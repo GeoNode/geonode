@@ -54,7 +54,7 @@ def get_visible_resources(queryset,
         is_admin = user.is_superuser if user else False
         try:
             is_manager = user.groupmember_set.all().filter(role='manager').exists()
-        except BaseException:
+        except Exception:
             is_manager = False
 
     # Get the list of objects the user has access to
@@ -65,18 +65,18 @@ def get_visible_resources(queryset,
     manager_groups = []
     try:
         group_list_all = user.group_list_all().values('group')
-    except BaseException:
+    except Exception:
         pass
     try:
         manager_groups = Group.objects.filter(
             name__in=user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
-    except BaseException:
+    except Exception:
         pass
     try:
         anonymous_group = Group.objects.get(name='anonymous')
         if anonymous_group and anonymous_group not in groups:
             groups.append(anonymous_group)
-    except BaseException:
+    except Exception:
         pass
 
     filter_set = queryset
@@ -188,7 +188,7 @@ def get_geofence_rules_count():
         rules_objs = json.loads(r.text)
         rules_count = rules_objs['count']
         return int(rules_count)
-    except BaseException:
+    except Exception:
         tb = traceback.format_exc()
         logger.debug(tb)
         return -1
@@ -223,7 +223,7 @@ def get_highest_priority():
         else:
             highest_priority = 0
         return int(highest_priority)
-    except BaseException:
+    except Exception:
         tb = traceback.format_exc()
         logger.debug(tb)
         return -1
@@ -268,7 +268,7 @@ def purge_geofence_all():
                                 raise e
                 except Exception:
                     logger.debug("Response [{}] : {}".format(r.status_code, r.text))
-        except BaseException:
+        except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
 
@@ -315,7 +315,7 @@ def purge_geofence_layer_rules(resource):
                     e = Exception(msg)
                     logger.debug("Response [{}] : {}".format(r.status_code, r.text))
                     raise e
-    except BaseException as e:
+    except Exception as e:
         logger.exception(e)
 
 
@@ -339,7 +339,7 @@ def set_geofence_invalidate_cache():
                 logger.warning("Could not Invalidate GeoFence Rules.")
                 return False
             return True
-        except BaseException:
+        except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
             return False
@@ -367,7 +367,7 @@ def set_geowebcache_invalidate_cache(layer_alternate):
                           auth=HTTPBasicAuth(user, passwd))
         if (r.status_code < 200 or r.status_code > 201):
             logger.warning("Could not Truncate GWC Cache for Layer '%s'." % layer_alternate)
-    except BaseException:
+    except Exception:
         tb = traceback.format_exc()
         logger.debug(tb)
 
@@ -417,7 +417,7 @@ def set_geofence_all(instance):
                 "Response {!r} : {}".format(response.status_code, response.text))
             raise RuntimeError("Could not ADD GeoServer ANONYMOUS Rule "
                                "for Layer {}".format(resource.layer.name))
-    except BaseException:
+    except Exception:
         tb = traceback.format_exc()
         logger.debug(tb)
     finally:
@@ -506,7 +506,7 @@ def remove_object_permissions(instance):
                 resource.set_dirty_state()
         except (ObjectDoesNotExist, RuntimeError):
             pass  # This layer is not manageable by geofence
-        except BaseException:
+        except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
     UserObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(resource),
@@ -611,6 +611,6 @@ def sync_resources_with_guardian(resource=None):
                             # Set the GeoFence Group Rules
                             sync_geofence_with_guardian(layer, perms, group=group)
                     r.clear_dirty_state()
-                except BaseException as e:
+                except Exception as e:
                     logger.exception(e)
                     logger.warn("!WARNING! - Failure Synching-up Security Rules for Resource [%s]" % (r))

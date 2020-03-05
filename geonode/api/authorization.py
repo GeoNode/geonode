@@ -43,7 +43,7 @@ class GeoNodeAuthorization(DjangoAuthorization):
             permitted_ids = get_objects_for_user(
                 bundle.request.user,
                 'base.view_resourcebase').values('id')
-        except BaseException:
+        except Exception:
             pass
 
         return object_list.filter(id__in=permitted_ids)

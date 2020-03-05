@@ -401,7 +401,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
         # @todo once the random tmp9723481758915 type of name is not
         # around, need to track the name computed above, for now, the
         # target store name can be used
-    except BaseException as e:
+    except Exception as e:
         tb = traceback.format_exc()
         logger.debug(tb)
         logger.exception('Error creating import session')
@@ -603,14 +603,14 @@ def final_step(upload_session, user, charset="UTF-8"):
         if os.path.isfile(sld_file):
             try:
                 f = open(sld_file, 'r')
-            except BaseException:
+            except Exception:
                 pass
         elif upload_session.tempdir and os.path.exists(upload_session.tempdir):
             tempdir = upload_session.tempdir
             if os.path.isfile(os.path.join(tempdir, sld_file)):
                 try:
                     f = open(os.path.join(tempdir, sld_file), 'r')
-                except BaseException:
+                except Exception:
                     pass
 
         if f:
@@ -648,14 +648,14 @@ def final_step(upload_session, user, charset="UTF-8"):
             try:
                 style = cat.get_style(
                     name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
-            except BaseException:
+            except Exception:
                 logger.warn('Could not retreive the Layer default Style name')
                 # what are we doing with this var?
                 msg = 'No style could be created for the layer, falling back to POINT default one'
                 try:
                     style = cat.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
                         cat.get_style(name + '_layer')
-                except BaseException:
+                except Exception:
                     style = cat.get_style('point')
                     logger.warn(msg)
                     e.args = (msg,)

@@ -28,6 +28,7 @@ from django.db.models import signals
 
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
+from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.auth.signals import user_logged_in, user_logged_out
@@ -213,13 +214,13 @@ class Profile(AbstractUser):
                     email_template,
                     self.email,
                     ctx)
-            except BaseException:
+            except Exception:
                 import traceback
                 traceback.print_exc()
 
 
-def get_anonymous_user_instance(Profile):
-    return Profile(pk=-1, username='AnonymousUser')
+def get_anonymous_user_instance(user_model):
+    return user_model(pk=-1, username='AnonymousUser')
 
 
 """ Connect relevant signals to their corresponding handlers. """
@@ -237,5 +238,5 @@ user_signed_up.connect(
 )
 signals.post_save.connect(
     profile_post_save,
-    sender=Profile
+    sender=get_user_model()
 )

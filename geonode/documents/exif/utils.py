@@ -102,7 +102,7 @@ def exif_extract_dict(doc):
         if date:
             try:
                 date = convertExifDateToDjangoDate(date)
-            except BaseException:
+            except Exception:
                 logger.error("Could not parse exif date")
                 date = None
 
@@ -160,7 +160,7 @@ def exif_extract_metadata_doc(doc):
         if date:
             try:
                 date = convertExifDateToDjangoDate(date)
-            except BaseException:
+            except Exception:
                 logger.error("Could not parse exif date")
                 date = None
 

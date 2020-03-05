@@ -23,6 +23,7 @@ import uuid
 import logging
 import json
 
+from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
 
 from geoserver.catalog import FailedRequestError
@@ -30,7 +31,6 @@ from geoserver.catalog import FailedRequestError
 from geonode import GeoNodeException
 from geonode.layers.models import Layer
 from geonode.layers.utils import get_valid_name
-from geonode.people.models import Profile
 from geonode.geoserver.helpers import gs_catalog, ogc_server_settings
 
 
@@ -61,7 +61,7 @@ def create_gn_layer(workspace, datastore, name, title, owner_name):
     """
     Associate a layer in GeoNode for a given layer in GeoServer.
     """
-    owner = Profile.objects.get(username=owner_name)
+    owner = get_user_model().objects.get(username=owner_name)
 
     layer = Layer.objects.create(
         name=name,

@@ -75,7 +75,7 @@ class EmailBackend(BaseBackend):
 
             connection.send_messages([email, ])
             # The connection was already open so send_messages() doesn't close it.
-        except BaseException:
+        except Exception:
             pass
         finally:
             # We need to manually close the connection.

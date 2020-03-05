@@ -195,7 +195,7 @@ class Map(ResourceBase, GXPMapBase):
         def source_for(layer):
             try:
                 return conf["sources"][layer["source"]]
-            except BaseException:
+            except Exception:
                 if 'url' in layer:
                     return {'url': layer['url']}
                 else:
@@ -348,7 +348,7 @@ class Map(ResourceBase, GXPMapBase):
                     'catalog': gs_catalog.get_layergroup(lg_name),
                     'ows': ogc_server_settings.ows
                 }
-            except BaseException:
+            except Exception:
                 return {
                     'catalog': None,
                     'ows': ogc_server_settings.ows
@@ -512,7 +512,7 @@ class MapLayer(models.Model, GXPLayerBase):
                         obj=layer.resourcebase_ptr):
                     cfg['disabled'] = True
                     cfg['visibility'] = False
-            except BaseException:
+            except Exception:
                 # shows maplayer with pink tiles,
                 # and signals that there is problem
                 # TODO: clear orphaned MapLayers
@@ -538,7 +538,7 @@ class MapLayer(models.Model, GXPLayerBase):
                         store=self.store, alternate=self.name).title
                 else:
                     title = Layer.objects.get(alternate=self.name).title
-        except BaseException:
+        except Exception:
             title = None
         if title is None:
             title = self.name
@@ -556,7 +556,7 @@ class MapLayer(models.Model, GXPLayerBase):
                     layer = Layer.objects.get(alternate=self.name)
                 link = "<a href=\"%s\">%s</a>" % (
                     layer.get_absolute_url(), layer.title)
-        except BaseException:
+        except Exception:
             link = None
         if link is None:
             link = "<span>%s</span> " % self.name

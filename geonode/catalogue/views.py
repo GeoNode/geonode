@@ -26,6 +26,7 @@ from defusedxml import lxml as dlxml
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt
 from pycsw import server
 from guardian.shortcuts import get_objects_for_user
@@ -34,7 +35,6 @@ from geonode.base.models import ResourceBase
 from geonode.layers.models import Layer
 from geonode.base.auth import get_or_create_token
 from geonode.base.models import ContactRole, SpatialRepresentationType
-from geonode.people.models import Profile
 from geonode.groups.models import GroupProfile
 from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
@@ -78,9 +78,9 @@ def csw_global_dispatch(request):
         # Filter out Layers not accessible to the User
         authorized_ids = []
         if request.user:
-            profiles = Profile.objects.filter(username=str(request.user))
+            profiles = get_user_model().objects.filter(username=str(request.user))
         else:
-            profiles = Profile.objects.filter(username="AnonymousUser")
+            profiles = get_user_model().objects.filter(username="AnonymousUser")
         if profiles:
             authorized = list(
                 get_objects_for_user(
@@ -120,7 +120,7 @@ def csw_global_dispatch(request):
                 group_list_all = []
                 try:
                     group_list_all = request.user.group_list_all().values('group')
-                except BaseException:
+                except Exception:
                     pass
                 for group in group_list_all:
                     if isinstance(group, dict):
@@ -187,7 +187,7 @@ def csw_global_dispatch(request):
                                 url.text += "&"
                             url.text += ("access_token=%s" % (access_token.token))
                             url.set('updated', 'yes')
-                except BaseException:
+                except Exception:
                     pass
             content = ET.tostring(tree, encoding='utf8', method='xml')
     finally:
@@ -363,7 +363,7 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
 
     pocr = ContactRole.objects.get(
         resource_id=resource.id, role='pointOfContact')
-    pocp = Profile.objects.get(id=pocr.contact_id)
+    pocp = get_user_model().objects.get(id=pocr.contact_id)
     content += "Point of Contact" + sc
     content += "name" + s + fst(pocp.last_name) + sc
     content += "e-mail" + s + fst(pocp.email) + sc
@@ -405,7 +405,7 @@ def csw_render_extra_format_html(request, layeruuid, resname):
 
     pocr = ContactRole.objects.get(
         resource_id=resource.id, role='pointOfContact')
-    pocp = Profile.objects.get(id=pocr.contact_id)
+    pocp = get_user_model().objects.get(id=pocr.contact_id)
     extra_res_md['poc_last_name'] = pocp.last_name
     extra_res_md['poc_email'] = pocp.email
     return render(request, "geonode_metadata_full.html", context={"resource": resource,

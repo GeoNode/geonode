@@ -31,6 +31,7 @@ from timeit import Timer
 
 from django.core.files import File
 from django.conf import settings
+from django.contrib.auth import get_user_model
 
 from taggit.models import Tag
 
@@ -38,7 +39,6 @@ from celery.exceptions import TimeoutError
 
 from geonode.base.models import TopicCategory
 from geonode.base.models import Region
-from geonode.people.models import Profile
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.layers.utils import file_upload
@@ -47,9 +47,9 @@ from geonode.layers.tasks import delete_layer
 
 def get_random_user():
     """ Get a random user """
-    users_count = Profile.objects.all().count()
+    users_count = get_user_model().objects.all().count()
     random_index = randint(0, users_count -1)
-    return Profile.objects.all()[random_index]
+    return get_user_model().objects.all()[random_index]
 
 def assign_random_category(resource):
     """ Assign a random category to a resource """
@@ -73,7 +73,7 @@ def assign_regions(resource):
 def create_users(n_users):
     """ Create n users in the database """
     for i in range(0, n_users):
-        user = Profile()
+        user = get_user_model()
         user.username = 'user_%s' % i
         user.save()
 
@@ -126,7 +126,7 @@ n_docs = 500
 Tag.objects.all().delete()
 
 # 1. create users
-Profile.objects.exclude(username='admin').exclude(username='AnonymousUser').delete()
+get_user_model().objects.exclude(username='admin').exclude(username='AnonymousUser').delete()
 create_users(n_users)
 
 # 2. create documents

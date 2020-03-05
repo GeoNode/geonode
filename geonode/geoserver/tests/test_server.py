@@ -972,7 +972,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
 
         try:
             wcs_url = urljoin(settings.SITEURL, reverse('ows_endpoint'))
-        except BaseException:
+        except Exception:
             wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
         self.assertEquals(wcs,
                           '%s?version=2.0.1&request=GetCapabilities&service=WCS' % wcs_url)
@@ -983,7 +983,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
 
         try:
             wfs_url = urljoin(settings.SITEURL, reverse('ows_endpoint'))
-        except BaseException:
+        except Exception:
             wfs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
         self.assertEquals(wfs,
                           '%s?version=1.1.0&request=GetCapabilities&service=WFS' % wfs_url)
@@ -994,7 +994,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
 
         try:
             wms_url = urljoin(settings.SITEURL, reverse('ows_endpoint'))
-        except BaseException:
+        except Exception:
             wms_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
         self.assertEquals(wms,
                           '%s?version=1.3.0&request=GetCapabilities&service=WMS' % wms_url)
@@ -1092,7 +1092,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
 
         try:
             image = _prepare_thumbnail_body_from_opts(request_body)
-        except BaseException as e:
+        except Exception as e:
             logger.exception(e)
             image = None
         # We are offline here, the layer does not exists in GeoServer

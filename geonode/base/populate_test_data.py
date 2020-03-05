@@ -30,7 +30,6 @@ from geonode.layers.models import Layer
 from geonode.base.models import TopicCategory
 from geonode.maps.models import Map
 from geonode.documents.models import Document
-from geonode.people.models import Profile
 from geonode import geoserver, qgis_server  # noqa
 from itertools import cycle
 from taggit.models import Tag
@@ -243,7 +242,7 @@ def remove_models(obj_ids, type=None):
             for id in m_ids:
                 m = Map.objects.get(pk=id)
                 m.delete()
-        except BaseException:
+        except Exception:
             pass
     elif type == 'layer':
         try:
@@ -251,7 +250,7 @@ def remove_models(obj_ids, type=None):
             for id in l_ids:
                 layer = Layer.objects.get(pk=id)
                 layer.delete()
-        except BaseException:
+        except Exception:
             pass
     elif type == 'document':
         try:
@@ -259,14 +258,13 @@ def remove_models(obj_ids, type=None):
             for id in d_ids:
                 d = Document.objects.get(pk=id)
                 d.delete()
-        except BaseException:
+        except Exception:
             pass
 
 
 def dump_models(path=None):
     result = serialize("json", sum([list(x) for x in
                                     [get_user_model().objects.all(),
-                                     Profile.objects.all(),
                                      Layer.objects.all(),
                                      Map.objects.all(),
                                      Document.objects.all(),

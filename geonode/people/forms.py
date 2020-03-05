@@ -21,10 +21,10 @@
 import taggit
 
 from django import forms
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import ugettext as _
 
-from geonode.people.models import Profile
 from geonode.base.models import ContactRole
 
 from captcha.fields import ReCaptchaField
@@ -45,7 +45,7 @@ class AllauthReCaptchaSignupForm(forms.Form):
 class ProfileCreationForm(UserCreationForm):
 
     class Meta:
-        model = Profile
+        model = get_user_model()
         fields = ("username",)
 
     def clean_username(self):
@@ -53,8 +53,8 @@ class ProfileCreationForm(UserCreationForm):
         # but it sets a nicer error message than the ORM. See #13147.
         username = self.cleaned_data["username"]
         try:
-            Profile.objects.get(username=username)
-        except Profile.DoesNotExist:
+            get_user_model().objects.get(username=username)
+        except get_user_model().DoesNotExist:
             return username
         raise forms.ValidationError(
             self.error_messages['duplicate_username'],
@@ -65,7 +65,7 @@ class ProfileCreationForm(UserCreationForm):
 class ProfileChangeForm(UserChangeForm):
 
     class Meta:
-        model = Profile
+        model = get_user_model()
         fields = '__all__'
 
 
@@ -84,7 +84,7 @@ class RoleForm(forms.ModelForm):
 
 class PocForm(forms.Form):
     contact = forms.ModelChoiceField(label="New point of contact",
-                                     queryset=Profile.objects.all())
+                                     queryset=get_user_model().objects.all())
 
 
 class ProfileForm(forms.ModelForm):
@@ -94,7 +94,7 @@ class ProfileForm(forms.ModelForm):
         help_text=_("A space or comma-separated list of keywords"))
 
     class Meta:
-        model = Profile
+        model = get_user_model()
         exclude = (
             'user',
             'password',

@@ -58,7 +58,6 @@ from geonode.monitoring.utils import generate_periods, align_period_start
 from geonode.utils import designals
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
-from geonode.people.models import Profile
 from geonode.documents.models import Document
 from geonode.monitoring.models import *  # noqa
 
@@ -95,7 +94,7 @@ logging.getLogger('south').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 # create test user if needed, delete all layers and set password
-u, created = Profile.objects.get_or_create(username=GEONODE_USER)
+u, created = get_user_model().objects.get_or_create(username=GEONODE_USER)
 if created:
     u.set_password(GEONODE_PASSWD)
     u.save()
@@ -195,7 +194,7 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
             try:
                 cl.get_html('/', debug=False)
                 break
-            except BaseException:
+            except Exception:
                 pass
 
         self.catalog = Catalog(

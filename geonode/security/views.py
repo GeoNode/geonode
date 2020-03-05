@@ -29,7 +29,6 @@ from django.contrib.auth import get_user_model
 from geonode.utils import resolve_object
 from geonode.base.models import ResourceBase
 from geonode.layers.models import Layer
-from geonode.people.models import Profile
 
 if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification
@@ -93,7 +92,7 @@ def resource_permissions(request, resource_id):
                 status=200,
                 content_type='text/plain'
             )
-        except BaseException:
+        except Exception:
             success = False
             message = "Error updating permissions :("
             return HttpResponse(
@@ -180,7 +179,7 @@ def attributes_sats_refresh(request):
             layer.bbox_y1 = Decimal(gs_resource.native_bbox[3])
             layer.srid = gs_resource.projection
             layer.save()
-        except BaseException as e:
+        except Exception as e:
             return HttpResponse(
                 json.dumps(
                     {
@@ -271,7 +270,7 @@ def request_permissions(request):
             json.dumps({'success': 'ok', }),
             status=200,
             content_type='text/plain')
-    except BaseException:
+    except Exception:
         return HttpResponse(
             json.dumps({'error': 'error delivering notification'}),
             status=400,
@@ -280,7 +279,7 @@ def request_permissions(request):
 
 def send_email_consumer(layer_uuid, user_id):
     resource = get_object_or_404(ResourceBase, uuid=layer_uuid)
-    user = Profile.objects.get(id=user_id)
+    user = get_user_model().objects.get(id=user_id)
     notification.send(
         [resource.owner],
         'request_download_resourcebase',
@@ -308,5 +307,5 @@ def send_email_owner_on_view(owner, viewer, layer_id, geonode_email="email@geo.n
                 reply_to=[geonode_email, ])
             email.content_subtype = "html"
             email.send()
-        except BaseException:
+        except Exception:
             pass

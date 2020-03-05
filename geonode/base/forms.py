@@ -46,7 +46,6 @@ from bootstrap3_datetime.widgets import DateTimePicker
 from modeltranslation.forms import TranslationModelForm
 
 from geonode.base.models import HierarchicalKeyword, TopicCategory, Region, License, CuratedThumbnail
-from geonode.people.models import Profile
 from geonode.base.enumerations import ALL_LANGUAGES
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
@@ -80,7 +79,7 @@ def get_tree_data():
                 data.append(
                     tuple((toplevel.name, childrens))
                 )
-    except BaseException:
+    except Exception:
         pass
 
     return tuple(data)
@@ -312,7 +311,7 @@ class TKeywordForm(forms.Form):
             try:
                 cleaned_data = [{key: self.data.get(key)} for key, value in self.data.items(
                 ) if 'tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
-            except BaseException:
+            except Exception:
                 tb = traceback.format_exc()
                 logger.exception(tb)
         return cleaned_data
@@ -336,7 +335,7 @@ class ResourceBaseForm(TranslationModelForm):
         empty_label="Owner",
         label=_("Owner"),
         required=False,
-        queryset=Profile.objects.exclude(
+        queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=ChoiceWidget('ProfileAutocomplete'))
 
@@ -365,7 +364,7 @@ class ResourceBaseForm(TranslationModelForm):
         empty_label=_("Person outside GeoNode (fill form)"),
         label=_("Point of Contact"),
         required=False,
-        queryset=Profile.objects.exclude(
+        queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=ChoiceWidget('ProfileAutocomplete'))
 
@@ -373,7 +372,7 @@ class ResourceBaseForm(TranslationModelForm):
         empty_label=_("Person outside GeoNode (fill form)"),
         label=_("Metadata Author"),
         required=False,
-        queryset=Profile.objects.exclude(
+        queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=ChoiceWidget('ProfileAutocomplete'))
 

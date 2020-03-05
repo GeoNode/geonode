@@ -39,7 +39,6 @@ from django.contrib.auth import get_user_model
 from guardian.shortcuts import get_anonymous_user, assign_perm, remove_perm
 from geonode import qgis_server, geoserver
 from geonode.base.populate_test_data import all_public
-from geonode.people.models import Profile
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
 from geonode.groups.models import Group
@@ -350,7 +349,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer = Layer.objects.all()[0]
         self.client.login(username='admin', password='admin')
         # give bobby the right to change the layer permissions
-        assign_perm('change_resourcebase', Profile.objects.get(username='bobby'), layer.get_self_resource())
+        assign_perm('change_resourcebase', get_user_model().objects.get(username='bobby'), layer.get_self_resource())
         self.client.logout()
         self.client.login(username='bobby', password='bob')
         layer2 = Layer.objects.all()[1]
@@ -632,7 +631,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                     from geonode.geoserver.helpers import cleanup
                     cleanup(saved_layer.name, saved_layer.uuid)
-            except BaseException:
+            except Exception:
                 pass
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -792,7 +791,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         finally:
             try:
                 layer.delete()
-            except BaseException:
+            except Exception:
                 pass
 
 

@@ -51,7 +51,7 @@ def verify_access_token(request, key):
             raise OAuthToolkitError('AccessToken has expired.')
     except AccessToken.DoesNotExist:
         raise FatalClientError("AccessToken not found at all.")
-    except BaseException:
+    except Exception:
         return None
     return token
 

@@ -273,14 +273,14 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 out['errormsgs'] = _('Failed to upload the layer')
                 try:
                     out['errors'] = u''.join(error).encode('utf-8')
-                except BaseException:
+                except Exception:
                     try:
                         out['errors'] = str(error)
-                    except BaseException:
+                    except Exception:
                         try:
                             tb = traceback.format_exc()
                             out['errors'] = tb
-                        except BaseException:
+                        except Exception:
                             pass
 
                 # Assign the error message to the latest UploadSession from
@@ -293,7 +293,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     if not isinstance(error, TracebackType):
                         try:
                             upload_session.error = pickle.dumps(error).decode("utf-8", "replace")
-                        except BaseException:
+                        except Exception:
                             err_msg = 'The error could not be parsed'
                             upload_session.error = err_msg
                             logger.error("TypeError: can't pickle traceback objects")
@@ -369,7 +369,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                             else:
                                 out[_k][key] = item.decode(layer_charset).encode("utf-8")
                             out[_k][key.decode(layer_charset).encode("utf-8")] = out[_k].pop(key)
-                        except BaseException as e:
+                        except Exception as e:
                             logger.exception(e)
 
         return HttpResponse(
@@ -551,7 +551,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
                 try:
                     if request.GET["filter"]:
                         filter = request.GET["filter"]
-                except BaseException:
+                except Exception:
                     pass
 
                 offset = 10 * (request.page - 1)
@@ -563,7 +563,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
                     filter=filter)
                 all_granules = cat.mosaic_granules(
                     coverages['coverages']['coverage'][0]['name'], store, filter=filter)
-            except BaseException:
+            except Exception:
                 granules = {"features": []}
                 all_granules = {"features": []}
 
@@ -663,7 +663,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             geom = GEOSGeometry(wkt, srid=int(srid[0]))
             geom.transform(4326)
             context_dict["layer_bbox"] = ','.join([str(c) for c in geom.extent])
-        except BaseException:
+        except Exception:
             pass
     if layer.storeType == 'dataStore':
         links = layer.link_set.download().filter(
@@ -710,7 +710,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
                 context_dict["layer_type"] = "vector_time"
             else:
                 context_dict["layer_type"] = "vector"
-    except BaseException:
+    except Exception:
         logger.error(
             "Possible error with OWSLib. Turning all available properties to string")
     # maps owned by user needed to fill the "add to existing map section" in template
@@ -776,7 +776,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
             properties[key].sort()
 
         context_dict["feature_properties"] = properties
-    except BaseException:
+    except Exception:
         import traceback
         traceback.print_exc()
         logger.error("Possible error with OWSLib.")
@@ -960,7 +960,7 @@ def layer_metadata(
                             tkeywords_list += "," + \
                                 tkl_ids if len(
                                     tkeywords_list) > 0 else tkl_ids
-                except BaseException:
+                except Exception:
                     tb = traceback.format_exc()
                     logger.error(tb)
 
@@ -1067,7 +1067,7 @@ def layer_metadata(
                         cleaned_data = [value for key, value in tkeywords_cleaned[i].items(
                         ) if 'tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
                         tkeywords_ids.extend(map(int, cleaned_data[0]))
-                    except BaseException:
+                    except Exception:
                         pass
 
                 if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
@@ -1082,10 +1082,10 @@ def layer_metadata(
                                 tkeywords_to_add.append(tkl[0].keyword_id)
                         layer.tkeywords.clear()
                         layer.tkeywords.add(*tkeywords_to_add)
-                    except BaseException:
+                    except Exception:
                         tb = traceback.format_exc()
                         logger.error(tb)
-        except BaseException:
+        except Exception:
             tb = traceback.format_exc()
             logger.error(tb)
 
@@ -1101,7 +1101,7 @@ def layer_metadata(
                 layer.get_self_resource())
             try:
                 is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except BaseException:
+            except Exception:
                 is_manager = False
             if not is_manager or not can_change_metadata:
                 layer_form.fields['is_approved'].widget.attrs.update(
@@ -1135,7 +1135,7 @@ def layer_metadata(
                 request.user.group_list_all().distinct(),
                 GroupProfile.objects.exclude(
                     access="private").exclude(access="public-invite"))
-        except BaseException:
+        except Exception:
             all_metadata_author_groups = GroupProfile.objects.exclude(
                 access="private").exclude(access="public-invite")
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
@@ -1263,7 +1263,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                     out['url'] = reverse(
                         'layer_detail', args=[
                             saved_layer.service_typename])
-            except BaseException as e:
+            except Exception as e:
                 logger.exception(e)
                 out['success'] = False
                 out['errors'] = str(e)
@@ -1391,7 +1391,7 @@ def layer_thumbnail(request, layername):
     try:
         try:
             preview = json.loads(request.body).get('preview', None)
-        except BaseException:
+        except Exception:
             preview = None
 
         if preview and preview == 'react':
@@ -1403,7 +1403,7 @@ def layer_thumbnail(request, layername):
             try:
                 image = _prepare_thumbnail_body_from_opts(
                     request.body, request=request)
-            except BaseException:
+            except Exception:
                 image = _render_thumbnail(request.body)
 
         is_image = False
@@ -1424,7 +1424,7 @@ def layer_thumbnail(request, layername):
         layer_obj.save_thumbnail(filename, image)
 
         return HttpResponse('Thumbnail saved')
-    except BaseException:
+    except Exception:
         return HttpResponse(
             content='error saving thumbnail',
             status=500,

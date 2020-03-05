@@ -112,7 +112,7 @@ class Command(BaseCommand):
                 # remove duplicates
                 if remove_duplicates:
                     remove_duplicate_links(layer)
-            except BaseException as e:
+            except Exception as e:
                 import traceback
                 traceback.print_exc()
                 if ignore_errors:

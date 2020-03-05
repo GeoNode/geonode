@@ -58,7 +58,7 @@ def add_xsl_link(resourcebase):
                           mime='text/xml',
                           link_type='metadata'))
         return created
-    except BaseException:
+    except Exception:
         return False
 
 

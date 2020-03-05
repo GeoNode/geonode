@@ -73,7 +73,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             _sname = utils.get_esri_service_name(self.url)
             _title_safe = safe(os.path.basename(os.path.normpath(_sname)))
             _title = _title_safe.replace('_', ' ').strip()
-        except BaseException:
+        except Exception:
             traceback.print_exc()
             _title = self.parsed_service.mapName
         if len(_title) == 0:
@@ -124,7 +124,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         ll = None
         try:
             ll = self.parsed_service.layers[int(resource_id)]
-        except BaseException:
+        except Exception:
             traceback.print_exc()
 
         return self._layer_meta(ll) if ll else None
@@ -138,7 +138,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         """
         try:
             return self._parse_layers(self.parsed_service.layers)
-        except BaseException:
+        except Exception:
             return None
 
     def _parse_layers(self, layers):
@@ -204,7 +204,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
     def has_resources(self):
         try:
             return True if len(self.parsed_service.layers) > 0 else False
-        except BaseException:
+        except Exception:
             traceback.print_exc()
             return False
 
@@ -317,7 +317,7 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
             _sname = utils.get_esri_service_name(self.url)
             _title_safe = safe(os.path.basename(os.path.normpath(_sname)))
             _title = _title_safe.replace('_', ' ').strip()
-        except BaseException:
+        except Exception:
             traceback.print_exc()
             _title = self.parsed_service.mapName
         if len(_title) == 0:

@@ -147,9 +147,10 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 resp = self.client.get(self.list_url)
                 self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
-                from geonode.people.models import Profile
-                Profile.objects.create(username='imnew',
-                                       password='pbkdf2_sha256$12000$UE4gAxckVj4Z$N\
+                from django.contrib.auth import get_user_model
+                get_user_model().objects.create(
+                    username='imnew',
+                    password='pbkdf2_sha256$12000$UE4gAxckVj4Z$N\
                     6NbOXIQWWblfInIoq/Ta34FdRiPhawCIZ+sOO3YQs=')
                 self.client.login(username='imnew', password='thepwd')
                 resp = self.client.get(self.list_url)
@@ -157,9 +158,10 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_new_user_has_access_to_old_layers(self):
         """Test that a new user can access the public available layers"""
-        from geonode.people.models import Profile
-        Profile.objects.create(username='imnew',
-                               password='pbkdf2_sha256$12000$UE4gAxckVj4Z$N\
+        from django.contrib.auth import get_user_model
+        get_user_model().objects.create(
+            username='imnew',
+            password='pbkdf2_sha256$12000$UE4gAxckVj4Z$N\
             6NbOXIQWWblfInIoq/Ta34FdRiPhawCIZ+sOO3YQs=')
         self.api_client.client.login(username='imnew', password='thepwd')
         resp = self.api_client.get(self.list_url)

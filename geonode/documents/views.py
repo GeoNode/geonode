@@ -150,7 +150,7 @@ def document_detail(request, docid):
                 exif = exif_extract_dict(document)
                 if exif:
                     context_dict['exif_data'] = exif
-            except BaseException:
+            except Exception:
                 logger.error("Exif extraction failed.")
 
         if request.user.is_authenticated():
@@ -240,7 +240,7 @@ class DocumentUploadView(CreateView):
                     keywords.extend(exif_metadata.get('keywords', []))
                     bbox = exif_metadata.get('bbox', None)
                     abstract = exif_metadata.get('abstract', None)
-            except BaseException:
+            except Exception:
                 logger.error("Exif extraction failed.")
 
         if abstract:
@@ -272,7 +272,7 @@ class DocumentUploadView(CreateView):
                 send_slack_message(
                     build_slack_message_document(
                         "document_new", self.object))
-            except BaseException:
+            except Exception:
                 logger.error("Could not send slack message for new document.")
 
         register_event(self.request, EventType.EVENT_UPLOAD, self.object)
@@ -402,7 +402,7 @@ def document_metadata(
                                 tkeywords_list += "," + \
                                     tkl_ids if len(
                                         tkeywords_list) > 0 else tkl_ids
-                    except BaseException:
+                    except Exception:
                         tb = traceback.format_exc()
                         logger.error(tb)
 
@@ -493,7 +493,7 @@ def document_metadata(
                             cleaned_data = [value for key, value in tkeywords_cleaned[i].items(
                             ) if 'tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
                             tkeywords_ids.extend(map(int, cleaned_data[0]))
-                        except BaseException:
+                        except Exception:
                             pass
 
                     if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
@@ -508,10 +508,10 @@ def document_metadata(
                                     tkeywords_to_add.append(tkl[0].keyword_id)
                             document.tkeywords.clear()
                             document.tkeywords.add(*tkeywords_to_add)
-                        except BaseException:
+                        except Exception:
                             tb = traceback.format_exc()
                             logger.error(tb)
-            except BaseException:
+            except Exception:
                 tb = traceback.format_exc()
                 logger.error(tb)
             return HttpResponse(json.dumps({'message': message}))
@@ -538,7 +538,7 @@ def document_metadata(
                     request.user.group_list_all(),
                     GroupProfile.objects.exclude(
                         access="private").exclude(access="public-invite"))
-            except BaseException:
+            except Exception:
                 all_metadata_author_groups = GroupProfile.objects.exclude(
                     access="private").exclude(access="public-invite")
             [metadata_author_groups.append(item) for item in all_metadata_author_groups
@@ -554,7 +554,7 @@ def document_metadata(
                     document.get_self_resource())
                 try:
                     is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-                except BaseException:
+                except Exception:
                     is_manager = False
                 if not is_manager or not can_change_metadata:
                     document_form.fields['is_approved'].widget.attrs.update(
@@ -634,7 +634,7 @@ def document_thumb_upload(
                 f = os.path.join(settings.MEDIA_ROOT, path)
                 try:
                     image_path = f
-                except BaseException:
+                except Exception:
                     image_path = document.find_placeholder()
 
                 thumbnail_content = None

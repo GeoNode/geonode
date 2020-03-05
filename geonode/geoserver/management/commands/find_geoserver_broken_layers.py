@@ -20,11 +20,11 @@
 
 import sys
 
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
 from geonode.geoserver.helpers import gs_catalog
 from geonode.layers.models import Layer
-from geonode.people.models import Profile
 
 
 def is_gs_resource_valid(layer):
@@ -68,7 +68,7 @@ class Command(BaseCommand):
         else:
             layers = Layer.objects.all()
         if options['owner']:
-            layers = layers.filter(owner=Profile.objects.filter(username=options['owner']))
+            layers = layers.filter(owner=get_user_model().objects.filter(username=options['owner']))
 
         layers_count = layers.count()
         count = 0

@@ -32,11 +32,11 @@ from geonode.tests.base import GeoNodeLiveTestSupport
 import os.path
 from django.conf import settings
 from django.db import connections
+from django.contrib.auth import get_user_model
 
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.upload.models import Upload
-from geonode.people.models import Profile
 from geonode.documents.models import Document
 from geonode.base.models import Link
 from geonode.catalogue import get_catalogue
@@ -88,7 +88,7 @@ logging.getLogger('south').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 # create test user if needed, delete all layers and set password
-u, created = Profile.objects.get_or_create(username=GEONODE_USER)
+u, created = get_user_model().objects.get_or_create(username=GEONODE_USER)
 if created:
     u.first_name = "Jhònà"
     u.last_name = "çénü"
@@ -142,7 +142,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
             try:
                 cl.get_html('/', debug=False)
                 break
-            except BaseException:
+            except Exception:
                 pass
 
         self.client = Client(
@@ -298,7 +298,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
                 layer_name in url, 'expected %s in URL, got %s' %
                 (layer_name, url))
             return url
-        except BaseException:
+        except Exception:
             return current_step
 
     def check_upload_model(self, original_name):
@@ -327,7 +327,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
         layer_name = original_name
         try:
             layer_name = type_name.split(':')[1]
-        except BaseException:
+        except Exception:
             pass
 
         # work around acl caching on geoserver side of things
@@ -337,7 +337,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
             try:
                 self.check_layer_geoserver_caps(type_name)
                 caps_found = True
-            except BaseException:
+            except Exception:
                 pass
         if not caps_found:
             logger.warning(
