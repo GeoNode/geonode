@@ -51,7 +51,6 @@ from modeltranslation.forms import TranslationModelForm
 from geonode.base.models import HierarchicalKeyword, TopicCategory, Region, License, CuratedThumbnail
 from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.documents.models import Document
-from geonode.people.models import Profile
 from geonode.base.enumerations import ALL_LANGUAGES
 from geonode.base.widgets import TaggitSelect2Custom
 
@@ -336,7 +335,7 @@ class ResourceBaseForm(TranslationModelForm):
         empty_label="Owner",
         label=_("Owner"),
         required=False,
-        queryset=Profile.objects.exclude(username='AnonymousUser'),
+        queryset=get_user_model().objects.exclude(username='AnonymousUser'),
         widget=autocomplete.ModelSelect2(url='autocomplete_profile'))
 
     date = forms.DateTimeField(
@@ -364,7 +363,7 @@ class ResourceBaseForm(TranslationModelForm):
         empty_label=_("Person outside GeoNode (fill form)"),
         label=_("Point of Contact"),
         required=False,
-        queryset=Profile.objects.exclude(
+        queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=autocomplete.ModelSelect2(url='autocomplete_profile'))
 
@@ -372,7 +371,7 @@ class ResourceBaseForm(TranslationModelForm):
         empty_label=_("Person outside GeoNode (fill form)"),
         label=_("Metadata Author"),
         required=False,
-        queryset=Profile.objects.exclude(
+        queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=autocomplete.ModelSelect2(url='autocomplete_profile'))
 

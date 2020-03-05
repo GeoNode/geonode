@@ -18,10 +18,10 @@
 #
 #########################################################################
 
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from oauth2_provider.models import Application
 from oauth2_provider.generators import generate_client_id, generate_client_secret
-from geonode.people.models import Profile
 
 from geonode import geoserver, qgis_server  # noqa
 from geonode.utils import check_ogc_backend
@@ -84,6 +84,6 @@ class Command(BaseCommand):
                     client_type='confidential',
                     client_id=client_id,
                     client_secret=client_secret,
-                    user=Profile.objects.filter(is_superuser=True)[0]
+                    user=get_user_model().objects.filter(is_superuser=True)[0]
                 )
         return '%s,%s' % (client_id, client_secret)

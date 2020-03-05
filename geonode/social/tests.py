@@ -35,7 +35,6 @@ from django.utils.translation import ugettext as _
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.social.templatetags.social_tags import activity_item
 from geonode.layers.models import Layer
-from geonode.people.models import Profile
 
 
 class SimpleTest(GeoNodeBaseTestSupport):
@@ -45,7 +44,7 @@ class SimpleTest(GeoNodeBaseTestSupport):
 
         registry.register(Layer)
         registry.register(Comment)
-        registry.register(Profile)
+        registry.register(get_user_model())
         create_layer_data()
         self.user = get_user_model().objects.filter(username='admin')[0]
 

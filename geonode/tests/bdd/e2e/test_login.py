@@ -21,7 +21,7 @@
 """User can login using authentication feature tests."""
 
 import pytest
-from geonode.people.models import Profile
+from django.contrib.auth import get_user_model
 from pytest_bdd import given, scenario, then, when
 
 
@@ -48,7 +48,7 @@ def admin_user():
 @given('A global administrator named "admin"')
 def administrator_named_admin():
     """A global administrator named "admin"."""
-    admin = Profile.objects.filter(username='admin')
+    admin = get_user_model().objects.filter(username='admin')
     assert admin.exists() is True
 
 

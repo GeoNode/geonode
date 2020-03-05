@@ -110,8 +110,8 @@ def get_notification_recipients(notice_type_label, exclude_user=None):
     recipients_ids = notifications.models.NoticeSetting.objects \
         .filter(notice_type__label=notice_type_label) \
         .values('user')
-    from geonode.people.models import Profile
-    profiles = Profile.objects.filter(id__in=recipients_ids)
+    from django.contrib.auth import get_user_model
+    profiles = get_user_model().objects.filter(id__in=recipients_ids)
     if exclude_user:
         profiles.exclude(username=exclude_user.username)
     return profiles
