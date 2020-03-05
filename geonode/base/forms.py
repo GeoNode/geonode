@@ -79,7 +79,7 @@ def get_tree_data():
                 data.append(
                     tuple((toplevel.name, childrens))
                 )
-    except BaseException:
+    except Exception:
         pass
 
     return tuple(data)
@@ -311,7 +311,7 @@ class TKeywordForm(forms.Form):
             try:
                 cleaned_data = [{key: self.data.get(key)} for key, value in self.data.items(
                 ) if 'tkeywords' in key.lower() and 'autocomplete' not in key.lower()]
-            except BaseException:
+            except Exception:
                 tb = traceback.format_exc()
                 logger.exception(tb)
         return cleaned_data

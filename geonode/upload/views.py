@@ -114,7 +114,7 @@ def data_upload_progress(req):
         try:
             progress = import_session.tasks[0].get_progress()
             return json_response(progress)
-        except BaseException:
+        except Exception:
             pass
 
     return json_response({'state': 'NONE'})
@@ -662,7 +662,7 @@ def view(req, step):
                 upload_session = session
             else:
                 upload_session = _get_upload_session(req)
-        except BaseException:
+        except Exception:
             traceback.print_exc()
     try:
         if req.method == 'GET' and upload_session:
@@ -688,7 +688,7 @@ def view(req, step):
                         upload_session = None
                         del req.session[upload_id]
                         req.session.modified = True
-                except BaseException:
+                except Exception:
                     pass
         else:
             upload_session = _get_upload_session(req)

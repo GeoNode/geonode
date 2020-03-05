@@ -375,7 +375,7 @@ def get_resolution(filename):
         __, resx, __, __, __, resy = gt
         resolution = '%s %s' % (resx, resy)
         return resolution
-    except BaseException:
+    except Exception:
         return None
 
 
@@ -445,7 +445,7 @@ def get_bbox(filename):
             bbox_x1 = max(ext[0][0], ext[2][0])
             bbox_y1 = max(ext[0][1], ext[2][1])
             srid = srs.GetAuthorityCode(None) if srs else '4326'
-    except BaseException:
+    except Exception:
         pass
 
     return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, "EPSG:%s" % str(srid)]
@@ -510,7 +510,7 @@ def file_upload(filename,
                     absolute_base_file = _fixup_base_file(files['shp'])
                 elif 'zip' in files and os.path.exists(files['zip']):
                     absolute_base_file = _fixup_base_file(files['zip'])
-            except BaseException:
+            except Exception:
                 absolute_base_file = None
 
             if not absolute_base_file or \
@@ -539,7 +539,7 @@ def file_upload(filename,
                     if not schema_is_compliant:
                         raise Exception(
                             _("You are attempting to replace a vector layer with an incompatible schema."))
-                except BaseException as e:
+                except Exception as e:
                     raise Exception(
                         _("Some error occurred while trying to access the uploaded schema: %s" % str(e)))
 
@@ -574,7 +574,7 @@ def file_upload(filename,
                 category = categories[0]
             else:
                 category = None
-        except BaseException:
+        except Exception:
             pass
 
     # Generate a name that is not taken if overwrite is False.
@@ -683,7 +683,7 @@ def file_upload(filename,
                         uuid=identifier,
                         defaults=defaults
                     )
-        except BaseException:
+        except Exception:
             raise
 
     # Delete the old layers if overwrite is true
@@ -786,7 +786,7 @@ def file_upload(filename,
 
             # Refresh from DB
             layer.refresh_from_db()
-        except BaseException:
+        except Exception:
             import traceback
             tb = traceback.format_exc()
             logger.error(tb)
@@ -957,7 +957,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
         _thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
         _thumbnail_path = os.path.join(_thumbnail_dir, thumbnail_name)
         _thumb_exists = storage.exists(_thumbnail_path)
-    except BaseException:
+    except Exception:
         _thumbnail_dir = os.path.join(settings.STATIC_ROOT, 'thumbs')
         _thumbnail_path = os.path.join(_thumbnail_dir, thumbnail_name)
         _thumb_exists = storage.exists(_thumbnail_path)
@@ -1019,7 +1019,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                                 logger.error(msg)
                                 # Replace error message with None.
                                 image = None
-                        except BaseException:
+                        except Exception:
                             image = None
                     if image is None:
                         request_body = {
@@ -1056,7 +1056,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
                         try:
                             image = _prepare_thumbnail_body_from_opts(request_body)
-                        except BaseException:
+                        except Exception:
                             image = None
 
                 if image is None:
@@ -1095,7 +1095,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
                             # Replace error message with None.
                             image = None
-                    except BaseException as e:
+                    except Exception as e:
                         logger.exception(e)
 
                         # Replace error message with None.
@@ -1200,7 +1200,7 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     try:
         username = ogc_server_settings.credentials.username
         user = get_user_model().objects.get(username=username)
-    except BaseException as e:
+    except Exception as e:
         logger.exception(e)
 
     access_token = None

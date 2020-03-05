@@ -107,7 +107,7 @@ class Style(models.Model, PermissionLevelMixin):
             layer = self.layer_styles.first()
             """:type: Layer"""
             return layer.get_self_resource()
-        except BaseException:
+        except Exception:
             return None
 
 
@@ -339,7 +339,7 @@ class UploadSession(models.Model):
     def __unicode__(self):
         try:
             _s = '[Upload session-id: {}] - {}'.format(self.id, self.resource.title)
-        except BaseException:
+        except Exception:
             _s = '[Upload session-id: {}]'.format(self.id)
         return u"{0}".format(_s)
 
@@ -516,7 +516,7 @@ def pre_save_layer(instance, sender, **kwargs):
             instance.bbox_y0 = _resourcebase_ptr.bbox_y0
             instance.bbox_y1 = _resourcebase_ptr.bbox_y1
             instance.srid = _resourcebase_ptr.srid
-        except BaseException as e:
+        except Exception as e:
             logger.exception(e)
 
     if instance.abstract == '' or instance.abstract is None:

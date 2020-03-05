@@ -215,7 +215,7 @@ community."
                 data="not a valid viewer config",
                 content_type="text/json")
             self.assertEquals(response.status_code, 400)
-        except BaseException:
+        except Exception:
             pass
 
         self.client.logout()
@@ -741,7 +741,7 @@ community."
             # Test methods other than GET or POST and no layer in params
             response = self.client.put(url)
             self.assertEquals(response.status_code, 405)
-        except BaseException:
+        except Exception:
             pass
 
     @dump_func_name
@@ -768,21 +768,21 @@ community."
                     object_id=map_id,
                     content_type=ctype,
                     rating=3)
-            except BaseException as e:
+            except Exception as e:
                 logger.exception(e)
 
             logger.info("Remove the map")
             try:
                 response = self.client.post(reverse('map_remove', args=(map_id,)))
                 self.assertEquals(response.status_code, 302)
-            except BaseException as e:
+            except Exception as e:
                 logger.exception(e)
 
             logger.info("Check there are no ratings matching the removed map")
             try:
                 rating = OverallRating.objects.filter(object_id=map_id)
                 self.assertEquals(rating.count(), 0)
-            except BaseException as e:
+            except Exception as e:
                 logger.exception(e)
 
     @dump_func_name

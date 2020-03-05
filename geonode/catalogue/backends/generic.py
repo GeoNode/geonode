@@ -114,7 +114,7 @@ class Catalogue(CatalogueServiceWeb):
     def get_by_uuid(self, uuid):
         try:
             self.getrecordbyid([uuid], outputschema=namespaces["gmd"])
-        except BaseException:
+        except Exception:
             return None
 
         if hasattr(self, 'records'):
@@ -415,7 +415,7 @@ class Catalogue(CatalogueServiceWeb):
                     format = format_re.match(link_el.description).groups()[0]
                     href = link_el.url
                     links.append((extension, format, href))
-                except BaseException:
+                except Exception:
                     pass
         return links
 
@@ -459,7 +459,7 @@ class CatalogueBackend(BaseCatalogueBackend):
                 # model but it just passes it to a Django template so a dict works
                 # too.
                 self.catalogue.delete_layer({"uuid": uuid})
-            except BaseException:
+            except Exception:
                 logger.exception(
                     'Couldn\'t delete Catalogue record during cleanup()')
 

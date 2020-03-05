@@ -180,7 +180,7 @@ def group_members_add(request, slug):
                     role=GroupMember.MANAGER if form.cleaned_data[
                         "manager_role"] else GroupMember.MEMBER
                 )
-            except BaseException as e:
+            except Exception as e:
                 messages.add_message(request, messages.ERROR, e)
                 return redirect("group_members", slug=group.slug)
     return redirect("group_detail", slug=group.slug)

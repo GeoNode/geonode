@@ -67,7 +67,7 @@ class Command(BaseCommand):
                 if not layer.alternate:
                     layer.alternate = layer.typename
                     layer.save()
-            except BaseException as e:
+            except Exception as e:
                 # import traceback
                 # traceback.print_exc()
                 if ignore_errors:

@@ -214,7 +214,7 @@ class Profile(AbstractUser):
                     email_template,
                     self.email,
                     ctx)
-            except BaseException:
+            except Exception:
                 import traceback
                 traceback.print_exc()
 

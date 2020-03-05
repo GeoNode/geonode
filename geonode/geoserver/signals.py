@@ -105,7 +105,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     """
     try:
         instance.refresh_from_db()
-    except BaseException:
+    except Exception:
         from django.db import connection
         connection._rollback()
 
@@ -149,17 +149,17 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                 name=instance.name,
                 store=instance.store,
                 workspace=instance.workspace)
-        except BaseException:
+        except Exception:
             try:
                 gs_resource = gs_catalog.get_resource(
                     name=instance.alternate,
                     store=instance.store,
                     workspace=instance.workspace)
-            except BaseException:
+            except Exception:
                 try:
                     gs_resource = gs_catalog.get_resource(
                         name=instance.alternate or instance.typename)
-                except BaseException:
+                except Exception:
                     gs_resource = None
 
         if gs_resource:
@@ -250,7 +250,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     try:
         _stylefilterparams_geowebcache_layer(instance.alternate)
         _invalidate_geowebcache_layer(instance.alternate)
-    except BaseException:
+    except Exception:
         pass
 
     if instance.storeType == "remoteStore":
@@ -281,7 +281,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
             instance.bbox_y0 = bbox[2]
             instance.bbox_y1 = bbox[3]
             instance.srid = bbox[4]
-        except BaseException:
+        except Exception:
             pass
 
     if instance.srid:
@@ -314,7 +314,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                     for keyword in gs_resource.keywords:
                         if keyword not in instance.keyword_list():
                             instance.keywords.add(keyword)
-            except BaseException:
+            except Exception:
                 from django.db import connection
                 connection._rollback()
 
@@ -333,7 +333,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                                'try to use: "%s"' % (gs_resource, str(e)))
                         e.args = (msg,)
                         logger.exception(e)
-        except BaseException:
+        except Exception:
             from django.db import connection
             connection._rollback()
 
@@ -352,7 +352,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     try:
         resources = ResourceBase.objects.filter(id=instance.resourcebase_ptr.id)
         resources.update(**to_update)
-    except BaseException:
+    except Exception:
         from django.db import connection
         connection._rollback()
 
@@ -365,21 +365,21 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     # Save all the modified information in the instance without triggering signals.
     try:
         Layer.objects.filter(id=instance.id).update(**to_update)
-    except BaseException:
+    except Exception:
         from django.db import connection
         connection._rollback()
 
     # Refresh from DB
     try:
         instance.refresh_from_db()
-    except BaseException:
+    except Exception:
         from django.db import connection
         connection._rollback()
 
     # Updating the Catalogue
     try:
         catalogue_post_save(instance=instance, sender=instance.__class__)
-    except BaseException:
+    except Exception:
         from django.db import connection
         connection._rollback()
 
@@ -393,7 +393,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         logger.info("... Creating Default Resource Links for Layer [%s]" % (instance.alternate))
         try:
             set_resource_default_links(instance, instance, prune=True)
-        except BaseException:
+        except Exception:
             from django.db import connection
             connection._rollback()
             logger.warn("Failure Creating Default Resource Links for Layer [%s]" % (instance.alternate))

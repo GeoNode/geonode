@@ -631,7 +631,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                     from geonode.geoserver.helpers import cleanup
                     cleanup(saved_layer.name, saved_layer.uuid)
-            except BaseException:
+            except Exception:
                 pass
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -791,7 +791,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         finally:
             try:
                 layer.delete()
-            except BaseException:
+            except Exception:
                 pass
 
 

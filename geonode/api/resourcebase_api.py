@@ -635,7 +635,7 @@ class CommonModelApi(ModelResource):
                 filtered_objects_ids = [
                     item.id for item in data['objects'] if request.user.has_perm(
                         'view_resourcebase', item.get_self_resource())]
-        except BaseException:
+        except Exception:
             pass
 
         if isinstance(
@@ -837,13 +837,13 @@ class LayerResource(CommonModelApi):
             # Default style
             try:
                 obj.qgis_default_style = obj.qgis_layer.default_style
-            except BaseException:
+            except Exception:
                 obj.qgis_default_style = None
 
             # Styles
             try:
                 obj.qgis_styles = obj.qgis_layer.styles
-            except BaseException:
+            except Exception:
                 obj.qgis_styles = []
         return obj
 
@@ -890,7 +890,7 @@ class LayerResource(CommonModelApi):
 
             layer_id = kwargs['id']
             layer = Layer.objects.get(id=layer_id)
-        except BaseException:
+        except Exception:
             return http.HttpBadRequest(reason=reason)
 
         from geonode.qgis_server.views import default_qml_style

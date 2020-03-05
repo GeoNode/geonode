@@ -142,7 +142,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
             try:
                 cl.get_html('/', debug=False)
                 break
-            except BaseException:
+            except Exception:
                 pass
 
         self.client = Client(
@@ -298,7 +298,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
                 layer_name in url, 'expected %s in URL, got %s' %
                 (layer_name, url))
             return url
-        except BaseException:
+        except Exception:
             return current_step
 
     def check_upload_model(self, original_name):
@@ -327,7 +327,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
         layer_name = original_name
         try:
             layer_name = type_name.split(':')[1]
-        except BaseException:
+        except Exception:
             pass
 
         # work around acl caching on geoserver side of things
@@ -337,7 +337,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
             try:
                 self.check_layer_geoserver_caps(type_name)
                 caps_found = True
-            except BaseException:
+            except Exception:
                 pass
         if not caps_found:
             logger.warning(

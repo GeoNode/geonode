@@ -24,7 +24,7 @@ from geonode.groups.conf import settings
 
 try:
     from django.db.models.signals import post_migrate
-except BaseException:
+except Exception:
     # OR for Django 2.0+
     from django.db.backends.signals import post_migrate
 

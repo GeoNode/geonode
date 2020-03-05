@@ -71,7 +71,7 @@ def do_login(sender, user, request, **kwargs):
         token = None
         try:
             token = get_or_create_token(user)
-        except BaseException:
+        except Exception:
             u = uuid1()
             token = u.hex
             tb = traceback.format_exc()
@@ -87,7 +87,7 @@ def do_logout(sender, user, request, **kwargs):
     if 'access_token' in request.session:
         try:
             delete_old_tokens(user)
-        except BaseException:
+        except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
         remove_session_token(request.session)

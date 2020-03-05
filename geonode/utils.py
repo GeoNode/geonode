@@ -172,7 +172,7 @@ def get_layer_name(layer):
                 _name = layer.alternate.split(':')[1]
             else:
                 _name = layer.alternate
-    except BaseException:
+    except Exception:
         pass
     return _name
 
@@ -183,11 +183,11 @@ def get_layer_workspace(layer):
     workspace = None
     try:
         alternate = layer.alternate
-    except BaseException:
+    except Exception:
         alternate = layer.name
     try:
         workspace = layer.workspace
-    except BaseException:
+    except Exception:
         workspace = None
     if not workspace and alternate and ':' in alternate:
         workspace = alternate.split(":")[1]
@@ -367,7 +367,7 @@ def bbox_to_projection(native_bbox, target_srid=4326):
     minx, maxx, miny, maxy = [float(a) for a in box]
     try:
         source_srid = int(proj.split(":")[1]) if proj and ':' in proj else int(proj)
-    except BaseException:
+    except Exception:
         source_srid = target_srid
 
     if source_srid != target_srid:
@@ -383,7 +383,7 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             # Must be in the form : [x0, x1, y0, y1, EPSG:<target_srid>)
             return tuple([projected_bbox[0], projected_bbox[2], projected_bbox[1], projected_bbox[3]]) + \
                 ("EPSG:%s" % target_srid,)
-        except BaseException:
+        except Exception:
             tb = traceback.format_exc()
             logger.info(tb)
 
@@ -405,7 +405,7 @@ def bounds_to_zoom_level(bounds, width, height):
     def zoom(mapPx, worldPx, fraction):
         try:
             return floor(log(mapPx / worldPx / fraction) / log(2.0))
-        except BaseException:
+        except Exception:
             return 0
 
     ne = [float(bounds[2]), float(bounds[3])]
@@ -776,7 +776,7 @@ class GXPLayerBase(object):
             try:
                 cfg['styles'] = ast.literal_eval(self.styles) \
                     if isinstance(self.styles, six.string_types) else self.styles
-            except BaseException:
+            except Exception:
                 pass
         if self.transparent:
             cfg['transparent'] = True
@@ -918,7 +918,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
             is_admin = request.user.is_superuser if request.user else False
             try:
                 is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except BaseException:
+            except Exception:
                 is_manager = False
         if (not obj_to_check.is_published):
             if not is_admin:
@@ -1138,7 +1138,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     inDriver = ogr.GetDriverByName('ESRI Shapefile')
     try:
         inDataSource = inDriver.Open(inShapefile, 1)
-    except BaseException:
+    except Exception:
         tb = traceback.format_exc()
         logger.debug(tb)
         inDataSource = None
@@ -1238,7 +1238,7 @@ def designals():
         if signalname in signals_store:
             try:
                 signaltype = getattr(models.signals, signalname)
-            except BaseException:
+            except Exception:
                 continue
             logger.debug("RETRIEVE: %s: %d" %
                          (signalname, len(signaltype.receivers)))
@@ -1261,7 +1261,7 @@ def designals():
                     # - case id(function) or uid
                     try:
                         receiv_call = id_to_obj(lookup[0])
-                    except BaseException:
+                    except Exception:
                         uid = lookup[0]
 
                 if isinstance(lookup[1], tuple):
@@ -1343,7 +1343,7 @@ def parse_datetime(value):
                 return datetime.datetime.strptime(value_obj, patt)
             else:
                 return datetime.datetime.strptime(value, patt)
-        except BaseException:
+        except Exception:
             # tb = traceback.format_exc()
             # logger.error(tb)
             pass
@@ -1411,7 +1411,7 @@ def check_ogc_backend(backend_package):
     try:
         in_installed_apps = backend_package in settings.INSTALLED_APPS
         return in_installed_apps and is_configured
-    except BaseException:
+    except Exception:
         pass
     return False
 
@@ -1450,7 +1450,7 @@ class HttpClient(object):
                     access_token = get_or_create_token(_u)
                     if access_token and not access_token.is_expired():
                         headers['Authorization'] = 'Bearer %s' % access_token.token
-                except BaseException:
+                except Exception:
                     tb = traceback.format_exc()
                     logger.debug(tb)
                     pass
@@ -1489,7 +1489,7 @@ class HttpClient(object):
 
         try:
             content = response.content if not stream else response.raw
-        except BaseException:
+        except Exception:
             content = None
 
         return (response, content)
@@ -1546,19 +1546,19 @@ def copy_tree(src, dst, symlinks=False, ignore=None):
                 if os.path.exists(d):
                     try:
                         os.remove(d)
-                    except BaseException:
+                    except Exception:
                         try:
                             shutil.rmtree(d)
-                        except BaseException:
+                        except Exception:
                             pass
                 try:
                     shutil.copytree(s, d, symlinks, ignore)
-                except BaseException:
+                except Exception:
                     pass
             else:
                 try:
                     shutil.copy2(s, d)
-                except BaseException:
+                except Exception:
                     pass
     except Exception:
         traceback.print_exc()
@@ -1670,7 +1670,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
                 srid = bbox[4]
                 bbox = ','.join(str(x) for x in [bbox[0], bbox[2], bbox[1], bbox[3]])
-            except BaseException as e:
+            except Exception as e:
                 logger.exception(e)
 
         # Create Raw Data download link

@@ -632,7 +632,7 @@ class QGISStyleResource(ModelResource):
             """:type: geonode.qgis_server.QGISServerLayer"""
             style.layer = qgis_layer.layer
             style.type = 'qml'
-        except BaseException:
+        except Exception:
             pass
         return style
 

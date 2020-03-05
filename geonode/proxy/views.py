@@ -207,7 +207,7 @@ def proxy(request, url=None, response_callback=None,
                 _s = text.decode("utf-8", "replace")
                 try:
                     found = re.search('<b>Message</b>(.+?)</p>', _s).group(1).strip()
-                except BaseException:
+                except Exception:
                     found = _s
                 return found
 
@@ -296,11 +296,11 @@ def download(request, resourceid, sender=Layer):
                         sld_file = open(sld_file_path, "w")
                         sld_file.write(sld_remote_content.strip())
                         sld_file.close()
-                    except BaseException:
+                    except Exception:
                         traceback.print_exc()
                         tb = traceback.format_exc()
                         logger.debug(tb)
-            except BaseException:
+            except Exception:
                 traceback.print_exc()
                 tb = traceback.format_exc()
                 logger.debug(tb)
@@ -333,7 +333,7 @@ def download(request, resourceid, sender=Layer):
                                 user=request.user)
                             raw.decode_content = True
                             shutil.copyfileobj(raw, link_file)
-                        except BaseException:
+                        except Exception:
                             traceback.print_exc()
                             tb = traceback.format_exc()
                             logger.debug(tb)
@@ -344,7 +344,7 @@ def download(request, resourceid, sender=Layer):
                         link_file = open(link_file, "w")
                         link_file.write(link.url.strip())
                         link_file.close()
-            except BaseException:
+            except Exception:
                 traceback.print_exc()
                 tb = traceback.format_exc()
                 logger.debug(tb)

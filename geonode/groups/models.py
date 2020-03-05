@@ -216,12 +216,12 @@ class GroupProfile(models.Model):
             _upload_path = os.path.join(_base_path, _upload_path)
             if not os.path.exists(_upload_path):
                 copyfile(self.logo.path, _upload_path)
-        except BaseException as e:
+        except Exception as e:
             logger.exception(e)
         _url = None
         try:
             _url = self.logo.url
-        except BaseException as e:
+        except Exception as e:
             logger.exception(e)
         return _url
 

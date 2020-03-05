@@ -97,7 +97,7 @@ class SessionControlMiddleware(object):
             elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
                 try:
                     access_token = get_token_object_from_session(request.session)
-                except BaseException:
+                except Exception:
                     access_token = None
                     self.do_logout(request)
 
@@ -108,14 +108,14 @@ class SessionControlMiddleware(object):
     def do_logout(self, request):
         try:
             logout(request)
-        except BaseException:
+        except Exception:
             pass
         finally:
             try:
                 from django.contrib import messages
                 from django.utils.translation import ugettext_noop as _
                 messages.warning(request, _("Session is Expired. Please login again!"))
-            except BaseException:
+            except Exception:
                 pass
 
             if not any(path.match(request.path) for path in white_list):
