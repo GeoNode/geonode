@@ -19,7 +19,7 @@
 #########################################################################
 
 from haystack import indexes
-from geonode.people.models import Profile
+from django.contrib.auth import get_user_model
 
 
 class ProfileIndex(indexes.SearchIndex, indexes.Indexable):
@@ -34,7 +34,7 @@ class ProfileIndex(indexes.SearchIndex, indexes.Indexable):
     type = indexes.CharField(faceted=True)
 
     def get_model(self):
-        return Profile
+        return get_user_model()
 
     def prepare_title(self, obj):
         return str(obj)

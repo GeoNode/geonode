@@ -18,8 +18,11 @@
 #
 #########################################################################
 
+from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin
+from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.utils.translation import ugettext_lazy as _
 from django.utils.decorators import method_decorator
@@ -30,9 +33,7 @@ from django.contrib.admin.options import IS_POPUP_VAR
 from django.shortcuts import get_object_or_404
 from django.utils.html import escape
 from django.template.response import TemplateResponse
-from django.contrib import messages
 from django.http import HttpResponseRedirect, Http404
-from django.conf import settings
 from django.core.exceptions import PermissionDenied
 
 from .models import Profile
@@ -47,7 +48,7 @@ sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('id', 'username', 'organization',)
     search_fields = ('username', 'organization', 'profile', )
-    modelform_factory(Profile, fields='__all__')
+    modelform_factory(get_user_model(), fields='__all__')
     add_form_template = 'admin/auth/user/add_form.html'
     change_user_password_template = None
     fieldsets = (

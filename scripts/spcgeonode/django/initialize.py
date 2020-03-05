@@ -20,7 +20,6 @@ from django.db.utils import OperationalError
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from requests.exceptions import ConnectionError
-from geonode.people.models import Profile
 from oauthlib.common import generate_token
 from oauth2_provider.models import AccessToken, get_application_model
 
@@ -63,14 +62,14 @@ call_command('migrate', '--noinput')
 print("-----------------------------------------------------")
 print("3. Creating/updating superuser")
 try:
-    superuser = Profile.objects.get(username=admin_username)
+    superuser = get_user_model().objects.get(username=admin_username)
     superuser.set_password(admin_password)
     superuser.is_active = True
     superuser.email = admin_email
     superuser.save()
     print('superuser successfully updated')
-except Profile.DoesNotExist:
-    superuser = Profile.objects.create_superuser(
+except get_user_model().DoesNotExist:
+    superuser = get_user_model().objects.create_superuser(
         admin_username,
         admin_email,
         admin_password

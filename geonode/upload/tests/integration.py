@@ -32,11 +32,11 @@ from geonode.tests.base import GeoNodeLiveTestSupport
 import os.path
 from django.conf import settings
 from django.db import connections
+from django.contrib.auth import get_user_model
 
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.upload.models import Upload
-from geonode.people.models import Profile
 from geonode.documents.models import Document
 from geonode.base.models import Link
 from geonode.catalogue import get_catalogue
@@ -88,7 +88,7 @@ logging.getLogger('south').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 # create test user if needed, delete all layers and set password
-u, created = Profile.objects.get_or_create(username=GEONODE_USER)
+u, created = get_user_model().objects.get_or_create(username=GEONODE_USER)
 if created:
     u.first_name = "Jhònà"
     u.last_name = "çénü"

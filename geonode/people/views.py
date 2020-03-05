@@ -29,7 +29,6 @@ from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.db.models import Q
 
-from geonode.people.models import Profile
 from geonode.people.forms import ProfileForm
 from geonode.people.forms import ForgotUsernameForm
 from geonode.tasks.tasks import send_email
@@ -41,10 +40,10 @@ def profile_edit(request, username=None):
         try:
             profile = request.user
             username = profile.username
-        except Profile.DoesNotExist:
+        except get_user_model().DoesNotExist:
             return redirect("profile_browse")
     else:
-        profile = get_object_or_404(Profile, Q(is_active=True), username=username)
+        profile = get_object_or_404(get_user_model(), Q(is_active=True), username=username)
 
     if username == request.user.username or request.user.is_superuser:
         if request.method == "POST":
@@ -70,7 +69,7 @@ def profile_edit(request, username=None):
 
 
 def profile_detail(request, username):
-    profile = get_object_or_404(Profile, Q(is_active=True), username=username)
+    profile = get_object_or_404(get_user_model(), Q(is_active=True), username=username)
     # combined queryset from each model content type
 
     return render(request, "people/profile_detail.html", {

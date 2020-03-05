@@ -19,9 +19,9 @@
 #########################################################################
 
 from django.db.models import Q
+from django.contrib.auth import get_user_model
 from autocomplete_light.registry import register
 from autocomplete_light.autocomplete.shortcuts import AutocompleteModelTemplate
-from .models import Profile
 
 
 class ProfileAutocomplete(AutocompleteModelTemplate):
@@ -33,7 +33,7 @@ class ProfileAutocomplete(AutocompleteModelTemplate):
 
 
 register(
-    Profile,
+    get_user_model(),
     ProfileAutocomplete,
     search_fields=['first_name', 'last_name', 'email', 'username'],
 )

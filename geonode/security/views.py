@@ -29,7 +29,6 @@ from django.contrib.auth import get_user_model
 from geonode.utils import resolve_object
 from geonode.base.models import ResourceBase
 from geonode.layers.models import Layer
-from geonode.people.models import Profile
 
 if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification
@@ -280,7 +279,7 @@ def request_permissions(request):
 
 def send_email_consumer(layer_uuid, user_id):
     resource = get_object_or_404(ResourceBase, uuid=layer_uuid)
-    user = Profile.objects.get(id=user_id)
+    user = get_user_model().objects.get(id=user_id)
     notification.send(
         [resource.owner],
         'request_download_resourcebase',
