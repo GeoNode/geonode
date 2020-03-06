@@ -34,8 +34,7 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
-from geonode.utils import (designals,
-                           resignals,
+from geonode.utils import (DisableDjangoSignals,
                            get_dir_time_suffix,
                            zip_dir,
                            copy_tree,
@@ -288,18 +287,15 @@ class Command(BaseCommand):
             else:
                 print("Skipping geoserver backup")
 
-            try:
-                # Deactivate GeoNode Signals
-                print "Deactivating GeoNode Signals..."
-                designals()
-                print "...done!"
+            # Deactivate GeoNode Signals
+            with DisableDjangoSignals():
 
                 # Dump Fixtures
                 for app_name, dump_name in zip(config.app_names, config.dump_names):
                     print "Dumping '"+app_name+"' into '"+dump_name+".json'."
                     # Point stdout at a file for dumping data to.
                     output = open(os.path.join(target_folder, dump_name+'.json'), 'w')
-                    call_command('dumpdata', app_name, format='json', indent=2, natural=True, stdout=output)
+                    call_command('dumpdata', app_name, format='json', indent=2, stdout=output)
                     output.close()
 
                 # Store Media Root
@@ -384,8 +380,3 @@ class Command(BaseCommand):
                 print "Backup Finished. Archive generated."
 
                 return str(os.path.join(backup_dir, dir_time_suffix+'.zip'))
-            finally:
-                # Reactivate GeoNode Signals
-                print "Reactivating GeoNode Signals..."
-                resignals()
-                print "...done!"
