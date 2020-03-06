@@ -117,6 +117,33 @@ class LayerManager(ResourceBaseManager):
         models.Manager.__init__(self)
 
 
+class UploadSession(models.Model):
+
+    """Helper class to keep track of uploads.
+    """
+    resource = models.ForeignKey(ResourceBase, blank=True, null=True, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    processed = models.BooleanField(default=False)
+    error = models.TextField(blank=True, null=True)
+    traceback = models.TextField(blank=True, null=True)
+    context = models.TextField(blank=True, null=True)
+
+    def successful(self):
+        return self.processed and self.errors is None
+
+    def __str__(self):
+        _s = "[Upload session-id: {}]".format(self.id)
+        try:
+            _s += " - {}".format(self.resource.title)
+        except Exception:
+            pass
+        return "{0}".format(_s)
+
+    def __unicode__(self):
+        return "{0}".format(self.__str__())
+
+
 class Layer(ResourceBase):
 
     """
@@ -153,7 +180,7 @@ class Layer(ResourceBase):
 
     charset = models.CharField(max_length=255, default='UTF-8')
 
-    upload_session = models.ForeignKey('UploadSession', blank=True, null=True, on_delete=models.CASCADE)
+    upload_session = models.ForeignKey(UploadSession, blank=True, null=True, on_delete=models.CASCADE)
 
     def is_vector(self):
         return self.storeType == 'dataStore'
@@ -313,30 +340,6 @@ class Layer(ResourceBase):
         else:
             Layer.objects.filter(id=self.id)\
                          .update(popular_count=models.F('popular_count') + 1)
-
-
-class UploadSession(models.Model):
-
-    """Helper class to keep track of uploads.
-    """
-    resource = models.ForeignKey(ResourceBase, blank=True, null=True, on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    processed = models.BooleanField(default=False)
-    error = models.TextField(blank=True, null=True)
-    traceback = models.TextField(blank=True, null=True)
-    context = models.TextField(blank=True, null=True)
-
-    def successful(self):
-        return self.processed and self.errors is None
-
-    def __str__(self):
-        _s = "[Upload session-id: {}]".format(self.id)
-        try:
-            _s += " - {}".format(self.resource.title)
-        except Exception:
-            pass
-        return "{0}".format(_s)
 
 
 class LayerFile(models.Model):
