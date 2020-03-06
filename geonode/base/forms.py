@@ -337,7 +337,7 @@ class ResourceBaseForm(TranslationModelForm):
         required=False,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
-        widget=ChoiceWidget('ProfileAutocomplete'))
+        widget=ChoiceWidget(settings.AUTH_USER_AUTOCOMPLETE))
 
     date = forms.DateTimeField(
         label=_("Date"),
@@ -366,7 +366,7 @@ class ResourceBaseForm(TranslationModelForm):
         required=False,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
-        widget=ChoiceWidget('ProfileAutocomplete'))
+        widget=ChoiceWidget(settings.AUTH_USER_AUTOCOMPLETE))
 
     metadata_author = forms.ModelChoiceField(
         empty_label=_("Person outside GeoNode (fill form)"),
@@ -374,7 +374,7 @@ class ResourceBaseForm(TranslationModelForm):
         required=False,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
-        widget=ChoiceWidget('ProfileAutocomplete'))
+        widget=ChoiceWidget(settings.AUTH_USER_AUTOCOMPLETE))
 
     keywords = TaggitField(
         label=_("Free-text Keywords"),
