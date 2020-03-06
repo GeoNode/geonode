@@ -376,6 +376,9 @@
           if ($location.search().hasOwnProperty('name__icontains')){
             $scope.text_query = $location.search()['name__icontains'].replace(/\+/g," ");
           }
+          if ($location.search().hasOwnProperty('name')) {
+            $scope.text_query = $location.search()['name'].replace(/\+/g, " ");
+          }
         }
 
         //Update facet/keyword/category counts from search results
@@ -603,9 +606,12 @@
                 // a user profile has no title; if search was triggered from
                 // the /people page, filter by username instead
                 var query_key = 'username__icontains';
-            } else if (AUTOCOMPLETE_URL_RESOURCEBASE == "/groups/autocomplete_category/" || AUTOCOMPLETE_URL_RESOURCEBASE == "/groups/autocomplete/" ) {
+            } else if (AUTOCOMPLETE_URL_RESOURCEBASE == "/groups/autocomplete_category/" ) {
                 // Adding in this conditional since both groups autocomplete and searches requests need to search name not title.
                 var query_key = 'name__icontains';
+            } else if (AUTOCOMPLETE_URL_RESOURCEBASE == "/groups/autocomplete/" ) {
+                // Adding in this conditional since both groups autocomplete and searches requests need to search name not title.
+                var query_key = 'name';
             } else {
                 var query_key = $('#text_search_input').data('query-key')||'title__icontains';
             }
