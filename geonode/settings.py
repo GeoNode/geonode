@@ -414,7 +414,7 @@ INSTALLED_APPS = (
     'modeltranslation',
     'dal',
     'dal_select2',
-    
+
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -741,6 +741,7 @@ AUTH_EXEMPT_URLS = (
     '%s/api/users' % FORCE_SCRIPT_NAME,
     '%s/api/layers' % FORCE_SCRIPT_NAME,
     '%s/monitoring' % FORCE_SCRIPT_NAME,
+    r'^/i18n/setlang/?$',
 )
 
 ANONYMOUS_USER_ID = os.getenv('ANONYMOUS_USER_ID', '-1')
