@@ -1,0 +1,64 @@
+.crop-widget {
+  display: inline-block;
+}
+.crop-widget .thumbnail-title {
+  text-align: left;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+.crop-widget button {
+  width: 50%;
+  padding: 0px;
+  border-radius: 2px;
+}
+.crop-widget .invisible {
+  /*important is on purpose, to force disappearning despite other displays*/
+  display: none !important;
+}
+.crop-widget .crop-modal-overlay {
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  opacity: 0.3;
+}
+.crop-widget .crop-input {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+.crop-widget .crop-input-label {
+  display: block;
+  padding: 0px;
+  width: 100%;
+  border-radius: 2px;
+}
+.crop-modal-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  max-width: 100%;
+  height: 400px;
+  max-height: 100%;
+  z-index: 1010;
+  text-align: center;
+}
+.crop-modal-container button {
+  width: 50%;
+  padding: 0px;
+  border-radius: 2px;
+}
+.crop-modal-container .cropper-bg {
+  background-image: none;
+}
+.crop-modal-container .invisible {
+  display: none;
+}

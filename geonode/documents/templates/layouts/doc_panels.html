@@ -17,6 +17,9 @@
 <script type="text/javascript" src="{% static "autocomplete_light/select2.js" %}"></script>
 <script type="text/javascript" src="{% static "autocomplete_light/jquery.post-setup.js" %}"></script>
 
+<script src="{% static "geonode/js/crop_widget/crop_widget_es5.js" %}/"></script>
+<link rel="stylesheet" href="{% static "geonode/css/crop_widget.css" %}">
+
 <style>
 /* general panel styles */
 #mdeditor_form .panel-group .panel{
@@ -261,13 +264,31 @@ span.grippy::after {
                     <div class="row">
                         <div class="col">
                             <div id="basicInfo" class="container-fluid">
+
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
                             <div id="basicDescriptiveInfo" class="container-fluid">
-                                <div class="col-lg-7">
+                                <div class="col-lg-3">
+                                    <img id="image" style="max-height: 100%; max-width: 100%; min-height: 100%; min-width: 100%">
+                                    <script>
+                                        const image = document.getElementById('image');
+                                        const path = location.pathname.split('/');
+                                        const id = path[path.length - 2];
+                                        const prefetch_url = "{{ resource.curatedthumbnail.thumbnail_url }}";
+                                        const c_widget = new CropWidget(image,
+                                            parseInt(
+                                                id
+                                            ),
+                                            '/api/documents/',
+                                            prefetch_url
+                                        );
+                                        c_widget.init();
+                                    </script>
+                                </div>
+                                <div class="col-lg-4">
                                     <span><label for="{{ document_form.title|id }}">{{ document_form.title.label }}</label></span>
                                     <!--<p class="xxs-font-size">(Name by which the cited resource is known)</p>-->
                                     {{ document_form.title }}
@@ -279,7 +300,7 @@ span.grippy::after {
                                         {{ document_form.abstract }}
                                     </div>
                                 </div>
-                                <div class="col-lg-5">
+                                <div class="col-lg-4">
                                     <div class="col-lg-12">
                                         <span><label for="{{ document_form.date_type|id }}">{{ document_form.keywords.label }}</label></span>
                                         {{ document_form.keywords }}
@@ -483,7 +504,7 @@ span.grippy::after {
                     {% if GEONODE_SECURITY_ENABLED %}
                     <!--<hr />
                     <div class="modal-body" id="_permissions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                        {# include "_permissions.html" #}
+                         include "_permissions.html"
                     </div>
                     <div class="modal fade" id="_permissions_feedbacks" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                       <div class="modal-dialog" role="document">

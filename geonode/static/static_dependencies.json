@@ -13,7 +13,8 @@
     "bootstrap-table/dist/bootstrap-table.css",
     "bootstrap-toggle/css/bootstrap-toggle.css",
     "fastselect/dist/fastselect.css",
-    "patternfly-bootstrap-treeview/dist/bootstrap-treeview.css"
+    "patternfly-bootstrap-treeview/dist/bootstrap-treeview.css",
+    "cropperjs/dist/cropper.css"
   ],
   "leaflet.plugins.min.css": [
     "leaflet/dist/leaflet.css",
@@ -76,7 +77,8 @@
     "select2/dist/js/select2.full.js",
     "jquery-waypoints/waypoints.js",
     "underscore/underscore.js",
-    "zeroclipboard/dist/ZeroClipboard.js"
+    "zeroclipboard/dist/ZeroClipboard.js",
+    "cropperjs/dist/cropper.js"
   ],
   "leaflet-plugins.min.js": [
     "leaflet/dist/leaflet.js",
