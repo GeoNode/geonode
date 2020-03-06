@@ -351,7 +351,7 @@
                     {% else %}
                     <input autocomplete="off" type="text" name="title__icontains" id="search_input" placeholder="Search" >
                     {% endif %}
-                  </div> 
+                  </div>
                 </form>
               </div>
             </li>
@@ -508,7 +508,7 @@
           {% endif %}
           {% endblock contactus %}
           <ul class="list-unstyled">
-            <li>{% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a> <em>{% trans "version" %} {{ VERSION }}</em></li>
+            <li>{% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a>{% if user.is_staff %} <em>{% trans "version" %} {{ VERSION }}</em>{% endif %}</li>
             <li><a href="{% url "developer" %}">{% trans "Developers" %}</a> | <a href="{% url "about" %}">{% trans "About" %}</a><li>
           </ul>
           <label class="hidden">{% trans "Language" %}</label>
@@ -625,7 +625,7 @@
         })
         window.autocomplete2.setup()
       })
-      
+
       $('#search_input').bind('selectChoice', function(e, choice) {
           if(choice[0].children[0] == undefined) {
               $('#search_input').val($(choice[0]).text());
