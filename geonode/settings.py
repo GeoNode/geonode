@@ -1514,43 +1514,43 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
         MAPSTORE_CATALOGUE_SERVICES[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]] = GEONODE_CATALOGUE_SERVICE[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]]
         MAPSTORE_CATALOGUE_SELECTED_SERVICE = list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]
 
-        DEFAULT_MS2_BACKGROUNDS = [
-            {
-                "type": "osm",
-                "title": "Open Street Map",
-                "name": "mapnik",
-                "source": "osm",
-                "group": "background",
-                "visibility": True
-            }, {
-                "type": "tileprovider",
-                "title": "OpenTopoMap",
-                "provider": "OpenTopoMap",
-                "name": "OpenTopoMap",
-                "source": "OpenTopoMap",
-                "group": "background",
-                "visibility": False
-            }, {
-                "type": "wms",
-                "title": "Sentinel-2 cloudless - https://s2maps.eu",
-                "format": "image/jpeg",
-                "id": "s2cloudless",
-                "name": "s2cloudless:s2cloudless",
-                "url": "https://maps.geo-solutions.it/geoserver/wms",
-                "group": "background",
-                "thumbURL": "%sstatic/mapstorestyle/img/s2cloudless-s2cloudless.png" % SITEURL,
-                "visibility": False
-           }, {
-                "source": "ol",
-                "group": "background",
-                "id": "none",
-                "name": "empty",
-                "title": "Empty Background",
-                "type": "empty",
-                "visibility": False,
-                "args": ["Empty Background", {"visibility": False}]
-           }
-        ]
+    DEFAULT_MS2_BACKGROUNDS = [
+        {
+            "type": "osm",
+            "title": "Open Street Map",
+            "name": "mapnik",
+            "source": "osm",
+            "group": "background",
+            "visibility": True
+        }, {
+            "type": "tileprovider",
+            "title": "OpenTopoMap",
+            "provider": "OpenTopoMap",
+            "name": "OpenTopoMap",
+            "source": "OpenTopoMap",
+            "group": "background",
+            "visibility": False
+        }, {
+            "type": "wms",
+            "title": "Sentinel-2 cloudless - https://s2maps.eu",
+            "format": "image/jpeg",
+            "id": "s2cloudless",
+            "name": "s2cloudless:s2cloudless",
+            "url": "https://maps.geo-solutions.it/geoserver/wms",
+            "group": "background",
+            "thumbURL": "%sstatic/mapstorestyle/img/s2cloudless-s2cloudless.png" % SITEURL,
+            "visibility": False
+       }, {
+            "source": "ol",
+            "group": "background",
+            "id": "none",
+            "name": "empty",
+            "title": "Empty Background",
+            "type": "empty",
+            "visibility": False,
+            "args": ["Empty Background", {"visibility": False}]
+       }
+    ]
 
     if MAPBOX_ACCESS_TOKEN:
         BASEMAP = {
