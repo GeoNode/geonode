@@ -102,10 +102,10 @@ class Document(ResourceBase):
 class DocumentResourceLink(models.Model):
 
     # relation to the document model
-    document = models.ForeignKey(Document, related_name='links')
+    document = models.ForeignKey(Document, related_name='links', null=True, blank=True, on_delete=models.CASCADE)
 
     # relation to the resource model
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, null=True, blank=True, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     resource = GenericForeignKey('content_type', 'object_id')
 

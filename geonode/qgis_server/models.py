@@ -330,7 +330,8 @@ class QGISServerMap(models.Model, PermissionLevelMixin):
     map = models.OneToOneField(
         Map,
         primary_key=True,
-        name='map'
+        name='map',
+        on_delete=models.CASCADE
     )
 
     map_name_format = 'map_{id}'

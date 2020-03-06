@@ -1548,7 +1548,8 @@ class MetricNotificationCheck(models.Model):
     definition = models.OneToOneField(
         NotificationMetricDefinition,
         null=True,
-        related_name='metric_check')
+        related_name='metric_check',
+        on_delete=models.CASCADE)
 
     def __unicode__(self):
         indicator = []
