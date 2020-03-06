@@ -47,7 +47,8 @@ module.exports = function(grunt) {
         },
         files: [
           {
-            'geonode/css/base.css': 'geonode/less/base.less'
+            'geonode/css/base.css': 'geonode/less/base.less',
+            'geonode/css/crop_widget.css': 'geonode/less/crop_widget.less'
           }
         ]
       },
@@ -61,7 +62,8 @@ module.exports = function(grunt) {
         },
         files: [
           {
-            'geonode/css/base.css': 'geonode/less/base.less'
+            'geonode/css/base.css': 'geonode/less/base.less',
+            'geonode/css/crop_widget.css': 'geonode/less/crop_widget.less'
           }
         ]
       }
@@ -218,6 +220,18 @@ module.exports = function(grunt) {
       }
     },
 
+    babel: {
+      options: {
+          sourceMap: true,
+          presets: ['@babel/preset-env']
+      },
+      dist: {
+          files: {
+              'geonode/js/crop_widget/crop_widget_es5.js': 'geonode/js/crop_widget/crop_widget.js'
+          }
+      }
+    },
+
     uglify: {
       options: {
         // the banner is inserted at the top of the output
@@ -266,6 +280,6 @@ module.exports = function(grunt) {
   grunt.registerTask('development', ['jshint', 'clean:lib', 'less:development', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:development']);
 
   // build production
-  grunt.registerTask('production', ['jshint', 'clean:lib', 'less:production', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:production']);
+  grunt.registerTask('production', ['jshint', 'clean:lib', 'less:production', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:production', 'babel']);
 
 };
