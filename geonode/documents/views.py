@@ -18,7 +18,6 @@
 #
 #########################################################################
 
-import os
 import json
 import logging
 import traceback
@@ -34,8 +33,6 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 from django_downloadview.response import DownloadResponse
 from django.views.generic.edit import UpdateView, CreateView
 from django.db.models import F
@@ -51,7 +48,6 @@ from geonode.base.models import (
 from geonode.documents.models import Document, get_related_resources
 from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
 from geonode.documents.models import IMGTYPES
-from geonode.documents.renderers import generate_thumbnail_content, MissingPILError
 from geonode.utils import build_social_links
 from geonode.groups.models import GroupProfile
 from geonode.base.views import batch_modify
