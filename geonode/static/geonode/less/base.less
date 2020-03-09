@@ -2,6 +2,7 @@
 @import "variables";
 @import "fonts";
 @import "../css/font-awesome.min.css";
+
 /* Basics
 ----------------------- */
 div#user_messages {
@@ -17,6 +18,7 @@ div#user_messages {
   -webkit-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
 }
+
 @keyframes msgDisappear {
   from {
     opacity: 1;
@@ -27,6 +29,7 @@ div#user_messages {
     visibility: hidden;
   }
 }
+
 @-webkit-keyframes msgDisappear {
   from {
     opacity: 1;
@@ -91,6 +94,7 @@ form {
     padding: 5px;
   }
 }
+
 /* Layout
 ----------------------- */
 #wrap {
@@ -121,6 +125,7 @@ article.tab-pane {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 /* ------ Nav
 ------------------------------ */
 .navbar-inverse {
@@ -234,11 +239,12 @@ article.tab-pane {
     margin-top: 0.75em;
   }
 }
+
 /* ------ Home
 ------------------------------ */
 .home {
   .navbar-inverse {
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
   }
 
   #wrap {
@@ -267,7 +273,7 @@ article.tab-pane {
     }
 
     .btn-default {
-      background: rgba(0,0,0,0.2);
+      background: rgba(0, 0, 0, 0.2);
       border: 2px solid white;
       color: white;
       font-weight: 600;
@@ -275,7 +281,7 @@ article.tab-pane {
       min-width: 320px;
 
       &:hover {
-        background: rgba(0,0,0,0.4);
+        background: rgba(0, 0, 0, 0.4);
       }
     }
   }
@@ -288,6 +294,7 @@ article.tab-pane {
     p {
       text-align: center;
     }
+
     padding-bottom: 3em;
     padding-top: 1em;
 
@@ -341,13 +348,13 @@ article.tab-pane {
     padding: 1em 0;
 
     .container {
-    	.text-center {
-    		.row {
-    			display: flex;
-    			display: -webkit-flex;
-    			flex-wrap: wrap;
-    		}
-    	}
+      .text-center {
+        .row {
+          display: flex;
+          display: -webkit-flex;
+          flex-wrap: wrap;
+        }
+      }
     }
 
     p {
@@ -406,6 +413,7 @@ article.tab-pane {
     }
   }
 }
+
 /* autocomplete
 ------------------------*/
 .yourlabs-autocomplete {
@@ -424,6 +432,7 @@ article.tab-pane {
   top: 30px !important;
   margin-top: 40px;
 }
+
 /* Home
 ----------------------- */
 .jumbotron {
@@ -462,6 +471,7 @@ article.tab-pane {
   background-size: contain;
   height: 250px;
 }
+
 /* Items
 ----------------------- */
 .actions,
@@ -480,6 +490,7 @@ article.tab-pane {
   .item-info {
     border-top: 1px solid @gray-lighter;
   }
+
   padding: 10px 0;
 
   h4 {
@@ -495,7 +506,8 @@ article.tab-pane {
       &:hover {
         color: @brand-danger;
         text-decoration: none;
-      };
+      }
+    ;
     }
   }
 
@@ -541,10 +553,12 @@ article.tab-pane {
       &:hover {
         color: @gray;
         text-decoration: none;
-      };
+      }
+    ;
     }
   }
 }
+
 /* Layers
 ----------------------- */
 .item-container {
@@ -580,7 +594,8 @@ article.tab-pane {
       &:hover {
         color: @brand-danger;
         text-decoration: none;
-      };
+      }
+    ;
     }
   }
 
@@ -662,6 +677,7 @@ article.tab-pane {
 .grid-spacer {
   margin-top: 30px;
 }
+
 /* Control items
 ----------------------- */
 .controls {
@@ -678,19 +694,19 @@ article.tab-pane {
 /* treeview component */
 
 .treeview .list-group-item {
-    cursor: pointer;
-    word-break: break-all;
-    padding-left: 0px;
-    padding-left: 12px;
+  cursor: pointer;
+  word-break: break-all;
+  padding-left: 0px;
+  padding-left: 12px;
 }
 
 .treeview span.icon {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 
 span.icon.node-icon:before {
-    font-family: FontAwesome;
-    content: "\f07b";
+  font-family: FontAwesome;
+  content: "\f07b";
 }
 
 /* Maps
@@ -698,11 +714,13 @@ span.icon.node-icon:before {
 .map-actions {
   .detail-page-actions;
 }
+
 /* Documents
 ----------------------- */
 .documents-actions {
   .detail-page-actions;
 }
+
 /* Documents
 ----------------------- */
 /* People
@@ -736,7 +754,8 @@ span.icon.node-icon:before {
       &:hover {
         color: @brand-danger;
         text-decoration: none;
-      };
+      }
+    ;
     }
   }
 
@@ -752,7 +771,8 @@ span.icon.node-icon:before {
         &:hover {
           color: @brand-danger;
           text-decoration: none;
-        };
+        }
+      ;
       }
     }
 
@@ -768,7 +788,8 @@ span.icon.node-icon:before {
     &:hover {
       color: @brand-danger;
       text-decoration: none;
-    };
+    }
+  ;
   }
 
   img {
@@ -862,6 +883,7 @@ nav.filter {
     color: @brand-primary;
   }
 }
+
 /* Groups
 ----------------------- */
 .group-container {
@@ -892,7 +914,8 @@ nav.filter {
       &:hover {
         color: @brand-danger;
         text-decoration: none;
-      };
+      }
+    ;
     }
   }
 }
@@ -909,7 +932,8 @@ nav.filter {
       &:hover {
         color: @brand-danger;
         text-decoration: none;
-      };
+      }
+    ;
     }
   }
 
@@ -935,6 +959,7 @@ nav.filter {
     width: 100%;
   }
 }
+
 /* Upload Layers
 ----------------------- */
 #drop-zone {
@@ -958,10 +983,12 @@ nav.filter {
 #upload-button {
   margin-top: 20px;
 }
+
 /* overwrite bootstrap styling, save updates */
 #id_metadata_uploaded_preserve {
   margin-left: 5px;
 }
+
 /* Upload Documents
 ----------------------- */
 #upload_form {
@@ -981,7 +1008,8 @@ nav.filter {
     outline: none;
   }
 
-  #id_title {}
+  #id_title {
+  }
 
   #id_doc_file {
     padding: 0.5em;
@@ -998,8 +1026,10 @@ nav.filter {
     width: 480px;
   }
 
-  .helptext {}
+  .helptext {
+  }
 }
+
 @media (max-width: 991px) {
   #upload_form {
     input[type="text"] {
@@ -1013,6 +1043,7 @@ nav.filter {
     }
   }
 }
+
 /* Upload Time
 ----------------------- */
 /*#timeForm label {
@@ -1075,6 +1106,7 @@ footer {
     color: @text-color;
   }
 }
+
 /* Copyright
 ----------------------- */
 .footer-copyright {
@@ -1091,6 +1123,7 @@ footer {
     font-size: 14px;
   }
 }
+
 /* Etc
 ----------------------- */
 .rotate-45 {
@@ -1143,6 +1176,7 @@ footer {
   font-weight: bold;
   color: #777;
 }
+
 /* Activity
    ----------------------------- */
 .no-style-list {
@@ -1260,6 +1294,7 @@ footer {
 #permission_form .select2-container {
   width: 250px;
 }
+
 /* Sign In Modal
 ----------------------- */
 .form-signin {
@@ -1315,7 +1350,8 @@ footer {
   &:hover {
     color: @brand-primary;
     text-decoration: none;
-  };
+  }
+;
 }
 
 .modal-divider {
@@ -1329,6 +1365,7 @@ footer {
     margin-right: 8px;
   }
 }
+
 /* Media Queries
    ----------------------------- */
 @media (max-width: 991px) {
@@ -1342,15 +1379,15 @@ footer {
 
   .navbar-collapse {
     border-top: 1px solid transparent;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
   .navbar-collapse.collapse {
-    display: none!important;
+    display: none !important;
   }
 
   .navbar-nav {
-    float: none!important;
+    float: none !important;
     margin: 7.5px -15px;
   }
 
@@ -1362,13 +1399,14 @@ footer {
     padding-top: 10px;
     padding-bottom: 10px;
   }
+
   /* since 3.1.0 */
   .navbar-collapse.collapse.in {
-    display: block!important;
+    display: block !important;
   }
 
   .collapsing {
-    overflow: hidden!important;
+    overflow: hidden !important;
   }
 
   .home .navbar-inverse {
@@ -1399,6 +1437,7 @@ footer {
 .table-user-profile-attribute {
   font-weight: bold;
 }
+
 /* Download Layer Filtering Modal
 ----------------------- */
 .gear {
@@ -1515,6 +1554,7 @@ form-inline {
 .has-error {
   color: #a94442 !important;
 }
+
 .has-error .select2-selection {
   border-color: #a94442 !important;
 }
@@ -1583,3 +1623,71 @@ form-inline {
   margin-right: 0px;
   margin-left: 0px;
 }
+
+.inbox-checkbox {
+
+  label {
+    cursor: pointer;
+    position: relative;
+    left: 30%;
+  }
+
+  label::before {
+    display: inline-block;
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    border: 1px solid;
+    border-color: @gray-light;
+  }
+
+  label::after {
+    position: absolute;
+    content: "";
+    display: inline-block;
+    height: 6px;
+    width: 9px;
+    top: 4px;
+    left: 4px;
+    border-left: 2px solid;
+    border-bottom: 2px solid;
+    border-color: @gray-light;
+
+    transform: rotate(-45deg);
+  }
+
+  label::after {
+    content: none;
+  }
+
+  input[type="checkbox"] {
+    opacity: 0;
+    display: none;
+  }
+
+  input[type="checkbox"]:checked + label::after {
+    content: "";
+  }
+
+}
+
+.inbox-icons {
+
+  button {
+    background: none;
+    border: none;
+    color: white; /* White text */
+
+    cursor: pointer;
+  }
+
+  margin-bottom: 5px;
+  color: @gray-light;
+
+  i {
+    cursor: pointer;
+    margin: 5px;
+  }
+}
+

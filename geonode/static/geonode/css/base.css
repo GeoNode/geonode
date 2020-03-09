@@ -7916,10 +7916,10 @@ footer form {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
   .navbar-collapse.collapse {
-    display: none!important;
+    display: none !important;
   }
   .navbar-nav {
-    float: none!important;
+    float: none !important;
     margin: 7.5px -15px;
   }
   .navbar-nav > li {
@@ -7931,10 +7931,10 @@ footer form {
   }
   /* since 3.1.0 */
   .navbar-collapse.collapse.in {
-    display: block!important;
+    display: block !important;
   }
   .collapsing {
-    overflow: hidden!important;
+    overflow: hidden !important;
   }
   .home .navbar-inverse {
     background-color: #333333;
@@ -8112,4 +8112,56 @@ form-inline {
 #metadata_update .form-group {
   margin-right: 0px;
   margin-left: 0px;
+}
+.inbox-checkbox label {
+  cursor: pointer;
+  position: relative;
+  left: 30%;
+}
+.inbox-checkbox label::before {
+  display: inline-block;
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  border: 1px solid;
+  border-color: #777777;
+}
+.inbox-checkbox label::after {
+  position: absolute;
+  content: "";
+  display: inline-block;
+  height: 6px;
+  width: 9px;
+  top: 4px;
+  left: 4px;
+  border-left: 2px solid;
+  border-bottom: 2px solid;
+  border-color: #777777;
+  transform: rotate(-45deg);
+}
+.inbox-checkbox label::after {
+  content: none;
+}
+.inbox-checkbox input[type="checkbox"] {
+  opacity: 0;
+  display: none;
+}
+.inbox-checkbox input[type="checkbox"]:checked + label::after {
+  content: "";
+}
+.inbox-icons {
+  margin-bottom: 5px;
+  color: #777777;
+}
+.inbox-icons button {
+  background: none;
+  border: none;
+  color: white;
+  /* White text */
+  cursor: pointer;
+}
+.inbox-icons i {
+  cursor: pointer;
+  margin: 5px;
 }

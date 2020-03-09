@@ -41,6 +41,7 @@ from geonode.base.views import thumbnail_upload
 from geonode import geoserver, qgis_server  # noqa
 from geonode.utils import check_ogc_backend
 from geonode.monitoring import register_url_event
+from geonode.messaging.urls import urlpatterns as msg_urls
 
 
 admin.autodiscover()
@@ -81,6 +82,8 @@ urlpatterns = [
     url(r'^robots\.txt$', TemplateView.as_view(
         template_name='robots.txt'), name='robots'),
     url(r'(.*version\.txt)$', version.version, name='version'),
+    url(r'^messages/', include(msg_urls))
+
 ]
 
 urlpatterns += [

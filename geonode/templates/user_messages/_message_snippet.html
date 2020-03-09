@@ -2,20 +2,32 @@
 
 {% load avatar_tags %}
 {% load groups_tags %}
+{% load user_messages %}
 
 <table class="table table-striped table-bordered table-condensed">
     <thead>
+    <tr>
+        <td></td>
+        <td><strong>{% trans "From" %}</strong></td>
+        <td><strong>{% trans "Subject" %}</strong></td>
+        <td><strong>{% trans "Last Sender" %}</strong></td>
+        <td><strong>{% trans "Preview" %}</strong></td>
+        <td><strong>{% trans "Delete?" %}</strong></td>
+    </tr>
+    </thead>
+    <tbody>
+
+
+    {% for thread in threads %}
+        {% random_uuid as input_id %}
+        {% is_unread thread request.user as unread_flag %}
         <tr>
-            <td><strong>{% trans "With" %}</strong></td>
-            <td><strong>{% trans "Subject" %}</strong></td>
-            <td><strong>{% trans "Last Sender" %}</strong></td>
-            <td><strong>{% trans "Preview" %}</strong></td>
-            <td><strong>{% trans "Delete?" %}</strong></td>
-        </tr>
-        </thead>
-        <tbody>
-        {% for thread in threads %}
-        <tr>
+            <td class="col-sm-1">
+                <div class="inbox-checkbox">
+                    <input name="thread_{{ thread.pk }}" id={{ input_id }} type="checkbox">
+                    <label for={{ input_id }} class="inbox-marker-checkmark"></label>
+                </div>
+            </td>
             <td class="col-md-3">
                 {% for user in thread.single_users.all %}
                     <div class="media">
@@ -24,7 +36,11 @@
                                 {% autoescape off %}{% avatar user 30 %}{% endautoescape %}
                             </div>
                             <div class="media-body">
-                                <a href="{{  user.get_absolute_url }}">{{ user }}</a>
+                                {% if unread_flag %}
+                                    <b><a href="{{ user.get_absolute_url }}">{{ user.first_name }} {{ user.last_name }}</a></b>
+                                {% else %}
+                                    <a href="{{ user.get_absolute_url }}">{{ user.first_name }} {{ user.last_name }}</a>
+                                {% endif %}
                             </div>
                         {% endifnotequal %}
                     </div>
@@ -34,7 +50,8 @@
                         {% with profile=group.groupprofile %}
                             <div class="media-left">
                                 <a href="{{ profile.get_absolute_url }}">
-                                    {% autoescape off %}{% group_profile_image profile css_classes="media-object" size=30 %}{% endautoescape %}
+                                    {% autoescape off %}
+                                        {% group_profile_image profile css_classes="media-object" size=30 %}{% endautoescape %}
                                 </a>
                             </div>
                             <div class="media-body">
@@ -44,24 +61,36 @@
                     </div>
                 {% endfor %}
             </td>
-            <td class="col-md-3"><a href="{{ thread.get_absolute_url }}">{{ thread.subject }}</a></td>
+            <td class="col-md-3">
+                {% if unread_flag %}
+                    <b><a href="{{ thread.get_absolute_url }}">{{ thread.subject }}</a></b>
+                {% else %}
+                    <a href="{{ thread.get_absolute_url }}">{{ thread.subject }}</a>
+                {% endif %}
+            </td>
             <td class="col-md-1">
                 {% ifequal request.user thread.latest_message.sender %}
-                  {% trans "me" %}
+                    {% trans "me" %}
                 {% else %}
-                  <a href="{{ thread.latest_message.sender.get_absolute_url }}">{{ thread.latest_message.sender }}</a>
+                    {% if unread_flag %}
+                        <b><a href="{{ thread.latest_message.sender.get_absolute_url }}">{{ thread.latest_message.sender.first_name }} {{ thread.latest_message.sender.last_name }}</a></b>
+                    {% else %}
+                        <a href="{{ thread.latest_message.sender.get_absolute_url }}">{{ thread.latest_message.sender.first_name }} {{ thread.latest_message.sender.last_name }}</a>
+                    {% endif %}
                 {% endifequal %}
             </td>
             <td class="col-md-4">
                 {{ thread.latest_message.content|slice:"50" }}<a href="{{ thread.get_absolute_url }}">...</a>
             </td>
             <td class="col-md-1">
-                <form id="thread_delete_{{ thread.pk }}" method="post" action="{% url "messages_thread_delete" thread.pk %}">
+                <form id="thread_delete_{{ thread.pk }}" method="post"
+                      action="{% url "messages_thread_delete" thread.pk %}">
                     {% csrf_token %}
                     <button class="btn btn-danger message_delete_btn">{% trans "Delete" %}</button>
                 </form>
             </td>
         </tr>
-        {% endfor %}
-        </tbody>
+    {% endfor %}
+    </tbody>
 </table>
+

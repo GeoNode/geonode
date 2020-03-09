@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load avatar_tags %}
+{% load static from staticfiles %}
 
 {% block title %}{% trans "Message Inbox" %} — {{ block.super }}{% endblock %}
 
@@ -15,18 +16,42 @@
           <li class="active"><a href="#inbox" data-toggle="tab"><i class=""></i>{% trans "Inbox" %}</a></li>
           <li><a href="#all" data-toggle="tab"><i class=""></i> {% trans "All" %}</a></li>
         </ul>
-        <div class="tab-content">
-          <article id="inbox" class="tab-pane active">
-            {% with threads_unread as threads %}
-                {% include "user_messages/_message_snippet.html" %}
-            {% endwith %}
-          </article>
-          <article id="all" class="tab-pane">
-            {% with threads_all as threads %}
-                {% include "user_messages/_message_snippet.html" %}
-            {% endwith %}
-          </article>
+
+
+        <div class="inbox-icons">
+            <i id=id-mark-as-read class="fa fa-envelope-open"></i>
+            <i id=id-mark-as-unread class="fa fa-envelope"></i>
         </div>
+
+        <script src="{% static "lib/js/jquery.js" %}"></script>
+        <script>
+            $("#id-mark-as-unread").click(() => {
+                $( "#id-action-type" ).attr('value', 'unread');
+                $("#id-inbox-form").submit();
+            });
+
+            $("#id-mark-as-read").click(() => {
+                $( "#id-action-type" ).attr('value', 'read');
+                $("#id-inbox-form").submit();
+            });
+        </script>
+
+        <form method="POST" id="id-inbox-form" action={% url "msg_status" %}>
+            {% csrf_token %}
+            <input id="id-action-type" name="action_type" type="hidden" value="">
+            <div class="tab-content">
+              <article id="inbox" class="tab-pane active">
+                {% with threads_unread as threads %}
+                    {% include "user_messages/_message_snippet.html" %}
+                {% endwith %}
+              </article>
+              <article id="all" class="tab-pane">
+                {% with threads_all as threads %}
+                    {% include "user_messages/_message_snippet.html" %}
+                {% endwith %}
+              </article>
+            </div>
+        </form>
       </div>
     </div>
   </div>
@@ -57,8 +82,8 @@ $('.tab-content').click(function(event) {
         $('#inbox').load(window.location.pathname + ' #inbox');
       }
     });
+    return false;
   }
-  return false;
 });
 // Allow thread links to work
 $('.tab-content a').click(function(event) {
