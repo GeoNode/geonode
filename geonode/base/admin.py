@@ -50,6 +50,7 @@ from geonode.base.models import (
     Menu,
     MenuItem,
     CuratedThumbnail,
+    Configuration,
 )
 from django.http import HttpResponseRedirect
 
@@ -276,6 +277,25 @@ class CuratedThumbnailAdmin(admin.ModelAdmin):
     list_display = ('id', 'resource', 'img', 'img_thumbnail')
 
 
+class ConfigurationAdmin(admin.ModelAdmin):
+    model = Configuration
+
+    def has_delete_permission(self, request, obj=None):
+        # Disable delete action of Singleton model, since "delete selected objects" uses QuerysSet.delete()
+        # instead of Model.delete()
+        return False
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+
+        # allow only superusers to modify Configuration
+        if not request.user.is_superuser:
+            for field in form.base_fields:
+                field.disabled = True
+
+        return form
+
+
 admin.site.register(TopicCategory, TopicCategoryAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(SpatialRepresentationType, SpatialRepresentationTypeAdmin)
@@ -289,6 +309,7 @@ admin.site.register(MenuPlaceholder, MenuPlaceholderAdmin)
 admin.site.register(Menu, MenuAdmin)
 admin.site.register(MenuItem, MenuItemAdmin)
 admin.site.register(CuratedThumbnail, CuratedThumbnailAdmin)
+admin.site.register(Configuration, ConfigurationAdmin)
 
 
 class ResourceBaseAdminForm(autocomplete.FutureModelForm):
