@@ -99,7 +99,7 @@ class MapCreateView(CreateView):
                 'preview': getattr(
                     settings,
                     'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-                    '')
+                    'leaflet')
             }
             return context
         else:
@@ -248,7 +248,7 @@ class MapCreateView(CreateView):
                     'preview': getattr(
                         settings,
                         'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-                        '')
+                        'leaflet')
                 }
 
             else:
@@ -300,7 +300,7 @@ class MapDetailView(DetailView):
             'preview': getattr(
                 settings,
                 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-                '')
+                'leaflet')
         }
         return context
 
@@ -338,7 +338,7 @@ class MapEmbedView(DetailView):
             'preview': getattr(
                 settings,
                 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-                '')
+                'leaflet')
         }
         return context
 
@@ -386,7 +386,7 @@ class MapEditView(UpdateView):
             'preview': getattr(
                 settings,
                 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-                '')
+                'leaflet')
         }
         return context
 

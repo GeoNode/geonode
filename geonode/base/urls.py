@@ -20,7 +20,6 @@
 
 
 from django.conf.urls import url
-from django.conf import settings
 
 from .views import (
     ResourceBaseAutocomplete, RegionAutocomplete,
@@ -45,15 +44,10 @@ urlpatterns = [
         HierarchicalKeywordAutocomplete.as_view(),
         name='autocomplete_hierachical_keyword',
     ),
-]
 
-# Only register the url for thesuarus if it is enabled in settings
-if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
-
-    urlpatterns.append(
-        url(
+    url(
         r'^thesaurus_autocomplete/$',
         ThesaurusKeywordLabelAutocomplete.as_view(),
         name='thesaurus_autocomplete',
-        ),
-    )
+    ),
+]
