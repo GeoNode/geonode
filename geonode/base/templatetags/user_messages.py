@@ -31,7 +31,7 @@ def format_senders(thread, current_user):
             if user == current_user:
                 user_repr = _('me')
             else:
-                user_repr = f'{user.first_name} {user.last_name}'
+                user_repr = f'{user.full_name_or_nick}'
             sender_string += f'{user_repr}, '
         sender_string = sender_string[:-2]
     elif u_count == 3:
@@ -39,11 +39,11 @@ def format_senders(thread, current_user):
             if user == current_user:
                 user_repr = _('me')
             else:
-                user_repr = f'{user.first_name}'
+                user_repr = f'{user.first_name_or_nick}'
             sender_string += f'{user_repr}, '
         sender_string = sender_string[:-2]
     else:
         first_sender = thread.latest_message
         last_sender = thread.latest_message
-        sender_string = f'{first_sender.first_name} .. {last_sender.last_name}'
+        sender_string = f'{first_sender.first_name_or_nick} .. {last_sender.first_name_or_nick}'
     return f'{sender_string}'
