@@ -29,7 +29,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-05 11:06+0100\n"
+"POT-Creation-Date: 2020-03-10 14:26+0100\n"
 "PO-Revision-Date: 2016-08-24 07:02+0000\n"
 "Last-Translator: Minpa Lee <mapplus@gmail.com>\n"
 "Language-Team: Korean (http://www.transifex.com/geonode/geonode/language/"
@@ -39,6 +39,521 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+#: geonode/base/__init__.py:27
+msgid "Request to download a resource"
+msgstr "리소스를 다운로드하기 위해 요청"
+
+#: geonode/base/__init__.py:28
+msgid "A request for downloading a resource was sent"
+msgstr "리소스를 다운로드하기 위한 요청을 보냈습니다"
+
+#: geonode/base/enumerations.py:27
+msgid "series"
+msgstr "시리즈"
+
+#: geonode/base/enumerations.py:28
+msgid "computer program or routine"
+msgstr "컴퓨터 프로그램 또는 루틴"
+
+#: geonode/base/enumerations.py:29
+msgid "feature type"
+msgstr "객체 유형"
+
+#: geonode/base/enumerations.py:30
+msgid "copy or imitation of an existing or hypothetical object"
+msgstr "기존 또는 가상 객체의 복사 또는 모방"
+
+#: geonode/base/enumerations.py:31
+msgid "collection hardware"
+msgstr "수집 하드웨어"
+
+#: geonode/base/enumerations.py:32
+msgid "collection session"
+msgstr "수집 세션"
+
+#: geonode/base/enumerations.py:33
+msgid "non-geographic data"
+msgstr "비 공간 데이터"
+
+#: geonode/base/enumerations.py:34
+msgid "property type"
+msgstr "속성 유형"
+
+#: geonode/base/enumerations.py:35
+msgid "field session"
+msgstr "필드 세션"
+
+#: geonode/base/enumerations.py:36
+#, fuzzy
+#| msgid "dataset"
+msgid "dataset"
+msgstr "데이터셋"
+
+#: geonode/base/enumerations.py:37
+#, fuzzy
+#| msgid "Resources"
+msgid "service interfaces"
+msgstr "자원"
+
+#: geonode/base/enumerations.py:38
+msgid "attribute class"
+msgstr "속성 클래스"
+
+#: geonode/base/enumerations.py:39
+msgid "characteristic of a feature"
+msgstr "객체의 특성"
+
+#: geonode/base/enumerations.py:40
+msgid "tile or spatial subset of geographic data"
+msgstr "타일 또는 지리 데이터의 공간적 집합"
+
+#: geonode/base/enumerations.py:41
+msgid "feature"
+msgstr "객체"
+
+#: geonode/base/enumerations.py:42
+msgid "dimension group"
+msgstr "차원 그룹"
+
+#: geonode/base/enumerations.py:46
+msgid "frequency of maintenance for the data is not known"
+msgstr "데이터에 대한 갱신 주기가 알려져 있지 않습니다"
+
+#: geonode/base/enumerations.py:47
+msgid "data is repeatedly and frequently updated"
+msgstr "데이터가 반복적으로 자주 갱신됩니다"
+
+#: geonode/base/enumerations.py:48
+msgid "there are no plans to update the data"
+msgstr "데이터를 갱신할 계획이 없습니다"
+
+#: geonode/base/enumerations.py:49
+msgid "data is updated each day"
+msgstr "데이터가 매일 갱신됩니다"
+
+#: geonode/base/enumerations.py:50
+msgid "data is updated every year"
+msgstr "데이터가 매년 갱신됩니다"
+
+#: geonode/base/enumerations.py:51
+msgid "data is updated as deemed necessary"
+msgstr "데이터가 필요하다고 인정될 때 갱신됩니다"
+
+#: geonode/base/enumerations.py:52
+msgid "data is updated each month"
+msgstr "데이터가 매월 갱신됩니다"
+
+#: geonode/base/enumerations.py:53
+msgid "data is updated every two weeks"
+msgstr "데이터가 격주로 갱신됩니다"
+
+#: geonode/base/enumerations.py:55
+msgid "data is updated in intervals that are uneven in duration"
+msgstr "데이터가 불규칙적으로 갱신됩니다"
+
+#: geonode/base/enumerations.py:56
+msgid "data is updated on a weekly basis"
+msgstr "데이터가 매주 갱신됩니다"
+
+#: geonode/base/enumerations.py:57
+msgid "data is updated twice each year"
+msgstr "데이터가 매년 2회 갱신됩니다"
+
+#: geonode/base/enumerations.py:58
+msgid "data is updated every three months"
+msgstr "데이터가 3개월마다 갱신됩니다"
+
+#: geonode/base/enumerations.py:77
+msgid "No information provided"
+msgstr "제공된 정보가 없습니다"
+
+#: geonode/base/forms.py:282
+#: geonode/base/templates/base/_resourcebase_info_panel.html:77
+#: geonode/catalogue/templates/geonode_metadata_full.html:145
+#: geonode/documents/templates/documents/document_metadata_advanced.html:76
+#: geonode/documents/templates/layouts/doc_panels.html:324
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:99
+#: geonode/layers/templates/layouts/panels.html:326
+#: geonode/maps/templates/layouts/map_panels.html:322
+#: geonode/maps/templates/maps/map_metadata_advanced.html:77
+#: geonode/templates/metadata_detail.html:88
+msgid "Category"
+msgstr "카테고리"
+
+#: geonode/base/forms.py:293
+msgid "Category is required."
+msgstr "카테고리가 필요합니다."
+
+#: geonode/base/forms.py:314
+msgid "Keywords from Thesaurus"
+msgstr ""
+
+#: geonode/base/forms.py:316
+msgid "List of keywords from Thesaurus"
+msgstr ""
+
+#: geonode/base/forms.py:336 geonode/base/models.py:577
+msgid "Owner"
+msgstr "소유자"
+
+#: geonode/base/forms.py:342
+#: geonode/base/templates/base/_resourcebase_info_panel.html:34
+#: geonode/catalogue/templates/geonode_metadata_full.html:58
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
+#: geonode/templates/metadata_detail.html:71
+#: geonode/templates/search/_general_filters.html:108
+msgid "Date"
+msgstr "날짜"
+
+#: geonode/base/forms.py:348 geonode/base/models.py:681
+msgid "temporal extent start"
+msgstr "시간적 범위 시작"
+
+#: geonode/base/forms.py:355 geonode/base/models.py:686
+msgid "temporal extent end"
+msgstr "시간적 범위 끝"
+
+#: geonode/base/forms.py:363 geonode/base/forms.py:371
+msgid "Person outside GeoNode (fill form)"
+msgstr "GeoNode의 외부인 (양식 작성)"
+
+#: geonode/base/forms.py:364
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
+#: geonode/base/templates/base/_resourcebase_info_panel.html:104
+#: geonode/catalogue/templates/geonode_metadata_full.html:75
+#: geonode/documents/templates/documents/document_metadata.html:42
+#: geonode/documents/templates/documents/document_metadata.html:66
+#: geonode/documents/templates/documents/document_metadata_advanced.html:47
+#: geonode/documents/templates/documents/document_metadata_advanced.html:100
+#: geonode/layers/templates/layers/layer_metadata.html:53
+#: geonode/layers/templates/layers/layer_metadata.html:84
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:58
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:144
+#: geonode/maps/templates/maps/map_metadata.html:67
+#: geonode/maps/templates/maps/map_metadata_advanced.html:101
+msgid "Point of Contact"
+msgstr "담당자"
+
+#: geonode/base/forms.py:372
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
+#: geonode/documents/templates/documents/document_metadata.html:38
+#: geonode/documents/templates/documents/document_metadata_advanced.html:43
+#: geonode/layers/templates/layers/layer_metadata.html:49
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:54
+#: geonode/templates/metadata_detail.html:346
+msgid "Metadata Author"
+msgstr "메타데이터 저자"
+
+#: geonode/base/forms.py:379
+#, fuzzy
+#| msgid "Keywords"
+msgid "Free-text Keywords"
+msgstr "키워드"
+
+#: geonode/base/forms.py:381
+#, fuzzy
+#| msgid "A space or comma-separated list of keywords"
+msgid ""
+"A space or comma-separated list of keywords. Use the widget to select from "
+"Hierarchical tree."
+msgstr "공백 또는 쉼표로 구분된 키워드 목록"
+
+#: geonode/base/forms.py:393
+#: geonode/base/templates/base/_resourcebase_info_panel.html:87
+#: geonode/catalogue/templates/geonode_metadata_full.html:149
+#: geonode/templates/metadata_detail.html:98
+#: geonode/templates/search/_region_filter.html:5
+msgid "Regions"
+msgstr "지역"
+
+#: geonode/base/management/commands/updategeoip.py:44
+msgid "Write result to file, default GEOIP_PATH: {}"
+msgstr ""
+
+#: geonode/base/management/commands/updategeoip.py:46
+msgid ""
+"Fetch database from specific url. If nothing provided, default {} will be "
+"used"
+msgstr ""
+
+#: geonode/base/management/commands/updategeoip.py:48
+msgid "Overwrite file if exists"
+msgstr ""
+
+#: geonode/base/models.py:87 geonode/services/models.py:194
+msgid "function performed by the responsible party"
+msgstr "책임 집단이 수행하는 기능"
+
+#: geonode/base/models.py:527
+msgid "reference date for the cited resource"
+msgstr "인용된 자원에 대한 참조 날짜"
+
+#: geonode/base/models.py:528
+msgid "identification of when a given event occurred"
+msgstr "지정된 이벤트가 발생했을 때의 식별자"
+
+#: geonode/base/models.py:529
+msgid "version of the cited resource"
+msgstr "인용된 자원의 버전"
+
+#: geonode/base/models.py:531
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "자원(들)의 내용에 대한 간단한 요약"
+
+#: geonode/base/models.py:533
+msgid "summary of the intentions with which the resource(s) was developed"
+msgstr "자원(들)을 개발하는데 사용된 목적 요약"
+
+#: geonode/base/models.py:535
+msgid ""
+"frequency with which modifications and deletions are made to the data after "
+"it is first produced"
+msgstr "데이터가 처음 생성된 후 수정 또는 삭제되는 주기"
+
+#: geonode/base/models.py:538
+msgid ""
+"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+"the subject (space or comma-separated"
+msgstr ""
+"주제를 설명하는 데 사용되는 일반적으로 사용되는 단어(들) 또는 정형화된 단어"
+"(들) 또는 구문(들) (공백 또는 쉼표로 구분 "
+
+#: geonode/base/models.py:541
+#, fuzzy
+#| msgid ""
+#| "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+#| "the subject (space or comma-separated"
+msgid ""
+"formalised word(s) or phrase(s) from a fixed thesaurus used to describe the "
+"subject (space or comma-separated"
+msgstr ""
+"주제를 설명하는 데 사용되는 일반적으로 사용되는 단어(들) 또는 정형화된 단어"
+"(들) 또는 구문(들) (공백 또는 쉼표로 구분 "
+
+#: geonode/base/models.py:543
+msgid "keyword identifies a location"
+msgstr "키워드는 위치를 식별합니다"
+
+#: geonode/base/models.py:545
+msgid "limitation(s) placed upon the access or use of the data."
+msgstr "데이터의 접근 또는 사용에 대한 제약사항(들)"
+
+#: geonode/base/models.py:547
+msgid ""
+"other restrictions and legal prerequisites for accessing and using the "
+"resource or metadata"
+msgstr ""
+"자원 또는 메타데이터를 사용하거나 접근하기 위한 기타 제약사항 및 법적 전제조"
+"건"
+
+#: geonode/base/models.py:549
+msgid "license of the dataset"
+msgstr "데이터셋의 라이센스"
+
+#: geonode/base/models.py:550
+msgid "language used within the dataset"
+msgstr "데이터셋에서 사용된 언어"
+
+#: geonode/base/models.py:552
+msgid ""
+"high-level geographic data thematic classification to assist in the grouping "
+"and search of available geographic data sets."
+msgstr ""
+"사용가능한 지리 데이터셋을 검색하거나 그룹화하기 위한 고수준 지리 데이터 주"
+"제 분류"
+
+#: geonode/base/models.py:555
+msgid "method used to represent geographic information in the dataset."
+msgstr "데이터셋의 지리 정보를 표현하는 방법"
+
+#: geonode/base/models.py:557
+msgid "time period covered by the content of the dataset (start)"
+msgstr "데이터셋에 포함된 시간적 범위(시작)"
+
+#: geonode/base/models.py:559
+msgid "time period covered by the content of the dataset (end)"
+msgstr "데이터셋에 포함된 시간적 범위(끝)"
+
+#: geonode/base/models.py:561
+msgid ""
+"general explanation of the data producer's knowledge about the lineage of a "
+"dataset"
+msgstr "데이터 연혁에 대한 데이터 생산자의 일반적인 설명"
+
+#: geonode/base/models.py:564
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
+
+#: geonode/base/models.py:566
+#: geonode/base/templates/base/_resourcebase_info_panel.html:114
+#: geonode/templates/metadata_detail.html:116
+msgid "DOI"
+msgstr ""
+
+#: geonode/base/models.py:582
+msgid "title"
+msgstr "제목"
+
+#: geonode/base/models.py:583
+msgid "name by which the cited resource is known"
+msgstr "인용된 리소스를 식별하는 이름"
+
+#: geonode/base/models.py:586
+msgid "date"
+msgstr "날짜"
+
+#: geonode/base/models.py:590
+msgid "date type"
+msgstr "날짜 유형"
+
+#: geonode/base/models.py:596
+msgid "edition"
+msgstr "판"
+
+#: geonode/base/models.py:602
+msgid "abstract"
+msgstr "요약"
+
+#: geonode/base/models.py:607
+msgid "purpose"
+msgstr "목적"
+
+#: geonode/base/models.py:613
+msgid "maintenance frequency"
+msgstr "갱신 주기"
+
+#: geonode/base/models.py:620 geonode/base/models.py:627
+#: geonode/people/models.py:117
+msgid "keywords"
+msgstr "키워드"
+
+#: geonode/base/models.py:633
+msgid "keywords region"
+msgstr "키워드 영역"
+
+#: geonode/base/models.py:639
+msgid "restrictions"
+msgstr "제약사항"
+
+#: geonode/base/models.py:646
+msgid "restrictions other"
+msgstr "기타 제약사항"
+
+#: geonode/base/models.py:654
+#: geonode/base/templates/base/_resourcebase_info_panel.html:16
+#: geonode/base/templates/base/_resourcebase_info_panel.html:134
+#: geonode/catalogue/templates/geonode_metadata_full.html:98
+#: geonode/templates/metadata_detail.html:57
+#: geonode/templates/metadata_detail.html:203
+msgid "License"
+msgstr "라이선스"
+
+#: geonode/base/models.py:658 geonode/people/models.py:121
+msgid "language"
+msgstr "언어"
+
+#: geonode/base/models.py:676
+msgid "spatial representation type"
+msgstr "공간 표현 유형"
+
+#: geonode/base/models.py:691
+msgid "supplemental information"
+msgstr "부가 정보"
+
+#: geonode/base/models.py:694
+msgid "any other descriptive information about the dataset"
+msgstr "데이터셋에 대한 또 다른 정보"
+
+#: geonode/base/models.py:698
+msgid "data quality statement"
+msgstr "데이터 품질"
+
+#: geonode/base/models.py:739
+msgid "CSW typename"
+msgstr "CSW 유형이름"
+
+#: geonode/base/models.py:744
+msgid "CSW schema"
+msgstr "CSW 스키마"
+
+#: geonode/base/models.py:749
+msgid "CSW source"
+msgstr "CSW 원본"
+
+#: geonode/base/models.py:754
+msgid "CSW insert date"
+msgstr "CSW 입력 일자"
+
+#: geonode/base/models.py:756
+msgid "CSW type"
+msgstr "CSW 유형"
+
+#: geonode/base/models.py:761
+msgid "CSW anytext"
+msgstr "CSW 부가정보"
+
+#: geonode/base/models.py:763
+msgid "CSW WKT geometry"
+msgstr "CSW WKT 지오메트리"
+
+#: geonode/base/models.py:769
+#, fuzzy
+#| msgid "Metadata Provider"
+msgid "Metadata uploaded preserve"
+msgstr "메타데이터 공급자"
+
+#: geonode/base/models.py:776 geonode/templates/metadata_detail.html:108
+msgid "Featured"
+msgstr "객체"
+
+#: geonode/base/models.py:777
+msgid "Should this resource be advertised in home page?"
+msgstr "이 리소스를 홈페이지에 게재해야 합니까?"
+
+#: geonode/base/models.py:779
+msgid "Is Published"
+msgstr "발행됨"
+
+#: geonode/base/models.py:781
+msgid "Should this resource be published and searchable?"
+msgstr "이 리소스를 게시하고 검색할 수 있도록 합니까?"
+
+#: geonode/base/models.py:783 geonode/templates/metadata_detail.html:102
+#, fuzzy
+#| msgid "Not provided"
+msgid "Approved"
+msgstr "제공되지 않음"
+
+#: geonode/base/models.py:785
+msgid "Is this resource validated from a publisher or editor?"
+msgstr ""
+
+#: geonode/base/models.py:788
+#, fuzzy
+#| msgid "Thumbnail"
+msgid "Thumbnail url"
+msgstr "섬네일"
+
+#: geonode/base/models.py:796
+msgid "Dirty State"
+msgstr ""
+
+#: geonode/base/models.py:798
+msgid "Security Rules Are Not Synched with GeoServer!"
+msgstr ""
+
+#: geonode/base/models.py:1425
+msgid "For example \"kml\""
+msgstr "예를 들어 \"kml\""
+
+#: geonode/base/models.py:1430
+msgid "For example \"View in Google Earth\""
+msgstr "예를 들어 \"구글 어스에서 보기\""
+
+#: geonode/base/models.py:1432
+msgid "For example \"text/xml\""
+msgstr "예를 들어  \"text/xml\""
 
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:3
 #: geonode/templates/500.html:181 geonode/templates/500.html:200
@@ -60,35 +575,12 @@ msgstr "소유자, 연락처, 메타데이터 관리자"
 msgid "Responsible"
 msgstr ""
 
-#: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
-#: geonode/base/templates/base/_resourcebase_info_panel.html:104
-#: geonode/catalogue/templates/geonode_metadata_full.html:75
-#: geonode/documents/templates/documents/document_metadata.html:42
-#: geonode/documents/templates/documents/document_metadata.html:66
-#: geonode/documents/templates/documents/document_metadata_advanced.html:47
-#: geonode/documents/templates/documents/document_metadata_advanced.html:100
-#: geonode/layers/templates/layers/layer_metadata.html:53
-#: geonode/layers/templates/layers/layer_metadata.html:84
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:58
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:144
-#: geonode/maps/templates/maps/map_metadata.html:67
-#: geonode/maps/templates/maps/map_metadata_advanced.html:101
-msgid "Point of Contact"
-msgstr "담당자"
-
-#: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
-#: geonode/documents/templates/documents/document_metadata.html:38
-#: geonode/documents/templates/documents/document_metadata_advanced.html:43
-#: geonode/layers/templates/layers/layer_metadata.html:49
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:54
-#: geonode/templates/metadata_detail.html:346
-msgid "Metadata Author"
-msgstr "메타데이터 저자"
-
 #: geonode/base/templates/base/_resourcebase_info_panel.html:6
 #: geonode/catalogue/templates/geonode_metadata_full.html:55
 #: geonode/client/templates/leaflet/maps/map_view.html:101
+#: geonode/groups/models.py:79
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:20
+#: geonode/services/forms.py:113
 #: geonode/services/templates/services/service_detail.html:22
 #: geonode/services/templates/services/service_list.html:15
 #: geonode/templates/announcements/announcement_list.html:19
@@ -100,14 +592,6 @@ msgstr "제목"
 #: geonode/base/templates/base/_resourcebase_info_panel.html:129
 msgid "SRID"
 msgstr "SRID"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:16
-#: geonode/base/templates/base/_resourcebase_info_panel.html:134
-#: geonode/catalogue/templates/geonode_metadata_full.html:98
-#: geonode/templates/metadata_detail.html:57
-#: geonode/templates/metadata_detail.html:203
-msgid "License"
-msgstr "라이선스"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:24
 #: geonode/base/templates/base/_resourcebase_info_panel.html:141
@@ -121,18 +605,11 @@ msgstr "더많은 정보"
 #: geonode/base/templates/base/_resourcebase_info_panel.html:29
 #: geonode/catalogue/templates/geonode_metadata_full.html:61
 #: geonode/client/templates/leaflet/maps/map_view.html:106
+#: geonode/services/forms.py:131
 #: geonode/services/templates/services/service_detail.html:10
 #: geonode/templates/metadata_detail.html:48
 msgid "Abstract"
 msgstr "요약"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:34
-#: geonode/catalogue/templates/geonode_metadata_full.html:58
-#: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
-#: geonode/templates/metadata_detail.html:71
-#: geonode/templates/search/_general_filters.html:108
-msgid "Date"
-msgstr "날짜"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:45
 #: geonode/catalogue/templates/geonode_metadata_full.html:91
@@ -145,6 +622,7 @@ msgstr "유형"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:50
 #: geonode/catalogue/templates/geonode_metadata_full.html:142
+#: geonode/groups/models.py:89 geonode/people/forms.py:92
 #: geonode/people/templates/people/profile_detail.html:106
 #: geonode/services/templates/services/service_detail.html:11
 #: geonode/templates/metadata_detail.html:81
@@ -155,27 +633,8 @@ msgstr "유형"
 msgid "Keywords"
 msgstr "키워드"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:77
-#: geonode/catalogue/templates/geonode_metadata_full.html:145
-#: geonode/documents/templates/documents/document_metadata_advanced.html:76
-#: geonode/documents/templates/layouts/doc_panels.html:303
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:99
-#: geonode/layers/templates/layouts/panels.html:326
-#: geonode/maps/templates/layouts/map_panels.html:322
-#: geonode/maps/templates/maps/map_metadata_advanced.html:77
-#: geonode/templates/metadata_detail.html:88
-msgid "Category"
-msgstr "카테고리"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:87
-#: geonode/catalogue/templates/geonode_metadata_full.html:149
-#: geonode/templates/metadata_detail.html:98
-#: geonode/templates/search/_region_filter.html:5
-msgid "Regions"
-msgstr "지역"
-
 #: geonode/base/templates/base/_resourcebase_info_panel.html:109
-#: geonode/documents/templates/layouts/doc_panels.html:322
+#: geonode/documents/templates/layouts/doc_panels.html:343
 #: geonode/layers/templates/layouts/panels.html:346
 #: geonode/maps/templates/layouts/map_panels.html:341
 #: geonode/templates/metadata_detail.html:112
@@ -183,11 +642,6 @@ msgstr "지역"
 #| msgid "Groups"
 msgid "Group"
 msgstr "그룹"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:114
-#: geonode/templates/metadata_detail.html:116
-msgid "DOI"
-msgstr ""
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:121
 msgid "More info"
@@ -368,16 +822,23 @@ msgid "Remove (and use auto generated thumbnail)"
 msgstr ""
 
 #: geonode/base/templates/base/thumbnail_upload.html:35
-#: geonode/documents/templates/documents/document_detail.html:152
+#: geonode/documents/templates/documents/document_detail.html:151
 #: geonode/documents/templates/documents/document_upload.html:15
 #: geonode/layers/templates/layers/layer_detail.html:478
 #: geonode/layers/templates/layers/layer_detail.html:499
 #: geonode/maps/templates/maps/map_detail.html:165
+#: geonode/monitoring/models.py:355
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:58
 #, fuzzy
 #| msgid "uploaded"
 msgid "Upload"
 msgstr "업로드됨"
+
+#: geonode/base/templatetags/user_messages.py:32
+#: geonode/base/templatetags/user_messages.py:40
+#: geonode/templates/user_messages/thread_detail.html:28
+msgid "me"
+msgstr "나"
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:40
 #, fuzzy
@@ -436,14 +897,22 @@ msgid "Attribute name"
 msgstr "속성 이름"
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:167
+#: geonode/groups/models.py:44 geonode/groups/models.py:82
 #: geonode/layers/templates/layers/layer_detail.html:178
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:128
 #: geonode/layers/templates/layouts/panels.html:546
 #: geonode/people/templates/people/profile_detail.html:101
+#: geonode/services/forms.py:123
 #: geonode/services/templates/services/service_detail.html:23
 #: geonode/services/templates/services/service_resources_harvest.html:32
 msgid "Description"
 msgstr "설명"
+
+#: geonode/client/apps.py:28
+#, fuzzy
+#| msgid "GeoNode Help"
+msgid "GeoNode Client Library"
+msgstr "GeoNode 도움말"
 
 #: geonode/client/templates/leaflet/layers/layer_leaflet_map.html:340
 #, fuzzy
@@ -508,8 +977,8 @@ msgid "Save Map"
 msgstr "지도 제거"
 
 #: geonode/client/templates/leaflet/maps/map_view.html:115
-#: geonode/documents/templates/documents/document_detail.html:170
-#: geonode/documents/templates/documents/document_detail.html:206
+#: geonode/documents/templates/documents/document_detail.html:169
+#: geonode/documents/templates/documents/document_detail.html:205
 #: geonode/layers/templates/layers/layer_detail.html:425
 #: geonode/layers/templates/layers/layer_detail.html:522
 #: geonode/layers/templates/layers/layer_detail.html:572
@@ -526,6 +995,72 @@ msgstr "지도 제거"
 #: geonode/templates/metadata_base.html:185
 msgid "Close"
 msgstr "닫기"
+
+#: geonode/documents/__init__.py:27
+#, fuzzy
+#| msgid "Document Updated"
+msgid "Document Created"
+msgstr "문서 갱신"
+
+#: geonode/documents/__init__.py:27
+msgid "A Document was created"
+msgstr "문서를 생성했습니다"
+
+#: geonode/documents/__init__.py:28
+msgid "Document Updated"
+msgstr "문서 갱신"
+
+#: geonode/documents/__init__.py:28
+msgid "A Document was updated"
+msgstr "문서를 갱신했습니다"
+
+#: geonode/documents/__init__.py:29
+#, fuzzy
+#| msgid "Document Updated"
+msgid "Document Approved"
+msgstr "문서 갱신"
+
+#: geonode/documents/__init__.py:29
+#, fuzzy
+#| msgid "A Document was created"
+msgid "A Document was approved by a Manager"
+msgstr "문서를 생성했습니다"
+
+#: geonode/documents/__init__.py:30
+#, fuzzy
+#| msgid "Document Deleted"
+msgid "Document Published"
+msgstr "문서 삭제"
+
+#: geonode/documents/__init__.py:30
+#, fuzzy
+#| msgid "A Document was updated"
+msgid "A Document was published"
+msgstr "문서를 갱신했습니다"
+
+#: geonode/documents/__init__.py:31
+msgid "Document Deleted"
+msgstr "문서 삭제"
+
+#: geonode/documents/__init__.py:31
+msgid "A Document was deleted"
+msgstr "문서를 삭제했습니다"
+
+#: geonode/documents/__init__.py:32
+msgid "Comment on Document"
+msgstr "문서 댓글"
+
+#: geonode/documents/__init__.py:32
+msgid "A Document was commented on"
+msgstr "문서에 댓글이 달렸습니다"
+
+#: geonode/documents/__init__.py:33
+msgid "Document for Map"
+msgstr "지도에 대한 문서"
+
+#: geonode/documents/__init__.py:33
+msgid "A rating was given to a document"
+msgstr "문서에 평점이 주어졌습니다"
 
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:5
 msgid "Width"
@@ -577,6 +1112,40 @@ msgstr "거짓"
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:21
 msgid "Speed Rating"
 msgstr "속도 등급"
+
+#: geonode/documents/forms.py:87 geonode/documents/forms.py:168
+msgid "Link to"
+msgstr "링크 "
+
+#: geonode/documents/forms.py:133 geonode/documents/forms.py:202
+msgid "Document must be a file or url."
+msgstr "문서는 파일 또는 URL이어야 합니다."
+
+#: geonode/documents/forms.py:137 geonode/documents/forms.py:206
+msgid "A document cannot have both a file and a url."
+msgstr "문서는 파일과 URL을 동시에 적용할 수 없습니다."
+
+#: geonode/documents/forms.py:150 geonode/documents/forms.py:219
+msgid "This file type is not allowed"
+msgstr "이 파일 유형은 허용되지 않습니다"
+
+#: geonode/documents/forms.py:191
+msgid "Permissions must be valid JSON."
+msgstr "권한은 유효한 JSON이어야 합니다."
+
+#: geonode/documents/models.py:57
+msgid "File"
+msgstr "파일"
+
+#: geonode/documents/models.py:67
+msgid "The URL of the document if it is external."
+msgstr "외부 문서인 경우 문서의 URL."
+
+#: geonode/documents/models.py:68 geonode/monitoring/models.py:179
+#: geonode/services/templates/services/service_detail.html:9
+#: geonode/services/templates/services/service_list.html:16
+msgid "URL"
+msgstr "URL"
 
 #: geonode/documents/templates/documents/document_detail.html:23
 #, fuzzy
@@ -656,84 +1225,79 @@ msgstr ""
 msgid "Advanced Edit"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:151
-#: geonode/layers/templates/layers/layer_detail.html:497
-#: geonode/maps/templates/maps/map_detail.html:164
-msgid "Set"
-msgstr "설정"
-
-#: geonode/documents/templates/documents/document_detail.html:158
-#: geonode/templates/index.html:86
+#: geonode/documents/templates/documents/document_detail.html:157
+#: geonode/monitoring/models.py:176 geonode/templates/index.html:86
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:7
 #, fuzzy
 #| msgid "Document"
 msgid "Document"
 msgid_plural "Documents"
 msgstr[0] "문서"
 
-#: geonode/documents/templates/documents/document_detail.html:160
+#: geonode/documents/templates/documents/document_detail.html:159
 #: geonode/layers/templates/layers/layer_detail.html:507
 msgid "Replace"
 msgstr "교체"
 
-#: geonode/documents/templates/documents/document_detail.html:163
+#: geonode/documents/templates/documents/document_detail.html:162
 #: geonode/groups/templates/groups/group_members.html:42
 #: geonode/groups/templates/groups/group_members.html:68
 #: geonode/groups/templates/groups/group_members.html:95
 #: geonode/layers/templates/layers/layer_detail.html:515
 #: geonode/maps/templates/maps/map_detail.html:173
-#: geonode/templates/account/email.html:36
+#: geonode/monitoring/models.py:362 geonode/templates/account/email.html:36
 #: geonode/templates/socialaccount/connections.html:33
 msgid "Remove"
 msgstr "제거"
 
-#: geonode/documents/templates/documents/document_detail.html:177
-#: geonode/documents/templates/documents/document_detail.html:184
+#: geonode/documents/templates/documents/document_detail.html:176
+#: geonode/documents/templates/documents/document_detail.html:183
 #: geonode/layers/templates/layers/layer_detail.html:534
 #: geonode/layers/templates/layers/layer_detail.html:542
 msgid "Download Metadata"
 msgstr "메타데이터 다운로드"
 
-#: geonode/documents/templates/documents/document_detail.html:189
+#: geonode/documents/templates/documents/document_detail.html:188
 #: geonode/layers/templates/layers/layer_detail.html:547
 #, fuzzy
 #| msgid "Metadata"
 msgid "Full metadata"
 msgstr "메타데이터"
 
-#: geonode/documents/templates/documents/document_detail.html:192
+#: geonode/documents/templates/documents/document_detail.html:191
 #: geonode/layers/templates/layers/layer_detail.html:550
 #, fuzzy
 #| msgid "format"
 msgid "Text format"
 msgstr "포맷"
 
-#: geonode/documents/templates/documents/document_detail.html:193
+#: geonode/documents/templates/documents/document_detail.html:192
 #: geonode/layers/templates/layers/layer_detail.html:551
 #, fuzzy
 #| msgid "format"
 msgid "HTML format"
 msgstr "포맷"
 
-#: geonode/documents/templates/documents/document_detail.html:197
+#: geonode/documents/templates/documents/document_detail.html:196
 #: geonode/layers/templates/layers/layer_detail.html:556
 msgid "Standard Metadata - XML format"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:213
+#: geonode/documents/templates/documents/document_detail.html:212
 #, fuzzy
 #| msgid "Resource using this document"
 msgid "Resources using this document"
 msgstr "이 문서를 사용하는 자원"
 
-#: geonode/documents/templates/documents/document_detail.html:215
+#: geonode/documents/templates/documents/document_detail.html:214
 msgid "List of resources using this document:"
 msgstr "이 문서를 사용하는 자원 목록:"
 
-#: geonode/documents/templates/documents/document_detail.html:221
+#: geonode/documents/templates/documents/document_detail.html:220
 msgid "This document is not related to any maps or layers"
 msgstr "이 문서는 지도나 레이어와 연결되어 있지 않습니다"
 
-#: geonode/documents/templates/documents/document_detail.html:228
+#: geonode/documents/templates/documents/document_detail.html:227
 #: geonode/documents/templates/documents/document_thumb_upload.html:64
 #: geonode/documents/templates/documents/document_upload.html:24
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:50
@@ -746,15 +1310,15 @@ msgstr "이 문서는 지도나 레이어와 연결되어 있지 않습니다"
 #: geonode/layers/templates/layers/layer_style_upload.html:101
 #: geonode/layers/templates/layers/layer_style_upload.html:110
 #: geonode/layers/templates/upload/layer_upload.html:114
-#: geonode/maps/templates/maps/map_detail.html:229
+#: geonode/maps/templates/maps/map_detail.html:229 geonode/people/admin.py:57
 msgid "Permissions"
 msgstr "권한"
 
-#: geonode/documents/templates/documents/document_detail.html:229
+#: geonode/documents/templates/documents/document_detail.html:228
 msgid "Click the button below to change the permissions of this document."
 msgstr "이 문서의 권한을 변경하려면 아래 버튼을 누르세요."
 
-#: geonode/documents/templates/documents/document_detail.html:230
+#: geonode/documents/templates/documents/document_detail.html:229
 msgid "Change Document Permissions"
 msgstr "문서 권한 변경"
 
@@ -1003,13 +1567,13 @@ msgstr "문서 업로드"
 msgid "Allowed document types"
 msgstr "문서 업로드"
 
-#: geonode/documents/templates/layouts/doc_panels.html:216
+#: geonode/documents/templates/layouts/doc_panels.html:219
 #: geonode/layers/templates/layouts/panels.html:216
 #: geonode/maps/templates/layouts/map_panels.html:216
 msgid "Done!"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:220
+#: geonode/documents/templates/layouts/doc_panels.html:223
 #: geonode/layers/templates/layers/layer_detail.html:474
 #: geonode/layers/templates/layers/layer_detail.html:476
 #: geonode/layers/templates/layers/layer_detail.html:488
@@ -1021,7 +1585,7 @@ msgstr ""
 msgid "Edit"
 msgstr "편집"
 
-#: geonode/documents/templates/layouts/doc_panels.html:226
+#: geonode/documents/templates/layouts/doc_panels.html:229
 #: geonode/layers/templates/layouts/panels.html:227
 #: geonode/maps/templates/layouts/map_panels.html:226
 #, fuzzy
@@ -1029,8 +1593,8 @@ msgstr "편집"
 msgid "Settings"
 msgstr "평점"
 
-#: geonode/documents/templates/layouts/doc_panels.html:235
 #: geonode/documents/templates/layouts/doc_panels.html:238
+#: geonode/documents/templates/layouts/doc_panels.html:241
 #: geonode/layers/templates/layouts/panels.html:236
 #: geonode/layers/templates/layouts/panels.html:239
 #: geonode/maps/templates/layouts/map_panels.html:235
@@ -1038,7 +1602,7 @@ msgstr "평점"
 msgid "Mandatory"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:241
+#: geonode/documents/templates/layouts/doc_panels.html:244
 #: geonode/layers/templates/layouts/panels.html:242
 #: geonode/maps/templates/layouts/map_panels.html:241
 #, fuzzy
@@ -1046,7 +1610,7 @@ msgstr ""
 msgid "Optional"
 msgstr "시간 옵션"
 
-#: geonode/documents/templates/layouts/doc_panels.html:246
+#: geonode/documents/templates/layouts/doc_panels.html:249
 #: geonode/layers/templates/layouts/panels.html:247
 #: geonode/maps/templates/layouts/map_panels.html:246
 #, fuzzy
@@ -1054,13 +1618,13 @@ msgstr "시간 옵션"
 msgid "Basic Metadata"
 msgstr "메타데이터 편집"
 
-#: geonode/documents/templates/layouts/doc_panels.html:249
+#: geonode/documents/templates/layouts/doc_panels.html:252
 #: geonode/layers/templates/layouts/panels.html:250
 #: geonode/maps/templates/layouts/map_panels.html:249
 msgid "Location and Licenses"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:252
+#: geonode/documents/templates/layouts/doc_panels.html:255
 #: geonode/layers/templates/layouts/panels.html:253
 #: geonode/maps/templates/layouts/map_panels.html:252
 #, fuzzy
@@ -1068,7 +1632,7 @@ msgstr ""
 msgid "Optional Metadata"
 msgstr "메타데이터 다운로드"
 
-#: geonode/documents/templates/layouts/doc_panels.html:324
+#: geonode/documents/templates/layouts/doc_panels.html:345
 #: geonode/layers/templates/layouts/panels.html:328
 #: geonode/layers/templates/layouts/panels.html:348
 #: geonode/maps/templates/layouts/map_panels.html:343
@@ -1077,7 +1641,7 @@ msgstr "메타데이터 다운로드"
 msgid "Choose one of the following..."
 msgstr "이 작업은 다음의 지도에 영향을 미칩니다:"
 
-#: geonode/documents/templates/layouts/doc_panels.html:417
+#: geonode/documents/templates/layouts/doc_panels.html:438
 #: geonode/layers/templates/layouts/panels.html:441
 #: geonode/maps/templates/layouts/map_panels.html:435
 #, fuzzy
@@ -1085,13 +1649,13 @@ msgstr "이 작업은 다음의 지도에 영향을 미칩니다:"
 msgid "Other, Optional, Metadata"
 msgstr "메타데이터 다운로드"
 
-#: geonode/documents/templates/layouts/doc_panels.html:464
+#: geonode/documents/templates/layouts/doc_panels.html:485
 #: geonode/layers/templates/layouts/panels.html:488
 #: geonode/maps/templates/layouts/map_panels.html:482
 msgid "Responsible Parties"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:471
+#: geonode/documents/templates/layouts/doc_panels.html:492
 #: geonode/layers/templates/layouts/panels.html:495
 #: geonode/maps/templates/layouts/map_panels.html:489
 #, fuzzy
@@ -1099,7 +1663,7 @@ msgstr ""
 msgid "Responsible and Permissions"
 msgstr "레이어 권한 변경"
 
-#: geonode/documents/templates/layouts/doc_panels.html:493
+#: geonode/documents/templates/layouts/doc_panels.html:514
 #: geonode/layers/templates/layouts/panels.html:517
 #: geonode/maps/templates/layouts/map_panels.html:511
 #: geonode/templates/_permissions_form.html:28 geonode/templates/base.html:679
@@ -1108,20 +1672,56 @@ msgstr "레이어 권한 변경"
 msgid "Message box"
 msgstr "메세지 보관함"
 
-#: geonode/documents/templates/layouts/doc_panels.html:499
+#: geonode/documents/templates/layouts/doc_panels.html:520
 #: geonode/layers/templates/layouts/panels.html:523
 #: geonode/maps/templates/layouts/map_panels.html:517
 #: geonode/templates/_permissions_form.html:34 geonode/templates/base.html:685
 msgid "OK"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:519
+#: geonode/documents/templates/layouts/doc_panels.html:540
 #: geonode/layers/templates/layouts/panels.html:584
 #: geonode/maps/templates/layouts/map_panels.html:537
 #, fuzzy
 #| msgid "Published"
 msgid "Publishing"
 msgstr "게시됨"
+
+#: geonode/documents/views.py:64
+msgid "You are not permitted to delete this document"
+msgstr "이 문서를 삭제할 권한이 없습니다"
+
+#: geonode/documents/views.py:65
+msgid "You do not have permissions for this document."
+msgstr "이 문서에 대한 권한이 없습니다"
+
+#: geonode/documents/views.py:66
+msgid "You are not permitted to modify this document"
+msgstr "이 문서를 수정할 권한이 없습니다"
+
+#: geonode/documents/views.py:68
+msgid "You are not permitted to modify this document's metadata"
+msgstr "이 문서의 메타데이터를 수정할 권한이 없습니다"
+
+#: geonode/documents/views.py:69
+msgid "You are not permitted to view this document"
+msgstr "이 문서를 볼 권한이 없습니다"
+
+#: geonode/documents/views.py:103 geonode/documents/views.py:177
+msgid "You are not allowed to view this document."
+msgstr "이 문서를 볼 권한이 없습니다."
+
+#: geonode/documents/views.py:354
+msgid "You are not allowed to edit this document."
+msgstr "이 문서를 편집할 권한이 없습니다."
+
+#: geonode/documents/views.py:435 geonode/layers/views.py:994
+msgid "You must set a point of contact for this resource"
+msgstr "이 자원에 대한 담당자를 설정"
+
+#: geonode/documents/views.py:452 geonode/layers/views.py:1011
+msgid "You must set an author for this resource"
+msgstr "이 자원에 대한 저자를 설정"
 
 #: geonode/favorite/templates/favorite/_favorite.html:5
 #: geonode/templates/_actions.html:23
@@ -1143,6 +1743,50 @@ msgstr "즐겨찾기 추가"
 #: geonode/favorite/templates/favorite/favorite_list.html:8
 msgid "Favorites for"
 msgstr "즐겨찾기: "
+
+#: geonode/geoserver/__init__.py:75
+msgid "Layer Uploaded"
+msgstr "업로드된 레이어"
+
+#: geonode/geoserver/__init__.py:75
+#, fuzzy
+#| msgid "A Layer was updated"
+msgid "A layer was uploaded"
+msgstr "레이어를 갱신했습니다"
+
+#: geonode/geoserver/__init__.py:76 geonode/layers/__init__.py:33
+msgid "Comment on Layer"
+msgstr "레이어 댓글"
+
+#: geonode/geoserver/__init__.py:76 geonode/layers/__init__.py:33
+msgid "A layer was commented on"
+msgstr "레이어에 대한 댓글이 게시"
+
+#: geonode/geoserver/__init__.py:77 geonode/layers/__init__.py:34
+msgid "Rating for Layer"
+msgstr "레이어 평점"
+
+#: geonode/geoserver/__init__.py:77 geonode/layers/__init__.py:34
+msgid "A rating was given to a layer"
+msgstr "레이어에 대한 평점이 주어짐"
+
+#: geonode/geoserver/createlayer/forms.py:35
+#, fuzzy
+#| msgid "Layer Name"
+msgid "Layer name"
+msgstr "레이어 이름"
+
+#: geonode/geoserver/createlayer/forms.py:36
+#, fuzzy
+#| msgid "Layer Title"
+msgid "Layer title"
+msgstr "레이어 제목"
+
+#: geonode/geoserver/createlayer/forms.py:37
+#, fuzzy
+#| msgid "property type"
+msgid "Geometry type"
+msgstr "속성 유형"
 
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:6
 #: geonode/templates/base.html:289 geonode/templates/base.html:455
@@ -1180,9 +1824,186 @@ msgstr "속성"
 
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:41
 #: geonode/groups/templates/groups/group_create.html:26
+#: geonode/monitoring/models.py:354
 #: geonode/services/templates/services/service_register.html:18
 msgid "Create"
 msgstr "생성"
+
+#: geonode/geoserver/helpers.py:681
+msgid "No abstract provided"
+msgstr "개요가 제공되지 않습니다"
+
+#: geonode/geoserver/helpers.py:1427
+msgid "An exception occurred loading data to PostGIS"
+msgstr "PostGIS에 데이터를 로딩하는 중 오류가 발생했습니다"
+
+#: geonode/geoserver/helpers.py:1432
+msgid " Additionally an error occured during database cleanup"
+msgstr "추가적으로 데이터베이스를 정리하는 중 오류가 발생했습니다"
+
+#: geonode/geoserver/ows.py:68
+msgid "GZIP"
+msgstr "GZIP"
+
+#: geonode/geoserver/ows.py:69
+msgid "GeoTIFF"
+msgstr "GeoTIFF"
+
+#: geonode/geoserver/ows.py:110
+msgid "Zipped Shapefile"
+msgstr "Zip 압축 Shapefile"
+
+#: geonode/geoserver/ows.py:111
+msgid "GML 2.0"
+msgstr "GML 2.0"
+
+#: geonode/geoserver/ows.py:112
+msgid "GML 3.1.1"
+msgstr "GML 3.1.1"
+
+#: geonode/geoserver/ows.py:113
+msgid "CSV"
+msgstr "CSV"
+
+#: geonode/geoserver/ows.py:114
+msgid "Excel"
+msgstr "Excel"
+
+#: geonode/geoserver/ows.py:115
+msgid "GeoJSON"
+msgstr "GeoJSON"
+
+#: geonode/geoserver/ows.py:157
+msgid "JPEG"
+msgstr "JPEG"
+
+#: geonode/geoserver/ows.py:158
+msgid "PDF"
+msgstr "PDF"
+
+#: geonode/geoserver/ows.py:159
+msgid "PNG"
+msgstr "PNG"
+
+#: geonode/geoserver/views.py:509
+msgid "You don't have permissions to change style for this layer"
+msgstr "이 레이어의 스타일을 변경할 수 있는 권한이 없습니다"
+
+#: geonode/geoserver/views.py:579 geonode/geoserver/views.py:635
+msgid "Bad HTTP Authorization Credentials."
+msgstr "유효하지 않은 HTTP 인증 자격증명."
+
+#: geonode/groups/forms.py:35
+msgid ""
+"a short version of the name consisting only of letters, numbers, underscores "
+"and hyphens."
+msgstr "문자, 숫자, 밑줄 및 하이픈으로 구성된 짧은 버전의 이름"
+
+#: geonode/groups/forms.py:43
+msgid "A group already exists with that slug."
+msgstr "이 슬러그의 그룹이 이미 있습니다."
+
+#: geonode/groups/forms.py:50 geonode/groups/forms.py:77
+msgid "A group already exists with that name."
+msgstr "이 이름의 그룹이 이미 있습니다."
+
+#: geonode/groups/forms.py:87
+#, fuzzy
+#| msgid "Identification"
+msgid "User Identifiers"
+msgstr "인증"
+
+#: geonode/groups/forms.py:97
+msgid "Assign manager role"
+msgstr ""
+
+#: geonode/groups/forms.py:111
+#, python-format
+msgid ""
+"The following are not valid usernames: %(errors)s; not added to the group"
+msgstr ""
+
+#: geonode/groups/models.py:43 geonode/layers/models.py:158
+#: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
+#: geonode/services/templates/services/service_resources_harvest.html:31
+#: geonode/templates/metadata_detail.html:130
+#: geonode/templates/metadata_detail.html:272
+#: geonode/templates/metadata_detail.html:353
+msgid "Name"
+msgstr "이름"
+
+#: geonode/groups/models.py:47 geonode/templates/base.html:314
+#: geonode/templates/search/_general_filters.html:76
+#: geonode/templates/search/_search_user_content.html:28
+#, fuzzy
+#| msgid "Categories"
+msgid "Group Categories"
+msgstr "카테고리"
+
+#: geonode/groups/models.py:65
+msgid "Public"
+msgstr "공개"
+
+#: geonode/groups/models.py:66
+msgid "Public (invite-only)"
+msgstr "공개(초대 전용)"
+
+#: geonode/groups/models.py:67
+msgid "Private"
+msgstr "비공개"
+
+#: geonode/groups/models.py:70
+msgid ""
+"Public: Any registered user can view and join a public group.<br>Public "
+"(invite-only):Any registered user can view the group.  Only invited users "
+"can join.<br>Private: Registered users cannot see any details about the "
+"group, including membership.  Only invited users can join."
+msgstr ""
+"공개: 모든 등록된 사용자가 공개 그룹을 보거나 가입할 수 있습니다.<br>공개 (초"
+"대 전용): 모든 등록된 사용자가 그룹을 볼 수 있습니다. 초대받은 사용자만 가입"
+"할 수 있습니다.<br>비공개: 등록된 사용자는 회원정보를 포함한 그룹의 상세정보"
+"를 볼 수 없습니다. 초대받은 사용자만 가입할 수 있습니다."
+
+#: geonode/groups/models.py:75
+msgid ""
+"Email used to contact one or all group members, such as a mailing list, "
+"shared email, or exchange group."
+msgstr ""
+"메일링 리스트, 공유 이메일 또는 익스체인지 그룹과 같은 하나 또는 모든 그룹 구"
+"성원과 연락하는데 사용되는 이메일."
+
+#: geonode/groups/models.py:81
+msgid "Logo"
+msgstr "로고"
+
+#: geonode/groups/models.py:84
+#: geonode/people/templates/people/profile_detail.html:67
+#: geonode/templates/invitations/forms/_invite.html:14
+msgid "Email"
+msgstr "이메일"
+
+#: geonode/groups/models.py:90 geonode/people/forms.py:94
+msgid "A space or comma-separated list of keywords"
+msgstr "공백 또는 쉼표로 구분된 키워드 목록"
+
+#: geonode/groups/models.py:93
+msgid "Access"
+msgstr "접근"
+
+#: geonode/groups/models.py:98 geonode/templates/search/_general_filters.html:4
+msgid "Categories"
+msgstr "카테고리"
+
+#: geonode/groups/models.py:241
+#: geonode/groups/templates/groups/group_members.html:37
+#: geonode/groups/templates/groups/group_members.html:63
+#: geonode/groups/templates/groups/group_members.html:90
+msgid "Manager"
+msgstr "관리자"
+
+#: geonode/groups/models.py:242
+msgid "Member"
+msgstr "회원"
 
 #: geonode/groups/templates/groups/activity.html:7
 #: geonode/groups/templates/groups/activity.html:8
@@ -1193,8 +2014,9 @@ msgstr "활동 피드"
 
 #: geonode/groups/templates/groups/activity.html:25
 #: geonode/groups/templates/groups/group_members.html:22
+#: geonode/monitoring/models.py:353
 #: geonode/social/templates/social/activity_list.html:20
-#: geonode/templates/user_messages/inbox.html:16
+#: geonode/templates/user_messages/inbox.html:17
 msgid "All"
 msgstr "전체"
 
@@ -1377,12 +2199,6 @@ msgstr "회원 편집"
 msgid "Current Members"
 msgstr "회원"
 
-#: geonode/groups/templates/groups/group_members.html:37
-#: geonode/groups/templates/groups/group_members.html:63
-#: geonode/groups/templates/groups/group_members.html:90
-msgid "Manager"
-msgstr "관리자"
-
 #: geonode/groups/templates/groups/group_members.html:46
 #: geonode/groups/templates/groups/group_members.html:72
 #: geonode/groups/templates/groups/group_members.html:99
@@ -1460,6 +2276,289 @@ msgstr "그룹 생성"
 #| msgid "Create Group"
 msgid "Edit Group Category"
 msgstr "그룹 생성"
+
+#: geonode/invitations/forms.py:53
+#, python-format
+msgid "The e-mail address '%(email)s' has already been invited."
+msgstr ""
+
+#: geonode/invitations/forms.py:55
+#, python-format
+msgid "The e-mail address '%(email)s' has already accepted an invite."
+msgstr ""
+
+#: geonode/invitations/forms.py:57
+#, python-format
+msgid "An active user is already using the e-mail address '%(email)s'"
+msgstr ""
+
+#: geonode/invitations/forms.py:75 geonode/templates/base.html:506
+#, fuzzy
+#| msgid "Email"
+msgid "E-mail"
+msgstr "이메일"
+
+#: geonode/invitations/views.py:71
+#, python-format
+msgid "Invitations succefully sent to '%(email)s'"
+msgstr ""
+
+#: geonode/invitations/views.py:78
+#, python-format
+msgid ""
+"Sorry, it was not possible to invite '%(email)s' due to the following isse: "
+"%(error)s (%(type)s)"
+msgstr ""
+
+#: geonode/layers/__init__.py:28
+msgid "Layer Created"
+msgstr "레이어 생성"
+
+#: geonode/layers/__init__.py:28
+msgid "A Layer was created"
+msgstr "레이어를 생성했습니다"
+
+#: geonode/layers/__init__.py:29
+msgid "Layer Updated"
+msgstr "레이어 갱신"
+
+#: geonode/layers/__init__.py:29
+msgid "A Layer was updated"
+msgstr "레이어를 갱신했습니다"
+
+#: geonode/layers/__init__.py:30
+#, fuzzy
+#| msgid "Not provided"
+msgid "Layer Approved"
+msgstr "제공되지 않음"
+
+#: geonode/layers/__init__.py:30
+#, fuzzy
+#| msgid "A Layer was created"
+msgid "A Layer was approved by a Manager"
+msgstr "레이어를 생성했습니다"
+
+#: geonode/layers/__init__.py:31
+#, fuzzy
+#| msgid "Published"
+msgid "Layer Published"
+msgstr "게시됨"
+
+#: geonode/layers/__init__.py:31
+#, fuzzy
+#| msgid "A Layer was updated"
+msgid "A Layer was published"
+msgstr "레이어를 갱신했습니다"
+
+#: geonode/layers/__init__.py:32
+msgid "Layer Deleted"
+msgstr "레이어 삭제"
+
+#: geonode/layers/__init__.py:32
+msgid "A Layer was deleted"
+msgstr "레이어를 삭제했습니다"
+
+#: geonode/layers/models.py:52
+msgid "YYYYMMDD"
+msgstr "YYYYMMDD"
+
+#: geonode/layers/models.py:53
+msgid "YYYYMMDD'T'hhmmss"
+msgstr "YYYYMMDD'T'hhmmss"
+
+#: geonode/layers/models.py:54
+msgid "YYYYMMDD'T'hhmmss'Z'"
+msgstr "YYYYMMDD'T'hhmmss'Z'"
+
+#: geonode/layers/models.py:72 geonode/qgis_server/models.py:198
+msgid "style name"
+msgstr "스타일 이름"
+
+#: geonode/layers/models.py:74
+msgid "sld text"
+msgstr "sld 텍스트"
+
+#: geonode/layers/models.py:76
+msgid "sld version"
+msgstr "sld 버전"
+
+#: geonode/layers/models.py:80
+msgid "sld url"
+msgstr "sld url"
+
+#: geonode/layers/models.py:155
+msgid "Workspace"
+msgstr ""
+
+#: geonode/layers/models.py:156
+msgid "Store"
+msgstr ""
+
+#: geonode/layers/models.py:157
+#, fuzzy
+#| msgid "feature type"
+msgid "Storetype"
+msgstr "객체 유형"
+
+#: geonode/layers/models.py:159
+#, fuzzy
+#| msgid "CSW typename"
+msgid "Typename"
+msgstr "CSW 유형이름"
+
+#: geonode/layers/models.py:161
+msgid "Is mosaic?"
+msgstr ""
+
+#: geonode/layers/models.py:162
+msgid "Has time?"
+msgstr ""
+
+#: geonode/layers/models.py:163
+#, fuzzy
+#| msgid "Elevation"
+msgid "Has elevation?"
+msgstr "고도"
+
+#: geonode/layers/models.py:165
+msgid "Time regex"
+msgstr ""
+
+#: geonode/layers/models.py:170
+#, fuzzy
+#| msgid "Elevation"
+msgid "Elevation regex"
+msgstr "고도"
+
+#: geonode/layers/models.py:275
+msgid "File cannot be opened, maybe check the encoding"
+msgstr "파일을 열 수 없습니다. 인코딩을 확인하십시오."
+
+#: geonode/layers/models.py:386
+#, fuzzy
+#| msgid "attribute name"
+msgid "attribute name"
+msgstr "속성 이름"
+
+#: geonode/layers/models.py:387
+msgid "name of attribute as stored in shapefile/spatial database"
+msgstr "shapefile/공간 데이터베이스에 저장된 속성 이름"
+
+#: geonode/layers/models.py:393
+#, fuzzy
+#| msgid "distribution description"
+msgid "attribute description"
+msgstr "distribution description"
+
+#: geonode/layers/models.py:394
+msgid "description of attribute to be used in metadata"
+msgstr "메타데이터에 사용되는 속성에 대한 설명"
+
+#: geonode/layers/models.py:399
+msgid "attribute label"
+msgstr "속성 레이블"
+
+#: geonode/layers/models.py:400
+msgid "title of attribute as displayed in GeoNode"
+msgstr "GeoNode에 표시되는 속성 제목"
+
+#: geonode/layers/models.py:406
+msgid "attribute type"
+msgstr "속성 유형"
+
+#: geonode/layers/models.py:407
+msgid "the data type of the attribute (integer, string, geometry, etc)"
+msgstr "속성 데이터 유형(정수, 문자, 지오메트리 등)"
+
+#: geonode/layers/models.py:414
+msgid "visible?"
+msgstr "보이기?"
+
+#: geonode/layers/models.py:415
+msgid "specifies if the attribute should be displayed in identify results"
+msgstr "이 속성이 속성확인 결과에 표시될 것인지를 설정합니다"
+
+#: geonode/layers/models.py:417
+msgid "display order"
+msgstr "디스플레이 순서"
+
+#: geonode/layers/models.py:418
+msgid ""
+"specifies the order in which attribute should be displayed in identify "
+"results"
+msgstr "속성이 속성확인 결과에 표시될 순서를 설정"
+
+#: geonode/layers/models.py:422
+#, fuzzy
+#| msgid "count"
+msgid "count"
+msgstr "갯수"
+
+#: geonode/layers/models.py:423
+msgid "count value for this field"
+msgstr "이 필드의 갯수 값"
+
+#: geonode/layers/models.py:426
+msgid "min"
+msgstr "최소값"
+
+#: geonode/layers/models.py:427
+msgid "minimum value for this field"
+msgstr "이 필드의 최소값"
+
+#: geonode/layers/models.py:434
+msgid "max"
+msgstr "최대값"
+
+#: geonode/layers/models.py:435
+msgid "maximum value for this field"
+msgstr "이 필드의 최대값"
+
+#: geonode/layers/models.py:442
+msgid "average"
+msgstr "평균"
+
+#: geonode/layers/models.py:443
+msgid "average value for this field"
+msgstr "이 필드의 평균값"
+
+#: geonode/layers/models.py:450
+msgid "median"
+msgstr "중간값"
+
+#: geonode/layers/models.py:451
+msgid "median value for this field"
+msgstr "이 필드의 중간값"
+
+#: geonode/layers/models.py:458
+msgid "standard deviation"
+msgstr "표준편차"
+
+#: geonode/layers/models.py:459
+msgid "standard deviation for this field"
+msgstr "이 필드의 표준편차"
+
+#: geonode/layers/models.py:466
+msgid "sum"
+msgstr "합"
+
+#: geonode/layers/models.py:467
+msgid "sum value for this field"
+msgstr "이 필드의 합"
+
+#: geonode/layers/models.py:474
+msgid "unique values for this field"
+msgstr "이 필드의 고유값"
+
+#: geonode/layers/models.py:478
+#, fuzzy
+#| msgid "last modified"
+msgid "last modified"
+msgstr "마지막 수정"
+
+#: geonode/layers/models.py:479
+msgid "date when attribute statistics were last updated"
+msgstr "속성 통계가 마지막으로 갱신된 날짜"
 
 #: geonode/layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1665,6 +2764,7 @@ msgid ""
 msgstr ""
 
 #: geonode/layers/templates/layers/layer_detail.html:412
+#: geonode/monitoring/models.py:1082
 msgid "Warning"
 msgstr ""
 
@@ -1698,8 +2798,14 @@ msgstr "스타일"
 msgid "Manage"
 msgstr "관리"
 
+#: geonode/layers/templates/layers/layer_detail.html:497
+#: geonode/maps/templates/maps/map_detail.html:164
+msgid "Set"
+msgstr "설정"
+
 #: geonode/layers/templates/layers/layer_detail.html:505
-#: geonode/templates/index.html:66
+#: geonode/monitoring/models.py:173 geonode/templates/index.html:66
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:5
 msgid "Layer"
 msgid_plural "Layers"
 msgstr[0] "레이어"
@@ -2013,7 +3119,7 @@ msgstr "재시작"
 #: geonode/templates/_comments.html:37
 #: geonode/templates/announcements/announcement_confirm_delete.html:21
 #: geonode/templates/announcements/announcement_form.html:24
-#: geonode/templates/user_messages/_message_snippet.html:61
+#: geonode/templates/user_messages/_message_snippet.html:39
 msgid "Delete"
 msgstr "삭제"
 
@@ -2120,7 +3226,6 @@ msgid "This will most probably overwrite the current default style!"
 msgstr ""
 
 #: geonode/layers/templates/layouts/panels.html:224
-#: geonode/templates/user_messages/_message_snippet.html:12
 msgid "Preview"
 msgstr "미리보기"
 
@@ -2742,6 +3847,251 @@ msgstr "계속 진행합니다"
 msgid "now"
 msgstr "지금"
 
+#: geonode/layers/utils.py:496 geonode/layers/utils.py:520
+#, fuzzy
+#| msgid "You are attempting to replace a vector layer with a raster."
+msgid "You are attempting to replace a vector layer with an unknown format."
+msgstr "벡터 레이어를 래스터 레이어로 변경하려 합니다."
+
+#: geonode/layers/utils.py:502 geonode/layers/views.py:1211
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr "벡터 레이어를 래스터 레이어로 변경하려 합니다."
+
+#: geonode/layers/utils.py:505 geonode/layers/views.py:1215
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr "래스터 레이어를 벡터 레이어로 변경하려 합니다."
+
+#: geonode/layers/utils.py:528
+msgid ""
+"Please ensure the name is consistent with the file you are trying to replace."
+msgstr ""
+
+#: geonode/layers/utils.py:533
+msgid "Local GeoNode layer has no geometry type."
+msgstr ""
+
+#: geonode/layers/utils.py:538
+msgid ""
+"Please ensure there is at least one geometry "
+"type                                 that is consistent with the file you "
+"are trying to replace."
+msgstr ""
+
+#: geonode/layers/utils.py:542
+#, python-format
+msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgstr ""
+
+#: geonode/layers/views.py:127
+msgid ""
+"There was an error while attempting to upload your data. Please try again, "
+"or contact and administrator if the problem continues."
+msgstr ""
+"데이터를 업로드하는 동안 오류가 발생했습니다. 다시 시도하거나, 문제가 지속되"
+"면 관리자에게 문의하십시오."
+
+#: geonode/layers/views.py:130
+msgid ""
+"Note: this layer's orginal metadata was populated and preserved by importing "
+"a metadata XML file. This metadata cannot be edited."
+msgstr ""
+"참고: 이 레이어의 원본 메타데이터는 메타데이터 XML 파일을 가져와서 생성되었습"
+"니다. 이 메타데이터는 편집할 수 없습니다."
+
+#: geonode/layers/views.py:134
+msgid "You are not permitted to delete this layer"
+msgstr "이 레이어를 삭제할 권한이 없습니다."
+
+#: geonode/layers/views.py:135
+msgid "You do not have permissions for this layer."
+msgstr "이 레이어에 대한 권한이 없습니다."
+
+#: geonode/layers/views.py:136
+msgid "You are not permitted to modify this layer"
+msgstr "이 레이어를 수정할 권한이 없습니다."
+
+#: geonode/layers/views.py:138
+msgid "You are not permitted to modify this layer's metadata"
+msgstr "이 레이어의 메타데이터를 수정할 권한이 없습니다."
+
+#: geonode/layers/views.py:139
+msgid "You are not permitted to view this layer"
+msgstr "이 레이어를 볼 수 있는 권한이 없습니다."
+
+#: geonode/layers/views.py:277
+#, fuzzy
+#| msgid "Files to be uploaded"
+msgid "Failed to upload the layer"
+msgstr "업로드된 파일"
+
+#: geonode/layers/views.py:1311 geonode/layers/views.py:1356
+#, fuzzy
+#| msgid "Unable to delete layer"
+msgid "Unable to delete layer"
+msgstr "레이어를 삭제할 수 없습니다"
+
+#: geonode/layers/views.py:1315 geonode/layers/views.py:1360
+msgid ""
+"This layer is a member of a layer group, you must remove the layer from the "
+"group before deleting."
+msgstr ""
+"이 레이어는 레이어 그룹에 포함되어 있습니다, 삭제하기 전 레이어 그룹에서 레이"
+"어를 제거해야 합니다."
+
+#: geonode/layers/views.py:1408 geonode/maps/views.py:1406
+msgid "couldn't generate thumbnail"
+msgstr ""
+
+#: geonode/maps/__init__.py:28
+msgid "Map Created"
+msgstr "생성된 지도"
+
+#: geonode/maps/__init__.py:28
+#, fuzzy
+#| msgid "A Layer was created"
+msgid "A Map was created"
+msgstr "레이어를 생성했습니다"
+
+#: geonode/maps/__init__.py:29
+msgid "Map Updated"
+msgstr "지도 갱신"
+
+#: geonode/maps/__init__.py:29
+#, fuzzy
+#| msgid "A Layer was updated"
+msgid "A Map was updated"
+msgstr "레이어를 갱신했습니다"
+
+#: geonode/maps/__init__.py:30
+#, fuzzy
+#| msgid "Not provided"
+msgid "Map Approved"
+msgstr "제공되지 않음"
+
+#: geonode/maps/__init__.py:30
+msgid "A Map was approved by a Manager"
+msgstr ""
+
+#: geonode/maps/__init__.py:31
+#, fuzzy
+#| msgid "Published"
+msgid "Map Published"
+msgstr "게시됨"
+
+#: geonode/maps/__init__.py:31
+#, fuzzy
+#| msgid "A Map was deleted"
+msgid "A Map was published"
+msgstr "지도를 삭제했습니다"
+
+#: geonode/maps/__init__.py:32
+msgid "Map Deleted"
+msgstr "지도 삭제"
+
+#: geonode/maps/__init__.py:32
+msgid "A Map was deleted"
+msgstr "지도를 삭제했습니다"
+
+#: geonode/maps/__init__.py:33
+msgid "Comment on Map"
+msgstr "지도 댓글"
+
+#: geonode/maps/__init__.py:33
+msgid "A map was commented on"
+msgstr "지도에 대한 댓글 게시"
+
+#: geonode/maps/__init__.py:34
+msgid "Rating for Map"
+msgstr "지도 평점"
+
+#: geonode/maps/__init__.py:34
+msgid "A rating was given to a map"
+msgstr "지도에 대한 평점이 주어졌습니다"
+
+#: geonode/maps/models.py:64
+msgid "zoom"
+msgstr "확대"
+
+#: geonode/maps/models.py:68
+msgid "projection"
+msgstr "투영"
+
+#: geonode/maps/models.py:72
+msgid "center X"
+msgstr "중심 X"
+
+#: geonode/maps/models.py:76
+msgid "center Y"
+msgstr "중심 Y"
+
+#: geonode/maps/models.py:83
+msgid "Site URL"
+msgstr "사이트 URL"
+
+#: geonode/maps/models.py:88
+msgid "Featured Map URL"
+msgstr "주요지도 URL"
+
+#: geonode/maps/models.py:443
+msgid "stack order"
+msgstr "스택 순서"
+
+#: geonode/maps/models.py:448
+#, fuzzy
+#| msgid "format"
+msgid "format"
+msgstr "포맷"
+
+#: geonode/maps/models.py:454
+msgid "name"
+msgstr "이름"
+
+#: geonode/maps/models.py:457
+msgid "store"
+msgstr ""
+
+#: geonode/maps/models.py:463
+msgid "opacity"
+msgstr "투명"
+
+#: geonode/maps/models.py:467
+msgid "styles"
+msgstr "스타일"
+
+#: geonode/maps/models.py:472
+msgid "transparent"
+msgstr "투명"
+
+#: geonode/maps/models.py:476
+msgid "fixed"
+msgstr "고정"
+
+#: geonode/maps/models.py:480
+#, fuzzy
+#| msgid "group"
+msgid "group"
+msgstr "그룹"
+
+#: geonode/maps/models.py:484
+msgid "visibility"
+msgstr "보이기"
+
+#: geonode/maps/models.py:487
+msgid "ows URL"
+msgstr "ows URL"
+
+#: geonode/maps/models.py:490
+msgid "layer params"
+msgstr "레이어 파라미터"
+
+#: geonode/maps/models.py:497
+msgid "source params"
+msgstr "원본 파라미터"
+
+#: geonode/maps/models.py:607
+msgid "JSON Configuration"
+msgstr "JSON 구성"
+
 #: geonode/maps/templates/maps/map_detail.html:26
 msgid "maps"
 msgstr ""
@@ -2760,7 +4110,8 @@ msgid "Download Map"
 msgstr "지도 다운로드"
 
 #: geonode/maps/templates/maps/map_detail.html:171
-#: geonode/maps/templates/maps/map_view.html:7 geonode/templates/index.html:76
+#: geonode/maps/templates/maps/map_view.html:7 geonode/monitoring/models.py:174
+#: geonode/templates/index.html:76
 msgid "Map"
 msgid_plural "Maps"
 msgstr[0] "지도"
@@ -2852,6 +4203,7 @@ msgid "Copy to Clipboard"
 msgstr ""
 
 #: geonode/maps/templates/maps/map_download.html:6
+#: geonode/monitoring/models.py:360
 msgid "Download"
 msgstr "다운로드"
 
@@ -2980,6 +4332,378 @@ msgstr ""
 "정말로  <a href=\"%(map.get_absolute_url)s\">%(map_title)s</a>를 제거하시겠습"
 "니까?"
 
+#: geonode/maps/views.py:95
+msgid "You are not permitted to delete this map."
+msgstr "이 지도를 삭제할 권한이 없습니다."
+
+#: geonode/maps/views.py:96
+msgid "You do not have permissions for this map."
+msgstr "이 지도에 대한 권한이 없습니다."
+
+#: geonode/maps/views.py:97
+msgid "You must be logged in to save this map"
+msgstr "지도를 저장하려면 로그인해야 합니다"
+
+#: geonode/maps/views.py:98
+msgid "You are not permitted to save or edit this map."
+msgstr "이 지도를 저장하거나 편집할 권한이 없습니다."
+
+#: geonode/maps/views.py:100
+msgid "You are not allowed to modify this map's metadata."
+msgstr "이 지도의 메타데이터를 수정할 권한이 없습니다."
+
+#: geonode/maps/views.py:101
+msgid "You are not allowed to view this map."
+msgstr "이 지도를 볼 수 있는 권한이 없습니다."
+
+#: geonode/maps/views.py:102
+msgid "An unknown error has occured."
+msgstr "알 수없는 오류가 발생했습니다."
+
+#: geonode/maps/views.py:1413
+#, fuzzy
+#| msgid "Thumbnail"
+msgid "Thumbnail saved"
+msgstr "섬네일"
+
+#: geonode/maps/views.py:1416
+#, fuzzy
+#| msgid "Thumbnail"
+msgid "error saving thumbnail"
+msgstr "섬네일"
+
+#: geonode/monitoring/__init__.py:45
+msgid "Monitoring alert"
+msgstr ""
+
+#: geonode/monitoring/__init__.py:46
+msgid "Alert situation reported by monitoring"
+msgstr ""
+
+#: geonode/monitoring/collector.py:1008
+msgid "GeoNode Monitoring on {} reports errors: {}"
+msgstr ""
+
+#: geonode/monitoring/forms.py:30
+#, fuzzy
+#| msgid "Confirm your email address"
+msgid "Enter valid email addresses."
+msgstr "이메일 주소 확인"
+
+#: geonode/monitoring/management/commands/collect_metrics.py:50
+msgid "Show list of services"
+msgstr ""
+
+#: geonode/monitoring/management/commands/collect_metrics.py:52
+#: geonode/monitoring/management/commands/render_metrics.py:57
+msgid ""
+"Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
+"provided, last sync will be used."
+msgstr ""
+
+#: geonode/monitoring/management/commands/collect_metrics.py:55
+#: geonode/monitoring/management/commands/render_metrics.py:59
+msgid ""
+"Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
+"provided, now will be used."
+msgstr ""
+
+#: geonode/monitoring/management/commands/collect_metrics.py:58
+msgid "Force check"
+msgstr ""
+
+#: geonode/monitoring/management/commands/collect_metrics.py:60
+msgid "Format of audit log (xml, json)"
+msgstr ""
+
+#: geonode/monitoring/management/commands/collect_metrics.py:62
+msgid ""
+"Should old data be preserved (default: no, data older than settings."
+"MONITORING_DATA_TTL will be removed)"
+msgstr ""
+
+#: geonode/monitoring/management/commands/collect_metrics.py:65
+msgid "Should stop on first error occured (default: no)"
+msgstr ""
+
+#: geonode/monitoring/management/commands/collect_metrics.py:67
+msgid "Should process and send notifications as well (default: no)"
+msgstr ""
+
+#: geonode/monitoring/management/commands/collect_metrics.py:69
+msgid "Collect data from this service only"
+msgstr ""
+
+#: geonode/monitoring/management/commands/render_metrics.py:49
+msgid "Show list of metrics"
+msgstr ""
+
+#: geonode/monitoring/management/commands/render_metrics.py:51
+msgid "Show list of labels for metric"
+msgstr ""
+
+#: geonode/monitoring/management/commands/render_metrics.py:54
+msgid "Show list of resources for metric"
+msgstr ""
+
+#: geonode/monitoring/management/commands/render_metrics.py:62
+msgid "Data aggregation interval in seconds (default: 60)"
+msgstr ""
+
+#: geonode/monitoring/management/commands/render_metrics.py:63
+#, fuzzy
+#| msgid "attribute name"
+msgid "Metric name"
+msgstr "속성 이름"
+
+#: geonode/monitoring/management/commands/render_metrics.py:66
+msgid "Show data for specific resource in resource_type=resource_name format"
+msgstr ""
+
+#: geonode/monitoring/management/commands/render_metrics.py:69
+#, fuzzy
+#| msgid "reference date for the cited resource"
+msgid "Show data for specific resource"
+msgstr "인용된 자원에 대한 참조 날짜"
+
+#: geonode/monitoring/management/commands/render_metrics.py:72
+msgid "Show data for specific label"
+msgstr ""
+
+#: geonode/monitoring/models.py:100 geonode/templates/500.html:199
+#: geonode/templates/base.html:511
+msgid "GeoNode"
+msgstr "GeoNode"
+
+#: geonode/monitoring/models.py:101
+#: geonode/people/templates/people/profile_detail.html:163
+#: geonode/templates/500.html:278
+msgid "GeoServer"
+msgstr "GeoServer"
+
+#: geonode/monitoring/models.py:102
+#, fuzzy
+#| msgid "GeoServer"
+msgid "Host (GeoServer)"
+msgstr "GeoServer"
+
+#: geonode/monitoring/models.py:103
+#, fuzzy
+#| msgid "About GeoNode"
+msgid "Host (GeoNode)"
+msgstr "GeoNode 소개"
+
+#: geonode/monitoring/models.py:172
+#, fuzzy
+#| msgid "Resources"
+msgid "No resource"
+msgstr "자원"
+
+#: geonode/monitoring/models.py:175
+#, fuzzy
+#| msgid "Resources"
+msgid "Resource base"
+msgstr "자원"
+
+#: geonode/monitoring/models.py:177
+#, fuzzy
+#| msgid "Styles"
+msgid "Style"
+msgstr "스타일"
+
+#: geonode/monitoring/models.py:178
+#: geonode/people/templates/people/profile_detail.html:164
+#: geonode/templates/500.html:279 geonode/templates/base.html:383
+msgid "Admin"
+msgstr "관리자"
+
+#: geonode/monitoring/models.py:180
+msgid "Other"
+msgstr ""
+
+#: geonode/monitoring/models.py:210 geonode/monitoring/models.py:261
+msgid "Rate"
+msgstr ""
+
+#: geonode/monitoring/models.py:211 geonode/monitoring/models.py:263
+#, fuzzy
+#| msgid "count"
+msgid "Count"
+msgstr "갯수"
+
+#: geonode/monitoring/models.py:212
+msgid "Value"
+msgstr ""
+
+#: geonode/monitoring/models.py:213
+msgid "Value numeric"
+msgstr ""
+
+#: geonode/monitoring/models.py:252
+msgid "Bytes"
+msgstr ""
+
+#: geonode/monitoring/models.py:253
+msgid "Kilobytes"
+msgstr ""
+
+#: geonode/monitoring/models.py:254
+msgid "Megabytes"
+msgstr ""
+
+#: geonode/monitoring/models.py:255
+msgid "Gigabytes"
+msgstr ""
+
+#: geonode/monitoring/models.py:256
+msgid "Bytes per second"
+msgstr ""
+
+#: geonode/monitoring/models.py:257
+msgid "Kilobytes per second"
+msgstr ""
+
+#: geonode/monitoring/models.py:258
+msgid "Megabytes per second"
+msgstr ""
+
+#: geonode/monitoring/models.py:259
+msgid "Gigabytes per second"
+msgstr ""
+
+#: geonode/monitoring/models.py:260
+msgid "Seconds"
+msgstr ""
+
+#: geonode/monitoring/models.py:262
+msgid "Percentage"
+msgstr ""
+
+#: geonode/monitoring/models.py:351
+#, fuzzy
+#| msgid "local OWS"
+msgid "Not OWS"
+msgstr "로컬 OWS"
+
+#: geonode/monitoring/models.py:352
+msgid "Any OWS"
+msgstr ""
+
+#: geonode/monitoring/models.py:356
+#: geonode/templates/pinax/notifications/notice_settings.html:51
+msgid "Change"
+msgstr "변경"
+
+#: geonode/monitoring/models.py:357
+#, fuzzy
+#| msgid "Metadata"
+msgid "Change Metadata"
+msgstr "메타데이터"
+
+#: geonode/monitoring/models.py:358
+#, fuzzy
+#| msgid "Edit Metadata"
+msgid "View Metadata"
+msgstr "메타데이터 편집"
+
+#: geonode/monitoring/models.py:359
+msgid "View"
+msgstr "View"
+
+#: geonode/monitoring/models.py:361
+#, fuzzy
+#| msgid "Published"
+msgid "Publish"
+msgstr "게시됨"
+
+#: geonode/monitoring/models.py:363
+#, fuzzy
+#| msgid "GeoServer"
+msgid "Geoserver event"
+msgstr "GeoServer"
+
+#: geonode/monitoring/models.py:432
+#, fuzzy
+#| msgid "List of resources using this document:"
+msgid "List of resources affected"
+msgstr "이 문서를 사용하는 자원 목록:"
+
+#: geonode/monitoring/models.py:439
+#, fuzzy
+#| msgid "Resource using this document"
+msgid "Response processing time in ms"
+msgstr "이 문서를 사용하는 자원"
+
+#: geonode/monitoring/models.py:1071
+msgid "1 minute"
+msgstr ""
+
+#: geonode/monitoring/models.py:1072
+msgid "5 minutes"
+msgstr ""
+
+#: geonode/monitoring/models.py:1073
+msgid "10 minutes"
+msgstr ""
+
+#: geonode/monitoring/models.py:1074
+msgid "30 minutes"
+msgstr ""
+
+#: geonode/monitoring/models.py:1075
+msgid "1 hour"
+msgstr ""
+
+#: geonode/monitoring/models.py:1083 geonode/templates/metadata_base.html:128
+#: geonode/templates/metadata_base.html:131
+#: geonode/templates/socialaccount/authentication_error.html:11
+msgid "Error"
+msgstr ""
+
+#: geonode/monitoring/models.py:1084
+msgid "Fatal"
+msgstr ""
+
+#: geonode/monitoring/models.py:1098
+msgid "Expected min/max values for user configuration"
+msgstr ""
+
+#: geonode/monitoring/models.py:1106
+msgid "Marker of last delivery"
+msgstr ""
+
+#: geonode/monitoring/models.py:1109
+msgid "Minimum time between subsequent notifications"
+msgstr ""
+
+#: geonode/monitoring/models.py:1114
+msgid "How severe would be error from this notification"
+msgstr ""
+
+#: geonode/monitoring/models.py:1119
+msgid "Is it active"
+msgstr ""
+
+#: geonode/monitoring/models.py:1126
+msgid "{}: {}"
+msgstr ""
+
+#: geonode/monitoring/models.py:1390
+msgid "Value must be above"
+msgstr ""
+
+#: geonode/monitoring/models.py:1391
+msgid "Value must be below"
+msgstr ""
+
+#: geonode/monitoring/models.py:1392
+msgid "Last update must not be older than"
+msgstr ""
+
+#: geonode/monitoring/models.py:1542
+msgid "Max timeout for given metric before error should be raised"
+msgstr ""
+
 #: geonode/monitoring/templates/monitoring/index.html:5
 #: geonode/monitoring/templates/monitoring/non_superuser.html:4
 #: geonode/templates/base.html:389
@@ -2989,6 +4713,250 @@ msgstr ""
 #: geonode/monitoring/templates/monitoring/non_superuser.html:10
 msgid "Only superusers can monitor performance"
 msgstr ""
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:3
+msgid "Hi,"
+msgstr ""
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:5
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:3
+msgid "Monitoring on"
+msgstr ""
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:5
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:3
+#, fuzzy
+#| msgid "The following groups:"
+msgid "has detected following problems :"
+msgstr "다음 그룹:"
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:9
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:6
+msgid "spotted"
+msgstr ""
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:9
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:10
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:6
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:7
+#: geonode/social/templates/social/_activity_item.html:31
+msgid "ago"
+msgstr "전"
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:10
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:7
+msgid "emerged"
+msgstr ""
+
+#: geonode/people/__init__.py:26
+msgid "User following you"
+msgstr "팔로잉하는 사용자"
+
+#: geonode/people/__init__.py:26
+msgid "Another user has started following you"
+msgstr "다른 사용자가 당신을 팔로잉합니다"
+
+#: geonode/people/__init__.py:27
+msgid "User requested access"
+msgstr "사용자 액세스 요청"
+
+#: geonode/people/__init__.py:28
+msgid "A new user has requested access to the site"
+msgstr "새로운 사용자가 이 사이트에 액세스를 요청했습니다"
+
+#: geonode/people/__init__.py:29
+#, fuzzy
+#| msgid "Account activated"
+msgid "Account activated"
+msgstr "계정 활성화"
+
+#: geonode/people/__init__.py:30
+msgid "This account is now active and can log in the site"
+msgstr "이 계정은 현재 활성화되어 있고 사이트에 로그인 할 수 있습니다"
+
+#: geonode/people/admin.py:56
+msgid "Personal info"
+msgstr "개인 정보"
+
+#: geonode/people/admin.py:59
+msgid "Important dates"
+msgstr "주요 일정"
+
+#: geonode/people/admin.py:60
+msgid "Extended profile"
+msgstr "확장 프로필"
+
+#: geonode/people/admin.py:159
+msgid "Password changed successfully."
+msgstr "비밀번호가 성공적으로 변경되었습니다."
+
+#: geonode/people/admin.py:169
+#, python-format
+msgid "Change password: %s"
+msgstr "비밀번호 변경: %s"
+
+#: geonode/people/enumerations.py:39
+msgid "party who authored the resource"
+msgstr "자원을 생성하는 집단"
+
+#: geonode/people/enumerations.py:40
+msgid ""
+"party who has processed the data in a manner such that the resource has been "
+"modified"
+msgstr "자원을 수정하는 것과 같은 방법으로 데이터를 처리하는 집단"
+
+#: geonode/people/enumerations.py:41
+msgid "party who published the resource"
+msgstr "자원을 발행하는 집단"
+
+#: geonode/people/enumerations.py:42
+msgid ""
+"party that accepts accountability and responsibility for the data and "
+"ensures         appropriate care and maintenance of the resource"
+msgstr ""
+"데이터에 대한 책임과 책임을 수용하고 자원의 적절한 관리 및 유지 보수를 보장하"
+"는 집단"
+
+#: geonode/people/enumerations.py:44
+msgid ""
+"party who can be contacted for acquiring knowledge about or acquisition of "
+"the resource"
+msgstr "자원에 대한 지식 또는 수집에 대한 교섭이 가능한 집단"
+
+#: geonode/people/enumerations.py:45
+msgid "party who distributes the resource"
+msgstr "자원을 분배하는 집단"
+
+#: geonode/people/enumerations.py:46
+msgid "party who uses the resource"
+msgstr "자원을 사용하는 집단"
+
+#: geonode/people/enumerations.py:47
+msgid "party that supplies the resource"
+msgstr "자원을 공급하는 집단"
+
+#: geonode/people/enumerations.py:48
+msgid "party who created the resource"
+msgstr "자원을 생성하는 집단"
+
+#: geonode/people/enumerations.py:49
+msgid "party that owns the resource"
+msgstr "자원을 소유하는 집단"
+
+#: geonode/people/enumerations.py:50
+msgid "key party responsible for gathering information and conducting research"
+msgstr "연구를 수행하고 정보를 수집하는 책임이 있는 주요 집단"
+
+#: geonode/people/forms.py:75
+#, fuzzy
+#| msgid "Email Address"
+msgid "Email Address"
+msgstr "이메일 주소"
+
+#: geonode/people/models.py:66
+msgid "Organization Name"
+msgstr "기관명"
+
+#: geonode/people/models.py:70
+msgid "name of the responsible organization"
+msgstr "담당 기관의 이름"
+
+#: geonode/people/models.py:72 geonode/templates/500.html:266
+#: geonode/templates/base.html:375
+msgid "Profile"
+msgstr "프로필"
+
+#: geonode/people/models.py:75
+msgid "introduce yourself"
+msgstr "자기 소개"
+
+#: geonode/people/models.py:77
+msgid "Position Name"
+msgstr "직위명"
+
+#: geonode/people/models.py:81
+msgid "role or position of the responsible person"
+msgstr "담당자의 역할 또는 직위"
+
+#: geonode/people/models.py:82
+#: geonode/people/templates/people/profile_detail.html:89
+#: geonode/templates/metadata_detail.html:145
+#: geonode/templates/metadata_detail.html:287
+#: geonode/templates/metadata_detail.html:368
+msgid "Voice"
+msgstr "전화번호"
+
+#: geonode/people/models.py:83
+msgid ""
+"telephone number by which individuals can speak to the responsible "
+"organization or individual"
+msgstr "개인이 담당 기관이나 담당자에게 연락할 수 있는 전화번호"
+
+#: geonode/people/models.py:84
+msgid "Facsimile"
+msgstr "팩스"
+
+#: geonode/people/models.py:85
+msgid ""
+"telephone number of a facsimile machine for the responsible organization or "
+"individual"
+msgstr "개인이 담당 기관이나 담당자에게 연락할 수 있는 팩스번호"
+
+#: geonode/people/models.py:87
+msgid "Delivery Point"
+msgstr "배달처"
+
+#: geonode/people/models.py:91
+msgid ""
+"physical and email address at which the organization or individual may be "
+"contacted"
+msgstr "기관이나 조직에 연락할 수 있는 주소 및 이메일 주소"
+
+#: geonode/people/models.py:93
+msgid "City"
+msgstr "도시"
+
+#: geonode/people/models.py:97
+msgid "city of the location"
+msgstr "위치의 도시"
+
+#: geonode/people/models.py:99
+msgid "Administrative Area"
+msgstr "행정구역"
+
+#: geonode/people/models.py:103
+msgid "state, province of the location"
+msgstr "위치의 주, 지방 행정구역"
+
+#: geonode/people/models.py:105
+msgid "Postal Code"
+msgstr "우편번호"
+
+#: geonode/people/models.py:109
+msgid "ZIP or other postal code"
+msgstr "ZIP 또는 다른 우편 번호"
+
+#: geonode/people/models.py:111
+msgid "Country"
+msgstr ""
+
+#: geonode/people/models.py:116
+msgid "country of the physical address"
+msgstr "물리적 주소의 국가"
+
+#: geonode/people/models.py:118
+msgid ""
+"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+"the subject             (space or comma-separated"
+msgstr ""
+"일반적으로 사용 된 단어 (들) 또는 공식화 할 단어 나 구 (들)은 피사체 (공간 또"
+"는 쉼표로 구분을 설명하기 위해 사용"
+
+#: geonode/people/models.py:127
+#, fuzzy
+#| msgid "Time"
+msgid "Timezone"
+msgstr "시간"
 
 #: geonode/people/templates/people/_profile_about_item.html:17
 msgid "No Group"
@@ -3031,11 +4999,6 @@ msgstr "프로필 정보: "
 msgid "people explore"
 msgstr "GeoExplorer"
 
-#: geonode/people/templates/people/profile_detail.html:67
-#: geonode/templates/invitations/forms/_invite.html:14
-msgid "Email"
-msgstr "이메일"
-
 #: geonode/people/templates/people/profile_detail.html:71
 #: geonode/people/templates/people/profile_detail.html:77
 #: geonode/people/templates/people/profile_detail.html:81
@@ -3066,15 +5029,10 @@ msgstr "기관"
 msgid "Location"
 msgstr "위치"
 
-#: geonode/people/templates/people/profile_detail.html:89
-#: geonode/templates/metadata_detail.html:145
-#: geonode/templates/metadata_detail.html:287
-#: geonode/templates/metadata_detail.html:368
-msgid "Voice"
-msgstr "전화번호"
-
 #: geonode/people/templates/people/profile_detail.html:93
 #: geonode/people/templates/people/profile_detail.html:113
+#: geonode/services/serviceprocessors/arcgis.py:115
+#: geonode/services/serviceprocessors/wms.py:144
 msgid "Not provided"
 msgstr "제공되지 않음"
 
@@ -3158,16 +5116,6 @@ msgstr "공지"
 msgid "Invite Users"
 msgstr "사용자 초대"
 
-#: geonode/people/templates/people/profile_detail.html:163
-#: geonode/templates/500.html:278
-msgid "GeoServer"
-msgstr "GeoServer"
-
-#: geonode/people/templates/people/profile_detail.html:164
-#: geonode/templates/500.html:279 geonode/templates/base.html:383
-msgid "Admin"
-msgstr "관리자"
-
 #: geonode/people/templates/people/profile_detail.html:174
 msgid "User Activities"
 msgstr "사용자 활동"
@@ -3203,6 +5151,67 @@ msgstr "프로필 업로드"
 msgid "Explore People"
 msgstr "사용자 검색"
 
+#: geonode/people/views.py:92
+msgid "Your username for "
+msgstr "사용자 이름 "
+
+#: geonode/people/views.py:106
+msgid "Your username has been emailed to you."
+msgstr "사용자 아이디가 이메일로 발송되었습니다."
+
+#: geonode/people/views.py:108
+msgid "No user could be found with that email address."
+msgstr "해당 이메일 주소에 해당하는 사용자가 없습니다."
+
+#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:224
+#, fuzzy
+#| msgid "You are not permitted to save or edit this map."
+msgid "You are not permitted to save or edit this resource."
+msgstr "이 지도를 저장하거나 편집할 권한이 없습니다."
+
+#: geonode/proxy/views.py:223
+#, fuzzy
+#| msgid "requested you to download this resource"
+msgid "You are not authorized to download this resource."
+msgstr "이 리소스에 대한 다운로드를 요청했습니다"
+
+#: geonode/proxy/views.py:225
+msgid ""
+"No files have been found for this resource. Please, contact a system "
+"administrator."
+msgstr ""
+
+#: geonode/proxy/views.py:259 geonode/proxy/views.py:270
+#: geonode/proxy/views.py:371
+#, fuzzy
+#| msgid "Documents"
+msgid "No files found."
+msgstr "문서"
+
+#: geonode/proxy/views.py:379
+#, fuzzy
+#| msgid "Not provided"
+msgid "Not Authorized"
+msgstr "제공되지 않음"
+
+#: geonode/qgis_server/models.py:200
+#, fuzzy
+#| msgid "style name"
+msgid "style xml"
+msgstr "스타일 이름"
+
+#: geonode/qgis_server/models.py:201
+#, fuzzy
+#| msgid "sld url"
+msgid "style url"
+msgstr "sld url"
+
+#: geonode/qgis_server/models.py:203
+#, fuzzy
+#| msgid "sld url"
+msgid "style legend url"
+msgstr "sld url"
+
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:10
 msgid "Layer Style changed. Redirecting to apply changes..."
 msgstr ""
@@ -3210,14 +5219,6 @@ msgstr ""
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:13
 msgid "You may also use browser reload."
 msgstr ""
-
-#: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
-#: geonode/services/templates/services/service_resources_harvest.html:31
-#: geonode/templates/metadata_detail.html:130
-#: geonode/templates/metadata_detail.html:272
-#: geonode/templates/metadata_detail.html:353
-msgid "Name"
-msgstr "이름"
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:21
 #, fuzzy
@@ -3247,6 +5248,120 @@ msgstr "레이어 제거"
 msgid "Reload to see changes"
 msgstr ""
 
+#: geonode/qgis_server/views.py:266
+#, python-brace-format
+msgid ""
+"You should use a GIS software or a library which support TMS service to use "
+"this URL : {url}"
+msgstr ""
+
+#: geonode/security/middleware.py:128
+msgid "Session is Expired. Please login again!"
+msgstr ""
+
+#: geonode/services/enumerations.py:45
+msgid "Auto-detect"
+msgstr "자동 감지"
+
+#: geonode/services/enumerations.py:46
+msgid "Paired WMS/WFS/WCS"
+msgstr "페어 WMS / WFS / WCS"
+
+#: geonode/services/enumerations.py:47 geonode/services/forms.py:54
+msgid "Web Map Service"
+msgstr "Web Map Service"
+
+#: geonode/services/enumerations.py:48
+msgid "Catalogue Service"
+msgstr "카탈로그 서비스"
+
+#: geonode/services/enumerations.py:49 geonode/services/forms.py:58
+#, fuzzy
+#| msgid "ArcGIS REST Service"
+msgid "ArcGIS REST MapServer"
+msgstr "ArcGIS REST 서비스"
+
+#: geonode/services/enumerations.py:50
+#, fuzzy
+#| msgid "ArcGIS REST Service"
+msgid "ArcGIS REST ImageServer"
+msgstr "ArcGIS REST 서비스"
+
+#: geonode/services/enumerations.py:51 geonode/services/models.py:51
+msgid "OpenGeoPortal"
+msgstr "OpenGeoPortal"
+
+#: geonode/services/enumerations.py:52
+msgid "Harvard Geospatial Library"
+msgstr "Harvard Geospatial Library"
+
+#: geonode/services/enumerations.py:53 geonode/services/forms.py:55
+#, fuzzy
+#| msgid "GeoNode's Web Services"
+msgid "GeoNode (Web Map Service)"
+msgstr "GeoNode 웹 서비스"
+
+#: geonode/services/enumerations.py:54
+#, fuzzy
+#| msgid "Catalogue Service"
+msgid "GeoNode (Catalogue Service)"
+msgstr "카탈로그 서비스"
+
+#: geonode/services/forms.py:37
+msgid "Service URL"
+msgstr "서비스 URL"
+
+#: geonode/services/forms.py:50
+msgid "Service Type"
+msgstr "서비스 유형"
+
+#: geonode/services/forms.py:72
+#, fuzzy, python-format
+#| msgid "service interfaces"
+msgid "Service %(url)s is already registered"
+msgstr "서비스 인터페이스"
+
+#: geonode/services/forms.py:88
+#, python-format
+msgid "Could not connect to the service at %(url)s"
+msgstr ""
+
+#: geonode/services/forms.py:93
+#, python-format
+msgid "Could not find importable resources for the service at %(url)s"
+msgstr ""
+
+#: geonode/services/forms.py:100
+#, python-format
+msgid "Found service of type %(found_type)s instead of %(service_type)s"
+msgstr ""
+
+#: geonode/services/models.py:46
+msgid "Local"
+msgstr "로컬"
+
+#: geonode/services/models.py:47
+msgid "Cascaded"
+msgstr "Cascaded"
+
+#: geonode/services/models.py:48
+msgid "Harvested"
+msgstr "Harvested"
+
+#: geonode/services/models.py:49
+msgid "Indexed"
+msgstr "Indexed"
+
+#: geonode/services/models.py:50
+msgid "Live"
+msgstr "라이브"
+
+#: geonode/services/models.py:211
+#, fuzzy
+#| msgid "Resources"
+msgid "Resource is queued"
+msgstr "자원"
+
 #: geonode/services/templates/services/remote_service_unavailable.html:5
 #, fuzzy
 #| msgid "Remote Services"
@@ -3264,11 +5379,6 @@ msgstr "서비스 이름"
 #| msgid "Point of Contact"
 msgid "Could not contact"
 msgstr "담당자"
-
-#: geonode/services/templates/services/service_detail.html:9
-#: geonode/services/templates/services/service_list.html:16
-msgid "URL"
-msgstr "URL"
 
 #: geonode/services/templates/services/service_detail.html:12
 #, fuzzy
@@ -3445,14 +5555,94 @@ msgstr ""
 msgid "Re-scan Service for new Resources"
 msgstr ""
 
-#: geonode/social/templates/social/_activity_item.html:31
-msgid "ago"
-msgstr "전"
+#: geonode/services/views.py:96
+#, fuzzy
+#| msgid "service interfaces"
+msgid "Service registered successfully"
+msgstr "서비스 인터페이스"
+
+#: geonode/services/views.py:193
+#, fuzzy
+#| msgid "A resource's download has been requested"
+msgid "The selected resources are being imported"
+msgstr "리소스의 다운로드가 요청되었습니다"
+
+#: geonode/services/views.py:194
+#, fuzzy
+#| msgid "A resource's download has been requested"
+msgid "The selected resources have been imported"
+msgstr "리소스의 다운로드가 요청되었습니다"
+
+#: geonode/services/views.py:224
+#, fuzzy
+#| msgid "A resource's download has been requested"
+msgid "Resource is already being processed"
+msgstr "리소스의 다운로드가 요청되었습니다"
+
+#: geonode/services/views.py:230
+msgid "Resource {} is being processed"
+msgstr ""
+
+#: geonode/services/views.py:259
+#, fuzzy
+#| msgid "Password changed successfully."
+msgid "Service rescanned successfully"
+msgstr "비밀번호가 성공적으로 변경되었습니다."
+
+#: geonode/services/views.py:329
+#, fuzzy
+#| msgid "You are not permitted to remove this service."
+msgid "You are not permitted to change this service."
+msgstr "이 서비스를 삭제할 권한이 없습니다."
+
+#: geonode/services/views.py:357
+msgid "You are not permitted to remove this service."
+msgstr "이 서비스를 삭제할 권한이 없습니다."
+
+#: geonode/services/views.py:368
+#, fuzzy
+#| msgid "Service has been created:"
+msgid "Service {} has been deleted"
+msgstr "서비스가 생성되었습니다:"
+
+#: geonode/social/signals.py:81
+msgid "created"
+msgstr "생성됨"
+
+#: geonode/social/signals.py:82 geonode/social/tests.py:102
+msgid "deleted"
+msgstr "삭제됨"
+
+#: geonode/social/signals.py:85
+msgid "updated"
+msgstr "수정됨"
+
+#: geonode/social/signals.py:95 geonode/social/tests.py:122
+msgid "added a comment"
+msgstr "댓글 추가"
+
+#: geonode/social/signals.py:97
+msgid "updated a comment"
+msgstr "댓글 수정"
+
+#: geonode/social/signals.py:103 geonode/social/signals.py:108
+#: geonode/social/tests.py:76
+msgid "uploaded"
+msgstr "업로드됨"
 
 #: geonode/social/templates/social/activity_list.html:4
 #: geonode/social/templates/social/activity_list.html:15
 msgid "Recent activity"
 msgstr "최근 활동"
+
+#: geonode/social/templatetags/social_tags.py:56
+msgid "to"
+msgstr "to"
+
+#: geonode/social/templatetags/social_tags.py:72 geonode/social/tests.py:125
+#: geonode/templates/_comments.html:31
+msgid "on"
+msgstr ":"
 
 #: geonode/templates/401.html:10
 msgid "Not Permitted"
@@ -3594,10 +5784,6 @@ msgid "Powered by"
 msgstr "제공 : "
 
 #: geonode/templates/500.html:199 geonode/templates/base.html:511
-msgid "GeoNode"
-msgstr "GeoNode"
-
-#: geonode/templates/500.html:199 geonode/templates/base.html:511
 msgid "version"
 msgstr "버전"
 
@@ -3623,16 +5809,12 @@ msgstr "기억하기"
 msgid "Menu"
 msgstr "메뉴"
 
-#: geonode/templates/500.html:266 geonode/templates/base.html:375
-msgid "Profile"
-msgstr "프로필"
-
 #: geonode/templates/500.html:267 geonode/templates/base.html:376
 msgid "Recent Activity"
 msgstr "최근 활동"
 
 #: geonode/templates/500.html:268 geonode/templates/base.html:380
-#: geonode/templates/user_messages/inbox.html:15
+#: geonode/templates/user_messages/inbox.html:16
 msgid "Inbox"
 msgstr "받은 편지함"
 
@@ -3690,10 +5872,6 @@ msgstr "댓글을 추가하려면 로그인하세요"
 #: geonode/templates/_comments.html:31
 msgid "By"
 msgstr " : "
-
-#: geonode/templates/_comments.html:31
-msgid "on"
-msgstr ":"
 
 #: geonode/templates/_comments.html:65
 msgid "Submit Comment"
@@ -3890,6 +6068,92 @@ msgstr "이메일"
 #: geonode/templates/account/email.html:62
 msgid "Do you really want to remove the selected e-mail address?"
 msgstr ""
+
+#: geonode/templates/account/email/email_confirmation_message.txt:1
+#, python-format
+msgid ""
+"Hello from %(site_name)s!\n"
+"\n"
+"You're receiving this e-mail because user %(user_display)s has given yours "
+"as an e-mail address to connect their account.\n"
+"\n"
+"To confirm this is correct, go to %(activate_url)s\n"
+msgstr ""
+
+#: geonode/templates/account/email/email_confirmation_message.txt:7
+#, python-format
+msgid ""
+"Thank you from %(site_name)s!\n"
+"%(site_domain)s"
+msgstr ""
+
+#: geonode/templates/account/email/email_confirmation_subject.txt:1
+#, fuzzy, python-format
+#| msgid "Confirm email address for %(site_name)s"
+msgid "Please confirm email address for %(site_name)s"
+msgstr "%(site_name)s의 이메일 주소 확인"
+
+#: geonode/templates/account/email/invite_user.txt:1
+#, python-format
+msgid "You have been invited to sign up at %(site_name)s."
+msgstr ""
+
+#: geonode/templates/account/email/invite_user_subject.txt:1
+#, fuzzy, python-format
+#| msgid "Confirm email address for %(site_name)s"
+msgid "Create an account on %(site_name)s"
+msgstr "%(site_name)s의 이메일 주소 확인"
+
+#: geonode/templates/account/email/password_change.txt:1
+msgid ""
+"This is the email notification to confirm your password has been changed on"
+msgstr ""
+
+#: geonode/templates/account/email/password_change_subject.txt:1
+#, fuzzy
+#| msgid "Change password: %s"
+msgid "Change password email notification"
+msgstr "비밀번호 변경: %s"
+
+#: geonode/templates/account/email/password_reset_key.txt:1
+#, fuzzy, python-format
+#| msgid ""
+#| "You're receiving this email because you or someone else has requested a "
+#| "password for your user account at %(site_name)s.\n"
+#| "It can be safely ignored if you did not request a password reset. Click "
+#| "the link below to reset your password.\n"
+#| "\n"
+#| "%(password_reset_url)s\n"
+msgid ""
+"Hello from %(site_name)s!\n"
+"\n"
+"You're receiving this e-mail because you or someone else has requested a "
+"password for your user account.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password."
+msgstr ""
+"당신이나 다른 사람이 %(site_name)s 의 사용자 계정에 대한 암호를 요청했기 때문"
+"에 이메일을 보내드립니다. 암호 재설정을 요청하지 않은 경우는 무시해도됩니다. "
+"암호를 재설정하려면 아래 링크를 클릭하십시오.\n"
+"\n"
+"%(password_reset_url)s\n"
+
+#: geonode/templates/account/email/password_reset_key.txt:8
+#, python-format
+msgid "In case you forgot, your username is %(username)s."
+msgstr ""
+
+#: geonode/templates/account/email/password_reset_key.txt:10
+#, python-format
+msgid ""
+"Thank you for using %(site_name)s!\n"
+"%(site_domain)s"
+msgstr ""
+
+#: geonode/templates/account/email/password_reset_key_subject.txt:1
+#, python-format
+msgid "[%(site_name)s] Password reset"
+msgstr "[%(site_name)s] 비밀번호 초기화"
 
 #: geonode/templates/account/email_confirm.html:6
 #: geonode/templates/account/email_confirm.html:10
@@ -4289,14 +6553,6 @@ msgstr "다음항목 삭제"
 msgid "GeoNode Search"
 msgstr "GeoNode 도움말"
 
-#: geonode/templates/base.html:314
-#: geonode/templates/search/_general_filters.html:76
-#: geonode/templates/search/_search_user_content.html:29
-#, fuzzy
-#| msgid "Categories"
-msgid "Group Categories"
-msgstr "카테고리"
-
 #: geonode/templates/base.html:495
 #, fuzzy
 #| msgid "Contact:"
@@ -4306,12 +6562,6 @@ msgstr "연락처:"
 #: geonode/templates/base.html:504
 msgid "Tel"
 msgstr ""
-
-#: geonode/templates/base.html:506
-#, fuzzy
-#| msgid "Email"
-msgid "E-mail"
-msgstr "이메일"
 
 #: geonode/templates/base.html:644
 #, fuzzy
@@ -5044,6 +7294,7 @@ msgid "Explore documents"
 msgstr "문서 검색"
 
 #: geonode/templates/index.html:96
+#: geonode/templates/pinax/notifications/account_approve/full.txt:1
 msgid "User"
 msgid_plural "Users"
 msgstr[0] "사용자"
@@ -5313,6 +7564,7 @@ msgid "Leave"
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:2
+#: geonode/templates/invitations/email/email_invite_message.txt:3
 msgid "Dear Sir/Madam,"
 msgstr ""
 
@@ -5329,6 +7581,7 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:8
+#: geonode/templates/invitations/email/email_invite_message.txt:9
 msgid ""
 "Once you receive the confirmation that your account is activated, you can "
 "notify"
@@ -5349,20 +7602,34 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:16
+#: geonode/templates/invitations/email/email_invite_message.txt:18
 msgid "We look forward to seeing you on the platform,"
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:17
+#: geonode/templates/invitations/email/email_invite_message.txt:20
 #, fuzzy
 #| msgid "GeoNode site admin"
 msgid "The GeoNode team."
 msgstr "GeoNode 사이트 관리자"
 
-#: geonode/templates/metadata_base.html:128
-#: geonode/templates/metadata_base.html:131
-#: geonode/templates/socialaccount/authentication_error.html:11
-msgid "Error"
+#: geonode/templates/invitations/email/email_invite_message.txt:5
+msgid "is inviting you to join"
 msgstr ""
+
+#: geonode/templates/invitations/email/email_invite_message.txt:7
+msgid "To do so, please register at"
+msgstr ""
+
+#: geonode/templates/invitations/email/email_invite_message.txt:9
+msgid "that you wish to join her/his group(s) through this link"
+msgstr ""
+
+#: geonode/templates/invitations/email/email_invite_message.txt:13
+#, fuzzy
+#| msgid "The following groups:"
+msgid "is a member of the following group(s)"
+msgstr "다음 그룹:"
 
 #: geonode/templates/metadata_base.html:149
 #, fuzzy
@@ -5397,12 +7664,6 @@ msgstr "돌아가기"
 msgid "Identification"
 msgstr "인증"
 
-#: geonode/templates/metadata_detail.html:102
-#, fuzzy
-#| msgid "Not provided"
-msgid "Approved"
-msgstr "제공되지 않음"
-
 #: geonode/templates/metadata_detail.html:103
 #: geonode/templates/metadata_detail.html:106
 #: geonode/templates/metadata_detail.html:109
@@ -5412,10 +7673,6 @@ msgstr "예"
 #: geonode/templates/metadata_detail.html:105
 msgid "Published"
 msgstr "게시됨"
-
-#: geonode/templates/metadata_detail.html:108
-msgid "Featured"
-msgstr "객체"
 
 #: geonode/templates/metadata_detail.html:133
 #: geonode/templates/metadata_detail.html:275
@@ -5485,6 +7742,324 @@ msgstr "메타데이터 페이지"
 msgid "Online Link"
 msgstr "온라인 연결"
 
+#: geonode/templates/pinax/notifications/account_active/account_active_message.txt:2
+#: geonode/templates/pinax/notifications/account_active/full.txt:2
+msgid "Your account has been approved and is now active."
+msgstr "당신의 계정이 승인되었고 현재 활성화 되었습니다."
+
+#: geonode/templates/pinax/notifications/account_active/account_active_message.txt:3
+#: geonode/templates/pinax/notifications/account_active/full.txt:3
+msgid "You can use the login form at"
+msgstr "로그인 폼 사용 가능"
+
+#: geonode/templates/pinax/notifications/account_active/account_active_subject.txt:1
+#, fuzzy
+#| msgid "Welcome"
+msgid "Welcome at"
+msgstr "시작하기"
+
+#: geonode/templates/pinax/notifications/account_active/short.txt:3
+#, fuzzy
+#| msgid "Your account is now active"
+msgid "Your account is now active"
+msgstr "계정이 활성화 상태입니다"
+
+#: geonode/templates/pinax/notifications/account_approve/full.txt:1
+msgid "has requested access to the site."
+msgstr "사이트에 액세스를 요청했습니다."
+
+#: geonode/templates/pinax/notifications/account_approve/full.txt:1
+msgid ""
+"You can enable access by setting the user as active on the admin section"
+msgstr "관리자 섹션에서 활성화된 사용자를 설정하여 액세스를 허용할 수 있습니다"
+
+#: geonode/templates/pinax/notifications/account_approve/short.txt:3
+msgid "A user has requested access to the site"
+msgstr "사용자가 이 사이트에 액세스를 요청헀습니"
+
+#: geonode/templates/pinax/notifications/document_approved/full.txt:2
+#, fuzzy
+#| msgid "The following document was updated"
+msgid "The following document was approved"
+msgstr "다음 문서를 갱신했습니다"
+
+#: geonode/templates/pinax/notifications/document_approved/full.txt:3
+#: geonode/templates/pinax/notifications/document_deleted/full.txt:3
+#: geonode/templates/pinax/notifications/document_published/full.txt:3
+#: geonode/templates/pinax/notifications/document_rated/full.txt:5
+#: geonode/templates/pinax/notifications/document_updated/full.txt:3
+#: geonode/templates/pinax/notifications/layer_approved/full.txt:3
+#: geonode/templates/pinax/notifications/layer_deleted/full.txt:3
+#: geonode/templates/pinax/notifications/layer_published/full.txt:3
+#: geonode/templates/pinax/notifications/layer_rated/full.txt:5
+#: geonode/templates/pinax/notifications/layer_updated/full.txt:3
+#: geonode/templates/pinax/notifications/map_approved/full.txt:3
+#: geonode/templates/pinax/notifications/map_deleted/full.txt:3
+#: geonode/templates/pinax/notifications/map_published/full.txt:3
+#: geonode/templates/pinax/notifications/map_rated/full.txt:5
+#: geonode/templates/pinax/notifications/map_updated/full.txt:3
+msgid "owned by"
+msgstr "소유자: "
+
+#: geonode/templates/pinax/notifications/document_approved/full.txt:4
+#: geonode/templates/pinax/notifications/document_comment/full.txt:3
+#: geonode/templates/pinax/notifications/document_created/full.txt:4
+#: geonode/templates/pinax/notifications/document_published/full.txt:4
+#: geonode/templates/pinax/notifications/document_updated/full.txt:4
+msgid "You can visit the document's detail page here"
+msgstr "여기에서 문서의 상세정보 페이지를 방문할 수 있습니다"
+
+#: geonode/templates/pinax/notifications/document_approved/short.txt:3
+#, fuzzy
+#| msgid "A document has been rated"
+msgid "A document has been approved"
+msgstr "문서에 평점이 주어졌습니다"
+
+#: geonode/templates/pinax/notifications/document_comment/full.txt:2
+msgid "A comment has been posted for the document"
+msgstr "이 문서에 댓글이 게시되었습니다"
+
+#: geonode/templates/pinax/notifications/document_comment/full.txt:2
+#: geonode/templates/pinax/notifications/layer_comment/full.txt:2
+#: geonode/templates/pinax/notifications/map_comment/full.txt:3
+msgid "by the user"
+msgstr "사용자에 의해"
+
+#: geonode/templates/pinax/notifications/document_comment/short.txt:3
+msgid "A comment has been posted for a document"
+msgstr "문서에 댓글이 게시되었습니다"
+
+#: geonode/templates/pinax/notifications/document_created/full.txt:2
+#: geonode/templates/pinax/notifications/document_rated/full.txt:2
+#: geonode/templates/pinax/notifications/layer_created/full.txt:2
+#: geonode/templates/pinax/notifications/layer_rated/full.txt:2
+#: geonode/templates/pinax/notifications/map_created/full.txt:2
+#: geonode/templates/pinax/notifications/map_rated/full.txt:2
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
+msgid "The user"
+msgstr "사용자가"
+
+#: geonode/templates/pinax/notifications/document_created/full.txt:2
+msgid "uploaded the following document"
+msgstr "다음 문서를 갱신했습니다"
+
+#: geonode/templates/pinax/notifications/document_created/short.txt:3
+msgid "A document has been uploaded"
+msgstr "문서가 갱신되었습니다"
+
+#: geonode/templates/pinax/notifications/document_deleted/full.txt:2
+msgid "The following document was deleted"
+msgstr "다음 문서를 삭제했습니다"
+
+#: geonode/templates/pinax/notifications/document_deleted/short.txt:3
+msgid "A document has been deleted"
+msgstr "문서가 삭제되었습니다"
+
+#: geonode/templates/pinax/notifications/document_published/full.txt:2
+#, fuzzy
+#| msgid "The following document was deleted"
+msgid "The following document was published"
+msgstr "다음 문서를 삭제했습니다"
+
+#: geonode/templates/pinax/notifications/document_published/short.txt:3
+#, fuzzy
+#| msgid "A document has been uploaded"
+msgid "A document has been published"
+msgstr "문서가 갱신되었습니다"
+
+#: geonode/templates/pinax/notifications/document_rated/full.txt:3
+#: geonode/templates/pinax/notifications/layer_rated/full.txt:3
+#: geonode/templates/pinax/notifications/map_rated/full.txt:3
+msgid "rated"
+msgstr "평점"
+
+#: geonode/templates/pinax/notifications/document_rated/full.txt:4
+msgid "the following document"
+msgstr "다음 문서"
+
+#: geonode/templates/pinax/notifications/document_rated/full.txt:6
+#: geonode/templates/pinax/notifications/layer_approved/full.txt:4
+#: geonode/templates/pinax/notifications/layer_comment/full.txt:3
+#: geonode/templates/pinax/notifications/layer_created/full.txt:4
+#: geonode/templates/pinax/notifications/layer_published/full.txt:4
+#: geonode/templates/pinax/notifications/layer_rated/full.txt:6
+#: geonode/templates/pinax/notifications/layer_updated/full.txt:4
+msgid "You can visit the layer's detail page here"
+msgstr "여기에서 레이어의 상세 페이지를 방문할 수 있습니다"
+
+#: geonode/templates/pinax/notifications/document_rated/short.txt:3
+msgid "A document has been rated"
+msgstr "문서에 평점이 주어졌습니다"
+
+#: geonode/templates/pinax/notifications/document_updated/full.txt:2
+msgid "The following document was updated"
+msgstr "다음 문서를 갱신했습니다"
+
+#: geonode/templates/pinax/notifications/document_updated/short.txt:3
+msgid "A document has been updated"
+msgstr "문서가 갱신되었습니다"
+
+#: geonode/templates/pinax/notifications/email_body.txt:3
+#, fuzzy
+#| msgid "You have the following incomplete uploads"
+msgid "You have received the following notice from"
+msgstr "다음과 같은 불완전한 업로드가 있습니다"
+
+#: geonode/templates/pinax/notifications/email_body.txt:8
+msgid "To change how you receive notifications, please go to"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/email_subject.txt:1
+#, python-format
+msgid "[%(current_site)s] %(message)s"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/full.txt:1
+#: geonode/templates/pinax/notifications/short.txt:1
+#, fuzzy, python-format
+#| msgid "Notices"
+msgid "%(notice)s"
+msgstr "Notices"
+
+#: geonode/templates/pinax/notifications/layer_approved/full.txt:2
+#, fuzzy
+#| msgid "The following layer was updated"
+msgid "The following layer was approved"
+msgstr "다음 레이어가 갱신되었습니다"
+
+#: geonode/templates/pinax/notifications/layer_approved/short.txt:3
+#, fuzzy
+#| msgid "A layer has been rated"
+msgid "A layer has been approved"
+msgstr "레이어에 평점이 주어졌습니다"
+
+#: geonode/templates/pinax/notifications/layer_comment/full.txt:2
+msgid "A comment has been posted for the layer"
+msgstr "레이어에 댓글이 게시되었습니다"
+
+#: geonode/templates/pinax/notifications/layer_comment/short.txt:3
+msgid "A comment has been posted for a layer"
+msgstr "레이어에 댓글이 게시되었습니다"
+
+#: geonode/templates/pinax/notifications/layer_created/full.txt:2
+msgid "uploaded the following layer"
+msgstr "다음 레이어를 업로드했습니다"
+
+#: geonode/templates/pinax/notifications/layer_created/short.txt:3
+msgid "A new layer has been uploaded"
+msgstr "새로운 레이어를 업로드했습니다"
+
+#: geonode/templates/pinax/notifications/layer_deleted/full.txt:2
+msgid "The following layer was deleted"
+msgstr "다음 레이어가 삭제되었습니다"
+
+#: geonode/templates/pinax/notifications/layer_deleted/short.txt:3
+msgid "A layer has been deleted"
+msgstr "레이어를 삭제했습니다"
+
+#: geonode/templates/pinax/notifications/layer_published/full.txt:2
+#, fuzzy
+#| msgid "The following layer was deleted"
+msgid "The following layer was published"
+msgstr "다음 레이어가 삭제되었습니다"
+
+#: geonode/templates/pinax/notifications/layer_published/short.txt:3
+#, fuzzy
+#| msgid "A layer has been deleted"
+msgid "A layer has been published"
+msgstr "레이어를 삭제했습니다"
+
+#: geonode/templates/pinax/notifications/layer_rated/full.txt:4
+msgid "the following layer"
+msgstr "다음 레이어"
+
+#: geonode/templates/pinax/notifications/layer_rated/short.txt:3
+msgid "A layer has been rated"
+msgstr "레이어에 평점이 주어졌습니다"
+
+#: geonode/templates/pinax/notifications/layer_updated/full.txt:2
+msgid "The following layer was updated"
+msgstr "다음 레이어가 갱신되었습니다"
+
+#: geonode/templates/pinax/notifications/layer_updated/short.txt:3
+msgid "A layer has been updated"
+msgstr "레이어를 갱신했습니다"
+
+#: geonode/templates/pinax/notifications/map_approved/full.txt:2
+#, fuzzy
+#| msgid "The following map was updated"
+msgid "The following map was approved"
+msgstr "다음 지도가 갱신되었습니다"
+
+#: geonode/templates/pinax/notifications/map_approved/full.txt:4
+#: geonode/templates/pinax/notifications/map_comment/full.txt:4
+#: geonode/templates/pinax/notifications/map_created/full.txt:4
+#: geonode/templates/pinax/notifications/map_published/full.txt:4
+#: geonode/templates/pinax/notifications/map_rated/full.txt:6
+#: geonode/templates/pinax/notifications/map_updated/full.txt:4
+msgid "You can visit the map's detail page here"
+msgstr "여기에서 지도 상세정보 페이지를 방문할 수 있습니다"
+
+#: geonode/templates/pinax/notifications/map_approved/short.txt:3
+#, fuzzy
+#| msgid "A map has been rated"
+msgid "A map has been approved"
+msgstr "지도에 평점이 주어졌습니다"
+
+#: geonode/templates/pinax/notifications/map_comment/full.txt:2
+msgid "A comment has been posted for the map"
+msgstr "지도에 댓글이 게시되었습니다"
+
+#: geonode/templates/pinax/notifications/map_comment/short.txt:3
+msgid "A comment has been posted for a map"
+msgstr "지도에 댓글이 게시되었습니다"
+
+#: geonode/templates/pinax/notifications/map_created/full.txt:2
+msgid "created the following map"
+msgstr "다음 지도가 생성되었습니다"
+
+#: geonode/templates/pinax/notifications/map_created/short.txt:3
+msgid "A map has been created"
+msgstr "지도를 생성했습니다"
+
+#: geonode/templates/pinax/notifications/map_deleted/full.txt:2
+msgid "The following map was deleted"
+msgstr "다음 지도를 삭제했습니다"
+
+#: geonode/templates/pinax/notifications/map_deleted/short.txt:3
+msgid "A map has been deleted"
+msgstr "지도를 삭제했습니다"
+
+#: geonode/templates/pinax/notifications/map_published/full.txt:2
+#, fuzzy
+#| msgid "The following map was deleted"
+msgid "The following map was published"
+msgstr "다음 지도를 삭제했습니다"
+
+#: geonode/templates/pinax/notifications/map_published/short.txt:3
+#, fuzzy
+#| msgid "A map has been deleted"
+msgid "A map has been published"
+msgstr "지도를 삭제했습니다"
+
+#: geonode/templates/pinax/notifications/map_rated/full.txt:4
+#, fuzzy
+#| msgid "the following layer"
+msgid "the following map"
+msgstr "다음 레이어"
+
+#: geonode/templates/pinax/notifications/map_rated/short.txt:3
+msgid "A map has been rated"
+msgstr "지도에 평점이 주어졌습니다"
+
+#: geonode/templates/pinax/notifications/map_updated/full.txt:2
+msgid "The following map was updated"
+msgstr "다음 지도가 갱신되었습니다"
+
+#: geonode/templates/pinax/notifications/map_updated/short.txt:3
+msgid "A map has been updated"
+msgstr "지도가 갱신되었습니다"
+
 #: geonode/templates/pinax/notifications/notice_settings.html:7
 #: geonode/templates/pinax/notifications/notice_settings.html:10
 msgid "Notification Settings"
@@ -5512,9 +8087,20 @@ msgstr ""
 msgid "Notification Type"
 msgstr "알림 유형"
 
-#: geonode/templates/pinax/notifications/notice_settings.html:51
-msgid "Change"
-msgstr "변경"
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
+msgid "requested you to download this resource"
+msgstr "이 리소스에 대한 다운로드를 요청했습니다"
+
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:9
+msgid ""
+"Please go to resource page and assign the download permissions if you wish"
+msgstr "원한다면 리소스 페이지로 이동하여 문서 권한을 승인하십시오"
+
+#: geonode/templates/pinax/notifications/request_download_resourcebase/short.txt:3
+#, fuzzy
+#| msgid "A document has been deleted"
+msgid "A resource's download has been requested"
+msgstr "문서가 삭제되었습니다"
 
 #: geonode/templates/privacy-cookies.html:4
 #: geonode/templates/privacy-cookies.html:8
@@ -5595,10 +8181,6 @@ msgstr "더이상 없음"
 msgid "%(to_user_username)s's profile"
 msgstr "%(to_user_username)s 프로필"
 
-#: geonode/templates/search/_general_filters.html:4
-msgid "Categories"
-msgstr "카테고리"
-
 #: geonode/templates/search/_general_filters.html:30
 msgid "Responsibles"
 msgstr ""
@@ -5654,7 +8236,7 @@ msgstr "문서"
 msgid "search"
 msgstr "검색"
 
-#: geonode/templates/search/_search_user_content.html:51
+#: geonode/templates/search/_search_user_content.html:50
 msgid "Total"
 msgstr ""
 
@@ -5786,36 +8368,15 @@ msgstr ""
 msgid "Sign up with"
 msgstr "가입"
 
-#: geonode/templates/user_messages/_message_snippet.html:9
-msgid "From"
-msgstr "Ji"
-
-#: geonode/templates/user_messages/_message_snippet.html:10
-msgid "Subject"
-msgstr "주제"
-
-#: geonode/templates/user_messages/_message_snippet.html:11
-msgid "Last Sender"
-msgstr "마지막으로 보낸 사람"
-
-#: geonode/templates/user_messages/_message_snippet.html:13
-msgid "Delete?"
-msgstr "삭제하시겠습니까?"
-
-#: geonode/templates/user_messages/_message_snippet.html:50
-#: geonode/templates/user_messages/thread_detail.html:14
-msgid "me"
-msgstr "나"
-
-#: geonode/templates/user_messages/inbox.html:6
+#: geonode/templates/user_messages/inbox.html:7
 msgid "Message Inbox"
 msgstr "메세지 보관함"
 
-#: geonode/templates/user_messages/inbox.html:11
+#: geonode/templates/user_messages/inbox.html:12
 msgid "Messages"
 msgstr "메세지"
 
-#: geonode/templates/user_messages/inbox.html:38
+#: geonode/templates/user_messages/inbox.html:63
 #: geonode/templates/user_messages/message_create.html:6
 #: geonode/templates/user_messages/message_create.html:9
 msgid "Create Message"
@@ -5826,308 +8387,160 @@ msgid "Send message"
 msgstr "메세지 보내기"
 
 #: geonode/templates/user_messages/message_create.html:22
-#: geonode/templates/user_messages/thread_detail.html:32
+#: geonode/templates/user_messages/thread_detail.html:46
 msgid "Back to Inbox"
 msgstr "보관함으로 돌아가기"
 
-#: geonode/templates/user_messages/thread_detail.html:14
+#: geonode/templates/user_messages/thread_detail.html:9
+#, fuzzy
+#| msgid "Message Inbox"
+msgid "A message to"
+msgstr "메세지 보관함"
+
+#: geonode/templates/user_messages/thread_detail.html:11
+msgid "Send to"
+msgstr "보내기"
+
+#: geonode/templates/user_messages/thread_detail.html:28
 msgid "by"
 msgstr ""
 
-#: geonode/templates/user_messages/thread_detail.html:18
+#: geonode/templates/user_messages/thread_detail.html:32
 #, fuzzy
 #| msgid "Send message"
 msgid "You have no messages"
 msgstr "메세지 보내기"
 
-#: geonode/templates/user_messages/thread_detail.html:26
+#: geonode/templates/user_messages/thread_detail.html:40
 msgid "Send Reply"
 msgstr "답장 보내기"
 
-#~ msgid "Request to download a resource"
-#~ msgstr "리소스를 다운로드하기 위해 요청"
-
-#~ msgid "A request for downloading a resource was sent"
-#~ msgstr "리소스를 다운로드하기 위한 요청을 보냈습니다"
-
-#~ msgid "series"
-#~ msgstr "시리즈"
-
-#~ msgid "computer program or routine"
-#~ msgstr "컴퓨터 프로그램 또는 루틴"
-
-#~ msgid "feature type"
-#~ msgstr "객체 유형"
-
-#~ msgid "copy or imitation of an existing or hypothetical object"
-#~ msgstr "기존 또는 가상 객체의 복사 또는 모방"
-
-#~ msgid "collection hardware"
-#~ msgstr "수집 하드웨어"
-
-#~ msgid "collection session"
-#~ msgstr "수집 세션"
-
-#~ msgid "non-geographic data"
-#~ msgstr "비 공간 데이터"
-
-#~ msgid "property type"
-#~ msgstr "속성 유형"
-
-#~ msgid "field session"
-#~ msgstr "필드 세션"
-
-#~ msgid "attribute class"
-#~ msgstr "속성 클래스"
-
-#~ msgid "characteristic of a feature"
-#~ msgstr "객체의 특성"
-
-#~ msgid "tile or spatial subset of geographic data"
-#~ msgstr "타일 또는 지리 데이터의 공간적 집합"
-
-#~ msgid "feature"
-#~ msgstr "객체"
-
-#~ msgid "dimension group"
-#~ msgstr "차원 그룹"
-
-#~ msgid "frequency of maintenance for the data is not known"
-#~ msgstr "데이터에 대한 갱신 주기가 알려져 있지 않습니다"
-
-#~ msgid "data is repeatedly and frequently updated"
-#~ msgstr "데이터가 반복적으로 자주 갱신됩니다"
-
-#~ msgid "there are no plans to update the data"
-#~ msgstr "데이터를 갱신할 계획이 없습니다"
-
-#~ msgid "data is updated each day"
-#~ msgstr "데이터가 매일 갱신됩니다"
-
-#~ msgid "data is updated every year"
-#~ msgstr "데이터가 매년 갱신됩니다"
-
-#~ msgid "data is updated as deemed necessary"
-#~ msgstr "데이터가 필요하다고 인정될 때 갱신됩니다"
-
-#~ msgid "data is updated each month"
-#~ msgstr "데이터가 매월 갱신됩니다"
-
-#~ msgid "data is updated every two weeks"
-#~ msgstr "데이터가 격주로 갱신됩니다"
-
-#~ msgid "data is updated in intervals that are uneven in duration"
-#~ msgstr "데이터가 불규칙적으로 갱신됩니다"
-
-#~ msgid "data is updated on a weekly basis"
-#~ msgstr "데이터가 매주 갱신됩니다"
-
-#~ msgid "data is updated twice each year"
-#~ msgstr "데이터가 매년 2회 갱신됩니다"
-
-#~ msgid "data is updated every three months"
-#~ msgstr "데이터가 3개월마다 갱신됩니다"
-
-#~ msgid "No information provided"
-#~ msgstr "제공된 정보가 없습니다"
-
-#~ msgid "Category is required."
-#~ msgstr "카테고리가 필요합니다."
-
-#~ msgid "Owner"
-#~ msgstr "소유자"
-
-#~ msgid "temporal extent start"
-#~ msgstr "시간적 범위 시작"
-
-#~ msgid "temporal extent end"
-#~ msgstr "시간적 범위 끝"
-
-#~ msgid "Person outside GeoNode (fill form)"
-#~ msgstr "GeoNode의 외부인 (양식 작성)"
-
+#: geonode/themes/apps.py:28
 #, fuzzy
-#~| msgid "Keywords"
-#~ msgid "Free-text Keywords"
-#~ msgstr "키워드"
+#| msgid "GeoNode Help"
+msgid "GeoNode Themes Library"
+msgstr "GeoNode 도움말"
 
+#: geonode/upload/files.py:262
+msgid "Could not access to uploaded data."
+msgstr ""
+
+#: geonode/upload/files.py:301
+msgid ""
+"One or more XML files was provided, but no matching files were found for "
+"them."
+msgstr ""
+
+#: geonode/upload/files.py:310
+msgid ""
+"One or more SLD files was provided, but no matching files were found for "
+"them."
+msgstr ""
+
+#: geonode/upload/upload_validators.py:66
+msgid "Invalid zip file detected"
+msgstr ""
+
+#: geonode/upload/upload_validators.py:82
+msgid "Could not find any valid spatial file inside the uploaded zip"
+msgstr ""
+
+#: geonode/upload/upload_validators.py:85
+msgid "Invalid kmz file detected"
+msgstr ""
+
+#: geonode/upload/upload_validators.py:89
 #, fuzzy
-#~| msgid "A space or comma-separated list of keywords"
-#~ msgid ""
-#~ "A space or comma-separated list of keywords. Use the widget to select "
-#~ "from Hierarchical tree."
-#~ msgstr "공백 또는 쉼표로 구분된 키워드 목록"
+#| msgid "Could not find any layers in a compatible projection."
+msgid "Could not find any kml files inside the uploaded kmz"
+msgstr "호환되는 좌표체계에서 어떤 레이어도 찾을 수 없습니다."
 
-#~ msgid "function performed by the responsible party"
-#~ msgstr "책임 집단이 수행하는 기능"
+#: geonode/upload/upload_validators.py:124
+msgid "Only one shapefile per zip is allowed"
+msgstr ""
 
-#~ msgid "reference date for the cited resource"
-#~ msgstr "인용된 자원에 대한 참조 날짜"
+#: geonode/upload/upload_validators.py:170
+msgid "kml files with more than one GroundOverlay are not supported"
+msgstr ""
 
-#~ msgid "identification of when a given event occurred"
-#~ msgstr "지정된 이벤트가 발생했을 때의 식별자"
+#: geonode/upload/upload_validators.py:181
+msgid "Ground overlay image declared in kml file cannot be found"
+msgstr ""
 
-#~ msgid "version of the cited resource"
-#~ msgstr "인용된 자원의 버전"
+#: geonode/upload/upload_validators.py:218
+msgid "Only one kml file per ZIP is allowed"
+msgstr ""
 
-#~ msgid "brief narrative summary of the content of the resource(s)"
-#~ msgstr "자원(들)의 내용에 대한 간단한 요약"
+#: geonode/upload/upload_validators.py:233
+msgid "Only one kml file per kmz is allowed"
+msgstr ""
 
-#~ msgid "summary of the intentions with which the resource(s) was developed"
-#~ msgstr "자원(들)을 개발하는데 사용된 목적 요약"
+#: geonode/upload/upload_validators.py:287
+msgid ""
+"You are trying to upload multiple GeoTIFFs without a valid 'indexer."
+"properties' file."
+msgstr ""
 
-#~ msgid ""
-#~ "frequency with which modifications and deletions are made to the data "
-#~ "after it is first produced"
-#~ msgstr "데이터가 처음 생성된 후 수정 또는 삭제되는 주기"
+#: geonode/upload/upload_validators.py:292
+msgid "Only one raster file per ZIP is allowed"
+msgstr ""
 
-#~ msgid ""
-#~ "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-#~ "the subject (space or comma-separated"
-#~ msgstr ""
-#~ "주제를 설명하는 데 사용되는 일반적으로 사용되는 단어(들) 또는 정형화된 단"
-#~ "어(들) 또는 구문(들) (공백 또는 쉼표로 구분 "
+#: geonode/upload/upload_validators.py:297
+msgid "No multiple rasters allowed"
+msgstr ""
 
-#, fuzzy
-#~| msgid ""
-#~| "commonly used word(s) or formalised word(s) or phrase(s) used to "
-#~| "describe the subject (space or comma-separated"
-#~ msgid ""
-#~ "formalised word(s) or phrase(s) from a fixed thesaurus used to describe "
-#~ "the subject (space or comma-separated"
-#~ msgstr ""
-#~ "주제를 설명하는 데 사용되는 일반적으로 사용되는 단어(들) 또는 정형화된 단"
-#~ "어(들) 또는 구문(들) (공백 또는 쉼표로 구분 "
+#: geonode/upload/utils.py:98
+msgid ""
+"To support the time step, you must enable the OGC_SERVER DATASTORE option"
+msgstr ""
 
-#~ msgid "keyword identifies a location"
-#~ msgstr "키워드는 위치를 식별합니다"
+#: geonode/upload/utils.py:261
+#, python-format
+msgid "Unsupported file type: %s"
+msgstr ""
 
-#~ msgid "limitation(s) placed upon the access or use of the data."
-#~ msgstr "데이터의 접근 또는 사용에 대한 제약사항(들)"
+#: geonode/upload/utils.py:526
+#, python-format
+msgid "File does not exist: %s"
+msgstr ""
 
-#~ msgid ""
-#~ "other restrictions and legal prerequisites for accessing and using the "
-#~ "resource or metadata"
-#~ msgstr ""
-#~ "자원 또는 메타데이터를 사용하거나 접근하기 위한 기타 제약사항 및 법적 전제"
-#~ "조건"
+#: geonode/upload/utils.py:583
+#, python-format
+msgid "unknown item state: %s"
+msgstr ""
 
-#~ msgid "license of the dataset"
-#~ msgstr "데이터셋의 라이센스"
+#: geonode/upload/utils.py:591
+#, python-format
+msgid "error during import: %s"
+msgstr ""
 
-#~ msgid "language used within the dataset"
-#~ msgstr "데이터셋에서 사용된 언어"
+#: geonode/upload/utils.py:701
+msgid "Could not find any valid Time Regex for the Mosaic files."
+msgstr ""
 
-#~ msgid ""
-#~ "high-level geographic data thematic classification to assist in the "
-#~ "grouping and search of available geographic data sets."
-#~ msgstr ""
-#~ "사용가능한 지리 데이터셋을 검색하거나 그룹화하기 위한 고수준 지리 데이터 "
-#~ "주제 분류"
+#: geonode/upload/utils.py:732 geonode/upload/utils.py:764
+msgid "Unsupported DataBase for Mosaics!"
+msgstr ""
 
-#~ msgid "method used to represent geographic information in the dataset."
-#~ msgstr "데이터셋의 지리 정보를 표현하는 방법"
+#: geonode/utils.py:87
+msgid "Invalid permission level."
+msgstr "유효하지 않은 권한 수준."
 
-#~ msgid "time period covered by the content of the dataset (start)"
-#~ msgstr "데이터셋에 포함된 시간적 범위(시작)"
+#: geonode/utils.py:967
+msgid "Permission Denied"
+msgstr "사용 권한이 거부되었습니다"
 
-#~ msgid "time period covered by the content of the dataset (end)"
-#~ msgstr "데이터셋에 포함된 시간적 범위(끝)"
+#~ msgid "From"
+#~ msgstr "Ji"
 
-#~ msgid ""
-#~ "general explanation of the data producer's knowledge about the lineage of "
-#~ "a dataset"
-#~ msgstr "데이터 연혁에 대한 데이터 생산자의 일반적인 설명"
+#~ msgid "Subject"
+#~ msgstr "주제"
 
-#~ msgid "title"
-#~ msgstr "제목"
+#~ msgid "Last Sender"
+#~ msgstr "마지막으로 보낸 사람"
 
-#~ msgid "name by which the cited resource is known"
-#~ msgstr "인용된 리소스를 식별하는 이름"
-
-#~ msgid "date"
-#~ msgstr "날짜"
-
-#~ msgid "date type"
-#~ msgstr "날짜 유형"
-
-#~ msgid "edition"
-#~ msgstr "판"
-
-#~ msgid "abstract"
-#~ msgstr "요약"
-
-#~ msgid "purpose"
-#~ msgstr "목적"
-
-#~ msgid "maintenance frequency"
-#~ msgstr "갱신 주기"
-
-#~ msgid "keywords"
-#~ msgstr "키워드"
-
-#~ msgid "keywords region"
-#~ msgstr "키워드 영역"
-
-#~ msgid "restrictions"
-#~ msgstr "제약사항"
-
-#~ msgid "restrictions other"
-#~ msgstr "기타 제약사항"
-
-#~ msgid "language"
-#~ msgstr "언어"
-
-#~ msgid "spatial representation type"
-#~ msgstr "공간 표현 유형"
-
-#~ msgid "supplemental information"
-#~ msgstr "부가 정보"
-
-#~ msgid "any other descriptive information about the dataset"
-#~ msgstr "데이터셋에 대한 또 다른 정보"
-
-#~ msgid "data quality statement"
-#~ msgstr "데이터 품질"
-
-#~ msgid "CSW typename"
-#~ msgstr "CSW 유형이름"
-
-#~ msgid "CSW schema"
-#~ msgstr "CSW 스키마"
-
-#~ msgid "CSW source"
-#~ msgstr "CSW 원본"
-
-#~ msgid "CSW insert date"
-#~ msgstr "CSW 입력 일자"
-
-#~ msgid "CSW type"
-#~ msgstr "CSW 유형"
-
-#~ msgid "CSW anytext"
-#~ msgstr "CSW 부가정보"
-
-#~ msgid "CSW WKT geometry"
-#~ msgstr "CSW WKT 지오메트리"
-
-#~ msgid "Should this resource be advertised in home page?"
-#~ msgstr "이 리소스를 홈페이지에 게재해야 합니까?"
-
-#~ msgid "Is Published"
-#~ msgstr "발행됨"
-
-#~ msgid "Should this resource be published and searchable?"
-#~ msgstr "이 리소스를 게시하고 검색할 수 있도록 합니까?"
-
-#~ msgid "For example \"kml\""
-#~ msgstr "예를 들어 \"kml\""
-
-#~ msgid "For example \"View in Google Earth\""
-#~ msgstr "예를 들어 \"구글 어스에서 보기\""
-
-#~ msgid "For example \"text/xml\""
-#~ msgstr "예를 들어  \"text/xml\""
+#~ msgid "Delete?"
+#~ msgstr "삭제하시겠습니까?"
 
 #~ msgid ""
 #~ "If you have any questions about the software or service, join our <a href="
@@ -6143,196 +8556,8 @@ msgstr "답장 보내기"
 #~ msgid "Getting Started"
 #~ msgstr "GeoNode 시작하기"
 
-#~ msgid "Bad HTTP Authorization Credentials."
-#~ msgstr "유효하지 않은 HTTP 인증 자격증명."
-
-#~ msgid "A Document was created"
-#~ msgstr "문서를 생성했습니다"
-
-#~ msgid "Document Updated"
-#~ msgstr "문서 갱신"
-
-#~ msgid "A Document was updated"
-#~ msgstr "문서를 갱신했습니다"
-
-#~ msgid "Document Deleted"
-#~ msgstr "문서 삭제"
-
-#~ msgid "A Document was deleted"
-#~ msgstr "문서를 삭제했습니다"
-
-#~ msgid "Comment on Document"
-#~ msgstr "문서 댓글"
-
-#~ msgid "A Document was commented on"
-#~ msgstr "문서에 댓글이 달렸습니다"
-
-#~ msgid "Document for Map"
-#~ msgstr "지도에 대한 문서"
-
-#~ msgid "A rating was given to a document"
-#~ msgstr "문서에 평점이 주어졌습니다"
-
-#~ msgid "Document must be a file or url."
-#~ msgstr "문서는 파일 또는 URL이어야 합니다."
-
-#~ msgid "A document cannot have both a file and a url."
-#~ msgstr "문서는 파일과 URL을 동시에 적용할 수 없습니다."
-
-#~ msgid "This file type is not allowed"
-#~ msgstr "이 파일 유형은 허용되지 않습니다"
-
-#~ msgid "Link to"
-#~ msgstr "링크 "
-
-#~ msgid "Permissions must be valid JSON."
-#~ msgstr "권한은 유효한 JSON이어야 합니다."
-
-#~ msgid "File"
-#~ msgstr "파일"
-
-#~ msgid "The URL of the document if it is external."
-#~ msgstr "외부 문서인 경우 문서의 URL."
-
 #~ msgid "This document is related to a "
 #~ msgstr "이 문서는 다음과 연결 : "
-
-#~ msgid "You are not permitted to delete this document"
-#~ msgstr "이 문서를 삭제할 권한이 없습니다"
-
-#~ msgid "You do not have permissions for this document."
-#~ msgstr "이 문서에 대한 권한이 없습니다"
-
-#~ msgid "You are not permitted to modify this document"
-#~ msgstr "이 문서를 수정할 권한이 없습니다"
-
-#~ msgid "You are not permitted to modify this document's metadata"
-#~ msgstr "이 문서의 메타데이터를 수정할 권한이 없습니다"
-
-#~ msgid "You are not permitted to view this document"
-#~ msgstr "이 문서를 볼 권한이 없습니다"
-
-#~ msgid "You are not allowed to view this document."
-#~ msgstr "이 문서를 볼 권한이 없습니다."
-
-#~ msgid "You are not allowed to edit this document."
-#~ msgstr "이 문서를 편집할 권한이 없습니다."
-
-#~ msgid "You must set a point of contact for this resource"
-#~ msgstr "이 자원에 대한 담당자를 설정"
-
-#~ msgid "You must set an author for this resource"
-#~ msgstr "이 자원에 대한 저자를 설정"
-
-#~ msgid "Layer Uploaded"
-#~ msgstr "업로드된 레이어"
-
-#~ msgid "Comment on Layer"
-#~ msgstr "레이어 댓글"
-
-#~ msgid "A layer was commented on"
-#~ msgstr "레이어에 대한 댓글이 게시"
-
-#~ msgid "Rating for Layer"
-#~ msgstr "레이어 평점"
-
-#~ msgid "A rating was given to a layer"
-#~ msgstr "레이어에 대한 평점이 주어짐"
-
-#~ msgid "No abstract provided"
-#~ msgstr "개요가 제공되지 않습니다"
-
-#~ msgid "An exception occurred loading data to PostGIS"
-#~ msgstr "PostGIS에 데이터를 로딩하는 중 오류가 발생했습니다"
-
-#~ msgid " Additionally an error occured during database cleanup"
-#~ msgstr "추가적으로 데이터베이스를 정리하는 중 오류가 발생했습니다"
-
-#~ msgid "GZIP"
-#~ msgstr "GZIP"
-
-#~ msgid "GeoTIFF"
-#~ msgstr "GeoTIFF"
-
-#~ msgid "Zipped Shapefile"
-#~ msgstr "Zip 압축 Shapefile"
-
-#~ msgid "GML 2.0"
-#~ msgstr "GML 2.0"
-
-#~ msgid "GML 3.1.1"
-#~ msgstr "GML 3.1.1"
-
-#~ msgid "CSV"
-#~ msgstr "CSV"
-
-#~ msgid "Excel"
-#~ msgstr "Excel"
-
-#~ msgid "GeoJSON"
-#~ msgstr "GeoJSON"
-
-#~ msgid "JPEG"
-#~ msgstr "JPEG"
-
-#~ msgid "PDF"
-#~ msgstr "PDF"
-
-#~ msgid "PNG"
-#~ msgstr "PNG"
-
-#~ msgid "You don't have permissions to change style for this layer"
-#~ msgstr "이 레이어의 스타일을 변경할 수 있는 권한이 없습니다"
-
-#~ msgid ""
-#~ "a short version of the name consisting only of letters, numbers, "
-#~ "underscores and hyphens."
-#~ msgstr "문자, 숫자, 밑줄 및 하이픈으로 구성된 짧은 버전의 이름"
-
-#~ msgid "A group already exists with that slug."
-#~ msgstr "이 슬러그의 그룹이 이미 있습니다."
-
-#~ msgid "A group already exists with that name."
-#~ msgstr "이 이름의 그룹이 이미 있습니다."
-
-#~ msgid "Public"
-#~ msgstr "공개"
-
-#~ msgid "Public (invite-only)"
-#~ msgstr "공개(초대 전용)"
-
-#~ msgid "Private"
-#~ msgstr "비공개"
-
-#~ msgid ""
-#~ "Public: Any registered user can view and join a public group.<br>Public "
-#~ "(invite-only):Any registered user can view the group.  Only invited users "
-#~ "can join.<br>Private: Registered users cannot see any details about the "
-#~ "group, including membership.  Only invited users can join."
-#~ msgstr ""
-#~ "공개: 모든 등록된 사용자가 공개 그룹을 보거나 가입할 수 있습니다.<br>공개 "
-#~ "(초대 전용): 모든 등록된 사용자가 그룹을 볼 수 있습니다. 초대받은 사용자"
-#~ "만 가입할 수 있습니다.<br>비공개: 등록된 사용자는 회원정보를 포함한 그룹"
-#~ "의 상세정보를 볼 수 없습니다. 초대받은 사용자만 가입할 수 있습니다."
-
-#~ msgid ""
-#~ "Email used to contact one or all group members, such as a mailing list, "
-#~ "shared email, or exchange group."
-#~ msgstr ""
-#~ "메일링 리스트, 공유 이메일 또는 익스체인지 그룹과 같은 하나 또는 모든 그"
-#~ "룹 구성원과 연락하는데 사용되는 이메일."
-
-#~ msgid "Logo"
-#~ msgstr "로고"
-
-#~ msgid "A space or comma-separated list of keywords"
-#~ msgstr "공백 또는 쉼표로 구분된 키워드 목록"
-
-#~ msgid "Access"
-#~ msgstr "접근"
-
-#~ msgid "Member"
-#~ msgstr "회원"
 
 #~ msgid "Sent"
 #~ msgstr "전송"
@@ -6345,125 +8570,6 @@ msgstr "답장 보내기"
 
 #~ msgid "Don't Join"
 #~ msgstr "가입 금지"
-
-#~ msgid "Layer Created"
-#~ msgstr "레이어 생성"
-
-#~ msgid "A Layer was created"
-#~ msgstr "레이어를 생성했습니다"
-
-#~ msgid "Layer Updated"
-#~ msgstr "레이어 갱신"
-
-#~ msgid "A Layer was updated"
-#~ msgstr "레이어를 갱신했습니다"
-
-#~ msgid "Layer Deleted"
-#~ msgstr "레이어 삭제"
-
-#~ msgid "A Layer was deleted"
-#~ msgstr "레이어를 삭제했습니다"
-
-#~ msgid "YYYYMMDD"
-#~ msgstr "YYYYMMDD"
-
-#~ msgid "YYYYMMDD'T'hhmmss"
-#~ msgstr "YYYYMMDD'T'hhmmss"
-
-#~ msgid "YYYYMMDD'T'hhmmss'Z'"
-#~ msgstr "YYYYMMDD'T'hhmmss'Z'"
-
-#~ msgid "style name"
-#~ msgstr "스타일 이름"
-
-#~ msgid "sld text"
-#~ msgstr "sld 텍스트"
-
-#~ msgid "sld version"
-#~ msgstr "sld 버전"
-
-#~ msgid "sld url"
-#~ msgstr "sld url"
-
-#~ msgid "File cannot be opened, maybe check the encoding"
-#~ msgstr "파일을 열 수 없습니다. 인코딩을 확인하십시오."
-
-#~ msgid "name of attribute as stored in shapefile/spatial database"
-#~ msgstr "shapefile/공간 데이터베이스에 저장된 속성 이름"
-
-#~ msgid "description of attribute to be used in metadata"
-#~ msgstr "메타데이터에 사용되는 속성에 대한 설명"
-
-#~ msgid "attribute label"
-#~ msgstr "속성 레이블"
-
-#~ msgid "title of attribute as displayed in GeoNode"
-#~ msgstr "GeoNode에 표시되는 속성 제목"
-
-#~ msgid "attribute type"
-#~ msgstr "속성 유형"
-
-#~ msgid "the data type of the attribute (integer, string, geometry, etc)"
-#~ msgstr "속성 데이터 유형(정수, 문자, 지오메트리 등)"
-
-#~ msgid "visible?"
-#~ msgstr "보이기?"
-
-#~ msgid "specifies if the attribute should be displayed in identify results"
-#~ msgstr "이 속성이 속성확인 결과에 표시될 것인지를 설정합니다"
-
-#~ msgid "display order"
-#~ msgstr "디스플레이 순서"
-
-#~ msgid ""
-#~ "specifies the order in which attribute should be displayed in identify "
-#~ "results"
-#~ msgstr "속성이 속성확인 결과에 표시될 순서를 설정"
-
-#~ msgid "count value for this field"
-#~ msgstr "이 필드의 갯수 값"
-
-#~ msgid "min"
-#~ msgstr "최소값"
-
-#~ msgid "minimum value for this field"
-#~ msgstr "이 필드의 최소값"
-
-#~ msgid "max"
-#~ msgstr "최대값"
-
-#~ msgid "maximum value for this field"
-#~ msgstr "이 필드의 최대값"
-
-#~ msgid "average"
-#~ msgstr "평균"
-
-#~ msgid "average value for this field"
-#~ msgstr "이 필드의 평균값"
-
-#~ msgid "median"
-#~ msgstr "중간값"
-
-#~ msgid "median value for this field"
-#~ msgstr "이 필드의 중간값"
-
-#~ msgid "standard deviation"
-#~ msgstr "표준편차"
-
-#~ msgid "standard deviation for this field"
-#~ msgstr "이 필드의 표준편차"
-
-#~ msgid "sum"
-#~ msgstr "합"
-
-#~ msgid "sum value for this field"
-#~ msgstr "이 필드의 합"
-
-#~ msgid "unique values for this field"
-#~ msgstr "이 필드의 고유값"
-
-#~ msgid "date when attribute statistics were last updated"
-#~ msgstr "속성 통계가 마지막으로 갱신된 날짜"
 
 #~ msgid "Replace Layer: "
 #~ msgstr "레이어 교체:"
@@ -6534,123 +8640,6 @@ msgstr "답장 보내기"
 #~ "모호성을 제거하려면, yyyy같이 자리수의 최대수를 나타내는 코드를 반복하십시"
 #~ "오"
 
-#~ msgid ""
-#~ "There was an error while attempting to upload your data. Please try "
-#~ "again, or contact and administrator if the problem continues."
-#~ msgstr ""
-#~ "데이터를 업로드하는 동안 오류가 발생했습니다. 다시 시도하거나, 문제가 지속"
-#~ "되면 관리자에게 문의하십시오."
-
-#~ msgid ""
-#~ "Note: this layer's orginal metadata was populated and preserved by "
-#~ "importing a metadata XML file. This metadata cannot be edited."
-#~ msgstr ""
-#~ "참고: 이 레이어의 원본 메타데이터는 메타데이터 XML 파일을 가져와서 생성되"
-#~ "었습니다. 이 메타데이터는 편집할 수 없습니다."
-
-#~ msgid "You are not permitted to delete this layer"
-#~ msgstr "이 레이어를 삭제할 권한이 없습니다."
-
-#~ msgid "You do not have permissions for this layer."
-#~ msgstr "이 레이어에 대한 권한이 없습니다."
-
-#~ msgid "You are not permitted to modify this layer"
-#~ msgstr "이 레이어를 수정할 권한이 없습니다."
-
-#~ msgid "You are not permitted to modify this layer's metadata"
-#~ msgstr "이 레이어의 메타데이터를 수정할 권한이 없습니다."
-
-#~ msgid "You are not permitted to view this layer"
-#~ msgstr "이 레이어를 볼 수 있는 권한이 없습니다."
-
-#~ msgid "You are attempting to replace a vector layer with a raster."
-#~ msgstr "벡터 레이어를 래스터 레이어로 변경하려 합니다."
-
-#~ msgid "You are attempting to replace a raster layer with a vector."
-#~ msgstr "래스터 레이어를 벡터 레이어로 변경하려 합니다."
-
-#~ msgid ""
-#~ "This layer is a member of a layer group, you must remove the layer from "
-#~ "the group before deleting."
-#~ msgstr ""
-#~ "이 레이어는 레이어 그룹에 포함되어 있습니다, 삭제하기 전 레이어 그룹에서 "
-#~ "레이어를 제거해야 합니다."
-
-#~ msgid "Map Created"
-#~ msgstr "생성된 지도"
-
-#~ msgid "Map Updated"
-#~ msgstr "지도 갱신"
-
-#~ msgid "Map Deleted"
-#~ msgstr "지도 삭제"
-
-#~ msgid "A Map was deleted"
-#~ msgstr "지도를 삭제했습니다"
-
-#~ msgid "Comment on Map"
-#~ msgstr "지도 댓글"
-
-#~ msgid "A map was commented on"
-#~ msgstr "지도에 대한 댓글 게시"
-
-#~ msgid "Rating for Map"
-#~ msgstr "지도 평점"
-
-#~ msgid "A rating was given to a map"
-#~ msgstr "지도에 대한 평점이 주어졌습니다"
-
-#~ msgid "zoom"
-#~ msgstr "확대"
-
-#~ msgid "projection"
-#~ msgstr "투영"
-
-#~ msgid "center X"
-#~ msgstr "중심 X"
-
-#~ msgid "center Y"
-#~ msgstr "중심 Y"
-
-#~ msgid "Site URL"
-#~ msgstr "사이트 URL"
-
-#~ msgid "Featured Map URL"
-#~ msgstr "주요지도 URL"
-
-#~ msgid "stack order"
-#~ msgstr "스택 순서"
-
-#~ msgid "name"
-#~ msgstr "이름"
-
-#~ msgid "opacity"
-#~ msgstr "투명"
-
-#~ msgid "styles"
-#~ msgstr "스타일"
-
-#~ msgid "transparent"
-#~ msgstr "투명"
-
-#~ msgid "fixed"
-#~ msgstr "고정"
-
-#~ msgid "visibility"
-#~ msgstr "보이기"
-
-#~ msgid "ows URL"
-#~ msgstr "ows URL"
-
-#~ msgid "layer params"
-#~ msgstr "레이어 파라미터"
-
-#~ msgid "source params"
-#~ msgstr "원본 파라미터"
-
-#~ msgid "JSON Configuration"
-#~ msgstr "JSON 구성"
-
 #~ msgid "Download Data Layers"
 #~ msgstr "데이터 레이어 다운로드"
 
@@ -6663,228 +8652,11 @@ msgstr "답장 보내기"
 #~ msgid "WMS layer group for local map layers"
 #~ msgstr "로컬 지도 레이어를 위한 WMS 레이어 그룹"
 
-#~ msgid "local OWS"
-#~ msgstr "로컬 OWS"
-
 #~ msgid "Publish local map layers as WMS layer group"
 #~ msgstr "로컬 지도 레이어를 WMS 레이어 그룹으로 발행"
 
 #~ msgid "Publish Map WMS"
 #~ msgstr "지도 WMS 발행"
-
-#~ msgid "You are not permitted to delete this map."
-#~ msgstr "이 지도를 삭제할 권한이 없습니다."
-
-#~ msgid "You do not have permissions for this map."
-#~ msgstr "이 지도에 대한 권한이 없습니다."
-
-#~ msgid "You must be logged in to save this map"
-#~ msgstr "지도를 저장하려면 로그인해야 합니다"
-
-#~ msgid "You are not permitted to save or edit this map."
-#~ msgstr "이 지도를 저장하거나 편집할 권한이 없습니다."
-
-#~ msgid "You are not allowed to modify this map's metadata."
-#~ msgstr "이 지도의 메타데이터를 수정할 권한이 없습니다."
-
-#~ msgid "You are not allowed to view this map."
-#~ msgstr "이 지도를 볼 수 있는 권한이 없습니다."
-
-#~ msgid "An unknown error has occured."
-#~ msgstr "알 수없는 오류가 발생했습니다."
-
-#~ msgid "User following you"
-#~ msgstr "팔로잉하는 사용자"
-
-#~ msgid "Another user has started following you"
-#~ msgstr "다른 사용자가 당신을 팔로잉합니다"
-
-#~ msgid "User requested access"
-#~ msgstr "사용자 액세스 요청"
-
-#~ msgid "A new user has requested access to the site"
-#~ msgstr "새로운 사용자가 이 사이트에 액세스를 요청했습니다"
-
-#~ msgid "This account is now active and can log in the site"
-#~ msgstr "이 계정은 현재 활성화되어 있고 사이트에 로그인 할 수 있습니다"
-
-#~ msgid "Personal info"
-#~ msgstr "개인 정보"
-
-#~ msgid "Important dates"
-#~ msgstr "주요 일정"
-
-#~ msgid "Extended profile"
-#~ msgstr "확장 프로필"
-
-#~ msgid "Password changed successfully."
-#~ msgstr "비밀번호가 성공적으로 변경되었습니다."
-
-#~ msgid "Change password: %s"
-#~ msgstr "비밀번호 변경: %s"
-
-#~ msgid "party who authored the resource"
-#~ msgstr "자원을 생성하는 집단"
-
-#~ msgid ""
-#~ "party who has processed the data in a manner such that the resource has "
-#~ "been modified"
-#~ msgstr "자원을 수정하는 것과 같은 방법으로 데이터를 처리하는 집단"
-
-#~ msgid "party who published the resource"
-#~ msgstr "자원을 발행하는 집단"
-
-#~ msgid ""
-#~ "party that accepts accountability and responsibility for the data and "
-#~ "ensures         appropriate care and maintenance of the resource"
-#~ msgstr ""
-#~ "데이터에 대한 책임과 책임을 수용하고 자원의 적절한 관리 및 유지 보수를 보"
-#~ "장하는 집단"
-
-#~ msgid ""
-#~ "party who can be contacted for acquiring knowledge about or acquisition "
-#~ "of the resource"
-#~ msgstr "자원에 대한 지식 또는 수집에 대한 교섭이 가능한 집단"
-
-#~ msgid "party who distributes the resource"
-#~ msgstr "자원을 분배하는 집단"
-
-#~ msgid "party who uses the resource"
-#~ msgstr "자원을 사용하는 집단"
-
-#~ msgid "party that supplies the resource"
-#~ msgstr "자원을 공급하는 집단"
-
-#~ msgid "party who created the resource"
-#~ msgstr "자원을 생성하는 집단"
-
-#~ msgid "party that owns the resource"
-#~ msgstr "자원을 소유하는 집단"
-
-#~ msgid ""
-#~ "key party responsible for gathering information and conducting research"
-#~ msgstr "연구를 수행하고 정보를 수집하는 책임이 있는 주요 집단"
-
-#~ msgid "Organization Name"
-#~ msgstr "기관명"
-
-#~ msgid "name of the responsible organization"
-#~ msgstr "담당 기관의 이름"
-
-#~ msgid "introduce yourself"
-#~ msgstr "자기 소개"
-
-#~ msgid "Position Name"
-#~ msgstr "직위명"
-
-#~ msgid "role or position of the responsible person"
-#~ msgstr "담당자의 역할 또는 직위"
-
-#~ msgid ""
-#~ "telephone number by which individuals can speak to the responsible "
-#~ "organization or individual"
-#~ msgstr "개인이 담당 기관이나 담당자에게 연락할 수 있는 전화번호"
-
-#~ msgid "Facsimile"
-#~ msgstr "팩스"
-
-#~ msgid ""
-#~ "telephone number of a facsimile machine for the responsible organization "
-#~ "or individual"
-#~ msgstr "개인이 담당 기관이나 담당자에게 연락할 수 있는 팩스번호"
-
-#~ msgid "Delivery Point"
-#~ msgstr "배달처"
-
-#~ msgid ""
-#~ "physical and email address at which the organization or individual may be "
-#~ "contacted"
-#~ msgstr "기관이나 조직에 연락할 수 있는 주소 및 이메일 주소"
-
-#~ msgid "City"
-#~ msgstr "도시"
-
-#~ msgid "city of the location"
-#~ msgstr "위치의 도시"
-
-#~ msgid "Administrative Area"
-#~ msgstr "행정구역"
-
-#~ msgid "state, province of the location"
-#~ msgstr "위치의 주, 지방 행정구역"
-
-#~ msgid "Postal Code"
-#~ msgstr "우편번호"
-
-#~ msgid "ZIP or other postal code"
-#~ msgstr "ZIP 또는 다른 우편 번호"
-
-#~ msgid "country of the physical address"
-#~ msgstr "물리적 주소의 국가"
-
-#~ msgid ""
-#~ "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-#~ "the subject             (space or comma-separated"
-#~ msgstr ""
-#~ "일반적으로 사용 된 단어 (들) 또는 공식화 할 단어 나 구 (들)은 피사체 (공"
-#~ "간 또는 쉼표로 구분을 설명하기 위해 사용"
-
-#~ msgid "Your username for "
-#~ msgstr "사용자 이름 "
-
-#~ msgid "Your username has been emailed to you."
-#~ msgstr "사용자 아이디가 이메일로 발송되었습니다."
-
-#~ msgid "No user could be found with that email address."
-#~ msgstr "해당 이메일 주소에 해당하는 사용자가 없습니다."
-
-#~ msgid "Auto-detect"
-#~ msgstr "자동 감지"
-
-#~ msgid "Paired WMS/WFS/WCS"
-#~ msgstr "페어 WMS / WFS / WCS"
-
-#~ msgid "Web Map Service"
-#~ msgstr "Web Map Service"
-
-#~ msgid "Catalogue Service"
-#~ msgstr "카탈로그 서비스"
-
-#~ msgid "ArcGIS REST Service"
-#~ msgstr "ArcGIS REST 서비스"
-
-#~ msgid "OpenGeoPortal"
-#~ msgstr "OpenGeoPortal"
-
-#~ msgid "Harvard Geospatial Library"
-#~ msgstr "Harvard Geospatial Library"
-
-#~ msgid "Local"
-#~ msgstr "로컬"
-
-#~ msgid "Cascaded"
-#~ msgstr "Cascaded"
-
-#~ msgid "Harvested"
-#~ msgstr "Harvested"
-
-#~ msgid "Indexed"
-#~ msgstr "Indexed"
-
-#~ msgid "Live"
-#~ msgstr "라이브"
-
-#~ msgid "Service URL"
-#~ msgstr "서비스 URL"
-
-#~ msgid "Service Type"
-#~ msgstr "서비스 유형"
-
-#~ msgid "Layer Name"
-#~ msgstr "레이어 이름"
-
-#~ msgid "Layer Title"
-#~ msgstr "레이어 제목"
 
 #~ msgid "Layer Description"
 #~ msgstr "레이어 설명"
@@ -6947,39 +8719,12 @@ msgstr "답장 보내기"
 #~ msgid "This is an existing service"
 #~ msgstr "이미 있는 서비스입니다"
 
-#~ msgid "Could not find any layers in a compatible projection."
-#~ msgstr "호환되는 좌표체계에서 어떤 레이어도 찾을 수 없습니다."
-
 #~ msgid ""
 #~ "Could not find any layers in a compatible projection:                     "
 #~ "The spatial id was: %(srs)s and the url %(url)s"
 #~ msgstr ""
 #~ "좌표계와 호환되는 레이어를 찾을 수 없습니다: 공간 ID는 %(srs)s 이며 URL은 "
 #~ "%(url)s 입니다"
-
-#~ msgid "You are not permitted to remove this service."
-#~ msgstr "이 서비스를 삭제할 권한이 없습니다."
-
-#~ msgid "created"
-#~ msgstr "생성됨"
-
-#~ msgid "deleted"
-#~ msgstr "삭제됨"
-
-#~ msgid "updated"
-#~ msgstr "수정됨"
-
-#~ msgid "added a comment"
-#~ msgstr "댓글 추가"
-
-#~ msgid "updated a comment"
-#~ msgstr "댓글 수정"
-
-#~ msgid "uploaded"
-#~ msgstr "업로드됨"
-
-#~ msgid "to"
-#~ msgstr "to"
 
 #~ msgid "Type your search here ..."
 #~ msgstr "여기에 검색어를 입력하세요..."
@@ -6997,26 +8742,6 @@ msgstr "답장 보내기"
 #~ "%(site_name)s 에 사용자는이 이메일 주소를 사용하여 계정을 만들었습니다. "
 #~ "이 이메일 주소를 확인하려면이 사이트에 가입하지 않은 경우,이 메시지를 무시"
 #~ "할 수 있습니다 %(activate_url)s 로 이동합니다.\n"
-
-#~ msgid "Confirm email address for %(site_name)s"
-#~ msgstr "%(site_name)s의 이메일 주소 확인"
-
-#~ msgid ""
-#~ "You're receiving this email because you or someone else has requested a "
-#~ "password for your user account at %(site_name)s.\n"
-#~ "It can be safely ignored if you did not request a password reset. Click "
-#~ "the link below to reset your password.\n"
-#~ "\n"
-#~ "%(password_reset_url)s\n"
-#~ msgstr ""
-#~ "당신이나 다른 사람이 %(site_name)s 의 사용자 계정에 대한 암호를 요청했기 "
-#~ "때문에 이메일을 보내드립니다. 암호 재설정을 요청하지 않은 경우는 무시해도"
-#~ "됩니다. 암호를 재설정하려면 아래 링크를 클릭하십시오.\n"
-#~ "\n"
-#~ "%(password_reset_url)s\n"
-
-#~ msgid "[%(site_name)s] Password reset"
-#~ msgstr "[%(site_name)s] 비밀번호 초기화"
 
 #~ msgid "Forgot your username?"
 #~ msgstr "사용자명을 잊으셨나요?"
@@ -7036,149 +8761,11 @@ msgstr "답장 보내기"
 #~ msgid "Spatial Resolution"
 #~ msgstr "공간 해상도"
 
-#~ msgid "Your account has been approved and is now active."
-#~ msgstr "당신의 계정이 승인되었고 현재 활성화 되었습니다."
-
-#~ msgid "You can use the login form at"
-#~ msgstr "로그인 폼 사용 가능"
-
-#~ msgid "has requested access to the site."
-#~ msgstr "사이트에 액세스를 요청했습니다."
-
-#~ msgid ""
-#~ "You can enable access by setting the user as active on the admin section"
-#~ msgstr ""
-#~ "관리자 섹션에서 활성화된 사용자를 설정하여 액세스를 허용할 수 있습니다"
-
-#~ msgid "A user has requested access to the site"
-#~ msgstr "사용자가 이 사이트에 액세스를 요청헀습니"
-
-#~ msgid "A comment has been posted for the document"
-#~ msgstr "이 문서에 댓글이 게시되었습니다"
-
-#~ msgid "by the user"
-#~ msgstr "사용자에 의해"
-
-#~ msgid "You can visit the document's detail page here"
-#~ msgstr "여기에서 문서의 상세정보 페이지를 방문할 수 있습니다"
-
-#~ msgid "A comment has been posted for a document"
-#~ msgstr "문서에 댓글이 게시되었습니다"
-
-#~ msgid "The user"
-#~ msgstr "사용자가"
-
-#~ msgid "uploaded the following document"
-#~ msgstr "다음 문서를 갱신했습니다"
-
-#~ msgid "A document has been uploaded"
-#~ msgstr "문서가 갱신되었습니다"
-
-#~ msgid "The following document was deleted"
-#~ msgstr "다음 문서를 삭제했습니다"
-
-#~ msgid "owned by"
-#~ msgstr "소유자: "
-
-#~ msgid "A document has been deleted"
-#~ msgstr "문서가 삭제되었습니다"
-
-#~ msgid "rated"
-#~ msgstr "평점"
-
-#~ msgid "the following document"
-#~ msgstr "다음 문서"
-
-#~ msgid "You can visit the layer's detail page here"
-#~ msgstr "여기에서 레이어의 상세 페이지를 방문할 수 있습니다"
-
-#~ msgid "A document has been rated"
-#~ msgstr "문서에 평점이 주어졌습니다"
-
-#~ msgid "The following document was updated"
-#~ msgstr "다음 문서를 갱신했습니다"
-
-#~ msgid "A document has been updated"
-#~ msgstr "문서가 갱신되었습니다"
-
-#~ msgid "A comment has been posted for the layer"
-#~ msgstr "레이어에 댓글이 게시되었습니다"
-
-#~ msgid "A comment has been posted for a layer"
-#~ msgstr "레이어에 댓글이 게시되었습니다"
-
-#~ msgid "uploaded the following layer"
-#~ msgstr "다음 레이어를 업로드했습니다"
-
-#~ msgid "A new layer has been uploaded"
-#~ msgstr "새로운 레이어를 업로드했습니다"
-
-#~ msgid "The following layer was deleted"
-#~ msgstr "다음 레이어가 삭제되었습니다"
-
-#~ msgid "A layer has been deleted"
-#~ msgstr "레이어를 삭제했습니다"
-
-#~ msgid "the following layer"
-#~ msgstr "다음 레이어"
-
-#~ msgid "A layer has been rated"
-#~ msgstr "레이어에 평점이 주어졌습니다"
-
-#~ msgid "The following layer was updated"
-#~ msgstr "다음 레이어가 갱신되었습니다"
-
-#~ msgid "A layer has been updated"
-#~ msgstr "레이어를 갱신했습니다"
-
-#~ msgid "A comment has been posted for the map"
-#~ msgstr "지도에 댓글이 게시되었습니다"
-
-#~ msgid "You can visit the map's detail page here"
-#~ msgstr "여기에서 지도 상세정보 페이지를 방문할 수 있습니다"
-
-#~ msgid "A comment has been posted for a map"
-#~ msgstr "지도에 댓글이 게시되었습니다"
-
-#~ msgid "created the following map"
-#~ msgstr "다음 지도가 생성되었습니다"
-
-#~ msgid "A map has been created"
-#~ msgstr "지도를 생성했습니다"
-
-#~ msgid "The following map was deleted"
-#~ msgstr "다음 지도를 삭제했습니다"
-
-#~ msgid "A map has been deleted"
-#~ msgstr "지도를 삭제했습니다"
-
-#~ msgid "A map has been rated"
-#~ msgstr "지도에 평점이 주어졌습니다"
-
-#~ msgid "The following map was updated"
-#~ msgstr "다음 지도가 갱신되었습니다"
-
-#~ msgid "A map has been updated"
-#~ msgstr "지도가 갱신되었습니다"
-
-#~ msgid "requested you to download this resource"
-#~ msgstr "이 리소스에 대한 다운로드를 요청했습니다"
-
-#~ msgid ""
-#~ "Please go to resource page and assign the download permissions if you wish"
-#~ msgstr "원한다면 리소스 페이지로 이동하여 문서 권한을 승인하십시오"
-
 #~ msgid "Owners"
 #~ msgstr "소유자"
 
 #~ msgid "With"
 #~ msgstr ":"
-
-#~ msgid "Invalid permission level."
-#~ msgstr "유효하지 않은 권한 수준."
-
-#~ msgid "Permission Denied"
-#~ msgstr "사용 권한이 거부되었습니다"
 
 #~ msgid "UWI GeoNode"
 #~ msgstr "UWI GeoNode"
@@ -7241,9 +8828,6 @@ msgstr "답장 보내기"
 
 #~ msgid "distribution URL"
 #~ msgstr "distribution URL"
-
-#~ msgid "distribution description"
-#~ msgstr "distribution description"
 
 #~ msgid "Could not create a download link for layer."
 #~ msgstr "Could not create a download link for layer."
@@ -7332,17 +8916,11 @@ msgstr "답장 보내기"
 #~ msgid "You do not have permission to view this layer"
 #~ msgstr "You do not have permission to view this layer"
 
-#~ msgid "View"
-#~ msgstr "View"
-
 #~ msgid "You do not have permission to view this map"
 #~ msgstr "You do not have permission to view this map"
 
 #~ msgid "Add a Comment"
 #~ msgstr "Add a Comment"
-
-#~ msgid "Notices"
-#~ msgstr "Notices"
 
 #~ msgid "Observed objects"
 #~ msgstr "Observed objects"

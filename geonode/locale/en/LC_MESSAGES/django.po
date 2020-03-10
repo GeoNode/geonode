@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-05 11:03+0100\n"
+"POT-Creation-Date: 2020-03-10 14:27+0100\n"
 "PO-Revision-Date: 2019-09-17 18:20+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
@@ -34,6 +34,511 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 2.2.3\n"
+
+#: geonode/base/__init__.py:27
+msgid "Request to download a resource"
+msgstr "Request to download a resource"
+
+#: geonode/base/__init__.py:28
+msgid "A request for downloading a resource was sent"
+msgstr "A request for downloading a resource was sent"
+
+#: geonode/base/enumerations.py:27
+msgid "series"
+msgstr "series"
+
+#: geonode/base/enumerations.py:28
+msgid "computer program or routine"
+msgstr "computer program or routine"
+
+#: geonode/base/enumerations.py:29
+msgid "feature type"
+msgstr "feature type"
+
+#: geonode/base/enumerations.py:30
+msgid "copy or imitation of an existing or hypothetical object"
+msgstr "copy or imitation of an existing or hypothetical object"
+
+#: geonode/base/enumerations.py:31
+msgid "collection hardware"
+msgstr "collection hardware"
+
+#: geonode/base/enumerations.py:32
+msgid "collection session"
+msgstr "collection session"
+
+#: geonode/base/enumerations.py:33
+msgid "non-geographic data"
+msgstr "non-geographic data"
+
+#: geonode/base/enumerations.py:34
+msgid "property type"
+msgstr "property type"
+
+#: geonode/base/enumerations.py:35
+msgid "field session"
+msgstr "field session"
+
+#: geonode/base/enumerations.py:36
+msgid "dataset"
+msgstr "dataset"
+
+#: geonode/base/enumerations.py:37
+msgid "service interfaces"
+msgstr "service interfaces"
+
+#: geonode/base/enumerations.py:38
+msgid "attribute class"
+msgstr "attribute class"
+
+#: geonode/base/enumerations.py:39
+msgid "characteristic of a feature"
+msgstr "characteristic of a feature"
+
+#: geonode/base/enumerations.py:40
+msgid "tile or spatial subset of geographic data"
+msgstr "tile or spatial subset of geographic data"
+
+#: geonode/base/enumerations.py:41
+msgid "feature"
+msgstr "feature"
+
+#: geonode/base/enumerations.py:42
+msgid "dimension group"
+msgstr "dimension group"
+
+#: geonode/base/enumerations.py:46
+msgid "frequency of maintenance for the data is not known"
+msgstr "frequency of maintenance for the data is not known"
+
+#: geonode/base/enumerations.py:47
+msgid "data is repeatedly and frequently updated"
+msgstr "data is repeatedly and frequently updated"
+
+#: geonode/base/enumerations.py:48
+msgid "there are no plans to update the data"
+msgstr "there are no plans to update the data"
+
+#: geonode/base/enumerations.py:49
+msgid "data is updated each day"
+msgstr "data is updated each day"
+
+#: geonode/base/enumerations.py:50
+msgid "data is updated every year"
+msgstr "data is updated every year"
+
+#: geonode/base/enumerations.py:51
+msgid "data is updated as deemed necessary"
+msgstr "data is updated as deemed necessary"
+
+#: geonode/base/enumerations.py:52
+msgid "data is updated each month"
+msgstr "data is updated each month"
+
+#: geonode/base/enumerations.py:53
+msgid "data is updated every two weeks"
+msgstr "data is updated every two weeks"
+
+#: geonode/base/enumerations.py:55
+msgid "data is updated in intervals that are uneven in duration"
+msgstr "data is updated in intervals that are uneven in duration"
+
+#: geonode/base/enumerations.py:56
+msgid "data is updated on a weekly basis"
+msgstr "data is updated on a weekly basis"
+
+#: geonode/base/enumerations.py:57
+msgid "data is updated twice each year"
+msgstr "data is updated twice each year"
+
+#: geonode/base/enumerations.py:58
+msgid "data is updated every three months"
+msgstr "data is updated every three months"
+
+#: geonode/base/enumerations.py:77
+msgid "No information provided"
+msgstr "No information provided"
+
+#: geonode/base/forms.py:282
+#: geonode/base/templates/base/_resourcebase_info_panel.html:77
+#: geonode/catalogue/templates/geonode_metadata_full.html:145
+#: geonode/documents/templates/documents/document_metadata_advanced.html:76
+#: geonode/documents/templates/layouts/doc_panels.html:324
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:99
+#: geonode/layers/templates/layouts/panels.html:326
+#: geonode/maps/templates/layouts/map_panels.html:322
+#: geonode/maps/templates/maps/map_metadata_advanced.html:77
+#: geonode/templates/metadata_detail.html:88
+msgid "Category"
+msgstr "Category"
+
+#: geonode/base/forms.py:293
+msgid "Category is required."
+msgstr "Category is required."
+
+#: geonode/base/forms.py:314
+msgid "Keywords from Thesaurus"
+msgstr "Keywords from Thesaurus"
+
+#: geonode/base/forms.py:316
+msgid "List of keywords from Thesaurus"
+msgstr "List of keywords from Thesaurus"
+
+#: geonode/base/forms.py:336 geonode/base/models.py:577
+msgid "Owner"
+msgstr "Owner"
+
+#: geonode/base/forms.py:342
+#: geonode/base/templates/base/_resourcebase_info_panel.html:34
+#: geonode/catalogue/templates/geonode_metadata_full.html:58
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
+#: geonode/templates/metadata_detail.html:71
+#: geonode/templates/search/_general_filters.html:108
+msgid "Date"
+msgstr "Date"
+
+#: geonode/base/forms.py:348 geonode/base/models.py:681
+msgid "temporal extent start"
+msgstr "temporal extent start"
+
+#: geonode/base/forms.py:355 geonode/base/models.py:686
+msgid "temporal extent end"
+msgstr "temporal extent end"
+
+#: geonode/base/forms.py:363 geonode/base/forms.py:371
+msgid "Person outside GeoNode (fill form)"
+msgstr "Person outside GeoNode (fill form)"
+
+#: geonode/base/forms.py:364
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
+#: geonode/base/templates/base/_resourcebase_info_panel.html:104
+#: geonode/catalogue/templates/geonode_metadata_full.html:75
+#: geonode/documents/templates/documents/document_metadata.html:42
+#: geonode/documents/templates/documents/document_metadata.html:66
+#: geonode/documents/templates/documents/document_metadata_advanced.html:47
+#: geonode/documents/templates/documents/document_metadata_advanced.html:100
+#: geonode/layers/templates/layers/layer_metadata.html:53
+#: geonode/layers/templates/layers/layer_metadata.html:84
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:58
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:144
+#: geonode/maps/templates/maps/map_metadata.html:67
+#: geonode/maps/templates/maps/map_metadata_advanced.html:101
+msgid "Point of Contact"
+msgstr "Point of Contact"
+
+#: geonode/base/forms.py:372
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
+#: geonode/documents/templates/documents/document_metadata.html:38
+#: geonode/documents/templates/documents/document_metadata_advanced.html:43
+#: geonode/layers/templates/layers/layer_metadata.html:49
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:54
+#: geonode/templates/metadata_detail.html:346
+msgid "Metadata Author"
+msgstr "Metadata Author"
+
+#: geonode/base/forms.py:379
+msgid "Free-text Keywords"
+msgstr "Free-text Keywords"
+
+#: geonode/base/forms.py:381
+msgid ""
+"A space or comma-separated list of keywords. Use the widget to select from "
+"Hierarchical tree."
+msgstr ""
+"A space or comma-separated list of keywords. Use the widget to select from "
+"Hierarchical tree."
+
+#: geonode/base/forms.py:393
+#: geonode/base/templates/base/_resourcebase_info_panel.html:87
+#: geonode/catalogue/templates/geonode_metadata_full.html:149
+#: geonode/templates/metadata_detail.html:98
+#: geonode/templates/search/_region_filter.html:5
+msgid "Regions"
+msgstr "Regions"
+
+#: geonode/base/management/commands/updategeoip.py:44
+msgid "Write result to file, default GEOIP_PATH: {}"
+msgstr "Write result to file, default GEOIP_PATH: {}"
+
+#: geonode/base/management/commands/updategeoip.py:46
+msgid ""
+"Fetch database from specific url. If nothing provided, default {} will be "
+"used"
+msgstr ""
+"Fetch database from specific url. If nothing provided, default {} will be "
+"used"
+
+#: geonode/base/management/commands/updategeoip.py:48
+msgid "Overwrite file if exists"
+msgstr "Overwrite file if exists"
+
+#: geonode/base/models.py:87 geonode/services/models.py:194
+msgid "function performed by the responsible party"
+msgstr "function performed by the responsible party"
+
+#: geonode/base/models.py:527
+msgid "reference date for the cited resource"
+msgstr "reference date for the cited resource"
+
+#: geonode/base/models.py:528
+msgid "identification of when a given event occurred"
+msgstr "identification of when a given event occurred"
+
+#: geonode/base/models.py:529
+msgid "version of the cited resource"
+msgstr "version of the cited resource"
+
+#: geonode/base/models.py:531
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "brief narrative summary of the content of the resource(s)"
+
+#: geonode/base/models.py:533
+msgid "summary of the intentions with which the resource(s) was developed"
+msgstr "summary of the intentions with which the resource(s) was developed"
+
+#: geonode/base/models.py:535
+msgid ""
+"frequency with which modifications and deletions are made to the data after "
+"it is first produced"
+msgstr ""
+"frequency with which modifications and deletions are made to the data after "
+"it is first produced"
+
+#: geonode/base/models.py:538
+msgid ""
+"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+"the subject (space or comma-separated"
+msgstr ""
+"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+"the subject (space or comma-separated"
+
+#: geonode/base/models.py:541
+msgid ""
+"formalised word(s) or phrase(s) from a fixed thesaurus used to describe the "
+"subject (space or comma-separated"
+msgstr ""
+"formalised word(s) or phrase(s) from a fixed thesaurus used to describe the "
+"subject (space or comma-separated"
+
+#: geonode/base/models.py:543
+msgid "keyword identifies a location"
+msgstr "keyword identifies a location"
+
+#: geonode/base/models.py:545
+msgid "limitation(s) placed upon the access or use of the data."
+msgstr "limitation(s) placed upon the access or use of the data."
+
+#: geonode/base/models.py:547
+msgid ""
+"other restrictions and legal prerequisites for accessing and using the "
+"resource or metadata"
+msgstr ""
+"other restrictions and legal prerequisites for accessing and using the "
+"resource or metadata"
+
+#: geonode/base/models.py:549
+msgid "license of the dataset"
+msgstr "license of the dataset"
+
+#: geonode/base/models.py:550
+msgid "language used within the dataset"
+msgstr "language used within the dataset"
+
+#: geonode/base/models.py:552
+msgid ""
+"high-level geographic data thematic classification to assist in the grouping "
+"and search of available geographic data sets."
+msgstr ""
+"high-level geographic data thematic classification to assist in the grouping "
+"and search of available geographic data sets."
+
+#: geonode/base/models.py:555
+msgid "method used to represent geographic information in the dataset."
+msgstr "method used to represent geographic information in the dataset."
+
+#: geonode/base/models.py:557
+msgid "time period covered by the content of the dataset (start)"
+msgstr "time period covered by the content of the dataset (start)"
+
+#: geonode/base/models.py:559
+msgid "time period covered by the content of the dataset (end)"
+msgstr "time period covered by the content of the dataset (end)"
+
+#: geonode/base/models.py:561
+msgid ""
+"general explanation of the data producer's knowledge about the lineage of a "
+"dataset"
+msgstr ""
+"general explanation of the data producer's knowledge about the lineage of a "
+"dataset"
+
+#: geonode/base/models.py:564
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
+
+#: geonode/base/models.py:566
+#: geonode/base/templates/base/_resourcebase_info_panel.html:114
+#: geonode/templates/metadata_detail.html:116
+msgid "DOI"
+msgstr ""
+
+#: geonode/base/models.py:582
+msgid "title"
+msgstr "title"
+
+#: geonode/base/models.py:583
+msgid "name by which the cited resource is known"
+msgstr "name by which the cited resource is known"
+
+#: geonode/base/models.py:586
+msgid "date"
+msgstr "date"
+
+#: geonode/base/models.py:590
+msgid "date type"
+msgstr "date type"
+
+#: geonode/base/models.py:596
+msgid "edition"
+msgstr "edition"
+
+#: geonode/base/models.py:602
+msgid "abstract"
+msgstr "abstract"
+
+#: geonode/base/models.py:607
+msgid "purpose"
+msgstr "purpose"
+
+#: geonode/base/models.py:613
+msgid "maintenance frequency"
+msgstr "maintenance frequency"
+
+#: geonode/base/models.py:620 geonode/base/models.py:627
+#: geonode/people/models.py:117
+msgid "keywords"
+msgstr "keywords"
+
+#: geonode/base/models.py:633
+msgid "keywords region"
+msgstr "keywords region"
+
+#: geonode/base/models.py:639
+msgid "restrictions"
+msgstr "restrictions"
+
+#: geonode/base/models.py:646
+msgid "restrictions other"
+msgstr "restrictions other"
+
+#: geonode/base/models.py:654
+#: geonode/base/templates/base/_resourcebase_info_panel.html:16
+#: geonode/base/templates/base/_resourcebase_info_panel.html:134
+#: geonode/catalogue/templates/geonode_metadata_full.html:98
+#: geonode/templates/metadata_detail.html:57
+#: geonode/templates/metadata_detail.html:203
+msgid "License"
+msgstr "License"
+
+#: geonode/base/models.py:658 geonode/people/models.py:121
+msgid "language"
+msgstr "language"
+
+#: geonode/base/models.py:676
+msgid "spatial representation type"
+msgstr "spatial representation type"
+
+#: geonode/base/models.py:691
+msgid "supplemental information"
+msgstr "supplemental information"
+
+#: geonode/base/models.py:694
+msgid "any other descriptive information about the dataset"
+msgstr "any other descriptive information about the dataset"
+
+#: geonode/base/models.py:698
+msgid "data quality statement"
+msgstr "data quality statement"
+
+#: geonode/base/models.py:739
+msgid "CSW typename"
+msgstr "CSW typename"
+
+#: geonode/base/models.py:744
+msgid "CSW schema"
+msgstr "CSW schema"
+
+#: geonode/base/models.py:749
+msgid "CSW source"
+msgstr "CSW source"
+
+#: geonode/base/models.py:754
+msgid "CSW insert date"
+msgstr "CSW insert date"
+
+#: geonode/base/models.py:756
+msgid "CSW type"
+msgstr "CSW type"
+
+#: geonode/base/models.py:761
+msgid "CSW anytext"
+msgstr "CSW anytext"
+
+#: geonode/base/models.py:763
+msgid "CSW WKT geometry"
+msgstr "CSW WKT geometry"
+
+#: geonode/base/models.py:769
+msgid "Metadata uploaded preserve"
+msgstr "Metadata uploaded preserve"
+
+#: geonode/base/models.py:776 geonode/templates/metadata_detail.html:108
+msgid "Featured"
+msgstr "Featured"
+
+#: geonode/base/models.py:777
+msgid "Should this resource be advertised in home page?"
+msgstr "Should this resource be advertised in home page?"
+
+#: geonode/base/models.py:779
+msgid "Is Published"
+msgstr "Is Published"
+
+#: geonode/base/models.py:781
+msgid "Should this resource be published and searchable?"
+msgstr "Should this resource be published and searchable?"
+
+#: geonode/base/models.py:783 geonode/templates/metadata_detail.html:102
+msgid "Approved"
+msgstr "Approved"
+
+#: geonode/base/models.py:785
+msgid "Is this resource validated from a publisher or editor?"
+msgstr "Is this resource validated from a publisher or editor?"
+
+#: geonode/base/models.py:788
+msgid "Thumbnail url"
+msgstr "Thumbnail url"
+
+#: geonode/base/models.py:796
+msgid "Dirty State"
+msgstr "Dirty State"
+
+#: geonode/base/models.py:798
+msgid "Security Rules Are Not Synched with GeoServer!"
+msgstr "Security Rules Are Not Synched with GeoServer!"
+
+#: geonode/base/models.py:1425
+msgid "For example \"kml\""
+msgstr "For example \"kml\""
+
+#: geonode/base/models.py:1430
+msgid "For example \"View in Google Earth\""
+msgstr "For example \"View in Google Earth\""
+
+#: geonode/base/models.py:1432
+msgid "For example \"text/xml\""
+msgstr "For example \"text/xml\""
 
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:3
 #: geonode/templates/500.html:181 geonode/templates/500.html:200
@@ -57,35 +562,12 @@ msgstr "Owner, Point of Contact, Metadata Author"
 msgid "Responsible"
 msgstr "Responsible Parties"
 
-#: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
-#: geonode/base/templates/base/_resourcebase_info_panel.html:104
-#: geonode/catalogue/templates/geonode_metadata_full.html:75
-#: geonode/documents/templates/documents/document_metadata.html:42
-#: geonode/documents/templates/documents/document_metadata.html:66
-#: geonode/documents/templates/documents/document_metadata_advanced.html:47
-#: geonode/documents/templates/documents/document_metadata_advanced.html:100
-#: geonode/layers/templates/layers/layer_metadata.html:53
-#: geonode/layers/templates/layers/layer_metadata.html:84
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:58
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:144
-#: geonode/maps/templates/maps/map_metadata.html:67
-#: geonode/maps/templates/maps/map_metadata_advanced.html:101
-msgid "Point of Contact"
-msgstr "Point of Contact"
-
-#: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
-#: geonode/documents/templates/documents/document_metadata.html:38
-#: geonode/documents/templates/documents/document_metadata_advanced.html:43
-#: geonode/layers/templates/layers/layer_metadata.html:49
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:54
-#: geonode/templates/metadata_detail.html:346
-msgid "Metadata Author"
-msgstr "Metadata Author"
-
 #: geonode/base/templates/base/_resourcebase_info_panel.html:6
 #: geonode/catalogue/templates/geonode_metadata_full.html:55
 #: geonode/client/templates/leaflet/maps/map_view.html:101
+#: geonode/groups/models.py:79
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:20
+#: geonode/services/forms.py:113
 #: geonode/services/templates/services/service_detail.html:22
 #: geonode/services/templates/services/service_list.html:15
 #: geonode/templates/announcements/announcement_list.html:19
@@ -98,14 +580,6 @@ msgstr "Title"
 msgid "SRID"
 msgstr "SRID"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:16
-#: geonode/base/templates/base/_resourcebase_info_panel.html:134
-#: geonode/catalogue/templates/geonode_metadata_full.html:98
-#: geonode/templates/metadata_detail.html:57
-#: geonode/templates/metadata_detail.html:203
-msgid "License"
-msgstr "License"
-
 #: geonode/base/templates/base/_resourcebase_info_panel.html:24
 #: geonode/base/templates/base/_resourcebase_info_panel.html:141
 #: geonode/templates/metadata_detail.html:65
@@ -116,18 +590,11 @@ msgstr "For more info see"
 #: geonode/base/templates/base/_resourcebase_info_panel.html:29
 #: geonode/catalogue/templates/geonode_metadata_full.html:61
 #: geonode/client/templates/leaflet/maps/map_view.html:106
+#: geonode/services/forms.py:131
 #: geonode/services/templates/services/service_detail.html:10
 #: geonode/templates/metadata_detail.html:48
 msgid "Abstract"
 msgstr "Abstract"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:34
-#: geonode/catalogue/templates/geonode_metadata_full.html:58
-#: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
-#: geonode/templates/metadata_detail.html:71
-#: geonode/templates/search/_general_filters.html:108
-msgid "Date"
-msgstr "Date"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:45
 #: geonode/catalogue/templates/geonode_metadata_full.html:91
@@ -140,6 +607,7 @@ msgstr "Type"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:50
 #: geonode/catalogue/templates/geonode_metadata_full.html:142
+#: geonode/groups/models.py:89 geonode/people/forms.py:92
 #: geonode/people/templates/people/profile_detail.html:106
 #: geonode/services/templates/services/service_detail.html:11
 #: geonode/templates/metadata_detail.html:81
@@ -150,37 +618,13 @@ msgstr "Type"
 msgid "Keywords"
 msgstr "Keywords"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:77
-#: geonode/catalogue/templates/geonode_metadata_full.html:145
-#: geonode/documents/templates/documents/document_metadata_advanced.html:76
-#: geonode/documents/templates/layouts/doc_panels.html:303
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:99
-#: geonode/layers/templates/layouts/panels.html:326
-#: geonode/maps/templates/layouts/map_panels.html:322
-#: geonode/maps/templates/maps/map_metadata_advanced.html:77
-#: geonode/templates/metadata_detail.html:88
-msgid "Category"
-msgstr "Category"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:87
-#: geonode/catalogue/templates/geonode_metadata_full.html:149
-#: geonode/templates/metadata_detail.html:98
-#: geonode/templates/search/_region_filter.html:5
-msgid "Regions"
-msgstr "Regions"
-
 #: geonode/base/templates/base/_resourcebase_info_panel.html:109
-#: geonode/documents/templates/layouts/doc_panels.html:322
+#: geonode/documents/templates/layouts/doc_panels.html:343
 #: geonode/layers/templates/layouts/panels.html:346
 #: geonode/maps/templates/layouts/map_panels.html:341
 #: geonode/templates/metadata_detail.html:112
 msgid "Group"
 msgstr "Group"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:114
-#: geonode/templates/metadata_detail.html:116
-msgid "DOI"
-msgstr ""
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:121
 msgid "More info"
@@ -351,14 +795,21 @@ msgid "Remove (and use auto generated thumbnail)"
 msgstr "Remove (and use auto generated thumbnail)"
 
 #: geonode/base/templates/base/thumbnail_upload.html:35
-#: geonode/documents/templates/documents/document_detail.html:152
+#: geonode/documents/templates/documents/document_detail.html:151
 #: geonode/documents/templates/documents/document_upload.html:15
 #: geonode/layers/templates/layers/layer_detail.html:478
 #: geonode/layers/templates/layers/layer_detail.html:499
 #: geonode/maps/templates/maps/map_detail.html:165
+#: geonode/monitoring/models.py:355
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:58
 msgid "Upload"
 msgstr "Upload"
+
+#: geonode/base/templatetags/user_messages.py:32
+#: geonode/base/templatetags/user_messages.py:40
+#: geonode/templates/user_messages/thread_detail.html:28
+msgid "me"
+msgstr "me"
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:40
 msgid "Resource Metadata"
@@ -407,14 +858,20 @@ msgid "Attribute name"
 msgstr "Attribute name"
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:167
+#: geonode/groups/models.py:44 geonode/groups/models.py:82
 #: geonode/layers/templates/layers/layer_detail.html:178
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:128
 #: geonode/layers/templates/layouts/panels.html:546
 #: geonode/people/templates/people/profile_detail.html:101
+#: geonode/services/forms.py:123
 #: geonode/services/templates/services/service_detail.html:23
 #: geonode/services/templates/services/service_resources_harvest.html:32
 msgid "Description"
 msgstr "Description"
+
+#: geonode/client/apps.py:28
+msgid "GeoNode Client Library"
+msgstr "GeoNode Client Library"
 
 #: geonode/client/templates/leaflet/layers/layer_leaflet_map.html:340
 msgid "Upload QML Style"
@@ -473,8 +930,8 @@ msgid "Save Map"
 msgstr "Save Map"
 
 #: geonode/client/templates/leaflet/maps/map_view.html:115
-#: geonode/documents/templates/documents/document_detail.html:170
-#: geonode/documents/templates/documents/document_detail.html:206
+#: geonode/documents/templates/documents/document_detail.html:169
+#: geonode/documents/templates/documents/document_detail.html:205
 #: geonode/layers/templates/layers/layer_detail.html:425
 #: geonode/layers/templates/layers/layer_detail.html:522
 #: geonode/layers/templates/layers/layer_detail.html:572
@@ -491,6 +948,62 @@ msgstr "Save Map"
 #: geonode/templates/metadata_base.html:185
 msgid "Close"
 msgstr "Close"
+
+#: geonode/documents/__init__.py:27
+msgid "Document Created"
+msgstr "Document Created"
+
+#: geonode/documents/__init__.py:27
+msgid "A Document was created"
+msgstr "A Document was created"
+
+#: geonode/documents/__init__.py:28
+msgid "Document Updated"
+msgstr "Document Updated"
+
+#: geonode/documents/__init__.py:28
+msgid "A Document was updated"
+msgstr "A Document was updated"
+
+#: geonode/documents/__init__.py:29
+msgid "Document Approved"
+msgstr "Document Approved"
+
+#: geonode/documents/__init__.py:29
+msgid "A Document was approved by a Manager"
+msgstr "A Document was approved by a Manager"
+
+#: geonode/documents/__init__.py:30
+msgid "Document Published"
+msgstr "Document Published"
+
+#: geonode/documents/__init__.py:30
+msgid "A Document was published"
+msgstr "A Document was published"
+
+#: geonode/documents/__init__.py:31
+msgid "Document Deleted"
+msgstr "Document Deleted"
+
+#: geonode/documents/__init__.py:31
+msgid "A Document was deleted"
+msgstr "A Document was deleted"
+
+#: geonode/documents/__init__.py:32
+msgid "Comment on Document"
+msgstr "Comment on Document"
+
+#: geonode/documents/__init__.py:32
+msgid "A Document was commented on"
+msgstr "A Document was commented on"
+
+#: geonode/documents/__init__.py:33
+msgid "Document for Map"
+msgstr "Document for Map"
+
+#: geonode/documents/__init__.py:33
+msgid "A rating was given to a document"
+msgstr "A rating was given to a document"
 
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:5
 msgid "Width"
@@ -542,6 +1055,40 @@ msgstr "False"
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:21
 msgid "Speed Rating"
 msgstr "Speed Rating"
+
+#: geonode/documents/forms.py:87 geonode/documents/forms.py:168
+msgid "Link to"
+msgstr "Link to"
+
+#: geonode/documents/forms.py:133 geonode/documents/forms.py:202
+msgid "Document must be a file or url."
+msgstr "Document must be a file or url."
+
+#: geonode/documents/forms.py:137 geonode/documents/forms.py:206
+msgid "A document cannot have both a file and a url."
+msgstr "A document cannot have both a file and a url."
+
+#: geonode/documents/forms.py:150 geonode/documents/forms.py:219
+msgid "This file type is not allowed"
+msgstr "This file type is not allowed"
+
+#: geonode/documents/forms.py:191
+msgid "Permissions must be valid JSON."
+msgstr "Permissions must be valid JSON."
+
+#: geonode/documents/models.py:57
+msgid "File"
+msgstr "File"
+
+#: geonode/documents/models.py:67
+msgid "The URL of the document if it is external."
+msgstr "The URL of the document if it is external."
+
+#: geonode/documents/models.py:68 geonode/monitoring/models.py:179
+#: geonode/services/templates/services/service_detail.html:9
+#: geonode/services/templates/services/service_list.html:16
+msgid "URL"
+msgstr "URL"
 
 #: geonode/documents/templates/documents/document_detail.html:23
 msgid "documents"
@@ -615,75 +1162,70 @@ msgstr "Wizard"
 msgid "Advanced Edit"
 msgstr "Advanced Edit"
 
-#: geonode/documents/templates/documents/document_detail.html:151
-#: geonode/layers/templates/layers/layer_detail.html:497
-#: geonode/maps/templates/maps/map_detail.html:164
-msgid "Set"
-msgstr "Set"
-
-#: geonode/documents/templates/documents/document_detail.html:158
-#: geonode/templates/index.html:86
+#: geonode/documents/templates/documents/document_detail.html:157
+#: geonode/monitoring/models.py:176 geonode/templates/index.html:86
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:7
 msgid "Document"
 msgid_plural "Documents"
 msgstr[0] "Document"
 msgstr[1] "Documents"
 
-#: geonode/documents/templates/documents/document_detail.html:160
+#: geonode/documents/templates/documents/document_detail.html:159
 #: geonode/layers/templates/layers/layer_detail.html:507
 msgid "Replace"
 msgstr "Replace"
 
-#: geonode/documents/templates/documents/document_detail.html:163
+#: geonode/documents/templates/documents/document_detail.html:162
 #: geonode/groups/templates/groups/group_members.html:42
 #: geonode/groups/templates/groups/group_members.html:68
 #: geonode/groups/templates/groups/group_members.html:95
 #: geonode/layers/templates/layers/layer_detail.html:515
 #: geonode/maps/templates/maps/map_detail.html:173
-#: geonode/templates/account/email.html:36
+#: geonode/monitoring/models.py:362 geonode/templates/account/email.html:36
 #: geonode/templates/socialaccount/connections.html:33
 msgid "Remove"
 msgstr "Remove"
 
-#: geonode/documents/templates/documents/document_detail.html:177
-#: geonode/documents/templates/documents/document_detail.html:184
+#: geonode/documents/templates/documents/document_detail.html:176
+#: geonode/documents/templates/documents/document_detail.html:183
 #: geonode/layers/templates/layers/layer_detail.html:534
 #: geonode/layers/templates/layers/layer_detail.html:542
 msgid "Download Metadata"
 msgstr "Download Metadata"
 
-#: geonode/documents/templates/documents/document_detail.html:189
+#: geonode/documents/templates/documents/document_detail.html:188
 #: geonode/layers/templates/layers/layer_detail.html:547
 msgid "Full metadata"
 msgstr "Full metadata"
 
-#: geonode/documents/templates/documents/document_detail.html:192
+#: geonode/documents/templates/documents/document_detail.html:191
 #: geonode/layers/templates/layers/layer_detail.html:550
 msgid "Text format"
 msgstr "Text format"
 
-#: geonode/documents/templates/documents/document_detail.html:193
+#: geonode/documents/templates/documents/document_detail.html:192
 #: geonode/layers/templates/layers/layer_detail.html:551
 msgid "HTML format"
 msgstr "HTML format"
 
-#: geonode/documents/templates/documents/document_detail.html:197
+#: geonode/documents/templates/documents/document_detail.html:196
 #: geonode/layers/templates/layers/layer_detail.html:556
 msgid "Standard Metadata - XML format"
 msgstr "Standard Metadata - XML format"
 
-#: geonode/documents/templates/documents/document_detail.html:213
+#: geonode/documents/templates/documents/document_detail.html:212
 msgid "Resources using this document"
 msgstr "Resources using this document"
 
-#: geonode/documents/templates/documents/document_detail.html:215
+#: geonode/documents/templates/documents/document_detail.html:214
 msgid "List of resources using this document:"
 msgstr "List of resources using this document:"
 
-#: geonode/documents/templates/documents/document_detail.html:221
+#: geonode/documents/templates/documents/document_detail.html:220
 msgid "This document is not related to any maps or layers"
 msgstr "This document is not related to any maps or layers"
 
-#: geonode/documents/templates/documents/document_detail.html:228
+#: geonode/documents/templates/documents/document_detail.html:227
 #: geonode/documents/templates/documents/document_thumb_upload.html:64
 #: geonode/documents/templates/documents/document_upload.html:24
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:50
@@ -696,15 +1238,15 @@ msgstr "This document is not related to any maps or layers"
 #: geonode/layers/templates/layers/layer_style_upload.html:101
 #: geonode/layers/templates/layers/layer_style_upload.html:110
 #: geonode/layers/templates/upload/layer_upload.html:114
-#: geonode/maps/templates/maps/map_detail.html:229
+#: geonode/maps/templates/maps/map_detail.html:229 geonode/people/admin.py:57
 msgid "Permissions"
 msgstr "Permissions"
 
-#: geonode/documents/templates/documents/document_detail.html:229
+#: geonode/documents/templates/documents/document_detail.html:228
 msgid "Click the button below to change the permissions of this document."
 msgstr "Click the button below to change the permissions of this document."
 
-#: geonode/documents/templates/documents/document_detail.html:230
+#: geonode/documents/templates/documents/document_detail.html:229
 msgid "Change Document Permissions"
 msgstr "Change Document Permissions"
 
@@ -940,13 +1482,13 @@ msgstr "Upload Document"
 msgid "Allowed document types"
 msgstr "Allowed document types"
 
-#: geonode/documents/templates/layouts/doc_panels.html:216
+#: geonode/documents/templates/layouts/doc_panels.html:219
 #: geonode/layers/templates/layouts/panels.html:216
 #: geonode/maps/templates/layouts/map_panels.html:216
 msgid "Done!"
 msgstr "Done!"
 
-#: geonode/documents/templates/layouts/doc_panels.html:220
+#: geonode/documents/templates/layouts/doc_panels.html:223
 #: geonode/layers/templates/layers/layer_detail.html:474
 #: geonode/layers/templates/layers/layer_detail.html:476
 #: geonode/layers/templates/layers/layer_detail.html:488
@@ -958,14 +1500,14 @@ msgstr "Done!"
 msgid "Edit"
 msgstr "Edit"
 
-#: geonode/documents/templates/layouts/doc_panels.html:226
+#: geonode/documents/templates/layouts/doc_panels.html:229
 #: geonode/layers/templates/layouts/panels.html:227
 #: geonode/maps/templates/layouts/map_panels.html:226
 msgid "Settings"
 msgstr "Settings"
 
-#: geonode/documents/templates/layouts/doc_panels.html:235
 #: geonode/documents/templates/layouts/doc_panels.html:238
+#: geonode/documents/templates/layouts/doc_panels.html:241
 #: geonode/layers/templates/layouts/panels.html:236
 #: geonode/layers/templates/layouts/panels.html:239
 #: geonode/maps/templates/layouts/map_panels.html:235
@@ -973,50 +1515,50 @@ msgstr "Settings"
 msgid "Mandatory"
 msgstr "Mandatory"
 
-#: geonode/documents/templates/layouts/doc_panels.html:241
+#: geonode/documents/templates/layouts/doc_panels.html:244
 #: geonode/layers/templates/layouts/panels.html:242
 #: geonode/maps/templates/layouts/map_panels.html:241
 msgid "Optional"
 msgstr "Optional"
 
-#: geonode/documents/templates/layouts/doc_panels.html:246
+#: geonode/documents/templates/layouts/doc_panels.html:249
 #: geonode/layers/templates/layouts/panels.html:247
 #: geonode/maps/templates/layouts/map_panels.html:246
 msgid "Basic Metadata"
 msgstr "Basic Metadata"
 
-#: geonode/documents/templates/layouts/doc_panels.html:249
+#: geonode/documents/templates/layouts/doc_panels.html:252
 #: geonode/layers/templates/layouts/panels.html:250
 #: geonode/maps/templates/layouts/map_panels.html:249
 msgid "Location and Licenses"
 msgstr "Location and Licenses"
 
-#: geonode/documents/templates/layouts/doc_panels.html:252
+#: geonode/documents/templates/layouts/doc_panels.html:255
 #: geonode/layers/templates/layouts/panels.html:253
 #: geonode/maps/templates/layouts/map_panels.html:252
 msgid "Optional Metadata"
 msgstr "Optional Metadata"
 
-#: geonode/documents/templates/layouts/doc_panels.html:324
+#: geonode/documents/templates/layouts/doc_panels.html:345
 #: geonode/layers/templates/layouts/panels.html:328
 #: geonode/layers/templates/layouts/panels.html:348
 #: geonode/maps/templates/layouts/map_panels.html:343
 msgid "Choose one of the following..."
 msgstr "Choose one of the following..."
 
-#: geonode/documents/templates/layouts/doc_panels.html:417
+#: geonode/documents/templates/layouts/doc_panels.html:438
 #: geonode/layers/templates/layouts/panels.html:441
 #: geonode/maps/templates/layouts/map_panels.html:435
 msgid "Other, Optional, Metadata"
 msgstr "Other, Optional, Metadata"
 
-#: geonode/documents/templates/layouts/doc_panels.html:464
+#: geonode/documents/templates/layouts/doc_panels.html:485
 #: geonode/layers/templates/layouts/panels.html:488
 #: geonode/maps/templates/layouts/map_panels.html:482
 msgid "Responsible Parties"
 msgstr "Responsible Parties"
 
-#: geonode/documents/templates/layouts/doc_panels.html:471
+#: geonode/documents/templates/layouts/doc_panels.html:492
 #: geonode/layers/templates/layouts/panels.html:495
 #: geonode/maps/templates/layouts/map_panels.html:489
 #, fuzzy
@@ -1024,25 +1566,61 @@ msgstr "Responsible Parties"
 msgid "Responsible and Permissions"
 msgstr "Owner and Permissions"
 
-#: geonode/documents/templates/layouts/doc_panels.html:493
+#: geonode/documents/templates/layouts/doc_panels.html:514
 #: geonode/layers/templates/layouts/panels.html:517
 #: geonode/maps/templates/layouts/map_panels.html:511
 #: geonode/templates/_permissions_form.html:28 geonode/templates/base.html:679
 msgid "Message box"
 msgstr "Message box"
 
-#: geonode/documents/templates/layouts/doc_panels.html:499
+#: geonode/documents/templates/layouts/doc_panels.html:520
 #: geonode/layers/templates/layouts/panels.html:523
 #: geonode/maps/templates/layouts/map_panels.html:517
 #: geonode/templates/_permissions_form.html:34 geonode/templates/base.html:685
 msgid "OK"
 msgstr "OK"
 
-#: geonode/documents/templates/layouts/doc_panels.html:519
+#: geonode/documents/templates/layouts/doc_panels.html:540
 #: geonode/layers/templates/layouts/panels.html:584
 #: geonode/maps/templates/layouts/map_panels.html:537
 msgid "Publishing"
 msgstr "Publishing"
+
+#: geonode/documents/views.py:64
+msgid "You are not permitted to delete this document"
+msgstr "You are not permitted to delete this document"
+
+#: geonode/documents/views.py:65
+msgid "You do not have permissions for this document."
+msgstr "You do not have permissions for this document."
+
+#: geonode/documents/views.py:66
+msgid "You are not permitted to modify this document"
+msgstr "You are not permitted to modify this document"
+
+#: geonode/documents/views.py:68
+msgid "You are not permitted to modify this document's metadata"
+msgstr "You are not permitted to modify this document's metadata"
+
+#: geonode/documents/views.py:69
+msgid "You are not permitted to view this document"
+msgstr "You are not permitted to view this document"
+
+#: geonode/documents/views.py:103 geonode/documents/views.py:177
+msgid "You are not allowed to view this document."
+msgstr "You are not allowed to view this document."
+
+#: geonode/documents/views.py:354
+msgid "You are not allowed to edit this document."
+msgstr "You are not allowed to edit this document."
+
+#: geonode/documents/views.py:435 geonode/layers/views.py:994
+msgid "You must set a point of contact for this resource"
+msgstr "You must set a point of contact for this resource"
+
+#: geonode/documents/views.py:452 geonode/layers/views.py:1011
+msgid "You must set an author for this resource"
+msgstr "You must set an author for this resource"
 
 #: geonode/favorite/templates/favorite/_favorite.html:5
 #: geonode/templates/_actions.html:23
@@ -1064,6 +1642,42 @@ msgstr "Add to Favorites"
 #: geonode/favorite/templates/favorite/favorite_list.html:8
 msgid "Favorites for"
 msgstr "Favorites for"
+
+#: geonode/geoserver/__init__.py:75
+msgid "Layer Uploaded"
+msgstr "Layer Uploaded"
+
+#: geonode/geoserver/__init__.py:75
+msgid "A layer was uploaded"
+msgstr "A layer was uploaded"
+
+#: geonode/geoserver/__init__.py:76 geonode/layers/__init__.py:33
+msgid "Comment on Layer"
+msgstr "Comment on Layer"
+
+#: geonode/geoserver/__init__.py:76 geonode/layers/__init__.py:33
+msgid "A layer was commented on"
+msgstr "A layer was commented on"
+
+#: geonode/geoserver/__init__.py:77 geonode/layers/__init__.py:34
+msgid "Rating for Layer"
+msgstr "Rating for Layer"
+
+#: geonode/geoserver/__init__.py:77 geonode/layers/__init__.py:34
+msgid "A rating was given to a layer"
+msgstr "A rating was given to a layer"
+
+#: geonode/geoserver/createlayer/forms.py:35
+msgid "Layer name"
+msgstr "Layer name"
+
+#: geonode/geoserver/createlayer/forms.py:36
+msgid "Layer title"
+msgstr "Layer title"
+
+#: geonode/geoserver/createlayer/forms.py:37
+msgid "Geometry type"
+msgstr "Geometry type"
 
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:6
 #: geonode/templates/base.html:289 geonode/templates/base.html:455
@@ -1095,9 +1709,185 @@ msgstr "Add Attribute"
 
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:41
 #: geonode/groups/templates/groups/group_create.html:26
+#: geonode/monitoring/models.py:354
 #: geonode/services/templates/services/service_register.html:18
 msgid "Create"
 msgstr "Create"
+
+#: geonode/geoserver/helpers.py:681
+msgid "No abstract provided"
+msgstr "No abstract provided"
+
+#: geonode/geoserver/helpers.py:1427
+msgid "An exception occurred loading data to PostGIS"
+msgstr "An exception occurred loading data to PostGIS"
+
+#: geonode/geoserver/helpers.py:1432
+msgid " Additionally an error occured during database cleanup"
+msgstr " Additionally an error occured during database cleanup"
+
+#: geonode/geoserver/ows.py:68
+msgid "GZIP"
+msgstr "GZIP"
+
+#: geonode/geoserver/ows.py:69
+msgid "GeoTIFF"
+msgstr "GeoTIFF"
+
+#: geonode/geoserver/ows.py:110
+msgid "Zipped Shapefile"
+msgstr "Zipped Shapefile"
+
+#: geonode/geoserver/ows.py:111
+msgid "GML 2.0"
+msgstr "GML 2.0"
+
+#: geonode/geoserver/ows.py:112
+msgid "GML 3.1.1"
+msgstr "GML 3.1.1"
+
+#: geonode/geoserver/ows.py:113
+msgid "CSV"
+msgstr "CSV"
+
+#: geonode/geoserver/ows.py:114
+msgid "Excel"
+msgstr "Excel"
+
+#: geonode/geoserver/ows.py:115
+msgid "GeoJSON"
+msgstr "GeoJSON"
+
+#: geonode/geoserver/ows.py:157
+msgid "JPEG"
+msgstr "JPEG"
+
+#: geonode/geoserver/ows.py:158
+msgid "PDF"
+msgstr "PDF"
+
+#: geonode/geoserver/ows.py:159
+msgid "PNG"
+msgstr "PNG"
+
+#: geonode/geoserver/views.py:509
+msgid "You don't have permissions to change style for this layer"
+msgstr "You don't have permissions to change style for this layer"
+
+#: geonode/geoserver/views.py:579 geonode/geoserver/views.py:635
+msgid "Bad HTTP Authorization Credentials."
+msgstr "Bad HTTP Authorization Credentials."
+
+#: geonode/groups/forms.py:35
+msgid ""
+"a short version of the name consisting only of letters, numbers, underscores "
+"and hyphens."
+msgstr ""
+"a short version of the name consisting only of letters, numbers, underscores "
+"and hyphens."
+
+#: geonode/groups/forms.py:43
+msgid "A group already exists with that slug."
+msgstr "A group already exists with that slug."
+
+#: geonode/groups/forms.py:50 geonode/groups/forms.py:77
+msgid "A group already exists with that name."
+msgstr "A group already exists with that name."
+
+#: geonode/groups/forms.py:87
+msgid "User Identifiers"
+msgstr "User Identifiers"
+
+#: geonode/groups/forms.py:97
+msgid "Assign manager role"
+msgstr "Assign manager role"
+
+#: geonode/groups/forms.py:111
+#, python-format
+msgid ""
+"The following are not valid usernames: %(errors)s; not added to the group"
+msgstr ""
+"The following are not valid usernames: %(errors)s; not added to the group"
+
+#: geonode/groups/models.py:43 geonode/layers/models.py:158
+#: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
+#: geonode/services/templates/services/service_resources_harvest.html:31
+#: geonode/templates/metadata_detail.html:130
+#: geonode/templates/metadata_detail.html:272
+#: geonode/templates/metadata_detail.html:353
+msgid "Name"
+msgstr "Name"
+
+#: geonode/groups/models.py:47 geonode/templates/base.html:314
+#: geonode/templates/search/_general_filters.html:76
+#: geonode/templates/search/_search_user_content.html:28
+msgid "Group Categories"
+msgstr "Group Categories"
+
+#: geonode/groups/models.py:65
+msgid "Public"
+msgstr "Public"
+
+#: geonode/groups/models.py:66
+msgid "Public (invite-only)"
+msgstr "Public (invite-only)"
+
+#: geonode/groups/models.py:67
+msgid "Private"
+msgstr "Private"
+
+#: geonode/groups/models.py:70
+msgid ""
+"Public: Any registered user can view and join a public group.<br>Public "
+"(invite-only):Any registered user can view the group.  Only invited users "
+"can join.<br>Private: Registered users cannot see any details about the "
+"group, including membership.  Only invited users can join."
+msgstr ""
+"Public: Any registered user can view and join a public group.<br>Public "
+"(invite-only):Any registered user can view the group.  Only invited users "
+"can join.<br>Private: Registered users cannot see any details about the "
+"group, including membership.  Only invited users can join."
+
+#: geonode/groups/models.py:75
+msgid ""
+"Email used to contact one or all group members, such as a mailing list, "
+"shared email, or exchange group."
+msgstr ""
+"Email used to contact one or all group members, such as a mailing list, "
+"shared email, or exchange group."
+
+#: geonode/groups/models.py:81
+msgid "Logo"
+msgstr "Logo"
+
+#: geonode/groups/models.py:84
+#: geonode/people/templates/people/profile_detail.html:67
+#: geonode/templates/invitations/forms/_invite.html:14
+msgid "Email"
+msgstr "Email"
+
+#: geonode/groups/models.py:90 geonode/people/forms.py:94
+msgid "A space or comma-separated list of keywords"
+msgstr "A space or comma-separated list of keywords"
+
+#: geonode/groups/models.py:93
+msgid "Access"
+msgstr "Access"
+
+#: geonode/groups/models.py:98 geonode/templates/search/_general_filters.html:4
+msgid "Categories"
+msgstr "Categories"
+
+#: geonode/groups/models.py:241
+#: geonode/groups/templates/groups/group_members.html:37
+#: geonode/groups/templates/groups/group_members.html:63
+#: geonode/groups/templates/groups/group_members.html:90
+msgid "Manager"
+msgstr "Manager"
+
+#: geonode/groups/models.py:242
+msgid "Member"
+msgstr "Member"
 
 #: geonode/groups/templates/groups/activity.html:7
 #: geonode/groups/templates/groups/activity.html:8
@@ -1108,8 +1898,9 @@ msgstr "Activity Feed for"
 
 #: geonode/groups/templates/groups/activity.html:25
 #: geonode/groups/templates/groups/group_members.html:22
+#: geonode/monitoring/models.py:353
 #: geonode/social/templates/social/activity_list.html:20
-#: geonode/templates/user_messages/inbox.html:16
+#: geonode/templates/user_messages/inbox.html:17
 msgid "All"
 msgstr "All"
 
@@ -1279,12 +2070,6 @@ msgstr "Edit Members for"
 msgid "Current Members"
 msgstr "Current Members"
 
-#: geonode/groups/templates/groups/group_members.html:37
-#: geonode/groups/templates/groups/group_members.html:63
-#: geonode/groups/templates/groups/group_members.html:90
-msgid "Manager"
-msgstr "Manager"
-
 #: geonode/groups/templates/groups/group_members.html:46
 #: geonode/groups/templates/groups/group_members.html:72
 #: geonode/groups/templates/groups/group_members.html:99
@@ -1349,6 +2134,267 @@ msgstr "Create a Group Category"
 #: geonode/groups/templates/groups/groupcategory_update_form.html:6
 msgid "Edit Group Category"
 msgstr "Edit Group Category"
+
+#: geonode/invitations/forms.py:53
+#, python-format
+msgid "The e-mail address '%(email)s' has already been invited."
+msgstr "The e-mail address '%(email)s' has already been invited."
+
+#: geonode/invitations/forms.py:55
+#, python-format
+msgid "The e-mail address '%(email)s' has already accepted an invite."
+msgstr "The e-mail address '%(email)s' has already accepted an invite."
+
+#: geonode/invitations/forms.py:57
+#, python-format
+msgid "An active user is already using the e-mail address '%(email)s'"
+msgstr "An active user is already using the e-mail address '%(email)s'"
+
+#: geonode/invitations/forms.py:75 geonode/templates/base.html:506
+msgid "E-mail"
+msgstr "E-mail"
+
+#: geonode/invitations/views.py:71
+#, python-format
+msgid "Invitations succefully sent to '%(email)s'"
+msgstr "Invitations succefully sent to '%(email)s'"
+
+#: geonode/invitations/views.py:78
+#, python-format
+msgid ""
+"Sorry, it was not possible to invite '%(email)s' due to the following isse: "
+"%(error)s (%(type)s)"
+msgstr ""
+"Sorry, it was not possible to invite '%(email)s' due to the following isse: "
+"%(error)s (%(type)s)"
+
+#: geonode/layers/__init__.py:28
+msgid "Layer Created"
+msgstr "Layer Created"
+
+#: geonode/layers/__init__.py:28
+msgid "A Layer was created"
+msgstr "A Layer was created"
+
+#: geonode/layers/__init__.py:29
+msgid "Layer Updated"
+msgstr "Layer Updated"
+
+#: geonode/layers/__init__.py:29
+msgid "A Layer was updated"
+msgstr "A Layer was updated"
+
+#: geonode/layers/__init__.py:30
+msgid "Layer Approved"
+msgstr "Layer Approved"
+
+#: geonode/layers/__init__.py:30
+msgid "A Layer was approved by a Manager"
+msgstr "A Layer was approved by a Manager"
+
+#: geonode/layers/__init__.py:31
+msgid "Layer Published"
+msgstr "Layer Published"
+
+#: geonode/layers/__init__.py:31
+msgid "A Layer was published"
+msgstr "A Layer was published"
+
+#: geonode/layers/__init__.py:32
+msgid "Layer Deleted"
+msgstr "Layer Deleted"
+
+#: geonode/layers/__init__.py:32
+msgid "A Layer was deleted"
+msgstr "A Layer was deleted"
+
+#: geonode/layers/models.py:52
+msgid "YYYYMMDD"
+msgstr "YYYYMMDD"
+
+#: geonode/layers/models.py:53
+msgid "YYYYMMDD'T'hhmmss"
+msgstr "YYYYMMDD'T'hhmmss"
+
+#: geonode/layers/models.py:54
+msgid "YYYYMMDD'T'hhmmss'Z'"
+msgstr "YYYYMMDD'T'hhmmss'Z'"
+
+#: geonode/layers/models.py:72 geonode/qgis_server/models.py:198
+msgid "style name"
+msgstr "style name"
+
+#: geonode/layers/models.py:74
+msgid "sld text"
+msgstr "sld text"
+
+#: geonode/layers/models.py:76
+msgid "sld version"
+msgstr "sld version"
+
+#: geonode/layers/models.py:80
+msgid "sld url"
+msgstr "sld url"
+
+#: geonode/layers/models.py:155
+msgid "Workspace"
+msgstr "Workspace"
+
+#: geonode/layers/models.py:156
+msgid "Store"
+msgstr "Store"
+
+#: geonode/layers/models.py:157
+msgid "Storetype"
+msgstr "Storetype"
+
+#: geonode/layers/models.py:159
+msgid "Typename"
+msgstr "Typename"
+
+#: geonode/layers/models.py:161
+msgid "Is mosaic?"
+msgstr "Is mosaic?"
+
+#: geonode/layers/models.py:162
+msgid "Has time?"
+msgstr "Has time?"
+
+#: geonode/layers/models.py:163
+msgid "Has elevation?"
+msgstr "Has elevation?"
+
+#: geonode/layers/models.py:165
+msgid "Time regex"
+msgstr "Time regex"
+
+#: geonode/layers/models.py:170
+msgid "Elevation regex"
+msgstr "Elevation regex"
+
+#: geonode/layers/models.py:275
+msgid "File cannot be opened, maybe check the encoding"
+msgstr "File cannot be opened, maybe check the encoding"
+
+#: geonode/layers/models.py:386
+msgid "attribute name"
+msgstr "attribute name"
+
+#: geonode/layers/models.py:387
+msgid "name of attribute as stored in shapefile/spatial database"
+msgstr "name of attribute as stored in shapefile/spatial database"
+
+#: geonode/layers/models.py:393
+msgid "attribute description"
+msgstr "attribute description"
+
+#: geonode/layers/models.py:394
+msgid "description of attribute to be used in metadata"
+msgstr "description of attribute to be used in metadata"
+
+#: geonode/layers/models.py:399
+msgid "attribute label"
+msgstr "attribute label"
+
+#: geonode/layers/models.py:400
+msgid "title of attribute as displayed in GeoNode"
+msgstr "title of attribute as displayed in GeoNode"
+
+#: geonode/layers/models.py:406
+msgid "attribute type"
+msgstr "attribute type"
+
+#: geonode/layers/models.py:407
+msgid "the data type of the attribute (integer, string, geometry, etc)"
+msgstr "the data type of the attribute (integer, string, geometry, etc)"
+
+#: geonode/layers/models.py:414
+msgid "visible?"
+msgstr "visible?"
+
+#: geonode/layers/models.py:415
+msgid "specifies if the attribute should be displayed in identify results"
+msgstr "specifies if the attribute should be displayed in identify results"
+
+#: geonode/layers/models.py:417
+msgid "display order"
+msgstr "display order"
+
+#: geonode/layers/models.py:418
+msgid ""
+"specifies the order in which attribute should be displayed in identify "
+"results"
+msgstr ""
+"specifies the order in which attribute should be displayed in identify "
+"results"
+
+#: geonode/layers/models.py:422
+msgid "count"
+msgstr "count"
+
+#: geonode/layers/models.py:423
+msgid "count value for this field"
+msgstr "count value for this field"
+
+#: geonode/layers/models.py:426
+msgid "min"
+msgstr "min"
+
+#: geonode/layers/models.py:427
+msgid "minimum value for this field"
+msgstr "minimum value for this field"
+
+#: geonode/layers/models.py:434
+msgid "max"
+msgstr "max"
+
+#: geonode/layers/models.py:435
+msgid "maximum value for this field"
+msgstr "maximum value for this field"
+
+#: geonode/layers/models.py:442
+msgid "average"
+msgstr "average"
+
+#: geonode/layers/models.py:443
+msgid "average value for this field"
+msgstr "average value for this field"
+
+#: geonode/layers/models.py:450
+msgid "median"
+msgstr "median"
+
+#: geonode/layers/models.py:451
+msgid "median value for this field"
+msgstr "median value for this field"
+
+#: geonode/layers/models.py:458
+msgid "standard deviation"
+msgstr "standard deviation"
+
+#: geonode/layers/models.py:459
+msgid "standard deviation for this field"
+msgstr "standard deviation for this field"
+
+#: geonode/layers/models.py:466
+msgid "sum"
+msgstr "sum"
+
+#: geonode/layers/models.py:467
+msgid "sum value for this field"
+msgstr "sum value for this field"
+
+#: geonode/layers/models.py:474
+msgid "unique values for this field"
+msgstr "unique values for this field"
+
+#: geonode/layers/models.py:478
+msgid "last modified"
+msgstr "last modified"
+
+#: geonode/layers/models.py:479
+msgid "date when attribute statistics were last updated"
+msgstr "date when attribute statistics were last updated"
 
 #: geonode/layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1536,6 +2582,7 @@ msgid ""
 msgstr ""
 
 #: geonode/layers/templates/layers/layer_detail.html:412
+#: geonode/monitoring/models.py:1082
 msgid "Warning"
 msgstr "Warning"
 
@@ -1565,8 +2612,14 @@ msgstr "Styles"
 msgid "Manage"
 msgstr "Manage"
 
+#: geonode/layers/templates/layers/layer_detail.html:497
+#: geonode/maps/templates/maps/map_detail.html:164
+msgid "Set"
+msgstr "Set"
+
 #: geonode/layers/templates/layers/layer_detail.html:505
-#: geonode/templates/index.html:66
+#: geonode/monitoring/models.py:173 geonode/templates/index.html:66
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:5
 msgid "Layer"
 msgid_plural "Layers"
 msgstr[0] "Layer"
@@ -1864,7 +2917,7 @@ msgstr "Resume"
 #: geonode/templates/_comments.html:37
 #: geonode/templates/announcements/announcement_confirm_delete.html:21
 #: geonode/templates/announcements/announcement_form.html:24
-#: geonode/templates/user_messages/_message_snippet.html:61
+#: geonode/templates/user_messages/_message_snippet.html:39
 msgid "Delete"
 msgstr "Delete"
 
@@ -1969,7 +3022,6 @@ msgid "This will most probably overwrite the current default style!"
 msgstr "This will most probably overwrite the current default style!"
 
 #: geonode/layers/templates/layouts/panels.html:224
-#: geonode/templates/user_messages/_message_snippet.html:12
 msgid "Preview"
 msgstr "Preview"
 
@@ -2652,6 +3704,235 @@ msgstr " Or just go "
 msgid "now"
 msgstr "now"
 
+#: geonode/layers/utils.py:496 geonode/layers/utils.py:520
+#, fuzzy
+#| msgid "You are attempting to replace a vector layer with a raster."
+msgid "You are attempting to replace a vector layer with an unknown format."
+msgstr "You are attempting to replace a vector layer with a raster."
+
+#: geonode/layers/utils.py:502 geonode/layers/views.py:1211
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr "You are attempting to replace a vector layer with a raster."
+
+#: geonode/layers/utils.py:505 geonode/layers/views.py:1215
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr "You are attempting to replace a raster layer with a vector."
+
+#: geonode/layers/utils.py:528
+msgid ""
+"Please ensure the name is consistent with the file you are trying to replace."
+msgstr ""
+
+#: geonode/layers/utils.py:533
+msgid "Local GeoNode layer has no geometry type."
+msgstr ""
+
+#: geonode/layers/utils.py:538
+msgid ""
+"Please ensure there is at least one geometry "
+"type                                 that is consistent with the file you "
+"are trying to replace."
+msgstr ""
+
+#: geonode/layers/utils.py:542
+#, python-format
+msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgstr ""
+
+#: geonode/layers/views.py:127
+msgid ""
+"There was an error while attempting to upload your data. Please try again, "
+"or contact and administrator if the problem continues."
+msgstr ""
+"There was an error while attempting to upload your data. Please try again, "
+"or contact and administrator if the problem continues."
+
+#: geonode/layers/views.py:130
+msgid ""
+"Note: this layer's orginal metadata was populated and preserved by importing "
+"a metadata XML file. This metadata cannot be edited."
+msgstr ""
+"Note: this layer's orginal metadata was populated and preserved by importing "
+"a metadata XML file. This metadata cannot be edited."
+
+#: geonode/layers/views.py:134
+msgid "You are not permitted to delete this layer"
+msgstr "You are not permitted to delete this layer"
+
+#: geonode/layers/views.py:135
+msgid "You do not have permissions for this layer."
+msgstr "You do not have permissions for this layer."
+
+#: geonode/layers/views.py:136
+msgid "You are not permitted to modify this layer"
+msgstr "You are not permitted to modify this layer"
+
+#: geonode/layers/views.py:138
+msgid "You are not permitted to modify this layer's metadata"
+msgstr "You are not permitted to modify this layer's metadata"
+
+#: geonode/layers/views.py:139
+msgid "You are not permitted to view this layer"
+msgstr "You are not permitted to view this layer"
+
+#: geonode/layers/views.py:277
+msgid "Failed to upload the layer"
+msgstr "Failed to upload the layer"
+
+#: geonode/layers/views.py:1311 geonode/layers/views.py:1356
+msgid "Unable to delete layer"
+msgstr "Unable to delete layer"
+
+#: geonode/layers/views.py:1315 geonode/layers/views.py:1360
+msgid ""
+"This layer is a member of a layer group, you must remove the layer from the "
+"group before deleting."
+msgstr ""
+"This layer is a member of a layer group, you must remove the layer from the "
+"group before deleting."
+
+#: geonode/layers/views.py:1408 geonode/maps/views.py:1406
+msgid "couldn't generate thumbnail"
+msgstr "couldn't generate thumbnail"
+
+#: geonode/maps/__init__.py:28
+msgid "Map Created"
+msgstr "Map Created"
+
+#: geonode/maps/__init__.py:28
+msgid "A Map was created"
+msgstr "A Map was created"
+
+#: geonode/maps/__init__.py:29
+msgid "Map Updated"
+msgstr "Map Updated"
+
+#: geonode/maps/__init__.py:29
+msgid "A Map was updated"
+msgstr "A Map was updated"
+
+#: geonode/maps/__init__.py:30
+msgid "Map Approved"
+msgstr "Map Approved"
+
+#: geonode/maps/__init__.py:30
+msgid "A Map was approved by a Manager"
+msgstr "A Map was approved by a Manager"
+
+#: geonode/maps/__init__.py:31
+msgid "Map Published"
+msgstr "Map Published"
+
+#: geonode/maps/__init__.py:31
+msgid "A Map was published"
+msgstr "A Map was published"
+
+#: geonode/maps/__init__.py:32
+msgid "Map Deleted"
+msgstr "Map Deleted"
+
+#: geonode/maps/__init__.py:32
+msgid "A Map was deleted"
+msgstr "A Map was deleted"
+
+#: geonode/maps/__init__.py:33
+msgid "Comment on Map"
+msgstr "Comment on Map"
+
+#: geonode/maps/__init__.py:33
+msgid "A map was commented on"
+msgstr "A map was commented on"
+
+#: geonode/maps/__init__.py:34
+msgid "Rating for Map"
+msgstr "Rating for Map"
+
+#: geonode/maps/__init__.py:34
+msgid "A rating was given to a map"
+msgstr "A rating was given to a map"
+
+#: geonode/maps/models.py:64
+msgid "zoom"
+msgstr "zoom"
+
+#: geonode/maps/models.py:68
+msgid "projection"
+msgstr "projection"
+
+#: geonode/maps/models.py:72
+msgid "center X"
+msgstr "center X"
+
+#: geonode/maps/models.py:76
+msgid "center Y"
+msgstr "center Y"
+
+#: geonode/maps/models.py:83
+msgid "Site URL"
+msgstr "Site URL"
+
+#: geonode/maps/models.py:88
+msgid "Featured Map URL"
+msgstr "Featured Map URL"
+
+#: geonode/maps/models.py:443
+msgid "stack order"
+msgstr "stack order"
+
+#: geonode/maps/models.py:448
+msgid "format"
+msgstr "format"
+
+#: geonode/maps/models.py:454
+msgid "name"
+msgstr "name"
+
+#: geonode/maps/models.py:457
+#, fuzzy
+#| msgid "Store"
+msgid "store"
+msgstr "Store"
+
+#: geonode/maps/models.py:463
+msgid "opacity"
+msgstr "opacity"
+
+#: geonode/maps/models.py:467
+msgid "styles"
+msgstr "styles"
+
+#: geonode/maps/models.py:472
+msgid "transparent"
+msgstr "transparent"
+
+#: geonode/maps/models.py:476
+msgid "fixed"
+msgstr "fixed"
+
+#: geonode/maps/models.py:480
+msgid "group"
+msgstr "group"
+
+#: geonode/maps/models.py:484
+msgid "visibility"
+msgstr "visibility"
+
+#: geonode/maps/models.py:487
+msgid "ows URL"
+msgstr "ows URL"
+
+#: geonode/maps/models.py:490
+msgid "layer params"
+msgstr "layer params"
+
+#: geonode/maps/models.py:497
+msgid "source params"
+msgstr "source params"
+
+#: geonode/maps/models.py:607
+msgid "JSON Configuration"
+msgstr "JSON Configuration"
+
 #: geonode/maps/templates/maps/map_detail.html:26
 msgid "maps"
 msgstr "maps"
@@ -2670,7 +3951,8 @@ msgid "Download Map"
 msgstr "Download Map"
 
 #: geonode/maps/templates/maps/map_detail.html:171
-#: geonode/maps/templates/maps/map_view.html:7 geonode/templates/index.html:76
+#: geonode/maps/templates/maps/map_view.html:7 geonode/monitoring/models.py:174
+#: geonode/templates/index.html:76
 msgid "Map"
 msgid_plural "Maps"
 msgstr[0] "Map"
@@ -2757,6 +4039,7 @@ msgid "Copy to Clipboard"
 msgstr "Copy to Clipboard"
 
 #: geonode/maps/templates/maps/map_download.html:6
+#: geonode/monitoring/models.py:360
 msgid "Download"
 msgstr "Download"
 
@@ -2890,6 +4173,350 @@ msgstr ""
 "\">%(map_title)s</a>?\n"
 "        "
 
+#: geonode/maps/views.py:95
+msgid "You are not permitted to delete this map."
+msgstr "You are not permitted to delete this map."
+
+#: geonode/maps/views.py:96
+msgid "You do not have permissions for this map."
+msgstr "You do not have permissions for this map."
+
+#: geonode/maps/views.py:97
+msgid "You must be logged in to save this map"
+msgstr "You must be logged in to save this map"
+
+#: geonode/maps/views.py:98
+msgid "You are not permitted to save or edit this map."
+msgstr "You are not permitted to save or edit this map."
+
+#: geonode/maps/views.py:100
+msgid "You are not allowed to modify this map's metadata."
+msgstr "You are not allowed to modify this map's metadata."
+
+#: geonode/maps/views.py:101
+msgid "You are not allowed to view this map."
+msgstr "You are not allowed to view this map."
+
+#: geonode/maps/views.py:102
+msgid "An unknown error has occured."
+msgstr "An unknown error has occured."
+
+#: geonode/maps/views.py:1413
+msgid "Thumbnail saved"
+msgstr "Thumbnail saved"
+
+#: geonode/maps/views.py:1416
+msgid "error saving thumbnail"
+msgstr "error saving thumbnail"
+
+#: geonode/monitoring/__init__.py:45
+msgid "Monitoring alert"
+msgstr "Monitoring alert"
+
+#: geonode/monitoring/__init__.py:46
+msgid "Alert situation reported by monitoring"
+msgstr "Alert situation reported by monitoring"
+
+#: geonode/monitoring/collector.py:1008
+msgid "GeoNode Monitoring on {} reports errors: {}"
+msgstr "GeoNode Monitoring on {} reports errors: {}"
+
+#: geonode/monitoring/forms.py:30
+#, fuzzy
+#| msgid "Verify your email address"
+msgid "Enter valid email addresses."
+msgstr "Verify your email address"
+
+#: geonode/monitoring/management/commands/collect_metrics.py:50
+msgid "Show list of services"
+msgstr "Show list of services"
+
+#: geonode/monitoring/management/commands/collect_metrics.py:52
+#: geonode/monitoring/management/commands/render_metrics.py:57
+msgid ""
+"Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
+"provided, last sync will be used."
+msgstr ""
+"Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
+"provided, last sync will be used."
+
+#: geonode/monitoring/management/commands/collect_metrics.py:55
+#: geonode/monitoring/management/commands/render_metrics.py:59
+msgid ""
+"Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
+"provided, now will be used."
+msgstr ""
+"Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
+"provided, now will be used."
+
+#: geonode/monitoring/management/commands/collect_metrics.py:58
+msgid "Force check"
+msgstr "Force check"
+
+#: geonode/monitoring/management/commands/collect_metrics.py:60
+msgid "Format of audit log (xml, json)"
+msgstr "Format of audit log (xml, json)"
+
+#: geonode/monitoring/management/commands/collect_metrics.py:62
+msgid ""
+"Should old data be preserved (default: no, data older than settings."
+"MONITORING_DATA_TTL will be removed)"
+msgstr ""
+"Should old data be preserved (default: no, data older than settings."
+"MONITORING_DATA_TTL will be removed)"
+
+#: geonode/monitoring/management/commands/collect_metrics.py:65
+msgid "Should stop on first error occured (default: no)"
+msgstr "Should stop on first error occured (default: no)"
+
+#: geonode/monitoring/management/commands/collect_metrics.py:67
+msgid "Should process and send notifications as well (default: no)"
+msgstr "Should process and send notifications as well (default: no)"
+
+#: geonode/monitoring/management/commands/collect_metrics.py:69
+msgid "Collect data from this service only"
+msgstr "Collect data from this service only"
+
+#: geonode/monitoring/management/commands/render_metrics.py:49
+msgid "Show list of metrics"
+msgstr "Show list of metrics"
+
+#: geonode/monitoring/management/commands/render_metrics.py:51
+msgid "Show list of labels for metric"
+msgstr "Show list of labels for metric"
+
+#: geonode/monitoring/management/commands/render_metrics.py:54
+msgid "Show list of resources for metric"
+msgstr "Show list of resources for metric"
+
+#: geonode/monitoring/management/commands/render_metrics.py:62
+msgid "Data aggregation interval in seconds (default: 60)"
+msgstr "Data aggregation interval in seconds (default: 60)"
+
+#: geonode/monitoring/management/commands/render_metrics.py:63
+msgid "Metric name"
+msgstr "Metric name"
+
+#: geonode/monitoring/management/commands/render_metrics.py:66
+msgid "Show data for specific resource in resource_type=resource_name format"
+msgstr "Show data for specific resource in resource_type=resource_name format"
+
+#: geonode/monitoring/management/commands/render_metrics.py:69
+msgid "Show data for specific resource"
+msgstr "Show data for specific resource"
+
+#: geonode/monitoring/management/commands/render_metrics.py:72
+msgid "Show data for specific label"
+msgstr "Show data for specific label"
+
+#: geonode/monitoring/models.py:100 geonode/templates/500.html:199
+#: geonode/templates/base.html:511
+msgid "GeoNode"
+msgstr "GeoNode"
+
+#: geonode/monitoring/models.py:101
+#: geonode/people/templates/people/profile_detail.html:163
+#: geonode/templates/500.html:278
+msgid "GeoServer"
+msgstr "GeoServer"
+
+#: geonode/monitoring/models.py:102
+msgid "Host (GeoServer)"
+msgstr "Host (GeoServer)"
+
+#: geonode/monitoring/models.py:103
+msgid "Host (GeoNode)"
+msgstr "Host (GeoNode)"
+
+#: geonode/monitoring/models.py:172
+msgid "No resource"
+msgstr "No resource"
+
+#: geonode/monitoring/models.py:175
+msgid "Resource base"
+msgstr "Resource base"
+
+#: geonode/monitoring/models.py:177
+msgid "Style"
+msgstr "Style"
+
+#: geonode/monitoring/models.py:178
+#: geonode/people/templates/people/profile_detail.html:164
+#: geonode/templates/500.html:279 geonode/templates/base.html:383
+msgid "Admin"
+msgstr "Admin"
+
+#: geonode/monitoring/models.py:180
+msgid "Other"
+msgstr "Other"
+
+#: geonode/monitoring/models.py:210 geonode/monitoring/models.py:261
+msgid "Rate"
+msgstr "Rate"
+
+#: geonode/monitoring/models.py:211 geonode/monitoring/models.py:263
+msgid "Count"
+msgstr "Count"
+
+#: geonode/monitoring/models.py:212
+msgid "Value"
+msgstr "Value"
+
+#: geonode/monitoring/models.py:213
+msgid "Value numeric"
+msgstr "Value numeric"
+
+#: geonode/monitoring/models.py:252
+msgid "Bytes"
+msgstr "Bytes"
+
+#: geonode/monitoring/models.py:253
+msgid "Kilobytes"
+msgstr "Kilobytes"
+
+#: geonode/monitoring/models.py:254
+msgid "Megabytes"
+msgstr "Megabytes"
+
+#: geonode/monitoring/models.py:255
+msgid "Gigabytes"
+msgstr "Gigabytes"
+
+#: geonode/monitoring/models.py:256
+msgid "Bytes per second"
+msgstr "Bytes per second"
+
+#: geonode/monitoring/models.py:257
+msgid "Kilobytes per second"
+msgstr "Kilobytes per second"
+
+#: geonode/monitoring/models.py:258
+msgid "Megabytes per second"
+msgstr "Megabytes per second"
+
+#: geonode/monitoring/models.py:259
+msgid "Gigabytes per second"
+msgstr "Gigabytes per second"
+
+#: geonode/monitoring/models.py:260
+msgid "Seconds"
+msgstr "Seconds"
+
+#: geonode/monitoring/models.py:262
+msgid "Percentage"
+msgstr "Percentage"
+
+#: geonode/monitoring/models.py:351
+msgid "Not OWS"
+msgstr "Not OWS"
+
+#: geonode/monitoring/models.py:352
+msgid "Any OWS"
+msgstr "Any OWS"
+
+#: geonode/monitoring/models.py:356
+#: geonode/templates/pinax/notifications/notice_settings.html:51
+msgid "Change"
+msgstr "Change"
+
+#: geonode/monitoring/models.py:357
+msgid "Change Metadata"
+msgstr "Change Metadata"
+
+#: geonode/monitoring/models.py:358
+msgid "View Metadata"
+msgstr "View Metadata"
+
+#: geonode/monitoring/models.py:359
+msgid "View"
+msgstr "View"
+
+#: geonode/monitoring/models.py:361
+msgid "Publish"
+msgstr "Publish"
+
+#: geonode/monitoring/models.py:363
+msgid "Geoserver event"
+msgstr "Geoserver event"
+
+#: geonode/monitoring/models.py:432
+msgid "List of resources affected"
+msgstr "List of resources affected"
+
+#: geonode/monitoring/models.py:439
+msgid "Response processing time in ms"
+msgstr "Response processing time in ms"
+
+#: geonode/monitoring/models.py:1071
+msgid "1 minute"
+msgstr "1 minute"
+
+#: geonode/monitoring/models.py:1072
+msgid "5 minutes"
+msgstr "5 minutes"
+
+#: geonode/monitoring/models.py:1073
+msgid "10 minutes"
+msgstr "10 minutes"
+
+#: geonode/monitoring/models.py:1074
+msgid "30 minutes"
+msgstr "30 minutes"
+
+#: geonode/monitoring/models.py:1075
+msgid "1 hour"
+msgstr "1 hour"
+
+#: geonode/monitoring/models.py:1083 geonode/templates/metadata_base.html:128
+#: geonode/templates/metadata_base.html:131
+#: geonode/templates/socialaccount/authentication_error.html:11
+msgid "Error"
+msgstr "Error"
+
+#: geonode/monitoring/models.py:1084
+msgid "Fatal"
+msgstr "Fatal"
+
+#: geonode/monitoring/models.py:1098
+msgid "Expected min/max values for user configuration"
+msgstr "Expected min/max values for user configuration"
+
+#: geonode/monitoring/models.py:1106
+msgid "Marker of last delivery"
+msgstr "Marker of last delivery"
+
+#: geonode/monitoring/models.py:1109
+msgid "Minimum time between subsequent notifications"
+msgstr "Minimum time between subsequent notifications"
+
+#: geonode/monitoring/models.py:1114
+msgid "How severe would be error from this notification"
+msgstr "How severe would be error from this notification"
+
+#: geonode/monitoring/models.py:1119
+msgid "Is it active"
+msgstr "Is it active"
+
+#: geonode/monitoring/models.py:1126
+msgid "{}: {}"
+msgstr "{}: {}"
+
+#: geonode/monitoring/models.py:1390
+msgid "Value must be above"
+msgstr "Value must be above"
+
+#: geonode/monitoring/models.py:1391
+msgid "Value must be below"
+msgstr "Value must be below"
+
+#: geonode/monitoring/models.py:1392
+msgid "Last update must not be older than"
+msgstr "Last update must not be older than"
+
+#: geonode/monitoring/models.py:1542
+msgid "Max timeout for given metric before error should be raised"
+msgstr "Max timeout for given metric before error should be raised"
+
 #: geonode/monitoring/templates/monitoring/index.html:5
 #: geonode/monitoring/templates/monitoring/non_superuser.html:4
 #: geonode/templates/base.html:389
@@ -2899,6 +4526,253 @@ msgstr "Monitoring & Analytics"
 #: geonode/monitoring/templates/monitoring/non_superuser.html:10
 msgid "Only superusers can monitor performance"
 msgstr "Only superusers can monitor performance"
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:3
+msgid "Hi,"
+msgstr "Hi,"
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:5
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:3
+msgid "Monitoring on"
+msgstr "Monitoring on"
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:5
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:3
+msgid "has detected following problems :"
+msgstr "has detected following problems :"
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:9
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:6
+msgid "spotted"
+msgstr "spotted"
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:9
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:10
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:6
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:7
+#: geonode/social/templates/social/_activity_item.html:31
+msgid "ago"
+msgstr "ago"
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:10
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:7
+msgid "emerged"
+msgstr "emerged"
+
+#: geonode/people/__init__.py:26
+msgid "User following you"
+msgstr "User following you"
+
+#: geonode/people/__init__.py:26
+msgid "Another user has started following you"
+msgstr "Another user has started following you"
+
+#: geonode/people/__init__.py:27
+msgid "User requested access"
+msgstr "User requested access"
+
+#: geonode/people/__init__.py:28
+msgid "A new user has requested access to the site"
+msgstr "A new user has requested access to the site"
+
+#: geonode/people/__init__.py:29
+msgid "Account activated"
+msgstr "Account activated"
+
+#: geonode/people/__init__.py:30
+msgid "This account is now active and can log in the site"
+msgstr "This account is now active and can log in the site"
+
+#: geonode/people/admin.py:56
+msgid "Personal info"
+msgstr "Personal info"
+
+#: geonode/people/admin.py:59
+msgid "Important dates"
+msgstr "Important dates"
+
+#: geonode/people/admin.py:60
+msgid "Extended profile"
+msgstr "Extended profile"
+
+#: geonode/people/admin.py:159
+msgid "Password changed successfully."
+msgstr "Password changed successfully."
+
+#: geonode/people/admin.py:169
+#, python-format
+msgid "Change password: %s"
+msgstr "Change password: %s"
+
+#: geonode/people/enumerations.py:39
+msgid "party who authored the resource"
+msgstr "party who authored the resource"
+
+#: geonode/people/enumerations.py:40
+msgid ""
+"party who has processed the data in a manner such that the resource has been "
+"modified"
+msgstr ""
+"party who has processed the data in a manner such that the resource has been "
+"modified"
+
+#: geonode/people/enumerations.py:41
+msgid "party who published the resource"
+msgstr "party who published the resource"
+
+#: geonode/people/enumerations.py:42
+msgid ""
+"party that accepts accountability and responsibility for the data and "
+"ensures         appropriate care and maintenance of the resource"
+msgstr ""
+"party that accepts accountability and responsibility for the data and "
+"ensures         appropriate care and maintenance of the resource"
+
+#: geonode/people/enumerations.py:44
+msgid ""
+"party who can be contacted for acquiring knowledge about or acquisition of "
+"the resource"
+msgstr ""
+"party who can be contacted for acquiring knowledge about or acquisition of "
+"the resource"
+
+#: geonode/people/enumerations.py:45
+msgid "party who distributes the resource"
+msgstr "party who distributes the resource"
+
+#: geonode/people/enumerations.py:46
+msgid "party who uses the resource"
+msgstr "party who uses the resource"
+
+#: geonode/people/enumerations.py:47
+msgid "party that supplies the resource"
+msgstr "party that supplies the resource"
+
+#: geonode/people/enumerations.py:48
+msgid "party who created the resource"
+msgstr "party who created the resource"
+
+#: geonode/people/enumerations.py:49
+msgid "party that owns the resource"
+msgstr "party that owns the resource"
+
+#: geonode/people/enumerations.py:50
+msgid "key party responsible for gathering information and conducting research"
+msgstr ""
+"key party responsible for gathering information and conducting research"
+
+#: geonode/people/forms.py:75
+msgid "Email Address"
+msgstr "Email Address"
+
+#: geonode/people/models.py:66
+msgid "Organization Name"
+msgstr "Organization Name"
+
+#: geonode/people/models.py:70
+msgid "name of the responsible organization"
+msgstr "name of the responsible organization"
+
+#: geonode/people/models.py:72 geonode/templates/500.html:266
+#: geonode/templates/base.html:375
+msgid "Profile"
+msgstr "Profile"
+
+#: geonode/people/models.py:75
+msgid "introduce yourself"
+msgstr "introduce yourself"
+
+#: geonode/people/models.py:77
+msgid "Position Name"
+msgstr "Position Name"
+
+#: geonode/people/models.py:81
+msgid "role or position of the responsible person"
+msgstr "role or position of the responsible person"
+
+#: geonode/people/models.py:82
+#: geonode/people/templates/people/profile_detail.html:89
+#: geonode/templates/metadata_detail.html:145
+#: geonode/templates/metadata_detail.html:287
+#: geonode/templates/metadata_detail.html:368
+msgid "Voice"
+msgstr "Voice"
+
+#: geonode/people/models.py:83
+msgid ""
+"telephone number by which individuals can speak to the responsible "
+"organization or individual"
+msgstr ""
+"telephone number by which individuals can speak to the responsible "
+"organization or individual"
+
+#: geonode/people/models.py:84
+msgid "Facsimile"
+msgstr "Facsimile"
+
+#: geonode/people/models.py:85
+msgid ""
+"telephone number of a facsimile machine for the responsible organization or "
+"individual"
+msgstr ""
+"telephone number of a facsimile machine for the responsible organization or "
+"individual"
+
+#: geonode/people/models.py:87
+msgid "Delivery Point"
+msgstr "Delivery Point"
+
+#: geonode/people/models.py:91
+msgid ""
+"physical and email address at which the organization or individual may be "
+"contacted"
+msgstr ""
+"physical and email address at which the organization or individual may be "
+"contacted"
+
+#: geonode/people/models.py:93
+msgid "City"
+msgstr "City"
+
+#: geonode/people/models.py:97
+msgid "city of the location"
+msgstr "city of the location"
+
+#: geonode/people/models.py:99
+msgid "Administrative Area"
+msgstr "Administrative Area"
+
+#: geonode/people/models.py:103
+msgid "state, province of the location"
+msgstr "state, province of the location"
+
+#: geonode/people/models.py:105
+msgid "Postal Code"
+msgstr "Postal Code"
+
+#: geonode/people/models.py:109
+msgid "ZIP or other postal code"
+msgstr "ZIP or other postal code"
+
+#: geonode/people/models.py:111
+msgid "Country"
+msgstr "Country"
+
+#: geonode/people/models.py:116
+msgid "country of the physical address"
+msgstr "country of the physical address"
+
+#: geonode/people/models.py:118
+msgid ""
+"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+"the subject             (space or comma-separated"
+msgstr ""
+"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+"the subject             (space or comma-separated"
+
+#: geonode/people/models.py:127
+msgid "Timezone"
+msgstr "Timezone"
 
 #: geonode/people/templates/people/_profile_about_item.html:17
 msgid "No Group"
@@ -2937,11 +4811,6 @@ msgstr "Profile of "
 msgid "people explore"
 msgstr "people explore"
 
-#: geonode/people/templates/people/profile_detail.html:67
-#: geonode/templates/invitations/forms/_invite.html:14
-msgid "Email"
-msgstr "Email"
-
 #: geonode/people/templates/people/profile_detail.html:71
 #: geonode/people/templates/people/profile_detail.html:77
 #: geonode/people/templates/people/profile_detail.html:81
@@ -2972,15 +4841,10 @@ msgstr "Organization"
 msgid "Location"
 msgstr "Location"
 
-#: geonode/people/templates/people/profile_detail.html:89
-#: geonode/templates/metadata_detail.html:145
-#: geonode/templates/metadata_detail.html:287
-#: geonode/templates/metadata_detail.html:368
-msgid "Voice"
-msgstr "Voice"
-
 #: geonode/people/templates/people/profile_detail.html:93
 #: geonode/people/templates/people/profile_detail.html:113
+#: geonode/services/serviceprocessors/arcgis.py:115
+#: geonode/services/serviceprocessors/wms.py:144
 msgid "Not provided"
 msgstr "Not provided"
 
@@ -3058,16 +4922,6 @@ msgstr "Announcements"
 msgid "Invite Users"
 msgstr "Invite Users"
 
-#: geonode/people/templates/people/profile_detail.html:163
-#: geonode/templates/500.html:278
-msgid "GeoServer"
-msgstr "GeoServer"
-
-#: geonode/people/templates/people/profile_detail.html:164
-#: geonode/templates/500.html:279 geonode/templates/base.html:383
-msgid "Admin"
-msgstr "Admin"
-
 #: geonode/people/templates/people/profile_detail.html:174
 msgid "User Activities"
 msgstr "User Activities"
@@ -3101,6 +4955,59 @@ msgstr "Update profile"
 msgid "Explore People"
 msgstr "Explore People"
 
+#: geonode/people/views.py:92
+msgid "Your username for "
+msgstr "Your username for "
+
+#: geonode/people/views.py:106
+msgid "Your username has been emailed to you."
+msgstr "Your username has been emailed to you."
+
+#: geonode/people/views.py:108
+msgid "No user could be found with that email address."
+msgstr "No user could be found with that email address."
+
+#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:224
+msgid "You are not permitted to save or edit this resource."
+msgstr "You are not permitted to save or edit this resource."
+
+#: geonode/proxy/views.py:223
+#, fuzzy
+#| msgid "You are not permitted to save or edit this resource."
+msgid "You are not authorized to download this resource."
+msgstr "You are not permitted to save or edit this resource."
+
+#: geonode/proxy/views.py:225
+msgid ""
+"No files have been found for this resource. Please, contact a system "
+"administrator."
+msgstr ""
+
+#: geonode/proxy/views.py:259 geonode/proxy/views.py:270
+#: geonode/proxy/views.py:371
+#, fuzzy
+#| msgid "Documents found"
+msgid "No files found."
+msgstr "Documents found"
+
+#: geonode/proxy/views.py:379
+#, fuzzy
+#| msgid "Not provided"
+msgid "Not Authorized"
+msgstr "Not provided"
+
+#: geonode/qgis_server/models.py:200
+msgid "style xml"
+msgstr "style xml"
+
+#: geonode/qgis_server/models.py:201
+msgid "style url"
+msgstr "style url"
+
+#: geonode/qgis_server/models.py:203
+msgid "style legend url"
+msgstr "style legend url"
+
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:10
 msgid "Layer Style changed. Redirecting to apply changes..."
 msgstr "Layer Style changed. Redirecting to apply changes..."
@@ -3108,14 +5015,6 @@ msgstr "Layer Style changed. Redirecting to apply changes..."
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:13
 msgid "You may also use browser reload."
 msgstr "You may also use browser reload."
-
-#: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
-#: geonode/services/templates/services/service_resources_harvest.html:31
-#: geonode/templates/metadata_detail.html:130
-#: geonode/templates/metadata_detail.html:272
-#: geonode/templates/metadata_detail.html:353
-msgid "Name"
-msgstr "Name"
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:21
 msgid "Action"
@@ -3137,6 +5036,111 @@ msgstr "Remove Style"
 msgid "Reload to see changes"
 msgstr "Reload to see changes"
 
+#: geonode/qgis_server/views.py:266
+#, python-brace-format
+msgid ""
+"You should use a GIS software or a library which support TMS service to use "
+"this URL : {url}"
+msgstr ""
+"You should use a GIS software or a library which support TMS service to use "
+"this URL : {url}"
+
+#: geonode/security/middleware.py:128
+msgid "Session is Expired. Please login again!"
+msgstr "Session is Expired. Please login again!"
+
+#: geonode/services/enumerations.py:45
+msgid "Auto-detect"
+msgstr "Auto-detect"
+
+#: geonode/services/enumerations.py:46
+msgid "Paired WMS/WFS/WCS"
+msgstr "Paired WMS/WFS/WCS"
+
+#: geonode/services/enumerations.py:47 geonode/services/forms.py:54
+msgid "Web Map Service"
+msgstr "Web Map Service"
+
+#: geonode/services/enumerations.py:48
+msgid "Catalogue Service"
+msgstr "Catalogue Service"
+
+#: geonode/services/enumerations.py:49 geonode/services/forms.py:58
+msgid "ArcGIS REST MapServer"
+msgstr "ArcGIS REST MapServer"
+
+#: geonode/services/enumerations.py:50
+msgid "ArcGIS REST ImageServer"
+msgstr "ArcGIS REST ImageServer"
+
+#: geonode/services/enumerations.py:51 geonode/services/models.py:51
+msgid "OpenGeoPortal"
+msgstr "OpenGeoPortal"
+
+#: geonode/services/enumerations.py:52
+msgid "Harvard Geospatial Library"
+msgstr "Harvard Geospatial Library"
+
+#: geonode/services/enumerations.py:53 geonode/services/forms.py:55
+msgid "GeoNode (Web Map Service)"
+msgstr "GeoNode (Web Map Service)"
+
+#: geonode/services/enumerations.py:54
+msgid "GeoNode (Catalogue Service)"
+msgstr "GeoNode (Catalogue Service)"
+
+#: geonode/services/forms.py:37
+msgid "Service URL"
+msgstr "Service URL"
+
+#: geonode/services/forms.py:50
+msgid "Service Type"
+msgstr "Service Type"
+
+#: geonode/services/forms.py:72
+#, python-format
+msgid "Service %(url)s is already registered"
+msgstr "Service %(url)s is already registered"
+
+#: geonode/services/forms.py:88
+#, python-format
+msgid "Could not connect to the service at %(url)s"
+msgstr "Could not connect to the service at %(url)s"
+
+#: geonode/services/forms.py:93
+#, python-format
+msgid "Could not find importable resources for the service at %(url)s"
+msgstr "Could not find importable resources for the service at %(url)s"
+
+#: geonode/services/forms.py:100
+#, python-format
+msgid "Found service of type %(found_type)s instead of %(service_type)s"
+msgstr "Found service of type %(found_type)s instead of %(service_type)s"
+
+#: geonode/services/models.py:46
+msgid "Local"
+msgstr "Local"
+
+#: geonode/services/models.py:47
+msgid "Cascaded"
+msgstr "Cascaded"
+
+#: geonode/services/models.py:48
+msgid "Harvested"
+msgstr "Harvested"
+
+#: geonode/services/models.py:49
+msgid "Indexed"
+msgstr "Indexed"
+
+#: geonode/services/models.py:50
+msgid "Live"
+msgstr "Live"
+
+#: geonode/services/models.py:211
+msgid "Resource is queued"
+msgstr "Resource is queued"
+
 #: geonode/services/templates/services/remote_service_unavailable.html:5
 msgid "Remote service unavailable"
 msgstr "Remote service unavailable"
@@ -3148,11 +5152,6 @@ msgstr "Service unavailable"
 #: geonode/services/templates/services/remote_service_unavailable.html:11
 msgid "Could not contact"
 msgstr "Could not contact"
-
-#: geonode/services/templates/services/service_detail.html:9
-#: geonode/services/templates/services/service_list.html:16
-msgid "URL"
-msgstr "URL"
 
 #: geonode/services/templates/services/service_detail.html:12
 msgid "Contact"
@@ -3303,14 +5302,80 @@ msgstr "Harvesting resources..."
 msgid "Re-scan Service for new Resources"
 msgstr "Re-scan Service for new Resources"
 
-#: geonode/social/templates/social/_activity_item.html:31
-msgid "ago"
-msgstr "ago"
+#: geonode/services/views.py:96
+msgid "Service registered successfully"
+msgstr "Service registered successfully"
+
+#: geonode/services/views.py:193
+msgid "The selected resources are being imported"
+msgstr "The selected resources are being imported"
+
+#: geonode/services/views.py:194
+msgid "The selected resources have been imported"
+msgstr "The selected resources have been imported"
+
+#: geonode/services/views.py:224
+msgid "Resource is already being processed"
+msgstr "Resource is already being processed"
+
+#: geonode/services/views.py:230
+msgid "Resource {} is being processed"
+msgstr "Resource {} is being processed"
+
+#: geonode/services/views.py:259
+msgid "Service rescanned successfully"
+msgstr "Service rescanned successfully"
+
+#: geonode/services/views.py:329
+msgid "You are not permitted to change this service."
+msgstr "You are not permitted to change this service."
+
+#: geonode/services/views.py:357
+msgid "You are not permitted to remove this service."
+msgstr "You are not permitted to remove this service."
+
+#: geonode/services/views.py:368
+msgid "Service {} has been deleted"
+msgstr "Service {} has been deleted"
+
+#: geonode/social/signals.py:81
+msgid "created"
+msgstr "created"
+
+#: geonode/social/signals.py:82 geonode/social/tests.py:102
+msgid "deleted"
+msgstr "deleted"
+
+#: geonode/social/signals.py:85
+msgid "updated"
+msgstr "updated"
+
+#: geonode/social/signals.py:95 geonode/social/tests.py:122
+msgid "added a comment"
+msgstr "added a comment"
+
+#: geonode/social/signals.py:97
+msgid "updated a comment"
+msgstr "updated a comment"
+
+#: geonode/social/signals.py:103 geonode/social/signals.py:108
+#: geonode/social/tests.py:76
+msgid "uploaded"
+msgstr "uploaded"
 
 #: geonode/social/templates/social/activity_list.html:4
 #: geonode/social/templates/social/activity_list.html:15
 msgid "Recent activity"
 msgstr "Recent activity"
+
+#: geonode/social/templatetags/social_tags.py:56
+msgid "to"
+msgstr "to"
+
+#: geonode/social/templatetags/social_tags.py:72 geonode/social/tests.py:125
+#: geonode/templates/_comments.html:31
+msgid "on"
+msgstr "on"
 
 #: geonode/templates/401.html:10
 msgid "Not Permitted"
@@ -3439,10 +5504,6 @@ msgid "Powered by"
 msgstr "Powered by"
 
 #: geonode/templates/500.html:199 geonode/templates/base.html:511
-msgid "GeoNode"
-msgstr "GeoNode"
-
-#: geonode/templates/500.html:199 geonode/templates/base.html:511
 msgid "version"
 msgstr "version"
 
@@ -3468,16 +5529,12 @@ msgstr "Remember Me"
 msgid "Menu"
 msgstr "Menu"
 
-#: geonode/templates/500.html:266 geonode/templates/base.html:375
-msgid "Profile"
-msgstr "Profile"
-
 #: geonode/templates/500.html:267 geonode/templates/base.html:376
 msgid "Recent Activity"
 msgstr "Recent Activity"
 
 #: geonode/templates/500.html:268 geonode/templates/base.html:380
-#: geonode/templates/user_messages/inbox.html:15
+#: geonode/templates/user_messages/inbox.html:16
 msgid "Inbox"
 msgstr "Inbox"
 
@@ -3535,10 +5592,6 @@ msgstr "Log in to add a comment"
 #: geonode/templates/_comments.html:31
 msgid "By"
 msgstr "By"
-
-#: geonode/templates/_comments.html:31
-msgid "on"
-msgstr "on"
 
 #: geonode/templates/_comments.html:65
 msgid "Submit Comment"
@@ -3737,6 +5790,93 @@ msgstr "Add E-mail"
 #: geonode/templates/account/email.html:62
 msgid "Do you really want to remove the selected e-mail address?"
 msgstr "Do you really want to remove the selected e-mail address?"
+
+#: geonode/templates/account/email/email_confirmation_message.txt:1
+#, python-format
+msgid ""
+"Hello from %(site_name)s!\n"
+"\n"
+"You're receiving this e-mail because user %(user_display)s has given yours "
+"as an e-mail address to connect their account.\n"
+"\n"
+"To confirm this is correct, go to %(activate_url)s\n"
+msgstr ""
+"Hello from %(site_name)s!\n"
+"\n"
+"You're receiving this e-mail because user %(user_display)s has given yours "
+"as an e-mail address to connect their account.\n"
+"\n"
+"To confirm this is correct, go to %(activate_url)s\n"
+
+#: geonode/templates/account/email/email_confirmation_message.txt:7
+#, python-format
+msgid ""
+"Thank you from %(site_name)s!\n"
+"%(site_domain)s"
+msgstr ""
+"Thank you from %(site_name)s!\n"
+"%(site_domain)s"
+
+#: geonode/templates/account/email/email_confirmation_subject.txt:1
+#, python-format
+msgid "Please confirm email address for %(site_name)s"
+msgstr "Please confirm email address for %(site_name)s"
+
+#: geonode/templates/account/email/invite_user.txt:1
+#, python-format
+msgid "You have been invited to sign up at %(site_name)s."
+msgstr "You have been invited to sign up at %(site_name)s."
+
+#: geonode/templates/account/email/invite_user_subject.txt:1
+#, python-format
+msgid "Create an account on %(site_name)s"
+msgstr "Create an account on %(site_name)s"
+
+#: geonode/templates/account/email/password_change.txt:1
+msgid ""
+"This is the email notification to confirm your password has been changed on"
+msgstr ""
+"This is the email notification to confirm your password has been changed on"
+
+#: geonode/templates/account/email/password_change_subject.txt:1
+msgid "Change password email notification"
+msgstr "Change password email notification"
+
+#: geonode/templates/account/email/password_reset_key.txt:1
+#, python-format
+msgid ""
+"Hello from %(site_name)s!\n"
+"\n"
+"You're receiving this e-mail because you or someone else has requested a "
+"password for your user account.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password."
+msgstr ""
+"Hello from %(site_name)s!\n"
+"\n"
+"You're receiving this e-mail because you or someone else has requested a "
+"password for your user account.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password."
+
+#: geonode/templates/account/email/password_reset_key.txt:8
+#, python-format
+msgid "In case you forgot, your username is %(username)s."
+msgstr "In case you forgot, your username is %(username)s."
+
+#: geonode/templates/account/email/password_reset_key.txt:10
+#, python-format
+msgid ""
+"Thank you for using %(site_name)s!\n"
+"%(site_domain)s"
+msgstr ""
+"Thank you for using %(site_name)s!\n"
+"%(site_domain)s"
+
+#: geonode/templates/account/email/password_reset_key_subject.txt:1
+#, python-format
+msgid "[%(site_name)s] Password reset"
+msgstr "[%(site_name)s] Password reset"
 
 #: geonode/templates/account/email_confirm.html:6
 #: geonode/templates/account/email_confirm.html:10
@@ -4129,12 +6269,6 @@ msgstr "Delete These"
 msgid "GeoNode Search"
 msgstr "GeoNode Search"
 
-#: geonode/templates/base.html:314
-#: geonode/templates/search/_general_filters.html:76
-#: geonode/templates/search/_search_user_content.html:29
-msgid "Group Categories"
-msgstr "Group Categories"
-
 #: geonode/templates/base.html:495
 msgid "Contact Us"
 msgstr "Contact Us"
@@ -4142,10 +6276,6 @@ msgstr "Contact Us"
 #: geonode/templates/base.html:504
 msgid "Tel"
 msgstr "Tel"
-
-#: geonode/templates/base.html:506
-msgid "E-mail"
-msgstr "E-mail"
 
 #: geonode/templates/base.html:644
 msgid "Uploading..."
@@ -4713,6 +6843,7 @@ msgid "Explore documents"
 msgstr "Explore documents"
 
 #: geonode/templates/index.html:96
+#: geonode/templates/pinax/notifications/account_approve/full.txt:1
 msgid "User"
 msgid_plural "Users"
 msgstr[0] "User"
@@ -5019,6 +7150,7 @@ msgid "Leave"
 msgstr "Leave"
 
 #: geonode/templates/invitations/email/email_invite_message.html:2
+#: geonode/templates/invitations/email/email_invite_message.txt:3
 msgid "Dear Sir/Madam,"
 msgstr "Dear Sir/Madam,"
 
@@ -5037,6 +7169,7 @@ msgstr ""
 "Registration</a>."
 
 #: geonode/templates/invitations/email/email_invite_message.html:8
+#: geonode/templates/invitations/email/email_invite_message.txt:9
 msgid ""
 "Once you receive the confirmation that your account is activated, you can "
 "notify"
@@ -5060,18 +7193,30 @@ msgstr ""
 "<strong>%(inviter_name)s</strong> is a member of the following group(s):"
 
 #: geonode/templates/invitations/email/email_invite_message.html:16
+#: geonode/templates/invitations/email/email_invite_message.txt:18
 msgid "We look forward to seeing you on the platform,"
 msgstr "We look forward to seeing you on the platform,"
 
 #: geonode/templates/invitations/email/email_invite_message.html:17
+#: geonode/templates/invitations/email/email_invite_message.txt:20
 msgid "The GeoNode team."
 msgstr "The GeoNode team."
 
-#: geonode/templates/metadata_base.html:128
-#: geonode/templates/metadata_base.html:131
-#: geonode/templates/socialaccount/authentication_error.html:11
-msgid "Error"
-msgstr "Error"
+#: geonode/templates/invitations/email/email_invite_message.txt:5
+msgid "is inviting you to join"
+msgstr "is inviting you to join"
+
+#: geonode/templates/invitations/email/email_invite_message.txt:7
+msgid "To do so, please register at"
+msgstr "To do so, please register at"
+
+#: geonode/templates/invitations/email/email_invite_message.txt:9
+msgid "that you wish to join her/his group(s) through this link"
+msgstr "that you wish to join her/his group(s) through this link"
+
+#: geonode/templates/invitations/email/email_invite_message.txt:13
+msgid "is a member of the following group(s)"
+msgstr "is a member of the following group(s)"
 
 #: geonode/templates/metadata_base.html:149
 msgid "Updating Metadata..."
@@ -5102,10 +7247,6 @@ msgstr "Return to Map"
 msgid "Identification"
 msgstr "Identification"
 
-#: geonode/templates/metadata_detail.html:102
-msgid "Approved"
-msgstr "Approved"
-
 #: geonode/templates/metadata_detail.html:103
 #: geonode/templates/metadata_detail.html:106
 #: geonode/templates/metadata_detail.html:109
@@ -5115,10 +7256,6 @@ msgstr "Yes"
 #: geonode/templates/metadata_detail.html:105
 msgid "Published"
 msgstr "Published"
-
-#: geonode/templates/metadata_detail.html:108
-msgid "Featured"
-msgstr "Featured"
 
 #: geonode/templates/metadata_detail.html:133
 #: geonode/templates/metadata_detail.html:275
@@ -5182,6 +7319,292 @@ msgstr "Metadata Page"
 msgid "Online Link"
 msgstr "Online Link"
 
+#: geonode/templates/pinax/notifications/account_active/account_active_message.txt:2
+#: geonode/templates/pinax/notifications/account_active/full.txt:2
+msgid "Your account has been approved and is now active."
+msgstr "Your account has been approved and is now active."
+
+#: geonode/templates/pinax/notifications/account_active/account_active_message.txt:3
+#: geonode/templates/pinax/notifications/account_active/full.txt:3
+msgid "You can use the login form at"
+msgstr "You can use the login form at"
+
+#: geonode/templates/pinax/notifications/account_active/account_active_subject.txt:1
+msgid "Welcome at"
+msgstr "Welcome at"
+
+#: geonode/templates/pinax/notifications/account_active/short.txt:3
+msgid "Your account is now active"
+msgstr "Your account is now active"
+
+#: geonode/templates/pinax/notifications/account_approve/full.txt:1
+msgid "has requested access to the site."
+msgstr "has requested access to the site."
+
+#: geonode/templates/pinax/notifications/account_approve/full.txt:1
+msgid ""
+"You can enable access by setting the user as active on the admin section"
+msgstr ""
+"You can enable access by setting the user as active on the admin section"
+
+#: geonode/templates/pinax/notifications/account_approve/short.txt:3
+msgid "A user has requested access to the site"
+msgstr "A user has requested access to the site"
+
+#: geonode/templates/pinax/notifications/document_approved/full.txt:2
+msgid "The following document was approved"
+msgstr "The following document was approved"
+
+#: geonode/templates/pinax/notifications/document_approved/full.txt:3
+#: geonode/templates/pinax/notifications/document_deleted/full.txt:3
+#: geonode/templates/pinax/notifications/document_published/full.txt:3
+#: geonode/templates/pinax/notifications/document_rated/full.txt:5
+#: geonode/templates/pinax/notifications/document_updated/full.txt:3
+#: geonode/templates/pinax/notifications/layer_approved/full.txt:3
+#: geonode/templates/pinax/notifications/layer_deleted/full.txt:3
+#: geonode/templates/pinax/notifications/layer_published/full.txt:3
+#: geonode/templates/pinax/notifications/layer_rated/full.txt:5
+#: geonode/templates/pinax/notifications/layer_updated/full.txt:3
+#: geonode/templates/pinax/notifications/map_approved/full.txt:3
+#: geonode/templates/pinax/notifications/map_deleted/full.txt:3
+#: geonode/templates/pinax/notifications/map_published/full.txt:3
+#: geonode/templates/pinax/notifications/map_rated/full.txt:5
+#: geonode/templates/pinax/notifications/map_updated/full.txt:3
+msgid "owned by"
+msgstr "owned by"
+
+#: geonode/templates/pinax/notifications/document_approved/full.txt:4
+#: geonode/templates/pinax/notifications/document_comment/full.txt:3
+#: geonode/templates/pinax/notifications/document_created/full.txt:4
+#: geonode/templates/pinax/notifications/document_published/full.txt:4
+#: geonode/templates/pinax/notifications/document_updated/full.txt:4
+msgid "You can visit the document's detail page here"
+msgstr "You can visit the document's detail page here"
+
+#: geonode/templates/pinax/notifications/document_approved/short.txt:3
+msgid "A document has been approved"
+msgstr "A document has been approved"
+
+#: geonode/templates/pinax/notifications/document_comment/full.txt:2
+msgid "A comment has been posted for the document"
+msgstr "A comment has been posted for the document"
+
+#: geonode/templates/pinax/notifications/document_comment/full.txt:2
+#: geonode/templates/pinax/notifications/layer_comment/full.txt:2
+#: geonode/templates/pinax/notifications/map_comment/full.txt:3
+msgid "by the user"
+msgstr "by the user"
+
+#: geonode/templates/pinax/notifications/document_comment/short.txt:3
+msgid "A comment has been posted for a document"
+msgstr "A comment has been posted for a document"
+
+#: geonode/templates/pinax/notifications/document_created/full.txt:2
+#: geonode/templates/pinax/notifications/document_rated/full.txt:2
+#: geonode/templates/pinax/notifications/layer_created/full.txt:2
+#: geonode/templates/pinax/notifications/layer_rated/full.txt:2
+#: geonode/templates/pinax/notifications/map_created/full.txt:2
+#: geonode/templates/pinax/notifications/map_rated/full.txt:2
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
+msgid "The user"
+msgstr "The user"
+
+#: geonode/templates/pinax/notifications/document_created/full.txt:2
+msgid "uploaded the following document"
+msgstr "uploaded the following document"
+
+#: geonode/templates/pinax/notifications/document_created/short.txt:3
+msgid "A document has been uploaded"
+msgstr "A document has been uploaded"
+
+#: geonode/templates/pinax/notifications/document_deleted/full.txt:2
+msgid "The following document was deleted"
+msgstr "The following document was deleted"
+
+#: geonode/templates/pinax/notifications/document_deleted/short.txt:3
+msgid "A document has been deleted"
+msgstr "A document has been deleted"
+
+#: geonode/templates/pinax/notifications/document_published/full.txt:2
+msgid "The following document was published"
+msgstr "The following document was published"
+
+#: geonode/templates/pinax/notifications/document_published/short.txt:3
+msgid "A document has been published"
+msgstr "A document has been published"
+
+#: geonode/templates/pinax/notifications/document_rated/full.txt:3
+#: geonode/templates/pinax/notifications/layer_rated/full.txt:3
+#: geonode/templates/pinax/notifications/map_rated/full.txt:3
+msgid "rated"
+msgstr "rated"
+
+#: geonode/templates/pinax/notifications/document_rated/full.txt:4
+msgid "the following document"
+msgstr "the following document"
+
+#: geonode/templates/pinax/notifications/document_rated/full.txt:6
+#: geonode/templates/pinax/notifications/layer_approved/full.txt:4
+#: geonode/templates/pinax/notifications/layer_comment/full.txt:3
+#: geonode/templates/pinax/notifications/layer_created/full.txt:4
+#: geonode/templates/pinax/notifications/layer_published/full.txt:4
+#: geonode/templates/pinax/notifications/layer_rated/full.txt:6
+#: geonode/templates/pinax/notifications/layer_updated/full.txt:4
+msgid "You can visit the layer's detail page here"
+msgstr "You can visit the layer's detail page here"
+
+#: geonode/templates/pinax/notifications/document_rated/short.txt:3
+msgid "A document has been rated"
+msgstr "A document has been rated"
+
+#: geonode/templates/pinax/notifications/document_updated/full.txt:2
+msgid "The following document was updated"
+msgstr "The following document was updated"
+
+#: geonode/templates/pinax/notifications/document_updated/short.txt:3
+msgid "A document has been updated"
+msgstr "A document has been updated"
+
+#: geonode/templates/pinax/notifications/email_body.txt:3
+msgid "You have received the following notice from"
+msgstr "You have received the following notice from"
+
+#: geonode/templates/pinax/notifications/email_body.txt:8
+msgid "To change how you receive notifications, please go to"
+msgstr "To change how you receive notifications, please go to"
+
+#: geonode/templates/pinax/notifications/email_subject.txt:1
+#, python-format
+msgid "[%(current_site)s] %(message)s"
+msgstr "[%(current_site)s] %(message)s"
+
+#: geonode/templates/pinax/notifications/full.txt:1
+#: geonode/templates/pinax/notifications/short.txt:1
+#, python-format
+msgid "%(notice)s"
+msgstr "%(notice)s"
+
+#: geonode/templates/pinax/notifications/layer_approved/full.txt:2
+msgid "The following layer was approved"
+msgstr "The following layer was approved"
+
+#: geonode/templates/pinax/notifications/layer_approved/short.txt:3
+msgid "A layer has been approved"
+msgstr "A layer has been approved"
+
+#: geonode/templates/pinax/notifications/layer_comment/full.txt:2
+msgid "A comment has been posted for the layer"
+msgstr "A comment has been posted for the layer"
+
+#: geonode/templates/pinax/notifications/layer_comment/short.txt:3
+msgid "A comment has been posted for a layer"
+msgstr "A comment has been posted for a layer"
+
+#: geonode/templates/pinax/notifications/layer_created/full.txt:2
+msgid "uploaded the following layer"
+msgstr "uploaded the following layer"
+
+#: geonode/templates/pinax/notifications/layer_created/short.txt:3
+msgid "A new layer has been uploaded"
+msgstr "A new layer has been uploaded"
+
+#: geonode/templates/pinax/notifications/layer_deleted/full.txt:2
+msgid "The following layer was deleted"
+msgstr "The following layer was deleted"
+
+#: geonode/templates/pinax/notifications/layer_deleted/short.txt:3
+msgid "A layer has been deleted"
+msgstr "A layer has been deleted"
+
+#: geonode/templates/pinax/notifications/layer_published/full.txt:2
+msgid "The following layer was published"
+msgstr "The following layer was published"
+
+#: geonode/templates/pinax/notifications/layer_published/short.txt:3
+msgid "A layer has been published"
+msgstr "A layer has been published"
+
+#: geonode/templates/pinax/notifications/layer_rated/full.txt:4
+msgid "the following layer"
+msgstr "the following layer"
+
+#: geonode/templates/pinax/notifications/layer_rated/short.txt:3
+msgid "A layer has been rated"
+msgstr "A layer has been rated"
+
+#: geonode/templates/pinax/notifications/layer_updated/full.txt:2
+msgid "The following layer was updated"
+msgstr "The following layer was updated"
+
+#: geonode/templates/pinax/notifications/layer_updated/short.txt:3
+msgid "A layer has been updated"
+msgstr "A layer has been updated"
+
+#: geonode/templates/pinax/notifications/map_approved/full.txt:2
+msgid "The following map was approved"
+msgstr "The following map was approved"
+
+#: geonode/templates/pinax/notifications/map_approved/full.txt:4
+#: geonode/templates/pinax/notifications/map_comment/full.txt:4
+#: geonode/templates/pinax/notifications/map_created/full.txt:4
+#: geonode/templates/pinax/notifications/map_published/full.txt:4
+#: geonode/templates/pinax/notifications/map_rated/full.txt:6
+#: geonode/templates/pinax/notifications/map_updated/full.txt:4
+msgid "You can visit the map's detail page here"
+msgstr "You can visit the map's detail page here"
+
+#: geonode/templates/pinax/notifications/map_approved/short.txt:3
+msgid "A map has been approved"
+msgstr "A map has been approved"
+
+#: geonode/templates/pinax/notifications/map_comment/full.txt:2
+msgid "A comment has been posted for the map"
+msgstr "A comment has been posted for the map"
+
+#: geonode/templates/pinax/notifications/map_comment/short.txt:3
+msgid "A comment has been posted for a map"
+msgstr "A comment has been posted for a map"
+
+#: geonode/templates/pinax/notifications/map_created/full.txt:2
+msgid "created the following map"
+msgstr "created the following map"
+
+#: geonode/templates/pinax/notifications/map_created/short.txt:3
+msgid "A map has been created"
+msgstr "A map has been created"
+
+#: geonode/templates/pinax/notifications/map_deleted/full.txt:2
+msgid "The following map was deleted"
+msgstr "The following map was deleted"
+
+#: geonode/templates/pinax/notifications/map_deleted/short.txt:3
+msgid "A map has been deleted"
+msgstr "A map has been deleted"
+
+#: geonode/templates/pinax/notifications/map_published/full.txt:2
+msgid "The following map was published"
+msgstr "The following map was published"
+
+#: geonode/templates/pinax/notifications/map_published/short.txt:3
+msgid "A map has been published"
+msgstr "A map has been published"
+
+#: geonode/templates/pinax/notifications/map_rated/full.txt:4
+msgid "the following map"
+msgstr "the following map"
+
+#: geonode/templates/pinax/notifications/map_rated/short.txt:3
+msgid "A map has been rated"
+msgstr "A map has been rated"
+
+#: geonode/templates/pinax/notifications/map_updated/full.txt:2
+msgid "The following map was updated"
+msgstr "The following map was updated"
+
+#: geonode/templates/pinax/notifications/map_updated/short.txt:3
+msgid "A map has been updated"
+msgstr "A map has been updated"
+
 #: geonode/templates/pinax/notifications/notice_settings.html:7
 #: geonode/templates/pinax/notifications/notice_settings.html:10
 msgid "Notification Settings"
@@ -5210,9 +7633,19 @@ msgstr ""
 msgid "Notification Type"
 msgstr "Notification Type"
 
-#: geonode/templates/pinax/notifications/notice_settings.html:51
-msgid "Change"
-msgstr "Change"
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
+msgid "requested you to download this resource"
+msgstr "requested you to download this resource"
+
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:9
+msgid ""
+"Please go to resource page and assign the download permissions if you wish"
+msgstr ""
+"Please go to resource page and assign the download permissions if you wish"
+
+#: geonode/templates/pinax/notifications/request_download_resourcebase/short.txt:3
+msgid "A resource's download has been requested"
+msgstr "A resource's download has been requested"
 
 #: geonode/templates/privacy-cookies.html:4
 #: geonode/templates/privacy-cookies.html:8
@@ -5293,10 +7726,6 @@ msgstr "no longer"
 msgid "%(to_user_username)s's profile"
 msgstr "%(to_user_username)s's profile"
 
-#: geonode/templates/search/_general_filters.html:4
-msgid "Categories"
-msgstr "Categories"
-
 #: geonode/templates/search/_general_filters.html:30
 #, fuzzy
 #| msgid "Responsible Parties"
@@ -5348,7 +7777,7 @@ msgstr "Documents found"
 msgid "search"
 msgstr "search"
 
-#: geonode/templates/search/_search_user_content.html:51
+#: geonode/templates/search/_search_user_content.html:50
 msgid "Total"
 msgstr "Total"
 
@@ -5479,36 +7908,15 @@ msgstr "Connect with"
 msgid "Sign up with"
 msgstr "Sign up with"
 
-#: geonode/templates/user_messages/_message_snippet.html:9
-msgid "From"
-msgstr "From"
-
-#: geonode/templates/user_messages/_message_snippet.html:10
-msgid "Subject"
-msgstr "Subject"
-
-#: geonode/templates/user_messages/_message_snippet.html:11
-msgid "Last Sender"
-msgstr "Last Sender"
-
-#: geonode/templates/user_messages/_message_snippet.html:13
-msgid "Delete?"
-msgstr "Delete?"
-
-#: geonode/templates/user_messages/_message_snippet.html:50
-#: geonode/templates/user_messages/thread_detail.html:14
-msgid "me"
-msgstr "me"
-
-#: geonode/templates/user_messages/inbox.html:6
+#: geonode/templates/user_messages/inbox.html:7
 msgid "Message Inbox"
 msgstr "Message Inbox"
 
-#: geonode/templates/user_messages/inbox.html:11
+#: geonode/templates/user_messages/inbox.html:12
 msgid "Messages"
 msgstr "Messages"
 
-#: geonode/templates/user_messages/inbox.html:38
+#: geonode/templates/user_messages/inbox.html:63
 #: geonode/templates/user_messages/message_create.html:6
 #: geonode/templates/user_messages/message_create.html:9
 msgid "Create Message"
@@ -5519,1474 +7927,164 @@ msgid "Send message"
 msgstr "Send message"
 
 #: geonode/templates/user_messages/message_create.html:22
-#: geonode/templates/user_messages/thread_detail.html:32
+#: geonode/templates/user_messages/thread_detail.html:46
 msgid "Back to Inbox"
 msgstr "Back to Inbox"
 
-#: geonode/templates/user_messages/thread_detail.html:14
+#: geonode/templates/user_messages/thread_detail.html:9
+#, fuzzy
+#| msgid "Message box"
+msgid "A message to"
+msgstr "Message box"
+
+#: geonode/templates/user_messages/thread_detail.html:11
+msgid "Send to"
+msgstr ""
+
+#: geonode/templates/user_messages/thread_detail.html:28
 msgid "by"
 msgstr "by"
 
-#: geonode/templates/user_messages/thread_detail.html:18
+#: geonode/templates/user_messages/thread_detail.html:32
 msgid "You have no messages"
 msgstr "You have no messages"
 
-#: geonode/templates/user_messages/thread_detail.html:26
+#: geonode/templates/user_messages/thread_detail.html:40
 msgid "Send Reply"
 msgstr "Send Reply"
 
-#~ msgid "Request to download a resource"
-#~ msgstr "Request to download a resource"
+#: geonode/themes/apps.py:28
+msgid "GeoNode Themes Library"
+msgstr "GeoNode Themes Library"
+
+#: geonode/upload/files.py:262
+msgid "Could not access to uploaded data."
+msgstr "Could not access to uploaded data."
+
+#: geonode/upload/files.py:301
+msgid ""
+"One or more XML files was provided, but no matching files were found for "
+"them."
+msgstr ""
+"One or more XML files was provided, but no matching files were found for "
+"them."
+
+#: geonode/upload/files.py:310
+msgid ""
+"One or more SLD files was provided, but no matching files were found for "
+"them."
+msgstr ""
+"One or more SLD files was provided, but no matching files were found for "
+"them."
+
+#: geonode/upload/upload_validators.py:66
+msgid "Invalid zip file detected"
+msgstr "Invalid zip file detected"
+
+#: geonode/upload/upload_validators.py:82
+msgid "Could not find any valid spatial file inside the uploaded zip"
+msgstr "Could not find any valid spatial file inside the uploaded zip"
+
+#: geonode/upload/upload_validators.py:85
+msgid "Invalid kmz file detected"
+msgstr "Invalid kmz file detected"
+
+#: geonode/upload/upload_validators.py:89
+msgid "Could not find any kml files inside the uploaded kmz"
+msgstr "Could not find any kml files inside the uploaded kmz"
+
+#: geonode/upload/upload_validators.py:124
+msgid "Only one shapefile per zip is allowed"
+msgstr "Only one shapefile per zip is allowed"
+
+#: geonode/upload/upload_validators.py:170
+msgid "kml files with more than one GroundOverlay are not supported"
+msgstr "kml files with more than one GroundOverlay are not supported"
+
+#: geonode/upload/upload_validators.py:181
+msgid "Ground overlay image declared in kml file cannot be found"
+msgstr "Ground overlay image declared in kml file cannot be found"
+
+#: geonode/upload/upload_validators.py:218
+msgid "Only one kml file per ZIP is allowed"
+msgstr "Only one kml file per ZIP is allowed"
+
+#: geonode/upload/upload_validators.py:233
+msgid "Only one kml file per kmz is allowed"
+msgstr "Only one kml file per kmz is allowed"
+
+#: geonode/upload/upload_validators.py:287
+msgid ""
+"You are trying to upload multiple GeoTIFFs without a valid 'indexer."
+"properties' file."
+msgstr ""
+"You are trying to upload multiple GeoTIFFs without a valid 'indexer."
+"properties' file."
+
+#: geonode/upload/upload_validators.py:292
+msgid "Only one raster file per ZIP is allowed"
+msgstr "Only one raster file per ZIP is allowed"
+
+#: geonode/upload/upload_validators.py:297
+msgid "No multiple rasters allowed"
+msgstr "No multiple rasters allowed"
+
+#: geonode/upload/utils.py:98
+msgid ""
+"To support the time step, you must enable the OGC_SERVER DATASTORE option"
+msgstr ""
+"To support the time step, you must enable the OGC_SERVER DATASTORE option"
+
+#: geonode/upload/utils.py:261
+#, python-format
+msgid "Unsupported file type: %s"
+msgstr "Unsupported file type: %s"
+
+#: geonode/upload/utils.py:526
+#, python-format
+msgid "File does not exist: %s"
+msgstr ""
+
+#: geonode/upload/utils.py:583
+#, python-format
+msgid "unknown item state: %s"
+msgstr "unknown item state: %s"
+
+#: geonode/upload/utils.py:591
+#, python-format
+msgid "error during import: %s"
+msgstr "error during import: %s"
 
-#~ msgid "A request for downloading a resource was sent"
-#~ msgstr "A request for downloading a resource was sent"
+#: geonode/upload/utils.py:701
+msgid "Could not find any valid Time Regex for the Mosaic files."
+msgstr "Could not find any valid Time Regex for the Mosaic files."
 
-#~ msgid "series"
-#~ msgstr "series"
+#: geonode/upload/utils.py:732 geonode/upload/utils.py:764
+msgid "Unsupported DataBase for Mosaics!"
+msgstr "Unsupported DataBase for Mosaics!"
 
-#~ msgid "computer program or routine"
-#~ msgstr "computer program or routine"
+#: geonode/utils.py:87
+msgid "Invalid permission level."
+msgstr "Invalid permission level."
 
-#~ msgid "feature type"
-#~ msgstr "feature type"
+#: geonode/utils.py:967
+msgid "Permission Denied"
+msgstr "Permission Denied"
 
-#~ msgid "copy or imitation of an existing or hypothetical object"
-#~ msgstr "copy or imitation of an existing or hypothetical object"
+#~ msgid "From"
+#~ msgstr "From"
 
-#~ msgid "collection hardware"
-#~ msgstr "collection hardware"
+#~ msgid "Subject"
+#~ msgstr "Subject"
 
-#~ msgid "collection session"
-#~ msgstr "collection session"
+#~ msgid "Last Sender"
+#~ msgstr "Last Sender"
 
-#~ msgid "non-geographic data"
-#~ msgstr "non-geographic data"
-
-#~ msgid "property type"
-#~ msgstr "property type"
-
-#~ msgid "field session"
-#~ msgstr "field session"
-
-#~ msgid "dataset"
-#~ msgstr "dataset"
-
-#~ msgid "service interfaces"
-#~ msgstr "service interfaces"
-
-#~ msgid "attribute class"
-#~ msgstr "attribute class"
-
-#~ msgid "characteristic of a feature"
-#~ msgstr "characteristic of a feature"
-
-#~ msgid "tile or spatial subset of geographic data"
-#~ msgstr "tile or spatial subset of geographic data"
-
-#~ msgid "feature"
-#~ msgstr "feature"
-
-#~ msgid "dimension group"
-#~ msgstr "dimension group"
-
-#~ msgid "frequency of maintenance for the data is not known"
-#~ msgstr "frequency of maintenance for the data is not known"
-
-#~ msgid "data is repeatedly and frequently updated"
-#~ msgstr "data is repeatedly and frequently updated"
-
-#~ msgid "there are no plans to update the data"
-#~ msgstr "there are no plans to update the data"
-
-#~ msgid "data is updated each day"
-#~ msgstr "data is updated each day"
-
-#~ msgid "data is updated every year"
-#~ msgstr "data is updated every year"
-
-#~ msgid "data is updated as deemed necessary"
-#~ msgstr "data is updated as deemed necessary"
-
-#~ msgid "data is updated each month"
-#~ msgstr "data is updated each month"
-
-#~ msgid "data is updated every two weeks"
-#~ msgstr "data is updated every two weeks"
-
-#~ msgid "data is updated in intervals that are uneven in duration"
-#~ msgstr "data is updated in intervals that are uneven in duration"
-
-#~ msgid "data is updated on a weekly basis"
-#~ msgstr "data is updated on a weekly basis"
-
-#~ msgid "data is updated twice each year"
-#~ msgstr "data is updated twice each year"
-
-#~ msgid "data is updated every three months"
-#~ msgstr "data is updated every three months"
-
-#~ msgid "No information provided"
-#~ msgstr "No information provided"
-
-#~ msgid "Category is required."
-#~ msgstr "Category is required."
-
-#~ msgid "Keywords from Thesaurus"
-#~ msgstr "Keywords from Thesaurus"
-
-#~ msgid "List of keywords from Thesaurus"
-#~ msgstr "List of keywords from Thesaurus"
-
-#~ msgid "Owner"
-#~ msgstr "Owner"
-
-#~ msgid "temporal extent start"
-#~ msgstr "temporal extent start"
-
-#~ msgid "temporal extent end"
-#~ msgstr "temporal extent end"
-
-#~ msgid "Person outside GeoNode (fill form)"
-#~ msgstr "Person outside GeoNode (fill form)"
-
-#~ msgid "Free-text Keywords"
-#~ msgstr "Free-text Keywords"
-
-#~ msgid ""
-#~ "A space or comma-separated list of keywords. Use the widget to select "
-#~ "from Hierarchical tree."
-#~ msgstr ""
-#~ "A space or comma-separated list of keywords. Use the widget to select "
-#~ "from Hierarchical tree."
-
-#~ msgid "Write result to file, default GEOIP_PATH: {}"
-#~ msgstr "Write result to file, default GEOIP_PATH: {}"
-
-#~ msgid ""
-#~ "Fetch database from specific url. If nothing provided, default {} will be "
-#~ "used"
-#~ msgstr ""
-#~ "Fetch database from specific url. If nothing provided, default {} will be "
-#~ "used"
-
-#~ msgid "Overwrite file if exists"
-#~ msgstr "Overwrite file if exists"
-
-#~ msgid "function performed by the responsible party"
-#~ msgstr "function performed by the responsible party"
-
-#~ msgid "reference date for the cited resource"
-#~ msgstr "reference date for the cited resource"
-
-#~ msgid "identification of when a given event occurred"
-#~ msgstr "identification of when a given event occurred"
-
-#~ msgid "version of the cited resource"
-#~ msgstr "version of the cited resource"
-
-#~ msgid "brief narrative summary of the content of the resource(s)"
-#~ msgstr "brief narrative summary of the content of the resource(s)"
-
-#~ msgid "summary of the intentions with which the resource(s) was developed"
-#~ msgstr "summary of the intentions with which the resource(s) was developed"
-
-#~ msgid ""
-#~ "frequency with which modifications and deletions are made to the data "
-#~ "after it is first produced"
-#~ msgstr ""
-#~ "frequency with which modifications and deletions are made to the data "
-#~ "after it is first produced"
-
-#~ msgid ""
-#~ "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-#~ "the subject (space or comma-separated"
-#~ msgstr ""
-#~ "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-#~ "the subject (space or comma-separated"
-
-#~ msgid ""
-#~ "formalised word(s) or phrase(s) from a fixed thesaurus used to describe "
-#~ "the subject (space or comma-separated"
-#~ msgstr ""
-#~ "formalised word(s) or phrase(s) from a fixed thesaurus used to describe "
-#~ "the subject (space or comma-separated"
-
-#~ msgid "keyword identifies a location"
-#~ msgstr "keyword identifies a location"
-
-#~ msgid "limitation(s) placed upon the access or use of the data."
-#~ msgstr "limitation(s) placed upon the access or use of the data."
-
-#~ msgid ""
-#~ "other restrictions and legal prerequisites for accessing and using the "
-#~ "resource or metadata"
-#~ msgstr ""
-#~ "other restrictions and legal prerequisites for accessing and using the "
-#~ "resource or metadata"
-
-#~ msgid "license of the dataset"
-#~ msgstr "license of the dataset"
-
-#~ msgid "language used within the dataset"
-#~ msgstr "language used within the dataset"
-
-#~ msgid ""
-#~ "high-level geographic data thematic classification to assist in the "
-#~ "grouping and search of available geographic data sets."
-#~ msgstr ""
-#~ "high-level geographic data thematic classification to assist in the "
-#~ "grouping and search of available geographic data sets."
-
-#~ msgid "method used to represent geographic information in the dataset."
-#~ msgstr "method used to represent geographic information in the dataset."
-
-#~ msgid "time period covered by the content of the dataset (start)"
-#~ msgstr "time period covered by the content of the dataset (start)"
-
-#~ msgid "time period covered by the content of the dataset (end)"
-#~ msgstr "time period covered by the content of the dataset (end)"
-
-#~ msgid ""
-#~ "general explanation of the data producer's knowledge about the lineage of "
-#~ "a dataset"
-#~ msgstr ""
-#~ "general explanation of the data producer's knowledge about the lineage of "
-#~ "a dataset"
-
-#~ msgid "title"
-#~ msgstr "title"
-
-#~ msgid "name by which the cited resource is known"
-#~ msgstr "name by which the cited resource is known"
-
-#~ msgid "date"
-#~ msgstr "date"
-
-#~ msgid "date type"
-#~ msgstr "date type"
-
-#~ msgid "edition"
-#~ msgstr "edition"
-
-#~ msgid "abstract"
-#~ msgstr "abstract"
-
-#~ msgid "purpose"
-#~ msgstr "purpose"
-
-#~ msgid "maintenance frequency"
-#~ msgstr "maintenance frequency"
-
-#~ msgid "keywords"
-#~ msgstr "keywords"
-
-#~ msgid "keywords region"
-#~ msgstr "keywords region"
-
-#~ msgid "restrictions"
-#~ msgstr "restrictions"
-
-#~ msgid "restrictions other"
-#~ msgstr "restrictions other"
-
-#~ msgid "language"
-#~ msgstr "language"
-
-#~ msgid "spatial representation type"
-#~ msgstr "spatial representation type"
-
-#~ msgid "supplemental information"
-#~ msgstr "supplemental information"
-
-#~ msgid "any other descriptive information about the dataset"
-#~ msgstr "any other descriptive information about the dataset"
-
-#~ msgid "data quality statement"
-#~ msgstr "data quality statement"
-
-#~ msgid "CSW typename"
-#~ msgstr "CSW typename"
-
-#~ msgid "CSW schema"
-#~ msgstr "CSW schema"
-
-#~ msgid "CSW source"
-#~ msgstr "CSW source"
-
-#~ msgid "CSW insert date"
-#~ msgstr "CSW insert date"
-
-#~ msgid "CSW type"
-#~ msgstr "CSW type"
-
-#~ msgid "CSW anytext"
-#~ msgstr "CSW anytext"
-
-#~ msgid "CSW WKT geometry"
-#~ msgstr "CSW WKT geometry"
-
-#~ msgid "Metadata uploaded preserve"
-#~ msgstr "Metadata uploaded preserve"
-
-#~ msgid "Should this resource be advertised in home page?"
-#~ msgstr "Should this resource be advertised in home page?"
-
-#~ msgid "Is Published"
-#~ msgstr "Is Published"
-
-#~ msgid "Should this resource be published and searchable?"
-#~ msgstr "Should this resource be published and searchable?"
-
-#~ msgid "Is this resource validated from a publisher or editor?"
-#~ msgstr "Is this resource validated from a publisher or editor?"
-
-#~ msgid "Thumbnail url"
-#~ msgstr "Thumbnail url"
-
-#~ msgid "Dirty State"
-#~ msgstr "Dirty State"
-
-#~ msgid "Security Rules Are Not Synched with GeoServer!"
-#~ msgstr "Security Rules Are Not Synched with GeoServer!"
-
-#~ msgid "For example \"kml\""
-#~ msgstr "For example \"kml\""
-
-#~ msgid "For example \"View in Google Earth\""
-#~ msgstr "For example \"View in Google Earth\""
-
-#~ msgid "For example \"text/xml\""
-#~ msgstr "For example \"text/xml\""
-
-#~ msgid "GeoNode Client Library"
-#~ msgstr "GeoNode Client Library"
-
-#~ msgid "Document Created"
-#~ msgstr "Document Created"
-
-#~ msgid "A Document was created"
-#~ msgstr "A Document was created"
-
-#~ msgid "Document Updated"
-#~ msgstr "Document Updated"
-
-#~ msgid "A Document was updated"
-#~ msgstr "A Document was updated"
-
-#~ msgid "Document Approved"
-#~ msgstr "Document Approved"
-
-#~ msgid "A Document was approved by a Manager"
-#~ msgstr "A Document was approved by a Manager"
-
-#~ msgid "Document Published"
-#~ msgstr "Document Published"
-
-#~ msgid "A Document was published"
-#~ msgstr "A Document was published"
-
-#~ msgid "Document Deleted"
-#~ msgstr "Document Deleted"
-
-#~ msgid "A Document was deleted"
-#~ msgstr "A Document was deleted"
-
-#~ msgid "Comment on Document"
-#~ msgstr "Comment on Document"
-
-#~ msgid "A Document was commented on"
-#~ msgstr "A Document was commented on"
-
-#~ msgid "Document for Map"
-#~ msgstr "Document for Map"
-
-#~ msgid "A rating was given to a document"
-#~ msgstr "A rating was given to a document"
-
-#~ msgid "Link to"
-#~ msgstr "Link to"
-
-#~ msgid "Document must be a file or url."
-#~ msgstr "Document must be a file or url."
-
-#~ msgid "A document cannot have both a file and a url."
-#~ msgstr "A document cannot have both a file and a url."
-
-#~ msgid "This file type is not allowed"
-#~ msgstr "This file type is not allowed"
-
-#~ msgid "Permissions must be valid JSON."
-#~ msgstr "Permissions must be valid JSON."
-
-#~ msgid "File"
-#~ msgstr "File"
-
-#~ msgid "The URL of the document if it is external."
-#~ msgstr "The URL of the document if it is external."
-
-#~ msgid "You are not permitted to delete this document"
-#~ msgstr "You are not permitted to delete this document"
-
-#~ msgid "You do not have permissions for this document."
-#~ msgstr "You do not have permissions for this document."
-
-#~ msgid "You are not permitted to modify this document"
-#~ msgstr "You are not permitted to modify this document"
-
-#~ msgid "You are not permitted to modify this document's metadata"
-#~ msgstr "You are not permitted to modify this document's metadata"
-
-#~ msgid "You are not permitted to view this document"
-#~ msgstr "You are not permitted to view this document"
-
-#~ msgid "You are not allowed to view this document."
-#~ msgstr "You are not allowed to view this document."
-
-#~ msgid "You are not allowed to edit this document."
-#~ msgstr "You are not allowed to edit this document."
-
-#~ msgid "You must set a point of contact for this resource"
-#~ msgstr "You must set a point of contact for this resource"
-
-#~ msgid "You must set an author for this resource"
-#~ msgstr "You must set an author for this resource"
-
-#~ msgid "Layer Uploaded"
-#~ msgstr "Layer Uploaded"
-
-#~ msgid "A layer was uploaded"
-#~ msgstr "A layer was uploaded"
-
-#~ msgid "Comment on Layer"
-#~ msgstr "Comment on Layer"
-
-#~ msgid "A layer was commented on"
-#~ msgstr "A layer was commented on"
-
-#~ msgid "Rating for Layer"
-#~ msgstr "Rating for Layer"
-
-#~ msgid "A rating was given to a layer"
-#~ msgstr "A rating was given to a layer"
-
-#~ msgid "Layer name"
-#~ msgstr "Layer name"
-
-#~ msgid "Layer title"
-#~ msgstr "Layer title"
-
-#~ msgid "Geometry type"
-#~ msgstr "Geometry type"
-
-#~ msgid "No abstract provided"
-#~ msgstr "No abstract provided"
-
-#~ msgid "An exception occurred loading data to PostGIS"
-#~ msgstr "An exception occurred loading data to PostGIS"
-
-#~ msgid " Additionally an error occured during database cleanup"
-#~ msgstr " Additionally an error occured during database cleanup"
-
-#~ msgid "GZIP"
-#~ msgstr "GZIP"
-
-#~ msgid "GeoTIFF"
-#~ msgstr "GeoTIFF"
-
-#~ msgid "Zipped Shapefile"
-#~ msgstr "Zipped Shapefile"
-
-#~ msgid "GML 2.0"
-#~ msgstr "GML 2.0"
-
-#~ msgid "GML 3.1.1"
-#~ msgstr "GML 3.1.1"
-
-#~ msgid "CSV"
-#~ msgstr "CSV"
-
-#~ msgid "Excel"
-#~ msgstr "Excel"
-
-#~ msgid "GeoJSON"
-#~ msgstr "GeoJSON"
-
-#~ msgid "JPEG"
-#~ msgstr "JPEG"
-
-#~ msgid "PDF"
-#~ msgstr "PDF"
-
-#~ msgid "PNG"
-#~ msgstr "PNG"
-
-#~ msgid "You don't have permissions to change style for this layer"
-#~ msgstr "You don't have permissions to change style for this layer"
-
-#~ msgid "Bad HTTP Authorization Credentials."
-#~ msgstr "Bad HTTP Authorization Credentials."
-
-#~ msgid ""
-#~ "a short version of the name consisting only of letters, numbers, "
-#~ "underscores and hyphens."
-#~ msgstr ""
-#~ "a short version of the name consisting only of letters, numbers, "
-#~ "underscores and hyphens."
-
-#~ msgid "A group already exists with that slug."
-#~ msgstr "A group already exists with that slug."
-
-#~ msgid "A group already exists with that name."
-#~ msgstr "A group already exists with that name."
-
-#~ msgid "User Identifiers"
-#~ msgstr "User Identifiers"
-
-#~ msgid "Assign manager role"
-#~ msgstr "Assign manager role"
-
-#~ msgid ""
-#~ "The following are not valid usernames: %(errors)s; not added to the group"
-#~ msgstr ""
-#~ "The following are not valid usernames: %(errors)s; not added to the group"
-
-#~ msgid "Public"
-#~ msgstr "Public"
-
-#~ msgid "Public (invite-only)"
-#~ msgstr "Public (invite-only)"
-
-#~ msgid "Private"
-#~ msgstr "Private"
-
-#~ msgid ""
-#~ "Public: Any registered user can view and join a public group.<br>Public "
-#~ "(invite-only):Any registered user can view the group.  Only invited users "
-#~ "can join.<br>Private: Registered users cannot see any details about the "
-#~ "group, including membership.  Only invited users can join."
-#~ msgstr ""
-#~ "Public: Any registered user can view and join a public group.<br>Public "
-#~ "(invite-only):Any registered user can view the group.  Only invited users "
-#~ "can join.<br>Private: Registered users cannot see any details about the "
-#~ "group, including membership.  Only invited users can join."
-
-#~ msgid ""
-#~ "Email used to contact one or all group members, such as a mailing list, "
-#~ "shared email, or exchange group."
-#~ msgstr ""
-#~ "Email used to contact one or all group members, such as a mailing list, "
-#~ "shared email, or exchange group."
-
-#~ msgid "Logo"
-#~ msgstr "Logo"
-
-#~ msgid "A space or comma-separated list of keywords"
-#~ msgstr "A space or comma-separated list of keywords"
-
-#~ msgid "Access"
-#~ msgstr "Access"
-
-#~ msgid "Member"
-#~ msgstr "Member"
-
-#~ msgid "The e-mail address '%(email)s' has already been invited."
-#~ msgstr "The e-mail address '%(email)s' has already been invited."
-
-#~ msgid "The e-mail address '%(email)s' has already accepted an invite."
-#~ msgstr "The e-mail address '%(email)s' has already accepted an invite."
-
-#~ msgid "An active user is already using the e-mail address '%(email)s'"
-#~ msgstr "An active user is already using the e-mail address '%(email)s'"
-
-#~ msgid "Invitations succefully sent to '%(email)s'"
-#~ msgstr "Invitations succefully sent to '%(email)s'"
-
-#~ msgid ""
-#~ "Sorry, it was not possible to invite '%(email)s' due to the following "
-#~ "isse: %(error)s (%(type)s)"
-#~ msgstr ""
-#~ "Sorry, it was not possible to invite '%(email)s' due to the following "
-#~ "isse: %(error)s (%(type)s)"
-
-#~ msgid "Layer Created"
-#~ msgstr "Layer Created"
-
-#~ msgid "A Layer was created"
-#~ msgstr "A Layer was created"
-
-#~ msgid "Layer Updated"
-#~ msgstr "Layer Updated"
-
-#~ msgid "A Layer was updated"
-#~ msgstr "A Layer was updated"
-
-#~ msgid "Layer Approved"
-#~ msgstr "Layer Approved"
-
-#~ msgid "A Layer was approved by a Manager"
-#~ msgstr "A Layer was approved by a Manager"
-
-#~ msgid "Layer Published"
-#~ msgstr "Layer Published"
-
-#~ msgid "A Layer was published"
-#~ msgstr "A Layer was published"
-
-#~ msgid "Layer Deleted"
-#~ msgstr "Layer Deleted"
-
-#~ msgid "A Layer was deleted"
-#~ msgstr "A Layer was deleted"
-
-#~ msgid "YYYYMMDD"
-#~ msgstr "YYYYMMDD"
-
-#~ msgid "YYYYMMDD'T'hhmmss"
-#~ msgstr "YYYYMMDD'T'hhmmss"
-
-#~ msgid "YYYYMMDD'T'hhmmss'Z'"
-#~ msgstr "YYYYMMDD'T'hhmmss'Z'"
-
-#~ msgid "style name"
-#~ msgstr "style name"
-
-#~ msgid "sld text"
-#~ msgstr "sld text"
-
-#~ msgid "sld version"
-#~ msgstr "sld version"
-
-#~ msgid "sld url"
-#~ msgstr "sld url"
-
-#~ msgid "Workspace"
-#~ msgstr "Workspace"
-
-#~ msgid "Store"
-#~ msgstr "Store"
-
-#~ msgid "Storetype"
-#~ msgstr "Storetype"
-
-#~ msgid "Typename"
-#~ msgstr "Typename"
-
-#~ msgid "Is mosaic?"
-#~ msgstr "Is mosaic?"
-
-#~ msgid "Has time?"
-#~ msgstr "Has time?"
-
-#~ msgid "Has elevation?"
-#~ msgstr "Has elevation?"
-
-#~ msgid "Time regex"
-#~ msgstr "Time regex"
-
-#~ msgid "Elevation regex"
-#~ msgstr "Elevation regex"
-
-#~ msgid "File cannot be opened, maybe check the encoding"
-#~ msgstr "File cannot be opened, maybe check the encoding"
-
-#~ msgid "attribute name"
-#~ msgstr "attribute name"
-
-#~ msgid "name of attribute as stored in shapefile/spatial database"
-#~ msgstr "name of attribute as stored in shapefile/spatial database"
-
-#~ msgid "attribute description"
-#~ msgstr "attribute description"
-
-#~ msgid "description of attribute to be used in metadata"
-#~ msgstr "description of attribute to be used in metadata"
-
-#~ msgid "attribute label"
-#~ msgstr "attribute label"
-
-#~ msgid "title of attribute as displayed in GeoNode"
-#~ msgstr "title of attribute as displayed in GeoNode"
-
-#~ msgid "attribute type"
-#~ msgstr "attribute type"
-
-#~ msgid "the data type of the attribute (integer, string, geometry, etc)"
-#~ msgstr "the data type of the attribute (integer, string, geometry, etc)"
-
-#~ msgid "visible?"
-#~ msgstr "visible?"
-
-#~ msgid "specifies if the attribute should be displayed in identify results"
-#~ msgstr "specifies if the attribute should be displayed in identify results"
-
-#~ msgid "display order"
-#~ msgstr "display order"
-
-#~ msgid ""
-#~ "specifies the order in which attribute should be displayed in identify "
-#~ "results"
-#~ msgstr ""
-#~ "specifies the order in which attribute should be displayed in identify "
-#~ "results"
-
-#~ msgid "count"
-#~ msgstr "count"
-
-#~ msgid "count value for this field"
-#~ msgstr "count value for this field"
-
-#~ msgid "min"
-#~ msgstr "min"
-
-#~ msgid "minimum value for this field"
-#~ msgstr "minimum value for this field"
-
-#~ msgid "max"
-#~ msgstr "max"
-
-#~ msgid "maximum value for this field"
-#~ msgstr "maximum value for this field"
-
-#~ msgid "average"
-#~ msgstr "average"
-
-#~ msgid "average value for this field"
-#~ msgstr "average value for this field"
-
-#~ msgid "median"
-#~ msgstr "median"
-
-#~ msgid "median value for this field"
-#~ msgstr "median value for this field"
-
-#~ msgid "standard deviation"
-#~ msgstr "standard deviation"
-
-#~ msgid "standard deviation for this field"
-#~ msgstr "standard deviation for this field"
-
-#~ msgid "sum"
-#~ msgstr "sum"
-
-#~ msgid "sum value for this field"
-#~ msgstr "sum value for this field"
-
-#~ msgid "unique values for this field"
-#~ msgstr "unique values for this field"
-
-#~ msgid "last modified"
-#~ msgstr "last modified"
-
-#~ msgid "date when attribute statistics were last updated"
-#~ msgstr "date when attribute statistics were last updated"
-
-#~ msgid ""
-#~ "There was an error while attempting to upload your data. Please try "
-#~ "again, or contact and administrator if the problem continues."
-#~ msgstr ""
-#~ "There was an error while attempting to upload your data. Please try "
-#~ "again, or contact and administrator if the problem continues."
-
-#~ msgid ""
-#~ "Note: this layer's orginal metadata was populated and preserved by "
-#~ "importing a metadata XML file. This metadata cannot be edited."
-#~ msgstr ""
-#~ "Note: this layer's orginal metadata was populated and preserved by "
-#~ "importing a metadata XML file. This metadata cannot be edited."
-
-#~ msgid "You are not permitted to delete this layer"
-#~ msgstr "You are not permitted to delete this layer"
-
-#~ msgid "You do not have permissions for this layer."
-#~ msgstr "You do not have permissions for this layer."
-
-#~ msgid "You are not permitted to modify this layer"
-#~ msgstr "You are not permitted to modify this layer"
-
-#~ msgid "You are not permitted to modify this layer's metadata"
-#~ msgstr "You are not permitted to modify this layer's metadata"
-
-#~ msgid "You are not permitted to view this layer"
-#~ msgstr "You are not permitted to view this layer"
-
-#~ msgid "Failed to upload the layer"
-#~ msgstr "Failed to upload the layer"
-
-#~ msgid "You are attempting to replace a vector layer with a raster."
-#~ msgstr "You are attempting to replace a vector layer with a raster."
-
-#~ msgid "You are attempting to replace a raster layer with a vector."
-#~ msgstr "You are attempting to replace a raster layer with a vector."
-
-#~ msgid "Unable to delete layer"
-#~ msgstr "Unable to delete layer"
-
-#~ msgid ""
-#~ "This layer is a member of a layer group, you must remove the layer from "
-#~ "the group before deleting."
-#~ msgstr ""
-#~ "This layer is a member of a layer group, you must remove the layer from "
-#~ "the group before deleting."
-
-#~ msgid "couldn't generate thumbnail"
-#~ msgstr "couldn't generate thumbnail"
-
-#~ msgid "Map Created"
-#~ msgstr "Map Created"
-
-#~ msgid "A Map was created"
-#~ msgstr "A Map was created"
-
-#~ msgid "Map Updated"
-#~ msgstr "Map Updated"
-
-#~ msgid "A Map was updated"
-#~ msgstr "A Map was updated"
-
-#~ msgid "Map Approved"
-#~ msgstr "Map Approved"
-
-#~ msgid "A Map was approved by a Manager"
-#~ msgstr "A Map was approved by a Manager"
-
-#~ msgid "Map Published"
-#~ msgstr "Map Published"
-
-#~ msgid "A Map was published"
-#~ msgstr "A Map was published"
-
-#~ msgid "Map Deleted"
-#~ msgstr "Map Deleted"
-
-#~ msgid "A Map was deleted"
-#~ msgstr "A Map was deleted"
-
-#~ msgid "Comment on Map"
-#~ msgstr "Comment on Map"
-
-#~ msgid "A map was commented on"
-#~ msgstr "A map was commented on"
-
-#~ msgid "Rating for Map"
-#~ msgstr "Rating for Map"
-
-#~ msgid "A rating was given to a map"
-#~ msgstr "A rating was given to a map"
-
-#~ msgid "zoom"
-#~ msgstr "zoom"
-
-#~ msgid "projection"
-#~ msgstr "projection"
-
-#~ msgid "center X"
-#~ msgstr "center X"
-
-#~ msgid "center Y"
-#~ msgstr "center Y"
-
-#~ msgid "Site URL"
-#~ msgstr "Site URL"
-
-#~ msgid "Featured Map URL"
-#~ msgstr "Featured Map URL"
-
-#~ msgid "stack order"
-#~ msgstr "stack order"
-
-#~ msgid "format"
-#~ msgstr "format"
-
-#~ msgid "name"
-#~ msgstr "name"
-
-#~ msgid "opacity"
-#~ msgstr "opacity"
-
-#~ msgid "styles"
-#~ msgstr "styles"
-
-#~ msgid "transparent"
-#~ msgstr "transparent"
-
-#~ msgid "fixed"
-#~ msgstr "fixed"
-
-#~ msgid "group"
-#~ msgstr "group"
-
-#~ msgid "visibility"
-#~ msgstr "visibility"
-
-#~ msgid "ows URL"
-#~ msgstr "ows URL"
-
-#~ msgid "layer params"
-#~ msgstr "layer params"
-
-#~ msgid "source params"
-#~ msgstr "source params"
-
-#~ msgid "JSON Configuration"
-#~ msgstr "JSON Configuration"
-
-#~ msgid "You are not permitted to delete this map."
-#~ msgstr "You are not permitted to delete this map."
-
-#~ msgid "You do not have permissions for this map."
-#~ msgstr "You do not have permissions for this map."
-
-#~ msgid "You must be logged in to save this map"
-#~ msgstr "You must be logged in to save this map"
-
-#~ msgid "You are not permitted to save or edit this map."
-#~ msgstr "You are not permitted to save or edit this map."
-
-#~ msgid "You are not allowed to modify this map's metadata."
-#~ msgstr "You are not allowed to modify this map's metadata."
-
-#~ msgid "You are not allowed to view this map."
-#~ msgstr "You are not allowed to view this map."
-
-#~ msgid "An unknown error has occured."
-#~ msgstr "An unknown error has occured."
-
-#~ msgid "Thumbnail saved"
-#~ msgstr "Thumbnail saved"
-
-#~ msgid "error saving thumbnail"
-#~ msgstr "error saving thumbnail"
-
-#~ msgid "Monitoring alert"
-#~ msgstr "Monitoring alert"
-
-#~ msgid "Alert situation reported by monitoring"
-#~ msgstr "Alert situation reported by monitoring"
-
-#~ msgid "GeoNode Monitoring on {} reports errors: {}"
-#~ msgstr "GeoNode Monitoring on {} reports errors: {}"
-
-#~ msgid "Show list of services"
-#~ msgstr "Show list of services"
-
-#~ msgid ""
-#~ "Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If "
-#~ "not provided, last sync will be used."
-#~ msgstr ""
-#~ "Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If "
-#~ "not provided, last sync will be used."
-
-#~ msgid ""
-#~ "Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If "
-#~ "not provided, now will be used."
-#~ msgstr ""
-#~ "Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If "
-#~ "not provided, now will be used."
-
-#~ msgid "Force check"
-#~ msgstr "Force check"
-
-#~ msgid "Format of audit log (xml, json)"
-#~ msgstr "Format of audit log (xml, json)"
-
-#~ msgid ""
-#~ "Should old data be preserved (default: no, data older than settings."
-#~ "MONITORING_DATA_TTL will be removed)"
-#~ msgstr ""
-#~ "Should old data be preserved (default: no, data older than settings."
-#~ "MONITORING_DATA_TTL will be removed)"
-
-#~ msgid "Should stop on first error occured (default: no)"
-#~ msgstr "Should stop on first error occured (default: no)"
-
-#~ msgid "Should process and send notifications as well (default: no)"
-#~ msgstr "Should process and send notifications as well (default: no)"
-
-#~ msgid "Collect data from this service only"
-#~ msgstr "Collect data from this service only"
-
-#~ msgid "Show list of metrics"
-#~ msgstr "Show list of metrics"
-
-#~ msgid "Show list of labels for metric"
-#~ msgstr "Show list of labels for metric"
-
-#~ msgid "Show list of resources for metric"
-#~ msgstr "Show list of resources for metric"
-
-#~ msgid "Data aggregation interval in seconds (default: 60)"
-#~ msgstr "Data aggregation interval in seconds (default: 60)"
-
-#~ msgid "Metric name"
-#~ msgstr "Metric name"
-
-#~ msgid ""
-#~ "Show data for specific resource in resource_type=resource_name format"
-#~ msgstr ""
-#~ "Show data for specific resource in resource_type=resource_name format"
-
-#~ msgid "Show data for specific resource"
-#~ msgstr "Show data for specific resource"
-
-#~ msgid "Show data for specific label"
-#~ msgstr "Show data for specific label"
-
-#~ msgid "Host (GeoServer)"
-#~ msgstr "Host (GeoServer)"
-
-#~ msgid "Host (GeoNode)"
-#~ msgstr "Host (GeoNode)"
-
-#~ msgid "No resource"
-#~ msgstr "No resource"
-
-#~ msgid "Resource base"
-#~ msgstr "Resource base"
-
-#~ msgid "Style"
-#~ msgstr "Style"
-
-#~ msgid "Other"
-#~ msgstr "Other"
-
-#~ msgid "Rate"
-#~ msgstr "Rate"
-
-#~ msgid "Count"
-#~ msgstr "Count"
-
-#~ msgid "Value"
-#~ msgstr "Value"
-
-#~ msgid "Value numeric"
-#~ msgstr "Value numeric"
-
-#~ msgid "Bytes"
-#~ msgstr "Bytes"
-
-#~ msgid "Kilobytes"
-#~ msgstr "Kilobytes"
-
-#~ msgid "Megabytes"
-#~ msgstr "Megabytes"
-
-#~ msgid "Gigabytes"
-#~ msgstr "Gigabytes"
-
-#~ msgid "Bytes per second"
-#~ msgstr "Bytes per second"
-
-#~ msgid "Kilobytes per second"
-#~ msgstr "Kilobytes per second"
-
-#~ msgid "Megabytes per second"
-#~ msgstr "Megabytes per second"
-
-#~ msgid "Gigabytes per second"
-#~ msgstr "Gigabytes per second"
-
-#~ msgid "Seconds"
-#~ msgstr "Seconds"
-
-#~ msgid "Percentage"
-#~ msgstr "Percentage"
-
-#~ msgid "Not OWS"
-#~ msgstr "Not OWS"
-
-#~ msgid "Any OWS"
-#~ msgstr "Any OWS"
-
-#~ msgid "Change Metadata"
-#~ msgstr "Change Metadata"
-
-#~ msgid "View Metadata"
-#~ msgstr "View Metadata"
-
-#~ msgid "View"
-#~ msgstr "View"
-
-#~ msgid "Publish"
-#~ msgstr "Publish"
-
-#~ msgid "Geoserver event"
-#~ msgstr "Geoserver event"
-
-#~ msgid "List of resources affected"
-#~ msgstr "List of resources affected"
-
-#~ msgid "Response processing time in ms"
-#~ msgstr "Response processing time in ms"
-
-#~ msgid "1 minute"
-#~ msgstr "1 minute"
-
-#~ msgid "5 minutes"
-#~ msgstr "5 minutes"
-
-#~ msgid "10 minutes"
-#~ msgstr "10 minutes"
-
-#~ msgid "30 minutes"
-#~ msgstr "30 minutes"
-
-#~ msgid "1 hour"
-#~ msgstr "1 hour"
-
-#~ msgid "Fatal"
-#~ msgstr "Fatal"
-
-#~ msgid "Expected min/max values for user configuration"
-#~ msgstr "Expected min/max values for user configuration"
-
-#~ msgid "Marker of last delivery"
-#~ msgstr "Marker of last delivery"
-
-#~ msgid "Minimum time between subsequent notifications"
-#~ msgstr "Minimum time between subsequent notifications"
-
-#~ msgid "How severe would be error from this notification"
-#~ msgstr "How severe would be error from this notification"
-
-#~ msgid "Is it active"
-#~ msgstr "Is it active"
-
-#~ msgid "{}: {}"
-#~ msgstr "{}: {}"
-
-#~ msgid "Value must be above"
-#~ msgstr "Value must be above"
-
-#~ msgid "Value must be below"
-#~ msgstr "Value must be below"
-
-#~ msgid "Last update must not be older than"
-#~ msgstr "Last update must not be older than"
-
-#~ msgid "Max timeout for given metric before error should be raised"
-#~ msgstr "Max timeout for given metric before error should be raised"
+#~ msgid "Delete?"
+#~ msgstr "Delete?"
 
 #~ msgid "Monitoring"
 #~ msgstr "Monitoring"
-
-#~ msgid "Hi,"
-#~ msgstr "Hi,"
-
-#~ msgid "Monitoring on"
-#~ msgstr "Monitoring on"
-
-#~ msgid "has detected following problems :"
-#~ msgstr "has detected following problems :"
-
-#~ msgid "spotted"
-#~ msgstr "spotted"
-
-#~ msgid "emerged"
-#~ msgstr "emerged"
-
-#~ msgid "User following you"
-#~ msgstr "User following you"
-
-#~ msgid "Another user has started following you"
-#~ msgstr "Another user has started following you"
-
-#~ msgid "User requested access"
-#~ msgstr "User requested access"
-
-#~ msgid "A new user has requested access to the site"
-#~ msgstr "A new user has requested access to the site"
-
-#~ msgid "Account activated"
-#~ msgstr "Account activated"
-
-#~ msgid "This account is now active and can log in the site"
-#~ msgstr "This account is now active and can log in the site"
-
-#~ msgid "Personal info"
-#~ msgstr "Personal info"
-
-#~ msgid "Important dates"
-#~ msgstr "Important dates"
-
-#~ msgid "Extended profile"
-#~ msgstr "Extended profile"
-
-#~ msgid "Password changed successfully."
-#~ msgstr "Password changed successfully."
-
-#~ msgid "Change password: %s"
-#~ msgstr "Change password: %s"
-
-#~ msgid "party who authored the resource"
-#~ msgstr "party who authored the resource"
-
-#~ msgid ""
-#~ "party who has processed the data in a manner such that the resource has "
-#~ "been modified"
-#~ msgstr ""
-#~ "party who has processed the data in a manner such that the resource has "
-#~ "been modified"
-
-#~ msgid "party who published the resource"
-#~ msgstr "party who published the resource"
-
-#~ msgid ""
-#~ "party that accepts accountability and responsibility for the data and "
-#~ "ensures         appropriate care and maintenance of the resource"
-#~ msgstr ""
-#~ "party that accepts accountability and responsibility for the data and "
-#~ "ensures         appropriate care and maintenance of the resource"
-
-#~ msgid ""
-#~ "party who can be contacted for acquiring knowledge about or acquisition "
-#~ "of the resource"
-#~ msgstr ""
-#~ "party who can be contacted for acquiring knowledge about or acquisition "
-#~ "of the resource"
-
-#~ msgid "party who distributes the resource"
-#~ msgstr "party who distributes the resource"
-
-#~ msgid "party who uses the resource"
-#~ msgstr "party who uses the resource"
-
-#~ msgid "party that supplies the resource"
-#~ msgstr "party that supplies the resource"
-
-#~ msgid "party who created the resource"
-#~ msgstr "party who created the resource"
-
-#~ msgid "party that owns the resource"
-#~ msgstr "party that owns the resource"
-
-#~ msgid ""
-#~ "key party responsible for gathering information and conducting research"
-#~ msgstr ""
-#~ "key party responsible for gathering information and conducting research"
-
-#~ msgid "Email Address"
-#~ msgstr "Email Address"
-
-#~ msgid "Organization Name"
-#~ msgstr "Organization Name"
-
-#~ msgid "name of the responsible organization"
-#~ msgstr "name of the responsible organization"
-
-#~ msgid "introduce yourself"
-#~ msgstr "introduce yourself"
-
-#~ msgid "Position Name"
-#~ msgstr "Position Name"
-
-#~ msgid "role or position of the responsible person"
-#~ msgstr "role or position of the responsible person"
-
-#~ msgid ""
-#~ "telephone number by which individuals can speak to the responsible "
-#~ "organization or individual"
-#~ msgstr ""
-#~ "telephone number by which individuals can speak to the responsible "
-#~ "organization or individual"
-
-#~ msgid "Facsimile"
-#~ msgstr "Facsimile"
-
-#~ msgid ""
-#~ "telephone number of a facsimile machine for the responsible organization "
-#~ "or individual"
-#~ msgstr ""
-#~ "telephone number of a facsimile machine for the responsible organization "
-#~ "or individual"
-
-#~ msgid "Delivery Point"
-#~ msgstr "Delivery Point"
-
-#~ msgid ""
-#~ "physical and email address at which the organization or individual may be "
-#~ "contacted"
-#~ msgstr ""
-#~ "physical and email address at which the organization or individual may be "
-#~ "contacted"
-
-#~ msgid "City"
-#~ msgstr "City"
-
-#~ msgid "city of the location"
-#~ msgstr "city of the location"
-
-#~ msgid "Administrative Area"
-#~ msgstr "Administrative Area"
-
-#~ msgid "state, province of the location"
-#~ msgstr "state, province of the location"
-
-#~ msgid "Postal Code"
-#~ msgstr "Postal Code"
-
-#~ msgid "ZIP or other postal code"
-#~ msgstr "ZIP or other postal code"
-
-#~ msgid "Country"
-#~ msgstr "Country"
-
-#~ msgid "country of the physical address"
-#~ msgstr "country of the physical address"
-
-#~ msgid ""
-#~ "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-#~ "the subject             (space or comma-separated"
-#~ msgstr ""
-#~ "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-#~ "the subject             (space or comma-separated"
-
-#~ msgid "Timezone"
-#~ msgstr "Timezone"
-
-#~ msgid "Your username for "
-#~ msgstr "Your username for "
-
-#~ msgid "Your username has been emailed to you."
-#~ msgstr "Your username has been emailed to you."
-
-#~ msgid "No user could be found with that email address."
-#~ msgstr "No user could be found with that email address."
-
-#~ msgid "You are not permitted to save or edit this resource."
-#~ msgstr "You are not permitted to save or edit this resource."
-
-#~ msgid "style xml"
-#~ msgstr "style xml"
-
-#~ msgid "style url"
-#~ msgstr "style url"
-
-#~ msgid "style legend url"
-#~ msgstr "style legend url"
-
-#~ msgid ""
-#~ "You should use a GIS software or a library which support TMS service to "
-#~ "use this URL : {url}"
-#~ msgstr ""
-#~ "You should use a GIS software or a library which support TMS service to "
-#~ "use this URL : {url}"
-
-#~ msgid "Session is Expired. Please login again!"
-#~ msgstr "Session is Expired. Please login again!"
-
-#~ msgid "Auto-detect"
-#~ msgstr "Auto-detect"
-
-#~ msgid "Paired WMS/WFS/WCS"
-#~ msgstr "Paired WMS/WFS/WCS"
-
-#~ msgid "Web Map Service"
-#~ msgstr "Web Map Service"
-
-#~ msgid "Catalogue Service"
-#~ msgstr "Catalogue Service"
-
-#~ msgid "ArcGIS REST MapServer"
-#~ msgstr "ArcGIS REST MapServer"
-
-#~ msgid "ArcGIS REST ImageServer"
-#~ msgstr "ArcGIS REST ImageServer"
-
-#~ msgid "OpenGeoPortal"
-#~ msgstr "OpenGeoPortal"
-
-#~ msgid "Harvard Geospatial Library"
-#~ msgstr "Harvard Geospatial Library"
-
-#~ msgid "GeoNode (Web Map Service)"
-#~ msgstr "GeoNode (Web Map Service)"
-
-#~ msgid "GeoNode (Catalogue Service)"
-#~ msgstr "GeoNode (Catalogue Service)"
-
-#~ msgid "Service URL"
-#~ msgstr "Service URL"
-
-#~ msgid "Service Type"
-#~ msgstr "Service Type"
-
-#~ msgid "Service %(url)s is already registered"
-#~ msgstr "Service %(url)s is already registered"
-
-#~ msgid "Could not connect to the service at %(url)s"
-#~ msgstr "Could not connect to the service at %(url)s"
-
-#~ msgid "Could not find importable resources for the service at %(url)s"
-#~ msgstr "Could not find importable resources for the service at %(url)s"
-
-#~ msgid "Found service of type %(found_type)s instead of %(service_type)s"
-#~ msgstr "Found service of type %(found_type)s instead of %(service_type)s"
-
-#~ msgid "Local"
-#~ msgstr "Local"
-
-#~ msgid "Cascaded"
-#~ msgstr "Cascaded"
-
-#~ msgid "Harvested"
-#~ msgstr "Harvested"
-
-#~ msgid "Indexed"
-#~ msgstr "Indexed"
-
-#~ msgid "Live"
-#~ msgstr "Live"
-
-#~ msgid "Resource is queued"
-#~ msgstr "Resource is queued"
-
-#~ msgid "Service registered successfully"
-#~ msgstr "Service registered successfully"
-
-#~ msgid "The selected resources are being imported"
-#~ msgstr "The selected resources are being imported"
-
-#~ msgid "The selected resources have been imported"
-#~ msgstr "The selected resources have been imported"
-
-#~ msgid "Resource is already being processed"
-#~ msgstr "Resource is already being processed"
-
-#~ msgid "Resource {} is being processed"
-#~ msgstr "Resource {} is being processed"
-
-#~ msgid "Service rescanned successfully"
-#~ msgstr "Service rescanned successfully"
-
-#~ msgid "You are not permitted to change this service."
-#~ msgstr "You are not permitted to change this service."
-
-#~ msgid "You are not permitted to remove this service."
-#~ msgstr "You are not permitted to remove this service."
-
-#~ msgid "Service {} has been deleted"
-#~ msgstr "Service {} has been deleted"
-
-#~ msgid "created"
-#~ msgstr "created"
-
-#~ msgid "deleted"
-#~ msgstr "deleted"
-
-#~ msgid "updated"
-#~ msgstr "updated"
-
-#~ msgid "added a comment"
-#~ msgstr "added a comment"
-
-#~ msgid "updated a comment"
-#~ msgstr "updated a comment"
-
-#~ msgid "uploaded"
-#~ msgstr "uploaded"
-
-#~ msgid "to"
-#~ msgstr "to"
 
 #~ msgid "Type your search here ..."
 #~ msgstr "Type your search here ..."
@@ -6994,282 +8092,8 @@ msgstr "Send Reply"
 #~ msgid "About GeoNode."
 #~ msgstr "About GeoNode."
 
-#~ msgid ""
-#~ "Hello from %(site_name)s!\n"
-#~ "\n"
-#~ "You're receiving this e-mail because user %(user_display)s has given "
-#~ "yours as an e-mail address to connect their account.\n"
-#~ "\n"
-#~ "To confirm this is correct, go to %(activate_url)s\n"
-#~ msgstr ""
-#~ "Hello from %(site_name)s!\n"
-#~ "\n"
-#~ "You're receiving this e-mail because user %(user_display)s has given "
-#~ "yours as an e-mail address to connect their account.\n"
-#~ "\n"
-#~ "To confirm this is correct, go to %(activate_url)s\n"
-
-#~ msgid ""
-#~ "Thank you from %(site_name)s!\n"
-#~ "%(site_domain)s"
-#~ msgstr ""
-#~ "Thank you from %(site_name)s!\n"
-#~ "%(site_domain)s"
-
-#~ msgid "Please confirm email address for %(site_name)s"
-#~ msgstr "Please confirm email address for %(site_name)s"
-
-#~ msgid "You have been invited to sign up at %(site_name)s."
-#~ msgstr "You have been invited to sign up at %(site_name)s."
-
-#~ msgid "Create an account on %(site_name)s"
-#~ msgstr "Create an account on %(site_name)s"
-
-#~ msgid ""
-#~ "This is the email notification to confirm your password has been changed "
-#~ "on"
-#~ msgstr ""
-#~ "This is the email notification to confirm your password has been changed "
-#~ "on"
-
-#~ msgid "Change password email notification"
-#~ msgstr "Change password email notification"
-
-#~ msgid ""
-#~ "Hello from %(site_name)s!\n"
-#~ "\n"
-#~ "You're receiving this e-mail because you or someone else has requested a "
-#~ "password for your user account.\n"
-#~ "It can be safely ignored if you did not request a password reset. Click "
-#~ "the link below to reset your password."
-#~ msgstr ""
-#~ "Hello from %(site_name)s!\n"
-#~ "\n"
-#~ "You're receiving this e-mail because you or someone else has requested a "
-#~ "password for your user account.\n"
-#~ "It can be safely ignored if you did not request a password reset. Click "
-#~ "the link below to reset your password."
-
-#~ msgid "In case you forgot, your username is %(username)s."
-#~ msgstr "In case you forgot, your username is %(username)s."
-
-#~ msgid ""
-#~ "Thank you for using %(site_name)s!\n"
-#~ "%(site_domain)s"
-#~ msgstr ""
-#~ "Thank you for using %(site_name)s!\n"
-#~ "%(site_domain)s"
-
-#~ msgid "[%(site_name)s] Password reset"
-#~ msgstr "[%(site_name)s] Password reset"
-
 #~ msgid "Explore all datasets"
 #~ msgstr "Explore all datasets"
-
-#~ msgid "is inviting you to join"
-#~ msgstr "is inviting you to join"
-
-#~ msgid "To do so, please register at"
-#~ msgstr "To do so, please register at"
-
-#~ msgid "that you wish to join her/his group(s) through this link"
-#~ msgstr "that you wish to join her/his group(s) through this link"
-
-#~ msgid "is a member of the following group(s)"
-#~ msgstr "is a member of the following group(s)"
-
-#~ msgid "Your account has been approved and is now active."
-#~ msgstr "Your account has been approved and is now active."
-
-#~ msgid "You can use the login form at"
-#~ msgstr "You can use the login form at"
-
-#~ msgid "Welcome at"
-#~ msgstr "Welcome at"
-
-#~ msgid "Your account is now active"
-#~ msgstr "Your account is now active"
-
-#~ msgid "has requested access to the site."
-#~ msgstr "has requested access to the site."
-
-#~ msgid ""
-#~ "You can enable access by setting the user as active on the admin section"
-#~ msgstr ""
-#~ "You can enable access by setting the user as active on the admin section"
-
-#~ msgid "A user has requested access to the site"
-#~ msgstr "A user has requested access to the site"
-
-#~ msgid "The following document was approved"
-#~ msgstr "The following document was approved"
-
-#~ msgid "owned by"
-#~ msgstr "owned by"
-
-#~ msgid "You can visit the document's detail page here"
-#~ msgstr "You can visit the document's detail page here"
-
-#~ msgid "A document has been approved"
-#~ msgstr "A document has been approved"
-
-#~ msgid "A comment has been posted for the document"
-#~ msgstr "A comment has been posted for the document"
-
-#~ msgid "by the user"
-#~ msgstr "by the user"
-
-#~ msgid "A comment has been posted for a document"
-#~ msgstr "A comment has been posted for a document"
-
-#~ msgid "The user"
-#~ msgstr "The user"
-
-#~ msgid "uploaded the following document"
-#~ msgstr "uploaded the following document"
-
-#~ msgid "A document has been uploaded"
-#~ msgstr "A document has been uploaded"
-
-#~ msgid "The following document was deleted"
-#~ msgstr "The following document was deleted"
-
-#~ msgid "A document has been deleted"
-#~ msgstr "A document has been deleted"
-
-#~ msgid "The following document was published"
-#~ msgstr "The following document was published"
-
-#~ msgid "A document has been published"
-#~ msgstr "A document has been published"
-
-#~ msgid "rated"
-#~ msgstr "rated"
-
-#~ msgid "the following document"
-#~ msgstr "the following document"
-
-#~ msgid "You can visit the layer's detail page here"
-#~ msgstr "You can visit the layer's detail page here"
-
-#~ msgid "A document has been rated"
-#~ msgstr "A document has been rated"
-
-#~ msgid "The following document was updated"
-#~ msgstr "The following document was updated"
-
-#~ msgid "A document has been updated"
-#~ msgstr "A document has been updated"
-
-#~ msgid "You have received the following notice from"
-#~ msgstr "You have received the following notice from"
-
-#~ msgid "To change how you receive notifications, please go to"
-#~ msgstr "To change how you receive notifications, please go to"
-
-#~ msgid "[%(current_site)s] %(message)s"
-#~ msgstr "[%(current_site)s] %(message)s"
-
-#~ msgid "%(notice)s"
-#~ msgstr "%(notice)s"
-
-#~ msgid "The following layer was approved"
-#~ msgstr "The following layer was approved"
-
-#~ msgid "A layer has been approved"
-#~ msgstr "A layer has been approved"
-
-#~ msgid "A comment has been posted for the layer"
-#~ msgstr "A comment has been posted for the layer"
-
-#~ msgid "A comment has been posted for a layer"
-#~ msgstr "A comment has been posted for a layer"
-
-#~ msgid "uploaded the following layer"
-#~ msgstr "uploaded the following layer"
-
-#~ msgid "A new layer has been uploaded"
-#~ msgstr "A new layer has been uploaded"
-
-#~ msgid "The following layer was deleted"
-#~ msgstr "The following layer was deleted"
-
-#~ msgid "A layer has been deleted"
-#~ msgstr "A layer has been deleted"
-
-#~ msgid "The following layer was published"
-#~ msgstr "The following layer was published"
-
-#~ msgid "A layer has been published"
-#~ msgstr "A layer has been published"
-
-#~ msgid "the following layer"
-#~ msgstr "the following layer"
-
-#~ msgid "A layer has been rated"
-#~ msgstr "A layer has been rated"
-
-#~ msgid "The following layer was updated"
-#~ msgstr "The following layer was updated"
-
-#~ msgid "A layer has been updated"
-#~ msgstr "A layer has been updated"
-
-#~ msgid "The following map was approved"
-#~ msgstr "The following map was approved"
-
-#~ msgid "You can visit the map's detail page here"
-#~ msgstr "You can visit the map's detail page here"
-
-#~ msgid "A map has been approved"
-#~ msgstr "A map has been approved"
-
-#~ msgid "A comment has been posted for the map"
-#~ msgstr "A comment has been posted for the map"
-
-#~ msgid "A comment has been posted for a map"
-#~ msgstr "A comment has been posted for a map"
-
-#~ msgid "created the following map"
-#~ msgstr "created the following map"
-
-#~ msgid "A map has been created"
-#~ msgstr "A map has been created"
-
-#~ msgid "The following map was deleted"
-#~ msgstr "The following map was deleted"
-
-#~ msgid "A map has been deleted"
-#~ msgstr "A map has been deleted"
-
-#~ msgid "The following map was published"
-#~ msgstr "The following map was published"
-
-#~ msgid "A map has been published"
-#~ msgstr "A map has been published"
-
-#~ msgid "the following map"
-#~ msgstr "the following map"
-
-#~ msgid "A map has been rated"
-#~ msgstr "A map has been rated"
-
-#~ msgid "The following map was updated"
-#~ msgstr "The following map was updated"
-
-#~ msgid "A map has been updated"
-#~ msgstr "A map has been updated"
-
-#~ msgid "requested you to download this resource"
-#~ msgstr "requested you to download this resource"
-
-#~ msgid ""
-#~ "Please go to resource page and assign the download permissions if you wish"
-#~ msgstr ""
-#~ "Please go to resource page and assign the download permissions if you wish"
-
-#~ msgid "A resource's download has been requested"
-#~ msgstr "A resource's download has been requested"
 
 #~ msgid "Owners"
 #~ msgstr "Owners"
@@ -7279,92 +8103,6 @@ msgstr "Send Reply"
 
 #~ msgid "With"
 #~ msgstr "With"
-
-#~ msgid "GeoNode Themes Library"
-#~ msgstr "GeoNode Themes Library"
-
-#~ msgid "Could not access to uploaded data."
-#~ msgstr "Could not access to uploaded data."
-
-#~ msgid ""
-#~ "One or more XML files was provided, but no matching files were found for "
-#~ "them."
-#~ msgstr ""
-#~ "One or more XML files was provided, but no matching files were found for "
-#~ "them."
-
-#~ msgid ""
-#~ "One or more SLD files was provided, but no matching files were found for "
-#~ "them."
-#~ msgstr ""
-#~ "One or more SLD files was provided, but no matching files were found for "
-#~ "them."
-
-#~ msgid "Invalid zip file detected"
-#~ msgstr "Invalid zip file detected"
-
-#~ msgid "Could not find any valid spatial file inside the uploaded zip"
-#~ msgstr "Could not find any valid spatial file inside the uploaded zip"
-
-#~ msgid "Invalid kmz file detected"
-#~ msgstr "Invalid kmz file detected"
-
-#~ msgid "Could not find any kml files inside the uploaded kmz"
-#~ msgstr "Could not find any kml files inside the uploaded kmz"
-
-#~ msgid "Only one shapefile per zip is allowed"
-#~ msgstr "Only one shapefile per zip is allowed"
-
-#~ msgid "kml files with more than one GroundOverlay are not supported"
-#~ msgstr "kml files with more than one GroundOverlay are not supported"
-
-#~ msgid "Ground overlay image declared in kml file cannot be found"
-#~ msgstr "Ground overlay image declared in kml file cannot be found"
-
-#~ msgid "Only one kml file per ZIP is allowed"
-#~ msgstr "Only one kml file per ZIP is allowed"
-
-#~ msgid "Only one kml file per kmz is allowed"
-#~ msgstr "Only one kml file per kmz is allowed"
-
-#~ msgid ""
-#~ "You are trying to upload multiple GeoTIFFs without a valid 'indexer."
-#~ "properties' file."
-#~ msgstr ""
-#~ "You are trying to upload multiple GeoTIFFs without a valid 'indexer."
-#~ "properties' file."
-
-#~ msgid "Only one raster file per ZIP is allowed"
-#~ msgstr "Only one raster file per ZIP is allowed"
-
-#~ msgid "No multiple rasters allowed"
-#~ msgstr "No multiple rasters allowed"
-
-#~ msgid ""
-#~ "To support the time step, you must enable the OGC_SERVER DATASTORE option"
-#~ msgstr ""
-#~ "To support the time step, you must enable the OGC_SERVER DATASTORE option"
-
-#~ msgid "Unsupported file type: %s"
-#~ msgstr "Unsupported file type: %s"
-
-#~ msgid "unknown item state: %s"
-#~ msgstr "unknown item state: %s"
-
-#~ msgid "error during import: %s"
-#~ msgstr "error during import: %s"
-
-#~ msgid "Could not find any valid Time Regex for the Mosaic files."
-#~ msgstr "Could not find any valid Time Regex for the Mosaic files."
-
-#~ msgid "Unsupported DataBase for Mosaics!"
-#~ msgstr "Unsupported DataBase for Mosaics!"
-
-#~ msgid "Invalid permission level."
-#~ msgstr "Invalid permission level."
-
-#~ msgid "Permission Denied"
-#~ msgstr "Permission Denied"
 
 #, fuzzy
 #~| msgid "Identification"

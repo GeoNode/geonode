@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-05 11:03+0100\n"
+"POT-Creation-Date: 2020-03-10 14:27+0100\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Persian (Iran) (http://www.transifex.com/geonode/geonode/"
@@ -36,6 +36,525 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+#: geonode/base/__init__.py:27
+msgid "Request to download a resource"
+msgstr ""
+
+#: geonode/base/__init__.py:28
+msgid "A request for downloading a resource was sent"
+msgstr ""
+
+#: geonode/base/enumerations.py:27
+msgid "series"
+msgstr "مجموعه ها"
+
+#: geonode/base/enumerations.py:28
+msgid "computer program or routine"
+msgstr "برنامه یا روند کامپیوتری"
+
+#: geonode/base/enumerations.py:29
+#, fuzzy
+#| msgid "date type"
+msgid "feature type"
+msgstr "نوع تاریخ"
+
+#: geonode/base/enumerations.py:30
+msgid "copy or imitation of an existing or hypothetical object"
+msgstr "کپی یا تقلید از یک شی موجود و یا فرضی"
+
+#: geonode/base/enumerations.py:31
+msgid "collection hardware"
+msgstr "سخت افزار مجموعه"
+
+#: geonode/base/enumerations.py:32
+msgid "collection session"
+msgstr "جلسه جمع آوری"
+
+#: geonode/base/enumerations.py:33
+msgid "non-geographic data"
+msgstr "داده غیرمکانی"
+
+#: geonode/base/enumerations.py:34
+msgid "property type"
+msgstr "نوع ویژگی"
+
+#: geonode/base/enumerations.py:35
+msgid "field session"
+msgstr "جلسه درست"
+
+#: geonode/base/enumerations.py:36
+#, fuzzy
+#| msgid "dataset"
+msgid "dataset"
+msgstr "دیتاست"
+
+#: geonode/base/enumerations.py:37
+#, fuzzy
+#| msgid "Resources"
+msgid "service interfaces"
+msgstr "منابع"
+
+#: geonode/base/enumerations.py:38
+msgid "attribute class"
+msgstr "کلاس اطلاعات توصیفی"
+
+#: geonode/base/enumerations.py:39
+msgid "characteristic of a feature"
+msgstr "ویژگی عارضه"
+
+#: geonode/base/enumerations.py:40
+msgid "tile or spatial subset of geographic data"
+msgstr "کاشی و یا زیر مجموعه فضایی از داده های جغرافیایی"
+
+#: geonode/base/enumerations.py:41
+msgid "feature"
+msgstr "عارضه"
+
+#: geonode/base/enumerations.py:42
+msgid "dimension group"
+msgstr "گروه بعد"
+
+#: geonode/base/enumerations.py:46
+msgid "frequency of maintenance for the data is not known"
+msgstr "فرآیند نگهداری داده نامشخص است"
+
+#: geonode/base/enumerations.py:47
+msgid "data is repeatedly and frequently updated"
+msgstr "داده بطور مداوم بروز رسانی شده است"
+
+#: geonode/base/enumerations.py:48
+msgid "there are no plans to update the data"
+msgstr "برنامه ای برای بروز رسانی این داده وجود ندارد"
+
+#: geonode/base/enumerations.py:49
+msgid "data is updated each day"
+msgstr " داده هر روز بروز رسانی می شود."
+
+#: geonode/base/enumerations.py:50
+msgid "data is updated every year"
+msgstr " داده هر سال بروز رسانی می شود"
+
+#: geonode/base/enumerations.py:51
+msgid "data is updated as deemed necessary"
+msgstr "داده در صورت لزوم بروز رسانی می شود"
+
+#: geonode/base/enumerations.py:52
+msgid "data is updated each month"
+msgstr "داده هر ماه بروز رسانی می شود"
+
+#: geonode/base/enumerations.py:53
+msgid "data is updated every two weeks"
+msgstr "داده هر دو هفته بروز رسانی می شود"
+
+#: geonode/base/enumerations.py:55
+msgid "data is updated in intervals that are uneven in duration"
+msgstr "داده در دوره زمانی نامشخصی بروز رسانی می شود"
+
+#: geonode/base/enumerations.py:56
+msgid "data is updated on a weekly basis"
+msgstr "داده هر هفته بروزرسانی می شود"
+
+#: geonode/base/enumerations.py:57
+msgid "data is updated twice each year"
+msgstr "این داده سالی دوبار بروز رسانی می شود"
+
+#: geonode/base/enumerations.py:58
+msgid "data is updated every three months"
+msgstr "این داده هر سه ماه یکبار بروز رسانی می شود"
+
+#: geonode/base/enumerations.py:77
+msgid "No information provided"
+msgstr "اطلاعاتی تهیه نشده است"
+
+#: geonode/base/forms.py:282
+#: geonode/base/templates/base/_resourcebase_info_panel.html:77
+#: geonode/catalogue/templates/geonode_metadata_full.html:145
+#: geonode/documents/templates/documents/document_metadata_advanced.html:76
+#: geonode/documents/templates/layouts/doc_panels.html:324
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:99
+#: geonode/layers/templates/layouts/panels.html:326
+#: geonode/maps/templates/layouts/map_panels.html:322
+#: geonode/maps/templates/maps/map_metadata_advanced.html:77
+#: geonode/templates/metadata_detail.html:88
+msgid "Category"
+msgstr "طبقه بندی"
+
+#: geonode/base/forms.py:293
+msgid "Category is required."
+msgstr "رده مورد نیاز است."
+
+#: geonode/base/forms.py:314
+msgid "Keywords from Thesaurus"
+msgstr ""
+
+#: geonode/base/forms.py:316
+msgid "List of keywords from Thesaurus"
+msgstr ""
+
+#: geonode/base/forms.py:336 geonode/base/models.py:577
+msgid "Owner"
+msgstr "مالک"
+
+#: geonode/base/forms.py:342
+#: geonode/base/templates/base/_resourcebase_info_panel.html:34
+#: geonode/catalogue/templates/geonode_metadata_full.html:58
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
+#: geonode/templates/metadata_detail.html:71
+#: geonode/templates/search/_general_filters.html:108
+msgid "Date"
+msgstr "تاریخ"
+
+#: geonode/base/forms.py:348 geonode/base/models.py:681
+msgid "temporal extent start"
+msgstr "شروع محدوده زمانی"
+
+#: geonode/base/forms.py:355 geonode/base/models.py:686
+msgid "temporal extent end"
+msgstr "پایان محدوده زمانی"
+
+#: geonode/base/forms.py:363 geonode/base/forms.py:371
+msgid "Person outside GeoNode (fill form)"
+msgstr ""
+
+#: geonode/base/forms.py:364
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
+#: geonode/base/templates/base/_resourcebase_info_panel.html:104
+#: geonode/catalogue/templates/geonode_metadata_full.html:75
+#: geonode/documents/templates/documents/document_metadata.html:42
+#: geonode/documents/templates/documents/document_metadata.html:66
+#: geonode/documents/templates/documents/document_metadata_advanced.html:47
+#: geonode/documents/templates/documents/document_metadata_advanced.html:100
+#: geonode/layers/templates/layers/layer_metadata.html:53
+#: geonode/layers/templates/layers/layer_metadata.html:84
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:58
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:144
+#: geonode/maps/templates/maps/map_metadata.html:67
+#: geonode/maps/templates/maps/map_metadata_advanced.html:101
+msgid "Point of Contact"
+msgstr "نقطه تماس"
+
+#: geonode/base/forms.py:372
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
+#: geonode/documents/templates/documents/document_metadata.html:38
+#: geonode/documents/templates/documents/document_metadata_advanced.html:43
+#: geonode/layers/templates/layers/layer_metadata.html:49
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:54
+#: geonode/templates/metadata_detail.html:346
+msgid "Metadata Author"
+msgstr "نویسنده متادیتا"
+
+#: geonode/base/forms.py:379
+#, fuzzy
+#| msgid "Keywords"
+msgid "Free-text Keywords"
+msgstr "کلمات کلیدی"
+
+#: geonode/base/forms.py:381
+#, fuzzy
+#| msgid "A space or comma-separated list of keywords"
+msgid ""
+"A space or comma-separated list of keywords. Use the widget to select from "
+"Hierarchical tree."
+msgstr "فضا و یا فهرست کاما جدا از کلمات کلیدی"
+
+#: geonode/base/forms.py:393
+#: geonode/base/templates/base/_resourcebase_info_panel.html:87
+#: geonode/catalogue/templates/geonode_metadata_full.html:149
+#: geonode/templates/metadata_detail.html:98
+#: geonode/templates/search/_region_filter.html:5
+msgid "Regions"
+msgstr "نواحی"
+
+#: geonode/base/management/commands/updategeoip.py:44
+msgid "Write result to file, default GEOIP_PATH: {}"
+msgstr ""
+
+#: geonode/base/management/commands/updategeoip.py:46
+msgid ""
+"Fetch database from specific url. If nothing provided, default {} will be "
+"used"
+msgstr ""
+
+#: geonode/base/management/commands/updategeoip.py:48
+msgid "Overwrite file if exists"
+msgstr ""
+
+#: geonode/base/models.py:87 geonode/services/models.py:194
+msgid "function performed by the responsible party"
+msgstr "تابع انجام شده توسط مسئول"
+
+#: geonode/base/models.py:527
+msgid "reference date for the cited resource"
+msgstr "تاریخ مرجع برای منابع ذکر شده"
+
+#: geonode/base/models.py:528
+msgid "identification of when a given event occurred"
+msgstr "احراز هویت زمانی که یک رویداد رخ داده است"
+
+#: geonode/base/models.py:529
+msgid "version of the cited resource"
+msgstr "ویرایش منبع ذکر شده"
+
+#: geonode/base/models.py:531
+msgid "brief narrative summary of the content of the resource(s)"
+msgstr "خلاصه مختصری از محتوای منابع"
+
+#: geonode/base/models.py:533
+msgid "summary of the intentions with which the resource(s) was developed"
+msgstr "خلاصه روایت مختصری از محتوای منبع (منابع)"
+
+#: geonode/base/models.py:535
+msgid ""
+"frequency with which modifications and deletions are made to the data after "
+"it is first produced"
+msgstr "تعداد دفعات تغییرات و حذف داده ها پس از اولین تولید"
+
+#: geonode/base/models.py:538
+msgid ""
+"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+"the subject (space or comma-separated"
+msgstr ""
+"کلمه(کلمات) یا عبارت(عبارات) مورد استفاده برای توصیف موضوع(با فاصله یا کاما "
+"از هم جدا شوند)"
+
+#: geonode/base/models.py:541
+#, fuzzy
+#| msgid ""
+#| "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+#| "the subject (space or comma-separated"
+msgid ""
+"formalised word(s) or phrase(s) from a fixed thesaurus used to describe the "
+"subject (space or comma-separated"
+msgstr ""
+"کلمه(کلمات) یا عبارت(عبارات) مورد استفاده برای توصیف موضوع(با فاصله یا کاما "
+"از هم جدا شوند)"
+
+#: geonode/base/models.py:543
+msgid "keyword identifies a location"
+msgstr "کلمات کلیدی تعیین کننده موقعیت مکانی"
+
+#: geonode/base/models.py:545
+msgid "limitation(s) placed upon the access or use of the data."
+msgstr "محدودیت (های) دسترسی و استفاده از داده"
+
+#: geonode/base/models.py:547
+msgid ""
+"other restrictions and legal prerequisites for accessing and using the "
+"resource or metadata"
+msgstr "دیگر محدودیت ها به منظور دستیابی به منابع و متادیتا"
+
+#: geonode/base/models.py:549
+msgid "license of the dataset"
+msgstr "مجوز از مجموعه داده"
+
+#: geonode/base/models.py:550
+msgid "language used within the dataset"
+msgstr "زبان مورد استفاده در دیتاست"
+
+#: geonode/base/models.py:552
+msgid ""
+"high-level geographic data thematic classification to assist in the grouping "
+"and search of available geographic data sets."
+msgstr ""
+"داده های مکانی سطح بالا و داری طبقه بندی موضوعی برای کمک به گروه بندی و "
+"جستجو از مجموعه داده های مکانی موجود"
+
+#: geonode/base/models.py:555
+msgid "method used to represent geographic information in the dataset."
+msgstr "متد بکار برده شده به منظور نمایش اطلاعات مکانی در دیتاست"
+
+#: geonode/base/models.py:557
+msgid "time period covered by the content of the dataset (start)"
+msgstr "مدت زمان تحت پوشش محتوای مجموعه داده (شروع)"
+
+#: geonode/base/models.py:559
+msgid "time period covered by the content of the dataset (end)"
+msgstr "مدت زمان تحت پوشش محتوای مجموعه داده (پایان)"
+
+#: geonode/base/models.py:561
+msgid ""
+"general explanation of the data producer's knowledge about the lineage of a "
+"dataset"
+msgstr "توضیح کلی از دانش تولید داده در مورد اصل و نسب از مجموعه داده"
+
+#: geonode/base/models.py:564
+msgid "a DOI will be added by Admin before publication."
+msgstr ""
+
+#: geonode/base/models.py:566
+#: geonode/base/templates/base/_resourcebase_info_panel.html:114
+#: geonode/templates/metadata_detail.html:116
+msgid "DOI"
+msgstr ""
+
+#: geonode/base/models.py:582
+msgid "title"
+msgstr "عنوان"
+
+#: geonode/base/models.py:583
+msgid "name by which the cited resource is known"
+msgstr "نام ذکر شده در منبع ناشناش می باشد."
+
+#: geonode/base/models.py:586
+msgid "date"
+msgstr "تاریخ"
+
+#: geonode/base/models.py:590
+msgid "date type"
+msgstr "نوع تاریخ"
+
+#: geonode/base/models.py:596
+msgid "edition"
+msgstr "ویرایش"
+
+#: geonode/base/models.py:602
+msgid "abstract"
+msgstr "چکیده"
+
+#: geonode/base/models.py:607
+msgid "purpose"
+msgstr "منظور"
+
+#: geonode/base/models.py:613
+msgid "maintenance frequency"
+msgstr "روند نگهداری"
+
+#: geonode/base/models.py:620 geonode/base/models.py:627
+#: geonode/people/models.py:117
+msgid "keywords"
+msgstr "کلمات کلیدی"
+
+#: geonode/base/models.py:633
+msgid "keywords region"
+msgstr "منطقه کلمات کلیدی"
+
+#: geonode/base/models.py:639
+msgid "restrictions"
+msgstr "محدودیت ها"
+
+#: geonode/base/models.py:646
+msgid "restrictions other"
+msgstr "دیگر محدودیت ها"
+
+#: geonode/base/models.py:654
+#: geonode/base/templates/base/_resourcebase_info_panel.html:16
+#: geonode/base/templates/base/_resourcebase_info_panel.html:134
+#: geonode/catalogue/templates/geonode_metadata_full.html:98
+#: geonode/templates/metadata_detail.html:57
+#: geonode/templates/metadata_detail.html:203
+msgid "License"
+msgstr "پروانه"
+
+#: geonode/base/models.py:658 geonode/people/models.py:121
+msgid "language"
+msgstr "زبان"
+
+#: geonode/base/models.py:676
+#, fuzzy
+#| msgid "Spatial Representation Type"
+msgid "spatial representation type"
+msgstr "نوع نمایش مکانی"
+
+#: geonode/base/models.py:691
+msgid "supplemental information"
+msgstr "اطلاعات تکمیلی"
+
+#: geonode/base/models.py:694
+msgid "any other descriptive information about the dataset"
+msgstr "دیگر اطلاعات توصیفی در مورد دیتاست"
+
+#: geonode/base/models.py:698
+msgid "data quality statement"
+msgstr "بیانیه کیفیت داده ها"
+
+#: geonode/base/models.py:739
+msgid "CSW typename"
+msgstr "typename CSW"
+
+#: geonode/base/models.py:744
+msgid "CSW schema"
+msgstr "طرح CSW"
+
+#: geonode/base/models.py:749
+msgid "CSW source"
+msgstr "منبع CSW"
+
+#: geonode/base/models.py:754
+msgid "CSW insert date"
+msgstr "CSW تاریخ درج"
+
+#: geonode/base/models.py:756
+msgid "CSW type"
+msgstr "نوع CSW"
+
+#: geonode/base/models.py:761
+msgid "CSW anytext"
+msgstr "anytext CSW"
+
+#: geonode/base/models.py:763
+msgid "CSW WKT geometry"
+msgstr "هندسه CSW WKT"
+
+#: geonode/base/models.py:769
+#, fuzzy
+#| msgid "Metadata Provider"
+msgid "Metadata uploaded preserve"
+msgstr "تامین کننده متادیتا"
+
+#: geonode/base/models.py:776 geonode/templates/metadata_detail.html:108
+msgid "Featured"
+msgstr ""
+
+#: geonode/base/models.py:777
+msgid "Should this resource be advertised in home page?"
+msgstr "باید این منابع در صفحه اصلی آگهی؟"
+
+#: geonode/base/models.py:779
+#, fuzzy
+#| msgid "Published From"
+msgid "Is Published"
+msgstr "منتشر شده از"
+
+#: geonode/base/models.py:781
+msgid "Should this resource be published and searchable?"
+msgstr "باید این منابع منتشر شود و جستجو؟"
+
+#: geonode/base/models.py:783 geonode/templates/metadata_detail.html:102
+#, fuzzy
+#| msgid "Not provided"
+msgid "Approved"
+msgstr "ارائه نشده است"
+
+#: geonode/base/models.py:785
+msgid "Is this resource validated from a publisher or editor?"
+msgstr ""
+
+#: geonode/base/models.py:788
+#, fuzzy
+#| msgid "Thumbnail"
+msgid "Thumbnail url"
+msgstr "Thumbnail"
+
+#: geonode/base/models.py:796
+msgid "Dirty State"
+msgstr ""
+
+#: geonode/base/models.py:798
+msgid "Security Rules Are Not Synched with GeoServer!"
+msgstr ""
+
+#: geonode/base/models.py:1425
+msgid "For example \"kml\""
+msgstr "برای مثال \"kml\""
+
+#: geonode/base/models.py:1430
+msgid "For example \"View in Google Earth\""
+msgstr "برای مثال\"View in Google Earth\""
+
+#: geonode/base/models.py:1432
+msgid "For example \"text/xml\""
+msgstr "برای مثال \"text/xml\""
 
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:3
 #: geonode/templates/500.html:181 geonode/templates/500.html:200
@@ -57,35 +576,12 @@ msgstr "مالک، نقطه تماس، متاداده نویسنده"
 msgid "Responsible"
 msgstr ""
 
-#: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
-#: geonode/base/templates/base/_resourcebase_info_panel.html:104
-#: geonode/catalogue/templates/geonode_metadata_full.html:75
-#: geonode/documents/templates/documents/document_metadata.html:42
-#: geonode/documents/templates/documents/document_metadata.html:66
-#: geonode/documents/templates/documents/document_metadata_advanced.html:47
-#: geonode/documents/templates/documents/document_metadata_advanced.html:100
-#: geonode/layers/templates/layers/layer_metadata.html:53
-#: geonode/layers/templates/layers/layer_metadata.html:84
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:58
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:144
-#: geonode/maps/templates/maps/map_metadata.html:67
-#: geonode/maps/templates/maps/map_metadata_advanced.html:101
-msgid "Point of Contact"
-msgstr "نقطه تماس"
-
-#: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
-#: geonode/documents/templates/documents/document_metadata.html:38
-#: geonode/documents/templates/documents/document_metadata_advanced.html:43
-#: geonode/layers/templates/layers/layer_metadata.html:49
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:54
-#: geonode/templates/metadata_detail.html:346
-msgid "Metadata Author"
-msgstr "نویسنده متادیتا"
-
 #: geonode/base/templates/base/_resourcebase_info_panel.html:6
 #: geonode/catalogue/templates/geonode_metadata_full.html:55
 #: geonode/client/templates/leaflet/maps/map_view.html:101
+#: geonode/groups/models.py:79
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:20
+#: geonode/services/forms.py:113
 #: geonode/services/templates/services/service_detail.html:22
 #: geonode/services/templates/services/service_list.html:15
 #: geonode/templates/announcements/announcement_list.html:19
@@ -98,14 +594,6 @@ msgstr "عنوان"
 msgid "SRID"
 msgstr ""
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:16
-#: geonode/base/templates/base/_resourcebase_info_panel.html:134
-#: geonode/catalogue/templates/geonode_metadata_full.html:98
-#: geonode/templates/metadata_detail.html:57
-#: geonode/templates/metadata_detail.html:203
-msgid "License"
-msgstr "پروانه"
-
 #: geonode/base/templates/base/_resourcebase_info_panel.html:24
 #: geonode/base/templates/base/_resourcebase_info_panel.html:141
 #: geonode/templates/metadata_detail.html:65
@@ -116,18 +604,11 @@ msgstr ""
 #: geonode/base/templates/base/_resourcebase_info_panel.html:29
 #: geonode/catalogue/templates/geonode_metadata_full.html:61
 #: geonode/client/templates/leaflet/maps/map_view.html:106
+#: geonode/services/forms.py:131
 #: geonode/services/templates/services/service_detail.html:10
 #: geonode/templates/metadata_detail.html:48
 msgid "Abstract"
 msgstr "چکیده"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:34
-#: geonode/catalogue/templates/geonode_metadata_full.html:58
-#: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
-#: geonode/templates/metadata_detail.html:71
-#: geonode/templates/search/_general_filters.html:108
-msgid "Date"
-msgstr "تاریخ"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:45
 #: geonode/catalogue/templates/geonode_metadata_full.html:91
@@ -140,6 +621,7 @@ msgstr "نوع"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:50
 #: geonode/catalogue/templates/geonode_metadata_full.html:142
+#: geonode/groups/models.py:89 geonode/people/forms.py:92
 #: geonode/people/templates/people/profile_detail.html:106
 #: geonode/services/templates/services/service_detail.html:11
 #: geonode/templates/metadata_detail.html:81
@@ -150,27 +632,8 @@ msgstr "نوع"
 msgid "Keywords"
 msgstr "کلمات کلیدی"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:77
-#: geonode/catalogue/templates/geonode_metadata_full.html:145
-#: geonode/documents/templates/documents/document_metadata_advanced.html:76
-#: geonode/documents/templates/layouts/doc_panels.html:303
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:99
-#: geonode/layers/templates/layouts/panels.html:326
-#: geonode/maps/templates/layouts/map_panels.html:322
-#: geonode/maps/templates/maps/map_metadata_advanced.html:77
-#: geonode/templates/metadata_detail.html:88
-msgid "Category"
-msgstr "طبقه بندی"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:87
-#: geonode/catalogue/templates/geonode_metadata_full.html:149
-#: geonode/templates/metadata_detail.html:98
-#: geonode/templates/search/_region_filter.html:5
-msgid "Regions"
-msgstr "نواحی"
-
 #: geonode/base/templates/base/_resourcebase_info_panel.html:109
-#: geonode/documents/templates/layouts/doc_panels.html:322
+#: geonode/documents/templates/layouts/doc_panels.html:343
 #: geonode/layers/templates/layouts/panels.html:346
 #: geonode/maps/templates/layouts/map_panels.html:341
 #: geonode/templates/metadata_detail.html:112
@@ -178,11 +641,6 @@ msgstr "نواحی"
 #| msgid "Groups"
 msgid "Group"
 msgstr "گروه"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:114
-#: geonode/templates/metadata_detail.html:116
-msgid "DOI"
-msgstr ""
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:121
 msgid "More info"
@@ -361,16 +819,23 @@ msgid "Remove (and use auto generated thumbnail)"
 msgstr ""
 
 #: geonode/base/templates/base/thumbnail_upload.html:35
-#: geonode/documents/templates/documents/document_detail.html:152
+#: geonode/documents/templates/documents/document_detail.html:151
 #: geonode/documents/templates/documents/document_upload.html:15
 #: geonode/layers/templates/layers/layer_detail.html:478
 #: geonode/layers/templates/layers/layer_detail.html:499
 #: geonode/maps/templates/maps/map_detail.html:165
+#: geonode/monitoring/models.py:355
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:58
 #, fuzzy
 #| msgid "uploaded"
 msgid "Upload"
 msgstr "آپلود شده"
+
+#: geonode/base/templatetags/user_messages.py:32
+#: geonode/base/templatetags/user_messages.py:40
+#: geonode/templates/user_messages/thread_detail.html:28
+msgid "me"
+msgstr ""
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:40
 #, fuzzy
@@ -427,14 +892,22 @@ msgid "Attribute name"
 msgstr "اطلاعات توصیفی"
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:167
+#: geonode/groups/models.py:44 geonode/groups/models.py:82
 #: geonode/layers/templates/layers/layer_detail.html:178
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:128
 #: geonode/layers/templates/layouts/panels.html:546
 #: geonode/people/templates/people/profile_detail.html:101
+#: geonode/services/forms.py:123
 #: geonode/services/templates/services/service_detail.html:23
 #: geonode/services/templates/services/service_resources_harvest.html:32
 msgid "Description"
 msgstr "توصیف"
+
+#: geonode/client/apps.py:28
+#, fuzzy
+#| msgid "GeoNode Help"
+msgid "GeoNode Client Library"
+msgstr "راهنمای سیستم"
 
 #: geonode/client/templates/leaflet/layers/layer_leaflet_map.html:340
 #, fuzzy
@@ -499,8 +972,8 @@ msgid "Save Map"
 msgstr "ایجاد نقشه"
 
 #: geonode/client/templates/leaflet/maps/map_view.html:115
-#: geonode/documents/templates/documents/document_detail.html:170
-#: geonode/documents/templates/documents/document_detail.html:206
+#: geonode/documents/templates/documents/document_detail.html:169
+#: geonode/documents/templates/documents/document_detail.html:205
 #: geonode/layers/templates/layers/layer_detail.html:425
 #: geonode/layers/templates/layers/layer_detail.html:522
 #: geonode/layers/templates/layers/layer_detail.html:572
@@ -517,6 +990,88 @@ msgstr "ایجاد نقشه"
 #: geonode/templates/metadata_base.html:185
 msgid "Close"
 msgstr "نزدیک"
+
+#: geonode/documents/__init__.py:27
+#, fuzzy
+#| msgid "Documents related to this map"
+msgid "Document Created"
+msgstr "مستندات وابسته به این نقشه"
+
+#: geonode/documents/__init__.py:27
+#, fuzzy
+#| msgid "This document is related to a "
+msgid "A Document was created"
+msgstr "این سند مربوط است به"
+
+#: geonode/documents/__init__.py:28
+#, fuzzy
+#| msgid "Documents"
+msgid "Document Updated"
+msgstr "مستندات"
+
+#: geonode/documents/__init__.py:28
+#, fuzzy
+#| msgid "Documents"
+msgid "A Document was updated"
+msgstr "مستندات"
+
+#: geonode/documents/__init__.py:29
+#, fuzzy
+#| msgid "Documents"
+msgid "Document Approved"
+msgstr "مستندات"
+
+#: geonode/documents/__init__.py:29
+msgid "A Document was approved by a Manager"
+msgstr ""
+
+#: geonode/documents/__init__.py:30
+#, fuzzy
+#| msgid "Documents"
+msgid "Document Published"
+msgstr "مستندات"
+
+#: geonode/documents/__init__.py:30
+#, fuzzy
+#| msgid "Documents"
+msgid "A Document was published"
+msgstr "مستندات"
+
+#: geonode/documents/__init__.py:31
+#, fuzzy
+#| msgid "Documents"
+msgid "Document Deleted"
+msgstr "مستندات"
+
+#: geonode/documents/__init__.py:31
+#, fuzzy
+#| msgid "This document is related to a "
+msgid "A Document was deleted"
+msgstr "این سند مربوط است به"
+
+#: geonode/documents/__init__.py:32
+#, fuzzy
+#| msgid "Comment on Layer"
+msgid "Comment on Document"
+msgstr "پینوشت لایه"
+
+#: geonode/documents/__init__.py:32
+#, fuzzy
+#| msgid "A map was commented on"
+msgid "A Document was commented on"
+msgstr "پینوشت این نقشه"
+
+#: geonode/documents/__init__.py:33
+#, fuzzy
+#| msgid "Comment on Map"
+msgid "Document for Map"
+msgstr "پینوشت نقشه"
+
+#: geonode/documents/__init__.py:33
+#, fuzzy
+#| msgid "A rating was given to a map"
+msgid "A rating was given to a document"
+msgstr "امتیاز داده شده به نقشه"
 
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:5
 msgid "Width"
@@ -568,6 +1123,40 @@ msgstr ""
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:21
 msgid "Speed Rating"
 msgstr ""
+
+#: geonode/documents/forms.py:87 geonode/documents/forms.py:168
+msgid "Link to"
+msgstr "پیوند به"
+
+#: geonode/documents/forms.py:133 geonode/documents/forms.py:202
+msgid "Document must be a file or url."
+msgstr "سند باید یک فایل یا URL باشد."
+
+#: geonode/documents/forms.py:137 geonode/documents/forms.py:206
+msgid "A document cannot have both a file and a url."
+msgstr "یک سند می تواند هر دو یک فایل و یک آدرس را ندارد."
+
+#: geonode/documents/forms.py:150 geonode/documents/forms.py:219
+msgid "This file type is not allowed"
+msgstr "این نوع فایل مجاز نیست"
+
+#: geonode/documents/forms.py:191
+msgid "Permissions must be valid JSON."
+msgstr "مجوز های باید JSON معتبر باشد."
+
+#: geonode/documents/models.py:57
+msgid "File"
+msgstr "پرونده"
+
+#: geonode/documents/models.py:67
+msgid "The URL of the document if it is external."
+msgstr "URL از سند اگر آن خارجی است."
+
+#: geonode/documents/models.py:68 geonode/monitoring/models.py:179
+#: geonode/services/templates/services/service_detail.html:9
+#: geonode/services/templates/services/service_list.html:16
+msgid "URL"
+msgstr "URL"
 
 #: geonode/documents/templates/documents/document_detail.html:23
 #, fuzzy
@@ -647,82 +1236,77 @@ msgstr ""
 msgid "Advanced Edit"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:151
-#: geonode/layers/templates/layers/layer_detail.html:497
-#: geonode/maps/templates/maps/map_detail.html:164
-msgid "Set"
-msgstr ""
-
-#: geonode/documents/templates/documents/document_detail.html:158
-#: geonode/templates/index.html:86
+#: geonode/documents/templates/documents/document_detail.html:157
+#: geonode/monitoring/models.py:176 geonode/templates/index.html:86
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:7
 msgid "Document"
 msgid_plural "Documents"
 msgstr[0] ""
 
-#: geonode/documents/templates/documents/document_detail.html:160
+#: geonode/documents/templates/documents/document_detail.html:159
 #: geonode/layers/templates/layers/layer_detail.html:507
 msgid "Replace"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:163
+#: geonode/documents/templates/documents/document_detail.html:162
 #: geonode/groups/templates/groups/group_members.html:42
 #: geonode/groups/templates/groups/group_members.html:68
 #: geonode/groups/templates/groups/group_members.html:95
 #: geonode/layers/templates/layers/layer_detail.html:515
 #: geonode/maps/templates/maps/map_detail.html:173
-#: geonode/templates/account/email.html:36
+#: geonode/monitoring/models.py:362 geonode/templates/account/email.html:36
 #: geonode/templates/socialaccount/connections.html:33
 msgid "Remove"
 msgstr "برداشتن"
 
-#: geonode/documents/templates/documents/document_detail.html:177
-#: geonode/documents/templates/documents/document_detail.html:184
+#: geonode/documents/templates/documents/document_detail.html:176
+#: geonode/documents/templates/documents/document_detail.html:183
 #: geonode/layers/templates/layers/layer_detail.html:534
 #: geonode/layers/templates/layers/layer_detail.html:542
 msgid "Download Metadata"
 msgstr "دانلود متادیتا"
 
-#: geonode/documents/templates/documents/document_detail.html:189
+#: geonode/documents/templates/documents/document_detail.html:188
 #: geonode/layers/templates/layers/layer_detail.html:547
 #, fuzzy
 #| msgid "Download Metadata"
 msgid "Full metadata"
 msgstr "دانلود متادیتا"
 
-#: geonode/documents/templates/documents/document_detail.html:192
+#: geonode/documents/templates/documents/document_detail.html:191
 #: geonode/layers/templates/layers/layer_detail.html:550
 #, fuzzy
 #| msgid "format"
 msgid "Text format"
 msgstr "قالب"
 
-#: geonode/documents/templates/documents/document_detail.html:193
+#: geonode/documents/templates/documents/document_detail.html:192
 #: geonode/layers/templates/layers/layer_detail.html:551
 #, fuzzy
 #| msgid "format"
 msgid "HTML format"
 msgstr "قالب"
 
-#: geonode/documents/templates/documents/document_detail.html:197
+#: geonode/documents/templates/documents/document_detail.html:196
 #: geonode/layers/templates/layers/layer_detail.html:556
 msgid "Standard Metadata - XML format"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:213
+#: geonode/documents/templates/documents/document_detail.html:212
 #, fuzzy
 #| msgid "Resource using this document"
 msgid "Resources using this document"
 msgstr "منبع مورد استفاده این سند"
 
-#: geonode/documents/templates/documents/document_detail.html:215
+#: geonode/documents/templates/documents/document_detail.html:214
 msgid "List of resources using this document:"
 msgstr "لیست منابع مورد استفاده این سند"
 
-#: geonode/documents/templates/documents/document_detail.html:221
+#: geonode/documents/templates/documents/document_detail.html:220
 msgid "This document is not related to any maps or layers"
 msgstr "این سند مربوط به هیچ نقشه و لایه ای نیست"
 
-#: geonode/documents/templates/documents/document_detail.html:228
+#: geonode/documents/templates/documents/document_detail.html:227
 #: geonode/documents/templates/documents/document_thumb_upload.html:64
 #: geonode/documents/templates/documents/document_upload.html:24
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:50
@@ -735,15 +1319,15 @@ msgstr "این سند مربوط به هیچ نقشه و لایه ای نیست"
 #: geonode/layers/templates/layers/layer_style_upload.html:101
 #: geonode/layers/templates/layers/layer_style_upload.html:110
 #: geonode/layers/templates/upload/layer_upload.html:114
-#: geonode/maps/templates/maps/map_detail.html:229
+#: geonode/maps/templates/maps/map_detail.html:229 geonode/people/admin.py:57
 msgid "Permissions"
 msgstr "مجوزها"
 
-#: geonode/documents/templates/documents/document_detail.html:229
+#: geonode/documents/templates/documents/document_detail.html:228
 msgid "Click the button below to change the permissions of this document."
 msgstr "با کلیک کردن دکمه زیر مجوز دسترسی به این سند را تغییر دهید."
 
-#: geonode/documents/templates/documents/document_detail.html:230
+#: geonode/documents/templates/documents/document_detail.html:229
 msgid "Change Document Permissions"
 msgstr "تغییر مجوز سند"
 
@@ -989,13 +1573,13 @@ msgstr "آپلود سند"
 msgid "Allowed document types"
 msgstr "آپلود مستندات"
 
-#: geonode/documents/templates/layouts/doc_panels.html:216
+#: geonode/documents/templates/layouts/doc_panels.html:219
 #: geonode/layers/templates/layouts/panels.html:216
 #: geonode/maps/templates/layouts/map_panels.html:216
 msgid "Done!"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:220
+#: geonode/documents/templates/layouts/doc_panels.html:223
 #: geonode/layers/templates/layers/layer_detail.html:474
 #: geonode/layers/templates/layers/layer_detail.html:476
 #: geonode/layers/templates/layers/layer_detail.html:488
@@ -1007,7 +1591,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:226
+#: geonode/documents/templates/layouts/doc_panels.html:229
 #: geonode/layers/templates/layouts/panels.html:227
 #: geonode/maps/templates/layouts/map_panels.html:226
 #, fuzzy
@@ -1015,8 +1599,8 @@ msgstr ""
 msgid "Settings"
 msgstr "امتیازدهی"
 
-#: geonode/documents/templates/layouts/doc_panels.html:235
 #: geonode/documents/templates/layouts/doc_panels.html:238
+#: geonode/documents/templates/layouts/doc_panels.html:241
 #: geonode/layers/templates/layouts/panels.html:236
 #: geonode/layers/templates/layouts/panels.html:239
 #: geonode/maps/templates/layouts/map_panels.html:235
@@ -1024,7 +1608,7 @@ msgstr "امتیازدهی"
 msgid "Mandatory"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:241
+#: geonode/documents/templates/layouts/doc_panels.html:244
 #: geonode/layers/templates/layouts/panels.html:242
 #: geonode/maps/templates/layouts/map_panels.html:241
 #, fuzzy
@@ -1032,7 +1616,7 @@ msgstr ""
 msgid "Optional"
 msgstr "تنظیمات زمان"
 
-#: geonode/documents/templates/layouts/doc_panels.html:246
+#: geonode/documents/templates/layouts/doc_panels.html:249
 #: geonode/layers/templates/layouts/panels.html:247
 #: geonode/maps/templates/layouts/map_panels.html:246
 #, fuzzy
@@ -1040,13 +1624,13 @@ msgstr "تنظیمات زمان"
 msgid "Basic Metadata"
 msgstr "ویرایش متادیتا"
 
-#: geonode/documents/templates/layouts/doc_panels.html:249
+#: geonode/documents/templates/layouts/doc_panels.html:252
 #: geonode/layers/templates/layouts/panels.html:250
 #: geonode/maps/templates/layouts/map_panels.html:249
 msgid "Location and Licenses"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:252
+#: geonode/documents/templates/layouts/doc_panels.html:255
 #: geonode/layers/templates/layouts/panels.html:253
 #: geonode/maps/templates/layouts/map_panels.html:252
 #, fuzzy
@@ -1054,7 +1638,7 @@ msgstr ""
 msgid "Optional Metadata"
 msgstr "دانلود متادیتا"
 
-#: geonode/documents/templates/layouts/doc_panels.html:324
+#: geonode/documents/templates/layouts/doc_panels.html:345
 #: geonode/layers/templates/layouts/panels.html:328
 #: geonode/layers/templates/layouts/panels.html:348
 #: geonode/maps/templates/layouts/map_panels.html:343
@@ -1063,7 +1647,7 @@ msgstr "دانلود متادیتا"
 msgid "Choose one of the following..."
 msgstr "این عملیات بروی نقشه ای زیر اثر خواهد گذاشت:"
 
-#: geonode/documents/templates/layouts/doc_panels.html:417
+#: geonode/documents/templates/layouts/doc_panels.html:438
 #: geonode/layers/templates/layouts/panels.html:441
 #: geonode/maps/templates/layouts/map_panels.html:435
 #, fuzzy
@@ -1071,13 +1655,13 @@ msgstr "این عملیات بروی نقشه ای زیر اثر خواهد گذ
 msgid "Other, Optional, Metadata"
 msgstr "دانلود متادیتا"
 
-#: geonode/documents/templates/layouts/doc_panels.html:464
+#: geonode/documents/templates/layouts/doc_panels.html:485
 #: geonode/layers/templates/layouts/panels.html:488
 #: geonode/maps/templates/layouts/map_panels.html:482
 msgid "Responsible Parties"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:471
+#: geonode/documents/templates/layouts/doc_panels.html:492
 #: geonode/layers/templates/layouts/panels.html:495
 #: geonode/maps/templates/layouts/map_panels.html:489
 #, fuzzy
@@ -1085,7 +1669,7 @@ msgstr ""
 msgid "Responsible and Permissions"
 msgstr "تغییر مجوز لایه"
 
-#: geonode/documents/templates/layouts/doc_panels.html:493
+#: geonode/documents/templates/layouts/doc_panels.html:514
 #: geonode/layers/templates/layouts/panels.html:517
 #: geonode/maps/templates/layouts/map_panels.html:511
 #: geonode/templates/_permissions_form.html:28 geonode/templates/base.html:679
@@ -1094,20 +1678,60 @@ msgstr "تغییر مجوز لایه"
 msgid "Message box"
 msgstr "صندوق پیام"
 
-#: geonode/documents/templates/layouts/doc_panels.html:499
+#: geonode/documents/templates/layouts/doc_panels.html:520
 #: geonode/layers/templates/layouts/panels.html:523
 #: geonode/maps/templates/layouts/map_panels.html:517
 #: geonode/templates/_permissions_form.html:34 geonode/templates/base.html:685
 msgid "OK"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:519
+#: geonode/documents/templates/layouts/doc_panels.html:540
 #: geonode/layers/templates/layouts/panels.html:584
 #: geonode/maps/templates/layouts/map_panels.html:537
 #, fuzzy
 #| msgid "Public"
 msgid "Publishing"
 msgstr "عمومی"
+
+#: geonode/documents/views.py:64
+msgid "You are not permitted to delete this document"
+msgstr "شما مجاز به پاک کردن این سند نیستید"
+
+#: geonode/documents/views.py:65
+msgid "You do not have permissions for this document."
+msgstr "شما اجازه دسترسی به این سند را ندارید"
+
+#: geonode/documents/views.py:66
+msgid "You are not permitted to modify this document"
+msgstr "شما مجاز به ایجاد تغییرات در این سند نیستید"
+
+#: geonode/documents/views.py:68
+msgid "You are not permitted to modify this document's metadata"
+msgstr "شما مجاز به ایجاد تغییرات در متادیتای این سند نیستید"
+
+#: geonode/documents/views.py:69
+msgid "You are not permitted to view this document"
+msgstr "شما مجاز به مشاهده این سند نیستید"
+
+#: geonode/documents/views.py:103 geonode/documents/views.py:177
+msgid "You are not allowed to view this document."
+msgstr "شما مجاز به مشاهده این سند نیستید"
+
+#: geonode/documents/views.py:354
+msgid "You are not allowed to edit this document."
+msgstr "شما امکان پذیر نیست ویرایش این سند است."
+
+#: geonode/documents/views.py:435 geonode/layers/views.py:994
+#, fuzzy
+#| msgid "Set permissions for this resource"
+msgid "You must set a point of contact for this resource"
+msgstr "اجازه انتخاب این منابع"
+
+#: geonode/documents/views.py:452 geonode/layers/views.py:1011
+#, fuzzy
+#| msgid "Set permissions for this resource"
+msgid "You must set an author for this resource"
+msgstr "اجازه انتخاب این منابع"
 
 #: geonode/favorite/templates/favorite/_favorite.html:5
 #: geonode/templates/_actions.html:23
@@ -1129,6 +1753,50 @@ msgstr "Add to Favorites"
 #: geonode/favorite/templates/favorite/favorite_list.html:8
 msgid "Favorites for"
 msgstr ""
+
+#: geonode/geoserver/__init__.py:75
+msgid "Layer Uploaded"
+msgstr "لایه آپلود شده"
+
+#: geonode/geoserver/__init__.py:75
+#, fuzzy
+#| msgid "A layer was uploaded"
+msgid "A layer was uploaded"
+msgstr "لایه آپلود شد"
+
+#: geonode/geoserver/__init__.py:76 geonode/layers/__init__.py:33
+msgid "Comment on Layer"
+msgstr "پینوشت لایه"
+
+#: geonode/geoserver/__init__.py:76 geonode/layers/__init__.py:33
+msgid "A layer was commented on"
+msgstr "پینوشت لایه"
+
+#: geonode/geoserver/__init__.py:77 geonode/layers/__init__.py:34
+msgid "Rating for Layer"
+msgstr "امتیاز لایه"
+
+#: geonode/geoserver/__init__.py:77 geonode/layers/__init__.py:34
+msgid "A rating was given to a layer"
+msgstr "امتیاز داده شده به این لایه"
+
+#: geonode/geoserver/createlayer/forms.py:35
+#, fuzzy
+#| msgid "Layer Name"
+msgid "Layer name"
+msgstr "نام لایه"
+
+#: geonode/geoserver/createlayer/forms.py:36
+#, fuzzy
+#| msgid "Layer Title"
+msgid "Layer title"
+msgstr "عنوان لایه"
+
+#: geonode/geoserver/createlayer/forms.py:37
+#, fuzzy
+#| msgid "property type"
+msgid "Geometry type"
+msgstr "نوع ویژگی"
 
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:6
 #: geonode/templates/base.html:289 geonode/templates/base.html:455
@@ -1166,9 +1834,193 @@ msgstr "اطلاعات توصیفی"
 
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:41
 #: geonode/groups/templates/groups/group_create.html:26
+#: geonode/monitoring/models.py:354
 #: geonode/services/templates/services/service_register.html:18
 msgid "Create"
 msgstr "ساختن"
+
+#: geonode/geoserver/helpers.py:681
+#, fuzzy
+#| msgid "Not provided"
+msgid "No abstract provided"
+msgstr "ارائه نشده است"
+
+#: geonode/geoserver/helpers.py:1427
+msgid "An exception occurred loading data to PostGIS"
+msgstr ""
+
+#: geonode/geoserver/helpers.py:1432
+msgid " Additionally an error occured during database cleanup"
+msgstr ""
+
+#: geonode/geoserver/ows.py:68
+msgid "GZIP"
+msgstr ""
+
+#: geonode/geoserver/ows.py:69
+msgid "GeoTIFF"
+msgstr ""
+
+#: geonode/geoserver/ows.py:110
+msgid "Zipped Shapefile"
+msgstr "Shapefile زیپ"
+
+#: geonode/geoserver/ows.py:111
+msgid "GML 2.0"
+msgstr "GML 2.0"
+
+#: geonode/geoserver/ows.py:112
+msgid "GML 3.1.1"
+msgstr "3.1.1 GML"
+
+#: geonode/geoserver/ows.py:113
+msgid "CSV"
+msgstr "CSV"
+
+#: geonode/geoserver/ows.py:114
+msgid "Excel"
+msgstr "بهتر بودن از"
+
+#: geonode/geoserver/ows.py:115
+msgid "GeoJSON"
+msgstr "GeoJSON"
+
+#: geonode/geoserver/ows.py:157
+msgid "JPEG"
+msgstr "JPEG"
+
+#: geonode/geoserver/ows.py:158
+msgid "PDF"
+msgstr "PDF"
+
+#: geonode/geoserver/ows.py:159
+msgid "PNG"
+msgstr "PNG"
+
+#: geonode/geoserver/views.py:509
+msgid "You don't have permissions to change style for this layer"
+msgstr "شما اجازه تغییر سبک برای این لایه ندارد"
+
+#: geonode/geoserver/views.py:579 geonode/geoserver/views.py:635
+msgid "Bad HTTP Authorization Credentials."
+msgstr "بد مدارک HTTP مجوز."
+
+#: geonode/groups/forms.py:35
+msgid ""
+"a short version of the name consisting only of letters, numbers, underscores "
+"and hyphens."
+msgstr "نسخه کوتاه از نام فقط متشکل از حروف، اعداد، زیرخط و خط فاصله."
+
+#: geonode/groups/forms.py:43
+msgid "A group already exists with that slug."
+msgstr "گروه در حال حاضر با آن مثل حلزون حرکت کردن وجود دارد."
+
+#: geonode/groups/forms.py:50 geonode/groups/forms.py:77
+msgid "A group already exists with that name."
+msgstr "گروه در حال حاضر با این نام وجود دارد."
+
+#: geonode/groups/forms.py:87
+#, fuzzy
+#| msgid "User Activities"
+msgid "User Identifiers"
+msgstr "فعالیت کاربر"
+
+#: geonode/groups/forms.py:97
+msgid "Assign manager role"
+msgstr ""
+
+#: geonode/groups/forms.py:111
+#, python-format
+msgid ""
+"The following are not valid usernames: %(errors)s; not added to the group"
+msgstr ""
+
+#: geonode/groups/models.py:43 geonode/layers/models.py:158
+#: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
+#: geonode/services/templates/services/service_resources_harvest.html:31
+#: geonode/templates/metadata_detail.html:130
+#: geonode/templates/metadata_detail.html:272
+#: geonode/templates/metadata_detail.html:353
+msgid "Name"
+msgstr "نام"
+
+#: geonode/groups/models.py:47 geonode/templates/base.html:314
+#: geonode/templates/search/_general_filters.html:76
+#: geonode/templates/search/_search_user_content.html:28
+#, fuzzy
+#| msgid "Categories"
+msgid "Group Categories"
+msgstr "دسته بندی ها"
+
+#: geonode/groups/models.py:65
+#, fuzzy
+#| msgid "Public"
+msgid "Public"
+msgstr "عمومی"
+
+#: geonode/groups/models.py:66
+msgid "Public (invite-only)"
+msgstr "عمومی (دعوت-تنها)"
+
+#: geonode/groups/models.py:67
+msgid "Private"
+msgstr "خصوصی"
+
+#: geonode/groups/models.py:70
+msgid ""
+"Public: Any registered user can view and join a public group.<br>Public "
+"(invite-only):Any registered user can view the group.  Only invited users "
+"can join.<br>Private: Registered users cannot see any details about the "
+"group, including membership.  Only invited users can join."
+msgstr ""
+"عمومی: هر کاربر ثبت نام شده می توانید مشاهده و گروه های عمومی بپیوندید. <br> "
+"عمومی (دعوت فقط): هر کاربر ثبت نام شده می توانید گروه ها را ببینید. فقط "
+"کاربران دعوت می بپیوندید. <br> خصوصی: کاربران ثبت شده نمی تواند هر گونه "
+"اطلاعات در مورد این گروه، از جمله عضویت را ببینید. فقط کاربران دعوت می "
+"بپیوندید."
+
+#: geonode/groups/models.py:75
+msgid ""
+"Email used to contact one or all group members, such as a mailing list, "
+"shared email, or exchange group."
+msgstr ""
+"ایمیل استفاده می شود به تماس اعضای یک یا تمام گروه، مانند یک لیست پستی، "
+"ایمیل مشترک، و یا گروه ارز."
+
+#: geonode/groups/models.py:81
+msgid "Logo"
+msgstr ""
+
+#: geonode/groups/models.py:84
+#: geonode/people/templates/people/profile_detail.html:67
+#: geonode/templates/invitations/forms/_invite.html:14
+msgid "Email"
+msgstr ""
+
+#: geonode/groups/models.py:90 geonode/people/forms.py:94
+msgid "A space or comma-separated list of keywords"
+msgstr "فضا و یا فهرست کاما جدا از کلمات کلیدی"
+
+#: geonode/groups/models.py:93
+#, fuzzy
+#| msgid "Success"
+msgid "Access"
+msgstr "موفق"
+
+#: geonode/groups/models.py:98 geonode/templates/search/_general_filters.html:4
+msgid "Categories"
+msgstr "دسته بندی ها"
+
+#: geonode/groups/models.py:241
+#: geonode/groups/templates/groups/group_members.html:37
+#: geonode/groups/templates/groups/group_members.html:63
+#: geonode/groups/templates/groups/group_members.html:90
+msgid "Manager"
+msgstr "مدیر"
+
+#: geonode/groups/models.py:242
+msgid "Member"
+msgstr "عضو"
 
 #: geonode/groups/templates/groups/activity.html:7
 #: geonode/groups/templates/groups/activity.html:8
@@ -1179,8 +2031,9 @@ msgstr "خوراک فعالیت برای"
 
 #: geonode/groups/templates/groups/activity.html:25
 #: geonode/groups/templates/groups/group_members.html:22
+#: geonode/monitoring/models.py:353
 #: geonode/social/templates/social/activity_list.html:20
-#: geonode/templates/user_messages/inbox.html:16
+#: geonode/templates/user_messages/inbox.html:17
 msgid "All"
 msgstr "همه"
 
@@ -1363,12 +2216,6 @@ msgstr ""
 msgid "Current Members"
 msgstr "کاربران"
 
-#: geonode/groups/templates/groups/group_members.html:37
-#: geonode/groups/templates/groups/group_members.html:63
-#: geonode/groups/templates/groups/group_members.html:90
-msgid "Manager"
-msgstr "مدیر"
-
 #: geonode/groups/templates/groups/group_members.html:46
 #: geonode/groups/templates/groups/group_members.html:72
 #: geonode/groups/templates/groups/group_members.html:99
@@ -1446,6 +2293,293 @@ msgstr "ایجاد یک گروه"
 #| msgid "Create Group"
 msgid "Edit Group Category"
 msgstr "ایجاد گروه"
+
+#: geonode/invitations/forms.py:53
+#, python-format
+msgid "The e-mail address '%(email)s' has already been invited."
+msgstr ""
+
+#: geonode/invitations/forms.py:55
+#, python-format
+msgid "The e-mail address '%(email)s' has already accepted an invite."
+msgstr ""
+
+#: geonode/invitations/forms.py:57
+#, python-format
+msgid "An active user is already using the e-mail address '%(email)s'"
+msgstr ""
+
+#: geonode/invitations/forms.py:75 geonode/templates/base.html:506
+#, fuzzy
+#| msgid "email"
+msgid "E-mail"
+msgstr "ایمیل"
+
+#: geonode/invitations/views.py:71
+#, python-format
+msgid "Invitations succefully sent to '%(email)s'"
+msgstr ""
+
+#: geonode/invitations/views.py:78
+#, python-format
+msgid ""
+"Sorry, it was not possible to invite '%(email)s' due to the following isse: "
+"%(error)s (%(type)s)"
+msgstr ""
+
+#: geonode/layers/__init__.py:28
+#, fuzzy
+#| msgid "Map Created"
+msgid "Layer Created"
+msgstr "نقشه ایجاد شده"
+
+#: geonode/layers/__init__.py:28
+#, fuzzy
+#| msgid "A layer was commented on"
+msgid "A Layer was created"
+msgstr "پینوشت لایه"
+
+#: geonode/layers/__init__.py:29
+#, fuzzy
+#| msgid "Layer Uploaded"
+msgid "Layer Updated"
+msgstr "لایه آپلود شده"
+
+#: geonode/layers/__init__.py:29
+#, fuzzy
+#| msgid "A layer was commented on"
+msgid "A Layer was updated"
+msgstr "پینوشت لایه"
+
+#: geonode/layers/__init__.py:30
+#, fuzzy
+#| msgid "Not provided"
+msgid "Layer Approved"
+msgstr "ارائه نشده است"
+
+#: geonode/layers/__init__.py:30
+msgid "A Layer was approved by a Manager"
+msgstr ""
+
+#: geonode/layers/__init__.py:31
+#, fuzzy
+#| msgid "Published From"
+msgid "Layer Published"
+msgstr "منتشر شده از"
+
+#: geonode/layers/__init__.py:31
+msgid "A Layer was published"
+msgstr ""
+
+#: geonode/layers/__init__.py:32
+#, fuzzy
+#| msgid "Layer Default Style"
+msgid "Layer Deleted"
+msgstr "لایه گرینویچ"
+
+#: geonode/layers/__init__.py:32
+#, fuzzy
+#| msgid "A layer was commented on"
+msgid "A Layer was deleted"
+msgstr "پینوشت لایه"
+
+#: geonode/layers/models.py:52
+msgid "YYYYMMDD"
+msgstr ""
+
+#: geonode/layers/models.py:53
+msgid "YYYYMMDD'T'hhmmss"
+msgstr ""
+
+#: geonode/layers/models.py:54
+msgid "YYYYMMDD'T'hhmmss'Z'"
+msgstr ""
+
+#: geonode/layers/models.py:72 geonode/qgis_server/models.py:198
+msgid "style name"
+msgstr "نام نحوه نمایش"
+
+#: geonode/layers/models.py:74
+msgid "sld text"
+msgstr "متن SLD"
+
+#: geonode/layers/models.py:76
+msgid "sld version"
+msgstr "نسخه SLD"
+
+#: geonode/layers/models.py:80
+msgid "sld url"
+msgstr "آدرس SLD"
+
+#: geonode/layers/models.py:155
+msgid "Workspace"
+msgstr ""
+
+#: geonode/layers/models.py:156
+msgid "Store"
+msgstr ""
+
+#: geonode/layers/models.py:157
+#, fuzzy
+#| msgid "date type"
+msgid "Storetype"
+msgstr "نوع تاریخ"
+
+#: geonode/layers/models.py:159
+#, fuzzy
+#| msgid "CSW typename"
+msgid "Typename"
+msgstr "typename CSW"
+
+#: geonode/layers/models.py:161
+msgid "Is mosaic?"
+msgstr ""
+
+#: geonode/layers/models.py:162
+msgid "Has time?"
+msgstr ""
+
+#: geonode/layers/models.py:163
+msgid "Has elevation?"
+msgstr ""
+
+#: geonode/layers/models.py:165
+msgid "Time regex"
+msgstr ""
+
+#: geonode/layers/models.py:170
+msgid "Elevation regex"
+msgstr ""
+
+#: geonode/layers/models.py:275
+msgid "File cannot be opened, maybe check the encoding"
+msgstr ""
+
+#: geonode/layers/models.py:386
+#, fuzzy
+#| msgid "attribute name"
+msgid "attribute name"
+msgstr "اطلاعات توصیفی"
+
+#: geonode/layers/models.py:387
+msgid "name of attribute as stored in shapefile/spatial database"
+msgstr "عنوان اطلاعات توصیفی ذخیره شده در پایگاه داده مکانی"
+
+#: geonode/layers/models.py:393
+#, fuzzy
+#| msgid "distribution description"
+msgid "attribute description"
+msgstr "distribution description"
+
+#: geonode/layers/models.py:394
+msgid "description of attribute to be used in metadata"
+msgstr "شرح ویژگی که در ابرداده استفاده"
+
+#: geonode/layers/models.py:399
+msgid "attribute label"
+msgstr "برچسب اطلاعات توصیفی"
+
+#: geonode/layers/models.py:400
+msgid "title of attribute as displayed in GeoNode"
+msgstr "عنوانن نمایش اطلاعات توصیفی"
+
+#: geonode/layers/models.py:406
+msgid "attribute type"
+msgstr "نوع اطلاعات توصیفی"
+
+#: geonode/layers/models.py:407
+msgid "the data type of the attribute (integer, string, geometry, etc)"
+msgstr "نوع اطلاعات توصیفی(عددی، رشته ای، مکانی و غیره)"
+
+#: geonode/layers/models.py:414
+msgid "visible?"
+msgstr "آشکار؟"
+
+#: geonode/layers/models.py:415
+msgid "specifies if the attribute should be displayed in identify results"
+msgstr "مشخص اگر ویژگی باید نمایش داده شده در شناسایی نتایج"
+
+#: geonode/layers/models.py:417
+msgid "display order"
+msgstr "ترتیب نمایش"
+
+#: geonode/layers/models.py:418
+msgid ""
+"specifies the order in which attribute should be displayed in identify "
+"results"
+msgstr "تعیین ترتیب نمایش اطلاعات توصیفی در خروجی"
+
+#: geonode/layers/models.py:422
+#, fuzzy
+#| msgid "count"
+msgid "count"
+msgstr "تعداد"
+
+#: geonode/layers/models.py:423
+msgid "count value for this field"
+msgstr "مقادیر این ستون"
+
+#: geonode/layers/models.py:426
+msgid "min"
+msgstr "حداقل"
+
+#: geonode/layers/models.py:427
+msgid "minimum value for this field"
+msgstr "حداقل مقادیر این ستون"
+
+#: geonode/layers/models.py:434
+msgid "max"
+msgstr "حداکثر"
+
+#: geonode/layers/models.py:435
+msgid "maximum value for this field"
+msgstr "حداکثر مقادیر این ستون"
+
+#: geonode/layers/models.py:442
+msgid "average"
+msgstr "میانگین"
+
+#: geonode/layers/models.py:443
+msgid "average value for this field"
+msgstr "میانگین مقادیر این ستون"
+
+#: geonode/layers/models.py:450
+msgid "median"
+msgstr "میانه"
+
+#: geonode/layers/models.py:451
+msgid "median value for this field"
+msgstr "میانه مقادیر این ستون"
+
+#: geonode/layers/models.py:458
+msgid "standard deviation"
+msgstr "انحراف معیار"
+
+#: geonode/layers/models.py:459
+msgid "standard deviation for this field"
+msgstr "انحراف معیار این ستون"
+
+#: geonode/layers/models.py:466
+msgid "sum"
+msgstr "مجموع"
+
+#: geonode/layers/models.py:467
+msgid "sum value for this field"
+msgstr "مجموع مقادیر این ستون"
+
+#: geonode/layers/models.py:474
+msgid "unique values for this field"
+msgstr "مقادیر یکتا در این ستون"
+
+#: geonode/layers/models.py:478
+#, fuzzy
+#| msgid "last modified"
+msgid "last modified"
+msgstr "آخرین تغییرات"
+
+#: geonode/layers/models.py:479
+msgid "date when attribute statistics were last updated"
+msgstr "آخرین تاریخ بروزرسانی اطلاعات آماری"
 
 #: geonode/layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -1649,6 +2783,7 @@ msgid ""
 msgstr ""
 
 #: geonode/layers/templates/layers/layer_detail.html:412
+#: geonode/monitoring/models.py:1082
 msgid "Warning"
 msgstr ""
 
@@ -1682,8 +2817,14 @@ msgstr "نحوه نمایش"
 msgid "Manage"
 msgstr "اداره کردن"
 
+#: geonode/layers/templates/layers/layer_detail.html:497
+#: geonode/maps/templates/maps/map_detail.html:164
+msgid "Set"
+msgstr ""
+
 #: geonode/layers/templates/layers/layer_detail.html:505
-#: geonode/templates/index.html:66
+#: geonode/monitoring/models.py:173 geonode/templates/index.html:66
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:5
 msgid "Layer"
 msgid_plural "Layers"
 msgstr[0] ""
@@ -1986,7 +3127,7 @@ msgstr "خلاصه"
 #: geonode/templates/_comments.html:37
 #: geonode/templates/announcements/announcement_confirm_delete.html:21
 #: geonode/templates/announcements/announcement_form.html:24
-#: geonode/templates/user_messages/_message_snippet.html:61
+#: geonode/templates/user_messages/_message_snippet.html:39
 msgid "Delete"
 msgstr "حذف"
 
@@ -2089,7 +3230,6 @@ msgid "This will most probably overwrite the current default style!"
 msgstr ""
 
 #: geonode/layers/templates/layouts/panels.html:224
-#: geonode/templates/user_messages/_message_snippet.html:12
 msgid "Preview"
 msgstr "پیش نمایش"
 
@@ -2706,6 +3846,247 @@ msgstr "و یا فقط به"
 msgid "now"
 msgstr "حالا"
 
+#: geonode/layers/utils.py:496 geonode/layers/utils.py:520
+msgid "You are attempting to replace a vector layer with an unknown format."
+msgstr ""
+
+#: geonode/layers/utils.py:502 geonode/layers/views.py:1211
+msgid "You are attempting to replace a vector layer with a raster."
+msgstr ""
+
+#: geonode/layers/utils.py:505 geonode/layers/views.py:1215
+msgid "You are attempting to replace a raster layer with a vector."
+msgstr ""
+
+#: geonode/layers/utils.py:528
+msgid ""
+"Please ensure the name is consistent with the file you are trying to replace."
+msgstr ""
+
+#: geonode/layers/utils.py:533
+msgid "Local GeoNode layer has no geometry type."
+msgstr ""
+
+#: geonode/layers/utils.py:538
+msgid ""
+"Please ensure there is at least one geometry "
+"type                                 that is consistent with the file you "
+"are trying to replace."
+msgstr ""
+
+#: geonode/layers/utils.py:542
+#, python-format
+msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgstr ""
+
+#: geonode/layers/views.py:127
+msgid ""
+"There was an error while attempting to upload your data. Please try again, "
+"or contact and administrator if the problem continues."
+msgstr "خطا در آپلود داده، مجددا سعی کنید."
+
+#: geonode/layers/views.py:130
+msgid ""
+"Note: this layer's orginal metadata was populated and preserved by importing "
+"a metadata XML file. This metadata cannot be edited."
+msgstr ""
+
+#: geonode/layers/views.py:134
+msgid "You are not permitted to delete this layer"
+msgstr "شما مجاز به پاک کردن این لایه نیستید."
+
+#: geonode/layers/views.py:135
+msgid "You do not have permissions for this layer."
+msgstr "شما مجوز دسترسی به این لایه را ندارید."
+
+#: geonode/layers/views.py:136
+msgid "You are not permitted to modify this layer"
+msgstr "شما مجاز به تغییر این لایه نیستید."
+
+#: geonode/layers/views.py:138
+msgid "You are not permitted to modify this layer's metadata"
+msgstr "شما مجاز به تغییر متادیتای این لایه نیستید."
+
+#: geonode/layers/views.py:139
+msgid "You are not permitted to view this layer"
+msgstr "شما مجاز به مشاهده این لایه نیستید."
+
+#: geonode/layers/views.py:277
+#, fuzzy
+#| msgid "Files to be uploaded"
+msgid "Failed to upload the layer"
+msgstr "فایل های آپلود می شود"
+
+#: geonode/layers/views.py:1311 geonode/layers/views.py:1356
+msgid "Unable to delete layer"
+msgstr ""
+
+#: geonode/layers/views.py:1315 geonode/layers/views.py:1360
+msgid ""
+"This layer is a member of a layer group, you must remove the layer from the "
+"group before deleting."
+msgstr ""
+
+#: geonode/layers/views.py:1408 geonode/maps/views.py:1406
+msgid "couldn't generate thumbnail"
+msgstr ""
+
+#: geonode/maps/__init__.py:28
+msgid "Map Created"
+msgstr "نقشه ایجاد شده"
+
+#: geonode/maps/__init__.py:28
+#, fuzzy
+#| msgid "A map was commented on"
+msgid "A Map was created"
+msgstr "پینوشت این نقشه"
+
+#: geonode/maps/__init__.py:29
+#, fuzzy
+#| msgid "Map Created"
+msgid "Map Updated"
+msgstr "نقشه ایجاد شده"
+
+#: geonode/maps/__init__.py:29
+#, fuzzy
+#| msgid "last updated on"
+msgid "A Map was updated"
+msgstr "آخرین بروز رسانی در"
+
+#: geonode/maps/__init__.py:30
+#, fuzzy
+#| msgid "Not provided"
+msgid "Map Approved"
+msgstr "ارائه نشده است"
+
+#: geonode/maps/__init__.py:30
+msgid "A Map was approved by a Manager"
+msgstr ""
+
+#: geonode/maps/__init__.py:31
+#, fuzzy
+#| msgid "Published From"
+msgid "Map Published"
+msgstr "منتشر شده از"
+
+#: geonode/maps/__init__.py:31
+msgid "A Map was published"
+msgstr ""
+
+#: geonode/maps/__init__.py:32
+#, fuzzy
+#| msgid "Map Created"
+msgid "Map Deleted"
+msgstr "نقشه ایجاد شده"
+
+#: geonode/maps/__init__.py:32
+#, fuzzy
+#| msgid "A map was commented on"
+msgid "A Map was deleted"
+msgstr "پینوشت این نقشه"
+
+#: geonode/maps/__init__.py:33
+msgid "Comment on Map"
+msgstr "پینوشت نقشه"
+
+#: geonode/maps/__init__.py:33
+msgid "A map was commented on"
+msgstr "پینوشت این نقشه"
+
+#: geonode/maps/__init__.py:34
+msgid "Rating for Map"
+msgstr "امتیاز این نقشه"
+
+#: geonode/maps/__init__.py:34
+msgid "A rating was given to a map"
+msgstr "امتیاز داده شده به نقشه"
+
+#: geonode/maps/models.py:64
+msgid "zoom"
+msgstr "زوم"
+
+#: geonode/maps/models.py:68
+#, fuzzy
+#| msgid "projection"
+msgid "projection"
+msgstr "طرح"
+
+#: geonode/maps/models.py:72
+msgid "center X"
+msgstr "مرکز X"
+
+#: geonode/maps/models.py:76
+msgid "center Y"
+msgstr "مرکز Y"
+
+#: geonode/maps/models.py:83
+msgid "Site URL"
+msgstr "URL سایت"
+
+#: geonode/maps/models.py:88
+msgid "Featured Map URL"
+msgstr "ویژه URL نقشه"
+
+#: geonode/maps/models.py:443
+msgid "stack order"
+msgstr "منظور پشته"
+
+#: geonode/maps/models.py:448
+#, fuzzy
+#| msgid "format"
+msgid "format"
+msgstr "قالب"
+
+#: geonode/maps/models.py:454
+msgid "name"
+msgstr "نام"
+
+#: geonode/maps/models.py:457
+msgid "store"
+msgstr ""
+
+#: geonode/maps/models.py:463
+msgid "opacity"
+msgstr "تاری"
+
+#: geonode/maps/models.py:467
+msgid "styles"
+msgstr "سبک"
+
+#: geonode/maps/models.py:472
+msgid "transparent"
+msgstr "شفاف"
+
+#: geonode/maps/models.py:476
+msgid "fixed"
+msgstr "ثابت"
+
+#: geonode/maps/models.py:480
+#, fuzzy
+#| msgid "group"
+msgid "group"
+msgstr "گروه"
+
+#: geonode/maps/models.py:484
+msgid "visibility"
+msgstr "دید"
+
+#: geonode/maps/models.py:487
+msgid "ows URL"
+msgstr "URL OWS"
+
+#: geonode/maps/models.py:490
+msgid "layer params"
+msgstr "پارامترهای لایه"
+
+#: geonode/maps/models.py:497
+msgid "source params"
+msgstr "پارامترهای منبع"
+
+#: geonode/maps/models.py:607
+msgid "JSON Configuration"
+msgstr "JSON پیکربندی"
+
 #: geonode/maps/templates/maps/map_detail.html:26
 msgid "maps"
 msgstr ""
@@ -2724,7 +4105,8 @@ msgid "Download Map"
 msgstr "دانلود نقشه"
 
 #: geonode/maps/templates/maps/map_detail.html:171
-#: geonode/maps/templates/maps/map_view.html:7 geonode/templates/index.html:76
+#: geonode/maps/templates/maps/map_view.html:7 geonode/monitoring/models.py:174
+#: geonode/templates/index.html:76
 msgid "Map"
 msgid_plural "Maps"
 msgstr[0] ""
@@ -2816,6 +4198,7 @@ msgid "Copy to Clipboard"
 msgstr ""
 
 #: geonode/maps/templates/maps/map_download.html:6
+#: geonode/monitoring/models.py:360
 msgid "Download"
 msgstr "دانلود"
 
@@ -2941,6 +4324,378 @@ msgid ""
 "        "
 msgstr ""
 
+#: geonode/maps/views.py:95
+msgid "You are not permitted to delete this map."
+msgstr "شما مجاز به پاک کردن این نقشه نیستید."
+
+#: geonode/maps/views.py:96
+msgid "You do not have permissions for this map."
+msgstr "شما مجوز دسترسی به این نقشه را ندارید."
+
+#: geonode/maps/views.py:97
+msgid "You must be logged in to save this map"
+msgstr "به منظور ذحیره کردن این نقشه باید به سیستم وارد شوید"
+
+#: geonode/maps/views.py:98
+msgid "You are not permitted to save or edit this map."
+msgstr "شما مجاز به ذخیره یا ویرایش این نقشه."
+
+#: geonode/maps/views.py:100
+msgid "You are not allowed to modify this map's metadata."
+msgstr "شما مجاز به تغییر متادیتای این نقشه نمی باشید."
+
+#: geonode/maps/views.py:101
+msgid "You are not allowed to view this map."
+msgstr "شما مجاز به مشاهده این نقشه نمی باشید."
+
+#: geonode/maps/views.py:102
+msgid "An unknown error has occured."
+msgstr "یک خطای ناشناخته رخ داده است."
+
+#: geonode/maps/views.py:1413
+#, fuzzy
+#| msgid "Thumbnail"
+msgid "Thumbnail saved"
+msgstr "Thumbnail"
+
+#: geonode/maps/views.py:1416
+#, fuzzy
+#| msgid "Thumbnail"
+msgid "error saving thumbnail"
+msgstr "Thumbnail"
+
+#: geonode/monitoring/__init__.py:45
+msgid "Monitoring alert"
+msgstr ""
+
+#: geonode/monitoring/__init__.py:46
+msgid "Alert situation reported by monitoring"
+msgstr ""
+
+#: geonode/monitoring/collector.py:1008
+msgid "GeoNode Monitoring on {} reports errors: {}"
+msgstr ""
+
+#: geonode/monitoring/forms.py:30
+#, fuzzy
+#| msgid "Email Address"
+msgid "Enter valid email addresses."
+msgstr "آدرس پست الکترونیک"
+
+#: geonode/monitoring/management/commands/collect_metrics.py:50
+msgid "Show list of services"
+msgstr ""
+
+#: geonode/monitoring/management/commands/collect_metrics.py:52
+#: geonode/monitoring/management/commands/render_metrics.py:57
+msgid ""
+"Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
+"provided, last sync will be used."
+msgstr ""
+
+#: geonode/monitoring/management/commands/collect_metrics.py:55
+#: geonode/monitoring/management/commands/render_metrics.py:59
+msgid ""
+"Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
+"provided, now will be used."
+msgstr ""
+
+#: geonode/monitoring/management/commands/collect_metrics.py:58
+msgid "Force check"
+msgstr ""
+
+#: geonode/monitoring/management/commands/collect_metrics.py:60
+msgid "Format of audit log (xml, json)"
+msgstr ""
+
+#: geonode/monitoring/management/commands/collect_metrics.py:62
+msgid ""
+"Should old data be preserved (default: no, data older than settings."
+"MONITORING_DATA_TTL will be removed)"
+msgstr ""
+
+#: geonode/monitoring/management/commands/collect_metrics.py:65
+msgid "Should stop on first error occured (default: no)"
+msgstr ""
+
+#: geonode/monitoring/management/commands/collect_metrics.py:67
+msgid "Should process and send notifications as well (default: no)"
+msgstr ""
+
+#: geonode/monitoring/management/commands/collect_metrics.py:69
+msgid "Collect data from this service only"
+msgstr ""
+
+#: geonode/monitoring/management/commands/render_metrics.py:49
+msgid "Show list of metrics"
+msgstr ""
+
+#: geonode/monitoring/management/commands/render_metrics.py:51
+msgid "Show list of labels for metric"
+msgstr ""
+
+#: geonode/monitoring/management/commands/render_metrics.py:54
+msgid "Show list of resources for metric"
+msgstr ""
+
+#: geonode/monitoring/management/commands/render_metrics.py:62
+msgid "Data aggregation interval in seconds (default: 60)"
+msgstr ""
+
+#: geonode/monitoring/management/commands/render_metrics.py:63
+#, fuzzy
+#| msgid "attribute name"
+msgid "Metric name"
+msgstr "اطلاعات توصیفی"
+
+#: geonode/monitoring/management/commands/render_metrics.py:66
+msgid "Show data for specific resource in resource_type=resource_name format"
+msgstr ""
+
+#: geonode/monitoring/management/commands/render_metrics.py:69
+#, fuzzy
+#| msgid "reference date for the cited resource"
+msgid "Show data for specific resource"
+msgstr "تاریخ مرجع برای منابع ذکر شده"
+
+#: geonode/monitoring/management/commands/render_metrics.py:72
+msgid "Show data for specific label"
+msgstr ""
+
+#: geonode/monitoring/models.py:100 geonode/templates/500.html:199
+#: geonode/templates/base.html:511
+msgid "GeoNode"
+msgstr "GeoNode"
+
+#: geonode/monitoring/models.py:101
+#: geonode/people/templates/people/profile_detail.html:163
+#: geonode/templates/500.html:278
+msgid "GeoServer"
+msgstr "GeoServer"
+
+#: geonode/monitoring/models.py:102
+#, fuzzy
+#| msgid "GeoServer"
+msgid "Host (GeoServer)"
+msgstr "GeoServer"
+
+#: geonode/monitoring/models.py:103
+#, fuzzy
+#| msgid "About GeoNode"
+msgid "Host (GeoNode)"
+msgstr "درباره GeoNode"
+
+#: geonode/monitoring/models.py:172
+#, fuzzy
+#| msgid "Resources"
+msgid "No resource"
+msgstr "منابع"
+
+#: geonode/monitoring/models.py:175
+#, fuzzy
+#| msgid "Resources"
+msgid "Resource base"
+msgstr "منابع"
+
+#: geonode/monitoring/models.py:177
+#, fuzzy
+#| msgid "Styles"
+msgid "Style"
+msgstr "نحوه نمایش"
+
+#: geonode/monitoring/models.py:178
+#: geonode/people/templates/people/profile_detail.html:164
+#: geonode/templates/500.html:279 geonode/templates/base.html:383
+msgid "Admin"
+msgstr "مدیر"
+
+#: geonode/monitoring/models.py:180
+msgid "Other"
+msgstr ""
+
+#: geonode/monitoring/models.py:210 geonode/monitoring/models.py:261
+msgid "Rate"
+msgstr ""
+
+#: geonode/monitoring/models.py:211 geonode/monitoring/models.py:263
+#, fuzzy
+#| msgid "count"
+msgid "Count"
+msgstr "تعداد"
+
+#: geonode/monitoring/models.py:212
+msgid "Value"
+msgstr ""
+
+#: geonode/monitoring/models.py:213
+msgid "Value numeric"
+msgstr ""
+
+#: geonode/monitoring/models.py:252
+msgid "Bytes"
+msgstr ""
+
+#: geonode/monitoring/models.py:253
+msgid "Kilobytes"
+msgstr ""
+
+#: geonode/monitoring/models.py:254
+msgid "Megabytes"
+msgstr ""
+
+#: geonode/monitoring/models.py:255
+msgid "Gigabytes"
+msgstr ""
+
+#: geonode/monitoring/models.py:256
+msgid "Bytes per second"
+msgstr ""
+
+#: geonode/monitoring/models.py:257
+msgid "Kilobytes per second"
+msgstr ""
+
+#: geonode/monitoring/models.py:258
+msgid "Megabytes per second"
+msgstr ""
+
+#: geonode/monitoring/models.py:259
+msgid "Gigabytes per second"
+msgstr ""
+
+#: geonode/monitoring/models.py:260
+msgid "Seconds"
+msgstr ""
+
+#: geonode/monitoring/models.py:262
+msgid "Percentage"
+msgstr ""
+
+#: geonode/monitoring/models.py:351
+#, fuzzy
+#| msgid "local OWS"
+msgid "Not OWS"
+msgstr "OWS محلی"
+
+#: geonode/monitoring/models.py:352
+msgid "Any OWS"
+msgstr ""
+
+#: geonode/monitoring/models.py:356
+#: geonode/templates/pinax/notifications/notice_settings.html:51
+msgid "Change"
+msgstr "تغییر"
+
+#: geonode/monitoring/models.py:357
+#, fuzzy
+#| msgid "Edit Metadata"
+msgid "Change Metadata"
+msgstr "ویرایش متادیتا"
+
+#: geonode/monitoring/models.py:358
+#, fuzzy
+#| msgid "Edit Metadata"
+msgid "View Metadata"
+msgstr "ویرایش متادیتا"
+
+#: geonode/monitoring/models.py:359
+msgid "View"
+msgstr "View"
+
+#: geonode/monitoring/models.py:361
+#, fuzzy
+#| msgid "Public"
+msgid "Publish"
+msgstr "عمومی"
+
+#: geonode/monitoring/models.py:363
+#, fuzzy
+#| msgid "GeoServer"
+msgid "Geoserver event"
+msgstr "GeoServer"
+
+#: geonode/monitoring/models.py:432
+#, fuzzy
+#| msgid "List of resources using this document:"
+msgid "List of resources affected"
+msgstr "لیست منابع مورد استفاده این سند"
+
+#: geonode/monitoring/models.py:439
+#, fuzzy
+#| msgid "Resource using this document"
+msgid "Response processing time in ms"
+msgstr "منبع مورد استفاده این سند"
+
+#: geonode/monitoring/models.py:1071
+msgid "1 minute"
+msgstr ""
+
+#: geonode/monitoring/models.py:1072
+msgid "5 minutes"
+msgstr ""
+
+#: geonode/monitoring/models.py:1073
+msgid "10 minutes"
+msgstr ""
+
+#: geonode/monitoring/models.py:1074
+msgid "30 minutes"
+msgstr ""
+
+#: geonode/monitoring/models.py:1075
+msgid "1 hour"
+msgstr ""
+
+#: geonode/monitoring/models.py:1083 geonode/templates/metadata_base.html:128
+#: geonode/templates/metadata_base.html:131
+#: geonode/templates/socialaccount/authentication_error.html:11
+msgid "Error"
+msgstr ""
+
+#: geonode/monitoring/models.py:1084
+msgid "Fatal"
+msgstr ""
+
+#: geonode/monitoring/models.py:1098
+msgid "Expected min/max values for user configuration"
+msgstr ""
+
+#: geonode/monitoring/models.py:1106
+msgid "Marker of last delivery"
+msgstr ""
+
+#: geonode/monitoring/models.py:1109
+msgid "Minimum time between subsequent notifications"
+msgstr ""
+
+#: geonode/monitoring/models.py:1114
+msgid "How severe would be error from this notification"
+msgstr ""
+
+#: geonode/monitoring/models.py:1119
+msgid "Is it active"
+msgstr ""
+
+#: geonode/monitoring/models.py:1126
+msgid "{}: {}"
+msgstr ""
+
+#: geonode/monitoring/models.py:1390
+msgid "Value must be above"
+msgstr ""
+
+#: geonode/monitoring/models.py:1391
+msgid "Value must be below"
+msgstr ""
+
+#: geonode/monitoring/models.py:1392
+msgid "Last update must not be older than"
+msgstr ""
+
+#: geonode/monitoring/models.py:1542
+msgid "Max timeout for given metric before error should be raised"
+msgstr ""
+
 #: geonode/monitoring/templates/monitoring/index.html:5
 #: geonode/monitoring/templates/monitoring/non_superuser.html:4
 #: geonode/templates/base.html:389
@@ -2949,6 +4704,255 @@ msgstr ""
 
 #: geonode/monitoring/templates/monitoring/non_superuser.html:10
 msgid "Only superusers can monitor performance"
+msgstr ""
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:3
+msgid "Hi,"
+msgstr ""
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:5
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:3
+msgid "Monitoring on"
+msgstr ""
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:5
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:3
+#, fuzzy
+#| msgid "The following groups:"
+msgid "has detected following problems :"
+msgstr "گروه های زیر:"
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:9
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:6
+msgid "spotted"
+msgstr ""
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:9
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:10
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:6
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:7
+#: geonode/social/templates/social/_activity_item.html:31
+msgid "ago"
+msgstr "پیش"
+
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:10
+#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:7
+msgid "emerged"
+msgstr ""
+
+#: geonode/people/__init__.py:26
+msgid "User following you"
+msgstr "کاربر شما زیر"
+
+#: geonode/people/__init__.py:26
+#, fuzzy
+#| msgid "This user is not following anyone"
+msgid "Another user has started following you"
+msgstr "این کاربر هر کسی زیر"
+
+#: geonode/people/__init__.py:27
+msgid "User requested access"
+msgstr ""
+
+#: geonode/people/__init__.py:28
+msgid "A new user has requested access to the site"
+msgstr ""
+
+#: geonode/people/__init__.py:29
+#, fuzzy
+#| msgid "Recent activity"
+msgid "Account activated"
+msgstr "فعالیت های اخیر"
+
+#: geonode/people/__init__.py:30
+msgid "This account is now active and can log in the site"
+msgstr ""
+
+#: geonode/people/admin.py:56
+msgid "Personal info"
+msgstr "اطلاعات شخصی"
+
+#: geonode/people/admin.py:59
+msgid "Important dates"
+msgstr "تاریخ های مهم"
+
+#: geonode/people/admin.py:60
+#, fuzzy
+#| msgid "Edit profile"
+msgid "Extended profile"
+msgstr "ویرایش مشخصات"
+
+#: geonode/people/admin.py:159
+msgid "Password changed successfully."
+msgstr "رمز عبور با موفقیت تغییر."
+
+#: geonode/people/admin.py:169
+#, python-format
+msgid "Change password: %s"
+msgstr "تغییر رمز عبور: %s را"
+
+#: geonode/people/enumerations.py:39
+msgid "party who authored the resource"
+msgstr "حزب که منابع نویسنده"
+
+#: geonode/people/enumerations.py:40
+msgid ""
+"party who has processed the data in a manner such that the resource has been "
+"modified"
+msgstr "حزب که تا به داده ها در روش به طوری که منابع اصلاح شده است پردازش"
+
+#: geonode/people/enumerations.py:41
+msgid "party who published the resource"
+msgstr "حزب که منابع منتشر شده"
+
+#: geonode/people/enumerations.py:42
+msgid ""
+"party that accepts accountability and responsibility for the data and "
+"ensures         appropriate care and maintenance of the resource"
+msgstr ""
+"حزب است که می پذیرد پاسخگویی و مسئولیت برای داده ها و تضمین مراقبت های مناسب "
+"و نگهداری از منابع"
+
+#: geonode/people/enumerations.py:44
+msgid ""
+"party who can be contacted for acquiring knowledge about or acquisition of "
+"the resource"
+msgstr "حزب که می تواند برای به دست آوردن دانش در مورد و یا کسب منابع تماس"
+
+#: geonode/people/enumerations.py:45
+msgid "party who distributes the resource"
+msgstr "حزب که توزیع منابع"
+
+#: geonode/people/enumerations.py:46
+msgid "party who uses the resource"
+msgstr "حزب که با استفاده از منابع"
+
+#: geonode/people/enumerations.py:47
+msgid "party that supplies the resource"
+msgstr "حزبی که تامین منابع"
+
+#: geonode/people/enumerations.py:48
+msgid "party who created the resource"
+msgstr "حزب که منبع ایجاد"
+
+#: geonode/people/enumerations.py:49
+msgid "party that owns the resource"
+msgstr "حزبی که دارای منابع"
+
+#: geonode/people/enumerations.py:50
+msgid "key party responsible for gathering information and conducting research"
+msgstr "احزاب مسئول جمع آوری اطلاعات و انجام پژوهش"
+
+#: geonode/people/forms.py:75
+#, fuzzy
+#| msgid "Email Address"
+msgid "Email Address"
+msgstr "آدرس پست الکترونیک"
+
+#: geonode/people/models.py:66
+#, fuzzy
+#| msgid "Organization Name"
+msgid "Organization Name"
+msgstr "نام سازمان"
+
+#: geonode/people/models.py:70
+msgid "name of the responsible organization"
+msgstr "نام سازمان مسئول"
+
+#: geonode/people/models.py:72 geonode/templates/500.html:266
+#: geonode/templates/base.html:375
+msgid "Profile"
+msgstr "نمایه"
+
+#: geonode/people/models.py:75
+msgid "introduce yourself"
+msgstr "خودتان را معرفی کنید"
+
+#: geonode/people/models.py:77
+msgid "Position Name"
+msgstr "موقعیت نام"
+
+#: geonode/people/models.py:81
+msgid "role or position of the responsible person"
+msgstr "نقش و یا موقعیت فرد مسئول"
+
+#: geonode/people/models.py:82
+#: geonode/people/templates/people/profile_detail.html:89
+#: geonode/templates/metadata_detail.html:145
+#: geonode/templates/metadata_detail.html:287
+#: geonode/templates/metadata_detail.html:368
+msgid "Voice"
+msgstr "صدا"
+
+#: geonode/people/models.py:83
+msgid ""
+"telephone number by which individuals can speak to the responsible "
+"organization or individual"
+msgstr ""
+"شماره تلفن های که افراد می توانند به سازمان مسئول و یا فردی صحبت می کنند"
+
+#: geonode/people/models.py:84
+msgid "Facsimile"
+msgstr "رونوشت"
+
+#: geonode/people/models.py:85
+msgid ""
+"telephone number of a facsimile machine for the responsible organization or "
+"individual"
+msgstr "شماره تلفن دستگاه فاکس برای سازمان مسئول و یا فردی"
+
+#: geonode/people/models.py:87
+msgid "Delivery Point"
+msgstr "نقطه تحویل"
+
+#: geonode/people/models.py:91
+msgid ""
+"physical and email address at which the organization or individual may be "
+"contacted"
+msgstr "آدرس فیزیکی و ایمیل که در آن سازمان و یا فردی ممکن است تماس"
+
+#: geonode/people/models.py:93
+msgid "City"
+msgstr "شهرستان"
+
+#: geonode/people/models.py:97
+msgid "city of the location"
+msgstr "شهرستان از محل"
+
+#: geonode/people/models.py:99
+msgid "Administrative Area"
+msgstr "منطقه اداری"
+
+#: geonode/people/models.py:103
+msgid "state, province of the location"
+msgstr "دولت، استان محل"
+
+#: geonode/people/models.py:105
+msgid "Postal Code"
+msgstr "کد پستی"
+
+#: geonode/people/models.py:109
+msgid "ZIP or other postal code"
+msgstr "ZIP و یا سایر کد پستی"
+
+#: geonode/people/models.py:111
+msgid "Country"
+msgstr ""
+
+#: geonode/people/models.py:116
+msgid "country of the physical address"
+msgstr "کشور از آدرس فیزیکی"
+
+#: geonode/people/models.py:118
+msgid ""
+"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+"the subject             (space or comma-separated"
+msgstr ""
+"کلمه معمول (ها) و یا کلمه رسمی (بازدید کنندگان) یا عبارت (بازدید کنندگان) "
+"مورد استفاده برای توصیف موضوع (فضا یا کاما از هم جدا"
+
+#: geonode/people/models.py:127
+msgid "Timezone"
 msgstr ""
 
 #: geonode/people/templates/people/_profile_about_item.html:17
@@ -2990,11 +4994,6 @@ msgstr "پروفایل"
 msgid "people explore"
 msgstr "GeoExplorer"
 
-#: geonode/people/templates/people/profile_detail.html:67
-#: geonode/templates/invitations/forms/_invite.html:14
-msgid "Email"
-msgstr ""
-
 #: geonode/people/templates/people/profile_detail.html:71
 #: geonode/people/templates/people/profile_detail.html:77
 #: geonode/people/templates/people/profile_detail.html:81
@@ -3025,15 +5024,10 @@ msgstr ""
 msgid "Location"
 msgstr ""
 
-#: geonode/people/templates/people/profile_detail.html:89
-#: geonode/templates/metadata_detail.html:145
-#: geonode/templates/metadata_detail.html:287
-#: geonode/templates/metadata_detail.html:368
-msgid "Voice"
-msgstr "صدا"
-
 #: geonode/people/templates/people/profile_detail.html:93
 #: geonode/people/templates/people/profile_detail.html:113
+#: geonode/services/serviceprocessors/arcgis.py:115
+#: geonode/services/serviceprocessors/wms.py:144
 msgid "Not provided"
 msgstr "ارائه نشده است"
 
@@ -3117,16 +5111,6 @@ msgstr "اعلانات"
 msgid "Invite Users"
 msgstr "دعوت از کاربر"
 
-#: geonode/people/templates/people/profile_detail.html:163
-#: geonode/templates/500.html:278
-msgid "GeoServer"
-msgstr "GeoServer"
-
-#: geonode/people/templates/people/profile_detail.html:164
-#: geonode/templates/500.html:279 geonode/templates/base.html:383
-msgid "Admin"
-msgstr "مدیر"
-
 #: geonode/people/templates/people/profile_detail.html:174
 msgid "User Activities"
 msgstr "فعالیت کاربر"
@@ -3162,6 +5146,67 @@ msgstr "بروز رسانی اطلاعات شخصی"
 msgid "Explore People"
 msgstr "کاوش مردم"
 
+#: geonode/people/views.py:92
+msgid "Your username for "
+msgstr "نام کاربری برای"
+
+#: geonode/people/views.py:106
+msgid "Your username has been emailed to you."
+msgstr "نام کاربری شما به شما ایمیل فرستاده."
+
+#: geonode/people/views.py:108
+msgid "No user could be found with that email address."
+msgstr "بدون کاربر می تواند با این آدرس ایمیل در بر داشت."
+
+#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:224
+#, fuzzy
+#| msgid "You are not permitted to save or edit this map."
+msgid "You are not permitted to save or edit this resource."
+msgstr "شما مجاز به ذخیره یا ویرایش این نقشه."
+
+#: geonode/proxy/views.py:223
+#, fuzzy
+#| msgid "You are not allowed to view this document."
+msgid "You are not authorized to download this resource."
+msgstr "شما مجاز به مشاهده این سند نیستید"
+
+#: geonode/proxy/views.py:225
+msgid ""
+"No files have been found for this resource. Please, contact a system "
+"administrator."
+msgstr ""
+
+#: geonode/proxy/views.py:259 geonode/proxy/views.py:270
+#: geonode/proxy/views.py:371
+#, fuzzy
+#| msgid "Documents"
+msgid "No files found."
+msgstr "مستندات"
+
+#: geonode/proxy/views.py:379
+#, fuzzy
+#| msgid "Not provided"
+msgid "Not Authorized"
+msgstr "ارائه نشده است"
+
+#: geonode/qgis_server/models.py:200
+#, fuzzy
+#| msgid "style name"
+msgid "style xml"
+msgstr "نام نحوه نمایش"
+
+#: geonode/qgis_server/models.py:201
+#, fuzzy
+#| msgid "sld url"
+msgid "style url"
+msgstr "آدرس SLD"
+
+#: geonode/qgis_server/models.py:203
+#, fuzzy
+#| msgid "sld url"
+msgid "style legend url"
+msgstr "آدرس SLD"
+
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:10
 msgid "Layer Style changed. Redirecting to apply changes..."
 msgstr ""
@@ -3169,14 +5214,6 @@ msgstr ""
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:13
 msgid "You may also use browser reload."
 msgstr ""
-
-#: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
-#: geonode/services/templates/services/service_resources_harvest.html:31
-#: geonode/templates/metadata_detail.html:130
-#: geonode/templates/metadata_detail.html:272
-#: geonode/templates/metadata_detail.html:353
-msgid "Name"
-msgstr "نام"
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:21
 #, fuzzy
@@ -3206,6 +5243,120 @@ msgstr "حذف خدمات"
 msgid "Reload to see changes"
 msgstr ""
 
+#: geonode/qgis_server/views.py:266
+#, python-brace-format
+msgid ""
+"You should use a GIS software or a library which support TMS service to use "
+"this URL : {url}"
+msgstr ""
+
+#: geonode/security/middleware.py:128
+msgid "Session is Expired. Please login again!"
+msgstr ""
+
+#: geonode/services/enumerations.py:45
+msgid "Auto-detect"
+msgstr "شناسایی خودکار"
+
+#: geonode/services/enumerations.py:46
+msgid "Paired WMS/WFS/WCS"
+msgstr "زوج WMS / WFS / WCS"
+
+#: geonode/services/enumerations.py:47 geonode/services/forms.py:54
+msgid "Web Map Service"
+msgstr "وب سرویس نقشه"
+
+#: geonode/services/enumerations.py:48
+msgid "Catalogue Service"
+msgstr "خدمات"
+
+#: geonode/services/enumerations.py:49 geonode/services/forms.py:58
+#, fuzzy
+#| msgid "ArcGIS REST Service"
+msgid "ArcGIS REST MapServer"
+msgstr "نرم افزار ArcGIS REST خدمات"
+
+#: geonode/services/enumerations.py:50
+#, fuzzy
+#| msgid "ArcGIS REST Service"
+msgid "ArcGIS REST ImageServer"
+msgstr "نرم افزار ArcGIS REST خدمات"
+
+#: geonode/services/enumerations.py:51 geonode/services/models.py:51
+msgid "OpenGeoPortal"
+msgstr "OpenGeoPortal"
+
+#: geonode/services/enumerations.py:52
+msgid "Harvard Geospatial Library"
+msgstr "کتابخانه مکانی هاروارد"
+
+#: geonode/services/enumerations.py:53 geonode/services/forms.py:55
+#, fuzzy
+#| msgid "GeoNode's Web Services"
+msgid "GeoNode (Web Map Service)"
+msgstr "خدمات وب GeoNode را"
+
+#: geonode/services/enumerations.py:54
+#, fuzzy
+#| msgid "Catalogue Service"
+msgid "GeoNode (Catalogue Service)"
+msgstr "خدمات"
+
+#: geonode/services/forms.py:37
+msgid "Service URL"
+msgstr "URL خدمات"
+
+#: geonode/services/forms.py:50
+msgid "Service Type"
+msgstr "نوع خدمات"
+
+#: geonode/services/forms.py:72
+#, fuzzy, python-format
+#| msgid "service interfaces"
+msgid "Service %(url)s is already registered"
+msgstr "واسط سرویس"
+
+#: geonode/services/forms.py:88
+#, python-format
+msgid "Could not connect to the service at %(url)s"
+msgstr ""
+
+#: geonode/services/forms.py:93
+#, python-format
+msgid "Could not find importable resources for the service at %(url)s"
+msgstr ""
+
+#: geonode/services/forms.py:100
+#, python-format
+msgid "Found service of type %(found_type)s instead of %(service_type)s"
+msgstr ""
+
+#: geonode/services/models.py:46
+msgid "Local"
+msgstr "محلی"
+
+#: geonode/services/models.py:47
+msgid "Cascaded"
+msgstr "آبشاری"
+
+#: geonode/services/models.py:48
+msgid "Harvested"
+msgstr "برداشت"
+
+#: geonode/services/models.py:49
+msgid "Indexed"
+msgstr "ایندکس شده"
+
+#: geonode/services/models.py:50
+msgid "Live"
+msgstr "زنده"
+
+#: geonode/services/models.py:211
+#, fuzzy
+#| msgid "Resources"
+msgid "Resource is queued"
+msgstr "منابع"
+
 #: geonode/services/templates/services/remote_service_unavailable.html:5
 #, fuzzy
 #| msgid "Remote Services"
@@ -3221,11 +5372,6 @@ msgstr ""
 #| msgid "Point of Contact"
 msgid "Could not contact"
 msgstr "نقطه تماس"
-
-#: geonode/services/templates/services/service_detail.html:9
-#: geonode/services/templates/services/service_list.html:16
-msgid "URL"
-msgstr "URL"
 
 #: geonode/services/templates/services/service_detail.html:12
 #, fuzzy
@@ -3398,14 +5544,90 @@ msgstr ""
 msgid "Re-scan Service for new Resources"
 msgstr ""
 
-#: geonode/social/templates/social/_activity_item.html:31
-msgid "ago"
-msgstr "پیش"
+#: geonode/services/views.py:96
+#, fuzzy
+#| msgid "service interfaces"
+msgid "Service registered successfully"
+msgstr "واسط سرویس"
+
+#: geonode/services/views.py:193
+msgid "The selected resources are being imported"
+msgstr ""
+
+#: geonode/services/views.py:194
+msgid "The selected resources have been imported"
+msgstr ""
+
+#: geonode/services/views.py:224
+msgid "Resource is already being processed"
+msgstr ""
+
+#: geonode/services/views.py:230
+msgid "Resource {} is being processed"
+msgstr ""
+
+#: geonode/services/views.py:259
+#, fuzzy
+#| msgid "Password changed successfully."
+msgid "Service rescanned successfully"
+msgstr "رمز عبور با موفقیت تغییر."
+
+#: geonode/services/views.py:329
+#, fuzzy
+#| msgid "You are not permitted to remove this service."
+msgid "You are not permitted to change this service."
+msgstr "شما مجاز به حذف این سرویس."
+
+#: geonode/services/views.py:357
+msgid "You are not permitted to remove this service."
+msgstr "شما مجاز به حذف این سرویس."
+
+#: geonode/services/views.py:368
+#, fuzzy
+#| msgid "Service has been created:"
+msgid "Service {} has been deleted"
+msgstr "خدمات ایجاد شده است:"
+
+#: geonode/social/signals.py:81
+msgid "created"
+msgstr "ساخته"
+
+#: geonode/social/signals.py:82 geonode/social/tests.py:102
+msgid "deleted"
+msgstr "حذف"
+
+#: geonode/social/signals.py:85
+#, fuzzy
+#| msgid "Update"
+msgid "updated"
+msgstr "بروزرسانی"
+
+#: geonode/social/signals.py:95 geonode/social/tests.py:122
+msgid "added a comment"
+msgstr "اضافه نظر"
+
+#: geonode/social/signals.py:97
+msgid "updated a comment"
+msgstr "به روز شده نظر"
+
+#: geonode/social/signals.py:103 geonode/social/signals.py:108
+#: geonode/social/tests.py:76
+msgid "uploaded"
+msgstr "آپلود شده"
 
 #: geonode/social/templates/social/activity_list.html:4
 #: geonode/social/templates/social/activity_list.html:15
 msgid "Recent activity"
 msgstr "فعالیت های اخیر"
+
+#: geonode/social/templatetags/social_tags.py:56
+msgid "to"
+msgstr "به"
+
+#: geonode/social/templatetags/social_tags.py:72 geonode/social/tests.py:125
+#: geonode/templates/_comments.html:31
+msgid "on"
+msgstr "بر"
 
 #: geonode/templates/401.html:10
 msgid "Not Permitted"
@@ -3530,10 +5752,6 @@ msgid "Powered by"
 msgstr "صفحه"
 
 #: geonode/templates/500.html:199 geonode/templates/base.html:511
-msgid "GeoNode"
-msgstr "GeoNode"
-
-#: geonode/templates/500.html:199 geonode/templates/base.html:511
 msgid "version"
 msgstr "نسخه"
 
@@ -3559,16 +5777,12 @@ msgstr "مرا بخاطر داشته باش"
 msgid "Menu"
 msgstr ""
 
-#: geonode/templates/500.html:266 geonode/templates/base.html:375
-msgid "Profile"
-msgstr "نمایه"
-
 #: geonode/templates/500.html:267 geonode/templates/base.html:376
 msgid "Recent Activity"
 msgstr "فعالیت های اخیر"
 
 #: geonode/templates/500.html:268 geonode/templates/base.html:380
-#: geonode/templates/user_messages/inbox.html:15
+#: geonode/templates/user_messages/inbox.html:16
 msgid "Inbox"
 msgstr "صندوق"
 
@@ -3626,10 +5840,6 @@ msgstr "ورود جهت اضافه نمودن پینوشت"
 #: geonode/templates/_comments.html:31
 msgid "By"
 msgstr "توسط"
-
-#: geonode/templates/_comments.html:31
-msgid "on"
-msgstr "بر"
 
 #: geonode/templates/_comments.html:65
 msgid "Submit Comment"
@@ -3819,6 +6029,92 @@ msgstr ""
 #: geonode/templates/account/email.html:62
 msgid "Do you really want to remove the selected e-mail address?"
 msgstr ""
+
+#: geonode/templates/account/email/email_confirmation_message.txt:1
+#, python-format
+msgid ""
+"Hello from %(site_name)s!\n"
+"\n"
+"You're receiving this e-mail because user %(user_display)s has given yours "
+"as an e-mail address to connect their account.\n"
+"\n"
+"To confirm this is correct, go to %(activate_url)s\n"
+msgstr ""
+
+#: geonode/templates/account/email/email_confirmation_message.txt:7
+#, python-format
+msgid ""
+"Thank you from %(site_name)s!\n"
+"%(site_domain)s"
+msgstr ""
+
+#: geonode/templates/account/email/email_confirmation_subject.txt:1
+#, fuzzy, python-format
+#| msgid "Confirm email address for %(site_name)s"
+msgid "Please confirm email address for %(site_name)s"
+msgstr "تکرار آدرس ایمیل برای %(site_name)sبازدید کنندگان"
+
+#: geonode/templates/account/email/invite_user.txt:1
+#, python-format
+msgid "You have been invited to sign up at %(site_name)s."
+msgstr ""
+
+#: geonode/templates/account/email/invite_user_subject.txt:1
+#, fuzzy, python-format
+#| msgid "Confirm email address for %(site_name)s"
+msgid "Create an account on %(site_name)s"
+msgstr "تکرار آدرس ایمیل برای %(site_name)sبازدید کنندگان"
+
+#: geonode/templates/account/email/password_change.txt:1
+msgid ""
+"This is the email notification to confirm your password has been changed on"
+msgstr ""
+
+#: geonode/templates/account/email/password_change_subject.txt:1
+#, fuzzy
+#| msgid "Change password: %s"
+msgid "Change password email notification"
+msgstr "تغییر رمز عبور: %s را"
+
+#: geonode/templates/account/email/password_reset_key.txt:1
+#, fuzzy, python-format
+#| msgid ""
+#| "You're receiving this email because you or someone else has requested a "
+#| "password for your user account at %(site_name)s.\n"
+#| "It can be safely ignored if you did not request a password reset. Click "
+#| "the link below to reset your password.\n"
+#| "\n"
+#| "%(password_reset_url)s\n"
+msgid ""
+"Hello from %(site_name)s!\n"
+"\n"
+"You're receiving this e-mail because you or someone else has requested a "
+"password for your user account.\n"
+"It can be safely ignored if you did not request a password reset. Click the "
+"link below to reset your password."
+msgstr ""
+"شما این ایمیل را دریافت چرا که شما یا شخص دیگری است یک رمز عبور برای نام "
+"کاربری خود در٪ %(site_name)s بازدید کنندگان درخواست شده است. این را می توان "
+"با خیال راحت نادیده گرفته اگر شما یک تنظیم مجدد رمز عبور درخواست نیست. لینک "
+"زیر برای بازنشانی گذرواژه خود کلیک کنید. %(password_reset_url)s بازدید "
+"کنندگان\n"
+
+#: geonode/templates/account/email/password_reset_key.txt:8
+#, python-format
+msgid "In case you forgot, your username is %(username)s."
+msgstr ""
+
+#: geonode/templates/account/email/password_reset_key.txt:10
+#, python-format
+msgid ""
+"Thank you for using %(site_name)s!\n"
+"%(site_domain)s"
+msgstr ""
+
+#: geonode/templates/account/email/password_reset_key_subject.txt:1
+#, python-format
+msgid "[%(site_name)s] Password reset"
+msgstr "[%(site_name)s] تنظیم مجدد رمز عبور"
 
 #: geonode/templates/account/email_confirm.html:6
 #: geonode/templates/account/email_confirm.html:10
@@ -4204,14 +6500,6 @@ msgstr "حذف این"
 msgid "GeoNode Search"
 msgstr "راهنمای سیستم"
 
-#: geonode/templates/base.html:314
-#: geonode/templates/search/_general_filters.html:76
-#: geonode/templates/search/_search_user_content.html:29
-#, fuzzy
-#| msgid "Categories"
-msgid "Group Categories"
-msgstr "دسته بندی ها"
-
 #: geonode/templates/base.html:495
 #, fuzzy
 #| msgid "Contact:"
@@ -4221,12 +6509,6 @@ msgstr "تماس با:"
 #: geonode/templates/base.html:504
 msgid "Tel"
 msgstr ""
-
-#: geonode/templates/base.html:506
-#, fuzzy
-#| msgid "email"
-msgid "E-mail"
-msgstr "ایمیل"
 
 #: geonode/templates/base.html:644
 #, fuzzy
@@ -4625,6 +6907,7 @@ msgid "Explore documents"
 msgstr "مرور مستندات"
 
 #: geonode/templates/index.html:96
+#: geonode/templates/pinax/notifications/account_approve/full.txt:1
 msgid "User"
 msgid_plural "Users"
 msgstr[0] ""
@@ -4892,6 +7175,7 @@ msgid "Leave"
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:2
+#: geonode/templates/invitations/email/email_invite_message.txt:3
 msgid "Dear Sir/Madam,"
 msgstr ""
 
@@ -4908,6 +7192,7 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:8
+#: geonode/templates/invitations/email/email_invite_message.txt:9
 msgid ""
 "Once you receive the confirmation that your account is activated, you can "
 "notify"
@@ -4928,20 +7213,34 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:16
+#: geonode/templates/invitations/email/email_invite_message.txt:18
 msgid "We look forward to seeing you on the platform,"
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:17
+#: geonode/templates/invitations/email/email_invite_message.txt:20
 #, fuzzy
 #| msgid "GeoNode site admin"
 msgid "The GeoNode team."
 msgstr "GeoNode مدیر سایت مدیر سایت"
 
-#: geonode/templates/metadata_base.html:128
-#: geonode/templates/metadata_base.html:131
-#: geonode/templates/socialaccount/authentication_error.html:11
-msgid "Error"
+#: geonode/templates/invitations/email/email_invite_message.txt:5
+msgid "is inviting you to join"
 msgstr ""
+
+#: geonode/templates/invitations/email/email_invite_message.txt:7
+msgid "To do so, please register at"
+msgstr ""
+
+#: geonode/templates/invitations/email/email_invite_message.txt:9
+msgid "that you wish to join her/his group(s) through this link"
+msgstr ""
+
+#: geonode/templates/invitations/email/email_invite_message.txt:13
+#, fuzzy
+#| msgid "The following groups:"
+msgid "is a member of the following group(s)"
+msgstr "گروه های زیر:"
 
 #: geonode/templates/metadata_base.html:149
 #, fuzzy
@@ -4976,12 +7275,6 @@ msgstr "بازگشت به"
 msgid "Identification"
 msgstr ""
 
-#: geonode/templates/metadata_detail.html:102
-#, fuzzy
-#| msgid "Not provided"
-msgid "Approved"
-msgstr "ارائه نشده است"
-
 #: geonode/templates/metadata_detail.html:103
 #: geonode/templates/metadata_detail.html:106
 #: geonode/templates/metadata_detail.html:109
@@ -4990,10 +7283,6 @@ msgstr ""
 
 #: geonode/templates/metadata_detail.html:105
 msgid "Published"
-msgstr ""
-
-#: geonode/templates/metadata_detail.html:108
-msgid "Featured"
 msgstr ""
 
 #: geonode/templates/metadata_detail.html:133
@@ -5064,6 +7353,374 @@ msgstr ""
 msgid "Online Link"
 msgstr ""
 
+#: geonode/templates/pinax/notifications/account_active/account_active_message.txt:2
+#: geonode/templates/pinax/notifications/account_active/full.txt:2
+msgid "Your account has been approved and is now active."
+msgstr ""
+
+#: geonode/templates/pinax/notifications/account_active/account_active_message.txt:3
+#: geonode/templates/pinax/notifications/account_active/full.txt:3
+msgid "You can use the login form at"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/account_active/account_active_subject.txt:1
+#, fuzzy
+#| msgid "Welcome"
+msgid "Welcome at"
+msgstr "خوش آمدید"
+
+#: geonode/templates/pinax/notifications/account_active/short.txt:3
+msgid "Your account is now active"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/account_approve/full.txt:1
+msgid "has requested access to the site."
+msgstr ""
+
+#: geonode/templates/pinax/notifications/account_approve/full.txt:1
+msgid ""
+"You can enable access by setting the user as active on the admin section"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/account_approve/short.txt:3
+msgid "A user has requested access to the site"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/document_approved/full.txt:2
+#, fuzzy
+#| msgid "The following users:"
+msgid "The following document was approved"
+msgstr "کاربران زیر:"
+
+#: geonode/templates/pinax/notifications/document_approved/full.txt:3
+#: geonode/templates/pinax/notifications/document_deleted/full.txt:3
+#: geonode/templates/pinax/notifications/document_published/full.txt:3
+#: geonode/templates/pinax/notifications/document_rated/full.txt:5
+#: geonode/templates/pinax/notifications/document_updated/full.txt:3
+#: geonode/templates/pinax/notifications/layer_approved/full.txt:3
+#: geonode/templates/pinax/notifications/layer_deleted/full.txt:3
+#: geonode/templates/pinax/notifications/layer_published/full.txt:3
+#: geonode/templates/pinax/notifications/layer_rated/full.txt:5
+#: geonode/templates/pinax/notifications/layer_updated/full.txt:3
+#: geonode/templates/pinax/notifications/map_approved/full.txt:3
+#: geonode/templates/pinax/notifications/map_deleted/full.txt:3
+#: geonode/templates/pinax/notifications/map_published/full.txt:3
+#: geonode/templates/pinax/notifications/map_rated/full.txt:5
+#: geonode/templates/pinax/notifications/map_updated/full.txt:3
+#, fuzzy
+#| msgid "Powered by"
+msgid "owned by"
+msgstr "صفحه"
+
+#: geonode/templates/pinax/notifications/document_approved/full.txt:4
+#: geonode/templates/pinax/notifications/document_comment/full.txt:3
+#: geonode/templates/pinax/notifications/document_created/full.txt:4
+#: geonode/templates/pinax/notifications/document_published/full.txt:4
+#: geonode/templates/pinax/notifications/document_updated/full.txt:4
+msgid "You can visit the document's detail page here"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/document_approved/short.txt:3
+msgid "A document has been approved"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/document_comment/full.txt:2
+#, fuzzy
+#| msgid "You do not have permissions for this document."
+msgid "A comment has been posted for the document"
+msgstr "شما اجازه دسترسی به این سند را ندارید"
+
+#: geonode/templates/pinax/notifications/document_comment/full.txt:2
+#: geonode/templates/pinax/notifications/layer_comment/full.txt:2
+#: geonode/templates/pinax/notifications/map_comment/full.txt:3
+msgid "by the user"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/document_comment/short.txt:3
+#, fuzzy
+#| msgid "You do not have permissions for this document."
+msgid "A comment has been posted for a document"
+msgstr "شما اجازه دسترسی به این سند را ندارید"
+
+#: geonode/templates/pinax/notifications/document_created/full.txt:2
+#: geonode/templates/pinax/notifications/document_rated/full.txt:2
+#: geonode/templates/pinax/notifications/layer_created/full.txt:2
+#: geonode/templates/pinax/notifications/layer_rated/full.txt:2
+#: geonode/templates/pinax/notifications/map_created/full.txt:2
+#: geonode/templates/pinax/notifications/map_rated/full.txt:2
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
+#, fuzzy
+#| msgid "Choose users..."
+msgid "The user"
+msgstr "را انتخاب کنید کاربران ..."
+
+#: geonode/templates/pinax/notifications/document_created/full.txt:2
+#, fuzzy
+#| msgid "The following users:"
+msgid "uploaded the following document"
+msgstr "کاربران زیر:"
+
+#: geonode/templates/pinax/notifications/document_created/short.txt:3
+msgid "A document has been uploaded"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/document_deleted/full.txt:2
+#, fuzzy
+#| msgid "The following users:"
+msgid "The following document was deleted"
+msgstr "کاربران زیر:"
+
+#: geonode/templates/pinax/notifications/document_deleted/short.txt:3
+#, fuzzy
+#| msgid "Service has been created:"
+msgid "A document has been deleted"
+msgstr "خدمات ایجاد شده است:"
+
+#: geonode/templates/pinax/notifications/document_published/full.txt:2
+#, fuzzy
+#| msgid "The following groups:"
+msgid "The following document was published"
+msgstr "گروه های زیر:"
+
+#: geonode/templates/pinax/notifications/document_published/short.txt:3
+msgid "A document has been published"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/document_rated/full.txt:3
+#: geonode/templates/pinax/notifications/layer_rated/full.txt:3
+#: geonode/templates/pinax/notifications/map_rated/full.txt:3
+#, fuzzy
+#| msgid "created"
+msgid "rated"
+msgstr "ساخته"
+
+#: geonode/templates/pinax/notifications/document_rated/full.txt:4
+#, fuzzy
+#| msgid "The following users:"
+msgid "the following document"
+msgstr "کاربران زیر:"
+
+#: geonode/templates/pinax/notifications/document_rated/full.txt:6
+#: geonode/templates/pinax/notifications/layer_approved/full.txt:4
+#: geonode/templates/pinax/notifications/layer_comment/full.txt:3
+#: geonode/templates/pinax/notifications/layer_created/full.txt:4
+#: geonode/templates/pinax/notifications/layer_published/full.txt:4
+#: geonode/templates/pinax/notifications/layer_rated/full.txt:6
+#: geonode/templates/pinax/notifications/layer_updated/full.txt:4
+msgid "You can visit the layer's detail page here"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/document_rated/short.txt:3
+#, fuzzy
+#| msgid "Service has been created:"
+msgid "A document has been rated"
+msgstr "خدمات ایجاد شده است:"
+
+#: geonode/templates/pinax/notifications/document_updated/full.txt:2
+#, fuzzy
+#| msgid "The following users:"
+msgid "The following document was updated"
+msgstr "کاربران زیر:"
+
+#: geonode/templates/pinax/notifications/document_updated/short.txt:3
+#, fuzzy
+#| msgid "Service has been created:"
+msgid "A document has been updated"
+msgstr "خدمات ایجاد شده است:"
+
+#: geonode/templates/pinax/notifications/email_body.txt:3
+#, fuzzy
+#| msgid "You have the following incomplete uploads"
+msgid "You have received the following notice from"
+msgstr "شما از این ارسال زیر ناقص"
+
+#: geonode/templates/pinax/notifications/email_body.txt:8
+msgid "To change how you receive notifications, please go to"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/email_subject.txt:1
+#, python-format
+msgid "[%(current_site)s] %(message)s"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/full.txt:1
+#: geonode/templates/pinax/notifications/short.txt:1
+#, fuzzy, python-format
+#| msgid "Notices"
+msgid "%(notice)s"
+msgstr "Notices"
+
+#: geonode/templates/pinax/notifications/layer_approved/full.txt:2
+#, fuzzy
+#| msgid "The following layers will be imported"
+msgid "The following layer was approved"
+msgstr "لایه زیر وارد خواهد شد"
+
+#: geonode/templates/pinax/notifications/layer_approved/short.txt:3
+#, fuzzy
+#| msgid "A layer was commented on"
+msgid "A layer has been approved"
+msgstr "پینوشت لایه"
+
+#: geonode/templates/pinax/notifications/layer_comment/full.txt:2
+#, fuzzy
+#| msgid "Documents related to this layer"
+msgid "A comment has been posted for the layer"
+msgstr "مستندات مربوط به این لایه"
+
+#: geonode/templates/pinax/notifications/layer_comment/short.txt:3
+#, fuzzy
+#| msgid "A rating was given to a layer"
+msgid "A comment has been posted for a layer"
+msgstr "امتیاز داده شده به این لایه"
+
+#: geonode/templates/pinax/notifications/layer_created/full.txt:2
+#, fuzzy
+#| msgid "This map uses the following layers:"
+msgid "uploaded the following layer"
+msgstr "این نقشه شامل لایه های زیر است:"
+
+#: geonode/templates/pinax/notifications/layer_created/short.txt:3
+#, fuzzy
+#| msgid "A layer was uploaded"
+msgid "A new layer has been uploaded"
+msgstr "لایه آپلود شد"
+
+#: geonode/templates/pinax/notifications/layer_deleted/full.txt:2
+#, fuzzy
+#| msgid "The following layers will be imported"
+msgid "The following layer was deleted"
+msgstr "لایه زیر وارد خواهد شد"
+
+#: geonode/templates/pinax/notifications/layer_deleted/short.txt:3
+#, fuzzy
+#| msgid "A layer was commented on"
+msgid "A layer has been deleted"
+msgstr "پینوشت لایه"
+
+#: geonode/templates/pinax/notifications/layer_published/full.txt:2
+#, fuzzy
+#| msgid "The following layers will be imported"
+msgid "The following layer was published"
+msgstr "لایه زیر وارد خواهد شد"
+
+#: geonode/templates/pinax/notifications/layer_published/short.txt:3
+#, fuzzy
+#| msgid "A layer was commented on"
+msgid "A layer has been published"
+msgstr "پینوشت لایه"
+
+#: geonode/templates/pinax/notifications/layer_rated/full.txt:4
+#, fuzzy
+#| msgid "The following users:"
+msgid "the following layer"
+msgstr "کاربران زیر:"
+
+#: geonode/templates/pinax/notifications/layer_rated/short.txt:3
+#, fuzzy
+#| msgid "Service has been created:"
+msgid "A layer has been rated"
+msgstr "خدمات ایجاد شده است:"
+
+#: geonode/templates/pinax/notifications/layer_updated/full.txt:2
+#, fuzzy
+#| msgid "The following layers will be imported"
+msgid "The following layer was updated"
+msgstr "لایه زیر وارد خواهد شد"
+
+#: geonode/templates/pinax/notifications/layer_updated/short.txt:3
+#, fuzzy
+#| msgid "A layer was commented on"
+msgid "A layer has been updated"
+msgstr "پینوشت لایه"
+
+#: geonode/templates/pinax/notifications/map_approved/full.txt:2
+#, fuzzy
+#| msgid "The following layers will be imported"
+msgid "The following map was approved"
+msgstr "لایه زیر وارد خواهد شد"
+
+#: geonode/templates/pinax/notifications/map_approved/full.txt:4
+#: geonode/templates/pinax/notifications/map_comment/full.txt:4
+#: geonode/templates/pinax/notifications/map_created/full.txt:4
+#: geonode/templates/pinax/notifications/map_published/full.txt:4
+#: geonode/templates/pinax/notifications/map_rated/full.txt:6
+#: geonode/templates/pinax/notifications/map_updated/full.txt:4
+msgid "You can visit the map's detail page here"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/map_approved/short.txt:3
+msgid "A map has been approved"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/map_comment/full.txt:2
+#, fuzzy
+#| msgid "Documents related to this map"
+msgid "A comment has been posted for the map"
+msgstr "مستندات وابسته به این نقشه"
+
+#: geonode/templates/pinax/notifications/map_comment/short.txt:3
+msgid "A comment has been posted for a map"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/map_created/full.txt:2
+#, fuzzy
+#| msgid "The following users:"
+msgid "created the following map"
+msgstr "کاربران زیر:"
+
+#: geonode/templates/pinax/notifications/map_created/short.txt:3
+#, fuzzy
+#| msgid "Service has been created:"
+msgid "A map has been created"
+msgstr "خدمات ایجاد شده است:"
+
+#: geonode/templates/pinax/notifications/map_deleted/full.txt:2
+#, fuzzy
+#| msgid "The following layers will be imported"
+msgid "The following map was deleted"
+msgstr "لایه زیر وارد خواهد شد"
+
+#: geonode/templates/pinax/notifications/map_deleted/short.txt:3
+#, fuzzy
+#| msgid "A map was commented on"
+msgid "A map has been deleted"
+msgstr "پینوشت این نقشه"
+
+#: geonode/templates/pinax/notifications/map_published/full.txt:2
+#, fuzzy
+#| msgid "The following users:"
+msgid "The following map was published"
+msgstr "کاربران زیر:"
+
+#: geonode/templates/pinax/notifications/map_published/short.txt:3
+msgid "A map has been published"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/map_rated/full.txt:4
+#, fuzzy
+#| msgid "The following users:"
+msgid "the following map"
+msgstr "کاربران زیر:"
+
+#: geonode/templates/pinax/notifications/map_rated/short.txt:3
+#, fuzzy
+#| msgid "Service has been created:"
+msgid "A map has been rated"
+msgstr "خدمات ایجاد شده است:"
+
+#: geonode/templates/pinax/notifications/map_updated/full.txt:2
+#, fuzzy
+#| msgid "The following layers will be imported"
+msgid "The following map was updated"
+msgstr "لایه زیر وارد خواهد شد"
+
+#: geonode/templates/pinax/notifications/map_updated/short.txt:3
+#, fuzzy
+#| msgid "A map was commented on"
+msgid "A map has been updated"
+msgstr "پینوشت این نقشه"
+
 #: geonode/templates/pinax/notifications/notice_settings.html:7
 #: geonode/templates/pinax/notifications/notice_settings.html:10
 msgid "Notification Settings"
@@ -5085,9 +7742,20 @@ msgstr ""
 msgid "Notification Type"
 msgstr "نوع اعلان"
 
-#: geonode/templates/pinax/notifications/notice_settings.html:51
-msgid "Change"
-msgstr "تغییر"
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
+#, fuzzy
+#| msgid "party that owns the resource"
+msgid "requested you to download this resource"
+msgstr "حزبی که دارای منابع"
+
+#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:9
+msgid ""
+"Please go to resource page and assign the download permissions if you wish"
+msgstr ""
+
+#: geonode/templates/pinax/notifications/request_download_resourcebase/short.txt:3
+msgid "A resource's download has been requested"
+msgstr ""
 
 #: geonode/templates/privacy-cookies.html:4
 #: geonode/templates/privacy-cookies.html:8
@@ -5168,10 +7836,6 @@ msgstr "دیگر"
 msgid "%(to_user_username)s's profile"
 msgstr "%(to_user_username)s پروفایل را"
 
-#: geonode/templates/search/_general_filters.html:4
-msgid "Categories"
-msgstr "دسته بندی ها"
-
 #: geonode/templates/search/_general_filters.html:30
 msgid "Responsibles"
 msgstr ""
@@ -5227,7 +7891,7 @@ msgstr "مستندات"
 msgid "search"
 msgstr ""
 
-#: geonode/templates/search/_search_user_content.html:51
+#: geonode/templates/search/_search_user_content.html:50
 msgid "Total"
 msgstr ""
 
@@ -5359,36 +8023,15 @@ msgstr ""
 msgid "Sign up with"
 msgstr "ثبت نام"
 
-#: geonode/templates/user_messages/_message_snippet.html:9
-msgid "From"
-msgstr "از جانب"
-
-#: geonode/templates/user_messages/_message_snippet.html:10
-msgid "Subject"
-msgstr "موضوع"
-
-#: geonode/templates/user_messages/_message_snippet.html:11
-msgid "Last Sender"
-msgstr "آخرین فرستنده"
-
-#: geonode/templates/user_messages/_message_snippet.html:13
-msgid "Delete?"
-msgstr "حذف؟"
-
-#: geonode/templates/user_messages/_message_snippet.html:50
-#: geonode/templates/user_messages/thread_detail.html:14
-msgid "me"
-msgstr ""
-
-#: geonode/templates/user_messages/inbox.html:6
+#: geonode/templates/user_messages/inbox.html:7
 msgid "Message Inbox"
 msgstr "صندوق پیام"
 
-#: geonode/templates/user_messages/inbox.html:11
+#: geonode/templates/user_messages/inbox.html:12
 msgid "Messages"
 msgstr "پیام ها"
 
-#: geonode/templates/user_messages/inbox.html:38
+#: geonode/templates/user_messages/inbox.html:63
 #: geonode/templates/user_messages/message_create.html:6
 #: geonode/templates/user_messages/message_create.html:9
 msgid "Create Message"
@@ -5399,288 +8042,160 @@ msgid "Send message"
 msgstr "فرستادن پیام"
 
 #: geonode/templates/user_messages/message_create.html:22
-#: geonode/templates/user_messages/thread_detail.html:32
+#: geonode/templates/user_messages/thread_detail.html:46
 msgid "Back to Inbox"
 msgstr "بازگشت به صندوق"
 
-#: geonode/templates/user_messages/thread_detail.html:14
+#: geonode/templates/user_messages/thread_detail.html:9
+#, fuzzy
+#| msgid "Message Inbox"
+msgid "A message to"
+msgstr "صندوق پیام"
+
+#: geonode/templates/user_messages/thread_detail.html:11
+msgid "Send to"
+msgstr ""
+
+#: geonode/templates/user_messages/thread_detail.html:28
 msgid "by"
 msgstr ""
 
-#: geonode/templates/user_messages/thread_detail.html:18
+#: geonode/templates/user_messages/thread_detail.html:32
 #, fuzzy
 #| msgid "Send message"
 msgid "You have no messages"
 msgstr "فرستادن پیام"
 
-#: geonode/templates/user_messages/thread_detail.html:26
+#: geonode/templates/user_messages/thread_detail.html:40
 msgid "Send Reply"
 msgstr "فرستادن پاسخ"
 
-#~ msgid "series"
-#~ msgstr "مجموعه ها"
-
-#~ msgid "computer program or routine"
-#~ msgstr "برنامه یا روند کامپیوتری"
-
-#~ msgid "copy or imitation of an existing or hypothetical object"
-#~ msgstr "کپی یا تقلید از یک شی موجود و یا فرضی"
-
-#~ msgid "collection hardware"
-#~ msgstr "سخت افزار مجموعه"
-
-#~ msgid "collection session"
-#~ msgstr "جلسه جمع آوری"
-
-#~ msgid "non-geographic data"
-#~ msgstr "داده غیرمکانی"
-
-#~ msgid "property type"
-#~ msgstr "نوع ویژگی"
-
-#~ msgid "field session"
-#~ msgstr "جلسه درست"
-
-#~ msgid "attribute class"
-#~ msgstr "کلاس اطلاعات توصیفی"
-
-#~ msgid "characteristic of a feature"
-#~ msgstr "ویژگی عارضه"
-
-#~ msgid "tile or spatial subset of geographic data"
-#~ msgstr "کاشی و یا زیر مجموعه فضایی از داده های جغرافیایی"
-
-#~ msgid "feature"
-#~ msgstr "عارضه"
-
-#~ msgid "dimension group"
-#~ msgstr "گروه بعد"
-
-#~ msgid "frequency of maintenance for the data is not known"
-#~ msgstr "فرآیند نگهداری داده نامشخص است"
-
-#~ msgid "data is repeatedly and frequently updated"
-#~ msgstr "داده بطور مداوم بروز رسانی شده است"
-
-#~ msgid "there are no plans to update the data"
-#~ msgstr "برنامه ای برای بروز رسانی این داده وجود ندارد"
-
-#~ msgid "data is updated each day"
-#~ msgstr " داده هر روز بروز رسانی می شود."
-
-#~ msgid "data is updated every year"
-#~ msgstr " داده هر سال بروز رسانی می شود"
-
-#~ msgid "data is updated as deemed necessary"
-#~ msgstr "داده در صورت لزوم بروز رسانی می شود"
-
-#~ msgid "data is updated each month"
-#~ msgstr "داده هر ماه بروز رسانی می شود"
-
-#~ msgid "data is updated every two weeks"
-#~ msgstr "داده هر دو هفته بروز رسانی می شود"
-
-#~ msgid "data is updated in intervals that are uneven in duration"
-#~ msgstr "داده در دوره زمانی نامشخصی بروز رسانی می شود"
-
-#~ msgid "data is updated on a weekly basis"
-#~ msgstr "داده هر هفته بروزرسانی می شود"
-
-#~ msgid "data is updated twice each year"
-#~ msgstr "این داده سالی دوبار بروز رسانی می شود"
-
-#~ msgid "data is updated every three months"
-#~ msgstr "این داده هر سه ماه یکبار بروز رسانی می شود"
-
-#~ msgid "No information provided"
-#~ msgstr "اطلاعاتی تهیه نشده است"
-
-#~ msgid "Category is required."
-#~ msgstr "رده مورد نیاز است."
-
-#~ msgid "Owner"
-#~ msgstr "مالک"
-
-#~ msgid "temporal extent start"
-#~ msgstr "شروع محدوده زمانی"
-
-#~ msgid "temporal extent end"
-#~ msgstr "پایان محدوده زمانی"
-
+#: geonode/themes/apps.py:28
 #, fuzzy
-#~| msgid "Keywords"
-#~ msgid "Free-text Keywords"
-#~ msgstr "کلمات کلیدی"
+#| msgid "GeoNode Help"
+msgid "GeoNode Themes Library"
+msgstr "راهنمای سیستم"
 
+#: geonode/upload/files.py:262
+msgid "Could not access to uploaded data."
+msgstr ""
+
+#: geonode/upload/files.py:301
+msgid ""
+"One or more XML files was provided, but no matching files were found for "
+"them."
+msgstr ""
+
+#: geonode/upload/files.py:310
+msgid ""
+"One or more SLD files was provided, but no matching files were found for "
+"them."
+msgstr ""
+
+#: geonode/upload/upload_validators.py:66
+msgid "Invalid zip file detected"
+msgstr ""
+
+#: geonode/upload/upload_validators.py:82
+msgid "Could not find any valid spatial file inside the uploaded zip"
+msgstr ""
+
+#: geonode/upload/upload_validators.py:85
+msgid "Invalid kmz file detected"
+msgstr ""
+
+#: geonode/upload/upload_validators.py:89
 #, fuzzy
-#~| msgid "A space or comma-separated list of keywords"
-#~ msgid ""
-#~ "A space or comma-separated list of keywords. Use the widget to select "
-#~ "from Hierarchical tree."
-#~ msgstr "فضا و یا فهرست کاما جدا از کلمات کلیدی"
+#| msgid "Could not find any layers in a compatible projection."
+msgid "Could not find any kml files inside the uploaded kmz"
+msgstr "می تواند هر لایه در یک طرح سازگار پیدا کند."
 
-#~ msgid "function performed by the responsible party"
-#~ msgstr "تابع انجام شده توسط مسئول"
+#: geonode/upload/upload_validators.py:124
+msgid "Only one shapefile per zip is allowed"
+msgstr ""
 
-#~ msgid "reference date for the cited resource"
-#~ msgstr "تاریخ مرجع برای منابع ذکر شده"
+#: geonode/upload/upload_validators.py:170
+msgid "kml files with more than one GroundOverlay are not supported"
+msgstr ""
 
-#~ msgid "identification of when a given event occurred"
-#~ msgstr "احراز هویت زمانی که یک رویداد رخ داده است"
+#: geonode/upload/upload_validators.py:181
+msgid "Ground overlay image declared in kml file cannot be found"
+msgstr ""
 
-#~ msgid "version of the cited resource"
-#~ msgstr "ویرایش منبع ذکر شده"
+#: geonode/upload/upload_validators.py:218
+msgid "Only one kml file per ZIP is allowed"
+msgstr ""
 
-#~ msgid "brief narrative summary of the content of the resource(s)"
-#~ msgstr "خلاصه مختصری از محتوای منابع"
+#: geonode/upload/upload_validators.py:233
+msgid "Only one kml file per kmz is allowed"
+msgstr ""
 
-#~ msgid "summary of the intentions with which the resource(s) was developed"
-#~ msgstr "خلاصه روایت مختصری از محتوای منبع (منابع)"
+#: geonode/upload/upload_validators.py:287
+msgid ""
+"You are trying to upload multiple GeoTIFFs without a valid 'indexer."
+"properties' file."
+msgstr ""
 
-#~ msgid ""
-#~ "frequency with which modifications and deletions are made to the data "
-#~ "after it is first produced"
-#~ msgstr "تعداد دفعات تغییرات و حذف داده ها پس از اولین تولید"
+#: geonode/upload/upload_validators.py:292
+msgid "Only one raster file per ZIP is allowed"
+msgstr ""
 
-#~ msgid ""
-#~ "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-#~ "the subject (space or comma-separated"
-#~ msgstr ""
-#~ "کلمه(کلمات) یا عبارت(عبارات) مورد استفاده برای توصیف موضوع(با فاصله یا "
-#~ "کاما از هم جدا شوند)"
+#: geonode/upload/upload_validators.py:297
+msgid "No multiple rasters allowed"
+msgstr ""
 
-#, fuzzy
-#~| msgid ""
-#~| "commonly used word(s) or formalised word(s) or phrase(s) used to "
-#~| "describe the subject (space or comma-separated"
-#~ msgid ""
-#~ "formalised word(s) or phrase(s) from a fixed thesaurus used to describe "
-#~ "the subject (space or comma-separated"
-#~ msgstr ""
-#~ "کلمه(کلمات) یا عبارت(عبارات) مورد استفاده برای توصیف موضوع(با فاصله یا "
-#~ "کاما از هم جدا شوند)"
+#: geonode/upload/utils.py:98
+msgid ""
+"To support the time step, you must enable the OGC_SERVER DATASTORE option"
+msgstr ""
 
-#~ msgid "keyword identifies a location"
-#~ msgstr "کلمات کلیدی تعیین کننده موقعیت مکانی"
+#: geonode/upload/utils.py:261
+#, python-format
+msgid "Unsupported file type: %s"
+msgstr ""
 
-#~ msgid "limitation(s) placed upon the access or use of the data."
-#~ msgstr "محدودیت (های) دسترسی و استفاده از داده"
+#: geonode/upload/utils.py:526
+#, python-format
+msgid "File does not exist: %s"
+msgstr ""
 
-#~ msgid ""
-#~ "other restrictions and legal prerequisites for accessing and using the "
-#~ "resource or metadata"
-#~ msgstr "دیگر محدودیت ها به منظور دستیابی به منابع و متادیتا"
+#: geonode/upload/utils.py:583
+#, python-format
+msgid "unknown item state: %s"
+msgstr ""
 
-#~ msgid "license of the dataset"
-#~ msgstr "مجوز از مجموعه داده"
+#: geonode/upload/utils.py:591
+#, python-format
+msgid "error during import: %s"
+msgstr ""
 
-#~ msgid "language used within the dataset"
-#~ msgstr "زبان مورد استفاده در دیتاست"
+#: geonode/upload/utils.py:701
+msgid "Could not find any valid Time Regex for the Mosaic files."
+msgstr ""
 
-#~ msgid ""
-#~ "high-level geographic data thematic classification to assist in the "
-#~ "grouping and search of available geographic data sets."
-#~ msgstr ""
-#~ "داده های مکانی سطح بالا و داری طبقه بندی موضوعی برای کمک به گروه بندی و "
-#~ "جستجو از مجموعه داده های مکانی موجود"
+#: geonode/upload/utils.py:732 geonode/upload/utils.py:764
+msgid "Unsupported DataBase for Mosaics!"
+msgstr ""
 
-#~ msgid "method used to represent geographic information in the dataset."
-#~ msgstr "متد بکار برده شده به منظور نمایش اطلاعات مکانی در دیتاست"
+#: geonode/utils.py:87
+msgid "Invalid permission level."
+msgstr "سطج دسترسی نامعتبر."
 
-#~ msgid "time period covered by the content of the dataset (start)"
-#~ msgstr "مدت زمان تحت پوشش محتوای مجموعه داده (شروع)"
+#: geonode/utils.py:967
+msgid "Permission Denied"
+msgstr "دسترسی غیرمجاز"
 
-#~ msgid "time period covered by the content of the dataset (end)"
-#~ msgstr "مدت زمان تحت پوشش محتوای مجموعه داده (پایان)"
+#~ msgid "From"
+#~ msgstr "از جانب"
 
-#~ msgid ""
-#~ "general explanation of the data producer's knowledge about the lineage of "
-#~ "a dataset"
-#~ msgstr "توضیح کلی از دانش تولید داده در مورد اصل و نسب از مجموعه داده"
+#~ msgid "Subject"
+#~ msgstr "موضوع"
 
-#~ msgid "title"
-#~ msgstr "عنوان"
+#~ msgid "Last Sender"
+#~ msgstr "آخرین فرستنده"
 
-#~ msgid "name by which the cited resource is known"
-#~ msgstr "نام ذکر شده در منبع ناشناش می باشد."
-
-#~ msgid "date"
-#~ msgstr "تاریخ"
-
-#~ msgid "date type"
-#~ msgstr "نوع تاریخ"
-
-#~ msgid "edition"
-#~ msgstr "ویرایش"
-
-#~ msgid "abstract"
-#~ msgstr "چکیده"
-
-#~ msgid "purpose"
-#~ msgstr "منظور"
-
-#~ msgid "maintenance frequency"
-#~ msgstr "روند نگهداری"
-
-#~ msgid "keywords"
-#~ msgstr "کلمات کلیدی"
-
-#~ msgid "keywords region"
-#~ msgstr "منطقه کلمات کلیدی"
-
-#~ msgid "restrictions"
-#~ msgstr "محدودیت ها"
-
-#~ msgid "restrictions other"
-#~ msgstr "دیگر محدودیت ها"
-
-#~ msgid "language"
-#~ msgstr "زبان"
-
-#~ msgid "supplemental information"
-#~ msgstr "اطلاعات تکمیلی"
-
-#~ msgid "any other descriptive information about the dataset"
-#~ msgstr "دیگر اطلاعات توصیفی در مورد دیتاست"
-
-#~ msgid "data quality statement"
-#~ msgstr "بیانیه کیفیت داده ها"
-
-#~ msgid "CSW typename"
-#~ msgstr "typename CSW"
-
-#~ msgid "CSW schema"
-#~ msgstr "طرح CSW"
-
-#~ msgid "CSW source"
-#~ msgstr "منبع CSW"
-
-#~ msgid "CSW insert date"
-#~ msgstr "CSW تاریخ درج"
-
-#~ msgid "CSW type"
-#~ msgstr "نوع CSW"
-
-#~ msgid "CSW anytext"
-#~ msgstr "anytext CSW"
-
-#~ msgid "CSW WKT geometry"
-#~ msgstr "هندسه CSW WKT"
-
-#~ msgid "Should this resource be advertised in home page?"
-#~ msgstr "باید این منابع در صفحه اصلی آگهی؟"
-
-#~ msgid "Should this resource be published and searchable?"
-#~ msgstr "باید این منابع منتشر شود و جستجو؟"
-
-#~ msgid "For example \"kml\""
-#~ msgstr "برای مثال \"kml\""
-
-#~ msgid "For example \"View in Google Earth\""
-#~ msgstr "برای مثال\"View in Google Earth\""
-
-#~ msgid "For example \"text/xml\""
-#~ msgstr "برای مثال \"text/xml\""
+#~ msgid "Delete?"
+#~ msgstr "حذف؟"
 
 #~ msgid ""
 #~ "If you have any questions about the software or service, join our <a href="
@@ -5695,141 +8210,6 @@ msgstr "فرستادن پاسخ"
 #~ msgid "Getting Started"
 #~ msgstr "شروع"
 
-#~ msgid "Bad HTTP Authorization Credentials."
-#~ msgstr "بد مدارک HTTP مجوز."
-
-#~ msgid "Document must be a file or url."
-#~ msgstr "سند باید یک فایل یا URL باشد."
-
-#~ msgid "A document cannot have both a file and a url."
-#~ msgstr "یک سند می تواند هر دو یک فایل و یک آدرس را ندارد."
-
-#~ msgid "This file type is not allowed"
-#~ msgstr "این نوع فایل مجاز نیست"
-
-#~ msgid "Link to"
-#~ msgstr "پیوند به"
-
-#~ msgid "Permissions must be valid JSON."
-#~ msgstr "مجوز های باید JSON معتبر باشد."
-
-#~ msgid "File"
-#~ msgstr "پرونده"
-
-#~ msgid "The URL of the document if it is external."
-#~ msgstr "URL از سند اگر آن خارجی است."
-
-#~ msgid "This document is related to a "
-#~ msgstr "این سند مربوط است به"
-
-#~ msgid "You are not permitted to delete this document"
-#~ msgstr "شما مجاز به پاک کردن این سند نیستید"
-
-#~ msgid "You do not have permissions for this document."
-#~ msgstr "شما اجازه دسترسی به این سند را ندارید"
-
-#~ msgid "You are not permitted to modify this document"
-#~ msgstr "شما مجاز به ایجاد تغییرات در این سند نیستید"
-
-#~ msgid "You are not permitted to modify this document's metadata"
-#~ msgstr "شما مجاز به ایجاد تغییرات در متادیتای این سند نیستید"
-
-#~ msgid "You are not permitted to view this document"
-#~ msgstr "شما مجاز به مشاهده این سند نیستید"
-
-#~ msgid "You are not allowed to view this document."
-#~ msgstr "شما مجاز به مشاهده این سند نیستید"
-
-#~ msgid "You are not allowed to edit this document."
-#~ msgstr "شما امکان پذیر نیست ویرایش این سند است."
-
-#~ msgid "Layer Uploaded"
-#~ msgstr "لایه آپلود شده"
-
-#~ msgid "Comment on Layer"
-#~ msgstr "پینوشت لایه"
-
-#~ msgid "A layer was commented on"
-#~ msgstr "پینوشت لایه"
-
-#~ msgid "Rating for Layer"
-#~ msgstr "امتیاز لایه"
-
-#~ msgid "A rating was given to a layer"
-#~ msgstr "امتیاز داده شده به این لایه"
-
-#~ msgid "Zipped Shapefile"
-#~ msgstr "Shapefile زیپ"
-
-#~ msgid "GML 2.0"
-#~ msgstr "GML 2.0"
-
-#~ msgid "GML 3.1.1"
-#~ msgstr "3.1.1 GML"
-
-#~ msgid "CSV"
-#~ msgstr "CSV"
-
-#~ msgid "Excel"
-#~ msgstr "بهتر بودن از"
-
-#~ msgid "GeoJSON"
-#~ msgstr "GeoJSON"
-
-#~ msgid "JPEG"
-#~ msgstr "JPEG"
-
-#~ msgid "PDF"
-#~ msgstr "PDF"
-
-#~ msgid "PNG"
-#~ msgstr "PNG"
-
-#~ msgid "You don't have permissions to change style for this layer"
-#~ msgstr "شما اجازه تغییر سبک برای این لایه ندارد"
-
-#~ msgid ""
-#~ "a short version of the name consisting only of letters, numbers, "
-#~ "underscores and hyphens."
-#~ msgstr "نسخه کوتاه از نام فقط متشکل از حروف، اعداد، زیرخط و خط فاصله."
-
-#~ msgid "A group already exists with that slug."
-#~ msgstr "گروه در حال حاضر با آن مثل حلزون حرکت کردن وجود دارد."
-
-#~ msgid "A group already exists with that name."
-#~ msgstr "گروه در حال حاضر با این نام وجود دارد."
-
-#~ msgid "Public (invite-only)"
-#~ msgstr "عمومی (دعوت-تنها)"
-
-#~ msgid "Private"
-#~ msgstr "خصوصی"
-
-#~ msgid ""
-#~ "Public: Any registered user can view and join a public group.<br>Public "
-#~ "(invite-only):Any registered user can view the group.  Only invited users "
-#~ "can join.<br>Private: Registered users cannot see any details about the "
-#~ "group, including membership.  Only invited users can join."
-#~ msgstr ""
-#~ "عمومی: هر کاربر ثبت نام شده می توانید مشاهده و گروه های عمومی بپیوندید. "
-#~ "<br> عمومی (دعوت فقط): هر کاربر ثبت نام شده می توانید گروه ها را ببینید. "
-#~ "فقط کاربران دعوت می بپیوندید. <br> خصوصی: کاربران ثبت شده نمی تواند هر "
-#~ "گونه اطلاعات در مورد این گروه، از جمله عضویت را ببینید. فقط کاربران دعوت "
-#~ "می بپیوندید."
-
-#~ msgid ""
-#~ "Email used to contact one or all group members, such as a mailing list, "
-#~ "shared email, or exchange group."
-#~ msgstr ""
-#~ "ایمیل استفاده می شود به تماس اعضای یک یا تمام گروه، مانند یک لیست پستی، "
-#~ "ایمیل مشترک، و یا گروه ارز."
-
-#~ msgid "A space or comma-separated list of keywords"
-#~ msgstr "فضا و یا فهرست کاما جدا از کلمات کلیدی"
-
-#~ msgid "Member"
-#~ msgstr "عضو"
-
 #~ msgid "Sent"
 #~ msgstr "فرستاده"
 
@@ -5841,95 +8221,6 @@ msgstr "فرستادن پاسخ"
 
 #~ msgid "Don't Join"
 #~ msgstr "آیا تاریخ نمی"
-
-#~ msgid "style name"
-#~ msgstr "نام نحوه نمایش"
-
-#~ msgid "sld text"
-#~ msgstr "متن SLD"
-
-#~ msgid "sld version"
-#~ msgstr "نسخه SLD"
-
-#~ msgid "sld url"
-#~ msgstr "آدرس SLD"
-
-#~ msgid "name of attribute as stored in shapefile/spatial database"
-#~ msgstr "عنوان اطلاعات توصیفی ذخیره شده در پایگاه داده مکانی"
-
-#~ msgid "description of attribute to be used in metadata"
-#~ msgstr "شرح ویژگی که در ابرداده استفاده"
-
-#~ msgid "attribute label"
-#~ msgstr "برچسب اطلاعات توصیفی"
-
-#~ msgid "title of attribute as displayed in GeoNode"
-#~ msgstr "عنوانن نمایش اطلاعات توصیفی"
-
-#~ msgid "attribute type"
-#~ msgstr "نوع اطلاعات توصیفی"
-
-#~ msgid "the data type of the attribute (integer, string, geometry, etc)"
-#~ msgstr "نوع اطلاعات توصیفی(عددی، رشته ای، مکانی و غیره)"
-
-#~ msgid "visible?"
-#~ msgstr "آشکار؟"
-
-#~ msgid "specifies if the attribute should be displayed in identify results"
-#~ msgstr "مشخص اگر ویژگی باید نمایش داده شده در شناسایی نتایج"
-
-#~ msgid "display order"
-#~ msgstr "ترتیب نمایش"
-
-#~ msgid ""
-#~ "specifies the order in which attribute should be displayed in identify "
-#~ "results"
-#~ msgstr "تعیین ترتیب نمایش اطلاعات توصیفی در خروجی"
-
-#~ msgid "count value for this field"
-#~ msgstr "مقادیر این ستون"
-
-#~ msgid "min"
-#~ msgstr "حداقل"
-
-#~ msgid "minimum value for this field"
-#~ msgstr "حداقل مقادیر این ستون"
-
-#~ msgid "max"
-#~ msgstr "حداکثر"
-
-#~ msgid "maximum value for this field"
-#~ msgstr "حداکثر مقادیر این ستون"
-
-#~ msgid "average"
-#~ msgstr "میانگین"
-
-#~ msgid "average value for this field"
-#~ msgstr "میانگین مقادیر این ستون"
-
-#~ msgid "median"
-#~ msgstr "میانه"
-
-#~ msgid "median value for this field"
-#~ msgstr "میانه مقادیر این ستون"
-
-#~ msgid "standard deviation"
-#~ msgstr "انحراف معیار"
-
-#~ msgid "standard deviation for this field"
-#~ msgstr "انحراف معیار این ستون"
-
-#~ msgid "sum"
-#~ msgstr "مجموع"
-
-#~ msgid "sum value for this field"
-#~ msgstr "مجموع مقادیر این ستون"
-
-#~ msgid "unique values for this field"
-#~ msgstr "مقادیر یکتا در این ستون"
-
-#~ msgid "date when attribute statistics were last updated"
-#~ msgstr "آخرین تاریخ بروزرسانی اطلاعات آماری"
 
 #~ msgid "Replace Layer: "
 #~ msgstr "جایگزین لایه:"
@@ -5996,89 +8287,6 @@ msgstr "فرستادن پاسخ"
 #~ "برای حذف ابهام، تکرار یک کد برای نشان دادن حداکثر تعداد ارقام - به عنوان "
 #~ "مثال YYYY"
 
-#~ msgid ""
-#~ "There was an error while attempting to upload your data. Please try "
-#~ "again, or contact and administrator if the problem continues."
-#~ msgstr "خطا در آپلود داده، مجددا سعی کنید."
-
-#~ msgid "You are not permitted to delete this layer"
-#~ msgstr "شما مجاز به پاک کردن این لایه نیستید."
-
-#~ msgid "You do not have permissions for this layer."
-#~ msgstr "شما مجوز دسترسی به این لایه را ندارید."
-
-#~ msgid "You are not permitted to modify this layer"
-#~ msgstr "شما مجاز به تغییر این لایه نیستید."
-
-#~ msgid "You are not permitted to modify this layer's metadata"
-#~ msgstr "شما مجاز به تغییر متادیتای این لایه نیستید."
-
-#~ msgid "You are not permitted to view this layer"
-#~ msgstr "شما مجاز به مشاهده این لایه نیستید."
-
-#~ msgid "Map Created"
-#~ msgstr "نقشه ایجاد شده"
-
-#~ msgid "Comment on Map"
-#~ msgstr "پینوشت نقشه"
-
-#~ msgid "A map was commented on"
-#~ msgstr "پینوشت این نقشه"
-
-#~ msgid "Rating for Map"
-#~ msgstr "امتیاز این نقشه"
-
-#~ msgid "A rating was given to a map"
-#~ msgstr "امتیاز داده شده به نقشه"
-
-#~ msgid "zoom"
-#~ msgstr "زوم"
-
-#~ msgid "center X"
-#~ msgstr "مرکز X"
-
-#~ msgid "center Y"
-#~ msgstr "مرکز Y"
-
-#~ msgid "Site URL"
-#~ msgstr "URL سایت"
-
-#~ msgid "Featured Map URL"
-#~ msgstr "ویژه URL نقشه"
-
-#~ msgid "stack order"
-#~ msgstr "منظور پشته"
-
-#~ msgid "name"
-#~ msgstr "نام"
-
-#~ msgid "opacity"
-#~ msgstr "تاری"
-
-#~ msgid "styles"
-#~ msgstr "سبک"
-
-#~ msgid "transparent"
-#~ msgstr "شفاف"
-
-#~ msgid "fixed"
-#~ msgstr "ثابت"
-
-#~ msgid "visibility"
-#~ msgstr "دید"
-
-#~ msgid "ows URL"
-#~ msgstr "URL OWS"
-
-#~ msgid "layer params"
-#~ msgstr "پارامترهای لایه"
-
-#~ msgid "source params"
-#~ msgstr "پارامترهای منبع"
-
-#~ msgid "JSON Configuration"
-#~ msgstr "JSON پیکربندی"
-
 #~ msgid "Download Data Layers"
 #~ msgstr "دانلود لایه های دیتا"
 
@@ -6091,211 +8299,11 @@ msgstr "فرستادن پاسخ"
 #~ msgid "WMS layer group for local map layers"
 #~ msgstr "گروه لایه WMS برای لایه های نقشه محلی"
 
-#~ msgid "local OWS"
-#~ msgstr "OWS محلی"
-
 #~ msgid "Publish local map layers as WMS layer group"
 #~ msgstr "انتشار لایه های نقشه محلی برای گروه لایه WMS"
 
 #~ msgid "Publish Map WMS"
 #~ msgstr "انتشار نقشه WMS"
-
-#~ msgid "You are not permitted to delete this map."
-#~ msgstr "شما مجاز به پاک کردن این نقشه نیستید."
-
-#~ msgid "You do not have permissions for this map."
-#~ msgstr "شما مجوز دسترسی به این نقشه را ندارید."
-
-#~ msgid "You must be logged in to save this map"
-#~ msgstr "به منظور ذحیره کردن این نقشه باید به سیستم وارد شوید"
-
-#~ msgid "You are not permitted to save or edit this map."
-#~ msgstr "شما مجاز به ذخیره یا ویرایش این نقشه."
-
-#~ msgid "You are not allowed to modify this map's metadata."
-#~ msgstr "شما مجاز به تغییر متادیتای این نقشه نمی باشید."
-
-#~ msgid "You are not allowed to view this map."
-#~ msgstr "شما مجاز به مشاهده این نقشه نمی باشید."
-
-#~ msgid "An unknown error has occured."
-#~ msgstr "یک خطای ناشناخته رخ داده است."
-
-#~ msgid "User following you"
-#~ msgstr "کاربر شما زیر"
-
-#~ msgid "Personal info"
-#~ msgstr "اطلاعات شخصی"
-
-#~ msgid "Important dates"
-#~ msgstr "تاریخ های مهم"
-
-#~ msgid "Password changed successfully."
-#~ msgstr "رمز عبور با موفقیت تغییر."
-
-#~ msgid "Change password: %s"
-#~ msgstr "تغییر رمز عبور: %s را"
-
-#~ msgid "party who authored the resource"
-#~ msgstr "حزب که منابع نویسنده"
-
-#~ msgid ""
-#~ "party who has processed the data in a manner such that the resource has "
-#~ "been modified"
-#~ msgstr "حزب که تا به داده ها در روش به طوری که منابع اصلاح شده است پردازش"
-
-#~ msgid "party who published the resource"
-#~ msgstr "حزب که منابع منتشر شده"
-
-#~ msgid ""
-#~ "party that accepts accountability and responsibility for the data and "
-#~ "ensures         appropriate care and maintenance of the resource"
-#~ msgstr ""
-#~ "حزب است که می پذیرد پاسخگویی و مسئولیت برای داده ها و تضمین مراقبت های "
-#~ "مناسب و نگهداری از منابع"
-
-#~ msgid ""
-#~ "party who can be contacted for acquiring knowledge about or acquisition "
-#~ "of the resource"
-#~ msgstr "حزب که می تواند برای به دست آوردن دانش در مورد و یا کسب منابع تماس"
-
-#~ msgid "party who distributes the resource"
-#~ msgstr "حزب که توزیع منابع"
-
-#~ msgid "party who uses the resource"
-#~ msgstr "حزب که با استفاده از منابع"
-
-#~ msgid "party that supplies the resource"
-#~ msgstr "حزبی که تامین منابع"
-
-#~ msgid "party who created the resource"
-#~ msgstr "حزب که منبع ایجاد"
-
-#~ msgid "party that owns the resource"
-#~ msgstr "حزبی که دارای منابع"
-
-#~ msgid ""
-#~ "key party responsible for gathering information and conducting research"
-#~ msgstr "احزاب مسئول جمع آوری اطلاعات و انجام پژوهش"
-
-#~ msgid "name of the responsible organization"
-#~ msgstr "نام سازمان مسئول"
-
-#~ msgid "introduce yourself"
-#~ msgstr "خودتان را معرفی کنید"
-
-#~ msgid "Position Name"
-#~ msgstr "موقعیت نام"
-
-#~ msgid "role or position of the responsible person"
-#~ msgstr "نقش و یا موقعیت فرد مسئول"
-
-#~ msgid ""
-#~ "telephone number by which individuals can speak to the responsible "
-#~ "organization or individual"
-#~ msgstr ""
-#~ "شماره تلفن های که افراد می توانند به سازمان مسئول و یا فردی صحبت می کنند"
-
-#~ msgid "Facsimile"
-#~ msgstr "رونوشت"
-
-#~ msgid ""
-#~ "telephone number of a facsimile machine for the responsible organization "
-#~ "or individual"
-#~ msgstr "شماره تلفن دستگاه فاکس برای سازمان مسئول و یا فردی"
-
-#~ msgid "Delivery Point"
-#~ msgstr "نقطه تحویل"
-
-#~ msgid ""
-#~ "physical and email address at which the organization or individual may be "
-#~ "contacted"
-#~ msgstr "آدرس فیزیکی و ایمیل که در آن سازمان و یا فردی ممکن است تماس"
-
-#~ msgid "City"
-#~ msgstr "شهرستان"
-
-#~ msgid "city of the location"
-#~ msgstr "شهرستان از محل"
-
-#~ msgid "Administrative Area"
-#~ msgstr "منطقه اداری"
-
-#~ msgid "state, province of the location"
-#~ msgstr "دولت، استان محل"
-
-#~ msgid "Postal Code"
-#~ msgstr "کد پستی"
-
-#~ msgid "ZIP or other postal code"
-#~ msgstr "ZIP و یا سایر کد پستی"
-
-#~ msgid "country of the physical address"
-#~ msgstr "کشور از آدرس فیزیکی"
-
-#~ msgid ""
-#~ "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-#~ "the subject             (space or comma-separated"
-#~ msgstr ""
-#~ "کلمه معمول (ها) و یا کلمه رسمی (بازدید کنندگان) یا عبارت (بازدید کنندگان) "
-#~ "مورد استفاده برای توصیف موضوع (فضا یا کاما از هم جدا"
-
-#~ msgid "Your username for "
-#~ msgstr "نام کاربری برای"
-
-#~ msgid "Your username has been emailed to you."
-#~ msgstr "نام کاربری شما به شما ایمیل فرستاده."
-
-#~ msgid "No user could be found with that email address."
-#~ msgstr "بدون کاربر می تواند با این آدرس ایمیل در بر داشت."
-
-#~ msgid "Auto-detect"
-#~ msgstr "شناسایی خودکار"
-
-#~ msgid "Paired WMS/WFS/WCS"
-#~ msgstr "زوج WMS / WFS / WCS"
-
-#~ msgid "Web Map Service"
-#~ msgstr "وب سرویس نقشه"
-
-#~ msgid "Catalogue Service"
-#~ msgstr "خدمات"
-
-#~ msgid "ArcGIS REST Service"
-#~ msgstr "نرم افزار ArcGIS REST خدمات"
-
-#~ msgid "OpenGeoPortal"
-#~ msgstr "OpenGeoPortal"
-
-#~ msgid "Harvard Geospatial Library"
-#~ msgstr "کتابخانه مکانی هاروارد"
-
-#~ msgid "Local"
-#~ msgstr "محلی"
-
-#~ msgid "Cascaded"
-#~ msgstr "آبشاری"
-
-#~ msgid "Harvested"
-#~ msgstr "برداشت"
-
-#~ msgid "Indexed"
-#~ msgstr "ایندکس شده"
-
-#~ msgid "Live"
-#~ msgstr "زنده"
-
-#~ msgid "Service URL"
-#~ msgstr "URL خدمات"
-
-#~ msgid "Service Type"
-#~ msgstr "نوع خدمات"
-
-#~ msgid "Layer Name"
-#~ msgstr "نام لایه"
-
-#~ msgid "Layer Title"
-#~ msgstr "عنوان لایه"
 
 #~ msgid "Layer Description"
 #~ msgstr "لایه شرح"
@@ -6358,30 +8366,6 @@ msgstr "فرستادن پاسخ"
 #~ msgid "This is an existing service"
 #~ msgstr "این یک سرویس موجود است"
 
-#~ msgid "Could not find any layers in a compatible projection."
-#~ msgstr "می تواند هر لایه در یک طرح سازگار پیدا کند."
-
-#~ msgid "You are not permitted to remove this service."
-#~ msgstr "شما مجاز به حذف این سرویس."
-
-#~ msgid "created"
-#~ msgstr "ساخته"
-
-#~ msgid "deleted"
-#~ msgstr "حذف"
-
-#~ msgid "added a comment"
-#~ msgstr "اضافه نظر"
-
-#~ msgid "updated a comment"
-#~ msgstr "به روز شده نظر"
-
-#~ msgid "uploaded"
-#~ msgstr "آپلود شده"
-
-#~ msgid "to"
-#~ msgstr "به"
-
 #~ msgid "Type your search here ..."
 #~ msgstr "جستجوی خود را اینجا وارد کنید ..."
 
@@ -6400,26 +8384,6 @@ msgstr "فرستادن پاسخ"
 #~ "%(activate_url)s بازدید کنندگان اگر شما برای این سایت را امضا نکند، شما "
 #~ "می توانید این پیغام را نادیده بگیرید.\n"
 
-#~ msgid "Confirm email address for %(site_name)s"
-#~ msgstr "تکرار آدرس ایمیل برای %(site_name)sبازدید کنندگان"
-
-#~ msgid ""
-#~ "You're receiving this email because you or someone else has requested a "
-#~ "password for your user account at %(site_name)s.\n"
-#~ "It can be safely ignored if you did not request a password reset. Click "
-#~ "the link below to reset your password.\n"
-#~ "\n"
-#~ "%(password_reset_url)s\n"
-#~ msgstr ""
-#~ "شما این ایمیل را دریافت چرا که شما یا شخص دیگری است یک رمز عبور برای نام "
-#~ "کاربری خود در٪ %(site_name)s بازدید کنندگان درخواست شده است. این را می "
-#~ "توان با خیال راحت نادیده گرفته اگر شما یک تنظیم مجدد رمز عبور درخواست "
-#~ "نیست. لینک زیر برای بازنشانی گذرواژه خود کلیک کنید. "
-#~ "%(password_reset_url)s بازدید کنندگان\n"
-
-#~ msgid "[%(site_name)s] Password reset"
-#~ msgstr "[%(site_name)s] تنظیم مجدد رمز عبور"
-
 #~ msgid "Forgot your username?"
 #~ msgstr "نام کاربری خود را فراموش کردید؟"
 
@@ -6428,12 +8392,6 @@ msgstr "فرستادن پاسخ"
 
 #~ msgid "With"
 #~ msgstr "با"
-
-#~ msgid "Invalid permission level."
-#~ msgstr "سطج دسترسی نامعتبر."
-
-#~ msgid "Permission Denied"
-#~ msgstr "دسترسی غیرمجاز"
 
 #~ msgid ""
 #~ "information about on-line sources from which the dataset, specification, "
@@ -6447,9 +8405,6 @@ msgstr "فرستادن پاسخ"
 
 #~ msgid "distribution URL"
 #~ msgstr "distribution URL"
-
-#~ msgid "distribution description"
-#~ msgstr "distribution description"
 
 #~ msgid "Could not create a download link for layer."
 #~ msgstr "Could not create a download link for layer."
@@ -6538,17 +8493,11 @@ msgstr "فرستادن پاسخ"
 #~ msgid "You do not have permission to view this layer"
 #~ msgstr "You do not have permission to view this layer"
 
-#~ msgid "View"
-#~ msgstr "View"
-
 #~ msgid "You do not have permission to view this map"
 #~ msgstr "You do not have permission to view this map"
 
 #~ msgid "Add a Comment"
 #~ msgstr "Add a Comment"
-
-#~ msgid "Notices"
-#~ msgstr "Notices"
 
 #~ msgid "Observed objects"
 #~ msgstr "Observed objects"
