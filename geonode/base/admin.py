@@ -291,7 +291,7 @@ class ConfigurationAdmin(admin.ModelAdmin):
         # allow only superusers to modify Configuration
         if not request.user.is_superuser:
             for field in form.base_fields:
-                field.disabled = True
+                form.base_fields.get(field).disabled = True
 
         return form
 
