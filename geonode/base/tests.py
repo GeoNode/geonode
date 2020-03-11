@@ -474,7 +474,7 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
             else:
                 response = web_client.post(reverse(url_name))
 
-            self.assertNotEqual(response.status_code, 405, f'Whitelisted URL: {url_name} is not available.')
+            self.assertNotEqual(response.status_code, 405, 'Whitelisted URL is not available.')
 
     def test_read_only_casual_user_privileges(self):
         web_client = Client()
@@ -493,7 +493,7 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
         # post not whitelisted URL as superuser
         response = web_client.post(reverse(url_name))
 
-        self.assertEqual(response.status_code, 405, f'User is allowed to post to {url_name}')
+        self.assertEqual(response.status_code, 405, 'User is allowed to post to forbidden URL')
 
     def test_maintenance_whitelist(self):
 
@@ -517,7 +517,7 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
             else:
                 response = web_client.get(reverse(url_name))
 
-            self.assertNotEqual(response.status_code, 503, f'Whitelisted URL: {url_name} is not available.')
+            self.assertNotEqual(response.status_code, 503, 'Whitelisted URL is not available.')
 
     def test_maintenance_false(self):
         web_client = Client()
@@ -531,7 +531,7 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
         # post not whitelisted URL as superuser
         response = web_client.get('/')
 
-        self.assertNotEqual(response.status_code, 503, f'User is allowed to post to index')
+        self.assertNotEqual(response.status_code, 503, 'User is allowed to get index page')
 
     def test_maintenance_true(self):
         web_client = Client()
@@ -545,4 +545,4 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
         # post not whitelisted URL as superuser
         response = web_client.get('/')
 
-        self.assertEqual(response.status_code, 503, f'User is allowed to post to index')
+        self.assertEqual(response.status_code, 503, 'User is allowed to get index page')
