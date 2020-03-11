@@ -50,6 +50,7 @@ from pinax.ratings.models import OverallRating
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
+from geonode.singleton import SingletonModel
 from geonode.base.enumerations import (
     LINK_TYPES,
     ALL_LANGUAGES,
@@ -1552,6 +1553,25 @@ class CuratedThumbnail(models.Model):
         except Exception as e:
             logger.exception(e)
         return self.img_thumbnail.url
+
+
+class Configuration(SingletonModel):
+    """
+    A model used for managing the Geonode instance's global configuration,
+    without a need for reloading the instance.
+
+    Usage:
+    from geonode.base.models import Configuration
+    config = Configuration.load()
+    """
+    read_only = models.BooleanField(default=False)
+    maintenance = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name_plural = 'Configuration'
+
+    def __str__(self):
+        return 'Configuration'
 
 
 def resourcebase_post_save(instance, *args, **kwargs):

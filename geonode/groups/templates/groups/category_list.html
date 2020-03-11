@@ -8,7 +8,7 @@
 
 {% block body %}
   <div class="page-header">
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and not READ_ONLY_MODE %}
     <a href="{% url "group_category_create" %}" class="btn btn-primary pull-right">{% trans "Create a New Group Category" %}</a>
     {% endif %}
     <h2>{% trans "Explore Group Categories" %}</h2>
