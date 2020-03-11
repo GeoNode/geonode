@@ -43,7 +43,6 @@ from geonode.utils import check_ogc_backend
 from geonode.monitoring import register_url_event
 from geonode.messaging.urls import urlpatterns as msg_urls
 
-
 admin.autodiscover()
 
 js_info_dict = {

@@ -47,3 +47,8 @@ def format_senders(thread, current_user):
         last_sender = thread.latest_message
         sender_string = f'{first_sender.first_name_or_nick} .. {last_sender.first_name_or_nick}'
     return f'{sender_string}'
+
+
+@register.simple_tag
+def get_item(dictionary, key):
+    return dictionary.get(key, [])

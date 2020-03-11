@@ -1,0 +1,8 @@
+{% load user_messages %}
+
+{% if field_name in form.errors %}
+    {% get_item form.errors field_name as errors %}
+    {% for e in errors %}
+        <span id="error_to_users_{{ forloop.counter }}" class="error-msg">{{ e }}</span>
+    {% endfor %}
+{% endif %}
