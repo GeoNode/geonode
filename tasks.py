@@ -22,11 +22,15 @@ def update(ctx):
     print "Public Hostname or IP is {0}".format(pub_ip)
     pub_port = _geonode_public_port()
     print "Public PORT is {0}".format(pub_port)
+    pub_protocol = 'https' if pub_port == '443' else 'http'
+    if pub_protocol == 'https' or pub_port == '80':
+        pub_port = None
     db_url = _update_db_connstring()
     geodb_url = _update_geodb_connstring()
     override_env = "$HOME/.override_env"
     envs = {
-        "public_fqdn": "{0}:{1}".format(pub_ip, pub_port or 80),
+        "public_protocol": pub_protocol,
+        "public_fqdn": "{0}{1}".format(pub_ip, ':' + pub_port if pub_port else ''),
         "public_host": "{0}".format(pub_ip),
         "dburl": db_url,
         "geodburl": geodb_url,
@@ -38,11 +42,11 @@ def update(ctx):
         'GEONODE_LB_PORT'
     ):
         ctx.run("echo export GEOSERVER_PUBLIC_LOCATION=\
-http://{public_fqdn}/geoserver/ >> {override_fn}".format(**envs), pty=True)
+{public_protocol}://{public_fqdn}/geoserver/ >> {override_fn}".format(**envs), pty=True)
         ctx.run("echo export GEOSERVER_WEB_UI_LOCATION=\
-http://{public_fqdn}/geoserver/ >> {override_fn}".format(**envs), pty=True)
+{public_protocol}://{public_fqdn}/geoserver/ >> {override_fn}".format(**envs), pty=True)
         ctx.run("echo export SITEURL=\
-http://{public_fqdn}/ >> {override_fn}".format(**envs), pty=True)
+{public_protocol}://{public_fqdn}/ >> {override_fn}".format(**envs), pty=True)
 
     try:
         current_allowed = ast.literal_eval(
@@ -157,7 +161,7 @@ def _geonode_public_host_ip():
 
 def _geonode_public_port():
     gn_pub_port = os.getenv('GEONODE_LB_PORT', '80')
-    return gn_pub_port
+    return str(gn_pub_port)
 
 
 def _prepare_oauth_fixture():
@@ -165,6 +169,9 @@ def _prepare_oauth_fixture():
     print "Public Hostname or IP is {0}".format(pub_ip)
     pub_port = _geonode_public_port()
     print "Public PORT is {0}".format(pub_port)
+    pub_protocol = 'https' if pub_port == '443' else 'http'
+    if pub_protocol == 'https' or pub_port == '80':
+        pub_port = None
     default_fixture = [
         {
             "model": "oauth2_provider.application",
@@ -174,8 +181,8 @@ def _prepare_oauth_fixture():
                 "created": "2018-05-31T10:00:31.661Z",
                 "updated": "2018-05-31T11:30:31.245Z",
                 "algorithm": "RS256",
-                "redirect_uris": "http://{0}:{1}/geoserver/index.html".format(
-                    pub_ip, pub_port
+                "redirect_uris": "{0}://{1}{2}/geoserver/index.html".format(
+                    pub_protocol, pub_ip, ':' + pub_port if pub_port else ''
                 ),
                 "name": "GeoServer",
                 "authorization_grant_type": "authorization-code",
