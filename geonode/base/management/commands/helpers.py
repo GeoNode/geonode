@@ -186,7 +186,7 @@ def flush_db(db_name, db_user, db_port, db_host, db_passwd):
         curs.execute(sql_dump)
         pg_tables = curs.fetchall()
         for table in pg_tables:
-            print "Flushing Data : " + table[0]
+            print("Flushing Data : " + table[0])
             curs.execute("TRUNCATE " + table[0] + " CASCADE;")
 
     except Exception:
@@ -212,7 +212,7 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
         curs.execute(sql_dump)
         pg_tables = curs.fetchall()
         for table in pg_tables:
-            print "Dumping GeoServer Vectorial Data : " + table[0]
+            print("Dumping GeoServer Vectorial Data : " + table[0])
             os.system('PGPASSWORD="' + db_passwd + '" ' + config.pg_dump_cmd + ' -h ' + db_host +
                       ' -p ' + str(db_port) + ' -U ' + db_user + ' -F c -b' +
                       ' -t ' + str(table[0]) + ' -f ' +
@@ -241,10 +241,10 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
         file_names = [fn for fn in os.listdir(source_folder)
                       if any(fn.endswith(ext) for ext in included_extenstions)]
         for table in file_names:
-            print "Restoring GeoServer Vectorial Data : " + os.path.splitext(table)[0]
+            print("Restoring GeoServer Vectorial Data : " + os.path.splitext(table)[0])
             pg_rstcmd = 'PGPASSWORD="' + db_passwd + '" ' + config.pg_restore_cmd + ' -c -h ' + db_host + \
                         ' -p ' + db_port + ' -U ' + db_user + ' -F c ' + \
-                        ' -t ' + table[0] + ' ' + \
+                        ' -t ' + os.path.splitext(table)[0] + ' ' + \
                         os.path.join(source_folder, table) + ' -d ' + db_name
             os.system(pg_rstcmd)
 
@@ -305,7 +305,7 @@ def confirm(prompt=None, resp=False):
         if not ans:
             return resp
         if ans not in ['y', 'Y', 'n', 'N']:
-            print 'please enter y or n.'
+            print('please enter y or n.')
             continue
         if ans == 'y' or ans == 'Y':
             return True
