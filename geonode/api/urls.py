@@ -27,6 +27,7 @@ api = Api(api_name='api')
 
 api.register(resources.GroupCategoryResource())
 api.register(resources.GroupResource())
+api.register(resources.GroupProfileResource())
 api.register(resources.OwnersResource())
 api.register(resources.ProfileResource())
 api.register(resources.RegionResource())

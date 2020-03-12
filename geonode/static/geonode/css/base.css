@@ -8165,3 +8165,11 @@ form-inline {
   cursor: pointer;
   margin: 5px;
 }
+.create-msg-form-control {
+  width: 100%;
+  color: #555555;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
