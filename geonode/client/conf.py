@@ -49,8 +49,8 @@ def is_installed(package):
 
 class GeoNodeClientAppConf(AppConf):
 
-    LAYER_PREVIEW_LIBRARY = 'geoext'
-    HOOKSET = "geonode.client.hooksets.GeoExtHookSet"
+    LAYER_PREVIEW_LIBRARY = 'geonode'
+    HOOKSET = "geonode.client.hooksets.BaseHookSet"
 
     def configure_hookset(self, value):
         return load_path_attr(value)()

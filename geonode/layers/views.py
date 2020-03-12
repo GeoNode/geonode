@@ -657,7 +657,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     context_dict["preview"] = getattr(
         settings,
         'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-        'geoext')
+        'mapstore')
     context_dict["crs"] = getattr(
         settings,
         'DEFAULT_MAP_CRS',
@@ -1139,7 +1139,7 @@ def layer_metadata(
         "category_form": category_form,
         "tkeywords_form": tkeywords_form,
         "viewer": viewer,
-        "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'geoext'),
+        "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'mapstore'),
         "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857'),
         "metadataxsl": getattr(settings, 'GEONODE_CATALOGUE_METADATA_XSL', True),
         "freetext_readonly": getattr(
