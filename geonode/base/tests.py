@@ -30,6 +30,8 @@ from django.test import Client
 from django.shortcuts import reverse
 
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
+from geonode import geoserver
+from geonode.decorators import on_ogc_backend
 
 
 class ThumbnailTests(GeoNodeBaseTestSupport):
@@ -456,6 +458,7 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
 
 class ConfigurationTest(GeoNodeBaseTestSupport):
 
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_read_only_whitelist(self):
         web_client = Client()
 
