@@ -18,16 +18,11 @@
                 </div>
             </td>
             <td class="col-md-3">
-                {% if unread_flag %}
-                    <b><a href="{{ thread.get_absolute_url }}">{{ senders_repr }} <span
-                            style="font-size:10px;">{{ thread.num_messages }}</span></a></b>
-                {% else %}
-                    <a href="{{ thread.get_absolute_url }}">{{ senders_repr }} <span
+                <a href="{{ thread.get_absolute_url }}" style="{% if unread_flag %}font-weight:bold{% endif %}">{{ senders_repr }} <span
                             style="font-size:10px;">{{ thread.num_messages }}</span></a>
-                {% endif %}
             </td>
             <td class="col-md-3">
-                <a href="{{ thread.get_absolute_url }}">{{ thread.subject }} - {{ thread.latest_message.content|slice:"10" }}...</a>
+                <a href="{{ thread.get_absolute_url }}" style="{% if unread_flag %}font-weight:bold{% endif %}">{{ thread.subject }} - {{ thread.latest_message.content|slice:"10" }}...</a>
             </td>
             <td class="col-md-3">
                 {{ thread.latest_message.sent_at}}
