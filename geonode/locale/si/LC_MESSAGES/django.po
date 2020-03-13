@@ -32,7 +32,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-10 14:26+0100\n"
+"POT-Creation-Date: 2020-03-13 13:21+0100\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Sinhala (http://www.transifex.com/geonode/geonode/language/"
@@ -42,521 +42,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#: geonode/base/__init__.py:27
-msgid "Request to download a resource"
-msgstr "resource බාගත කිරීම සඳහා ඉල්ලුම් කිරීම"
-
-#: geonode/base/__init__.py:28
-msgid "A request for downloading a resource was sent"
-msgstr "resource බාගත කිරීම සඳහා ඉල්ලීමක් යවන ලදී"
-
-#: geonode/base/enumerations.py:27
-msgid "series"
-msgstr "ශ්‍රේණිය"
-
-#: geonode/base/enumerations.py:28
-msgid "computer program or routine"
-msgstr "පරිගණක වැඩසටහන හෝ රූටිනය"
-
-#: geonode/base/enumerations.py:29
-msgid "feature type"
-msgstr "අංගය"
-
-#: geonode/base/enumerations.py:30
-msgid "copy or imitation of an existing or hypothetical object"
-msgstr "පවතින හෝ කල්පිත වස්තුවක් පිටපත් කිරීම හෝ අනුකරණය"
-
-#: geonode/base/enumerations.py:31
-msgid "collection hardware"
-msgstr "එකතුව දෘඩාංග"
-
-#: geonode/base/enumerations.py:32
-msgid "collection session"
-msgstr "එකතුව සැසිය"
-
-#: geonode/base/enumerations.py:33
-msgid "non-geographic data"
-msgstr "භූගෝලීය නොවන දත්ත"
-
-#: geonode/base/enumerations.py:34
-msgid "property type"
-msgstr "ගුණාංගය"
-
-#: geonode/base/enumerations.py:35
-msgid "field session"
-msgstr "ක්ෂේත්රයේ සැසිය"
-
-#: geonode/base/enumerations.py:36
-#, fuzzy
-#| msgid "dataset"
-msgid "dataset"
-msgstr "දත්ත කට්ටලය"
-
-#: geonode/base/enumerations.py:37
-#, fuzzy
-#| msgid "Resources"
-msgid "service interfaces"
-msgstr "සම්පත්"
-
-#: geonode/base/enumerations.py:38
-msgid "attribute class"
-msgstr "ගුණාංග පන්තිය"
-
-#: geonode/base/enumerations.py:39
-msgid "characteristic of a feature"
-msgstr "අංගයක ගති ලක්ෂණ"
-
-#: geonode/base/enumerations.py:40
-msgid "tile or spatial subset of geographic data"
-msgstr "උළු හෝ භූගෝලීය දත්ත අවකාශ උප කුලකයක්"
-
-#: geonode/base/enumerations.py:41
-msgid "feature"
-msgstr "අංගය"
-
-#: geonode/base/enumerations.py:42
-msgid "dimension group"
-msgstr "මිනුම් කණ්ඩායම"
-
-#: geonode/base/enumerations.py:46
-msgid "frequency of maintenance for the data is not known"
-msgstr "දත්ත නඩත්තු කිරීම් වාර ගණන නොදනී"
-
-#: geonode/base/enumerations.py:47
-msgid "data is repeatedly and frequently updated"
-msgstr "දත්ත නිරන්තරයෙන් නැවත නැවතත් යාවත්කාලීන කරනු ලැබේ"
-
-#: geonode/base/enumerations.py:48
-msgid "there are no plans to update the data"
-msgstr "දත්ත යාවත්කාලීන කිරීමේ සැලසුමක් නොපවතී"
-
-#: geonode/base/enumerations.py:49
-msgid "data is updated each day"
-msgstr "දිනපතා දත්ත යාවත්කාලීන කරනු ලැබේ"
-
-#: geonode/base/enumerations.py:50
-msgid "data is updated every year"
-msgstr "සෑම වසරකම දත්ත යාවත්කාලීන කරනු ලැබේ"
-
-#: geonode/base/enumerations.py:51
-msgid "data is updated as deemed necessary"
-msgstr "අවශ්‍ය වූ විටෙක දත්ත යාවත්කාලීන කරනු ලැබේ"
-
-#: geonode/base/enumerations.py:52
-msgid "data is updated each month"
-msgstr "සෑම මසකදීම දත්ත යාවත්කාලීන කරනු ලැබේ"
-
-#: geonode/base/enumerations.py:53
-msgid "data is updated every two weeks"
-msgstr "සෑම සති දෙකකට වරක්ම දත්ත යාවත්කාලීන කරනු ලැබේ"
-
-#: geonode/base/enumerations.py:55
-msgid "data is updated in intervals that are uneven in duration"
-msgstr "අසමාන කාල පරිච්ඡේද වලදී දත්ත යාවත්කාලීන කරනු ලැබේ"
-
-#: geonode/base/enumerations.py:56
-msgid "data is updated on a weekly basis"
-msgstr "සති පතා  දත්ත යාවත්කාලීන කරනු ලැබේ"
-
-#: geonode/base/enumerations.py:57
-msgid "data is updated twice each year"
-msgstr "සෑම වසරකටම දෙවරක් දත්ත යාවත්කාලීන කරනු ලැබේ"
-
-#: geonode/base/enumerations.py:58
-msgid "data is updated every three months"
-msgstr "සෑම මාස තුනකට වරක්ම දත්ත යාවත්කාලීන කරනු ලැබේ"
-
-#: geonode/base/enumerations.py:77
-msgid "No information provided"
-msgstr "තොරතුරු සපයා නොමැත"
-
-#: geonode/base/forms.py:282
-#: geonode/base/templates/base/_resourcebase_info_panel.html:77
-#: geonode/catalogue/templates/geonode_metadata_full.html:145
-#: geonode/documents/templates/documents/document_metadata_advanced.html:76
-#: geonode/documents/templates/layouts/doc_panels.html:324
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:99
-#: geonode/layers/templates/layouts/panels.html:326
-#: geonode/maps/templates/layouts/map_panels.html:322
-#: geonode/maps/templates/maps/map_metadata_advanced.html:77
-#: geonode/templates/metadata_detail.html:88
-msgid "Category"
-msgstr "ප්‍රභේදය"
-
-#: geonode/base/forms.py:293
-msgid "Category is required."
-msgstr "ප්රවර්ගය අවශ්ය වේ."
-
-#: geonode/base/forms.py:314
-msgid "Keywords from Thesaurus"
-msgstr ""
-
-#: geonode/base/forms.py:316
-msgid "List of keywords from Thesaurus"
-msgstr ""
-
-#: geonode/base/forms.py:336 geonode/base/models.py:577
-msgid "Owner"
-msgstr "හිමිකරු"
-
-#: geonode/base/forms.py:342
-#: geonode/base/templates/base/_resourcebase_info_panel.html:34
-#: geonode/catalogue/templates/geonode_metadata_full.html:58
-#: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
-#: geonode/templates/metadata_detail.html:71
-#: geonode/templates/search/_general_filters.html:108
-msgid "Date"
-msgstr "දිනය"
-
-#: geonode/base/forms.py:348 geonode/base/models.py:681
-msgid "temporal extent start"
-msgstr "ලෞකික දුරට ආරම්භ"
-
-#: geonode/base/forms.py:355 geonode/base/models.py:686
-msgid "temporal extent end"
-msgstr "ලෞකික දුරට අවසන්"
-
-#: geonode/base/forms.py:363 geonode/base/forms.py:371
-msgid "Person outside GeoNode (fill form)"
-msgstr "GeoNode පිටත පුද්ගලයා (ආකෘති පත්රය පිරවීම)"
-
-#: geonode/base/forms.py:364
-#: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
-#: geonode/base/templates/base/_resourcebase_info_panel.html:104
-#: geonode/catalogue/templates/geonode_metadata_full.html:75
-#: geonode/documents/templates/documents/document_metadata.html:42
-#: geonode/documents/templates/documents/document_metadata.html:66
-#: geonode/documents/templates/documents/document_metadata_advanced.html:47
-#: geonode/documents/templates/documents/document_metadata_advanced.html:100
-#: geonode/layers/templates/layers/layer_metadata.html:53
-#: geonode/layers/templates/layers/layer_metadata.html:84
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:58
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:144
-#: geonode/maps/templates/maps/map_metadata.html:67
-#: geonode/maps/templates/maps/map_metadata_advanced.html:101
-msgid "Point of Contact"
-msgstr "විමසීමි"
-
-#: geonode/base/forms.py:372
-#: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
-#: geonode/documents/templates/documents/document_metadata.html:38
-#: geonode/documents/templates/documents/document_metadata_advanced.html:43
-#: geonode/layers/templates/layers/layer_metadata.html:49
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:54
-#: geonode/templates/metadata_detail.html:346
-msgid "Metadata Author"
-msgstr "ලේඛනයේ අයිතිකරු"
-
-#: geonode/base/forms.py:379
-#, fuzzy
-#| msgid "Keywords"
-msgid "Free-text Keywords"
-msgstr "මුලපද"
-
-#: geonode/base/forms.py:381
-#, fuzzy
-#| msgid "A space or comma-separated list of keywords"
-msgid ""
-"A space or comma-separated list of keywords. Use the widget to select from "
-"Hierarchical tree."
-msgstr "එක් එක් මුලපදය  එක හිස්තැනකින් හෝ කොමාවකින් වෙන් කර ඇතුලත් කරන්න"
-
-#: geonode/base/forms.py:393
-#: geonode/base/templates/base/_resourcebase_info_panel.html:87
-#: geonode/catalogue/templates/geonode_metadata_full.html:149
-#: geonode/templates/metadata_detail.html:98
-#: geonode/templates/search/_region_filter.html:5
-msgid "Regions"
-msgstr "කලාප"
-
-#: geonode/base/management/commands/updategeoip.py:44
-msgid "Write result to file, default GEOIP_PATH: {}"
-msgstr ""
-
-#: geonode/base/management/commands/updategeoip.py:46
-msgid ""
-"Fetch database from specific url. If nothing provided, default {} will be "
-"used"
-msgstr ""
-
-#: geonode/base/management/commands/updategeoip.py:48
-msgid "Overwrite file if exists"
-msgstr ""
-
-#: geonode/base/models.py:87 geonode/services/models.py:194
-msgid "function performed by the responsible party"
-msgstr "වගකිවයුතු පාර්ශවය විසින් සිදු කෙරෙන කාර්යය භාරය"
-
-#: geonode/base/models.py:527
-msgid "reference date for the cited resource"
-msgstr "උපුටාගත් මූලාශ්‍රය පරිශීලනය කල දිනය"
-
-#: geonode/base/models.py:528
-msgid "identification of when a given event occurred"
-msgstr "යම් සිද්ධියක් සිදු වූ අවස්ථාව හඳුනා ගැනීම"
-
-#: geonode/base/models.py:529
-msgid "version of the cited resource"
-msgstr "උපුටාගත් මූලාශ්‍රය කී වෙනි සංස්කරණයද යන වග"
-
-#: geonode/base/models.py:531
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "මූලාශ්‍රයේ (මූලාශ්‍ර වල) අන්තර්ගතය පිළිබඳ කෙටි සාරාංශගත විස්තරයක්"
-
-#: geonode/base/models.py:533
-msgid "summary of the intentions with which the resource(s) was developed"
-msgstr "මූලාශ්‍රයේ (මූලාශ්‍ර වල) පරමාර්ථය පිළිබඳ සාරාංශයක්"
-
-#: geonode/base/models.py:535
-msgid ""
-"frequency with which modifications and deletions are made to the data after "
-"it is first produced"
-msgstr "දත්ත නිපදවීමෙන් පසු ඒවාට සිදු කරන වෙනස්කම් සහ මකා දැමීම් වාර ගනන"
-
-#: geonode/base/models.py:538
-msgid ""
-"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-"the subject (space or comma-separated"
-msgstr ""
-"වස්තුව විස්තර කිරීමට යොදා ගන්නා පොදුවේ භාවිතා වන වචන(ය) හෝ රූපීකෘත වචන (ය) හෝ වාක්‍ය "
-"ඛණ්ඩ(ය) (හිස්තැනකින් හෝ කොමාවකින් වෙන් කර ලියන්න"
-
-#: geonode/base/models.py:541
-#, fuzzy
-#| msgid ""
-#| "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-#| "the subject (space or comma-separated"
-msgid ""
-"formalised word(s) or phrase(s) from a fixed thesaurus used to describe the "
-"subject (space or comma-separated"
-msgstr ""
-"වස්තුව විස්තර කිරීමට යොදා ගන්නා පොදුවේ භාවිතා වන වචන(ය) හෝ රූපීකෘත වචන (ය) හෝ වාක්‍ය "
-"ඛණ්ඩ(ය) (හිස්තැනකින් හෝ කොමාවකින් වෙන් කර ලියන්න"
-
-#: geonode/base/models.py:543
-msgid "keyword identifies a location"
-msgstr "මුලපදය ස්ථානයක් හඳුනාගනී"
-
-#: geonode/base/models.py:545
-msgid "limitation(s) placed upon the access or use of the data."
-msgstr "දත්ත වලට පිවිසීම හෝ භාවිතය සම්බන්ධයෙන් පනවා ඇති සීමා කිරීම්"
-
-#: geonode/base/models.py:547
-msgid ""
-"other restrictions and legal prerequisites for accessing and using the "
-"resource or metadata"
-msgstr ""
-"සම්පත හෝ මෙටාදත්ත වලට පිවිසීමට හෝ ඒවා භාවිතා කිරීමට පනවා ඇති වෙනත් සම්බාධක සහ නීතිමය අවශ්‍"
-"යතා"
-
-#: geonode/base/models.py:549
-msgid "license of the dataset"
-msgstr "මේ දත්ත සමුදාය බලපත්රය"
-
-#: geonode/base/models.py:550
-msgid "language used within the dataset"
-msgstr "දත්ත කට්ටලය තුල භාවිතා කර ඇති භාෂාව"
-
-#: geonode/base/models.py:552
-msgid ""
-"high-level geographic data thematic classification to assist in the grouping "
-"and search of available geographic data sets."
-msgstr ""
-"පවතින භූගෝලීය දත්ත කට්ටලයන් සමූහනයට සහ සෙවීමට සහය දැක්වීම සඳහා ඉහල මට්ටමේ භූගෝලීය දත්ත "
-"තේමානුගතව වර්ගීකරණය "
-
-#: geonode/base/models.py:555
-msgid "method used to represent geographic information in the dataset."
-msgstr "දත්ත කට්ටලය තුල ඇති භූගෝලීය තොරතුරු නියෝජනය කිරීමට භාවිත කර ඇති ක්‍රමය"
-
-#: geonode/base/models.py:557
-msgid "time period covered by the content of the dataset (start)"
-msgstr "දත්ත කට්ටලයේ අන්තර්ගතයෙන් ආවරණය වන කාල සීමාව (ආරම්භයේදී )"
-
-#: geonode/base/models.py:559
-msgid "time period covered by the content of the dataset (end)"
-msgstr "දත්ත කට්ටලයේ අන්තර්ගතයෙන් ආවරණය වන කාල සීමාව (අවසානයේදී )"
-
-#: geonode/base/models.py:561
-msgid ""
-"general explanation of the data producer's knowledge about the lineage of a "
-"dataset"
-msgstr "දත්ත කට්ටලයක ආර පිළිබඳව දත්ත නිෂ්පාදකගේ දැනීම ගැන සාමාන්‍ය පැහැදිලි කිරීමක්"
-
-#: geonode/base/models.py:564
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-#: geonode/base/models.py:566
-#: geonode/base/templates/base/_resourcebase_info_panel.html:114
-#: geonode/templates/metadata_detail.html:116
-msgid "DOI"
-msgstr ""
-
-#: geonode/base/models.py:582
-msgid "title"
-msgstr "මාතෘකාව"
-
-#: geonode/base/models.py:583
-msgid "name by which the cited resource is known"
-msgstr "උපුටාගත් මූලාශ්‍රය හඳුන්වන නාමය"
-
-#: geonode/base/models.py:586
-msgid "date"
-msgstr "දිනය"
-
-#: geonode/base/models.py:590
-msgid "date type"
-msgstr "දින මාදිළිය"
-
-#: geonode/base/models.py:596
-msgid "edition"
-msgstr "සංස්කරණය"
-
-#: geonode/base/models.py:602
-msgid "abstract"
-msgstr "සාරාංශය"
-
-#: geonode/base/models.py:607
-msgid "purpose"
-msgstr "අරමුණ"
-
-#: geonode/base/models.py:613
-msgid "maintenance frequency"
-msgstr "නඩත්තු වාර ගණන"
-
-#: geonode/base/models.py:620 geonode/base/models.py:627
-#: geonode/people/models.py:117
-msgid "keywords"
-msgstr "මුලපදය"
-
-#: geonode/base/models.py:633
-msgid "keywords region"
-msgstr "මුලපද කලාපය"
-
-#: geonode/base/models.py:639
-msgid "restrictions"
-msgstr "බාධා කිරීම්"
-
-#: geonode/base/models.py:646
-msgid "restrictions other"
-msgstr "වෙනත් සීමා කිරීම්"
-
-#: geonode/base/models.py:654
-#: geonode/base/templates/base/_resourcebase_info_panel.html:16
-#: geonode/base/templates/base/_resourcebase_info_panel.html:134
-#: geonode/catalogue/templates/geonode_metadata_full.html:98
-#: geonode/templates/metadata_detail.html:57
-#: geonode/templates/metadata_detail.html:203
-msgid "License"
-msgstr "බලපත්ර"
-
-#: geonode/base/models.py:658 geonode/people/models.py:121
-msgid "language"
-msgstr "භාෂාව"
-
-#: geonode/base/models.py:676
-msgid "spatial representation type"
-msgstr "අවකාශීය නිරූපණය වර්ගය"
-
-#: geonode/base/models.py:691
-msgid "supplemental information"
-msgstr "අතිරේක තොරතුරු"
-
-#: geonode/base/models.py:694
-msgid "any other descriptive information about the dataset"
-msgstr "දත්ත කට්ටලය පිළිබඳ වෙනත් ඕනෑම සවිස්තරාත්මක තොරතුරක්"
-
-#: geonode/base/models.py:698
-msgid "data quality statement"
-msgstr "දත්ත වල ගුණාත්මක භාවය"
-
-#: geonode/base/models.py:739
-msgid "CSW typename"
-msgstr "CSW වර්ග නාමය"
-
-#: geonode/base/models.py:744
-msgid "CSW schema"
-msgstr "අතිකරන්නන් schema"
-
-#: geonode/base/models.py:749
-msgid "CSW source"
-msgstr "CSW ප්‍රභවය"
-
-#: geonode/base/models.py:754
-msgid "CSW insert date"
-msgstr "CSW ඇතුලත් කරන දිනය"
-
-#: geonode/base/models.py:756
-msgid "CSW type"
-msgstr "CSW වර්ගය"
-
-#: geonode/base/models.py:761
-msgid "CSW anytext"
-msgstr "අතිකරන්නන් anytext"
-
-#: geonode/base/models.py:763
-msgid "CSW WKT geometry"
-msgstr "CSW WKT ජ්‍යාමිතිය"
-
-#: geonode/base/models.py:769
-#, fuzzy
-#| msgid "Metadata Provider"
-msgid "Metadata uploaded preserve"
-msgstr "මෙටාදත්ත සැපයුම්කරු"
-
-#: geonode/base/models.py:776 geonode/templates/metadata_detail.html:108
-msgid "Featured"
-msgstr "විශේෂාංග"
-
-#: geonode/base/models.py:777
-msgid "Should this resource be advertised in home page?"
-msgstr "මෙම resource මුල් පිටුව ප්රචාරය කළ යුතුද?"
-
-#: geonode/base/models.py:779
-msgid "Is Published"
-msgstr "ප්රකාශයට පත්"
-
-#: geonode/base/models.py:781
-msgid "Should this resource be published and searchable?"
-msgstr "මෙම resource මුල් පිටුව ප්රචාරය කළ යුතුද?"
-
-#: geonode/base/models.py:783 geonode/templates/metadata_detail.html:102
-#, fuzzy
-#| msgid "Not provided"
-msgid "Approved"
-msgstr "සපයනු නොලැබේ"
-
-#: geonode/base/models.py:785
-msgid "Is this resource validated from a publisher or editor?"
-msgstr ""
-
-#: geonode/base/models.py:788
-#, fuzzy
-#| msgid "Thumbnail"
-msgid "Thumbnail url"
-msgstr "Thumbnail"
-
-#: geonode/base/models.py:796
-msgid "Dirty State"
-msgstr ""
-
-#: geonode/base/models.py:798
-msgid "Security Rules Are Not Synched with GeoServer!"
-msgstr ""
-
-#: geonode/base/models.py:1425
-msgid "For example \"kml\""
-msgstr "උදාහරණයක් ලෙස \"kml\""
-
-#: geonode/base/models.py:1430
-msgid "For example \"View in Google Earth\""
-msgstr "උදාහරණයක් ලෙස \"view in Google Earth\""
-
-#: geonode/base/models.py:1432
-msgid "For example \"text/xml\""
-msgstr "උදාහරණයක් ලෙස \"text/xml\""
 
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:3
 #: geonode/templates/500.html:181 geonode/templates/500.html:200
@@ -578,12 +63,35 @@ msgstr "හිමිකරු, point of Contact. Meta data කර්තෘ"
 msgid "Responsible"
 msgstr ""
 
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
+#: geonode/base/templates/base/_resourcebase_info_panel.html:104
+#: geonode/catalogue/templates/geonode_metadata_full.html:75
+#: geonode/documents/templates/documents/document_metadata.html:42
+#: geonode/documents/templates/documents/document_metadata.html:66
+#: geonode/documents/templates/documents/document_metadata_advanced.html:47
+#: geonode/documents/templates/documents/document_metadata_advanced.html:100
+#: geonode/layers/templates/layers/layer_metadata.html:53
+#: geonode/layers/templates/layers/layer_metadata.html:84
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:58
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:144
+#: geonode/maps/templates/maps/map_metadata.html:67
+#: geonode/maps/templates/maps/map_metadata_advanced.html:101
+msgid "Point of Contact"
+msgstr "විමසීමි"
+
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
+#: geonode/documents/templates/documents/document_metadata.html:38
+#: geonode/documents/templates/documents/document_metadata_advanced.html:43
+#: geonode/layers/templates/layers/layer_metadata.html:49
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:54
+#: geonode/templates/metadata_detail.html:346
+msgid "Metadata Author"
+msgstr "ලේඛනයේ අයිතිකරු"
+
 #: geonode/base/templates/base/_resourcebase_info_panel.html:6
 #: geonode/catalogue/templates/geonode_metadata_full.html:55
 #: geonode/client/templates/leaflet/maps/map_view.html:101
-#: geonode/groups/models.py:79
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:20
-#: geonode/services/forms.py:113
 #: geonode/services/templates/services/service_detail.html:22
 #: geonode/services/templates/services/service_list.html:15
 #: geonode/templates/announcements/announcement_list.html:19
@@ -595,6 +103,14 @@ msgstr "මාතෘකාව"
 #: geonode/base/templates/base/_resourcebase_info_panel.html:129
 msgid "SRID"
 msgstr ""
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:16
+#: geonode/base/templates/base/_resourcebase_info_panel.html:134
+#: geonode/catalogue/templates/geonode_metadata_full.html:98
+#: geonode/templates/metadata_detail.html:57
+#: geonode/templates/metadata_detail.html:203
+msgid "License"
+msgstr "බලපත්ර"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:24
 #: geonode/base/templates/base/_resourcebase_info_panel.html:141
@@ -608,11 +124,18 @@ msgstr "වැඩි විස්තර"
 #: geonode/base/templates/base/_resourcebase_info_panel.html:29
 #: geonode/catalogue/templates/geonode_metadata_full.html:61
 #: geonode/client/templates/leaflet/maps/map_view.html:106
-#: geonode/services/forms.py:131
 #: geonode/services/templates/services/service_detail.html:10
 #: geonode/templates/metadata_detail.html:48
 msgid "Abstract"
 msgstr "සාරාංශය"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:34
+#: geonode/catalogue/templates/geonode_metadata_full.html:58
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
+#: geonode/templates/metadata_detail.html:71
+#: geonode/templates/search/_general_filters.html:108
+msgid "Date"
+msgstr "දිනය"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:45
 #: geonode/catalogue/templates/geonode_metadata_full.html:91
@@ -625,7 +148,6 @@ msgstr "වර්ගය"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:50
 #: geonode/catalogue/templates/geonode_metadata_full.html:142
-#: geonode/groups/models.py:89 geonode/people/forms.py:92
 #: geonode/people/templates/people/profile_detail.html:106
 #: geonode/services/templates/services/service_detail.html:11
 #: geonode/templates/metadata_detail.html:81
@@ -636,15 +158,39 @@ msgstr "වර්ගය"
 msgid "Keywords"
 msgstr "මුලපද"
 
+#: geonode/base/templates/base/_resourcebase_info_panel.html:77
+#: geonode/catalogue/templates/geonode_metadata_full.html:145
+#: geonode/documents/templates/documents/document_metadata_advanced.html:76
+#: geonode/documents/templates/layouts/doc_panels.html:324
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:99
+#: geonode/layers/templates/layouts/panels.html:326
+#: geonode/maps/templates/layouts/map_panels.html:321
+#: geonode/maps/templates/maps/map_metadata_advanced.html:77
+#: geonode/templates/metadata_detail.html:88
+msgid "Category"
+msgstr "ප්‍රභේදය"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:87
+#: geonode/catalogue/templates/geonode_metadata_full.html:149
+#: geonode/templates/metadata_detail.html:98
+#: geonode/templates/search/_region_filter.html:5
+msgid "Regions"
+msgstr "කලාප"
+
 #: geonode/base/templates/base/_resourcebase_info_panel.html:109
 #: geonode/documents/templates/layouts/doc_panels.html:343
 #: geonode/layers/templates/layouts/panels.html:346
-#: geonode/maps/templates/layouts/map_panels.html:341
+#: geonode/maps/templates/layouts/map_panels.html:340
 #: geonode/templates/metadata_detail.html:112
 #, fuzzy
 #| msgid "Groups"
 msgid "Group"
 msgstr "කණ්ඩායම්"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:114
+#: geonode/templates/metadata_detail.html:116
+msgid "DOI"
+msgstr ""
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:121
 msgid "More info"
@@ -760,6 +306,7 @@ msgid "Create a Map"
 msgstr "සිතියමක් නිර්මාණය කරන්න"
 
 #: geonode/base/templates/base/_resourcebase_snippet.html:80
+#: geonode/client/templates/leaflet/maps/map_view.html:8
 #: geonode/maps/templates/maps/map_detail.html:187
 #: geonode/maps/templates/maps/map_detail.html:189
 msgid "View Map"
@@ -830,18 +377,11 @@ msgstr ""
 #: geonode/layers/templates/layers/layer_detail.html:478
 #: geonode/layers/templates/layers/layer_detail.html:499
 #: geonode/maps/templates/maps/map_detail.html:165
-#: geonode/monitoring/models.py:355
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:58
 #, fuzzy
 #| msgid "uploaded"
 msgid "Upload"
 msgstr "උඩුගත කරන ලද්දේ"
-
-#: geonode/base/templatetags/user_messages.py:32
-#: geonode/base/templatetags/user_messages.py:40
-#: geonode/templates/user_messages/thread_detail.html:28
-msgid "me"
-msgstr "මා"
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:40
 #, fuzzy
@@ -898,22 +438,14 @@ msgid "Attribute name"
 msgstr "ගුණාංග නාමය"
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:167
-#: geonode/groups/models.py:44 geonode/groups/models.py:82
 #: geonode/layers/templates/layers/layer_detail.html:178
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:128
 #: geonode/layers/templates/layouts/panels.html:546
 #: geonode/people/templates/people/profile_detail.html:101
-#: geonode/services/forms.py:123
 #: geonode/services/templates/services/service_detail.html:23
 #: geonode/services/templates/services/service_resources_harvest.html:32
 msgid "Description"
 msgstr "විස්තරය"
-
-#: geonode/client/apps.py:28
-#, fuzzy
-#| msgid "GeoNode Help"
-msgid "GeoNode Client Library"
-msgstr "GeoNode සහය"
 
 #: geonode/client/templates/leaflet/layers/layer_leaflet_map.html:340
 #, fuzzy
@@ -931,9 +463,9 @@ msgid "Explore Maps"
 msgstr "සිතියම් සොයන්න"
 
 #: geonode/client/templates/leaflet/maps/map_edit.html:8
-#: geonode/client/templates/leaflet/maps/map_view.html:8
-msgid "GeoExplorer"
-msgstr "GeoExplorer"
+#: geonode/maps/templates/maps/map_edit.html:7
+msgid "Edit Map"
+msgstr "සිතියම සංස්කරණය කරන්න"
 
 #: geonode/client/templates/leaflet/maps/map_edit.html:77
 #: geonode/documents/templates/documents/document_metadata.html:78
@@ -965,7 +497,7 @@ msgstr "දැනට පවතින ශෛලියන්"
 #: geonode/client/templates/leaflet/maps/map_view.html:114
 #: geonode/groups/templates/groups/groupcategory_update_form.html:8
 #: geonode/layers/templates/layouts/panels.html:284
-#: geonode/maps/templates/layouts/map_panels.html:280
+#: geonode/maps/templates/layouts/map_panels.html:279
 #: geonode/services/templates/services/service_edit.html:21
 #: geonode/templates/announcements/announcement_form.html:26
 msgid "Save"
@@ -996,72 +528,6 @@ msgstr "සිතියම ඉවත් කරන්න"
 #: geonode/templates/metadata_base.html:185
 msgid "Close"
 msgstr "වසන්න"
-
-#: geonode/documents/__init__.py:27
-#, fuzzy
-#| msgid "Document Updated"
-msgid "Document Created"
-msgstr "ලේඛන යාවත්කාලීන කිරීම"
-
-#: geonode/documents/__init__.py:27
-msgid "A Document was created"
-msgstr "ලියවිල්ලක් නිර්මිතය"
-
-#: geonode/documents/__init__.py:28
-msgid "Document Updated"
-msgstr "ලේඛන යාවත්කාලීන කිරීම"
-
-#: geonode/documents/__init__.py:28
-msgid "A Document was updated"
-msgstr "ලියවිල්ලක් යාවත්කාලීන කර"
-
-#: geonode/documents/__init__.py:29
-#, fuzzy
-#| msgid "Document Updated"
-msgid "Document Approved"
-msgstr "ලේඛන යාවත්කාලීන කිරීම"
-
-#: geonode/documents/__init__.py:29
-#, fuzzy
-#| msgid "A Document was created"
-msgid "A Document was approved by a Manager"
-msgstr "ලියවිල්ලක් නිර්මිතය"
-
-#: geonode/documents/__init__.py:30
-#, fuzzy
-#| msgid "Document Deleted"
-msgid "Document Published"
-msgstr "ලේඛන මකාදැමුවා"
-
-#: geonode/documents/__init__.py:30
-#, fuzzy
-#| msgid "A Document was updated"
-msgid "A Document was published"
-msgstr "ලියවිල්ලක් යාවත්කාලීන කර"
-
-#: geonode/documents/__init__.py:31
-msgid "Document Deleted"
-msgstr "ලේඛන මකාදැමුවා"
-
-#: geonode/documents/__init__.py:31
-msgid "A Document was deleted"
-msgstr "ලියවිල්ලක් මකා"
-
-#: geonode/documents/__init__.py:32
-msgid "Comment on Document"
-msgstr "ලේඛන පිළිබඳව නොදනිති"
-
-#: geonode/documents/__init__.py:32
-msgid "A Document was commented on"
-msgstr "ලියවිල්ලක් පිළිබඳව අදහස් විය"
-
-#: geonode/documents/__init__.py:33
-msgid "Document for Map"
-msgstr "සිතියම සඳහා ලේඛන"
-
-#: geonode/documents/__init__.py:33
-msgid "A rating was given to a document"
-msgstr "ශ්රේණිය ලියවිල්ලක් ලබා දෙන ලදී"
 
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:5
 msgid "Width"
@@ -1113,40 +579,6 @@ msgstr "වැරදි "
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:21
 msgid "Speed Rating"
 msgstr "වේග ඇගැයුම"
-
-#: geonode/documents/forms.py:87 geonode/documents/forms.py:168
-msgid "Link to"
-msgstr "සම්බන්ධ කරන්න"
-
-#: geonode/documents/forms.py:133 geonode/documents/forms.py:202
-msgid "Document must be a file or url."
-msgstr "ලේඛන හෝ ගොනුවකට විය යුතුය url"
-
-#: geonode/documents/forms.py:137 geonode/documents/forms.py:206
-msgid "A document cannot have both a file and a url."
-msgstr "කරන ලද ලියවිල්ලක් ගොනු හා URL එකක් දෙකම කරන්න බැහැ."
-
-#: geonode/documents/forms.py:150 geonode/documents/forms.py:219
-msgid "This file type is not allowed"
-msgstr "මෙම ගොනු වර්ගය සඳහා ඉඩ නැත"
-
-#: geonode/documents/forms.py:191
-msgid "Permissions must be valid JSON."
-msgstr "අවසර වලංගු JSON විය යුතුය."
-
-#: geonode/documents/models.py:57
-msgid "File"
-msgstr "ගොනුව"
-
-#: geonode/documents/models.py:67
-msgid "The URL of the document if it is external."
-msgstr "එය බාහිර නම් ලේඛනයේ මෙම URL එක."
-
-#: geonode/documents/models.py:68 geonode/monitoring/models.py:179
-#: geonode/services/templates/services/service_detail.html:9
-#: geonode/services/templates/services/service_list.html:16
-msgid "URL"
-msgstr "URL"
 
 #: geonode/documents/templates/documents/document_detail.html:23
 #, fuzzy
@@ -1227,8 +659,7 @@ msgid "Advanced Edit"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_detail.html:157
-#: geonode/monitoring/models.py:176 geonode/templates/index.html:86
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:7
+#: geonode/templates/index.html:86
 #, fuzzy
 #| msgid "Document"
 msgid "Document"
@@ -1247,7 +678,7 @@ msgstr "ආදේශ කරන්න"
 #: geonode/groups/templates/groups/group_members.html:95
 #: geonode/layers/templates/layers/layer_detail.html:515
 #: geonode/maps/templates/maps/map_detail.html:173
-#: geonode/monitoring/models.py:362 geonode/templates/account/email.html:36
+#: geonode/templates/account/email.html:36
 #: geonode/templates/socialaccount/connections.html:33
 msgid "Remove"
 msgstr "ඉවත් කරන්න"
@@ -1312,7 +743,7 @@ msgstr "මෙම ලේඛනය කිසියම් සිතියමකට
 #: geonode/layers/templates/layers/layer_style_upload.html:101
 #: geonode/layers/templates/layers/layer_style_upload.html:110
 #: geonode/layers/templates/upload/layer_upload.html:114
-#: geonode/maps/templates/maps/map_detail.html:229 geonode/people/admin.py:57
+#: geonode/maps/templates/maps/map_detail.html:229
 msgid "Permissions"
 msgstr "අවසර"
 
@@ -1479,15 +910,15 @@ msgid "No, don't remove it"
 msgstr "නෑ, එය ඉවත් කරන්න එපා"
 
 #: geonode/documents/templates/documents/document_replace.html:4
-#: geonode/documents/templates/documents/document_replace.html:28
+#: geonode/documents/templates/documents/document_replace.html:27
 msgid "Replace Document"
 msgstr "ලේඛනය ප්‍රතිස්ථාපනය කරන්න"
 
-#: geonode/documents/templates/documents/document_replace.html:16
+#: geonode/documents/templates/documents/document_replace.html:15
 msgid "Replace "
 msgstr "ප්‍රතිස්ථාපනය කරන්න"
 
-#: geonode/documents/templates/documents/document_replace.html:27
+#: geonode/documents/templates/documents/document_replace.html:26
 #: geonode/documents/templates/documents/document_thumb_upload.html:55
 #: geonode/layers/templates/layers/layer_detail.html:396
 #: geonode/layers/templates/layers/layer_metadata_upload.html:88
@@ -1579,7 +1010,7 @@ msgstr ""
 #: geonode/layers/templates/layouts/panels.html:221
 #: geonode/layers/templates/layouts/panels.html:290
 #: geonode/maps/templates/layouts/map_panels.html:220
-#: geonode/maps/templates/layouts/map_panels.html:286
+#: geonode/maps/templates/layouts/map_panels.html:285
 #: geonode/maps/templates/maps/map_detail.html:172
 msgid "Edit"
 msgstr "සංස්කරණය"
@@ -1634,7 +1065,7 @@ msgstr "මෙටාදත්ත බාගත කරන්න"
 #: geonode/documents/templates/layouts/doc_panels.html:345
 #: geonode/layers/templates/layouts/panels.html:328
 #: geonode/layers/templates/layouts/panels.html:348
-#: geonode/maps/templates/layouts/map_panels.html:343
+#: geonode/maps/templates/layouts/map_panels.html:342
 #, fuzzy
 #| msgid "This action affects the following maps:"
 msgid "Choose one of the following..."
@@ -1642,7 +1073,7 @@ msgstr "මෙම ක්‍රියාව පහත සිතියම් ව�
 
 #: geonode/documents/templates/layouts/doc_panels.html:438
 #: geonode/layers/templates/layouts/panels.html:441
-#: geonode/maps/templates/layouts/map_panels.html:435
+#: geonode/maps/templates/layouts/map_panels.html:434
 #, fuzzy
 #| msgid "Download Metadata"
 msgid "Other, Optional, Metadata"
@@ -1650,13 +1081,13 @@ msgstr "මෙටාදත්ත බාගත කරන්න"
 
 #: geonode/documents/templates/layouts/doc_panels.html:485
 #: geonode/layers/templates/layouts/panels.html:488
-#: geonode/maps/templates/layouts/map_panels.html:482
+#: geonode/maps/templates/layouts/map_panels.html:481
 msgid "Responsible Parties"
 msgstr ""
 
 #: geonode/documents/templates/layouts/doc_panels.html:492
 #: geonode/layers/templates/layouts/panels.html:495
-#: geonode/maps/templates/layouts/map_panels.html:489
+#: geonode/maps/templates/layouts/map_panels.html:488
 #, fuzzy
 #| msgid "Change Layer Permissions"
 msgid "Responsible and Permissions"
@@ -1664,7 +1095,7 @@ msgstr "මෙම සිතියම සඳහා අවසරය වෙනස�
 
 #: geonode/documents/templates/layouts/doc_panels.html:514
 #: geonode/layers/templates/layouts/panels.html:517
-#: geonode/maps/templates/layouts/map_panels.html:511
+#: geonode/maps/templates/layouts/map_panels.html:510
 #: geonode/templates/_permissions_form.html:28 geonode/templates/base.html:679
 #, fuzzy
 #| msgid "Message Inbox"
@@ -1673,54 +1104,18 @@ msgstr "පණිවුඩය එන ලිපි"
 
 #: geonode/documents/templates/layouts/doc_panels.html:520
 #: geonode/layers/templates/layouts/panels.html:523
-#: geonode/maps/templates/layouts/map_panels.html:517
+#: geonode/maps/templates/layouts/map_panels.html:516
 #: geonode/templates/_permissions_form.html:34 geonode/templates/base.html:685
 msgid "OK"
 msgstr ""
 
 #: geonode/documents/templates/layouts/doc_panels.html:540
 #: geonode/layers/templates/layouts/panels.html:584
-#: geonode/maps/templates/layouts/map_panels.html:537
+#: geonode/maps/templates/layouts/map_panels.html:536
 #, fuzzy
 #| msgid "Published"
 msgid "Publishing"
 msgstr "ප්රකාශයට පත්"
-
-#: geonode/documents/views.py:64
-msgid "You are not permitted to delete this document"
-msgstr "මෙම ලේඛනය මකා දැමීමට ඔබට අවසර නැත"
-
-#: geonode/documents/views.py:65
-msgid "You do not have permissions for this document."
-msgstr "මෙම ලේඛනය සඳහා ඔබට අවසර නැත"
-
-#: geonode/documents/views.py:66
-msgid "You are not permitted to modify this document"
-msgstr "මෙම ලේඛනයට වෙනස්කම් සිදු කිරීමට ඔබට අවසර නැත"
-
-#: geonode/documents/views.py:68
-msgid "You are not permitted to modify this document's metadata"
-msgstr "මෙම ලෙඛනයේ වෙනස්කම් කිරීමට ඔබට අවසර නැත"
-
-#: geonode/documents/views.py:69
-msgid "You are not permitted to view this document"
-msgstr "මෙම ලේඛනය බැලීමට ඔබට අවසර නැත"
-
-#: geonode/documents/views.py:103 geonode/documents/views.py:177
-msgid "You are not allowed to view this document."
-msgstr "මෙම ලේඛනය නැරඹීමට ඔබට අවසර නැත."
-
-#: geonode/documents/views.py:354
-msgid "You are not allowed to edit this document."
-msgstr "ඔබ මෙම ලිපිය සංස්කරණය කිරීමට අවසර නැත."
-
-#: geonode/documents/views.py:435 geonode/layers/views.py:994
-msgid "You must set a point of contact for this resource"
-msgstr "ඔබ මෙම සම්පත් සඳහා සබඳතා ලක්ෂ්යයක් තැබිය යුතු"
-
-#: geonode/documents/views.py:452 geonode/layers/views.py:1011
-msgid "You must set an author for this resource"
-msgstr "ඔබ මෙම සම්පත් සඳහා කර්තෘ තැබිය යුතුය"
 
 #: geonode/favorite/templates/favorite/_favorite.html:5
 #: geonode/templates/_actions.html:23
@@ -1742,50 +1137,6 @@ msgstr "ප්‍රියතමදෑ එක්කිරීම"
 #: geonode/favorite/templates/favorite/favorite_list.html:8
 msgid "Favorites for"
 msgstr "ප්‍රියතමදෑ සඳහා"
-
-#: geonode/geoserver/__init__.py:75
-msgid "Layer Uploaded"
-msgstr "ස්ථරය උඩුගත කලා"
-
-#: geonode/geoserver/__init__.py:75
-#, fuzzy
-#| msgid "A Layer was updated"
-msgid "A layer was uploaded"
-msgstr "A Layer was updated"
-
-#: geonode/geoserver/__init__.py:76 geonode/layers/__init__.py:33
-msgid "Comment on Layer"
-msgstr "ස්ථරය ගැන අදහස් දක්වන්න"
-
-#: geonode/geoserver/__init__.py:76 geonode/layers/__init__.py:33
-msgid "A layer was commented on"
-msgstr "ස්ථරයක් සඳහා අදහස් දක්වන ලදී"
-
-#: geonode/geoserver/__init__.py:77 geonode/layers/__init__.py:34
-msgid "Rating for Layer"
-msgstr "ස්ථරය පිළිබඳ ප්‍රමාණනය"
-
-#: geonode/geoserver/__init__.py:77 geonode/layers/__init__.py:34
-msgid "A rating was given to a layer"
-msgstr "ස්ථරයක් සඳහා ප්‍රමාණනයක් දෙන ලදී"
-
-#: geonode/geoserver/createlayer/forms.py:35
-#, fuzzy
-#| msgid "Layer Name"
-msgid "Layer name"
-msgstr "ස්ථරය නම"
-
-#: geonode/geoserver/createlayer/forms.py:36
-#, fuzzy
-#| msgid "Layer Title"
-msgid "Layer title"
-msgstr "ස්ථරය සිරැසිය"
-
-#: geonode/geoserver/createlayer/forms.py:37
-#, fuzzy
-#| msgid "property type"
-msgid "Geometry type"
-msgstr "ගුණාංගය"
 
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:6
 #: geonode/templates/base.html:289 geonode/templates/base.html:455
@@ -1823,186 +1174,9 @@ msgstr "ගුණාංග"
 
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:41
 #: geonode/groups/templates/groups/group_create.html:26
-#: geonode/monitoring/models.py:354
 #: geonode/services/templates/services/service_register.html:18
 msgid "Create"
 msgstr "නිර්මාණය කරන්න"
-
-#: geonode/geoserver/helpers.py:681
-msgid "No abstract provided"
-msgstr "වියුක්ත ලබා නැත"
-
-#: geonode/geoserver/helpers.py:1427
-msgid "An exception occurred loading data to PostGIS"
-msgstr "ව්යතිරේකයක් PostGIS කිරීමට පැටවීම දත්ත සිදු"
-
-#: geonode/geoserver/helpers.py:1432
-msgid " Additionally an error occured during database cleanup"
-msgstr "මීට අමතරව දෝෂයක් දත්ත සමුදාය තුළ පිරිසිදු කිරීමේ සිදුවිය"
-
-#: geonode/geoserver/ows.py:68
-msgid "GZIP"
-msgstr ""
-
-#: geonode/geoserver/ows.py:69
-msgid "GeoTIFF"
-msgstr ""
-
-#: geonode/geoserver/ows.py:110
-msgid "Zipped Shapefile"
-msgstr "zip කරන ලද shapefile එක"
-
-#: geonode/geoserver/ows.py:111
-msgid "GML 2.0"
-msgstr "GML 2.0"
-
-#: geonode/geoserver/ows.py:112
-msgid "GML 3.1.1"
-msgstr "GML 3.1.1"
-
-#: geonode/geoserver/ows.py:113
-msgid "CSV"
-msgstr "CSV"
-
-#: geonode/geoserver/ows.py:114
-msgid "Excel"
-msgstr "Excel"
-
-#: geonode/geoserver/ows.py:115
-msgid "GeoJSON"
-msgstr "GeoJSON"
-
-#: geonode/geoserver/ows.py:157
-msgid "JPEG"
-msgstr "JPEG"
-
-#: geonode/geoserver/ows.py:158
-msgid "PDF"
-msgstr "PDF"
-
-#: geonode/geoserver/ows.py:159
-msgid "PNG"
-msgstr "PNG"
-
-#: geonode/geoserver/views.py:509
-msgid "You don't have permissions to change style for this layer"
-msgstr "ඔබට මෙම ස්ථරය සඳහා ශෛලිය වෙනස් කිරීමට අවසර නොමැත"
-
-#: geonode/geoserver/views.py:579 geonode/geoserver/views.py:635
-msgid "Bad HTTP Authorization Credentials."
-msgstr "නිවැරදි නොවන HTTP අවසර දීමේ සහතික"
-
-#: geonode/groups/forms.py:35
-msgid ""
-"a short version of the name consisting only of letters, numbers, underscores "
-"and hyphens."
-msgstr "අකුරු, අංක , යටි සහ හයිපනය පමණක් සමන්විත නම කෙටි අනුවාදයක් ."
-
-#: geonode/groups/forms.py:43
-msgid "A group already exists with that slug."
-msgstr "පිරිසක් දැනටමත් Slug මත පවතී."
-
-#: geonode/groups/forms.py:50 geonode/groups/forms.py:77
-msgid "A group already exists with that name."
-msgstr "පිරිසක් මේ වන විටත් එම නම මත පවතී."
-
-#: geonode/groups/forms.py:87
-#, fuzzy
-#| msgid "Identification"
-msgid "User Identifiers"
-msgstr "හදුනා ගැනීම"
-
-#: geonode/groups/forms.py:97
-msgid "Assign manager role"
-msgstr ""
-
-#: geonode/groups/forms.py:111
-#, python-format
-msgid ""
-"The following are not valid usernames: %(errors)s; not added to the group"
-msgstr ""
-
-#: geonode/groups/models.py:43 geonode/layers/models.py:158
-#: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
-#: geonode/services/templates/services/service_resources_harvest.html:31
-#: geonode/templates/metadata_detail.html:130
-#: geonode/templates/metadata_detail.html:272
-#: geonode/templates/metadata_detail.html:353
-msgid "Name"
-msgstr "නම"
-
-#: geonode/groups/models.py:47 geonode/templates/base.html:314
-#: geonode/templates/search/_general_filters.html:76
-#: geonode/templates/search/_search_user_content.html:28
-#, fuzzy
-#| msgid "Categories"
-msgid "Group Categories"
-msgstr "වර්ග"
-
-#: geonode/groups/models.py:65
-msgid "Public"
-msgstr "පොදු"
-
-#: geonode/groups/models.py:66
-msgid "Public (invite-only)"
-msgstr "පොදු ( ආරාධනා - පමණි)"
-
-#: geonode/groups/models.py:67
-msgid "Private"
-msgstr "පුද්ගලික"
-
-#: geonode/groups/models.py:70
-msgid ""
-"Public: Any registered user can view and join a public group.<br>Public "
-"(invite-only):Any registered user can view the group.  Only invited users "
-"can join.<br>Private: Registered users cannot see any details about the "
-"group, including membership.  Only invited users can join."
-msgstr ""
-"රාජ්ය ඕනෑම ලියාපදිංචි පරිශීලක මහජන කණ්ඩායමක් නැරඹීමට හා සම්බන්ධ විය හැක <br> රාජ්ය "
-"( ආරාධනා පමණක් ): . යම් ලියාපදිංචි පරිශීලක සමූහය බැලිය හැක. ආරාධනා පරිශීලකයන් පමණක් සම්බන්ධ "
-"විය හැක පුද්ගලික විශ්වකෝෂය : . ලියාපදිංචි පරිශීලකයන් සාමාජිකත්වය ඇතුළු පිරිසක් ගැන කිසිදු විස්තරයක් "
-"පේන්නේ නැහැ. පමණක් ආරාධනා කරන්නන් සමග එක්විය හැකියි ."
-
-#: geonode/groups/models.py:75
-msgid ""
-"Email used to contact one or all group members, such as a mailing list, "
-"shared email, or exchange group."
-msgstr ""
-"විද්යුත් එවැනි ලිපි ලැයිස්තුවක් , බෙදා ඊ-තැපැල්, හෝ විනිමය කණ්ඩායමක් ලෙස කෙනෙකු හෝ සියලු කණ්ඩායම් "
-"සාමාජිකයන්, සම්බන්ධ කර ගැනීමට යොදා ගත්තේය."
-
-#: geonode/groups/models.py:81
-msgid "Logo"
-msgstr "ලාංඡනය"
-
-#: geonode/groups/models.py:84
-#: geonode/people/templates/people/profile_detail.html:67
-#: geonode/templates/invitations/forms/_invite.html:14
-msgid "Email"
-msgstr "Email"
-
-#: geonode/groups/models.py:90 geonode/people/forms.py:94
-msgid "A space or comma-separated list of keywords"
-msgstr "එක් එක් මුලපදය  එක හිස්තැනකින් හෝ කොමාවකින් වෙන් කර ඇතුලත් කරන්න"
-
-#: geonode/groups/models.py:93
-msgid "Access"
-msgstr "ප්රවේශ"
-
-#: geonode/groups/models.py:98 geonode/templates/search/_general_filters.html:4
-msgid "Categories"
-msgstr "වර්ග"
-
-#: geonode/groups/models.py:241
-#: geonode/groups/templates/groups/group_members.html:37
-#: geonode/groups/templates/groups/group_members.html:63
-#: geonode/groups/templates/groups/group_members.html:90
-msgid "Manager"
-msgstr "කළමනාකරු"
-
-#: geonode/groups/models.py:242
-msgid "Member"
-msgstr "සාමාජික"
 
 #: geonode/groups/templates/groups/activity.html:7
 #: geonode/groups/templates/groups/activity.html:8
@@ -2013,7 +1187,6 @@ msgstr "සඳහා ක්රියාකාරකම් සංග්රහය"
 
 #: geonode/groups/templates/groups/activity.html:25
 #: geonode/groups/templates/groups/group_members.html:22
-#: geonode/monitoring/models.py:353
 #: geonode/social/templates/social/activity_list.html:20
 #: geonode/templates/user_messages/inbox.html:17
 msgid "All"
@@ -2198,6 +1371,12 @@ msgstr "සංස්කරණය කරන්න මන්ත්රීවරු�
 msgid "Current Members"
 msgstr "සාමාජිකයින්"
 
+#: geonode/groups/templates/groups/group_members.html:37
+#: geonode/groups/templates/groups/group_members.html:63
+#: geonode/groups/templates/groups/group_members.html:90
+msgid "Manager"
+msgstr "කළමනාකරු"
+
 #: geonode/groups/templates/groups/group_members.html:46
 #: geonode/groups/templates/groups/group_members.html:72
 #: geonode/groups/templates/groups/group_members.html:99
@@ -2277,285 +1456,6 @@ msgstr "පිරිසක් බිහි"
 #| msgid "Create Group"
 msgid "Edit Group Category"
 msgstr "සමූහ නිර්මාණය"
-
-#: geonode/invitations/forms.py:53
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
-msgstr ""
-
-#: geonode/invitations/forms.py:55
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
-msgstr ""
-
-#: geonode/invitations/forms.py:57
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
-msgstr ""
-
-#: geonode/invitations/forms.py:75 geonode/templates/base.html:506
-#, fuzzy
-#| msgid "Email"
-msgid "E-mail"
-msgstr "Email"
-
-#: geonode/invitations/views.py:71
-#, python-format
-msgid "Invitations succefully sent to '%(email)s'"
-msgstr ""
-
-#: geonode/invitations/views.py:78
-#, python-format
-msgid ""
-"Sorry, it was not possible to invite '%(email)s' due to the following isse: "
-"%(error)s (%(type)s)"
-msgstr ""
-
-#: geonode/layers/__init__.py:28
-msgid "Layer Created"
-msgstr "තට්ටුවක් නිර්මානය"
-
-#: geonode/layers/__init__.py:28
-msgid "A Layer was created"
-msgstr "තට්ටුවක් නිර්මිතය"
-
-#: geonode/layers/__init__.py:29
-msgid "Layer Updated"
-msgstr "ස්ථරය යාවත්කාලීන කිරීම"
-
-#: geonode/layers/__init__.py:29
-msgid "A Layer was updated"
-msgstr "A Layer was updated"
-
-#: geonode/layers/__init__.py:30
-#, fuzzy
-#| msgid "Not provided"
-msgid "Layer Approved"
-msgstr "සපයනු නොලැබේ"
-
-#: geonode/layers/__init__.py:30
-#, fuzzy
-#| msgid "A Layer was created"
-msgid "A Layer was approved by a Manager"
-msgstr "තට්ටුවක් නිර්මිතය"
-
-#: geonode/layers/__init__.py:31
-#, fuzzy
-#| msgid "Published"
-msgid "Layer Published"
-msgstr "ප්රකාශයට පත්"
-
-#: geonode/layers/__init__.py:31
-#, fuzzy
-#| msgid "A Layer was updated"
-msgid "A Layer was published"
-msgstr "A Layer was updated"
-
-#: geonode/layers/__init__.py:32
-msgid "Layer Deleted"
-msgstr "ස්ථරය වන සංස්කරණයන්"
-
-#: geonode/layers/__init__.py:32
-msgid "A Layer was deleted"
-msgstr "තට්ටුවක් මකා"
-
-#: geonode/layers/models.py:52
-msgid "YYYYMMDD"
-msgstr ""
-
-#: geonode/layers/models.py:53
-msgid "YYYYMMDD'T'hhmmss"
-msgstr ""
-
-#: geonode/layers/models.py:54
-msgid "YYYYMMDD'T'hhmmss'Z'"
-msgstr ""
-
-#: geonode/layers/models.py:72 geonode/qgis_server/models.py:198
-msgid "style name"
-msgstr "ශෛලයේ නම"
-
-#: geonode/layers/models.py:74
-msgid "sld text"
-msgstr "sld පෙළ"
-
-#: geonode/layers/models.py:76
-msgid "sld version"
-msgstr "sld අනුවාදය"
-
-#: geonode/layers/models.py:80
-msgid "sld url"
-msgstr "sld url එක"
-
-#: geonode/layers/models.py:155
-msgid "Workspace"
-msgstr ""
-
-#: geonode/layers/models.py:156
-msgid "Store"
-msgstr ""
-
-#: geonode/layers/models.py:157
-#, fuzzy
-#| msgid "feature type"
-msgid "Storetype"
-msgstr "අංගය"
-
-#: geonode/layers/models.py:159
-#, fuzzy
-#| msgid "CSW typename"
-msgid "Typename"
-msgstr "CSW වර්ග නාමය"
-
-#: geonode/layers/models.py:161
-msgid "Is mosaic?"
-msgstr ""
-
-#: geonode/layers/models.py:162
-msgid "Has time?"
-msgstr ""
-
-#: geonode/layers/models.py:163
-msgid "Has elevation?"
-msgstr ""
-
-#: geonode/layers/models.py:165
-msgid "Time regex"
-msgstr ""
-
-#: geonode/layers/models.py:170
-msgid "Elevation regex"
-msgstr ""
-
-#: geonode/layers/models.py:275
-msgid "File cannot be opened, maybe check the encoding"
-msgstr "ගොනුව විවෘත කල නොහැක ,maybe check the encoding"
-
-#: geonode/layers/models.py:386
-#, fuzzy
-#| msgid "attribute name"
-msgid "attribute name"
-msgstr "ගුණාංග නාමය"
-
-#: geonode/layers/models.py:387
-msgid "name of attribute as stored in shapefile/spatial database"
-msgstr ".shp ගොනුව/ අවකාශීය දත්ත ගබඩාව තුල ගබඩා කර ඇති පරිදි ගුණාංගයේ නම"
-
-#: geonode/layers/models.py:393
-#, fuzzy
-#| msgid "distribution description"
-msgid "attribute description"
-msgstr "distribution description"
-
-#: geonode/layers/models.py:394
-msgid "description of attribute to be used in metadata"
-msgstr "පාරදත්ත භාවිතා කළ වර්ණනා පිළිබඳ විස්තරය"
-
-#: geonode/layers/models.py:399
-msgid "attribute label"
-msgstr "ගුණාංගයේ ලේබලය"
-
-#: geonode/layers/models.py:400
-msgid "title of attribute as displayed in GeoNode"
-msgstr "GeoNode හි දිස්වන ආකාරයට ගුණාංගයේ මාතෘකාව"
-
-#: geonode/layers/models.py:406
-msgid "attribute type"
-msgstr "ගුණාංග වර්ගය"
-
-#: geonode/layers/models.py:407
-msgid "the data type of the attribute (integer, string, geometry, etc)"
-msgstr "ගුණාංගයේ දත්ත වර්ගය (පූර්ණ සංඛ්‍යා,තන්තු, ජ්‍යාමිතික යනාදී වශයෙන්)"
-
-#: geonode/layers/models.py:414
-msgid "visible?"
-msgstr "දිස්වේද?"
-
-#: geonode/layers/models.py:415
-msgid "specifies if the attribute should be displayed in identify results"
-msgstr "ප්‍රතිඵල හඳුනාගන්න තුල ගුණාංගය දිස්විය යුතු පිළිවෙල විශේෂීකරණය කරයි"
-
-#: geonode/layers/models.py:417
-msgid "display order"
-msgstr "දිස්වන පිළිවෙල"
-
-#: geonode/layers/models.py:418
-msgid ""
-"specifies the order in which attribute should be displayed in identify "
-"results"
-msgstr "ප්‍රතිඵල හඳුනාගන්න තුල ගුණාංගය දිස්විය යුතු පිළිවෙල විශේෂීකරණය කරයි"
-
-#: geonode/layers/models.py:422
-#, fuzzy
-#| msgid "count"
-msgid "count"
-msgstr "ගණන"
-
-#: geonode/layers/models.py:423
-msgid "count value for this field"
-msgstr "මෙම ක්ෂේත්‍රය සඳහා අගය ගණනය කරන්න"
-
-#: geonode/layers/models.py:426
-msgid "min"
-msgstr "අවමය"
-
-#: geonode/layers/models.py:427
-msgid "minimum value for this field"
-msgstr "මෙම ක්ෂේත්‍රය සඳහා වන අවම අගය"
-
-#: geonode/layers/models.py:434
-msgid "max"
-msgstr "උපරිමය"
-
-#: geonode/layers/models.py:435
-msgid "maximum value for this field"
-msgstr "මෙම ක්ෂේත්‍රය සඳහා වන උපරිම අගය"
-
-#: geonode/layers/models.py:442
-msgid "average"
-msgstr "සාමාන්‍යය"
-
-#: geonode/layers/models.py:443
-msgid "average value for this field"
-msgstr "මෙම ක්ෂේත්‍රය සඳහා වන සාමාන්‍ය අගය"
-
-#: geonode/layers/models.py:450
-msgid "median"
-msgstr "මධ්‍යස්ථය"
-
-#: geonode/layers/models.py:451
-msgid "median value for this field"
-msgstr "මෙම ක්ෂේත්‍රය සඳහා මධ්‍යස්ථ අගය"
-
-#: geonode/layers/models.py:458
-msgid "standard deviation"
-msgstr "සම්මත අපගමනය"
-
-#: geonode/layers/models.py:459
-msgid "standard deviation for this field"
-msgstr "මෙම ක්ෂේත්‍රය සඳහා වන සම්මත අපගමනය"
-
-#: geonode/layers/models.py:466
-msgid "sum"
-msgstr "ඓක්‍යය"
-
-#: geonode/layers/models.py:467
-msgid "sum value for this field"
-msgstr "මෙම ක්ෂේත්‍රය සඳහා වන ඓක්‍යය"
-
-#: geonode/layers/models.py:474
-msgid "unique values for this field"
-msgstr "මෙම ක්ෂේත්‍රය සඳහා වන අනන්‍ය අගයන්"
-
-#: geonode/layers/models.py:478
-#, fuzzy
-#| msgid "last modified"
-msgid "last modified"
-msgstr "අවසාන වරට වෙනස්කම් සිදු කලේ"
-
-#: geonode/layers/models.py:479
-msgid "date when attribute statistics were last updated"
-msgstr "ගුණාංගයේ සංඛ්‍යාලේඛන අවසන් වරට යාවත්කලීන කල දිනය"
 
 #: geonode/layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -2761,7 +1661,6 @@ msgid ""
 msgstr ""
 
 #: geonode/layers/templates/layers/layer_detail.html:412
-#: geonode/monitoring/models.py:1082
 msgid "Warning"
 msgstr ""
 
@@ -2801,8 +1700,7 @@ msgid "Set"
 msgstr "කට්ටලයක්"
 
 #: geonode/layers/templates/layers/layer_detail.html:505
-#: geonode/monitoring/models.py:173 geonode/templates/index.html:66
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:5
+#: geonode/templates/index.html:66
 msgid "Layer"
 msgid_plural "Layers"
 msgstr[0] "ස්ථරය"
@@ -3113,7 +2011,7 @@ msgstr "නැවත ආරම්භ කරන්න"
 #: geonode/templates/_comments.html:37
 #: geonode/templates/announcements/announcement_confirm_delete.html:21
 #: geonode/templates/announcements/announcement_form.html:24
-#: geonode/templates/user_messages/_message_snippet.html:39
+#: geonode/templates/user_messages/_message_snippet.html:34
 msgid "Delete"
 msgstr "මකා දමන්න"
 
@@ -3230,7 +2128,7 @@ msgid "Dataset Attributes"
 msgstr "ගුණාංග"
 
 #: geonode/layers/templates/layouts/panels.html:613
-#: geonode/maps/templates/layouts/map_panels.html:566
+#: geonode/maps/templates/layouts/map_panels.html:565
 #, fuzzy
 #| msgid "Notice settings"
 msgid "Other Settings"
@@ -3845,250 +2743,6 @@ msgstr "එසේත් නැත්නම් යන්න"
 msgid "now"
 msgstr "දැන්"
 
-#: geonode/layers/utils.py:496 geonode/layers/utils.py:520
-#, fuzzy
-#| msgid "You are attempting to replace a vector layer with a raster."
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr "ඔබ වෙනුවට උත්සාහ කරන්නේ a vector layer with a raster."
-
-#: geonode/layers/utils.py:502 geonode/layers/views.py:1211
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr "ඔබ වෙනුවට උත්සාහ කරන්නේ a vector layer with a raster."
-
-#: geonode/layers/utils.py:505 geonode/layers/views.py:1215
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr "ඔබ වෙනුවට උත්සාහ කරන්නේ a raster layer with a vector."
-
-#: geonode/layers/utils.py:528
-msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
-msgstr ""
-
-#: geonode/layers/utils.py:533
-msgid "Local GeoNode layer has no geometry type."
-msgstr ""
-
-#: geonode/layers/utils.py:538
-msgid ""
-"Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
-msgstr ""
-
-#: geonode/layers/utils.py:542
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
-msgstr ""
-
-#: geonode/layers/views.py:127
-msgid ""
-"There was an error while attempting to upload your data. Please try again, "
-"or contact and administrator if the problem continues."
-msgstr ""
-"ඔබේ දත්ත උඩුගත කිරීමේදී යම් දෝෂයක් මතු විය. කරුණාකර නැවත උත්සාහ කරන්න. ගැටළුව තවදුරටත් පවතී "
-"නම් පාලක වෙත දැනුම් දෙන්න"
-
-#: geonode/layers/views.py:130
-msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
-msgstr ""
-"සටහන: මෙම ස්ථරය මුල් පාර-දත්ත සඳහා පාර-දත්ත XML ගොනුව ආනයනය විසින් ජනාකීර්ණ, කල් තබා "
-"ගන්නා ලදී. මෙම පාරදත්ත සංස්කරණය කල නොහැක."
-
-#: geonode/layers/views.py:134
-msgid "You are not permitted to delete this layer"
-msgstr "මෙම ස්ථරය මකා දැමීමට ඔබට අවසර නොමැත"
-
-#: geonode/layers/views.py:135
-msgid "You do not have permissions for this layer."
-msgstr "මෙම ස්ථරය සඳහා ඔබට අවසර නැත."
-
-#: geonode/layers/views.py:136
-msgid "You are not permitted to modify this layer"
-msgstr "මෙම ස්ථරය වෙනස් කිරීමට ඔබට අවසර නැත"
-
-#: geonode/layers/views.py:138
-msgid "You are not permitted to modify this layer's metadata"
-msgstr "මෙම ස්ථරයේ මෙටා දත්ත වෙනස් කිරීමට ඔබට අවසර නැත"
-
-#: geonode/layers/views.py:139
-msgid "You are not permitted to view this layer"
-msgstr "මෙම ස්ථරය බැලීමට ඔබට අවසර නොමැත"
-
-#: geonode/layers/views.py:277
-#, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Failed to upload the layer"
-msgstr "උඩුගත කිරීමට ඇති ගොනු"
-
-#: geonode/layers/views.py:1311 geonode/layers/views.py:1356
-#, fuzzy
-#| msgid "Unable to delete layer"
-msgid "Unable to delete layer"
-msgstr "ස්ථරය ඉවත් කිරීමට නොහැකි විය"
-
-#: geonode/layers/views.py:1315 geonode/layers/views.py:1360
-msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
-msgstr ""
-"මෙම ස්ථරය තට්ටුවක් කණ්ඩායමේ සාමාජිකයකු වන , ඔබ මකාදැමීමට පෙර කණ්ඩායමේ ස්තරය ඉවත් කළ යුතුයි."
-
-#: geonode/layers/views.py:1408 geonode/maps/views.py:1406
-msgid "couldn't generate thumbnail"
-msgstr ""
-
-#: geonode/maps/__init__.py:28
-msgid "Map Created"
-msgstr "සිතියම නිර්මාණය කරන ලදී."
-
-#: geonode/maps/__init__.py:28
-#, fuzzy
-#| msgid "A Layer was created"
-msgid "A Map was created"
-msgstr "තට්ටුවක් නිර්මිතය"
-
-#: geonode/maps/__init__.py:29
-msgid "Map Updated"
-msgstr "සිතියම යාවත්කාලීන කිරීම"
-
-#: geonode/maps/__init__.py:29
-#, fuzzy
-#| msgid "A Layer was updated"
-msgid "A Map was updated"
-msgstr "A Layer was updated"
-
-#: geonode/maps/__init__.py:30
-#, fuzzy
-#| msgid "Not provided"
-msgid "Map Approved"
-msgstr "සපයනු නොලැබේ"
-
-#: geonode/maps/__init__.py:30
-msgid "A Map was approved by a Manager"
-msgstr ""
-
-#: geonode/maps/__init__.py:31
-#, fuzzy
-#| msgid "Published"
-msgid "Map Published"
-msgstr "ප්රකාශයට පත්"
-
-#: geonode/maps/__init__.py:31
-#, fuzzy
-#| msgid "A Map was deleted"
-msgid "A Map was published"
-msgstr "සිතියමක් මකා"
-
-#: geonode/maps/__init__.py:32
-msgid "Map Deleted"
-msgstr "සිතියම මකාදැමුවා"
-
-#: geonode/maps/__init__.py:32
-msgid "A Map was deleted"
-msgstr "සිතියමක් මකා"
-
-#: geonode/maps/__init__.py:33
-msgid "Comment on Map"
-msgstr "සිතියම පිළිබඳ අදහස් දක්වන්න"
-
-#: geonode/maps/__init__.py:33
-msgid "A map was commented on"
-msgstr "සිතියමක් පිළිබඳ අදහසක් දක්වන ලදී"
-
-#: geonode/maps/__init__.py:34
-msgid "Rating for Map"
-msgstr "සිතියම සඳහා ප්‍රමාණනයන්"
-
-#: geonode/maps/__init__.py:34
-msgid "A rating was given to a map"
-msgstr "සිතියමක් සඳහා ප්‍රමාණනයක් දෙන ලදී"
-
-#: geonode/maps/models.py:64
-msgid "zoom"
-msgstr "විශාල කර බලන්න"
-
-#: geonode/maps/models.py:68
-msgid "projection"
-msgstr "ප්‍රක්ෂේපය"
-
-#: geonode/maps/models.py:72
-msgid "center X"
-msgstr "X මධ්‍ය ලක්ෂය"
-
-#: geonode/maps/models.py:76
-msgid "center Y"
-msgstr "Y මධ්‍ය ලක්ෂය"
-
-#: geonode/maps/models.py:83
-msgid "Site URL"
-msgstr "අඩවිය URL එක"
-
-#: geonode/maps/models.py:88
-msgid "Featured Map URL"
-msgstr "විශේෂාංග සිතියම URL එක"
-
-#: geonode/maps/models.py:443
-msgid "stack order"
-msgstr "අඩුක් කරන පිළිවෙල"
-
-#: geonode/maps/models.py:448
-#, fuzzy
-#| msgid "format"
-msgid "format"
-msgstr "හැඩහුරුව"
-
-#: geonode/maps/models.py:454
-msgid "name"
-msgstr "නම"
-
-#: geonode/maps/models.py:457
-msgid "store"
-msgstr ""
-
-#: geonode/maps/models.py:463
-msgid "opacity"
-msgstr "පාරාන්ධතාවය"
-
-#: geonode/maps/models.py:467
-msgid "styles"
-msgstr "ශෛලීයන්"
-
-#: geonode/maps/models.py:472
-msgid "transparent"
-msgstr "විනිවිද පෙනෙන සුළු"
-
-#: geonode/maps/models.py:476
-msgid "fixed"
-msgstr "ස්ථාපිත"
-
-#: geonode/maps/models.py:480
-#, fuzzy
-#| msgid "group"
-msgid "group"
-msgstr "කණ්ඩායම"
-
-#: geonode/maps/models.py:484
-msgid "visibility"
-msgstr "දෘශ්‍යතාවය"
-
-#: geonode/maps/models.py:487
-msgid "ows URL"
-msgstr "ows URL"
-
-#: geonode/maps/models.py:490
-msgid "layer params"
-msgstr "ස්ථර පරාමිති"
-
-#: geonode/maps/models.py:497
-msgid "source params"
-msgstr "ප්‍රභව පරාමිති"
-
-#: geonode/maps/models.py:607
-msgid "JSON Configuration"
-msgstr "JSON Configuration"
-
 #: geonode/maps/templates/maps/map_detail.html:26
 msgid "maps"
 msgstr ""
@@ -4107,8 +2761,7 @@ msgid "Download Map"
 msgstr "සිතියම බාගත කරන්න"
 
 #: geonode/maps/templates/maps/map_detail.html:171
-#: geonode/maps/templates/maps/map_view.html:7 geonode/monitoring/models.py:174
-#: geonode/templates/index.html:76
+#: geonode/maps/templates/maps/map_view.html:7 geonode/templates/index.html:76
 msgid "Map"
 msgid_plural "Maps"
 msgstr[0] "සිතියම"
@@ -4202,7 +2855,6 @@ msgid "Copy to Clipboard"
 msgstr ""
 
 #: geonode/maps/templates/maps/map_download.html:6
-#: geonode/monitoring/models.py:360
 msgid "Download"
 msgstr "බාගත කරන්න"
 
@@ -4271,10 +2923,6 @@ msgstr "භාගත වීම සම්පූර්ණයි"
 msgid "Download Failed"
 msgstr "භාගත වීම අසාර්ථකයි"
 
-#: geonode/maps/templates/maps/map_edit.html:7
-msgid "Edit Map"
-msgstr "සිතියම සංස්කරණය කරන්න"
-
 #: geonode/maps/templates/maps/map_list.html:5
 #, fuzzy
 #| msgid "GeoExplorer"
@@ -4330,378 +2978,6 @@ msgid ""
 "        "
 msgstr ""
 
-#: geonode/maps/views.py:95
-msgid "You are not permitted to delete this map."
-msgstr "මෙම සිතියම මකා දැමීමට ඔබට අවසර නැත"
-
-#: geonode/maps/views.py:96
-msgid "You do not have permissions for this map."
-msgstr "මෙම සිතියම සඳහා ඔබට අවරස නැත."
-
-#: geonode/maps/views.py:97
-msgid "You must be logged in to save this map"
-msgstr "මෙම සිතියම save කිරීමට ඔබ ලොග් විය යුතුය"
-
-#: geonode/maps/views.py:98
-msgid "You are not permitted to save or edit this map."
-msgstr "ඔබ මෙම සිතියම බේරා හෝ සංස්කරණය කිරීමට අවසර නැත."
-
-#: geonode/maps/views.py:100
-msgid "You are not allowed to modify this map's metadata."
-msgstr "මෙම සිතියමේ මෙටා දත්ත වෙනස් කිරීමට ඔබට අවසර නොමැත"
-
-#: geonode/maps/views.py:101
-msgid "You are not allowed to view this map."
-msgstr "මෙම සිතියම බැලීමට ඔබට අවසර නැත"
-
-#: geonode/maps/views.py:102
-msgid "An unknown error has occured."
-msgstr "නාඳුනන දෝෂයක් සිදු කර ඇත."
-
-#: geonode/maps/views.py:1413
-#, fuzzy
-#| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "Thumbnail"
-
-#: geonode/maps/views.py:1416
-#, fuzzy
-#| msgid "Thumbnail"
-msgid "error saving thumbnail"
-msgstr "Thumbnail"
-
-#: geonode/monitoring/__init__.py:45
-msgid "Monitoring alert"
-msgstr ""
-
-#: geonode/monitoring/__init__.py:46
-msgid "Alert situation reported by monitoring"
-msgstr ""
-
-#: geonode/monitoring/collector.py:1008
-msgid "GeoNode Monitoring on {} reports errors: {}"
-msgstr ""
-
-#: geonode/monitoring/forms.py:30
-#, fuzzy
-#| msgid "Confirm your email address"
-msgid "Enter valid email addresses."
-msgstr "ඔබේ විද්යුත් තැපැල් ලිපිනය තහවුරු කරන්න"
-
-#: geonode/monitoring/management/commands/collect_metrics.py:50
-msgid "Show list of services"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:52
-#: geonode/monitoring/management/commands/render_metrics.py:57
-msgid ""
-"Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
-"provided, last sync will be used."
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:55
-#: geonode/monitoring/management/commands/render_metrics.py:59
-msgid ""
-"Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
-"provided, now will be used."
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:58
-msgid "Force check"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:60
-msgid "Format of audit log (xml, json)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:62
-msgid ""
-"Should old data be preserved (default: no, data older than settings."
-"MONITORING_DATA_TTL will be removed)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:65
-msgid "Should stop on first error occured (default: no)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:67
-msgid "Should process and send notifications as well (default: no)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:69
-msgid "Collect data from this service only"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:49
-msgid "Show list of metrics"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:51
-msgid "Show list of labels for metric"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:54
-msgid "Show list of resources for metric"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:62
-msgid "Data aggregation interval in seconds (default: 60)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:63
-#, fuzzy
-#| msgid "attribute name"
-msgid "Metric name"
-msgstr "ගුණාංග නාමය"
-
-#: geonode/monitoring/management/commands/render_metrics.py:66
-msgid "Show data for specific resource in resource_type=resource_name format"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:69
-#, fuzzy
-#| msgid "reference date for the cited resource"
-msgid "Show data for specific resource"
-msgstr "උපුටාගත් මූලාශ්‍රය පරිශීලනය කල දිනය"
-
-#: geonode/monitoring/management/commands/render_metrics.py:72
-msgid "Show data for specific label"
-msgstr ""
-
-#: geonode/monitoring/models.py:100 geonode/templates/500.html:199
-#: geonode/templates/base.html:511
-msgid "GeoNode"
-msgstr "GeoNode"
-
-#: geonode/monitoring/models.py:101
-#: geonode/people/templates/people/profile_detail.html:163
-#: geonode/templates/500.html:278
-msgid "GeoServer"
-msgstr "GeoServer"
-
-#: geonode/monitoring/models.py:102
-#, fuzzy
-#| msgid "GeoServer"
-msgid "Host (GeoServer)"
-msgstr "GeoServer"
-
-#: geonode/monitoring/models.py:103
-#, fuzzy
-#| msgid "About GeoNode"
-msgid "Host (GeoNode)"
-msgstr "GeoNode ගැන"
-
-#: geonode/monitoring/models.py:172
-#, fuzzy
-#| msgid "Resources"
-msgid "No resource"
-msgstr "සම්පත්"
-
-#: geonode/monitoring/models.py:175
-#, fuzzy
-#| msgid "Resources"
-msgid "Resource base"
-msgstr "සම්පත්"
-
-#: geonode/monitoring/models.py:177
-#, fuzzy
-#| msgid "Styles"
-msgid "Style"
-msgstr "ශෛලීයන්"
-
-#: geonode/monitoring/models.py:178
-#: geonode/people/templates/people/profile_detail.html:164
-#: geonode/templates/500.html:279 geonode/templates/base.html:383
-msgid "Admin"
-msgstr "පාලක"
-
-#: geonode/monitoring/models.py:180
-msgid "Other"
-msgstr ""
-
-#: geonode/monitoring/models.py:210 geonode/monitoring/models.py:261
-msgid "Rate"
-msgstr ""
-
-#: geonode/monitoring/models.py:211 geonode/monitoring/models.py:263
-#, fuzzy
-#| msgid "count"
-msgid "Count"
-msgstr "ගණන"
-
-#: geonode/monitoring/models.py:212
-msgid "Value"
-msgstr ""
-
-#: geonode/monitoring/models.py:213
-msgid "Value numeric"
-msgstr ""
-
-#: geonode/monitoring/models.py:252
-msgid "Bytes"
-msgstr ""
-
-#: geonode/monitoring/models.py:253
-msgid "Kilobytes"
-msgstr ""
-
-#: geonode/monitoring/models.py:254
-msgid "Megabytes"
-msgstr ""
-
-#: geonode/monitoring/models.py:255
-msgid "Gigabytes"
-msgstr ""
-
-#: geonode/monitoring/models.py:256
-msgid "Bytes per second"
-msgstr ""
-
-#: geonode/monitoring/models.py:257
-msgid "Kilobytes per second"
-msgstr ""
-
-#: geonode/monitoring/models.py:258
-msgid "Megabytes per second"
-msgstr ""
-
-#: geonode/monitoring/models.py:259
-msgid "Gigabytes per second"
-msgstr ""
-
-#: geonode/monitoring/models.py:260
-msgid "Seconds"
-msgstr ""
-
-#: geonode/monitoring/models.py:262
-msgid "Percentage"
-msgstr ""
-
-#: geonode/monitoring/models.py:351
-#, fuzzy
-#| msgid "local OWS"
-msgid "Not OWS"
-msgstr "දේශීය OWS"
-
-#: geonode/monitoring/models.py:352
-msgid "Any OWS"
-msgstr ""
-
-#: geonode/monitoring/models.py:356
-#: geonode/templates/pinax/notifications/notice_settings.html:51
-msgid "Change"
-msgstr "වෙනස් කරන්න"
-
-#: geonode/monitoring/models.py:357
-#, fuzzy
-#| msgid "Metadata"
-msgid "Change Metadata"
-msgstr "පාරදත්ත"
-
-#: geonode/monitoring/models.py:358
-#, fuzzy
-#| msgid "Edit Metadata"
-msgid "View Metadata"
-msgstr "මෙටා දත්ත සංස්කරණය කරන්න"
-
-#: geonode/monitoring/models.py:359
-msgid "View"
-msgstr "View"
-
-#: geonode/monitoring/models.py:361
-#, fuzzy
-#| msgid "Published"
-msgid "Publish"
-msgstr "ප්රකාශයට පත්"
-
-#: geonode/monitoring/models.py:363
-#, fuzzy
-#| msgid "GeoServer"
-msgid "Geoserver event"
-msgstr "GeoServer"
-
-#: geonode/monitoring/models.py:432
-#, fuzzy
-#| msgid "List of resources using this document:"
-msgid "List of resources affected"
-msgstr "මෙම ලේඛනය භාවිතා කරන සම්පත් ලැයිස්තුව"
-
-#: geonode/monitoring/models.py:439
-#, fuzzy
-#| msgid "Resource using this document"
-msgid "Response processing time in ms"
-msgstr "මෙම ලේඛනය භාවිතා කරන සම්පත"
-
-#: geonode/monitoring/models.py:1071
-msgid "1 minute"
-msgstr ""
-
-#: geonode/monitoring/models.py:1072
-msgid "5 minutes"
-msgstr ""
-
-#: geonode/monitoring/models.py:1073
-msgid "10 minutes"
-msgstr ""
-
-#: geonode/monitoring/models.py:1074
-msgid "30 minutes"
-msgstr ""
-
-#: geonode/monitoring/models.py:1075
-msgid "1 hour"
-msgstr ""
-
-#: geonode/monitoring/models.py:1083 geonode/templates/metadata_base.html:128
-#: geonode/templates/metadata_base.html:131
-#: geonode/templates/socialaccount/authentication_error.html:11
-msgid "Error"
-msgstr ""
-
-#: geonode/monitoring/models.py:1084
-msgid "Fatal"
-msgstr ""
-
-#: geonode/monitoring/models.py:1098
-msgid "Expected min/max values for user configuration"
-msgstr ""
-
-#: geonode/monitoring/models.py:1106
-msgid "Marker of last delivery"
-msgstr ""
-
-#: geonode/monitoring/models.py:1109
-msgid "Minimum time between subsequent notifications"
-msgstr ""
-
-#: geonode/monitoring/models.py:1114
-msgid "How severe would be error from this notification"
-msgstr ""
-
-#: geonode/monitoring/models.py:1119
-msgid "Is it active"
-msgstr ""
-
-#: geonode/monitoring/models.py:1126
-msgid "{}: {}"
-msgstr ""
-
-#: geonode/monitoring/models.py:1390
-msgid "Value must be above"
-msgstr ""
-
-#: geonode/monitoring/models.py:1391
-msgid "Value must be below"
-msgstr ""
-
-#: geonode/monitoring/models.py:1392
-msgid "Last update must not be older than"
-msgstr ""
-
-#: geonode/monitoring/models.py:1542
-msgid "Max timeout for given metric before error should be raised"
-msgstr ""
-
 #: geonode/monitoring/templates/monitoring/index.html:5
 #: geonode/monitoring/templates/monitoring/non_superuser.html:4
 #: geonode/templates/base.html:389
@@ -4710,248 +2986,6 @@ msgstr ""
 
 #: geonode/monitoring/templates/monitoring/non_superuser.html:10
 msgid "Only superusers can monitor performance"
-msgstr ""
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:3
-msgid "Hi,"
-msgstr ""
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:5
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:3
-msgid "Monitoring on"
-msgstr ""
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:5
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:3
-#, fuzzy
-#| msgid "The following groups:"
-msgid "has detected following problems :"
-msgstr "පහත දැක්වෙන කණ්ඩායම් :"
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:9
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:6
-msgid "spotted"
-msgstr ""
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:9
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:10
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:6
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:7
-#: geonode/social/templates/social/_activity_item.html:31
-msgid "ago"
-msgstr "පෙර"
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:10
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:7
-msgid "emerged"
-msgstr ""
-
-#: geonode/people/__init__.py:26
-msgid "User following you"
-msgstr "ඔබ පහත සඳහන් පරිශීලක"
-
-#: geonode/people/__init__.py:26
-msgid "Another user has started following you"
-msgstr "තවත් පරිශීලක ඔබ ආරම්භ කර ඇති පහත සඳහන්"
-
-#: geonode/people/__init__.py:27
-msgid "User requested access"
-msgstr "පරිශීලක ප්රවේශ ඉල්ලා"
-
-#: geonode/people/__init__.py:28
-msgid "A new user has requested access to the site"
-msgstr "නව පරිශීලක වෙබ් අඩවිය වෙත ප්රවේශ ඉල්ලීමක් කර තිබේ"
-
-#: geonode/people/__init__.py:29
-#, fuzzy
-#| msgid "Account activated"
-msgid "Account activated"
-msgstr "ගිණුම සක්රිය"
-
-#: geonode/people/__init__.py:30
-msgid "This account is now active and can log in the site"
-msgstr "මෙම ගිණුම දැන් සක්රීය වන අතර, එම වෙබ් අඩවිය පිවිසිය හැකි"
-
-#: geonode/people/admin.py:56
-msgid "Personal info"
-msgstr "පෞද්ගලික තොරතුරු"
-
-#: geonode/people/admin.py:59
-msgid "Important dates"
-msgstr "වැදගත් දින"
-
-#: geonode/people/admin.py:60
-#, fuzzy
-#| msgid "Edit profile"
-msgid "Extended profile"
-msgstr "සංස්කරණය කරන්න  Profile"
-
-#: geonode/people/admin.py:159
-msgid "Password changed successfully."
-msgstr "Password සාර්ථකව වෙනස් විය."
-
-#: geonode/people/admin.py:169
-#, python-format
-msgid "Change password: %s"
-msgstr "වෙනස් password: %s"
-
-#: geonode/people/enumerations.py:39
-msgid "party who authored the resource"
-msgstr "මූලාශ්‍රයේ  කර්තෲ පාර්ශවය"
-
-#: geonode/people/enumerations.py:40
-msgid ""
-"party who has processed the data in a manner such that the resource has been "
-"modified"
-msgstr "මූලාශ්‍රය වෙනස් කිරීමකට භාජනය වන පරිදි දත්ත ක්‍රියායනය කල පාර්ශවය"
-
-#: geonode/people/enumerations.py:41
-msgid "party who published the resource"
-msgstr "සම්පත ප්‍රකාශනයට පත් කල පාර්ශවය"
-
-#: geonode/people/enumerations.py:42
-msgid ""
-"party that accepts accountability and responsibility for the data and "
-"ensures         appropriate care and maintenance of the resource"
-msgstr "දත්ත සඳහා වගවීම සහ වගකීම භාර හා සම්පත් සුදුසු පහසුකම් හා නඩත්තු සහතික බව පක්ෂ"
-
-#: geonode/people/enumerations.py:44
-msgid ""
-"party who can be contacted for acquiring knowledge about or acquisition of "
-"the resource"
-msgstr "සම්පත ලබා ගැනීමට හෝ ඒ පිළිබඳ විස්තර ලබා ගැනීමට යොමුවිය යුතු පාර්ශවය"
-
-#: geonode/people/enumerations.py:45
-msgid "party who distributes the resource"
-msgstr "සම්පත බෙදාහරින පාර්ශවය"
-
-#: geonode/people/enumerations.py:46
-msgid "party who uses the resource"
-msgstr "සම්පත භාවිතා කරන පාර්ශවය"
-
-#: geonode/people/enumerations.py:47
-msgid "party that supplies the resource"
-msgstr "සම්පත සපයා දෙන පාර්ශවය"
-
-#: geonode/people/enumerations.py:48
-msgid "party who created the resource"
-msgstr "සම්පත නිර්මාණය කල පාර්ශවය"
-
-#: geonode/people/enumerations.py:49
-msgid "party that owns the resource"
-msgstr "සම්පත අයිති පාර්ශවය"
-
-#: geonode/people/enumerations.py:50
-msgid "key party responsible for gathering information and conducting research"
-msgstr "තොරතුරු රැස් කිරීම සහ සමීක්ෂණ පැවැත්වීම පිළිබඳ වගකිවයුතු ප්‍රධාන පාර්ශවය"
-
-#: geonode/people/forms.py:75
-#, fuzzy
-#| msgid "Email Address"
-msgid "Email Address"
-msgstr "විද්‍යුත්-තැපැල් ලිපිනය"
-
-#: geonode/people/models.py:66
-msgid "Organization Name"
-msgstr "ආයතනයේ නම"
-
-#: geonode/people/models.py:70
-msgid "name of the responsible organization"
-msgstr "වගකිවයුතු සංවිධානයේ නම"
-
-#: geonode/people/models.py:72 geonode/templates/500.html:266
-#: geonode/templates/base.html:375
-msgid "Profile"
-msgstr "පැතිකඩ"
-
-#: geonode/people/models.py:75
-msgid "introduce yourself"
-msgstr "ඔබව හදුන්වාදෙන්න"
-
-#: geonode/people/models.py:77
-msgid "Position Name"
-msgstr "තනතුර"
-
-#: geonode/people/models.py:81
-msgid "role or position of the responsible person"
-msgstr "වගකිවයුතු පුද්ගලයාගේ භූමිකාව හෝ තත්ත්වය"
-
-#: geonode/people/models.py:82
-#: geonode/people/templates/people/profile_detail.html:89
-#: geonode/templates/metadata_detail.html:145
-#: geonode/templates/metadata_detail.html:287
-#: geonode/templates/metadata_detail.html:368
-msgid "Voice"
-msgstr "දුරකතන අංකය"
-
-#: geonode/people/models.py:83
-msgid ""
-"telephone number by which individuals can speak to the responsible "
-"organization or individual"
-msgstr "වගකිවයුතු පුද්ගලයා හෝ සංවිධානය ඇමතිය හැකි දුරකතන අංකය"
-
-#: geonode/people/models.py:84
-msgid "Facsimile"
-msgstr "ෆැක්ස් අංකය"
-
-#: geonode/people/models.py:85
-msgid ""
-"telephone number of a facsimile machine for the responsible organization or "
-"individual"
-msgstr "වගකිවයුතු පුද්ගලයා හෝ සංවිධානය ඇමතිය හැකි වෙනත් දුරකතන අංක"
-
-#: geonode/people/models.py:87
-msgid "Delivery Point"
-msgstr "ලිපිනය"
-
-#: geonode/people/models.py:91
-msgid ""
-"physical and email address at which the organization or individual may be "
-"contacted"
-msgstr "අදාල සංවිධානය හෝ පුද්ගලයා වෙත යොමු විය හැකි ලිපිනය හෝ විද්‍යුත්-තැපැල් ලිපිනය "
-
-#: geonode/people/models.py:93
-msgid "City"
-msgstr "නගරය"
-
-#: geonode/people/models.py:97
-msgid "city of the location"
-msgstr "අදාල ස්ථානය පිහිටි නගරය"
-
-#: geonode/people/models.py:99
-msgid "Administrative Area"
-msgstr "පළාත"
-
-#: geonode/people/models.py:103
-msgid "state, province of the location"
-msgstr "අදාල ස්ථානය පිහිටි පළාත"
-
-#: geonode/people/models.py:105
-msgid "Postal Code"
-msgstr "තැපැල් කේතය"
-
-#: geonode/people/models.py:109
-msgid "ZIP or other postal code"
-msgstr "ZIP කේතය හෝ තැපැල් කේතය"
-
-#: geonode/people/models.py:111
-msgid "Country"
-msgstr ""
-
-#: geonode/people/models.py:116
-msgid "country of the physical address"
-msgstr "ලිපිනයට අදාල රට"
-
-#: geonode/people/models.py:118
-msgid ""
-"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-"the subject             (space or comma-separated"
-msgstr ""
-"පොදුවේ භාවිතා වචනය (න් ) හෝ විධිමත් වචනය (න් ) හෝ වාක්ය ඛණ්ඩයක් (ව) විෂය (අවකාශය හෝ "
-"කොමා - වෙන් විස්තර කිරීමට භාවිතා"
-
-#: geonode/people/models.py:127
-msgid "Timezone"
 msgstr ""
 
 #: geonode/people/templates/people/_profile_about_item.html:17
@@ -4995,6 +3029,11 @@ msgstr "ගේ පැතිකඩ"
 msgid "people explore"
 msgstr "GeoExplorer"
 
+#: geonode/people/templates/people/profile_detail.html:67
+#: geonode/templates/invitations/forms/_invite.html:14
+msgid "Email"
+msgstr "Email"
+
 #: geonode/people/templates/people/profile_detail.html:71
 #: geonode/people/templates/people/profile_detail.html:77
 #: geonode/people/templates/people/profile_detail.html:81
@@ -5025,10 +3064,15 @@ msgstr "සංවිධානය"
 msgid "Location"
 msgstr "ස්ථානය"
 
+#: geonode/people/templates/people/profile_detail.html:89
+#: geonode/templates/metadata_detail.html:145
+#: geonode/templates/metadata_detail.html:287
+#: geonode/templates/metadata_detail.html:368
+msgid "Voice"
+msgstr "දුරකතන අංකය"
+
 #: geonode/people/templates/people/profile_detail.html:93
 #: geonode/people/templates/people/profile_detail.html:113
-#: geonode/services/serviceprocessors/arcgis.py:115
-#: geonode/services/serviceprocessors/wms.py:144
 msgid "Not provided"
 msgstr "සපයනු නොලැබේ"
 
@@ -5048,7 +3092,7 @@ msgid "Message User"
 msgstr "පණිවුඩය පරිශීලක"
 
 #: geonode/people/templates/people/profile_detail.html:136
-#: geonode/people/templates/people/profile_detail.html:170
+#: geonode/people/templates/people/profile_detail.html:171
 msgid "Edit profile"
 msgstr "සංස්කරණය කරන්න  Profile"
 
@@ -5078,24 +3122,30 @@ msgid "Create a new layer"
 msgstr "නව සිතියමක් නිර්මාණය කරන්න"
 
 #: geonode/people/templates/people/profile_detail.html:146
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload new document"
+msgstr "ලේඛනය උඩුගත කරන්න"
+
+#: geonode/people/templates/people/profile_detail.html:147
 msgid "Create a new map"
 msgstr "නව සිතියමක් නිර්මාණය කරන්න"
 
-#: geonode/people/templates/people/profile_detail.html:147
+#: geonode/people/templates/people/profile_detail.html:148
 msgid "My Activities"
 msgstr "මගේ ක්‍රියාකාරකම්"
 
-#: geonode/people/templates/people/profile_detail.html:149
+#: geonode/people/templates/people/profile_detail.html:150
 #: geonode/templates/base.html:378
 msgid "Favorites"
 msgstr "ප්රියතම"
 
-#: geonode/people/templates/people/profile_detail.html:154
+#: geonode/people/templates/people/profile_detail.html:155
 #: geonode/templates/500.html:270
 msgid "Notifications"
 msgstr "නිවේදන"
 
-#: geonode/people/templates/people/profile_detail.html:157
+#: geonode/people/templates/people/profile_detail.html:158
 #: geonode/templates/500.html:185 geonode/templates/500.html:273
 #: geonode/templates/announcements/announcement_list.html:5
 #: geonode/templates/announcements/announcement_list.html:12
@@ -5103,7 +3153,7 @@ msgstr "නිවේදන"
 msgid "Announcements"
 msgstr "නිවේදන"
 
-#: geonode/people/templates/people/profile_detail.html:161
+#: geonode/people/templates/people/profile_detail.html:162
 #: geonode/templates/500.html:187 geonode/templates/500.html:275
 #: geonode/templates/base.html:320 geonode/templates/base.html:482
 #: geonode/templates/invitations/forms/_invite.html:7
@@ -5112,11 +3162,21 @@ msgstr "නිවේදන"
 msgid "Invite Users"
 msgstr "පරිශීලක ආරාධනා කරන්න"
 
-#: geonode/people/templates/people/profile_detail.html:174
+#: geonode/people/templates/people/profile_detail.html:164
+#: geonode/templates/500.html:278
+msgid "GeoServer"
+msgstr "GeoServer"
+
+#: geonode/people/templates/people/profile_detail.html:165
+#: geonode/templates/500.html:279 geonode/templates/base.html:383
+msgid "Admin"
+msgstr "පාලක"
+
+#: geonode/people/templates/people/profile_detail.html:175
 msgid "User Activities"
 msgstr "පරිශීලක ක්රියාකාරකම්"
 
-#: geonode/people/templates/people/profile_detail.html:180
+#: geonode/people/templates/people/profile_detail.html:181
 msgid "Resources"
 msgstr "සම්පත්"
 
@@ -5147,67 +3207,6 @@ msgstr "පැතිකඩ යාවත්කාලීන කරන්න"
 msgid "Explore People"
 msgstr "මිනිසුන් සොයන්න"
 
-#: geonode/people/views.py:92
-msgid "Your username for "
-msgstr "ඔබගේ පරිශීලක නාමය සඳහා"
-
-#: geonode/people/views.py:106
-msgid "Your username has been emailed to you."
-msgstr "ඔබගේ පරිශීලක නාමය ඔබට ඊමේල් කරන ලදී."
-
-#: geonode/people/views.py:108
-msgid "No user could be found with that email address."
-msgstr "එවන් විද්‍යුත්-තැපැල් ලිපිනයක් සහිත පරිශීලකයෙකු නොමැත."
-
-#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:224
-#, fuzzy
-#| msgid "You are not permitted to save or edit this map."
-msgid "You are not permitted to save or edit this resource."
-msgstr "ඔබ මෙම සිතියම බේරා හෝ සංස්කරණය කිරීමට අවසර නැත."
-
-#: geonode/proxy/views.py:223
-#, fuzzy
-#| msgid "requested you to download this resource"
-msgid "You are not authorized to download this resource."
-msgstr "මෙම සම්පත් බාගත කිරීම සඳහා ඔබ විසින් ඉල්ලා"
-
-#: geonode/proxy/views.py:225
-msgid ""
-"No files have been found for this resource. Please, contact a system "
-"administrator."
-msgstr ""
-
-#: geonode/proxy/views.py:259 geonode/proxy/views.py:270
-#: geonode/proxy/views.py:371
-#, fuzzy
-#| msgid "Documents"
-msgid "No files found."
-msgstr "ලේඛන"
-
-#: geonode/proxy/views.py:379
-#, fuzzy
-#| msgid "Not provided"
-msgid "Not Authorized"
-msgstr "සපයනු නොලැබේ"
-
-#: geonode/qgis_server/models.py:200
-#, fuzzy
-#| msgid "style name"
-msgid "style xml"
-msgstr "ශෛලයේ නම"
-
-#: geonode/qgis_server/models.py:201
-#, fuzzy
-#| msgid "sld url"
-msgid "style url"
-msgstr "sld url එක"
-
-#: geonode/qgis_server/models.py:203
-#, fuzzy
-#| msgid "sld url"
-msgid "style legend url"
-msgstr "sld url එක"
-
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:10
 msgid "Layer Style changed. Redirecting to apply changes..."
 msgstr ""
@@ -5215,6 +3214,14 @@ msgstr ""
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:13
 msgid "You may also use browser reload."
 msgstr ""
+
+#: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
+#: geonode/services/templates/services/service_resources_harvest.html:31
+#: geonode/templates/metadata_detail.html:130
+#: geonode/templates/metadata_detail.html:272
+#: geonode/templates/metadata_detail.html:353
+msgid "Name"
+msgstr "නම"
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:21
 #, fuzzy
@@ -5244,120 +3251,6 @@ msgstr "ලේයර් ඉවත් කරන්න"
 msgid "Reload to see changes"
 msgstr ""
 
-#: geonode/qgis_server/views.py:266
-#, python-brace-format
-msgid ""
-"You should use a GIS software or a library which support TMS service to use "
-"this URL : {url}"
-msgstr ""
-
-#: geonode/security/middleware.py:128
-msgid "Session is Expired. Please login again!"
-msgstr ""
-
-#: geonode/services/enumerations.py:45
-msgid "Auto-detect"
-msgstr "වාහන - හඳුනා"
-
-#: geonode/services/enumerations.py:46
-msgid "Paired WMS/WFS/WCS"
-msgstr "නීපාරක්ෂක WMS / WFS / WCS"
-
-#: geonode/services/enumerations.py:47 geonode/services/forms.py:54
-msgid "Web Map Service"
-msgstr "වෙබ් සිතියම සේවා"
-
-#: geonode/services/enumerations.py:48
-msgid "Catalogue Service"
-msgstr "කැටලොග් සේවා"
-
-#: geonode/services/enumerations.py:49 geonode/services/forms.py:58
-#, fuzzy
-#| msgid "ArcGIS REST Service"
-msgid "ArcGIS REST MapServer"
-msgstr "ArcGIS REST  සේවා"
-
-#: geonode/services/enumerations.py:50
-#, fuzzy
-#| msgid "ArcGIS REST Service"
-msgid "ArcGIS REST ImageServer"
-msgstr "ArcGIS REST  සේවා"
-
-#: geonode/services/enumerations.py:51 geonode/services/models.py:51
-msgid "OpenGeoPortal"
-msgstr "OpenGeoPortal"
-
-#: geonode/services/enumerations.py:52
-msgid "Harvard Geospatial Library"
-msgstr "Harvard Geospatial Library"
-
-#: geonode/services/enumerations.py:53 geonode/services/forms.py:55
-#, fuzzy
-#| msgid "GeoNode's Web Services"
-msgid "GeoNode (Web Map Service)"
-msgstr "GeoNode හි වෙබ් සේවා"
-
-#: geonode/services/enumerations.py:54
-#, fuzzy
-#| msgid "Catalogue Service"
-msgid "GeoNode (Catalogue Service)"
-msgstr "කැටලොග් සේවා"
-
-#: geonode/services/forms.py:37
-msgid "Service URL"
-msgstr "සේවා URL එක"
-
-#: geonode/services/forms.py:50
-msgid "Service Type"
-msgstr "සේවා වර්ගය"
-
-#: geonode/services/forms.py:72
-#, fuzzy, python-format
-#| msgid "service interfaces"
-msgid "Service %(url)s is already registered"
-msgstr "සේවා අතුරුමුහුණත්"
-
-#: geonode/services/forms.py:88
-#, python-format
-msgid "Could not connect to the service at %(url)s"
-msgstr ""
-
-#: geonode/services/forms.py:93
-#, python-format
-msgid "Could not find importable resources for the service at %(url)s"
-msgstr ""
-
-#: geonode/services/forms.py:100
-#, python-format
-msgid "Found service of type %(found_type)s instead of %(service_type)s"
-msgstr ""
-
-#: geonode/services/models.py:46
-msgid "Local"
-msgstr "දේශීය"
-
-#: geonode/services/models.py:47
-msgid "Cascaded"
-msgstr "Cascaded"
-
-#: geonode/services/models.py:48
-msgid "Harvested"
-msgstr "Harvested"
-
-#: geonode/services/models.py:49
-msgid "Indexed"
-msgstr "Indexed"
-
-#: geonode/services/models.py:50
-msgid "Live"
-msgstr "Live"
-
-#: geonode/services/models.py:211
-#, fuzzy
-#| msgid "Resources"
-msgid "Resource is queued"
-msgstr "සම්පත්"
-
 #: geonode/services/templates/services/remote_service_unavailable.html:5
 #, fuzzy
 #| msgid "Remote Services"
@@ -5375,6 +3268,11 @@ msgstr "සේවා නාමය"
 #| msgid "Point of Contact"
 msgid "Could not contact"
 msgstr "විමසීමි"
+
+#: geonode/services/templates/services/service_detail.html:9
+#: geonode/services/templates/services/service_list.html:16
+msgid "URL"
+msgstr "URL"
 
 #: geonode/services/templates/services/service_detail.html:12
 #, fuzzy
@@ -5551,94 +3449,14 @@ msgstr ""
 msgid "Re-scan Service for new Resources"
 msgstr ""
 
-#: geonode/services/views.py:96
-#, fuzzy
-#| msgid "service interfaces"
-msgid "Service registered successfully"
-msgstr "සේවා අතුරුමුහුණත්"
-
-#: geonode/services/views.py:193
-#, fuzzy
-#| msgid "A resource's download has been requested"
-msgid "The selected resources are being imported"
-msgstr "ඒ සම්පත් ගේ බාගත ඉල්ලා තිබෙනවා"
-
-#: geonode/services/views.py:194
-#, fuzzy
-#| msgid "A resource's download has been requested"
-msgid "The selected resources have been imported"
-msgstr "ඒ සම්පත් ගේ බාගත ඉල්ලා තිබෙනවා"
-
-#: geonode/services/views.py:224
-#, fuzzy
-#| msgid "A resource's download has been requested"
-msgid "Resource is already being processed"
-msgstr "ඒ සම්පත් ගේ බාගත ඉල්ලා තිබෙනවා"
-
-#: geonode/services/views.py:230
-msgid "Resource {} is being processed"
-msgstr ""
-
-#: geonode/services/views.py:259
-#, fuzzy
-#| msgid "Password changed successfully."
-msgid "Service rescanned successfully"
-msgstr "Password සාර්ථකව වෙනස් විය."
-
-#: geonode/services/views.py:329
-#, fuzzy
-#| msgid "You are not permitted to remove this service."
-msgid "You are not permitted to change this service."
-msgstr "ඔබ මෙම සේවාව ඉවත් කිරීමට අවසර නැත."
-
-#: geonode/services/views.py:357
-msgid "You are not permitted to remove this service."
-msgstr "ඔබ මෙම සේවාව ඉවත් කිරීමට අවසර නැත."
-
-#: geonode/services/views.py:368
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "Service {} has been deleted"
-msgstr "සේවා නිර්මාණය කර ඇත :"
-
-#: geonode/social/signals.py:81
-msgid "created"
-msgstr "නිර්මාණය කරන ලද්දේ"
-
-#: geonode/social/signals.py:82 geonode/social/tests.py:102
-msgid "deleted"
-msgstr "මකා දමන ලද්දේ"
-
-#: geonode/social/signals.py:85
-msgid "updated"
-msgstr "යාවත්කාලීන කරන ලද්දේ"
-
-#: geonode/social/signals.py:95 geonode/social/tests.py:122
-msgid "added a comment"
-msgstr "අදහසක් දක්වන ලද්දේ"
-
-#: geonode/social/signals.py:97
-msgid "updated a comment"
-msgstr "අදහසක් යාවත්කාලීන කරන ලද්දේ"
-
-#: geonode/social/signals.py:103 geonode/social/signals.py:108
-#: geonode/social/tests.py:76
-msgid "uploaded"
-msgstr "උඩුගත කරන ලද්දේ"
+#: geonode/social/templates/social/_activity_item.html:31
+msgid "ago"
+msgstr "පෙර"
 
 #: geonode/social/templates/social/activity_list.html:4
 #: geonode/social/templates/social/activity_list.html:15
 msgid "Recent activity"
 msgstr "මෑතකදී සිදුකරන ලද ක්‍රියාකාරකම්"
-
-#: geonode/social/templatetags/social_tags.py:56
-msgid "to"
-msgstr "වෙත"
-
-#: geonode/social/templatetags/social_tags.py:72 geonode/social/tests.py:125
-#: geonode/templates/_comments.html:31
-msgid "on"
-msgstr "මත"
 
 #: geonode/templates/401.html:10
 msgid "Not Permitted"
@@ -5779,6 +3597,10 @@ msgid "Powered by"
 msgstr "බලය ලත්"
 
 #: geonode/templates/500.html:199 geonode/templates/base.html:511
+msgid "GeoNode"
+msgstr "GeoNode"
+
+#: geonode/templates/500.html:199 geonode/templates/base.html:511
 msgid "version"
 msgstr "අනුවාදය"
 
@@ -5803,6 +3625,10 @@ msgstr "මාව මතක තබා ගන්න"
 #: geonode/templates/500.html:260
 msgid "Menu"
 msgstr "මෙනුව"
+
+#: geonode/templates/500.html:266 geonode/templates/base.html:375
+msgid "Profile"
+msgstr "පැතිකඩ"
 
 #: geonode/templates/500.html:267 geonode/templates/base.html:376
 msgid "Recent Activity"
@@ -5867,6 +3693,10 @@ msgstr "අදහස් දැක්වීම සඳහා ..."
 #: geonode/templates/_comments.html:31
 msgid "By"
 msgstr "විසින්"
+
+#: geonode/templates/_comments.html:31
+msgid "on"
+msgstr "මත"
 
 #: geonode/templates/_comments.html:65
 msgid "Submit Comment"
@@ -6065,92 +3895,6 @@ msgstr "Email"
 #: geonode/templates/account/email.html:62
 msgid "Do you really want to remove the selected e-mail address?"
 msgstr ""
-
-#: geonode/templates/account/email/email_confirmation_message.txt:1
-#, python-format
-msgid ""
-"Hello from %(site_name)s!\n"
-"\n"
-"You're receiving this e-mail because user %(user_display)s has given yours "
-"as an e-mail address to connect their account.\n"
-"\n"
-"To confirm this is correct, go to %(activate_url)s\n"
-msgstr ""
-
-#: geonode/templates/account/email/email_confirmation_message.txt:7
-#, python-format
-msgid ""
-"Thank you from %(site_name)s!\n"
-"%(site_domain)s"
-msgstr ""
-
-#: geonode/templates/account/email/email_confirmation_subject.txt:1
-#, fuzzy, python-format
-#| msgid "Confirm email address for %(site_name)s"
-msgid "Please confirm email address for %(site_name)s"
-msgstr "ඊතැපැල් ලිපිනය තහවුරු කරන්න  %(site_name)s"
-
-#: geonode/templates/account/email/invite_user.txt:1
-#, python-format
-msgid "You have been invited to sign up at %(site_name)s."
-msgstr ""
-
-#: geonode/templates/account/email/invite_user_subject.txt:1
-#, fuzzy, python-format
-#| msgid "Confirm email address for %(site_name)s"
-msgid "Create an account on %(site_name)s"
-msgstr "ඊතැපැල් ලිපිනය තහවුරු කරන්න  %(site_name)s"
-
-#: geonode/templates/account/email/password_change.txt:1
-msgid ""
-"This is the email notification to confirm your password has been changed on"
-msgstr ""
-
-#: geonode/templates/account/email/password_change_subject.txt:1
-#, fuzzy
-#| msgid "Change password: %s"
-msgid "Change password email notification"
-msgstr "වෙනස් password: %s"
-
-#: geonode/templates/account/email/password_reset_key.txt:1
-#, fuzzy, python-format
-#| msgid ""
-#| "You're receiving this email because you or someone else has requested a "
-#| "password for your user account at %(site_name)s.\n"
-#| "It can be safely ignored if you did not request a password reset. Click "
-#| "the link below to reset your password.\n"
-#| "\n"
-#| "%(password_reset_url)s\n"
-msgid ""
-"Hello from %(site_name)s!\n"
-"\n"
-"You're receiving this e-mail because you or someone else has requested a "
-"password for your user account.\n"
-"It can be safely ignored if you did not request a password reset. Click the "
-"link below to reset your password."
-msgstr ""
-"ඔබ හෝ වෙන කෙනෙක් ඔබගේ පරිශීලක ගිණුම සඳහා මුරපදයක් ඉල්ලා ඇත නිසා ඔබට මෙම විද්යුත් තැපැල් "
-"ලබමින් කරනවා   %(site_name)s\n"
-"ඔබ මුරපද යළි ඉල්ලා නෑ නම් එය ආරක්ෂිතව නොසලකා හැරිය හැක . ඔබේ මුරවචනය නැවත සකස් කිරීම "
-"සඳහා පහත ලින්ක් එක ක්ලික් කරන්න .\n"
-"%(password_reset_url)s\n"
-
-#: geonode/templates/account/email/password_reset_key.txt:8
-#, python-format
-msgid "In case you forgot, your username is %(username)s."
-msgstr ""
-
-#: geonode/templates/account/email/password_reset_key.txt:10
-#, python-format
-msgid ""
-"Thank you for using %(site_name)s!\n"
-"%(site_domain)s"
-msgstr ""
-
-#: geonode/templates/account/email/password_reset_key_subject.txt:1
-#, python-format
-msgid "[%(site_name)s] Password reset"
-msgstr "[%(site_name)s]   Password yaḷai"
 
 #: geonode/templates/account/email_confirm.html:6
 #: geonode/templates/account/email_confirm.html:10
@@ -6551,6 +4295,14 @@ msgstr "මේවා මකාදමන්න"
 msgid "GeoNode Search"
 msgstr "GeoNode සහය"
 
+#: geonode/templates/base.html:314
+#: geonode/templates/search/_general_filters.html:76
+#: geonode/templates/search/_search_user_content.html:28
+#, fuzzy
+#| msgid "Categories"
+msgid "Group Categories"
+msgstr "වර්ග"
+
 #: geonode/templates/base.html:495
 #, fuzzy
 #| msgid "Contact:"
@@ -6560,6 +4312,12 @@ msgstr "අමතන්න:"
 #: geonode/templates/base.html:504
 msgid "Tel"
 msgstr ""
+
+#: geonode/templates/base.html:506
+#, fuzzy
+#| msgid "Email"
+msgid "E-mail"
+msgstr "Email"
 
 #: geonode/templates/base.html:644
 #, fuzzy
@@ -6611,8 +4369,6 @@ msgid ""
 "GeoNode, we encourage you to do so by contributing to one of the projects on "
 "which it is built:</p>\n"
 "    <ul>\n"
-"      <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
-"for rich web mapping applications</li>\n"
 "      <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
 "server for geospatial information</li>\n"
 "      <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
@@ -6691,43 +4447,43 @@ msgid ""
 "    "
 msgstr ""
 
-#: geonode/templates/developer.html:65
+#: geonode/templates/developer.html:64
 msgid "GeoNode's Web Services"
 msgstr "GeoNode හි වෙබ් සේවා"
 
-#: geonode/templates/developer.html:66
+#: geonode/templates/developer.html:65
 msgid "GeoNode's Web Services are available from the following URLs:"
 msgstr "පහත URL හරහා GeoNode හි වෙබ් සේවා ලබා ගත හැක"
 
-#: geonode/templates/developer.html:69
+#: geonode/templates/developer.html:68
 msgid "Dynamic tiles via WMS:"
 msgstr "WMS හරහා ඩයිනමික් උළු :"
 
-#: geonode/templates/developer.html:73
+#: geonode/templates/developer.html:72
 msgid "Vector data via WFS:"
 msgstr "WFS හරහා vector දත්ත"
 
-#: geonode/templates/developer.html:77
+#: geonode/templates/developer.html:76
 msgid "Raster data via WCS:"
 msgstr "WCS හරහා Raster දත්ත :"
 
-#: geonode/templates/developer.html:81
+#: geonode/templates/developer.html:80
 msgid "Metadata search via CSW:"
 msgstr "CSW හරහා මෙටාදත්ත සෙවුම් "
 
-#: geonode/templates/developer.html:85
+#: geonode/templates/developer.html:84
 msgid "Metadata search via OpenSearch:"
 msgstr ""
 
-#: geonode/templates/developer.html:89
+#: geonode/templates/developer.html:88
 msgid "Metadata search via OAI-PMH:"
 msgstr ""
 
-#: geonode/templates/developer.html:93
+#: geonode/templates/developer.html:92
 msgid "Open Data:"
 msgstr "විවෘත දත්ත:"
 
-#: geonode/templates/developer.html:97
+#: geonode/templates/developer.html:96
 msgid "Cached tiles via WMTS:"
 msgstr "WMTS හරහා හැඹිලිගත උළු :"
 
@@ -6954,7 +4710,6 @@ msgid "Explore documents"
 msgstr "ලේඛන සොයන්න"
 
 #: geonode/templates/index.html:96
-#: geonode/templates/pinax/notifications/account_approve/full.txt:1
 msgid "User"
 msgid_plural "Users"
 msgstr[0] "පරිශීලක"
@@ -7225,7 +4980,6 @@ msgid "Leave"
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:2
-#: geonode/templates/invitations/email/email_invite_message.txt:3
 msgid "Dear Sir/Madam,"
 msgstr ""
 
@@ -7242,7 +4996,6 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:8
-#: geonode/templates/invitations/email/email_invite_message.txt:9
 msgid ""
 "Once you receive the confirmation that your account is activated, you can "
 "notify"
@@ -7263,34 +5016,20 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:16
-#: geonode/templates/invitations/email/email_invite_message.txt:18
 msgid "We look forward to seeing you on the platform,"
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:17
-#: geonode/templates/invitations/email/email_invite_message.txt:20
 #, fuzzy
 #| msgid "GeoNode site admin"
 msgid "The GeoNode team."
 msgstr "GeoNode අඩවිය පරිපාලක"
 
-#: geonode/templates/invitations/email/email_invite_message.txt:5
-msgid "is inviting you to join"
+#: geonode/templates/metadata_base.html:128
+#: geonode/templates/metadata_base.html:131
+#: geonode/templates/socialaccount/authentication_error.html:11
+msgid "Error"
 msgstr ""
-
-#: geonode/templates/invitations/email/email_invite_message.txt:7
-msgid "To do so, please register at"
-msgstr ""
-
-#: geonode/templates/invitations/email/email_invite_message.txt:9
-msgid "that you wish to join her/his group(s) through this link"
-msgstr ""
-
-#: geonode/templates/invitations/email/email_invite_message.txt:13
-#, fuzzy
-#| msgid "The following groups:"
-msgid "is a member of the following group(s)"
-msgstr "පහත දැක්වෙන කණ්ඩායම් :"
 
 #: geonode/templates/metadata_base.html:149
 #, fuzzy
@@ -7325,6 +5064,12 @@ msgstr "වෙත ආපසු"
 msgid "Identification"
 msgstr "හදුනා ගැනීම"
 
+#: geonode/templates/metadata_detail.html:102
+#, fuzzy
+#| msgid "Not provided"
+msgid "Approved"
+msgstr "සපයනු නොලැබේ"
+
 #: geonode/templates/metadata_detail.html:103
 #: geonode/templates/metadata_detail.html:106
 #: geonode/templates/metadata_detail.html:109
@@ -7334,6 +5079,10 @@ msgstr "ඔව්"
 #: geonode/templates/metadata_detail.html:105
 msgid "Published"
 msgstr "ප්රකාශයට පත්"
+
+#: geonode/templates/metadata_detail.html:108
+msgid "Featured"
+msgstr "විශේෂාංග"
 
 #: geonode/templates/metadata_detail.html:133
 #: geonode/templates/metadata_detail.html:275
@@ -7403,324 +5152,6 @@ msgstr "පාරදත්ත පිටුව"
 msgid "Online Link"
 msgstr ""
 
-#: geonode/templates/pinax/notifications/account_active/account_active_message.txt:2
-#: geonode/templates/pinax/notifications/account_active/full.txt:2
-msgid "Your account has been approved and is now active."
-msgstr "ඔබගේ ගිණුම අනුමත හා දැන් සක්රීය කර ඇත."
-
-#: geonode/templates/pinax/notifications/account_active/account_active_message.txt:3
-#: geonode/templates/pinax/notifications/account_active/full.txt:3
-msgid "You can use the login form at"
-msgstr "ඔබ ට ලොගින් පෝරම භාවිතා කළ හැක"
-
-#: geonode/templates/pinax/notifications/account_active/account_active_subject.txt:1
-#, fuzzy
-#| msgid "Welcome"
-msgid "Welcome at"
-msgstr "ආයුබෝවන්"
-
-#: geonode/templates/pinax/notifications/account_active/short.txt:3
-#, fuzzy
-#| msgid "Your account is now active"
-msgid "Your account is now active"
-msgstr "ඔබගේ ගිණුම දැන් සක්රීය"
-
-#: geonode/templates/pinax/notifications/account_approve/full.txt:1
-msgid "has requested access to the site."
-msgstr "එම වෙබ් අඩවිය වෙත ප්රවේශ ඉල්ලීමක් කර තිබේ."
-
-#: geonode/templates/pinax/notifications/account_approve/full.txt:1
-msgid ""
-"You can enable access by setting the user as active on the admin section"
-msgstr "ඔබ පරිපාලක කොටස සක්රීය ලෙස පරිශීලක සැකසීමෙන් ප්රවේශ සක්රීය කල හැක"
-
-#: geonode/templates/pinax/notifications/account_approve/short.txt:3
-msgid "A user has requested access to the site"
-msgstr "පරිශීලකයෙක් වෙබ් අඩවිය වෙත ප්රවේශ ඉල්ලීමක් කර තිබේ"
-
-#: geonode/templates/pinax/notifications/document_approved/full.txt:2
-#, fuzzy
-#| msgid "The following document was updated"
-msgid "The following document was approved"
-msgstr "පහත දැක්වෙන ලේඛනය යාවත්කාලීන කර"
-
-#: geonode/templates/pinax/notifications/document_approved/full.txt:3
-#: geonode/templates/pinax/notifications/document_deleted/full.txt:3
-#: geonode/templates/pinax/notifications/document_published/full.txt:3
-#: geonode/templates/pinax/notifications/document_rated/full.txt:5
-#: geonode/templates/pinax/notifications/document_updated/full.txt:3
-#: geonode/templates/pinax/notifications/layer_approved/full.txt:3
-#: geonode/templates/pinax/notifications/layer_deleted/full.txt:3
-#: geonode/templates/pinax/notifications/layer_published/full.txt:3
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:5
-#: geonode/templates/pinax/notifications/layer_updated/full.txt:3
-#: geonode/templates/pinax/notifications/map_approved/full.txt:3
-#: geonode/templates/pinax/notifications/map_deleted/full.txt:3
-#: geonode/templates/pinax/notifications/map_published/full.txt:3
-#: geonode/templates/pinax/notifications/map_rated/full.txt:5
-#: geonode/templates/pinax/notifications/map_updated/full.txt:3
-msgid "owned by"
-msgstr "අයත්"
-
-#: geonode/templates/pinax/notifications/document_approved/full.txt:4
-#: geonode/templates/pinax/notifications/document_comment/full.txt:3
-#: geonode/templates/pinax/notifications/document_created/full.txt:4
-#: geonode/templates/pinax/notifications/document_published/full.txt:4
-#: geonode/templates/pinax/notifications/document_updated/full.txt:4
-msgid "You can visit the document's detail page here"
-msgstr "ඔබ මෙතනයි ලේඛනයේ විස්තර පිටුව වෙත හැකි"
-
-#: geonode/templates/pinax/notifications/document_approved/short.txt:3
-#, fuzzy
-#| msgid "A document has been rated"
-msgid "A document has been approved"
-msgstr "කරන ලද ලියවිල්ලක් ශ්රේණිගත කර ඇත"
-
-#: geonode/templates/pinax/notifications/document_comment/full.txt:2
-msgid "A comment has been posted for the document"
-msgstr "A comment දත්තගොනුව සඳහා පල කර නැත"
-
-#: geonode/templates/pinax/notifications/document_comment/full.txt:2
-#: geonode/templates/pinax/notifications/layer_comment/full.txt:2
-#: geonode/templates/pinax/notifications/map_comment/full.txt:3
-msgid "by the user"
-msgstr "පරිශීලක විසින්"
-
-#: geonode/templates/pinax/notifications/document_comment/short.txt:3
-msgid "A comment has been posted for a document"
-msgstr "A comment ලියවිල්ලක් සඳහා පල කර නැත"
-
-#: geonode/templates/pinax/notifications/document_created/full.txt:2
-#: geonode/templates/pinax/notifications/document_rated/full.txt:2
-#: geonode/templates/pinax/notifications/layer_created/full.txt:2
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:2
-#: geonode/templates/pinax/notifications/map_created/full.txt:2
-#: geonode/templates/pinax/notifications/map_rated/full.txt:2
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
-msgid "The user"
-msgstr "පරිශීලකයා"
-
-#: geonode/templates/pinax/notifications/document_created/full.txt:2
-msgid "uploaded the following document"
-msgstr "පහත සඳහන් ලේඛන උඩුගත"
-
-#: geonode/templates/pinax/notifications/document_created/short.txt:3
-msgid "A document has been uploaded"
-msgstr "කරන ලද ලියවිල්ලක් උඩුගත කර ඇත"
-
-#: geonode/templates/pinax/notifications/document_deleted/full.txt:2
-msgid "The following document was deleted"
-msgstr "පහත දැක්වෙන ලේඛනය මකා"
-
-#: geonode/templates/pinax/notifications/document_deleted/short.txt:3
-msgid "A document has been deleted"
-msgstr "කරන ලද ලියවිල්ලක් මකාදමා ඇත"
-
-#: geonode/templates/pinax/notifications/document_published/full.txt:2
-#, fuzzy
-#| msgid "The following document was deleted"
-msgid "The following document was published"
-msgstr "පහත දැක්වෙන ලේඛනය මකා"
-
-#: geonode/templates/pinax/notifications/document_published/short.txt:3
-#, fuzzy
-#| msgid "A document has been uploaded"
-msgid "A document has been published"
-msgstr "කරන ලද ලියවිල්ලක් උඩුගත කර ඇත"
-
-#: geonode/templates/pinax/notifications/document_rated/full.txt:3
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:3
-#: geonode/templates/pinax/notifications/map_rated/full.txt:3
-msgid "rated"
-msgstr "ණය ශ්රේණියක්"
-
-#: geonode/templates/pinax/notifications/document_rated/full.txt:4
-msgid "the following document"
-msgstr "පහත සඳහන් ලේඛන"
-
-#: geonode/templates/pinax/notifications/document_rated/full.txt:6
-#: geonode/templates/pinax/notifications/layer_approved/full.txt:4
-#: geonode/templates/pinax/notifications/layer_comment/full.txt:3
-#: geonode/templates/pinax/notifications/layer_created/full.txt:4
-#: geonode/templates/pinax/notifications/layer_published/full.txt:4
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:6
-#: geonode/templates/pinax/notifications/layer_updated/full.txt:4
-msgid "You can visit the layer's detail page here"
-msgstr "ඔබ මෙතනයි ස්තරයෙහි විස්තර පිටුව වෙත හැකි"
-
-#: geonode/templates/pinax/notifications/document_rated/short.txt:3
-msgid "A document has been rated"
-msgstr "කරන ලද ලියවිල්ලක් ශ්රේණිගත කර ඇත"
-
-#: geonode/templates/pinax/notifications/document_updated/full.txt:2
-msgid "The following document was updated"
-msgstr "පහත දැක්වෙන ලේඛනය යාවත්කාලීන කර"
-
-#: geonode/templates/pinax/notifications/document_updated/short.txt:3
-msgid "A document has been updated"
-msgstr "කරන ලද ලියවිල්ලක් යාවත්කාලීන කර ඇත"
-
-#: geonode/templates/pinax/notifications/email_body.txt:3
-#, fuzzy
-#| msgid "You have the following incomplete uploads"
-msgid "You have received the following notice from"
-msgstr "පහත අසම්පූර්ණ උඩුගත කිරීම් ඔබට තිබේ"
-
-#: geonode/templates/pinax/notifications/email_body.txt:8
-msgid "To change how you receive notifications, please go to"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/email_subject.txt:1
-#, python-format
-msgid "[%(current_site)s] %(message)s"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/full.txt:1
-#: geonode/templates/pinax/notifications/short.txt:1
-#, fuzzy, python-format
-#| msgid "Notices"
-msgid "%(notice)s"
-msgstr "Notices"
-
-#: geonode/templates/pinax/notifications/layer_approved/full.txt:2
-#, fuzzy
-#| msgid "The following layer was updated"
-msgid "The following layer was approved"
-msgstr "පහත දැක්වෙන ස්තරය යාවත්කාලීන කර"
-
-#: geonode/templates/pinax/notifications/layer_approved/short.txt:3
-#, fuzzy
-#| msgid "A layer has been rated"
-msgid "A layer has been approved"
-msgstr "තට්ටුවක් ශ්රේණිගත කර ඇත"
-
-#: geonode/templates/pinax/notifications/layer_comment/full.txt:2
-msgid "A comment has been posted for the layer"
-msgstr "A comment ස්තරය සඳහා පල කර නැත"
-
-#: geonode/templates/pinax/notifications/layer_comment/short.txt:3
-msgid "A comment has been posted for a layer"
-msgstr "A comment තට්ටුවක් සඳහා පල කර නැත"
-
-#: geonode/templates/pinax/notifications/layer_created/full.txt:2
-msgid "uploaded the following layer"
-msgstr "පහත සඳහන් ස්ථරය උඩුගත"
-
-#: geonode/templates/pinax/notifications/layer_created/short.txt:3
-msgid "A new layer has been uploaded"
-msgstr "නව ස්ථරය උඩුගත කර ඇත"
-
-#: geonode/templates/pinax/notifications/layer_deleted/full.txt:2
-msgid "The following layer was deleted"
-msgstr "පහත දැක්වෙන ස්තරය මකා"
-
-#: geonode/templates/pinax/notifications/layer_deleted/short.txt:3
-msgid "A layer has been deleted"
-msgstr "තට්ටුවක් මකාදමා ඇත"
-
-#: geonode/templates/pinax/notifications/layer_published/full.txt:2
-#, fuzzy
-#| msgid "The following layer was deleted"
-msgid "The following layer was published"
-msgstr "පහත දැක්වෙන ස්තරය මකා"
-
-#: geonode/templates/pinax/notifications/layer_published/short.txt:3
-#, fuzzy
-#| msgid "A layer has been deleted"
-msgid "A layer has been published"
-msgstr "තට්ටුවක් මකාදමා ඇත"
-
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:4
-msgid "the following layer"
-msgstr "පහත සඳහන් ස්ථරය"
-
-#: geonode/templates/pinax/notifications/layer_rated/short.txt:3
-msgid "A layer has been rated"
-msgstr "තට්ටුවක් ශ්රේණිගත කර ඇත"
-
-#: geonode/templates/pinax/notifications/layer_updated/full.txt:2
-msgid "The following layer was updated"
-msgstr "පහත දැක්වෙන ස්තරය යාවත්කාලීන කර"
-
-#: geonode/templates/pinax/notifications/layer_updated/short.txt:3
-msgid "A layer has been updated"
-msgstr "තට්ටුවක් යාවත්කාලීන කර ඇත"
-
-#: geonode/templates/pinax/notifications/map_approved/full.txt:2
-#, fuzzy
-#| msgid "The following map was updated"
-msgid "The following map was approved"
-msgstr "පහත දැක්වෙන සිතියම යාවත්කාලීන කර"
-
-#: geonode/templates/pinax/notifications/map_approved/full.txt:4
-#: geonode/templates/pinax/notifications/map_comment/full.txt:4
-#: geonode/templates/pinax/notifications/map_created/full.txt:4
-#: geonode/templates/pinax/notifications/map_published/full.txt:4
-#: geonode/templates/pinax/notifications/map_rated/full.txt:6
-#: geonode/templates/pinax/notifications/map_updated/full.txt:4
-msgid "You can visit the map's detail page here"
-msgstr "ඔබ මෙතනයි සිතියමේ විස්තර පිටුව වෙත හැකි"
-
-#: geonode/templates/pinax/notifications/map_approved/short.txt:3
-#, fuzzy
-#| msgid "A map has been rated"
-msgid "A map has been approved"
-msgstr "සිතියමක් ශ්රේණිගත කර ඇත"
-
-#: geonode/templates/pinax/notifications/map_comment/full.txt:2
-msgid "A comment has been posted for the map"
-msgstr "A comment සිතියම සඳහා පල කර නැත"
-
-#: geonode/templates/pinax/notifications/map_comment/short.txt:3
-msgid "A comment has been posted for a map"
-msgstr "A comment සිතියමක් සඳහා පල කර නැත"
-
-#: geonode/templates/pinax/notifications/map_created/full.txt:2
-msgid "created the following map"
-msgstr "පහත සඳහන් සිතියම නිර්මාණය"
-
-#: geonode/templates/pinax/notifications/map_created/short.txt:3
-msgid "A map has been created"
-msgstr "සිතියමක් නිර්මාණය කර ඇත"
-
-#: geonode/templates/pinax/notifications/map_deleted/full.txt:2
-msgid "The following map was deleted"
-msgstr "පහත දැක්වෙන සිතියම මකා"
-
-#: geonode/templates/pinax/notifications/map_deleted/short.txt:3
-msgid "A map has been deleted"
-msgstr "සිතියමක් මකාදමා ඇත"
-
-#: geonode/templates/pinax/notifications/map_published/full.txt:2
-#, fuzzy
-#| msgid "The following map was deleted"
-msgid "The following map was published"
-msgstr "පහත දැක්වෙන සිතියම මකා"
-
-#: geonode/templates/pinax/notifications/map_published/short.txt:3
-#, fuzzy
-#| msgid "A map has been deleted"
-msgid "A map has been published"
-msgstr "සිතියමක් මකාදමා ඇත"
-
-#: geonode/templates/pinax/notifications/map_rated/full.txt:4
-#, fuzzy
-#| msgid "the following layer"
-msgid "the following map"
-msgstr "පහත සඳහන් ස්ථරය"
-
-#: geonode/templates/pinax/notifications/map_rated/short.txt:3
-msgid "A map has been rated"
-msgstr "සිතියමක් ශ්රේණිගත කර ඇත"
-
-#: geonode/templates/pinax/notifications/map_updated/full.txt:2
-msgid "The following map was updated"
-msgstr "පහත දැක්වෙන සිතියම යාවත්කාලීන කර"
-
-#: geonode/templates/pinax/notifications/map_updated/short.txt:3
-msgid "A map has been updated"
-msgstr "සිතියමක් යාවත්කාලීන කර ඇත"
-
 #: geonode/templates/pinax/notifications/notice_settings.html:7
 #: geonode/templates/pinax/notifications/notice_settings.html:10
 msgid "Notification Settings"
@@ -7748,20 +5179,9 @@ msgstr ""
 msgid "Notification Type"
 msgstr "නිවේදන වර්ගය"
 
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
-msgid "requested you to download this resource"
-msgstr "මෙම සම්පත් බාගත කිරීම සඳහා ඔබ විසින් ඉල්ලා"
-
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:9
-msgid ""
-"Please go to resource page and assign the download permissions if you wish"
-msgstr "ඔබ කැමති නම්, පිටුව සම්පත් හා බාගත අවසර ලබා දිය යන්න කරුණාකර"
-
-#: geonode/templates/pinax/notifications/request_download_resourcebase/short.txt:3
-#, fuzzy
-#| msgid "A document has been deleted"
-msgid "A resource's download has been requested"
-msgstr "කරන ලද ලියවිල්ලක් මකාදමා ඇත"
+#: geonode/templates/pinax/notifications/notice_settings.html:51
+msgid "Change"
+msgstr "වෙනස් කරන්න"
 
 #: geonode/templates/privacy-cookies.html:4
 #: geonode/templates/privacy-cookies.html:8
@@ -7841,6 +5261,10 @@ msgstr "තවදුරටත් නැත"
 #, python-format
 msgid "%(to_user_username)s's profile"
 msgstr "%(to_user_username)sගේ පැතිකඩ"
+
+#: geonode/templates/search/_general_filters.html:4
+msgid "Categories"
+msgstr "වර්ග"
 
 #: geonode/templates/search/_general_filters.html:30
 msgid "Responsibles"
@@ -8037,162 +5461,1665 @@ msgstr "පණිවුඩය එන ලිපි"
 msgid "Messages"
 msgstr "පණිවිඩ"
 
+#: geonode/templates/user_messages/inbox.html:22
+msgid "Mark selected as read"
+msgstr ""
+
+#: geonode/templates/user_messages/inbox.html:23
+msgid "Mark selected as unread"
+msgstr ""
+
 #: geonode/templates/user_messages/inbox.html:63
 #: geonode/templates/user_messages/message_create.html:6
 #: geonode/templates/user_messages/message_create.html:9
 msgid "Create Message"
 msgstr "පණිවුඩය නිර්මාණය කරන්න"
 
-#: geonode/templates/user_messages/message_create.html:16
+#: geonode/templates/user_messages/message_create.html:26
+#, fuzzy
+#| msgid "The user"
+msgid "To users"
+msgstr "පරිශීලකයා"
+
+#: geonode/templates/user_messages/message_create.html:32
+#, fuzzy
+#| msgid "group"
+msgid "To groups"
+msgstr "කණ්ඩායම"
+
+#: geonode/templates/user_messages/message_create.html:37
+msgid "Subject"
+msgstr "මාතෘකාව"
+
+#: geonode/templates/user_messages/message_create.html:42
+#, fuzzy
+#| msgid "Contact:"
+msgid "Content"
+msgstr "අමතන්න:"
+
+#: geonode/templates/user_messages/message_create.html:50
 msgid "Send message"
 msgstr "පිළිතුරු යවන්න"
 
-#: geonode/templates/user_messages/message_create.html:22
-#: geonode/templates/user_messages/thread_detail.html:46
+#: geonode/templates/user_messages/message_create.html:82
+#: geonode/templates/user_messages/thread_detail.html:48
 msgid "Back to Inbox"
 msgstr "නැවතත් Inbox"
-
-#: geonode/templates/user_messages/thread_detail.html:9
-#, fuzzy
-#| msgid "Message Inbox"
-msgid "A message to"
-msgstr "පණිවුඩය එන ලිපි"
 
 #: geonode/templates/user_messages/thread_detail.html:11
 msgid "Sent to"
 msgstr ""
 
-#: geonode/templates/user_messages/thread_detail.html:28
+#: geonode/templates/user_messages/thread_detail.html:30
 msgid "by"
 msgstr ""
 
-#: geonode/templates/user_messages/thread_detail.html:32
+#: geonode/templates/user_messages/thread_detail.html:30
+msgid "me"
+msgstr "මා"
+
+#: geonode/templates/user_messages/thread_detail.html:34
 #, fuzzy
 #| msgid "Send message"
 msgid "You have no messages"
 msgstr "පිළිතුරු යවන්න"
 
-#: geonode/templates/user_messages/thread_detail.html:40
+#: geonode/templates/user_messages/thread_detail.html:42
 msgid "Send Reply"
 msgstr "පිළිතුරු යවන්න"
 
-#: geonode/themes/apps.py:28
+#~ msgid "Request to download a resource"
+#~ msgstr "resource බාගත කිරීම සඳහා ඉල්ලුම් කිරීම"
+
+#~ msgid "A request for downloading a resource was sent"
+#~ msgstr "resource බාගත කිරීම සඳහා ඉල්ලීමක් යවන ලදී"
+
+#~ msgid "series"
+#~ msgstr "ශ්‍රේණිය"
+
+#~ msgid "computer program or routine"
+#~ msgstr "පරිගණක වැඩසටහන හෝ රූටිනය"
+
+#~ msgid "feature type"
+#~ msgstr "අංගය"
+
+#~ msgid "copy or imitation of an existing or hypothetical object"
+#~ msgstr "පවතින හෝ කල්පිත වස්තුවක් පිටපත් කිරීම හෝ අනුකරණය"
+
+#~ msgid "collection hardware"
+#~ msgstr "එකතුව දෘඩාංග"
+
+#~ msgid "collection session"
+#~ msgstr "එකතුව සැසිය"
+
+#~ msgid "non-geographic data"
+#~ msgstr "භූගෝලීය නොවන දත්ත"
+
+#~ msgid "property type"
+#~ msgstr "ගුණාංගය"
+
+#~ msgid "field session"
+#~ msgstr "ක්ෂේත්රයේ සැසිය"
+
 #, fuzzy
-#| msgid "GeoNode Help"
-msgid "GeoNode Themes Library"
-msgstr "GeoNode සහය"
+#~| msgid "dataset"
+#~ msgid "dataset"
+#~ msgstr "දත්ත කට්ටලය"
 
-#: geonode/upload/files.py:262
-msgid "Could not access to uploaded data."
-msgstr ""
-
-#: geonode/upload/files.py:301
-msgid ""
-"One or more XML files was provided, but no matching files were found for "
-"them."
-msgstr ""
-
-#: geonode/upload/files.py:310
-msgid ""
-"One or more SLD files was provided, but no matching files were found for "
-"them."
-msgstr ""
-
-#: geonode/upload/upload_validators.py:66
-msgid "Invalid zip file detected"
-msgstr ""
-
-#: geonode/upload/upload_validators.py:82
-msgid "Could not find any valid spatial file inside the uploaded zip"
-msgstr ""
-
-#: geonode/upload/upload_validators.py:85
-msgid "Invalid kmz file detected"
-msgstr ""
-
-#: geonode/upload/upload_validators.py:89
 #, fuzzy
-#| msgid "Could not find any layers in a compatible projection."
-msgid "Could not find any kml files inside the uploaded kmz"
-msgstr "  compatible projection. තුල ඕනෑම ස්ථර මම සොයා ගැනීමට නොහැක "
+#~| msgid "Resources"
+#~ msgid "service interfaces"
+#~ msgstr "සම්පත්"
 
-#: geonode/upload/upload_validators.py:124
-msgid "Only one shapefile per zip is allowed"
-msgstr ""
+#~ msgid "attribute class"
+#~ msgstr "ගුණාංග පන්තිය"
 
-#: geonode/upload/upload_validators.py:170
-msgid "kml files with more than one GroundOverlay are not supported"
-msgstr ""
+#~ msgid "characteristic of a feature"
+#~ msgstr "අංගයක ගති ලක්ෂණ"
 
-#: geonode/upload/upload_validators.py:181
-msgid "Ground overlay image declared in kml file cannot be found"
-msgstr ""
+#~ msgid "tile or spatial subset of geographic data"
+#~ msgstr "උළු හෝ භූගෝලීය දත්ත අවකාශ උප කුලකයක්"
 
-#: geonode/upload/upload_validators.py:218
-msgid "Only one kml file per ZIP is allowed"
-msgstr ""
+#~ msgid "feature"
+#~ msgstr "අංගය"
 
-#: geonode/upload/upload_validators.py:233
-msgid "Only one kml file per kmz is allowed"
-msgstr ""
+#~ msgid "dimension group"
+#~ msgstr "මිනුම් කණ්ඩායම"
 
-#: geonode/upload/upload_validators.py:287
-msgid ""
-"You are trying to upload multiple GeoTIFFs without a valid 'indexer."
-"properties' file."
-msgstr ""
+#~ msgid "frequency of maintenance for the data is not known"
+#~ msgstr "දත්ත නඩත්තු කිරීම් වාර ගණන නොදනී"
 
-#: geonode/upload/upload_validators.py:292
-msgid "Only one raster file per ZIP is allowed"
-msgstr ""
+#~ msgid "data is repeatedly and frequently updated"
+#~ msgstr "දත්ත නිරන්තරයෙන් නැවත නැවතත් යාවත්කාලීන කරනු ලැබේ"
 
-#: geonode/upload/upload_validators.py:297
-msgid "No multiple rasters allowed"
-msgstr ""
+#~ msgid "there are no plans to update the data"
+#~ msgstr "දත්ත යාවත්කාලීන කිරීමේ සැලසුමක් නොපවතී"
 
-#: geonode/upload/utils.py:98
-msgid ""
-"To support the time step, you must enable the OGC_SERVER DATASTORE option"
-msgstr ""
+#~ msgid "data is updated each day"
+#~ msgstr "දිනපතා දත්ත යාවත්කාලීන කරනු ලැබේ"
 
-#: geonode/upload/utils.py:261
-#, python-format
-msgid "Unsupported file type: %s"
-msgstr ""
+#~ msgid "data is updated every year"
+#~ msgstr "සෑම වසරකම දත්ත යාවත්කාලීන කරනු ලැබේ"
 
-#: geonode/upload/utils.py:526
-#, python-format
-msgid "File does not exist: %s"
-msgstr ""
+#~ msgid "data is updated as deemed necessary"
+#~ msgstr "අවශ්‍ය වූ විටෙක දත්ත යාවත්කාලීන කරනු ලැබේ"
 
-#: geonode/upload/utils.py:583
-#, python-format
-msgid "unknown item state: %s"
-msgstr ""
+#~ msgid "data is updated each month"
+#~ msgstr "සෑම මසකදීම දත්ත යාවත්කාලීන කරනු ලැබේ"
 
-#: geonode/upload/utils.py:591
-#, python-format
-msgid "error during import: %s"
-msgstr ""
+#~ msgid "data is updated every two weeks"
+#~ msgstr "සෑම සති දෙකකට වරක්ම දත්ත යාවත්කාලීන කරනු ලැබේ"
 
-#: geonode/upload/utils.py:701
-msgid "Could not find any valid Time Regex for the Mosaic files."
-msgstr ""
+#~ msgid "data is updated in intervals that are uneven in duration"
+#~ msgstr "අසමාන කාල පරිච්ඡේද වලදී දත්ත යාවත්කාලීන කරනු ලැබේ"
 
-#: geonode/upload/utils.py:732 geonode/upload/utils.py:764
-msgid "Unsupported DataBase for Mosaics!"
-msgstr ""
+#~ msgid "data is updated on a weekly basis"
+#~ msgstr "සති පතා  දත්ත යාවත්කාලීන කරනු ලැබේ"
 
-#: geonode/utils.py:87
-msgid "Invalid permission level."
-msgstr "වලංගු නොවන අවසර මට්ටම"
+#~ msgid "data is updated twice each year"
+#~ msgstr "සෑම වසරකටම දෙවරක් දත්ත යාවත්කාලීන කරනු ලැබේ"
 
-#: geonode/utils.py:967
-msgid "Permission Denied"
-msgstr "අවසර ලබා දෙනු නොලැබේ"
+#~ msgid "data is updated every three months"
+#~ msgstr "සෑම මාස තුනකට වරක්ම දත්ත යාවත්කාලීන කරනු ලැබේ"
 
-#~ msgid "Subject"
+#~ msgid "No information provided"
+#~ msgstr "තොරතුරු සපයා නොමැත"
+
+#~ msgid "Category is required."
+#~ msgstr "ප්රවර්ගය අවශ්ය වේ."
+
+#~ msgid "Owner"
+#~ msgstr "හිමිකරු"
+
+#~ msgid "temporal extent start"
+#~ msgstr "ලෞකික දුරට ආරම්භ"
+
+#~ msgid "temporal extent end"
+#~ msgstr "ලෞකික දුරට අවසන්"
+
+#~ msgid "Person outside GeoNode (fill form)"
+#~ msgstr "GeoNode පිටත පුද්ගලයා (ආකෘති පත්රය පිරවීම)"
+
+#, fuzzy
+#~| msgid "Keywords"
+#~ msgid "Free-text Keywords"
+#~ msgstr "මුලපද"
+
+#, fuzzy
+#~| msgid "A space or comma-separated list of keywords"
+#~ msgid ""
+#~ "A space or comma-separated list of keywords. Use the widget to select "
+#~ "from Hierarchical tree."
+#~ msgstr "එක් එක් මුලපදය  එක හිස්තැනකින් හෝ කොමාවකින් වෙන් කර ඇතුලත් කරන්න"
+
+#~ msgid "function performed by the responsible party"
+#~ msgstr "වගකිවයුතු පාර්ශවය විසින් සිදු කෙරෙන කාර්යය භාරය"
+
+#~ msgid "reference date for the cited resource"
+#~ msgstr "උපුටාගත් මූලාශ්‍රය පරිශීලනය කල දිනය"
+
+#~ msgid "identification of when a given event occurred"
+#~ msgstr "යම් සිද්ධියක් සිදු වූ අවස්ථාව හඳුනා ගැනීම"
+
+#~ msgid "version of the cited resource"
+#~ msgstr "උපුටාගත් මූලාශ්‍රය කී වෙනි සංස්කරණයද යන වග"
+
+#~ msgid "brief narrative summary of the content of the resource(s)"
+#~ msgstr "මූලාශ්‍රයේ (මූලාශ්‍ර වල) අන්තර්ගතය පිළිබඳ කෙටි සාරාංශගත විස්තරයක්"
+
+#~ msgid "summary of the intentions with which the resource(s) was developed"
+#~ msgstr "මූලාශ්‍රයේ (මූලාශ්‍ර වල) පරමාර්ථය පිළිබඳ සාරාංශයක්"
+
+#~ msgid ""
+#~ "frequency with which modifications and deletions are made to the data "
+#~ "after it is first produced"
+#~ msgstr "දත්ත නිපදවීමෙන් පසු ඒවාට සිදු කරන වෙනස්කම් සහ මකා දැමීම් වාර ගනන"
+
+#~ msgid ""
+#~ "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+#~ "the subject (space or comma-separated"
+#~ msgstr ""
+#~ "වස්තුව විස්තර කිරීමට යොදා ගන්නා පොදුවේ භාවිතා වන වචන(ය) හෝ රූපීකෘත වචන (ය) හෝ වාක්‍ය "
+#~ "ඛණ්ඩ(ය) (හිස්තැනකින් හෝ කොමාවකින් වෙන් කර ලියන්න"
+
+#, fuzzy
+#~| msgid ""
+#~| "commonly used word(s) or formalised word(s) or phrase(s) used to "
+#~| "describe the subject (space or comma-separated"
+#~ msgid ""
+#~ "formalised word(s) or phrase(s) from a fixed thesaurus used to describe "
+#~ "the subject (space or comma-separated"
+#~ msgstr ""
+#~ "වස්තුව විස්තර කිරීමට යොදා ගන්නා පොදුවේ භාවිතා වන වචන(ය) හෝ රූපීකෘත වචන (ය) හෝ වාක්‍ය "
+#~ "ඛණ්ඩ(ය) (හිස්තැනකින් හෝ කොමාවකින් වෙන් කර ලියන්න"
+
+#~ msgid "keyword identifies a location"
+#~ msgstr "මුලපදය ස්ථානයක් හඳුනාගනී"
+
+#~ msgid "limitation(s) placed upon the access or use of the data."
+#~ msgstr "දත්ත වලට පිවිසීම හෝ භාවිතය සම්බන්ධයෙන් පනවා ඇති සීමා කිරීම්"
+
+#~ msgid ""
+#~ "other restrictions and legal prerequisites for accessing and using the "
+#~ "resource or metadata"
+#~ msgstr ""
+#~ "සම්පත හෝ මෙටාදත්ත වලට පිවිසීමට හෝ ඒවා භාවිතා කිරීමට පනවා ඇති වෙනත් සම්බාධක සහ නීතිමය "
+#~ "අවශ්‍යතා"
+
+#~ msgid "license of the dataset"
+#~ msgstr "මේ දත්ත සමුදාය බලපත්රය"
+
+#~ msgid "language used within the dataset"
+#~ msgstr "දත්ත කට්ටලය තුල භාවිතා කර ඇති භාෂාව"
+
+#~ msgid ""
+#~ "high-level geographic data thematic classification to assist in the "
+#~ "grouping and search of available geographic data sets."
+#~ msgstr ""
+#~ "පවතින භූගෝලීය දත්ත කට්ටලයන් සමූහනයට සහ සෙවීමට සහය දැක්වීම සඳහා ඉහල මට්ටමේ භූගෝලීය දත්ත "
+#~ "තේමානුගතව වර්ගීකරණය "
+
+#~ msgid "method used to represent geographic information in the dataset."
+#~ msgstr "දත්ත කට්ටලය තුල ඇති භූගෝලීය තොරතුරු නියෝජනය කිරීමට භාවිත කර ඇති ක්‍රමය"
+
+#~ msgid "time period covered by the content of the dataset (start)"
+#~ msgstr "දත්ත කට්ටලයේ අන්තර්ගතයෙන් ආවරණය වන කාල සීමාව (ආරම්භයේදී )"
+
+#~ msgid "time period covered by the content of the dataset (end)"
+#~ msgstr "දත්ත කට්ටලයේ අන්තර්ගතයෙන් ආවරණය වන කාල සීමාව (අවසානයේදී )"
+
+#~ msgid ""
+#~ "general explanation of the data producer's knowledge about the lineage of "
+#~ "a dataset"
+#~ msgstr "දත්ත කට්ටලයක ආර පිළිබඳව දත්ත නිෂ්පාදකගේ දැනීම ගැන සාමාන්‍ය පැහැදිලි කිරීමක්"
+
+#~ msgid "title"
 #~ msgstr "මාතෘකාව"
+
+#~ msgid "name by which the cited resource is known"
+#~ msgstr "උපුටාගත් මූලාශ්‍රය හඳුන්වන නාමය"
+
+#~ msgid "date"
+#~ msgstr "දිනය"
+
+#~ msgid "date type"
+#~ msgstr "දින මාදිළිය"
+
+#~ msgid "edition"
+#~ msgstr "සංස්කරණය"
+
+#~ msgid "abstract"
+#~ msgstr "සාරාංශය"
+
+#~ msgid "purpose"
+#~ msgstr "අරමුණ"
+
+#~ msgid "maintenance frequency"
+#~ msgstr "නඩත්තු වාර ගණන"
+
+#~ msgid "keywords"
+#~ msgstr "මුලපදය"
+
+#~ msgid "keywords region"
+#~ msgstr "මුලපද කලාපය"
+
+#~ msgid "restrictions"
+#~ msgstr "බාධා කිරීම්"
+
+#~ msgid "restrictions other"
+#~ msgstr "වෙනත් සීමා කිරීම්"
+
+#~ msgid "language"
+#~ msgstr "භාෂාව"
+
+#~ msgid "spatial representation type"
+#~ msgstr "අවකාශීය නිරූපණය වර්ගය"
+
+#~ msgid "supplemental information"
+#~ msgstr "අතිරේක තොරතුරු"
+
+#~ msgid "any other descriptive information about the dataset"
+#~ msgstr "දත්ත කට්ටලය පිළිබඳ වෙනත් ඕනෑම සවිස්තරාත්මක තොරතුරක්"
+
+#~ msgid "data quality statement"
+#~ msgstr "දත්ත වල ගුණාත්මක භාවය"
+
+#~ msgid "CSW typename"
+#~ msgstr "CSW වර්ග නාමය"
+
+#~ msgid "CSW schema"
+#~ msgstr "අතිකරන්නන් schema"
+
+#~ msgid "CSW source"
+#~ msgstr "CSW ප්‍රභවය"
+
+#~ msgid "CSW insert date"
+#~ msgstr "CSW ඇතුලත් කරන දිනය"
+
+#~ msgid "CSW type"
+#~ msgstr "CSW වර්ගය"
+
+#~ msgid "CSW anytext"
+#~ msgstr "අතිකරන්නන් anytext"
+
+#~ msgid "CSW WKT geometry"
+#~ msgstr "CSW WKT ජ්‍යාමිතිය"
+
+#, fuzzy
+#~| msgid "Metadata Provider"
+#~ msgid "Metadata uploaded preserve"
+#~ msgstr "මෙටාදත්ත සැපයුම්කරු"
+
+#~ msgid "Should this resource be advertised in home page?"
+#~ msgstr "මෙම resource මුල් පිටුව ප්රචාරය කළ යුතුද?"
+
+#~ msgid "Is Published"
+#~ msgstr "ප්රකාශයට පත්"
+
+#~ msgid "Should this resource be published and searchable?"
+#~ msgstr "මෙම resource මුල් පිටුව ප්රචාරය කළ යුතුද?"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail url"
+#~ msgstr "Thumbnail"
+
+#~ msgid "For example \"kml\""
+#~ msgstr "උදාහරණයක් ලෙස \"kml\""
+
+#~ msgid "For example \"View in Google Earth\""
+#~ msgstr "උදාහරණයක් ලෙස \"view in Google Earth\""
+
+#~ msgid "For example \"text/xml\""
+#~ msgstr "උදාහරණයක් ලෙස \"text/xml\""
+
+#, fuzzy
+#~| msgid "GeoNode Help"
+#~ msgid "GeoNode Client Library"
+#~ msgstr "GeoNode සහය"
+
+#~ msgid "GeoExplorer"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Document Updated"
+#~ msgid "Document Created"
+#~ msgstr "ලේඛන යාවත්කාලීන කිරීම"
+
+#~ msgid "A Document was created"
+#~ msgstr "ලියවිල්ලක් නිර්මිතය"
+
+#~ msgid "Document Updated"
+#~ msgstr "ලේඛන යාවත්කාලීන කිරීම"
+
+#~ msgid "A Document was updated"
+#~ msgstr "ලියවිල්ලක් යාවත්කාලීන කර"
+
+#, fuzzy
+#~| msgid "Document Updated"
+#~ msgid "Document Approved"
+#~ msgstr "ලේඛන යාවත්කාලීන කිරීම"
+
+#, fuzzy
+#~| msgid "A Document was created"
+#~ msgid "A Document was approved by a Manager"
+#~ msgstr "ලියවිල්ලක් නිර්මිතය"
+
+#, fuzzy
+#~| msgid "Document Deleted"
+#~ msgid "Document Published"
+#~ msgstr "ලේඛන මකාදැමුවා"
+
+#, fuzzy
+#~| msgid "A Document was updated"
+#~ msgid "A Document was published"
+#~ msgstr "ලියවිල්ලක් යාවත්කාලීන කර"
+
+#~ msgid "Document Deleted"
+#~ msgstr "ලේඛන මකාදැමුවා"
+
+#~ msgid "A Document was deleted"
+#~ msgstr "ලියවිල්ලක් මකා"
+
+#~ msgid "Comment on Document"
+#~ msgstr "ලේඛන පිළිබඳව නොදනිති"
+
+#~ msgid "A Document was commented on"
+#~ msgstr "ලියවිල්ලක් පිළිබඳව අදහස් විය"
+
+#~ msgid "Document for Map"
+#~ msgstr "සිතියම සඳහා ලේඛන"
+
+#~ msgid "A rating was given to a document"
+#~ msgstr "ශ්රේණිය ලියවිල්ලක් ලබා දෙන ලදී"
+
+#~ msgid "Link to"
+#~ msgstr "සම්බන්ධ කරන්න"
+
+#~ msgid "Document must be a file or url."
+#~ msgstr "ලේඛන හෝ ගොනුවකට විය යුතුය url"
+
+#~ msgid "A document cannot have both a file and a url."
+#~ msgstr "කරන ලද ලියවිල්ලක් ගොනු හා URL එකක් දෙකම කරන්න බැහැ."
+
+#~ msgid "This file type is not allowed"
+#~ msgstr "මෙම ගොනු වර්ගය සඳහා ඉඩ නැත"
+
+#~ msgid "Permissions must be valid JSON."
+#~ msgstr "අවසර වලංගු JSON විය යුතුය."
+
+#~ msgid "File"
+#~ msgstr "ගොනුව"
+
+#~ msgid "The URL of the document if it is external."
+#~ msgstr "එය බාහිර නම් ලේඛනයේ මෙම URL එක."
+
+#~ msgid "You are not permitted to delete this document"
+#~ msgstr "මෙම ලේඛනය මකා දැමීමට ඔබට අවසර නැත"
+
+#~ msgid "You do not have permissions for this document."
+#~ msgstr "මෙම ලේඛනය සඳහා ඔබට අවසර නැත"
+
+#~ msgid "You are not permitted to modify this document"
+#~ msgstr "මෙම ලේඛනයට වෙනස්කම් සිදු කිරීමට ඔබට අවසර නැත"
+
+#~ msgid "You are not permitted to modify this document's metadata"
+#~ msgstr "මෙම ලෙඛනයේ වෙනස්කම් කිරීමට ඔබට අවසර නැත"
+
+#~ msgid "You are not permitted to view this document"
+#~ msgstr "මෙම ලේඛනය බැලීමට ඔබට අවසර නැත"
+
+#~ msgid "You are not allowed to view this document."
+#~ msgstr "මෙම ලේඛනය නැරඹීමට ඔබට අවසර නැත."
+
+#~ msgid "You are not allowed to edit this document."
+#~ msgstr "ඔබ මෙම ලිපිය සංස්කරණය කිරීමට අවසර නැත."
+
+#~ msgid "You must set a point of contact for this resource"
+#~ msgstr "ඔබ මෙම සම්පත් සඳහා සබඳතා ලක්ෂ්යයක් තැබිය යුතු"
+
+#~ msgid "You must set an author for this resource"
+#~ msgstr "ඔබ මෙම සම්පත් සඳහා කර්තෘ තැබිය යුතුය"
+
+#~ msgid "Layer Uploaded"
+#~ msgstr "ස්ථරය උඩුගත කලා"
+
+#, fuzzy
+#~| msgid "A Layer was updated"
+#~ msgid "A layer was uploaded"
+#~ msgstr "A Layer was updated"
+
+#~ msgid "Comment on Layer"
+#~ msgstr "ස්ථරය ගැන අදහස් දක්වන්න"
+
+#~ msgid "A layer was commented on"
+#~ msgstr "ස්ථරයක් සඳහා අදහස් දක්වන ලදී"
+
+#~ msgid "Rating for Layer"
+#~ msgstr "ස්ථරය පිළිබඳ ප්‍රමාණනය"
+
+#~ msgid "A rating was given to a layer"
+#~ msgstr "ස්ථරයක් සඳහා ප්‍රමාණනයක් දෙන ලදී"
+
+#, fuzzy
+#~| msgid "Layer Name"
+#~ msgid "Layer name"
+#~ msgstr "ස්ථරය නම"
+
+#, fuzzy
+#~| msgid "Layer Title"
+#~ msgid "Layer title"
+#~ msgstr "ස්ථරය සිරැසිය"
+
+#, fuzzy
+#~| msgid "property type"
+#~ msgid "Geometry type"
+#~ msgstr "ගුණාංගය"
+
+#~ msgid "No abstract provided"
+#~ msgstr "වියුක්ත ලබා නැත"
+
+#~ msgid "An exception occurred loading data to PostGIS"
+#~ msgstr "ව්යතිරේකයක් PostGIS කිරීමට පැටවීම දත්ත සිදු"
+
+#~ msgid " Additionally an error occured during database cleanup"
+#~ msgstr "මීට අමතරව දෝෂයක් දත්ත සමුදාය තුළ පිරිසිදු කිරීමේ සිදුවිය"
+
+#~ msgid "Zipped Shapefile"
+#~ msgstr "zip කරන ලද shapefile එක"
+
+#~ msgid "GML 2.0"
+#~ msgstr "GML 2.0"
+
+#~ msgid "GML 3.1.1"
+#~ msgstr "GML 3.1.1"
+
+#~ msgid "CSV"
+#~ msgstr "CSV"
+
+#~ msgid "Excel"
+#~ msgstr "Excel"
+
+#~ msgid "GeoJSON"
+#~ msgstr "GeoJSON"
+
+#~ msgid "JPEG"
+#~ msgstr "JPEG"
+
+#~ msgid "PDF"
+#~ msgstr "PDF"
+
+#~ msgid "PNG"
+#~ msgstr "PNG"
+
+#~ msgid "You don't have permissions to change style for this layer"
+#~ msgstr "ඔබට මෙම ස්ථරය සඳහා ශෛලිය වෙනස් කිරීමට අවසර නොමැත"
+
+#~ msgid "Bad HTTP Authorization Credentials."
+#~ msgstr "නිවැරදි නොවන HTTP අවසර දීමේ සහතික"
+
+#~ msgid ""
+#~ "a short version of the name consisting only of letters, numbers, "
+#~ "underscores and hyphens."
+#~ msgstr "අකුරු, අංක , යටි සහ හයිපනය පමණක් සමන්විත නම කෙටි අනුවාදයක් ."
+
+#~ msgid "A group already exists with that slug."
+#~ msgstr "පිරිසක් දැනටමත් Slug මත පවතී."
+
+#~ msgid "A group already exists with that name."
+#~ msgstr "පිරිසක් මේ වන විටත් එම නම මත පවතී."
+
+#, fuzzy
+#~| msgid "Identification"
+#~ msgid "User Identifiers"
+#~ msgstr "හදුනා ගැනීම"
+
+#~ msgid "Public"
+#~ msgstr "පොදු"
+
+#~ msgid "Public (invite-only)"
+#~ msgstr "පොදු ( ආරාධනා - පමණි)"
+
+#~ msgid "Private"
+#~ msgstr "පුද්ගලික"
+
+#~ msgid ""
+#~ "Public: Any registered user can view and join a public group.<br>Public "
+#~ "(invite-only):Any registered user can view the group.  Only invited users "
+#~ "can join.<br>Private: Registered users cannot see any details about the "
+#~ "group, including membership.  Only invited users can join."
+#~ msgstr ""
+#~ "රාජ්ය ඕනෑම ලියාපදිංචි පරිශීලක මහජන කණ්ඩායමක් නැරඹීමට හා සම්බන්ධ විය හැක <br> රාජ්ය "
+#~ "( ආරාධනා පමණක් ): . යම් ලියාපදිංචි පරිශීලක සමූහය බැලිය හැක. ආරාධනා පරිශීලකයන් පමණක් "
+#~ "සම්බන්ධ විය හැක පුද්ගලික විශ්වකෝෂය : . ලියාපදිංචි පරිශීලකයන් සාමාජිකත්වය ඇතුළු පිරිසක් ගැන කිසිදු "
+#~ "විස්තරයක් පේන්නේ නැහැ. පමණක් ආරාධනා කරන්නන් සමග එක්විය හැකියි ."
+
+#~ msgid ""
+#~ "Email used to contact one or all group members, such as a mailing list, "
+#~ "shared email, or exchange group."
+#~ msgstr ""
+#~ "විද්යුත් එවැනි ලිපි ලැයිස්තුවක් , බෙදා ඊ-තැපැල්, හෝ විනිමය කණ්ඩායමක් ලෙස කෙනෙකු හෝ සියලු "
+#~ "කණ්ඩායම් සාමාජිකයන්, සම්බන්ධ කර ගැනීමට යොදා ගත්තේය."
+
+#~ msgid "Logo"
+#~ msgstr "ලාංඡනය"
+
+#~ msgid "A space or comma-separated list of keywords"
+#~ msgstr "එක් එක් මුලපදය  එක හිස්තැනකින් හෝ කොමාවකින් වෙන් කර ඇතුලත් කරන්න"
+
+#~ msgid "Access"
+#~ msgstr "ප්රවේශ"
+
+#~ msgid "Member"
+#~ msgstr "සාමාජික"
+
+#~ msgid "Layer Created"
+#~ msgstr "තට්ටුවක් නිර්මානය"
+
+#~ msgid "A Layer was created"
+#~ msgstr "තට්ටුවක් නිර්මිතය"
+
+#~ msgid "Layer Updated"
+#~ msgstr "ස්ථරය යාවත්කාලීන කිරීම"
+
+#~ msgid "A Layer was updated"
+#~ msgstr "A Layer was updated"
+
+#, fuzzy
+#~| msgid "Not provided"
+#~ msgid "Layer Approved"
+#~ msgstr "සපයනු නොලැබේ"
+
+#, fuzzy
+#~| msgid "A Layer was created"
+#~ msgid "A Layer was approved by a Manager"
+#~ msgstr "තට්ටුවක් නිර්මිතය"
+
+#, fuzzy
+#~| msgid "Published"
+#~ msgid "Layer Published"
+#~ msgstr "ප්රකාශයට පත්"
+
+#, fuzzy
+#~| msgid "A Layer was updated"
+#~ msgid "A Layer was published"
+#~ msgstr "A Layer was updated"
+
+#~ msgid "Layer Deleted"
+#~ msgstr "ස්ථරය වන සංස්කරණයන්"
+
+#~ msgid "A Layer was deleted"
+#~ msgstr "තට්ටුවක් මකා"
+
+#~ msgid "style name"
+#~ msgstr "ශෛලයේ නම"
+
+#~ msgid "sld text"
+#~ msgstr "sld පෙළ"
+
+#~ msgid "sld version"
+#~ msgstr "sld අනුවාදය"
+
+#~ msgid "sld url"
+#~ msgstr "sld url එක"
+
+#, fuzzy
+#~| msgid "feature type"
+#~ msgid "Storetype"
+#~ msgstr "අංගය"
+
+#, fuzzy
+#~| msgid "CSW typename"
+#~ msgid "Typename"
+#~ msgstr "CSW වර්ග නාමය"
+
+#~ msgid "File cannot be opened, maybe check the encoding"
+#~ msgstr "ගොනුව විවෘත කල නොහැක ,maybe check the encoding"
+
+#, fuzzy
+#~| msgid "attribute name"
+#~ msgid "attribute name"
+#~ msgstr "ගුණාංග නාමය"
+
+#~ msgid "name of attribute as stored in shapefile/spatial database"
+#~ msgstr ".shp ගොනුව/ අවකාශීය දත්ත ගබඩාව තුල ගබඩා කර ඇති පරිදි ගුණාංගයේ නම"
+
+#, fuzzy
+#~| msgid "distribution description"
+#~ msgid "attribute description"
+#~ msgstr "distribution description"
+
+#~ msgid "description of attribute to be used in metadata"
+#~ msgstr "පාරදත්ත භාවිතා කළ වර්ණනා පිළිබඳ විස්තරය"
+
+#~ msgid "attribute label"
+#~ msgstr "ගුණාංගයේ ලේබලය"
+
+#~ msgid "title of attribute as displayed in GeoNode"
+#~ msgstr "GeoNode හි දිස්වන ආකාරයට ගුණාංගයේ මාතෘකාව"
+
+#~ msgid "attribute type"
+#~ msgstr "ගුණාංග වර්ගය"
+
+#~ msgid "the data type of the attribute (integer, string, geometry, etc)"
+#~ msgstr "ගුණාංගයේ දත්ත වර්ගය (පූර්ණ සංඛ්‍යා,තන්තු, ජ්‍යාමිතික යනාදී වශයෙන්)"
+
+#~ msgid "visible?"
+#~ msgstr "දිස්වේද?"
+
+#~ msgid "specifies if the attribute should be displayed in identify results"
+#~ msgstr "ප්‍රතිඵල හඳුනාගන්න තුල ගුණාංගය දිස්විය යුතු පිළිවෙල විශේෂීකරණය කරයි"
+
+#~ msgid "display order"
+#~ msgstr "දිස්වන පිළිවෙල"
+
+#~ msgid ""
+#~ "specifies the order in which attribute should be displayed in identify "
+#~ "results"
+#~ msgstr "ප්‍රතිඵල හඳුනාගන්න තුල ගුණාංගය දිස්විය යුතු පිළිවෙල විශේෂීකරණය කරයි"
+
+#, fuzzy
+#~| msgid "count"
+#~ msgid "count"
+#~ msgstr "ගණන"
+
+#~ msgid "count value for this field"
+#~ msgstr "මෙම ක්ෂේත්‍රය සඳහා අගය ගණනය කරන්න"
+
+#~ msgid "min"
+#~ msgstr "අවමය"
+
+#~ msgid "minimum value for this field"
+#~ msgstr "මෙම ක්ෂේත්‍රය සඳහා වන අවම අගය"
+
+#~ msgid "max"
+#~ msgstr "උපරිමය"
+
+#~ msgid "maximum value for this field"
+#~ msgstr "මෙම ක්ෂේත්‍රය සඳහා වන උපරිම අගය"
+
+#~ msgid "average"
+#~ msgstr "සාමාන්‍යය"
+
+#~ msgid "average value for this field"
+#~ msgstr "මෙම ක්ෂේත්‍රය සඳහා වන සාමාන්‍ය අගය"
+
+#~ msgid "median"
+#~ msgstr "මධ්‍යස්ථය"
+
+#~ msgid "median value for this field"
+#~ msgstr "මෙම ක්ෂේත්‍රය සඳහා මධ්‍යස්ථ අගය"
+
+#~ msgid "standard deviation"
+#~ msgstr "සම්මත අපගමනය"
+
+#~ msgid "standard deviation for this field"
+#~ msgstr "මෙම ක්ෂේත්‍රය සඳහා වන සම්මත අපගමනය"
+
+#~ msgid "sum"
+#~ msgstr "ඓක්‍යය"
+
+#~ msgid "sum value for this field"
+#~ msgstr "මෙම ක්ෂේත්‍රය සඳහා වන ඓක්‍යය"
+
+#~ msgid "unique values for this field"
+#~ msgstr "මෙම ක්ෂේත්‍රය සඳහා වන අනන්‍ය අගයන්"
+
+#, fuzzy
+#~| msgid "last modified"
+#~ msgid "last modified"
+#~ msgstr "අවසාන වරට වෙනස්කම් සිදු කලේ"
+
+#~ msgid "date when attribute statistics were last updated"
+#~ msgstr "ගුණාංගයේ සංඛ්‍යාලේඛන අවසන් වරට යාවත්කලීන කල දිනය"
+
+#, fuzzy
+#~| msgid "You are attempting to replace a vector layer with a raster."
+#~ msgid "You are attempting to replace a vector layer with an unknown format."
+#~ msgstr "ඔබ වෙනුවට උත්සාහ කරන්නේ a vector layer with a raster."
+
+#~ msgid "You are attempting to replace a vector layer with a raster."
+#~ msgstr "ඔබ වෙනුවට උත්සාහ කරන්නේ a vector layer with a raster."
+
+#~ msgid "You are attempting to replace a raster layer with a vector."
+#~ msgstr "ඔබ වෙනුවට උත්සාහ කරන්නේ a raster layer with a vector."
+
+#~ msgid ""
+#~ "There was an error while attempting to upload your data. Please try "
+#~ "again, or contact and administrator if the problem continues."
+#~ msgstr ""
+#~ "ඔබේ දත්ත උඩුගත කිරීමේදී යම් දෝෂයක් මතු විය. කරුණාකර නැවත උත්සාහ කරන්න. ගැටළුව තවදුරටත් "
+#~ "පවතී නම් පාලක වෙත දැනුම් දෙන්න"
+
+#~ msgid ""
+#~ "Note: this layer's orginal metadata was populated and preserved by "
+#~ "importing a metadata XML file. This metadata cannot be edited."
+#~ msgstr ""
+#~ "සටහන: මෙම ස්ථරය මුල් පාර-දත්ත සඳහා පාර-දත්ත XML ගොනුව ආනයනය විසින් ජනාකීර්ණ, කල් තබා "
+#~ "ගන්නා ලදී. මෙම පාරදත්ත සංස්කරණය කල නොහැක."
+
+#~ msgid "You are not permitted to delete this layer"
+#~ msgstr "මෙම ස්ථරය මකා දැමීමට ඔබට අවසර නොමැත"
+
+#~ msgid "You do not have permissions for this layer."
+#~ msgstr "මෙම ස්ථරය සඳහා ඔබට අවසර නැත."
+
+#~ msgid "You are not permitted to modify this layer"
+#~ msgstr "මෙම ස්ථරය වෙනස් කිරීමට ඔබට අවසර නැත"
+
+#~ msgid "You are not permitted to modify this layer's metadata"
+#~ msgstr "මෙම ස්ථරයේ මෙටා දත්ත වෙනස් කිරීමට ඔබට අවසර නැත"
+
+#~ msgid "You are not permitted to view this layer"
+#~ msgstr "මෙම ස්ථරය බැලීමට ඔබට අවසර නොමැත"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Failed to upload the layer"
+#~ msgstr "උඩුගත කිරීමට ඇති ගොනු"
+
+#, fuzzy
+#~| msgid "Unable to delete layer"
+#~ msgid "Unable to delete layer"
+#~ msgstr "ස්ථරය ඉවත් කිරීමට නොහැකි විය"
+
+#~ msgid ""
+#~ "This layer is a member of a layer group, you must remove the layer from "
+#~ "the group before deleting."
+#~ msgstr ""
+#~ "මෙම ස්ථරය තට්ටුවක් කණ්ඩායමේ සාමාජිකයකු වන , ඔබ මකාදැමීමට පෙර කණ්ඩායමේ ස්තරය ඉවත් කළ "
+#~ "යුතුයි."
+
+#~ msgid "Map Created"
+#~ msgstr "සිතියම නිර්මාණය කරන ලදී."
+
+#, fuzzy
+#~| msgid "A Layer was created"
+#~ msgid "A Map was created"
+#~ msgstr "තට්ටුවක් නිර්මිතය"
+
+#~ msgid "Map Updated"
+#~ msgstr "සිතියම යාවත්කාලීන කිරීම"
+
+#, fuzzy
+#~| msgid "A Layer was updated"
+#~ msgid "A Map was updated"
+#~ msgstr "A Layer was updated"
+
+#, fuzzy
+#~| msgid "Not provided"
+#~ msgid "Map Approved"
+#~ msgstr "සපයනු නොලැබේ"
+
+#, fuzzy
+#~| msgid "Published"
+#~ msgid "Map Published"
+#~ msgstr "ප්රකාශයට පත්"
+
+#, fuzzy
+#~| msgid "A Map was deleted"
+#~ msgid "A Map was published"
+#~ msgstr "සිතියමක් මකා"
+
+#~ msgid "Map Deleted"
+#~ msgstr "සිතියම මකාදැමුවා"
+
+#~ msgid "A Map was deleted"
+#~ msgstr "සිතියමක් මකා"
+
+#~ msgid "Comment on Map"
+#~ msgstr "සිතියම පිළිබඳ අදහස් දක්වන්න"
+
+#~ msgid "A map was commented on"
+#~ msgstr "සිතියමක් පිළිබඳ අදහසක් දක්වන ලදී"
+
+#~ msgid "Rating for Map"
+#~ msgstr "සිතියම සඳහා ප්‍රමාණනයන්"
+
+#~ msgid "A rating was given to a map"
+#~ msgstr "සිතියමක් සඳහා ප්‍රමාණනයක් දෙන ලදී"
+
+#~ msgid "zoom"
+#~ msgstr "විශාල කර බලන්න"
+
+#~ msgid "projection"
+#~ msgstr "ප්‍රක්ෂේපය"
+
+#~ msgid "center X"
+#~ msgstr "X මධ්‍ය ලක්ෂය"
+
+#~ msgid "center Y"
+#~ msgstr "Y මධ්‍ය ලක්ෂය"
+
+#~ msgid "Site URL"
+#~ msgstr "අඩවිය URL එක"
+
+#~ msgid "Featured Map URL"
+#~ msgstr "විශේෂාංග සිතියම URL එක"
+
+#~ msgid "stack order"
+#~ msgstr "අඩුක් කරන පිළිවෙල"
+
+#, fuzzy
+#~| msgid "format"
+#~ msgid "format"
+#~ msgstr "හැඩහුරුව"
+
+#~ msgid "name"
+#~ msgstr "නම"
+
+#~ msgid "opacity"
+#~ msgstr "පාරාන්ධතාවය"
+
+#~ msgid "styles"
+#~ msgstr "ශෛලීයන්"
+
+#~ msgid "transparent"
+#~ msgstr "විනිවිද පෙනෙන සුළු"
+
+#~ msgid "fixed"
+#~ msgstr "ස්ථාපිත"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "group"
+#~ msgstr "කණ්ඩායම"
+
+#~ msgid "visibility"
+#~ msgstr "දෘශ්‍යතාවය"
+
+#~ msgid "ows URL"
+#~ msgstr "ows URL"
+
+#~ msgid "layer params"
+#~ msgstr "ස්ථර පරාමිති"
+
+#~ msgid "source params"
+#~ msgstr "ප්‍රභව පරාමිති"
+
+#~ msgid "JSON Configuration"
+#~ msgstr "JSON Configuration"
+
+#~ msgid "You are not permitted to delete this map."
+#~ msgstr "මෙම සිතියම මකා දැමීමට ඔබට අවසර නැත"
+
+#~ msgid "You do not have permissions for this map."
+#~ msgstr "මෙම සිතියම සඳහා ඔබට අවරස නැත."
+
+#~ msgid "You must be logged in to save this map"
+#~ msgstr "මෙම සිතියම save කිරීමට ඔබ ලොග් විය යුතුය"
+
+#~ msgid "You are not permitted to save or edit this map."
+#~ msgstr "ඔබ මෙම සිතියම බේරා හෝ සංස්කරණය කිරීමට අවසර නැත."
+
+#~ msgid "You are not allowed to modify this map's metadata."
+#~ msgstr "මෙම සිතියමේ මෙටා දත්ත වෙනස් කිරීමට ඔබට අවසර නොමැත"
+
+#~ msgid "You are not allowed to view this map."
+#~ msgstr "මෙම සිතියම බැලීමට ඔබට අවසර නැත"
+
+#~ msgid "An unknown error has occured."
+#~ msgstr "නාඳුනන දෝෂයක් සිදු කර ඇත."
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "Thumbnail"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "error saving thumbnail"
+#~ msgstr "Thumbnail"
+
+#, fuzzy
+#~| msgid "Confirm your email address"
+#~ msgid "Enter valid email addresses."
+#~ msgstr "ඔබේ විද්යුත් තැපැල් ලිපිනය තහවුරු කරන්න"
+
+#, fuzzy
+#~| msgid "attribute name"
+#~ msgid "Metric name"
+#~ msgstr "ගුණාංග නාමය"
+
+#, fuzzy
+#~| msgid "reference date for the cited resource"
+#~ msgid "Show data for specific resource"
+#~ msgstr "උපුටාගත් මූලාශ්‍රය පරිශීලනය කල දිනය"
+
+#, fuzzy
+#~| msgid "GeoServer"
+#~ msgid "Host (GeoServer)"
+#~ msgstr "GeoServer"
+
+#, fuzzy
+#~| msgid "About GeoNode"
+#~ msgid "Host (GeoNode)"
+#~ msgstr "GeoNode ගැන"
+
+#, fuzzy
+#~| msgid "Resources"
+#~ msgid "No resource"
+#~ msgstr "සම්පත්"
+
+#, fuzzy
+#~| msgid "Resources"
+#~ msgid "Resource base"
+#~ msgstr "සම්පත්"
+
+#, fuzzy
+#~| msgid "Styles"
+#~ msgid "Style"
+#~ msgstr "ශෛලීයන්"
+
+#, fuzzy
+#~| msgid "count"
+#~ msgid "Count"
+#~ msgstr "ගණන"
+
+#, fuzzy
+#~| msgid "local OWS"
+#~ msgid "Not OWS"
+#~ msgstr "දේශීය OWS"
+
+#, fuzzy
+#~| msgid "Metadata"
+#~ msgid "Change Metadata"
+#~ msgstr "පාරදත්ත"
+
+#, fuzzy
+#~| msgid "Edit Metadata"
+#~ msgid "View Metadata"
+#~ msgstr "මෙටා දත්ත සංස්කරණය කරන්න"
+
+#~ msgid "View"
+#~ msgstr "View"
+
+#, fuzzy
+#~| msgid "Published"
+#~ msgid "Publish"
+#~ msgstr "ප්රකාශයට පත්"
+
+#, fuzzy
+#~| msgid "GeoServer"
+#~ msgid "Geoserver event"
+#~ msgstr "GeoServer"
+
+#, fuzzy
+#~| msgid "List of resources using this document:"
+#~ msgid "List of resources affected"
+#~ msgstr "මෙම ලේඛනය භාවිතා කරන සම්පත් ලැයිස්තුව"
+
+#, fuzzy
+#~| msgid "Resource using this document"
+#~ msgid "Response processing time in ms"
+#~ msgstr "මෙම ලේඛනය භාවිතා කරන සම්පත"
+
+#, fuzzy
+#~| msgid "The following groups:"
+#~ msgid "has detected following problems :"
+#~ msgstr "පහත දැක්වෙන කණ්ඩායම් :"
+
+#~ msgid "User following you"
+#~ msgstr "ඔබ පහත සඳහන් පරිශීලක"
+
+#~ msgid "Another user has started following you"
+#~ msgstr "තවත් පරිශීලක ඔබ ආරම්භ කර ඇති පහත සඳහන්"
+
+#~ msgid "User requested access"
+#~ msgstr "පරිශීලක ප්රවේශ ඉල්ලා"
+
+#~ msgid "A new user has requested access to the site"
+#~ msgstr "නව පරිශීලක වෙබ් අඩවිය වෙත ප්රවේශ ඉල්ලීමක් කර තිබේ"
+
+#, fuzzy
+#~| msgid "Account activated"
+#~ msgid "Account activated"
+#~ msgstr "ගිණුම සක්රිය"
+
+#~ msgid "This account is now active and can log in the site"
+#~ msgstr "මෙම ගිණුම දැන් සක්රීය වන අතර, එම වෙබ් අඩවිය පිවිසිය හැකි"
+
+#~ msgid "Personal info"
+#~ msgstr "පෞද්ගලික තොරතුරු"
+
+#~ msgid "Important dates"
+#~ msgstr "වැදගත් දින"
+
+#, fuzzy
+#~| msgid "Edit profile"
+#~ msgid "Extended profile"
+#~ msgstr "සංස්කරණය කරන්න  Profile"
+
+#~ msgid "Password changed successfully."
+#~ msgstr "Password සාර්ථකව වෙනස් විය."
+
+#~ msgid "Change password: %s"
+#~ msgstr "වෙනස් password: %s"
+
+#~ msgid "party who authored the resource"
+#~ msgstr "මූලාශ්‍රයේ  කර්තෲ පාර්ශවය"
+
+#~ msgid ""
+#~ "party who has processed the data in a manner such that the resource has "
+#~ "been modified"
+#~ msgstr "මූලාශ්‍රය වෙනස් කිරීමකට භාජනය වන පරිදි දත්ත ක්‍රියායනය කල පාර්ශවය"
+
+#~ msgid "party who published the resource"
+#~ msgstr "සම්පත ප්‍රකාශනයට පත් කල පාර්ශවය"
+
+#~ msgid ""
+#~ "party that accepts accountability and responsibility for the data and "
+#~ "ensures         appropriate care and maintenance of the resource"
+#~ msgstr "දත්ත සඳහා වගවීම සහ වගකීම භාර හා සම්පත් සුදුසු පහසුකම් හා නඩත්තු සහතික බව පක්ෂ"
+
+#~ msgid ""
+#~ "party who can be contacted for acquiring knowledge about or acquisition "
+#~ "of the resource"
+#~ msgstr "සම්පත ලබා ගැනීමට හෝ ඒ පිළිබඳ විස්තර ලබා ගැනීමට යොමුවිය යුතු පාර්ශවය"
+
+#~ msgid "party who distributes the resource"
+#~ msgstr "සම්පත බෙදාහරින පාර්ශවය"
+
+#~ msgid "party who uses the resource"
+#~ msgstr "සම්පත භාවිතා කරන පාර්ශවය"
+
+#~ msgid "party that supplies the resource"
+#~ msgstr "සම්පත සපයා දෙන පාර්ශවය"
+
+#~ msgid "party who created the resource"
+#~ msgstr "සම්පත නිර්මාණය කල පාර්ශවය"
+
+#~ msgid "party that owns the resource"
+#~ msgstr "සම්පත අයිති පාර්ශවය"
+
+#~ msgid ""
+#~ "key party responsible for gathering information and conducting research"
+#~ msgstr "තොරතුරු රැස් කිරීම සහ සමීක්ෂණ පැවැත්වීම පිළිබඳ වගකිවයුතු ප්‍රධාන පාර්ශවය"
+
+#, fuzzy
+#~| msgid "Email Address"
+#~ msgid "Email Address"
+#~ msgstr "විද්‍යුත්-තැපැල් ලිපිනය"
+
+#~ msgid "Organization Name"
+#~ msgstr "ආයතනයේ නම"
+
+#~ msgid "name of the responsible organization"
+#~ msgstr "වගකිවයුතු සංවිධානයේ නම"
+
+#~ msgid "introduce yourself"
+#~ msgstr "ඔබව හදුන්වාදෙන්න"
+
+#~ msgid "Position Name"
+#~ msgstr "තනතුර"
+
+#~ msgid "role or position of the responsible person"
+#~ msgstr "වගකිවයුතු පුද්ගලයාගේ භූමිකාව හෝ තත්ත්වය"
+
+#~ msgid ""
+#~ "telephone number by which individuals can speak to the responsible "
+#~ "organization or individual"
+#~ msgstr "වගකිවයුතු පුද්ගලයා හෝ සංවිධානය ඇමතිය හැකි දුරකතන අංකය"
+
+#~ msgid "Facsimile"
+#~ msgstr "ෆැක්ස් අංකය"
+
+#~ msgid ""
+#~ "telephone number of a facsimile machine for the responsible organization "
+#~ "or individual"
+#~ msgstr "වගකිවයුතු පුද්ගලයා හෝ සංවිධානය ඇමතිය හැකි වෙනත් දුරකතන අංක"
+
+#~ msgid "Delivery Point"
+#~ msgstr "ලිපිනය"
+
+#~ msgid ""
+#~ "physical and email address at which the organization or individual may be "
+#~ "contacted"
+#~ msgstr "අදාල සංවිධානය හෝ පුද්ගලයා වෙත යොමු විය හැකි ලිපිනය හෝ විද්‍යුත්-තැපැල් ලිපිනය "
+
+#~ msgid "City"
+#~ msgstr "නගරය"
+
+#~ msgid "city of the location"
+#~ msgstr "අදාල ස්ථානය පිහිටි නගරය"
+
+#~ msgid "Administrative Area"
+#~ msgstr "පළාත"
+
+#~ msgid "state, province of the location"
+#~ msgstr "අදාල ස්ථානය පිහිටි පළාත"
+
+#~ msgid "Postal Code"
+#~ msgstr "තැපැල් කේතය"
+
+#~ msgid "ZIP or other postal code"
+#~ msgstr "ZIP කේතය හෝ තැපැල් කේතය"
+
+#~ msgid "country of the physical address"
+#~ msgstr "ලිපිනයට අදාල රට"
+
+#~ msgid ""
+#~ "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+#~ "the subject             (space or comma-separated"
+#~ msgstr ""
+#~ "පොදුවේ භාවිතා වචනය (න් ) හෝ විධිමත් වචනය (න් ) හෝ වාක්ය ඛණ්ඩයක් (ව) විෂය (අවකාශය හෝ "
+#~ "කොමා - වෙන් විස්තර කිරීමට භාවිතා"
+
+#~ msgid "Your username for "
+#~ msgstr "ඔබගේ පරිශීලක නාමය සඳහා"
+
+#~ msgid "Your username has been emailed to you."
+#~ msgstr "ඔබගේ පරිශීලක නාමය ඔබට ඊමේල් කරන ලදී."
+
+#~ msgid "No user could be found with that email address."
+#~ msgstr "එවන් විද්‍යුත්-තැපැල් ලිපිනයක් සහිත පරිශීලකයෙකු නොමැත."
+
+#, fuzzy
+#~| msgid "You are not permitted to save or edit this map."
+#~ msgid "You are not permitted to save or edit this resource."
+#~ msgstr "ඔබ මෙම සිතියම බේරා හෝ සංස්කරණය කිරීමට අවසර නැත."
+
+#, fuzzy
+#~| msgid "requested you to download this resource"
+#~ msgid "You are not authorized to download this resource."
+#~ msgstr "මෙම සම්පත් බාගත කිරීම සඳහා ඔබ විසින් ඉල්ලා"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "No files found."
+#~ msgstr "ලේඛන"
+
+#, fuzzy
+#~| msgid "Not provided"
+#~ msgid "Not Authorized"
+#~ msgstr "සපයනු නොලැබේ"
+
+#, fuzzy
+#~| msgid "style name"
+#~ msgid "style xml"
+#~ msgstr "ශෛලයේ නම"
+
+#, fuzzy
+#~| msgid "sld url"
+#~ msgid "style url"
+#~ msgstr "sld url එක"
+
+#, fuzzy
+#~| msgid "sld url"
+#~ msgid "style legend url"
+#~ msgstr "sld url එක"
+
+#~ msgid "Auto-detect"
+#~ msgstr "වාහන - හඳුනා"
+
+#~ msgid "Paired WMS/WFS/WCS"
+#~ msgstr "නීපාරක්ෂක WMS / WFS / WCS"
+
+#~ msgid "Web Map Service"
+#~ msgstr "වෙබ් සිතියම සේවා"
+
+#~ msgid "Catalogue Service"
+#~ msgstr "කැටලොග් සේවා"
+
+#, fuzzy
+#~| msgid "ArcGIS REST Service"
+#~ msgid "ArcGIS REST MapServer"
+#~ msgstr "ArcGIS REST  සේවා"
+
+#, fuzzy
+#~| msgid "ArcGIS REST Service"
+#~ msgid "ArcGIS REST ImageServer"
+#~ msgstr "ArcGIS REST  සේවා"
+
+#~ msgid "OpenGeoPortal"
+#~ msgstr "OpenGeoPortal"
+
+#~ msgid "Harvard Geospatial Library"
+#~ msgstr "Harvard Geospatial Library"
+
+#, fuzzy
+#~| msgid "GeoNode's Web Services"
+#~ msgid "GeoNode (Web Map Service)"
+#~ msgstr "GeoNode හි වෙබ් සේවා"
+
+#, fuzzy
+#~| msgid "Catalogue Service"
+#~ msgid "GeoNode (Catalogue Service)"
+#~ msgstr "කැටලොග් සේවා"
+
+#~ msgid "Service URL"
+#~ msgstr "සේවා URL එක"
+
+#~ msgid "Service Type"
+#~ msgstr "සේවා වර්ගය"
+
+#, fuzzy
+#~| msgid "service interfaces"
+#~ msgid "Service %(url)s is already registered"
+#~ msgstr "සේවා අතුරුමුහුණත්"
+
+#~ msgid "Local"
+#~ msgstr "දේශීය"
+
+#~ msgid "Cascaded"
+#~ msgstr "Cascaded"
+
+#~ msgid "Harvested"
+#~ msgstr "Harvested"
+
+#~ msgid "Indexed"
+#~ msgstr "Indexed"
+
+#~ msgid "Live"
+#~ msgstr "Live"
+
+#, fuzzy
+#~| msgid "Resources"
+#~ msgid "Resource is queued"
+#~ msgstr "සම්පත්"
+
+#, fuzzy
+#~| msgid "service interfaces"
+#~ msgid "Service registered successfully"
+#~ msgstr "සේවා අතුරුමුහුණත්"
+
+#, fuzzy
+#~| msgid "A resource's download has been requested"
+#~ msgid "The selected resources are being imported"
+#~ msgstr "ඒ සම්පත් ගේ බාගත ඉල්ලා තිබෙනවා"
+
+#, fuzzy
+#~| msgid "A resource's download has been requested"
+#~ msgid "The selected resources have been imported"
+#~ msgstr "ඒ සම්පත් ගේ බාගත ඉල්ලා තිබෙනවා"
+
+#, fuzzy
+#~| msgid "A resource's download has been requested"
+#~ msgid "Resource is already being processed"
+#~ msgstr "ඒ සම්පත් ගේ බාගත ඉල්ලා තිබෙනවා"
+
+#, fuzzy
+#~| msgid "Password changed successfully."
+#~ msgid "Service rescanned successfully"
+#~ msgstr "Password සාර්ථකව වෙනස් විය."
+
+#, fuzzy
+#~| msgid "You are not permitted to remove this service."
+#~ msgid "You are not permitted to change this service."
+#~ msgstr "ඔබ මෙම සේවාව ඉවත් කිරීමට අවසර නැත."
+
+#~ msgid "You are not permitted to remove this service."
+#~ msgstr "ඔබ මෙම සේවාව ඉවත් කිරීමට අවසර නැත."
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "Service {} has been deleted"
+#~ msgstr "සේවා නිර්මාණය කර ඇත :"
+
+#~ msgid "created"
+#~ msgstr "නිර්මාණය කරන ලද්දේ"
+
+#~ msgid "deleted"
+#~ msgstr "මකා දමන ලද්දේ"
+
+#~ msgid "updated"
+#~ msgstr "යාවත්කාලීන කරන ලද්දේ"
+
+#~ msgid "added a comment"
+#~ msgstr "අදහසක් දක්වන ලද්දේ"
+
+#~ msgid "updated a comment"
+#~ msgstr "අදහසක් යාවත්කාලීන කරන ලද්දේ"
+
+#~ msgid "uploaded"
+#~ msgstr "උඩුගත කරන ලද්දේ"
+
+#~ msgid "to"
+#~ msgstr "වෙත"
+
+#, fuzzy
+#~| msgid "Confirm email address for %(site_name)s"
+#~ msgid "Please confirm email address for %(site_name)s"
+#~ msgstr "ඊතැපැල් ලිපිනය තහවුරු කරන්න  %(site_name)s"
+
+#, fuzzy
+#~| msgid "Confirm email address for %(site_name)s"
+#~ msgid "Create an account on %(site_name)s"
+#~ msgstr "ඊතැපැල් ලිපිනය තහවුරු කරන්න  %(site_name)s"
+
+#, fuzzy
+#~| msgid "Change password: %s"
+#~ msgid "Change password email notification"
+#~ msgstr "වෙනස් password: %s"
+
+#, fuzzy
+#~| msgid ""
+#~| "You're receiving this email because you or someone else has requested a "
+#~| "password for your user account at %(site_name)s.\n"
+#~| "It can be safely ignored if you did not request a password reset. Click "
+#~| "the link below to reset your password.\n"
+#~| "\n"
+#~| "%(password_reset_url)s\n"
+#~ msgid ""
+#~ "Hello from %(site_name)s!\n"
+#~ "\n"
+#~ "You're receiving this e-mail because you or someone else has requested a "
+#~ "password for your user account.\n"
+#~ "It can be safely ignored if you did not request a password reset. Click "
+#~ "the link below to reset your password."
+#~ msgstr ""
+#~ "ඔබ හෝ වෙන කෙනෙක් ඔබගේ පරිශීලක ගිණුම සඳහා මුරපදයක් ඉල්ලා ඇත නිසා ඔබට මෙම විද්යුත් තැපැල් "
+#~ "ලබමින් කරනවා   %(site_name)s\n"
+#~ "ඔබ මුරපද යළි ඉල්ලා නෑ නම් එය ආරක්ෂිතව නොසලකා හැරිය හැක . ඔබේ මුරවචනය නැවත සකස් කිරීම "
+#~ "සඳහා පහත ලින්ක් එක ක්ලික් කරන්න .\n"
+#~ "%(password_reset_url)s\n"
+
+#~ msgid "[%(site_name)s] Password reset"
+#~ msgstr "[%(site_name)s]   Password yaḷai"
+
+#, fuzzy
+#~| msgid "The following groups:"
+#~ msgid "is a member of the following group(s)"
+#~ msgstr "පහත දැක්වෙන කණ්ඩායම් :"
+
+#~ msgid "Your account has been approved and is now active."
+#~ msgstr "ඔබගේ ගිණුම අනුමත හා දැන් සක්රීය කර ඇත."
+
+#~ msgid "You can use the login form at"
+#~ msgstr "ඔබ ට ලොගින් පෝරම භාවිතා කළ හැක"
+
+#, fuzzy
+#~| msgid "Welcome"
+#~ msgid "Welcome at"
+#~ msgstr "ආයුබෝවන්"
+
+#, fuzzy
+#~| msgid "Your account is now active"
+#~ msgid "Your account is now active"
+#~ msgstr "ඔබගේ ගිණුම දැන් සක්රීය"
+
+#~ msgid "has requested access to the site."
+#~ msgstr "එම වෙබ් අඩවිය වෙත ප්රවේශ ඉල්ලීමක් කර තිබේ."
+
+#~ msgid ""
+#~ "You can enable access by setting the user as active on the admin section"
+#~ msgstr "ඔබ පරිපාලක කොටස සක්රීය ලෙස පරිශීලක සැකසීමෙන් ප්රවේශ සක්රීය කල හැක"
+
+#~ msgid "A user has requested access to the site"
+#~ msgstr "පරිශීලකයෙක් වෙබ් අඩවිය වෙත ප්රවේශ ඉල්ලීමක් කර තිබේ"
+
+#, fuzzy
+#~| msgid "The following document was updated"
+#~ msgid "The following document was approved"
+#~ msgstr "පහත දැක්වෙන ලේඛනය යාවත්කාලීන කර"
+
+#~ msgid "owned by"
+#~ msgstr "අයත්"
+
+#~ msgid "You can visit the document's detail page here"
+#~ msgstr "ඔබ මෙතනයි ලේඛනයේ විස්තර පිටුව වෙත හැකි"
+
+#, fuzzy
+#~| msgid "A document has been rated"
+#~ msgid "A document has been approved"
+#~ msgstr "කරන ලද ලියවිල්ලක් ශ්රේණිගත කර ඇත"
+
+#~ msgid "A comment has been posted for the document"
+#~ msgstr "A comment දත්තගොනුව සඳහා පල කර නැත"
+
+#~ msgid "by the user"
+#~ msgstr "පරිශීලක විසින්"
+
+#~ msgid "A comment has been posted for a document"
+#~ msgstr "A comment ලියවිල්ලක් සඳහා පල කර නැත"
+
+#~ msgid "uploaded the following document"
+#~ msgstr "පහත සඳහන් ලේඛන උඩුගත"
+
+#~ msgid "A document has been uploaded"
+#~ msgstr "කරන ලද ලියවිල්ලක් උඩුගත කර ඇත"
+
+#~ msgid "The following document was deleted"
+#~ msgstr "පහත දැක්වෙන ලේඛනය මකා"
+
+#~ msgid "A document has been deleted"
+#~ msgstr "කරන ලද ලියවිල්ලක් මකාදමා ඇත"
+
+#, fuzzy
+#~| msgid "The following document was deleted"
+#~ msgid "The following document was published"
+#~ msgstr "පහත දැක්වෙන ලේඛනය මකා"
+
+#, fuzzy
+#~| msgid "A document has been uploaded"
+#~ msgid "A document has been published"
+#~ msgstr "කරන ලද ලියවිල්ලක් උඩුගත කර ඇත"
+
+#~ msgid "rated"
+#~ msgstr "ණය ශ්රේණියක්"
+
+#~ msgid "the following document"
+#~ msgstr "පහත සඳහන් ලේඛන"
+
+#~ msgid "You can visit the layer's detail page here"
+#~ msgstr "ඔබ මෙතනයි ස්තරයෙහි විස්තර පිටුව වෙත හැකි"
+
+#~ msgid "A document has been rated"
+#~ msgstr "කරන ලද ලියවිල්ලක් ශ්රේණිගත කර ඇත"
+
+#~ msgid "The following document was updated"
+#~ msgstr "පහත දැක්වෙන ලේඛනය යාවත්කාලීන කර"
+
+#~ msgid "A document has been updated"
+#~ msgstr "කරන ලද ලියවිල්ලක් යාවත්කාලීන කර ඇත"
+
+#, fuzzy
+#~| msgid "You have the following incomplete uploads"
+#~ msgid "You have received the following notice from"
+#~ msgstr "පහත අසම්පූර්ණ උඩුගත කිරීම් ඔබට තිබේ"
+
+#, fuzzy
+#~| msgid "Notices"
+#~ msgid "%(notice)s"
+#~ msgstr "Notices"
+
+#, fuzzy
+#~| msgid "The following layer was updated"
+#~ msgid "The following layer was approved"
+#~ msgstr "පහත දැක්වෙන ස්තරය යාවත්කාලීන කර"
+
+#, fuzzy
+#~| msgid "A layer has been rated"
+#~ msgid "A layer has been approved"
+#~ msgstr "තට්ටුවක් ශ්රේණිගත කර ඇත"
+
+#~ msgid "A comment has been posted for the layer"
+#~ msgstr "A comment ස්තරය සඳහා පල කර නැත"
+
+#~ msgid "A comment has been posted for a layer"
+#~ msgstr "A comment තට්ටුවක් සඳහා පල කර නැත"
+
+#~ msgid "uploaded the following layer"
+#~ msgstr "පහත සඳහන් ස්ථරය උඩුගත"
+
+#~ msgid "A new layer has been uploaded"
+#~ msgstr "නව ස්ථරය උඩුගත කර ඇත"
+
+#~ msgid "The following layer was deleted"
+#~ msgstr "පහත දැක්වෙන ස්තරය මකා"
+
+#~ msgid "A layer has been deleted"
+#~ msgstr "තට්ටුවක් මකාදමා ඇත"
+
+#, fuzzy
+#~| msgid "The following layer was deleted"
+#~ msgid "The following layer was published"
+#~ msgstr "පහත දැක්වෙන ස්තරය මකා"
+
+#, fuzzy
+#~| msgid "A layer has been deleted"
+#~ msgid "A layer has been published"
+#~ msgstr "තට්ටුවක් මකාදමා ඇත"
+
+#~ msgid "the following layer"
+#~ msgstr "පහත සඳහන් ස්ථරය"
+
+#~ msgid "A layer has been rated"
+#~ msgstr "තට්ටුවක් ශ්රේණිගත කර ඇත"
+
+#~ msgid "The following layer was updated"
+#~ msgstr "පහත දැක්වෙන ස්තරය යාවත්කාලීන කර"
+
+#~ msgid "A layer has been updated"
+#~ msgstr "තට්ටුවක් යාවත්කාලීන කර ඇත"
+
+#, fuzzy
+#~| msgid "The following map was updated"
+#~ msgid "The following map was approved"
+#~ msgstr "පහත දැක්වෙන සිතියම යාවත්කාලීන කර"
+
+#~ msgid "You can visit the map's detail page here"
+#~ msgstr "ඔබ මෙතනයි සිතියමේ විස්තර පිටුව වෙත හැකි"
+
+#, fuzzy
+#~| msgid "A map has been rated"
+#~ msgid "A map has been approved"
+#~ msgstr "සිතියමක් ශ්රේණිගත කර ඇත"
+
+#~ msgid "A comment has been posted for the map"
+#~ msgstr "A comment සිතියම සඳහා පල කර නැත"
+
+#~ msgid "A comment has been posted for a map"
+#~ msgstr "A comment සිතියමක් සඳහා පල කර නැත"
+
+#~ msgid "created the following map"
+#~ msgstr "පහත සඳහන් සිතියම නිර්මාණය"
+
+#~ msgid "A map has been created"
+#~ msgstr "සිතියමක් නිර්මාණය කර ඇත"
+
+#~ msgid "The following map was deleted"
+#~ msgstr "පහත දැක්වෙන සිතියම මකා"
+
+#~ msgid "A map has been deleted"
+#~ msgstr "සිතියමක් මකාදමා ඇත"
+
+#, fuzzy
+#~| msgid "The following map was deleted"
+#~ msgid "The following map was published"
+#~ msgstr "පහත දැක්වෙන සිතියම මකා"
+
+#, fuzzy
+#~| msgid "A map has been deleted"
+#~ msgid "A map has been published"
+#~ msgstr "සිතියමක් මකාදමා ඇත"
+
+#, fuzzy
+#~| msgid "the following layer"
+#~ msgid "the following map"
+#~ msgstr "පහත සඳහන් ස්ථරය"
+
+#~ msgid "A map has been rated"
+#~ msgstr "සිතියමක් ශ්රේණිගත කර ඇත"
+
+#~ msgid "The following map was updated"
+#~ msgstr "පහත දැක්වෙන සිතියම යාවත්කාලීන කර"
+
+#~ msgid "A map has been updated"
+#~ msgstr "සිතියමක් යාවත්කාලීන කර ඇත"
+
+#~ msgid "requested you to download this resource"
+#~ msgstr "මෙම සම්පත් බාගත කිරීම සඳහා ඔබ විසින් ඉල්ලා"
+
+#~ msgid ""
+#~ "Please go to resource page and assign the download permissions if you wish"
+#~ msgstr "ඔබ කැමති නම්, පිටුව සම්පත් හා බාගත අවසර ලබා දිය යන්න කරුණාකර"
+
+#, fuzzy
+#~| msgid "A document has been deleted"
+#~ msgid "A resource's download has been requested"
+#~ msgstr "කරන ලද ලියවිල්ලක් මකාදමා ඇත"
+
+#, fuzzy
+#~| msgid "Message Inbox"
+#~ msgid "A message to"
+#~ msgstr "පණිවුඩය එන ලිපි"
+
+#, fuzzy
+#~| msgid "GeoNode Help"
+#~ msgid "GeoNode Themes Library"
+#~ msgstr "GeoNode සහය"
+
+#, fuzzy
+#~| msgid "Could not find any layers in a compatible projection."
+#~ msgid "Could not find any kml files inside the uploaded kmz"
+#~ msgstr "  compatible projection. තුල ඕනෑම ස්ථර මම සොයා ගැනීමට නොහැක "
+
+#~ msgid "Invalid permission level."
+#~ msgstr "වලංගු නොවන අවසර මට්ටම"
+
+#~ msgid "Permission Denied"
+#~ msgstr "අවසර ලබා දෙනු නොලැබේ"
 
 #~ msgid "Last Sender"
 #~ msgstr "අවසන් වරට එවූ තැනැත්තා"

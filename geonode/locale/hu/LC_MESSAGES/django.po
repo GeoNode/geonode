@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-10 14:27+0100\n"
+"POT-Creation-Date: 2020-03-13 13:20+0100\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Hungarian (http://www.transifex.com/geonode/geonode/language/"
@@ -36,532 +36,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#: geonode/base/__init__.py:27
-msgid "Request to download a resource"
-msgstr ""
-
-#: geonode/base/__init__.py:28
-msgid "A request for downloading a resource was sent"
-msgstr ""
-
-#: geonode/base/enumerations.py:27
-msgid "series"
-msgstr "sorozat"
-
-#: geonode/base/enumerations.py:28
-msgid "computer program or routine"
-msgstr "számítógépes program vagy rutin"
-
-#: geonode/base/enumerations.py:29
-#, fuzzy
-#| msgid "date type"
-msgid "feature type"
-msgstr "dátum típus"
-
-#: geonode/base/enumerations.py:30
-msgid "copy or imitation of an existing or hypothetical object"
-msgstr "másolata vagy utánzata létező vagy hipotetikus tárgy"
-
-#: geonode/base/enumerations.py:31
-msgid "collection hardware"
-msgstr "gyűjtemény hardver"
-
-#: geonode/base/enumerations.py:32
-msgid "collection session"
-msgstr "gyűjtemény ülés"
-
-#: geonode/base/enumerations.py:33
-msgid "non-geographic data"
-msgstr "nem földrajzi adatok"
-
-#: geonode/base/enumerations.py:34
-msgid "property type"
-msgstr "ingatlan típus"
-
-#: geonode/base/enumerations.py:35
-msgid "field session"
-msgstr "mező ülés"
-
-#: geonode/base/enumerations.py:36
-#, fuzzy
-#| msgid "dataset"
-msgid "dataset"
-msgstr "adatbázisba"
-
-#: geonode/base/enumerations.py:37
-#, fuzzy
-#| msgid "Resources"
-msgid "service interfaces"
-msgstr "Erőforrás"
-
-#: geonode/base/enumerations.py:38
-msgid "attribute class"
-msgstr "attribútum osztály"
-
-#: geonode/base/enumerations.py:39
-msgid "characteristic of a feature"
-msgstr "jellemző jellemző"
-
-#: geonode/base/enumerations.py:40
-msgid "tile or spatial subset of geographic data"
-msgstr "csempe vagy térbeli részhalmazát földrajzi adatok"
-
-#: geonode/base/enumerations.py:41
-msgid "feature"
-msgstr "vonás"
-
-#: geonode/base/enumerations.py:42
-msgid "dimension group"
-msgstr "dimenzió csoport"
-
-#: geonode/base/enumerations.py:46
-msgid "frequency of maintenance for the data is not known"
-msgstr "karbantartás gyakorisága az adat nem ismert"
-
-#: geonode/base/enumerations.py:47
-msgid "data is repeatedly and frequently updated"
-msgstr "adatokat ismételten és rendszeresen frissített"
-
-#: geonode/base/enumerations.py:48
-msgid "there are no plans to update the data"
-msgstr "nem tervezik frissíteni az adatokat"
-
-#: geonode/base/enumerations.py:49
-msgid "data is updated each day"
-msgstr "adatok frissítése naponta"
-
-#: geonode/base/enumerations.py:50
-msgid "data is updated every year"
-msgstr "adatok frissítése évente"
-
-#: geonode/base/enumerations.py:51
-msgid "data is updated as deemed necessary"
-msgstr "adatok frissítésre szükség"
-
-#: geonode/base/enumerations.py:52
-msgid "data is updated each month"
-msgstr "adatok frissítése havonta"
-
-#: geonode/base/enumerations.py:53
-msgid "data is updated every two weeks"
-msgstr "adatok frissítése kéthetente"
-
-#: geonode/base/enumerations.py:55
-msgid "data is updated in intervals that are uneven in duration"
-msgstr "adatok frissítése időközönként, amelyek egyenetlen tartó"
-
-#: geonode/base/enumerations.py:56
-msgid "data is updated on a weekly basis"
-msgstr "adatok frissítése hetente"
-
-#: geonode/base/enumerations.py:57
-msgid "data is updated twice each year"
-msgstr "adatok frissítése évente kétszer"
-
-#: geonode/base/enumerations.py:58
-msgid "data is updated every three months"
-msgstr "adatok frissítése háromhavonta"
-
-#: geonode/base/enumerations.py:77
-msgid "No information provided"
-msgstr "Nem adott tájékoztatást"
-
-#: geonode/base/forms.py:282
-#: geonode/base/templates/base/_resourcebase_info_panel.html:77
-#: geonode/catalogue/templates/geonode_metadata_full.html:145
-#: geonode/documents/templates/documents/document_metadata_advanced.html:76
-#: geonode/documents/templates/layouts/doc_panels.html:324
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:99
-#: geonode/layers/templates/layouts/panels.html:326
-#: geonode/maps/templates/layouts/map_panels.html:322
-#: geonode/maps/templates/maps/map_metadata_advanced.html:77
-#: geonode/templates/metadata_detail.html:88
-msgid "Category"
-msgstr "Kategória"
-
-#: geonode/base/forms.py:293
-msgid "Category is required."
-msgstr "Kategória szükséges."
-
-#: geonode/base/forms.py:314
-msgid "Keywords from Thesaurus"
-msgstr ""
-
-#: geonode/base/forms.py:316
-msgid "List of keywords from Thesaurus"
-msgstr ""
-
-#: geonode/base/forms.py:336 geonode/base/models.py:577
-msgid "Owner"
-msgstr "Tulajdonos"
-
-#: geonode/base/forms.py:342
-#: geonode/base/templates/base/_resourcebase_info_panel.html:34
-#: geonode/catalogue/templates/geonode_metadata_full.html:58
-#: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
-#: geonode/templates/metadata_detail.html:71
-#: geonode/templates/search/_general_filters.html:108
-msgid "Date"
-msgstr "Dátum"
-
-#: geonode/base/forms.py:348 geonode/base/models.py:681
-msgid "temporal extent start"
-msgstr "időbeli mértékben kezdet"
-
-#: geonode/base/forms.py:355 geonode/base/models.py:686
-msgid "temporal extent end"
-msgstr "időbeli mértéke end"
-
-#: geonode/base/forms.py:363 geonode/base/forms.py:371
-msgid "Person outside GeoNode (fill form)"
-msgstr ""
-
-#: geonode/base/forms.py:364
-#: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
-#: geonode/base/templates/base/_resourcebase_info_panel.html:104
-#: geonode/catalogue/templates/geonode_metadata_full.html:75
-#: geonode/documents/templates/documents/document_metadata.html:42
-#: geonode/documents/templates/documents/document_metadata.html:66
-#: geonode/documents/templates/documents/document_metadata_advanced.html:47
-#: geonode/documents/templates/documents/document_metadata_advanced.html:100
-#: geonode/layers/templates/layers/layer_metadata.html:53
-#: geonode/layers/templates/layers/layer_metadata.html:84
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:58
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:144
-#: geonode/maps/templates/maps/map_metadata.html:67
-#: geonode/maps/templates/maps/map_metadata_advanced.html:101
-msgid "Point of Contact"
-msgstr "Kapcsolattartó"
-
-#: geonode/base/forms.py:372
-#: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
-#: geonode/documents/templates/documents/document_metadata.html:38
-#: geonode/documents/templates/documents/document_metadata_advanced.html:43
-#: geonode/layers/templates/layers/layer_metadata.html:49
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:54
-#: geonode/templates/metadata_detail.html:346
-msgid "Metadata Author"
-msgstr "Metaadatok Szerző"
-
-#: geonode/base/forms.py:379
-#, fuzzy
-#| msgid "Keywords"
-msgid "Free-text Keywords"
-msgstr "Kulcsszavak"
-
-#: geonode/base/forms.py:381
-#, fuzzy
-#| msgid "A space or comma-separated list of keywords"
-msgid ""
-"A space or comma-separated list of keywords. Use the widget to select from "
-"Hierarchical tree."
-msgstr "A tér vagy vesszővel elválasztott kulcsszavak"
-
-#: geonode/base/forms.py:393
-#: geonode/base/templates/base/_resourcebase_info_panel.html:87
-#: geonode/catalogue/templates/geonode_metadata_full.html:149
-#: geonode/templates/metadata_detail.html:98
-#: geonode/templates/search/_region_filter.html:5
-msgid "Regions"
-msgstr "Régiók"
-
-#: geonode/base/management/commands/updategeoip.py:44
-msgid "Write result to file, default GEOIP_PATH: {}"
-msgstr ""
-
-#: geonode/base/management/commands/updategeoip.py:46
-msgid ""
-"Fetch database from specific url. If nothing provided, default {} will be "
-"used"
-msgstr ""
-
-#: geonode/base/management/commands/updategeoip.py:48
-msgid "Overwrite file if exists"
-msgstr ""
-
-#: geonode/base/models.py:87 geonode/services/models.py:194
-msgid "function performed by the responsible party"
-msgstr "funkciója a felelős fél"
-
-#: geonode/base/models.py:527
-msgid "reference date for the cited resource"
-msgstr "viszonyítási időpont az idézett forrás"
-
-#: geonode/base/models.py:528
-msgid "identification of when a given event occurred"
-msgstr "azonosítását, amikor egy adott esemény"
-
-#: geonode/base/models.py:529
-msgid "version of the cited resource"
-msgstr "változata az idézett forrás"
-
-#: geonode/base/models.py:531
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "rövid szöveges tartalmának összefoglalása a forrás (ok)"
-
-#: geonode/base/models.py:533
-msgid "summary of the intentions with which the resource(s) was developed"
-msgstr "összefoglaló a szándék, amellyel a forrás (ok) fejlesztették"
-
-#: geonode/base/models.py:535
-msgid ""
-"frequency with which modifications and deletions are made to the data after "
-"it is first produced"
-msgstr ""
-"gyakoriság, amellyel módosításokkal és törlések készülnek az adatok után "
-"először elő"
-
-#: geonode/base/models.py:538
-msgid ""
-"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-"the subject (space or comma-separated"
-msgstr ""
-"leggyakrabban használt szó (k) vagy hivatalos szó (k) vagy mondat (ok) "
-"leírására használt tárgy (térben vagy vesszővel elválasztott"
-
-#: geonode/base/models.py:541
-#, fuzzy
-#| msgid ""
-#| "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-#| "the subject (space or comma-separated"
-msgid ""
-"formalised word(s) or phrase(s) from a fixed thesaurus used to describe the "
-"subject (space or comma-separated"
-msgstr ""
-"leggyakrabban használt szó (k) vagy hivatalos szó (k) vagy mondat (ok) "
-"leírására használt tárgy (térben vagy vesszővel elválasztott"
-
-#: geonode/base/models.py:543
-msgid "keyword identifies a location"
-msgstr "kulcsszó azonosítja egy helyet"
-
-#: geonode/base/models.py:545
-msgid "limitation(s) placed upon the access or use of the data."
-msgstr "korlátozás (ok) keletkezik a hozzáférés vagy az adatok felhasználását."
-
-#: geonode/base/models.py:547
-msgid ""
-"other restrictions and legal prerequisites for accessing and using the "
-"resource or metadata"
-msgstr ""
-"egyéb korlátozások és jogi előfeltételei hozzáférés és azok felhasználása a "
-"forrás vagy metaadatok"
-
-#: geonode/base/models.py:549
-msgid "license of the dataset"
-msgstr "engedély Az adatkészlet"
-
-#: geonode/base/models.py:550
-msgid "language used within the dataset"
-msgstr "használt nyelv az adatbázisba"
-
-#: geonode/base/models.py:552
-msgid ""
-"high-level geographic data thematic classification to assist in the grouping "
-"and search of available geographic data sets."
-msgstr ""
-"magas szintű földrajzi adatok tematikus besorolás csoportosításában segít és "
-"keresést az elérhető földrajzi adatsorok."
-
-#: geonode/base/models.py:555
-msgid "method used to represent geographic information in the dataset."
-msgstr ""
-"módszert használják, hogy képviselje a földrajzi információkat az "
-"adatbázisba."
-
-#: geonode/base/models.py:557
-msgid "time period covered by the content of the dataset (start)"
-msgstr "időszak, amelyre a tartalma adatbázisba (start)"
-
-#: geonode/base/models.py:559
-msgid "time period covered by the content of the dataset (end)"
-msgstr "időszak, amelyre a tartalma adatbázisba (vége)"
-
-#: geonode/base/models.py:561
-msgid ""
-"general explanation of the data producer's knowledge about the lineage of a "
-"dataset"
-msgstr ""
-"általános magyarázata az adatok termelő ismereteit a vonal egy adatbázisba"
-
-#: geonode/base/models.py:564
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-#: geonode/base/models.py:566
-#: geonode/base/templates/base/_resourcebase_info_panel.html:114
-#: geonode/templates/metadata_detail.html:116
-msgid "DOI"
-msgstr ""
-
-#: geonode/base/models.py:582
-msgid "title"
-msgstr "cím"
-
-#: geonode/base/models.py:583
-msgid "name by which the cited resource is known"
-msgstr "nevet, amellyel a hivatkozott erőforrás ismert"
-
-#: geonode/base/models.py:586
-msgid "date"
-msgstr "dátum"
-
-#: geonode/base/models.py:590
-msgid "date type"
-msgstr "dátum típus"
-
-#: geonode/base/models.py:596
-msgid "edition"
-msgstr "kiadás"
-
-#: geonode/base/models.py:602
-msgid "abstract"
-msgstr "absztrakt"
-
-#: geonode/base/models.py:607
-msgid "purpose"
-msgstr "cél"
-
-#: geonode/base/models.py:613
-msgid "maintenance frequency"
-msgstr "karbantartási gyakoriság"
-
-#: geonode/base/models.py:620 geonode/base/models.py:627
-#: geonode/people/models.py:117
-msgid "keywords"
-msgstr "kulcsszavak"
-
-#: geonode/base/models.py:633
-msgid "keywords region"
-msgstr "kulcsszavak régió"
-
-#: geonode/base/models.py:639
-msgid "restrictions"
-msgstr "korlátozások"
-
-#: geonode/base/models.py:646
-msgid "restrictions other"
-msgstr "korlátozásoknak"
-
-#: geonode/base/models.py:654
-#: geonode/base/templates/base/_resourcebase_info_panel.html:16
-#: geonode/base/templates/base/_resourcebase_info_panel.html:134
-#: geonode/catalogue/templates/geonode_metadata_full.html:98
-#: geonode/templates/metadata_detail.html:57
-#: geonode/templates/metadata_detail.html:203
-msgid "License"
-msgstr "Engedély"
-
-#: geonode/base/models.py:658 geonode/people/models.py:121
-msgid "language"
-msgstr "nyelv"
-
-#: geonode/base/models.py:676
-#, fuzzy
-#| msgid "Spatial Representation Type"
-msgid "spatial representation type"
-msgstr "Területi Képviselet típus"
-
-#: geonode/base/models.py:691
-msgid "supplemental information"
-msgstr "kiegészítő információk"
-
-#: geonode/base/models.py:694
-msgid "any other descriptive information about the dataset"
-msgstr "egyéb leírásáról adatbázisba"
-
-#: geonode/base/models.py:698
-msgid "data quality statement"
-msgstr "az adatminőség nyilatkozat"
-
-#: geonode/base/models.py:739
-msgid "CSW typename"
-msgstr "CSW typename"
-
-#: geonode/base/models.py:744
-msgid "CSW schema"
-msgstr "CSW séma"
-
-#: geonode/base/models.py:749
-msgid "CSW source"
-msgstr "CSW forrás"
-
-#: geonode/base/models.py:754
-msgid "CSW insert date"
-msgstr "CSW dátum"
-
-#: geonode/base/models.py:756
-msgid "CSW type"
-msgstr "CSW típus"
-
-#: geonode/base/models.py:761
-msgid "CSW anytext"
-msgstr "CSW anytext"
-
-#: geonode/base/models.py:763
-msgid "CSW WKT geometry"
-msgstr "CSW WKT geometria"
-
-#: geonode/base/models.py:769
-#, fuzzy
-#| msgid "Metadata Provider"
-msgid "Metadata uploaded preserve"
-msgstr "Metaadatok Szolgáltató"
-
-#: geonode/base/models.py:776 geonode/templates/metadata_detail.html:108
-msgid "Featured"
-msgstr ""
-
-#: geonode/base/models.py:777
-msgid "Should this resource be advertised in home page?"
-msgstr "Amennyiben ezt a forrást kell hirdetni honlap?"
-
-#: geonode/base/models.py:779
-#, fuzzy
-#| msgid "Published From"
-msgid "Is Published"
-msgstr "Közreadta"
-
-#: geonode/base/models.py:781
-msgid "Should this resource be published and searchable?"
-msgstr "Amennyiben ezt a forrást kell közzétenni és kereshető?"
-
-#: geonode/base/models.py:783 geonode/templates/metadata_detail.html:102
-#, fuzzy
-#| msgid "Not provided"
-msgid "Approved"
-msgstr "Nem biztosított"
-
-#: geonode/base/models.py:785
-msgid "Is this resource validated from a publisher or editor?"
-msgstr ""
-
-#: geonode/base/models.py:788
-#, fuzzy
-#| msgid "Thumbnail"
-msgid "Thumbnail url"
-msgstr "Thumbnail"
-
-#: geonode/base/models.py:796
-msgid "Dirty State"
-msgstr ""
-
-#: geonode/base/models.py:798
-msgid "Security Rules Are Not Synched with GeoServer!"
-msgstr ""
-
-#: geonode/base/models.py:1425
-msgid "For example \"kml\""
-msgstr "Például a \"kml\""
-
-#: geonode/base/models.py:1430
-msgid "For example \"View in Google Earth\""
-msgstr "Például a \"View in Google Earth\""
-
-#: geonode/base/models.py:1432
-msgid "For example \"text/xml\""
-msgstr "Például a \"text / xml\""
 
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:3
 #: geonode/templates/500.html:181 geonode/templates/500.html:200
@@ -583,12 +57,35 @@ msgstr "Tulajdonosa, Kapcsolattartó, metaadatok Szerző"
 msgid "Responsible"
 msgstr ""
 
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
+#: geonode/base/templates/base/_resourcebase_info_panel.html:104
+#: geonode/catalogue/templates/geonode_metadata_full.html:75
+#: geonode/documents/templates/documents/document_metadata.html:42
+#: geonode/documents/templates/documents/document_metadata.html:66
+#: geonode/documents/templates/documents/document_metadata_advanced.html:47
+#: geonode/documents/templates/documents/document_metadata_advanced.html:100
+#: geonode/layers/templates/layers/layer_metadata.html:53
+#: geonode/layers/templates/layers/layer_metadata.html:84
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:58
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:144
+#: geonode/maps/templates/maps/map_metadata.html:67
+#: geonode/maps/templates/maps/map_metadata_advanced.html:101
+msgid "Point of Contact"
+msgstr "Kapcsolattartó"
+
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
+#: geonode/documents/templates/documents/document_metadata.html:38
+#: geonode/documents/templates/documents/document_metadata_advanced.html:43
+#: geonode/layers/templates/layers/layer_metadata.html:49
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:54
+#: geonode/templates/metadata_detail.html:346
+msgid "Metadata Author"
+msgstr "Metaadatok Szerző"
+
 #: geonode/base/templates/base/_resourcebase_info_panel.html:6
 #: geonode/catalogue/templates/geonode_metadata_full.html:55
 #: geonode/client/templates/leaflet/maps/map_view.html:101
-#: geonode/groups/models.py:79
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:20
-#: geonode/services/forms.py:113
 #: geonode/services/templates/services/service_detail.html:22
 #: geonode/services/templates/services/service_list.html:15
 #: geonode/templates/announcements/announcement_list.html:19
@@ -601,6 +98,14 @@ msgstr "Cím"
 msgid "SRID"
 msgstr ""
 
+#: geonode/base/templates/base/_resourcebase_info_panel.html:16
+#: geonode/base/templates/base/_resourcebase_info_panel.html:134
+#: geonode/catalogue/templates/geonode_metadata_full.html:98
+#: geonode/templates/metadata_detail.html:57
+#: geonode/templates/metadata_detail.html:203
+msgid "License"
+msgstr "Engedély"
+
 #: geonode/base/templates/base/_resourcebase_info_panel.html:24
 #: geonode/base/templates/base/_resourcebase_info_panel.html:141
 #: geonode/templates/metadata_detail.html:65
@@ -611,11 +116,18 @@ msgstr ""
 #: geonode/base/templates/base/_resourcebase_info_panel.html:29
 #: geonode/catalogue/templates/geonode_metadata_full.html:61
 #: geonode/client/templates/leaflet/maps/map_view.html:106
-#: geonode/services/forms.py:131
 #: geonode/services/templates/services/service_detail.html:10
 #: geonode/templates/metadata_detail.html:48
 msgid "Abstract"
 msgstr "Absztrakt"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:34
+#: geonode/catalogue/templates/geonode_metadata_full.html:58
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
+#: geonode/templates/metadata_detail.html:71
+#: geonode/templates/search/_general_filters.html:108
+msgid "Date"
+msgstr "Dátum"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:45
 #: geonode/catalogue/templates/geonode_metadata_full.html:91
@@ -628,7 +140,6 @@ msgstr "Típus"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:50
 #: geonode/catalogue/templates/geonode_metadata_full.html:142
-#: geonode/groups/models.py:89 geonode/people/forms.py:92
 #: geonode/people/templates/people/profile_detail.html:106
 #: geonode/services/templates/services/service_detail.html:11
 #: geonode/templates/metadata_detail.html:81
@@ -639,15 +150,39 @@ msgstr "Típus"
 msgid "Keywords"
 msgstr "Kulcsszavak"
 
+#: geonode/base/templates/base/_resourcebase_info_panel.html:77
+#: geonode/catalogue/templates/geonode_metadata_full.html:145
+#: geonode/documents/templates/documents/document_metadata_advanced.html:76
+#: geonode/documents/templates/layouts/doc_panels.html:324
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:99
+#: geonode/layers/templates/layouts/panels.html:326
+#: geonode/maps/templates/layouts/map_panels.html:321
+#: geonode/maps/templates/maps/map_metadata_advanced.html:77
+#: geonode/templates/metadata_detail.html:88
+msgid "Category"
+msgstr "Kategória"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:87
+#: geonode/catalogue/templates/geonode_metadata_full.html:149
+#: geonode/templates/metadata_detail.html:98
+#: geonode/templates/search/_region_filter.html:5
+msgid "Regions"
+msgstr "Régiók"
+
 #: geonode/base/templates/base/_resourcebase_info_panel.html:109
 #: geonode/documents/templates/layouts/doc_panels.html:343
 #: geonode/layers/templates/layouts/panels.html:346
-#: geonode/maps/templates/layouts/map_panels.html:341
+#: geonode/maps/templates/layouts/map_panels.html:340
 #: geonode/templates/metadata_detail.html:112
 #, fuzzy
 #| msgid "Groups"
 msgid "Group"
 msgstr "Csoportok"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:114
+#: geonode/templates/metadata_detail.html:116
+msgid "DOI"
+msgstr ""
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:121
 msgid "More info"
@@ -761,6 +296,7 @@ msgid "Create a Map"
 msgstr "Hozzon létre egy Map"
 
 #: geonode/base/templates/base/_resourcebase_snippet.html:80
+#: geonode/client/templates/leaflet/maps/map_view.html:8
 #: geonode/maps/templates/maps/map_detail.html:187
 #: geonode/maps/templates/maps/map_detail.html:189
 msgid "View Map"
@@ -831,18 +367,11 @@ msgstr ""
 #: geonode/layers/templates/layers/layer_detail.html:478
 #: geonode/layers/templates/layers/layer_detail.html:499
 #: geonode/maps/templates/maps/map_detail.html:165
-#: geonode/monitoring/models.py:355
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:58
 #, fuzzy
 #| msgid "uploaded"
 msgid "Upload"
 msgstr "feltöltve"
-
-#: geonode/base/templatetags/user_messages.py:32
-#: geonode/base/templatetags/user_messages.py:40
-#: geonode/templates/user_messages/thread_detail.html:28
-msgid "me"
-msgstr ""
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:40
 #, fuzzy
@@ -899,22 +428,14 @@ msgid "Attribute name"
 msgstr "attribútum neve"
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:167
-#: geonode/groups/models.py:44 geonode/groups/models.py:82
 #: geonode/layers/templates/layers/layer_detail.html:178
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:128
 #: geonode/layers/templates/layouts/panels.html:546
 #: geonode/people/templates/people/profile_detail.html:101
-#: geonode/services/forms.py:123
 #: geonode/services/templates/services/service_detail.html:23
 #: geonode/services/templates/services/service_resources_harvest.html:32
 msgid "Description"
 msgstr "Leírás"
-
-#: geonode/client/apps.py:28
-#, fuzzy
-#| msgid "GeoNode Help"
-msgid "GeoNode Client Library"
-msgstr "GeoNode Segítség"
 
 #: geonode/client/templates/leaflet/layers/layer_leaflet_map.html:340
 #, fuzzy
@@ -932,9 +453,9 @@ msgid "Explore Maps"
 msgstr "Fedezze Maps"
 
 #: geonode/client/templates/leaflet/maps/map_edit.html:8
-#: geonode/client/templates/leaflet/maps/map_view.html:8
-msgid "GeoExplorer"
-msgstr "GeoExplorer"
+#: geonode/maps/templates/maps/map_edit.html:7
+msgid "Edit Map"
+msgstr "Térkép szerkesztése"
 
 #: geonode/client/templates/leaflet/maps/map_edit.html:77
 #: geonode/documents/templates/documents/document_metadata.html:78
@@ -966,7 +487,7 @@ msgstr "Elérhető stílusok"
 #: geonode/client/templates/leaflet/maps/map_view.html:114
 #: geonode/groups/templates/groups/groupcategory_update_form.html:8
 #: geonode/layers/templates/layouts/panels.html:284
-#: geonode/maps/templates/layouts/map_panels.html:280
+#: geonode/maps/templates/layouts/map_panels.html:279
 #: geonode/services/templates/services/service_edit.html:21
 #: geonode/templates/announcements/announcement_form.html:26
 msgid "Save"
@@ -997,88 +518,6 @@ msgstr "Hozzon létre egy Map"
 #: geonode/templates/metadata_base.html:185
 msgid "Close"
 msgstr "Közel"
-
-#: geonode/documents/__init__.py:27
-#, fuzzy
-#| msgid "Documents related to this map"
-msgid "Document Created"
-msgstr "Kapcsolódó dokumentumok megosztása"
-
-#: geonode/documents/__init__.py:27
-#, fuzzy
-#| msgid "This document is related to a "
-msgid "A Document was created"
-msgstr "Ez a dokumentum kapcsolódik egy"
-
-#: geonode/documents/__init__.py:28
-#, fuzzy
-#| msgid "Documents"
-msgid "Document Updated"
-msgstr "Dokumentumok"
-
-#: geonode/documents/__init__.py:28
-#, fuzzy
-#| msgid "Documents"
-msgid "A Document was updated"
-msgstr "Dokumentumok"
-
-#: geonode/documents/__init__.py:29
-#, fuzzy
-#| msgid "Documents"
-msgid "Document Approved"
-msgstr "Dokumentumok"
-
-#: geonode/documents/__init__.py:29
-msgid "A Document was approved by a Manager"
-msgstr ""
-
-#: geonode/documents/__init__.py:30
-#, fuzzy
-#| msgid "Documents"
-msgid "Document Published"
-msgstr "Dokumentumok"
-
-#: geonode/documents/__init__.py:30
-#, fuzzy
-#| msgid "Documents"
-msgid "A Document was published"
-msgstr "Dokumentumok"
-
-#: geonode/documents/__init__.py:31
-#, fuzzy
-#| msgid "Documents"
-msgid "Document Deleted"
-msgstr "Dokumentumok"
-
-#: geonode/documents/__init__.py:31
-#, fuzzy
-#| msgid "This document is related to a "
-msgid "A Document was deleted"
-msgstr "Ez a dokumentum kapcsolódik egy"
-
-#: geonode/documents/__init__.py:32
-#, fuzzy
-#| msgid "Comment on Layer"
-msgid "Comment on Document"
-msgstr "Hozzászólás a réteg"
-
-#: geonode/documents/__init__.py:32
-#, fuzzy
-#| msgid "A map was commented on"
-msgid "A Document was commented on"
-msgstr "A térképet hozzászólást"
-
-#: geonode/documents/__init__.py:33
-#, fuzzy
-#| msgid "Comment on Map"
-msgid "Document for Map"
-msgstr "Hozzászólás Térkép"
-
-#: geonode/documents/__init__.py:33
-#, fuzzy
-#| msgid "A rating was given to a map"
-msgid "A rating was given to a document"
-msgstr "A hitelminősítő kapott egy térképet"
 
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:5
 msgid "Width"
@@ -1130,40 +569,6 @@ msgstr ""
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:21
 msgid "Speed Rating"
 msgstr ""
-
-#: geonode/documents/forms.py:87 geonode/documents/forms.py:168
-msgid "Link to"
-msgstr "Link"
-
-#: geonode/documents/forms.py:133 geonode/documents/forms.py:202
-msgid "Document must be a file or url."
-msgstr "Dokumentum kell, hogy legyen egy fájlt vagy URL-t."
-
-#: geonode/documents/forms.py:137 geonode/documents/forms.py:206
-msgid "A document cannot have both a file and a url."
-msgstr "A dokumentum nem lehet egyszerre egy fájlt, és a url."
-
-#: geonode/documents/forms.py:150 geonode/documents/forms.py:219
-msgid "This file type is not allowed"
-msgstr "Ez a fájl típus nem engedélyezett"
-
-#: geonode/documents/forms.py:191
-msgid "Permissions must be valid JSON."
-msgstr "Engedélyek érvényesnek kell lennie JSON."
-
-#: geonode/documents/models.py:57
-msgid "File"
-msgstr "Akta"
-
-#: geonode/documents/models.py:67
-msgid "The URL of the document if it is external."
-msgstr "Az URL a dokumentum, ha a külső."
-
-#: geonode/documents/models.py:68 geonode/monitoring/models.py:179
-#: geonode/services/templates/services/service_detail.html:9
-#: geonode/services/templates/services/service_list.html:16
-msgid "URL"
-msgstr "URL"
 
 #: geonode/documents/templates/documents/document_detail.html:23
 #, fuzzy
@@ -1244,8 +649,7 @@ msgid "Advanced Edit"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_detail.html:157
-#: geonode/monitoring/models.py:176 geonode/templates/index.html:86
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:7
+#: geonode/templates/index.html:86
 msgid "Document"
 msgid_plural "Documents"
 msgstr[0] ""
@@ -1262,7 +666,7 @@ msgstr ""
 #: geonode/groups/templates/groups/group_members.html:95
 #: geonode/layers/templates/layers/layer_detail.html:515
 #: geonode/maps/templates/maps/map_detail.html:173
-#: geonode/monitoring/models.py:362 geonode/templates/account/email.html:36
+#: geonode/templates/account/email.html:36
 #: geonode/templates/socialaccount/connections.html:33
 msgid "Remove"
 msgstr "Eltávolít"
@@ -1327,7 +731,7 @@ msgstr "Ez a dokumentum nem kapcsolódik semmilyen térképek vagy rétegek"
 #: geonode/layers/templates/layers/layer_style_upload.html:101
 #: geonode/layers/templates/layers/layer_style_upload.html:110
 #: geonode/layers/templates/upload/layer_upload.html:114
-#: geonode/maps/templates/maps/map_detail.html:229 geonode/people/admin.py:57
+#: geonode/maps/templates/maps/map_detail.html:229
 msgid "Permissions"
 msgstr "Engedélyek"
 
@@ -1497,15 +901,15 @@ msgid "No, don't remove it"
 msgstr "Nem, ne távolítsa el"
 
 #: geonode/documents/templates/documents/document_replace.html:4
-#: geonode/documents/templates/documents/document_replace.html:28
+#: geonode/documents/templates/documents/document_replace.html:27
 msgid "Replace Document"
 msgstr "Cserélje dokumentum"
 
-#: geonode/documents/templates/documents/document_replace.html:16
+#: geonode/documents/templates/documents/document_replace.html:15
 msgid "Replace "
 msgstr "Cserélje ki"
 
-#: geonode/documents/templates/documents/document_replace.html:27
+#: geonode/documents/templates/documents/document_replace.html:26
 #: geonode/documents/templates/documents/document_thumb_upload.html:55
 #: geonode/layers/templates/layers/layer_detail.html:396
 #: geonode/layers/templates/layers/layer_metadata_upload.html:88
@@ -1597,7 +1001,7 @@ msgstr ""
 #: geonode/layers/templates/layouts/panels.html:221
 #: geonode/layers/templates/layouts/panels.html:290
 #: geonode/maps/templates/layouts/map_panels.html:220
-#: geonode/maps/templates/layouts/map_panels.html:286
+#: geonode/maps/templates/layouts/map_panels.html:285
 #: geonode/maps/templates/maps/map_detail.html:172
 msgid "Edit"
 msgstr ""
@@ -1652,7 +1056,7 @@ msgstr "Download Metadata"
 #: geonode/documents/templates/layouts/doc_panels.html:345
 #: geonode/layers/templates/layouts/panels.html:328
 #: geonode/layers/templates/layouts/panels.html:348
-#: geonode/maps/templates/layouts/map_panels.html:343
+#: geonode/maps/templates/layouts/map_panels.html:342
 #, fuzzy
 #| msgid "This action affects the following maps:"
 msgid "Choose one of the following..."
@@ -1660,7 +1064,7 @@ msgstr "Ez a művelet érinti a következő térképek:"
 
 #: geonode/documents/templates/layouts/doc_panels.html:438
 #: geonode/layers/templates/layouts/panels.html:441
-#: geonode/maps/templates/layouts/map_panels.html:435
+#: geonode/maps/templates/layouts/map_panels.html:434
 #, fuzzy
 #| msgid "Download Metadata"
 msgid "Other, Optional, Metadata"
@@ -1668,13 +1072,13 @@ msgstr "Download Metadata"
 
 #: geonode/documents/templates/layouts/doc_panels.html:485
 #: geonode/layers/templates/layouts/panels.html:488
-#: geonode/maps/templates/layouts/map_panels.html:482
+#: geonode/maps/templates/layouts/map_panels.html:481
 msgid "Responsible Parties"
 msgstr ""
 
 #: geonode/documents/templates/layouts/doc_panels.html:492
 #: geonode/layers/templates/layouts/panels.html:495
-#: geonode/maps/templates/layouts/map_panels.html:489
+#: geonode/maps/templates/layouts/map_panels.html:488
 #, fuzzy
 #| msgid "Change Layer Permissions"
 msgid "Responsible and Permissions"
@@ -1682,7 +1086,7 @@ msgstr "Változás réteg Engedélyek"
 
 #: geonode/documents/templates/layouts/doc_panels.html:514
 #: geonode/layers/templates/layouts/panels.html:517
-#: geonode/maps/templates/layouts/map_panels.html:511
+#: geonode/maps/templates/layouts/map_panels.html:510
 #: geonode/templates/_permissions_form.html:28 geonode/templates/base.html:679
 #, fuzzy
 #| msgid "Message Inbox"
@@ -1691,58 +1095,18 @@ msgstr "Bejövő üzenetek"
 
 #: geonode/documents/templates/layouts/doc_panels.html:520
 #: geonode/layers/templates/layouts/panels.html:523
-#: geonode/maps/templates/layouts/map_panels.html:517
+#: geonode/maps/templates/layouts/map_panels.html:516
 #: geonode/templates/_permissions_form.html:34 geonode/templates/base.html:685
 msgid "OK"
 msgstr ""
 
 #: geonode/documents/templates/layouts/doc_panels.html:540
 #: geonode/layers/templates/layouts/panels.html:584
-#: geonode/maps/templates/layouts/map_panels.html:537
+#: geonode/maps/templates/layouts/map_panels.html:536
 #, fuzzy
 #| msgid "Public"
 msgid "Publishing"
 msgstr "Nyilvános"
-
-#: geonode/documents/views.py:64
-msgid "You are not permitted to delete this document"
-msgstr "Ön nem jogosult törölni a dokumentum"
-
-#: geonode/documents/views.py:65
-msgid "You do not have permissions for this document."
-msgstr "Nem rendelkezik engedélyekkel a dokumentumot."
-
-#: geonode/documents/views.py:66
-msgid "You are not permitted to modify this document"
-msgstr "Ön nem jogosult módosítani a dokumentumot"
-
-#: geonode/documents/views.py:68
-msgid "You are not permitted to modify this document's metadata"
-msgstr "Ön nem jogosult módosítani a dokumentum metaadatait"
-
-#: geonode/documents/views.py:69
-msgid "You are not permitted to view this document"
-msgstr "Ön nem jogosult megtekinteni a dokumentumot"
-
-#: geonode/documents/views.py:103 geonode/documents/views.py:177
-msgid "You are not allowed to view this document."
-msgstr "Nem tekintheted meg ezt a dokumentumot."
-
-#: geonode/documents/views.py:354
-msgid "You are not allowed to edit this document."
-msgstr "Ön nem szerkesztheti a dokumentumot."
-
-#: geonode/documents/views.py:435 geonode/layers/views.py:994
-#, fuzzy
-#| msgid "Set permissions for this resource"
-msgid "You must set a point of contact for this resource"
-msgstr "Engedélyek beállítása az erőforrás"
-
-#: geonode/documents/views.py:452 geonode/layers/views.py:1011
-#, fuzzy
-#| msgid "Set permissions for this resource"
-msgid "You must set an author for this resource"
-msgstr "Engedélyek beállítása az erőforrás"
 
 #: geonode/favorite/templates/favorite/_favorite.html:5
 #: geonode/templates/_actions.html:23
@@ -1764,50 +1128,6 @@ msgstr "Add to Favorites"
 #: geonode/favorite/templates/favorite/favorite_list.html:8
 msgid "Favorites for"
 msgstr ""
-
-#: geonode/geoserver/__init__.py:75
-msgid "Layer Uploaded"
-msgstr "Feltöltött réteg"
-
-#: geonode/geoserver/__init__.py:75
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "A layer was uploaded"
-msgstr "A réteget feltöltve"
-
-#: geonode/geoserver/__init__.py:76 geonode/layers/__init__.py:33
-msgid "Comment on Layer"
-msgstr "Hozzászólás a réteg"
-
-#: geonode/geoserver/__init__.py:76 geonode/layers/__init__.py:33
-msgid "A layer was commented on"
-msgstr "A réteget hozzászólást"
-
-#: geonode/geoserver/__init__.py:77 geonode/layers/__init__.py:34
-msgid "Rating for Layer"
-msgstr "Értékelés Layer"
-
-#: geonode/geoserver/__init__.py:77 geonode/layers/__init__.py:34
-msgid "A rating was given to a layer"
-msgstr "A hitelminősítő kapott egy réteg"
-
-#: geonode/geoserver/createlayer/forms.py:35
-#, fuzzy
-#| msgid "Layer Name"
-msgid "Layer name"
-msgstr "Réteg neve"
-
-#: geonode/geoserver/createlayer/forms.py:36
-#, fuzzy
-#| msgid "Layer Title"
-msgid "Layer title"
-msgstr "Réteg címe"
-
-#: geonode/geoserver/createlayer/forms.py:37
-#, fuzzy
-#| msgid "property type"
-msgid "Geometry type"
-msgstr "ingatlan típus"
 
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:6
 #: geonode/templates/base.html:289 geonode/templates/base.html:455
@@ -1845,195 +1165,9 @@ msgstr "Képesség"
 
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:41
 #: geonode/groups/templates/groups/group_create.html:26
-#: geonode/monitoring/models.py:354
 #: geonode/services/templates/services/service_register.html:18
 msgid "Create"
 msgstr "Teremt"
-
-#: geonode/geoserver/helpers.py:681
-#, fuzzy
-#| msgid "Not provided"
-msgid "No abstract provided"
-msgstr "Nem biztosított"
-
-#: geonode/geoserver/helpers.py:1427
-msgid "An exception occurred loading data to PostGIS"
-msgstr ""
-
-#: geonode/geoserver/helpers.py:1432
-msgid " Additionally an error occured during database cleanup"
-msgstr ""
-
-#: geonode/geoserver/ows.py:68
-msgid "GZIP"
-msgstr ""
-
-#: geonode/geoserver/ows.py:69
-msgid "GeoTIFF"
-msgstr ""
-
-#: geonode/geoserver/ows.py:110
-msgid "Zipped Shapefile"
-msgstr "Tömörített Shape fájl"
-
-#: geonode/geoserver/ows.py:111
-msgid "GML 2.0"
-msgstr "GML 2.0"
-
-#: geonode/geoserver/ows.py:112
-msgid "GML 3.1.1"
-msgstr "GML 3.1.1"
-
-#: geonode/geoserver/ows.py:113
-msgid "CSV"
-msgstr "CSV"
-
-#: geonode/geoserver/ows.py:114
-msgid "Excel"
-msgstr "Excel"
-
-#: geonode/geoserver/ows.py:115
-msgid "GeoJSON"
-msgstr "GeoJSON"
-
-#: geonode/geoserver/ows.py:157
-msgid "JPEG"
-msgstr "JPEG"
-
-#: geonode/geoserver/ows.py:158
-msgid "PDF"
-msgstr "PDF"
-
-#: geonode/geoserver/ows.py:159
-msgid "PNG"
-msgstr "PNG"
-
-#: geonode/geoserver/views.py:509
-msgid "You don't have permissions to change style for this layer"
-msgstr "Ön nem jogosult módosítani stílust ezt a réteget"
-
-#: geonode/geoserver/views.py:579 geonode/geoserver/views.py:635
-msgid "Bad HTTP Authorization Credentials."
-msgstr "Bad HTTP hitelesítési adatokat."
-
-#: geonode/groups/forms.py:35
-msgid ""
-"a short version of the name consisting only of letters, numbers, underscores "
-"and hyphens."
-msgstr ""
-"rövid változata a nevét, amely csak a betűk, számok, aláhúzás és kötőjelet."
-
-#: geonode/groups/forms.py:43
-msgid "A group already exists with that slug."
-msgstr "A csoport már létezik az adott csiga."
-
-#: geonode/groups/forms.py:50 geonode/groups/forms.py:77
-msgid "A group already exists with that name."
-msgstr "A csoport már létezik ezzel a névvel."
-
-#: geonode/groups/forms.py:87
-#, fuzzy
-#| msgid "User Activities"
-msgid "User Identifiers"
-msgstr "Felhasználói tevékenységek"
-
-#: geonode/groups/forms.py:97
-msgid "Assign manager role"
-msgstr ""
-
-#: geonode/groups/forms.py:111
-#, python-format
-msgid ""
-"The following are not valid usernames: %(errors)s; not added to the group"
-msgstr ""
-
-#: geonode/groups/models.py:43 geonode/layers/models.py:158
-#: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
-#: geonode/services/templates/services/service_resources_harvest.html:31
-#: geonode/templates/metadata_detail.html:130
-#: geonode/templates/metadata_detail.html:272
-#: geonode/templates/metadata_detail.html:353
-msgid "Name"
-msgstr "Név"
-
-#: geonode/groups/models.py:47 geonode/templates/base.html:314
-#: geonode/templates/search/_general_filters.html:76
-#: geonode/templates/search/_search_user_content.html:28
-#, fuzzy
-#| msgid "Categories"
-msgid "Group Categories"
-msgstr "Kategóriák"
-
-#: geonode/groups/models.py:65
-#, fuzzy
-#| msgid "Public"
-msgid "Public"
-msgstr "Nyilvános"
-
-#: geonode/groups/models.py:66
-msgid "Public (invite-only)"
-msgstr "Nyilvános (csak meghívásos alapon)"
-
-#: geonode/groups/models.py:67
-msgid "Private"
-msgstr "Magán"
-
-#: geonode/groups/models.py:70
-msgid ""
-"Public: Any registered user can view and join a public group.<br>Public "
-"(invite-only):Any registered user can view the group.  Only invited users "
-"can join.<br>Private: Registered users cannot see any details about the "
-"group, including membership.  Only invited users can join."
-msgstr ""
-"Nyilvános: bármely regisztrált felhasználó megtekintheti és csatlakozz a "
-"nyilvános csoporthoz. <br> Nyilvános (csak meghívásos alapon): bármely "
-"regisztrált felhasználó megtekintheti a csoport. Csak a meghívott "
-"felhasználók csatlakozhatnak. <br> Private: A regisztrált felhasználók nem "
-"lát részleteket a csoport, a tagságot is beleértve. Csak a meghívott "
-"felhasználók csatlakozhatnak."
-
-#: geonode/groups/models.py:75
-msgid ""
-"Email used to contact one or all group members, such as a mailing list, "
-"shared email, or exchange group."
-msgstr ""
-"Email használt kapcsolatba egy vagy csoport minden tagja, így például egy "
-"levelezési listát, közös e-mail, vagy csere-csoport."
-
-#: geonode/groups/models.py:81
-msgid "Logo"
-msgstr ""
-
-#: geonode/groups/models.py:84
-#: geonode/people/templates/people/profile_detail.html:67
-#: geonode/templates/invitations/forms/_invite.html:14
-msgid "Email"
-msgstr ""
-
-#: geonode/groups/models.py:90 geonode/people/forms.py:94
-msgid "A space or comma-separated list of keywords"
-msgstr "A tér vagy vesszővel elválasztott kulcsszavak"
-
-#: geonode/groups/models.py:93
-#, fuzzy
-#| msgid "Success"
-msgid "Access"
-msgstr "Siker"
-
-#: geonode/groups/models.py:98 geonode/templates/search/_general_filters.html:4
-msgid "Categories"
-msgstr "Kategóriák"
-
-#: geonode/groups/models.py:241
-#: geonode/groups/templates/groups/group_members.html:37
-#: geonode/groups/templates/groups/group_members.html:63
-#: geonode/groups/templates/groups/group_members.html:90
-msgid "Manager"
-msgstr "Menedzser"
-
-#: geonode/groups/models.py:242
-msgid "Member"
-msgstr "Tag"
 
 #: geonode/groups/templates/groups/activity.html:7
 #: geonode/groups/templates/groups/activity.html:8
@@ -2044,7 +1178,6 @@ msgstr "Activity Feed for"
 
 #: geonode/groups/templates/groups/activity.html:25
 #: geonode/groups/templates/groups/group_members.html:22
-#: geonode/monitoring/models.py:353
 #: geonode/social/templates/social/activity_list.html:20
 #: geonode/templates/user_messages/inbox.html:17
 msgid "All"
@@ -2229,6 +1362,12 @@ msgstr ""
 msgid "Current Members"
 msgstr "Tagok"
 
+#: geonode/groups/templates/groups/group_members.html:37
+#: geonode/groups/templates/groups/group_members.html:63
+#: geonode/groups/templates/groups/group_members.html:90
+msgid "Manager"
+msgstr "Menedzser"
+
 #: geonode/groups/templates/groups/group_members.html:46
 #: geonode/groups/templates/groups/group_members.html:72
 #: geonode/groups/templates/groups/group_members.html:99
@@ -2306,295 +1445,6 @@ msgstr "Csoport létrehozása"
 #| msgid "Create Group"
 msgid "Edit Group Category"
 msgstr "Csoport létrehozása"
-
-#: geonode/invitations/forms.py:53
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
-msgstr ""
-
-#: geonode/invitations/forms.py:55
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
-msgstr ""
-
-#: geonode/invitations/forms.py:57
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
-msgstr ""
-
-#: geonode/invitations/forms.py:75 geonode/templates/base.html:506
-#, fuzzy
-#| msgid "email"
-msgid "E-mail"
-msgstr "E-mail"
-
-#: geonode/invitations/views.py:71
-#, python-format
-msgid "Invitations succefully sent to '%(email)s'"
-msgstr ""
-
-#: geonode/invitations/views.py:78
-#, python-format
-msgid ""
-"Sorry, it was not possible to invite '%(email)s' due to the following isse: "
-"%(error)s (%(type)s)"
-msgstr ""
-
-#: geonode/layers/__init__.py:28
-#, fuzzy
-#| msgid "Map Created"
-msgid "Layer Created"
-msgstr "Térkép Létrehozva"
-
-#: geonode/layers/__init__.py:28
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A Layer was created"
-msgstr "A réteget hozzászólást"
-
-#: geonode/layers/__init__.py:29
-#, fuzzy
-#| msgid "Layer Uploaded"
-msgid "Layer Updated"
-msgstr "Feltöltött réteg"
-
-#: geonode/layers/__init__.py:29
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A Layer was updated"
-msgstr "A réteget hozzászólást"
-
-#: geonode/layers/__init__.py:30
-#, fuzzy
-#| msgid "Not provided"
-msgid "Layer Approved"
-msgstr "Nem biztosított"
-
-#: geonode/layers/__init__.py:30
-msgid "A Layer was approved by a Manager"
-msgstr ""
-
-#: geonode/layers/__init__.py:31
-#, fuzzy
-#| msgid "Published From"
-msgid "Layer Published"
-msgstr "Közreadta"
-
-#: geonode/layers/__init__.py:31
-msgid "A Layer was published"
-msgstr ""
-
-#: geonode/layers/__init__.py:32
-#, fuzzy
-#| msgid "Layer Default Style"
-msgid "Layer Deleted"
-msgstr "Réteg Default Style"
-
-#: geonode/layers/__init__.py:32
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A Layer was deleted"
-msgstr "A réteget hozzászólást"
-
-#: geonode/layers/models.py:52
-msgid "YYYYMMDD"
-msgstr ""
-
-#: geonode/layers/models.py:53
-msgid "YYYYMMDD'T'hhmmss"
-msgstr ""
-
-#: geonode/layers/models.py:54
-msgid "YYYYMMDD'T'hhmmss'Z'"
-msgstr ""
-
-#: geonode/layers/models.py:72 geonode/qgis_server/models.py:198
-msgid "style name"
-msgstr "stílus neve"
-
-#: geonode/layers/models.py:74
-msgid "sld text"
-msgstr "SLD szöveg"
-
-#: geonode/layers/models.py:76
-msgid "sld version"
-msgstr "SLD verzió"
-
-#: geonode/layers/models.py:80
-msgid "sld url"
-msgstr "SLD url"
-
-#: geonode/layers/models.py:155
-msgid "Workspace"
-msgstr ""
-
-#: geonode/layers/models.py:156
-msgid "Store"
-msgstr ""
-
-#: geonode/layers/models.py:157
-#, fuzzy
-#| msgid "date type"
-msgid "Storetype"
-msgstr "dátum típus"
-
-#: geonode/layers/models.py:159
-#, fuzzy
-#| msgid "CSW typename"
-msgid "Typename"
-msgstr "CSW typename"
-
-#: geonode/layers/models.py:161
-msgid "Is mosaic?"
-msgstr ""
-
-#: geonode/layers/models.py:162
-msgid "Has time?"
-msgstr ""
-
-#: geonode/layers/models.py:163
-msgid "Has elevation?"
-msgstr ""
-
-#: geonode/layers/models.py:165
-msgid "Time regex"
-msgstr ""
-
-#: geonode/layers/models.py:170
-msgid "Elevation regex"
-msgstr ""
-
-#: geonode/layers/models.py:275
-msgid "File cannot be opened, maybe check the encoding"
-msgstr ""
-
-#: geonode/layers/models.py:386
-#, fuzzy
-#| msgid "attribute name"
-msgid "attribute name"
-msgstr "attribútum neve"
-
-#: geonode/layers/models.py:387
-msgid "name of attribute as stored in shapefile/spatial database"
-msgstr "neve attribútum tárolt shapefile / térbeli adatbázis"
-
-#: geonode/layers/models.py:393
-#, fuzzy
-#| msgid "distribution description"
-msgid "attribute description"
-msgstr "distribution description"
-
-#: geonode/layers/models.py:394
-msgid "description of attribute to be used in metadata"
-msgstr "attribútum leírása használandó metaadatok"
-
-#: geonode/layers/models.py:399
-msgid "attribute label"
-msgstr "attribútum címke"
-
-#: geonode/layers/models.py:400
-msgid "title of attribute as displayed in GeoNode"
-msgstr "cím attribútum jelenik GeoNode"
-
-#: geonode/layers/models.py:406
-msgid "attribute type"
-msgstr "attribútum típus"
-
-#: geonode/layers/models.py:407
-msgid "the data type of the attribute (integer, string, geometry, etc)"
-msgstr "az adat típusa attribútum (integer, string, geometria, stb.)"
-
-#: geonode/layers/models.py:414
-msgid "visible?"
-msgstr "látható?"
-
-#: geonode/layers/models.py:415
-msgid "specifies if the attribute should be displayed in identify results"
-msgstr "ha megadja az attribútum megjelenik azonosítani eredmények"
-
-#: geonode/layers/models.py:417
-msgid "display order"
-msgstr "megjelenítési sorrend"
-
-#: geonode/layers/models.py:418
-msgid ""
-"specifies the order in which attribute should be displayed in identify "
-"results"
-msgstr ""
-"meghatározza, hogy milyen sorrendben attribútum megjeleníthető azonosítani "
-"eredmények"
-
-#: geonode/layers/models.py:422
-#, fuzzy
-#| msgid "count"
-msgid "count"
-msgstr "számol"
-
-#: geonode/layers/models.py:423
-msgid "count value for this field"
-msgstr "gróf érték ezen a területen"
-
-#: geonode/layers/models.py:426
-msgid "min"
-msgstr "min"
-
-#: geonode/layers/models.py:427
-msgid "minimum value for this field"
-msgstr "minimum értéke ezen a területen"
-
-#: geonode/layers/models.py:434
-msgid "max"
-msgstr "max"
-
-#: geonode/layers/models.py:435
-msgid "maximum value for this field"
-msgstr "maximális érték ezen a területen"
-
-#: geonode/layers/models.py:442
-msgid "average"
-msgstr "átlagos"
-
-#: geonode/layers/models.py:443
-msgid "average value for this field"
-msgstr "átlagos érték ezen a területen"
-
-#: geonode/layers/models.py:450
-msgid "median"
-msgstr "középső"
-
-#: geonode/layers/models.py:451
-msgid "median value for this field"
-msgstr "medián érték ezen a területen"
-
-#: geonode/layers/models.py:458
-msgid "standard deviation"
-msgstr "szabvány eltérés"
-
-#: geonode/layers/models.py:459
-msgid "standard deviation for this field"
-msgstr "szórás ezen a téren"
-
-#: geonode/layers/models.py:466
-msgid "sum"
-msgstr "összeg"
-
-#: geonode/layers/models.py:467
-msgid "sum value for this field"
-msgstr "összeg értéke ezen a területen"
-
-#: geonode/layers/models.py:474
-msgid "unique values for this field"
-msgstr "egyedi értékeket ezen a területen"
-
-#: geonode/layers/models.py:478
-#, fuzzy
-#| msgid "last modified"
-msgid "last modified"
-msgstr "utolsó módosítás"
-
-#: geonode/layers/models.py:479
-msgid "date when attribute statistics were last updated"
-msgstr "időpont, amikor az attribútum statisztika utolsó frissítés"
 
 #: geonode/layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -2798,7 +1648,6 @@ msgid ""
 msgstr ""
 
 #: geonode/layers/templates/layers/layer_detail.html:412
-#: geonode/monitoring/models.py:1082
 msgid "Warning"
 msgstr ""
 
@@ -2838,8 +1687,7 @@ msgid "Set"
 msgstr ""
 
 #: geonode/layers/templates/layers/layer_detail.html:505
-#: geonode/monitoring/models.py:173 geonode/templates/index.html:66
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:5
+#: geonode/templates/index.html:66
 msgid "Layer"
 msgid_plural "Layers"
 msgstr[0] ""
@@ -3147,7 +1995,7 @@ msgstr "Folytatás"
 #: geonode/templates/_comments.html:37
 #: geonode/templates/announcements/announcement_confirm_delete.html:21
 #: geonode/templates/announcements/announcement_form.html:24
-#: geonode/templates/user_messages/_message_snippet.html:39
+#: geonode/templates/user_messages/_message_snippet.html:34
 msgid "Delete"
 msgstr "Töröl"
 
@@ -3261,7 +2109,7 @@ msgid "Dataset Attributes"
 msgstr "Attribútumok"
 
 #: geonode/layers/templates/layouts/panels.html:613
-#: geonode/maps/templates/layouts/map_panels.html:566
+#: geonode/maps/templates/layouts/map_panels.html:565
 #, fuzzy
 #| msgid "Notice settings"
 msgid "Other Settings"
@@ -3874,250 +2722,6 @@ msgstr "Vagy csak megy"
 msgid "now"
 msgstr "most"
 
-#: geonode/layers/utils.py:496 geonode/layers/utils.py:520
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr ""
-
-#: geonode/layers/utils.py:502 geonode/layers/views.py:1211
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
-
-#: geonode/layers/utils.py:505 geonode/layers/views.py:1215
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
-
-#: geonode/layers/utils.py:528
-msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
-msgstr ""
-
-#: geonode/layers/utils.py:533
-msgid "Local GeoNode layer has no geometry type."
-msgstr ""
-
-#: geonode/layers/utils.py:538
-msgid ""
-"Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
-msgstr ""
-
-#: geonode/layers/utils.py:542
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
-msgstr ""
-
-#: geonode/layers/views.py:127
-msgid ""
-"There was an error while attempting to upload your data. Please try again, "
-"or contact and administrator if the problem continues."
-msgstr ""
-"Hiba történt, miközben megpróbálja feltölteni az adatokat. Kérjük, próbálja "
-"újra, vagy lépjen kapcsolatba és a rendszergazda, ha a probléma továbbra is "
-"fennáll."
-
-#: geonode/layers/views.py:130
-msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
-msgstr ""
-
-#: geonode/layers/views.py:134
-msgid "You are not permitted to delete this layer"
-msgstr "Ön nem jogosult törölni ezt a réteget"
-
-#: geonode/layers/views.py:135
-msgid "You do not have permissions for this layer."
-msgstr "Nem rendelkezik engedélyekkel ezt a réteget."
-
-#: geonode/layers/views.py:136
-msgid "You are not permitted to modify this layer"
-msgstr "Ön nem jogosult módosítani ezt a réteget"
-
-#: geonode/layers/views.py:138
-msgid "You are not permitted to modify this layer's metadata"
-msgstr "Ön nem jogosult módosítani ezt a réteget a metaadatok"
-
-#: geonode/layers/views.py:139
-msgid "You are not permitted to view this layer"
-msgstr "Ön nem jogosult megtekinteni ezt a réteget"
-
-#: geonode/layers/views.py:277
-#, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Failed to upload the layer"
-msgstr "Fájlok feltöltését"
-
-#: geonode/layers/views.py:1311 geonode/layers/views.py:1356
-msgid "Unable to delete layer"
-msgstr ""
-
-#: geonode/layers/views.py:1315 geonode/layers/views.py:1360
-msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
-msgstr ""
-
-#: geonode/layers/views.py:1408 geonode/maps/views.py:1406
-msgid "couldn't generate thumbnail"
-msgstr ""
-
-#: geonode/maps/__init__.py:28
-msgid "Map Created"
-msgstr "Térkép Létrehozva"
-
-#: geonode/maps/__init__.py:28
-#, fuzzy
-#| msgid "A map was commented on"
-msgid "A Map was created"
-msgstr "A térképet hozzászólást"
-
-#: geonode/maps/__init__.py:29
-#, fuzzy
-#| msgid "Map Created"
-msgid "Map Updated"
-msgstr "Térkép Létrehozva"
-
-#: geonode/maps/__init__.py:29
-#, fuzzy
-#| msgid "last updated on"
-msgid "A Map was updated"
-msgstr "utolsó frissítése"
-
-#: geonode/maps/__init__.py:30
-#, fuzzy
-#| msgid "Not provided"
-msgid "Map Approved"
-msgstr "Nem biztosított"
-
-#: geonode/maps/__init__.py:30
-msgid "A Map was approved by a Manager"
-msgstr ""
-
-#: geonode/maps/__init__.py:31
-#, fuzzy
-#| msgid "Published From"
-msgid "Map Published"
-msgstr "Közreadta"
-
-#: geonode/maps/__init__.py:31
-msgid "A Map was published"
-msgstr ""
-
-#: geonode/maps/__init__.py:32
-#, fuzzy
-#| msgid "Map Created"
-msgid "Map Deleted"
-msgstr "Térkép Létrehozva"
-
-#: geonode/maps/__init__.py:32
-#, fuzzy
-#| msgid "A map was commented on"
-msgid "A Map was deleted"
-msgstr "A térképet hozzászólást"
-
-#: geonode/maps/__init__.py:33
-msgid "Comment on Map"
-msgstr "Hozzászólás Térkép"
-
-#: geonode/maps/__init__.py:33
-msgid "A map was commented on"
-msgstr "A térképet hozzászólást"
-
-#: geonode/maps/__init__.py:34
-msgid "Rating for Map"
-msgstr "Értékelés Térkép"
-
-#: geonode/maps/__init__.py:34
-msgid "A rating was given to a map"
-msgstr "A hitelminősítő kapott egy térképet"
-
-#: geonode/maps/models.py:64
-msgid "zoom"
-msgstr "zoom"
-
-#: geonode/maps/models.py:68
-#, fuzzy
-#| msgid "projection"
-msgid "projection"
-msgstr "vetület"
-
-#: geonode/maps/models.py:72
-msgid "center X"
-msgstr "középpont x"
-
-#: geonode/maps/models.py:76
-msgid "center Y"
-msgstr "középpont y"
-
-#: geonode/maps/models.py:83
-msgid "Site URL"
-msgstr "Oldal URL"
-
-#: geonode/maps/models.py:88
-msgid "Featured Map URL"
-msgstr "Kiemelt Map URL"
-
-#: geonode/maps/models.py:443
-msgid "stack order"
-msgstr "halom sorrend"
-
-#: geonode/maps/models.py:448
-#, fuzzy
-#| msgid "format"
-msgid "format"
-msgstr "formátum"
-
-#: geonode/maps/models.py:454
-msgid "name"
-msgstr "név"
-
-#: geonode/maps/models.py:457
-msgid "store"
-msgstr ""
-
-#: geonode/maps/models.py:463
-msgid "opacity"
-msgstr "átlátszatlanság"
-
-#: geonode/maps/models.py:467
-msgid "styles"
-msgstr "stílusok"
-
-#: geonode/maps/models.py:472
-msgid "transparent"
-msgstr "áttetsző"
-
-#: geonode/maps/models.py:476
-msgid "fixed"
-msgstr "rögzített"
-
-#: geonode/maps/models.py:480
-#, fuzzy
-#| msgid "group"
-msgid "group"
-msgstr "csoport"
-
-#: geonode/maps/models.py:484
-msgid "visibility"
-msgstr "láthatóság"
-
-#: geonode/maps/models.py:487
-msgid "ows URL"
-msgstr "ows URL"
-
-#: geonode/maps/models.py:490
-msgid "layer params"
-msgstr "fólia paraméterek"
-
-#: geonode/maps/models.py:497
-msgid "source params"
-msgstr "forrás paraméterek"
-
-#: geonode/maps/models.py:607
-msgid "JSON Configuration"
-msgstr "JSON konfiguráció"
-
 #: geonode/maps/templates/maps/map_detail.html:26
 msgid "maps"
 msgstr ""
@@ -4136,8 +2740,7 @@ msgid "Download Map"
 msgstr "Download Map"
 
 #: geonode/maps/templates/maps/map_detail.html:171
-#: geonode/maps/templates/maps/map_view.html:7 geonode/monitoring/models.py:174
-#: geonode/templates/index.html:76
+#: geonode/maps/templates/maps/map_view.html:7 geonode/templates/index.html:76
 msgid "Map"
 msgid_plural "Maps"
 msgstr[0] ""
@@ -4231,7 +2834,6 @@ msgid "Copy to Clipboard"
 msgstr ""
 
 #: geonode/maps/templates/maps/map_download.html:6
-#: geonode/monitoring/models.py:360
 msgid "Download"
 msgstr "Download"
 
@@ -4300,10 +2902,6 @@ msgstr "Letöltés Complete"
 msgid "Download Failed"
 msgstr "Download sikerült"
 
-#: geonode/maps/templates/maps/map_edit.html:7
-msgid "Edit Map"
-msgstr "Térkép szerkesztése"
-
 #: geonode/maps/templates/maps/map_list.html:5
 #, fuzzy
 #| msgid "GeoExplorer"
@@ -4357,378 +2955,6 @@ msgid ""
 "        "
 msgstr ""
 
-#: geonode/maps/views.py:95
-msgid "You are not permitted to delete this map."
-msgstr "Ön nem jogosult törölni ezen a térképen."
-
-#: geonode/maps/views.py:96
-msgid "You do not have permissions for this map."
-msgstr "Nem rendelkezik engedélyekkel ezen a térképen."
-
-#: geonode/maps/views.py:97
-msgid "You must be logged in to save this map"
-msgstr "Be kell jelentkezned, hogy megmentse ezt a térképet"
-
-#: geonode/maps/views.py:98
-msgid "You are not permitted to save or edit this map."
-msgstr "Nem megengedett, hogy menteni vagy szerkeszteni ezt a térképet."
-
-#: geonode/maps/views.py:100
-msgid "You are not allowed to modify this map's metadata."
-msgstr "Ön nem jogosult módosítani ezen a térképen a metaadatokat."
-
-#: geonode/maps/views.py:101
-msgid "You are not allowed to view this map."
-msgstr "Nem engedélyezett, hogy megtekinthesse ezt a térképet."
-
-#: geonode/maps/views.py:102
-msgid "An unknown error has occured."
-msgstr "Ismeretlen hiba történt."
-
-#: geonode/maps/views.py:1413
-#, fuzzy
-#| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "Thumbnail"
-
-#: geonode/maps/views.py:1416
-#, fuzzy
-#| msgid "Thumbnail"
-msgid "error saving thumbnail"
-msgstr "Thumbnail"
-
-#: geonode/monitoring/__init__.py:45
-msgid "Monitoring alert"
-msgstr ""
-
-#: geonode/monitoring/__init__.py:46
-msgid "Alert situation reported by monitoring"
-msgstr ""
-
-#: geonode/monitoring/collector.py:1008
-msgid "GeoNode Monitoring on {} reports errors: {}"
-msgstr ""
-
-#: geonode/monitoring/forms.py:30
-#, fuzzy
-#| msgid "Email Address"
-msgid "Enter valid email addresses."
-msgstr "E-mail cím"
-
-#: geonode/monitoring/management/commands/collect_metrics.py:50
-msgid "Show list of services"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:52
-#: geonode/monitoring/management/commands/render_metrics.py:57
-msgid ""
-"Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
-"provided, last sync will be used."
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:55
-#: geonode/monitoring/management/commands/render_metrics.py:59
-msgid ""
-"Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
-"provided, now will be used."
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:58
-msgid "Force check"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:60
-msgid "Format of audit log (xml, json)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:62
-msgid ""
-"Should old data be preserved (default: no, data older than settings."
-"MONITORING_DATA_TTL will be removed)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:65
-msgid "Should stop on first error occured (default: no)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:67
-msgid "Should process and send notifications as well (default: no)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:69
-msgid "Collect data from this service only"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:49
-msgid "Show list of metrics"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:51
-msgid "Show list of labels for metric"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:54
-msgid "Show list of resources for metric"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:62
-msgid "Data aggregation interval in seconds (default: 60)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:63
-#, fuzzy
-#| msgid "attribute name"
-msgid "Metric name"
-msgstr "attribútum neve"
-
-#: geonode/monitoring/management/commands/render_metrics.py:66
-msgid "Show data for specific resource in resource_type=resource_name format"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:69
-#, fuzzy
-#| msgid "reference date for the cited resource"
-msgid "Show data for specific resource"
-msgstr "viszonyítási időpont az idézett forrás"
-
-#: geonode/monitoring/management/commands/render_metrics.py:72
-msgid "Show data for specific label"
-msgstr ""
-
-#: geonode/monitoring/models.py:100 geonode/templates/500.html:199
-#: geonode/templates/base.html:511
-msgid "GeoNode"
-msgstr "GeoNode"
-
-#: geonode/monitoring/models.py:101
-#: geonode/people/templates/people/profile_detail.html:163
-#: geonode/templates/500.html:278
-msgid "GeoServer"
-msgstr "GeoServer"
-
-#: geonode/monitoring/models.py:102
-#, fuzzy
-#| msgid "GeoServer"
-msgid "Host (GeoServer)"
-msgstr "GeoServer"
-
-#: geonode/monitoring/models.py:103
-#, fuzzy
-#| msgid "About GeoNode"
-msgid "Host (GeoNode)"
-msgstr "Mintegy GeoNode"
-
-#: geonode/monitoring/models.py:172
-#, fuzzy
-#| msgid "Resources"
-msgid "No resource"
-msgstr "Erőforrás"
-
-#: geonode/monitoring/models.py:175
-#, fuzzy
-#| msgid "Resources"
-msgid "Resource base"
-msgstr "Erőforrás"
-
-#: geonode/monitoring/models.py:177
-#, fuzzy
-#| msgid "Styles"
-msgid "Style"
-msgstr "Stílusok"
-
-#: geonode/monitoring/models.py:178
-#: geonode/people/templates/people/profile_detail.html:164
-#: geonode/templates/500.html:279 geonode/templates/base.html:383
-msgid "Admin"
-msgstr "Admin"
-
-#: geonode/monitoring/models.py:180
-msgid "Other"
-msgstr ""
-
-#: geonode/monitoring/models.py:210 geonode/monitoring/models.py:261
-msgid "Rate"
-msgstr ""
-
-#: geonode/monitoring/models.py:211 geonode/monitoring/models.py:263
-#, fuzzy
-#| msgid "count"
-msgid "Count"
-msgstr "számol"
-
-#: geonode/monitoring/models.py:212
-msgid "Value"
-msgstr ""
-
-#: geonode/monitoring/models.py:213
-msgid "Value numeric"
-msgstr ""
-
-#: geonode/monitoring/models.py:252
-msgid "Bytes"
-msgstr ""
-
-#: geonode/monitoring/models.py:253
-msgid "Kilobytes"
-msgstr ""
-
-#: geonode/monitoring/models.py:254
-msgid "Megabytes"
-msgstr ""
-
-#: geonode/monitoring/models.py:255
-msgid "Gigabytes"
-msgstr ""
-
-#: geonode/monitoring/models.py:256
-msgid "Bytes per second"
-msgstr ""
-
-#: geonode/monitoring/models.py:257
-msgid "Kilobytes per second"
-msgstr ""
-
-#: geonode/monitoring/models.py:258
-msgid "Megabytes per second"
-msgstr ""
-
-#: geonode/monitoring/models.py:259
-msgid "Gigabytes per second"
-msgstr ""
-
-#: geonode/monitoring/models.py:260
-msgid "Seconds"
-msgstr ""
-
-#: geonode/monitoring/models.py:262
-msgid "Percentage"
-msgstr ""
-
-#: geonode/monitoring/models.py:351
-#, fuzzy
-#| msgid "local OWS"
-msgid "Not OWS"
-msgstr "helyi OWS"
-
-#: geonode/monitoring/models.py:352
-msgid "Any OWS"
-msgstr ""
-
-#: geonode/monitoring/models.py:356
-#: geonode/templates/pinax/notifications/notice_settings.html:51
-msgid "Change"
-msgstr "Változás"
-
-#: geonode/monitoring/models.py:357
-#, fuzzy
-#| msgid "Edit Metadata"
-msgid "Change Metadata"
-msgstr "Metaadatok szerkesztése"
-
-#: geonode/monitoring/models.py:358
-#, fuzzy
-#| msgid "Edit Metadata"
-msgid "View Metadata"
-msgstr "Metaadatok szerkesztése"
-
-#: geonode/monitoring/models.py:359
-msgid "View"
-msgstr "View"
-
-#: geonode/monitoring/models.py:361
-#, fuzzy
-#| msgid "Public"
-msgid "Publish"
-msgstr "Nyilvános"
-
-#: geonode/monitoring/models.py:363
-#, fuzzy
-#| msgid "GeoServer"
-msgid "Geoserver event"
-msgstr "GeoServer"
-
-#: geonode/monitoring/models.py:432
-#, fuzzy
-#| msgid "List of resources using this document:"
-msgid "List of resources affected"
-msgstr "Listája források révén ezt a dokumentumot:"
-
-#: geonode/monitoring/models.py:439
-#, fuzzy
-#| msgid "Resource using this document"
-msgid "Response processing time in ms"
-msgstr "Erőforrás ezt a dokumentumot"
-
-#: geonode/monitoring/models.py:1071
-msgid "1 minute"
-msgstr ""
-
-#: geonode/monitoring/models.py:1072
-msgid "5 minutes"
-msgstr ""
-
-#: geonode/monitoring/models.py:1073
-msgid "10 minutes"
-msgstr ""
-
-#: geonode/monitoring/models.py:1074
-msgid "30 minutes"
-msgstr ""
-
-#: geonode/monitoring/models.py:1075
-msgid "1 hour"
-msgstr ""
-
-#: geonode/monitoring/models.py:1083 geonode/templates/metadata_base.html:128
-#: geonode/templates/metadata_base.html:131
-#: geonode/templates/socialaccount/authentication_error.html:11
-msgid "Error"
-msgstr ""
-
-#: geonode/monitoring/models.py:1084
-msgid "Fatal"
-msgstr ""
-
-#: geonode/monitoring/models.py:1098
-msgid "Expected min/max values for user configuration"
-msgstr ""
-
-#: geonode/monitoring/models.py:1106
-msgid "Marker of last delivery"
-msgstr ""
-
-#: geonode/monitoring/models.py:1109
-msgid "Minimum time between subsequent notifications"
-msgstr ""
-
-#: geonode/monitoring/models.py:1114
-msgid "How severe would be error from this notification"
-msgstr ""
-
-#: geonode/monitoring/models.py:1119
-msgid "Is it active"
-msgstr ""
-
-#: geonode/monitoring/models.py:1126
-msgid "{}: {}"
-msgstr ""
-
-#: geonode/monitoring/models.py:1390
-msgid "Value must be above"
-msgstr ""
-
-#: geonode/monitoring/models.py:1391
-msgid "Value must be below"
-msgstr ""
-
-#: geonode/monitoring/models.py:1392
-msgid "Last update must not be older than"
-msgstr ""
-
-#: geonode/monitoring/models.py:1542
-msgid "Max timeout for given metric before error should be raised"
-msgstr ""
-
 #: geonode/monitoring/templates/monitoring/index.html:5
 #: geonode/monitoring/templates/monitoring/non_superuser.html:4
 #: geonode/templates/base.html:389
@@ -4737,256 +2963,6 @@ msgstr ""
 
 #: geonode/monitoring/templates/monitoring/non_superuser.html:10
 msgid "Only superusers can monitor performance"
-msgstr ""
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:3
-msgid "Hi,"
-msgstr ""
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:5
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:3
-msgid "Monitoring on"
-msgstr ""
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:5
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:3
-#, fuzzy
-#| msgid "The following groups:"
-msgid "has detected following problems :"
-msgstr "A következő csoportok:"
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:9
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:6
-msgid "spotted"
-msgstr ""
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:9
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:10
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:6
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:7
-#: geonode/social/templates/social/_activity_item.html:31
-msgid "ago"
-msgstr "ezelőtt"
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:10
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:7
-msgid "emerged"
-msgstr ""
-
-#: geonode/people/__init__.py:26
-msgid "User following you"
-msgstr "Felhasználói követi Önt"
-
-#: geonode/people/__init__.py:26
-#, fuzzy
-#| msgid "This user is not following anyone"
-msgid "Another user has started following you"
-msgstr "Ez a felhasználó nem követ senkit"
-
-#: geonode/people/__init__.py:27
-msgid "User requested access"
-msgstr ""
-
-#: geonode/people/__init__.py:28
-msgid "A new user has requested access to the site"
-msgstr ""
-
-#: geonode/people/__init__.py:29
-#, fuzzy
-#| msgid "Recent activity"
-msgid "Account activated"
-msgstr "Legutóbbi aktivitás"
-
-#: geonode/people/__init__.py:30
-msgid "This account is now active and can log in the site"
-msgstr ""
-
-#: geonode/people/admin.py:56
-msgid "Personal info"
-msgstr "Személyes info"
-
-#: geonode/people/admin.py:59
-msgid "Important dates"
-msgstr "Fontos dátumok"
-
-#: geonode/people/admin.py:60
-#, fuzzy
-#| msgid "Edit profile"
-msgid "Extended profile"
-msgstr "Profil szerkesztése"
-
-#: geonode/people/admin.py:159
-msgid "Password changed successfully."
-msgstr "Jelszó sikeresen megváltoztatva."
-
-#: geonode/people/admin.py:169
-#, python-format
-msgid "Change password: %s"
-msgstr "Jelszó módosítása: %s"
-
-#: geonode/people/enumerations.py:39
-msgid "party who authored the resource"
-msgstr "a készlet szerző fél"
-
-#: geonode/people/enumerations.py:40
-msgid ""
-"party who has processed the data in a manner such that the resource has been "
-"modified"
-msgstr "a készlet eredeti adatainak változtatásával feldolgozó fél"
-
-#: geonode/people/enumerations.py:41
-msgid "party who published the resource"
-msgstr "a készletet kiadó fél"
-
-#: geonode/people/enumerations.py:42
-msgid ""
-"party that accepts accountability and responsibility for the data and "
-"ensures         appropriate care and maintenance of the resource"
-msgstr ""
-"fél, hogy a felelősséget vállaló, elszámoltatható, az adatok és a megfelelő "
-"kezelés és karbantartás a forrás"
-
-#: geonode/people/enumerations.py:44
-msgid ""
-"party who can be contacted for acquiring knowledge about or acquisition of "
-"the resource"
-msgstr ""
-"a készlet beszerzésével és további ismertetésével kapcsolatosan elérhető fél"
-
-#: geonode/people/enumerations.py:45
-msgid "party who distributes the resource"
-msgstr "a készletet terjesztő fél"
-
-#: geonode/people/enumerations.py:46
-msgid "party who uses the resource"
-msgstr "a készletet felhasználó fél"
-
-#: geonode/people/enumerations.py:47
-msgid "party that supplies the resource"
-msgstr "a készletet szolgáltató fél"
-
-#: geonode/people/enumerations.py:48
-msgid "party who created the resource"
-msgstr "a készletet létrehozó fél"
-
-#: geonode/people/enumerations.py:49
-msgid "party that owns the resource"
-msgstr "a készlet tulajdonosa"
-
-#: geonode/people/enumerations.py:50
-msgid "key party responsible for gathering information and conducting research"
-msgstr "kulcsfontosságú fél felelős az információgyűjtés és a kutatásért"
-
-#: geonode/people/forms.py:75
-#, fuzzy
-#| msgid "Email Address"
-msgid "Email Address"
-msgstr "E-mail cím"
-
-#: geonode/people/models.py:66
-#, fuzzy
-#| msgid "Organization Name"
-msgid "Organization Name"
-msgstr "Szervezet neve"
-
-#: geonode/people/models.py:70
-msgid "name of the responsible organization"
-msgstr "nevét az illetékes szervezet"
-
-#: geonode/people/models.py:72 geonode/templates/500.html:266
-#: geonode/templates/base.html:375
-msgid "Profile"
-msgstr "Profil"
-
-#: geonode/people/models.py:75
-msgid "introduce yourself"
-msgstr "mutatkozz"
-
-#: geonode/people/models.py:77
-msgid "Position Name"
-msgstr "Pozíció Név"
-
-#: geonode/people/models.py:81
-msgid "role or position of the responsible person"
-msgstr "szerepe, illetve helyzete a felelős személy"
-
-#: geonode/people/models.py:82
-#: geonode/people/templates/people/profile_detail.html:89
-#: geonode/templates/metadata_detail.html:145
-#: geonode/templates/metadata_detail.html:287
-#: geonode/templates/metadata_detail.html:368
-msgid "Voice"
-msgstr "Hang"
-
-#: geonode/people/models.py:83
-msgid ""
-"telephone number by which individuals can speak to the responsible "
-"organization or individual"
-msgstr ""
-"telefonszám, amellyel az egyének beszélni a felelős szervezet vagy egyén"
-
-#: geonode/people/models.py:84
-msgid "Facsimile"
-msgstr "Hasonmás"
-
-#: geonode/people/models.py:85
-msgid ""
-"telephone number of a facsimile machine for the responsible organization or "
-"individual"
-msgstr "telefonszámát a telefax gép a felelős szervezet vagy egyén"
-
-#: geonode/people/models.py:87
-msgid "Delivery Point"
-msgstr "Szállítási Point"
-
-#: geonode/people/models.py:91
-msgid ""
-"physical and email address at which the organization or individual may be "
-"contacted"
-msgstr "fizikai és e-mail cím, ahol a szervezet vagy személy a kapcsolatot"
-
-#: geonode/people/models.py:93
-msgid "City"
-msgstr "City"
-
-#: geonode/people/models.py:97
-msgid "city of the location"
-msgstr "város a helyszín"
-
-#: geonode/people/models.py:99
-msgid "Administrative Area"
-msgstr "Közigazgatási Terület"
-
-#: geonode/people/models.py:103
-msgid "state, province of the location"
-msgstr "állami, tartományi, a hely"
-
-#: geonode/people/models.py:105
-msgid "Postal Code"
-msgstr "Postal Code"
-
-#: geonode/people/models.py:109
-msgid "ZIP or other postal code"
-msgstr "ZIP vagy egyéb irányítószám"
-
-#: geonode/people/models.py:111
-msgid "Country"
-msgstr ""
-
-#: geonode/people/models.py:116
-msgid "country of the physical address"
-msgstr "ország fizikai cím"
-
-#: geonode/people/models.py:118
-msgid ""
-"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-"the subject             (space or comma-separated"
-msgstr ""
-"leggyakrabban használt szó (k) vagy hivatalos szó (k) vagy mondat (ok) "
-"leírására használt tárgy (térben vagy vesszővel elválasztott"
-
-#: geonode/people/models.py:127
-msgid "Timezone"
 msgstr ""
 
 #: geonode/people/templates/people/_profile_about_item.html:17
@@ -5028,6 +3004,11 @@ msgstr "Profilja"
 msgid "people explore"
 msgstr "GeoExplorer"
 
+#: geonode/people/templates/people/profile_detail.html:67
+#: geonode/templates/invitations/forms/_invite.html:14
+msgid "Email"
+msgstr ""
+
 #: geonode/people/templates/people/profile_detail.html:71
 #: geonode/people/templates/people/profile_detail.html:77
 #: geonode/people/templates/people/profile_detail.html:81
@@ -5058,10 +3039,15 @@ msgstr ""
 msgid "Location"
 msgstr ""
 
+#: geonode/people/templates/people/profile_detail.html:89
+#: geonode/templates/metadata_detail.html:145
+#: geonode/templates/metadata_detail.html:287
+#: geonode/templates/metadata_detail.html:368
+msgid "Voice"
+msgstr "Hang"
+
 #: geonode/people/templates/people/profile_detail.html:93
 #: geonode/people/templates/people/profile_detail.html:113
-#: geonode/services/serviceprocessors/arcgis.py:115
-#: geonode/services/serviceprocessors/wms.py:144
 msgid "Not provided"
 msgstr "Nem biztosított"
 
@@ -5081,7 +3067,7 @@ msgid "Message User"
 msgstr ""
 
 #: geonode/people/templates/people/profile_detail.html:136
-#: geonode/people/templates/people/profile_detail.html:170
+#: geonode/people/templates/people/profile_detail.html:171
 msgid "Edit profile"
 msgstr "Profil szerkesztése"
 
@@ -5111,24 +3097,30 @@ msgid "Create a new layer"
 msgstr "Hozzon létre egy új térképet"
 
 #: geonode/people/templates/people/profile_detail.html:146
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload new document"
+msgstr "Dokumentum feltöltése"
+
+#: geonode/people/templates/people/profile_detail.html:147
 msgid "Create a new map"
 msgstr "Hozzon létre egy új térképet"
 
-#: geonode/people/templates/people/profile_detail.html:147
+#: geonode/people/templates/people/profile_detail.html:148
 msgid "My Activities"
 msgstr "Saját tevékenységek"
 
-#: geonode/people/templates/people/profile_detail.html:149
+#: geonode/people/templates/people/profile_detail.html:150
 #: geonode/templates/base.html:378
 msgid "Favorites"
 msgstr ""
 
-#: geonode/people/templates/people/profile_detail.html:154
+#: geonode/people/templates/people/profile_detail.html:155
 #: geonode/templates/500.html:270
 msgid "Notifications"
 msgstr ""
 
-#: geonode/people/templates/people/profile_detail.html:157
+#: geonode/people/templates/people/profile_detail.html:158
 #: geonode/templates/500.html:185 geonode/templates/500.html:273
 #: geonode/templates/announcements/announcement_list.html:5
 #: geonode/templates/announcements/announcement_list.html:12
@@ -5136,7 +3128,7 @@ msgstr ""
 msgid "Announcements"
 msgstr "Közlemények"
 
-#: geonode/people/templates/people/profile_detail.html:161
+#: geonode/people/templates/people/profile_detail.html:162
 #: geonode/templates/500.html:187 geonode/templates/500.html:275
 #: geonode/templates/base.html:320 geonode/templates/base.html:482
 #: geonode/templates/invitations/forms/_invite.html:7
@@ -5145,11 +3137,21 @@ msgstr "Közlemények"
 msgid "Invite Users"
 msgstr "Felhasználó meghívása"
 
-#: geonode/people/templates/people/profile_detail.html:174
+#: geonode/people/templates/people/profile_detail.html:164
+#: geonode/templates/500.html:278
+msgid "GeoServer"
+msgstr "GeoServer"
+
+#: geonode/people/templates/people/profile_detail.html:165
+#: geonode/templates/500.html:279 geonode/templates/base.html:383
+msgid "Admin"
+msgstr "Admin"
+
+#: geonode/people/templates/people/profile_detail.html:175
 msgid "User Activities"
 msgstr "Felhasználói tevékenységek"
 
-#: geonode/people/templates/people/profile_detail.html:180
+#: geonode/people/templates/people/profile_detail.html:181
 msgid "Resources"
 msgstr "Erőforrás"
 
@@ -5180,67 +3182,6 @@ msgstr "Frissítés profil"
 msgid "Explore People"
 msgstr "Fedezze fel az emberek"
 
-#: geonode/people/views.py:92
-msgid "Your username for "
-msgstr "A felhasználónevet"
-
-#: geonode/people/views.py:106
-msgid "Your username has been emailed to you."
-msgstr "A felhasználónév már elküldjük Önnek."
-
-#: geonode/people/views.py:108
-msgid "No user could be found with that email address."
-msgstr "Nem biztosítanak felhasználói lehetett találni az adott e-mail cím."
-
-#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:224
-#, fuzzy
-#| msgid "You are not permitted to save or edit this map."
-msgid "You are not permitted to save or edit this resource."
-msgstr "Nem megengedett, hogy menteni vagy szerkeszteni ezt a térképet."
-
-#: geonode/proxy/views.py:223
-#, fuzzy
-#| msgid "You are not allowed to view this document."
-msgid "You are not authorized to download this resource."
-msgstr "Nem tekintheted meg ezt a dokumentumot."
-
-#: geonode/proxy/views.py:225
-msgid ""
-"No files have been found for this resource. Please, contact a system "
-"administrator."
-msgstr ""
-
-#: geonode/proxy/views.py:259 geonode/proxy/views.py:270
-#: geonode/proxy/views.py:371
-#, fuzzy
-#| msgid "Documents"
-msgid "No files found."
-msgstr "Dokumentumok"
-
-#: geonode/proxy/views.py:379
-#, fuzzy
-#| msgid "Not provided"
-msgid "Not Authorized"
-msgstr "Nem biztosított"
-
-#: geonode/qgis_server/models.py:200
-#, fuzzy
-#| msgid "style name"
-msgid "style xml"
-msgstr "stílus neve"
-
-#: geonode/qgis_server/models.py:201
-#, fuzzy
-#| msgid "sld url"
-msgid "style url"
-msgstr "SLD url"
-
-#: geonode/qgis_server/models.py:203
-#, fuzzy
-#| msgid "sld url"
-msgid "style legend url"
-msgstr "SLD url"
-
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:10
 msgid "Layer Style changed. Redirecting to apply changes..."
 msgstr ""
@@ -5248,6 +3189,14 @@ msgstr ""
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:13
 msgid "You may also use browser reload."
 msgstr ""
+
+#: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
+#: geonode/services/templates/services/service_resources_harvest.html:31
+#: geonode/templates/metadata_detail.html:130
+#: geonode/templates/metadata_detail.html:272
+#: geonode/templates/metadata_detail.html:353
+msgid "Name"
+msgstr "Név"
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:21
 #, fuzzy
@@ -5277,120 +3226,6 @@ msgstr "Távolítsuk Service"
 msgid "Reload to see changes"
 msgstr ""
 
-#: geonode/qgis_server/views.py:266
-#, python-brace-format
-msgid ""
-"You should use a GIS software or a library which support TMS service to use "
-"this URL : {url}"
-msgstr ""
-
-#: geonode/security/middleware.py:128
-msgid "Session is Expired. Please login again!"
-msgstr ""
-
-#: geonode/services/enumerations.py:45
-msgid "Auto-detect"
-msgstr "Automatikus felismerés"
-
-#: geonode/services/enumerations.py:46
-msgid "Paired WMS/WFS/WCS"
-msgstr "A párosított WMS / WFS / WCS"
-
-#: geonode/services/enumerations.py:47 geonode/services/forms.py:54
-msgid "Web Map Service"
-msgstr "Web Map Service"
-
-#: geonode/services/enumerations.py:48
-msgid "Catalogue Service"
-msgstr "Katalógus Service"
-
-#: geonode/services/enumerations.py:49 geonode/services/forms.py:58
-#, fuzzy
-#| msgid "ArcGIS REST Service"
-msgid "ArcGIS REST MapServer"
-msgstr "ArcGIS REST szolgáltatás"
-
-#: geonode/services/enumerations.py:50
-#, fuzzy
-#| msgid "ArcGIS REST Service"
-msgid "ArcGIS REST ImageServer"
-msgstr "ArcGIS REST szolgáltatás"
-
-#: geonode/services/enumerations.py:51 geonode/services/models.py:51
-msgid "OpenGeoPortal"
-msgstr "OpenGeoPortal"
-
-#: geonode/services/enumerations.py:52
-msgid "Harvard Geospatial Library"
-msgstr "Harvard Térinformatikai Könyvtár"
-
-#: geonode/services/enumerations.py:53 geonode/services/forms.py:55
-#, fuzzy
-#| msgid "GeoNode's Web Services"
-msgid "GeoNode (Web Map Service)"
-msgstr "GeoNode Web Services"
-
-#: geonode/services/enumerations.py:54
-#, fuzzy
-#| msgid "Catalogue Service"
-msgid "GeoNode (Catalogue Service)"
-msgstr "Katalógus Service"
-
-#: geonode/services/forms.py:37
-msgid "Service URL"
-msgstr "Szolgáltatás URL"
-
-#: geonode/services/forms.py:50
-msgid "Service Type"
-msgstr "A szolgáltatás típusa"
-
-#: geonode/services/forms.py:72
-#, fuzzy, python-format
-#| msgid "service interfaces"
-msgid "Service %(url)s is already registered"
-msgstr "szolgáltatási interfészek"
-
-#: geonode/services/forms.py:88
-#, python-format
-msgid "Could not connect to the service at %(url)s"
-msgstr ""
-
-#: geonode/services/forms.py:93
-#, python-format
-msgid "Could not find importable resources for the service at %(url)s"
-msgstr ""
-
-#: geonode/services/forms.py:100
-#, python-format
-msgid "Found service of type %(found_type)s instead of %(service_type)s"
-msgstr ""
-
-#: geonode/services/models.py:46
-msgid "Local"
-msgstr "Helyi"
-
-#: geonode/services/models.py:47
-msgid "Cascaded"
-msgstr "Zuhogott"
-
-#: geonode/services/models.py:48
-msgid "Harvested"
-msgstr "Betakarított"
-
-#: geonode/services/models.py:49
-msgid "Indexed"
-msgstr "Indexelt"
-
-#: geonode/services/models.py:50
-msgid "Live"
-msgstr "Élő"
-
-#: geonode/services/models.py:211
-#, fuzzy
-#| msgid "Resources"
-msgid "Resource is queued"
-msgstr "Erőforrás"
-
 #: geonode/services/templates/services/remote_service_unavailable.html:5
 #, fuzzy
 #| msgid "Remote Services"
@@ -5406,6 +3241,11 @@ msgstr ""
 #| msgid "Point of Contact"
 msgid "Could not contact"
 msgstr "Kapcsolattartó"
+
+#: geonode/services/templates/services/service_detail.html:9
+#: geonode/services/templates/services/service_list.html:16
+msgid "URL"
+msgstr "URL"
 
 #: geonode/services/templates/services/service_detail.html:12
 #, fuzzy
@@ -5578,90 +3418,14 @@ msgstr ""
 msgid "Re-scan Service for new Resources"
 msgstr ""
 
-#: geonode/services/views.py:96
-#, fuzzy
-#| msgid "service interfaces"
-msgid "Service registered successfully"
-msgstr "szolgáltatási interfészek"
-
-#: geonode/services/views.py:193
-msgid "The selected resources are being imported"
-msgstr ""
-
-#: geonode/services/views.py:194
-msgid "The selected resources have been imported"
-msgstr ""
-
-#: geonode/services/views.py:224
-msgid "Resource is already being processed"
-msgstr ""
-
-#: geonode/services/views.py:230
-msgid "Resource {} is being processed"
-msgstr ""
-
-#: geonode/services/views.py:259
-#, fuzzy
-#| msgid "Password changed successfully."
-msgid "Service rescanned successfully"
-msgstr "Jelszó sikeresen megváltoztatva."
-
-#: geonode/services/views.py:329
-#, fuzzy
-#| msgid "You are not permitted to remove this service."
-msgid "You are not permitted to change this service."
-msgstr "Nem megengedett, hogy távolítsa el ezt a szolgáltatást."
-
-#: geonode/services/views.py:357
-msgid "You are not permitted to remove this service."
-msgstr "Nem megengedett, hogy távolítsa el ezt a szolgáltatást."
-
-#: geonode/services/views.py:368
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "Service {} has been deleted"
-msgstr "Szolgáltatás jött létre:"
-
-#: geonode/social/signals.py:81
-msgid "created"
-msgstr "létre"
-
-#: geonode/social/signals.py:82 geonode/social/tests.py:102
-msgid "deleted"
-msgstr "törölve"
-
-#: geonode/social/signals.py:85
-#, fuzzy
-#| msgid "Update"
-msgid "updated"
-msgstr "Frissítés"
-
-#: geonode/social/signals.py:95 geonode/social/tests.py:122
-msgid "added a comment"
-msgstr "hozzá egy megjegyzést"
-
-#: geonode/social/signals.py:97
-msgid "updated a comment"
-msgstr "frissített egy megjegyzést"
-
-#: geonode/social/signals.py:103 geonode/social/signals.py:108
-#: geonode/social/tests.py:76
-msgid "uploaded"
-msgstr "feltöltve"
+#: geonode/social/templates/social/_activity_item.html:31
+msgid "ago"
+msgstr "ezelőtt"
 
 #: geonode/social/templates/social/activity_list.html:4
 #: geonode/social/templates/social/activity_list.html:15
 msgid "Recent activity"
 msgstr "Legutóbbi aktivitás"
-
-#: geonode/social/templatetags/social_tags.py:56
-msgid "to"
-msgstr "hogy"
-
-#: geonode/social/templatetags/social_tags.py:72 geonode/social/tests.py:125
-#: geonode/templates/_comments.html:31
-msgid "on"
-msgstr "tovább"
 
 #: geonode/templates/401.html:10
 msgid "Not Permitted"
@@ -5787,6 +3551,10 @@ msgid "Powered by"
 msgstr "Powered by"
 
 #: geonode/templates/500.html:199 geonode/templates/base.html:511
+msgid "GeoNode"
+msgstr "GeoNode"
+
+#: geonode/templates/500.html:199 geonode/templates/base.html:511
 msgid "version"
 msgstr "változat"
 
@@ -5811,6 +3579,10 @@ msgstr "Emlékezzen rám"
 #: geonode/templates/500.html:260
 msgid "Menu"
 msgstr ""
+
+#: geonode/templates/500.html:266 geonode/templates/base.html:375
+msgid "Profile"
+msgstr "Profil"
 
 #: geonode/templates/500.html:267 geonode/templates/base.html:376
 msgid "Recent Activity"
@@ -5875,6 +3647,10 @@ msgstr "Jelentkezzen be, aki"
 #: geonode/templates/_comments.html:31
 msgid "By"
 msgstr "Szerint"
+
+#: geonode/templates/_comments.html:31
+msgid "on"
+msgstr "tovább"
 
 #: geonode/templates/_comments.html:65
 msgid "Submit Comment"
@@ -6065,93 +3841,6 @@ msgstr ""
 #: geonode/templates/account/email.html:62
 msgid "Do you really want to remove the selected e-mail address?"
 msgstr ""
-
-#: geonode/templates/account/email/email_confirmation_message.txt:1
-#, python-format
-msgid ""
-"Hello from %(site_name)s!\n"
-"\n"
-"You're receiving this e-mail because user %(user_display)s has given yours "
-"as an e-mail address to connect their account.\n"
-"\n"
-"To confirm this is correct, go to %(activate_url)s\n"
-msgstr ""
-
-#: geonode/templates/account/email/email_confirmation_message.txt:7
-#, python-format
-msgid ""
-"Thank you from %(site_name)s!\n"
-"%(site_domain)s"
-msgstr ""
-
-#: geonode/templates/account/email/email_confirmation_subject.txt:1
-#, fuzzy, python-format
-#| msgid "Confirm email address for %(site_name)s"
-msgid "Please confirm email address for %(site_name)s"
-msgstr "Erősítse meg e-mail címét %(site_name)s"
-
-#: geonode/templates/account/email/invite_user.txt:1
-#, python-format
-msgid "You have been invited to sign up at %(site_name)s."
-msgstr ""
-
-#: geonode/templates/account/email/invite_user_subject.txt:1
-#, fuzzy, python-format
-#| msgid "Confirm email address for %(site_name)s"
-msgid "Create an account on %(site_name)s"
-msgstr "Erősítse meg e-mail címét %(site_name)s"
-
-#: geonode/templates/account/email/password_change.txt:1
-msgid ""
-"This is the email notification to confirm your password has been changed on"
-msgstr ""
-
-#: geonode/templates/account/email/password_change_subject.txt:1
-#, fuzzy
-#| msgid "Change password: %s"
-msgid "Change password email notification"
-msgstr "Jelszó módosítása: %s"
-
-#: geonode/templates/account/email/password_reset_key.txt:1
-#, fuzzy, python-format
-#| msgid ""
-#| "You're receiving this email because you or someone else has requested a "
-#| "password for your user account at %(site_name)s.\n"
-#| "It can be safely ignored if you did not request a password reset. Click "
-#| "the link below to reset your password.\n"
-#| "\n"
-#| "%(password_reset_url)s\n"
-msgid ""
-"Hello from %(site_name)s!\n"
-"\n"
-"You're receiving this e-mail because you or someone else has requested a "
-"password for your user account.\n"
-"It can be safely ignored if you did not request a password reset. Click the "
-"link below to reset your password."
-msgstr ""
-"Azért kapja ezt az e-mailt, mert Ön vagy valaki más kérte a jelszót a "
-"felhasználói fiók %(site_name)s. Ezt figyelmen kívül hagyhatja, ha nem kérte "
-"a jelszó visszaállítását. Kattintson az alábbi linkre, hogy állítsa vissza "
-"jelszavát.  \n"
-"\n"
-"%(password_reset_url)s\n"
-
-#: geonode/templates/account/email/password_reset_key.txt:8
-#, python-format
-msgid "In case you forgot, your username is %(username)s."
-msgstr ""
-
-#: geonode/templates/account/email/password_reset_key.txt:10
-#, python-format
-msgid ""
-"Thank you for using %(site_name)s!\n"
-"%(site_domain)s"
-msgstr ""
-
-#: geonode/templates/account/email/password_reset_key_subject.txt:1
-#, python-format
-msgid "[%(site_name)s] Password reset"
-msgstr "[%(site_name)s] Password Reset"
 
 #: geonode/templates/account/email_confirm.html:6
 #: geonode/templates/account/email_confirm.html:10
@@ -6537,6 +4226,14 @@ msgstr "Ezek törlése"
 msgid "GeoNode Search"
 msgstr "GeoNode Segítség"
 
+#: geonode/templates/base.html:314
+#: geonode/templates/search/_general_filters.html:76
+#: geonode/templates/search/_search_user_content.html:28
+#, fuzzy
+#| msgid "Categories"
+msgid "Group Categories"
+msgstr "Kategóriák"
+
 #: geonode/templates/base.html:495
 #, fuzzy
 #| msgid "Contact:"
@@ -6546,6 +4243,12 @@ msgstr "Kapcsolat:"
 #: geonode/templates/base.html:504
 msgid "Tel"
 msgstr ""
+
+#: geonode/templates/base.html:506
+#, fuzzy
+#| msgid "email"
+msgid "E-mail"
+msgstr "E-mail"
 
 #: geonode/templates/base.html:644
 #, fuzzy
@@ -6597,8 +4300,6 @@ msgid ""
 "GeoNode, we encourage you to do so by contributing to one of the projects on "
 "which it is built:</p>\n"
 "    <ul>\n"
-"      <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
-"for rich web mapping applications</li>\n"
 "      <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
 "server for geospatial information</li>\n"
 "      <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
@@ -6677,43 +4378,43 @@ msgid ""
 "    "
 msgstr ""
 
-#: geonode/templates/developer.html:65
+#: geonode/templates/developer.html:64
 msgid "GeoNode's Web Services"
 msgstr "GeoNode Web Services"
 
-#: geonode/templates/developer.html:66
+#: geonode/templates/developer.html:65
 msgid "GeoNode's Web Services are available from the following URLs:"
 msgstr "GeoNode Web Services-ről a következő címeken:"
 
-#: geonode/templates/developer.html:69
+#: geonode/templates/developer.html:68
 msgid "Dynamic tiles via WMS:"
 msgstr "Dinamikus lapok via WMS:"
 
-#: geonode/templates/developer.html:73
+#: geonode/templates/developer.html:72
 msgid "Vector data via WFS:"
 msgstr "Vector adatok segítségével WFS:"
 
-#: geonode/templates/developer.html:77
+#: geonode/templates/developer.html:76
 msgid "Raster data via WCS:"
 msgstr "Raszter adatok segítségével WCS:"
 
-#: geonode/templates/developer.html:81
+#: geonode/templates/developer.html:80
 msgid "Metadata search via CSW:"
 msgstr "Metaadat keresés via CSW:"
 
-#: geonode/templates/developer.html:85
+#: geonode/templates/developer.html:84
 msgid "Metadata search via OpenSearch:"
 msgstr ""
 
-#: geonode/templates/developer.html:89
+#: geonode/templates/developer.html:88
 msgid "Metadata search via OAI-PMH:"
 msgstr ""
 
-#: geonode/templates/developer.html:93
+#: geonode/templates/developer.html:92
 msgid "Open Data:"
 msgstr ""
 
-#: geonode/templates/developer.html:97
+#: geonode/templates/developer.html:96
 msgid "Cached tiles via WMTS:"
 msgstr "Gyorsítótárazott csempe via WMTS:"
 
@@ -6944,7 +4645,6 @@ msgid "Explore documents"
 msgstr "Fedezze fel a dokumentumok"
 
 #: geonode/templates/index.html:96
-#: geonode/templates/pinax/notifications/account_approve/full.txt:1
 msgid "User"
 msgid_plural "Users"
 msgstr[0] ""
@@ -7213,7 +4913,6 @@ msgid "Leave"
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:2
-#: geonode/templates/invitations/email/email_invite_message.txt:3
 msgid "Dear Sir/Madam,"
 msgstr ""
 
@@ -7230,7 +4929,6 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:8
-#: geonode/templates/invitations/email/email_invite_message.txt:9
 msgid ""
 "Once you receive the confirmation that your account is activated, you can "
 "notify"
@@ -7251,34 +4949,20 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:16
-#: geonode/templates/invitations/email/email_invite_message.txt:18
 msgid "We look forward to seeing you on the platform,"
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:17
-#: geonode/templates/invitations/email/email_invite_message.txt:20
 #, fuzzy
 #| msgid "GeoNode site admin"
 msgid "The GeoNode team."
 msgstr "GeoNode adminisztrátor"
 
-#: geonode/templates/invitations/email/email_invite_message.txt:5
-msgid "is inviting you to join"
+#: geonode/templates/metadata_base.html:128
+#: geonode/templates/metadata_base.html:131
+#: geonode/templates/socialaccount/authentication_error.html:11
+msgid "Error"
 msgstr ""
-
-#: geonode/templates/invitations/email/email_invite_message.txt:7
-msgid "To do so, please register at"
-msgstr ""
-
-#: geonode/templates/invitations/email/email_invite_message.txt:9
-msgid "that you wish to join her/his group(s) through this link"
-msgstr ""
-
-#: geonode/templates/invitations/email/email_invite_message.txt:13
-#, fuzzy
-#| msgid "The following groups:"
-msgid "is a member of the following group(s)"
-msgstr "A következő csoportok:"
 
 #: geonode/templates/metadata_base.html:149
 #, fuzzy
@@ -7313,6 +4997,12 @@ msgstr "Vissza a"
 msgid "Identification"
 msgstr ""
 
+#: geonode/templates/metadata_detail.html:102
+#, fuzzy
+#| msgid "Not provided"
+msgid "Approved"
+msgstr "Nem biztosított"
+
 #: geonode/templates/metadata_detail.html:103
 #: geonode/templates/metadata_detail.html:106
 #: geonode/templates/metadata_detail.html:109
@@ -7321,6 +5011,10 @@ msgstr ""
 
 #: geonode/templates/metadata_detail.html:105
 msgid "Published"
+msgstr ""
+
+#: geonode/templates/metadata_detail.html:108
+msgid "Featured"
 msgstr ""
 
 #: geonode/templates/metadata_detail.html:133
@@ -7391,374 +5085,6 @@ msgstr ""
 msgid "Online Link"
 msgstr ""
 
-#: geonode/templates/pinax/notifications/account_active/account_active_message.txt:2
-#: geonode/templates/pinax/notifications/account_active/full.txt:2
-msgid "Your account has been approved and is now active."
-msgstr ""
-
-#: geonode/templates/pinax/notifications/account_active/account_active_message.txt:3
-#: geonode/templates/pinax/notifications/account_active/full.txt:3
-msgid "You can use the login form at"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/account_active/account_active_subject.txt:1
-#, fuzzy
-#| msgid "Welcome"
-msgid "Welcome at"
-msgstr "Fogadtatás"
-
-#: geonode/templates/pinax/notifications/account_active/short.txt:3
-msgid "Your account is now active"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/account_approve/full.txt:1
-msgid "has requested access to the site."
-msgstr ""
-
-#: geonode/templates/pinax/notifications/account_approve/full.txt:1
-msgid ""
-"You can enable access by setting the user as active on the admin section"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/account_approve/short.txt:3
-msgid "A user has requested access to the site"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_approved/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "The following document was approved"
-msgstr "A következő felhasználók:"
-
-#: geonode/templates/pinax/notifications/document_approved/full.txt:3
-#: geonode/templates/pinax/notifications/document_deleted/full.txt:3
-#: geonode/templates/pinax/notifications/document_published/full.txt:3
-#: geonode/templates/pinax/notifications/document_rated/full.txt:5
-#: geonode/templates/pinax/notifications/document_updated/full.txt:3
-#: geonode/templates/pinax/notifications/layer_approved/full.txt:3
-#: geonode/templates/pinax/notifications/layer_deleted/full.txt:3
-#: geonode/templates/pinax/notifications/layer_published/full.txt:3
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:5
-#: geonode/templates/pinax/notifications/layer_updated/full.txt:3
-#: geonode/templates/pinax/notifications/map_approved/full.txt:3
-#: geonode/templates/pinax/notifications/map_deleted/full.txt:3
-#: geonode/templates/pinax/notifications/map_published/full.txt:3
-#: geonode/templates/pinax/notifications/map_rated/full.txt:5
-#: geonode/templates/pinax/notifications/map_updated/full.txt:3
-#, fuzzy
-#| msgid "Powered by"
-msgid "owned by"
-msgstr "Powered by"
-
-#: geonode/templates/pinax/notifications/document_approved/full.txt:4
-#: geonode/templates/pinax/notifications/document_comment/full.txt:3
-#: geonode/templates/pinax/notifications/document_created/full.txt:4
-#: geonode/templates/pinax/notifications/document_published/full.txt:4
-#: geonode/templates/pinax/notifications/document_updated/full.txt:4
-msgid "You can visit the document's detail page here"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_approved/short.txt:3
-msgid "A document has been approved"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_comment/full.txt:2
-#, fuzzy
-#| msgid "You do not have permissions for this document."
-msgid "A comment has been posted for the document"
-msgstr "Nem rendelkezik engedélyekkel a dokumentumot."
-
-#: geonode/templates/pinax/notifications/document_comment/full.txt:2
-#: geonode/templates/pinax/notifications/layer_comment/full.txt:2
-#: geonode/templates/pinax/notifications/map_comment/full.txt:3
-msgid "by the user"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_comment/short.txt:3
-#, fuzzy
-#| msgid "You do not have permissions for this document."
-msgid "A comment has been posted for a document"
-msgstr "Nem rendelkezik engedélyekkel a dokumentumot."
-
-#: geonode/templates/pinax/notifications/document_created/full.txt:2
-#: geonode/templates/pinax/notifications/document_rated/full.txt:2
-#: geonode/templates/pinax/notifications/layer_created/full.txt:2
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:2
-#: geonode/templates/pinax/notifications/map_created/full.txt:2
-#: geonode/templates/pinax/notifications/map_rated/full.txt:2
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
-#, fuzzy
-#| msgid "Choose users..."
-msgid "The user"
-msgstr "Válasszon a felhasználók ..."
-
-#: geonode/templates/pinax/notifications/document_created/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "uploaded the following document"
-msgstr "A következő felhasználók:"
-
-#: geonode/templates/pinax/notifications/document_created/short.txt:3
-msgid "A document has been uploaded"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_deleted/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "The following document was deleted"
-msgstr "A következő felhasználók:"
-
-#: geonode/templates/pinax/notifications/document_deleted/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A document has been deleted"
-msgstr "Szolgáltatás jött létre:"
-
-#: geonode/templates/pinax/notifications/document_published/full.txt:2
-#, fuzzy
-#| msgid "The following groups:"
-msgid "The following document was published"
-msgstr "A következő csoportok:"
-
-#: geonode/templates/pinax/notifications/document_published/short.txt:3
-msgid "A document has been published"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_rated/full.txt:3
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:3
-#: geonode/templates/pinax/notifications/map_rated/full.txt:3
-#, fuzzy
-#| msgid "created"
-msgid "rated"
-msgstr "létre"
-
-#: geonode/templates/pinax/notifications/document_rated/full.txt:4
-#, fuzzy
-#| msgid "The following users:"
-msgid "the following document"
-msgstr "A következő felhasználók:"
-
-#: geonode/templates/pinax/notifications/document_rated/full.txt:6
-#: geonode/templates/pinax/notifications/layer_approved/full.txt:4
-#: geonode/templates/pinax/notifications/layer_comment/full.txt:3
-#: geonode/templates/pinax/notifications/layer_created/full.txt:4
-#: geonode/templates/pinax/notifications/layer_published/full.txt:4
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:6
-#: geonode/templates/pinax/notifications/layer_updated/full.txt:4
-msgid "You can visit the layer's detail page here"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_rated/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A document has been rated"
-msgstr "Szolgáltatás jött létre:"
-
-#: geonode/templates/pinax/notifications/document_updated/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "The following document was updated"
-msgstr "A következő felhasználók:"
-
-#: geonode/templates/pinax/notifications/document_updated/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A document has been updated"
-msgstr "Szolgáltatás jött létre:"
-
-#: geonode/templates/pinax/notifications/email_body.txt:3
-#, fuzzy
-#| msgid "You have the following incomplete uploads"
-msgid "You have received the following notice from"
-msgstr "Az alábbi hiányos feltöltések"
-
-#: geonode/templates/pinax/notifications/email_body.txt:8
-msgid "To change how you receive notifications, please go to"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/email_subject.txt:1
-#, python-format
-msgid "[%(current_site)s] %(message)s"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/full.txt:1
-#: geonode/templates/pinax/notifications/short.txt:1
-#, fuzzy, python-format
-#| msgid "Notices"
-msgid "%(notice)s"
-msgstr "Notices"
-
-#: geonode/templates/pinax/notifications/layer_approved/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following layer was approved"
-msgstr "A következő rétegeket fogja importálni"
-
-#: geonode/templates/pinax/notifications/layer_approved/short.txt:3
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A layer has been approved"
-msgstr "A réteget hozzászólást"
-
-#: geonode/templates/pinax/notifications/layer_comment/full.txt:2
-#, fuzzy
-#| msgid "Documents related to this layer"
-msgid "A comment has been posted for the layer"
-msgstr "Kapcsolatos dokumentumok ezt a réteget"
-
-#: geonode/templates/pinax/notifications/layer_comment/short.txt:3
-#, fuzzy
-#| msgid "A rating was given to a layer"
-msgid "A comment has been posted for a layer"
-msgstr "A hitelminősítő kapott egy réteg"
-
-#: geonode/templates/pinax/notifications/layer_created/full.txt:2
-#, fuzzy
-#| msgid "This map uses the following layers:"
-msgid "uploaded the following layer"
-msgstr "Ez a térkép használja a következő rétegeket:"
-
-#: geonode/templates/pinax/notifications/layer_created/short.txt:3
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "A new layer has been uploaded"
-msgstr "A réteget feltöltve"
-
-#: geonode/templates/pinax/notifications/layer_deleted/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following layer was deleted"
-msgstr "A következő rétegeket fogja importálni"
-
-#: geonode/templates/pinax/notifications/layer_deleted/short.txt:3
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A layer has been deleted"
-msgstr "A réteget hozzászólást"
-
-#: geonode/templates/pinax/notifications/layer_published/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following layer was published"
-msgstr "A következő rétegeket fogja importálni"
-
-#: geonode/templates/pinax/notifications/layer_published/short.txt:3
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A layer has been published"
-msgstr "A réteget hozzászólást"
-
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:4
-#, fuzzy
-#| msgid "The following users:"
-msgid "the following layer"
-msgstr "A következő felhasználók:"
-
-#: geonode/templates/pinax/notifications/layer_rated/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A layer has been rated"
-msgstr "Szolgáltatás jött létre:"
-
-#: geonode/templates/pinax/notifications/layer_updated/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following layer was updated"
-msgstr "A következő rétegeket fogja importálni"
-
-#: geonode/templates/pinax/notifications/layer_updated/short.txt:3
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A layer has been updated"
-msgstr "A réteget hozzászólást"
-
-#: geonode/templates/pinax/notifications/map_approved/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following map was approved"
-msgstr "A következő rétegeket fogja importálni"
-
-#: geonode/templates/pinax/notifications/map_approved/full.txt:4
-#: geonode/templates/pinax/notifications/map_comment/full.txt:4
-#: geonode/templates/pinax/notifications/map_created/full.txt:4
-#: geonode/templates/pinax/notifications/map_published/full.txt:4
-#: geonode/templates/pinax/notifications/map_rated/full.txt:6
-#: geonode/templates/pinax/notifications/map_updated/full.txt:4
-msgid "You can visit the map's detail page here"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/map_approved/short.txt:3
-msgid "A map has been approved"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/map_comment/full.txt:2
-#, fuzzy
-#| msgid "Documents related to this map"
-msgid "A comment has been posted for the map"
-msgstr "Kapcsolódó dokumentumok megosztása"
-
-#: geonode/templates/pinax/notifications/map_comment/short.txt:3
-msgid "A comment has been posted for a map"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/map_created/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "created the following map"
-msgstr "A következő felhasználók:"
-
-#: geonode/templates/pinax/notifications/map_created/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A map has been created"
-msgstr "Szolgáltatás jött létre:"
-
-#: geonode/templates/pinax/notifications/map_deleted/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following map was deleted"
-msgstr "A következő rétegeket fogja importálni"
-
-#: geonode/templates/pinax/notifications/map_deleted/short.txt:3
-#, fuzzy
-#| msgid "A map was commented on"
-msgid "A map has been deleted"
-msgstr "A térképet hozzászólást"
-
-#: geonode/templates/pinax/notifications/map_published/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "The following map was published"
-msgstr "A következő felhasználók:"
-
-#: geonode/templates/pinax/notifications/map_published/short.txt:3
-msgid "A map has been published"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/map_rated/full.txt:4
-#, fuzzy
-#| msgid "The following users:"
-msgid "the following map"
-msgstr "A következő felhasználók:"
-
-#: geonode/templates/pinax/notifications/map_rated/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A map has been rated"
-msgstr "Szolgáltatás jött létre:"
-
-#: geonode/templates/pinax/notifications/map_updated/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following map was updated"
-msgstr "A következő rétegeket fogja importálni"
-
-#: geonode/templates/pinax/notifications/map_updated/short.txt:3
-#, fuzzy
-#| msgid "A map was commented on"
-msgid "A map has been updated"
-msgstr "A térképet hozzászólást"
-
 #: geonode/templates/pinax/notifications/notice_settings.html:7
 #: geonode/templates/pinax/notifications/notice_settings.html:10
 msgid "Notification Settings"
@@ -7780,20 +5106,9 @@ msgstr ""
 msgid "Notification Type"
 msgstr "Értesítés típusa"
 
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
-#, fuzzy
-#| msgid "party that owns the resource"
-msgid "requested you to download this resource"
-msgstr "a készlet tulajdonosa"
-
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:9
-msgid ""
-"Please go to resource page and assign the download permissions if you wish"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/request_download_resourcebase/short.txt:3
-msgid "A resource's download has been requested"
-msgstr ""
+#: geonode/templates/pinax/notifications/notice_settings.html:51
+msgid "Change"
+msgstr "Változás"
 
 #: geonode/templates/privacy-cookies.html:4
 #: geonode/templates/privacy-cookies.html:8
@@ -7873,6 +5188,10 @@ msgstr "többé már nem"
 #, python-format
 msgid "%(to_user_username)s's profile"
 msgstr "%(to_user_username)s profilja"
+
+#: geonode/templates/search/_general_filters.html:4
+msgid "Categories"
+msgstr "Kategóriák"
 
 #: geonode/templates/search/_general_filters.html:30
 msgid "Responsibles"
@@ -8069,165 +5388,1649 @@ msgstr "Bejövő üzenetek"
 msgid "Messages"
 msgstr ""
 
+#: geonode/templates/user_messages/inbox.html:22
+msgid "Mark selected as read"
+msgstr "A jelölést olvasottnak választja"
+
+#: geonode/templates/user_messages/inbox.html:23
+msgid "Mark selected as unread"
+msgstr "Jelölés olvasatlanként kiválasztva"
+
 #: geonode/templates/user_messages/inbox.html:63
 #: geonode/templates/user_messages/message_create.html:6
 #: geonode/templates/user_messages/message_create.html:9
 msgid "Create Message"
 msgstr "Új üzenet"
 
-#: geonode/templates/user_messages/message_create.html:16
+#: geonode/templates/user_messages/message_create.html:26
+#, fuzzy
+#| msgid "Choose users..."
+msgid "To users"
+msgstr "Válasszon a felhasználók ..."
+
+#: geonode/templates/user_messages/message_create.html:32
+#, fuzzy
+#| msgid "group"
+msgid "To groups"
+msgstr "csoport"
+
+#: geonode/templates/user_messages/message_create.html:37
+msgid "Subject"
+msgstr "Téma"
+
+#: geonode/templates/user_messages/message_create.html:42
+#, fuzzy
+#| msgid "Contact:"
+msgid "Content"
+msgstr "Kapcsolat:"
+
+#: geonode/templates/user_messages/message_create.html:50
 msgid "Send message"
 msgstr "Üzenet küldése"
 
-#: geonode/templates/user_messages/message_create.html:22
-#: geonode/templates/user_messages/thread_detail.html:46
+#: geonode/templates/user_messages/message_create.html:82
+#: geonode/templates/user_messages/thread_detail.html:48
 msgid "Back to Inbox"
 msgstr "Vissza az Inbox"
-
-#: geonode/templates/user_messages/thread_detail.html:9
-#, fuzzy
-#| msgid "Message Inbox"
-msgid "A message to"
-msgstr "Bejövő üzenetek"
 
 #: geonode/templates/user_messages/thread_detail.html:11
 msgid "Sent to"
 msgstr "Címzett"
 
-#: geonode/templates/user_messages/thread_detail.html:28
+#: geonode/templates/user_messages/thread_detail.html:30
 msgid "by"
 msgstr ""
 
-#: geonode/templates/user_messages/thread_detail.html:32
+#: geonode/templates/user_messages/thread_detail.html:30
+msgid "me"
+msgstr ""
+
+#: geonode/templates/user_messages/thread_detail.html:34
 #, fuzzy
 #| msgid "Send message"
 msgid "You have no messages"
 msgstr "Üzenet küldése"
 
-#: geonode/templates/user_messages/thread_detail.html:40
+#: geonode/templates/user_messages/thread_detail.html:42
 msgid "Send Reply"
 msgstr "Küldés Reply"
 
-#: geonode/themes/apps.py:28
+#~ msgid "series"
+#~ msgstr "sorozat"
+
+#~ msgid "computer program or routine"
+#~ msgstr "számítógépes program vagy rutin"
+
 #, fuzzy
-#| msgid "GeoNode Help"
-msgid "GeoNode Themes Library"
-msgstr "GeoNode Segítség"
+#~| msgid "date type"
+#~ msgid "feature type"
+#~ msgstr "dátum típus"
 
-#: geonode/upload/files.py:262
-msgid "Could not access to uploaded data."
-msgstr ""
+#~ msgid "copy or imitation of an existing or hypothetical object"
+#~ msgstr "másolata vagy utánzata létező vagy hipotetikus tárgy"
 
-#: geonode/upload/files.py:301
-msgid ""
-"One or more XML files was provided, but no matching files were found for "
-"them."
-msgstr ""
+#~ msgid "collection hardware"
+#~ msgstr "gyűjtemény hardver"
 
-#: geonode/upload/files.py:310
-msgid ""
-"One or more SLD files was provided, but no matching files were found for "
-"them."
-msgstr ""
+#~ msgid "collection session"
+#~ msgstr "gyűjtemény ülés"
 
-#: geonode/upload/upload_validators.py:66
-msgid "Invalid zip file detected"
-msgstr ""
+#~ msgid "non-geographic data"
+#~ msgstr "nem földrajzi adatok"
 
-#: geonode/upload/upload_validators.py:82
-msgid "Could not find any valid spatial file inside the uploaded zip"
-msgstr ""
+#~ msgid "property type"
+#~ msgstr "ingatlan típus"
 
-#: geonode/upload/upload_validators.py:85
-msgid "Invalid kmz file detected"
-msgstr ""
+#~ msgid "field session"
+#~ msgstr "mező ülés"
 
-#: geonode/upload/upload_validators.py:89
 #, fuzzy
-#| msgid "Could not find any layers in a compatible projection."
-msgid "Could not find any kml files inside the uploaded kmz"
-msgstr "Nem található rétegek kompatibilis vetítés."
+#~| msgid "dataset"
+#~ msgid "dataset"
+#~ msgstr "adatbázisba"
 
-#: geonode/upload/upload_validators.py:124
-msgid "Only one shapefile per zip is allowed"
-msgstr ""
+#, fuzzy
+#~| msgid "Resources"
+#~ msgid "service interfaces"
+#~ msgstr "Erőforrás"
 
-#: geonode/upload/upload_validators.py:170
-msgid "kml files with more than one GroundOverlay are not supported"
-msgstr ""
+#~ msgid "attribute class"
+#~ msgstr "attribútum osztály"
 
-#: geonode/upload/upload_validators.py:181
-msgid "Ground overlay image declared in kml file cannot be found"
-msgstr ""
+#~ msgid "characteristic of a feature"
+#~ msgstr "jellemző jellemző"
 
-#: geonode/upload/upload_validators.py:218
-msgid "Only one kml file per ZIP is allowed"
-msgstr ""
+#~ msgid "tile or spatial subset of geographic data"
+#~ msgstr "csempe vagy térbeli részhalmazát földrajzi adatok"
 
-#: geonode/upload/upload_validators.py:233
-msgid "Only one kml file per kmz is allowed"
-msgstr ""
+#~ msgid "feature"
+#~ msgstr "vonás"
 
-#: geonode/upload/upload_validators.py:287
-msgid ""
-"You are trying to upload multiple GeoTIFFs without a valid 'indexer."
-"properties' file."
-msgstr ""
+#~ msgid "dimension group"
+#~ msgstr "dimenzió csoport"
 
-#: geonode/upload/upload_validators.py:292
-msgid "Only one raster file per ZIP is allowed"
-msgstr ""
+#~ msgid "frequency of maintenance for the data is not known"
+#~ msgstr "karbantartás gyakorisága az adat nem ismert"
 
-#: geonode/upload/upload_validators.py:297
-msgid "No multiple rasters allowed"
-msgstr ""
+#~ msgid "data is repeatedly and frequently updated"
+#~ msgstr "adatokat ismételten és rendszeresen frissített"
 
-#: geonode/upload/utils.py:98
-msgid ""
-"To support the time step, you must enable the OGC_SERVER DATASTORE option"
-msgstr ""
+#~ msgid "there are no plans to update the data"
+#~ msgstr "nem tervezik frissíteni az adatokat"
 
-#: geonode/upload/utils.py:261
-#, python-format
-msgid "Unsupported file type: %s"
-msgstr ""
+#~ msgid "data is updated each day"
+#~ msgstr "adatok frissítése naponta"
 
-#: geonode/upload/utils.py:526
-#, python-format
-msgid "File does not exist: %s"
-msgstr ""
+#~ msgid "data is updated every year"
+#~ msgstr "adatok frissítése évente"
 
-#: geonode/upload/utils.py:583
-#, python-format
-msgid "unknown item state: %s"
-msgstr ""
+#~ msgid "data is updated as deemed necessary"
+#~ msgstr "adatok frissítésre szükség"
 
-#: geonode/upload/utils.py:591
-#, python-format
-msgid "error during import: %s"
-msgstr ""
+#~ msgid "data is updated each month"
+#~ msgstr "adatok frissítése havonta"
 
-#: geonode/upload/utils.py:701
-msgid "Could not find any valid Time Regex for the Mosaic files."
-msgstr ""
+#~ msgid "data is updated every two weeks"
+#~ msgstr "adatok frissítése kéthetente"
 
-#: geonode/upload/utils.py:732 geonode/upload/utils.py:764
-msgid "Unsupported DataBase for Mosaics!"
-msgstr ""
+#~ msgid "data is updated in intervals that are uneven in duration"
+#~ msgstr "adatok frissítése időközönként, amelyek egyenetlen tartó"
 
-#: geonode/utils.py:87
-msgid "Invalid permission level."
-msgstr "Érvénytelen jogosultsági szint."
+#~ msgid "data is updated on a weekly basis"
+#~ msgstr "adatok frissítése hetente"
 
-#: geonode/utils.py:967
-msgid "Permission Denied"
-msgstr "Engedély megtagadva"
+#~ msgid "data is updated twice each year"
+#~ msgstr "adatok frissítése évente kétszer"
+
+#~ msgid "data is updated every three months"
+#~ msgstr "adatok frissítése háromhavonta"
+
+#~ msgid "No information provided"
+#~ msgstr "Nem adott tájékoztatást"
+
+#~ msgid "Category is required."
+#~ msgstr "Kategória szükséges."
+
+#~ msgid "Owner"
+#~ msgstr "Tulajdonos"
+
+#~ msgid "temporal extent start"
+#~ msgstr "időbeli mértékben kezdet"
+
+#~ msgid "temporal extent end"
+#~ msgstr "időbeli mértéke end"
+
+#, fuzzy
+#~| msgid "Keywords"
+#~ msgid "Free-text Keywords"
+#~ msgstr "Kulcsszavak"
+
+#, fuzzy
+#~| msgid "A space or comma-separated list of keywords"
+#~ msgid ""
+#~ "A space or comma-separated list of keywords. Use the widget to select "
+#~ "from Hierarchical tree."
+#~ msgstr "A tér vagy vesszővel elválasztott kulcsszavak"
+
+#~ msgid "function performed by the responsible party"
+#~ msgstr "funkciója a felelős fél"
+
+#~ msgid "reference date for the cited resource"
+#~ msgstr "viszonyítási időpont az idézett forrás"
+
+#~ msgid "identification of when a given event occurred"
+#~ msgstr "azonosítását, amikor egy adott esemény"
+
+#~ msgid "version of the cited resource"
+#~ msgstr "változata az idézett forrás"
+
+#~ msgid "brief narrative summary of the content of the resource(s)"
+#~ msgstr "rövid szöveges tartalmának összefoglalása a forrás (ok)"
+
+#~ msgid "summary of the intentions with which the resource(s) was developed"
+#~ msgstr "összefoglaló a szándék, amellyel a forrás (ok) fejlesztették"
+
+#~ msgid ""
+#~ "frequency with which modifications and deletions are made to the data "
+#~ "after it is first produced"
+#~ msgstr ""
+#~ "gyakoriság, amellyel módosításokkal és törlések készülnek az adatok után "
+#~ "először elő"
+
+#~ msgid ""
+#~ "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+#~ "the subject (space or comma-separated"
+#~ msgstr ""
+#~ "leggyakrabban használt szó (k) vagy hivatalos szó (k) vagy mondat (ok) "
+#~ "leírására használt tárgy (térben vagy vesszővel elválasztott"
+
+#, fuzzy
+#~| msgid ""
+#~| "commonly used word(s) or formalised word(s) or phrase(s) used to "
+#~| "describe the subject (space or comma-separated"
+#~ msgid ""
+#~ "formalised word(s) or phrase(s) from a fixed thesaurus used to describe "
+#~ "the subject (space or comma-separated"
+#~ msgstr ""
+#~ "leggyakrabban használt szó (k) vagy hivatalos szó (k) vagy mondat (ok) "
+#~ "leírására használt tárgy (térben vagy vesszővel elválasztott"
+
+#~ msgid "keyword identifies a location"
+#~ msgstr "kulcsszó azonosítja egy helyet"
+
+#~ msgid "limitation(s) placed upon the access or use of the data."
+#~ msgstr ""
+#~ "korlátozás (ok) keletkezik a hozzáférés vagy az adatok felhasználását."
+
+#~ msgid ""
+#~ "other restrictions and legal prerequisites for accessing and using the "
+#~ "resource or metadata"
+#~ msgstr ""
+#~ "egyéb korlátozások és jogi előfeltételei hozzáférés és azok felhasználása "
+#~ "a forrás vagy metaadatok"
+
+#~ msgid "license of the dataset"
+#~ msgstr "engedély Az adatkészlet"
+
+#~ msgid "language used within the dataset"
+#~ msgstr "használt nyelv az adatbázisba"
+
+#~ msgid ""
+#~ "high-level geographic data thematic classification to assist in the "
+#~ "grouping and search of available geographic data sets."
+#~ msgstr ""
+#~ "magas szintű földrajzi adatok tematikus besorolás csoportosításában segít "
+#~ "és keresést az elérhető földrajzi adatsorok."
+
+#~ msgid "method used to represent geographic information in the dataset."
+#~ msgstr ""
+#~ "módszert használják, hogy képviselje a földrajzi információkat az "
+#~ "adatbázisba."
+
+#~ msgid "time period covered by the content of the dataset (start)"
+#~ msgstr "időszak, amelyre a tartalma adatbázisba (start)"
+
+#~ msgid "time period covered by the content of the dataset (end)"
+#~ msgstr "időszak, amelyre a tartalma adatbázisba (vége)"
+
+#~ msgid ""
+#~ "general explanation of the data producer's knowledge about the lineage of "
+#~ "a dataset"
+#~ msgstr ""
+#~ "általános magyarázata az adatok termelő ismereteit a vonal egy adatbázisba"
+
+#~ msgid "title"
+#~ msgstr "cím"
+
+#~ msgid "name by which the cited resource is known"
+#~ msgstr "nevet, amellyel a hivatkozott erőforrás ismert"
+
+#~ msgid "date"
+#~ msgstr "dátum"
+
+#~ msgid "date type"
+#~ msgstr "dátum típus"
+
+#~ msgid "edition"
+#~ msgstr "kiadás"
+
+#~ msgid "abstract"
+#~ msgstr "absztrakt"
+
+#~ msgid "purpose"
+#~ msgstr "cél"
+
+#~ msgid "maintenance frequency"
+#~ msgstr "karbantartási gyakoriság"
+
+#~ msgid "keywords"
+#~ msgstr "kulcsszavak"
+
+#~ msgid "keywords region"
+#~ msgstr "kulcsszavak régió"
+
+#~ msgid "restrictions"
+#~ msgstr "korlátozások"
+
+#~ msgid "restrictions other"
+#~ msgstr "korlátozásoknak"
+
+#~ msgid "language"
+#~ msgstr "nyelv"
+
+#, fuzzy
+#~| msgid "Spatial Representation Type"
+#~ msgid "spatial representation type"
+#~ msgstr "Területi Képviselet típus"
+
+#~ msgid "supplemental information"
+#~ msgstr "kiegészítő információk"
+
+#~ msgid "any other descriptive information about the dataset"
+#~ msgstr "egyéb leírásáról adatbázisba"
+
+#~ msgid "data quality statement"
+#~ msgstr "az adatminőség nyilatkozat"
+
+#~ msgid "CSW typename"
+#~ msgstr "CSW typename"
+
+#~ msgid "CSW schema"
+#~ msgstr "CSW séma"
+
+#~ msgid "CSW source"
+#~ msgstr "CSW forrás"
+
+#~ msgid "CSW insert date"
+#~ msgstr "CSW dátum"
+
+#~ msgid "CSW type"
+#~ msgstr "CSW típus"
+
+#~ msgid "CSW anytext"
+#~ msgstr "CSW anytext"
+
+#~ msgid "CSW WKT geometry"
+#~ msgstr "CSW WKT geometria"
+
+#, fuzzy
+#~| msgid "Metadata Provider"
+#~ msgid "Metadata uploaded preserve"
+#~ msgstr "Metaadatok Szolgáltató"
+
+#~ msgid "Should this resource be advertised in home page?"
+#~ msgstr "Amennyiben ezt a forrást kell hirdetni honlap?"
+
+#, fuzzy
+#~| msgid "Published From"
+#~ msgid "Is Published"
+#~ msgstr "Közreadta"
+
+#~ msgid "Should this resource be published and searchable?"
+#~ msgstr "Amennyiben ezt a forrást kell közzétenni és kereshető?"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail url"
+#~ msgstr "Thumbnail"
+
+#~ msgid "For example \"kml\""
+#~ msgstr "Például a \"kml\""
+
+#~ msgid "For example \"View in Google Earth\""
+#~ msgstr "Például a \"View in Google Earth\""
+
+#~ msgid "For example \"text/xml\""
+#~ msgstr "Például a \"text / xml\""
+
+#, fuzzy
+#~| msgid "GeoNode Help"
+#~ msgid "GeoNode Client Library"
+#~ msgstr "GeoNode Segítség"
+
+#, fuzzy
+#~| msgid "Documents related to this map"
+#~ msgid "Document Created"
+#~ msgstr "Kapcsolódó dokumentumok megosztása"
+
+#, fuzzy
+#~| msgid "This document is related to a "
+#~ msgid "A Document was created"
+#~ msgstr "Ez a dokumentum kapcsolódik egy"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "Document Updated"
+#~ msgstr "Dokumentumok"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "A Document was updated"
+#~ msgstr "Dokumentumok"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "Document Approved"
+#~ msgstr "Dokumentumok"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "Document Published"
+#~ msgstr "Dokumentumok"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "A Document was published"
+#~ msgstr "Dokumentumok"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "Document Deleted"
+#~ msgstr "Dokumentumok"
+
+#, fuzzy
+#~| msgid "This document is related to a "
+#~ msgid "A Document was deleted"
+#~ msgstr "Ez a dokumentum kapcsolódik egy"
+
+#, fuzzy
+#~| msgid "Comment on Layer"
+#~ msgid "Comment on Document"
+#~ msgstr "Hozzászólás a réteg"
+
+#, fuzzy
+#~| msgid "A map was commented on"
+#~ msgid "A Document was commented on"
+#~ msgstr "A térképet hozzászólást"
+
+#, fuzzy
+#~| msgid "Comment on Map"
+#~ msgid "Document for Map"
+#~ msgstr "Hozzászólás Térkép"
+
+#, fuzzy
+#~| msgid "A rating was given to a map"
+#~ msgid "A rating was given to a document"
+#~ msgstr "A hitelminősítő kapott egy térképet"
+
+#~ msgid "Link to"
+#~ msgstr "Link"
+
+#~ msgid "Document must be a file or url."
+#~ msgstr "Dokumentum kell, hogy legyen egy fájlt vagy URL-t."
+
+#~ msgid "A document cannot have both a file and a url."
+#~ msgstr "A dokumentum nem lehet egyszerre egy fájlt, és a url."
+
+#~ msgid "This file type is not allowed"
+#~ msgstr "Ez a fájl típus nem engedélyezett"
+
+#~ msgid "Permissions must be valid JSON."
+#~ msgstr "Engedélyek érvényesnek kell lennie JSON."
+
+#~ msgid "File"
+#~ msgstr "Akta"
+
+#~ msgid "The URL of the document if it is external."
+#~ msgstr "Az URL a dokumentum, ha a külső."
+
+#~ msgid "You are not permitted to delete this document"
+#~ msgstr "Ön nem jogosult törölni a dokumentum"
+
+#~ msgid "You do not have permissions for this document."
+#~ msgstr "Nem rendelkezik engedélyekkel a dokumentumot."
+
+#~ msgid "You are not permitted to modify this document"
+#~ msgstr "Ön nem jogosult módosítani a dokumentumot"
+
+#~ msgid "You are not permitted to modify this document's metadata"
+#~ msgstr "Ön nem jogosult módosítani a dokumentum metaadatait"
+
+#~ msgid "You are not permitted to view this document"
+#~ msgstr "Ön nem jogosult megtekinteni a dokumentumot"
+
+#~ msgid "You are not allowed to view this document."
+#~ msgstr "Nem tekintheted meg ezt a dokumentumot."
+
+#~ msgid "You are not allowed to edit this document."
+#~ msgstr "Ön nem szerkesztheti a dokumentumot."
+
+#, fuzzy
+#~| msgid "Set permissions for this resource"
+#~ msgid "You must set a point of contact for this resource"
+#~ msgstr "Engedélyek beállítása az erőforrás"
+
+#, fuzzy
+#~| msgid "Set permissions for this resource"
+#~ msgid "You must set an author for this resource"
+#~ msgstr "Engedélyek beállítása az erőforrás"
+
+#~ msgid "Layer Uploaded"
+#~ msgstr "Feltöltött réteg"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "A layer was uploaded"
+#~ msgstr "A réteget feltöltve"
+
+#~ msgid "Comment on Layer"
+#~ msgstr "Hozzászólás a réteg"
+
+#~ msgid "A layer was commented on"
+#~ msgstr "A réteget hozzászólást"
+
+#~ msgid "Rating for Layer"
+#~ msgstr "Értékelés Layer"
+
+#~ msgid "A rating was given to a layer"
+#~ msgstr "A hitelminősítő kapott egy réteg"
+
+#, fuzzy
+#~| msgid "Layer Name"
+#~ msgid "Layer name"
+#~ msgstr "Réteg neve"
+
+#, fuzzy
+#~| msgid "Layer Title"
+#~ msgid "Layer title"
+#~ msgstr "Réteg címe"
+
+#, fuzzy
+#~| msgid "property type"
+#~ msgid "Geometry type"
+#~ msgstr "ingatlan típus"
+
+#, fuzzy
+#~| msgid "Not provided"
+#~ msgid "No abstract provided"
+#~ msgstr "Nem biztosított"
+
+#~ msgid "Zipped Shapefile"
+#~ msgstr "Tömörített Shape fájl"
+
+#~ msgid "GML 2.0"
+#~ msgstr "GML 2.0"
+
+#~ msgid "GML 3.1.1"
+#~ msgstr "GML 3.1.1"
+
+#~ msgid "CSV"
+#~ msgstr "CSV"
+
+#~ msgid "Excel"
+#~ msgstr "Excel"
+
+#~ msgid "GeoJSON"
+#~ msgstr "GeoJSON"
+
+#~ msgid "JPEG"
+#~ msgstr "JPEG"
+
+#~ msgid "PDF"
+#~ msgstr "PDF"
+
+#~ msgid "PNG"
+#~ msgstr "PNG"
+
+#~ msgid "You don't have permissions to change style for this layer"
+#~ msgstr "Ön nem jogosult módosítani stílust ezt a réteget"
+
+#~ msgid "Bad HTTP Authorization Credentials."
+#~ msgstr "Bad HTTP hitelesítési adatokat."
+
+#~ msgid ""
+#~ "a short version of the name consisting only of letters, numbers, "
+#~ "underscores and hyphens."
+#~ msgstr ""
+#~ "rövid változata a nevét, amely csak a betűk, számok, aláhúzás és "
+#~ "kötőjelet."
+
+#~ msgid "A group already exists with that slug."
+#~ msgstr "A csoport már létezik az adott csiga."
+
+#~ msgid "A group already exists with that name."
+#~ msgstr "A csoport már létezik ezzel a névvel."
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "User Identifiers"
+#~ msgstr "Felhasználói tevékenységek"
+
+#, fuzzy
+#~| msgid "Public"
+#~ msgid "Public"
+#~ msgstr "Nyilvános"
+
+#~ msgid "Public (invite-only)"
+#~ msgstr "Nyilvános (csak meghívásos alapon)"
+
+#~ msgid "Private"
+#~ msgstr "Magán"
+
+#~ msgid ""
+#~ "Public: Any registered user can view and join a public group.<br>Public "
+#~ "(invite-only):Any registered user can view the group.  Only invited users "
+#~ "can join.<br>Private: Registered users cannot see any details about the "
+#~ "group, including membership.  Only invited users can join."
+#~ msgstr ""
+#~ "Nyilvános: bármely regisztrált felhasználó megtekintheti és csatlakozz a "
+#~ "nyilvános csoporthoz. <br> Nyilvános (csak meghívásos alapon): bármely "
+#~ "regisztrált felhasználó megtekintheti a csoport. Csak a meghívott "
+#~ "felhasználók csatlakozhatnak. <br> Private: A regisztrált felhasználók "
+#~ "nem lát részleteket a csoport, a tagságot is beleértve. Csak a meghívott "
+#~ "felhasználók csatlakozhatnak."
+
+#~ msgid ""
+#~ "Email used to contact one or all group members, such as a mailing list, "
+#~ "shared email, or exchange group."
+#~ msgstr ""
+#~ "Email használt kapcsolatba egy vagy csoport minden tagja, így például egy "
+#~ "levelezési listát, közös e-mail, vagy csere-csoport."
+
+#~ msgid "A space or comma-separated list of keywords"
+#~ msgstr "A tér vagy vesszővel elválasztott kulcsszavak"
+
+#, fuzzy
+#~| msgid "Success"
+#~ msgid "Access"
+#~ msgstr "Siker"
+
+#~ msgid "Member"
+#~ msgstr "Tag"
+
+#, fuzzy
+#~| msgid "Map Created"
+#~ msgid "Layer Created"
+#~ msgstr "Térkép Létrehozva"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A Layer was created"
+#~ msgstr "A réteget hozzászólást"
+
+#, fuzzy
+#~| msgid "Layer Uploaded"
+#~ msgid "Layer Updated"
+#~ msgstr "Feltöltött réteg"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A Layer was updated"
+#~ msgstr "A réteget hozzászólást"
+
+#, fuzzy
+#~| msgid "Not provided"
+#~ msgid "Layer Approved"
+#~ msgstr "Nem biztosított"
+
+#, fuzzy
+#~| msgid "Published From"
+#~ msgid "Layer Published"
+#~ msgstr "Közreadta"
+
+#, fuzzy
+#~| msgid "Layer Default Style"
+#~ msgid "Layer Deleted"
+#~ msgstr "Réteg Default Style"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A Layer was deleted"
+#~ msgstr "A réteget hozzászólást"
+
+#~ msgid "style name"
+#~ msgstr "stílus neve"
+
+#~ msgid "sld text"
+#~ msgstr "SLD szöveg"
+
+#~ msgid "sld version"
+#~ msgstr "SLD verzió"
+
+#~ msgid "sld url"
+#~ msgstr "SLD url"
+
+#, fuzzy
+#~| msgid "date type"
+#~ msgid "Storetype"
+#~ msgstr "dátum típus"
+
+#, fuzzy
+#~| msgid "CSW typename"
+#~ msgid "Typename"
+#~ msgstr "CSW typename"
+
+#, fuzzy
+#~| msgid "attribute name"
+#~ msgid "attribute name"
+#~ msgstr "attribútum neve"
+
+#~ msgid "name of attribute as stored in shapefile/spatial database"
+#~ msgstr "neve attribútum tárolt shapefile / térbeli adatbázis"
+
+#, fuzzy
+#~| msgid "distribution description"
+#~ msgid "attribute description"
+#~ msgstr "distribution description"
+
+#~ msgid "description of attribute to be used in metadata"
+#~ msgstr "attribútum leírása használandó metaadatok"
+
+#~ msgid "attribute label"
+#~ msgstr "attribútum címke"
+
+#~ msgid "title of attribute as displayed in GeoNode"
+#~ msgstr "cím attribútum jelenik GeoNode"
+
+#~ msgid "attribute type"
+#~ msgstr "attribútum típus"
+
+#~ msgid "the data type of the attribute (integer, string, geometry, etc)"
+#~ msgstr "az adat típusa attribútum (integer, string, geometria, stb.)"
+
+#~ msgid "visible?"
+#~ msgstr "látható?"
+
+#~ msgid "specifies if the attribute should be displayed in identify results"
+#~ msgstr "ha megadja az attribútum megjelenik azonosítani eredmények"
+
+#~ msgid "display order"
+#~ msgstr "megjelenítési sorrend"
+
+#~ msgid ""
+#~ "specifies the order in which attribute should be displayed in identify "
+#~ "results"
+#~ msgstr ""
+#~ "meghatározza, hogy milyen sorrendben attribútum megjeleníthető "
+#~ "azonosítani eredmények"
+
+#, fuzzy
+#~| msgid "count"
+#~ msgid "count"
+#~ msgstr "számol"
+
+#~ msgid "count value for this field"
+#~ msgstr "gróf érték ezen a területen"
+
+#~ msgid "min"
+#~ msgstr "min"
+
+#~ msgid "minimum value for this field"
+#~ msgstr "minimum értéke ezen a területen"
+
+#~ msgid "max"
+#~ msgstr "max"
+
+#~ msgid "maximum value for this field"
+#~ msgstr "maximális érték ezen a területen"
+
+#~ msgid "average"
+#~ msgstr "átlagos"
+
+#~ msgid "average value for this field"
+#~ msgstr "átlagos érték ezen a területen"
+
+#~ msgid "median"
+#~ msgstr "középső"
+
+#~ msgid "median value for this field"
+#~ msgstr "medián érték ezen a területen"
+
+#~ msgid "standard deviation"
+#~ msgstr "szabvány eltérés"
+
+#~ msgid "standard deviation for this field"
+#~ msgstr "szórás ezen a téren"
+
+#~ msgid "sum"
+#~ msgstr "összeg"
+
+#~ msgid "sum value for this field"
+#~ msgstr "összeg értéke ezen a területen"
+
+#~ msgid "unique values for this field"
+#~ msgstr "egyedi értékeket ezen a területen"
+
+#, fuzzy
+#~| msgid "last modified"
+#~ msgid "last modified"
+#~ msgstr "utolsó módosítás"
+
+#~ msgid "date when attribute statistics were last updated"
+#~ msgstr "időpont, amikor az attribútum statisztika utolsó frissítés"
+
+#~ msgid ""
+#~ "There was an error while attempting to upload your data. Please try "
+#~ "again, or contact and administrator if the problem continues."
+#~ msgstr ""
+#~ "Hiba történt, miközben megpróbálja feltölteni az adatokat. Kérjük, "
+#~ "próbálja újra, vagy lépjen kapcsolatba és a rendszergazda, ha a probléma "
+#~ "továbbra is fennáll."
+
+#~ msgid "You are not permitted to delete this layer"
+#~ msgstr "Ön nem jogosult törölni ezt a réteget"
+
+#~ msgid "You do not have permissions for this layer."
+#~ msgstr "Nem rendelkezik engedélyekkel ezt a réteget."
+
+#~ msgid "You are not permitted to modify this layer"
+#~ msgstr "Ön nem jogosult módosítani ezt a réteget"
+
+#~ msgid "You are not permitted to modify this layer's metadata"
+#~ msgstr "Ön nem jogosult módosítani ezt a réteget a metaadatok"
+
+#~ msgid "You are not permitted to view this layer"
+#~ msgstr "Ön nem jogosult megtekinteni ezt a réteget"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Failed to upload the layer"
+#~ msgstr "Fájlok feltöltését"
+
+#~ msgid "Map Created"
+#~ msgstr "Térkép Létrehozva"
+
+#, fuzzy
+#~| msgid "A map was commented on"
+#~ msgid "A Map was created"
+#~ msgstr "A térképet hozzászólást"
+
+#, fuzzy
+#~| msgid "Map Created"
+#~ msgid "Map Updated"
+#~ msgstr "Térkép Létrehozva"
+
+#, fuzzy
+#~| msgid "last updated on"
+#~ msgid "A Map was updated"
+#~ msgstr "utolsó frissítése"
+
+#, fuzzy
+#~| msgid "Not provided"
+#~ msgid "Map Approved"
+#~ msgstr "Nem biztosított"
+
+#, fuzzy
+#~| msgid "Published From"
+#~ msgid "Map Published"
+#~ msgstr "Közreadta"
+
+#, fuzzy
+#~| msgid "Map Created"
+#~ msgid "Map Deleted"
+#~ msgstr "Térkép Létrehozva"
+
+#, fuzzy
+#~| msgid "A map was commented on"
+#~ msgid "A Map was deleted"
+#~ msgstr "A térképet hozzászólást"
+
+#~ msgid "Comment on Map"
+#~ msgstr "Hozzászólás Térkép"
+
+#~ msgid "A map was commented on"
+#~ msgstr "A térképet hozzászólást"
+
+#~ msgid "Rating for Map"
+#~ msgstr "Értékelés Térkép"
+
+#~ msgid "A rating was given to a map"
+#~ msgstr "A hitelminősítő kapott egy térképet"
+
+#~ msgid "zoom"
+#~ msgstr "zoom"
+
+#, fuzzy
+#~| msgid "projection"
+#~ msgid "projection"
+#~ msgstr "vetület"
+
+#~ msgid "center X"
+#~ msgstr "középpont x"
+
+#~ msgid "center Y"
+#~ msgstr "középpont y"
+
+#~ msgid "Site URL"
+#~ msgstr "Oldal URL"
+
+#~ msgid "Featured Map URL"
+#~ msgstr "Kiemelt Map URL"
+
+#~ msgid "stack order"
+#~ msgstr "halom sorrend"
+
+#, fuzzy
+#~| msgid "format"
+#~ msgid "format"
+#~ msgstr "formátum"
+
+#~ msgid "name"
+#~ msgstr "név"
+
+#~ msgid "opacity"
+#~ msgstr "átlátszatlanság"
+
+#~ msgid "styles"
+#~ msgstr "stílusok"
+
+#~ msgid "transparent"
+#~ msgstr "áttetsző"
+
+#~ msgid "fixed"
+#~ msgstr "rögzített"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "group"
+#~ msgstr "csoport"
+
+#~ msgid "visibility"
+#~ msgstr "láthatóság"
+
+#~ msgid "ows URL"
+#~ msgstr "ows URL"
+
+#~ msgid "layer params"
+#~ msgstr "fólia paraméterek"
+
+#~ msgid "source params"
+#~ msgstr "forrás paraméterek"
+
+#~ msgid "JSON Configuration"
+#~ msgstr "JSON konfiguráció"
+
+#~ msgid "You are not permitted to delete this map."
+#~ msgstr "Ön nem jogosult törölni ezen a térképen."
+
+#~ msgid "You do not have permissions for this map."
+#~ msgstr "Nem rendelkezik engedélyekkel ezen a térképen."
+
+#~ msgid "You must be logged in to save this map"
+#~ msgstr "Be kell jelentkezned, hogy megmentse ezt a térképet"
+
+#~ msgid "You are not permitted to save or edit this map."
+#~ msgstr "Nem megengedett, hogy menteni vagy szerkeszteni ezt a térképet."
+
+#~ msgid "You are not allowed to modify this map's metadata."
+#~ msgstr "Ön nem jogosult módosítani ezen a térképen a metaadatokat."
+
+#~ msgid "You are not allowed to view this map."
+#~ msgstr "Nem engedélyezett, hogy megtekinthesse ezt a térképet."
+
+#~ msgid "An unknown error has occured."
+#~ msgstr "Ismeretlen hiba történt."
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "Thumbnail"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "error saving thumbnail"
+#~ msgstr "Thumbnail"
+
+#, fuzzy
+#~| msgid "Email Address"
+#~ msgid "Enter valid email addresses."
+#~ msgstr "E-mail cím"
+
+#, fuzzy
+#~| msgid "attribute name"
+#~ msgid "Metric name"
+#~ msgstr "attribútum neve"
+
+#, fuzzy
+#~| msgid "reference date for the cited resource"
+#~ msgid "Show data for specific resource"
+#~ msgstr "viszonyítási időpont az idézett forrás"
+
+#, fuzzy
+#~| msgid "GeoServer"
+#~ msgid "Host (GeoServer)"
+#~ msgstr "GeoServer"
+
+#, fuzzy
+#~| msgid "About GeoNode"
+#~ msgid "Host (GeoNode)"
+#~ msgstr "Mintegy GeoNode"
+
+#, fuzzy
+#~| msgid "Resources"
+#~ msgid "No resource"
+#~ msgstr "Erőforrás"
+
+#, fuzzy
+#~| msgid "Resources"
+#~ msgid "Resource base"
+#~ msgstr "Erőforrás"
+
+#, fuzzy
+#~| msgid "Styles"
+#~ msgid "Style"
+#~ msgstr "Stílusok"
+
+#, fuzzy
+#~| msgid "count"
+#~ msgid "Count"
+#~ msgstr "számol"
+
+#, fuzzy
+#~| msgid "local OWS"
+#~ msgid "Not OWS"
+#~ msgstr "helyi OWS"
+
+#, fuzzy
+#~| msgid "Edit Metadata"
+#~ msgid "Change Metadata"
+#~ msgstr "Metaadatok szerkesztése"
+
+#, fuzzy
+#~| msgid "Edit Metadata"
+#~ msgid "View Metadata"
+#~ msgstr "Metaadatok szerkesztése"
+
+#~ msgid "View"
+#~ msgstr "View"
+
+#, fuzzy
+#~| msgid "Public"
+#~ msgid "Publish"
+#~ msgstr "Nyilvános"
+
+#, fuzzy
+#~| msgid "GeoServer"
+#~ msgid "Geoserver event"
+#~ msgstr "GeoServer"
+
+#, fuzzy
+#~| msgid "List of resources using this document:"
+#~ msgid "List of resources affected"
+#~ msgstr "Listája források révén ezt a dokumentumot:"
+
+#, fuzzy
+#~| msgid "Resource using this document"
+#~ msgid "Response processing time in ms"
+#~ msgstr "Erőforrás ezt a dokumentumot"
+
+#, fuzzy
+#~| msgid "The following groups:"
+#~ msgid "has detected following problems :"
+#~ msgstr "A következő csoportok:"
+
+#~ msgid "User following you"
+#~ msgstr "Felhasználói követi Önt"
+
+#, fuzzy
+#~| msgid "This user is not following anyone"
+#~ msgid "Another user has started following you"
+#~ msgstr "Ez a felhasználó nem követ senkit"
+
+#, fuzzy
+#~| msgid "Recent activity"
+#~ msgid "Account activated"
+#~ msgstr "Legutóbbi aktivitás"
+
+#~ msgid "Personal info"
+#~ msgstr "Személyes info"
+
+#~ msgid "Important dates"
+#~ msgstr "Fontos dátumok"
+
+#, fuzzy
+#~| msgid "Edit profile"
+#~ msgid "Extended profile"
+#~ msgstr "Profil szerkesztése"
+
+#~ msgid "Password changed successfully."
+#~ msgstr "Jelszó sikeresen megváltoztatva."
+
+#~ msgid "Change password: %s"
+#~ msgstr "Jelszó módosítása: %s"
+
+#~ msgid "party who authored the resource"
+#~ msgstr "a készlet szerző fél"
+
+#~ msgid ""
+#~ "party who has processed the data in a manner such that the resource has "
+#~ "been modified"
+#~ msgstr "a készlet eredeti adatainak változtatásával feldolgozó fél"
+
+#~ msgid "party who published the resource"
+#~ msgstr "a készletet kiadó fél"
+
+#~ msgid ""
+#~ "party that accepts accountability and responsibility for the data and "
+#~ "ensures         appropriate care and maintenance of the resource"
+#~ msgstr ""
+#~ "fél, hogy a felelősséget vállaló, elszámoltatható, az adatok és a "
+#~ "megfelelő kezelés és karbantartás a forrás"
+
+#~ msgid ""
+#~ "party who can be contacted for acquiring knowledge about or acquisition "
+#~ "of the resource"
+#~ msgstr ""
+#~ "a készlet beszerzésével és további ismertetésével kapcsolatosan elérhető "
+#~ "fél"
+
+#~ msgid "party who distributes the resource"
+#~ msgstr "a készletet terjesztő fél"
+
+#~ msgid "party who uses the resource"
+#~ msgstr "a készletet felhasználó fél"
+
+#~ msgid "party that supplies the resource"
+#~ msgstr "a készletet szolgáltató fél"
+
+#~ msgid "party who created the resource"
+#~ msgstr "a készletet létrehozó fél"
+
+#~ msgid "party that owns the resource"
+#~ msgstr "a készlet tulajdonosa"
+
+#~ msgid ""
+#~ "key party responsible for gathering information and conducting research"
+#~ msgstr "kulcsfontosságú fél felelős az információgyűjtés és a kutatásért"
+
+#, fuzzy
+#~| msgid "Email Address"
+#~ msgid "Email Address"
+#~ msgstr "E-mail cím"
+
+#, fuzzy
+#~| msgid "Organization Name"
+#~ msgid "Organization Name"
+#~ msgstr "Szervezet neve"
+
+#~ msgid "name of the responsible organization"
+#~ msgstr "nevét az illetékes szervezet"
+
+#~ msgid "introduce yourself"
+#~ msgstr "mutatkozz"
+
+#~ msgid "Position Name"
+#~ msgstr "Pozíció Név"
+
+#~ msgid "role or position of the responsible person"
+#~ msgstr "szerepe, illetve helyzete a felelős személy"
+
+#~ msgid ""
+#~ "telephone number by which individuals can speak to the responsible "
+#~ "organization or individual"
+#~ msgstr ""
+#~ "telefonszám, amellyel az egyének beszélni a felelős szervezet vagy egyén"
+
+#~ msgid "Facsimile"
+#~ msgstr "Hasonmás"
+
+#~ msgid ""
+#~ "telephone number of a facsimile machine for the responsible organization "
+#~ "or individual"
+#~ msgstr "telefonszámát a telefax gép a felelős szervezet vagy egyén"
+
+#~ msgid "Delivery Point"
+#~ msgstr "Szállítási Point"
+
+#~ msgid ""
+#~ "physical and email address at which the organization or individual may be "
+#~ "contacted"
+#~ msgstr "fizikai és e-mail cím, ahol a szervezet vagy személy a kapcsolatot"
+
+#~ msgid "City"
+#~ msgstr "City"
+
+#~ msgid "city of the location"
+#~ msgstr "város a helyszín"
+
+#~ msgid "Administrative Area"
+#~ msgstr "Közigazgatási Terület"
+
+#~ msgid "state, province of the location"
+#~ msgstr "állami, tartományi, a hely"
+
+#~ msgid "Postal Code"
+#~ msgstr "Postal Code"
+
+#~ msgid "ZIP or other postal code"
+#~ msgstr "ZIP vagy egyéb irányítószám"
+
+#~ msgid "country of the physical address"
+#~ msgstr "ország fizikai cím"
+
+#~ msgid ""
+#~ "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+#~ "the subject             (space or comma-separated"
+#~ msgstr ""
+#~ "leggyakrabban használt szó (k) vagy hivatalos szó (k) vagy mondat (ok) "
+#~ "leírására használt tárgy (térben vagy vesszővel elválasztott"
+
+#~ msgid "Your username for "
+#~ msgstr "A felhasználónevet"
+
+#~ msgid "Your username has been emailed to you."
+#~ msgstr "A felhasználónév már elküldjük Önnek."
+
+#~ msgid "No user could be found with that email address."
+#~ msgstr "Nem biztosítanak felhasználói lehetett találni az adott e-mail cím."
+
+#, fuzzy
+#~| msgid "You are not permitted to save or edit this map."
+#~ msgid "You are not permitted to save or edit this resource."
+#~ msgstr "Nem megengedett, hogy menteni vagy szerkeszteni ezt a térképet."
+
+#, fuzzy
+#~| msgid "You are not allowed to view this document."
+#~ msgid "You are not authorized to download this resource."
+#~ msgstr "Nem tekintheted meg ezt a dokumentumot."
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "No files found."
+#~ msgstr "Dokumentumok"
+
+#, fuzzy
+#~| msgid "Not provided"
+#~ msgid "Not Authorized"
+#~ msgstr "Nem biztosított"
+
+#, fuzzy
+#~| msgid "style name"
+#~ msgid "style xml"
+#~ msgstr "stílus neve"
+
+#, fuzzy
+#~| msgid "sld url"
+#~ msgid "style url"
+#~ msgstr "SLD url"
+
+#, fuzzy
+#~| msgid "sld url"
+#~ msgid "style legend url"
+#~ msgstr "SLD url"
+
+#~ msgid "Auto-detect"
+#~ msgstr "Automatikus felismerés"
+
+#~ msgid "Paired WMS/WFS/WCS"
+#~ msgstr "A párosított WMS / WFS / WCS"
+
+#~ msgid "Web Map Service"
+#~ msgstr "Web Map Service"
+
+#~ msgid "Catalogue Service"
+#~ msgstr "Katalógus Service"
+
+#, fuzzy
+#~| msgid "ArcGIS REST Service"
+#~ msgid "ArcGIS REST MapServer"
+#~ msgstr "ArcGIS REST szolgáltatás"
+
+#, fuzzy
+#~| msgid "ArcGIS REST Service"
+#~ msgid "ArcGIS REST ImageServer"
+#~ msgstr "ArcGIS REST szolgáltatás"
+
+#~ msgid "OpenGeoPortal"
+#~ msgstr "OpenGeoPortal"
+
+#~ msgid "Harvard Geospatial Library"
+#~ msgstr "Harvard Térinformatikai Könyvtár"
+
+#, fuzzy
+#~| msgid "GeoNode's Web Services"
+#~ msgid "GeoNode (Web Map Service)"
+#~ msgstr "GeoNode Web Services"
+
+#, fuzzy
+#~| msgid "Catalogue Service"
+#~ msgid "GeoNode (Catalogue Service)"
+#~ msgstr "Katalógus Service"
+
+#~ msgid "Service URL"
+#~ msgstr "Szolgáltatás URL"
+
+#~ msgid "Service Type"
+#~ msgstr "A szolgáltatás típusa"
+
+#, fuzzy
+#~| msgid "service interfaces"
+#~ msgid "Service %(url)s is already registered"
+#~ msgstr "szolgáltatási interfészek"
+
+#~ msgid "Local"
+#~ msgstr "Helyi"
+
+#~ msgid "Cascaded"
+#~ msgstr "Zuhogott"
+
+#~ msgid "Harvested"
+#~ msgstr "Betakarított"
+
+#~ msgid "Indexed"
+#~ msgstr "Indexelt"
+
+#~ msgid "Live"
+#~ msgstr "Élő"
+
+#, fuzzy
+#~| msgid "Resources"
+#~ msgid "Resource is queued"
+#~ msgstr "Erőforrás"
+
+#, fuzzy
+#~| msgid "service interfaces"
+#~ msgid "Service registered successfully"
+#~ msgstr "szolgáltatási interfészek"
+
+#, fuzzy
+#~| msgid "Password changed successfully."
+#~ msgid "Service rescanned successfully"
+#~ msgstr "Jelszó sikeresen megváltoztatva."
+
+#, fuzzy
+#~| msgid "You are not permitted to remove this service."
+#~ msgid "You are not permitted to change this service."
+#~ msgstr "Nem megengedett, hogy távolítsa el ezt a szolgáltatást."
+
+#~ msgid "You are not permitted to remove this service."
+#~ msgstr "Nem megengedett, hogy távolítsa el ezt a szolgáltatást."
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "Service {} has been deleted"
+#~ msgstr "Szolgáltatás jött létre:"
+
+#~ msgid "created"
+#~ msgstr "létre"
+
+#~ msgid "deleted"
+#~ msgstr "törölve"
+
+#, fuzzy
+#~| msgid "Update"
+#~ msgid "updated"
+#~ msgstr "Frissítés"
+
+#~ msgid "added a comment"
+#~ msgstr "hozzá egy megjegyzést"
+
+#~ msgid "updated a comment"
+#~ msgstr "frissített egy megjegyzést"
+
+#~ msgid "uploaded"
+#~ msgstr "feltöltve"
+
+#~ msgid "to"
+#~ msgstr "hogy"
+
+#, fuzzy
+#~| msgid "Confirm email address for %(site_name)s"
+#~ msgid "Please confirm email address for %(site_name)s"
+#~ msgstr "Erősítse meg e-mail címét %(site_name)s"
+
+#, fuzzy
+#~| msgid "Confirm email address for %(site_name)s"
+#~ msgid "Create an account on %(site_name)s"
+#~ msgstr "Erősítse meg e-mail címét %(site_name)s"
+
+#, fuzzy
+#~| msgid "Change password: %s"
+#~ msgid "Change password email notification"
+#~ msgstr "Jelszó módosítása: %s"
+
+#, fuzzy
+#~| msgid ""
+#~| "You're receiving this email because you or someone else has requested a "
+#~| "password for your user account at %(site_name)s.\n"
+#~| "It can be safely ignored if you did not request a password reset. Click "
+#~| "the link below to reset your password.\n"
+#~| "\n"
+#~| "%(password_reset_url)s\n"
+#~ msgid ""
+#~ "Hello from %(site_name)s!\n"
+#~ "\n"
+#~ "You're receiving this e-mail because you or someone else has requested a "
+#~ "password for your user account.\n"
+#~ "It can be safely ignored if you did not request a password reset. Click "
+#~ "the link below to reset your password."
+#~ msgstr ""
+#~ "Azért kapja ezt az e-mailt, mert Ön vagy valaki más kérte a jelszót a "
+#~ "felhasználói fiók %(site_name)s. Ezt figyelmen kívül hagyhatja, ha nem "
+#~ "kérte a jelszó visszaállítását. Kattintson az alábbi linkre, hogy állítsa "
+#~ "vissza jelszavát.  \n"
+#~ "\n"
+#~ "%(password_reset_url)s\n"
+
+#~ msgid "[%(site_name)s] Password reset"
+#~ msgstr "[%(site_name)s] Password Reset"
+
+#, fuzzy
+#~| msgid "The following groups:"
+#~ msgid "is a member of the following group(s)"
+#~ msgstr "A következő csoportok:"
+
+#, fuzzy
+#~| msgid "Welcome"
+#~ msgid "Welcome at"
+#~ msgstr "Fogadtatás"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "The following document was approved"
+#~ msgstr "A következő felhasználók:"
+
+#, fuzzy
+#~| msgid "Powered by"
+#~ msgid "owned by"
+#~ msgstr "Powered by"
+
+#, fuzzy
+#~| msgid "You do not have permissions for this document."
+#~ msgid "A comment has been posted for the document"
+#~ msgstr "Nem rendelkezik engedélyekkel a dokumentumot."
+
+#, fuzzy
+#~| msgid "You do not have permissions for this document."
+#~ msgid "A comment has been posted for a document"
+#~ msgstr "Nem rendelkezik engedélyekkel a dokumentumot."
+
+#, fuzzy
+#~| msgid "Choose users..."
+#~ msgid "The user"
+#~ msgstr "Válasszon a felhasználók ..."
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "uploaded the following document"
+#~ msgstr "A következő felhasználók:"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "The following document was deleted"
+#~ msgstr "A következő felhasználók:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A document has been deleted"
+#~ msgstr "Szolgáltatás jött létre:"
+
+#, fuzzy
+#~| msgid "The following groups:"
+#~ msgid "The following document was published"
+#~ msgstr "A következő csoportok:"
+
+#, fuzzy
+#~| msgid "created"
+#~ msgid "rated"
+#~ msgstr "létre"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "the following document"
+#~ msgstr "A következő felhasználók:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A document has been rated"
+#~ msgstr "Szolgáltatás jött létre:"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "The following document was updated"
+#~ msgstr "A következő felhasználók:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A document has been updated"
+#~ msgstr "Szolgáltatás jött létre:"
+
+#, fuzzy
+#~| msgid "You have the following incomplete uploads"
+#~ msgid "You have received the following notice from"
+#~ msgstr "Az alábbi hiányos feltöltések"
+
+#, fuzzy
+#~| msgid "Notices"
+#~ msgid "%(notice)s"
+#~ msgstr "Notices"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following layer was approved"
+#~ msgstr "A következő rétegeket fogja importálni"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A layer has been approved"
+#~ msgstr "A réteget hozzászólást"
+
+#, fuzzy
+#~| msgid "Documents related to this layer"
+#~ msgid "A comment has been posted for the layer"
+#~ msgstr "Kapcsolatos dokumentumok ezt a réteget"
+
+#, fuzzy
+#~| msgid "A rating was given to a layer"
+#~ msgid "A comment has been posted for a layer"
+#~ msgstr "A hitelminősítő kapott egy réteg"
+
+#, fuzzy
+#~| msgid "This map uses the following layers:"
+#~ msgid "uploaded the following layer"
+#~ msgstr "Ez a térkép használja a következő rétegeket:"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "A new layer has been uploaded"
+#~ msgstr "A réteget feltöltve"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following layer was deleted"
+#~ msgstr "A következő rétegeket fogja importálni"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A layer has been deleted"
+#~ msgstr "A réteget hozzászólást"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following layer was published"
+#~ msgstr "A következő rétegeket fogja importálni"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A layer has been published"
+#~ msgstr "A réteget hozzászólást"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "the following layer"
+#~ msgstr "A következő felhasználók:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A layer has been rated"
+#~ msgstr "Szolgáltatás jött létre:"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following layer was updated"
+#~ msgstr "A következő rétegeket fogja importálni"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A layer has been updated"
+#~ msgstr "A réteget hozzászólást"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following map was approved"
+#~ msgstr "A következő rétegeket fogja importálni"
+
+#, fuzzy
+#~| msgid "Documents related to this map"
+#~ msgid "A comment has been posted for the map"
+#~ msgstr "Kapcsolódó dokumentumok megosztása"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "created the following map"
+#~ msgstr "A következő felhasználók:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A map has been created"
+#~ msgstr "Szolgáltatás jött létre:"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following map was deleted"
+#~ msgstr "A következő rétegeket fogja importálni"
+
+#, fuzzy
+#~| msgid "A map was commented on"
+#~ msgid "A map has been deleted"
+#~ msgstr "A térképet hozzászólást"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "The following map was published"
+#~ msgstr "A következő felhasználók:"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "the following map"
+#~ msgstr "A következő felhasználók:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A map has been rated"
+#~ msgstr "Szolgáltatás jött létre:"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following map was updated"
+#~ msgstr "A következő rétegeket fogja importálni"
+
+#, fuzzy
+#~| msgid "A map was commented on"
+#~ msgid "A map has been updated"
+#~ msgstr "A térképet hozzászólást"
+
+#, fuzzy
+#~| msgid "party that owns the resource"
+#~ msgid "requested you to download this resource"
+#~ msgstr "a készlet tulajdonosa"
+
+#, fuzzy
+#~| msgid "GeoNode Help"
+#~ msgid "GeoNode Themes Library"
+#~ msgstr "GeoNode Segítség"
+
+#, fuzzy
+#~| msgid "Could not find any layers in a compatible projection."
+#~ msgid "Could not find any kml files inside the uploaded kmz"
+#~ msgstr "Nem található rétegek kompatibilis vetítés."
+
+#~ msgid "Invalid permission level."
+#~ msgstr "Érvénytelen jogosultsági szint."
+
+#~ msgid "Permission Denied"
+#~ msgstr "Engedély megtagadva"
+
+#~ msgid "GeoExplorer"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Message Inbox"
+#~ msgid "A message to"
+#~ msgstr "Bejövő üzenetek"
 
 #~ msgid "From"
 #~ msgstr "Tól től"
-
-#~ msgid "Subject"
-#~ msgstr "Téma"
 
 #~ msgid "Last Sender"
 #~ msgstr "Utolsó Sender"

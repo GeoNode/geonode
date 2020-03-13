@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-10 14:26+0100\n"
+"POT-Creation-Date: 2020-03-13 13:21+0100\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Romanian (http://www.transifex.com/geonode/geonode/language/"
@@ -35,533 +35,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
 "2:1));\n"
-
-#: geonode/base/__init__.py:27
-msgid "Request to download a resource"
-msgstr ""
-
-#: geonode/base/__init__.py:28
-msgid "A request for downloading a resource was sent"
-msgstr ""
-
-#: geonode/base/enumerations.py:27
-msgid "series"
-msgstr "serie"
-
-#: geonode/base/enumerations.py:28
-msgid "computer program or routine"
-msgstr "program de calculator sau de rutină"
-
-#: geonode/base/enumerations.py:29
-#, fuzzy
-#| msgid "date type"
-msgid "feature type"
-msgstr "tip data"
-
-#: geonode/base/enumerations.py:30
-msgid "copy or imitation of an existing or hypothetical object"
-msgstr "copie sau imitație a unui obiect existent sau ipotetic"
-
-#: geonode/base/enumerations.py:31
-msgid "collection hardware"
-msgstr "hardware de colectare"
-
-#: geonode/base/enumerations.py:32
-msgid "collection session"
-msgstr "sesiune de colectare"
-
-#: geonode/base/enumerations.py:33
-msgid "non-geographic data"
-msgstr "date non-geografice"
-
-#: geonode/base/enumerations.py:34
-msgid "property type"
-msgstr "Tipul de proprietate"
-
-#: geonode/base/enumerations.py:35
-msgid "field session"
-msgstr "sesiune de câmp"
-
-#: geonode/base/enumerations.py:36
-#, fuzzy
-#| msgid "dataset"
-msgid "dataset"
-msgstr "CCD"
-
-#: geonode/base/enumerations.py:37
-#, fuzzy
-#| msgid "Resources"
-msgid "service interfaces"
-msgstr "Resurse"
-
-#: geonode/base/enumerations.py:38
-msgid "attribute class"
-msgstr "Clasa de atribut"
-
-#: geonode/base/enumerations.py:39
-msgid "characteristic of a feature"
-msgstr "caracteristică a unei caracteristici"
-
-#: geonode/base/enumerations.py:40
-msgid "tile or spatial subset of geographic data"
-msgstr "Placi sau subset spațială a datelor geografice"
-
-#: geonode/base/enumerations.py:41
-msgid "feature"
-msgstr "trăsătură"
-
-#: geonode/base/enumerations.py:42
-msgid "dimension group"
-msgstr "Grup de dimensiune"
-
-#: geonode/base/enumerations.py:46
-msgid "frequency of maintenance for the data is not known"
-msgstr "frecvență de întreținere pentru datele nu este cunoscută"
-
-#: geonode/base/enumerations.py:47
-msgid "data is repeatedly and frequently updated"
-msgstr "de date este actualizată în mod repetat și frecvent"
-
-#: geonode/base/enumerations.py:48
-msgid "there are no plans to update the data"
-msgstr "nu există planuri de a actualiza datele"
-
-#: geonode/base/enumerations.py:49
-msgid "data is updated each day"
-msgstr "datele sunt actualizate în fiecare zi"
-
-#: geonode/base/enumerations.py:50
-msgid "data is updated every year"
-msgstr "de date este actualizată în fiecare an"
-
-#: geonode/base/enumerations.py:51
-msgid "data is updated as deemed necessary"
-msgstr "de date este actualizat după cum consideră necesar"
-
-#: geonode/base/enumerations.py:52
-msgid "data is updated each month"
-msgstr "de date este actualizată în fiecare lună"
-
-#: geonode/base/enumerations.py:53
-msgid "data is updated every two weeks"
-msgstr "de date este actualizată la fiecare două săptămâni"
-
-#: geonode/base/enumerations.py:55
-msgid "data is updated in intervals that are uneven in duration"
-msgstr "datele sunt actualizate la intervale care sunt inegale în durată"
-
-#: geonode/base/enumerations.py:56
-msgid "data is updated on a weekly basis"
-msgstr "de date este actualizată o dată pe săptămână"
-
-#: geonode/base/enumerations.py:57
-msgid "data is updated twice each year"
-msgstr "de date este actualizat de două ori în fiecare an"
-
-#: geonode/base/enumerations.py:58
-msgid "data is updated every three months"
-msgstr "de date este actualizată la fiecare trei luni"
-
-#: geonode/base/enumerations.py:77
-msgid "No information provided"
-msgstr "Nu există informații furnizate"
-
-#: geonode/base/forms.py:282
-#: geonode/base/templates/base/_resourcebase_info_panel.html:77
-#: geonode/catalogue/templates/geonode_metadata_full.html:145
-#: geonode/documents/templates/documents/document_metadata_advanced.html:76
-#: geonode/documents/templates/layouts/doc_panels.html:324
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:99
-#: geonode/layers/templates/layouts/panels.html:326
-#: geonode/maps/templates/layouts/map_panels.html:322
-#: geonode/maps/templates/maps/map_metadata_advanced.html:77
-#: geonode/templates/metadata_detail.html:88
-msgid "Category"
-msgstr "Categorie"
-
-#: geonode/base/forms.py:293
-msgid "Category is required."
-msgstr "Este necesară categorie."
-
-#: geonode/base/forms.py:314
-msgid "Keywords from Thesaurus"
-msgstr ""
-
-#: geonode/base/forms.py:316
-msgid "List of keywords from Thesaurus"
-msgstr ""
-
-#: geonode/base/forms.py:336 geonode/base/models.py:577
-msgid "Owner"
-msgstr "Proprietar"
-
-#: geonode/base/forms.py:342
-#: geonode/base/templates/base/_resourcebase_info_panel.html:34
-#: geonode/catalogue/templates/geonode_metadata_full.html:58
-#: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
-#: geonode/templates/metadata_detail.html:71
-#: geonode/templates/search/_general_filters.html:108
-msgid "Date"
-msgstr "Data"
-
-#: geonode/base/forms.py:348 geonode/base/models.py:681
-msgid "temporal extent start"
-msgstr "temporal măsură start"
-
-#: geonode/base/forms.py:355 geonode/base/models.py:686
-msgid "temporal extent end"
-msgstr "temporal măsură final"
-
-#: geonode/base/forms.py:363 geonode/base/forms.py:371
-msgid "Person outside GeoNode (fill form)"
-msgstr ""
-
-#: geonode/base/forms.py:364
-#: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
-#: geonode/base/templates/base/_resourcebase_info_panel.html:104
-#: geonode/catalogue/templates/geonode_metadata_full.html:75
-#: geonode/documents/templates/documents/document_metadata.html:42
-#: geonode/documents/templates/documents/document_metadata.html:66
-#: geonode/documents/templates/documents/document_metadata_advanced.html:47
-#: geonode/documents/templates/documents/document_metadata_advanced.html:100
-#: geonode/layers/templates/layers/layer_metadata.html:53
-#: geonode/layers/templates/layers/layer_metadata.html:84
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:58
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:144
-#: geonode/maps/templates/maps/map_metadata.html:67
-#: geonode/maps/templates/maps/map_metadata_advanced.html:101
-msgid "Point of Contact"
-msgstr "Punct de Contact"
-
-#: geonode/base/forms.py:372
-#: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
-#: geonode/documents/templates/documents/document_metadata.html:38
-#: geonode/documents/templates/documents/document_metadata_advanced.html:43
-#: geonode/layers/templates/layers/layer_metadata.html:49
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:54
-#: geonode/templates/metadata_detail.html:346
-msgid "Metadata Author"
-msgstr "Metadata Autor"
-
-#: geonode/base/forms.py:379
-#, fuzzy
-#| msgid "Keywords"
-msgid "Free-text Keywords"
-msgstr "Cuvinte cheie"
-
-#: geonode/base/forms.py:381
-#, fuzzy
-#| msgid "A space or comma-separated list of keywords"
-msgid ""
-"A space or comma-separated list of keywords. Use the widget to select from "
-"Hierarchical tree."
-msgstr "Un spațiu sau lista separata cu virgule de cuvinte cheie"
-
-#: geonode/base/forms.py:393
-#: geonode/base/templates/base/_resourcebase_info_panel.html:87
-#: geonode/catalogue/templates/geonode_metadata_full.html:149
-#: geonode/templates/metadata_detail.html:98
-#: geonode/templates/search/_region_filter.html:5
-msgid "Regions"
-msgstr "Regiuni"
-
-#: geonode/base/management/commands/updategeoip.py:44
-msgid "Write result to file, default GEOIP_PATH: {}"
-msgstr ""
-
-#: geonode/base/management/commands/updategeoip.py:46
-msgid ""
-"Fetch database from specific url. If nothing provided, default {} will be "
-"used"
-msgstr ""
-
-#: geonode/base/management/commands/updategeoip.py:48
-msgid "Overwrite file if exists"
-msgstr ""
-
-#: geonode/base/models.py:87 geonode/services/models.py:194
-msgid "function performed by the responsible party"
-msgstr "Funcția realizată de către partea responsabilă"
-
-#: geonode/base/models.py:527
-msgid "reference date for the cited resource"
-msgstr "Data de referință pentru resursa citat"
-
-#: geonode/base/models.py:528
-msgid "identification of when a given event occurred"
-msgstr "identificarea când a avut loc un anumit eveniment"
-
-#: geonode/base/models.py:529
-msgid "version of the cited resource"
-msgstr "versiune a resursei citat"
-
-#: geonode/base/models.py:531
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "scurt rezumat narativ al conținutului resursei (e)"
-
-#: geonode/base/models.py:533
-msgid "summary of the intentions with which the resource(s) was developed"
-msgstr "rezumat intențiile cu care a fost dezvoltat resursa (s)"
-
-#: geonode/base/models.py:535
-msgid ""
-"frequency with which modifications and deletions are made to the data after "
-"it is first produced"
-msgstr ""
-"Frecventa cu care modificari si stergeri sunt făcute pentru datele după ce "
-"este produs primul"
-
-#: geonode/base/models.py:538
-msgid ""
-"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-"the subject (space or comma-separated"
-msgstr ""
-"cuvânt utilizate în mod obișnuit (e) sau cuvânt formalizate (e) sau expresia "
-"(e) utilizat pentru a descrie subiect (spațiul sau separate prin virgule"
-
-#: geonode/base/models.py:541
-#, fuzzy
-#| msgid ""
-#| "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-#| "the subject (space or comma-separated"
-msgid ""
-"formalised word(s) or phrase(s) from a fixed thesaurus used to describe the "
-"subject (space or comma-separated"
-msgstr ""
-"cuvânt utilizate în mod obișnuit (e) sau cuvânt formalizate (e) sau expresia "
-"(e) utilizat pentru a descrie subiect (spațiul sau separate prin virgule"
-
-#: geonode/base/models.py:543
-msgid "keyword identifies a location"
-msgstr "cuvinte cheie identifică o locație"
-
-#: geonode/base/models.py:545
-msgid "limitation(s) placed upon the access or use of the data."
-msgstr "limitare (s) pus pe accesul sau utilizarea datelor."
-
-#: geonode/base/models.py:547
-msgid ""
-"other restrictions and legal prerequisites for accessing and using the "
-"resource or metadata"
-msgstr ""
-"alte restricții și condiții prealabile legale pentru accesarea și utilizarea "
-"resurselor sau metadatele"
-
-#: geonode/base/models.py:549
-msgid "license of the dataset"
-msgstr "de licență a setului de date"
-
-#: geonode/base/models.py:550
-msgid "language used within the dataset"
-msgstr "Limba utilizată în cadrul setului de date"
-
-#: geonode/base/models.py:552
-msgid ""
-"high-level geographic data thematic classification to assist in the grouping "
-"and search of available geographic data sets."
-msgstr ""
-"la nivel înalt de clasificare tematică de date geografice pentru a ajuta la "
-"gruparea și căutarea de seturi de date geografice disponibile."
-
-#: geonode/base/models.py:555
-msgid "method used to represent geographic information in the dataset."
-msgstr ""
-"Metoda utilizată pentru a reprezenta informații geografice în setul de date."
-
-#: geonode/base/models.py:557
-msgid "time period covered by the content of the dataset (start)"
-msgstr "Perioada de timp acoperită de conținutul setului de date (start)"
-
-#: geonode/base/models.py:559
-msgid "time period covered by the content of the dataset (end)"
-msgstr ""
-"Perioada de timp acoperită de conținutul de date CCD (sfârșitul anului)"
-
-#: geonode/base/models.py:561
-msgid ""
-"general explanation of the data producer's knowledge about the lineage of a "
-"dataset"
-msgstr ""
-"explicație generală a cunoștințelor producătorului de date despre "
-"descendența unui set de date"
-
-#: geonode/base/models.py:564
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-#: geonode/base/models.py:566
-#: geonode/base/templates/base/_resourcebase_info_panel.html:114
-#: geonode/templates/metadata_detail.html:116
-msgid "DOI"
-msgstr ""
-
-#: geonode/base/models.py:582
-msgid "title"
-msgstr "titlu"
-
-#: geonode/base/models.py:583
-msgid "name by which the cited resource is known"
-msgstr "nume de care resursa citată este cunoscut"
-
-#: geonode/base/models.py:586
-msgid "date"
-msgstr "data"
-
-#: geonode/base/models.py:590
-msgid "date type"
-msgstr "tip data"
-
-#: geonode/base/models.py:596
-msgid "edition"
-msgstr "ediție"
-
-#: geonode/base/models.py:602
-msgid "abstract"
-msgstr "abstract"
-
-#: geonode/base/models.py:607
-msgid "purpose"
-msgstr "scop"
-
-#: geonode/base/models.py:613
-msgid "maintenance frequency"
-msgstr "frecvență întreținere"
-
-#: geonode/base/models.py:620 geonode/base/models.py:627
-#: geonode/people/models.py:117
-msgid "keywords"
-msgstr "cuvinte-cheie"
-
-#: geonode/base/models.py:633
-msgid "keywords region"
-msgstr "Regiunea cuvinte-cheie"
-
-#: geonode/base/models.py:639
-msgid "restrictions"
-msgstr "restricții"
-
-#: geonode/base/models.py:646
-msgid "restrictions other"
-msgstr "alte restricții"
-
-#: geonode/base/models.py:654
-#: geonode/base/templates/base/_resourcebase_info_panel.html:16
-#: geonode/base/templates/base/_resourcebase_info_panel.html:134
-#: geonode/catalogue/templates/geonode_metadata_full.html:98
-#: geonode/templates/metadata_detail.html:57
-#: geonode/templates/metadata_detail.html:203
-msgid "License"
-msgstr "Licență"
-
-#: geonode/base/models.py:658 geonode/people/models.py:121
-msgid "language"
-msgstr "limbă"
-
-#: geonode/base/models.py:676
-#, fuzzy
-#| msgid "Spatial Representation Type"
-msgid "spatial representation type"
-msgstr "Spațială tipul de reprezentare"
-
-#: geonode/base/models.py:691
-msgid "supplemental information"
-msgstr "informații suplimentare"
-
-#: geonode/base/models.py:694
-msgid "any other descriptive information about the dataset"
-msgstr "orice alte informații descriptive despre setul de date"
-
-#: geonode/base/models.py:698
-msgid "data quality statement"
-msgstr "Declarație de calitatea datelor"
-
-#: geonode/base/models.py:739
-msgid "CSW typename"
-msgstr "CSW typename"
-
-#: geonode/base/models.py:744
-msgid "CSW schema"
-msgstr "CSW schemă"
-
-#: geonode/base/models.py:749
-msgid "CSW source"
-msgstr "Sursa CSW"
-
-#: geonode/base/models.py:754
-msgid "CSW insert date"
-msgstr "CSW a se insera data"
-
-#: geonode/base/models.py:756
-msgid "CSW type"
-msgstr "Tipul CSW"
-
-#: geonode/base/models.py:761
-msgid "CSW anytext"
-msgstr "CSW anytext"
-
-#: geonode/base/models.py:763
-msgid "CSW WKT geometry"
-msgstr "Geometrie CSW WKT"
-
-#: geonode/base/models.py:769
-#, fuzzy
-#| msgid "Metadata Provider"
-msgid "Metadata uploaded preserve"
-msgstr "Furnizor de metadate"
-
-#: geonode/base/models.py:776 geonode/templates/metadata_detail.html:108
-msgid "Featured"
-msgstr ""
-
-#: geonode/base/models.py:777
-msgid "Should this resource be advertised in home page?"
-msgstr "În cazul în care această resursă să fie anunțate în pagina de acasă?"
-
-#: geonode/base/models.py:779
-#, fuzzy
-#| msgid "Published From"
-msgid "Is Published"
-msgstr "Publicat la"
-
-#: geonode/base/models.py:781
-msgid "Should this resource be published and searchable?"
-msgstr "În cazul în care această resursă publică și căutat?"
-
-#: geonode/base/models.py:783 geonode/templates/metadata_detail.html:102
-#, fuzzy
-#| msgid "Not provided"
-msgid "Approved"
-msgstr "Care nu sunt prevăzute"
-
-#: geonode/base/models.py:785
-msgid "Is this resource validated from a publisher or editor?"
-msgstr ""
-
-#: geonode/base/models.py:788
-#, fuzzy
-#| msgid "Thumbnail"
-msgid "Thumbnail url"
-msgstr "Thumbnail"
-
-#: geonode/base/models.py:796
-msgid "Dirty State"
-msgstr ""
-
-#: geonode/base/models.py:798
-msgid "Security Rules Are Not Synched with GeoServer!"
-msgstr ""
-
-#: geonode/base/models.py:1425
-msgid "For example \"kml\""
-msgstr "De exemplu \"kml\""
-
-#: geonode/base/models.py:1430
-msgid "For example \"View in Google Earth\""
-msgstr "De exemplu, \"Vizualizati în Google Earth\""
-
-#: geonode/base/models.py:1432
-msgid "For example \"text/xml\""
-msgstr "De exemplu, \"text / xml\""
 
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:3
 #: geonode/templates/500.html:181 geonode/templates/500.html:200
@@ -583,12 +56,35 @@ msgstr "Proprietar, Punct de Contact, metadate Autor"
 msgid "Responsible"
 msgstr ""
 
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
+#: geonode/base/templates/base/_resourcebase_info_panel.html:104
+#: geonode/catalogue/templates/geonode_metadata_full.html:75
+#: geonode/documents/templates/documents/document_metadata.html:42
+#: geonode/documents/templates/documents/document_metadata.html:66
+#: geonode/documents/templates/documents/document_metadata_advanced.html:47
+#: geonode/documents/templates/documents/document_metadata_advanced.html:100
+#: geonode/layers/templates/layers/layer_metadata.html:53
+#: geonode/layers/templates/layers/layer_metadata.html:84
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:58
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:144
+#: geonode/maps/templates/maps/map_metadata.html:67
+#: geonode/maps/templates/maps/map_metadata_advanced.html:101
+msgid "Point of Contact"
+msgstr "Punct de Contact"
+
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
+#: geonode/documents/templates/documents/document_metadata.html:38
+#: geonode/documents/templates/documents/document_metadata_advanced.html:43
+#: geonode/layers/templates/layers/layer_metadata.html:49
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:54
+#: geonode/templates/metadata_detail.html:346
+msgid "Metadata Author"
+msgstr "Metadata Autor"
+
 #: geonode/base/templates/base/_resourcebase_info_panel.html:6
 #: geonode/catalogue/templates/geonode_metadata_full.html:55
 #: geonode/client/templates/leaflet/maps/map_view.html:101
-#: geonode/groups/models.py:79
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:20
-#: geonode/services/forms.py:113
 #: geonode/services/templates/services/service_detail.html:22
 #: geonode/services/templates/services/service_list.html:15
 #: geonode/templates/announcements/announcement_list.html:19
@@ -601,6 +97,14 @@ msgstr "Titlu"
 msgid "SRID"
 msgstr ""
 
+#: geonode/base/templates/base/_resourcebase_info_panel.html:16
+#: geonode/base/templates/base/_resourcebase_info_panel.html:134
+#: geonode/catalogue/templates/geonode_metadata_full.html:98
+#: geonode/templates/metadata_detail.html:57
+#: geonode/templates/metadata_detail.html:203
+msgid "License"
+msgstr "Licență"
+
 #: geonode/base/templates/base/_resourcebase_info_panel.html:24
 #: geonode/base/templates/base/_resourcebase_info_panel.html:141
 #: geonode/templates/metadata_detail.html:65
@@ -611,11 +115,18 @@ msgstr ""
 #: geonode/base/templates/base/_resourcebase_info_panel.html:29
 #: geonode/catalogue/templates/geonode_metadata_full.html:61
 #: geonode/client/templates/leaflet/maps/map_view.html:106
-#: geonode/services/forms.py:131
 #: geonode/services/templates/services/service_detail.html:10
 #: geonode/templates/metadata_detail.html:48
 msgid "Abstract"
 msgstr "Abstract"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:34
+#: geonode/catalogue/templates/geonode_metadata_full.html:58
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
+#: geonode/templates/metadata_detail.html:71
+#: geonode/templates/search/_general_filters.html:108
+msgid "Date"
+msgstr "Data"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:45
 #: geonode/catalogue/templates/geonode_metadata_full.html:91
@@ -628,7 +139,6 @@ msgstr "Tip"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:50
 #: geonode/catalogue/templates/geonode_metadata_full.html:142
-#: geonode/groups/models.py:89 geonode/people/forms.py:92
 #: geonode/people/templates/people/profile_detail.html:106
 #: geonode/services/templates/services/service_detail.html:11
 #: geonode/templates/metadata_detail.html:81
@@ -639,15 +149,39 @@ msgstr "Tip"
 msgid "Keywords"
 msgstr "Cuvinte cheie"
 
+#: geonode/base/templates/base/_resourcebase_info_panel.html:77
+#: geonode/catalogue/templates/geonode_metadata_full.html:145
+#: geonode/documents/templates/documents/document_metadata_advanced.html:76
+#: geonode/documents/templates/layouts/doc_panels.html:324
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:99
+#: geonode/layers/templates/layouts/panels.html:326
+#: geonode/maps/templates/layouts/map_panels.html:321
+#: geonode/maps/templates/maps/map_metadata_advanced.html:77
+#: geonode/templates/metadata_detail.html:88
+msgid "Category"
+msgstr "Categorie"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:87
+#: geonode/catalogue/templates/geonode_metadata_full.html:149
+#: geonode/templates/metadata_detail.html:98
+#: geonode/templates/search/_region_filter.html:5
+msgid "Regions"
+msgstr "Regiuni"
+
 #: geonode/base/templates/base/_resourcebase_info_panel.html:109
 #: geonode/documents/templates/layouts/doc_panels.html:343
 #: geonode/layers/templates/layouts/panels.html:346
-#: geonode/maps/templates/layouts/map_panels.html:341
+#: geonode/maps/templates/layouts/map_panels.html:340
 #: geonode/templates/metadata_detail.html:112
 #, fuzzy
 #| msgid "Groups"
 msgid "Group"
 msgstr "Grupuri"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:114
+#: geonode/templates/metadata_detail.html:116
+msgid "DOI"
+msgstr ""
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:121
 msgid "More info"
@@ -761,6 +295,7 @@ msgid "Create a Map"
 msgstr "Creați un Hartă"
 
 #: geonode/base/templates/base/_resourcebase_snippet.html:80
+#: geonode/client/templates/leaflet/maps/map_view.html:8
 #: geonode/maps/templates/maps/map_detail.html:187
 #: geonode/maps/templates/maps/map_detail.html:189
 msgid "View Map"
@@ -831,18 +366,11 @@ msgstr ""
 #: geonode/layers/templates/layers/layer_detail.html:478
 #: geonode/layers/templates/layers/layer_detail.html:499
 #: geonode/maps/templates/maps/map_detail.html:165
-#: geonode/monitoring/models.py:355
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:58
 #, fuzzy
 #| msgid "uploaded"
 msgid "Upload"
 msgstr "încărcat"
-
-#: geonode/base/templatetags/user_messages.py:32
-#: geonode/base/templatetags/user_messages.py:40
-#: geonode/templates/user_messages/thread_detail.html:28
-msgid "me"
-msgstr ""
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:40
 #, fuzzy
@@ -899,22 +427,14 @@ msgid "Attribute name"
 msgstr "nume de atribut"
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:167
-#: geonode/groups/models.py:44 geonode/groups/models.py:82
 #: geonode/layers/templates/layers/layer_detail.html:178
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:128
 #: geonode/layers/templates/layouts/panels.html:546
 #: geonode/people/templates/people/profile_detail.html:101
-#: geonode/services/forms.py:123
 #: geonode/services/templates/services/service_detail.html:23
 #: geonode/services/templates/services/service_resources_harvest.html:32
 msgid "Description"
 msgstr "Descriere"
-
-#: geonode/client/apps.py:28
-#, fuzzy
-#| msgid "GeoNode Help"
-msgid "GeoNode Client Library"
-msgstr "GeoNode Ajutor"
 
 #: geonode/client/templates/leaflet/layers/layer_leaflet_map.html:340
 #, fuzzy
@@ -932,9 +452,9 @@ msgid "Explore Maps"
 msgstr "Exploreaza hărți"
 
 #: geonode/client/templates/leaflet/maps/map_edit.html:8
-#: geonode/client/templates/leaflet/maps/map_view.html:8
-msgid "GeoExplorer"
-msgstr "GeoExplorer"
+#: geonode/maps/templates/maps/map_edit.html:7
+msgid "Edit Map"
+msgstr "Edit Map"
 
 #: geonode/client/templates/leaflet/maps/map_edit.html:77
 #: geonode/documents/templates/documents/document_metadata.html:78
@@ -966,7 +486,7 @@ msgstr "Stiluri disponibile"
 #: geonode/client/templates/leaflet/maps/map_view.html:114
 #: geonode/groups/templates/groups/groupcategory_update_form.html:8
 #: geonode/layers/templates/layouts/panels.html:284
-#: geonode/maps/templates/layouts/map_panels.html:280
+#: geonode/maps/templates/layouts/map_panels.html:279
 #: geonode/services/templates/services/service_edit.html:21
 #: geonode/templates/announcements/announcement_form.html:26
 msgid "Save"
@@ -997,88 +517,6 @@ msgstr "Creați un Hartă"
 #: geonode/templates/metadata_base.html:185
 msgid "Close"
 msgstr "Închidere"
-
-#: geonode/documents/__init__.py:27
-#, fuzzy
-#| msgid "Documents related to this map"
-msgid "Document Created"
-msgstr "Documente legate de această hartă"
-
-#: geonode/documents/__init__.py:27
-#, fuzzy
-#| msgid "This document is related to a "
-msgid "A Document was created"
-msgstr "Acest document se referă la o"
-
-#: geonode/documents/__init__.py:28
-#, fuzzy
-#| msgid "Documents"
-msgid "Document Updated"
-msgstr "Documente"
-
-#: geonode/documents/__init__.py:28
-#, fuzzy
-#| msgid "Documents"
-msgid "A Document was updated"
-msgstr "Documente"
-
-#: geonode/documents/__init__.py:29
-#, fuzzy
-#| msgid "Documents"
-msgid "Document Approved"
-msgstr "Documente"
-
-#: geonode/documents/__init__.py:29
-msgid "A Document was approved by a Manager"
-msgstr ""
-
-#: geonode/documents/__init__.py:30
-#, fuzzy
-#| msgid "Documents"
-msgid "Document Published"
-msgstr "Documente"
-
-#: geonode/documents/__init__.py:30
-#, fuzzy
-#| msgid "Documents"
-msgid "A Document was published"
-msgstr "Documente"
-
-#: geonode/documents/__init__.py:31
-#, fuzzy
-#| msgid "Documents"
-msgid "Document Deleted"
-msgstr "Documente"
-
-#: geonode/documents/__init__.py:31
-#, fuzzy
-#| msgid "This document is related to a "
-msgid "A Document was deleted"
-msgstr "Acest document se referă la o"
-
-#: geonode/documents/__init__.py:32
-#, fuzzy
-#| msgid "Comment on Layer"
-msgid "Comment on Document"
-msgstr "Comment on Layer"
-
-#: geonode/documents/__init__.py:32
-#, fuzzy
-#| msgid "A map was commented on"
-msgid "A Document was commented on"
-msgstr "O hartă a fost comentat"
-
-#: geonode/documents/__init__.py:33
-#, fuzzy
-#| msgid "Comment on Map"
-msgid "Document for Map"
-msgstr "Comment on Harta"
-
-#: geonode/documents/__init__.py:33
-#, fuzzy
-#| msgid "A rating was given to a map"
-msgid "A rating was given to a document"
-msgstr "Un rating a fost dat la o hartă"
 
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:5
 msgid "Width"
@@ -1130,40 +568,6 @@ msgstr ""
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:21
 msgid "Speed Rating"
 msgstr ""
-
-#: geonode/documents/forms.py:87 geonode/documents/forms.py:168
-msgid "Link to"
-msgstr "Link catre"
-
-#: geonode/documents/forms.py:133 geonode/documents/forms.py:202
-msgid "Document must be a file or url."
-msgstr "Document trebuie să fie un fișier sau URL."
-
-#: geonode/documents/forms.py:137 geonode/documents/forms.py:206
-msgid "A document cannot have both a file and a url."
-msgstr "Un document nu poate avea atât un fișier și o adresă URL."
-
-#: geonode/documents/forms.py:150 geonode/documents/forms.py:219
-msgid "This file type is not allowed"
-msgstr "Acest tip de fișier nu este permis"
-
-#: geonode/documents/forms.py:191
-msgid "Permissions must be valid JSON."
-msgstr "Permisiuni trebuie să fie JSON valid."
-
-#: geonode/documents/models.py:57
-msgid "File"
-msgstr "Fișier"
-
-#: geonode/documents/models.py:67
-msgid "The URL of the document if it is external."
-msgstr "Adresa URL a documentului în cazul în care este extern."
-
-#: geonode/documents/models.py:68 geonode/monitoring/models.py:179
-#: geonode/services/templates/services/service_detail.html:9
-#: geonode/services/templates/services/service_list.html:16
-msgid "URL"
-msgstr "URL"
 
 #: geonode/documents/templates/documents/document_detail.html:23
 #, fuzzy
@@ -1244,8 +648,7 @@ msgid "Advanced Edit"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_detail.html:157
-#: geonode/monitoring/models.py:176 geonode/templates/index.html:86
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:7
+#: geonode/templates/index.html:86
 msgid "Document"
 msgid_plural "Documents"
 msgstr[0] ""
@@ -1263,7 +666,7 @@ msgstr ""
 #: geonode/groups/templates/groups/group_members.html:95
 #: geonode/layers/templates/layers/layer_detail.html:515
 #: geonode/maps/templates/maps/map_detail.html:173
-#: geonode/monitoring/models.py:362 geonode/templates/account/email.html:36
+#: geonode/templates/account/email.html:36
 #: geonode/templates/socialaccount/connections.html:33
 msgid "Remove"
 msgstr "Scoate"
@@ -1328,7 +731,7 @@ msgstr "Acest document nu are legătură cu nici o harta sau straturi"
 #: geonode/layers/templates/layers/layer_style_upload.html:101
 #: geonode/layers/templates/layers/layer_style_upload.html:110
 #: geonode/layers/templates/upload/layer_upload.html:114
-#: geonode/maps/templates/maps/map_detail.html:229 geonode/people/admin.py:57
+#: geonode/maps/templates/maps/map_detail.html:229
 msgid "Permissions"
 msgstr "Permisiuni"
 
@@ -1499,15 +902,15 @@ msgid "No, don't remove it"
 msgstr "Nu, nu-l scoate"
 
 #: geonode/documents/templates/documents/document_replace.html:4
-#: geonode/documents/templates/documents/document_replace.html:28
+#: geonode/documents/templates/documents/document_replace.html:27
 msgid "Replace Document"
 msgstr "Înlocuiți Document"
 
-#: geonode/documents/templates/documents/document_replace.html:16
+#: geonode/documents/templates/documents/document_replace.html:15
 msgid "Replace "
 msgstr "Înlocui"
 
-#: geonode/documents/templates/documents/document_replace.html:27
+#: geonode/documents/templates/documents/document_replace.html:26
 #: geonode/documents/templates/documents/document_thumb_upload.html:55
 #: geonode/layers/templates/layers/layer_detail.html:396
 #: geonode/layers/templates/layers/layer_metadata_upload.html:88
@@ -1599,7 +1002,7 @@ msgstr ""
 #: geonode/layers/templates/layouts/panels.html:221
 #: geonode/layers/templates/layouts/panels.html:290
 #: geonode/maps/templates/layouts/map_panels.html:220
-#: geonode/maps/templates/layouts/map_panels.html:286
+#: geonode/maps/templates/layouts/map_panels.html:285
 #: geonode/maps/templates/maps/map_detail.html:172
 msgid "Edit"
 msgstr ""
@@ -1654,7 +1057,7 @@ msgstr "Descărcare metadate"
 #: geonode/documents/templates/layouts/doc_panels.html:345
 #: geonode/layers/templates/layouts/panels.html:328
 #: geonode/layers/templates/layouts/panels.html:348
-#: geonode/maps/templates/layouts/map_panels.html:343
+#: geonode/maps/templates/layouts/map_panels.html:342
 #, fuzzy
 #| msgid "This action affects the following maps:"
 msgid "Choose one of the following..."
@@ -1662,7 +1065,7 @@ msgstr "Această acțiune afectează următoarele hărți:"
 
 #: geonode/documents/templates/layouts/doc_panels.html:438
 #: geonode/layers/templates/layouts/panels.html:441
-#: geonode/maps/templates/layouts/map_panels.html:435
+#: geonode/maps/templates/layouts/map_panels.html:434
 #, fuzzy
 #| msgid "Download Metadata"
 msgid "Other, Optional, Metadata"
@@ -1670,13 +1073,13 @@ msgstr "Descărcare metadate"
 
 #: geonode/documents/templates/layouts/doc_panels.html:485
 #: geonode/layers/templates/layouts/panels.html:488
-#: geonode/maps/templates/layouts/map_panels.html:482
+#: geonode/maps/templates/layouts/map_panels.html:481
 msgid "Responsible Parties"
 msgstr ""
 
 #: geonode/documents/templates/layouts/doc_panels.html:492
 #: geonode/layers/templates/layouts/panels.html:495
-#: geonode/maps/templates/layouts/map_panels.html:489
+#: geonode/maps/templates/layouts/map_panels.html:488
 #, fuzzy
 #| msgid "Change Layer Permissions"
 msgid "Responsible and Permissions"
@@ -1684,7 +1087,7 @@ msgstr "Permisiuni schimbare Layer"
 
 #: geonode/documents/templates/layouts/doc_panels.html:514
 #: geonode/layers/templates/layouts/panels.html:517
-#: geonode/maps/templates/layouts/map_panels.html:511
+#: geonode/maps/templates/layouts/map_panels.html:510
 #: geonode/templates/_permissions_form.html:28 geonode/templates/base.html:679
 #, fuzzy
 #| msgid "Message Inbox"
@@ -1693,58 +1096,18 @@ msgstr "Inbox mesaj"
 
 #: geonode/documents/templates/layouts/doc_panels.html:520
 #: geonode/layers/templates/layouts/panels.html:523
-#: geonode/maps/templates/layouts/map_panels.html:517
+#: geonode/maps/templates/layouts/map_panels.html:516
 #: geonode/templates/_permissions_form.html:34 geonode/templates/base.html:685
 msgid "OK"
 msgstr ""
 
 #: geonode/documents/templates/layouts/doc_panels.html:540
 #: geonode/layers/templates/layouts/panels.html:584
-#: geonode/maps/templates/layouts/map_panels.html:537
+#: geonode/maps/templates/layouts/map_panels.html:536
 #, fuzzy
 #| msgid "Public"
 msgid "Publishing"
 msgstr "Public"
-
-#: geonode/documents/views.py:64
-msgid "You are not permitted to delete this document"
-msgstr "Tu nu sunt permise pentru a șterge acest document"
-
-#: geonode/documents/views.py:65
-msgid "You do not have permissions for this document."
-msgstr "Nu aveți permisiuni pentru acest document."
-
-#: geonode/documents/views.py:66
-msgid "You are not permitted to modify this document"
-msgstr "Tu nu sunt permise pentru a modifica acest document"
-
-#: geonode/documents/views.py:68
-msgid "You are not permitted to modify this document's metadata"
-msgstr "Tu nu sunt permise de a modifica metadatele acest document"
-
-#: geonode/documents/views.py:69
-msgid "You are not permitted to view this document"
-msgstr "Tu nu sunt permise pentru a vizualiza acest document"
-
-#: geonode/documents/views.py:103 geonode/documents/views.py:177
-msgid "You are not allowed to view this document."
-msgstr "Nu este permis pentru a vizualiza acest document."
-
-#: geonode/documents/views.py:354
-msgid "You are not allowed to edit this document."
-msgstr "Nu aveți permisiunea de a edita acest document."
-
-#: geonode/documents/views.py:435 geonode/layers/views.py:994
-#, fuzzy
-#| msgid "Set permissions for this resource"
-msgid "You must set a point of contact for this resource"
-msgstr "Setarea permisiunilor pentru această resursă"
-
-#: geonode/documents/views.py:452 geonode/layers/views.py:1011
-#, fuzzy
-#| msgid "Set permissions for this resource"
-msgid "You must set an author for this resource"
-msgstr "Setarea permisiunilor pentru această resursă"
 
 #: geonode/favorite/templates/favorite/_favorite.html:5
 #: geonode/templates/_actions.html:23
@@ -1766,50 +1129,6 @@ msgstr "Add to Favorites"
 #: geonode/favorite/templates/favorite/favorite_list.html:8
 msgid "Favorites for"
 msgstr ""
-
-#: geonode/geoserver/__init__.py:75
-msgid "Layer Uploaded"
-msgstr "Strat Încărcate"
-
-#: geonode/geoserver/__init__.py:75
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "A layer was uploaded"
-msgstr "Un strat a fost încărcat"
-
-#: geonode/geoserver/__init__.py:76 geonode/layers/__init__.py:33
-msgid "Comment on Layer"
-msgstr "Comment on Layer"
-
-#: geonode/geoserver/__init__.py:76 geonode/layers/__init__.py:33
-msgid "A layer was commented on"
-msgstr "Un strat a fost comentat"
-
-#: geonode/geoserver/__init__.py:77 geonode/layers/__init__.py:34
-msgid "Rating for Layer"
-msgstr "Rating-ul pentru Layer"
-
-#: geonode/geoserver/__init__.py:77 geonode/layers/__init__.py:34
-msgid "A rating was given to a layer"
-msgstr "Un rating a fost dat la un strat"
-
-#: geonode/geoserver/createlayer/forms.py:35
-#, fuzzy
-#| msgid "Layer Name"
-msgid "Layer name"
-msgstr "Strat Nume"
-
-#: geonode/geoserver/createlayer/forms.py:36
-#, fuzzy
-#| msgid "Layer Title"
-msgid "Layer title"
-msgstr "Strat Titlu"
-
-#: geonode/geoserver/createlayer/forms.py:37
-#, fuzzy
-#| msgid "property type"
-msgid "Geometry type"
-msgstr "Tipul de proprietate"
 
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:6
 #: geonode/templates/base.html:289 geonode/templates/base.html:455
@@ -1847,195 +1166,9 @@ msgstr "Atribut"
 
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:41
 #: geonode/groups/templates/groups/group_create.html:26
-#: geonode/monitoring/models.py:354
 #: geonode/services/templates/services/service_register.html:18
 msgid "Create"
 msgstr "Crea"
-
-#: geonode/geoserver/helpers.py:681
-#, fuzzy
-#| msgid "Not provided"
-msgid "No abstract provided"
-msgstr "Care nu sunt prevăzute"
-
-#: geonode/geoserver/helpers.py:1427
-msgid "An exception occurred loading data to PostGIS"
-msgstr ""
-
-#: geonode/geoserver/helpers.py:1432
-msgid " Additionally an error occured during database cleanup"
-msgstr ""
-
-#: geonode/geoserver/ows.py:68
-msgid "GZIP"
-msgstr ""
-
-#: geonode/geoserver/ows.py:69
-msgid "GeoTIFF"
-msgstr ""
-
-#: geonode/geoserver/ows.py:110
-msgid "Zipped Shapefile"
-msgstr "Shapefile fermoar"
-
-#: geonode/geoserver/ows.py:111
-msgid "GML 2.0"
-msgstr "GML 2.0"
-
-#: geonode/geoserver/ows.py:112
-msgid "GML 3.1.1"
-msgstr "GML 3.1.1"
-
-#: geonode/geoserver/ows.py:113
-msgid "CSV"
-msgstr "CSV"
-
-#: geonode/geoserver/ows.py:114
-msgid "Excel"
-msgstr "Excela"
-
-#: geonode/geoserver/ows.py:115
-msgid "GeoJSON"
-msgstr "GeoJSON"
-
-#: geonode/geoserver/ows.py:157
-msgid "JPEG"
-msgstr "JPEG"
-
-#: geonode/geoserver/ows.py:158
-msgid "PDF"
-msgstr "PDF"
-
-#: geonode/geoserver/ows.py:159
-msgid "PNG"
-msgstr "PNG"
-
-#: geonode/geoserver/views.py:509
-msgid "You don't have permissions to change style for this layer"
-msgstr "Nu aveți permisiunea de a schimba stilul de acest strat"
-
-#: geonode/geoserver/views.py:579 geonode/geoserver/views.py:635
-msgid "Bad HTTP Authorization Credentials."
-msgstr "Bad Atestări autorizare HTTP."
-
-#: geonode/groups/forms.py:35
-msgid ""
-"a short version of the name consisting only of letters, numbers, underscores "
-"and hyphens."
-msgstr ""
-"o versiune scurtă a numelui format numai din litere, cifre, de subliniere și "
-"cratime."
-
-#: geonode/groups/forms.py:43
-msgid "A group already exists with that slug."
-msgstr "Un grup există deja cu melc."
-
-#: geonode/groups/forms.py:50 geonode/groups/forms.py:77
-msgid "A group already exists with that name."
-msgstr "Un grup există deja cu acest nume."
-
-#: geonode/groups/forms.py:87
-#, fuzzy
-#| msgid "User Activities"
-msgid "User Identifiers"
-msgstr "Activități de utilizare"
-
-#: geonode/groups/forms.py:97
-msgid "Assign manager role"
-msgstr ""
-
-#: geonode/groups/forms.py:111
-#, python-format
-msgid ""
-"The following are not valid usernames: %(errors)s; not added to the group"
-msgstr ""
-
-#: geonode/groups/models.py:43 geonode/layers/models.py:158
-#: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
-#: geonode/services/templates/services/service_resources_harvest.html:31
-#: geonode/templates/metadata_detail.html:130
-#: geonode/templates/metadata_detail.html:272
-#: geonode/templates/metadata_detail.html:353
-msgid "Name"
-msgstr "Nume"
-
-#: geonode/groups/models.py:47 geonode/templates/base.html:314
-#: geonode/templates/search/_general_filters.html:76
-#: geonode/templates/search/_search_user_content.html:28
-#, fuzzy
-#| msgid "Categories"
-msgid "Group Categories"
-msgstr "Categorii"
-
-#: geonode/groups/models.py:65
-#, fuzzy
-#| msgid "Public"
-msgid "Public"
-msgstr "Public"
-
-#: geonode/groups/models.py:66
-msgid "Public (invite-only)"
-msgstr "Public (invita-numai)"
-
-#: geonode/groups/models.py:67
-msgid "Private"
-msgstr "Privat"
-
-#: geonode/groups/models.py:70
-msgid ""
-"Public: Any registered user can view and join a public group.<br>Public "
-"(invite-only):Any registered user can view the group.  Only invited users "
-"can join.<br>Private: Registered users cannot see any details about the "
-"group, including membership.  Only invited users can join."
-msgstr ""
-"Public: Orice utilizator inregistrat poate vizualiza și să se alăture unui "
-"grup de public. <br> Public (invita-numai): Orice utilizator inregistrat "
-"poate vizualiza grupului. Doar utilizatorii invitați se pot alătura. <br> "
-"Private: Utilizatorii înregistrați nu pot vedea detalii despre grup, "
-"inclusiv calitatea de membru. Doar utilizatorii invitați se pot alătura."
-
-#: geonode/groups/models.py:75
-msgid ""
-"Email used to contact one or all group members, such as a mailing list, "
-"shared email, or exchange group."
-msgstr ""
-"E-mail utilizate pentru a contacta membrii una sau toate de grup, cum ar fi "
-"o listă de corespondență, e-mail comun, sau grup de schimb."
-
-#: geonode/groups/models.py:81
-msgid "Logo"
-msgstr ""
-
-#: geonode/groups/models.py:84
-#: geonode/people/templates/people/profile_detail.html:67
-#: geonode/templates/invitations/forms/_invite.html:14
-msgid "Email"
-msgstr ""
-
-#: geonode/groups/models.py:90 geonode/people/forms.py:94
-msgid "A space or comma-separated list of keywords"
-msgstr "Un spațiu sau lista separata cu virgule de cuvinte cheie"
-
-#: geonode/groups/models.py:93
-#, fuzzy
-#| msgid "Success"
-msgid "Access"
-msgstr "Succes"
-
-#: geonode/groups/models.py:98 geonode/templates/search/_general_filters.html:4
-msgid "Categories"
-msgstr "Categorii"
-
-#: geonode/groups/models.py:241
-#: geonode/groups/templates/groups/group_members.html:37
-#: geonode/groups/templates/groups/group_members.html:63
-#: geonode/groups/templates/groups/group_members.html:90
-msgid "Manager"
-msgstr "Manager"
-
-#: geonode/groups/models.py:242
-msgid "Member"
-msgstr "Membru"
 
 #: geonode/groups/templates/groups/activity.html:7
 #: geonode/groups/templates/groups/activity.html:8
@@ -2046,7 +1179,6 @@ msgstr "Alimentare activitate pentru"
 
 #: geonode/groups/templates/groups/activity.html:25
 #: geonode/groups/templates/groups/group_members.html:22
-#: geonode/monitoring/models.py:353
 #: geonode/social/templates/social/activity_list.html:20
 #: geonode/templates/user_messages/inbox.html:17
 msgid "All"
@@ -2231,6 +1363,12 @@ msgstr ""
 msgid "Current Members"
 msgstr "Membri"
 
+#: geonode/groups/templates/groups/group_members.html:37
+#: geonode/groups/templates/groups/group_members.html:63
+#: geonode/groups/templates/groups/group_members.html:90
+msgid "Manager"
+msgstr "Manager"
+
 #: geonode/groups/templates/groups/group_members.html:46
 #: geonode/groups/templates/groups/group_members.html:72
 #: geonode/groups/templates/groups/group_members.html:99
@@ -2308,298 +1446,6 @@ msgstr "Creați un grup"
 #| msgid "Create Group"
 msgid "Edit Group Category"
 msgstr "Creare grup"
-
-#: geonode/invitations/forms.py:53
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
-msgstr ""
-
-#: geonode/invitations/forms.py:55
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
-msgstr ""
-
-#: geonode/invitations/forms.py:57
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
-msgstr ""
-
-#: geonode/invitations/forms.py:75 geonode/templates/base.html:506
-#, fuzzy
-#| msgid "email"
-msgid "E-mail"
-msgstr "e-mail"
-
-#: geonode/invitations/views.py:71
-#, python-format
-msgid "Invitations succefully sent to '%(email)s'"
-msgstr ""
-
-#: geonode/invitations/views.py:78
-#, python-format
-msgid ""
-"Sorry, it was not possible to invite '%(email)s' due to the following isse: "
-"%(error)s (%(type)s)"
-msgstr ""
-
-#: geonode/layers/__init__.py:28
-#, fuzzy
-#| msgid "Map Created"
-msgid "Layer Created"
-msgstr "Harta Creat"
-
-#: geonode/layers/__init__.py:28
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A Layer was created"
-msgstr "Un strat a fost comentat"
-
-#: geonode/layers/__init__.py:29
-#, fuzzy
-#| msgid "Layer Uploaded"
-msgid "Layer Updated"
-msgstr "Strat Încărcate"
-
-#: geonode/layers/__init__.py:29
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A Layer was updated"
-msgstr "Un strat a fost comentat"
-
-#: geonode/layers/__init__.py:30
-#, fuzzy
-#| msgid "Not provided"
-msgid "Layer Approved"
-msgstr "Care nu sunt prevăzute"
-
-#: geonode/layers/__init__.py:30
-msgid "A Layer was approved by a Manager"
-msgstr ""
-
-#: geonode/layers/__init__.py:31
-#, fuzzy
-#| msgid "Published From"
-msgid "Layer Published"
-msgstr "Publicat la"
-
-#: geonode/layers/__init__.py:31
-msgid "A Layer was published"
-msgstr ""
-
-#: geonode/layers/__init__.py:32
-#, fuzzy
-#| msgid "Layer Default Style"
-msgid "Layer Deleted"
-msgstr "Strat Stil prestabilit"
-
-#: geonode/layers/__init__.py:32
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A Layer was deleted"
-msgstr "Un strat a fost comentat"
-
-#: geonode/layers/models.py:52
-msgid "YYYYMMDD"
-msgstr ""
-
-#: geonode/layers/models.py:53
-msgid "YYYYMMDD'T'hhmmss"
-msgstr ""
-
-#: geonode/layers/models.py:54
-msgid "YYYYMMDD'T'hhmmss'Z'"
-msgstr ""
-
-#: geonode/layers/models.py:72 geonode/qgis_server/models.py:198
-msgid "style name"
-msgstr "Numele de stil"
-
-#: geonode/layers/models.py:74
-msgid "sld text"
-msgstr "Text SLD"
-
-#: geonode/layers/models.py:76
-msgid "sld version"
-msgstr "Versiune SLD"
-
-#: geonode/layers/models.py:80
-msgid "sld url"
-msgstr "url SLD"
-
-#: geonode/layers/models.py:155
-msgid "Workspace"
-msgstr ""
-
-#: geonode/layers/models.py:156
-msgid "Store"
-msgstr ""
-
-#: geonode/layers/models.py:157
-#, fuzzy
-#| msgid "date type"
-msgid "Storetype"
-msgstr "tip data"
-
-#: geonode/layers/models.py:159
-#, fuzzy
-#| msgid "CSW typename"
-msgid "Typename"
-msgstr "CSW typename"
-
-#: geonode/layers/models.py:161
-msgid "Is mosaic?"
-msgstr ""
-
-#: geonode/layers/models.py:162
-msgid "Has time?"
-msgstr ""
-
-#: geonode/layers/models.py:163
-msgid "Has elevation?"
-msgstr ""
-
-#: geonode/layers/models.py:165
-msgid "Time regex"
-msgstr ""
-
-#: geonode/layers/models.py:170
-msgid "Elevation regex"
-msgstr ""
-
-#: geonode/layers/models.py:275
-msgid "File cannot be opened, maybe check the encoding"
-msgstr ""
-
-#: geonode/layers/models.py:386
-#, fuzzy
-#| msgid "attribute name"
-msgid "attribute name"
-msgstr "nume de atribut"
-
-#: geonode/layers/models.py:387
-msgid "name of attribute as stored in shapefile/spatial database"
-msgstr ""
-"Numele atribut așa cum este stocată în shapefile / bază de date spațiale"
-
-#: geonode/layers/models.py:393
-#, fuzzy
-#| msgid "distribution description"
-msgid "attribute description"
-msgstr "distribution description"
-
-#: geonode/layers/models.py:394
-msgid "description of attribute to be used in metadata"
-msgstr "descrierea atribut pentru a fi utilizate în metadate"
-
-#: geonode/layers/models.py:399
-msgid "attribute label"
-msgstr "eticheta atribut"
-
-#: geonode/layers/models.py:400
-msgid "title of attribute as displayed in GeoNode"
-msgstr "Titlul de atribut așa cum sunt afișate în GeoNode"
-
-#: geonode/layers/models.py:406
-msgid "attribute type"
-msgstr "Tipul de atribut"
-
-#: geonode/layers/models.py:407
-msgid "the data type of the attribute (integer, string, geometry, etc)"
-msgstr "tipul de date al atributului (întreg, șir, geometrie, etc)"
-
-#: geonode/layers/models.py:414
-msgid "visible?"
-msgstr "vizibil?"
-
-#: geonode/layers/models.py:415
-msgid "specifies if the attribute should be displayed in identify results"
-msgstr ""
-"specifică dacă trebuie să fie afișate atributul din identifica rezultatele"
-
-#: geonode/layers/models.py:417
-msgid "display order"
-msgstr "ordinea de afișare"
-
-#: geonode/layers/models.py:418
-msgid ""
-"specifies the order in which attribute should be displayed in identify "
-"results"
-msgstr ""
-"Specifică ordinea în care atribut trebuie să fie afișate în identificarea "
-"rezultatelor"
-
-#: geonode/layers/models.py:422
-#, fuzzy
-#| msgid "count"
-msgid "count"
-msgstr "conta"
-
-#: geonode/layers/models.py:423
-msgid "count value for this field"
-msgstr "Numar de valoare pentru acest câmp"
-
-#: geonode/layers/models.py:426
-msgid "min"
-msgstr "min"
-
-#: geonode/layers/models.py:427
-msgid "minimum value for this field"
-msgstr "Valoarea minimă pentru acest domeniu"
-
-#: geonode/layers/models.py:434
-msgid "max"
-msgstr "max"
-
-#: geonode/layers/models.py:435
-msgid "maximum value for this field"
-msgstr "Valoarea maximă pentru acest domeniu"
-
-#: geonode/layers/models.py:442
-msgid "average"
-msgstr "mediu"
-
-#: geonode/layers/models.py:443
-msgid "average value for this field"
-msgstr "Valoarea medie pentru acest domeniu"
-
-#: geonode/layers/models.py:450
-msgid "median"
-msgstr "median"
-
-#: geonode/layers/models.py:451
-msgid "median value for this field"
-msgstr "Valoarea medie pentru acest domeniu"
-
-#: geonode/layers/models.py:458
-msgid "standard deviation"
-msgstr "abatere standard"
-
-#: geonode/layers/models.py:459
-msgid "standard deviation for this field"
-msgstr "deviația standard pentru acest domeniu"
-
-#: geonode/layers/models.py:466
-msgid "sum"
-msgstr "sumă"
-
-#: geonode/layers/models.py:467
-msgid "sum value for this field"
-msgstr "Valoarea sumă pentru acest domeniu"
-
-#: geonode/layers/models.py:474
-msgid "unique values for this field"
-msgstr "valori unice pentru acest domeniu"
-
-#: geonode/layers/models.py:478
-#, fuzzy
-#| msgid "last modified"
-msgid "last modified"
-msgstr "modificată ultima dată"
-
-#: geonode/layers/models.py:479
-msgid "date when attribute statistics were last updated"
-msgstr ""
-"Data atunci când statisticile de atribute au fost actualizată ultima dată"
 
 #: geonode/layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -2803,7 +1649,6 @@ msgid ""
 msgstr ""
 
 #: geonode/layers/templates/layers/layer_detail.html:412
-#: geonode/monitoring/models.py:1082
 msgid "Warning"
 msgstr ""
 
@@ -2843,8 +1688,7 @@ msgid "Set"
 msgstr ""
 
 #: geonode/layers/templates/layers/layer_detail.html:505
-#: geonode/monitoring/models.py:173 geonode/templates/index.html:66
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:5
+#: geonode/templates/index.html:66
 msgid "Layer"
 msgid_plural "Layers"
 msgstr[0] ""
@@ -3154,7 +1998,7 @@ msgstr "Relua"
 #: geonode/templates/_comments.html:37
 #: geonode/templates/announcements/announcement_confirm_delete.html:21
 #: geonode/templates/announcements/announcement_form.html:24
-#: geonode/templates/user_messages/_message_snippet.html:39
+#: geonode/templates/user_messages/_message_snippet.html:34
 msgid "Delete"
 msgstr "Șterge"
 
@@ -3268,7 +2112,7 @@ msgid "Dataset Attributes"
 msgstr "Atribute"
 
 #: geonode/layers/templates/layouts/panels.html:613
-#: geonode/maps/templates/layouts/map_panels.html:566
+#: geonode/maps/templates/layouts/map_panels.html:565
 #, fuzzy
 #| msgid "Notice settings"
 msgid "Other Settings"
@@ -3887,249 +2731,6 @@ msgstr "Sau du-te"
 msgid "now"
 msgstr "acum"
 
-#: geonode/layers/utils.py:496 geonode/layers/utils.py:520
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr ""
-
-#: geonode/layers/utils.py:502 geonode/layers/views.py:1211
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
-
-#: geonode/layers/utils.py:505 geonode/layers/views.py:1215
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
-
-#: geonode/layers/utils.py:528
-msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
-msgstr ""
-
-#: geonode/layers/utils.py:533
-msgid "Local GeoNode layer has no geometry type."
-msgstr ""
-
-#: geonode/layers/utils.py:538
-msgid ""
-"Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
-msgstr ""
-
-#: geonode/layers/utils.py:542
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
-msgstr ""
-
-#: geonode/layers/views.py:127
-msgid ""
-"There was an error while attempting to upload your data. Please try again, "
-"or contact and administrator if the problem continues."
-msgstr ""
-"A apărut o eroare în timp ce încerca pentru a încărca datele. Vă rugăm să "
-"încercați din nou, sau contactați și administrator dacă problema persistă."
-
-#: geonode/layers/views.py:130
-msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
-msgstr ""
-
-#: geonode/layers/views.py:134
-msgid "You are not permitted to delete this layer"
-msgstr "Tu nu sunt permise pentru a șterge acest strat"
-
-#: geonode/layers/views.py:135
-msgid "You do not have permissions for this layer."
-msgstr "Nu aveți permisiuni pentru acest strat."
-
-#: geonode/layers/views.py:136
-msgid "You are not permitted to modify this layer"
-msgstr "Tu nu sunt permise de a modifica acest strat"
-
-#: geonode/layers/views.py:138
-msgid "You are not permitted to modify this layer's metadata"
-msgstr "Tu nu sunt permise de a modifica metadatele acest strat de"
-
-#: geonode/layers/views.py:139
-msgid "You are not permitted to view this layer"
-msgstr "Tu nu sunt permise pentru a vizualiza acest strat"
-
-#: geonode/layers/views.py:277
-#, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Failed to upload the layer"
-msgstr "Fișiere pentru a fi încărcate"
-
-#: geonode/layers/views.py:1311 geonode/layers/views.py:1356
-msgid "Unable to delete layer"
-msgstr ""
-
-#: geonode/layers/views.py:1315 geonode/layers/views.py:1360
-msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
-msgstr ""
-
-#: geonode/layers/views.py:1408 geonode/maps/views.py:1406
-msgid "couldn't generate thumbnail"
-msgstr ""
-
-#: geonode/maps/__init__.py:28
-msgid "Map Created"
-msgstr "Harta Creat"
-
-#: geonode/maps/__init__.py:28
-#, fuzzy
-#| msgid "A map was commented on"
-msgid "A Map was created"
-msgstr "O hartă a fost comentat"
-
-#: geonode/maps/__init__.py:29
-#, fuzzy
-#| msgid "Map Created"
-msgid "Map Updated"
-msgstr "Harta Creat"
-
-#: geonode/maps/__init__.py:29
-#, fuzzy
-#| msgid "last updated on"
-msgid "A Map was updated"
-msgstr "Ultima actualizare pe"
-
-#: geonode/maps/__init__.py:30
-#, fuzzy
-#| msgid "Not provided"
-msgid "Map Approved"
-msgstr "Care nu sunt prevăzute"
-
-#: geonode/maps/__init__.py:30
-msgid "A Map was approved by a Manager"
-msgstr ""
-
-#: geonode/maps/__init__.py:31
-#, fuzzy
-#| msgid "Published From"
-msgid "Map Published"
-msgstr "Publicat la"
-
-#: geonode/maps/__init__.py:31
-msgid "A Map was published"
-msgstr ""
-
-#: geonode/maps/__init__.py:32
-#, fuzzy
-#| msgid "Map Created"
-msgid "Map Deleted"
-msgstr "Harta Creat"
-
-#: geonode/maps/__init__.py:32
-#, fuzzy
-#| msgid "A map was commented on"
-msgid "A Map was deleted"
-msgstr "O hartă a fost comentat"
-
-#: geonode/maps/__init__.py:33
-msgid "Comment on Map"
-msgstr "Comment on Harta"
-
-#: geonode/maps/__init__.py:33
-msgid "A map was commented on"
-msgstr "O hartă a fost comentat"
-
-#: geonode/maps/__init__.py:34
-msgid "Rating for Map"
-msgstr "Rating-ul pentru Harta"
-
-#: geonode/maps/__init__.py:34
-msgid "A rating was given to a map"
-msgstr "Un rating a fost dat la o hartă"
-
-#: geonode/maps/models.py:64
-msgid "zoom"
-msgstr "zoom"
-
-#: geonode/maps/models.py:68
-#, fuzzy
-#| msgid "projection"
-msgid "projection"
-msgstr "proeminență"
-
-#: geonode/maps/models.py:72
-msgid "center X"
-msgstr "Centrul X"
-
-#: geonode/maps/models.py:76
-msgid "center Y"
-msgstr "Centrul Y"
-
-#: geonode/maps/models.py:83
-msgid "Site URL"
-msgstr "URL-ul site-ului"
-
-#: geonode/maps/models.py:88
-msgid "Featured Map URL"
-msgstr "Featured Harta URL"
-
-#: geonode/maps/models.py:443
-msgid "stack order"
-msgstr "Pentru stivă"
-
-#: geonode/maps/models.py:448
-#, fuzzy
-#| msgid "format"
-msgid "format"
-msgstr "format"
-
-#: geonode/maps/models.py:454
-msgid "name"
-msgstr "nume"
-
-#: geonode/maps/models.py:457
-msgid "store"
-msgstr ""
-
-#: geonode/maps/models.py:463
-msgid "opacity"
-msgstr "opacitate"
-
-#: geonode/maps/models.py:467
-msgid "styles"
-msgstr "stiluri"
-
-#: geonode/maps/models.py:472
-msgid "transparent"
-msgstr "transparent"
-
-#: geonode/maps/models.py:476
-msgid "fixed"
-msgstr "fix"
-
-#: geonode/maps/models.py:480
-#, fuzzy
-#| msgid "group"
-msgid "group"
-msgstr "grup"
-
-#: geonode/maps/models.py:484
-msgid "visibility"
-msgstr "vizibilitate"
-
-#: geonode/maps/models.py:487
-msgid "ows URL"
-msgstr "OWS URL"
-
-#: geonode/maps/models.py:490
-msgid "layer params"
-msgstr "params strat"
-
-#: geonode/maps/models.py:497
-msgid "source params"
-msgstr "params sursă"
-
-#: geonode/maps/models.py:607
-msgid "JSON Configuration"
-msgstr "JSON de configurare"
-
 #: geonode/maps/templates/maps/map_detail.html:26
 msgid "maps"
 msgstr ""
@@ -4148,8 +2749,7 @@ msgid "Download Map"
 msgstr "Descărcare Harta"
 
 #: geonode/maps/templates/maps/map_detail.html:171
-#: geonode/maps/templates/maps/map_view.html:7 geonode/monitoring/models.py:174
-#: geonode/templates/index.html:76
+#: geonode/maps/templates/maps/map_view.html:7 geonode/templates/index.html:76
 msgid "Map"
 msgid_plural "Maps"
 msgstr[0] ""
@@ -4243,7 +2843,6 @@ msgid "Copy to Clipboard"
 msgstr ""
 
 #: geonode/maps/templates/maps/map_download.html:6
-#: geonode/monitoring/models.py:360
 msgid "Download"
 msgstr "Descărcare"
 
@@ -4312,10 +2911,6 @@ msgstr "Descărcați complet"
 msgid "Download Failed"
 msgstr "Descărcare eșuată"
 
-#: geonode/maps/templates/maps/map_edit.html:7
-msgid "Edit Map"
-msgstr "Edit Map"
-
 #: geonode/maps/templates/maps/map_list.html:5
 #, fuzzy
 #| msgid "GeoExplorer"
@@ -4370,378 +2965,6 @@ msgid ""
 "        "
 msgstr ""
 
-#: geonode/maps/views.py:95
-msgid "You are not permitted to delete this map."
-msgstr "Tu nu sunt permise pentru a șterge această hartă."
-
-#: geonode/maps/views.py:96
-msgid "You do not have permissions for this map."
-msgstr "Nu aveți permisiuni pentru această hartă."
-
-#: geonode/maps/views.py:97
-msgid "You must be logged in to save this map"
-msgstr "Trebuie să fii autentificat pentru a salva această hartă"
-
-#: geonode/maps/views.py:98
-msgid "You are not permitted to save or edit this map."
-msgstr "Tu nu sunt permise pentru a salva sau edita această hartă."
-
-#: geonode/maps/views.py:100
-msgid "You are not allowed to modify this map's metadata."
-msgstr "Nu vi se permite de a modifica metadatele această hartă a lui."
-
-#: geonode/maps/views.py:101
-msgid "You are not allowed to view this map."
-msgstr "Nu este permis pentru a vizualiza această hartă."
-
-#: geonode/maps/views.py:102
-msgid "An unknown error has occured."
-msgstr "O eroare necunoscută a apărut."
-
-#: geonode/maps/views.py:1413
-#, fuzzy
-#| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "Thumbnail"
-
-#: geonode/maps/views.py:1416
-#, fuzzy
-#| msgid "Thumbnail"
-msgid "error saving thumbnail"
-msgstr "Thumbnail"
-
-#: geonode/monitoring/__init__.py:45
-msgid "Monitoring alert"
-msgstr ""
-
-#: geonode/monitoring/__init__.py:46
-msgid "Alert situation reported by monitoring"
-msgstr ""
-
-#: geonode/monitoring/collector.py:1008
-msgid "GeoNode Monitoring on {} reports errors: {}"
-msgstr ""
-
-#: geonode/monitoring/forms.py:30
-#, fuzzy
-#| msgid "Email Address"
-msgid "Enter valid email addresses."
-msgstr "Adresa de e-mail"
-
-#: geonode/monitoring/management/commands/collect_metrics.py:50
-msgid "Show list of services"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:52
-#: geonode/monitoring/management/commands/render_metrics.py:57
-msgid ""
-"Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
-"provided, last sync will be used."
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:55
-#: geonode/monitoring/management/commands/render_metrics.py:59
-msgid ""
-"Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
-"provided, now will be used."
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:58
-msgid "Force check"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:60
-msgid "Format of audit log (xml, json)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:62
-msgid ""
-"Should old data be preserved (default: no, data older than settings."
-"MONITORING_DATA_TTL will be removed)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:65
-msgid "Should stop on first error occured (default: no)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:67
-msgid "Should process and send notifications as well (default: no)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:69
-msgid "Collect data from this service only"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:49
-msgid "Show list of metrics"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:51
-msgid "Show list of labels for metric"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:54
-msgid "Show list of resources for metric"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:62
-msgid "Data aggregation interval in seconds (default: 60)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:63
-#, fuzzy
-#| msgid "attribute name"
-msgid "Metric name"
-msgstr "nume de atribut"
-
-#: geonode/monitoring/management/commands/render_metrics.py:66
-msgid "Show data for specific resource in resource_type=resource_name format"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:69
-#, fuzzy
-#| msgid "reference date for the cited resource"
-msgid "Show data for specific resource"
-msgstr "Data de referință pentru resursa citat"
-
-#: geonode/monitoring/management/commands/render_metrics.py:72
-msgid "Show data for specific label"
-msgstr ""
-
-#: geonode/monitoring/models.py:100 geonode/templates/500.html:199
-#: geonode/templates/base.html:511
-msgid "GeoNode"
-msgstr "GeoNode"
-
-#: geonode/monitoring/models.py:101
-#: geonode/people/templates/people/profile_detail.html:163
-#: geonode/templates/500.html:278
-msgid "GeoServer"
-msgstr "GeoServer"
-
-#: geonode/monitoring/models.py:102
-#, fuzzy
-#| msgid "GeoServer"
-msgid "Host (GeoServer)"
-msgstr "GeoServer"
-
-#: geonode/monitoring/models.py:103
-#, fuzzy
-#| msgid "About GeoNode"
-msgid "Host (GeoNode)"
-msgstr "Despre GeoNode"
-
-#: geonode/monitoring/models.py:172
-#, fuzzy
-#| msgid "Resources"
-msgid "No resource"
-msgstr "Resurse"
-
-#: geonode/monitoring/models.py:175
-#, fuzzy
-#| msgid "Resources"
-msgid "Resource base"
-msgstr "Resurse"
-
-#: geonode/monitoring/models.py:177
-#, fuzzy
-#| msgid "Styles"
-msgid "Style"
-msgstr "Stiluri"
-
-#: geonode/monitoring/models.py:178
-#: geonode/people/templates/people/profile_detail.html:164
-#: geonode/templates/500.html:279 geonode/templates/base.html:383
-msgid "Admin"
-msgstr "Admin"
-
-#: geonode/monitoring/models.py:180
-msgid "Other"
-msgstr ""
-
-#: geonode/monitoring/models.py:210 geonode/monitoring/models.py:261
-msgid "Rate"
-msgstr ""
-
-#: geonode/monitoring/models.py:211 geonode/monitoring/models.py:263
-#, fuzzy
-#| msgid "count"
-msgid "Count"
-msgstr "conta"
-
-#: geonode/monitoring/models.py:212
-msgid "Value"
-msgstr ""
-
-#: geonode/monitoring/models.py:213
-msgid "Value numeric"
-msgstr ""
-
-#: geonode/monitoring/models.py:252
-msgid "Bytes"
-msgstr ""
-
-#: geonode/monitoring/models.py:253
-msgid "Kilobytes"
-msgstr ""
-
-#: geonode/monitoring/models.py:254
-msgid "Megabytes"
-msgstr ""
-
-#: geonode/monitoring/models.py:255
-msgid "Gigabytes"
-msgstr ""
-
-#: geonode/monitoring/models.py:256
-msgid "Bytes per second"
-msgstr ""
-
-#: geonode/monitoring/models.py:257
-msgid "Kilobytes per second"
-msgstr ""
-
-#: geonode/monitoring/models.py:258
-msgid "Megabytes per second"
-msgstr ""
-
-#: geonode/monitoring/models.py:259
-msgid "Gigabytes per second"
-msgstr ""
-
-#: geonode/monitoring/models.py:260
-msgid "Seconds"
-msgstr ""
-
-#: geonode/monitoring/models.py:262
-msgid "Percentage"
-msgstr ""
-
-#: geonode/monitoring/models.py:351
-#, fuzzy
-#| msgid "local OWS"
-msgid "Not OWS"
-msgstr "OWS locale"
-
-#: geonode/monitoring/models.py:352
-msgid "Any OWS"
-msgstr ""
-
-#: geonode/monitoring/models.py:356
-#: geonode/templates/pinax/notifications/notice_settings.html:51
-msgid "Change"
-msgstr "Schimbare"
-
-#: geonode/monitoring/models.py:357
-#, fuzzy
-#| msgid "Edit Metadata"
-msgid "Change Metadata"
-msgstr "Editează metadatele"
-
-#: geonode/monitoring/models.py:358
-#, fuzzy
-#| msgid "Edit Metadata"
-msgid "View Metadata"
-msgstr "Editează metadatele"
-
-#: geonode/monitoring/models.py:359
-msgid "View"
-msgstr "View"
-
-#: geonode/monitoring/models.py:361
-#, fuzzy
-#| msgid "Public"
-msgid "Publish"
-msgstr "Public"
-
-#: geonode/monitoring/models.py:363
-#, fuzzy
-#| msgid "GeoServer"
-msgid "Geoserver event"
-msgstr "GeoServer"
-
-#: geonode/monitoring/models.py:432
-#, fuzzy
-#| msgid "List of resources using this document:"
-msgid "List of resources affected"
-msgstr "Listă de resurse folosind acest document:"
-
-#: geonode/monitoring/models.py:439
-#, fuzzy
-#| msgid "Resource using this document"
-msgid "Response processing time in ms"
-msgstr "Resursa folosind acest document"
-
-#: geonode/monitoring/models.py:1071
-msgid "1 minute"
-msgstr ""
-
-#: geonode/monitoring/models.py:1072
-msgid "5 minutes"
-msgstr ""
-
-#: geonode/monitoring/models.py:1073
-msgid "10 minutes"
-msgstr ""
-
-#: geonode/monitoring/models.py:1074
-msgid "30 minutes"
-msgstr ""
-
-#: geonode/monitoring/models.py:1075
-msgid "1 hour"
-msgstr ""
-
-#: geonode/monitoring/models.py:1083 geonode/templates/metadata_base.html:128
-#: geonode/templates/metadata_base.html:131
-#: geonode/templates/socialaccount/authentication_error.html:11
-msgid "Error"
-msgstr ""
-
-#: geonode/monitoring/models.py:1084
-msgid "Fatal"
-msgstr ""
-
-#: geonode/monitoring/models.py:1098
-msgid "Expected min/max values for user configuration"
-msgstr ""
-
-#: geonode/monitoring/models.py:1106
-msgid "Marker of last delivery"
-msgstr ""
-
-#: geonode/monitoring/models.py:1109
-msgid "Minimum time between subsequent notifications"
-msgstr ""
-
-#: geonode/monitoring/models.py:1114
-msgid "How severe would be error from this notification"
-msgstr ""
-
-#: geonode/monitoring/models.py:1119
-msgid "Is it active"
-msgstr ""
-
-#: geonode/monitoring/models.py:1126
-msgid "{}: {}"
-msgstr ""
-
-#: geonode/monitoring/models.py:1390
-msgid "Value must be above"
-msgstr ""
-
-#: geonode/monitoring/models.py:1391
-msgid "Value must be below"
-msgstr ""
-
-#: geonode/monitoring/models.py:1392
-msgid "Last update must not be older than"
-msgstr ""
-
-#: geonode/monitoring/models.py:1542
-msgid "Max timeout for given metric before error should be raised"
-msgstr ""
-
 #: geonode/monitoring/templates/monitoring/index.html:5
 #: geonode/monitoring/templates/monitoring/non_superuser.html:4
 #: geonode/templates/base.html:389
@@ -4750,266 +2973,6 @@ msgstr ""
 
 #: geonode/monitoring/templates/monitoring/non_superuser.html:10
 msgid "Only superusers can monitor performance"
-msgstr ""
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:3
-msgid "Hi,"
-msgstr ""
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:5
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:3
-msgid "Monitoring on"
-msgstr ""
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:5
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:3
-#, fuzzy
-#| msgid "The following groups:"
-msgid "has detected following problems :"
-msgstr "Următoarele grupuri:"
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:9
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:6
-msgid "spotted"
-msgstr ""
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:9
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:10
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:6
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:7
-#: geonode/social/templates/social/_activity_item.html:31
-msgid "ago"
-msgstr "în urmă"
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:10
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:7
-msgid "emerged"
-msgstr ""
-
-#: geonode/people/__init__.py:26
-msgid "User following you"
-msgstr "Utilizator îți următoare"
-
-#: geonode/people/__init__.py:26
-#, fuzzy
-#| msgid "This user is not following anyone"
-msgid "Another user has started following you"
-msgstr "Acest utilizator nu are următorul nimeni"
-
-#: geonode/people/__init__.py:27
-msgid "User requested access"
-msgstr ""
-
-#: geonode/people/__init__.py:28
-msgid "A new user has requested access to the site"
-msgstr ""
-
-#: geonode/people/__init__.py:29
-#, fuzzy
-#| msgid "Recent activity"
-msgid "Account activated"
-msgstr "Activitate recentă"
-
-#: geonode/people/__init__.py:30
-msgid "This account is now active and can log in the site"
-msgstr ""
-
-#: geonode/people/admin.py:56
-msgid "Personal info"
-msgstr "Informații personale"
-
-#: geonode/people/admin.py:59
-msgid "Important dates"
-msgstr "Date importante"
-
-#: geonode/people/admin.py:60
-#, fuzzy
-#| msgid "Edit profile"
-msgid "Extended profile"
-msgstr "Editeaza profil"
-
-#: geonode/people/admin.py:159
-msgid "Password changed successfully."
-msgstr "Parola a fost schimbata cu succes."
-
-#: geonode/people/admin.py:169
-#, python-format
-msgid "Change password: %s"
-msgstr "Schimba parola: %s"
-
-#: geonode/people/enumerations.py:39
-msgid "party who authored the resource"
-msgstr "Partea care autorul resursei"
-
-#: geonode/people/enumerations.py:40
-msgid ""
-"party who has processed the data in a manner such that the resource has been "
-"modified"
-msgstr ""
-"Partea care a prelucrat datele într-o manieră astfel încât resursa a fost "
-"modificat"
-
-#: geonode/people/enumerations.py:41
-msgid "party who published the resource"
-msgstr "Partea care a publicat resursa"
-
-#: geonode/people/enumerations.py:42
-msgid ""
-"party that accepts accountability and responsibility for the data and "
-"ensures         appropriate care and maintenance of the resource"
-msgstr ""
-"partid care acceptă răspunderea și responsabilitatea pentru datele și "
-"asigură îngrijire și întreținere corespunzătoare a resursei"
-
-#: geonode/people/enumerations.py:44
-msgid ""
-"party who can be contacted for acquiring knowledge about or acquisition of "
-"the resource"
-msgstr ""
-"parte care poate fi contactată pentru dobândirea de cunoștințe despre sau "
-"achiziționarea resursei"
-
-#: geonode/people/enumerations.py:45
-msgid "party who distributes the resource"
-msgstr "Partea care distribuie resursa"
-
-#: geonode/people/enumerations.py:46
-msgid "party who uses the resource"
-msgstr "Partea care utilizează resursa"
-
-#: geonode/people/enumerations.py:47
-msgid "party that supplies the resource"
-msgstr "partid care furnizează resursa"
-
-#: geonode/people/enumerations.py:48
-msgid "party who created the resource"
-msgstr "Partea care a creat resursa"
-
-#: geonode/people/enumerations.py:49
-msgid "party that owns the resource"
-msgstr "partid care detine resursa"
-
-#: geonode/people/enumerations.py:50
-msgid "key party responsible for gathering information and conducting research"
-msgstr ""
-"partid-cheie responsabil pentru colectarea de informații și efectuarea de "
-"cercetare"
-
-#: geonode/people/forms.py:75
-#, fuzzy
-#| msgid "Email Address"
-msgid "Email Address"
-msgstr "Adresa de e-mail"
-
-#: geonode/people/models.py:66
-#, fuzzy
-#| msgid "Organization Name"
-msgid "Organization Name"
-msgstr "Numele organizației"
-
-#: geonode/people/models.py:70
-msgid "name of the responsible organization"
-msgstr "numele organizației responsabile"
-
-#: geonode/people/models.py:72 geonode/templates/500.html:266
-#: geonode/templates/base.html:375
-msgid "Profile"
-msgstr "Profil"
-
-#: geonode/people/models.py:75
-msgid "introduce yourself"
-msgstr "te prezinti"
-
-#: geonode/people/models.py:77
-msgid "Position Name"
-msgstr "Poziție Name"
-
-#: geonode/people/models.py:81
-msgid "role or position of the responsible person"
-msgstr "Rolul sau funcția persoanei responsabile"
-
-#: geonode/people/models.py:82
-#: geonode/people/templates/people/profile_detail.html:89
-#: geonode/templates/metadata_detail.html:145
-#: geonode/templates/metadata_detail.html:287
-#: geonode/templates/metadata_detail.html:368
-msgid "Voice"
-msgstr "Voce"
-
-#: geonode/people/models.py:83
-msgid ""
-"telephone number by which individuals can speak to the responsible "
-"organization or individual"
-msgstr ""
-"număr de telefon prin care persoanele fizice pot vorbi la organizația "
-"responsabilă sau individuale"
-
-#: geonode/people/models.py:84
-msgid "Facsimile"
-msgstr "Reproducere"
-
-#: geonode/people/models.py:85
-msgid ""
-"telephone number of a facsimile machine for the responsible organization or "
-"individual"
-msgstr ""
-"numărul de telefon al unei mașini de fax pentru organizația responsabilă sau "
-"individuale"
-
-#: geonode/people/models.py:87
-msgid "Delivery Point"
-msgstr "Punct de livrare"
-
-#: geonode/people/models.py:91
-msgid ""
-"physical and email address at which the organization or individual may be "
-"contacted"
-msgstr ""
-"adresă fizică și de e-mail la care organizația sau individul poate fi "
-"contactat"
-
-#: geonode/people/models.py:93
-msgid "City"
-msgstr "Oraș"
-
-#: geonode/people/models.py:97
-msgid "city of the location"
-msgstr "orașul de locația"
-
-#: geonode/people/models.py:99
-msgid "Administrative Area"
-msgstr "Zona administrativă"
-
-#: geonode/people/models.py:103
-msgid "state, province of the location"
-msgstr "de stat, provincie a locației"
-
-#: geonode/people/models.py:105
-msgid "Postal Code"
-msgstr "Cod Postal"
-
-#: geonode/people/models.py:109
-msgid "ZIP or other postal code"
-msgstr "Cod Poștal sau alt cod postal"
-
-#: geonode/people/models.py:111
-msgid "Country"
-msgstr ""
-
-#: geonode/people/models.py:116
-msgid "country of the physical address"
-msgstr "țara de adresa fizică"
-
-#: geonode/people/models.py:118
-msgid ""
-"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-"the subject             (space or comma-separated"
-msgstr ""
-"cuvânt utilizate în mod obișnuit (e) sau cuvânt formalizate (e) sau expresia "
-"(e) utilizat pentru a descrie subiect (spațiul sau separate prin virgule"
-
-#: geonode/people/models.py:127
-msgid "Timezone"
 msgstr ""
 
 #: geonode/people/templates/people/_profile_about_item.html:17
@@ -5051,6 +3014,11 @@ msgstr "Profilul lui"
 msgid "people explore"
 msgstr "GeoExplorer"
 
+#: geonode/people/templates/people/profile_detail.html:67
+#: geonode/templates/invitations/forms/_invite.html:14
+msgid "Email"
+msgstr ""
+
 #: geonode/people/templates/people/profile_detail.html:71
 #: geonode/people/templates/people/profile_detail.html:77
 #: geonode/people/templates/people/profile_detail.html:81
@@ -5081,10 +3049,15 @@ msgstr ""
 msgid "Location"
 msgstr ""
 
+#: geonode/people/templates/people/profile_detail.html:89
+#: geonode/templates/metadata_detail.html:145
+#: geonode/templates/metadata_detail.html:287
+#: geonode/templates/metadata_detail.html:368
+msgid "Voice"
+msgstr "Voce"
+
 #: geonode/people/templates/people/profile_detail.html:93
 #: geonode/people/templates/people/profile_detail.html:113
-#: geonode/services/serviceprocessors/arcgis.py:115
-#: geonode/services/serviceprocessors/wms.py:144
 msgid "Not provided"
 msgstr "Care nu sunt prevăzute"
 
@@ -5104,7 +3077,7 @@ msgid "Message User"
 msgstr ""
 
 #: geonode/people/templates/people/profile_detail.html:136
-#: geonode/people/templates/people/profile_detail.html:170
+#: geonode/people/templates/people/profile_detail.html:171
 msgid "Edit profile"
 msgstr "Editeaza profil"
 
@@ -5134,24 +3107,30 @@ msgid "Create a new layer"
 msgstr "Creați o nouă hartă"
 
 #: geonode/people/templates/people/profile_detail.html:146
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload new document"
+msgstr "Încărcați documente"
+
+#: geonode/people/templates/people/profile_detail.html:147
 msgid "Create a new map"
 msgstr "Creați o nouă hartă"
 
-#: geonode/people/templates/people/profile_detail.html:147
+#: geonode/people/templates/people/profile_detail.html:148
 msgid "My Activities"
 msgstr "Activități mele"
 
-#: geonode/people/templates/people/profile_detail.html:149
+#: geonode/people/templates/people/profile_detail.html:150
 #: geonode/templates/base.html:378
 msgid "Favorites"
 msgstr ""
 
-#: geonode/people/templates/people/profile_detail.html:154
+#: geonode/people/templates/people/profile_detail.html:155
 #: geonode/templates/500.html:270
 msgid "Notifications"
 msgstr ""
 
-#: geonode/people/templates/people/profile_detail.html:157
+#: geonode/people/templates/people/profile_detail.html:158
 #: geonode/templates/500.html:185 geonode/templates/500.html:273
 #: geonode/templates/announcements/announcement_list.html:5
 #: geonode/templates/announcements/announcement_list.html:12
@@ -5159,7 +3138,7 @@ msgstr ""
 msgid "Announcements"
 msgstr "Anunturi"
 
-#: geonode/people/templates/people/profile_detail.html:161
+#: geonode/people/templates/people/profile_detail.html:162
 #: geonode/templates/500.html:187 geonode/templates/500.html:275
 #: geonode/templates/base.html:320 geonode/templates/base.html:482
 #: geonode/templates/invitations/forms/_invite.html:7
@@ -5168,11 +3147,21 @@ msgstr "Anunturi"
 msgid "Invite Users"
 msgstr "Invita-ti de utilizare"
 
-#: geonode/people/templates/people/profile_detail.html:174
+#: geonode/people/templates/people/profile_detail.html:164
+#: geonode/templates/500.html:278
+msgid "GeoServer"
+msgstr "GeoServer"
+
+#: geonode/people/templates/people/profile_detail.html:165
+#: geonode/templates/500.html:279 geonode/templates/base.html:383
+msgid "Admin"
+msgstr "Admin"
+
+#: geonode/people/templates/people/profile_detail.html:175
 msgid "User Activities"
 msgstr "Activități de utilizare"
 
-#: geonode/people/templates/people/profile_detail.html:180
+#: geonode/people/templates/people/profile_detail.html:181
 msgid "Resources"
 msgstr "Resurse"
 
@@ -5203,67 +3192,6 @@ msgstr "Profilul actualizare"
 msgid "Explore People"
 msgstr "Explorează"
 
-#: geonode/people/views.py:92
-msgid "Your username for "
-msgstr "Numele de utilizator îți pentru"
-
-#: geonode/people/views.py:106
-msgid "Your username has been emailed to you."
-msgstr "Numele de utilizator îți a fost trimisă prin email."
-
-#: geonode/people/views.py:108
-msgid "No user could be found with that email address."
-msgstr "Nici un utilizator a putut fi găsită cu acea adresă de e-mail."
-
-#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:224
-#, fuzzy
-#| msgid "You are not permitted to save or edit this map."
-msgid "You are not permitted to save or edit this resource."
-msgstr "Tu nu sunt permise pentru a salva sau edita această hartă."
-
-#: geonode/proxy/views.py:223
-#, fuzzy
-#| msgid "You are not allowed to view this document."
-msgid "You are not authorized to download this resource."
-msgstr "Nu este permis pentru a vizualiza acest document."
-
-#: geonode/proxy/views.py:225
-msgid ""
-"No files have been found for this resource. Please, contact a system "
-"administrator."
-msgstr ""
-
-#: geonode/proxy/views.py:259 geonode/proxy/views.py:270
-#: geonode/proxy/views.py:371
-#, fuzzy
-#| msgid "Documents"
-msgid "No files found."
-msgstr "Documente"
-
-#: geonode/proxy/views.py:379
-#, fuzzy
-#| msgid "Not provided"
-msgid "Not Authorized"
-msgstr "Care nu sunt prevăzute"
-
-#: geonode/qgis_server/models.py:200
-#, fuzzy
-#| msgid "style name"
-msgid "style xml"
-msgstr "Numele de stil"
-
-#: geonode/qgis_server/models.py:201
-#, fuzzy
-#| msgid "sld url"
-msgid "style url"
-msgstr "url SLD"
-
-#: geonode/qgis_server/models.py:203
-#, fuzzy
-#| msgid "sld url"
-msgid "style legend url"
-msgstr "url SLD"
-
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:10
 msgid "Layer Style changed. Redirecting to apply changes..."
 msgstr ""
@@ -5271,6 +3199,14 @@ msgstr ""
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:13
 msgid "You may also use browser reload."
 msgstr ""
+
+#: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
+#: geonode/services/templates/services/service_resources_harvest.html:31
+#: geonode/templates/metadata_detail.html:130
+#: geonode/templates/metadata_detail.html:272
+#: geonode/templates/metadata_detail.html:353
+msgid "Name"
+msgstr "Nume"
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:21
 #, fuzzy
@@ -5300,120 +3236,6 @@ msgstr "Scoateți Serviciu"
 msgid "Reload to see changes"
 msgstr ""
 
-#: geonode/qgis_server/views.py:266
-#, python-brace-format
-msgid ""
-"You should use a GIS software or a library which support TMS service to use "
-"this URL : {url}"
-msgstr ""
-
-#: geonode/security/middleware.py:128
-msgid "Session is Expired. Please login again!"
-msgstr ""
-
-#: geonode/services/enumerations.py:45
-msgid "Auto-detect"
-msgstr "Auto-detecta"
-
-#: geonode/services/enumerations.py:46
-msgid "Paired WMS/WFS/WCS"
-msgstr "Sincronizat WMS / WFS / WCS"
-
-#: geonode/services/enumerations.py:47 geonode/services/forms.py:54
-msgid "Web Map Service"
-msgstr "Harta web service"
-
-#: geonode/services/enumerations.py:48
-msgid "Catalogue Service"
-msgstr "Serviciul de catalog"
-
-#: geonode/services/enumerations.py:49 geonode/services/forms.py:58
-#, fuzzy
-#| msgid "ArcGIS REST Service"
-msgid "ArcGIS REST MapServer"
-msgstr "ArcGIS REST Serviciu"
-
-#: geonode/services/enumerations.py:50
-#, fuzzy
-#| msgid "ArcGIS REST Service"
-msgid "ArcGIS REST ImageServer"
-msgstr "ArcGIS REST Serviciu"
-
-#: geonode/services/enumerations.py:51 geonode/services/models.py:51
-msgid "OpenGeoPortal"
-msgstr "OpenGeoPortal"
-
-#: geonode/services/enumerations.py:52
-msgid "Harvard Geospatial Library"
-msgstr "Harvard geospațiale Library"
-
-#: geonode/services/enumerations.py:53 geonode/services/forms.py:55
-#, fuzzy
-#| msgid "GeoNode's Web Services"
-msgid "GeoNode (Web Map Service)"
-msgstr "Servicii Web GeoNode lui"
-
-#: geonode/services/enumerations.py:54
-#, fuzzy
-#| msgid "Catalogue Service"
-msgid "GeoNode (Catalogue Service)"
-msgstr "Serviciul de catalog"
-
-#: geonode/services/forms.py:37
-msgid "Service URL"
-msgstr "URL serviciu"
-
-#: geonode/services/forms.py:50
-msgid "Service Type"
-msgstr "Tip de serviciu"
-
-#: geonode/services/forms.py:72
-#, fuzzy, python-format
-#| msgid "service interfaces"
-msgid "Service %(url)s is already registered"
-msgstr "interfețe de servicii"
-
-#: geonode/services/forms.py:88
-#, python-format
-msgid "Could not connect to the service at %(url)s"
-msgstr ""
-
-#: geonode/services/forms.py:93
-#, python-format
-msgid "Could not find importable resources for the service at %(url)s"
-msgstr ""
-
-#: geonode/services/forms.py:100
-#, python-format
-msgid "Found service of type %(found_type)s instead of %(service_type)s"
-msgstr ""
-
-#: geonode/services/models.py:46
-msgid "Local"
-msgstr "Local"
-
-#: geonode/services/models.py:47
-msgid "Cascaded"
-msgstr "Cascadă"
-
-#: geonode/services/models.py:48
-msgid "Harvested"
-msgstr "Recoltate"
-
-#: geonode/services/models.py:49
-msgid "Indexed"
-msgstr "Indexate"
-
-#: geonode/services/models.py:50
-msgid "Live"
-msgstr "Live"
-
-#: geonode/services/models.py:211
-#, fuzzy
-#| msgid "Resources"
-msgid "Resource is queued"
-msgstr "Resurse"
-
 #: geonode/services/templates/services/remote_service_unavailable.html:5
 #, fuzzy
 #| msgid "Remote Services"
@@ -5429,6 +3251,11 @@ msgstr ""
 #| msgid "Point of Contact"
 msgid "Could not contact"
 msgstr "Punct de Contact"
+
+#: geonode/services/templates/services/service_detail.html:9
+#: geonode/services/templates/services/service_list.html:16
+msgid "URL"
+msgstr "URL"
 
 #: geonode/services/templates/services/service_detail.html:12
 #, fuzzy
@@ -5601,90 +3428,14 @@ msgstr ""
 msgid "Re-scan Service for new Resources"
 msgstr ""
 
-#: geonode/services/views.py:96
-#, fuzzy
-#| msgid "service interfaces"
-msgid "Service registered successfully"
-msgstr "interfețe de servicii"
-
-#: geonode/services/views.py:193
-msgid "The selected resources are being imported"
-msgstr ""
-
-#: geonode/services/views.py:194
-msgid "The selected resources have been imported"
-msgstr ""
-
-#: geonode/services/views.py:224
-msgid "Resource is already being processed"
-msgstr ""
-
-#: geonode/services/views.py:230
-msgid "Resource {} is being processed"
-msgstr ""
-
-#: geonode/services/views.py:259
-#, fuzzy
-#| msgid "Password changed successfully."
-msgid "Service rescanned successfully"
-msgstr "Parola a fost schimbata cu succes."
-
-#: geonode/services/views.py:329
-#, fuzzy
-#| msgid "You are not permitted to remove this service."
-msgid "You are not permitted to change this service."
-msgstr "Tu nu sunt permise pentru a elimina acest serviciu."
-
-#: geonode/services/views.py:357
-msgid "You are not permitted to remove this service."
-msgstr "Tu nu sunt permise pentru a elimina acest serviciu."
-
-#: geonode/services/views.py:368
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "Service {} has been deleted"
-msgstr "Serviciu a fost creat:"
-
-#: geonode/social/signals.py:81
-msgid "created"
-msgstr "creată"
-
-#: geonode/social/signals.py:82 geonode/social/tests.py:102
-msgid "deleted"
-msgstr "eliminat"
-
-#: geonode/social/signals.py:85
-#, fuzzy
-#| msgid "Update"
-msgid "updated"
-msgstr "Actualizare"
-
-#: geonode/social/signals.py:95 geonode/social/tests.py:122
-msgid "added a comment"
-msgstr "a adăugat un comentariu"
-
-#: geonode/social/signals.py:97
-msgid "updated a comment"
-msgstr "actualizat un comentariu"
-
-#: geonode/social/signals.py:103 geonode/social/signals.py:108
-#: geonode/social/tests.py:76
-msgid "uploaded"
-msgstr "încărcat"
+#: geonode/social/templates/social/_activity_item.html:31
+msgid "ago"
+msgstr "în urmă"
 
 #: geonode/social/templates/social/activity_list.html:4
 #: geonode/social/templates/social/activity_list.html:15
 msgid "Recent activity"
 msgstr "Activitate recentă"
-
-#: geonode/social/templatetags/social_tags.py:56
-msgid "to"
-msgstr "pentru"
-
-#: geonode/social/templatetags/social_tags.py:72 geonode/social/tests.py:125
-#: geonode/templates/_comments.html:31
-msgid "on"
-msgstr "pe"
 
 #: geonode/templates/401.html:10
 msgid "Not Permitted"
@@ -5810,6 +3561,10 @@ msgid "Powered by"
 msgstr "Powered by"
 
 #: geonode/templates/500.html:199 geonode/templates/base.html:511
+msgid "GeoNode"
+msgstr "GeoNode"
+
+#: geonode/templates/500.html:199 geonode/templates/base.html:511
 msgid "version"
 msgstr "versiune"
 
@@ -5834,6 +3589,10 @@ msgstr "Ține-mă minte"
 #: geonode/templates/500.html:260
 msgid "Menu"
 msgstr ""
+
+#: geonode/templates/500.html:266 geonode/templates/base.html:375
+msgid "Profile"
+msgstr "Profil"
 
 #: geonode/templates/500.html:267 geonode/templates/base.html:376
 msgid "Recent Activity"
@@ -5898,6 +3657,10 @@ msgstr "Conectați-vă pentru a adăuga un comentariu"
 #: geonode/templates/_comments.html:31
 msgid "By"
 msgstr "Prin"
+
+#: geonode/templates/_comments.html:31
+msgid "on"
+msgstr "pe"
 
 #: geonode/templates/_comments.html:65
 msgid "Submit Comment"
@@ -6088,93 +3851,6 @@ msgstr ""
 #: geonode/templates/account/email.html:62
 msgid "Do you really want to remove the selected e-mail address?"
 msgstr ""
-
-#: geonode/templates/account/email/email_confirmation_message.txt:1
-#, python-format
-msgid ""
-"Hello from %(site_name)s!\n"
-"\n"
-"You're receiving this e-mail because user %(user_display)s has given yours "
-"as an e-mail address to connect their account.\n"
-"\n"
-"To confirm this is correct, go to %(activate_url)s\n"
-msgstr ""
-
-#: geonode/templates/account/email/email_confirmation_message.txt:7
-#, python-format
-msgid ""
-"Thank you from %(site_name)s!\n"
-"%(site_domain)s"
-msgstr ""
-
-#: geonode/templates/account/email/email_confirmation_subject.txt:1
-#, fuzzy, python-format
-#| msgid "Confirm email address for %(site_name)s"
-msgid "Please confirm email address for %(site_name)s"
-msgstr "Confirmați adresa de e-mail pentru %(site_name)s"
-
-#: geonode/templates/account/email/invite_user.txt:1
-#, python-format
-msgid "You have been invited to sign up at %(site_name)s."
-msgstr ""
-
-#: geonode/templates/account/email/invite_user_subject.txt:1
-#, fuzzy, python-format
-#| msgid "Confirm email address for %(site_name)s"
-msgid "Create an account on %(site_name)s"
-msgstr "Confirmați adresa de e-mail pentru %(site_name)s"
-
-#: geonode/templates/account/email/password_change.txt:1
-msgid ""
-"This is the email notification to confirm your password has been changed on"
-msgstr ""
-
-#: geonode/templates/account/email/password_change_subject.txt:1
-#, fuzzy
-#| msgid "Change password: %s"
-msgid "Change password email notification"
-msgstr "Schimba parola: %s"
-
-#: geonode/templates/account/email/password_reset_key.txt:1
-#, fuzzy, python-format
-#| msgid ""
-#| "You're receiving this email because you or someone else has requested a "
-#| "password for your user account at %(site_name)s.\n"
-#| "It can be safely ignored if you did not request a password reset. Click "
-#| "the link below to reset your password.\n"
-#| "\n"
-#| "%(password_reset_url)s\n"
-msgid ""
-"Hello from %(site_name)s!\n"
-"\n"
-"You're receiving this e-mail because you or someone else has requested a "
-"password for your user account.\n"
-"It can be safely ignored if you did not request a password reset. Click the "
-"link below to reset your password."
-msgstr ""
-"Ați primit acest e-mail deoarece tu sau altcineva a solicitat o parolă "
-"pentru contul dvs. de utilizator la %(site_name)s. \n"
-"Acesta poate fi ignorat în siguranță dacă nu ați solicitat o resetare a "
-"parolei. Faceți clic pe linkul de mai jos pentru a reseta parola. \n"
-"\n"
-"%(password_reset_url)s\n"
-
-#: geonode/templates/account/email/password_reset_key.txt:8
-#, python-format
-msgid "In case you forgot, your username is %(username)s."
-msgstr ""
-
-#: geonode/templates/account/email/password_reset_key.txt:10
-#, python-format
-msgid ""
-"Thank you for using %(site_name)s!\n"
-"%(site_domain)s"
-msgstr ""
-
-#: geonode/templates/account/email/password_reset_key_subject.txt:1
-#, python-format
-msgid "[%(site_name)s] Password reset"
-msgstr "[%(site_name)s]  resetare a parolei"
 
 #: geonode/templates/account/email_confirm.html:6
 #: geonode/templates/account/email_confirm.html:10
@@ -6559,6 +4235,14 @@ msgstr "Ștergeți aceste"
 msgid "GeoNode Search"
 msgstr "GeoNode Ajutor"
 
+#: geonode/templates/base.html:314
+#: geonode/templates/search/_general_filters.html:76
+#: geonode/templates/search/_search_user_content.html:28
+#, fuzzy
+#| msgid "Categories"
+msgid "Group Categories"
+msgstr "Categorii"
+
 #: geonode/templates/base.html:495
 #, fuzzy
 #| msgid "Contact:"
@@ -6568,6 +4252,12 @@ msgstr "De contact:"
 #: geonode/templates/base.html:504
 msgid "Tel"
 msgstr ""
+
+#: geonode/templates/base.html:506
+#, fuzzy
+#| msgid "email"
+msgid "E-mail"
+msgstr "e-mail"
 
 #: geonode/templates/base.html:644
 #, fuzzy
@@ -6619,8 +4309,6 @@ msgid ""
 "GeoNode, we encourage you to do so by contributing to one of the projects on "
 "which it is built:</p>\n"
 "    <ul>\n"
-"      <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
-"for rich web mapping applications</li>\n"
 "      <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
 "server for geospatial information</li>\n"
 "      <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
@@ -6699,43 +4387,43 @@ msgid ""
 "    "
 msgstr ""
 
-#: geonode/templates/developer.html:65
+#: geonode/templates/developer.html:64
 msgid "GeoNode's Web Services"
 msgstr "Servicii Web GeoNode lui"
 
-#: geonode/templates/developer.html:66
+#: geonode/templates/developer.html:65
 msgid "GeoNode's Web Services are available from the following URLs:"
 msgstr "Servicii Web GeoNode sunt disponibile la următoarele URL-uri:"
 
-#: geonode/templates/developer.html:69
+#: geonode/templates/developer.html:68
 msgid "Dynamic tiles via WMS:"
 msgstr "Gresie dinamice prin intermediul WMS:"
 
-#: geonode/templates/developer.html:73
+#: geonode/templates/developer.html:72
 msgid "Vector data via WFS:"
 msgstr "Date vectoriale prin WFS:"
 
-#: geonode/templates/developer.html:77
+#: geonode/templates/developer.html:76
 msgid "Raster data via WCS:"
 msgstr "Date raster prin WCS:"
 
-#: geonode/templates/developer.html:81
+#: geonode/templates/developer.html:80
 msgid "Metadata search via CSW:"
 msgstr "Căutare metadate prin LSC:"
 
-#: geonode/templates/developer.html:85
+#: geonode/templates/developer.html:84
 msgid "Metadata search via OpenSearch:"
 msgstr ""
 
-#: geonode/templates/developer.html:89
+#: geonode/templates/developer.html:88
 msgid "Metadata search via OAI-PMH:"
 msgstr ""
 
-#: geonode/templates/developer.html:93
+#: geonode/templates/developer.html:92
 msgid "Open Data:"
 msgstr ""
 
-#: geonode/templates/developer.html:97
+#: geonode/templates/developer.html:96
 msgid "Cached tiles via WMTS:"
 msgstr "Gresie retinute prin WMTS:"
 
@@ -6967,7 +4655,6 @@ msgid "Explore documents"
 msgstr "Exploreaza Documente"
 
 #: geonode/templates/index.html:96
-#: geonode/templates/pinax/notifications/account_approve/full.txt:1
 msgid "User"
 msgid_plural "Users"
 msgstr[0] ""
@@ -7237,7 +4924,6 @@ msgid "Leave"
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:2
-#: geonode/templates/invitations/email/email_invite_message.txt:3
 msgid "Dear Sir/Madam,"
 msgstr ""
 
@@ -7254,7 +4940,6 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:8
-#: geonode/templates/invitations/email/email_invite_message.txt:9
 msgid ""
 "Once you receive the confirmation that your account is activated, you can "
 "notify"
@@ -7275,34 +4960,20 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:16
-#: geonode/templates/invitations/email/email_invite_message.txt:18
 msgid "We look forward to seeing you on the platform,"
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:17
-#: geonode/templates/invitations/email/email_invite_message.txt:20
 #, fuzzy
 #| msgid "GeoNode site admin"
 msgid "The GeoNode team."
 msgstr "GeoNode site-ul admin"
 
-#: geonode/templates/invitations/email/email_invite_message.txt:5
-msgid "is inviting you to join"
+#: geonode/templates/metadata_base.html:128
+#: geonode/templates/metadata_base.html:131
+#: geonode/templates/socialaccount/authentication_error.html:11
+msgid "Error"
 msgstr ""
-
-#: geonode/templates/invitations/email/email_invite_message.txt:7
-msgid "To do so, please register at"
-msgstr ""
-
-#: geonode/templates/invitations/email/email_invite_message.txt:9
-msgid "that you wish to join her/his group(s) through this link"
-msgstr ""
-
-#: geonode/templates/invitations/email/email_invite_message.txt:13
-#, fuzzy
-#| msgid "The following groups:"
-msgid "is a member of the following group(s)"
-msgstr "Următoarele grupuri:"
 
 #: geonode/templates/metadata_base.html:149
 #, fuzzy
@@ -7337,6 +5008,12 @@ msgstr "Revino la"
 msgid "Identification"
 msgstr ""
 
+#: geonode/templates/metadata_detail.html:102
+#, fuzzy
+#| msgid "Not provided"
+msgid "Approved"
+msgstr "Care nu sunt prevăzute"
+
 #: geonode/templates/metadata_detail.html:103
 #: geonode/templates/metadata_detail.html:106
 #: geonode/templates/metadata_detail.html:109
@@ -7345,6 +5022,10 @@ msgstr ""
 
 #: geonode/templates/metadata_detail.html:105
 msgid "Published"
+msgstr ""
+
+#: geonode/templates/metadata_detail.html:108
+msgid "Featured"
 msgstr ""
 
 #: geonode/templates/metadata_detail.html:133
@@ -7415,374 +5096,6 @@ msgstr ""
 msgid "Online Link"
 msgstr ""
 
-#: geonode/templates/pinax/notifications/account_active/account_active_message.txt:2
-#: geonode/templates/pinax/notifications/account_active/full.txt:2
-msgid "Your account has been approved and is now active."
-msgstr ""
-
-#: geonode/templates/pinax/notifications/account_active/account_active_message.txt:3
-#: geonode/templates/pinax/notifications/account_active/full.txt:3
-msgid "You can use the login form at"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/account_active/account_active_subject.txt:1
-#, fuzzy
-#| msgid "Welcome"
-msgid "Welcome at"
-msgstr "Bine ai venit"
-
-#: geonode/templates/pinax/notifications/account_active/short.txt:3
-msgid "Your account is now active"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/account_approve/full.txt:1
-msgid "has requested access to the site."
-msgstr ""
-
-#: geonode/templates/pinax/notifications/account_approve/full.txt:1
-msgid ""
-"You can enable access by setting the user as active on the admin section"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/account_approve/short.txt:3
-msgid "A user has requested access to the site"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_approved/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "The following document was approved"
-msgstr "Următorii utilizatori:"
-
-#: geonode/templates/pinax/notifications/document_approved/full.txt:3
-#: geonode/templates/pinax/notifications/document_deleted/full.txt:3
-#: geonode/templates/pinax/notifications/document_published/full.txt:3
-#: geonode/templates/pinax/notifications/document_rated/full.txt:5
-#: geonode/templates/pinax/notifications/document_updated/full.txt:3
-#: geonode/templates/pinax/notifications/layer_approved/full.txt:3
-#: geonode/templates/pinax/notifications/layer_deleted/full.txt:3
-#: geonode/templates/pinax/notifications/layer_published/full.txt:3
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:5
-#: geonode/templates/pinax/notifications/layer_updated/full.txt:3
-#: geonode/templates/pinax/notifications/map_approved/full.txt:3
-#: geonode/templates/pinax/notifications/map_deleted/full.txt:3
-#: geonode/templates/pinax/notifications/map_published/full.txt:3
-#: geonode/templates/pinax/notifications/map_rated/full.txt:5
-#: geonode/templates/pinax/notifications/map_updated/full.txt:3
-#, fuzzy
-#| msgid "Powered by"
-msgid "owned by"
-msgstr "Powered by"
-
-#: geonode/templates/pinax/notifications/document_approved/full.txt:4
-#: geonode/templates/pinax/notifications/document_comment/full.txt:3
-#: geonode/templates/pinax/notifications/document_created/full.txt:4
-#: geonode/templates/pinax/notifications/document_published/full.txt:4
-#: geonode/templates/pinax/notifications/document_updated/full.txt:4
-msgid "You can visit the document's detail page here"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_approved/short.txt:3
-msgid "A document has been approved"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_comment/full.txt:2
-#, fuzzy
-#| msgid "You do not have permissions for this document."
-msgid "A comment has been posted for the document"
-msgstr "Nu aveți permisiuni pentru acest document."
-
-#: geonode/templates/pinax/notifications/document_comment/full.txt:2
-#: geonode/templates/pinax/notifications/layer_comment/full.txt:2
-#: geonode/templates/pinax/notifications/map_comment/full.txt:3
-msgid "by the user"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_comment/short.txt:3
-#, fuzzy
-#| msgid "You do not have permissions for this document."
-msgid "A comment has been posted for a document"
-msgstr "Nu aveți permisiuni pentru acest document."
-
-#: geonode/templates/pinax/notifications/document_created/full.txt:2
-#: geonode/templates/pinax/notifications/document_rated/full.txt:2
-#: geonode/templates/pinax/notifications/layer_created/full.txt:2
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:2
-#: geonode/templates/pinax/notifications/map_created/full.txt:2
-#: geonode/templates/pinax/notifications/map_rated/full.txt:2
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
-#, fuzzy
-#| msgid "Choose users..."
-msgid "The user"
-msgstr "Alege utilizatori ..."
-
-#: geonode/templates/pinax/notifications/document_created/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "uploaded the following document"
-msgstr "Următorii utilizatori:"
-
-#: geonode/templates/pinax/notifications/document_created/short.txt:3
-msgid "A document has been uploaded"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_deleted/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "The following document was deleted"
-msgstr "Următorii utilizatori:"
-
-#: geonode/templates/pinax/notifications/document_deleted/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A document has been deleted"
-msgstr "Serviciu a fost creat:"
-
-#: geonode/templates/pinax/notifications/document_published/full.txt:2
-#, fuzzy
-#| msgid "The following groups:"
-msgid "The following document was published"
-msgstr "Următoarele grupuri:"
-
-#: geonode/templates/pinax/notifications/document_published/short.txt:3
-msgid "A document has been published"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_rated/full.txt:3
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:3
-#: geonode/templates/pinax/notifications/map_rated/full.txt:3
-#, fuzzy
-#| msgid "created"
-msgid "rated"
-msgstr "creată"
-
-#: geonode/templates/pinax/notifications/document_rated/full.txt:4
-#, fuzzy
-#| msgid "The following users:"
-msgid "the following document"
-msgstr "Următorii utilizatori:"
-
-#: geonode/templates/pinax/notifications/document_rated/full.txt:6
-#: geonode/templates/pinax/notifications/layer_approved/full.txt:4
-#: geonode/templates/pinax/notifications/layer_comment/full.txt:3
-#: geonode/templates/pinax/notifications/layer_created/full.txt:4
-#: geonode/templates/pinax/notifications/layer_published/full.txt:4
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:6
-#: geonode/templates/pinax/notifications/layer_updated/full.txt:4
-msgid "You can visit the layer's detail page here"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_rated/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A document has been rated"
-msgstr "Serviciu a fost creat:"
-
-#: geonode/templates/pinax/notifications/document_updated/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "The following document was updated"
-msgstr "Următorii utilizatori:"
-
-#: geonode/templates/pinax/notifications/document_updated/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A document has been updated"
-msgstr "Serviciu a fost creat:"
-
-#: geonode/templates/pinax/notifications/email_body.txt:3
-#, fuzzy
-#| msgid "You have the following incomplete uploads"
-msgid "You have received the following notice from"
-msgstr "Aveți următoarele imagini încărcate incomplete"
-
-#: geonode/templates/pinax/notifications/email_body.txt:8
-msgid "To change how you receive notifications, please go to"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/email_subject.txt:1
-#, python-format
-msgid "[%(current_site)s] %(message)s"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/full.txt:1
-#: geonode/templates/pinax/notifications/short.txt:1
-#, fuzzy, python-format
-#| msgid "Notices"
-msgid "%(notice)s"
-msgstr "Notices"
-
-#: geonode/templates/pinax/notifications/layer_approved/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following layer was approved"
-msgstr "Următoarele straturi vor fi importate"
-
-#: geonode/templates/pinax/notifications/layer_approved/short.txt:3
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A layer has been approved"
-msgstr "Un strat a fost comentat"
-
-#: geonode/templates/pinax/notifications/layer_comment/full.txt:2
-#, fuzzy
-#| msgid "Documents related to this layer"
-msgid "A comment has been posted for the layer"
-msgstr "Documentele legate de acest strat"
-
-#: geonode/templates/pinax/notifications/layer_comment/short.txt:3
-#, fuzzy
-#| msgid "A rating was given to a layer"
-msgid "A comment has been posted for a layer"
-msgstr "Un rating a fost dat la un strat"
-
-#: geonode/templates/pinax/notifications/layer_created/full.txt:2
-#, fuzzy
-#| msgid "This map uses the following layers:"
-msgid "uploaded the following layer"
-msgstr "Această hartă utilizează următoarele straturi:"
-
-#: geonode/templates/pinax/notifications/layer_created/short.txt:3
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "A new layer has been uploaded"
-msgstr "Un strat a fost încărcat"
-
-#: geonode/templates/pinax/notifications/layer_deleted/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following layer was deleted"
-msgstr "Următoarele straturi vor fi importate"
-
-#: geonode/templates/pinax/notifications/layer_deleted/short.txt:3
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A layer has been deleted"
-msgstr "Un strat a fost comentat"
-
-#: geonode/templates/pinax/notifications/layer_published/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following layer was published"
-msgstr "Următoarele straturi vor fi importate"
-
-#: geonode/templates/pinax/notifications/layer_published/short.txt:3
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A layer has been published"
-msgstr "Un strat a fost comentat"
-
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:4
-#, fuzzy
-#| msgid "The following users:"
-msgid "the following layer"
-msgstr "Următorii utilizatori:"
-
-#: geonode/templates/pinax/notifications/layer_rated/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A layer has been rated"
-msgstr "Serviciu a fost creat:"
-
-#: geonode/templates/pinax/notifications/layer_updated/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following layer was updated"
-msgstr "Următoarele straturi vor fi importate"
-
-#: geonode/templates/pinax/notifications/layer_updated/short.txt:3
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A layer has been updated"
-msgstr "Un strat a fost comentat"
-
-#: geonode/templates/pinax/notifications/map_approved/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following map was approved"
-msgstr "Următoarele straturi vor fi importate"
-
-#: geonode/templates/pinax/notifications/map_approved/full.txt:4
-#: geonode/templates/pinax/notifications/map_comment/full.txt:4
-#: geonode/templates/pinax/notifications/map_created/full.txt:4
-#: geonode/templates/pinax/notifications/map_published/full.txt:4
-#: geonode/templates/pinax/notifications/map_rated/full.txt:6
-#: geonode/templates/pinax/notifications/map_updated/full.txt:4
-msgid "You can visit the map's detail page here"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/map_approved/short.txt:3
-msgid "A map has been approved"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/map_comment/full.txt:2
-#, fuzzy
-#| msgid "Documents related to this map"
-msgid "A comment has been posted for the map"
-msgstr "Documente legate de această hartă"
-
-#: geonode/templates/pinax/notifications/map_comment/short.txt:3
-msgid "A comment has been posted for a map"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/map_created/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "created the following map"
-msgstr "Următorii utilizatori:"
-
-#: geonode/templates/pinax/notifications/map_created/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A map has been created"
-msgstr "Serviciu a fost creat:"
-
-#: geonode/templates/pinax/notifications/map_deleted/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following map was deleted"
-msgstr "Următoarele straturi vor fi importate"
-
-#: geonode/templates/pinax/notifications/map_deleted/short.txt:3
-#, fuzzy
-#| msgid "A map was commented on"
-msgid "A map has been deleted"
-msgstr "O hartă a fost comentat"
-
-#: geonode/templates/pinax/notifications/map_published/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "The following map was published"
-msgstr "Următorii utilizatori:"
-
-#: geonode/templates/pinax/notifications/map_published/short.txt:3
-msgid "A map has been published"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/map_rated/full.txt:4
-#, fuzzy
-#| msgid "The following users:"
-msgid "the following map"
-msgstr "Următorii utilizatori:"
-
-#: geonode/templates/pinax/notifications/map_rated/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A map has been rated"
-msgstr "Serviciu a fost creat:"
-
-#: geonode/templates/pinax/notifications/map_updated/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following map was updated"
-msgstr "Următoarele straturi vor fi importate"
-
-#: geonode/templates/pinax/notifications/map_updated/short.txt:3
-#, fuzzy
-#| msgid "A map was commented on"
-msgid "A map has been updated"
-msgstr "O hartă a fost comentat"
-
 #: geonode/templates/pinax/notifications/notice_settings.html:7
 #: geonode/templates/pinax/notifications/notice_settings.html:10
 msgid "Notification Settings"
@@ -7804,20 +5117,9 @@ msgstr ""
 msgid "Notification Type"
 msgstr "Notificarea Tip"
 
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
-#, fuzzy
-#| msgid "party that owns the resource"
-msgid "requested you to download this resource"
-msgstr "partid care detine resursa"
-
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:9
-msgid ""
-"Please go to resource page and assign the download permissions if you wish"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/request_download_resourcebase/short.txt:3
-msgid "A resource's download has been requested"
-msgstr ""
+#: geonode/templates/pinax/notifications/notice_settings.html:51
+msgid "Change"
+msgstr "Schimbare"
 
 #: geonode/templates/privacy-cookies.html:4
 #: geonode/templates/privacy-cookies.html:8
@@ -7897,6 +5199,10 @@ msgstr "nu mai"
 #, python-format
 msgid "%(to_user_username)s's profile"
 msgstr "%(to_user_username)s profilul lui "
+
+#: geonode/templates/search/_general_filters.html:4
+msgid "Categories"
+msgstr "Categorii"
 
 #: geonode/templates/search/_general_filters.html:30
 msgid "Responsibles"
@@ -8093,165 +5399,1660 @@ msgstr "Inbox mesaj"
 msgid "Messages"
 msgstr ""
 
+#: geonode/templates/user_messages/inbox.html:22
+msgid "Mark selected as read"
+msgstr "Marcaj selectat ca citit"
+
+#: geonode/templates/user_messages/inbox.html:23
+msgid "Mark selected as unread"
+msgstr "Marcarea selectată ca necitită"
+
 #: geonode/templates/user_messages/inbox.html:63
 #: geonode/templates/user_messages/message_create.html:6
 #: geonode/templates/user_messages/message_create.html:9
 msgid "Create Message"
 msgstr "Creați Mesaj"
 
-#: geonode/templates/user_messages/message_create.html:16
+#: geonode/templates/user_messages/message_create.html:26
+#, fuzzy
+#| msgid "Choose users..."
+msgid "To users"
+msgstr "Alege utilizatori ..."
+
+#: geonode/templates/user_messages/message_create.html:32
+#, fuzzy
+#| msgid "group"
+msgid "To groups"
+msgstr "grup"
+
+#: geonode/templates/user_messages/message_create.html:37
+msgid "Subject"
+msgstr "Subiect"
+
+#: geonode/templates/user_messages/message_create.html:42
+#, fuzzy
+#| msgid "Contact:"
+msgid "Content"
+msgstr "De contact:"
+
+#: geonode/templates/user_messages/message_create.html:50
 msgid "Send message"
 msgstr "Trimite mesajul"
 
-#: geonode/templates/user_messages/message_create.html:22
-#: geonode/templates/user_messages/thread_detail.html:46
+#: geonode/templates/user_messages/message_create.html:82
+#: geonode/templates/user_messages/thread_detail.html:48
 msgid "Back to Inbox"
 msgstr "Înapoi la Inbox"
-
-#: geonode/templates/user_messages/thread_detail.html:9
-#, fuzzy
-#| msgid "Message Inbox"
-msgid "A message to"
-msgstr "Inbox mesaj"
 
 #: geonode/templates/user_messages/thread_detail.html:11
 msgid "Sent to"
 msgstr "Trimite catre"
 
-#: geonode/templates/user_messages/thread_detail.html:28
+#: geonode/templates/user_messages/thread_detail.html:30
 msgid "by"
 msgstr ""
 
-#: geonode/templates/user_messages/thread_detail.html:32
+#: geonode/templates/user_messages/thread_detail.html:30
+msgid "me"
+msgstr ""
+
+#: geonode/templates/user_messages/thread_detail.html:34
 #, fuzzy
 #| msgid "Send message"
 msgid "You have no messages"
 msgstr "Trimite mesajul"
 
-#: geonode/templates/user_messages/thread_detail.html:40
+#: geonode/templates/user_messages/thread_detail.html:42
 msgid "Send Reply"
 msgstr "Trimite Reply"
 
-#: geonode/themes/apps.py:28
+#~ msgid "series"
+#~ msgstr "serie"
+
+#~ msgid "computer program or routine"
+#~ msgstr "program de calculator sau de rutină"
+
 #, fuzzy
-#| msgid "GeoNode Help"
-msgid "GeoNode Themes Library"
-msgstr "GeoNode Ajutor"
+#~| msgid "date type"
+#~ msgid "feature type"
+#~ msgstr "tip data"
 
-#: geonode/upload/files.py:262
-msgid "Could not access to uploaded data."
-msgstr ""
+#~ msgid "copy or imitation of an existing or hypothetical object"
+#~ msgstr "copie sau imitație a unui obiect existent sau ipotetic"
 
-#: geonode/upload/files.py:301
-msgid ""
-"One or more XML files was provided, but no matching files were found for "
-"them."
-msgstr ""
+#~ msgid "collection hardware"
+#~ msgstr "hardware de colectare"
 
-#: geonode/upload/files.py:310
-msgid ""
-"One or more SLD files was provided, but no matching files were found for "
-"them."
-msgstr ""
+#~ msgid "collection session"
+#~ msgstr "sesiune de colectare"
 
-#: geonode/upload/upload_validators.py:66
-msgid "Invalid zip file detected"
-msgstr ""
+#~ msgid "non-geographic data"
+#~ msgstr "date non-geografice"
 
-#: geonode/upload/upload_validators.py:82
-msgid "Could not find any valid spatial file inside the uploaded zip"
-msgstr ""
+#~ msgid "property type"
+#~ msgstr "Tipul de proprietate"
 
-#: geonode/upload/upload_validators.py:85
-msgid "Invalid kmz file detected"
-msgstr ""
+#~ msgid "field session"
+#~ msgstr "sesiune de câmp"
 
-#: geonode/upload/upload_validators.py:89
 #, fuzzy
-#| msgid "Could not find any layers in a compatible projection."
-msgid "Could not find any kml files inside the uploaded kmz"
-msgstr "Nu am găsit nici o straturi într-o proiecție compatibil."
+#~| msgid "dataset"
+#~ msgid "dataset"
+#~ msgstr "CCD"
 
-#: geonode/upload/upload_validators.py:124
-msgid "Only one shapefile per zip is allowed"
-msgstr ""
+#, fuzzy
+#~| msgid "Resources"
+#~ msgid "service interfaces"
+#~ msgstr "Resurse"
 
-#: geonode/upload/upload_validators.py:170
-msgid "kml files with more than one GroundOverlay are not supported"
-msgstr ""
+#~ msgid "attribute class"
+#~ msgstr "Clasa de atribut"
 
-#: geonode/upload/upload_validators.py:181
-msgid "Ground overlay image declared in kml file cannot be found"
-msgstr ""
+#~ msgid "characteristic of a feature"
+#~ msgstr "caracteristică a unei caracteristici"
 
-#: geonode/upload/upload_validators.py:218
-msgid "Only one kml file per ZIP is allowed"
-msgstr ""
+#~ msgid "tile or spatial subset of geographic data"
+#~ msgstr "Placi sau subset spațială a datelor geografice"
 
-#: geonode/upload/upload_validators.py:233
-msgid "Only one kml file per kmz is allowed"
-msgstr ""
+#~ msgid "feature"
+#~ msgstr "trăsătură"
 
-#: geonode/upload/upload_validators.py:287
-msgid ""
-"You are trying to upload multiple GeoTIFFs without a valid 'indexer."
-"properties' file."
-msgstr ""
+#~ msgid "dimension group"
+#~ msgstr "Grup de dimensiune"
 
-#: geonode/upload/upload_validators.py:292
-msgid "Only one raster file per ZIP is allowed"
-msgstr ""
+#~ msgid "frequency of maintenance for the data is not known"
+#~ msgstr "frecvență de întreținere pentru datele nu este cunoscută"
 
-#: geonode/upload/upload_validators.py:297
-msgid "No multiple rasters allowed"
-msgstr ""
+#~ msgid "data is repeatedly and frequently updated"
+#~ msgstr "de date este actualizată în mod repetat și frecvent"
 
-#: geonode/upload/utils.py:98
-msgid ""
-"To support the time step, you must enable the OGC_SERVER DATASTORE option"
-msgstr ""
+#~ msgid "there are no plans to update the data"
+#~ msgstr "nu există planuri de a actualiza datele"
 
-#: geonode/upload/utils.py:261
-#, python-format
-msgid "Unsupported file type: %s"
-msgstr ""
+#~ msgid "data is updated each day"
+#~ msgstr "datele sunt actualizate în fiecare zi"
 
-#: geonode/upload/utils.py:526
-#, python-format
-msgid "File does not exist: %s"
-msgstr ""
+#~ msgid "data is updated every year"
+#~ msgstr "de date este actualizată în fiecare an"
 
-#: geonode/upload/utils.py:583
-#, python-format
-msgid "unknown item state: %s"
-msgstr ""
+#~ msgid "data is updated as deemed necessary"
+#~ msgstr "de date este actualizat după cum consideră necesar"
 
-#: geonode/upload/utils.py:591
-#, python-format
-msgid "error during import: %s"
-msgstr ""
+#~ msgid "data is updated each month"
+#~ msgstr "de date este actualizată în fiecare lună"
 
-#: geonode/upload/utils.py:701
-msgid "Could not find any valid Time Regex for the Mosaic files."
-msgstr ""
+#~ msgid "data is updated every two weeks"
+#~ msgstr "de date este actualizată la fiecare două săptămâni"
 
-#: geonode/upload/utils.py:732 geonode/upload/utils.py:764
-msgid "Unsupported DataBase for Mosaics!"
-msgstr ""
+#~ msgid "data is updated in intervals that are uneven in duration"
+#~ msgstr "datele sunt actualizate la intervale care sunt inegale în durată"
 
-#: geonode/utils.py:87
-msgid "Invalid permission level."
-msgstr "Nivel de permisiune invalid."
+#~ msgid "data is updated on a weekly basis"
+#~ msgstr "de date este actualizată o dată pe săptămână"
 
-#: geonode/utils.py:967
-msgid "Permission Denied"
-msgstr "Permission denied"
+#~ msgid "data is updated twice each year"
+#~ msgstr "de date este actualizat de două ori în fiecare an"
+
+#~ msgid "data is updated every three months"
+#~ msgstr "de date este actualizată la fiecare trei luni"
+
+#~ msgid "No information provided"
+#~ msgstr "Nu există informații furnizate"
+
+#~ msgid "Category is required."
+#~ msgstr "Este necesară categorie."
+
+#~ msgid "Owner"
+#~ msgstr "Proprietar"
+
+#~ msgid "temporal extent start"
+#~ msgstr "temporal măsură start"
+
+#~ msgid "temporal extent end"
+#~ msgstr "temporal măsură final"
+
+#, fuzzy
+#~| msgid "Keywords"
+#~ msgid "Free-text Keywords"
+#~ msgstr "Cuvinte cheie"
+
+#, fuzzy
+#~| msgid "A space or comma-separated list of keywords"
+#~ msgid ""
+#~ "A space or comma-separated list of keywords. Use the widget to select "
+#~ "from Hierarchical tree."
+#~ msgstr "Un spațiu sau lista separata cu virgule de cuvinte cheie"
+
+#~ msgid "function performed by the responsible party"
+#~ msgstr "Funcția realizată de către partea responsabilă"
+
+#~ msgid "reference date for the cited resource"
+#~ msgstr "Data de referință pentru resursa citat"
+
+#~ msgid "identification of when a given event occurred"
+#~ msgstr "identificarea când a avut loc un anumit eveniment"
+
+#~ msgid "version of the cited resource"
+#~ msgstr "versiune a resursei citat"
+
+#~ msgid "brief narrative summary of the content of the resource(s)"
+#~ msgstr "scurt rezumat narativ al conținutului resursei (e)"
+
+#~ msgid "summary of the intentions with which the resource(s) was developed"
+#~ msgstr "rezumat intențiile cu care a fost dezvoltat resursa (s)"
+
+#~ msgid ""
+#~ "frequency with which modifications and deletions are made to the data "
+#~ "after it is first produced"
+#~ msgstr ""
+#~ "Frecventa cu care modificari si stergeri sunt făcute pentru datele după "
+#~ "ce este produs primul"
+
+#~ msgid ""
+#~ "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+#~ "the subject (space or comma-separated"
+#~ msgstr ""
+#~ "cuvânt utilizate în mod obișnuit (e) sau cuvânt formalizate (e) sau "
+#~ "expresia (e) utilizat pentru a descrie subiect (spațiul sau separate prin "
+#~ "virgule"
+
+#, fuzzy
+#~| msgid ""
+#~| "commonly used word(s) or formalised word(s) or phrase(s) used to "
+#~| "describe the subject (space or comma-separated"
+#~ msgid ""
+#~ "formalised word(s) or phrase(s) from a fixed thesaurus used to describe "
+#~ "the subject (space or comma-separated"
+#~ msgstr ""
+#~ "cuvânt utilizate în mod obișnuit (e) sau cuvânt formalizate (e) sau "
+#~ "expresia (e) utilizat pentru a descrie subiect (spațiul sau separate prin "
+#~ "virgule"
+
+#~ msgid "keyword identifies a location"
+#~ msgstr "cuvinte cheie identifică o locație"
+
+#~ msgid "limitation(s) placed upon the access or use of the data."
+#~ msgstr "limitare (s) pus pe accesul sau utilizarea datelor."
+
+#~ msgid ""
+#~ "other restrictions and legal prerequisites for accessing and using the "
+#~ "resource or metadata"
+#~ msgstr ""
+#~ "alte restricții și condiții prealabile legale pentru accesarea și "
+#~ "utilizarea resurselor sau metadatele"
+
+#~ msgid "license of the dataset"
+#~ msgstr "de licență a setului de date"
+
+#~ msgid "language used within the dataset"
+#~ msgstr "Limba utilizată în cadrul setului de date"
+
+#~ msgid ""
+#~ "high-level geographic data thematic classification to assist in the "
+#~ "grouping and search of available geographic data sets."
+#~ msgstr ""
+#~ "la nivel înalt de clasificare tematică de date geografice pentru a ajuta "
+#~ "la gruparea și căutarea de seturi de date geografice disponibile."
+
+#~ msgid "method used to represent geographic information in the dataset."
+#~ msgstr ""
+#~ "Metoda utilizată pentru a reprezenta informații geografice în setul de "
+#~ "date."
+
+#~ msgid "time period covered by the content of the dataset (start)"
+#~ msgstr "Perioada de timp acoperită de conținutul setului de date (start)"
+
+#~ msgid "time period covered by the content of the dataset (end)"
+#~ msgstr ""
+#~ "Perioada de timp acoperită de conținutul de date CCD (sfârșitul anului)"
+
+#~ msgid ""
+#~ "general explanation of the data producer's knowledge about the lineage of "
+#~ "a dataset"
+#~ msgstr ""
+#~ "explicație generală a cunoștințelor producătorului de date despre "
+#~ "descendența unui set de date"
+
+#~ msgid "title"
+#~ msgstr "titlu"
+
+#~ msgid "name by which the cited resource is known"
+#~ msgstr "nume de care resursa citată este cunoscut"
+
+#~ msgid "date"
+#~ msgstr "data"
+
+#~ msgid "date type"
+#~ msgstr "tip data"
+
+#~ msgid "edition"
+#~ msgstr "ediție"
+
+#~ msgid "abstract"
+#~ msgstr "abstract"
+
+#~ msgid "purpose"
+#~ msgstr "scop"
+
+#~ msgid "maintenance frequency"
+#~ msgstr "frecvență întreținere"
+
+#~ msgid "keywords"
+#~ msgstr "cuvinte-cheie"
+
+#~ msgid "keywords region"
+#~ msgstr "Regiunea cuvinte-cheie"
+
+#~ msgid "restrictions"
+#~ msgstr "restricții"
+
+#~ msgid "restrictions other"
+#~ msgstr "alte restricții"
+
+#~ msgid "language"
+#~ msgstr "limbă"
+
+#, fuzzy
+#~| msgid "Spatial Representation Type"
+#~ msgid "spatial representation type"
+#~ msgstr "Spațială tipul de reprezentare"
+
+#~ msgid "supplemental information"
+#~ msgstr "informații suplimentare"
+
+#~ msgid "any other descriptive information about the dataset"
+#~ msgstr "orice alte informații descriptive despre setul de date"
+
+#~ msgid "data quality statement"
+#~ msgstr "Declarație de calitatea datelor"
+
+#~ msgid "CSW typename"
+#~ msgstr "CSW typename"
+
+#~ msgid "CSW schema"
+#~ msgstr "CSW schemă"
+
+#~ msgid "CSW source"
+#~ msgstr "Sursa CSW"
+
+#~ msgid "CSW insert date"
+#~ msgstr "CSW a se insera data"
+
+#~ msgid "CSW type"
+#~ msgstr "Tipul CSW"
+
+#~ msgid "CSW anytext"
+#~ msgstr "CSW anytext"
+
+#~ msgid "CSW WKT geometry"
+#~ msgstr "Geometrie CSW WKT"
+
+#, fuzzy
+#~| msgid "Metadata Provider"
+#~ msgid "Metadata uploaded preserve"
+#~ msgstr "Furnizor de metadate"
+
+#~ msgid "Should this resource be advertised in home page?"
+#~ msgstr ""
+#~ "În cazul în care această resursă să fie anunțate în pagina de acasă?"
+
+#, fuzzy
+#~| msgid "Published From"
+#~ msgid "Is Published"
+#~ msgstr "Publicat la"
+
+#~ msgid "Should this resource be published and searchable?"
+#~ msgstr "În cazul în care această resursă publică și căutat?"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail url"
+#~ msgstr "Thumbnail"
+
+#~ msgid "For example \"kml\""
+#~ msgstr "De exemplu \"kml\""
+
+#~ msgid "For example \"View in Google Earth\""
+#~ msgstr "De exemplu, \"Vizualizati în Google Earth\""
+
+#~ msgid "For example \"text/xml\""
+#~ msgstr "De exemplu, \"text / xml\""
+
+#, fuzzy
+#~| msgid "GeoNode Help"
+#~ msgid "GeoNode Client Library"
+#~ msgstr "GeoNode Ajutor"
+
+#~ msgid "GeoExplorer"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Documents related to this map"
+#~ msgid "Document Created"
+#~ msgstr "Documente legate de această hartă"
+
+#, fuzzy
+#~| msgid "This document is related to a "
+#~ msgid "A Document was created"
+#~ msgstr "Acest document se referă la o"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "Document Updated"
+#~ msgstr "Documente"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "A Document was updated"
+#~ msgstr "Documente"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "Document Approved"
+#~ msgstr "Documente"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "Document Published"
+#~ msgstr "Documente"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "A Document was published"
+#~ msgstr "Documente"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "Document Deleted"
+#~ msgstr "Documente"
+
+#, fuzzy
+#~| msgid "This document is related to a "
+#~ msgid "A Document was deleted"
+#~ msgstr "Acest document se referă la o"
+
+#, fuzzy
+#~| msgid "Comment on Layer"
+#~ msgid "Comment on Document"
+#~ msgstr "Comment on Layer"
+
+#, fuzzy
+#~| msgid "A map was commented on"
+#~ msgid "A Document was commented on"
+#~ msgstr "O hartă a fost comentat"
+
+#, fuzzy
+#~| msgid "Comment on Map"
+#~ msgid "Document for Map"
+#~ msgstr "Comment on Harta"
+
+#, fuzzy
+#~| msgid "A rating was given to a map"
+#~ msgid "A rating was given to a document"
+#~ msgstr "Un rating a fost dat la o hartă"
+
+#~ msgid "Link to"
+#~ msgstr "Link catre"
+
+#~ msgid "Document must be a file or url."
+#~ msgstr "Document trebuie să fie un fișier sau URL."
+
+#~ msgid "A document cannot have both a file and a url."
+#~ msgstr "Un document nu poate avea atât un fișier și o adresă URL."
+
+#~ msgid "This file type is not allowed"
+#~ msgstr "Acest tip de fișier nu este permis"
+
+#~ msgid "Permissions must be valid JSON."
+#~ msgstr "Permisiuni trebuie să fie JSON valid."
+
+#~ msgid "File"
+#~ msgstr "Fișier"
+
+#~ msgid "The URL of the document if it is external."
+#~ msgstr "Adresa URL a documentului în cazul în care este extern."
+
+#~ msgid "You are not permitted to delete this document"
+#~ msgstr "Tu nu sunt permise pentru a șterge acest document"
+
+#~ msgid "You do not have permissions for this document."
+#~ msgstr "Nu aveți permisiuni pentru acest document."
+
+#~ msgid "You are not permitted to modify this document"
+#~ msgstr "Tu nu sunt permise pentru a modifica acest document"
+
+#~ msgid "You are not permitted to modify this document's metadata"
+#~ msgstr "Tu nu sunt permise de a modifica metadatele acest document"
+
+#~ msgid "You are not permitted to view this document"
+#~ msgstr "Tu nu sunt permise pentru a vizualiza acest document"
+
+#~ msgid "You are not allowed to view this document."
+#~ msgstr "Nu este permis pentru a vizualiza acest document."
+
+#~ msgid "You are not allowed to edit this document."
+#~ msgstr "Nu aveți permisiunea de a edita acest document."
+
+#, fuzzy
+#~| msgid "Set permissions for this resource"
+#~ msgid "You must set a point of contact for this resource"
+#~ msgstr "Setarea permisiunilor pentru această resursă"
+
+#, fuzzy
+#~| msgid "Set permissions for this resource"
+#~ msgid "You must set an author for this resource"
+#~ msgstr "Setarea permisiunilor pentru această resursă"
+
+#~ msgid "Layer Uploaded"
+#~ msgstr "Strat Încărcate"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "A layer was uploaded"
+#~ msgstr "Un strat a fost încărcat"
+
+#~ msgid "Comment on Layer"
+#~ msgstr "Comment on Layer"
+
+#~ msgid "A layer was commented on"
+#~ msgstr "Un strat a fost comentat"
+
+#~ msgid "Rating for Layer"
+#~ msgstr "Rating-ul pentru Layer"
+
+#~ msgid "A rating was given to a layer"
+#~ msgstr "Un rating a fost dat la un strat"
+
+#, fuzzy
+#~| msgid "Layer Name"
+#~ msgid "Layer name"
+#~ msgstr "Strat Nume"
+
+#, fuzzy
+#~| msgid "Layer Title"
+#~ msgid "Layer title"
+#~ msgstr "Strat Titlu"
+
+#, fuzzy
+#~| msgid "property type"
+#~ msgid "Geometry type"
+#~ msgstr "Tipul de proprietate"
+
+#, fuzzy
+#~| msgid "Not provided"
+#~ msgid "No abstract provided"
+#~ msgstr "Care nu sunt prevăzute"
+
+#~ msgid "Zipped Shapefile"
+#~ msgstr "Shapefile fermoar"
+
+#~ msgid "GML 2.0"
+#~ msgstr "GML 2.0"
+
+#~ msgid "GML 3.1.1"
+#~ msgstr "GML 3.1.1"
+
+#~ msgid "CSV"
+#~ msgstr "CSV"
+
+#~ msgid "Excel"
+#~ msgstr "Excela"
+
+#~ msgid "GeoJSON"
+#~ msgstr "GeoJSON"
+
+#~ msgid "JPEG"
+#~ msgstr "JPEG"
+
+#~ msgid "PDF"
+#~ msgstr "PDF"
+
+#~ msgid "PNG"
+#~ msgstr "PNG"
+
+#~ msgid "You don't have permissions to change style for this layer"
+#~ msgstr "Nu aveți permisiunea de a schimba stilul de acest strat"
+
+#~ msgid "Bad HTTP Authorization Credentials."
+#~ msgstr "Bad Atestări autorizare HTTP."
+
+#~ msgid ""
+#~ "a short version of the name consisting only of letters, numbers, "
+#~ "underscores and hyphens."
+#~ msgstr ""
+#~ "o versiune scurtă a numelui format numai din litere, cifre, de subliniere "
+#~ "și cratime."
+
+#~ msgid "A group already exists with that slug."
+#~ msgstr "Un grup există deja cu melc."
+
+#~ msgid "A group already exists with that name."
+#~ msgstr "Un grup există deja cu acest nume."
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "User Identifiers"
+#~ msgstr "Activități de utilizare"
+
+#, fuzzy
+#~| msgid "Public"
+#~ msgid "Public"
+#~ msgstr "Public"
+
+#~ msgid "Public (invite-only)"
+#~ msgstr "Public (invita-numai)"
+
+#~ msgid "Private"
+#~ msgstr "Privat"
+
+#~ msgid ""
+#~ "Public: Any registered user can view and join a public group.<br>Public "
+#~ "(invite-only):Any registered user can view the group.  Only invited users "
+#~ "can join.<br>Private: Registered users cannot see any details about the "
+#~ "group, including membership.  Only invited users can join."
+#~ msgstr ""
+#~ "Public: Orice utilizator inregistrat poate vizualiza și să se alăture "
+#~ "unui grup de public. <br> Public (invita-numai): Orice utilizator "
+#~ "inregistrat poate vizualiza grupului. Doar utilizatorii invitați se pot "
+#~ "alătura. <br> Private: Utilizatorii înregistrați nu pot vedea detalii "
+#~ "despre grup, inclusiv calitatea de membru. Doar utilizatorii invitați se "
+#~ "pot alătura."
+
+#~ msgid ""
+#~ "Email used to contact one or all group members, such as a mailing list, "
+#~ "shared email, or exchange group."
+#~ msgstr ""
+#~ "E-mail utilizate pentru a contacta membrii una sau toate de grup, cum ar "
+#~ "fi o listă de corespondență, e-mail comun, sau grup de schimb."
+
+#~ msgid "A space or comma-separated list of keywords"
+#~ msgstr "Un spațiu sau lista separata cu virgule de cuvinte cheie"
+
+#, fuzzy
+#~| msgid "Success"
+#~ msgid "Access"
+#~ msgstr "Succes"
+
+#~ msgid "Member"
+#~ msgstr "Membru"
+
+#, fuzzy
+#~| msgid "Map Created"
+#~ msgid "Layer Created"
+#~ msgstr "Harta Creat"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A Layer was created"
+#~ msgstr "Un strat a fost comentat"
+
+#, fuzzy
+#~| msgid "Layer Uploaded"
+#~ msgid "Layer Updated"
+#~ msgstr "Strat Încărcate"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A Layer was updated"
+#~ msgstr "Un strat a fost comentat"
+
+#, fuzzy
+#~| msgid "Not provided"
+#~ msgid "Layer Approved"
+#~ msgstr "Care nu sunt prevăzute"
+
+#, fuzzy
+#~| msgid "Published From"
+#~ msgid "Layer Published"
+#~ msgstr "Publicat la"
+
+#, fuzzy
+#~| msgid "Layer Default Style"
+#~ msgid "Layer Deleted"
+#~ msgstr "Strat Stil prestabilit"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A Layer was deleted"
+#~ msgstr "Un strat a fost comentat"
+
+#~ msgid "style name"
+#~ msgstr "Numele de stil"
+
+#~ msgid "sld text"
+#~ msgstr "Text SLD"
+
+#~ msgid "sld version"
+#~ msgstr "Versiune SLD"
+
+#~ msgid "sld url"
+#~ msgstr "url SLD"
+
+#, fuzzy
+#~| msgid "date type"
+#~ msgid "Storetype"
+#~ msgstr "tip data"
+
+#, fuzzy
+#~| msgid "CSW typename"
+#~ msgid "Typename"
+#~ msgstr "CSW typename"
+
+#, fuzzy
+#~| msgid "attribute name"
+#~ msgid "attribute name"
+#~ msgstr "nume de atribut"
+
+#~ msgid "name of attribute as stored in shapefile/spatial database"
+#~ msgstr ""
+#~ "Numele atribut așa cum este stocată în shapefile / bază de date spațiale"
+
+#, fuzzy
+#~| msgid "distribution description"
+#~ msgid "attribute description"
+#~ msgstr "distribution description"
+
+#~ msgid "description of attribute to be used in metadata"
+#~ msgstr "descrierea atribut pentru a fi utilizate în metadate"
+
+#~ msgid "attribute label"
+#~ msgstr "eticheta atribut"
+
+#~ msgid "title of attribute as displayed in GeoNode"
+#~ msgstr "Titlul de atribut așa cum sunt afișate în GeoNode"
+
+#~ msgid "attribute type"
+#~ msgstr "Tipul de atribut"
+
+#~ msgid "the data type of the attribute (integer, string, geometry, etc)"
+#~ msgstr "tipul de date al atributului (întreg, șir, geometrie, etc)"
+
+#~ msgid "visible?"
+#~ msgstr "vizibil?"
+
+#~ msgid "specifies if the attribute should be displayed in identify results"
+#~ msgstr ""
+#~ "specifică dacă trebuie să fie afișate atributul din identifica rezultatele"
+
+#~ msgid "display order"
+#~ msgstr "ordinea de afișare"
+
+#~ msgid ""
+#~ "specifies the order in which attribute should be displayed in identify "
+#~ "results"
+#~ msgstr ""
+#~ "Specifică ordinea în care atribut trebuie să fie afișate în identificarea "
+#~ "rezultatelor"
+
+#, fuzzy
+#~| msgid "count"
+#~ msgid "count"
+#~ msgstr "conta"
+
+#~ msgid "count value for this field"
+#~ msgstr "Numar de valoare pentru acest câmp"
+
+#~ msgid "min"
+#~ msgstr "min"
+
+#~ msgid "minimum value for this field"
+#~ msgstr "Valoarea minimă pentru acest domeniu"
+
+#~ msgid "max"
+#~ msgstr "max"
+
+#~ msgid "maximum value for this field"
+#~ msgstr "Valoarea maximă pentru acest domeniu"
+
+#~ msgid "average"
+#~ msgstr "mediu"
+
+#~ msgid "average value for this field"
+#~ msgstr "Valoarea medie pentru acest domeniu"
+
+#~ msgid "median"
+#~ msgstr "median"
+
+#~ msgid "median value for this field"
+#~ msgstr "Valoarea medie pentru acest domeniu"
+
+#~ msgid "standard deviation"
+#~ msgstr "abatere standard"
+
+#~ msgid "standard deviation for this field"
+#~ msgstr "deviația standard pentru acest domeniu"
+
+#~ msgid "sum"
+#~ msgstr "sumă"
+
+#~ msgid "sum value for this field"
+#~ msgstr "Valoarea sumă pentru acest domeniu"
+
+#~ msgid "unique values for this field"
+#~ msgstr "valori unice pentru acest domeniu"
+
+#, fuzzy
+#~| msgid "last modified"
+#~ msgid "last modified"
+#~ msgstr "modificată ultima dată"
+
+#~ msgid "date when attribute statistics were last updated"
+#~ msgstr ""
+#~ "Data atunci când statisticile de atribute au fost actualizată ultima dată"
+
+#~ msgid ""
+#~ "There was an error while attempting to upload your data. Please try "
+#~ "again, or contact and administrator if the problem continues."
+#~ msgstr ""
+#~ "A apărut o eroare în timp ce încerca pentru a încărca datele. Vă rugăm să "
+#~ "încercați din nou, sau contactați și administrator dacă problema persistă."
+
+#~ msgid "You are not permitted to delete this layer"
+#~ msgstr "Tu nu sunt permise pentru a șterge acest strat"
+
+#~ msgid "You do not have permissions for this layer."
+#~ msgstr "Nu aveți permisiuni pentru acest strat."
+
+#~ msgid "You are not permitted to modify this layer"
+#~ msgstr "Tu nu sunt permise de a modifica acest strat"
+
+#~ msgid "You are not permitted to modify this layer's metadata"
+#~ msgstr "Tu nu sunt permise de a modifica metadatele acest strat de"
+
+#~ msgid "You are not permitted to view this layer"
+#~ msgstr "Tu nu sunt permise pentru a vizualiza acest strat"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Failed to upload the layer"
+#~ msgstr "Fișiere pentru a fi încărcate"
+
+#~ msgid "Map Created"
+#~ msgstr "Harta Creat"
+
+#, fuzzy
+#~| msgid "A map was commented on"
+#~ msgid "A Map was created"
+#~ msgstr "O hartă a fost comentat"
+
+#, fuzzy
+#~| msgid "Map Created"
+#~ msgid "Map Updated"
+#~ msgstr "Harta Creat"
+
+#, fuzzy
+#~| msgid "last updated on"
+#~ msgid "A Map was updated"
+#~ msgstr "Ultima actualizare pe"
+
+#, fuzzy
+#~| msgid "Not provided"
+#~ msgid "Map Approved"
+#~ msgstr "Care nu sunt prevăzute"
+
+#, fuzzy
+#~| msgid "Published From"
+#~ msgid "Map Published"
+#~ msgstr "Publicat la"
+
+#, fuzzy
+#~| msgid "Map Created"
+#~ msgid "Map Deleted"
+#~ msgstr "Harta Creat"
+
+#, fuzzy
+#~| msgid "A map was commented on"
+#~ msgid "A Map was deleted"
+#~ msgstr "O hartă a fost comentat"
+
+#~ msgid "Comment on Map"
+#~ msgstr "Comment on Harta"
+
+#~ msgid "A map was commented on"
+#~ msgstr "O hartă a fost comentat"
+
+#~ msgid "Rating for Map"
+#~ msgstr "Rating-ul pentru Harta"
+
+#~ msgid "A rating was given to a map"
+#~ msgstr "Un rating a fost dat la o hartă"
+
+#~ msgid "zoom"
+#~ msgstr "zoom"
+
+#, fuzzy
+#~| msgid "projection"
+#~ msgid "projection"
+#~ msgstr "proeminență"
+
+#~ msgid "center X"
+#~ msgstr "Centrul X"
+
+#~ msgid "center Y"
+#~ msgstr "Centrul Y"
+
+#~ msgid "Site URL"
+#~ msgstr "URL-ul site-ului"
+
+#~ msgid "Featured Map URL"
+#~ msgstr "Featured Harta URL"
+
+#~ msgid "stack order"
+#~ msgstr "Pentru stivă"
+
+#, fuzzy
+#~| msgid "format"
+#~ msgid "format"
+#~ msgstr "format"
+
+#~ msgid "name"
+#~ msgstr "nume"
+
+#~ msgid "opacity"
+#~ msgstr "opacitate"
+
+#~ msgid "styles"
+#~ msgstr "stiluri"
+
+#~ msgid "transparent"
+#~ msgstr "transparent"
+
+#~ msgid "fixed"
+#~ msgstr "fix"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "group"
+#~ msgstr "grup"
+
+#~ msgid "visibility"
+#~ msgstr "vizibilitate"
+
+#~ msgid "ows URL"
+#~ msgstr "OWS URL"
+
+#~ msgid "layer params"
+#~ msgstr "params strat"
+
+#~ msgid "source params"
+#~ msgstr "params sursă"
+
+#~ msgid "JSON Configuration"
+#~ msgstr "JSON de configurare"
+
+#~ msgid "You are not permitted to delete this map."
+#~ msgstr "Tu nu sunt permise pentru a șterge această hartă."
+
+#~ msgid "You do not have permissions for this map."
+#~ msgstr "Nu aveți permisiuni pentru această hartă."
+
+#~ msgid "You must be logged in to save this map"
+#~ msgstr "Trebuie să fii autentificat pentru a salva această hartă"
+
+#~ msgid "You are not permitted to save or edit this map."
+#~ msgstr "Tu nu sunt permise pentru a salva sau edita această hartă."
+
+#~ msgid "You are not allowed to modify this map's metadata."
+#~ msgstr "Nu vi se permite de a modifica metadatele această hartă a lui."
+
+#~ msgid "You are not allowed to view this map."
+#~ msgstr "Nu este permis pentru a vizualiza această hartă."
+
+#~ msgid "An unknown error has occured."
+#~ msgstr "O eroare necunoscută a apărut."
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "Thumbnail"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "error saving thumbnail"
+#~ msgstr "Thumbnail"
+
+#, fuzzy
+#~| msgid "Email Address"
+#~ msgid "Enter valid email addresses."
+#~ msgstr "Adresa de e-mail"
+
+#, fuzzy
+#~| msgid "attribute name"
+#~ msgid "Metric name"
+#~ msgstr "nume de atribut"
+
+#, fuzzy
+#~| msgid "reference date for the cited resource"
+#~ msgid "Show data for specific resource"
+#~ msgstr "Data de referință pentru resursa citat"
+
+#, fuzzy
+#~| msgid "GeoServer"
+#~ msgid "Host (GeoServer)"
+#~ msgstr "GeoServer"
+
+#, fuzzy
+#~| msgid "About GeoNode"
+#~ msgid "Host (GeoNode)"
+#~ msgstr "Despre GeoNode"
+
+#, fuzzy
+#~| msgid "Resources"
+#~ msgid "No resource"
+#~ msgstr "Resurse"
+
+#, fuzzy
+#~| msgid "Resources"
+#~ msgid "Resource base"
+#~ msgstr "Resurse"
+
+#, fuzzy
+#~| msgid "Styles"
+#~ msgid "Style"
+#~ msgstr "Stiluri"
+
+#, fuzzy
+#~| msgid "count"
+#~ msgid "Count"
+#~ msgstr "conta"
+
+#, fuzzy
+#~| msgid "local OWS"
+#~ msgid "Not OWS"
+#~ msgstr "OWS locale"
+
+#, fuzzy
+#~| msgid "Edit Metadata"
+#~ msgid "Change Metadata"
+#~ msgstr "Editează metadatele"
+
+#, fuzzy
+#~| msgid "Edit Metadata"
+#~ msgid "View Metadata"
+#~ msgstr "Editează metadatele"
+
+#~ msgid "View"
+#~ msgstr "View"
+
+#, fuzzy
+#~| msgid "Public"
+#~ msgid "Publish"
+#~ msgstr "Public"
+
+#, fuzzy
+#~| msgid "GeoServer"
+#~ msgid "Geoserver event"
+#~ msgstr "GeoServer"
+
+#, fuzzy
+#~| msgid "List of resources using this document:"
+#~ msgid "List of resources affected"
+#~ msgstr "Listă de resurse folosind acest document:"
+
+#, fuzzy
+#~| msgid "Resource using this document"
+#~ msgid "Response processing time in ms"
+#~ msgstr "Resursa folosind acest document"
+
+#, fuzzy
+#~| msgid "The following groups:"
+#~ msgid "has detected following problems :"
+#~ msgstr "Următoarele grupuri:"
+
+#~ msgid "User following you"
+#~ msgstr "Utilizator îți următoare"
+
+#, fuzzy
+#~| msgid "This user is not following anyone"
+#~ msgid "Another user has started following you"
+#~ msgstr "Acest utilizator nu are următorul nimeni"
+
+#, fuzzy
+#~| msgid "Recent activity"
+#~ msgid "Account activated"
+#~ msgstr "Activitate recentă"
+
+#~ msgid "Personal info"
+#~ msgstr "Informații personale"
+
+#~ msgid "Important dates"
+#~ msgstr "Date importante"
+
+#, fuzzy
+#~| msgid "Edit profile"
+#~ msgid "Extended profile"
+#~ msgstr "Editeaza profil"
+
+#~ msgid "Password changed successfully."
+#~ msgstr "Parola a fost schimbata cu succes."
+
+#~ msgid "Change password: %s"
+#~ msgstr "Schimba parola: %s"
+
+#~ msgid "party who authored the resource"
+#~ msgstr "Partea care autorul resursei"
+
+#~ msgid ""
+#~ "party who has processed the data in a manner such that the resource has "
+#~ "been modified"
+#~ msgstr ""
+#~ "Partea care a prelucrat datele într-o manieră astfel încât resursa a fost "
+#~ "modificat"
+
+#~ msgid "party who published the resource"
+#~ msgstr "Partea care a publicat resursa"
+
+#~ msgid ""
+#~ "party that accepts accountability and responsibility for the data and "
+#~ "ensures         appropriate care and maintenance of the resource"
+#~ msgstr ""
+#~ "partid care acceptă răspunderea și responsabilitatea pentru datele și "
+#~ "asigură îngrijire și întreținere corespunzătoare a resursei"
+
+#~ msgid ""
+#~ "party who can be contacted for acquiring knowledge about or acquisition "
+#~ "of the resource"
+#~ msgstr ""
+#~ "parte care poate fi contactată pentru dobândirea de cunoștințe despre sau "
+#~ "achiziționarea resursei"
+
+#~ msgid "party who distributes the resource"
+#~ msgstr "Partea care distribuie resursa"
+
+#~ msgid "party who uses the resource"
+#~ msgstr "Partea care utilizează resursa"
+
+#~ msgid "party that supplies the resource"
+#~ msgstr "partid care furnizează resursa"
+
+#~ msgid "party who created the resource"
+#~ msgstr "Partea care a creat resursa"
+
+#~ msgid "party that owns the resource"
+#~ msgstr "partid care detine resursa"
+
+#~ msgid ""
+#~ "key party responsible for gathering information and conducting research"
+#~ msgstr ""
+#~ "partid-cheie responsabil pentru colectarea de informații și efectuarea de "
+#~ "cercetare"
+
+#, fuzzy
+#~| msgid "Email Address"
+#~ msgid "Email Address"
+#~ msgstr "Adresa de e-mail"
+
+#, fuzzy
+#~| msgid "Organization Name"
+#~ msgid "Organization Name"
+#~ msgstr "Numele organizației"
+
+#~ msgid "name of the responsible organization"
+#~ msgstr "numele organizației responsabile"
+
+#~ msgid "introduce yourself"
+#~ msgstr "te prezinti"
+
+#~ msgid "Position Name"
+#~ msgstr "Poziție Name"
+
+#~ msgid "role or position of the responsible person"
+#~ msgstr "Rolul sau funcția persoanei responsabile"
+
+#~ msgid ""
+#~ "telephone number by which individuals can speak to the responsible "
+#~ "organization or individual"
+#~ msgstr ""
+#~ "număr de telefon prin care persoanele fizice pot vorbi la organizația "
+#~ "responsabilă sau individuale"
+
+#~ msgid "Facsimile"
+#~ msgstr "Reproducere"
+
+#~ msgid ""
+#~ "telephone number of a facsimile machine for the responsible organization "
+#~ "or individual"
+#~ msgstr ""
+#~ "numărul de telefon al unei mașini de fax pentru organizația responsabilă "
+#~ "sau individuale"
+
+#~ msgid "Delivery Point"
+#~ msgstr "Punct de livrare"
+
+#~ msgid ""
+#~ "physical and email address at which the organization or individual may be "
+#~ "contacted"
+#~ msgstr ""
+#~ "adresă fizică și de e-mail la care organizația sau individul poate fi "
+#~ "contactat"
+
+#~ msgid "City"
+#~ msgstr "Oraș"
+
+#~ msgid "city of the location"
+#~ msgstr "orașul de locația"
+
+#~ msgid "Administrative Area"
+#~ msgstr "Zona administrativă"
+
+#~ msgid "state, province of the location"
+#~ msgstr "de stat, provincie a locației"
+
+#~ msgid "Postal Code"
+#~ msgstr "Cod Postal"
+
+#~ msgid "ZIP or other postal code"
+#~ msgstr "Cod Poștal sau alt cod postal"
+
+#~ msgid "country of the physical address"
+#~ msgstr "țara de adresa fizică"
+
+#~ msgid ""
+#~ "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+#~ "the subject             (space or comma-separated"
+#~ msgstr ""
+#~ "cuvânt utilizate în mod obișnuit (e) sau cuvânt formalizate (e) sau "
+#~ "expresia (e) utilizat pentru a descrie subiect (spațiul sau separate prin "
+#~ "virgule"
+
+#~ msgid "Your username for "
+#~ msgstr "Numele de utilizator îți pentru"
+
+#~ msgid "Your username has been emailed to you."
+#~ msgstr "Numele de utilizator îți a fost trimisă prin email."
+
+#~ msgid "No user could be found with that email address."
+#~ msgstr "Nici un utilizator a putut fi găsită cu acea adresă de e-mail."
+
+#, fuzzy
+#~| msgid "You are not permitted to save or edit this map."
+#~ msgid "You are not permitted to save or edit this resource."
+#~ msgstr "Tu nu sunt permise pentru a salva sau edita această hartă."
+
+#, fuzzy
+#~| msgid "You are not allowed to view this document."
+#~ msgid "You are not authorized to download this resource."
+#~ msgstr "Nu este permis pentru a vizualiza acest document."
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "No files found."
+#~ msgstr "Documente"
+
+#, fuzzy
+#~| msgid "Not provided"
+#~ msgid "Not Authorized"
+#~ msgstr "Care nu sunt prevăzute"
+
+#, fuzzy
+#~| msgid "style name"
+#~ msgid "style xml"
+#~ msgstr "Numele de stil"
+
+#, fuzzy
+#~| msgid "sld url"
+#~ msgid "style url"
+#~ msgstr "url SLD"
+
+#, fuzzy
+#~| msgid "sld url"
+#~ msgid "style legend url"
+#~ msgstr "url SLD"
+
+#~ msgid "Auto-detect"
+#~ msgstr "Auto-detecta"
+
+#~ msgid "Paired WMS/WFS/WCS"
+#~ msgstr "Sincronizat WMS / WFS / WCS"
+
+#~ msgid "Web Map Service"
+#~ msgstr "Harta web service"
+
+#~ msgid "Catalogue Service"
+#~ msgstr "Serviciul de catalog"
+
+#, fuzzy
+#~| msgid "ArcGIS REST Service"
+#~ msgid "ArcGIS REST MapServer"
+#~ msgstr "ArcGIS REST Serviciu"
+
+#, fuzzy
+#~| msgid "ArcGIS REST Service"
+#~ msgid "ArcGIS REST ImageServer"
+#~ msgstr "ArcGIS REST Serviciu"
+
+#~ msgid "OpenGeoPortal"
+#~ msgstr "OpenGeoPortal"
+
+#~ msgid "Harvard Geospatial Library"
+#~ msgstr "Harvard geospațiale Library"
+
+#, fuzzy
+#~| msgid "GeoNode's Web Services"
+#~ msgid "GeoNode (Web Map Service)"
+#~ msgstr "Servicii Web GeoNode lui"
+
+#, fuzzy
+#~| msgid "Catalogue Service"
+#~ msgid "GeoNode (Catalogue Service)"
+#~ msgstr "Serviciul de catalog"
+
+#~ msgid "Service URL"
+#~ msgstr "URL serviciu"
+
+#~ msgid "Service Type"
+#~ msgstr "Tip de serviciu"
+
+#, fuzzy
+#~| msgid "service interfaces"
+#~ msgid "Service %(url)s is already registered"
+#~ msgstr "interfețe de servicii"
+
+#~ msgid "Local"
+#~ msgstr "Local"
+
+#~ msgid "Cascaded"
+#~ msgstr "Cascadă"
+
+#~ msgid "Harvested"
+#~ msgstr "Recoltate"
+
+#~ msgid "Indexed"
+#~ msgstr "Indexate"
+
+#~ msgid "Live"
+#~ msgstr "Live"
+
+#, fuzzy
+#~| msgid "Resources"
+#~ msgid "Resource is queued"
+#~ msgstr "Resurse"
+
+#, fuzzy
+#~| msgid "service interfaces"
+#~ msgid "Service registered successfully"
+#~ msgstr "interfețe de servicii"
+
+#, fuzzy
+#~| msgid "Password changed successfully."
+#~ msgid "Service rescanned successfully"
+#~ msgstr "Parola a fost schimbata cu succes."
+
+#, fuzzy
+#~| msgid "You are not permitted to remove this service."
+#~ msgid "You are not permitted to change this service."
+#~ msgstr "Tu nu sunt permise pentru a elimina acest serviciu."
+
+#~ msgid "You are not permitted to remove this service."
+#~ msgstr "Tu nu sunt permise pentru a elimina acest serviciu."
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "Service {} has been deleted"
+#~ msgstr "Serviciu a fost creat:"
+
+#~ msgid "created"
+#~ msgstr "creată"
+
+#~ msgid "deleted"
+#~ msgstr "eliminat"
+
+#, fuzzy
+#~| msgid "Update"
+#~ msgid "updated"
+#~ msgstr "Actualizare"
+
+#~ msgid "added a comment"
+#~ msgstr "a adăugat un comentariu"
+
+#~ msgid "updated a comment"
+#~ msgstr "actualizat un comentariu"
+
+#~ msgid "uploaded"
+#~ msgstr "încărcat"
+
+#~ msgid "to"
+#~ msgstr "pentru"
+
+#, fuzzy
+#~| msgid "Confirm email address for %(site_name)s"
+#~ msgid "Please confirm email address for %(site_name)s"
+#~ msgstr "Confirmați adresa de e-mail pentru %(site_name)s"
+
+#, fuzzy
+#~| msgid "Confirm email address for %(site_name)s"
+#~ msgid "Create an account on %(site_name)s"
+#~ msgstr "Confirmați adresa de e-mail pentru %(site_name)s"
+
+#, fuzzy
+#~| msgid "Change password: %s"
+#~ msgid "Change password email notification"
+#~ msgstr "Schimba parola: %s"
+
+#, fuzzy
+#~| msgid ""
+#~| "You're receiving this email because you or someone else has requested a "
+#~| "password for your user account at %(site_name)s.\n"
+#~| "It can be safely ignored if you did not request a password reset. Click "
+#~| "the link below to reset your password.\n"
+#~| "\n"
+#~| "%(password_reset_url)s\n"
+#~ msgid ""
+#~ "Hello from %(site_name)s!\n"
+#~ "\n"
+#~ "You're receiving this e-mail because you or someone else has requested a "
+#~ "password for your user account.\n"
+#~ "It can be safely ignored if you did not request a password reset. Click "
+#~ "the link below to reset your password."
+#~ msgstr ""
+#~ "Ați primit acest e-mail deoarece tu sau altcineva a solicitat o parolă "
+#~ "pentru contul dvs. de utilizator la %(site_name)s. \n"
+#~ "Acesta poate fi ignorat în siguranță dacă nu ați solicitat o resetare a "
+#~ "parolei. Faceți clic pe linkul de mai jos pentru a reseta parola. \n"
+#~ "\n"
+#~ "%(password_reset_url)s\n"
+
+#~ msgid "[%(site_name)s] Password reset"
+#~ msgstr "[%(site_name)s]  resetare a parolei"
+
+#, fuzzy
+#~| msgid "The following groups:"
+#~ msgid "is a member of the following group(s)"
+#~ msgstr "Următoarele grupuri:"
+
+#, fuzzy
+#~| msgid "Welcome"
+#~ msgid "Welcome at"
+#~ msgstr "Bine ai venit"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "The following document was approved"
+#~ msgstr "Următorii utilizatori:"
+
+#, fuzzy
+#~| msgid "Powered by"
+#~ msgid "owned by"
+#~ msgstr "Powered by"
+
+#, fuzzy
+#~| msgid "You do not have permissions for this document."
+#~ msgid "A comment has been posted for the document"
+#~ msgstr "Nu aveți permisiuni pentru acest document."
+
+#, fuzzy
+#~| msgid "You do not have permissions for this document."
+#~ msgid "A comment has been posted for a document"
+#~ msgstr "Nu aveți permisiuni pentru acest document."
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "uploaded the following document"
+#~ msgstr "Următorii utilizatori:"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "The following document was deleted"
+#~ msgstr "Următorii utilizatori:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A document has been deleted"
+#~ msgstr "Serviciu a fost creat:"
+
+#, fuzzy
+#~| msgid "The following groups:"
+#~ msgid "The following document was published"
+#~ msgstr "Următoarele grupuri:"
+
+#, fuzzy
+#~| msgid "created"
+#~ msgid "rated"
+#~ msgstr "creată"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "the following document"
+#~ msgstr "Următorii utilizatori:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A document has been rated"
+#~ msgstr "Serviciu a fost creat:"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "The following document was updated"
+#~ msgstr "Următorii utilizatori:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A document has been updated"
+#~ msgstr "Serviciu a fost creat:"
+
+#, fuzzy
+#~| msgid "You have the following incomplete uploads"
+#~ msgid "You have received the following notice from"
+#~ msgstr "Aveți următoarele imagini încărcate incomplete"
+
+#, fuzzy
+#~| msgid "Notices"
+#~ msgid "%(notice)s"
+#~ msgstr "Notices"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following layer was approved"
+#~ msgstr "Următoarele straturi vor fi importate"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A layer has been approved"
+#~ msgstr "Un strat a fost comentat"
+
+#, fuzzy
+#~| msgid "Documents related to this layer"
+#~ msgid "A comment has been posted for the layer"
+#~ msgstr "Documentele legate de acest strat"
+
+#, fuzzy
+#~| msgid "A rating was given to a layer"
+#~ msgid "A comment has been posted for a layer"
+#~ msgstr "Un rating a fost dat la un strat"
+
+#, fuzzy
+#~| msgid "This map uses the following layers:"
+#~ msgid "uploaded the following layer"
+#~ msgstr "Această hartă utilizează următoarele straturi:"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "A new layer has been uploaded"
+#~ msgstr "Un strat a fost încărcat"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following layer was deleted"
+#~ msgstr "Următoarele straturi vor fi importate"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A layer has been deleted"
+#~ msgstr "Un strat a fost comentat"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following layer was published"
+#~ msgstr "Următoarele straturi vor fi importate"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A layer has been published"
+#~ msgstr "Un strat a fost comentat"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "the following layer"
+#~ msgstr "Următorii utilizatori:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A layer has been rated"
+#~ msgstr "Serviciu a fost creat:"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following layer was updated"
+#~ msgstr "Următoarele straturi vor fi importate"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A layer has been updated"
+#~ msgstr "Un strat a fost comentat"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following map was approved"
+#~ msgstr "Următoarele straturi vor fi importate"
+
+#, fuzzy
+#~| msgid "Documents related to this map"
+#~ msgid "A comment has been posted for the map"
+#~ msgstr "Documente legate de această hartă"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "created the following map"
+#~ msgstr "Următorii utilizatori:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A map has been created"
+#~ msgstr "Serviciu a fost creat:"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following map was deleted"
+#~ msgstr "Următoarele straturi vor fi importate"
+
+#, fuzzy
+#~| msgid "A map was commented on"
+#~ msgid "A map has been deleted"
+#~ msgstr "O hartă a fost comentat"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "The following map was published"
+#~ msgstr "Următorii utilizatori:"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "the following map"
+#~ msgstr "Următorii utilizatori:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A map has been rated"
+#~ msgstr "Serviciu a fost creat:"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following map was updated"
+#~ msgstr "Următoarele straturi vor fi importate"
+
+#, fuzzy
+#~| msgid "A map was commented on"
+#~ msgid "A map has been updated"
+#~ msgstr "O hartă a fost comentat"
+
+#, fuzzy
+#~| msgid "party that owns the resource"
+#~ msgid "requested you to download this resource"
+#~ msgstr "partid care detine resursa"
+
+#, fuzzy
+#~| msgid "Message Inbox"
+#~ msgid "A message to"
+#~ msgstr "Inbox mesaj"
+
+#, fuzzy
+#~| msgid "GeoNode Help"
+#~ msgid "GeoNode Themes Library"
+#~ msgstr "GeoNode Ajutor"
+
+#, fuzzy
+#~| msgid "Could not find any layers in a compatible projection."
+#~ msgid "Could not find any kml files inside the uploaded kmz"
+#~ msgstr "Nu am găsit nici o straturi într-o proiecție compatibil."
+
+#~ msgid "Invalid permission level."
+#~ msgstr "Nivel de permisiune invalid."
+
+#~ msgid "Permission Denied"
+#~ msgstr "Permission denied"
 
 #~ msgid "From"
 #~ msgstr "Din"
-
-#~ msgid "Subject"
-#~ msgstr "Subiect"
 
 #~ msgid "Last Sender"
 #~ msgstr "Ultima Sender"

@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-10 14:27+0100\n"
+"POT-Creation-Date: 2020-03-13 13:20+0100\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Finnish (http://www.transifex.com/geonode/geonode/language/"
@@ -35,525 +35,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#: geonode/base/__init__.py:27
-msgid "Request to download a resource"
-msgstr "Pyyntä ladata resurssi"
-
-#: geonode/base/__init__.py:28
-msgid "A request for downloading a resource was sent"
-msgstr "Pyyntö ladata resurssi lähetettiin"
-
-#: geonode/base/enumerations.py:27
-msgid "series"
-msgstr "sarjat"
-
-#: geonode/base/enumerations.py:28
-msgid "computer program or routine"
-msgstr "tietokoneohjelma tai rutiini"
-
-#: geonode/base/enumerations.py:29
-msgid "feature type"
-msgstr "ominaisuustyyppi"
-
-#: geonode/base/enumerations.py:30
-msgid "copy or imitation of an existing or hypothetical object"
-msgstr "kopio tai jäljitelmä nykyisestä tai oletetusta objektista"
-
-#: geonode/base/enumerations.py:31
-msgid "collection hardware"
-msgstr "kokoomalaitteisto"
-
-#: geonode/base/enumerations.py:32
-msgid "collection session"
-msgstr "kokoomaistunto"
-
-#: geonode/base/enumerations.py:33
-msgid "non-geographic data"
-msgstr "ei-maantieteellisiä tietoja"
-
-#: geonode/base/enumerations.py:34
-msgid "property type"
-msgstr "kiinteistön tyyppi"
-
-#: geonode/base/enumerations.py:35
-msgid "field session"
-msgstr "kenttä istunto"
-
-#: geonode/base/enumerations.py:36
-#, fuzzy
-#| msgid "dataset"
-msgid "dataset"
-msgstr "aineisto"
-
-#: geonode/base/enumerations.py:37
-#, fuzzy
-#| msgid "Resources"
-msgid "service interfaces"
-msgstr "Resurssit"
-
-#: geonode/base/enumerations.py:38
-msgid "attribute class"
-msgstr "ominaisuusluokka"
-
-#: geonode/base/enumerations.py:39
-msgid "characteristic of a feature"
-msgstr "ominaisuuden piirteet"
-
-#: geonode/base/enumerations.py:40
-msgid "tile or spatial subset of geographic data"
-msgstr "kuvake tai alueellinen osajoukko paikkatiedosta"
-
-#: geonode/base/enumerations.py:41
-msgid "feature"
-msgstr "ominaisuus"
-
-#: geonode/base/enumerations.py:42
-msgid "dimension group"
-msgstr "ulottuvuusryhmä"
-
-#: geonode/base/enumerations.py:46
-msgid "frequency of maintenance for the data is not known"
-msgstr "dataylläpidon tiheyttä ei ole tiedossa"
-
-#: geonode/base/enumerations.py:47
-msgid "data is repeatedly and frequently updated"
-msgstr "data on toistuvasti ja usein päivitettävä"
-
-#: geonode/base/enumerations.py:48
-msgid "there are no plans to update the data"
-msgstr "ei ole suunnitelmaa tietojen päivittämiseksi"
-
-#: geonode/base/enumerations.py:49
-msgid "data is updated each day"
-msgstr "tiedot päivitetään joka päivä"
-
-#: geonode/base/enumerations.py:50
-msgid "data is updated every year"
-msgstr "tiedot päivitetään vuosittain"
-
-#: geonode/base/enumerations.py:51
-msgid "data is updated as deemed necessary"
-msgstr "tiedot päivitetään tarvittaessa"
-
-#: geonode/base/enumerations.py:52
-msgid "data is updated each month"
-msgstr "tiedot päivitetään kuukausittain"
-
-#: geonode/base/enumerations.py:53
-msgid "data is updated every two weeks"
-msgstr "tiedot päivitetään kahden viikon välein"
-
-#: geonode/base/enumerations.py:55
-msgid "data is updated in intervals that are uneven in duration"
-msgstr "tiedot päivitetään epäsäännöllisin väliajoin"
-
-#: geonode/base/enumerations.py:56
-msgid "data is updated on a weekly basis"
-msgstr "tiedot päivitetään viikoittain"
-
-#: geonode/base/enumerations.py:57
-msgid "data is updated twice each year"
-msgstr "tiedot päivitetään kaksi kertaa vuodessa"
-
-#: geonode/base/enumerations.py:58
-msgid "data is updated every three months"
-msgstr "tiedot päivitetään kolmen kuukauden välein"
-
-#: geonode/base/enumerations.py:77
-msgid "No information provided"
-msgstr "Tietoa ei ole annettu"
-
-#: geonode/base/forms.py:282
-#: geonode/base/templates/base/_resourcebase_info_panel.html:77
-#: geonode/catalogue/templates/geonode_metadata_full.html:145
-#: geonode/documents/templates/documents/document_metadata_advanced.html:76
-#: geonode/documents/templates/layouts/doc_panels.html:324
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:99
-#: geonode/layers/templates/layouts/panels.html:326
-#: geonode/maps/templates/layouts/map_panels.html:322
-#: geonode/maps/templates/maps/map_metadata_advanced.html:77
-#: geonode/templates/metadata_detail.html:88
-msgid "Category"
-msgstr "Luokka"
-
-#: geonode/base/forms.py:293
-msgid "Category is required."
-msgstr "Luokka on pakollinen."
-
-#: geonode/base/forms.py:314
-msgid "Keywords from Thesaurus"
-msgstr ""
-
-#: geonode/base/forms.py:316
-msgid "List of keywords from Thesaurus"
-msgstr ""
-
-#: geonode/base/forms.py:336 geonode/base/models.py:577
-msgid "Owner"
-msgstr "Omistaja"
-
-#: geonode/base/forms.py:342
-#: geonode/base/templates/base/_resourcebase_info_panel.html:34
-#: geonode/catalogue/templates/geonode_metadata_full.html:58
-#: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
-#: geonode/templates/metadata_detail.html:71
-#: geonode/templates/search/_general_filters.html:108
-msgid "Date"
-msgstr "Päivämäärä"
-
-#: geonode/base/forms.py:348 geonode/base/models.py:681
-msgid "temporal extent start"
-msgstr "aikajakson alku"
-
-#: geonode/base/forms.py:355 geonode/base/models.py:686
-msgid "temporal extent end"
-msgstr "aikajakson loppu"
-
-#: geonode/base/forms.py:363 geonode/base/forms.py:371
-msgid "Person outside GeoNode (fill form)"
-msgstr "Henkilö GeoNoden ulkopuolelta (täytä lomake)"
-
-#: geonode/base/forms.py:364
-#: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
-#: geonode/base/templates/base/_resourcebase_info_panel.html:104
-#: geonode/catalogue/templates/geonode_metadata_full.html:75
-#: geonode/documents/templates/documents/document_metadata.html:42
-#: geonode/documents/templates/documents/document_metadata.html:66
-#: geonode/documents/templates/documents/document_metadata_advanced.html:47
-#: geonode/documents/templates/documents/document_metadata_advanced.html:100
-#: geonode/layers/templates/layers/layer_metadata.html:53
-#: geonode/layers/templates/layers/layer_metadata.html:84
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:58
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:144
-#: geonode/maps/templates/maps/map_metadata.html:67
-#: geonode/maps/templates/maps/map_metadata_advanced.html:101
-msgid "Point of Contact"
-msgstr "Yhteyspiste"
-
-#: geonode/base/forms.py:372
-#: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
-#: geonode/documents/templates/documents/document_metadata.html:38
-#: geonode/documents/templates/documents/document_metadata_advanced.html:43
-#: geonode/layers/templates/layers/layer_metadata.html:49
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:54
-#: geonode/templates/metadata_detail.html:346
-msgid "Metadata Author"
-msgstr "Metadatan Tekijä"
-
-#: geonode/base/forms.py:379
-#, fuzzy
-#| msgid "Keywords"
-msgid "Free-text Keywords"
-msgstr "Avainsanat"
-
-#: geonode/base/forms.py:381
-#, fuzzy
-#| msgid "A space or comma-separated list of keywords"
-msgid ""
-"A space or comma-separated list of keywords. Use the widget to select from "
-"Hierarchical tree."
-msgstr "Tyhjämerkillä tai pilkulla erotettu lista avainsanoja"
-
-#: geonode/base/forms.py:393
-#: geonode/base/templates/base/_resourcebase_info_panel.html:87
-#: geonode/catalogue/templates/geonode_metadata_full.html:149
-#: geonode/templates/metadata_detail.html:98
-#: geonode/templates/search/_region_filter.html:5
-msgid "Regions"
-msgstr "Alueet"
-
-#: geonode/base/management/commands/updategeoip.py:44
-msgid "Write result to file, default GEOIP_PATH: {}"
-msgstr ""
-
-#: geonode/base/management/commands/updategeoip.py:46
-msgid ""
-"Fetch database from specific url. If nothing provided, default {} will be "
-"used"
-msgstr ""
-
-#: geonode/base/management/commands/updategeoip.py:48
-msgid "Overwrite file if exists"
-msgstr ""
-
-#: geonode/base/models.py:87 geonode/services/models.py:194
-msgid "function performed by the responsible party"
-msgstr "vastuullisen osapuolen suorittama toiminto "
-
-#: geonode/base/models.py:527
-msgid "reference date for the cited resource"
-msgstr "viitatun resurssin viitepäivä"
-
-#: geonode/base/models.py:528
-msgid "identification of when a given event occurred"
-msgstr "tunnistaminen, kun tietty tapahtuma sattui"
-
-#: geonode/base/models.py:529
-msgid "version of the cited resource"
-msgstr "viitatun resurssin versio"
-
-#: geonode/base/models.py:531
-msgid "brief narrative summary of the content of the resource(s)"
-msgstr "lyhyt kertova yhteenveto resurssin(ien) sisällöstä"
-
-#: geonode/base/models.py:533
-msgid "summary of the intentions with which the resource(s) was developed"
-msgstr "Yhteenveto tarkoituksista joihin resurssi(t) kehitettiin"
-
-#: geonode/base/models.py:535
-msgid ""
-"frequency with which modifications and deletions are made to the data after "
-"it is first produced"
-msgstr "luotujen tietojen päivitysten ja poistojen muutostiheys"
-
-#: geonode/base/models.py:538
-msgid ""
-"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-"the subject (space or comma-separated"
-msgstr ""
-"yleisesti käytetty sana(t) tai muodolliset sana(t) tai fraasi(t) "
-"käytettäessä kuvaamaan asiaa (tyhjämerkillä tai pilkulla erotettuna"
-
-#: geonode/base/models.py:541
-#, fuzzy
-#| msgid ""
-#| "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-#| "the subject (space or comma-separated"
-msgid ""
-"formalised word(s) or phrase(s) from a fixed thesaurus used to describe the "
-"subject (space or comma-separated"
-msgstr ""
-"yleisesti käytetty sana(t) tai muodolliset sana(t) tai fraasi(t) "
-"käytettäessä kuvaamaan asiaa (tyhjämerkillä tai pilkulla erotettuna"
-
-#: geonode/base/models.py:543
-msgid "keyword identifies a location"
-msgstr "hakusana identifioi sijainnin"
-
-#: geonode/base/models.py:545
-msgid "limitation(s) placed upon the access or use of the data."
-msgstr ""
-"rajoitus(set) jotka on asetettu tietoihin pääsyyn tai tietojen käyttöön."
-
-#: geonode/base/models.py:547
-msgid ""
-"other restrictions and legal prerequisites for accessing and using the "
-"resource or metadata"
-msgstr ""
-"muut rajoitukset ja oikeudelliset edellytykset avaamaan ja käyttämään "
-"resurssia tai metatietoa"
-
-#: geonode/base/models.py:549
-msgid "license of the dataset"
-msgstr "aineiston lisenssi"
-
-#: geonode/base/models.py:550
-msgid "language used within the dataset"
-msgstr "aineistossa käytetty kieli"
-
-#: geonode/base/models.py:552
-msgid ""
-"high-level geographic data thematic classification to assist in the grouping "
-"and search of available geographic data sets."
-msgstr ""
-"ylätason paikkatiedon teemallinen luokittelu auttamaan ryhmittelyssä ja "
-"käytettävissä olevien paikkatieto tietojoukkojen etsimisessä."
-
-#: geonode/base/models.py:555
-msgid "method used to represent geographic information in the dataset."
-msgstr ""
-"menetelmä käytettäväksi maantieteellisen tiedon esitykseen aineistossa."
-
-#: geonode/base/models.py:557
-msgid "time period covered by the content of the dataset (start)"
-msgstr "aineiston (alku) sisällön kattama ajanjakso"
-
-#: geonode/base/models.py:559
-msgid "time period covered by the content of the dataset (end)"
-msgstr "aineiston (loppu) sisällön kattama ajanjakso"
-
-#: geonode/base/models.py:561
-msgid ""
-"general explanation of the data producer's knowledge about the lineage of a "
-"dataset"
-msgstr "yleinen selitys tiedon tuottajan käsityksestä aineiston alkuperästä"
-
-#: geonode/base/models.py:564
-msgid "a DOI will be added by Admin before publication."
-msgstr ""
-
-#: geonode/base/models.py:566
-#: geonode/base/templates/base/_resourcebase_info_panel.html:114
-#: geonode/templates/metadata_detail.html:116
-msgid "DOI"
-msgstr ""
-
-#: geonode/base/models.py:582
-msgid "title"
-msgstr "otsikko"
-
-#: geonode/base/models.py:583
-msgid "name by which the cited resource is known"
-msgstr "nimi, jolla viitattu resurssi tunnetaan"
-
-#: geonode/base/models.py:586
-msgid "date"
-msgstr "päivämäärä"
-
-#: geonode/base/models.py:590
-msgid "date type"
-msgstr "päivämäärän tyyppi"
-
-#: geonode/base/models.py:596
-msgid "edition"
-msgstr "painos"
-
-#: geonode/base/models.py:602
-msgid "abstract"
-msgstr "abstrakti"
-
-#: geonode/base/models.py:607
-msgid "purpose"
-msgstr "tarkoitus"
-
-#: geonode/base/models.py:613
-msgid "maintenance frequency"
-msgstr "ylläpidon tiheys"
-
-#: geonode/base/models.py:620 geonode/base/models.py:627
-#: geonode/people/models.py:117
-msgid "keywords"
-msgstr "avainsanat"
-
-#: geonode/base/models.py:633
-msgid "keywords region"
-msgstr "Avainsanojen alue"
-
-#: geonode/base/models.py:639
-msgid "restrictions"
-msgstr "rajoitukset"
-
-#: geonode/base/models.py:646
-msgid "restrictions other"
-msgstr "muut rajoitukset"
-
-#: geonode/base/models.py:654
-#: geonode/base/templates/base/_resourcebase_info_panel.html:16
-#: geonode/base/templates/base/_resourcebase_info_panel.html:134
-#: geonode/catalogue/templates/geonode_metadata_full.html:98
-#: geonode/templates/metadata_detail.html:57
-#: geonode/templates/metadata_detail.html:203
-msgid "License"
-msgstr "Lisenssi"
-
-#: geonode/base/models.py:658 geonode/people/models.py:121
-msgid "language"
-msgstr "kieli"
-
-#: geonode/base/models.py:676
-msgid "spatial representation type"
-msgstr "paikkatiedon esitystapa"
-
-#: geonode/base/models.py:691
-msgid "supplemental information"
-msgstr "lisätiedot"
-
-#: geonode/base/models.py:694
-msgid "any other descriptive information about the dataset"
-msgstr "muita kuvailevia tietoja aineistosta"
-
-#: geonode/base/models.py:698
-msgid "data quality statement"
-msgstr "Tietojen laadun selvitys"
-
-#: geonode/base/models.py:739
-msgid "CSW typename"
-msgstr "CSW typename"
-
-#: geonode/base/models.py:744
-msgid "CSW schema"
-msgstr "CSW skeema"
-
-#: geonode/base/models.py:749
-msgid "CSW source"
-msgstr "CSW lähde"
-
-#: geonode/base/models.py:754
-msgid "CSW insert date"
-msgstr "CSW lisäyspäivämäärä"
-
-#: geonode/base/models.py:756
-msgid "CSW type"
-msgstr "CSW tyyppi"
-
-#: geonode/base/models.py:761
-msgid "CSW anytext"
-msgstr "CSW anytext"
-
-#: geonode/base/models.py:763
-msgid "CSW WKT geometry"
-msgstr "CSW WKT geometria"
-
-#: geonode/base/models.py:769
-#, fuzzy
-#| msgid "Metadata Provider"
-msgid "Metadata uploaded preserve"
-msgstr "Metadata Provider"
-
-#: geonode/base/models.py:776 geonode/templates/metadata_detail.html:108
-msgid "Featured"
-msgstr "Kiinnostavat"
-
-#: geonode/base/models.py:777
-msgid "Should this resource be advertised in home page?"
-msgstr "Tuleeko tätä resurssia on mainostaa etusivulla?"
-
-#: geonode/base/models.py:779
-#, fuzzy
-#| msgid "Published From"
-msgid "Is Published"
-msgstr "Julkaistu Alkaen"
-
-#: geonode/base/models.py:781
-msgid "Should this resource be published and searchable?"
-msgstr "Tulisiko tämä resurssi julkaista ja tehdä haettavaksi?"
-
-#: geonode/base/models.py:783 geonode/templates/metadata_detail.html:102
-#, fuzzy
-#| msgid "Not provided"
-msgid "Approved"
-msgstr "Ei toimiteta"
-
-#: geonode/base/models.py:785
-msgid "Is this resource validated from a publisher or editor?"
-msgstr ""
-
-#: geonode/base/models.py:788
-#, fuzzy
-#| msgid "Thumbnail"
-msgid "Thumbnail url"
-msgstr "Thumbnail"
-
-#: geonode/base/models.py:796
-msgid "Dirty State"
-msgstr ""
-
-#: geonode/base/models.py:798
-msgid "Security Rules Are Not Synched with GeoServer!"
-msgstr ""
-
-#: geonode/base/models.py:1425
-msgid "For example \"kml\""
-msgstr "Esimerkiksi \"kml\""
-
-#: geonode/base/models.py:1430
-msgid "For example \"View in Google Earth\""
-msgstr "Esimerkiksi \"Näytä Google Earthissa\""
-
-#: geonode/base/models.py:1432
-msgid "For example \"text/xml\""
-msgstr "Esimerkiksi \"text / xml\""
 
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:3
 #: geonode/templates/500.html:181 geonode/templates/500.html:200
@@ -575,12 +56,35 @@ msgstr "Omistaja, yhteyshenkilön, metadatan tekijä"
 msgid "Responsible"
 msgstr ""
 
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
+#: geonode/base/templates/base/_resourcebase_info_panel.html:104
+#: geonode/catalogue/templates/geonode_metadata_full.html:75
+#: geonode/documents/templates/documents/document_metadata.html:42
+#: geonode/documents/templates/documents/document_metadata.html:66
+#: geonode/documents/templates/documents/document_metadata_advanced.html:47
+#: geonode/documents/templates/documents/document_metadata_advanced.html:100
+#: geonode/layers/templates/layers/layer_metadata.html:53
+#: geonode/layers/templates/layers/layer_metadata.html:84
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:58
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:144
+#: geonode/maps/templates/maps/map_metadata.html:67
+#: geonode/maps/templates/maps/map_metadata_advanced.html:101
+msgid "Point of Contact"
+msgstr "Yhteyspiste"
+
+#: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
+#: geonode/documents/templates/documents/document_metadata.html:38
+#: geonode/documents/templates/documents/document_metadata_advanced.html:43
+#: geonode/layers/templates/layers/layer_metadata.html:49
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:54
+#: geonode/templates/metadata_detail.html:346
+msgid "Metadata Author"
+msgstr "Metadatan Tekijä"
+
 #: geonode/base/templates/base/_resourcebase_info_panel.html:6
 #: geonode/catalogue/templates/geonode_metadata_full.html:55
 #: geonode/client/templates/leaflet/maps/map_view.html:101
-#: geonode/groups/models.py:79
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:20
-#: geonode/services/forms.py:113
 #: geonode/services/templates/services/service_detail.html:22
 #: geonode/services/templates/services/service_list.html:15
 #: geonode/templates/announcements/announcement_list.html:19
@@ -592,6 +96,14 @@ msgstr "Otsikko"
 #: geonode/base/templates/base/_resourcebase_info_panel.html:129
 msgid "SRID"
 msgstr "SRID"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:16
+#: geonode/base/templates/base/_resourcebase_info_panel.html:134
+#: geonode/catalogue/templates/geonode_metadata_full.html:98
+#: geonode/templates/metadata_detail.html:57
+#: geonode/templates/metadata_detail.html:203
+msgid "License"
+msgstr "Lisenssi"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:24
 #: geonode/base/templates/base/_resourcebase_info_panel.html:141
@@ -605,11 +117,18 @@ msgstr "Lisäinfo"
 #: geonode/base/templates/base/_resourcebase_info_panel.html:29
 #: geonode/catalogue/templates/geonode_metadata_full.html:61
 #: geonode/client/templates/leaflet/maps/map_view.html:106
-#: geonode/services/forms.py:131
 #: geonode/services/templates/services/service_detail.html:10
 #: geonode/templates/metadata_detail.html:48
 msgid "Abstract"
 msgstr "Abstrakti"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:34
+#: geonode/catalogue/templates/geonode_metadata_full.html:58
+#: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
+#: geonode/templates/metadata_detail.html:71
+#: geonode/templates/search/_general_filters.html:108
+msgid "Date"
+msgstr "Päivämäärä"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:45
 #: geonode/catalogue/templates/geonode_metadata_full.html:91
@@ -622,7 +141,6 @@ msgstr "Tyyppi"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:50
 #: geonode/catalogue/templates/geonode_metadata_full.html:142
-#: geonode/groups/models.py:89 geonode/people/forms.py:92
 #: geonode/people/templates/people/profile_detail.html:106
 #: geonode/services/templates/services/service_detail.html:11
 #: geonode/templates/metadata_detail.html:81
@@ -633,15 +151,39 @@ msgstr "Tyyppi"
 msgid "Keywords"
 msgstr "Avainsanat"
 
+#: geonode/base/templates/base/_resourcebase_info_panel.html:77
+#: geonode/catalogue/templates/geonode_metadata_full.html:145
+#: geonode/documents/templates/documents/document_metadata_advanced.html:76
+#: geonode/documents/templates/layouts/doc_panels.html:324
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:99
+#: geonode/layers/templates/layouts/panels.html:326
+#: geonode/maps/templates/layouts/map_panels.html:321
+#: geonode/maps/templates/maps/map_metadata_advanced.html:77
+#: geonode/templates/metadata_detail.html:88
+msgid "Category"
+msgstr "Luokka"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:87
+#: geonode/catalogue/templates/geonode_metadata_full.html:149
+#: geonode/templates/metadata_detail.html:98
+#: geonode/templates/search/_region_filter.html:5
+msgid "Regions"
+msgstr "Alueet"
+
 #: geonode/base/templates/base/_resourcebase_info_panel.html:109
 #: geonode/documents/templates/layouts/doc_panels.html:343
 #: geonode/layers/templates/layouts/panels.html:346
-#: geonode/maps/templates/layouts/map_panels.html:341
+#: geonode/maps/templates/layouts/map_panels.html:340
 #: geonode/templates/metadata_detail.html:112
 #, fuzzy
 #| msgid "Groups"
 msgid "Group"
 msgstr "Ryhmät"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:114
+#: geonode/templates/metadata_detail.html:116
+msgid "DOI"
+msgstr ""
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:121
 msgid "More info"
@@ -755,6 +297,7 @@ msgid "Create a Map"
 msgstr "Luo Kartta"
 
 #: geonode/base/templates/base/_resourcebase_snippet.html:80
+#: geonode/client/templates/leaflet/maps/map_view.html:8
 #: geonode/maps/templates/maps/map_detail.html:187
 #: geonode/maps/templates/maps/map_detail.html:189
 msgid "View Map"
@@ -825,18 +368,11 @@ msgstr ""
 #: geonode/layers/templates/layers/layer_detail.html:478
 #: geonode/layers/templates/layers/layer_detail.html:499
 #: geonode/maps/templates/maps/map_detail.html:165
-#: geonode/monitoring/models.py:355
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:58
 #, fuzzy
 #| msgid "uploaded"
 msgid "Upload"
 msgstr "latasi"
-
-#: geonode/base/templatetags/user_messages.py:32
-#: geonode/base/templatetags/user_messages.py:40
-#: geonode/templates/user_messages/thread_detail.html:28
-msgid "me"
-msgstr ""
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:40
 #, fuzzy
@@ -893,22 +429,14 @@ msgid "Attribute name"
 msgstr "määritteen nimi"
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:167
-#: geonode/groups/models.py:44 geonode/groups/models.py:82
 #: geonode/layers/templates/layers/layer_detail.html:178
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:128
 #: geonode/layers/templates/layouts/panels.html:546
 #: geonode/people/templates/people/profile_detail.html:101
-#: geonode/services/forms.py:123
 #: geonode/services/templates/services/service_detail.html:23
 #: geonode/services/templates/services/service_resources_harvest.html:32
 msgid "Description"
 msgstr "Kuvaus"
-
-#: geonode/client/apps.py:28
-#, fuzzy
-#| msgid "GeoNode Help"
-msgid "GeoNode Client Library"
-msgstr "GeoNode Ohje"
 
 #: geonode/client/templates/leaflet/layers/layer_leaflet_map.html:340
 #, fuzzy
@@ -926,9 +454,9 @@ msgid "Explore Maps"
 msgstr "Tutustu kartat"
 
 #: geonode/client/templates/leaflet/maps/map_edit.html:8
-#: geonode/client/templates/leaflet/maps/map_view.html:8
-msgid "GeoExplorer"
-msgstr "GeoExplorer"
+#: geonode/maps/templates/maps/map_edit.html:7
+msgid "Edit Map"
+msgstr "Edit Kartta"
 
 #: geonode/client/templates/leaflet/maps/map_edit.html:77
 #: geonode/documents/templates/documents/document_metadata.html:78
@@ -960,7 +488,7 @@ msgstr "Käytettävissä tyylit"
 #: geonode/client/templates/leaflet/maps/map_view.html:114
 #: geonode/groups/templates/groups/groupcategory_update_form.html:8
 #: geonode/layers/templates/layouts/panels.html:284
-#: geonode/maps/templates/layouts/map_panels.html:280
+#: geonode/maps/templates/layouts/map_panels.html:279
 #: geonode/services/templates/services/service_edit.html:21
 #: geonode/templates/announcements/announcement_form.html:26
 msgid "Save"
@@ -991,88 +519,6 @@ msgstr "Luo Kartta"
 #: geonode/templates/metadata_base.html:185
 msgid "Close"
 msgstr "Lähellä"
-
-#: geonode/documents/__init__.py:27
-#, fuzzy
-#| msgid "Documents related to this map"
-msgid "Document Created"
-msgstr "Asiakirjoja, jotka liittyvät tähän karttaan"
-
-#: geonode/documents/__init__.py:27
-#, fuzzy
-#| msgid "This document is related to a "
-msgid "A Document was created"
-msgstr "Tämä asiakirja liittyy"
-
-#: geonode/documents/__init__.py:28
-#, fuzzy
-#| msgid "Documents"
-msgid "Document Updated"
-msgstr "Dokumentit"
-
-#: geonode/documents/__init__.py:28
-#, fuzzy
-#| msgid "Documents"
-msgid "A Document was updated"
-msgstr "Dokumentit"
-
-#: geonode/documents/__init__.py:29
-#, fuzzy
-#| msgid "Documents"
-msgid "Document Approved"
-msgstr "Dokumentit"
-
-#: geonode/documents/__init__.py:29
-msgid "A Document was approved by a Manager"
-msgstr ""
-
-#: geonode/documents/__init__.py:30
-#, fuzzy
-#| msgid "Documents"
-msgid "Document Published"
-msgstr "Dokumentit"
-
-#: geonode/documents/__init__.py:30
-#, fuzzy
-#| msgid "Documents"
-msgid "A Document was published"
-msgstr "Dokumentit"
-
-#: geonode/documents/__init__.py:31
-#, fuzzy
-#| msgid "Documents"
-msgid "Document Deleted"
-msgstr "Dokumentit"
-
-#: geonode/documents/__init__.py:31
-#, fuzzy
-#| msgid "This document is related to a "
-msgid "A Document was deleted"
-msgstr "Tämä asiakirja liittyy"
-
-#: geonode/documents/__init__.py:32
-#, fuzzy
-#| msgid "Comment on Layer"
-msgid "Comment on Document"
-msgstr "Kommentoi Layer"
-
-#: geonode/documents/__init__.py:32
-#, fuzzy
-#| msgid "A map was commented on"
-msgid "A Document was commented on"
-msgstr "Kartta kommentoi"
-
-#: geonode/documents/__init__.py:33
-#, fuzzy
-#| msgid "Comment on Map"
-msgid "Document for Map"
-msgstr "Kommentoi Kartta"
-
-#: geonode/documents/__init__.py:33
-#, fuzzy
-#| msgid "A rating was given to a map"
-msgid "A rating was given to a document"
-msgstr "Arvosana annettiin kartta"
 
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:5
 msgid "Width"
@@ -1124,40 +570,6 @@ msgstr "Epätosi"
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:21
 msgid "Speed Rating"
 msgstr "Nopeusluokitus"
-
-#: geonode/documents/forms.py:87 geonode/documents/forms.py:168
-msgid "Link to"
-msgstr "Linkki"
-
-#: geonode/documents/forms.py:133 geonode/documents/forms.py:202
-msgid "Document must be a file or url."
-msgstr "Asiakirja on tiedosto tai URL."
-
-#: geonode/documents/forms.py:137 geonode/documents/forms.py:206
-msgid "A document cannot have both a file and a url."
-msgstr "Asiakirja ei voi olla sekä tiedostojen ja URL."
-
-#: geonode/documents/forms.py:150 geonode/documents/forms.py:219
-msgid "This file type is not allowed"
-msgstr "Tämä tiedostotyyppi ei ole sallittu"
-
-#: geonode/documents/forms.py:191
-msgid "Permissions must be valid JSON."
-msgstr "Oikeudet on oltava voimassa JSON."
-
-#: geonode/documents/models.py:57
-msgid "File"
-msgstr "Tiedosto"
-
-#: geonode/documents/models.py:67
-msgid "The URL of the document if it is external."
-msgstr "URL asiakirja, jos se on ulkoinen."
-
-#: geonode/documents/models.py:68 geonode/monitoring/models.py:179
-#: geonode/services/templates/services/service_detail.html:9
-#: geonode/services/templates/services/service_list.html:16
-msgid "URL"
-msgstr "URL"
 
 #: geonode/documents/templates/documents/document_detail.html:23
 #, fuzzy
@@ -1238,8 +650,7 @@ msgid "Advanced Edit"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_detail.html:157
-#: geonode/monitoring/models.py:176 geonode/templates/index.html:86
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:7
+#: geonode/templates/index.html:86
 msgid "Document"
 msgid_plural "Documents"
 msgstr[0] ""
@@ -1256,7 +667,7 @@ msgstr ""
 #: geonode/groups/templates/groups/group_members.html:95
 #: geonode/layers/templates/layers/layer_detail.html:515
 #: geonode/maps/templates/maps/map_detail.html:173
-#: geonode/monitoring/models.py:362 geonode/templates/account/email.html:36
+#: geonode/templates/account/email.html:36
 #: geonode/templates/socialaccount/connections.html:33
 msgid "Remove"
 msgstr "Poistaa"
@@ -1321,7 +732,7 @@ msgstr "Tämä asiakirja ei liity mitään karttoja tai kerroksia"
 #: geonode/layers/templates/layers/layer_style_upload.html:101
 #: geonode/layers/templates/layers/layer_style_upload.html:110
 #: geonode/layers/templates/upload/layer_upload.html:114
-#: geonode/maps/templates/maps/map_detail.html:229 geonode/people/admin.py:57
+#: geonode/maps/templates/maps/map_detail.html:229
 msgid "Permissions"
 msgstr "Oikeudet"
 
@@ -1488,15 +899,15 @@ msgid "No, don't remove it"
 msgstr "Ei, älä poista sitä"
 
 #: geonode/documents/templates/documents/document_replace.html:4
-#: geonode/documents/templates/documents/document_replace.html:28
+#: geonode/documents/templates/documents/document_replace.html:27
 msgid "Replace Document"
 msgstr "Vaihda Document"
 
-#: geonode/documents/templates/documents/document_replace.html:16
+#: geonode/documents/templates/documents/document_replace.html:15
 msgid "Replace "
 msgstr "Korvata"
 
-#: geonode/documents/templates/documents/document_replace.html:27
+#: geonode/documents/templates/documents/document_replace.html:26
 #: geonode/documents/templates/documents/document_thumb_upload.html:55
 #: geonode/layers/templates/layers/layer_detail.html:396
 #: geonode/layers/templates/layers/layer_metadata_upload.html:88
@@ -1588,7 +999,7 @@ msgstr ""
 #: geonode/layers/templates/layouts/panels.html:221
 #: geonode/layers/templates/layouts/panels.html:290
 #: geonode/maps/templates/layouts/map_panels.html:220
-#: geonode/maps/templates/layouts/map_panels.html:286
+#: geonode/maps/templates/layouts/map_panels.html:285
 #: geonode/maps/templates/maps/map_detail.html:172
 msgid "Edit"
 msgstr ""
@@ -1643,7 +1054,7 @@ msgstr "Lataa Metadata"
 #: geonode/documents/templates/layouts/doc_panels.html:345
 #: geonode/layers/templates/layouts/panels.html:328
 #: geonode/layers/templates/layouts/panels.html:348
-#: geonode/maps/templates/layouts/map_panels.html:343
+#: geonode/maps/templates/layouts/map_panels.html:342
 #, fuzzy
 #| msgid "This action affects the following maps:"
 msgid "Choose one of the following..."
@@ -1651,7 +1062,7 @@ msgstr "Tämä toimenpide koskee seuraavia karttoja:"
 
 #: geonode/documents/templates/layouts/doc_panels.html:438
 #: geonode/layers/templates/layouts/panels.html:441
-#: geonode/maps/templates/layouts/map_panels.html:435
+#: geonode/maps/templates/layouts/map_panels.html:434
 #, fuzzy
 #| msgid "Download Metadata"
 msgid "Other, Optional, Metadata"
@@ -1659,13 +1070,13 @@ msgstr "Lataa Metadata"
 
 #: geonode/documents/templates/layouts/doc_panels.html:485
 #: geonode/layers/templates/layouts/panels.html:488
-#: geonode/maps/templates/layouts/map_panels.html:482
+#: geonode/maps/templates/layouts/map_panels.html:481
 msgid "Responsible Parties"
 msgstr ""
 
 #: geonode/documents/templates/layouts/doc_panels.html:492
 #: geonode/layers/templates/layouts/panels.html:495
-#: geonode/maps/templates/layouts/map_panels.html:489
+#: geonode/maps/templates/layouts/map_panels.html:488
 #, fuzzy
 #| msgid "Change Layer Permissions"
 msgid "Responsible and Permissions"
@@ -1673,7 +1084,7 @@ msgstr "Muuta Layer Oikeudet"
 
 #: geonode/documents/templates/layouts/doc_panels.html:514
 #: geonode/layers/templates/layouts/panels.html:517
-#: geonode/maps/templates/layouts/map_panels.html:511
+#: geonode/maps/templates/layouts/map_panels.html:510
 #: geonode/templates/_permissions_form.html:28 geonode/templates/base.html:679
 #, fuzzy
 #| msgid "Message Inbox"
@@ -1682,58 +1093,18 @@ msgstr "Viesti Saapuneet"
 
 #: geonode/documents/templates/layouts/doc_panels.html:520
 #: geonode/layers/templates/layouts/panels.html:523
-#: geonode/maps/templates/layouts/map_panels.html:517
+#: geonode/maps/templates/layouts/map_panels.html:516
 #: geonode/templates/_permissions_form.html:34 geonode/templates/base.html:685
 msgid "OK"
 msgstr ""
 
 #: geonode/documents/templates/layouts/doc_panels.html:540
 #: geonode/layers/templates/layouts/panels.html:584
-#: geonode/maps/templates/layouts/map_panels.html:537
+#: geonode/maps/templates/layouts/map_panels.html:536
 #, fuzzy
 #| msgid "Is Published"
 msgid "Publishing"
 msgstr "On julkaistu"
-
-#: geonode/documents/views.py:64
-msgid "You are not permitted to delete this document"
-msgstr "Sinulla ei ole oikeutta poistaa tätä asiakirjaa"
-
-#: geonode/documents/views.py:65
-msgid "You do not have permissions for this document."
-msgstr "Sinulla ei ole oikeuksia tämän asiakirjan."
-
-#: geonode/documents/views.py:66
-msgid "You are not permitted to modify this document"
-msgstr "Sinulla ei ole oikeutta muuttaa tätä asiakirjaa"
-
-#: geonode/documents/views.py:68
-msgid "You are not permitted to modify this document's metadata"
-msgstr "Sinulla ei ole oikeutta muuttaa tätä asiakirjaa metatietoja"
-
-#: geonode/documents/views.py:69
-msgid "You are not permitted to view this document"
-msgstr "Sinulla ei ole oikeuksia tarkastella tätä asiakirjaa"
-
-#: geonode/documents/views.py:103 geonode/documents/views.py:177
-msgid "You are not allowed to view this document."
-msgstr "Et voi tarkastella tätä asiakirjaa."
-
-#: geonode/documents/views.py:354
-msgid "You are not allowed to edit this document."
-msgstr "Sinulla ei ole lupaa muokata tätä asiakirjaa."
-
-#: geonode/documents/views.py:435 geonode/layers/views.py:994
-#, fuzzy
-#| msgid "Set permissions for this resource"
-msgid "You must set a point of contact for this resource"
-msgstr "Käyttöoikeuksien määrittäminen tämä resurssi"
-
-#: geonode/documents/views.py:452 geonode/layers/views.py:1011
-#, fuzzy
-#| msgid "Set permissions for this resource"
-msgid "You must set an author for this resource"
-msgstr "Käyttöoikeuksien määrittäminen tämä resurssi"
 
 #: geonode/favorite/templates/favorite/_favorite.html:5
 #: geonode/templates/_actions.html:23
@@ -1755,50 +1126,6 @@ msgstr "Lisää suosituksiin"
 #: geonode/favorite/templates/favorite/favorite_list.html:8
 msgid "Favorites for"
 msgstr "Suositukset "
-
-#: geonode/geoserver/__init__.py:75
-msgid "Layer Uploaded"
-msgstr "Kerros Ladattu"
-
-#: geonode/geoserver/__init__.py:75
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "A layer was uploaded"
-msgstr "Kerros ladattu"
-
-#: geonode/geoserver/__init__.py:76 geonode/layers/__init__.py:33
-msgid "Comment on Layer"
-msgstr "Kommentoi Layer"
-
-#: geonode/geoserver/__init__.py:76 geonode/layers/__init__.py:33
-msgid "A layer was commented on"
-msgstr "Kerros kommentoi"
-
-#: geonode/geoserver/__init__.py:77 geonode/layers/__init__.py:34
-msgid "Rating for Layer"
-msgstr "Luokitus Layer"
-
-#: geonode/geoserver/__init__.py:77 geonode/layers/__init__.py:34
-msgid "A rating was given to a layer"
-msgstr "Arvosana annettiin kerros"
-
-#: geonode/geoserver/createlayer/forms.py:35
-#, fuzzy
-#| msgid "Layer Name"
-msgid "Layer name"
-msgstr "Tason nimi"
-
-#: geonode/geoserver/createlayer/forms.py:36
-#, fuzzy
-#| msgid "Layer Title"
-msgid "Layer title"
-msgstr "Kerros Otsikko"
-
-#: geonode/geoserver/createlayer/forms.py:37
-#, fuzzy
-#| msgid "property type"
-msgid "Geometry type"
-msgstr "kiinteistön tyyppi"
 
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:6
 #: geonode/templates/base.html:289 geonode/templates/base.html:455
@@ -1836,194 +1163,9 @@ msgstr "Ominaisuus"
 
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:41
 #: geonode/groups/templates/groups/group_create.html:26
-#: geonode/monitoring/models.py:354
 #: geonode/services/templates/services/service_register.html:18
 msgid "Create"
 msgstr "Luoda"
-
-#: geonode/geoserver/helpers.py:681
-#, fuzzy
-#| msgid "Not provided"
-msgid "No abstract provided"
-msgstr "Ei toimiteta"
-
-#: geonode/geoserver/helpers.py:1427
-msgid "An exception occurred loading data to PostGIS"
-msgstr ""
-
-#: geonode/geoserver/helpers.py:1432
-msgid " Additionally an error occured during database cleanup"
-msgstr ""
-
-#: geonode/geoserver/ows.py:68
-msgid "GZIP"
-msgstr ""
-
-#: geonode/geoserver/ows.py:69
-msgid "GeoTIFF"
-msgstr "GeoTIFF"
-
-#: geonode/geoserver/ows.py:110
-msgid "Zipped Shapefile"
-msgstr "Vetoketjullisten Shapefile"
-
-#: geonode/geoserver/ows.py:111
-msgid "GML 2.0"
-msgstr "GML 2.0"
-
-#: geonode/geoserver/ows.py:112
-msgid "GML 3.1.1"
-msgstr "GML 3.1.1"
-
-#: geonode/geoserver/ows.py:113
-msgid "CSV"
-msgstr "CSV"
-
-#: geonode/geoserver/ows.py:114
-msgid "Excel"
-msgstr "Kunnostautua"
-
-#: geonode/geoserver/ows.py:115
-msgid "GeoJSON"
-msgstr "GeoJSON"
-
-#: geonode/geoserver/ows.py:157
-msgid "JPEG"
-msgstr "JPEG"
-
-#: geonode/geoserver/ows.py:158
-msgid "PDF"
-msgstr "PDF"
-
-#: geonode/geoserver/ows.py:159
-msgid "PNG"
-msgstr "PNG"
-
-#: geonode/geoserver/views.py:509
-msgid "You don't have permissions to change style for this layer"
-msgstr "Sinulla ei ole oikeuksia muuttaa tyyliä tähän kerrokseen"
-
-#: geonode/geoserver/views.py:579 geonode/geoserver/views.py:635
-msgid "Bad HTTP Authorization Credentials."
-msgstr "Bad HTTP Authorization valtakirjojen."
-
-#: geonode/groups/forms.py:35
-msgid ""
-"a short version of the name consisting only of letters, numbers, underscores "
-"and hyphens."
-msgstr ""
-"lyhyt versio nimestä, jossa esiintyy vain kirjaimia, numeroita, alaviivoja "
-"ja väliviivoja."
-
-#: geonode/groups/forms.py:43
-msgid "A group already exists with that slug."
-msgstr "Ryhmä on jo olemassa, että etana."
-
-#: geonode/groups/forms.py:50 geonode/groups/forms.py:77
-msgid "A group already exists with that name."
-msgstr "Ryhmä on jo olemassa tällä nimellä."
-
-#: geonode/groups/forms.py:87
-#, fuzzy
-#| msgid "User Activities"
-msgid "User Identifiers"
-msgstr "Käyttäjän toimet"
-
-#: geonode/groups/forms.py:97
-msgid "Assign manager role"
-msgstr ""
-
-#: geonode/groups/forms.py:111
-#, python-format
-msgid ""
-"The following are not valid usernames: %(errors)s; not added to the group"
-msgstr ""
-
-#: geonode/groups/models.py:43 geonode/layers/models.py:158
-#: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
-#: geonode/services/templates/services/service_resources_harvest.html:31
-#: geonode/templates/metadata_detail.html:130
-#: geonode/templates/metadata_detail.html:272
-#: geonode/templates/metadata_detail.html:353
-msgid "Name"
-msgstr "Nimi"
-
-#: geonode/groups/models.py:47 geonode/templates/base.html:314
-#: geonode/templates/search/_general_filters.html:76
-#: geonode/templates/search/_search_user_content.html:28
-#, fuzzy
-#| msgid "Categories"
-msgid "Group Categories"
-msgstr "Kategoriat"
-
-#: geonode/groups/models.py:65
-msgid "Public"
-msgstr "Julkinen"
-
-#: geonode/groups/models.py:66
-msgid "Public (invite-only)"
-msgstr "Julkinen (vain kutsutuille)"
-
-#: geonode/groups/models.py:67
-msgid "Private"
-msgstr "Yksityinen"
-
-#: geonode/groups/models.py:70
-msgid ""
-"Public: Any registered user can view and join a public group.<br>Public "
-"(invite-only):Any registered user can view the group.  Only invited users "
-"can join.<br>Private: Registered users cannot see any details about the "
-"group, including membership.  Only invited users can join."
-msgstr ""
-"Julkinen: Kaikki rekisteröityneet käyttäjät voivat katsella ja liittyä "
-"julkiseen ryhmään. <br> Julkinen (vain kutsutuille): Jokainen "
-"rekisteröitynyt käyttäjä voi tarkastella ryhmän. Vain kutsutut käyttäjät "
-"voivat liittyä. <br> Yksityinen: Rekisteröityneet käyttäjät eivät voi nähdä "
-"mitään yksityiskohtia ryhmä, jäsenyys mukaan lukien. Vain kutsutut käyttäjät "
-"voivat liittyä."
-
-#: geonode/groups/models.py:75
-msgid ""
-"Email used to contact one or all group members, such as a mailing list, "
-"shared email, or exchange group."
-msgstr ""
-"Sähköposti käytetään yhteyttä yhteen tai kaikille ryhmän jäsenille, kuten "
-"postituslistalle, yhteinen sähköposti, tai vaihto ryhmä."
-
-#: geonode/groups/models.py:81
-msgid "Logo"
-msgstr ""
-
-#: geonode/groups/models.py:84
-#: geonode/people/templates/people/profile_detail.html:67
-#: geonode/templates/invitations/forms/_invite.html:14
-msgid "Email"
-msgstr ""
-
-#: geonode/groups/models.py:90 geonode/people/forms.py:94
-msgid "A space or comma-separated list of keywords"
-msgstr "Tyhjämerkillä tai pilkulla erotettu lista avainsanoja"
-
-#: geonode/groups/models.py:93
-#, fuzzy
-#| msgid "Success"
-msgid "Access"
-msgstr "Onnistui"
-
-#: geonode/groups/models.py:98 geonode/templates/search/_general_filters.html:4
-msgid "Categories"
-msgstr "Kategoriat"
-
-#: geonode/groups/models.py:241
-#: geonode/groups/templates/groups/group_members.html:37
-#: geonode/groups/templates/groups/group_members.html:63
-#: geonode/groups/templates/groups/group_members.html:90
-msgid "Manager"
-msgstr "Johtaja"
-
-#: geonode/groups/models.py:242
-msgid "Member"
-msgstr "Jäsen"
 
 #: geonode/groups/templates/groups/activity.html:7
 #: geonode/groups/templates/groups/activity.html:8
@@ -2034,7 +1176,6 @@ msgstr "RSS-syöte varten"
 
 #: geonode/groups/templates/groups/activity.html:25
 #: geonode/groups/templates/groups/group_members.html:22
-#: geonode/monitoring/models.py:353
 #: geonode/social/templates/social/activity_list.html:20
 #: geonode/templates/user_messages/inbox.html:17
 msgid "All"
@@ -2220,6 +1361,12 @@ msgstr ""
 msgid "Current Members"
 msgstr "Jäsenet"
 
+#: geonode/groups/templates/groups/group_members.html:37
+#: geonode/groups/templates/groups/group_members.html:63
+#: geonode/groups/templates/groups/group_members.html:90
+msgid "Manager"
+msgstr "Johtaja"
+
 #: geonode/groups/templates/groups/group_members.html:46
 #: geonode/groups/templates/groups/group_members.html:72
 #: geonode/groups/templates/groups/group_members.html:99
@@ -2297,293 +1444,6 @@ msgstr "Luo ryhmä"
 #| msgid "Create Group"
 msgid "Edit Group Category"
 msgstr "Luo ryhmä"
-
-#: geonode/invitations/forms.py:53
-#, python-format
-msgid "The e-mail address '%(email)s' has already been invited."
-msgstr ""
-
-#: geonode/invitations/forms.py:55
-#, python-format
-msgid "The e-mail address '%(email)s' has already accepted an invite."
-msgstr ""
-
-#: geonode/invitations/forms.py:57
-#, python-format
-msgid "An active user is already using the e-mail address '%(email)s'"
-msgstr ""
-
-#: geonode/invitations/forms.py:75 geonode/templates/base.html:506
-#, fuzzy
-#| msgid "email"
-msgid "E-mail"
-msgstr "sähköposti"
-
-#: geonode/invitations/views.py:71
-#, python-format
-msgid "Invitations succefully sent to '%(email)s'"
-msgstr ""
-
-#: geonode/invitations/views.py:78
-#, python-format
-msgid ""
-"Sorry, it was not possible to invite '%(email)s' due to the following isse: "
-"%(error)s (%(type)s)"
-msgstr ""
-
-#: geonode/layers/__init__.py:28
-#, fuzzy
-#| msgid "Map Created"
-msgid "Layer Created"
-msgstr "Kartta Luotu"
-
-#: geonode/layers/__init__.py:28
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A Layer was created"
-msgstr "Kerros kommentoi"
-
-#: geonode/layers/__init__.py:29
-#, fuzzy
-#| msgid "Layer Uploaded"
-msgid "Layer Updated"
-msgstr "Kerros Ladattu"
-
-#: geonode/layers/__init__.py:29
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A Layer was updated"
-msgstr "Kerros kommentoi"
-
-#: geonode/layers/__init__.py:30
-#, fuzzy
-#| msgid "Not provided"
-msgid "Layer Approved"
-msgstr "Ei toimiteta"
-
-#: geonode/layers/__init__.py:30
-msgid "A Layer was approved by a Manager"
-msgstr ""
-
-#: geonode/layers/__init__.py:31
-#, fuzzy
-#| msgid "Published From"
-msgid "Layer Published"
-msgstr "Julkaistu Alkaen"
-
-#: geonode/layers/__init__.py:31
-msgid "A Layer was published"
-msgstr ""
-
-#: geonode/layers/__init__.py:32
-#, fuzzy
-#| msgid "Layer Default Style"
-msgid "Layer Deleted"
-msgstr "Kerros Default Style"
-
-#: geonode/layers/__init__.py:32
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A Layer was deleted"
-msgstr "Kerros kommentoi"
-
-#: geonode/layers/models.py:52
-msgid "YYYYMMDD"
-msgstr ""
-
-#: geonode/layers/models.py:53
-msgid "YYYYMMDD'T'hhmmss"
-msgstr ""
-
-#: geonode/layers/models.py:54
-msgid "YYYYMMDD'T'hhmmss'Z'"
-msgstr ""
-
-#: geonode/layers/models.py:72 geonode/qgis_server/models.py:198
-msgid "style name"
-msgstr "tyylin nimi"
-
-#: geonode/layers/models.py:74
-msgid "sld text"
-msgstr "SLD teksti"
-
-#: geonode/layers/models.py:76
-msgid "sld version"
-msgstr "SLD versio"
-
-#: geonode/layers/models.py:80
-msgid "sld url"
-msgstr "SLD url"
-
-#: geonode/layers/models.py:155
-msgid "Workspace"
-msgstr ""
-
-#: geonode/layers/models.py:156
-msgid "Store"
-msgstr ""
-
-#: geonode/layers/models.py:157
-#, fuzzy
-#| msgid "feature type"
-msgid "Storetype"
-msgstr "ominaisuustyyppi"
-
-#: geonode/layers/models.py:159
-#, fuzzy
-#| msgid "CSW typename"
-msgid "Typename"
-msgstr "CSW typename"
-
-#: geonode/layers/models.py:161
-msgid "Is mosaic?"
-msgstr ""
-
-#: geonode/layers/models.py:162
-msgid "Has time?"
-msgstr ""
-
-#: geonode/layers/models.py:163
-msgid "Has elevation?"
-msgstr ""
-
-#: geonode/layers/models.py:165
-msgid "Time regex"
-msgstr ""
-
-#: geonode/layers/models.py:170
-msgid "Elevation regex"
-msgstr ""
-
-#: geonode/layers/models.py:275
-msgid "File cannot be opened, maybe check the encoding"
-msgstr ""
-
-#: geonode/layers/models.py:386
-#, fuzzy
-#| msgid "attribute name"
-msgid "attribute name"
-msgstr "määritteen nimi"
-
-#: geonode/layers/models.py:387
-msgid "name of attribute as stored in shapefile/spatial database"
-msgstr "nimeksi ominaisuuden tallennettu shapefile / spatiaalinen tietokanta"
-
-#: geonode/layers/models.py:393
-#, fuzzy
-#| msgid "distribution description"
-msgid "attribute description"
-msgstr "distribution description"
-
-#: geonode/layers/models.py:394
-msgid "description of attribute to be used in metadata"
-msgstr "kuvaus ominaisuuden, jota käytetään metatietojen"
-
-#: geonode/layers/models.py:399
-msgid "attribute label"
-msgstr "Taito etiketti"
-
-#: geonode/layers/models.py:400
-msgid "title of attribute as displayed in GeoNode"
-msgstr "otsikko ominaisuuden näytetään GeoNode"
-
-#: geonode/layers/models.py:406
-msgid "attribute type"
-msgstr "Taito tyyppi"
-
-#: geonode/layers/models.py:407
-msgid "the data type of the attribute (integer, string, geometry, etc)"
-msgstr "tietotyyppi määrite (kokonaisluku, merkkijono, geometria, jne)"
-
-#: geonode/layers/models.py:414
-msgid "visible?"
-msgstr "näkyvissä?"
-
-#: geonode/layers/models.py:415
-msgid "specifies if the attribute should be displayed in identify results"
-msgstr "täsmennetään, jos määrite pitäisi näkyä tunnistaa tuloksia"
-
-#: geonode/layers/models.py:417
-msgid "display order"
-msgstr "näyttöjärjestystä"
-
-#: geonode/layers/models.py:418
-msgid ""
-"specifies the order in which attribute should be displayed in identify "
-"results"
-msgstr "Määrittää järjestyksen, jossa määrite pitäisi näkyä tunnistaa tuloksia"
-
-#: geonode/layers/models.py:422
-#, fuzzy
-#| msgid "count"
-msgid "count"
-msgstr "laskea"
-
-#: geonode/layers/models.py:423
-msgid "count value for this field"
-msgstr "count arvo tällä alalla"
-
-#: geonode/layers/models.py:426
-msgid "min"
-msgstr "min"
-
-#: geonode/layers/models.py:427
-msgid "minimum value for this field"
-msgstr "minimiarvo tällä alalla"
-
-#: geonode/layers/models.py:434
-msgid "max"
-msgstr "Max"
-
-#: geonode/layers/models.py:435
-msgid "maximum value for this field"
-msgstr "enimmäisarvo tällä alalla"
-
-#: geonode/layers/models.py:442
-msgid "average"
-msgstr "keskimäärin"
-
-#: geonode/layers/models.py:443
-msgid "average value for this field"
-msgstr "keskiarvo tällä alalla"
-
-#: geonode/layers/models.py:450
-msgid "median"
-msgstr "mediaani"
-
-#: geonode/layers/models.py:451
-msgid "median value for this field"
-msgstr "mediaani tällä alalla"
-
-#: geonode/layers/models.py:458
-msgid "standard deviation"
-msgstr "keskihajonta"
-
-#: geonode/layers/models.py:459
-msgid "standard deviation for this field"
-msgstr "keskihajonta tällä alalla"
-
-#: geonode/layers/models.py:466
-msgid "sum"
-msgstr "summa"
-
-#: geonode/layers/models.py:467
-msgid "sum value for this field"
-msgstr "summa-arvo tällä alalla"
-
-#: geonode/layers/models.py:474
-msgid "unique values for this field"
-msgstr "ainutlaatuinen kentän arvoja"
-
-#: geonode/layers/models.py:478
-#, fuzzy
-#| msgid "last modified"
-msgid "last modified"
-msgstr "viimeksi muutettu"
-
-#: geonode/layers/models.py:479
-msgid "date when attribute statistics were last updated"
-msgstr "jolloin määrite tilastoja on viimeksi päivitetty"
 
 #: geonode/layers/templates/layers/layer_change_poc.html:5
 msgid "Home"
@@ -2787,7 +1647,6 @@ msgid ""
 msgstr ""
 
 #: geonode/layers/templates/layers/layer_detail.html:412
-#: geonode/monitoring/models.py:1082
 msgid "Warning"
 msgstr ""
 
@@ -2827,8 +1686,7 @@ msgid "Set"
 msgstr ""
 
 #: geonode/layers/templates/layers/layer_detail.html:505
-#: geonode/monitoring/models.py:173 geonode/templates/index.html:66
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:5
+#: geonode/templates/index.html:66
 msgid "Layer"
 msgid_plural "Layers"
 msgstr[0] ""
@@ -3133,7 +1991,7 @@ msgstr "Jatkaa"
 #: geonode/templates/_comments.html:37
 #: geonode/templates/announcements/announcement_confirm_delete.html:21
 #: geonode/templates/announcements/announcement_form.html:24
-#: geonode/templates/user_messages/_message_snippet.html:39
+#: geonode/templates/user_messages/_message_snippet.html:34
 msgid "Delete"
 msgstr "Poistaa"
 
@@ -3247,7 +2105,7 @@ msgid "Dataset Attributes"
 msgstr "Attribuutteja"
 
 #: geonode/layers/templates/layouts/panels.html:613
-#: geonode/maps/templates/layouts/map_panels.html:566
+#: geonode/maps/templates/layouts/map_panels.html:565
 #, fuzzy
 #| msgid "Notice settings"
 msgid "Other Settings"
@@ -3857,249 +2715,6 @@ msgstr "Tai vain mennä"
 msgid "now"
 msgstr "nyt"
 
-#: geonode/layers/utils.py:496 geonode/layers/utils.py:520
-msgid "You are attempting to replace a vector layer with an unknown format."
-msgstr ""
-
-#: geonode/layers/utils.py:502 geonode/layers/views.py:1211
-msgid "You are attempting to replace a vector layer with a raster."
-msgstr ""
-
-#: geonode/layers/utils.py:505 geonode/layers/views.py:1215
-msgid "You are attempting to replace a raster layer with a vector."
-msgstr ""
-
-#: geonode/layers/utils.py:528
-msgid ""
-"Please ensure the name is consistent with the file you are trying to replace."
-msgstr ""
-
-#: geonode/layers/utils.py:533
-msgid "Local GeoNode layer has no geometry type."
-msgstr ""
-
-#: geonode/layers/utils.py:538
-msgid ""
-"Please ensure there is at least one geometry "
-"type                                 that is consistent with the file you "
-"are trying to replace."
-msgstr ""
-
-#: geonode/layers/utils.py:542
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
-msgstr ""
-
-#: geonode/layers/views.py:127
-msgid ""
-"There was an error while attempting to upload your data. Please try again, "
-"or contact and administrator if the problem continues."
-msgstr ""
-"Virhe yritettäessä ladata tietoja. Yritä uudelleen tai ota yhteyttä ja "
-"valvojalle, jos ongelma jatkuu."
-
-#: geonode/layers/views.py:130
-msgid ""
-"Note: this layer's orginal metadata was populated and preserved by importing "
-"a metadata XML file. This metadata cannot be edited."
-msgstr ""
-
-#: geonode/layers/views.py:134
-msgid "You are not permitted to delete this layer"
-msgstr "Sinulla ei ole oikeutta poistaa tämän kerroksen"
-
-#: geonode/layers/views.py:135
-msgid "You do not have permissions for this layer."
-msgstr "Sinulla ei ole oikeuksia tähän kerrokseen."
-
-#: geonode/layers/views.py:136
-msgid "You are not permitted to modify this layer"
-msgstr "Sinulla ei ole oikeutta muuttaa tätä kerros"
-
-#: geonode/layers/views.py:138
-msgid "You are not permitted to modify this layer's metadata"
-msgstr "Sinulla ei ole oikeutta muuttaa tätä kerrosta metatietoja"
-
-#: geonode/layers/views.py:139
-msgid "You are not permitted to view this layer"
-msgstr "Sinulla ei ole oikeuksia nähdäksesi tämän kerroksen"
-
-#: geonode/layers/views.py:277
-#, fuzzy
-#| msgid "Files to be uploaded"
-msgid "Failed to upload the layer"
-msgstr "Tiedostot ladattavaksi"
-
-#: geonode/layers/views.py:1311 geonode/layers/views.py:1356
-msgid "Unable to delete layer"
-msgstr ""
-
-#: geonode/layers/views.py:1315 geonode/layers/views.py:1360
-msgid ""
-"This layer is a member of a layer group, you must remove the layer from the "
-"group before deleting."
-msgstr ""
-
-#: geonode/layers/views.py:1408 geonode/maps/views.py:1406
-msgid "couldn't generate thumbnail"
-msgstr ""
-
-#: geonode/maps/__init__.py:28
-msgid "Map Created"
-msgstr "Kartta Luotu"
-
-#: geonode/maps/__init__.py:28
-#, fuzzy
-#| msgid "A map was commented on"
-msgid "A Map was created"
-msgstr "Kartta kommentoi"
-
-#: geonode/maps/__init__.py:29
-#, fuzzy
-#| msgid "Map Created"
-msgid "Map Updated"
-msgstr "Kartta Luotu"
-
-#: geonode/maps/__init__.py:29
-#, fuzzy
-#| msgid "last updated on"
-msgid "A Map was updated"
-msgstr "viimeksi päivitetty"
-
-#: geonode/maps/__init__.py:30
-#, fuzzy
-#| msgid "Not provided"
-msgid "Map Approved"
-msgstr "Ei toimiteta"
-
-#: geonode/maps/__init__.py:30
-msgid "A Map was approved by a Manager"
-msgstr ""
-
-#: geonode/maps/__init__.py:31
-#, fuzzy
-#| msgid "Published From"
-msgid "Map Published"
-msgstr "Julkaistu Alkaen"
-
-#: geonode/maps/__init__.py:31
-msgid "A Map was published"
-msgstr ""
-
-#: geonode/maps/__init__.py:32
-#, fuzzy
-#| msgid "Map Created"
-msgid "Map Deleted"
-msgstr "Kartta Luotu"
-
-#: geonode/maps/__init__.py:32
-#, fuzzy
-#| msgid "A map was commented on"
-msgid "A Map was deleted"
-msgstr "Kartta kommentoi"
-
-#: geonode/maps/__init__.py:33
-msgid "Comment on Map"
-msgstr "Kommentoi Kartta"
-
-#: geonode/maps/__init__.py:33
-msgid "A map was commented on"
-msgstr "Kartta kommentoi"
-
-#: geonode/maps/__init__.py:34
-msgid "Rating for Map"
-msgstr "Luokitus Kartta"
-
-#: geonode/maps/__init__.py:34
-msgid "A rating was given to a map"
-msgstr "Arvosana annettiin kartta"
-
-#: geonode/maps/models.py:64
-msgid "zoom"
-msgstr "zoomaus"
-
-#: geonode/maps/models.py:68
-#, fuzzy
-#| msgid "projection"
-msgid "projection"
-msgstr "projektio"
-
-#: geonode/maps/models.py:72
-msgid "center X"
-msgstr "keskus X"
-
-#: geonode/maps/models.py:76
-msgid "center Y"
-msgstr "keskus Y"
-
-#: geonode/maps/models.py:83
-msgid "Site URL"
-msgstr "Sivuston URL"
-
-#: geonode/maps/models.py:88
-msgid "Featured Map URL"
-msgstr "Ohjelmaan Kartta URL"
-
-#: geonode/maps/models.py:443
-msgid "stack order"
-msgstr "pino järjestys"
-
-#: geonode/maps/models.py:448
-#, fuzzy
-#| msgid "format"
-msgid "format"
-msgstr "muoto"
-
-#: geonode/maps/models.py:454
-msgid "name"
-msgstr "nimi"
-
-#: geonode/maps/models.py:457
-msgid "store"
-msgstr ""
-
-#: geonode/maps/models.py:463
-msgid "opacity"
-msgstr "sameus"
-
-#: geonode/maps/models.py:467
-msgid "styles"
-msgstr "tyylit"
-
-#: geonode/maps/models.py:472
-msgid "transparent"
-msgstr "läpinäkyvä"
-
-#: geonode/maps/models.py:476
-msgid "fixed"
-msgstr "kiinteä"
-
-#: geonode/maps/models.py:480
-#, fuzzy
-#| msgid "group"
-msgid "group"
-msgstr "ryhmä"
-
-#: geonode/maps/models.py:484
-msgid "visibility"
-msgstr "näkyvyys"
-
-#: geonode/maps/models.py:487
-msgid "ows URL"
-msgstr "OWS URL"
-
-#: geonode/maps/models.py:490
-msgid "layer params"
-msgstr "kerros params"
-
-#: geonode/maps/models.py:497
-msgid "source params"
-msgstr "lähde params"
-
-#: geonode/maps/models.py:607
-msgid "JSON Configuration"
-msgstr "JSON Configuration"
-
 #: geonode/maps/templates/maps/map_detail.html:26
 msgid "maps"
 msgstr ""
@@ -4118,8 +2733,7 @@ msgid "Download Map"
 msgstr "Lataa Kartta"
 
 #: geonode/maps/templates/maps/map_detail.html:171
-#: geonode/maps/templates/maps/map_view.html:7 geonode/monitoring/models.py:174
-#: geonode/templates/index.html:76
+#: geonode/maps/templates/maps/map_view.html:7 geonode/templates/index.html:76
 msgid "Map"
 msgid_plural "Maps"
 msgstr[0] ""
@@ -4212,7 +2826,6 @@ msgid "Copy to Clipboard"
 msgstr ""
 
 #: geonode/maps/templates/maps/map_download.html:6
-#: geonode/monitoring/models.py:360
 msgid "Download"
 msgstr "Lataa"
 
@@ -4281,10 +2894,6 @@ msgstr "Lataa Complete"
 msgid "Download Failed"
 msgstr "Lataus epäonnistui"
 
-#: geonode/maps/templates/maps/map_edit.html:7
-msgid "Edit Map"
-msgstr "Edit Kartta"
-
 #: geonode/maps/templates/maps/map_list.html:5
 #, fuzzy
 #| msgid "GeoExplorer"
@@ -4338,378 +2947,6 @@ msgid ""
 "        "
 msgstr ""
 
-#: geonode/maps/views.py:95
-msgid "You are not permitted to delete this map."
-msgstr "Sinulla ei ole oikeutta poistaa tätä karttaa."
-
-#: geonode/maps/views.py:96
-msgid "You do not have permissions for this map."
-msgstr "Sinulla ei ole oikeuksia tämän kartan."
-
-#: geonode/maps/views.py:97
-msgid "You must be logged in to save this map"
-msgstr "Sinun täytyy olla kirjautunut sisään pelastaa tämä kartta"
-
-#: geonode/maps/views.py:98
-msgid "You are not permitted to save or edit this map."
-msgstr "Sinulla ei ole oikeutta tallentaa tai muokata tätä karttaa."
-
-#: geonode/maps/views.py:100
-msgid "You are not allowed to modify this map's metadata."
-msgstr "Sinulla ei ole lupaa muokata tätä karttaa metatietoja."
-
-#: geonode/maps/views.py:101
-msgid "You are not allowed to view this map."
-msgstr "Sinulla ei ole lupaa katsella tätä karttaa."
-
-#: geonode/maps/views.py:102
-msgid "An unknown error has occured."
-msgstr "Tuntematon virhe on tapahtunut."
-
-#: geonode/maps/views.py:1413
-#, fuzzy
-#| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "Thumbnail"
-
-#: geonode/maps/views.py:1416
-#, fuzzy
-#| msgid "Thumbnail"
-msgid "error saving thumbnail"
-msgstr "Thumbnail"
-
-#: geonode/monitoring/__init__.py:45
-msgid "Monitoring alert"
-msgstr ""
-
-#: geonode/monitoring/__init__.py:46
-msgid "Alert situation reported by monitoring"
-msgstr ""
-
-#: geonode/monitoring/collector.py:1008
-msgid "GeoNode Monitoring on {} reports errors: {}"
-msgstr ""
-
-#: geonode/monitoring/forms.py:30
-#, fuzzy
-#| msgid "Email Address"
-msgid "Enter valid email addresses."
-msgstr "Sähköpostiosoite"
-
-#: geonode/monitoring/management/commands/collect_metrics.py:50
-msgid "Show list of services"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:52
-#: geonode/monitoring/management/commands/render_metrics.py:57
-msgid ""
-"Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
-"provided, last sync will be used."
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:55
-#: geonode/monitoring/management/commands/render_metrics.py:59
-msgid ""
-"Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
-"provided, now will be used."
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:58
-msgid "Force check"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:60
-msgid "Format of audit log (xml, json)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:62
-msgid ""
-"Should old data be preserved (default: no, data older than settings."
-"MONITORING_DATA_TTL will be removed)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:65
-msgid "Should stop on first error occured (default: no)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:67
-msgid "Should process and send notifications as well (default: no)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/collect_metrics.py:69
-msgid "Collect data from this service only"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:49
-msgid "Show list of metrics"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:51
-msgid "Show list of labels for metric"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:54
-msgid "Show list of resources for metric"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:62
-msgid "Data aggregation interval in seconds (default: 60)"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:63
-#, fuzzy
-#| msgid "attribute name"
-msgid "Metric name"
-msgstr "määritteen nimi"
-
-#: geonode/monitoring/management/commands/render_metrics.py:66
-msgid "Show data for specific resource in resource_type=resource_name format"
-msgstr ""
-
-#: geonode/monitoring/management/commands/render_metrics.py:69
-#, fuzzy
-#| msgid "reference date for the cited resource"
-msgid "Show data for specific resource"
-msgstr "viitatun resurssin viitepäivä"
-
-#: geonode/monitoring/management/commands/render_metrics.py:72
-msgid "Show data for specific label"
-msgstr ""
-
-#: geonode/monitoring/models.py:100 geonode/templates/500.html:199
-#: geonode/templates/base.html:511
-msgid "GeoNode"
-msgstr "GeoNode"
-
-#: geonode/monitoring/models.py:101
-#: geonode/people/templates/people/profile_detail.html:163
-#: geonode/templates/500.html:278
-msgid "GeoServer"
-msgstr "GeoServer"
-
-#: geonode/monitoring/models.py:102
-#, fuzzy
-#| msgid "GeoServer"
-msgid "Host (GeoServer)"
-msgstr "GeoServer"
-
-#: geonode/monitoring/models.py:103
-#, fuzzy
-#| msgid "About GeoNode"
-msgid "Host (GeoNode)"
-msgstr "Tietoja GeoNode"
-
-#: geonode/monitoring/models.py:172
-#, fuzzy
-#| msgid "Resources"
-msgid "No resource"
-msgstr "Resurssit"
-
-#: geonode/monitoring/models.py:175
-#, fuzzy
-#| msgid "Resources"
-msgid "Resource base"
-msgstr "Resurssit"
-
-#: geonode/monitoring/models.py:177
-#, fuzzy
-#| msgid "Styles"
-msgid "Style"
-msgstr "Tyylit"
-
-#: geonode/monitoring/models.py:178
-#: geonode/people/templates/people/profile_detail.html:164
-#: geonode/templates/500.html:279 geonode/templates/base.html:383
-msgid "Admin"
-msgstr "Admin"
-
-#: geonode/monitoring/models.py:180
-msgid "Other"
-msgstr ""
-
-#: geonode/monitoring/models.py:210 geonode/monitoring/models.py:261
-msgid "Rate"
-msgstr ""
-
-#: geonode/monitoring/models.py:211 geonode/monitoring/models.py:263
-#, fuzzy
-#| msgid "count"
-msgid "Count"
-msgstr "laskea"
-
-#: geonode/monitoring/models.py:212
-msgid "Value"
-msgstr ""
-
-#: geonode/monitoring/models.py:213
-msgid "Value numeric"
-msgstr ""
-
-#: geonode/monitoring/models.py:252
-msgid "Bytes"
-msgstr ""
-
-#: geonode/monitoring/models.py:253
-msgid "Kilobytes"
-msgstr ""
-
-#: geonode/monitoring/models.py:254
-msgid "Megabytes"
-msgstr ""
-
-#: geonode/monitoring/models.py:255
-msgid "Gigabytes"
-msgstr ""
-
-#: geonode/monitoring/models.py:256
-msgid "Bytes per second"
-msgstr ""
-
-#: geonode/monitoring/models.py:257
-msgid "Kilobytes per second"
-msgstr ""
-
-#: geonode/monitoring/models.py:258
-msgid "Megabytes per second"
-msgstr ""
-
-#: geonode/monitoring/models.py:259
-msgid "Gigabytes per second"
-msgstr ""
-
-#: geonode/monitoring/models.py:260
-msgid "Seconds"
-msgstr ""
-
-#: geonode/monitoring/models.py:262
-msgid "Percentage"
-msgstr ""
-
-#: geonode/monitoring/models.py:351
-#, fuzzy
-#| msgid "local OWS"
-msgid "Not OWS"
-msgstr "paikallinen OWS"
-
-#: geonode/monitoring/models.py:352
-msgid "Any OWS"
-msgstr ""
-
-#: geonode/monitoring/models.py:356
-#: geonode/templates/pinax/notifications/notice_settings.html:51
-msgid "Change"
-msgstr "Muutos"
-
-#: geonode/monitoring/models.py:357
-#, fuzzy
-#| msgid "Edit Metadata"
-msgid "Change Metadata"
-msgstr "Edit Metadata"
-
-#: geonode/monitoring/models.py:358
-#, fuzzy
-#| msgid "Edit Metadata"
-msgid "View Metadata"
-msgstr "Edit Metadata"
-
-#: geonode/monitoring/models.py:359
-msgid "View"
-msgstr "View"
-
-#: geonode/monitoring/models.py:361
-#, fuzzy
-#| msgid "Is Published"
-msgid "Publish"
-msgstr "On julkaistu"
-
-#: geonode/monitoring/models.py:363
-#, fuzzy
-#| msgid "GeoServer"
-msgid "Geoserver event"
-msgstr "GeoServer"
-
-#: geonode/monitoring/models.py:432
-#, fuzzy
-#| msgid "List of resources using this document:"
-msgid "List of resources affected"
-msgstr "Luettelo resursseja tämän dokumentin avulla"
-
-#: geonode/monitoring/models.py:439
-#, fuzzy
-#| msgid "Resource using this document"
-msgid "Response processing time in ms"
-msgstr "Resurssi tämän dokumentin avulla"
-
-#: geonode/monitoring/models.py:1071
-msgid "1 minute"
-msgstr ""
-
-#: geonode/monitoring/models.py:1072
-msgid "5 minutes"
-msgstr ""
-
-#: geonode/monitoring/models.py:1073
-msgid "10 minutes"
-msgstr ""
-
-#: geonode/monitoring/models.py:1074
-msgid "30 minutes"
-msgstr ""
-
-#: geonode/monitoring/models.py:1075
-msgid "1 hour"
-msgstr ""
-
-#: geonode/monitoring/models.py:1083 geonode/templates/metadata_base.html:128
-#: geonode/templates/metadata_base.html:131
-#: geonode/templates/socialaccount/authentication_error.html:11
-msgid "Error"
-msgstr ""
-
-#: geonode/monitoring/models.py:1084
-msgid "Fatal"
-msgstr ""
-
-#: geonode/monitoring/models.py:1098
-msgid "Expected min/max values for user configuration"
-msgstr ""
-
-#: geonode/monitoring/models.py:1106
-msgid "Marker of last delivery"
-msgstr ""
-
-#: geonode/monitoring/models.py:1109
-msgid "Minimum time between subsequent notifications"
-msgstr ""
-
-#: geonode/monitoring/models.py:1114
-msgid "How severe would be error from this notification"
-msgstr ""
-
-#: geonode/monitoring/models.py:1119
-msgid "Is it active"
-msgstr ""
-
-#: geonode/monitoring/models.py:1126
-msgid "{}: {}"
-msgstr ""
-
-#: geonode/monitoring/models.py:1390
-msgid "Value must be above"
-msgstr ""
-
-#: geonode/monitoring/models.py:1391
-msgid "Value must be below"
-msgstr ""
-
-#: geonode/monitoring/models.py:1392
-msgid "Last update must not be older than"
-msgstr ""
-
-#: geonode/monitoring/models.py:1542
-msgid "Max timeout for given metric before error should be raised"
-msgstr ""
-
 #: geonode/monitoring/templates/monitoring/index.html:5
 #: geonode/monitoring/templates/monitoring/non_superuser.html:4
 #: geonode/templates/base.html:389
@@ -4718,261 +2955,6 @@ msgstr ""
 
 #: geonode/monitoring/templates/monitoring/non_superuser.html:10
 msgid "Only superusers can monitor performance"
-msgstr ""
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:3
-msgid "Hi,"
-msgstr ""
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:5
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:3
-msgid "Monitoring on"
-msgstr ""
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:5
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:3
-#, fuzzy
-#| msgid "The following groups:"
-msgid "has detected following problems :"
-msgstr "Seuraavat ryhmät:"
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:9
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:6
-msgid "spotted"
-msgstr ""
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:9
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:10
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:6
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:7
-#: geonode/social/templates/social/_activity_item.html:31
-msgid "ago"
-msgstr "sitten"
-
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:10
-#: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:7
-msgid "emerged"
-msgstr ""
-
-#: geonode/people/__init__.py:26
-msgid "User following you"
-msgstr "Käyttäjä seuraa sinua"
-
-#: geonode/people/__init__.py:26
-#, fuzzy
-#| msgid "This user is not following anyone"
-msgid "Another user has started following you"
-msgstr "Tämä käyttäjä ei seuraa muita"
-
-#: geonode/people/__init__.py:27
-msgid "User requested access"
-msgstr ""
-
-#: geonode/people/__init__.py:28
-msgid "A new user has requested access to the site"
-msgstr ""
-
-#: geonode/people/__init__.py:29
-#, fuzzy
-#| msgid "Recent activity"
-msgid "Account activated"
-msgstr "Viimeaikainen toiminta"
-
-#: geonode/people/__init__.py:30
-msgid "This account is now active and can log in the site"
-msgstr ""
-
-#: geonode/people/admin.py:56
-msgid "Personal info"
-msgstr "Henkilökohtaiset tiedot"
-
-#: geonode/people/admin.py:59
-msgid "Important dates"
-msgstr "Tärkeitä päivämääriä"
-
-#: geonode/people/admin.py:60
-#, fuzzy
-#| msgid "Edit profile"
-msgid "Extended profile"
-msgstr "Muokkaa profiilia"
-
-#: geonode/people/admin.py:159
-msgid "Password changed successfully."
-msgstr "Salasana vaihdettu onnistuneesti."
-
-#: geonode/people/admin.py:169
-#, python-format
-msgid "Change password: %s"
-msgstr "Vaihda salasana: %s"
-
-#: geonode/people/enumerations.py:39
-msgid "party who authored the resource"
-msgstr "osapuoli, joka kirjoitti resurssi"
-
-#: geonode/people/enumerations.py:40
-msgid ""
-"party who has processed the data in a manner such that the resource has been "
-"modified"
-msgstr "osapuoli, joka on muokannut tietoa siten, että resurssi on muuttunut"
-
-#: geonode/people/enumerations.py:41
-msgid "party who published the resource"
-msgstr "osapuoli, joka on julkaissut resurssin"
-
-#: geonode/people/enumerations.py:42
-msgid ""
-"party that accepts accountability and responsibility for the data and "
-"ensures         appropriate care and maintenance of the resource"
-msgstr ""
-"puolue, joka hyväksyy vastuullisuutta ja vastuu tiedosta ja joka varmistaa "
-"asianmukaisen hoidon ja ylläpidon luonnonvarojen"
-
-#: geonode/people/enumerations.py:44
-msgid ""
-"party who can be contacted for acquiring knowledge about or acquisition of "
-"the resource"
-msgstr ""
-"osapuoli, joka voidaan ottaa yhteyttä hankkimalla tietoa tai hankinnan "
-"resurssi"
-
-#: geonode/people/enumerations.py:45
-msgid "party who distributes the resource"
-msgstr "osapuoli, joka jakelee resurssia"
-
-#: geonode/people/enumerations.py:46
-msgid "party who uses the resource"
-msgstr "osapuoli, joka käyttää resurssia"
-
-#: geonode/people/enumerations.py:47
-msgid "party that supplies the resource"
-msgstr "osapuoli, jolta resurssi"
-
-#: geonode/people/enumerations.py:48
-msgid "party who created the resource"
-msgstr "osapuoli, joka on luonut resurssin"
-
-#: geonode/people/enumerations.py:49
-msgid "party that owns the resource"
-msgstr "Osapuoli, joka omistaa resurssin"
-
-#: geonode/people/enumerations.py:50
-msgid "key party responsible for gathering information and conducting research"
-msgstr "keskeinen osapuoli vastaa tiedon keruusta ja tutkimuksesta"
-
-#: geonode/people/forms.py:75
-#, fuzzy
-#| msgid "Email Address"
-msgid "Email Address"
-msgstr "Sähköpostiosoite"
-
-#: geonode/people/models.py:66
-#, fuzzy
-#| msgid "Organization Name"
-msgid "Organization Name"
-msgstr "Organisaation nimi"
-
-#: geonode/people/models.py:70
-msgid "name of the responsible organization"
-msgstr "nimi vastuuorganisaatiolle"
-
-#: geonode/people/models.py:72 geonode/templates/500.html:266
-#: geonode/templates/base.html:375
-msgid "Profile"
-msgstr "Profiili"
-
-#: geonode/people/models.py:75
-msgid "introduce yourself"
-msgstr "Esittele itsesi"
-
-#: geonode/people/models.py:77
-msgid "Position Name"
-msgstr "Sijainti Nimi"
-
-#: geonode/people/models.py:81
-msgid "role or position of the responsible person"
-msgstr "rooli tai asema vastuuhenkilö"
-
-#: geonode/people/models.py:82
-#: geonode/people/templates/people/profile_detail.html:89
-#: geonode/templates/metadata_detail.html:145
-#: geonode/templates/metadata_detail.html:287
-#: geonode/templates/metadata_detail.html:368
-msgid "Voice"
-msgstr "Ääni"
-
-#: geonode/people/models.py:83
-msgid ""
-"telephone number by which individuals can speak to the responsible "
-"organization or individual"
-msgstr ""
-"puhelinnumero, johon ihmiset voivat puhua vastaavan organisaation tai "
-"yksittäisen"
-
-#: geonode/people/models.py:84
-msgid "Facsimile"
-msgstr "Faksi"
-
-#: geonode/people/models.py:85
-msgid ""
-"telephone number of a facsimile machine for the responsible organization or "
-"individual"
-msgstr ""
-"puhelinnumero faksimilekonetta vastuullista organisaation tai yksittäisen"
-
-#: geonode/people/models.py:87
-msgid "Delivery Point"
-msgstr "Jakelupisteen"
-
-#: geonode/people/models.py:91
-msgid ""
-"physical and email address at which the organization or individual may be "
-"contacted"
-msgstr ""
-"fyysinen ja sähköpostiosoite, johon organisaatio tai henkilö voi ottaa "
-"yhteyttä"
-
-#: geonode/people/models.py:93
-msgid "City"
-msgstr "Kaupunki"
-
-#: geonode/people/models.py:97
-msgid "city of the location"
-msgstr "kaupungin sijainti"
-
-#: geonode/people/models.py:99
-msgid "Administrative Area"
-msgstr "Hallinnollinen alue"
-
-#: geonode/people/models.py:103
-msgid "state, province of the location"
-msgstr "valtion, maakunnan sijainti"
-
-#: geonode/people/models.py:105
-msgid "Postal Code"
-msgstr "Postinumero"
-
-#: geonode/people/models.py:109
-msgid "ZIP or other postal code"
-msgstr "ZIP tai muu postinumeron"
-
-#: geonode/people/models.py:111
-msgid "Country"
-msgstr ""
-
-#: geonode/people/models.py:116
-msgid "country of the physical address"
-msgstr "maan fyysisen osoitteen"
-
-#: geonode/people/models.py:118
-msgid ""
-"commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-"the subject             (space or comma-separated"
-msgstr ""
-"yleisesti käytetty sana (t) tai virallisesti sana (t) tai lauseke (t) "
-"käytetään kuvaamaan aihe (tilan tai pilkulla erotettuna"
-
-#: geonode/people/models.py:127
-msgid "Timezone"
 msgstr ""
 
 #: geonode/people/templates/people/_profile_about_item.html:17
@@ -5014,6 +2996,11 @@ msgstr "Kavereita"
 msgid "people explore"
 msgstr "GeoExplorer"
 
+#: geonode/people/templates/people/profile_detail.html:67
+#: geonode/templates/invitations/forms/_invite.html:14
+msgid "Email"
+msgstr ""
+
 #: geonode/people/templates/people/profile_detail.html:71
 #: geonode/people/templates/people/profile_detail.html:77
 #: geonode/people/templates/people/profile_detail.html:81
@@ -5044,10 +3031,15 @@ msgstr ""
 msgid "Location"
 msgstr ""
 
+#: geonode/people/templates/people/profile_detail.html:89
+#: geonode/templates/metadata_detail.html:145
+#: geonode/templates/metadata_detail.html:287
+#: geonode/templates/metadata_detail.html:368
+msgid "Voice"
+msgstr "Ääni"
+
 #: geonode/people/templates/people/profile_detail.html:93
 #: geonode/people/templates/people/profile_detail.html:113
-#: geonode/services/serviceprocessors/arcgis.py:115
-#: geonode/services/serviceprocessors/wms.py:144
 msgid "Not provided"
 msgstr "Ei toimiteta"
 
@@ -5067,7 +3059,7 @@ msgid "Message User"
 msgstr ""
 
 #: geonode/people/templates/people/profile_detail.html:136
-#: geonode/people/templates/people/profile_detail.html:170
+#: geonode/people/templates/people/profile_detail.html:171
 msgid "Edit profile"
 msgstr "Muokkaa profiilia"
 
@@ -5097,24 +3089,30 @@ msgid "Create a new layer"
 msgstr "Luo uusi kartta"
 
 #: geonode/people/templates/people/profile_detail.html:146
+#, fuzzy
+#| msgid "Upload Document"
+msgid "Upload new document"
+msgstr "Tallennettu asiakirja"
+
+#: geonode/people/templates/people/profile_detail.html:147
 msgid "Create a new map"
 msgstr "Luo uusi kartta"
 
-#: geonode/people/templates/people/profile_detail.html:147
+#: geonode/people/templates/people/profile_detail.html:148
 msgid "My Activities"
 msgstr "Minun aktiviteetit"
 
-#: geonode/people/templates/people/profile_detail.html:149
+#: geonode/people/templates/people/profile_detail.html:150
 #: geonode/templates/base.html:378
 msgid "Favorites"
 msgstr "Suositut"
 
-#: geonode/people/templates/people/profile_detail.html:154
+#: geonode/people/templates/people/profile_detail.html:155
 #: geonode/templates/500.html:270
 msgid "Notifications"
 msgstr ""
 
-#: geonode/people/templates/people/profile_detail.html:157
+#: geonode/people/templates/people/profile_detail.html:158
 #: geonode/templates/500.html:185 geonode/templates/500.html:273
 #: geonode/templates/announcements/announcement_list.html:5
 #: geonode/templates/announcements/announcement_list.html:12
@@ -5122,7 +3120,7 @@ msgstr ""
 msgid "Announcements"
 msgstr "Ilmoitukset"
 
-#: geonode/people/templates/people/profile_detail.html:161
+#: geonode/people/templates/people/profile_detail.html:162
 #: geonode/templates/500.html:187 geonode/templates/500.html:275
 #: geonode/templates/base.html:320 geonode/templates/base.html:482
 #: geonode/templates/invitations/forms/_invite.html:7
@@ -5131,11 +3129,21 @@ msgstr "Ilmoitukset"
 msgid "Invite Users"
 msgstr "Kutsu Käyttäjä"
 
-#: geonode/people/templates/people/profile_detail.html:174
+#: geonode/people/templates/people/profile_detail.html:164
+#: geonode/templates/500.html:278
+msgid "GeoServer"
+msgstr "GeoServer"
+
+#: geonode/people/templates/people/profile_detail.html:165
+#: geonode/templates/500.html:279 geonode/templates/base.html:383
+msgid "Admin"
+msgstr "Admin"
+
+#: geonode/people/templates/people/profile_detail.html:175
 msgid "User Activities"
 msgstr "Käyttäjän toimet"
 
-#: geonode/people/templates/people/profile_detail.html:180
+#: geonode/people/templates/people/profile_detail.html:181
 msgid "Resources"
 msgstr "Resurssit"
 
@@ -5166,67 +3174,6 @@ msgstr "Päivitysprofiilille"
 msgid "Explore People"
 msgstr "Tutustu Ihmiset"
 
-#: geonode/people/views.py:92
-msgid "Your username for "
-msgstr "Käyttäjätunnuksesi"
-
-#: geonode/people/views.py:106
-msgid "Your username has been emailed to you."
-msgstr "Käyttäjätunnuksesi on sähköpostitse sinulle."
-
-#: geonode/people/views.py:108
-msgid "No user could be found with that email address."
-msgstr "Ei käyttäjä voisi löytyä kyseisen sähköpostiosoite."
-
-#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:224
-#, fuzzy
-#| msgid "You are not permitted to save or edit this map."
-msgid "You are not permitted to save or edit this resource."
-msgstr "Sinulla ei ole oikeutta tallentaa tai muokata tätä karttaa."
-
-#: geonode/proxy/views.py:223
-#, fuzzy
-#| msgid "You are not allowed to view this document."
-msgid "You are not authorized to download this resource."
-msgstr "Et voi tarkastella tätä asiakirjaa."
-
-#: geonode/proxy/views.py:225
-msgid ""
-"No files have been found for this resource. Please, contact a system "
-"administrator."
-msgstr ""
-
-#: geonode/proxy/views.py:259 geonode/proxy/views.py:270
-#: geonode/proxy/views.py:371
-#, fuzzy
-#| msgid "Documents"
-msgid "No files found."
-msgstr "Dokumentit"
-
-#: geonode/proxy/views.py:379
-#, fuzzy
-#| msgid "Not provided"
-msgid "Not Authorized"
-msgstr "Ei toimiteta"
-
-#: geonode/qgis_server/models.py:200
-#, fuzzy
-#| msgid "style name"
-msgid "style xml"
-msgstr "tyylin nimi"
-
-#: geonode/qgis_server/models.py:201
-#, fuzzy
-#| msgid "sld url"
-msgid "style url"
-msgstr "SLD url"
-
-#: geonode/qgis_server/models.py:203
-#, fuzzy
-#| msgid "sld url"
-msgid "style legend url"
-msgstr "SLD url"
-
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:10
 msgid "Layer Style changed. Redirecting to apply changes..."
 msgstr ""
@@ -5234,6 +3181,14 @@ msgstr ""
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:13
 msgid "You may also use browser reload."
 msgstr ""
+
+#: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
+#: geonode/services/templates/services/service_resources_harvest.html:31
+#: geonode/templates/metadata_detail.html:130
+#: geonode/templates/metadata_detail.html:272
+#: geonode/templates/metadata_detail.html:353
+msgid "Name"
+msgstr "Nimi"
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:21
 #, fuzzy
@@ -5263,120 +3218,6 @@ msgstr "Poista palvelu"
 msgid "Reload to see changes"
 msgstr ""
 
-#: geonode/qgis_server/views.py:266
-#, python-brace-format
-msgid ""
-"You should use a GIS software or a library which support TMS service to use "
-"this URL : {url}"
-msgstr ""
-
-#: geonode/security/middleware.py:128
-msgid "Session is Expired. Please login again!"
-msgstr ""
-
-#: geonode/services/enumerations.py:45
-msgid "Auto-detect"
-msgstr "Automaattinen tunnistus"
-
-#: geonode/services/enumerations.py:46
-msgid "Paired WMS/WFS/WCS"
-msgstr "Pariksi WMS / WFS / WCS"
-
-#: geonode/services/enumerations.py:47 geonode/services/forms.py:54
-msgid "Web Map Service"
-msgstr "Web Map Service"
-
-#: geonode/services/enumerations.py:48
-msgid "Catalogue Service"
-msgstr "Katalogi Service"
-
-#: geonode/services/enumerations.py:49 geonode/services/forms.py:58
-#, fuzzy
-#| msgid "ArcGIS REST Service"
-msgid "ArcGIS REST MapServer"
-msgstr "ArcGIS REST palvelu"
-
-#: geonode/services/enumerations.py:50
-#, fuzzy
-#| msgid "ArcGIS REST Service"
-msgid "ArcGIS REST ImageServer"
-msgstr "ArcGIS REST palvelu"
-
-#: geonode/services/enumerations.py:51 geonode/services/models.py:51
-msgid "OpenGeoPortal"
-msgstr "OpenGeoPortal"
-
-#: geonode/services/enumerations.py:52
-msgid "Harvard Geospatial Library"
-msgstr "Harvard Geospatiaalinen Kirjasto"
-
-#: geonode/services/enumerations.py:53 geonode/services/forms.py:55
-#, fuzzy
-#| msgid "GeoNode's Web Services"
-msgid "GeoNode (Web Map Service)"
-msgstr "GeoNode Web Services"
-
-#: geonode/services/enumerations.py:54
-#, fuzzy
-#| msgid "Catalogue Service"
-msgid "GeoNode (Catalogue Service)"
-msgstr "Katalogi Service"
-
-#: geonode/services/forms.py:37
-msgid "Service URL"
-msgstr "Palvelun URL"
-
-#: geonode/services/forms.py:50
-msgid "Service Type"
-msgstr "Palvelun tyyppi"
-
-#: geonode/services/forms.py:72
-#, fuzzy, python-format
-#| msgid "service interfaces"
-msgid "Service %(url)s is already registered"
-msgstr "palvelun rajapinnat"
-
-#: geonode/services/forms.py:88
-#, python-format
-msgid "Could not connect to the service at %(url)s"
-msgstr ""
-
-#: geonode/services/forms.py:93
-#, python-format
-msgid "Could not find importable resources for the service at %(url)s"
-msgstr ""
-
-#: geonode/services/forms.py:100
-#, python-format
-msgid "Found service of type %(found_type)s instead of %(service_type)s"
-msgstr ""
-
-#: geonode/services/models.py:46
-msgid "Local"
-msgstr "Paikallinen"
-
-#: geonode/services/models.py:47
-msgid "Cascaded"
-msgstr "Jalkauttaminen"
-
-#: geonode/services/models.py:48
-msgid "Harvested"
-msgstr "Korjattu"
-
-#: geonode/services/models.py:49
-msgid "Indexed"
-msgstr "Indeksoitu"
-
-#: geonode/services/models.py:50
-msgid "Live"
-msgstr "Live"
-
-#: geonode/services/models.py:211
-#, fuzzy
-#| msgid "Resources"
-msgid "Resource is queued"
-msgstr "Resurssit"
-
 #: geonode/services/templates/services/remote_service_unavailable.html:5
 #, fuzzy
 #| msgid "Remote Services"
@@ -5392,6 +3233,11 @@ msgstr ""
 #| msgid "Point of Contact"
 msgid "Could not contact"
 msgstr "Yhteyspiste"
+
+#: geonode/services/templates/services/service_detail.html:9
+#: geonode/services/templates/services/service_list.html:16
+msgid "URL"
+msgstr "URL"
 
 #: geonode/services/templates/services/service_detail.html:12
 #, fuzzy
@@ -5564,90 +3410,14 @@ msgstr ""
 msgid "Re-scan Service for new Resources"
 msgstr ""
 
-#: geonode/services/views.py:96
-#, fuzzy
-#| msgid "service interfaces"
-msgid "Service registered successfully"
-msgstr "palvelun rajapinnat"
-
-#: geonode/services/views.py:193
-msgid "The selected resources are being imported"
-msgstr ""
-
-#: geonode/services/views.py:194
-msgid "The selected resources have been imported"
-msgstr ""
-
-#: geonode/services/views.py:224
-msgid "Resource is already being processed"
-msgstr ""
-
-#: geonode/services/views.py:230
-msgid "Resource {} is being processed"
-msgstr ""
-
-#: geonode/services/views.py:259
-#, fuzzy
-#| msgid "Password changed successfully."
-msgid "Service rescanned successfully"
-msgstr "Salasana vaihdettu onnistuneesti."
-
-#: geonode/services/views.py:329
-#, fuzzy
-#| msgid "You are not permitted to remove this service."
-msgid "You are not permitted to change this service."
-msgstr "Sinulla ei ole oikeutta poistaa tätä palvelua."
-
-#: geonode/services/views.py:357
-msgid "You are not permitted to remove this service."
-msgstr "Sinulla ei ole oikeutta poistaa tätä palvelua."
-
-#: geonode/services/views.py:368
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "Service {} has been deleted"
-msgstr "Palvelu on luotu:"
-
-#: geonode/social/signals.py:81
-msgid "created"
-msgstr "luotu"
-
-#: geonode/social/signals.py:82 geonode/social/tests.py:102
-msgid "deleted"
-msgstr "Poistetaan"
-
-#: geonode/social/signals.py:85
-#, fuzzy
-#| msgid "Update"
-msgid "updated"
-msgstr "Päivitys"
-
-#: geonode/social/signals.py:95 geonode/social/tests.py:122
-msgid "added a comment"
-msgstr "lisäsi kommentin"
-
-#: geonode/social/signals.py:97
-msgid "updated a comment"
-msgstr "päivitetty kommentti"
-
-#: geonode/social/signals.py:103 geonode/social/signals.py:108
-#: geonode/social/tests.py:76
-msgid "uploaded"
-msgstr "latasi"
+#: geonode/social/templates/social/_activity_item.html:31
+msgid "ago"
+msgstr "sitten"
 
 #: geonode/social/templates/social/activity_list.html:4
 #: geonode/social/templates/social/activity_list.html:15
 msgid "Recent activity"
 msgstr "Viimeaikainen toiminta"
-
-#: geonode/social/templatetags/social_tags.py:56
-msgid "to"
-msgstr "jotta"
-
-#: geonode/social/templatetags/social_tags.py:72 geonode/social/tests.py:125
-#: geonode/templates/_comments.html:31
-msgid "on"
-msgstr "päällä"
 
 #: geonode/templates/401.html:10
 msgid "Not Permitted"
@@ -5772,6 +3542,10 @@ msgid "Powered by"
 msgstr "Powered by"
 
 #: geonode/templates/500.html:199 geonode/templates/base.html:511
+msgid "GeoNode"
+msgstr "GeoNode"
+
+#: geonode/templates/500.html:199 geonode/templates/base.html:511
 msgid "version"
 msgstr "versio"
 
@@ -5796,6 +3570,10 @@ msgstr "Muista minut"
 #: geonode/templates/500.html:260
 msgid "Menu"
 msgstr ""
+
+#: geonode/templates/500.html:266 geonode/templates/base.html:375
+msgid "Profile"
+msgstr "Profiili"
 
 #: geonode/templates/500.html:267 geonode/templates/base.html:376
 msgid "Recent Activity"
@@ -5860,6 +3638,10 @@ msgstr "Kirjaudu sisään lisätä kommentin"
 #: geonode/templates/_comments.html:31
 msgid "By"
 msgstr "Mennessä"
+
+#: geonode/templates/_comments.html:31
+msgid "on"
+msgstr "päällä"
 
 #: geonode/templates/_comments.html:65
 msgid "Submit Comment"
@@ -6050,93 +3832,6 @@ msgstr ""
 #: geonode/templates/account/email.html:62
 msgid "Do you really want to remove the selected e-mail address?"
 msgstr ""
-
-#: geonode/templates/account/email/email_confirmation_message.txt:1
-#, python-format
-msgid ""
-"Hello from %(site_name)s!\n"
-"\n"
-"You're receiving this e-mail because user %(user_display)s has given yours "
-"as an e-mail address to connect their account.\n"
-"\n"
-"To confirm this is correct, go to %(activate_url)s\n"
-msgstr ""
-
-#: geonode/templates/account/email/email_confirmation_message.txt:7
-#, python-format
-msgid ""
-"Thank you from %(site_name)s!\n"
-"%(site_domain)s"
-msgstr ""
-
-#: geonode/templates/account/email/email_confirmation_subject.txt:1
-#, fuzzy, python-format
-#| msgid "Confirm email address for %(site_name)s"
-msgid "Please confirm email address for %(site_name)s"
-msgstr "Vahvista sähköpostiosoite %(site_name)s"
-
-#: geonode/templates/account/email/invite_user.txt:1
-#, python-format
-msgid "You have been invited to sign up at %(site_name)s."
-msgstr ""
-
-#: geonode/templates/account/email/invite_user_subject.txt:1
-#, fuzzy, python-format
-#| msgid "Confirm email address for %(site_name)s"
-msgid "Create an account on %(site_name)s"
-msgstr "Vahvista sähköpostiosoite %(site_name)s"
-
-#: geonode/templates/account/email/password_change.txt:1
-msgid ""
-"This is the email notification to confirm your password has been changed on"
-msgstr ""
-
-#: geonode/templates/account/email/password_change_subject.txt:1
-#, fuzzy
-#| msgid "Change password: %s"
-msgid "Change password email notification"
-msgstr "Vaihda salasana: %s"
-
-#: geonode/templates/account/email/password_reset_key.txt:1
-#, fuzzy, python-format
-#| msgid ""
-#| "You're receiving this email because you or someone else has requested a "
-#| "password for your user account at %(site_name)s.\n"
-#| "It can be safely ignored if you did not request a password reset. Click "
-#| "the link below to reset your password.\n"
-#| "\n"
-#| "%(password_reset_url)s\n"
-msgid ""
-"Hello from %(site_name)s!\n"
-"\n"
-"You're receiving this e-mail because you or someone else has requested a "
-"password for your user account.\n"
-"It can be safely ignored if you did not request a password reset. Click the "
-"link below to reset your password."
-msgstr ""
-"Saat tämän sähköpostin, koska olet tai joku muu on pyytänyt salasanan "
-"käyttäjätilille osoitteessa %(site_name)s. \n"
-"Se voidaan turvallisesti jättää huomiotta, jos et pyytänyt salasanan. "
-"Klikkaa alla olevaa linkkiä salasanan. \n"
-"\n"
-"%(password_reset_url)s\n"
-
-#: geonode/templates/account/email/password_reset_key.txt:8
-#, python-format
-msgid "In case you forgot, your username is %(username)s."
-msgstr ""
-
-#: geonode/templates/account/email/password_reset_key.txt:10
-#, python-format
-msgid ""
-"Thank you for using %(site_name)s!\n"
-"%(site_domain)s"
-msgstr ""
-
-#: geonode/templates/account/email/password_reset_key_subject.txt:1
-#, python-format
-msgid "[%(site_name)s] Password reset"
-msgstr "[%(site_name)s]Salasanan"
 
 #: geonode/templates/account/email_confirm.html:6
 #: geonode/templates/account/email_confirm.html:10
@@ -6522,6 +4217,14 @@ msgstr "Poistaa nämä"
 msgid "GeoNode Search"
 msgstr "GeoNode Ohje"
 
+#: geonode/templates/base.html:314
+#: geonode/templates/search/_general_filters.html:76
+#: geonode/templates/search/_search_user_content.html:28
+#, fuzzy
+#| msgid "Categories"
+msgid "Group Categories"
+msgstr "Kategoriat"
+
 #: geonode/templates/base.html:495
 #, fuzzy
 #| msgid "Contact:"
@@ -6531,6 +4234,12 @@ msgstr "Yhteystiedot:"
 #: geonode/templates/base.html:504
 msgid "Tel"
 msgstr ""
+
+#: geonode/templates/base.html:506
+#, fuzzy
+#| msgid "email"
+msgid "E-mail"
+msgstr "sähköposti"
 
 #: geonode/templates/base.html:644
 #, fuzzy
@@ -6582,8 +4291,6 @@ msgid ""
 "GeoNode, we encourage you to do so by contributing to one of the projects on "
 "which it is built:</p>\n"
 "    <ul>\n"
-"      <li><a href=\"http://geoext.org\">GeoExt</a> - The JavaScript toolkit "
-"for rich web mapping applications</li>\n"
 "      <li><a href=\"http://geoserver.org\">GeoServer</a> - Standards based "
 "server for geospatial information</li>\n"
 "      <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Cache engine "
@@ -6662,43 +4369,43 @@ msgid ""
 "    "
 msgstr ""
 
-#: geonode/templates/developer.html:65
+#: geonode/templates/developer.html:64
 msgid "GeoNode's Web Services"
 msgstr "GeoNode Web Services"
 
-#: geonode/templates/developer.html:66
+#: geonode/templates/developer.html:65
 msgid "GeoNode's Web Services are available from the following URLs:"
 msgstr "GeoNode Web Services ovat saatavilla osoitteissa:"
 
-#: geonode/templates/developer.html:69
+#: geonode/templates/developer.html:68
 msgid "Dynamic tiles via WMS:"
 msgstr "Dynaaminen laatat kautta WMS:"
 
-#: geonode/templates/developer.html:73
+#: geonode/templates/developer.html:72
 msgid "Vector data via WFS:"
 msgstr "Vector dataa WFS:"
 
-#: geonode/templates/developer.html:77
+#: geonode/templates/developer.html:76
 msgid "Raster data via WCS:"
 msgstr "Rasteritietoja kautta WCS:"
 
-#: geonode/templates/developer.html:81
+#: geonode/templates/developer.html:80
 msgid "Metadata search via CSW:"
 msgstr "Metatietojen haku kautta CSW:"
 
-#: geonode/templates/developer.html:85
+#: geonode/templates/developer.html:84
 msgid "Metadata search via OpenSearch:"
 msgstr ""
 
-#: geonode/templates/developer.html:89
+#: geonode/templates/developer.html:88
 msgid "Metadata search via OAI-PMH:"
 msgstr ""
 
-#: geonode/templates/developer.html:93
+#: geonode/templates/developer.html:92
 msgid "Open Data:"
 msgstr ""
 
-#: geonode/templates/developer.html:97
+#: geonode/templates/developer.html:96
 msgid "Cached tiles via WMTS:"
 msgstr "Välimuistissa laatat kautta WMTS:"
 
@@ -6925,7 +4632,6 @@ msgid "Explore documents"
 msgstr "Tutustu Asiakirjat"
 
 #: geonode/templates/index.html:96
-#: geonode/templates/pinax/notifications/account_approve/full.txt:1
 msgid "User"
 msgid_plural "Users"
 msgstr[0] ""
@@ -7194,7 +4900,6 @@ msgid "Leave"
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:2
-#: geonode/templates/invitations/email/email_invite_message.txt:3
 msgid "Dear Sir/Madam,"
 msgstr ""
 
@@ -7211,7 +4916,6 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:8
-#: geonode/templates/invitations/email/email_invite_message.txt:9
 msgid ""
 "Once you receive the confirmation that your account is activated, you can "
 "notify"
@@ -7232,34 +4936,20 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:16
-#: geonode/templates/invitations/email/email_invite_message.txt:18
 msgid "We look forward to seeing you on the platform,"
 msgstr ""
 
 #: geonode/templates/invitations/email/email_invite_message.html:17
-#: geonode/templates/invitations/email/email_invite_message.txt:20
 #, fuzzy
 #| msgid "GeoNode site admin"
 msgid "The GeoNode team."
 msgstr "GeoNode site admin"
 
-#: geonode/templates/invitations/email/email_invite_message.txt:5
-msgid "is inviting you to join"
+#: geonode/templates/metadata_base.html:128
+#: geonode/templates/metadata_base.html:131
+#: geonode/templates/socialaccount/authentication_error.html:11
+msgid "Error"
 msgstr ""
-
-#: geonode/templates/invitations/email/email_invite_message.txt:7
-msgid "To do so, please register at"
-msgstr ""
-
-#: geonode/templates/invitations/email/email_invite_message.txt:9
-msgid "that you wish to join her/his group(s) through this link"
-msgstr ""
-
-#: geonode/templates/invitations/email/email_invite_message.txt:13
-#, fuzzy
-#| msgid "The following groups:"
-msgid "is a member of the following group(s)"
-msgstr "Seuraavat ryhmät:"
 
 #: geonode/templates/metadata_base.html:149
 #, fuzzy
@@ -7294,6 +4984,12 @@ msgstr "Paluu"
 msgid "Identification"
 msgstr ""
 
+#: geonode/templates/metadata_detail.html:102
+#, fuzzy
+#| msgid "Not provided"
+msgid "Approved"
+msgstr "Ei toimiteta"
+
 #: geonode/templates/metadata_detail.html:103
 #: geonode/templates/metadata_detail.html:106
 #: geonode/templates/metadata_detail.html:109
@@ -7303,6 +4999,10 @@ msgstr ""
 #: geonode/templates/metadata_detail.html:105
 msgid "Published"
 msgstr ""
+
+#: geonode/templates/metadata_detail.html:108
+msgid "Featured"
+msgstr "Kiinnostavat"
 
 #: geonode/templates/metadata_detail.html:133
 #: geonode/templates/metadata_detail.html:275
@@ -7372,374 +5072,6 @@ msgstr ""
 msgid "Online Link"
 msgstr ""
 
-#: geonode/templates/pinax/notifications/account_active/account_active_message.txt:2
-#: geonode/templates/pinax/notifications/account_active/full.txt:2
-msgid "Your account has been approved and is now active."
-msgstr ""
-
-#: geonode/templates/pinax/notifications/account_active/account_active_message.txt:3
-#: geonode/templates/pinax/notifications/account_active/full.txt:3
-msgid "You can use the login form at"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/account_active/account_active_subject.txt:1
-#, fuzzy
-#| msgid "Welcome"
-msgid "Welcome at"
-msgstr "Tervetuloa"
-
-#: geonode/templates/pinax/notifications/account_active/short.txt:3
-msgid "Your account is now active"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/account_approve/full.txt:1
-msgid "has requested access to the site."
-msgstr ""
-
-#: geonode/templates/pinax/notifications/account_approve/full.txt:1
-msgid ""
-"You can enable access by setting the user as active on the admin section"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/account_approve/short.txt:3
-msgid "A user has requested access to the site"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_approved/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "The following document was approved"
-msgstr "Seuraavat käyttäjät:"
-
-#: geonode/templates/pinax/notifications/document_approved/full.txt:3
-#: geonode/templates/pinax/notifications/document_deleted/full.txt:3
-#: geonode/templates/pinax/notifications/document_published/full.txt:3
-#: geonode/templates/pinax/notifications/document_rated/full.txt:5
-#: geonode/templates/pinax/notifications/document_updated/full.txt:3
-#: geonode/templates/pinax/notifications/layer_approved/full.txt:3
-#: geonode/templates/pinax/notifications/layer_deleted/full.txt:3
-#: geonode/templates/pinax/notifications/layer_published/full.txt:3
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:5
-#: geonode/templates/pinax/notifications/layer_updated/full.txt:3
-#: geonode/templates/pinax/notifications/map_approved/full.txt:3
-#: geonode/templates/pinax/notifications/map_deleted/full.txt:3
-#: geonode/templates/pinax/notifications/map_published/full.txt:3
-#: geonode/templates/pinax/notifications/map_rated/full.txt:5
-#: geonode/templates/pinax/notifications/map_updated/full.txt:3
-#, fuzzy
-#| msgid "Powered by"
-msgid "owned by"
-msgstr "Powered by"
-
-#: geonode/templates/pinax/notifications/document_approved/full.txt:4
-#: geonode/templates/pinax/notifications/document_comment/full.txt:3
-#: geonode/templates/pinax/notifications/document_created/full.txt:4
-#: geonode/templates/pinax/notifications/document_published/full.txt:4
-#: geonode/templates/pinax/notifications/document_updated/full.txt:4
-msgid "You can visit the document's detail page here"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_approved/short.txt:3
-msgid "A document has been approved"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_comment/full.txt:2
-#, fuzzy
-#| msgid "You do not have permissions for this document."
-msgid "A comment has been posted for the document"
-msgstr "Sinulla ei ole oikeuksia tämän asiakirjan."
-
-#: geonode/templates/pinax/notifications/document_comment/full.txt:2
-#: geonode/templates/pinax/notifications/layer_comment/full.txt:2
-#: geonode/templates/pinax/notifications/map_comment/full.txt:3
-msgid "by the user"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_comment/short.txt:3
-#, fuzzy
-#| msgid "You do not have permissions for this document."
-msgid "A comment has been posted for a document"
-msgstr "Sinulla ei ole oikeuksia tämän asiakirjan."
-
-#: geonode/templates/pinax/notifications/document_created/full.txt:2
-#: geonode/templates/pinax/notifications/document_rated/full.txt:2
-#: geonode/templates/pinax/notifications/layer_created/full.txt:2
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:2
-#: geonode/templates/pinax/notifications/map_created/full.txt:2
-#: geonode/templates/pinax/notifications/map_rated/full.txt:2
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
-#, fuzzy
-#| msgid "Choose users..."
-msgid "The user"
-msgstr "Valitse käyttäjät ..."
-
-#: geonode/templates/pinax/notifications/document_created/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "uploaded the following document"
-msgstr "Seuraavat käyttäjät:"
-
-#: geonode/templates/pinax/notifications/document_created/short.txt:3
-msgid "A document has been uploaded"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_deleted/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "The following document was deleted"
-msgstr "Seuraavat käyttäjät:"
-
-#: geonode/templates/pinax/notifications/document_deleted/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A document has been deleted"
-msgstr "Palvelu on luotu:"
-
-#: geonode/templates/pinax/notifications/document_published/full.txt:2
-#, fuzzy
-#| msgid "The following groups:"
-msgid "The following document was published"
-msgstr "Seuraavat ryhmät:"
-
-#: geonode/templates/pinax/notifications/document_published/short.txt:3
-msgid "A document has been published"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_rated/full.txt:3
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:3
-#: geonode/templates/pinax/notifications/map_rated/full.txt:3
-#, fuzzy
-#| msgid "created"
-msgid "rated"
-msgstr "luotu"
-
-#: geonode/templates/pinax/notifications/document_rated/full.txt:4
-#, fuzzy
-#| msgid "The following users:"
-msgid "the following document"
-msgstr "Seuraavat käyttäjät:"
-
-#: geonode/templates/pinax/notifications/document_rated/full.txt:6
-#: geonode/templates/pinax/notifications/layer_approved/full.txt:4
-#: geonode/templates/pinax/notifications/layer_comment/full.txt:3
-#: geonode/templates/pinax/notifications/layer_created/full.txt:4
-#: geonode/templates/pinax/notifications/layer_published/full.txt:4
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:6
-#: geonode/templates/pinax/notifications/layer_updated/full.txt:4
-msgid "You can visit the layer's detail page here"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/document_rated/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A document has been rated"
-msgstr "Palvelu on luotu:"
-
-#: geonode/templates/pinax/notifications/document_updated/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "The following document was updated"
-msgstr "Seuraavat käyttäjät:"
-
-#: geonode/templates/pinax/notifications/document_updated/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A document has been updated"
-msgstr "Palvelu on luotu:"
-
-#: geonode/templates/pinax/notifications/email_body.txt:3
-#, fuzzy
-#| msgid "You have the following incomplete uploads"
-msgid "You have received the following notice from"
-msgstr "Sinulla on seuraavat epätäydellinen kuvat"
-
-#: geonode/templates/pinax/notifications/email_body.txt:8
-msgid "To change how you receive notifications, please go to"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/email_subject.txt:1
-#, python-format
-msgid "[%(current_site)s] %(message)s"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/full.txt:1
-#: geonode/templates/pinax/notifications/short.txt:1
-#, fuzzy, python-format
-#| msgid "Notices"
-msgid "%(notice)s"
-msgstr "Notices"
-
-#: geonode/templates/pinax/notifications/layer_approved/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following layer was approved"
-msgstr "Seuraavat kerrokset tuodaan"
-
-#: geonode/templates/pinax/notifications/layer_approved/short.txt:3
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A layer has been approved"
-msgstr "Kerros kommentoi"
-
-#: geonode/templates/pinax/notifications/layer_comment/full.txt:2
-#, fuzzy
-#| msgid "Documents related to this layer"
-msgid "A comment has been posted for the layer"
-msgstr "Asiakirjoja, jotka liittyvät tähän kerrokseen"
-
-#: geonode/templates/pinax/notifications/layer_comment/short.txt:3
-#, fuzzy
-#| msgid "A rating was given to a layer"
-msgid "A comment has been posted for a layer"
-msgstr "Arvosana annettiin kerros"
-
-#: geonode/templates/pinax/notifications/layer_created/full.txt:2
-#, fuzzy
-#| msgid "This map uses the following layers:"
-msgid "uploaded the following layer"
-msgstr "Tämä kartta käyttää seuraavat kerrokset:"
-
-#: geonode/templates/pinax/notifications/layer_created/short.txt:3
-#, fuzzy
-#| msgid "A layer was uploaded"
-msgid "A new layer has been uploaded"
-msgstr "Kerros ladattu"
-
-#: geonode/templates/pinax/notifications/layer_deleted/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following layer was deleted"
-msgstr "Seuraavat kerrokset tuodaan"
-
-#: geonode/templates/pinax/notifications/layer_deleted/short.txt:3
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A layer has been deleted"
-msgstr "Kerros kommentoi"
-
-#: geonode/templates/pinax/notifications/layer_published/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following layer was published"
-msgstr "Seuraavat kerrokset tuodaan"
-
-#: geonode/templates/pinax/notifications/layer_published/short.txt:3
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A layer has been published"
-msgstr "Kerros kommentoi"
-
-#: geonode/templates/pinax/notifications/layer_rated/full.txt:4
-#, fuzzy
-#| msgid "The following users:"
-msgid "the following layer"
-msgstr "Seuraavat käyttäjät:"
-
-#: geonode/templates/pinax/notifications/layer_rated/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A layer has been rated"
-msgstr "Palvelu on luotu:"
-
-#: geonode/templates/pinax/notifications/layer_updated/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following layer was updated"
-msgstr "Seuraavat kerrokset tuodaan"
-
-#: geonode/templates/pinax/notifications/layer_updated/short.txt:3
-#, fuzzy
-#| msgid "A layer was commented on"
-msgid "A layer has been updated"
-msgstr "Kerros kommentoi"
-
-#: geonode/templates/pinax/notifications/map_approved/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following map was approved"
-msgstr "Seuraavat kerrokset tuodaan"
-
-#: geonode/templates/pinax/notifications/map_approved/full.txt:4
-#: geonode/templates/pinax/notifications/map_comment/full.txt:4
-#: geonode/templates/pinax/notifications/map_created/full.txt:4
-#: geonode/templates/pinax/notifications/map_published/full.txt:4
-#: geonode/templates/pinax/notifications/map_rated/full.txt:6
-#: geonode/templates/pinax/notifications/map_updated/full.txt:4
-msgid "You can visit the map's detail page here"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/map_approved/short.txt:3
-msgid "A map has been approved"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/map_comment/full.txt:2
-#, fuzzy
-#| msgid "Documents related to this map"
-msgid "A comment has been posted for the map"
-msgstr "Asiakirjoja, jotka liittyvät tähän karttaan"
-
-#: geonode/templates/pinax/notifications/map_comment/short.txt:3
-msgid "A comment has been posted for a map"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/map_created/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "created the following map"
-msgstr "Seuraavat käyttäjät:"
-
-#: geonode/templates/pinax/notifications/map_created/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A map has been created"
-msgstr "Palvelu on luotu:"
-
-#: geonode/templates/pinax/notifications/map_deleted/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following map was deleted"
-msgstr "Seuraavat kerrokset tuodaan"
-
-#: geonode/templates/pinax/notifications/map_deleted/short.txt:3
-#, fuzzy
-#| msgid "A map was commented on"
-msgid "A map has been deleted"
-msgstr "Kartta kommentoi"
-
-#: geonode/templates/pinax/notifications/map_published/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
-msgid "The following map was published"
-msgstr "Seuraavat käyttäjät:"
-
-#: geonode/templates/pinax/notifications/map_published/short.txt:3
-msgid "A map has been published"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/map_rated/full.txt:4
-#, fuzzy
-#| msgid "The following users:"
-msgid "the following map"
-msgstr "Seuraavat käyttäjät:"
-
-#: geonode/templates/pinax/notifications/map_rated/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
-msgid "A map has been rated"
-msgstr "Palvelu on luotu:"
-
-#: geonode/templates/pinax/notifications/map_updated/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
-msgid "The following map was updated"
-msgstr "Seuraavat kerrokset tuodaan"
-
-#: geonode/templates/pinax/notifications/map_updated/short.txt:3
-#, fuzzy
-#| msgid "A map was commented on"
-msgid "A map has been updated"
-msgstr "Kartta kommentoi"
-
 #: geonode/templates/pinax/notifications/notice_settings.html:7
 #: geonode/templates/pinax/notifications/notice_settings.html:10
 msgid "Notification Settings"
@@ -7761,20 +5093,9 @@ msgstr ""
 msgid "Notification Type"
 msgstr "Ilmoitustyyppi"
 
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
-#, fuzzy
-#| msgid "Request to download a resource"
-msgid "requested you to download this resource"
-msgstr "Pyyntä ladata resurssi"
-
-#: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:9
-msgid ""
-"Please go to resource page and assign the download permissions if you wish"
-msgstr ""
-
-#: geonode/templates/pinax/notifications/request_download_resourcebase/short.txt:3
-msgid "A resource's download has been requested"
-msgstr ""
+#: geonode/templates/pinax/notifications/notice_settings.html:51
+msgid "Change"
+msgstr "Muutos"
 
 #: geonode/templates/privacy-cookies.html:4
 #: geonode/templates/privacy-cookies.html:8
@@ -7854,6 +5175,10 @@ msgstr "ei enää"
 #, python-format
 msgid "%(to_user_username)s's profile"
 msgstr "%(to_user_username)s profiili"
+
+#: geonode/templates/search/_general_filters.html:4
+msgid "Categories"
+msgstr "Kategoriat"
 
 #: geonode/templates/search/_general_filters.html:30
 msgid "Responsibles"
@@ -8050,165 +5375,1655 @@ msgstr "Viesti Saapuneet"
 msgid "Messages"
 msgstr ""
 
+#: geonode/templates/user_messages/inbox.html:22
+msgid "Mark selected as read"
+msgstr "Merkitse valituksi luetuksi"
+
+#: geonode/templates/user_messages/inbox.html:23
+msgid "Mark selected as unread"
+msgstr "Valitse valittu lukemattomaksi"
+
 #: geonode/templates/user_messages/inbox.html:63
 #: geonode/templates/user_messages/message_create.html:6
 #: geonode/templates/user_messages/message_create.html:9
 msgid "Create Message"
 msgstr "Uusi viesti"
 
-#: geonode/templates/user_messages/message_create.html:16
+#: geonode/templates/user_messages/message_create.html:26
+#, fuzzy
+#| msgid "Choose users..."
+msgid "To users"
+msgstr "Valitse käyttäjät ..."
+
+#: geonode/templates/user_messages/message_create.html:32
+#, fuzzy
+#| msgid "group"
+msgid "To groups"
+msgstr "ryhmä"
+
+#: geonode/templates/user_messages/message_create.html:37
+msgid "Subject"
+msgstr "Aihe"
+
+#: geonode/templates/user_messages/message_create.html:42
+#, fuzzy
+#| msgid "Contact:"
+msgid "Content"
+msgstr "Yhteystiedot:"
+
+#: geonode/templates/user_messages/message_create.html:50
 msgid "Send message"
 msgstr "Lähetä viesti"
 
-#: geonode/templates/user_messages/message_create.html:22
-#: geonode/templates/user_messages/thread_detail.html:46
+#: geonode/templates/user_messages/message_create.html:82
+#: geonode/templates/user_messages/thread_detail.html:48
 msgid "Back to Inbox"
 msgstr "Takaisin postilaatikkoon"
-
-#: geonode/templates/user_messages/thread_detail.html:9
-#, fuzzy
-#| msgid "Message Inbox"
-msgid "A message to"
-msgstr "Viesti Saapuneet"
 
 #: geonode/templates/user_messages/thread_detail.html:11
 msgid "Sent to"
 msgstr "Lähetä"
 
-#: geonode/templates/user_messages/thread_detail.html:28
+#: geonode/templates/user_messages/thread_detail.html:30
 msgid "by"
 msgstr ""
 
-#: geonode/templates/user_messages/thread_detail.html:32
+#: geonode/templates/user_messages/thread_detail.html:30
+msgid "me"
+msgstr ""
+
+#: geonode/templates/user_messages/thread_detail.html:34
 #, fuzzy
 #| msgid "Send message"
 msgid "You have no messages"
 msgstr "Lähetä viesti"
 
-#: geonode/templates/user_messages/thread_detail.html:40
+#: geonode/templates/user_messages/thread_detail.html:42
 msgid "Send Reply"
 msgstr "Lähetä vastaus"
 
-#: geonode/themes/apps.py:28
+#~ msgid "Request to download a resource"
+#~ msgstr "Pyyntä ladata resurssi"
+
+#~ msgid "A request for downloading a resource was sent"
+#~ msgstr "Pyyntö ladata resurssi lähetettiin"
+
+#~ msgid "series"
+#~ msgstr "sarjat"
+
+#~ msgid "computer program or routine"
+#~ msgstr "tietokoneohjelma tai rutiini"
+
+#~ msgid "feature type"
+#~ msgstr "ominaisuustyyppi"
+
+#~ msgid "copy or imitation of an existing or hypothetical object"
+#~ msgstr "kopio tai jäljitelmä nykyisestä tai oletetusta objektista"
+
+#~ msgid "collection hardware"
+#~ msgstr "kokoomalaitteisto"
+
+#~ msgid "collection session"
+#~ msgstr "kokoomaistunto"
+
+#~ msgid "non-geographic data"
+#~ msgstr "ei-maantieteellisiä tietoja"
+
+#~ msgid "property type"
+#~ msgstr "kiinteistön tyyppi"
+
+#~ msgid "field session"
+#~ msgstr "kenttä istunto"
+
 #, fuzzy
-#| msgid "GeoNode Help"
-msgid "GeoNode Themes Library"
-msgstr "GeoNode Ohje"
+#~| msgid "dataset"
+#~ msgid "dataset"
+#~ msgstr "aineisto"
 
-#: geonode/upload/files.py:262
-msgid "Could not access to uploaded data."
-msgstr ""
-
-#: geonode/upload/files.py:301
-msgid ""
-"One or more XML files was provided, but no matching files were found for "
-"them."
-msgstr ""
-
-#: geonode/upload/files.py:310
-msgid ""
-"One or more SLD files was provided, but no matching files were found for "
-"them."
-msgstr ""
-
-#: geonode/upload/upload_validators.py:66
-msgid "Invalid zip file detected"
-msgstr ""
-
-#: geonode/upload/upload_validators.py:82
-msgid "Could not find any valid spatial file inside the uploaded zip"
-msgstr ""
-
-#: geonode/upload/upload_validators.py:85
-msgid "Invalid kmz file detected"
-msgstr ""
-
-#: geonode/upload/upload_validators.py:89
 #, fuzzy
-#| msgid "Could not find any layers in a compatible projection."
-msgid "Could not find any kml files inside the uploaded kmz"
-msgstr "Löytäneet kerroksiin yhteensopiva projektio."
+#~| msgid "Resources"
+#~ msgid "service interfaces"
+#~ msgstr "Resurssit"
 
-#: geonode/upload/upload_validators.py:124
-msgid "Only one shapefile per zip is allowed"
-msgstr ""
+#~ msgid "attribute class"
+#~ msgstr "ominaisuusluokka"
 
-#: geonode/upload/upload_validators.py:170
-msgid "kml files with more than one GroundOverlay are not supported"
-msgstr ""
+#~ msgid "characteristic of a feature"
+#~ msgstr "ominaisuuden piirteet"
 
-#: geonode/upload/upload_validators.py:181
-msgid "Ground overlay image declared in kml file cannot be found"
-msgstr ""
+#~ msgid "tile or spatial subset of geographic data"
+#~ msgstr "kuvake tai alueellinen osajoukko paikkatiedosta"
 
-#: geonode/upload/upload_validators.py:218
-msgid "Only one kml file per ZIP is allowed"
-msgstr ""
+#~ msgid "feature"
+#~ msgstr "ominaisuus"
 
-#: geonode/upload/upload_validators.py:233
-msgid "Only one kml file per kmz is allowed"
-msgstr ""
+#~ msgid "dimension group"
+#~ msgstr "ulottuvuusryhmä"
 
-#: geonode/upload/upload_validators.py:287
-msgid ""
-"You are trying to upload multiple GeoTIFFs without a valid 'indexer."
-"properties' file."
-msgstr ""
+#~ msgid "frequency of maintenance for the data is not known"
+#~ msgstr "dataylläpidon tiheyttä ei ole tiedossa"
 
-#: geonode/upload/upload_validators.py:292
-msgid "Only one raster file per ZIP is allowed"
-msgstr ""
+#~ msgid "data is repeatedly and frequently updated"
+#~ msgstr "data on toistuvasti ja usein päivitettävä"
 
-#: geonode/upload/upload_validators.py:297
-msgid "No multiple rasters allowed"
-msgstr ""
+#~ msgid "there are no plans to update the data"
+#~ msgstr "ei ole suunnitelmaa tietojen päivittämiseksi"
 
-#: geonode/upload/utils.py:98
-msgid ""
-"To support the time step, you must enable the OGC_SERVER DATASTORE option"
-msgstr ""
+#~ msgid "data is updated each day"
+#~ msgstr "tiedot päivitetään joka päivä"
 
-#: geonode/upload/utils.py:261
-#, python-format
-msgid "Unsupported file type: %s"
-msgstr ""
+#~ msgid "data is updated every year"
+#~ msgstr "tiedot päivitetään vuosittain"
 
-#: geonode/upload/utils.py:526
-#, python-format
-msgid "File does not exist: %s"
-msgstr ""
+#~ msgid "data is updated as deemed necessary"
+#~ msgstr "tiedot päivitetään tarvittaessa"
 
-#: geonode/upload/utils.py:583
-#, python-format
-msgid "unknown item state: %s"
-msgstr ""
+#~ msgid "data is updated each month"
+#~ msgstr "tiedot päivitetään kuukausittain"
 
-#: geonode/upload/utils.py:591
-#, python-format
-msgid "error during import: %s"
-msgstr ""
+#~ msgid "data is updated every two weeks"
+#~ msgstr "tiedot päivitetään kahden viikon välein"
 
-#: geonode/upload/utils.py:701
-msgid "Could not find any valid Time Regex for the Mosaic files."
-msgstr ""
+#~ msgid "data is updated in intervals that are uneven in duration"
+#~ msgstr "tiedot päivitetään epäsäännöllisin väliajoin"
 
-#: geonode/upload/utils.py:732 geonode/upload/utils.py:764
-msgid "Unsupported DataBase for Mosaics!"
-msgstr ""
+#~ msgid "data is updated on a weekly basis"
+#~ msgstr "tiedot päivitetään viikoittain"
 
-#: geonode/utils.py:87
-msgid "Invalid permission level."
-msgstr "Virheellinen lupataso."
+#~ msgid "data is updated twice each year"
+#~ msgstr "tiedot päivitetään kaksi kertaa vuodessa"
 
-#: geonode/utils.py:967
-msgid "Permission Denied"
-msgstr "Lupa kielletty"
+#~ msgid "data is updated every three months"
+#~ msgstr "tiedot päivitetään kolmen kuukauden välein"
+
+#~ msgid "No information provided"
+#~ msgstr "Tietoa ei ole annettu"
+
+#~ msgid "Category is required."
+#~ msgstr "Luokka on pakollinen."
+
+#~ msgid "Owner"
+#~ msgstr "Omistaja"
+
+#~ msgid "temporal extent start"
+#~ msgstr "aikajakson alku"
+
+#~ msgid "temporal extent end"
+#~ msgstr "aikajakson loppu"
+
+#~ msgid "Person outside GeoNode (fill form)"
+#~ msgstr "Henkilö GeoNoden ulkopuolelta (täytä lomake)"
+
+#, fuzzy
+#~| msgid "Keywords"
+#~ msgid "Free-text Keywords"
+#~ msgstr "Avainsanat"
+
+#, fuzzy
+#~| msgid "A space or comma-separated list of keywords"
+#~ msgid ""
+#~ "A space or comma-separated list of keywords. Use the widget to select "
+#~ "from Hierarchical tree."
+#~ msgstr "Tyhjämerkillä tai pilkulla erotettu lista avainsanoja"
+
+#~ msgid "function performed by the responsible party"
+#~ msgstr "vastuullisen osapuolen suorittama toiminto "
+
+#~ msgid "reference date for the cited resource"
+#~ msgstr "viitatun resurssin viitepäivä"
+
+#~ msgid "identification of when a given event occurred"
+#~ msgstr "tunnistaminen, kun tietty tapahtuma sattui"
+
+#~ msgid "version of the cited resource"
+#~ msgstr "viitatun resurssin versio"
+
+#~ msgid "brief narrative summary of the content of the resource(s)"
+#~ msgstr "lyhyt kertova yhteenveto resurssin(ien) sisällöstä"
+
+#~ msgid "summary of the intentions with which the resource(s) was developed"
+#~ msgstr "Yhteenveto tarkoituksista joihin resurssi(t) kehitettiin"
+
+#~ msgid ""
+#~ "frequency with which modifications and deletions are made to the data "
+#~ "after it is first produced"
+#~ msgstr "luotujen tietojen päivitysten ja poistojen muutostiheys"
+
+#~ msgid ""
+#~ "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+#~ "the subject (space or comma-separated"
+#~ msgstr ""
+#~ "yleisesti käytetty sana(t) tai muodolliset sana(t) tai fraasi(t) "
+#~ "käytettäessä kuvaamaan asiaa (tyhjämerkillä tai pilkulla erotettuna"
+
+#, fuzzy
+#~| msgid ""
+#~| "commonly used word(s) or formalised word(s) or phrase(s) used to "
+#~| "describe the subject (space or comma-separated"
+#~ msgid ""
+#~ "formalised word(s) or phrase(s) from a fixed thesaurus used to describe "
+#~ "the subject (space or comma-separated"
+#~ msgstr ""
+#~ "yleisesti käytetty sana(t) tai muodolliset sana(t) tai fraasi(t) "
+#~ "käytettäessä kuvaamaan asiaa (tyhjämerkillä tai pilkulla erotettuna"
+
+#~ msgid "keyword identifies a location"
+#~ msgstr "hakusana identifioi sijainnin"
+
+#~ msgid "limitation(s) placed upon the access or use of the data."
+#~ msgstr ""
+#~ "rajoitus(set) jotka on asetettu tietoihin pääsyyn tai tietojen käyttöön."
+
+#~ msgid ""
+#~ "other restrictions and legal prerequisites for accessing and using the "
+#~ "resource or metadata"
+#~ msgstr ""
+#~ "muut rajoitukset ja oikeudelliset edellytykset avaamaan ja käyttämään "
+#~ "resurssia tai metatietoa"
+
+#~ msgid "license of the dataset"
+#~ msgstr "aineiston lisenssi"
+
+#~ msgid "language used within the dataset"
+#~ msgstr "aineistossa käytetty kieli"
+
+#~ msgid ""
+#~ "high-level geographic data thematic classification to assist in the "
+#~ "grouping and search of available geographic data sets."
+#~ msgstr ""
+#~ "ylätason paikkatiedon teemallinen luokittelu auttamaan ryhmittelyssä ja "
+#~ "käytettävissä olevien paikkatieto tietojoukkojen etsimisessä."
+
+#~ msgid "method used to represent geographic information in the dataset."
+#~ msgstr ""
+#~ "menetelmä käytettäväksi maantieteellisen tiedon esitykseen aineistossa."
+
+#~ msgid "time period covered by the content of the dataset (start)"
+#~ msgstr "aineiston (alku) sisällön kattama ajanjakso"
+
+#~ msgid "time period covered by the content of the dataset (end)"
+#~ msgstr "aineiston (loppu) sisällön kattama ajanjakso"
+
+#~ msgid ""
+#~ "general explanation of the data producer's knowledge about the lineage of "
+#~ "a dataset"
+#~ msgstr "yleinen selitys tiedon tuottajan käsityksestä aineiston alkuperästä"
+
+#~ msgid "title"
+#~ msgstr "otsikko"
+
+#~ msgid "name by which the cited resource is known"
+#~ msgstr "nimi, jolla viitattu resurssi tunnetaan"
+
+#~ msgid "date"
+#~ msgstr "päivämäärä"
+
+#~ msgid "date type"
+#~ msgstr "päivämäärän tyyppi"
+
+#~ msgid "edition"
+#~ msgstr "painos"
+
+#~ msgid "abstract"
+#~ msgstr "abstrakti"
+
+#~ msgid "purpose"
+#~ msgstr "tarkoitus"
+
+#~ msgid "maintenance frequency"
+#~ msgstr "ylläpidon tiheys"
+
+#~ msgid "keywords"
+#~ msgstr "avainsanat"
+
+#~ msgid "keywords region"
+#~ msgstr "Avainsanojen alue"
+
+#~ msgid "restrictions"
+#~ msgstr "rajoitukset"
+
+#~ msgid "restrictions other"
+#~ msgstr "muut rajoitukset"
+
+#~ msgid "language"
+#~ msgstr "kieli"
+
+#~ msgid "spatial representation type"
+#~ msgstr "paikkatiedon esitystapa"
+
+#~ msgid "supplemental information"
+#~ msgstr "lisätiedot"
+
+#~ msgid "any other descriptive information about the dataset"
+#~ msgstr "muita kuvailevia tietoja aineistosta"
+
+#~ msgid "data quality statement"
+#~ msgstr "Tietojen laadun selvitys"
+
+#~ msgid "CSW typename"
+#~ msgstr "CSW typename"
+
+#~ msgid "CSW schema"
+#~ msgstr "CSW skeema"
+
+#~ msgid "CSW source"
+#~ msgstr "CSW lähde"
+
+#~ msgid "CSW insert date"
+#~ msgstr "CSW lisäyspäivämäärä"
+
+#~ msgid "CSW type"
+#~ msgstr "CSW tyyppi"
+
+#~ msgid "CSW anytext"
+#~ msgstr "CSW anytext"
+
+#~ msgid "CSW WKT geometry"
+#~ msgstr "CSW WKT geometria"
+
+#, fuzzy
+#~| msgid "Metadata Provider"
+#~ msgid "Metadata uploaded preserve"
+#~ msgstr "Metadata Provider"
+
+#~ msgid "Should this resource be advertised in home page?"
+#~ msgstr "Tuleeko tätä resurssia on mainostaa etusivulla?"
+
+#, fuzzy
+#~| msgid "Published From"
+#~ msgid "Is Published"
+#~ msgstr "Julkaistu Alkaen"
+
+#~ msgid "Should this resource be published and searchable?"
+#~ msgstr "Tulisiko tämä resurssi julkaista ja tehdä haettavaksi?"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail url"
+#~ msgstr "Thumbnail"
+
+#~ msgid "For example \"kml\""
+#~ msgstr "Esimerkiksi \"kml\""
+
+#~ msgid "For example \"View in Google Earth\""
+#~ msgstr "Esimerkiksi \"Näytä Google Earthissa\""
+
+#~ msgid "For example \"text/xml\""
+#~ msgstr "Esimerkiksi \"text / xml\""
+
+#, fuzzy
+#~| msgid "GeoNode Help"
+#~ msgid "GeoNode Client Library"
+#~ msgstr "GeoNode Ohje"
+
+#, fuzzy
+#~| msgid "Documents related to this map"
+#~ msgid "Document Created"
+#~ msgstr "Asiakirjoja, jotka liittyvät tähän karttaan"
+
+#, fuzzy
+#~| msgid "This document is related to a "
+#~ msgid "A Document was created"
+#~ msgstr "Tämä asiakirja liittyy"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "Document Updated"
+#~ msgstr "Dokumentit"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "A Document was updated"
+#~ msgstr "Dokumentit"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "Document Approved"
+#~ msgstr "Dokumentit"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "Document Published"
+#~ msgstr "Dokumentit"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "A Document was published"
+#~ msgstr "Dokumentit"
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "Document Deleted"
+#~ msgstr "Dokumentit"
+
+#, fuzzy
+#~| msgid "This document is related to a "
+#~ msgid "A Document was deleted"
+#~ msgstr "Tämä asiakirja liittyy"
+
+#, fuzzy
+#~| msgid "Comment on Layer"
+#~ msgid "Comment on Document"
+#~ msgstr "Kommentoi Layer"
+
+#, fuzzy
+#~| msgid "A map was commented on"
+#~ msgid "A Document was commented on"
+#~ msgstr "Kartta kommentoi"
+
+#, fuzzy
+#~| msgid "Comment on Map"
+#~ msgid "Document for Map"
+#~ msgstr "Kommentoi Kartta"
+
+#, fuzzy
+#~| msgid "A rating was given to a map"
+#~ msgid "A rating was given to a document"
+#~ msgstr "Arvosana annettiin kartta"
+
+#~ msgid "Link to"
+#~ msgstr "Linkki"
+
+#~ msgid "Document must be a file or url."
+#~ msgstr "Asiakirja on tiedosto tai URL."
+
+#~ msgid "A document cannot have both a file and a url."
+#~ msgstr "Asiakirja ei voi olla sekä tiedostojen ja URL."
+
+#~ msgid "This file type is not allowed"
+#~ msgstr "Tämä tiedostotyyppi ei ole sallittu"
+
+#~ msgid "Permissions must be valid JSON."
+#~ msgstr "Oikeudet on oltava voimassa JSON."
+
+#~ msgid "File"
+#~ msgstr "Tiedosto"
+
+#~ msgid "The URL of the document if it is external."
+#~ msgstr "URL asiakirja, jos se on ulkoinen."
+
+#~ msgid "You are not permitted to delete this document"
+#~ msgstr "Sinulla ei ole oikeutta poistaa tätä asiakirjaa"
+
+#~ msgid "You do not have permissions for this document."
+#~ msgstr "Sinulla ei ole oikeuksia tämän asiakirjan."
+
+#~ msgid "You are not permitted to modify this document"
+#~ msgstr "Sinulla ei ole oikeutta muuttaa tätä asiakirjaa"
+
+#~ msgid "You are not permitted to modify this document's metadata"
+#~ msgstr "Sinulla ei ole oikeutta muuttaa tätä asiakirjaa metatietoja"
+
+#~ msgid "You are not permitted to view this document"
+#~ msgstr "Sinulla ei ole oikeuksia tarkastella tätä asiakirjaa"
+
+#~ msgid "You are not allowed to view this document."
+#~ msgstr "Et voi tarkastella tätä asiakirjaa."
+
+#~ msgid "You are not allowed to edit this document."
+#~ msgstr "Sinulla ei ole lupaa muokata tätä asiakirjaa."
+
+#, fuzzy
+#~| msgid "Set permissions for this resource"
+#~ msgid "You must set a point of contact for this resource"
+#~ msgstr "Käyttöoikeuksien määrittäminen tämä resurssi"
+
+#, fuzzy
+#~| msgid "Set permissions for this resource"
+#~ msgid "You must set an author for this resource"
+#~ msgstr "Käyttöoikeuksien määrittäminen tämä resurssi"
+
+#~ msgid "Layer Uploaded"
+#~ msgstr "Kerros Ladattu"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "A layer was uploaded"
+#~ msgstr "Kerros ladattu"
+
+#~ msgid "Comment on Layer"
+#~ msgstr "Kommentoi Layer"
+
+#~ msgid "A layer was commented on"
+#~ msgstr "Kerros kommentoi"
+
+#~ msgid "Rating for Layer"
+#~ msgstr "Luokitus Layer"
+
+#~ msgid "A rating was given to a layer"
+#~ msgstr "Arvosana annettiin kerros"
+
+#, fuzzy
+#~| msgid "Layer Name"
+#~ msgid "Layer name"
+#~ msgstr "Tason nimi"
+
+#, fuzzy
+#~| msgid "Layer Title"
+#~ msgid "Layer title"
+#~ msgstr "Kerros Otsikko"
+
+#, fuzzy
+#~| msgid "property type"
+#~ msgid "Geometry type"
+#~ msgstr "kiinteistön tyyppi"
+
+#, fuzzy
+#~| msgid "Not provided"
+#~ msgid "No abstract provided"
+#~ msgstr "Ei toimiteta"
+
+#~ msgid "GeoTIFF"
+#~ msgstr "GeoTIFF"
+
+#~ msgid "Zipped Shapefile"
+#~ msgstr "Vetoketjullisten Shapefile"
+
+#~ msgid "GML 2.0"
+#~ msgstr "GML 2.0"
+
+#~ msgid "GML 3.1.1"
+#~ msgstr "GML 3.1.1"
+
+#~ msgid "CSV"
+#~ msgstr "CSV"
+
+#~ msgid "Excel"
+#~ msgstr "Kunnostautua"
+
+#~ msgid "GeoJSON"
+#~ msgstr "GeoJSON"
+
+#~ msgid "JPEG"
+#~ msgstr "JPEG"
+
+#~ msgid "PDF"
+#~ msgstr "PDF"
+
+#~ msgid "PNG"
+#~ msgstr "PNG"
+
+#~ msgid "You don't have permissions to change style for this layer"
+#~ msgstr "Sinulla ei ole oikeuksia muuttaa tyyliä tähän kerrokseen"
+
+#~ msgid "Bad HTTP Authorization Credentials."
+#~ msgstr "Bad HTTP Authorization valtakirjojen."
+
+#~ msgid ""
+#~ "a short version of the name consisting only of letters, numbers, "
+#~ "underscores and hyphens."
+#~ msgstr ""
+#~ "lyhyt versio nimestä, jossa esiintyy vain kirjaimia, numeroita, "
+#~ "alaviivoja ja väliviivoja."
+
+#~ msgid "A group already exists with that slug."
+#~ msgstr "Ryhmä on jo olemassa, että etana."
+
+#~ msgid "A group already exists with that name."
+#~ msgstr "Ryhmä on jo olemassa tällä nimellä."
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "User Identifiers"
+#~ msgstr "Käyttäjän toimet"
+
+#~ msgid "Public"
+#~ msgstr "Julkinen"
+
+#~ msgid "Public (invite-only)"
+#~ msgstr "Julkinen (vain kutsutuille)"
+
+#~ msgid "Private"
+#~ msgstr "Yksityinen"
+
+#~ msgid ""
+#~ "Public: Any registered user can view and join a public group.<br>Public "
+#~ "(invite-only):Any registered user can view the group.  Only invited users "
+#~ "can join.<br>Private: Registered users cannot see any details about the "
+#~ "group, including membership.  Only invited users can join."
+#~ msgstr ""
+#~ "Julkinen: Kaikki rekisteröityneet käyttäjät voivat katsella ja liittyä "
+#~ "julkiseen ryhmään. <br> Julkinen (vain kutsutuille): Jokainen "
+#~ "rekisteröitynyt käyttäjä voi tarkastella ryhmän. Vain kutsutut käyttäjät "
+#~ "voivat liittyä. <br> Yksityinen: Rekisteröityneet käyttäjät eivät voi "
+#~ "nähdä mitään yksityiskohtia ryhmä, jäsenyys mukaan lukien. Vain kutsutut "
+#~ "käyttäjät voivat liittyä."
+
+#~ msgid ""
+#~ "Email used to contact one or all group members, such as a mailing list, "
+#~ "shared email, or exchange group."
+#~ msgstr ""
+#~ "Sähköposti käytetään yhteyttä yhteen tai kaikille ryhmän jäsenille, kuten "
+#~ "postituslistalle, yhteinen sähköposti, tai vaihto ryhmä."
+
+#~ msgid "A space or comma-separated list of keywords"
+#~ msgstr "Tyhjämerkillä tai pilkulla erotettu lista avainsanoja"
+
+#, fuzzy
+#~| msgid "Success"
+#~ msgid "Access"
+#~ msgstr "Onnistui"
+
+#~ msgid "Member"
+#~ msgstr "Jäsen"
+
+#, fuzzy
+#~| msgid "Map Created"
+#~ msgid "Layer Created"
+#~ msgstr "Kartta Luotu"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A Layer was created"
+#~ msgstr "Kerros kommentoi"
+
+#, fuzzy
+#~| msgid "Layer Uploaded"
+#~ msgid "Layer Updated"
+#~ msgstr "Kerros Ladattu"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A Layer was updated"
+#~ msgstr "Kerros kommentoi"
+
+#, fuzzy
+#~| msgid "Not provided"
+#~ msgid "Layer Approved"
+#~ msgstr "Ei toimiteta"
+
+#, fuzzy
+#~| msgid "Published From"
+#~ msgid "Layer Published"
+#~ msgstr "Julkaistu Alkaen"
+
+#, fuzzy
+#~| msgid "Layer Default Style"
+#~ msgid "Layer Deleted"
+#~ msgstr "Kerros Default Style"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A Layer was deleted"
+#~ msgstr "Kerros kommentoi"
+
+#~ msgid "style name"
+#~ msgstr "tyylin nimi"
+
+#~ msgid "sld text"
+#~ msgstr "SLD teksti"
+
+#~ msgid "sld version"
+#~ msgstr "SLD versio"
+
+#~ msgid "sld url"
+#~ msgstr "SLD url"
+
+#, fuzzy
+#~| msgid "feature type"
+#~ msgid "Storetype"
+#~ msgstr "ominaisuustyyppi"
+
+#, fuzzy
+#~| msgid "CSW typename"
+#~ msgid "Typename"
+#~ msgstr "CSW typename"
+
+#, fuzzy
+#~| msgid "attribute name"
+#~ msgid "attribute name"
+#~ msgstr "määritteen nimi"
+
+#~ msgid "name of attribute as stored in shapefile/spatial database"
+#~ msgstr ""
+#~ "nimeksi ominaisuuden tallennettu shapefile / spatiaalinen tietokanta"
+
+#, fuzzy
+#~| msgid "distribution description"
+#~ msgid "attribute description"
+#~ msgstr "distribution description"
+
+#~ msgid "description of attribute to be used in metadata"
+#~ msgstr "kuvaus ominaisuuden, jota käytetään metatietojen"
+
+#~ msgid "attribute label"
+#~ msgstr "Taito etiketti"
+
+#~ msgid "title of attribute as displayed in GeoNode"
+#~ msgstr "otsikko ominaisuuden näytetään GeoNode"
+
+#~ msgid "attribute type"
+#~ msgstr "Taito tyyppi"
+
+#~ msgid "the data type of the attribute (integer, string, geometry, etc)"
+#~ msgstr "tietotyyppi määrite (kokonaisluku, merkkijono, geometria, jne)"
+
+#~ msgid "visible?"
+#~ msgstr "näkyvissä?"
+
+#~ msgid "specifies if the attribute should be displayed in identify results"
+#~ msgstr "täsmennetään, jos määrite pitäisi näkyä tunnistaa tuloksia"
+
+#~ msgid "display order"
+#~ msgstr "näyttöjärjestystä"
+
+#~ msgid ""
+#~ "specifies the order in which attribute should be displayed in identify "
+#~ "results"
+#~ msgstr ""
+#~ "Määrittää järjestyksen, jossa määrite pitäisi näkyä tunnistaa tuloksia"
+
+#, fuzzy
+#~| msgid "count"
+#~ msgid "count"
+#~ msgstr "laskea"
+
+#~ msgid "count value for this field"
+#~ msgstr "count arvo tällä alalla"
+
+#~ msgid "min"
+#~ msgstr "min"
+
+#~ msgid "minimum value for this field"
+#~ msgstr "minimiarvo tällä alalla"
+
+#~ msgid "max"
+#~ msgstr "Max"
+
+#~ msgid "maximum value for this field"
+#~ msgstr "enimmäisarvo tällä alalla"
+
+#~ msgid "average"
+#~ msgstr "keskimäärin"
+
+#~ msgid "average value for this field"
+#~ msgstr "keskiarvo tällä alalla"
+
+#~ msgid "median"
+#~ msgstr "mediaani"
+
+#~ msgid "median value for this field"
+#~ msgstr "mediaani tällä alalla"
+
+#~ msgid "standard deviation"
+#~ msgstr "keskihajonta"
+
+#~ msgid "standard deviation for this field"
+#~ msgstr "keskihajonta tällä alalla"
+
+#~ msgid "sum"
+#~ msgstr "summa"
+
+#~ msgid "sum value for this field"
+#~ msgstr "summa-arvo tällä alalla"
+
+#~ msgid "unique values for this field"
+#~ msgstr "ainutlaatuinen kentän arvoja"
+
+#, fuzzy
+#~| msgid "last modified"
+#~ msgid "last modified"
+#~ msgstr "viimeksi muutettu"
+
+#~ msgid "date when attribute statistics were last updated"
+#~ msgstr "jolloin määrite tilastoja on viimeksi päivitetty"
+
+#~ msgid ""
+#~ "There was an error while attempting to upload your data. Please try "
+#~ "again, or contact and administrator if the problem continues."
+#~ msgstr ""
+#~ "Virhe yritettäessä ladata tietoja. Yritä uudelleen tai ota yhteyttä ja "
+#~ "valvojalle, jos ongelma jatkuu."
+
+#~ msgid "You are not permitted to delete this layer"
+#~ msgstr "Sinulla ei ole oikeutta poistaa tämän kerroksen"
+
+#~ msgid "You do not have permissions for this layer."
+#~ msgstr "Sinulla ei ole oikeuksia tähän kerrokseen."
+
+#~ msgid "You are not permitted to modify this layer"
+#~ msgstr "Sinulla ei ole oikeutta muuttaa tätä kerros"
+
+#~ msgid "You are not permitted to modify this layer's metadata"
+#~ msgstr "Sinulla ei ole oikeutta muuttaa tätä kerrosta metatietoja"
+
+#~ msgid "You are not permitted to view this layer"
+#~ msgstr "Sinulla ei ole oikeuksia nähdäksesi tämän kerroksen"
+
+#, fuzzy
+#~| msgid "Files to be uploaded"
+#~ msgid "Failed to upload the layer"
+#~ msgstr "Tiedostot ladattavaksi"
+
+#~ msgid "Map Created"
+#~ msgstr "Kartta Luotu"
+
+#, fuzzy
+#~| msgid "A map was commented on"
+#~ msgid "A Map was created"
+#~ msgstr "Kartta kommentoi"
+
+#, fuzzy
+#~| msgid "Map Created"
+#~ msgid "Map Updated"
+#~ msgstr "Kartta Luotu"
+
+#, fuzzy
+#~| msgid "last updated on"
+#~ msgid "A Map was updated"
+#~ msgstr "viimeksi päivitetty"
+
+#, fuzzy
+#~| msgid "Not provided"
+#~ msgid "Map Approved"
+#~ msgstr "Ei toimiteta"
+
+#, fuzzy
+#~| msgid "Published From"
+#~ msgid "Map Published"
+#~ msgstr "Julkaistu Alkaen"
+
+#, fuzzy
+#~| msgid "Map Created"
+#~ msgid "Map Deleted"
+#~ msgstr "Kartta Luotu"
+
+#, fuzzy
+#~| msgid "A map was commented on"
+#~ msgid "A Map was deleted"
+#~ msgstr "Kartta kommentoi"
+
+#~ msgid "Comment on Map"
+#~ msgstr "Kommentoi Kartta"
+
+#~ msgid "A map was commented on"
+#~ msgstr "Kartta kommentoi"
+
+#~ msgid "Rating for Map"
+#~ msgstr "Luokitus Kartta"
+
+#~ msgid "A rating was given to a map"
+#~ msgstr "Arvosana annettiin kartta"
+
+#~ msgid "zoom"
+#~ msgstr "zoomaus"
+
+#, fuzzy
+#~| msgid "projection"
+#~ msgid "projection"
+#~ msgstr "projektio"
+
+#~ msgid "center X"
+#~ msgstr "keskus X"
+
+#~ msgid "center Y"
+#~ msgstr "keskus Y"
+
+#~ msgid "Site URL"
+#~ msgstr "Sivuston URL"
+
+#~ msgid "Featured Map URL"
+#~ msgstr "Ohjelmaan Kartta URL"
+
+#~ msgid "stack order"
+#~ msgstr "pino järjestys"
+
+#, fuzzy
+#~| msgid "format"
+#~ msgid "format"
+#~ msgstr "muoto"
+
+#~ msgid "name"
+#~ msgstr "nimi"
+
+#~ msgid "opacity"
+#~ msgstr "sameus"
+
+#~ msgid "styles"
+#~ msgstr "tyylit"
+
+#~ msgid "transparent"
+#~ msgstr "läpinäkyvä"
+
+#~ msgid "fixed"
+#~ msgstr "kiinteä"
+
+#, fuzzy
+#~| msgid "group"
+#~ msgid "group"
+#~ msgstr "ryhmä"
+
+#~ msgid "visibility"
+#~ msgstr "näkyvyys"
+
+#~ msgid "ows URL"
+#~ msgstr "OWS URL"
+
+#~ msgid "layer params"
+#~ msgstr "kerros params"
+
+#~ msgid "source params"
+#~ msgstr "lähde params"
+
+#~ msgid "JSON Configuration"
+#~ msgstr "JSON Configuration"
+
+#~ msgid "You are not permitted to delete this map."
+#~ msgstr "Sinulla ei ole oikeutta poistaa tätä karttaa."
+
+#~ msgid "You do not have permissions for this map."
+#~ msgstr "Sinulla ei ole oikeuksia tämän kartan."
+
+#~ msgid "You must be logged in to save this map"
+#~ msgstr "Sinun täytyy olla kirjautunut sisään pelastaa tämä kartta"
+
+#~ msgid "You are not permitted to save or edit this map."
+#~ msgstr "Sinulla ei ole oikeutta tallentaa tai muokata tätä karttaa."
+
+#~ msgid "You are not allowed to modify this map's metadata."
+#~ msgstr "Sinulla ei ole lupaa muokata tätä karttaa metatietoja."
+
+#~ msgid "You are not allowed to view this map."
+#~ msgstr "Sinulla ei ole lupaa katsella tätä karttaa."
+
+#~ msgid "An unknown error has occured."
+#~ msgstr "Tuntematon virhe on tapahtunut."
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "Thumbnail"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "error saving thumbnail"
+#~ msgstr "Thumbnail"
+
+#, fuzzy
+#~| msgid "Email Address"
+#~ msgid "Enter valid email addresses."
+#~ msgstr "Sähköpostiosoite"
+
+#, fuzzy
+#~| msgid "attribute name"
+#~ msgid "Metric name"
+#~ msgstr "määritteen nimi"
+
+#, fuzzy
+#~| msgid "reference date for the cited resource"
+#~ msgid "Show data for specific resource"
+#~ msgstr "viitatun resurssin viitepäivä"
+
+#, fuzzy
+#~| msgid "GeoServer"
+#~ msgid "Host (GeoServer)"
+#~ msgstr "GeoServer"
+
+#, fuzzy
+#~| msgid "About GeoNode"
+#~ msgid "Host (GeoNode)"
+#~ msgstr "Tietoja GeoNode"
+
+#, fuzzy
+#~| msgid "Resources"
+#~ msgid "No resource"
+#~ msgstr "Resurssit"
+
+#, fuzzy
+#~| msgid "Resources"
+#~ msgid "Resource base"
+#~ msgstr "Resurssit"
+
+#, fuzzy
+#~| msgid "Styles"
+#~ msgid "Style"
+#~ msgstr "Tyylit"
+
+#, fuzzy
+#~| msgid "count"
+#~ msgid "Count"
+#~ msgstr "laskea"
+
+#, fuzzy
+#~| msgid "local OWS"
+#~ msgid "Not OWS"
+#~ msgstr "paikallinen OWS"
+
+#, fuzzy
+#~| msgid "Edit Metadata"
+#~ msgid "Change Metadata"
+#~ msgstr "Edit Metadata"
+
+#, fuzzy
+#~| msgid "Edit Metadata"
+#~ msgid "View Metadata"
+#~ msgstr "Edit Metadata"
+
+#~ msgid "View"
+#~ msgstr "View"
+
+#, fuzzy
+#~| msgid "Is Published"
+#~ msgid "Publish"
+#~ msgstr "On julkaistu"
+
+#, fuzzy
+#~| msgid "GeoServer"
+#~ msgid "Geoserver event"
+#~ msgstr "GeoServer"
+
+#, fuzzy
+#~| msgid "List of resources using this document:"
+#~ msgid "List of resources affected"
+#~ msgstr "Luettelo resursseja tämän dokumentin avulla"
+
+#, fuzzy
+#~| msgid "Resource using this document"
+#~ msgid "Response processing time in ms"
+#~ msgstr "Resurssi tämän dokumentin avulla"
+
+#, fuzzy
+#~| msgid "The following groups:"
+#~ msgid "has detected following problems :"
+#~ msgstr "Seuraavat ryhmät:"
+
+#~ msgid "User following you"
+#~ msgstr "Käyttäjä seuraa sinua"
+
+#, fuzzy
+#~| msgid "This user is not following anyone"
+#~ msgid "Another user has started following you"
+#~ msgstr "Tämä käyttäjä ei seuraa muita"
+
+#, fuzzy
+#~| msgid "Recent activity"
+#~ msgid "Account activated"
+#~ msgstr "Viimeaikainen toiminta"
+
+#~ msgid "Personal info"
+#~ msgstr "Henkilökohtaiset tiedot"
+
+#~ msgid "Important dates"
+#~ msgstr "Tärkeitä päivämääriä"
+
+#, fuzzy
+#~| msgid "Edit profile"
+#~ msgid "Extended profile"
+#~ msgstr "Muokkaa profiilia"
+
+#~ msgid "Password changed successfully."
+#~ msgstr "Salasana vaihdettu onnistuneesti."
+
+#~ msgid "Change password: %s"
+#~ msgstr "Vaihda salasana: %s"
+
+#~ msgid "party who authored the resource"
+#~ msgstr "osapuoli, joka kirjoitti resurssi"
+
+#~ msgid ""
+#~ "party who has processed the data in a manner such that the resource has "
+#~ "been modified"
+#~ msgstr ""
+#~ "osapuoli, joka on muokannut tietoa siten, että resurssi on muuttunut"
+
+#~ msgid "party who published the resource"
+#~ msgstr "osapuoli, joka on julkaissut resurssin"
+
+#~ msgid ""
+#~ "party that accepts accountability and responsibility for the data and "
+#~ "ensures         appropriate care and maintenance of the resource"
+#~ msgstr ""
+#~ "puolue, joka hyväksyy vastuullisuutta ja vastuu tiedosta ja joka "
+#~ "varmistaa asianmukaisen hoidon ja ylläpidon luonnonvarojen"
+
+#~ msgid ""
+#~ "party who can be contacted for acquiring knowledge about or acquisition "
+#~ "of the resource"
+#~ msgstr ""
+#~ "osapuoli, joka voidaan ottaa yhteyttä hankkimalla tietoa tai hankinnan "
+#~ "resurssi"
+
+#~ msgid "party who distributes the resource"
+#~ msgstr "osapuoli, joka jakelee resurssia"
+
+#~ msgid "party who uses the resource"
+#~ msgstr "osapuoli, joka käyttää resurssia"
+
+#~ msgid "party that supplies the resource"
+#~ msgstr "osapuoli, jolta resurssi"
+
+#~ msgid "party who created the resource"
+#~ msgstr "osapuoli, joka on luonut resurssin"
+
+#~ msgid "party that owns the resource"
+#~ msgstr "Osapuoli, joka omistaa resurssin"
+
+#~ msgid ""
+#~ "key party responsible for gathering information and conducting research"
+#~ msgstr "keskeinen osapuoli vastaa tiedon keruusta ja tutkimuksesta"
+
+#, fuzzy
+#~| msgid "Email Address"
+#~ msgid "Email Address"
+#~ msgstr "Sähköpostiosoite"
+
+#, fuzzy
+#~| msgid "Organization Name"
+#~ msgid "Organization Name"
+#~ msgstr "Organisaation nimi"
+
+#~ msgid "name of the responsible organization"
+#~ msgstr "nimi vastuuorganisaatiolle"
+
+#~ msgid "introduce yourself"
+#~ msgstr "Esittele itsesi"
+
+#~ msgid "Position Name"
+#~ msgstr "Sijainti Nimi"
+
+#~ msgid "role or position of the responsible person"
+#~ msgstr "rooli tai asema vastuuhenkilö"
+
+#~ msgid ""
+#~ "telephone number by which individuals can speak to the responsible "
+#~ "organization or individual"
+#~ msgstr ""
+#~ "puhelinnumero, johon ihmiset voivat puhua vastaavan organisaation tai "
+#~ "yksittäisen"
+
+#~ msgid "Facsimile"
+#~ msgstr "Faksi"
+
+#~ msgid ""
+#~ "telephone number of a facsimile machine for the responsible organization "
+#~ "or individual"
+#~ msgstr ""
+#~ "puhelinnumero faksimilekonetta vastuullista organisaation tai yksittäisen"
+
+#~ msgid "Delivery Point"
+#~ msgstr "Jakelupisteen"
+
+#~ msgid ""
+#~ "physical and email address at which the organization or individual may be "
+#~ "contacted"
+#~ msgstr ""
+#~ "fyysinen ja sähköpostiosoite, johon organisaatio tai henkilö voi ottaa "
+#~ "yhteyttä"
+
+#~ msgid "City"
+#~ msgstr "Kaupunki"
+
+#~ msgid "city of the location"
+#~ msgstr "kaupungin sijainti"
+
+#~ msgid "Administrative Area"
+#~ msgstr "Hallinnollinen alue"
+
+#~ msgid "state, province of the location"
+#~ msgstr "valtion, maakunnan sijainti"
+
+#~ msgid "Postal Code"
+#~ msgstr "Postinumero"
+
+#~ msgid "ZIP or other postal code"
+#~ msgstr "ZIP tai muu postinumeron"
+
+#~ msgid "country of the physical address"
+#~ msgstr "maan fyysisen osoitteen"
+
+#~ msgid ""
+#~ "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+#~ "the subject             (space or comma-separated"
+#~ msgstr ""
+#~ "yleisesti käytetty sana (t) tai virallisesti sana (t) tai lauseke (t) "
+#~ "käytetään kuvaamaan aihe (tilan tai pilkulla erotettuna"
+
+#~ msgid "Your username for "
+#~ msgstr "Käyttäjätunnuksesi"
+
+#~ msgid "Your username has been emailed to you."
+#~ msgstr "Käyttäjätunnuksesi on sähköpostitse sinulle."
+
+#~ msgid "No user could be found with that email address."
+#~ msgstr "Ei käyttäjä voisi löytyä kyseisen sähköpostiosoite."
+
+#, fuzzy
+#~| msgid "You are not permitted to save or edit this map."
+#~ msgid "You are not permitted to save or edit this resource."
+#~ msgstr "Sinulla ei ole oikeutta tallentaa tai muokata tätä karttaa."
+
+#, fuzzy
+#~| msgid "You are not allowed to view this document."
+#~ msgid "You are not authorized to download this resource."
+#~ msgstr "Et voi tarkastella tätä asiakirjaa."
+
+#, fuzzy
+#~| msgid "Documents"
+#~ msgid "No files found."
+#~ msgstr "Dokumentit"
+
+#, fuzzy
+#~| msgid "Not provided"
+#~ msgid "Not Authorized"
+#~ msgstr "Ei toimiteta"
+
+#, fuzzy
+#~| msgid "style name"
+#~ msgid "style xml"
+#~ msgstr "tyylin nimi"
+
+#, fuzzy
+#~| msgid "sld url"
+#~ msgid "style url"
+#~ msgstr "SLD url"
+
+#, fuzzy
+#~| msgid "sld url"
+#~ msgid "style legend url"
+#~ msgstr "SLD url"
+
+#~ msgid "Auto-detect"
+#~ msgstr "Automaattinen tunnistus"
+
+#~ msgid "Paired WMS/WFS/WCS"
+#~ msgstr "Pariksi WMS / WFS / WCS"
+
+#~ msgid "Web Map Service"
+#~ msgstr "Web Map Service"
+
+#~ msgid "Catalogue Service"
+#~ msgstr "Katalogi Service"
+
+#, fuzzy
+#~| msgid "ArcGIS REST Service"
+#~ msgid "ArcGIS REST MapServer"
+#~ msgstr "ArcGIS REST palvelu"
+
+#, fuzzy
+#~| msgid "ArcGIS REST Service"
+#~ msgid "ArcGIS REST ImageServer"
+#~ msgstr "ArcGIS REST palvelu"
+
+#~ msgid "OpenGeoPortal"
+#~ msgstr "OpenGeoPortal"
+
+#~ msgid "Harvard Geospatial Library"
+#~ msgstr "Harvard Geospatiaalinen Kirjasto"
+
+#, fuzzy
+#~| msgid "GeoNode's Web Services"
+#~ msgid "GeoNode (Web Map Service)"
+#~ msgstr "GeoNode Web Services"
+
+#, fuzzy
+#~| msgid "Catalogue Service"
+#~ msgid "GeoNode (Catalogue Service)"
+#~ msgstr "Katalogi Service"
+
+#~ msgid "Service URL"
+#~ msgstr "Palvelun URL"
+
+#~ msgid "Service Type"
+#~ msgstr "Palvelun tyyppi"
+
+#, fuzzy
+#~| msgid "service interfaces"
+#~ msgid "Service %(url)s is already registered"
+#~ msgstr "palvelun rajapinnat"
+
+#~ msgid "Local"
+#~ msgstr "Paikallinen"
+
+#~ msgid "Cascaded"
+#~ msgstr "Jalkauttaminen"
+
+#~ msgid "Harvested"
+#~ msgstr "Korjattu"
+
+#~ msgid "Indexed"
+#~ msgstr "Indeksoitu"
+
+#~ msgid "Live"
+#~ msgstr "Live"
+
+#, fuzzy
+#~| msgid "Resources"
+#~ msgid "Resource is queued"
+#~ msgstr "Resurssit"
+
+#, fuzzy
+#~| msgid "service interfaces"
+#~ msgid "Service registered successfully"
+#~ msgstr "palvelun rajapinnat"
+
+#, fuzzy
+#~| msgid "Password changed successfully."
+#~ msgid "Service rescanned successfully"
+#~ msgstr "Salasana vaihdettu onnistuneesti."
+
+#, fuzzy
+#~| msgid "You are not permitted to remove this service."
+#~ msgid "You are not permitted to change this service."
+#~ msgstr "Sinulla ei ole oikeutta poistaa tätä palvelua."
+
+#~ msgid "You are not permitted to remove this service."
+#~ msgstr "Sinulla ei ole oikeutta poistaa tätä palvelua."
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "Service {} has been deleted"
+#~ msgstr "Palvelu on luotu:"
+
+#~ msgid "created"
+#~ msgstr "luotu"
+
+#~ msgid "deleted"
+#~ msgstr "Poistetaan"
+
+#, fuzzy
+#~| msgid "Update"
+#~ msgid "updated"
+#~ msgstr "Päivitys"
+
+#~ msgid "added a comment"
+#~ msgstr "lisäsi kommentin"
+
+#~ msgid "updated a comment"
+#~ msgstr "päivitetty kommentti"
+
+#~ msgid "uploaded"
+#~ msgstr "latasi"
+
+#~ msgid "to"
+#~ msgstr "jotta"
+
+#, fuzzy
+#~| msgid "Confirm email address for %(site_name)s"
+#~ msgid "Please confirm email address for %(site_name)s"
+#~ msgstr "Vahvista sähköpostiosoite %(site_name)s"
+
+#, fuzzy
+#~| msgid "Confirm email address for %(site_name)s"
+#~ msgid "Create an account on %(site_name)s"
+#~ msgstr "Vahvista sähköpostiosoite %(site_name)s"
+
+#, fuzzy
+#~| msgid "Change password: %s"
+#~ msgid "Change password email notification"
+#~ msgstr "Vaihda salasana: %s"
+
+#, fuzzy
+#~| msgid ""
+#~| "You're receiving this email because you or someone else has requested a "
+#~| "password for your user account at %(site_name)s.\n"
+#~| "It can be safely ignored if you did not request a password reset. Click "
+#~| "the link below to reset your password.\n"
+#~| "\n"
+#~| "%(password_reset_url)s\n"
+#~ msgid ""
+#~ "Hello from %(site_name)s!\n"
+#~ "\n"
+#~ "You're receiving this e-mail because you or someone else has requested a "
+#~ "password for your user account.\n"
+#~ "It can be safely ignored if you did not request a password reset. Click "
+#~ "the link below to reset your password."
+#~ msgstr ""
+#~ "Saat tämän sähköpostin, koska olet tai joku muu on pyytänyt salasanan "
+#~ "käyttäjätilille osoitteessa %(site_name)s. \n"
+#~ "Se voidaan turvallisesti jättää huomiotta, jos et pyytänyt salasanan. "
+#~ "Klikkaa alla olevaa linkkiä salasanan. \n"
+#~ "\n"
+#~ "%(password_reset_url)s\n"
+
+#~ msgid "[%(site_name)s] Password reset"
+#~ msgstr "[%(site_name)s]Salasanan"
+
+#, fuzzy
+#~| msgid "The following groups:"
+#~ msgid "is a member of the following group(s)"
+#~ msgstr "Seuraavat ryhmät:"
+
+#, fuzzy
+#~| msgid "Welcome"
+#~ msgid "Welcome at"
+#~ msgstr "Tervetuloa"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "The following document was approved"
+#~ msgstr "Seuraavat käyttäjät:"
+
+#, fuzzy
+#~| msgid "Powered by"
+#~ msgid "owned by"
+#~ msgstr "Powered by"
+
+#, fuzzy
+#~| msgid "You do not have permissions for this document."
+#~ msgid "A comment has been posted for the document"
+#~ msgstr "Sinulla ei ole oikeuksia tämän asiakirjan."
+
+#, fuzzy
+#~| msgid "You do not have permissions for this document."
+#~ msgid "A comment has been posted for a document"
+#~ msgstr "Sinulla ei ole oikeuksia tämän asiakirjan."
+
+#, fuzzy
+#~| msgid "Choose users..."
+#~ msgid "The user"
+#~ msgstr "Valitse käyttäjät ..."
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "uploaded the following document"
+#~ msgstr "Seuraavat käyttäjät:"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "The following document was deleted"
+#~ msgstr "Seuraavat käyttäjät:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A document has been deleted"
+#~ msgstr "Palvelu on luotu:"
+
+#, fuzzy
+#~| msgid "The following groups:"
+#~ msgid "The following document was published"
+#~ msgstr "Seuraavat ryhmät:"
+
+#, fuzzy
+#~| msgid "created"
+#~ msgid "rated"
+#~ msgstr "luotu"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "the following document"
+#~ msgstr "Seuraavat käyttäjät:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A document has been rated"
+#~ msgstr "Palvelu on luotu:"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "The following document was updated"
+#~ msgstr "Seuraavat käyttäjät:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A document has been updated"
+#~ msgstr "Palvelu on luotu:"
+
+#, fuzzy
+#~| msgid "You have the following incomplete uploads"
+#~ msgid "You have received the following notice from"
+#~ msgstr "Sinulla on seuraavat epätäydellinen kuvat"
+
+#, fuzzy
+#~| msgid "Notices"
+#~ msgid "%(notice)s"
+#~ msgstr "Notices"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following layer was approved"
+#~ msgstr "Seuraavat kerrokset tuodaan"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A layer has been approved"
+#~ msgstr "Kerros kommentoi"
+
+#, fuzzy
+#~| msgid "Documents related to this layer"
+#~ msgid "A comment has been posted for the layer"
+#~ msgstr "Asiakirjoja, jotka liittyvät tähän kerrokseen"
+
+#, fuzzy
+#~| msgid "A rating was given to a layer"
+#~ msgid "A comment has been posted for a layer"
+#~ msgstr "Arvosana annettiin kerros"
+
+#, fuzzy
+#~| msgid "This map uses the following layers:"
+#~ msgid "uploaded the following layer"
+#~ msgstr "Tämä kartta käyttää seuraavat kerrokset:"
+
+#, fuzzy
+#~| msgid "A layer was uploaded"
+#~ msgid "A new layer has been uploaded"
+#~ msgstr "Kerros ladattu"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following layer was deleted"
+#~ msgstr "Seuraavat kerrokset tuodaan"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A layer has been deleted"
+#~ msgstr "Kerros kommentoi"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following layer was published"
+#~ msgstr "Seuraavat kerrokset tuodaan"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A layer has been published"
+#~ msgstr "Kerros kommentoi"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "the following layer"
+#~ msgstr "Seuraavat käyttäjät:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A layer has been rated"
+#~ msgstr "Palvelu on luotu:"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following layer was updated"
+#~ msgstr "Seuraavat kerrokset tuodaan"
+
+#, fuzzy
+#~| msgid "A layer was commented on"
+#~ msgid "A layer has been updated"
+#~ msgstr "Kerros kommentoi"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following map was approved"
+#~ msgstr "Seuraavat kerrokset tuodaan"
+
+#, fuzzy
+#~| msgid "Documents related to this map"
+#~ msgid "A comment has been posted for the map"
+#~ msgstr "Asiakirjoja, jotka liittyvät tähän karttaan"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "created the following map"
+#~ msgstr "Seuraavat käyttäjät:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A map has been created"
+#~ msgstr "Palvelu on luotu:"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following map was deleted"
+#~ msgstr "Seuraavat kerrokset tuodaan"
+
+#, fuzzy
+#~| msgid "A map was commented on"
+#~ msgid "A map has been deleted"
+#~ msgstr "Kartta kommentoi"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "The following map was published"
+#~ msgstr "Seuraavat käyttäjät:"
+
+#, fuzzy
+#~| msgid "The following users:"
+#~ msgid "the following map"
+#~ msgstr "Seuraavat käyttäjät:"
+
+#, fuzzy
+#~| msgid "Service has been created:"
+#~ msgid "A map has been rated"
+#~ msgstr "Palvelu on luotu:"
+
+#, fuzzy
+#~| msgid "The following layers will be imported"
+#~ msgid "The following map was updated"
+#~ msgstr "Seuraavat kerrokset tuodaan"
+
+#, fuzzy
+#~| msgid "A map was commented on"
+#~ msgid "A map has been updated"
+#~ msgstr "Kartta kommentoi"
+
+#, fuzzy
+#~| msgid "Request to download a resource"
+#~ msgid "requested you to download this resource"
+#~ msgstr "Pyyntä ladata resurssi"
+
+#, fuzzy
+#~| msgid "GeoNode Help"
+#~ msgid "GeoNode Themes Library"
+#~ msgstr "GeoNode Ohje"
+
+#, fuzzy
+#~| msgid "Could not find any layers in a compatible projection."
+#~ msgid "Could not find any kml files inside the uploaded kmz"
+#~ msgstr "Löytäneet kerroksiin yhteensopiva projektio."
+
+#~ msgid "Invalid permission level."
+#~ msgstr "Virheellinen lupataso."
+
+#~ msgid "Permission Denied"
+#~ msgstr "Lupa kielletty"
+
+#~ msgid "GeoExplorer"
+#~ msgstr "GeoExplorer"
+
+#, fuzzy
+#~| msgid "Message Inbox"
+#~ msgid "A message to"
+#~ msgstr "Viesti Saapuneet"
 
 #~ msgid "From"
 #~ msgstr "Alkaen"
-
-#~ msgid "Subject"
-#~ msgstr "Aihe"
 
 #~ msgid "Last Sender"
 #~ msgstr "Viimeisin Sender"
