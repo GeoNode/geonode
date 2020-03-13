@@ -52,7 +52,7 @@ setup(
     description="Application for serving and sharing geospatial data",
     long_description=open("README.md").read(),
     classifiers=["Development Status :: 5 - Production/Stable"],
-    python_requires=">=3",
+    python_requires=">=3.6",
     keywords="",
     author="GeoNode Developers",
     author_email="dev@geonode.org",
