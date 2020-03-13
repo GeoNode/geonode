@@ -1,4 +1,6 @@
 language: python
+python:
+  - 3.5
 
 cache:
   pip: true
@@ -20,6 +22,7 @@ addons:
   postgresql: 9.6
   apt:
     packages:
+      - python3-pip
       - postgresql-9.6-postgis-2.4
       - nginx
   firefox: "latest-esr"
@@ -276,6 +279,13 @@ jobs:
     - name: "GeoServer-backend Upload Tests"
 
 before_install:
+  - set -ex;
+    export PYENV_VERSION=$PYTHON
+    export PATH="/Users/travis/.pyenv/shims:${PATH}"
+    pyenv-virtualenv venv
+    source venv/bin/activate
+    # A manual check that the correct version of Python is running.
+    python --version
   - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
       git clone --depth 1 https://github.com/GeoNode/geonode-selenium.git;
       export GEONODE_REPOSITORY=$(pwd);
