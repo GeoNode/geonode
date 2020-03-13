@@ -27,7 +27,7 @@
                 {% endif %}
             </td>
             <td class="col-md-3">
-                <a href="{{ thread.get_absolute_url }}">{{ thread.subject }} - {{ thread.latest_message.content|slice:"10" }}</a>
+                <a href="{{ thread.get_absolute_url }}">{{ thread.subject }} - {{ thread.latest_message.content|slice:"10" }}...</a>
             </td>
             <td class="col-md-3">
                 {{ thread.latest_message.sent_at}}
