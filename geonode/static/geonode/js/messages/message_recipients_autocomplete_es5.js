@@ -71,6 +71,12 @@ var MessageRecipientsTags = /*#__PURE__*/function () {
         return response.json().then(_this.data_extract_func).then(function (res) {
           var _this$tagify$settings;
 
+          res = res.filter(function (elem) {
+            if (!_this.blacklist.includes(elem.value)) {
+              return elem;
+            }
+          });
+
           (_this$tagify$settings = _this.tagify.settings.whitelist).splice.apply(_this$tagify$settings, [0, res.length].concat(_toConsumableArray(res)));
 
           _this.tagify.loading(false).dropdown.show.call(_this.tagify, value);

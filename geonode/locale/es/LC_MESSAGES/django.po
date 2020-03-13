@@ -8308,7 +8308,7 @@ msgid "A message to"
 msgstr "Bandeja de Entrada"
 
 #: geonode/templates/user_messages/thread_detail.html:11
-msgid "Send to"
+msgid "Sent to"
 msgstr "Enviar a"
 
 #: geonode/templates/user_messages/thread_detail.html:28

@@ -7904,7 +7904,7 @@ msgid "A message to"
 msgstr "Messaggi di posta in arrivo"
 
 #: geonode/templates/user_messages/thread_detail.html:11
-msgid "Send to"
+msgid "Sent to"
 msgstr "Inviare a"
 
 #: geonode/templates/user_messages/thread_detail.html:28

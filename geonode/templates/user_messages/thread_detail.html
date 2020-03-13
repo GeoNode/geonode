@@ -6,12 +6,14 @@
 {% block title %}{{ thread.subject }} — {{ block.super }}{% endblock %}
 
 {% block body %}
-<h3>{% trans "A message to" %} {{ request.user.first_name_or_nick }}</h3>
+<h3>{{ thread.subject }}</h3>
 <div>
-    <b>{% trans "Send to" %}:</b>
+    <b>{% trans "Sent to" %}:</b>
         {% for user in thread.single_users.all%}
-            <a href={{  user.get_absolute_url }}>{{ user.full_name_or_nick }}</a>
-            {%if not forloop.last%},{%endif%}
+            {% if user.username != request.user.username %}
+                <a href={{  user.get_absolute_url }}>{{ user.full_name_or_nick }}</a>
+                {%if not forloop.last%},{%endif%}
+            {% endif %}
         {% endfor %}
         {% if thread.registered_groups.all %}
             ,

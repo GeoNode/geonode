@@ -7956,7 +7956,7 @@ msgid "A message to"
 msgstr "შემოსული შეტყობინებები"
 
 #: geonode/templates/user_messages/thread_detail.html:11
-msgid "Send to"
+msgid "Sent to"
 msgstr "აგზავნა"
 
 #: geonode/templates/user_messages/thread_detail.html:28

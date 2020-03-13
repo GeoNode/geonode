@@ -39,6 +39,11 @@ class MessageRecipientsTags {
             response.json()
                 .then(this.data_extract_func)
                 .then(res => {
+                    res = res.filter(elem => {
+                        if (!(this.blacklist.includes(elem.value))) {
+                            return elem;
+                        }
+                    });
                     this.tagify.settings.whitelist.splice(0, res.length, ...res);
                     this.tagify.loading(false).dropdown.show.call(this.tagify, value);
                 }));

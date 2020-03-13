@@ -8077,7 +8077,7 @@ msgid "A message to"
 msgstr "தகவல் உள்பெட்டி "
 
 #: geonode/templates/user_messages/thread_detail.html:11
-msgid "Send to"
+msgid "Sent to"
 msgstr "அனுப்புங்கள்"
 
 #: geonode/templates/user_messages/thread_detail.html:28

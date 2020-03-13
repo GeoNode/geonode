@@ -7911,7 +7911,7 @@ msgid "A message to"
 msgstr "Meldinger"
 
 #: geonode/templates/user_messages/thread_detail.html:11
-msgid "Send to"
+msgid "Sent to"
 msgstr "Send til"
 
 #: geonode/templates/user_messages/thread_detail.html:28

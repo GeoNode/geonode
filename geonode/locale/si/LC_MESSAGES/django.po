@@ -8059,7 +8059,7 @@ msgid "A message to"
 msgstr "පණිවුඩය එන ලිපි"
 
 #: geonode/templates/user_messages/thread_detail.html:11
-msgid "Send to"
+msgid "Sent to"
 msgstr ""
 
 #: geonode/templates/user_messages/thread_detail.html:28

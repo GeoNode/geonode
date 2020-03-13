@@ -8297,7 +8297,7 @@ msgid "A message to"
 msgstr "Ящик входящих сообщений"
 
 #: geonode/templates/user_messages/thread_detail.html:11
-msgid "Send to"
+msgid "Sent to"
 msgstr "Отправить"
 
 #: geonode/templates/user_messages/thread_detail.html:28

@@ -5,8 +5,6 @@ from django.views import View
 from user_messages.models import UserThread
 
 
-
-
 class MarkReadUnread(View):
 
     def post(self, request, **kwargs):

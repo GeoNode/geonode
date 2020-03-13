@@ -8059,7 +8059,7 @@ msgid "A message to"
 msgstr "বার্তা ইনবক্স"
 
 #: geonode/templates/user_messages/thread_detail.html:11
-msgid "Send to"
+msgid "Sent to"
 msgstr "পাঠানো"
 
 #: geonode/templates/user_messages/thread_detail.html:28

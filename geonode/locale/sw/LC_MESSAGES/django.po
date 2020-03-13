@@ -8089,7 +8089,7 @@ msgid "A message to"
 msgstr "Kikasha cha ujumbe"
 
 #: geonode/templates/user_messages/thread_detail.html:11
-msgid "Send to"
+msgid "Sent to"
 msgstr "Tuma kwa"
 
 #: geonode/templates/user_messages/thread_detail.html:28

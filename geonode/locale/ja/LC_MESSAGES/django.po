@@ -8080,7 +8080,7 @@ msgid "A message to"
 msgstr "受信メッセージ"
 
 #: geonode/templates/user_messages/thread_detail.html:11
-msgid "Send to"
+msgid "Sent to"
 msgstr "に送る"
 
 #: geonode/templates/user_messages/thread_detail.html:28
