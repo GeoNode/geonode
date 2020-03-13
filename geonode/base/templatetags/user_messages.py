@@ -42,8 +42,8 @@ def format_senders(thread, current_user):
             sender_string += f'{user_repr}, '
         sender_string = sender_string[:-2]
     else:
-        first_sender = thread.latest_message
-        last_sender = thread.latest_message
+        first_sender = thread.first_message.sender
+        last_sender = thread.latest_message.sender
         sender_string = f'{first_sender.first_name_or_nick} .. {last_sender.first_name_or_nick}'
     return f'{sender_string}'
 
