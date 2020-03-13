@@ -8270,7 +8270,7 @@ msgid "A message to"
 msgstr "Съобщения"
 
 #: geonode/templates/user_messages/thread_detail.html:11
-msgid "Send to"
+msgid "Sent to"
 msgstr "изпрати на"
 
 #: geonode/templates/user_messages/thread_detail.html:28

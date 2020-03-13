@@ -7778,7 +7778,7 @@ msgid "A message to"
 msgstr "Εισερχόμενα Μηνύματα"
 
 #: geonode/templates/user_messages/thread_detail.html:11
-msgid "Send to"
+msgid "Sent to"
 msgstr "Στέλνω σε"
 
 #: geonode/templates/user_messages/thread_detail.html:28

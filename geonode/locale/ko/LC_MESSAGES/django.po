@@ -8398,7 +8398,7 @@ msgid "A message to"
 msgstr "메세지 보관함"
 
 #: geonode/templates/user_messages/thread_detail.html:11
-msgid "Send to"
+msgid "Sent to"
 msgstr "보내기"
 
 #: geonode/templates/user_messages/thread_detail.html:28

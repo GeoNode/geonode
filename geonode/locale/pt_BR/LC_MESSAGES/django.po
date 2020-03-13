@@ -8300,7 +8300,7 @@ msgid "A message to"
 msgstr "Caixa de entrada de mensagens"
 
 #: geonode/templates/user_messages/thread_detail.html:11
-msgid "Send to"
+msgid "Sent to"
 msgstr "Enviar para"
 
 #: geonode/templates/user_messages/thread_detail.html:28

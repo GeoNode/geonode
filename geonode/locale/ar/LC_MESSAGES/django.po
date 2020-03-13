@@ -7947,7 +7947,7 @@ msgid "A message to"
 msgstr "صندوق الرسائل"
 
 #: geonode/templates/user_messages/thread_detail.html:11
-msgid "Send to"
+msgid "Sent to"
 msgstr "ارسل إلى"
 
 #: geonode/templates/user_messages/thread_detail.html:28

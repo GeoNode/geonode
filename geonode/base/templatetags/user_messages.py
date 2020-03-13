@@ -1,9 +1,8 @@
 from django import template
 from uuid import uuid4
 from django.contrib.auth import get_user_model
+from django.db.models import Sum
 from django.utils.translation import ugettext as _
-
-from user_messages.models import Message
 
 register = template.Library()
 
@@ -23,7 +22,7 @@ def random_uuid():
 @register.simple_tag
 def format_senders(thread, current_user):
     User = get_user_model()
-    users = User.objects.filter(sent_messages__thread=thread).order_by('sent_messages__sent_at').distinct()
+    users = User.objects.filter(sent_messages__thread=thread).annotate(Sum('pk'))
     sender_string = ''
     u_count = users.count()
     if u_count < 3:

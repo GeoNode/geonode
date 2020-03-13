@@ -8072,7 +8072,7 @@ msgid "A message to"
 msgstr "Viesti Saapuneet"
 
 #: geonode/templates/user_messages/thread_detail.html:11
-msgid "Send to"
+msgid "Sent to"
 msgstr "Lähetä"
 
 #: geonode/templates/user_messages/thread_detail.html:28
