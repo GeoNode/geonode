@@ -470,7 +470,7 @@
                   <div class="col-sm-3">
                     <i class="fa fa-tint fa-3x"></i>
                     <h4>{% trans "Styles" %}</h4>
-                    {% if preview == 'geoext' or preview == 'react' or preview == 'leaflet' %}
+                    {% if preview == 'react' or preview == 'leaflet' %}
                       <a class="btn btn-default btn-block btn-xs style-edit" data-dismiss="modal" href="#">{% trans "Edit" %}</a>
                     {% else %}
                       <a class="btn btn-default btn-block btn-xs style-edit" href="{% url "layer_sld_edit" resource.service_typename %}">{% trans "Edit" %}</a>
