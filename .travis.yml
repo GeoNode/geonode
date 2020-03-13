@@ -279,7 +279,7 @@ before_install:
       scripts/misc/qgis_server_setup.sh before_install;
       sudo apt-get autoremove sqlite3;
     fi
-    python --version;
+  - python --version;
 
 install:
   - set -ex;
