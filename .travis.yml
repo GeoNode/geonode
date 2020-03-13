@@ -292,6 +292,11 @@ before_install:
       scripts/misc/qgis_server_setup.sh before_install;
       sudo apt-get autoremove sqlite3;
     fi
+    export PYENV_VERSION=$PYTHON;
+    export PATH="/Users/travis/.pyenv/shims:${PATH}";
+    pyenv-virtualenv venv;
+    source venv/bin/activate;
+    python --version;
 
 install:
   - set -ex;
