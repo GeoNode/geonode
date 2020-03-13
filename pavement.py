@@ -502,7 +502,6 @@ def start(options):
     """
     Start GeoNode (Django, GeoServer & Client)
     """
-    sh('sleep 30')
     info("GeoNode is now available.")
 
 
@@ -600,6 +599,7 @@ def start_django(options):
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     bind = options.get('bind', '0.0.0.0:8000')
+    port = bind.split(":")[1]
     foreground = '' if options.get('foreground', False) else '&'
     sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
 
@@ -635,6 +635,12 @@ def start_django(options):
 
     if ASYNC_SIGNALS:
         sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
+
+    # wait for Django to start
+    started = waitfor("http://localhost:" + port)
+    if not started:
+        info('Django never started properly or timed out.')
+        sys.exit(1)
 
 
 @task

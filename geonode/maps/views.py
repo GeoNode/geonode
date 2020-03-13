@@ -165,7 +165,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
         'preview': getattr(
             settings,
             'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-            'geoext'),
+            'mapstore'),
         'crs': getattr(
             settings,
             'DEFAULT_MAP_CRS',
@@ -380,7 +380,7 @@ def map_metadata(
         "category_form": category_form,
         "tkeywords_form": tkeywords_form,
         "layers": layers,
-        "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'geoext'),
+        "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'mapstore'),
         "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857'),
         "metadata_author_groups": metadata_author_groups,
         "TOPICCATEGORY_MANDATORY": getattr(settings, 'TOPICCATEGORY_MANDATORY', False),
@@ -592,7 +592,7 @@ def map_view(request, mapid, snapshot=None, layer_name=None,
         'preview': getattr(
             settings,
             'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-            'geoext')
+            'mapstore')
     })
 
 
@@ -682,7 +682,7 @@ def map_edit(request, mapid, snapshot=None, template='maps/map_edit.html'):
         'preview': getattr(
             settings,
             'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-            'geoext')
+            'mapstore')
     })
 
 
@@ -720,7 +720,7 @@ def new_map(request, template='maps/map_new.html'):
     context_dict["preview"] = getattr(
         settings,
         'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-        'geoext')
+        'mapstore')
     if isinstance(config, HttpResponse):
         return config
     else:
