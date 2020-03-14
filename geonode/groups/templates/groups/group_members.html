@@ -41,6 +41,20 @@
                   {% csrf_token %}
                   <button type="submit" class="btn btn-danger btn-xs">{% trans 'Remove' %}</button>
                 </form>
+                {% if member.role == 'member' %}
+                  |
+                  <form style="display: inline;" method="POST" action="{% url "group_member_promote" group.slug member.user.username %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success btn-xs">{% trans 'Promote' %}</button>
+                  </form>
+                {% endif %}
+                {% if member.role == 'manager' %}
+                  |
+                  <form style="display: inline;" method="POST" action="{% url "group_member_demote" group.slug member.user.username %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning btn-xs">{% trans 'Demote' %}</button>
+                  </form>
+                {% endif %}
               <h4>
               <h5>
                   {% trans 'Role' %}: {{ member.role }}
@@ -66,6 +80,11 @@
                 <form style="display: inline;" method="POST" action="{% url "group_member_remove" group.slug member.user.username %}">
                   {% csrf_token %}
                   <button type="submit" class="btn btn-danger btn-xs">{% trans 'Remove' %}</button>
+                </form>
+                |
+                <form style="display: inline;" method="POST" action="{% url "group_member_demote" group.slug member.user.username %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-warning btn-xs">{% trans 'Demote' %}</button>
                 </form>
               <h4>
               <h5>
@@ -93,6 +112,11 @@
                 <form style="display: inline;" method="POST" action="{% url "group_member_remove" group.slug member.user.username %}">
                   {% csrf_token %}
                   <button type="submit" class="btn btn-danger btn-xs">{% trans 'Remove' %}</button>
+                </form>
+                |
+                <form style="display: inline;" method="POST" action="{% url "group_member_promote" group.slug member.user.username %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-success btn-xs">{% trans 'Promote' %}</button>
                 </form>
               <h4>
               <h5>

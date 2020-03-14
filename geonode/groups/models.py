@@ -252,6 +252,14 @@ class GroupMember(models.Model):
         self.user.groups.remove(self.group.group)
         super(GroupMember, self).delete(*args, **kwargs)
 
+    def promote(self, *args, **kwargs):
+        self.role = "manager"
+        super(GroupMember, self).save(*args, **kwargs)
+
+    def demote(self, *args, **kwargs):
+        self.role = "member"
+        super(GroupMember, self).save(*args, **kwargs)
+
 
 def group_pre_delete(instance, sender, **kwargs):
     """Make sure that the anonymous group is not deleted"""

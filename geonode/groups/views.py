@@ -202,6 +202,30 @@ def group_member_remove(request, slug, username):
         return redirect("group_detail", slug=group.slug)
 
 
+@login_required
+def group_member_promote(request, slug, username):
+    group = get_object_or_404(models.GroupProfile, slug=slug)
+    user = get_object_or_404(get_user_model(), username=username)
+
+    if not group.user_is_role(request.user, role="manager"):
+        return HttpResponseForbidden()
+    else:
+        GroupMember.objects.get(group=group, user=user).promote()
+        return redirect("group_members", slug=group.slug)
+
+
+@login_required
+def group_member_demote(request, slug, username):
+    group = get_object_or_404(models.GroupProfile, slug=slug)
+    user = get_object_or_404(get_user_model(), username=username)
+
+    if not group.user_is_role(request.user, role="manager"):
+        return HttpResponseForbidden()
+    else:
+        GroupMember.objects.get(group=group, user=user).demote()
+        return redirect("group_members", slug=group.slug)
+
+
 @require_POST
 @login_required
 def group_join(request, slug):
