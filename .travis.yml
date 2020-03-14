@@ -22,6 +22,7 @@ addons:
   postgresql: 9.6
   apt:
     packages:
+      - python3-pip
       - postgresql-9.6-postgis-2.4
       - nginx
   firefox: "latest-esr"

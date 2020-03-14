@@ -7,6 +7,22 @@
 
 {% block body %}
 <h3>{{ thread.subject }}</h3>
+<div>
+    <b>{% trans "Sent to" %}:</b>
+        {% for user in thread.single_users.all%}
+            {% if user.username != request.user.username %}
+                <a href={{  user.get_absolute_url }}>{{ user.full_name_or_nick }}</a>
+                {%if not forloop.last%},{%endif%}
+            {% endif %}
+        {% endfor %}
+        {% if thread.registered_groups.all %}
+            ,
+        {% endif %}
+        {% for group in thread.registered_groups.all%}
+            <a href={{  group.groupprofile.get_absolute_url }}>{{ group.groupprofile.title }}</a>
+            {%if not forloop.last%},{%endif%}
+        {% endfor %}
+</div>
 <hr />
 {% for message in thread.messages.all %}
   <div class="well">
