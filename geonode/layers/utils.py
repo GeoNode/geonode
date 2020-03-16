@@ -1003,8 +1003,8 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 ogc_client = http_client
 
             if ogc_client:
+                headers = {}
                 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                    headers = {}
                     if is_remote and thumbnail_remote_url:
                         try:
                             resp, image = ogc_client.request(
