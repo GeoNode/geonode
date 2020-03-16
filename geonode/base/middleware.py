@@ -22,7 +22,7 @@
 # Geonode functionality
 
 from django.shortcuts import render
-from geonode.base.models import Configuration
+from geonode.base.utils import configuration_session_cache
 
 
 class ReadOnlyMiddleware:
@@ -51,8 +51,11 @@ class ReadOnlyMiddleware:
 
     def process_view(self, request, view_func, view_args, view_kwargs):
 
+        session = request.session
+        configuration_session_cache(session)
+
         # check if the Geonode instance is read-only
-        if Configuration.load().read_only:
+        if session.get('config').get('configuration').get('read_only'):
             # allow superadmin users to do whatever they want
             if not request.user.is_superuser or not request.user.is_active:
                 # check if the request's method is forbidden in read-only instance
@@ -87,8 +90,11 @@ class MaintenanceMiddleware:
 
     def process_view(self, request, view_func, view_args, view_kwargs):
 
-        # check if the Geonode instance is read-only
-        if Configuration.load().maintenance:
+        session = request.session
+        configuration_session_cache(session)
+
+        # check if the Geonode instance is in maintenance mode
+        if session.get('config').get('configuration').get('maintenance'):
             # allow superadmin users to do whatever they want
             if not request.user.is_superuser:
                 # check if the request is not against whitelisted views (check by URL names)

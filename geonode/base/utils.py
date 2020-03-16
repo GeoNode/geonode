@@ -24,6 +24,7 @@
 # Standard Modules
 import os
 import logging
+from datetime import datetime, timedelta
 
 # Django functionality
 from django.conf import settings
@@ -32,7 +33,7 @@ from django.core.files.storage import default_storage as storage
 
 # Geonode functionality
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase, Link
+from geonode.base.models import ResourceBase, Link, Configuration
 from geonode.geoserver.helpers import ogc_server_settings
 
 logger = logging.getLogger('geonode.base.utils')
@@ -95,3 +96,20 @@ def remove_duplicate_links(resource):
                     style_name=layer.default_style.name),
                 mime='image/png',
                 link_type='image')
+
+
+def configuration_session_cache(session):
+
+    CONFIG_CACHE_TIMEOUT_SEC = 60
+
+    if session.get('config') is None or session.get('config').get('expiration') < datetime.now():
+        config = Configuration.load()
+        cached_config = {
+            'configuration': {},
+            'expiration': datetime.now() + timedelta(seconds=CONFIG_CACHE_TIMEOUT_SEC)
+        }
+
+        for field_name in ['read_only', 'maintenance']:
+            cached_config['configuration'][field_name] = getattr(config, field_name)
+
+        session['config'] = cached_config
