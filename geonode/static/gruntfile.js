@@ -227,7 +227,8 @@ module.exports = function(grunt) {
       },
       dist: {
           files: {
-              'geonode/js/crop_widget/crop_widget_es5.js': 'geonode/js/crop_widget/crop_widget.js'
+              'geonode/js/crop_widget/crop_widget_es5.js': 'geonode/js/crop_widget/crop_widget.js',
+              'geonode/js/messages/message_recipients_autocomplete_es5.js': 'geonode/js/messages/message_recipients_autocomplete.js'
           }
       }
     },
@@ -277,9 +278,10 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['jshint']);
 
   // build development
-  grunt.registerTask('development', ['jshint', 'clean:lib', 'less:development', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:development']);
-
+  grunt.registerTask('development', ['jshint', 'clean:lib', 'less:development', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:development', 'babel']);
+  grunt.registerTask('build-less-dev', ['less:development']);
   // build production
   grunt.registerTask('production', ['jshint', 'clean:lib', 'less:production', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:production', 'babel']);
+  grunt.registerTask('build-less-prod', ['less:production']);
 
 };

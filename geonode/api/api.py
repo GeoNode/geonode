@@ -392,6 +392,7 @@ class GroupResource(ModelResource):
         allowed_methods = ['get']
         filtering = {
             'name': ALL,
+            'title': ALL,
             'group_profile': ALL_WITH_RELATIONS,
         }
         ordering = ['name', 'last_modified']

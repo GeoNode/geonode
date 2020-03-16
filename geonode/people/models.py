@@ -37,11 +37,9 @@ from taggit.managers import TaggableManager
 
 from geonode.base.enumerations import COUNTRIES
 from geonode.groups.models import GroupProfile
-# from geonode.notifications_helper import send_notification
 
 from allauth.account.signals import user_signed_up
 from allauth.socialaccount.signals import social_account_added
-# from account.models import EmailAddress
 
 from .utils import format_address
 from .signals import (
@@ -58,11 +56,10 @@ logger = logging.getLogger(__name__)
 
 class ProfileUserManager(UserManager):
     def get_by_natural_key(self, username):
-        return self.get(username__iexact=username)
+        return self.get(username=username)
 
 
 class Profile(AbstractUser):
-
     """Fully featured Geonode user"""
 
     organization = models.CharField(
@@ -181,6 +178,18 @@ class Profile(AbstractUser):
             return '%s (%s)' % (self.first_name, self.username)
         else:
             return self.username
+
+    @property
+    def full_name_or_nick(self):
+        if self.first_name and self.last_name:
+            return '%s %s' % (self.first_name,
+                              self.last_name)
+        else:
+            return self.username
+
+    @property
+    def first_name_or_nick(self):
+        return self.first_name if self.first_name else self.username
 
     @property
     def location(self):

@@ -1,0 +1,110 @@
+"use strict";
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function get_users_data(data) {
+  return data.objects.map(function (elem) {
+    return {
+      value: elem.username,
+      id: elem.id
+    };
+  });
+}
+
+function get_groups_data(data) {
+  return data.objects.map(function (elem) {
+    return {
+      value: elem.title,
+      id: elem.id
+    };
+  });
+}
+
+var MessageRecipientsTags = /*#__PURE__*/function () {
+  function MessageRecipientsTags(input, data_extract_func, url) {
+    var blacklist = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+
+    _classCallCheck(this, MessageRecipientsTags);
+
+    if (input.tagName !== 'INPUT' || input.type !== 'text') {
+      throw Error('Base element should be <input type="text">');
+    }
+
+    this.input = input;
+    this.tagify = null;
+    this.controller = null;
+    this.data_extract_func = data_extract_func;
+    this.url = url;
+    this.blacklist = blacklist;
+  }
+
+  _createClass(MessageRecipientsTags, [{
+    key: "init",
+    value: function init() {
+      this.tagify = new Tagify(this.input, {
+        whitelist: [],
+        blacklist: this.blacklist
+      });
+      this.tagify.on('input', this._onInputHandler.bind(this));
+    }
+  }, {
+    key: "_onInputHandler",
+    value: function _onInputHandler(event) {
+      var _this = this;
+
+      var value = event.detail.value;
+      this.tagify.settings.whitelist.length = 0;
+      this.tagify.loading(true).dropdown.hide.call(this.tagify);
+      fetch(this.url + value).then(function (response) {
+        return response.json().then(_this.data_extract_func).then(function (res) {
+          var _this$tagify$settings;
+
+          res = res.filter(function (elem) {
+            if (!_this.blacklist.includes(elem.value)) {
+              return elem;
+            }
+          });
+
+          (_this$tagify$settings = _this.tagify.settings.whitelist).splice.apply(_this$tagify$settings, [0, res.length].concat(_toConsumableArray(res)));
+
+          _this.tagify.loading(false).dropdown.show.call(_this.tagify, value);
+        });
+      });
+    }
+  }, {
+    key: "fixOutputValue",
+    value: function fixOutputValue() {
+      var _this2 = this;
+
+      if (this.input.value !== '') {
+        JSON.parse(this.input.value).filter(function (elem) {
+          return 'id' in elem;
+        }).forEach(function (elem) {
+          $('<input>').attr({
+            type: 'hidden',
+            id: 'foo',
+            name: _this2.input.name,
+            value: elem.id
+          }).appendTo('form');
+        });
+      }
+
+      this.input.disabled = true;
+    }
+  }]);
+
+  return MessageRecipientsTags;
+}();
+//# sourceMappingURL=message_recipients_autocomplete_es5.js.map

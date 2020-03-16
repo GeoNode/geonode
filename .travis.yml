@@ -1,4 +1,6 @@
 language: python
+python:
+  - 3.7
 
 cache:
   pip: true
@@ -20,6 +22,7 @@ addons:
   postgresql: 9.6
   apt:
     packages:
+      - python3-pip
       - postgresql-9.6-postgis-2.4
       - nginx
   firefox: "latest-esr"
@@ -32,7 +35,6 @@ jobs:
   include:
     - stage: unit-tests
       name: "GeoServer-backend Core Modules Smoke Tests"
-      python: "3.5"
       virtualenv:
           system_site_packages: false
       env:
@@ -48,7 +50,6 @@ jobs:
 
     - stage: unit-tests
       name: "GeoServer-backend Contrib Apps Smoke Tests"
-      python: "3.5"
       virtualenv:
           system_site_packages: false
       env:
@@ -64,7 +65,6 @@ jobs:
 
     - stage: unit-tests
       name: "GeoServer-backend CSW-Catalogue Smoke Tests"
-      python: "3.5"
       virtualenv:
           system_site_packages: false
       env:
@@ -81,7 +81,6 @@ jobs:
 
     - stage: unit-tests
       name: "QGis Server-backend Core Modules Smoke Tests"
-      python: "3.5"
       virtualenv:
           system_site_packages: false
       env:
@@ -102,7 +101,6 @@ jobs:
 
     - stage: unit-tests
       name: "QGis Server-backend Contrib Apps Smoke Tests"
-      python: "3.5"
       virtualenv:
           system_site_packages: false
       env:
@@ -123,7 +121,6 @@ jobs:
 
     - stage: upload-tests
       name: "GeoServer-backend Upload Tests"
-      python: "3.5"
       virtualenv:
           system_site_packages: false
       env:
@@ -147,7 +144,6 @@ jobs:
 
     - stage: anlytics-tests
       name: "GeoServer-backend Monitoring Tests"
-      python: "3.5"
       virtualenv:
           system_site_packages: false
       env:
@@ -171,7 +167,6 @@ jobs:
 
     - stage: frontend-tests
       name: "BDD Tests"
-      python: "3.5"
       virtualenv:
           system_site_packages: false
       env:
@@ -190,20 +185,17 @@ jobs:
 
     - stage: frontend-tests
       name: "Selenium Tests Core"
-      python: "3.5"
       env:
           - TEST_RUN_SELENIUM: 'True'
 
     - stage: frontend-tests
       name: "Selenium Tests SPCGeoNode"
-      python: "3.5"
       env:
           - TEST_RUN_SELENIUM: 'True'
           - SPCGEONODE: 'True'
 
     - stage: integration-tests
       name: "Backend Integration Tests"
-      python: "3.5"
       virtualenv:
           system_site_packages: false
       env:
@@ -227,7 +219,6 @@ jobs:
 
     - stage: integration-tests
       name: "GeoServer Integration Tests"
-      python: "3.5"
       virtualenv:
           system_site_packages: false
       env:
@@ -251,7 +242,6 @@ jobs:
 
     - stage: integration-tests
       name: "QGis Server Integration Tests"
-      python: "3.5"
       virtualenv:
           system_site_packages: false
       env:
@@ -289,6 +279,7 @@ before_install:
       scripts/misc/qgis_server_setup.sh before_install;
       sudo apt-get autoremove sqlite3;
     fi
+  - python --version;
 
 install:
   - set -ex;
