@@ -124,7 +124,7 @@ docker==4.2.0
 invoke==1.4.1
 
 # tests
-coverage==5.0.3
+coverage==5.0.4
 parse-type==0.5.2
 requests-toolbelt==0.9.1
 flake8==3.7.9
