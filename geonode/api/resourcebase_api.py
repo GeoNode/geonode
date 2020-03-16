@@ -89,6 +89,8 @@ class CommonMetaApi:
                  'group': ALL_WITH_RELATIONS,
                  'owner': ALL_WITH_RELATIONS,
                  'date': ALL,
+                 'purpose': ALL,
+                 'abstract':ALL
                  }
     ordering = ['date', 'title', 'popular_count']
     max_limit = None
@@ -161,22 +163,25 @@ class CommonModelApi(ModelResource):
             orm_filters.update({'type': filters.getlist('type__in')})
         if 'extent' in filters:
             orm_filters.update({'extent': filters['extent']})
-        # Nothing returned if +'s are used instead of spaces for text search,
-        # so swap them out. Must be a better way of doing this?
-        for filter in orm_filters:
-            if filter in ['title__contains', 'q']:
-                orm_filters[filter] = orm_filters[filter].replace("+", " ")
+        orm_filters['f_method'] = filters['f_method'] if 'f_method' in filters else 'and'
         return orm_filters
 
     def apply_filters(self, request, applicable_filters):
         types = applicable_filters.pop('type', None)
         extent = applicable_filters.pop('extent', None)
         keywords = applicable_filters.pop('keywords__slug__in', None)
-        semi_filtered = super(
-            CommonModelApi,
-            self).apply_filters(
-            request,
-            applicable_filters)
+        filtering_method = applicable_filters.pop('f_method', 'and')
+        if filtering_method == 'or':
+            filters = Q()
+            for f in applicable_filters.items():
+                filters |= Q(f)
+            semi_filtered =  self.get_object_list(request).filter(filters)
+        else:
+            semi_filtered = super(
+                CommonModelApi,
+                self).apply_filters(
+                request,
+                applicable_filters)
         filtered = None
         if types:
             for the_type in types:

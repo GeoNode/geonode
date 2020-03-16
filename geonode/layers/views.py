@@ -1627,7 +1627,7 @@ class LayerAutocomplete(autocomplete.Select2QuerySetView):
         qs = Layer.objects.all().filter(id__in=permitted)
 
         if self.q:
-            qs = qs.filter(title__icontains=self.q)
+            qs = qs.filter(Q(title__icontains=self.q) | Q(purpose__icontains=self.q) | Q(abstract__icontains=self.q))
 
         return get_visible_resources(
             qs,

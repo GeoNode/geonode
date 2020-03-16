@@ -20,6 +20,7 @@
 
 
 # Geonode functionality
+from django.db.models import Q
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
@@ -170,7 +171,8 @@ class ResourceBaseAutocomplete(autocomplete.Select2QuerySetView):
         qs = ResourceBase.objects.all().filter(id__in=permitted)
 
         if self.q:
-            qs = qs.filter(title__icontains=self.q).order_by('title')
+            qs = qs.filter(Q(purpose__icontains=self.q) | Q(abstract__icontains=self.q) | Q(title__icontains=self.q)).order_by('title')
+
 
         return get_visible_resources(
             qs,

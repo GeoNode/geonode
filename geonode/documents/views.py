@@ -35,7 +35,7 @@ from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django_downloadview.response import DownloadResponse
 from django.views.generic.edit import UpdateView, CreateView
-from django.db.models import F
+from django.db.models import F, Q
 from django.forms.utils import ErrorList
 
 from geonode.utils import resolve_object
@@ -649,7 +649,7 @@ class DocumentAutocomplete(autocomplete.Select2QuerySetView):
         qs = Document.objects.all().filter(id__in=permitted)
 
         if self.q:
-            qs = qs.filter(title__icontains=self.q)
+            qs = qs.filter(Q(title__icontains=self.q) | Q(purpose__icontains=self.q) | Q(abstract__icontains=self.q))
 
         return get_visible_resources(
             qs,
