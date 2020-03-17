@@ -18,7 +18,7 @@ python-slugify==4.0.0
 decorator==4.4.2
 celery==4.4.1
 kombu==4.6.8
-boto3==1.12.21
+boto3==1.12.22
 six==1.12.0
 tqdm==4.43.0
 Deprecated==1.2.7
@@ -124,7 +124,7 @@ docker==4.2.0
 invoke==1.4.1
 
 # tests
-coverage==5.0.3
+coverage==5.0.4
 parse-type==0.5.2
 requests-toolbelt==0.9.1
 flake8==3.7.9
