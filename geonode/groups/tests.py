@@ -32,7 +32,7 @@ from django.conf import settings
 
 from guardian.shortcuts import get_anonymous_user
 
-from geonode.groups.models import GroupProfile, GroupCategory
+from geonode.groups.models import GroupProfile, GroupCategory, GroupMember
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -594,6 +594,20 @@ class MembershipTest(GeoNodeBaseTestSupport):
         self.assertTrue(group.user_is_member(normal))
         self.assertRaises(ValueError, lambda: group.join(anon))
 
+    def test_group_promote_demote_member(self):
+        """
+        Tests promoting a member to manager, demoting to member
+        """
+
+        normal = get_user_model().objects.get(username="norman")
+        group = GroupProfile.objects.get(slug="bar")
+        group.join(normal)
+        self.assertFalse(group.user_is_role(normal, "manager"))
+        GroupMember.objects.get(group=group, user=normal).promote()
+        self.assertTrue(group.user_is_role(normal, "manager"))
+        GroupMember.objects.get(group=group, user=normal).demote()
+        self.assertFalse(group.user_is_role(normal, "manager"))
+
     def test_profile_is_member_of_group(self):
         """
         Tests profile is_member_of_group property
@@ -605,6 +619,18 @@ class MembershipTest(GeoNodeBaseTestSupport):
 
         group.join(normal)
         self.assertTrue(normal.is_member_of_group(group.slug))
+
+    def test_group_remove_member(self):
+        """
+        Tests removing a user from a group
+        """
+
+        normal = get_user_model().objects.get(username="norman")
+        group = GroupProfile.objects.get(slug="bar")
+        group.join(normal)
+        self.assertTrue(group.user_is_member(normal))
+        group.leave(normal)
+        self.assertFalse(group.user_is_member(normal))
 
 
 # class InvitationTest(GeoNodeBaseTestSupport):
