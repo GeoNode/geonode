@@ -1073,11 +1073,15 @@ def set_styles(layer, gs_catalog):
             else:
                 style = default_style
             if style:
-                layer.default_style = save_style(style, layer)
-                if layer.default_style not in style_set:
-                    style_set.append(layer.default_style)
-                gs_layer.default_style = style
-                gs_catalog.save(gs_layer)
+                try:
+                    layer.default_style = save_style(style, layer)
+                    if layer.default_style not in style_set:
+                        style_set.append(layer.default_style)
+                    gs_layer.default_style = style
+                    gs_catalog.save(gs_layer)
+                except Exception:
+                    tb = traceback.format_exc()
+                    logger.debug(tb)
 
         try:
             if gs_layer.styles:
@@ -1088,7 +1092,6 @@ def set_styles(layer, gs_catalog):
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
-            pass
 
     # Remove duplicates
     style_set = list(dict.fromkeys(style_set))
@@ -1117,26 +1120,28 @@ def save_style(gs_style, layer):
         sld_body = gs_style.sld_body
         try:
             gs_catalog.create_style(gs_style.name, sld_body, raw=True, workspace=layer.workspace)
+            gs_style = gs_catalog.get_style(gs_style.name, workspace=layer.workspace)
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
-            pass
-        style = gs_catalog.get_style(gs_style.name, workspace=layer.workspace)
 
-    style, created = Style.objects.get_or_create(name=gs_style.name)
-    if not style.workspace:
-        style.workspace = layer.workspace
-
+    style = None
     try:
-        style.sld_title = gs_style.sld_title or gs_style.sld_name
+        style, created = Style.objects.get_or_create(name=gs_style.name)
+        if style:
+            if not style.workspace and gs_style.workspace:
+                style.workspace = layer.workspace
+            style.sld_title = gs_style.sld_title or gs_style.sld_name
     except Exception:
         tb = traceback.format_exc()
         logger.debug(tb)
-        style.sld_title = gs_style.name
+        if style:
+            style.sld_title = gs_style.name
     finally:
-        style.sld_body = gs_style.sld_body
-        style.sld_url = gs_style.body_href
-        style.save()
+        if style:
+            style.sld_body = gs_style.sld_body
+            style.sld_url = gs_style.body_href
+            style.save()
     return style
 
 
