@@ -27,7 +27,7 @@ import re
 import six
 
 from . import helpers
-from .helpers import Config
+from .helpers import Config, md5_file_hash
 
 from requests.auth import HTTPBasicAuth
 from xmltodict import parse as parse_xml
@@ -370,7 +370,14 @@ class Command(BaseCommand):
                     print("Saved Locale Files from '"+locale_files_folder+"'.")
 
                 # Create Final ZIP Archive
-                zip_dir(target_folder, os.path.join(backup_dir, dir_time_suffix+'.zip'))
+                backup_archive = os.path.join(backup_dir, dir_time_suffix+'.zip')
+                zip_dir(target_folder, backup_archive)
+
+                # Generate a md5 hash of a backup archive and save it
+                backup_md5_file = os.path.join(backup_dir, dir_time_suffix+'.md5')
+                zip_archive_md5 = md5_file_hash(backup_archive)
+                with open(backup_md5_file, 'w') as md5_file:
+                    md5_file.write(zip_archive_md5)
 
                 # Clean-up Temp Folder
                 try:
