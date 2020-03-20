@@ -26,6 +26,9 @@ from geonode.base.models import (
 )
 from django.template import Template, Context
 
+from django.core.management import call_command
+from django.core.management.base import CommandError
+
 
 class ThumbnailTests(GeoNodeBaseTestSupport):
 
@@ -447,3 +450,68 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
                 self.menu_item_1_0_1.title
             )
         )
+
+
+class DeleteResourcesCommandTests(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super().setUp()
+
+    def test_delete_resources_no_arguments(self):
+        args = []
+        kwargs = {}
+
+        with self.assertRaises(CommandError) as exception:
+            call_command('delete_resources', *args, **kwargs)
+
+        self.assertIn(
+            'No configuration provided',
+            exception.exception.args[0],
+            '"No configuration" exception expected.'
+        )
+
+    def test_delete_resources_too_many_arguments(self):
+        args = []
+        kwargs = {'config_path': '/example/config.txt', 'map_filters': "*"}
+
+        with self.assertRaises(CommandError) as exception:
+            call_command('delete_resources', *args, **kwargs)
+
+        self.assertIn(
+            'Too many configuration options provided',
+            exception.exception.args[0],
+            '"Too many configuration options provided" exception expected.'
+        )
+
+    def test_delete_resource_config_file_not_existing(self):
+        args = []
+        kwargs = {'config_path': '/example/config.json'}
+
+        with self.assertRaises(CommandError) as exception:
+            call_command('delete_resources', *args, **kwargs)
+
+        self.assertIn(
+            'Specified configuration file does not exist',
+            exception.exception.args[0],
+            '"Specified configuration file does not exist" exception expected.'
+        )
+
+    def test_delete_resource_config_file_empty(self):
+        # create an empty config file
+        config_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'delete_resources_config.json')
+        open(config_file_path, 'a').close()
+
+        args = []
+        kwargs = {'config_path': config_file_path}
+
+        with self.assertRaises(CommandError) as exception:
+            call_command('delete_resources', *args, **kwargs)
+
+        self.assertIn(
+            'Specified configuration file is empty',
+            exception.exception.args[0],
+            '"Specified configuration file is empty" exception expected.'
+        )
+
+        # delete the config file
+        os.remove(config_file_path)
