@@ -283,7 +283,7 @@ class Backup(models.Model):
 
 class License(models.Model):
     identifier = models.CharField(max_length=255, editable=False)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=255)
     abbreviation = models.CharField(max_length=20, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     url = models.URLField(max_length=2000, null=True, blank=True)
@@ -1205,7 +1205,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                             storage.path(_upload_path)
                         )
                     except Exception as e:
-                        logger.warn(e)
+                        logger.debug(e)
 
                 try:
                     # Optimize the Thumbnail size and resolution
@@ -1252,11 +1252,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     thumbnail_url=url
                 )
         except Exception as e:
-            logger.exception(e)
-            logger.error(
+            logger.debug(
                 'Error when generating the thumbnail for resource %s. (%s)' %
                 (self.id, str(e)))
-            logger.error('Check permissions for file %s.' % upload_path)
+            logger.warn('Check permissions for file %s.' % upload_path)
             Link.objects.filter(resource=self, name='Thumbnail').delete()
             _thumbnail_url = staticfiles.static(settings.MISSING_THUMBNAIL)
             obj, created = Link.objects.get_or_create(

@@ -24,6 +24,7 @@
 # Standard Modules
 import os
 import logging
+from dateutil.parser import isoparse
 from datetime import datetime, timedelta
 
 # Django functionality
@@ -102,11 +103,15 @@ def configuration_session_cache(session):
 
     CONFIG_CACHE_TIMEOUT_SEC = 60
 
-    if session.get('config') is None or session.get('config').get('expiration') < datetime.now():
+    _config = session.get('config')
+    _now = datetime.utcnow()
+    _dt = isoparse(_config.get('expiration')) if _config else _now
+    if _config is None or _dt < _now:
         config = Configuration.load()
+        _dt = _now + timedelta(seconds=CONFIG_CACHE_TIMEOUT_SEC)
         cached_config = {
             'configuration': {},
-            'expiration': datetime.now() + timedelta(seconds=CONFIG_CACHE_TIMEOUT_SEC)
+            'expiration': _dt.isoformat()
         }
 
         for field_name in ['read_only', 'maintenance']:

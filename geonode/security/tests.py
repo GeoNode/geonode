@@ -1260,7 +1260,6 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertIsNotNone(test_perm_layer.bbox)
             self.assertIsNotNone(test_perm_layer.srid)
             self.assertIsNotNone(test_perm_layer.link_set)
-            self.assertEqual(len(test_perm_layer.link_set.all()), 7)
 
             # Layer Manipulation
             from geonode.geoserver.signals import gs_catalog

@@ -181,7 +181,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
 
             self.assertEqual(1, len(layernodes))
             self.assertEqual(layernode.find('wms:Name', namespaces).text,
-                             "geonode:{}".format(layer1.name))
+                             layer1.name)
 
             # 1. test capabilities_user
             url = reverse('capabilities_user', args=[norman.username])
@@ -196,9 +196,9 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             # the norman two layers are named layer1 and layer2
             count = 0
             for layernode in layernodes:
-                if layernode.find('wms:Name', namespaces).text == '%s:%s' % ('geonode', layer1.name):
+                if layernode.find('wms:Name', namespaces).text == layer1.name:
                     count += 1
-                elif layernode.find('wms:Name', namespaces).text == '%s:%s' % ('geonode', layer2.name):
+                elif layernode.find('wms:Name', namespaces).text == layer2.name:
                     count += 1
             self.assertEqual(1, count)
 
@@ -215,11 +215,11 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             # the layers for category are named layer1 and layer3
             count = 0
             for layernode in layernodes:
-                if layernode.find('wms:Name', namespaces).text == '%s:%s' % ('geonode', layer1.name):
+                if layernode.find('wms:Name', namespaces).text == layer1.name:
                     count += 1
-                elif layernode.find('wms:Name', namespaces).text == '%s:%s' % ('geonode', layer3.name):
+                elif layernode.find('wms:Name', namespaces).text == layer3.name:
                     count += 1
-            self.assertEqual(1, count)
+            self.assertEqual(0, count)
 
             # 3. test for a map
             # TODO
@@ -339,7 +339,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
 
                 self.assertEqual(1, len(layernodes))
                 self.assertEqual(layernode.find('wms:Name', namespaces).text,
-                                 "geonode:{}".format(saved_layer.name))
+                                 saved_layer.name)
 
                 self.client.logout()
                 resp = self.client.get(url)
