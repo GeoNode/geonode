@@ -19,7 +19,7 @@
 #########################################################################
 
 
-
+import hashlib
 import traceback
 import psycopg2
 
@@ -324,3 +324,17 @@ def load_class(name):
         mod = getattr(mod, comp)
 
     return mod
+
+
+def md5_file_hash(file_path):
+    """
+    A method generating MD5 hash of the provided file.
+
+    :param file_path: file's path with an extension, which will be opened for reading and generating md5 hash
+    :return: hex representation of md5 hash
+    """
+    hash_md5 = hashlib.md5()
+    with open(file_path, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()

@@ -8151,8 +8151,8 @@ form-inline {
   content: "";
 }
 .inbox-icons {
-  margin-bottom: 5px;
-  color: #777777;
+  margin: 5px 0px 5px 15px;
+  color: #636363;
 }
 .inbox-icons button {
   background: none;
@@ -8163,7 +8163,7 @@ form-inline {
 }
 .inbox-icons i {
   cursor: pointer;
-  margin: 5px;
+  margin-right: 10px;
 }
 .create-msg-form-control {
   width: 100%;
