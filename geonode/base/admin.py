@@ -43,7 +43,6 @@ from geonode.base.models import (
     RestrictionCodeType,
     ContactRole,
     Link,
-    Backup,
     License,
     HierarchicalKeyword,
     MenuPlaceholder,
@@ -74,95 +73,6 @@ def set_batch_permissions(modeladmin, request, queryset):
 
 
 set_batch_permissions.short_description = 'Set permissions'
-
-
-class BackupAdminForm(forms.ModelForm):
-
-    class Meta:
-        model = Backup
-        fields = '__all__'
-
-
-def run(self, request, queryset):
-    """
-    Running a Backup
-    """
-    if request.POST.get('_selected_action'):
-        id = request.POST.get('_selected_action')
-        siteObj = self.model.objects.get(pk=id)
-        if request.POST.get("post"):
-            for siteObj in queryset:
-                self.message_user(request, "Executed Backup: " + siteObj.name)
-                out = StringIO()
-                call_command(
-                    'backup',
-                    force_exec=True,
-                    backup_dir=siteObj.base_folder,
-                    stdout=out)
-                value = out.getvalue()
-                if value:
-                    siteObj.location = value
-                    siteObj.save()
-                else:
-                    self.message_user(
-                        request, siteObj.name + " backup failed!")
-        else:
-            context = {
-                "objects_name": "Backups",
-                'title': "Confirm run of Backups:",
-                'action_exec': "run",
-                'cancellable_backups': [siteObj],
-                'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
-            }
-            return TemplateResponse(
-                request,
-                'admin/backups/confirm_cancel.html',
-                context)
-
-
-def restore(self, request, queryset):
-    """
-    Running a Restore
-    """
-    if request.POST.get('_selected_action'):
-        id = request.POST.get('_selected_action')
-        siteObj = self.model.objects.get(pk=id)
-        if request.POST.get("post"):
-            for siteObj in queryset:
-                self.message_user(request, "Executed Restore: " + siteObj.name)
-                out = StringIO.StringIO()
-                if siteObj.location:
-                    call_command(
-                        'restore', force_exec=True, backup_file=str(
-                            siteObj.location).strip(), stdout=out)
-                else:
-                    self.message_user(
-                        request, siteObj.name + " backup not ready!")
-        else:
-            context = {
-                "objects_name": "Restores",
-                'title': "Confirm run of Restores:",
-                'action_exec': "restore",
-                'cancellable_backups': [siteObj],
-                'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
-            }
-            return TemplateResponse(
-                request,
-                'admin/backups/confirm_cancel.html',
-                context)
-
-
-run.short_description = "Run the Backup"
-restore.short_description = "Run the Restore"
-
-
-class BackupAdmin(TabbedTranslationAdmin):
-    list_display = ('id', 'name', 'date', 'location')
-    list_display_links = ('name',)
-    date_hierarchy = 'date'
-    readonly_fields = ('location',)
-    form = BackupAdminForm
-    actions = [run, restore]
 
 
 class LicenseAdmin(TabbedTranslationAdmin):
@@ -282,7 +192,6 @@ admin.site.register(SpatialRepresentationType, SpatialRepresentationTypeAdmin)
 admin.site.register(RestrictionCodeType, RestrictionCodeTypeAdmin)
 admin.site.register(ContactRole, ContactRoleAdmin)
 admin.site.register(Link, LinkAdmin)
-admin.site.register(Backup, BackupAdmin)
 admin.site.register(License, LicenseAdmin)
 admin.site.register(HierarchicalKeyword, HierarchicalKeywordAdmin)
 admin.site.register(MenuPlaceholder, MenuPlaceholderAdmin)
