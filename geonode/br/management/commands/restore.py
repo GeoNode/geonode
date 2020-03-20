@@ -25,6 +25,7 @@ import time
 import shutil
 import requests
 import tempfile
+import warnings
 
 from .utils import utils
 
@@ -252,6 +253,29 @@ class Command(BaseCommand):
 
         if backup_dir and not os.path.isdir(backup_dir):
             raise CommandError("Provided '--backup-dir' is not a directory")
+
+        # check md5 hash for backup archive, if the md5 file is in place
+        if backup_file:
+            archive_md5_file = backup_file.rsplit('.', 1)[0] + '.md5'
+
+            if os.path.exists(archive_md5_file):
+                with open(archive_md5_file, 'r') as md5_file:
+                    zip_archive_md5 = md5_file.readline().strip()
+
+                generated_zip_archive_md5 = utils.md5_file_hash(backup_file)
+
+                if zip_archive_md5 != generated_zip_archive_md5:
+                    raise RuntimeError(
+                        f'Backup archive integrity failure. MD5 hash of the  archive '
+                        f'is different from the one provided in {archive_md5_file}'
+                    )
+            else:
+                warnings.warn(
+                    "Backup archive's MD5 file does not exist under expected path. Skipping integrity check.",
+                    RuntimeWarning
+                )
+                # sleep for the proper console writing order
+                time.sleep(0.1)
 
         print("Before proceeding with the Restore, please ensure that:")
         print(" 1. The backend (DB or whatever) is accessible and you have rights")
