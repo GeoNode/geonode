@@ -19,13 +19,7 @@
 #########################################################################
 
 from django.contrib import admin
-from django.contrib.admin import helpers
 from django.conf import settings
-from django.core.management import call_command
-from django.template.response import TemplateResponse
-
-
-from io import StringIO
 
 from dal import autocomplete
 from taggit.forms import TagField
