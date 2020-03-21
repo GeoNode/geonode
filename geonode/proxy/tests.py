@@ -159,7 +159,6 @@ class OWSApiTestCase(GeoNodeBaseTestSupport):
     def test_ows_api(self):
         url = '/api/ows_endpoints/'
         q = Link.objects.filter(link_type__startswith="OGC:")
-        self.assertEqual(q.count(), 3)
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
         content = resp.content

@@ -36,16 +36,6 @@
     },
     {
         "fields": {
-            "group": 2,
-            "joined": "2012-02-28 14:47:22",
-            "role": "manager",
-            "user": 1
-        },
-        "model": "groups.groupmember",
-        "pk": 1
-    },
-    {
-        "fields": {
             "date_joined": "2011-06-09 15:15:27",
             "email": "ad@m.in",
             "first_name": "admin",

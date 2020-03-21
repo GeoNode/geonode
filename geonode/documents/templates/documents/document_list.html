@@ -8,7 +8,9 @@
 
 {% block body %}
   <div class="page-header">
-    <a href="{% url "document_upload" %}" class="btn btn-primary pull-right">{% trans "Upload Documents" %}</a>
+    {% if not READ_ONLY_MODE %}
+      <a href="{% url "document_upload" %}" class="btn btn-primary pull-right">{% trans "Upload Documents" %}</a>
+    {% endif %}
     <h2>{% trans "Explore Documents" %}</h2>
   </div>
   {% with include_type_filter='true' %}

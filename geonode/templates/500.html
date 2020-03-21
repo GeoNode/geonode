@@ -154,7 +154,7 @@
             <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a></li>
             <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
             <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
-            {% if user.is_authenticated %}
+            {% if user.is_authenticated and not READ_ONLY_MODE %}
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "layer_upload" %}">{% trans "Upload Layer" %}</a></li>
                 {% if USE_GEOSERVER and CREATE_LAYER %}
@@ -163,7 +163,9 @@
                 <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
             {% endif %}
             {% if user.is_superuser or user.is_staff %}
+              {% if not READ_ONLY_MODE %}
                 <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
+              {% endif %}
             {% endif %}
           </ul>
         </div>
@@ -171,7 +173,7 @@
           <ul class="list-unstyled">
             <li>{% trans "Maps" %}</li>
             <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
-            {% if user.is_authenticated %}
+            {% if user.is_authenticated and not READ_ONLY_MODE %}
             <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
             {% endif %}
           </ul>
@@ -184,10 +186,12 @@
             {% if perms.announcements.can_manage %}
             <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
             {% endif %}
-            <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
-            {% if user.is_superuser %}
-            <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
-            <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
+            {% if not READ_ONLY_MODE %}
+              <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
+            {% endif %}
+            {% if user.is_superuser and not READ_ONLY_MODE %}
+              <li><a href="/admin/people/profile/add/">{% trans "Add User" %}</a></li>
+              <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
             {% endif %}
           </ul>
         </div>
@@ -272,7 +276,9 @@
               {% if perms.announcements.can_manage %}
               <li><a href="{% url "announcements_list" %}"><i class="fa fa-bullhorn"></i> {% trans "Announcements" %}</a></li>
               {% endif %}
-              <li><a href="{% url "geonode.invitations:geonode-send-invite" %}"><i class="fa fa-edit"></i> {% trans "Invite Users" %}</a></li>
+              {% if not READ_ONLY_MODE %}
+                <li><a href="{% url "geonode.invitations:geonode-send-invite" %}"><i class="fa fa-edit"></i> {% trans "Invite Users" %}</a></li>
+              {% endif %}
               <li class="modal-divider"></li>
               {% if user.is_superuser or user.is_staff %}
                 <li><a href="{% url "proxy" %}?url={{ OGC_SERVER.default.LOCATION }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>

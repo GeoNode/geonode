@@ -1,0 +1,46 @@
+{% load static from staticfiles %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        background-color: #162a44; //#313131
+      }
+      .container {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+      }
+
+      .center {
+        text-align: center;
+      }
+
+      .center img {
+        width: 150px;
+        align: center;
+      }
+
+      .center p {
+        width: 800px;
+        color: white;
+        font-size: 1.7em;
+        font-family: Montserrat,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji'
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="center">
+        <img src="{% static 'geonode/img/logo.png' %}">
+        <p><b>Your instance is currently in Read-Only mode.</b><br><br>Performing any changes is disallowed on this instace.</p>
+      </div>
+    </div>
+  </body>
+
+</html>

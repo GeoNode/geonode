@@ -96,11 +96,13 @@
 
   {% if GEONODE_SECURITY_ENABLED %}
   {% if "change_resourcebase_permissions" in perms_list %}
-  <li class="list-group-item">
-    <h4>{% trans "Permissions" %}</h4>
-    <p>{% trans "Click the button below to change the permissions of this layer." %}</p>
-    <p><a href="#modal_perms" data-toggle="modal" class="btn btn-primary btn-block" data-target="#_permissions">{% trans "Change Layer Permissions" %}</a></p>
-  </li>
+    {% if not READ_ONLY_MODE %}
+      <li class="list-group-item">
+        <h4>{% trans "Permissions" %}</h4>
+        <p>{% trans "Click the button below to change the permissions of this layer." %}</p>
+        <p><a href="#modal_perms" data-toggle="modal" class="btn btn-primary btn-block" data-target="#_permissions">{% trans "Change Layer Permissions" %}</a></p>
+      </li>
+    {% endif %}
   {% endif %}
   {% endif %}
 

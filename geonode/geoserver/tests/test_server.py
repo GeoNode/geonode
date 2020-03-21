@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeLiveTestSupport
 
 import base64
 import json
@@ -1174,7 +1174,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
             OGC_Servers_Handler(ogc_server_settings)['default']
 
 
-class SignalsTests(GeoNodeBaseTestSupport):
+class SignalsTests(GeoNodeLiveTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_set_resources_links(self):
