@@ -629,15 +629,25 @@ msgid "Replace"
 msgstr "Replace"
 
 #: geonode/documents/templates/documents/document_detail.html:162
-#: geonode/groups/templates/groups/group_members.html:42
-#: geonode/groups/templates/groups/group_members.html:68
-#: geonode/groups/templates/groups/group_members.html:95
 #: geonode/layers/templates/layers/layer_detail.html:515
+#: geonode/groups/templates/groups/group_members.html:42
+#: geonode/groups/templates/groups/group_members.html:82
+#: geonode/groups/templates/groups/group_members.html:114
 #: geonode/maps/templates/maps/map_detail.html:173
 #: geonode/templates/account/email.html:36
 #: geonode/templates/socialaccount/connections.html:33
 msgid "Remove"
 msgstr "Remove"
+
+#: geonode/groups/templates/groups/group_members.html:48
+#: geonode/groups/templates/groups/group_members.html:119
+msgid "Promote"
+msgstr "Promote"
+
+#: geonode/groups/templates/groups/group_members.html:55
+#: geonode/groups/templates/groups/group_members.html:87
+msgid "Demote"
+msgstr "Demote"
 
 #: geonode/documents/templates/documents/document_detail.html:176
 #: geonode/documents/templates/documents/document_detail.html:183
