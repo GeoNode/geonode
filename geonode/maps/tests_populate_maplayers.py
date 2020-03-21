@@ -19,7 +19,6 @@
 #########################################################################
 
 from geonode import geoserver, qgis_server  # noqa
-from geonode.utils import check_ogc_backend
 from geonode.maps.models import Map, MapLayer
 
 maplayers = [{"fixed": False,
@@ -83,25 +82,18 @@ maplayers = [{"fixed": False,
 
 
 def create_maplayers():
-    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        from django.db.models import signals
-        from geonode.geoserver.signals import geoserver_pre_save_maplayer
-        from geonode.geoserver.signals import geoserver_post_save_map
-        signals.pre_save.disconnect(
-            geoserver_pre_save_maplayer,
-            sender=MapLayer)
-        signals.post_save.disconnect(geoserver_post_save_map, sender=Map)
-
-    for ml in maplayers:
-        MapLayer.objects.create(
-            fixed=ml['fixed'],
-            group=ml['group'],
-            name=ml['name'],
-            layer_params=ml['layer_params'],
-            map=Map.objects.get(title=ml['map']),
-            source_params=ml['source_params'],
-            stack_order=ml['stack_order'],
-            opacity=ml['opacity'],
-            transparent=True,
-            visibility=True
-        )
+    from geonode.utils import DisableDjangoSignals
+    with DisableDjangoSignals():
+        for ml in maplayers:
+            MapLayer.objects.create(
+                fixed=ml['fixed'],
+                group=ml['group'],
+                name=ml['name'],
+                layer_params=ml['layer_params'],
+                map=Map.objects.get(title=ml['map']),
+                source_params=ml['source_params'],
+                stack_order=ml['stack_order'],
+                opacity=ml['opacity'],
+                transparent=True,
+                visibility=True
+            )

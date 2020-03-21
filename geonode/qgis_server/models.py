@@ -69,7 +69,7 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
         name='base_layer_path',
         verbose_name='Base Layer Path',
         help_text='Location of the base layer.',
-        max_length=100
+        max_length=2000
     )
 
     default_style = models.ForeignKey(

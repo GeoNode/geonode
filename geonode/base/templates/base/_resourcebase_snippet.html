@@ -1,5 +1,6 @@
 {% load i18n %}
 {% verbatim %}
+
 <div class="row resourcebase-snippet">
   <div ng-if="results.length == 0" ng-cloak>
     {% endverbatim %}
@@ -70,11 +71,15 @@
                 <li><a href="{{ item.detail_url }}"><i class="fa fa-eye"></i>{{ item.popular_count }}</a></li>
                 <li><a href="{{ item.detail_url }}#share"><i class="fa fa-share"></i>{{ item.share_count }}</a></li>
                 <li><a href="{{ item.detail_url }}#rate"><i class="fa fa-star"></i>{{ item.rating }}</a></li>
-                <li><a ng-if="item.detail_url.indexOf('/layers/') > -1" href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
-                  {% endverbatim %}
-                  <i class="fa fa-map-marker"></i>{% trans "Create a Map" %}</a>
-                  {% verbatim %}
-                </li>
+                {% endverbatim %}
+                  {% if not READ_ONLY_MODE %}
+                    {% verbatim %}
+                    <li><a ng-if="item.detail_url.indexOf('/layers/') > -1" href="{% endverbatim %}{% url "new_map" %}?layer={% verbatim %}{{ item.detail_url.substring(8) }}">
+                      {% endverbatim %}
+                      <i class="fa fa-map-marker"></i>{% trans "Create a Map" %}</a>
+                    </li>
+                  {% endif %}
+                {% verbatim %}
                 <li><a ng-if="item.detail_url.indexOf('/maps/') > -1" href="{{ item.site_url }}maps/{{item.id}}/view">
                   {% endverbatim %}
                   <i class="fa fa-map-marker"></i>{% trans "View Map" %}</a>
