@@ -65,7 +65,7 @@ class Upload(models.Model):
     state = models.CharField(max_length=16)
     date = models.DateTimeField('date', default=now)
     layer = models.ForeignKey(Layer, null=True, on_delete=models.SET_NULL)
-    upload_dir = models.CharField(max_length=100, null=True)
+    upload_dir = models.TextField(null=True)
     name = models.CharField(max_length=64, null=True)
     complete = models.BooleanField(default=False)
     # hold our serialized session object

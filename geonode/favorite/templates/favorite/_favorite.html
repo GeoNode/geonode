@@ -6,12 +6,13 @@
     </header>
 
     {% if user.is_authenticated %}
-    <div class="clearfix">
-        <button id="favoriteLink" class="btn btn-primary">Add to Favorites</button>
-        <br/><br/>
-        <div><a href="{% url "favorite_list" %}">Go to Favorites</a></div>
-    </div>
-
+      {% if not READ_ONLY_MODE %}
+        <div class="clearfix">
+            <button id="favoriteLink" class="btn btn-primary">Add to Favorites</button>
+            <br/><br/>
+            <div><a href="{% url "favorite_list" %}">Go to Favorites</a></div>
+        </div>
+      {% endif %}
     {% else %}
     <div class="clearfix">
         <p class="pull-right">{% trans 'Log in to add/delete Favorites.' %}</p>

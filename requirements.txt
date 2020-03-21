@@ -135,4 +135,4 @@ pytest-splinter==2.0.1
 pytest-django==3.8.0
 setuptools==46.0.0
 pip==20.0.2
-Twisted==19.10.0
+Twisted==20.3.0

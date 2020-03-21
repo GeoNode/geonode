@@ -8,7 +8,9 @@
 
 {% block body %}
 <div class="page-header">
-  <a href="{% url "layer_upload" %}" class="btn btn-primary pull-right">{% trans "Upload Layers" %}</a>
+  {% if not READ_ONLY_MODE %}
+    <a href="{% url "layer_upload" %}" class="btn btn-primary pull-right">{% trans "Upload Layers" %}</a>
+  {% endif %}
   <h2 class="page-title">{% trans "Explore Layers" %}</h2>
 </div>
   {% with include_type_filter='true' %}

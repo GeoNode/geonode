@@ -2,7 +2,7 @@
 
 set -x
 
-if [ "$BACKEND" = "geonode.geoserver" ]; then
+if [ "$BACKEND" = "geonode.geoserver" ] && [ ! "$TEST_RUN_INTEGRATION_SERVER" = "True" ]; then
 
 	case $1 in
 		"before_install")

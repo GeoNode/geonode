@@ -140,6 +140,7 @@ def grab(src, dest, name):
 @cmdopts([
     ('geoserver=', 'g', 'The location of the geoserver build (.war file).'),
     ('jetty=', 'j', 'The location of the Jetty Runner (.jar file).'),
+    ('force_exec=', '', 'Force GeoServer Setup.')
 ])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
@@ -147,7 +148,7 @@ def setup_geoserver(options):
     _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
     if _backend == 'geonode.qgis_server' or 'geonode.geoserver' not in INSTALLED_APPS:
         return
-    if on_travis:
+    if on_travis and not options.get('force_exec', False):
         """Will make use of the docker container for the Integration Tests"""
         pass
     else:
@@ -392,6 +393,9 @@ def upgradedb(options):
 
 
 @task
+@cmdopts([
+    ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
+])
 def updategeoip(options):
     """
     Update geoip db
@@ -496,7 +500,8 @@ def package(options):
     ('bind=', 'b', 'Bind server to provided IP address and port number.'),
     ('java_path=', 'j', 'Full path to java install for Windows'),
     ('foreground', 'f', 'Do not run in background but in foreground'),
-    ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
+    ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE'),
+    ('force_exec=', '', 'Force Server Execution')
 ], share_with=['start_django', 'start_geoserver'])
 def start(options):
     """
@@ -516,12 +521,15 @@ def stop_django(options):
 
 
 @task
+@cmdopts([
+    ('force_exec=', '', 'Force GeoServer Stop.')
+])
 def stop_geoserver(options):
     """
     Stop GeoServer
     """
     # we use docker-compose for integration tests
-    if on_travis:
+    if on_travis and not options.get('force_exec', False):
         return
 
     # only start if using Geoserver backend
@@ -576,6 +584,9 @@ def stop_qgis_server(options):
 @needs([
     'stop_geoserver',
     'stop_qgis_server'
+])
+@cmdopts([
+    ('force_exec=', '', 'Force GeoServer Stop.')
 ])
 def stop(options):
     """
@@ -657,14 +668,15 @@ def start_messaging(options):
 
 @task
 @cmdopts([
-    ('java_path=', 'j', 'Full path to java install for Windows')
+    ('java_path=', 'j', 'Full path to java install for Windows'),
+    ('force_exec=', '', 'Force GeoServer Start.')
 ])
 def start_geoserver(options):
     """
     Start GeoServer with GeoNode extensions
     """
     # we use docker-compose for integration tests
-    if on_travis:
+    if on_travis and not options.get('force_exec', False):
         return
 
     # only start if using Geoserver backend
@@ -762,6 +774,7 @@ def start_geoserver(options):
                 '%(javapath)s -Xms512m -Xmx2048m -server -XX:+UseConcMarkSweepGC -XX:MaxPermSize=512m'
                 ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
                 ' -Dgeofence.dir=%(geofence_dir)s'
+                ' -Djava.awt.headless=true'
                 # ' -Dgeofence-ovr=geofence-datasource-ovr.properties'
                 # workaround for JAI sealed jar issue and jetty classloader
                 # ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
@@ -888,12 +901,17 @@ def test_integration(options):
     settings = options.get('settings', '')
     success = False
     try:
-        call_task('setup', options={'settings': settings})
+        call_task('setup', options={'settings': settings, 'force_exec': True})
 
         if name and name in ('geonode.tests.csw', 'geonode.tests.integration', 'geonode.geoserver.tests.integration'):
-            call_task('sync', options={'settings': settings})
-            call_task('start', options={'settings': settings})
-            call_task('setup_data', options={'settings': settings})
+            if not settings:
+                settings = 'geonode.local_settings' if _backend == 'geonode.qgis_server' else 'geonode.settings'
+                settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
+            call_task('sync', options={'settings': settings, 'force_exec': True})
+            if _backend == 'geonode.geoserver':
+                call_task('start_geoserver', options={'settings': settings, 'force_exec': True})
+            call_task('start', options={'settings': settings, 'force_exec': True})
+            call_task('setup_data', options={'settings': settings, 'force_exec': True})
         elif not integration_csw_tests and _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
             sh("cp geonode/upload/tests/test_settings.py geonode/")
             settings = 'geonode.test_settings'
@@ -933,7 +951,7 @@ def test_integration(options):
     else:
         success = True
     finally:
-        # don't use call task here - it won't run since it already has
+        options['force_exec'] = True
         stop(options)
         _reset()
 

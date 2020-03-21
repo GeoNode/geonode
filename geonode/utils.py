@@ -1305,7 +1305,8 @@ class DisableDjangoSignals:
     with DisableDjangoSignals():
         # do some fancy stuff here
     """
-    def __init__(self, disabled_signals=None):
+    def __init__(self, disabled_signals=None, skip=False):
+        self.skip = skip
         self.stashed_signals = defaultdict(list)
         self.disabled_signals = disabled_signals or [
             signals.pre_init, signals.post_init,
@@ -1316,12 +1317,14 @@ class DisableDjangoSignals:
         ]
 
     def __enter__(self):
-        for signal in self.disabled_signals:
-            self.disconnect(signal)
+        if not self.skip:
+            for signal in self.disabled_signals:
+                self.disconnect(signal)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        for signal in list(self.stashed_signals):
-            self.reconnect(signal)
+        if not self.skip:
+            for signal in list(self.stashed_signals):
+                self.reconnect(signal)
 
     def disconnect(self, signal):
         self.stashed_signals[signal] = signal.receivers
