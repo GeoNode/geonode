@@ -500,8 +500,7 @@ def package(options):
     ('bind=', 'b', 'Bind server to provided IP address and port number.'),
     ('java_path=', 'j', 'Full path to java install for Windows'),
     ('foreground', 'f', 'Do not run in background but in foreground'),
-    ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE'),
-    ('force_exec=', '', 'Force Server Execution')
+    ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
 ], share_with=['start_django', 'start_geoserver'])
 def start(options):
     """
@@ -584,9 +583,6 @@ def stop_qgis_server(options):
 @needs([
     'stop_geoserver',
     'stop_qgis_server'
-])
-@cmdopts([
-    ('force_exec=', '', 'Force GeoServer Stop.')
 ])
 def stop(options):
     """
@@ -907,11 +903,11 @@ def test_integration(options):
             if not settings:
                 settings = 'geonode.local_settings' if _backend == 'geonode.qgis_server' else 'geonode.settings'
                 settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
-            call_task('sync', options={'settings': settings, 'force_exec': True})
+            call_task('sync', options={'settings': settings})
             if _backend == 'geonode.geoserver':
                 call_task('start_geoserver', options={'settings': settings, 'force_exec': True})
-            call_task('start', options={'settings': settings, 'force_exec': True})
-            call_task('setup_data', options={'settings': settings, 'force_exec': True})
+            call_task('start', options={'settings': settings})
+            call_task('setup_data', options={'settings': settings})
         elif not integration_csw_tests and _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
             sh("cp geonode/upload/tests/test_settings.py geonode/")
             settings = 'geonode.test_settings'
@@ -951,7 +947,6 @@ def test_integration(options):
     else:
         success = True
     finally:
-        options['force_exec'] = True
         stop(options)
         _reset()
 
