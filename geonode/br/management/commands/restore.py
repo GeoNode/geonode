@@ -27,8 +27,7 @@ import requests
 import tempfile
 import warnings
 
-from . import helpers
-from .helpers import Config, md5_file_hash
+from .utils import utils
 
 from distutils import dir_util
 from requests.auth import HTTPBasicAuth
@@ -50,9 +49,9 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
 
         # Named (optional) arguments
-        helpers.option(parser)
+        utils.option(parser)
 
-        helpers.geoserver_option_list(parser)
+        utils.geoserver_option_list(parser)
 
         parser.add_argument(
             '-i',
@@ -226,18 +225,18 @@ class Command(BaseCommand):
                 ogc_db_host = settings.DATABASES[datastore]['HOST']
                 ogc_db_port = settings.DATABASES[datastore]['PORT']
 
-                helpers.restore_db(config, ogc_db_name, ogc_db_user, ogc_db_port,
-                                   ogc_db_host, ogc_db_passwd, gs_data_folder)
+                utils.restore_db(config, ogc_db_name, ogc_db_user, ogc_db_port,
+                                 ogc_db_host, ogc_db_passwd, gs_data_folder)
 
     def restore_geoserver_externals(self, config, settings, target_folder):
         """Restore external references from XML files"""
-        external_folder = os.path.join(target_folder, helpers.EXTERNAL_ROOT)
+        external_folder = os.path.join(target_folder, utils.EXTERNAL_ROOT)
         if os.path.exists(external_folder):
             dir_util.copy_tree(external_folder, '/')
 
     def handle(self, **options):
         # ignore_errors = options.get('ignore_errors')
-        config = Config(options)
+        config = utils.Config(options)
         force_exec = options.get('force_exec')
         backup_file = options.get('backup_file')
         skip_geoserver = options.get('skip_geoserver')
@@ -263,7 +262,7 @@ class Command(BaseCommand):
                 with open(archive_md5_file, 'r') as md5_file:
                     zip_archive_md5 = md5_file.readline().strip()
 
-                generated_zip_archive_md5 = md5_file_hash(backup_file)
+                generated_zip_archive_md5 = utils.md5_file_hash(backup_file)
 
                 if zip_archive_md5 != generated_zip_archive_md5:
                     raise RuntimeError(
@@ -282,7 +281,7 @@ class Command(BaseCommand):
         print(" 1. The backend (DB or whatever) is accessible and you have rights")
         print(" 2. The GeoServer is up and running and reachable from this machine")
         message = 'WARNING: The restore will overwrite ALL GeoNode data. You want to proceed?'
-        if force_exec or helpers.confirm(prompt=message, resp=False):
+        if force_exec or utils.confirm(prompt=message, resp=False):
             target_folder = backup_dir
 
             if backup_file:
@@ -296,11 +295,11 @@ class Command(BaseCommand):
 
                 # Write Checks
                 media_root = settings.MEDIA_ROOT
-                media_folder = os.path.join(target_folder, helpers.MEDIA_ROOT)
+                media_folder = os.path.join(target_folder, utils.MEDIA_ROOT)
                 static_root = settings.STATIC_ROOT
-                static_folder = os.path.join(target_folder, helpers.STATIC_ROOT)
+                static_folder = os.path.join(target_folder, utils.STATIC_ROOT)
                 static_folders = settings.STATICFILES_DIRS
-                static_files_folders = os.path.join(target_folder, helpers.STATICFILES_DIRS)
+                static_files_folders = os.path.join(target_folder, utils.STATICFILES_DIRS)
                 template_folders = []
                 try:
                     template_folders = settings.TEMPLATE_DIRS
@@ -309,9 +308,9 @@ class Command(BaseCommand):
                         template_folders = settings.TEMPLATES[0]['DIRS']
                     except Exception:
                         pass
-                template_files_folders = os.path.join(target_folder, helpers.TEMPLATE_DIRS)
+                template_files_folders = os.path.join(target_folder, utils.TEMPLATE_DIRS)
                 locale_folders = settings.LOCALE_PATHS
-                locale_files_folders = os.path.join(target_folder, helpers.LOCALE_PATHS)
+                locale_files_folders = os.path.join(target_folder, utils.LOCALE_PATHS)
 
                 try:
                     print(("[Sanity Check] Full Write Access to '{}' ...".format(media_root)))
@@ -351,7 +350,7 @@ class Command(BaseCommand):
                 db_host = settings.DATABASES['default']['HOST']
                 db_passwd = settings.DATABASES['default']['PASSWORD']
 
-                helpers.patch_db(db_name, db_user, db_port, db_host, db_passwd, settings.MONITORING_ENABLED)
+                utils.patch_db(db_name, db_user, db_port, db_host, db_passwd, settings.MONITORING_ENABLED)
             except Exception:
                 traceback.print_exc()
 
@@ -366,7 +365,7 @@ class Command(BaseCommand):
                         db_host = settings.DATABASES['default']['HOST']
                         db_passwd = settings.DATABASES['default']['PASSWORD']
 
-                        helpers.flush_db(db_name, db_user, db_port, db_host, db_passwd)
+                        utils.flush_db(db_name, db_user, db_port, db_host, db_passwd)
                     except Exception:
                         try:
                             call_command('flush', interactive=False)
@@ -484,7 +483,7 @@ class Command(BaseCommand):
                         db_host = settings.DATABASES['default']['HOST']
                         db_passwd = settings.DATABASES['default']['PASSWORD']
 
-                        helpers.cleanup_db(db_name, db_user, db_port, db_host, db_passwd)
+                        utils.cleanup_db(db_name, db_user, db_port, db_host, db_passwd)
                     except Exception:
                         traceback.print_exc()
 

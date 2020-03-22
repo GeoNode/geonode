@@ -268,19 +268,6 @@ class RestrictionCodeType(models.Model):
         verbose_name_plural = 'Metadata Restriction Code Types'
 
 
-class Backup(models.Model):
-    identifier = models.CharField(max_length=255, editable=False)
-    name = models.CharField(max_length=100)
-    date = models.DateTimeField(auto_now_add=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-    base_folder = models.CharField(max_length=100)
-    location = models.TextField(null=True, blank=True)
-
-    class Meta:
-        ordering = ("date", )
-        verbose_name_plural = 'Backups'
-
-
 class License(models.Model):
     identifier = models.CharField(max_length=255, editable=False)
     name = models.CharField(max_length=255)

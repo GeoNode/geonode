@@ -26,8 +26,7 @@ import requests
 import re
 import six
 
-from . import helpers
-from .helpers import Config, md5_file_hash
+from .utils import utils
 
 from requests.auth import HTTPBasicAuth
 from xmltodict import parse as parse_xml
@@ -49,9 +48,9 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
 
         # Named (optional) arguments
-        helpers.option(parser)
+        utils.option(parser)
 
-        helpers.geoserver_option_list(parser)
+        utils.geoserver_option_list(parser)
 
         parser.add_argument(
             '-i',
@@ -176,8 +175,8 @@ class Command(BaseCommand):
                 if not os.path.exists(gs_data_folder):
                     os.makedirs(gs_data_folder)
 
-                helpers.dump_db(config, ogc_db_name, ogc_db_user, ogc_db_port,
-                                ogc_db_host, ogc_db_passwd, gs_data_folder)
+                utils.dump_db(config, ogc_db_name, ogc_db_user, ogc_db_port,
+                              ogc_db_host, ogc_db_passwd, gs_data_folder)
 
     def dump_geoserver_externals(self, config, settings, target_folder):
         """Scan layers xml and see if there are external references.
@@ -186,7 +185,7 @@ class Command(BaseCommand):
         backup. Also, some references may point to specific url, which
         may not be available later.
         """
-        external_folder = os.path.join(target_folder, helpers.EXTERNAL_ROOT)
+        external_folder = os.path.join(target_folder, utils.EXTERNAL_ROOT)
 
         def copy_external_resource(abspath):
             external_path = os.path.join(external_folder, abspath[1:])
@@ -256,7 +255,7 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         # ignore_errors = options.get('ignore_errors')
-        config = Config(options)
+        config = utils.Config(options)
         force_exec = options.get('force_exec')
         backup_dir = options.get('backup_dir')
         skip_geoserver = options.get('skip_geoserver')
@@ -269,7 +268,7 @@ class Command(BaseCommand):
         print(" 2. The GeoServer is up and running and reachable from this machine")
         message = 'You want to proceed?'
 
-        if force_exec or helpers.confirm(prompt=message, resp=False):
+        if force_exec or utils.confirm(prompt=message, resp=False):
 
             # Create Target Folder
             dir_time_suffix = get_dir_time_suffix()
@@ -301,7 +300,7 @@ class Command(BaseCommand):
 
                 # Store Media Root
                 media_root = settings.MEDIA_ROOT
-                media_folder = os.path.join(target_folder, helpers.MEDIA_ROOT)
+                media_folder = os.path.join(target_folder, utils.MEDIA_ROOT)
                 if not os.path.exists(media_folder):
                     os.makedirs(media_folder)
 
@@ -310,7 +309,7 @@ class Command(BaseCommand):
 
                 # Store Static Root
                 static_root = settings.STATIC_ROOT
-                static_folder = os.path.join(target_folder, helpers.STATIC_ROOT)
+                static_folder = os.path.join(target_folder, utils.STATIC_ROOT)
                 if not os.path.exists(static_folder):
                     os.makedirs(static_folder)
 
@@ -319,7 +318,7 @@ class Command(BaseCommand):
 
                 # Store Static Folders
                 static_folders = settings.STATICFILES_DIRS
-                static_files_folders = os.path.join(target_folder, helpers.STATICFILES_DIRS)
+                static_files_folders = os.path.join(target_folder, utils.STATICFILES_DIRS)
                 if not os.path.exists(static_files_folders):
                     os.makedirs(static_files_folders)
 
@@ -341,7 +340,7 @@ class Command(BaseCommand):
                         template_folders = settings.TEMPLATES[0]['DIRS']
                     except Exception:
                         pass
-                template_files_folders = os.path.join(target_folder, helpers.TEMPLATE_DIRS)
+                template_files_folders = os.path.join(target_folder, utils.TEMPLATE_DIRS)
                 if not os.path.exists(template_files_folders):
                     os.makedirs(template_files_folders)
 
@@ -356,7 +355,7 @@ class Command(BaseCommand):
 
                 # Store Locale Folders
                 locale_folders = settings.LOCALE_PATHS
-                locale_files_folders = os.path.join(target_folder, helpers.LOCALE_PATHS)
+                locale_files_folders = os.path.join(target_folder, utils.LOCALE_PATHS)
                 if not os.path.exists(locale_files_folders):
                     os.makedirs(locale_files_folders)
 
@@ -375,7 +374,7 @@ class Command(BaseCommand):
 
                 # Generate a md5 hash of a backup archive and save it
                 backup_md5_file = os.path.join(backup_dir, dir_time_suffix+'.md5')
-                zip_archive_md5 = md5_file_hash(backup_archive)
+                zip_archive_md5 = utils.md5_file_hash(backup_archive)
                 with open(backup_md5_file, 'w') as md5_file:
                     md5_file.write(zip_archive_md5)
 
