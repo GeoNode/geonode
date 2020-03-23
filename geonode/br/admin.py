@@ -18,12 +18,21 @@
 #
 #########################################################################
 
-from django.apps import AppConfig
+from django.contrib import admin
+from geonode.br.models import RestoredBackup
 
 
-class BackupRestoreAppConfig(AppConfig):
-    name = 'geonode.br'
-    verbose_name = 'Backup/Restore'
+@admin.register(RestoredBackup)
+class RestoredBackupAdmin(admin.ModelAdmin):
+    readonly_fields = ('name', 'restoration_date', 'archive_md5', 'creation_date')
+    actions = None
+    list_display = ('name', 'restoration_date', 'archive_md5', 'creation_date')
 
+    def has_add_permission(self, request):
+        return False
 
-default_app_config = 'geonode.br.BackupRestoreAppConfig'
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
