@@ -462,62 +462,68 @@ class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def test_profiles_lockdown(self):
         filter_url = self.profiles_list_url
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
-        # now test with logged in user
-        self.api_client.client.login(username='bobby', password='bob')
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 9)
+        with self.settings(API_LOCKDOWN=True):
+            resp = self.api_client.get(filter_url)
+            self.assertValidJSONResponse(resp)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 0)
+
+            # now test with logged in user
+            self.api_client.client.login(username='bobby', password='bob')
+            resp = self.api_client.get(filter_url)
+            self.assertValidJSONResponse(resp)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 9)
 
     def test_owners_lockdown(self):
         filter_url = self.owners_list_url
 
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
+        with self.settings(API_LOCKDOWN=True):
+            resp = self.api_client.get(filter_url)
+            self.assertValidJSONResponse(resp)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
-        # now test with logged in user
-        self.api_client.client.login(username='bobby', password='bob')
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 9)
+            # now test with logged in user
+            self.api_client.client.login(username='bobby', password='bob')
+            resp = self.api_client.get(filter_url)
+            self.assertValidJSONResponse(resp)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 9)
 
     def test_groups_lockdown(self):
         filter_url = self.groups_list_url
 
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
+        with self.settings(API_LOCKDOWN=True):
+            resp = self.api_client.get(filter_url)
+            self.assertValidJSONResponse(resp)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
-        # now test with logged in user
-        self.api_client.client.login(username='bobby', password='bob')
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+            # now test with logged in user
+            self.api_client.client.login(username='bobby', password='bob')
+            resp = self.api_client.get(filter_url)
+            self.assertValidJSONResponse(resp)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 2)
 
     def test_regions_lockdown(self):
         filter_url = self.region_list_url
 
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
+        with self.settings(API_LOCKDOWN=True):
+            resp = self.api_client.get(filter_url)
+            self.assertValidJSONResponse(resp)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
-        self.api_client.client.login(username='bobby', password='bob')
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 200)
+            self.api_client.client.login(username='bobby', password='bob')
+            resp = self.api_client.get(filter_url)
+            self.assertValidJSONResponse(resp)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 200)
 
     def test_tags_lockdown(self):
         filter_url = self.tag_list_url
 
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
+        with self.settings(API_LOCKDOWN=True):
+            resp = self.api_client.get(filter_url)
+            self.assertValidJSONResponse(resp)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
-        self.api_client.client.login(username='bobby', password='bob')
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 5)
+            self.api_client.client.login(username='bobby', password='bob')
+            resp = self.api_client.get(filter_url)
+            self.assertValidJSONResponse(resp)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 5)

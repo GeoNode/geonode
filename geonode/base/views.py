@@ -98,12 +98,10 @@ def thumbnail_upload(
         request,
         res_id,
         template='base/thumbnail_upload.html'):
-
     try:
         res = resolve_object(
             request, ResourceBase, {
                 'id': res_id}, 'base.change_resourcebase')
-
     except PermissionDenied:
         return HttpResponse(
             'You are not allowed to change permissions for this resource',

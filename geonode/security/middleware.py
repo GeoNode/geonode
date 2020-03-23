@@ -24,6 +24,7 @@ from django.conf import settings
 from django.contrib.auth import logout
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+# from django.http.response import HttpResponse
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -36,7 +37,6 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         reverse('account_login'),
         reverse('forgot_username'),
         reverse('help'),
-        reverse('javascript-catalog'),
         reverse('layer_acls'),
         reverse('layer_acls_dep'),
         reverse('layer_resolve_user'),
@@ -50,19 +50,12 @@ else:
         reverse('account_login'),
         reverse('forgot_username'),
         reverse('help'),
-        reverse('javascript-catalog'),
         '/account/(?!.*(?:signup))',
         # block unauthenticated users from creating new accounts.
         '/static/*',
     )
 
-white_list = map(
-    compile,
-    white_list_paths +
-    getattr(
-        settings,
-        "AUTH_EXEMPT_URLS",
-        ()))
+white_list = [compile(x) for x in white_list_paths + getattr(settings, "AUTH_EXEMPT_URLS", ())]
 
 
 class LoginRequiredMiddleware(object):
@@ -73,9 +66,12 @@ class LoginRequiredMiddleware(object):
 
     redirect_to = getattr(settings, 'LOGIN_URL', reverse('account_login'))
 
+    # def process_exception(self, request, exception):
+    #     return HttpResponse("in exception")
+
     def process_request(self, request):
-        if not request.user.is_authenticated(
-        ) or request.user == get_anonymous_user():
+        if not request.user.is_authenticated or \
+        request.user == get_anonymous_user():
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(
                     '{login_path}?next={request_path}'.format(
@@ -89,6 +85,9 @@ class SessionControlMiddleware(object):
     """
 
     redirect_to = getattr(settings, 'LOGIN_URL', reverse('account_login'))
+
+    # def process_exception(self, request, exception):
+    #     return HttpResponse("in exception")
 
     def process_request(self, request):
         if request and request.user and not request.user.is_anonymous:

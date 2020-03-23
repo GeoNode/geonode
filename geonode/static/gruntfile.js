@@ -11,11 +11,17 @@ module.exports = function(grunt) {
   let leafletPluginsMinifiedJs = fileHandling["leaflet-plugins.min.js"].map (
     fileSegment => 'lib/js/' + fileSegment.substring(fileSegment.lastIndexOf('/')+1)
   );
+  let openlayersPluginsMinifiedJs = fileHandling["openlayers-plugins.min.js"].map(
+    fileSegment => 'lib/js/' + fileSegment.substring(fileSegment.lastIndexOf('/') + 1)
+  );
   let assetsMinifiedCss = fileHandling["assets.min.css"].map (
     fileSegment => 'lib/css/' + fileSegment.substring(fileSegment.lastIndexOf('/')+1)
   );
   let leafletMinifiedCss = fileHandling["leaflet.plugins.min.css"].map (
     fileSegment => 'lib/css/' + fileSegment.substring(fileSegment.lastIndexOf('/')+1)
+  );
+  let openlayersMinifiedCss = fileHandling["openlayers.plugins.min.css"].map(
+    fileSegment => 'lib/css/' + fileSegment.substring(fileSegment.lastIndexOf('/') + 1)
   );
 
   grunt.initConfig({
@@ -47,7 +53,8 @@ module.exports = function(grunt) {
         },
         files: [
           {
-            'geonode/css/base.css': 'geonode/less/base.less'
+            'geonode/css/base.css': 'geonode/less/base.less',
+            'geonode/css/crop_widget.css': 'geonode/less/crop_widget.less'
           }
         ]
       },
@@ -61,7 +68,8 @@ module.exports = function(grunt) {
         },
         files: [
           {
-            'geonode/css/base.css': 'geonode/less/base.less'
+            'geonode/css/base.css': 'geonode/less/base.less',
+            'geonode/css/crop_widget.css': 'geonode/less/crop_widget.less'
           }
         ]
       }
@@ -87,7 +95,7 @@ module.exports = function(grunt) {
           nonull: true,
           cwd: 'node_modules',
           dest: 'lib/css',
-          src: [fileHandling["assets.min.css"], fileHandling["leaflet.plugins.min.css"]]
+          src: [fileHandling["assets.min.css"], fileHandling["leaflet.plugins.min.css"], fileHandling["openlayers.plugins.min.css"]]
         }, {
           expand: true,
           flatten: true,
@@ -130,7 +138,7 @@ module.exports = function(grunt) {
           nonull: true,
           cwd: 'node_modules',
           dest: 'lib/js',
-          src: [fileHandling["assets.min.js"], fileHandling.other_dependencies, fileHandling["leaflet-plugins.min.js"]]
+          src: [fileHandling["assets.min.js"], fileHandling.other_dependencies, fileHandling["leaflet-plugins.min.js"], fileHandling["openlayers-plugins.min.js"]]
         }]
       }
     },
@@ -213,8 +221,22 @@ module.exports = function(grunt) {
         },
         files: {
           'lib/css/assets.min.css': assetsMinifiedCss,
-          'lib/css/leaflet-plugins.min.css': leafletMinifiedCss
+          'lib/css/leaflet-plugins.min.css': leafletMinifiedCss,
+          'lib/css/openlayers-plugins.min.css': openlayersMinifiedCss
         }
+      }
+    },
+
+    babel: {
+      options: {
+          sourceMap: true,
+          presets: ['@babel/preset-env']
+      },
+      dist: {
+          files: {
+              'geonode/js/crop_widget/crop_widget_es5.js': 'geonode/js/crop_widget/crop_widget.js',
+              'geonode/js/messages/message_recipients_autocomplete_es5.js': 'geonode/js/messages/message_recipients_autocomplete.js'
+          }
       }
     },
 
@@ -231,7 +253,8 @@ module.exports = function(grunt) {
         },
         files: {
           'lib/js/assets.min.js': assetsMinifiedJs,
-          'lib/js/leaflet-plugins.min.js': leafletPluginsMinifiedJs
+          'lib/js/leaflet-plugins.min.js': leafletPluginsMinifiedJs,
+          'lib/js/openlayers-plugins.min.js': openlayersPluginsMinifiedJs
         }
       },
       production: {
@@ -242,7 +265,8 @@ module.exports = function(grunt) {
         },
         files: {
           'lib/js/assets.min.js': assetsMinifiedJs,
-          'lib/js/leaflet-plugins.min.js': leafletPluginsMinifiedJs
+          'lib/js/leaflet-plugins.min.js': leafletPluginsMinifiedJs,
+          'lib/js/openlayers-plugins.min.js': openlayersPluginsMinifiedJs
         }
       }
     },
@@ -263,9 +287,10 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['jshint']);
 
   // build development
-  grunt.registerTask('development', ['jshint', 'clean:lib', 'less:development', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:development']);
-
+  grunt.registerTask('development', ['jshint', 'clean:lib', 'less:development', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:development', 'babel']);
+  grunt.registerTask('build-less-dev', ['less:development']);
   // build production
   grunt.registerTask('production', ['jshint', 'clean:lib', 'less:production', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:production']);
+  grunt.registerTask('build-less-prod', ['less:production']);
 
 };

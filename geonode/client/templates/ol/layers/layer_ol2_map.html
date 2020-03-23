@@ -1,7 +1,8 @@
 
-<link rel="stylesheet" href="{% url "proxy" %}?url=http://dev.openlayers.org/releases/OpenLayers-2.13.1/theme/default/style.css" type="text/css">
-<script src="{% url "proxy" %}?url=http://dev.openlayers.org/releases/OpenLayers-2.13.1/OpenLayers.js" type="text/javascript"></script>
-<script src="{% url "proxy" %}?url=http://dev.openlayers.org/releases/OpenLayers-2.13.1/lib/OpenLayers/Layer/ArcGISCache.js" type="text/javascript"></script>
+{% load static from staticfiles %}
+<!-- script src="{% static "geonode/js/proj4js/proj4.js" %}" type="text/javascript"></script -->
+<script src="{% static "geonode/js/ol-2.13/OpenLayers.js" %}" type="text/javascript"></script>
+<script src="{% static "geonode/js/ol-2.13/lib/OpenLayers/Layer/ArcGISCache.js" %}" type="text/javascript"></script>
 
 <style>
     .olControlAttribution {
@@ -10,49 +11,48 @@
 </style>
 
 <script type="text/javascript">
-
-  document.addEventListener("DOMContentLoaded", function(event) {
-
-  	// document.getElementById('preview_map').setAttribute("style", "height:600px");
-
-    {% if resource.bbox_string %}
-    var bbox = [{{ resource.bbox_string }}];
+  document.addEventListener("DOMContentLoaded", function (event) {
+    {% if resource.ll_bbox %}
+      var bbox = [{{ resource.ll_bbox_string }}];
     {% else %}
-    var bbox = null;
+      var bbox = null;
     {% endif %}
-
-    source = null;
+    var source = null;
     {% if resource.ptype == 'gxp_wmscsource' %}
-    {% if 'access_token' in request.session %}
-    var url = '{{ resource.ows_url|safe }}?access_token={{request.session.access_token}}'
-    {% else %}
-    var url = '{{ resource.ows_url|safe }}'
-    {% endif %}
-    source = new OpenLayers.Layer.WMS("{{ resource.title|safe }}",
-    	url,
+      {% if access_token %}
+        var url = '{{ resource.ows_url|safe }}?access_token={{access_token}}';
+      {% else %}
+        var url = '{{ resource.ows_url|safe }}';
+      {% endif %}
+
+      source = new OpenLayers.Layer.WMS("{{ resource.title|safe }}",
+        url,
         {layers: '{{ resource.alternate }}', transparent: true},
         {isBaseLayer: false}
-    );
-
+      );
     {% elif resource.ptype == 'gxp_arcrestsource' %}
-    {% if 'access_token' in request.session %}
-    var url = '{{ resource.ows_url|safe }}?access_token={{request.session.access_token}}'
-    {% else %}
-    var url = '{{ resource.ows_url|safe }}'
+      {% if access_token %}
+        var url = '{{ resource.ows_url|safe }}?access_token={{access_token}}';
+      {% else %}
+        var url = '{{ resource.ows_url|safe }}';
+      {% endif %}
+        source = new OpenLayers.Layer.ArcGISCache("{{ resource.title|safe }}",
+          url,
+          {layers: '{{ resource.alternate }}', transparent: true},
+          {isBaseLayer: false}
+        );
     {% endif %}
-    source = new OpenLayers.Layer.ArcGISCache("{{ resource.title|safe }}",
-    	url,
-        {layers: '{{ resource.alternate }}', transparent: true},
-        {isBaseLayer: false}
-    );
 
-    {% endif %}
+    //Snippet comes from http://osgeo-org.1560.x6.nabble.com/OL-2-13-1-latest-Proj4js-td5081636.html
+    /* window.Proj4js = {
+      Proj: function(code) {
+        return proj4(Proj4js.defs[code]);
+      },
+      defs: proj4.defs,
+      transform: proj4
+    }; */
 
-    var crs = '{{ crs }}'
-
-    if (crs != 'EPSG:4326') {
-        crs = 'EPSG:3857';
-    }
+    var crs = 'EPSG:4326';  // resource.ll_bbox is always 4326
     if (source != null) {
     	var layers = [
             new OpenLayers.Layer.OSM("OpenCycleMap",
@@ -64,20 +64,20 @@
 
     	var map = new OpenLayers.Map({
             div: 'preview_map',
-            projection: new OpenLayers.Projection(crs),
-            // controls: [],
+            projection: new OpenLayers.Projection('EPSG:900913'),
             layers: layers,
             center: [0, 0],
             zoom: 2
     	});
 
     	if (bbox != null) {
-    	    if (crs != 'EPSG:4326') {
-                bbox = new OpenLayers.Bounds(bbox).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:3857"));
-    		}
+    	  if (crs != 'EPSG:900913') {
+          bbox = new OpenLayers.Bounds(bbox).transform(
+            new OpenLayers.Projection(crs),
+            new OpenLayers.Projection("EPSG:900913"));
+        }
     		map.zoomToExtent(bbox);
     	}
     }
   });
-
 </script>

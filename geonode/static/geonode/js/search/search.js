@@ -643,6 +643,7 @@
           appendAutocomplete: $('#region_search_input'),
           placeholder: gettext('Enter your region here ...')
     });
+
     $('#region_search_input').bind('selectChoice', function(e, choice, region_autocomplete) {
           if(choice[0].children[0] == undefined) {
               $('#region_search_input').val(choice[0].innerHTML);
@@ -708,41 +709,44 @@
     }, true);
 
     /*
-    * Spatial search
-    */
+     * Spatial search
+     */
     if ($('.leaflet_map').length > 0) {
       angular.extend($scope, {
-        layers: {
-          baselayers: {
-            stamen: {
-              name: 'OpenStreetMap Mapnik',
-              type: 'xyz',
-              url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-              layerOptions: {
-                subdomains: ['a', 'b', 'c'],
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                continuousWorld: true
+        layers: [
+          {
+              name: 'OpenStreetMap',
+              active: true,
+              source: {
+                  type: 'OSM'
               }
-            }
           }
-        },
-        map_center: {
-          lat: 5.6,
-          lng: 3.9,
-          zoom: 0
+        ],
+        center: {
+          lat: 0.0,
+          lon: 0.0,
+          zoom: 1
         },
         defaults: {
-          zoomControl: false
+          interactions: {
+            mouseWheelZoom: true
+          },
+          controls: {
+              zoom: {
+                  position: 'topleft'
+              }
+          }
         }
       });
 
-
-      var leafletData = $injector.get('leafletData'),
-          map = leafletData.getMap('filter-map');
-
-      map.then(function(map){
-        map.on('moveend', function(){
-          $scope.query['extent'] = map.getBounds().toBBoxString();
+      var olData = $injector.get('olData'),
+          map = olData.getMap('filter-map');
+      
+      map.then(function(map) {
+        map.on('moveend', function () {
+          var glbox = map.getView().calculateExtent(map.getSize()); // doesn't look as expected.
+          var box = ol.proj.transformExtent(glbox, 'EPSG:3857', 'EPSG:4326');
+          $scope.query['extent'] = box.toString();
           query_api($scope.query);
         });
       });
@@ -751,8 +755,8 @@
       $('#_extent_filter').click(function(evt) {
           showMap = !showMap
         if (showMap){
-          leafletData.getMap().then(function(map) {
-            map.invalidateSize();
+          olData.getMap().then(function(map) {
+            map.updateSize();
           });
         }
       });

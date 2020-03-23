@@ -22,9 +22,11 @@ from django.conf.urls import url
 
 from . import views
 
-urlpatterns = [  # 'geonode.security.views',
+urlpatterns = [
     url(r'^permissions/(?P<resource_id>\d+)$',
         views.resource_permissions, name='resource_permissions'),
+    url(r'^geolimits/(?P<resource_id>\d+)$',
+        views.resource_geolimits, name='resource_geolimits'),
     url(r'^bulk-permissions/?$',
         views.set_bulk_permissions, name='bulk_permissions'),
     url(r'^request-permissions/?$',

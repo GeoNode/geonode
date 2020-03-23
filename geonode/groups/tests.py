@@ -726,8 +726,7 @@ class GroupCategoriesTestCase(GeoNodeBaseTestSupport):
             content = content.decode('UTF-8')
         data = json.loads(content)
         self.assertEqual(
-            data['meta']['total_count'],
-            0)
+            data['meta']['total_count'], 1)
 
         # check if we have non-empty group category
         self.assertTrue(
@@ -739,7 +738,7 @@ class GroupCategoriesTestCase(GeoNodeBaseTestSupport):
                 GroupCategory.objects.filter(
                     slug=item['slug']).count() == 1)
             g = GroupCategory.objects.get(slug=item['slug'])
-            self.assertEqual(item['member_count'], 0)
+            self.assertEqual(item['member_count'], 1)
 
     def test_group_categories_list(self):
         view_url = reverse('group_category_list')

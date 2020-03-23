@@ -65,6 +65,7 @@ from geonode.base.models import (
     TopicCategory)
 from geonode import geoserver, qgis_server
 from geonode.groups.models import GroupProfile
+from geonode.base.auth import get_or_create_token
 from geonode.documents.models import get_related_documents
 from geonode.people.forms import ProfileForm
 from geonode.base.views import batch_modify
@@ -147,7 +148,17 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
             group = GroupProfile.objects.get(slug=map_obj.group.name)
         except GroupProfile.DoesNotExist:
             group = None
+
+    access_token = None
+    if request and request.user:
+        access_token = get_or_create_token(request.user)
+        if access_token and not access_token.is_expired():
+            access_token = access_token.token
+        else:
+            access_token = None
+
     context_dict = {
+        'access_token': access_token,
         'config': config,
         'resource': map_obj,
         'group': group,
