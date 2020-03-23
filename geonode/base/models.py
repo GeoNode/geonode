@@ -27,28 +27,33 @@ import logging
 import traceback
 
 from django.db import models
-from django.core import serializers
-from django.db.models import Q, signals
-from django.utils.translation import ugettext_lazy as _
-from django.core.exceptions import ValidationError
 from django.conf import settings
-from django.contrib.staticfiles.templatetags import staticfiles
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
-from django.core.files.storage import default_storage as storage
-from django.core.files.base import ContentFile
-from django.contrib.gis.geos import GEOSGeometry
-from django.utils.timezone import now
+from django.core import serializers
 from django.utils.html import escape
+from django.utils.timezone import now
+from django.db.models import Q, signals
+from django.contrib.auth.models import Group
+from django.core.files.base import ContentFile
+from django.contrib.auth import get_user_model
+from django.contrib.gis.geos import GEOSGeometry
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.staticfiles.templatetags import staticfiles
+from django.core.files.storage import default_storage as storage
 
 from mptt.models import MPTTModel, TreeForeignKey
+
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
 from pinax.ratings.models import OverallRating
-from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill
+
+from taggit.models import TagBase, ItemBase
+from taggit.managers import TaggableManager, _TaggableManager
+from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
 
 from geonode.singleton import SingletonModel
 from geonode.base.enumerations import (
@@ -61,10 +66,8 @@ from geonode.utils import (
     add_url_params,
     bbox_to_wkt,
     forward_mercator)
+from geonode.groups.models import GroupProfile
 from geonode.security.models import PermissionLevelMixin
-from taggit.managers import TaggableManager, _TaggableManager
-from taggit.models import TagBase, ItemBase
-from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
 
 from geonode.people.enumerations import ROLE_VALUES
 
@@ -785,6 +788,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         default=False,
         help_text=_('Security Rules Are Not Synched with GeoServer!'))
 
+    users_geolimits = models.ManyToManyField(
+        "UserGeoLimit",
+        related_name="users_geolimits",
+        null=True,
+        blank=True)
+
+    groups_geolimits = models.ManyToManyField(
+        "GroupGeoLimit",
+        related_name="groups_geolimits",
+        null=True,
+        blank=True)
+
     def __str__(self):
         return "{0}".format(self.title)
 
@@ -856,6 +871,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             llbbox[2],  # y0
             llbbox[3],  # y1
             self.srid]
+
+    @property
+    def ll_bbox_string(self):
+        """WGS84 BBOX is in the format: [x0,y0,x1,y1]."""
+        return ",".join([str(self.ll_bbox[0]), str(self.ll_bbox[2]),
+                         str(self.ll_bbox[1]), str(self.ll_bbox[3])])
 
     @property
     def bbox_string(self):
@@ -1558,6 +1579,38 @@ class Configuration(SingletonModel):
 
     def __str__(self):
         return 'Configuration'
+
+
+class UserGeoLimit(models.Model):
+    user = models.ForeignKey(
+        get_user_model(),
+        null=False,
+        blank=False,
+        on_delete=models.CASCADE)
+    resource = models.ForeignKey(
+        ResourceBase,
+        null=False,
+        blank=False,
+        on_delete=models.CASCADE)
+    wkt = models.TextField(
+        db_column='wkt',
+        blank=True)
+
+
+class GroupGeoLimit(models.Model):
+    group = models.ForeignKey(
+        GroupProfile,
+        null=False,
+        blank=False,
+        on_delete=models.CASCADE)
+    resource = models.ForeignKey(
+        ResourceBase,
+        null=False,
+        blank=False,
+        on_delete=models.CASCADE)
+    wkt = models.TextField(
+        db_column='wkt',
+        blank=True)
 
 
 def resourcebase_post_save(instance, *args, **kwargs):

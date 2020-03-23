@@ -2,8 +2,8 @@
   "assets.min.css": [
     "datatables/media/css/jquery.dataTables.css",
     "select2/dist/css/select2.css",
-    "jquery-ui-dist/jquery-ui.theme.css",
-    "jquery-ui-dist/jquery-ui.structure.css",
+    "jquery-ui-dist/jquery-ui.theme.min.css",
+    "jquery-ui-dist/jquery-ui.structure.min.css",
     "raty-js/lib/jquery.raty.css",
     "bootstrap/dist/css/bootstrap.css",
     "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css",
@@ -64,7 +64,7 @@
     "bootstrap-toggle/js/bootstrap-toggle.js",
     "bootstrap-typeahead/bootstrap-typeahead.js",
     "tree-multiselect/dist/jquery.tree-multiselect.min.js",
-
+    
     "clipboard/dist/clipboard.min.js",
     "fastselect/dist/fastselect.standalone.js",
     "handlebars/dist/handlebars.min.js",
@@ -73,6 +73,7 @@
     "raty-js/lib/jquery.raty.js",
     "timeago/jquery.timeago.js",
     "jq-ajax-progress/src/jq-ajax-progress.js",
+    "list.js/dist/list.min.js",
 
     "select/dist/select.js",
     "select2/dist/js/select2.full.js",

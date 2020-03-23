@@ -12,15 +12,15 @@
 
 <script type="text/javascript">
   document.addEventListener("DOMContentLoaded", function (event) {
-    {% if resource.bbox_string %}
-      var bbox = [{{ resource.bbox_string }}];
+    {% if resource.ll_bbox %}
+      var bbox = [{{ resource.ll_bbox_string }}];
     {% else %}
       var bbox = null;
     {% endif %}
     var source = null;
     {% if resource.ptype == 'gxp_wmscsource' %}
-      {% if 'access_token' in request.session %}
-        var url = '{{ resource.ows_url|safe }}?access_token={{request.session.access_token}}';
+      {% if access_token %}
+        var url = '{{ resource.ows_url|safe }}?access_token={{access_token}}';
       {% else %}
         var url = '{{ resource.ows_url|safe }}';
       {% endif %}
@@ -31,8 +31,8 @@
         {isBaseLayer: false}
       );
     {% elif resource.ptype == 'gxp_arcrestsource' %}
-      {% if 'access_token' in request.session %}
-        var url = '{{ resource.ows_url|safe }}?access_token={{request.session.access_token}}';
+      {% if access_token %}
+        var url = '{{ resource.ows_url|safe }}?access_token={{access_token}}';
       {% else %}
         var url = '{{ resource.ows_url|safe }}';
       {% endif %}
@@ -52,7 +52,7 @@
       transform: proj4
     }; */
 
-    var crs = '{{ resource.srid }}';
+    var crs = 'EPSG:4326';  // resource.ll_bbox is always 4326
     if (source != null) {
     	var layers = [
             new OpenLayers.Layer.OSM("OpenCycleMap",
