@@ -7916,10 +7916,10 @@ footer form {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
   .navbar-collapse.collapse {
-    display: none!important;
+    display: none !important;
   }
   .navbar-nav {
-    float: none!important;
+    float: none !important;
     margin: 7.5px -15px;
   }
   .navbar-nav > li {
@@ -7931,10 +7931,10 @@ footer form {
   }
   /* since 3.1.0 */
   .navbar-collapse.collapse.in {
-    display: block!important;
+    display: block !important;
   }
   .collapsing {
-    overflow: hidden!important;
+    overflow: hidden !important;
   }
   .home .navbar-inverse {
     background-color: #333333;
@@ -7959,6 +7959,9 @@ footer form {
 }
 /* Download Layer Filtering Modal
 ----------------------- */
+#download_tab1 li.active {
+  list-style-type: none;
+}
 .gear {
   -webkit-animation: rotation 6s infinite linear;
   -moz-animation: rotation 6s infinite linear;

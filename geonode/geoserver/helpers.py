@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 from collections import namedtuple, defaultdict
 import datetime
 from decimal import Decimal
@@ -75,7 +76,7 @@ if not hasattr(settings, 'OGC_SERVER'):
     msg = (
         'Please configure OGC_SERVER when enabling geonode.geoserver.'
         ' More info can be found at '
-        'http://docs.geonode.org/en/2.10.3/basic/settings/index.html#ogc-server')
+        'http://docs.geonode.org/en/2.10.x/basic/settings/index.html#ogc-server')
     raise ImproperlyConfigured(msg)
 
 
@@ -434,8 +435,12 @@ def cascading_delete(cat, layer_name):
             'cascading_delete was called with a non existent resource')
         return
     resource_name = resource.name
-    lyr = cat.get_layer(resource_name)
-    if(lyr is not None):  # Already deleted
+    lyr = None
+    try:
+        lyr = cat.get_layer(resource_name)
+    except Exception as e:
+        logger.debug(e)
+    if lyr is not None:  # Already deleted
         store = resource.store
         styles = lyr.styles
         try:
@@ -461,7 +466,7 @@ def cascading_delete(cat, layer_name):
         for s in styles:
             if s is not None and s.name not in _default_style_names:
                 try:
-                    logger.info("Trying to delete Style [%s]" % s.name)
+                    logger.debug("Trying to delete Style [%s]" % s.name)
                     cat.delete(s, purge='true')
                     workspace, name = layer_name.split(':') if ':' in layer_name else \
                         (settings.DEFAULT_WORKSPACE, layer_name)
@@ -485,11 +490,11 @@ def cascading_delete(cat, layer_name):
         else:
             if store.resource_type == 'coverageStore':
                 try:
-                    logger.info(" - Going to purge the " + store.resource_type + " : " + store.href)
+                    logger.debug(" - Going to purge the " + store.resource_type + " : " + store.href)
                     cat.reset()  # this resets the coverage readers and unlocks the files
                     cat.delete(store, purge='all', recurse=True)
                     # cat.reload()  # this preservers the integrity of geoserver
-                except FailedRequestError as e:
+                except Exception as e:
                     # Trying to recursively purge a store may fail
                     # We'll catch the exception and log it.
                     logger.debug(e)
@@ -497,7 +502,7 @@ def cascading_delete(cat, layer_name):
                 try:
                     if not store.get_resources():
                         cat.delete(store, recurse=True)
-                except FailedRequestError as e:
+                except Exception as e:
                     # Catch the exception and log it.
                     logger.debug(e)
 
@@ -586,11 +591,17 @@ def gs_slurp(
         # filter out layers for delete comparison with GeoNode layers by following criteria:
         # enabled = true, if --skip-unadvertised: advertised = true, but
         # disregard the filter parameter in the case of deleting layers
-        resources_for_delete_compare = [
-            k for k in resources_for_delete_compare if k.enabled in ["true", True]]
-        if skip_unadvertised:
+        try:
             resources_for_delete_compare = [
-                k for k in resources_for_delete_compare if k.advertised in ["true", True]]
+                k for k in resources_for_delete_compare if k.enabled in ["true", True]]
+            if skip_unadvertised:
+                resources_for_delete_compare = [
+                    k for k in resources_for_delete_compare if k.advertised in ["true", True]]
+        except Exception:
+            if ignore_errors:
+                pass
+            else:
+                raise
 
     if filter:
         resources = [k for k in resources if filter in k.name]
@@ -609,13 +620,25 @@ def gs_slurp(
     # resources = [k for k in resources if k.enabled in ["true", True]]
     resources = _resources
     if skip_unadvertised:
-        resources = [k for k in resources if k.advertised in ["true", True]]
+        try:
+            resources = [k for k in resources if k.advertised in ["true", True]]
+        except Exception:
+            if ignore_errors:
+                pass
+            else:
+                raise
 
     # filter out layers already registered in geonode
     layer_names = Layer.objects.all().values_list('alternate', flat=True)
     if skip_geonode_registered:
-        resources = [k for k in resources
-                     if not '%s:%s' % (k.workspace.name, k.name) in layer_names]
+        try:
+            resources = [k for k in resources
+                         if not '%s:%s' % (k.workspace.name, k.name) in layer_names]
+        except Exception:
+            if ignore_errors:
+                pass
+            else:
+                raise
 
     # TODO: Should we do something with these?
     # i.e. look for matching layers in GeoNode and also disable?
@@ -688,9 +711,9 @@ def gs_slurp(
                 if verbosity > 0:
                     msg = "Stopping process because --ignore-errors was not set and an error was found."
                     print >> sys.stderr, msg
-                raise Exception(
-                    'Failed to process %s' %
-                    resource.name.encode('utf-8'), e), None, sys.exc_info()[2]
+                raise _(
+                    Exception("Failed to process {}".format(resource.name), e)
+                )
         else:
             if created:
                 if not permissions:
@@ -790,7 +813,7 @@ def gs_slurp(
                 layer.delete()
                 output['stats']['deleted'] += 1
                 status = "delete_succeeded"
-            except Exception as e:
+            except Exception:
                 status = "delete_failed"
             finally:
                 from .signals import geoserver_pre_delete
@@ -1035,9 +1058,18 @@ def set_attributes_from_geoserver(layer, overwrite=False):
 def set_styles(layer, gs_catalog):
     style_set = []
 
-    gs_layer = gs_catalog.get_layer(layer.name)
+    gs_layer = None
+    try:
+        gs_layer = gs_catalog.get_layer(layer.name)
+    except Exception:
+        tb = traceback.format_exc()
+        logger.debug(tb)
     if not gs_layer:
-        gs_layer = gs_catalog.get_layer(layer.alternate or layer.typename)
+        try:
+            gs_layer = gs_catalog.get_layer(layer.alternate or layer.typename)
+        except Exception:
+            tb = traceback.format_exc()
+            logger.debug(tb)
 
     if gs_layer:
         default_style = None
@@ -1046,7 +1078,6 @@ def set_styles(layer, gs_catalog):
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
-            pass
 
         if not default_style:
             try:
@@ -1068,7 +1099,7 @@ def set_styles(layer, gs_catalog):
                 except Exception:
                     tb = traceback.format_exc()
                     logger.debug(tb)
-                    pass
+
                 style = gs_catalog.get_style(layer.name, workspace=layer.workspace)
             else:
                 style = default_style
@@ -1095,7 +1126,7 @@ def set_styles(layer, gs_catalog):
 
     # Remove duplicates
     style_set = list(dict.fromkeys(style_set))
-    layer.styles = style_set
+    layer.styles.set(style_set)
 
     # Update default style to database
     to_update = {
@@ -1227,7 +1258,7 @@ def cleanup(name, uuid):
     """
     try:
         Layer.objects.get(name=name)
-    except Layer.DoesNotExist as e:
+    except Layer.DoesNotExist:
         pass
     else:
         msg = ('Not doing any cleanup because the layer %s exists in the '
@@ -1299,7 +1330,7 @@ def create_geoserver_db_featurestore(
             raise FailedRequestError
         ds_exists = True
     except FailedRequestError:
-        logger.info(
+        logger.debug(
             'Creating target datastore %s' % dsname)
         ds = cat.create_datastore(dsname, workspace=workspace)
         db = ogc_server_settings.datastore_db
@@ -1335,10 +1366,10 @@ def create_geoserver_db_featurestore(
     if ds_exists:
         ds.save_method = "PUT"
 
-    logger.info('Updating target datastore % s' % dsname)
+    logger.debug('Updating target datastore % s' % dsname)
     cat.save(ds)
 
-    logger.info('Reloading target datastore % s' % dsname)
+    logger.debug('Reloading target datastore % s' % dsname)
     ds = get_store(cat, dsname, workspace=workspace)
     assert ds.enabled
 
@@ -1702,7 +1733,7 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
         line = "Error {0} invalidating GeoWebCache at {1}".format(
             req.status_code, url
         )
-        logger.error(line)
+        logger.debug(line)
 
 
 def style_update(request, url):
@@ -1924,12 +1955,12 @@ _esri_types = {
     "esriFieldTypeXML": "xsd:anyType"}
 
 
-def _render_thumbnail(req_body, width=240, height=180):
+def _render_thumbnail(req_body, width=240, height=200):
     spec = _fixup_ows_url(req_body)
     url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
     headers = {'Content-type': 'text/html'}
-    # valid_uname_pw = base64.b64encode(b"%s:%s" % (_user, _password)).decode("ascii")
-    # headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
+    _default_thumb_size = getattr(
+        settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
     params = dict(width=width, height=height)
     url = url + "?" + urllib.urlencode(params)
 
@@ -1955,20 +1986,21 @@ def _render_thumbnail(req_body, width=240, height=180):
         # Optimize the Thumbnail size and resolution
         from PIL import Image
         from io import BytesIO
+        from resizeimage import resizeimage
         content_data = BytesIO(content)
         im = Image.open(content_data)
-        im_width, im_height = im.size
-        right = min(width, im_width)
-        bottom = min(height, im_height)
-        size = right, bottom
-        im.thumbnail(size, Image.ANTIALIAS)
+        im.thumbnail(
+            (_default_thumb_size['width'], _default_thumb_size['height']),
+            resample=Image.ANTIALIAS)
+        cover = resizeimage.resize_cover(
+            im,
+            [_default_thumb_size['width'], _default_thumb_size['height']])
         imgByteArr = BytesIO()
-        im.save(imgByteArr, format='JPEG')
+        cover.save(imgByteArr, format='JPEG')
         content = imgByteArr.getvalue()
     except Exception as e:
-        logger.warning('Error generating thumbnail')
-        logger.exception(e)
-        return
+        logger.debug(e)
+        raise e
 
     return content
 
@@ -1980,17 +2012,21 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
                                    bbox_to_projection,
                                    bounds_to_zoom_level)
         image = None
-        width = 240
-        height = 200
+        _default_thumb_size = getattr(
+            settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
+        width = _default_thumb_size['width']
+        height = _default_thumb_size['height']
 
         if isinstance(request_body, basestring):
             try:
                 request_body = json.loads(request_body)
-            except Exception:
+            except Exception as e:
+                logger.debug(e)
                 try:
                     image = _render_thumbnail(
                         request_body, width=width, height=height)
-                except Exception:
+                except Exception as e:
+                    logger.debug(e)
                     image = None
 
         if image is not None:
@@ -2025,14 +2061,11 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             width = int(request_body['width'])
         if 'height' in request_body:
             height = int(request_body['height'])
-        if (float(width) / float(height)) > 1.3:
-            height = int(float(width) / 1.3)
         smurl = None
         if 'smurl' in request_body:
             smurl = request_body['smurl']
         if not smurl and getattr(settings, 'THUMBNAIL_GENERATOR_DEFAULT_BG', None):
             smurl = settings.THUMBNAIL_GENERATOR_DEFAULT_BG
-
         layers = None
         thumbnail_create_url = None
         if 'thumbnail_create_url' in request_body:
@@ -2161,7 +2194,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
     except Exception as e:
         logger.warning('Error generating thumbnail')
         logger.exception(e)
-        image = None
+        raise e
 
     return image
 

@@ -37,7 +37,6 @@ var createMapThumbnail = function(obj_id) {
                 var href = e.attr('src');
                 e.attr('src', 'http:' + href);
             }
-
             e.css({
                 "visibility":"inherit",
                 "position":"absolute"

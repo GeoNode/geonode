@@ -2,8 +2,8 @@
   "assets.min.css": [
     "datatables/media/css/jquery.dataTables.css",
     "select2/dist/css/select2.css",
-    "jquery-ui-dist/jquery-ui.theme.css",
-    "jquery-ui-dist/jquery-ui.structure.css",
+    "jquery-ui-dist/jquery-ui.theme.min.css",
+    "jquery-ui-dist/jquery-ui.structure.min.css",
     "raty-js/lib/jquery.raty.css",
     "bootstrap/dist/css/bootstrap.css",
     "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css",
@@ -13,17 +13,21 @@
     "bootstrap-table/dist/bootstrap-table.css",
     "bootstrap-toggle/css/bootstrap-toggle.css",
     "fastselect/dist/fastselect.css",
-    "patternfly-bootstrap-treeview/dist/bootstrap-treeview.css"
+    "patternfly-bootstrap-treeview/dist/bootstrap-treeview.css",
+    "cropperjs/dist/cropper.css",
+    "@yaireo/tagify/dist/tagify.css"
   ],
   "leaflet.plugins.min.css": [
     "leaflet/dist/leaflet.css",
     "leaflet-easybutton/src/easy-button.css",
-    "leaflet.locatecontrol/dist/L.Control.Locate.css",
     "leaflet.pancontrol/src/L.Control.Pan.css",
     "leaflet-fullscreen/dist/leaflet.fullscreen.css",
     "leaflet.control.opacity/dist/L.Control.Opacity.css",
     "leaflet-measure/dist/leaflet-measure.css",
     "leaflet-navbar/Leaflet.NavBar.css"
+  ],
+  "openlayers.plugins.min.css": [
+    "openlayers/dist/ol.css"
   ],
   "other_dependencies": [
     "jquery/dist/jquery.js",
@@ -39,7 +43,7 @@
     "requirejs/require.js",
     "requirejs-text/text.js",
     "requirejs/require.js"
-    ],
+  ],
   "assets.min.js": [
     "jquery/dist/jquery.min.js",
     "jquery-ui-dist/jquery-ui.min.js",
@@ -52,7 +56,9 @@
 
     "angular/angular.min.js",
     "angular-cookies/angular-cookies.js",
-    "angular-leaflet-directive/dist/angular-leaflet-directive.js",
+    "angular-sanitize/angular-sanitize.min.js",
+    "angular-leaflet-directive/dist/angular-leaflet-directive.min.js",
+    "angular-openlayers-directive/dist/angular-openlayers-directive.min.js",
 
     "eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js",
     "bootstrap-tokenfield/dist/bootstrap-tokenfield.js",
@@ -62,7 +68,7 @@
     "bootstrap-toggle/js/bootstrap-toggle.js",
     "bootstrap-typeahead/bootstrap-typeahead.js",
     "tree-multiselect/dist/jquery.tree-multiselect.min.js",
-
+    
     "clipboard/dist/clipboard.min.js",
     "fastselect/dist/fastselect.standalone.js",
     "handlebars/dist/handlebars.min.js",
@@ -71,12 +77,15 @@
     "raty-js/lib/jquery.raty.js",
     "timeago/jquery.timeago.js",
     "jq-ajax-progress/src/jq-ajax-progress.js",
+    "list.js/dist/list.min.js",
 
     "select/dist/select.js",
     "select2/dist/js/select2.full.js",
     "jquery-waypoints/waypoints.js",
     "underscore/underscore.js",
-    "zeroclipboard/dist/ZeroClipboard.js"
+    "zeroclipboard/dist/ZeroClipboard.js",
+    "cropperjs/dist/cropper.js",
+    "@yaireo/tagify/dist/tagify.min.js"
   ],
   "leaflet-plugins.min.js": [
     "leaflet/dist/leaflet.js",
@@ -88,45 +97,48 @@
     "leaflet.locatecontrol/dist/L.Control.Locate.min.js",
     "leaflet.pancontrol/src/L.Control.Pan.js"
   ],
+  "openlayers-plugins.min.js": [
+    "openlayers/dist/ol.js"
+  ],
   "concatBootstrap":[
-      "bootstrap/dist/js/bootstrap.js",
-      "bootstrap/js/affix.js",
-      "bootstrap/js/alert.js",
-      "bootstrap/js/button.js",
-      "bootstrap/js/carousel.js",
-      "bootstrap/js/collapse.js",
-      "bootstrap/js/dropdown.js",
-      "bootstrap/js/modal.js",
-      "bootstrap/js/popover.js",
-      "bootstrap/js/scrollspy.js",
-      "bootstrap/js/tab.js",
-      "bootstrap/js/tooltip.js",
-      "bootstrap/js/transition.js"
-    ],
+    "bootstrap/dist/js/bootstrap.js",
+    "bootstrap/js/affix.js",
+    "bootstrap/js/alert.js",
+    "bootstrap/js/button.js",
+    "bootstrap/js/carousel.js",
+    "bootstrap/js/collapse.js",
+    "bootstrap/js/dropdown.js",
+    "bootstrap/js/modal.js",
+    "bootstrap/js/popover.js",
+    "bootstrap/js/scrollspy.js",
+    "bootstrap/js/tab.js",
+    "bootstrap/js/tooltip.js",
+    "bootstrap/js/transition.js"
+  ],
   "images": [
-      "raty-js/lib/images/*.png",
-      "jquery-ui-dist/images/*",
-      "leaflet/dist/images/*.png",
-      "leaflet-fullscreen/dist/*.png",
-      "leaflet.control.opacity/img/*",
-      "leaflet-measure/dist/assets/*",
-      "leaflet-navbar/img/*",
-      "leaflet.pancontrol/src/images/*",
-      "datatables/media/images/*.png",
-      "timeago/*.png",
-      "timeago/*.png",
-      "zeroclipboard/dist/ZeroClipboard.swf"
-    ],
-    "lib_fonts": [
-        "bootstrap/fonts/*"
-      ],
-    "lib_css_fonts": [
-        "raty-js/lib/fonts/*"
-      ],
-    "lib_css_assets": [
-      "leaflet-measure/assets/*"
-    ],
-    "lib_css_png": [
-      "leaflet-fullscreen/dist/*.png"
-    ]
+    "raty-js/lib/images/*.png",
+    "jquery-ui-dist/images/*",
+    "leaflet/dist/images/*.png",
+    "leaflet-fullscreen/dist/*.png",
+    "leaflet.control.opacity/img/*",
+    "leaflet-measure/dist/assets/*",
+    "leaflet-navbar/img/*",
+    "leaflet.pancontrol/src/images/*",
+    "datatables/media/images/*.png",
+    "timeago/*.png",
+    "timeago/*.png",
+    "zeroclipboard/dist/ZeroClipboard.swf"
+  ],
+  "lib_fonts": [
+      "bootstrap/fonts/*"
+  ],
+  "lib_css_fonts": [
+      "raty-js/lib/fonts/*"
+  ],
+  "lib_css_assets": [
+    "leaflet-measure/assets/*"
+  ],
+  "lib_css_png": [
+    "leaflet-fullscreen/dist/*.png"
+  ]
 }

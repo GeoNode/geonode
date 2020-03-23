@@ -36,12 +36,20 @@ from django.http import HttpRequest
 from django.core.urlresolvers import reverse
 from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth import get_user_model
-from guardian.shortcuts import get_anonymous_user, assign_perm, remove_perm
+from guardian.shortcuts import (
+    get_anonymous_user,
+    assign_perm,
+    remove_perm
+)
 from geonode import qgis_server, geoserver
+from geonode.base.models import (
+    UserGeoLimit,
+    GroupGeoLimit
+)
 from geonode.base.populate_test_data import all_public
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
-from geonode.groups.models import Group
+from geonode.groups.models import Group, GroupProfile
 from geonode.utils import check_ogc_backend
 from geonode.tests.utils import check_layer
 from geonode.decorators import on_ogc_backend
@@ -51,6 +59,7 @@ from geonode.layers.populate_layers_data import create_layer_data
 
 from .utils import (purge_geofence_all,
                     get_users_with_perms,
+                    get_geofence_rules,
                     get_geofence_rules_count,
                     get_highest_priority,
                     set_geofence_all,
@@ -63,7 +72,7 @@ logger = logging.getLogger(__name__)
 
 
 def _log(msg, *args):
-    logger.info(msg, *args)
+    logger.debug(msg, *args)
 
 
 class StreamToLogger(object):
@@ -145,7 +154,7 @@ class SecurityTest(GeoNodeBaseTestSupport):
 
         self.client.login(username='admin', password='admin')
         admin = get_user_model().objects.get(username='admin')
-        self.assertTrue(admin.is_authenticated())
+        self.assertTrue(admin.is_authenticated)
         request.user = admin
 
         # The middleware should return None when an authenticated user attempts
@@ -164,10 +173,9 @@ class SecurityTest(GeoNodeBaseTestSupport):
         middleware = SessionControlMiddleware()
 
         request = HttpRequest()
-
         self.client.login(username='admin', password='admin')
         admin = get_user_model().objects.get(username='admin')
-        self.assertTrue(admin.is_authenticated())
+        self.assertTrue(admin.is_authenticated)
         request.user = admin
         request.path = reverse('layer_browse')
         middleware.process_request(request)
@@ -218,7 +226,7 @@ class SecurityViewsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertEqual(layer_attributes.count(), test_layer.attributes.count())
 
             # Remove permissions to anonymous users and try to refresh attributes again
-            test_layer.set_permissions({'users': {'AnonymousUser': []}})
+            test_layer.set_permissions({'users': {'AnonymousUser': []}, 'groups': []})
             test_layer.attribute_set.all().delete()
             test_layer.save()
 
@@ -259,7 +267,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.bulk_perms_url = reverse('bulk_permissions')
         all_public()
         self.perm_spec = {
-            "users": {"admin": ["view_resourcebase"]}, "groups": {}}
+            "users": {"admin": ["view_resourcebase"]}, "groups": []}
 
     def test_set_bulk_permissions(self):
         """Test that after restrict view permissions on two layers
@@ -368,7 +376,6 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             3. Set permissions to a group of users
             4. Try to sync a layer from GeoServer
         """
-
         layer = Layer.objects.all()[0]
         self.client.login(username='admin', password='admin')
 
@@ -407,6 +414,110 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         geofence_rules_count = get_geofence_rules_count()
         _log("5. geofence_rules_count: %s " % geofence_rules_count)
         self.assertEqual(geofence_rules_count, 5)
+
+        # Testing GeoLimits
+        # grab bobby
+        bobby = get_user_model().objects.get(username="bobby")
+
+        geo_limit, _ = UserGeoLimit.objects.get_or_create(
+            user=bobby,
+            resource=layer.get_self_resource()
+        )
+        geo_limit.wkt = 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
+146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
+145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))'
+        geo_limit.save()
+        layer.users_geolimits.add(geo_limit)
+        self.assertEqual(layer.users_geolimits.all().count(), 1)
+
+        perm_spec = {
+            "users": {"bobby": ["view_resourcebase"]}, "groups": []}
+        layer.set_permissions(perm_spec)
+        geofence_rules_count = get_geofence_rules_count()
+        self.assertEqual(geofence_rules_count, 5)
+
+        rules_objs = get_geofence_rules(entries=5)
+        self.assertEqual(len(rules_objs['rules']), 5)
+        for rule in rules_objs['rules']:
+            if rule['service'] is None:
+                self.assertEqual(rule['userName'], 'bobby')
+                self.assertEqual(rule['workspace'], 'CA')
+                self.assertEqual(rule['layer'], 'CA')
+                self.assertEqual(rule['access'], 'LIMIT')
+
+                self.assertTrue('limits' in rule)
+                rule_limits = rule['limits']
+                self.assertEqual(rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
+146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
+145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
+                self.assertEqual(rule_limits['catalogMode'], 'MIXED')
+
+        geo_limit, _ = GroupGeoLimit.objects.get_or_create(
+            group=GroupProfile.objects.get(group__name='bar'),
+            resource=layer.get_self_resource()
+        )
+        geo_limit.wkt = 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
+146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
+145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))'
+        geo_limit.save()
+        layer.groups_geolimits.add(geo_limit)
+        self.assertEqual(layer.groups_geolimits.all().count(), 1)
+
+        perm_spec = {
+            'users': {}, 'groups': {'bar': ['change_resourcebase']}}
+        layer.set_permissions(perm_spec)
+        geofence_rules_count = get_geofence_rules_count()
+        self.assertEqual(geofence_rules_count, 6)
+
+        rules_objs = get_geofence_rules(entries=6)
+        self.assertEqual(len(rules_objs['rules']), 6)
+        for rule in rules_objs['rules']:
+            if rule['roleName'] == 'ROLE_BAR':
+                self.assertEqual(rule['service'], None)
+                self.assertEqual(rule['userName'], None)
+                self.assertEqual(rule['workspace'], 'CA')
+                self.assertEqual(rule['layer'], 'CA')
+                self.assertEqual(rule['access'], 'LIMIT')
+
+                self.assertTrue('limits' in rule)
+                rule_limits = rule['limits']
+                self.assertEqual(rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
+146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
+145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
+                self.assertEqual(rule_limits['catalogMode'], 'MIXED')
+
+        # Change Layer Type and SRID in order to force GeoFence allowed-area reprojection
+        _original_storeType = layer.storeType
+        _original_srid = layer.srid
+        layer.storeType = 'coverageStore'
+        layer.srid = 'EPSG:3857'
+        layer.save()
+
+        layer.set_permissions(perm_spec)
+        geofence_rules_count = get_geofence_rules_count()
+        self.assertEqual(geofence_rules_count, 6)
+
+        rules_objs = get_geofence_rules(entries=6)
+        self.assertEqual(len(rules_objs['rules']), 6)
+        for rule in rules_objs['rules']:
+            if rule['roleName'] == 'ROLE_BAR':
+                self.assertEqual(rule['service'], None)
+                self.assertEqual(rule['userName'], None)
+                self.assertEqual(rule['workspace'], 'CA')
+                self.assertEqual(rule['layer'], 'CA')
+                self.assertEqual(rule['access'], 'LIMIT')
+
+                self.assertTrue('limits' in rule)
+                rule_limits = rule['limits']
+                self.assertEqual(
+                    rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, 146.7000276171853 \
+-42.53655428642583, 146.7110139453067 -43.07256577359489, 145.9804231249952 \
+-43.05651288026286, 145.8046418749977 -42.49606500060302)))')
+                self.assertEqual(rule_limits['catalogMode'], 'MIXED')
+
+        layer.storeType = _original_storeType
+        layer.srid = _original_srid
+        layer.save()
 
         # Reset GeoFence Rules
         purge_geofence_all()
@@ -1273,7 +1384,7 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             ws = gs_catalog.get_workspace(workspace)
             self.assertIsNotNone(ws)
             store = get_store(gs_catalog, name, workspace=ws)
-            _log("1. ------------ %s " % store)
+            _log("store. ------------ %s " % store)
             self.assertIsNotNone(store)
 
             # Save layer attributes
@@ -1285,12 +1396,12 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # set SLD
             sld = test_perm_layer.default_style.sld_body if test_perm_layer.default_style else None
             if sld:
-                _log("2. ------------ %s " % sld)
+                _log("sld. ------------ %s " % sld)
                 set_layer_style(test_perm_layer, test_perm_layer.alternate, sld)
 
-            fixup_style(gs_catalog, test_perm_layer.alternate, None)
-            self.assertIsNotNone(get_sld_for(gs_catalog, test_perm_layer))
-            _log("3. ------------ %s " % get_sld_for(gs_catalog, test_perm_layer))
+                fixup_style(gs_catalog, test_perm_layer.alternate, None)
+                self.assertIsNotNone(get_sld_for(gs_catalog, test_perm_layer))
+                _log("fixup_sld. ------------ %s " % get_sld_for(gs_catalog, test_perm_layer))
 
             create_gs_thumbnail(test_perm_layer, overwrite=True)
             self.assertIsNotNone(test_perm_layer.get_thumbnail_url())
@@ -1342,7 +1453,6 @@ class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         return paths, suffixes,
 
     def test_sync_resources_with_guardian_delay_false(self):
-
         with self.settings(DELAYED_SECURITY_SIGNALS=False):
             # Set geofence (and so the dirty state)
             set_geofence_all(self._l)
@@ -1357,7 +1467,6 @@ class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertFalse(clean_layer.dirty_state)
 
     def test_sync_resources_with_guardian_delay_true(self):
-
         with self.settings(DELAYED_SECURITY_SIGNALS=True):
             # Set geofence (and so the dirty state)
             set_geofence_all(self._l)

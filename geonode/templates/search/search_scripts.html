@@ -4,7 +4,7 @@
 {% if DEBUG_STATIC %}
 <script src="{% static "lib/js/angular.js" %}"></script>
 <script src="{% static "lib/js/angular-cookies.js" %}"></script>
-<script src="{% static "lib/js/angular-leaflet-directive.js" %}"></script>
+<script src="{% static "lib/js/angular-openlayers-directive.js" %}"></script>
 {% endif %}
 
 {% if include_spatial == 'true' %}
@@ -13,8 +13,6 @@
     height: 300px;
   }
 </style>
-
-{% include 'search/_spatial_tags.html' %}
 
 {% endif %}
 <script src="{% static "geonode/js/search/explore.js" %}"></script>
@@ -62,7 +60,7 @@
 
   var deps = ['search'];
   {% if include_spatial == 'true' %}
-  deps.push('leaflet-directive');
+  deps.push('openlayers-directive');
   {% endif %}
   angular.bootstrap(document, deps);
 </script>

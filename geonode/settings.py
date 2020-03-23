@@ -36,7 +36,12 @@ from django.conf.global_settings import DATETIME_INPUT_FORMATS
 from geonode import get_version
 from kombu import Queue, Exchange
 
-SILENCED_SYSTEM_CHECKS = ['1_8.W001', 'fields.W340', 'auth.W004', 'urls.W002']
+SILENCED_SYSTEM_CHECKS = [
+    '1_8.W001',
+    'fields.W340',
+    'auth.W004',
+    'urls.W002'
+]
 
 # GeoNode Version
 VERSION = get_version()
@@ -210,7 +215,7 @@ EXTRA_LANG_INFO = {
         'bidi': False,
         'code': 'ta',
         'name': 'Tamil',
-        'name_local': u'tamil',
+        'name_local': 'tamil',
     },
     'si': {
         'bidi': False,
@@ -559,7 +564,6 @@ LOGGING = {
 #
 # Test Settings
 #
-
 on_travis = ast.literal_eval(os.environ.get('ON_TRAVIS', 'False'))
 core_tests = ast.literal_eval(os.environ.get('TEST_RUN_CORE', 'False'))
 internal_apps_tests = ast.literal_eval(os.environ.get('TEST_RUN_INTERNAL_APPS', 'False'))
@@ -752,6 +756,7 @@ AUTH_EXEMPT_URLS = (
     '%s/api/users' % FORCE_SCRIPT_NAME,
     '%s/api/layers' % FORCE_SCRIPT_NAME,
     '%s/monitoring' % FORCE_SCRIPT_NAME,
+    r'^/i18n/setlang/?$',
 )
 
 ANONYMOUS_USER_ID = os.getenv('ANONYMOUS_USER_ID', '-1')
@@ -894,7 +899,7 @@ GEOFENCE_SECURITY_ENABLED = False if TEST and not INTEGRATION else ast.literal_e
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
     'default': {
-        'BACKEND': 'geonode.geoserver',
+        'BACKEND': os.getenv('BACKEND', 'geonode.geoserver'),
         'LOCATION': GEOSERVER_LOCATION,
         'WEB_UI_LOCATION': GEOSERVER_WEB_UI_LOCATION,
         'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
@@ -918,8 +923,8 @@ OGC_SERVER = {
         # Set to name of database in DATABASES dictionary to enable
         # 'datastore',
         'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE', ''),
-        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '5')),
-        'MAX_RETRIES': int(os.getenv('OGC_REQUEST_MAX_RETRIES', '2')),
+        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '10')),
+        'MAX_RETRIES': int(os.getenv('OGC_REQUEST_MAX_RETRIES', '3')),
         'BACKOFF_FACTOR': float(os.getenv('OGC_REQUEST_BACKOFF_FACTOR', '0.3')),
         'POOL_MAXSIZE': int(os.getenv('OGC_REQUEST_POOL_MAXSIZE', '10')),
         'POOL_CONNECTIONS': int(os.getenv('OGC_REQUEST_POOL_CONNECTIONS', '10')),
@@ -1232,7 +1237,7 @@ CLIENT_RESULTS_LIMIT = int(os.getenv('CLIENT_RESULTS_LIMIT', '5'))
 # LOCKDOWN API endpoints to prevent unauthenticated access.
 # If set to True, search won't deliver results and filtering ResourceBase-objects is not possible for anonymous users
 API_LOCKDOWN = ast.literal_eval(
-    os.getenv('API_LOCKDOWN', 'True'))
+    os.getenv('API_LOCKDOWN', 'False'))
 
 # Number of items returned by the apis 0 equals no limit
 API_LIMIT_PER_PAGE = int(os.getenv('API_LIMIT_PER_PAGE', '200'))
@@ -1309,88 +1314,6 @@ GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = os.getenv('GEONODE_CLIENT_LAYER_PREVIEW_L
 MAP_BASELAYERS = [{}]
 
 """
-To enable the GeoExt based Client:
-1. pip install django-geoexplorer==4.0.42
-2. add 'geoexplorer' to INSTALLED_APPS
-3. enable those:
-"""
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'  # DEPRECATED use HOOKSET instead
-if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'geoext':
-    GEONODE_CLIENT_HOOKSET = os.getenv('GEONODE_CLIENT_HOOKSET', 'geonode.client.hooksets.GeoExtHookSet')
-
-    if 'geoexplorer' not in INSTALLED_APPS:
-        INSTALLED_APPS += ('geoexplorer', )
-
-    MAP_BASELAYERS += [{
-            "source": {"ptype": "gxp_olsource"},
-            "type": "OpenLayers.Layer",
-            "args": ["No background"],
-            "name": "background",
-            "visibility": False,
-            "fixed": True,
-            "group": "background"
-        },
-        {
-            "source": {"ptype": "gxp_osmsource"},
-            "type": "OpenLayers.Layer.OSM",
-            "name": "mapnik",
-            "visibility": True,
-            "fixed": True,
-            "group": "background"
-        }]
-
-    # MAP_BASELAYERS += [
-    # {
-    #     "source": {"ptype": "gxp_olsource"},
-    #     "type": "OpenLayers.Layer.XYZ",
-    #     "title": "TEST TILE",
-    #     "args": ["TEST_TILE", "http://test_tiles/tiles/${z}/${x}/${y}.png"],
-    #     "name": "background",
-    #     "attribution": "&copy; TEST TILE",
-    #     "visibility": False,
-    #     "fixed": True,
-    #     "group":"background"
-    # }]
-
-    if BING_API_KEY:
-        BASEMAP = {
-            'source': {
-                'ptype': 'gxp_bingsource',
-                'apiKey': BING_API_KEY
-            },
-            'name': 'AerialWithLabels',
-            'fixed': True,
-            'visibility': True,
-            'group': 'background'
-        }
-        MAP_BASELAYERS.append(BASEMAP)
-
-    if GOOGLE_API_KEY:
-        BASEMAP = {
-            'source': {
-                 'ptype': 'gxp_googlesource',
-                 'apiKey': GOOGLE_API_KEY
-            },
-            'name': 'SATELLITE',
-            'fixed': True,
-            'visibility': True,
-            'group': 'background'
-        }
-        MAP_BASELAYERS.append(BASEMAP)
-
-    if USE_GEOSERVER:
-        LOCAL_GEOSERVER = {
-            "source": {
-                "ptype": "gxp_wmscsource",
-                "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
-                "restUrl": "/gs/rest"
-            }
-        }
-        baselayers = MAP_BASELAYERS
-        MAP_BASELAYERS = [LOCAL_GEOSERVER]
-        MAP_BASELAYERS.extend(baselayers)
-
-"""
 To enable the REACT based Client:
 1. pip install pip install django-geonode-client==1.0.9
 2. enable those:
@@ -1408,72 +1331,68 @@ To enable the Leaflet based Client:
 if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'leaflet':
     GEONODE_CLIENT_HOOKSET = os.getenv('GEONODE_CLIENT_HOOKSET', 'geonode.client.hooksets.LeafletHookSet')
 
-    CORS_ORIGIN_WHITELIST = (
-        HOSTNAME
-    )
+    LEAFLET_CONFIG = {
+        'TILES': [
+            # Find tiles at:
+            # http://leaflet-extras.github.io/leaflet-providers/preview/
 
-LEAFLET_CONFIG = {
-    'TILES': [
-        # Find tiles at:
-        # http://leaflet-extras.github.io/leaflet-providers/preview/
-
-        # Stamen toner lite.
-        ('Watercolor',
-            'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
-            'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-            <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
-            &mdash; Map data &copy; \
-            <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-            <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
-            CC-BY-SA</a>'),
-        ('Toner Lite',
-            'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
-            'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-            <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
-            &mdash; Map data &copy; \
-            <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-            <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
-            CC-BY-SA</a>'),
-    ],
-    'PLUGINS': {
-        'esri-leaflet': {
-            'js': 'lib/js/leaflet.js',
-            'auto-include': True,
+            # Stamen toner lite.
+            ('Watercolor',
+                'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
+                'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+                <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
+                &mdash; Map data &copy; \
+                <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+                <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
+                CC-BY-SA</a>'),
+            ('Toner Lite',
+                'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
+                'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+                <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
+                &mdash; Map data &copy; \
+                <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+                <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
+                CC-BY-SA</a>'),
+        ],
+        'PLUGINS': {
+            'esri-leaflet': {
+                'js': 'lib/js/leaflet.js',
+                'auto-include': True,
+            },
+            'leaflet-fullscreen': {
+                'css': 'lib/css/leaflet.fullscreen.css',
+                'js': 'lib/js/Leaflet.fullscreen.min.js',
+                'auto-include': True,
+            },
+            'leaflet-opacity': {
+                'css': 'lib/css/L.Control.Opacity.css',
+                'js': 'lib/js/L.Control.Opacity.js',
+                'auto-include': True,
+            },
+            'leaflet-navbar': {
+                'css': 'lib/css/Leaflet.NavBar.css',
+                'js': 'lib/js/index.js',
+                'auto-include': True,
+            },
+            'leaflet-measure': {
+                'css': 'lib/css/leaflet-measure.css',
+                'js': 'lib/js/leaflet-measure.js',
+                'auto-include': True,
+            },
         },
-        'leaflet-fullscreen': {
-            'css': 'lib/css/leaflet.fullscreen.css',
-            'js': 'lib/js/Leaflet.fullscreen.min.js',
-            'auto-include': True,
-        },
-        'leaflet-opacity': {
-            'css': 'lib/css/L.Control.Opacity.css',
-            'js': 'lib/js/L.Control.Opacity.js',
-            'auto-include': True,
-        },
-        'leaflet-navbar': {
-            'css': 'lib/css/Leaflet.NavBar.css',
-            'js': 'lib/js/index.js',
-            'auto-include': True,
-        },
-        'leaflet-measure': {
-            'css': 'lib/css/leaflet-measure.css',
-            'js': 'lib/js/leaflet-measure.js',
-            'auto-include': True,
-        },
-    },
-    'SRID': 3857,
-    'RESET_VIEW': False
-}
-
-if not DEBUG_STATIC:
-    # if not DEBUG_STATIC, use minified css and js
-    LEAFLET_CONFIG['PLUGINS'] = {
-        'leaflet-plugins': {
-            'js': 'lib/js/leaflet-plugins.min.js',
-            'css': 'lib/css/leaflet-plugins.min.css',
-            'auto-include': True,
-        }
+        'SRID': 3857,
+        'RESET_VIEW': False
     }
+
+    if not DEBUG_STATIC:
+        # if not DEBUG_STATIC, use minified css and js
+        LEAFLET_CONFIG['PLUGINS'] = {
+            'leaflet-plugins': {
+                'js': 'lib/js/leaflet-plugins.min.js',
+                'css': 'lib/css/leaflet-plugins.min.css',
+                'auto-include': True,
+            }
+        }
 
 """
 To enable the MapStore2 REACT based Client:
@@ -1899,6 +1818,7 @@ INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
 THUMBNAIL_GENERATOR = "geonode.layers.utils.create_gs_thumbnail_geonode"
 #THUMBNAIL_GENERATOR_DEFAULT_BG = r"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
 THUMBNAIL_GENERATOR_DEFAULT_BG = r"https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"
+THUMBNAIL_GENERATOR_DEFAULT_SIZE = {'width': 240, 'height': 200}
 
 # define the urls after the settings are overridden
 if USE_GEOSERVER:

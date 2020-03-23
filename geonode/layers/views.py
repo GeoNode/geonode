@@ -616,12 +616,23 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     metadata = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
+    perms_list = get_perms(
+        request.user,
+        layer.get_self_resource()) + get_perms(request.user, layer)
+
+    access_token = None
+    if request and request.user:
+        access_token = get_or_create_token(request.user)
+        if access_token and not access_token.is_expired():
+            access_token = access_token.token
+        else:
+            access_token = None
+
     context_dict = {
+        'access_token': access_token,
         'resource': layer,
         'group': group,
-        'perms_list': get_perms(
-            request.user,
-            layer.get_self_resource()) + get_perms(request.user, layer),
+        'perms_list': perms_list,
         "permissions_json": _perms_info_json(layer),
         "documents": get_related_documents(layer),
         "metadata": metadata,
@@ -635,14 +646,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "storeType": layer.storeType,
         # "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True
     }
-
-    access_token = None
-    if request and request.user:
-        access_token = get_or_create_token(request.user)
-        if access_token and not access_token.is_expired():
-            access_token = access_token.token
-        else:
-            access_token = None
 
     context_dict["viewer"] = json.dumps(map_obj.viewer_json(
         request, * (NON_WMS_BASE_LAYERS + [maplayer])))
@@ -719,6 +722,14 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         if getattr(settings, 'FAVORITE_ENABLED', False):
             from geonode.favorite.utils import get_favorite_info
             context_dict["favorite_info"] = get_favorite_info(request.user, layer)
+
+    if request.user.is_authenticated and (request.user.is_superuser or "change_resourcebase_permissions" in perms_list):
+        context_dict['users'] = [user for user in get_user_model().objects.all().exclude(
+            id=request.user.id).exclude(is_superuser=True)]
+        if request.user.is_superuser:
+            context_dict['groups'] = [_group for _group in GroupProfile.objects.all()]
+        else:
+            context_dict['groups'] = [_group for _group in request.user.group_list_all()]
 
     register_event(request, 'view', layer)
     return TemplateResponse(

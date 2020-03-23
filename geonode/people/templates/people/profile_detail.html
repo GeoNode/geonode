@@ -118,8 +118,8 @@
   </table>
   {% if USE_GEOSERVER and DISPLAY_WMS_LINKS %}
   <p>
-      {% if request.user.is_authenticated and 'access_token' in request.session %}
-        <a href="{% url 'capabilities_user' profile.username %}?access_token={{ request.session.access_token }}">
+      {% if request.user.is_authenticated and access_token %}
+        <a href="{% url 'capabilities_user' profile.username %}?access_token={{access_token}}">
       {% else %}
         <a href="{% url 'capabilities_user' profile.username %}">
       {% endif %}

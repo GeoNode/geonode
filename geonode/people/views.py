@@ -29,9 +29,10 @@ from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.db.models import Q
 
-from geonode.people.forms import ProfileForm
-from geonode.people.forms import ForgotUsernameForm
 from geonode.tasks.tasks import send_email
+from geonode.people.forms import ProfileForm
+from geonode.base.auth import get_or_create_token
+from geonode.people.forms import ForgotUsernameForm
 
 
 @login_required
@@ -72,7 +73,16 @@ def profile_detail(request, username):
     profile = get_object_or_404(get_user_model(), Q(is_active=True), username=username)
     # combined queryset from each model content type
 
+    access_token = None
+    if request and request.user:
+        access_token = get_or_create_token(request.user)
+        if access_token and not access_token.is_expired():
+            access_token = access_token.token
+        else:
+            access_token = None
+
     return render(request, "people/profile_detail.html", {
+        'access_token': access_token,
         "profile": profile,
     })
 
