@@ -103,7 +103,7 @@ class Command(BaseCommand):
         skip_geoserver = options.get('skip_geoserver')
         backup_file = options.get('backup_file')
         backup_files_dir = options.get('backup_files_dir')
-        with_logs = options.get('with-logs')
+        with_logs = options.get('with_logs')
 
         # choose backup_file from backup_files_dir, if --backup-files-dir was provided
         if backup_files_dir:
