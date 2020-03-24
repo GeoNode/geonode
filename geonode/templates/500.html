@@ -92,7 +92,7 @@
             {% if user.is_authenticated %}
             <li>
               <a href="#" data-toggle="modal" data-target="#UserModal" role="button" aria-expanded="false">
-                {% autoescape off %}{% avatar user 30 %} {{ user.username }}{% endautoescape %}
+                {% autoescape off %}{% avatar user 40 %} {{ user.username }}{% endautoescape %}
               </a>
             </li>
             {% else %}

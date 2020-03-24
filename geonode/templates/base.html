@@ -355,7 +355,7 @@
             {% if user.is_authenticated %}
             <li>
               <a href="#" class="dropdown-toggle avatar" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                {% autoescape off %}{% avatar user 42 %}{% endautoescape %}
+                {% autoescape off %}{% avatar user 40 %}{% endautoescape %}
                 {% with full_name=user.first_name|add:' '|add:user.last_name %}
                   {% if full_name.strip %}
                     {{ full_name | truncatechars:20 }}
