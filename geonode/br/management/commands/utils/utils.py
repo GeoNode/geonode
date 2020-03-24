@@ -189,6 +189,8 @@ def flush_db(db_name, db_user, db_port, db_host, db_passwd):
         curs.execute(sql_dump)
         pg_tables = curs.fetchall()
         for table in pg_tables:
+            if table[0] == 'br_restoredbackup':
+                continue
             print("Flushing Data : " + table[0])
             curs.execute("TRUNCATE " + table[0] + " CASCADE;")
 
