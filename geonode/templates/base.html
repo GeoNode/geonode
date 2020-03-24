@@ -36,6 +36,8 @@
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
 
     <link rel="shortcut icon" href="{% static 'geonode/img/favicon.ico' %}" />
+    <link href="{% static "lib/css/ol.css" %}" rel="stylesheet" />
+    <script src="{% static "lib/js/ol.js" %}"></script>
 
     {% block head %}
 
@@ -48,7 +50,7 @@
           <link href="{% static "lib/css/jquery-ui.structure.css" %}" rel="stylesheet"/>
           <link href="{% static "lib/css/bootstrap-treeview.css" %}" rel="stylesheet"/>
       {% else %}
-        <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet"/>
+      <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet"/>
       {% endif %}
 
       <link href="{% static "geonode/css/base.css" %}" rel="stylesheet" />

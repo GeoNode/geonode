@@ -20,12 +20,14 @@
   "leaflet.plugins.min.css": [
     "leaflet/dist/leaflet.css",
     "leaflet-easybutton/src/easy-button.css",
-    "leaflet.locatecontrol/dist/L.Control.Locate.css",
     "leaflet.pancontrol/src/L.Control.Pan.css",
     "leaflet-fullscreen/dist/leaflet.fullscreen.css",
     "leaflet.control.opacity/dist/L.Control.Opacity.css",
     "leaflet-measure/dist/leaflet-measure.css",
     "leaflet-navbar/Leaflet.NavBar.css"
+  ],
+  "openlayers.plugins.min.css": [
+    "openlayers/dist/ol.css"
   ],
   "other_dependencies": [
     "jquery/dist/jquery.js",
@@ -54,7 +56,9 @@
 
     "angular/angular.min.js",
     "angular-cookies/angular-cookies.js",
-    "angular-leaflet-directive/dist/angular-leaflet-directive.js",
+    "angular-sanitize/angular-sanitize.min.js",
+    "angular-leaflet-directive/dist/angular-leaflet-directive.min.js",
+    "angular-openlayers-directive/dist/angular-openlayers-directive.min.js",
 
     "eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js",
     "bootstrap-tokenfield/dist/bootstrap-tokenfield.js",
@@ -93,6 +97,9 @@
     "leaflet.locatecontrol/dist/L.Control.Locate.min.js",
     "leaflet.pancontrol/src/L.Control.Pan.js"
   ],
+  "openlayers-plugins.min.js": [
+    "openlayers/dist/ol.js"
+  ],
   "concatBootstrap":[
     "bootstrap/dist/js/bootstrap.js",
     "bootstrap/js/affix.js",
@@ -121,17 +128,17 @@
     "timeago/*.png",
     "timeago/*.png",
     "zeroclipboard/dist/ZeroClipboard.swf"
-    ],
-    "lib_fonts": [
-        "bootstrap/fonts/*"
-      ],
-    "lib_css_fonts": [
-        "raty-js/lib/fonts/*"
-      ],
-    "lib_css_assets": [
-      "leaflet-measure/assets/*"
-    ],
-    "lib_css_png": [
-      "leaflet-fullscreen/dist/*.png"
+  ],
+  "lib_fonts": [
+      "bootstrap/fonts/*"
+  ],
+  "lib_css_fonts": [
+      "raty-js/lib/fonts/*"
+  ],
+  "lib_css_assets": [
+    "leaflet-measure/assets/*"
+  ],
+  "lib_css_png": [
+    "leaflet-fullscreen/dist/*.png"
   ]
 }

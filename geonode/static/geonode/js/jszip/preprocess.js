@@ -236,8 +236,8 @@ DBFParser.prototype.parse = function(arrayBuffer,src,response,encoding) {
     var charString = [],
         count = 0,
         index = 0,
-        z = 0,
-        /* sum = (responseHeader.length+1)/32 */;
+        z = 0;
+    /* var sum = (responseHeader.length+1)/32 */
 
     while(responseHeader.length > 0) {
         while(count < 10) {

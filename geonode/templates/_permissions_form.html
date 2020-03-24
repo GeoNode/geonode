@@ -18,7 +18,7 @@
       position: fixed;
     }
     .bt-scrollable {
-      max-height: 300px;
+      max-height: 180px;
       margin-bottom: 10px;
       overflow:scroll;
       -webkit-overflow-scrolling: touch;
@@ -125,17 +125,21 @@
                                         <div class="expertise">
                                           <div class="read-more pull-right">
                                             <button id="user-load{{ profile.id }}" type="button" class="btn btn-default btn-sm deserialize-geo-limit"
-                                              data-toggle="tooltip" data-placement="top" title="{% trans "Load Geo Limits" %}" aria-pressed="true">
-                                              <span class="glyphicon glyphicon glyphicon glyphicon-cloud-download" aria-hidden="true"></span>
+                                              data-toggle="tooltip" data-placement="top" title="{% trans "Show Geo Limits" %}" aria-pressed="true">
+                                              <span class="glyphicon glyphicon glyphicon glyphicon-eye-open" aria-hidden="true"></span>
                                             </button>
                                             <button id="user-upload{{ profile.id }}" type="button" class="btn btn-default btn-sm"
                                               data-toggle="tooltip" data-placement="top" title="{% trans "Upload Geo Limits" %}" aria-pressed="true">
-                                              <span class="glyphicon glyphicon glyphicon glyphicon-file"
+                                              <span class="glyphicon glyphicon glyphicon glyphicon-open-file"
                                                     data-toggle="modal" data-target="#_add_shp_zip" aria-hidden="true"></span>
                                             </button>
                                             <button id="user-save{{ profile.id }}" type="button" class="btn btn-default btn-sm serialize-geo-limit"
                                               data-toggle="tooltip" data-placement="top" title="{% trans "Save Geo Limits" %}" aria-pressed="true">
                                               <span class="glyphicon glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                            </button>
+                                            <button id="user-remove{{ profile.id }}" type="button" class="btn btn-default btn-sm delete-geo-limit"
+                                              data-toggle="tooltip" data-placement="top" title="{% trans "Delete Geo Limits" %}" aria-pressed="true">
+                                              <span class="glyphicon glyphicon glyphicon-trash" aria-hidden="true"></span>
                                             </button>
                                           </div>
                                         </div>
@@ -175,17 +179,21 @@
                                         <div class="expertise">
                                           <div class="read-more pull-right">
                                             <button id="group-load{{ group.id }}" type="button" class="btn btn-default btn-sm deserialize-geo-limit"
-                                              data-toggle="tooltip" data-placement="top" title="{% trans "Load Geo Limits" %}" aria-pressed="true">
-                                              <span class="glyphicon glyphicon glyphicon glyphicon-cloud-download" aria-hidden="true"></span>
+                                              data-toggle="tooltip" data-placement="top" title="{% trans "Show Geo Limits" %}" aria-pressed="true">
+                                              <span class="glyphicon glyphicon glyphicon glyphicon-eye-open" aria-hidden="true"></span>
                                             </button>
                                             <button id="group-upload{{ group.id }}" type="button" class="btn btn-default btn-sm"
                                               data-toggle="tooltip" data-placement="top" title="{% trans "Upload Geo Limits" %}" aria-pressed="true">
-                                              <span class="glyphicon glyphicon glyphicon glyphicon-file"
+                                              <span class="glyphicon glyphicon glyphicon glyphicon-open-file"
                                                     data-toggle="modal" data-target="#_add_shp_zip" aria-hidden="true"></span>
                                             </button>
                                             <button id="group-save{{ group.id }}" type="button" class="btn btn-default btn-sm serialize-geo-limit"
                                               data-toggle="tooltip" data-placement="top" title="{% trans "Save Geo Limits" %}" aria-pressed="true">
                                               <span class="glyphicon glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                            </button>
+                                            <button id="group-remove{{ profile.id }}" type="button" class="btn btn-default btn-sm delete-geo-limit"
+                                              data-toggle="tooltip" data-placement="top" title="{% trans "Delete Geo Limits" %}" aria-pressed="true">
+                                              <span class="glyphicon glyphicon glyphicon-trash" aria-hidden="true"></span>
                                             </button>
                                           </div>
                                         </div>
@@ -464,7 +472,6 @@
           if ($("#confirmMsgBoxModalOK_control_field").val() == 'loadShpZip') {
             $("#confirmMsgBoxModalOK_control_field").val();
             $("#confirmMsgBoxModalOK").modal("hide");
-
             loadShpZip();
           }
         });
@@ -606,6 +613,54 @@
 
       $('.deserialize-geo-limit').click(function(event) {
         deserializeGeoLimit($(this).attr('id'));
+      });
+
+      function deleteGeoLimit(ID) {
+        $("#confirmMsgBoxModalOK").find('.modal-title').html('{% trans "Delete Geo Limits" %}');
+        $("#confirmMsgBoxModalOK").find('.modal-body').html('{% trans "<p>This will <strong>permanently</strong> remove the Geo Limits from the DB.</p><p>To apply them you will need to click on <strong>\"Apply Changes\"</strong> button.</p><p>Do you want to proceed?</p>" %}');
+        $("#confirmMsgBoxModalOK_control_field").val('deleteGeoLimit');
+        $('#confirmMsgBoxModalOK').find('.modal-footer .confirm').remove();
+        var confirm_button = $('<button />').attr({ type: 'button', id:'confirm_deleteGeoLimit', class:'btn btn-danger confirm' });
+        $('#confirmMsgBoxModalOK').find('.modal-footer').append(confirm_button);
+        $("#confirmMsgBoxModalOK").modal("show");
+        $('#confirm_deleteGeoLimit').html('{% trans "OK" %}');
+        $('#confirm_deleteGeoLimit').prop('value', '{% trans "OK" %}');
+
+        $('#confirm_deleteGeoLimit').on('click', function(e) {
+          e.stopImmediatePropagation();
+          if ($("#confirmMsgBoxModalOK_control_field").val() == 'deleteGeoLimit') {
+            $("#confirmMsgBoxModalOK_control_field").val();
+            $("#confirmMsgBoxModalOK").modal("hide");
+
+            var query_param = "";
+            if(ID.startsWith("user-remove")) {
+              query_param = "user_id=" + ID.substring("user-remove".length);
+            } else if(ID.startsWith("group-remove")) {
+              query_param = "group_id=" + ID.substring("group-remove".length);
+            }
+
+            $.ajax({
+              type: "DELETE",
+              url: '{% url "resource_geolimits" resource.id %}?' + query_param,
+              success: function(data, status, xhr) {
+                $("#_thumbnail_feedbacks").find('.modal-title').text('{% trans "Delete Geo Limit" %}');
+                $("#_thumbnail_feedbacks").find('.modal-body').html('{% trans "<p><strong>Geo Limitsy</strong> successfully deleted!</p>" %}');
+                $("#_thumbnail_feedbacks").modal("show");
+              },
+              error: function(xhr, status, error) {
+                $("#_thumbnail_feedbacks").find('.modal-title').text('{% trans "Delete Geo Limit" %}');
+                $("#_thumbnail_feedbacks").find('.modal-body').html(
+                  '{% trans "<p><strong>Error</strong> occurred while trying to delete Geo Limits:</p>" %}' + '<q>' + xhr.responseText + '</q>');
+                $("#_thumbnail_feedbacks").modal("show");
+              }
+            });
+            return false;
+          }
+        });
+      }
+
+      $('.delete-geo-limit').click(function() {
+        deleteGeoLimit($(this).attr('id'));
       });
     }
   });

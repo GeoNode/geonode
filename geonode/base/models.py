@@ -326,43 +326,52 @@ class HierarchicalKeyword(TagBase, MP_Node):
     objects = HierarchicalKeywordManager()
 
     @classmethod
-    def dump_bulk_tree(cls, parent=None, keep_ids=True):
+    def dump_bulk_tree(cls, parent=None, keep_ids=True, type=None):
         """Dumps a tree branch to a python data structure."""
         qset = cls._get_serializable_model().get_tree(parent)
         ret, lnk = [], {}
         try:
-            for pyobj in qset:
+            for pyobj in qset.order_by('name'):
                 serobj = serializers.serialize('python', [pyobj])[0]
                 # django's serializer stores the attributes in 'fields'
                 fields = serobj['fields']
-                depth = fields['depth'] or 1
-                fields['text'] = fields['name']
-                fields['href'] = fields['slug']
-                del fields['name']
-                del fields['slug']
-                del fields['path']
-                del fields['numchild']
-                del fields['depth']
-                if 'id' in fields:
-                    # this happens immediately after a load_bulk
-                    del fields['id']
+                tags_count = 0
+                try:
+                    tags_count = TaggedContentItem.objects.filter(
+                        content_object__polymorphic_ctype__model=type,
+                        tag=HierarchicalKeyword.objects.get(slug=fields['slug'])).count()
+                except Exception:
+                    pass
+                if tags_count > 0:
+                    depth = fields['depth'] or 1
+                    fields['text'] = fields['name']
+                    fields['href'] = fields['slug']
+                    fields['tags'] = [tags_count]
+                    del fields['name']
+                    del fields['slug']
+                    del fields['path']
+                    del fields['numchild']
+                    del fields['depth']
+                    if 'id' in fields:
+                        # this happens immediately after a load_bulk
+                        del fields['id']
 
-                newobj = {}
-                for field in fields:
-                    newobj[field] = fields[field]
-                if keep_ids:
-                    newobj['id'] = serobj['pk']
+                    newobj = {}
+                    for field in fields:
+                        newobj[field] = fields[field]
+                    if keep_ids:
+                        newobj['id'] = serobj['pk']
 
-                if (not parent and depth == 1) or\
-                   (parent and depth == parent.depth):
-                    ret.append(newobj)
-                else:
-                    parentobj = pyobj.get_parent()
-                    parentser = lnk[parentobj.pk]
-                    if 'nodes' not in parentser:
-                        parentser['nodes'] = []
-                    parentser['nodes'].append(newobj)
-                lnk[pyobj.pk] = newobj
+                    if (not parent and depth == 1) or\
+                    (parent and depth == parent.depth):
+                        ret.append(newobj)
+                    else:
+                        parentobj = pyobj.get_parent()
+                        parentser = lnk[parentobj.pk]
+                        if 'nodes' not in parentser:
+                            parentser['nodes'] = []
+                        parentser['nodes'].append(newobj)
+                    lnk[pyobj.pk] = newobj
         except Exception:
             pass
         return ret

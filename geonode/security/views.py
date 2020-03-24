@@ -204,6 +204,47 @@ def resource_geolimits(request, resource_id):
                 }),
                 content_type="application/json"
             )
+    elif request.method == 'DELETE':
+        if user_id:
+            try:
+                geo_limits = UserGeoLimit.objects.filter(
+                    user=get_user_model().objects.get(id=user_id),
+                    resource=resource
+                )
+                for geo_limit in geo_limits:
+                    resource.users_geolimits.remove(geo_limit)
+                geo_limits.delete()
+                return HttpResponse(
+                    json.dumps({
+                        'user': user_id
+                    }),
+                    content_type="application/json"
+                )
+            except Exception as e:
+                return HttpResponse(
+                    str(e),
+                    status=400,
+                    content_type='text/plain')
+        elif group_id:
+            try:
+                geo_limits = GroupGeoLimit.objects.filter(
+                    group=GroupProfile.objects.get(id=group_id),
+                    resource=resource
+                )
+                for geo_limit in geo_limits:
+                    resource.groups_geolimits.remove(geo_limit)
+                geo_limits.delete()
+                return HttpResponse(
+                    json.dumps({
+                        'group': group_id
+                    }),
+                    content_type="application/json"
+                )
+            except Exception as e:
+                return HttpResponse(
+                    str(e),
+                    status=400,
+                    content_type='text/plain')
     elif request.method == 'GET':
         if user_id:
             try:
