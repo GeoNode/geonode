@@ -28,6 +28,7 @@ import requests
 import tempfile
 import warnings
 from typing import Union
+from datetime import datetime
 
 from .utils import utils
 
@@ -115,7 +116,10 @@ class Command(BaseCommand):
         # check if the backup has already been restored
         if with_logs:
             if RestoredBackup.objects.filter(archive_md5=backup_md5):
-                raise RuntimeError('Backup archive has already been restored')
+                raise RuntimeError(
+                    'Backup archive has already been restored. If you want to restore '
+                    'this backup anyway, run the script without "-l" argument.'
+                )
 
         print("Before proceeding with the Restore, please ensure that:")
         print(" 1. The backend (DB or whatever) is accessible and you have rights")
@@ -329,7 +333,7 @@ class Command(BaseCommand):
                 restored_backup = RestoredBackup(
                     name=backup_file.rsplit('/', 1)[-1],
                     archive_md5=backup_md5,
-                    creation_date=os.path.getmtime(backup_file)
+                    creation_date=datetime.fromtimestamp(os.path.getmtime(backup_file))
                 )
                 restored_backup.save()
 
