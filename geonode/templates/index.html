@@ -39,12 +39,18 @@
       	<div class="container">
       		<h1>{% trans "Search for Data." %}</h1>
       		<div class="search">
-      			<form id="search" action="{% url "search" %}" >
+      			<form id="main_search" action="{% url "search" %}" >
       				<span class="fa fa-search fa-3x"></span>
       				{% if HAYSTACK_SEARCH %}
-      				<input id="search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" name="q" autocomplete="off">
+      				<input id="main_search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" name="q" autocomplete="off">
+                    <input type="hidden" name="abstract__icontains" id="main_search_abstract_input" placeholder="Search" >
+                    <input type="hidden" name="purpose__icontains" id="main_search_purpose_input" placeholder="Search" >
+                    <input type="hidden" name="f_method" id="main_filtering_type" value="or" >
       				{% else %}
-      				<input id="search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" autocomplete="off" name="title__icontains">
+      				<input id="main_search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" autocomplete="off" name="title__icontains">
+                    <input type="hidden" name="abstract__icontains" id="main_search_abstract_input">
+                    <input type="hidden" name="purpose__icontains" id="main_search_purpose_input">
+                    <input type="hidden" name="f_method" id="main_filtering_type" value="or" >
       				{% endif %}
       			</form>
       		</div>
@@ -363,6 +369,12 @@
 {% endblock middle %}
 
 {% block extra_script %}
+    <script type="text/javascript">
+      $('#main_search').on('submit', (e) => {
+          $('#main_search_abstract_input')[0].value =$('#main_search_input')[0].value;
+          $('#main_search_purpose_input')[0].value = $('#main_search_input')[0].value;
+      });
+    </script>
 {{ block.super }}
 {% if DEBUG_STATIC %}
 <script src="{% static "lib/js/angular.js" %}"></script>
