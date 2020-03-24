@@ -292,6 +292,10 @@ class Command(BaseCommand):
 
                 # Dump Fixtures
                 for app_name, dump_name in zip(config.app_names, config.dump_names):
+                    # prevent dumping BackupRestore application
+                    if app_name == 'br':
+                        continue
+
                     print("Dumping '"+app_name+"' into '"+dump_name+".json'.")
                     # Point stdout at a file for dumping data to.
                     output = open(os.path.join(target_folder, dump_name+'.json'), 'w')
