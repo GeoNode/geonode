@@ -31,6 +31,7 @@ from django.conf import settings
 from guardian.shortcuts import get_objects_for_user
 
 from geonode.base.models import ResourceBase
+from geonode.base.bbox_utils import filter_bbox
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
@@ -154,22 +155,7 @@ def facets(context):
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
         if extent_filter:
-            from geonode.utils import bbox_to_projection
-            bbox = extent_filter.split(',')
-            bbox = list(map(str, bbox))
-
-            intersects = (Q(bbox_x0__gt=bbox[0]) & Q(bbox_x1__lt=bbox[2]) &
-                          Q(bbox_y0__gt=bbox[1]) & Q(bbox_y1__lt=bbox[3]))
-
-            for proj in Layer.objects.order_by('srid').values('srid').distinct():
-                if proj['srid'] != 'EPSG:4326':
-                    proj_bbox = bbox_to_projection(bbox + ['4326', ],
-                                                   target_srid=int(proj['srid'][5:]))
-                    if proj_bbox[-1] != 4326:
-                        intersects = intersects | (Q(bbox_x0__gt=proj_bbox[0]) & Q(bbox_x1__lt=proj_bbox[2]) & Q(
-                            bbox_y0__gt=proj_bbox[1]) & Q(bbox_y1__lt=proj_bbox[3]))
-
-            layers = layers.filter(intersects)
+            layers = filter_bbox(layers, extent_filter)
 
         if keywords_filter:
             treeqs = HierarchicalKeyword.objects.none()
@@ -252,14 +238,7 @@ def facets(context):
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
         if extent_filter:
-            bbox = extent_filter.split(
-                ',')  # TODO: Why is this different when done through haystack?
-            bbox = map(str, bbox)  # 2.6 compat - float to decimal conversion
-            intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) |
-                           Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
-
-            maps = maps.filter(intersects)
-            documents = documents.filter(intersects)
+            documents = filter_bbox(documents, extent_filter)
 
         if keywords_filter:
             treeqs = HierarchicalKeyword.objects.none()

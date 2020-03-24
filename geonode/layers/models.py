@@ -579,10 +579,7 @@ def pre_save_layer(instance, sender, **kwargs):
             _resourcebase_ptr = instance.resourcebase_ptr
             instance.owner = _resourcebase_ptr.owner
             instance.uuid = _resourcebase_ptr.uuid
-            instance.bbox_x0 = _resourcebase_ptr.bbox_x0
-            instance.bbox_x1 = _resourcebase_ptr.bbox_x1
-            instance.bbox_y0 = _resourcebase_ptr.bbox_y0
-            instance.bbox_y1 = _resourcebase_ptr.bbox_y1
+            instance.bbox_polygon = _resourcebase_ptr.bbox_polygon
             instance.srid = _resourcebase_ptr.srid
         except Exception as e:
             logger.exception(e)
@@ -616,26 +613,12 @@ def pre_save_layer(instance, sender, **kwargs):
         elif extension in cov_exts:
             instance.storeType = 'coverageStore'
 
-    # Set sane defaults for None in bbox fields.
-    if instance.bbox_x0 is None:
-        instance.bbox_x0 = -180
-
-    if instance.bbox_x1 is None:
-        instance.bbox_x1 = 180
-
-    if instance.bbox_y0 is None:
-        instance.bbox_y0 = -90
-
-    if instance.bbox_y1 is None:
-        instance.bbox_y1 = 90
-
-    bbox = [
-        instance.bbox_x0,
-        instance.bbox_x1,
-        instance.bbox_y0,
-        instance.bbox_y1]
-
-    instance.set_bounds_from_bbox(bbox, instance.srid)
+    if instance.bbox_polygon is None:
+        instance.set_bbox_polygon((-180, -90, 180, 90), 'EPSG:4326')
+    instance.set_bounds_from_bbox(
+        instance.bbox_polygon,
+        instance.bbox_polygon.srid
+    )
 
 
 def pre_delete_layer(instance, sender, **kwargs):

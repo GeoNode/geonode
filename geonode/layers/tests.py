@@ -38,7 +38,7 @@ from django.forms import ValidationError
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.contrib.auth.models import Group
-
+from django.contrib.gis.geos import Polygon
 from django.db.models import Count
 from django.contrib.auth import get_user_model
 
@@ -216,10 +216,11 @@ class LayersTest(GeoNodeBaseTestSupport):
         projected_bbox = decimal_encode(
             bbox_to_projection([float(coord) for coord in layer_bbox] + [lyr.srid, ],
                                target_srid=3857)[:4])
+        solution = [-20037397.023298454, -74299743.40065672,
+                          20037397.02329845, 74299743.40061197]
         logger.debug(projected_bbox)
-        self.assertEqual(projected_bbox,
-                         [-20037397.023298454, -74299743.40065672,
-                          20037397.02329845, 74299743.40061197])
+        for coord, check in zip(projected_bbox, solution):
+            self.assertAlmostEqual(coord, check)
 
     def test_layer_attributes_feature_catalogue(self):
         """ Test layer feature catalogue functionality
@@ -1191,10 +1192,7 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             self.clear_notifications_queue()
             _l = Layer.objects.create(
                 name='test notifications',
-                bbox_x0=-180,
-                bbox_x1=180,
-                bbox_y0=-90,
-                bbox_y1=90,
+                bbox_polygon=Polygon.from_bbox((-180,-90,180,90)),
                 srid='EPSG:4326')
             self.assertTrue(self.check_notification_out('layer_created', self.u))
             _l.name = 'test notifications 2'

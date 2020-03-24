@@ -181,16 +181,16 @@
         <dd>{{ resource.srid }}</dd>
 
         <dt>{% trans "Extension x0" %}</dt>
-        <dd>{{resource.bbox_x0}}</dd>
+        <dd>{{resource.bbox_helper.xmin}}</dd>
 
         <dt>{% trans "Extension x1" %}</dt>
-        <dd>{{resource.bbox_x1}}</dd>
+        <dd>{{resource.bbox_helper.xmax}}</dd>
 
         <dt>{% trans "Extension y0" %}</dt>
-        <dd>{{resource.bbox_y0}}</dd>
+        <dd>{{resource.bbox_helper.ymin}}</dd>
 
         <dt>{% trans "Extension y1" %}</dt>
-        <dd>{{resource.bbox_y1}}</dd>
+        <dd>{{resource.bbox_helper.ymax}}</dd>
 
     </dl>
 

@@ -1459,10 +1459,10 @@ def get_layer(request, layername):
             'title': layer_obj.title,
             'url': layer_obj.get_tiles_url(),
             'bbox_string': layer_obj.bbox_string,
-            'bbox_x0': layer_obj.bbox_x0,
-            'bbox_x1': layer_obj.bbox_x1,
-            'bbox_y0': layer_obj.bbox_y0,
-            'bbox_y1': layer_obj.bbox_y1,
+            'bbox_x0': layer_obj.bbox_helper.xmin,
+            'bbox_x1': layer_obj.bbox_helper.xmax,
+            'bbox_y0': layer_obj.bbox_helper.ymin,
+            'bbox_y1': layer_obj.bbox_helper.ymax,
         }
         return HttpResponse(json.dumps(
             response,

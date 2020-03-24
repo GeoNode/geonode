@@ -28,6 +28,7 @@ from django.db.models import signals
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.gis.geos import MultiPolygon
 from django.urls import reverse
 from django.contrib.staticfiles import finders
 from django.utils.translation import ugettext_lazy as _
@@ -172,15 +173,10 @@ def pre_save_document(instance, sender, **kwargs):
     resources = get_related_resources(instance)
 
     if resources:
-        instance.bbox_x0 = min([r.bbox_x0 for r in resources])
-        instance.bbox_x1 = max([r.bbox_x1 for r in resources])
-        instance.bbox_y0 = min([r.bbox_y0 for r in resources])
-        instance.bbox_y1 = max([r.bbox_y1 for r in resources])
+        bbox = MultiPolygon([r.bbox_polygon for r in resources])
+        instance.set_bbox_polygon(bbox.extent, instance.srid)
     else:
-        instance.bbox_x0 = -180
-        instance.bbox_x1 = 180
-        instance.bbox_y0 = -90
-        instance.bbox_y1 = 90
+        instance.set_bbox_polygon((-180, -90, 180, 90), '4326')
 
 
 def post_save_document(instance, *args, **kwargs):

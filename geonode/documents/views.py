@@ -44,6 +44,7 @@ from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm
 from geonode.base.auth import get_or_create_token
+from geonode.base.bbox_utils import BBOXHelper
 from geonode.base.forms import CategoryForm, TKeywordForm
 from geonode.base.models import (
     Thesaurus,
@@ -277,12 +278,10 @@ class DocumentUploadView(CreateView):
             self.object.keywords.add(*keywords)
 
         if bbox:
-            bbox_x0, bbox_x1, bbox_y0, bbox_y1 = bbox
+            bbox = BBOXHelper.from_xy(bbox)
             Document.objects.filter(id=self.object.pk).update(
-                bbox_x0=bbox_x0,
-                bbox_x1=bbox_x1,
-                bbox_y0=bbox_y0,
-                bbox_y1=bbox_y1)
+                bbox_polygon=bbox.as_polygon()
+            )
 
         if getattr(settings, 'SLACK_ENABLED', False):
             try:

@@ -676,11 +676,12 @@ def gs_slurp(
                 "owner": owner,
                 "uuid": str(uuid.uuid4())
             })
-            layer.bbox_x0 = Decimal(resource.native_bbox[0])
-            layer.bbox_x1 = Decimal(resource.native_bbox[1])
-            layer.bbox_y0 = Decimal(resource.native_bbox[2])
-            layer.bbox_y1 = Decimal(resource.native_bbox[3])
+            bbox_x0 = Decimal(resource.native_bbox[0])
+            bbox_x1 = Decimal(resource.native_bbox[1])
+            bbox_y0 = Decimal(resource.native_bbox[2])
+            bbox_y1 = Decimal(resource.native_bbox[3])
             layer.srid = resource.projection
+            layer.set_bbox_polygon((bbox_x0, bbox_y0, bbox_x1, bbox_y1), layer.srid)
 
             # sync permissions in GeoFence
             perm_spec = json.loads(_perms_info_json(layer))

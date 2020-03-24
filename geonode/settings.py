@@ -1681,9 +1681,14 @@ CELERY_TASK_ALWAYS_EAGER = ast.literal_eval(os.environ.get('CELERY_TASK_ALWAYS_E
 CELERY_TASK_EAGER_PROPAGATES = ast.literal_eval(os.environ.get('CELERY_TASK_EAGER_PROPAGATES', 'True'))
 CELERY_TASK_IGNORE_RESULT = ast.literal_eval(os.environ.get('CELERY_TASK_IGNORE_RESULT', 'True'))
 
+
+from . import serializer
+from kombu.serialization import register
+register('geonode_json', serializer.dumps, serializer.loads, content_type='application/json', content_encoding='utf-8')
+
 # I use these to debug kombu crashes; we get a more informative message.
-CELERY_TASK_SERIALIZER = os.environ.get('CELERY_TASK_SERIALIZER', 'json')
-CELERY_RESULT_SERIALIZER = os.environ.get('CELERY_RESULT_SERIALIZER', 'json')
+CELERY_TASK_SERIALIZER = os.environ.get('CELERY_TASK_SERIALIZER', 'geonode_json')
+CELERY_RESULT_SERIALIZER = os.environ.get('CELERY_RESULT_SERIALIZER', 'geonode_json')
 CELERY_ACCEPT_CONTENT = [CELERY_RESULT_SERIALIZER, ]
 
 # Set Tasks Queues
