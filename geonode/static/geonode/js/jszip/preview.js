@@ -22,7 +22,7 @@ EPSG4326 = proj4('EPSG:4326');
 
 function loadshp(config, returnData) {
     url = config.url;
-    encoding = typeof config.encoding != 'utf-8' ? config.encoding : 'utf-8';
+    encoding = typeof config.encoding != 'undefined' ? config.encoding : 'utf-8';
     EPSG = typeof config.EPSG != 'undefined' ? config.EPSG : 4326;
 
     loadEPSG('http://epsg.io/'+EPSG+'.js', function() {
@@ -104,14 +104,14 @@ function dbfLoader(data, returnData) {
 function toGeojson(geojsonData) {
     var geojson = {},
     features = [],
-    feature, geometry, points;
+    feature, geometry; /*, points*/
 
     var shpRecords = geojsonData.shp.records;
     var dbfRecords = geojsonData.dbf.records;
 
     geojson.type = "FeatureCollection";
-    min = TransCoord(geojsonData.shp.minX, geojsonData.shp.minY);
-    max = TransCoord(geojsonData.shp.maxX, geojsonData.shp.maxY);
+    var min = TransCoord(geojsonData.shp.minX, geojsonData.shp.minY);
+    var max = TransCoord(geojsonData.shp.maxX, geojsonData.shp.maxY);
     geojson.bbox = [
         min.x,
         min.y,
@@ -151,8 +151,8 @@ function toGeojson(geojsonData) {
 
                 for (var pts = 0; pts < shpRecords[i].shape.content.parts.length; pts++) {
                     var partsIndex = shpRecords[i].shape.content.parts[pts],
-                        part = [],
-                        dataset;
+                        part = [];
+                        // dataset;
 
                     for (var j = partsIndex*2; j < (shpRecords[i].shape.content.parts[pts+1]*2 || shpRecords[i].shape.content.points.length); j+=2) {
                         var point = shpRecords[i].shape.content.points;

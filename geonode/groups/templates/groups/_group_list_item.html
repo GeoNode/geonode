@@ -3,7 +3,9 @@
   <div class="col-xs-12 col-sm-6 col-lg-4 group-container">
     <div class="col-xs-12 group-avatar">
       <div class="col-xs-4 group-image">
-        <a ng-if="group.logo" href="{{ group.detail_url }}" ><img ng-if="group.logo" ng-src="{{ group.logo }}" alt="{{ group.title }}" class="group-logo" /></a>
+        <a ng-if="group.group_profile.logo_url != ''" href="{{ group.detail_url }}"><img
+            ng-if="group.group_profile.logo_url != ''"
+            ng-src="{{ group.group_profile.logo_url }}" alt="{{ group.group_profile.title }}" class="group-logo" /></a>
       </div>
       <div class="col-xs-8 group-details">
         <h5><a href="{{ group.detail_url }}">{{ group.title }}</a></h5>

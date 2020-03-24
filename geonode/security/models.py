@@ -27,7 +27,6 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from guardian.shortcuts import (
     assign_perm,
-    get_anonymous_user,
     get_groups_with_perms
 )
 
@@ -263,7 +262,6 @@ class PermissionLevelMixin(object):
         # AnonymousUser
         if 'users' in perm_spec and len(perm_spec['users']) > 0:
             if "AnonymousUser" in perm_spec['users']:
-                user = get_anonymous_user()
                 perms = perm_spec['users']["AnonymousUser"]
                 for perm in perms:
                     if self.polymorphic_ctype.name == 'layer' and perm in (

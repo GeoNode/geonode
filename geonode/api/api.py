@@ -349,6 +349,7 @@ class GroupProfileResource(ModelResource):
     )
     member_count = fields.CharField()
     manager_count = fields.CharField()
+    logo_url = fields.CharField()
     detail_url = fields.CharField()
 
     class Meta:
@@ -374,6 +375,9 @@ class GroupProfileResource(ModelResource):
     def dehydrate_detail_url(self, bundle):
         """Return relative URL to the geonode UI's page on the group"""
         return reverse('group_detail', args=[bundle.obj.slug])
+
+    def dehydrate_logo_url(self, bundle):
+        return bundle.obj.logo_url
 
 
 class GroupResource(ModelResource):

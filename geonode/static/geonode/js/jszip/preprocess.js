@@ -20,7 +20,7 @@ SHP = {
 };
 
 SHP.getShapeName = function(id) {
-    for (name in this) {
+    for (var name in this) {
         if (id === this[name]) {
             return name;
         }
@@ -92,7 +92,7 @@ SHPParser.prototype.parseShape = function(dv, idx, length) {
         shape = {};
     shape.type = dv.getInt32(idx, true);
     idx += 4;
-    var byteLen = length * 2;
+    // var byteLen = length * 2;
     switch (shape.type) {
     case SHP.NULL: // Null
         break;
@@ -162,7 +162,7 @@ DBFParser.load = function(url, encoding, callback, returnData) {
     xhr.onload = function() {
 
         var xhrText = new XMLHttpRequest();
-        var xhrTextResponse = '';
+        // var xhrTextResponse = '';
         xhrText.open('GET', url);
         xhrText.overrideMimeType('text/plain; charset='+encoding);
 
@@ -225,7 +225,7 @@ DBFParser.prototype.parse = function(arrayBuffer,src,response,encoding) {
 
     if(response_handler.length > 2) {
         response_handler.pop();
-        responseHeader = response_handler.join('\r');
+        var responseHeader = response_handler.join('\r');
         responseHeader = responseHeader.slice(32, responseHeader.length);
     } else {
         responseHeader = response_handler[0];
@@ -236,6 +236,7 @@ DBFParser.prototype.parse = function(arrayBuffer,src,response,encoding) {
     var charString = [],
         count = 0,
         index = 0,
+        z = 0,
         sum = (responseHeader.length+1)/32;
 
     while(responseHeader.length > 0) {
@@ -296,7 +297,7 @@ DBFParser.prototype.parse = function(arrayBuffer,src,response,encoding) {
         field.indexFieldFlag = dv.getUint8(idx);
         idx += 1;
         o.fields.push(field);
-        var test = dv.getUint8(idx);
+        // var test = dv.getUint8(idx);
         // Checks for end of field descriptor array. Valid .dbf files will have this
         // flag.
         if (dv.getUint8(idx) == 0x0D) break;
@@ -306,7 +307,7 @@ DBFParser.prototype.parse = function(arrayBuffer,src,response,encoding) {
     o.fieldpos = idx;
     o.records = [];
 
-    responseText = response.split('\r')[response.split('\r').length-1];
+    var responseText = response.split('\r')[response.split('\r').length-1];
 
     for (var i = 0; i < o.numberOfRecords; i++) {
         responseText = responseText.slice(1, responseText.length);

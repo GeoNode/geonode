@@ -162,6 +162,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
             access_token = None
 
     context_dict = {
+        'access_token': access_token,
         'config': config,
         'resource': map_obj,
         'group': group,
