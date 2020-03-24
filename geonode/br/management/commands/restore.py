@@ -23,15 +23,19 @@ import traceback
 import os
 import time
 import shutil
+import zipfile
 import requests
 import tempfile
 import warnings
+from typing import Union
+from datetime import datetime
 
 from .utils import utils
 
 from distutils import dir_util
 from requests.auth import HTTPBasicAuth
 
+from geonode.br.models import RestoredBackup
 from geonode.utils import (DisableDjangoSignals,
                            copy_tree,
                            extract_archive,
@@ -54,14 +58,6 @@ class Command(BaseCommand):
         utils.geoserver_option_list(parser)
 
         parser.add_argument(
-            '-i',
-            '--ignore-errors',
-            action='store_true',
-            dest='ignore_errors',
-            default=False,
-            help='Stop after any errors are encountered.')
-
-        parser.add_argument(
             '-f',
             '--force',
             action='store_true',
@@ -82,254 +78,100 @@ class Command(BaseCommand):
             help='Backup archive containing GeoNode data to restore.')
 
         parser.add_argument(
-            '--backup-dir',
-            dest='backup_dir',
+            '--backup-files-dir',
+            dest='backup_files_dir',
             default=None,
-            help='Backup directory containing GeoNode data to restore.')
+            help="Directory containing GeoNode backups. Restoration procedure will pick "
+                 "the newest created/modified backup which wasn't yet restored, and was "
+                 "created after creation date of the currently used backup (the newest "
+                 "if no backup was yet restored on the GeoNode instance)."
+        )
 
-    def restore_geoserver_backup(self, settings, target_folder):
-        """Restore GeoServer Catalog"""
-        url = settings.OGC_SERVER['default']['LOCATION']
-        user = settings.OGC_SERVER['default']['USER']
-        passwd = settings.OGC_SERVER['default']['PASSWORD']
-        geoserver_bk_file = os.path.join(target_folder, 'geoserver_catalog.zip')
-
-        if not os.path.exists(geoserver_bk_file):
-            print(('Skipping geoserver restore: ' +
-                  'file "{}" not found.'.format(geoserver_bk_file)))
-            return
-
-        print("Restoring 'GeoServer Catalog ["+url+"]' into '"+geoserver_bk_file+"'.")
-
-        # Best Effort Restore: 'options': {'option': ['BK_BEST_EFFORT=true']}
-        data = {'restore': {'archiveFile': geoserver_bk_file, 'options': {}}}
-        headers = {'Content-type': 'application/json'}
-        r = requests.post(url + 'rest/br/restore/', data=json.dumps(data),
-                          headers=headers, auth=HTTPBasicAuth(user, passwd))
-        error_backup = 'Could not successfully restore GeoServer ' + \
-                       'catalog [{}rest/br/restore/]: {} - {}'
-
-        if r.status_code in (200, 201, 406):
-            try:
-                r = requests.get(url + 'rest/br/restore.json',
-                                 auth=HTTPBasicAuth(user, passwd),
-                                 timeout=10)
-                if (r.status_code == 200):
-                    gs_backup = r.json()
-                    _url = gs_backup['restores']['restore'][len(gs_backup['restores']['restore']) - 1]['href']
-                    r = requests.get(_url,
-                                     auth=HTTPBasicAuth(user, passwd),
-                                     timeout=10)
-                    if (r.status_code == 200):
-                        gs_backup = r.json()
-
-                if (r.status_code != 200):
-                    raise ValueError(error_backup.format(_url, r.status_code, r.text))
-            except ValueError:
-                raise ValueError(error_backup.format(url, r.status_code, r.text))
-
-            gs_bk_exec_id = gs_backup['restore']['execution']['id']
-            r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
-                             auth=HTTPBasicAuth(user, passwd),
-                             timeout=10)
-            if (r.status_code == 200):
-                gs_bk_exec_status = gs_backup['restore']['execution']['status']
-                gs_bk_exec_progress = gs_backup['restore']['execution']['progress']
-                gs_bk_exec_progress_updated = '0/0'
-                while (gs_bk_exec_status != 'COMPLETED' and gs_bk_exec_status != 'FAILED'):
-                    if (gs_bk_exec_progress != gs_bk_exec_progress_updated):
-                        gs_bk_exec_progress_updated = gs_bk_exec_progress
-                    r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
-                                     auth=HTTPBasicAuth(user, passwd),
-                                     timeout=10)
-                    if (r.status_code == 200):
-
-                        try:
-                            gs_backup = r.json()
-                        except ValueError:
-                            raise ValueError(error_backup.format(url, r.status_code, r.text))
-
-                        gs_bk_exec_status = gs_backup['restore']['execution']['status']
-                        gs_bk_exec_progress = gs_backup['restore']['execution']['progress']
-                        print(str(gs_bk_exec_status) + ' - ' + gs_bk_exec_progress)
-                        time.sleep(3)
-                    else:
-                        raise ValueError(error_backup.format(url, r.status_code, r.text))
-            else:
-                raise ValueError(error_backup.format(url, r.status_code, r.text))
-
-    def restore_geoserver_raster_data(self, config, settings, target_folder):
-        if (config.gs_data_dir):
-            if (config.gs_dump_raster_data):
-
-                gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
-                if not os.path.exists(gs_data_folder):
-                    print(('Skipping geoserver raster data restore: ' +
-                          'directory "{}" not found.'.format(gs_data_folder)))
-                    return
-
-                # Restore '$config.gs_data_dir/data/geonode'
-                gs_data_root = os.path.join(config.gs_data_dir, 'data', 'geonode')
-                if not os.path.isabs(gs_data_root):
-                    gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
-
-                try:
-                    chmod_tree(gs_data_root)
-                except Exception:
-                    print('Original GeoServer Data Dir "{}" must be writable by the current user. \
-                        Do not forget to copy it first. It will be wiped-out by the Restore procedure!'.format(gs_data_root))
-                    raise
-
-                try:
-                    shutil.rmtree(gs_data_root)
-                    print('Cleaned out old GeoServer Data Dir: ' + gs_data_root)
-                except Exception:
-                    pass
-
-                if not os.path.exists(gs_data_root):
-                    os.makedirs(gs_data_root)
-
-                copy_tree(gs_data_folder, gs_data_root)
-                chmod_tree(gs_data_root)
-                print("GeoServer Uploaded Data Restored to '"+gs_data_root+"'.")
-
-                # Cleanup '$config.gs_data_dir/gwc-layers'
-                gwc_layers_root = os.path.join(config.gs_data_dir, 'gwc-layers')
-                if not os.path.isabs(gwc_layers_root):
-                    gwc_layers_root = os.path.join(settings.PROJECT_ROOT, '..', gwc_layers_root)
-
-                try:
-                    shutil.rmtree(gwc_layers_root)
-                    print('Cleaned out old GeoServer GWC Layers Config: ' + gwc_layers_root)
-                except Exception:
-                    pass
-
-                if not os.path.exists(gwc_layers_root):
-                    os.makedirs(gwc_layers_root)
-
-    def restore_geoserver_vector_data(self, config, settings, target_folder):
-        """Restore Vectorial Data from DB"""
-        if (config.gs_dump_vector_data):
-
-            gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
-            if not os.path.exists(gs_data_folder):
-                print(('Skipping geoserver vector data restore: ' +
-                      'directory "{}" not found.'.format(gs_data_folder)))
-                return
-
-            datastore = settings.OGC_SERVER['default']['DATASTORE']
-            if (datastore):
-                ogc_db_name = settings.DATABASES[datastore]['NAME']
-                ogc_db_user = settings.DATABASES[datastore]['USER']
-                ogc_db_passwd = settings.DATABASES[datastore]['PASSWORD']
-                ogc_db_host = settings.DATABASES[datastore]['HOST']
-                ogc_db_port = settings.DATABASES[datastore]['PORT']
-
-                utils.restore_db(config, ogc_db_name, ogc_db_user, ogc_db_port,
-                                 ogc_db_host, ogc_db_passwd, gs_data_folder)
-
-    def restore_geoserver_externals(self, config, settings, target_folder):
-        """Restore external references from XML files"""
-        external_folder = os.path.join(target_folder, utils.EXTERNAL_ROOT)
-        if os.path.exists(external_folder):
-            dir_util.copy_tree(external_folder, '/')
+        parser.add_argument(
+            '-l',
+            '--with-logs',
+            action='store_true',
+            dest='with_logs',
+            default=False,
+            help="Compares the backup file with restoration logs, and applies it only, if it hasn't been already restored"
+        )
 
     def handle(self, **options):
-        # ignore_errors = options.get('ignore_errors')
+        self.validate_backup_file_options(**options)
+
         config = utils.Config(options)
         force_exec = options.get('force_exec')
-        backup_file = options.get('backup_file')
         skip_geoserver = options.get('skip_geoserver')
-        backup_dir = options.get('backup_dir')
+        backup_file = options.get('backup_file')
+        backup_files_dir = options.get('backup_files_dir')
+        with_logs = options.get('with_logs')
 
-        if not any([backup_file, backup_dir]):
-            raise CommandError("Mandatory option (--backup-file|--backup-dir)")
+        # choose backup_file from backup_files_dir, if --backup-files-dir was provided
+        if backup_files_dir:
+            backup_file = self.parse_backup_files_dir(backup_files_dir)
 
-        if all([backup_file, backup_dir]):
-            raise CommandError("Exclusive option (--backup-file|--backup-dir)")
+        # calculate and validate backup archive hash
+        backup_md5 = self.validate_backup_file_hash(backup_file)
 
-        if backup_file and not os.path.isfile(backup_file):
-            raise CommandError("Provided '--backup-file' is not a file")
-
-        if backup_dir and not os.path.isdir(backup_dir):
-            raise CommandError("Provided '--backup-dir' is not a directory")
-
-        # check md5 hash for backup archive, if the md5 file is in place
-        if backup_file:
-            archive_md5_file = backup_file.rsplit('.', 1)[0] + '.md5'
-
-            if os.path.exists(archive_md5_file):
-                with open(archive_md5_file, 'r') as md5_file:
-                    zip_archive_md5 = md5_file.readline().strip()
-
-                generated_zip_archive_md5 = utils.md5_file_hash(backup_file)
-
-                if zip_archive_md5 != generated_zip_archive_md5:
-                    raise RuntimeError(
-                        f'Backup archive integrity failure. MD5 hash of the  archive '
-                        f'is different from the one provided in {archive_md5_file}'
-                    )
-            else:
-                warnings.warn(
-                    "Backup archive's MD5 file does not exist under expected path. Skipping integrity check.",
-                    RuntimeWarning
+        # check if the backup has already been restored
+        if with_logs:
+            if RestoredBackup.objects.filter(archive_md5=backup_md5):
+                raise RuntimeError(
+                    'Backup archive has already been restored. If you want to restore '
+                    'this backup anyway, run the script without "-l" argument.'
                 )
-                # sleep for the proper console writing order
-                time.sleep(0.1)
 
         print("Before proceeding with the Restore, please ensure that:")
         print(" 1. The backend (DB or whatever) is accessible and you have rights")
         print(" 2. The GeoServer is up and running and reachable from this machine")
         message = 'WARNING: The restore will overwrite ALL GeoNode data. You want to proceed?'
         if force_exec or utils.confirm(prompt=message, resp=False):
-            target_folder = backup_dir
 
-            if backup_file:
-                # Create Target Folder
-                restore_folder = os.path.join(tempfile.gettempdir(), 'restore')
-                if not os.path.exists(restore_folder):
-                    os.makedirs(restore_folder)
+            # Create Target Folder
+            restore_folder = os.path.join(tempfile.gettempdir(), 'restore')
+            if not os.path.exists(restore_folder):
+                os.makedirs(restore_folder)
 
-                # Extract ZIP Archive to Target Folder
-                target_folder = extract_archive(backup_file, restore_folder)
+            # Extract ZIP Archive to Target Folder
+            target_folder = extract_archive(backup_file, restore_folder)
 
-                # Write Checks
-                media_root = settings.MEDIA_ROOT
-                media_folder = os.path.join(target_folder, utils.MEDIA_ROOT)
-                static_root = settings.STATIC_ROOT
-                static_folder = os.path.join(target_folder, utils.STATIC_ROOT)
-                static_folders = settings.STATICFILES_DIRS
-                static_files_folders = os.path.join(target_folder, utils.STATICFILES_DIRS)
-                template_folders = []
+            # Write Checks
+            media_root = settings.MEDIA_ROOT
+            media_folder = os.path.join(target_folder, utils.MEDIA_ROOT)
+            static_root = settings.STATIC_ROOT
+            static_folder = os.path.join(target_folder, utils.STATIC_ROOT)
+            static_folders = settings.STATICFILES_DIRS
+            static_files_folders = os.path.join(target_folder, utils.STATICFILES_DIRS)
+            template_folders = []
+            try:
+                template_folders = settings.TEMPLATE_DIRS
+            except Exception:
                 try:
-                    template_folders = settings.TEMPLATE_DIRS
+                    template_folders = settings.TEMPLATES[0]['DIRS']
                 except Exception:
-                    try:
-                        template_folders = settings.TEMPLATES[0]['DIRS']
-                    except Exception:
-                        pass
-                template_files_folders = os.path.join(target_folder, utils.TEMPLATE_DIRS)
-                locale_folders = settings.LOCALE_PATHS
-                locale_files_folders = os.path.join(target_folder, utils.LOCALE_PATHS)
+                    pass
+            template_files_folders = os.path.join(target_folder, utils.TEMPLATE_DIRS)
+            locale_folders = settings.LOCALE_PATHS
+            locale_files_folders = os.path.join(target_folder, utils.LOCALE_PATHS)
 
-                try:
-                    print(("[Sanity Check] Full Write Access to '{}' ...".format(media_root)))
-                    chmod_tree(media_root)
-                    print(("[Sanity Check] Full Write Access to '{}' ...".format(static_root)))
-                    chmod_tree(static_root)
-                    for static_files_folder in static_folders:
-                        print(("[Sanity Check] Full Write Access to '{}' ...".format(static_files_folder)))
-                        chmod_tree(static_files_folder)
-                    for template_files_folder in template_folders:
-                        print(("[Sanity Check] Full Write Access to '{}' ...".format(template_files_folder)))
-                        chmod_tree(template_files_folder)
-                    for locale_files_folder in locale_folders:
-                        print(("[Sanity Check] Full Write Access to '{}' ...".format(locale_files_folder)))
-                        chmod_tree(locale_files_folder)
-                except Exception:
-                    print("...Sanity Checks on Folder failed. Please make sure that the current user has full WRITE access to the above folders (and sub-folders or files).")
-                    print("Reason:")
-                    raise
+            try:
+                print(("[Sanity Check] Full Write Access to '{}' ...".format(media_root)))
+                chmod_tree(media_root)
+                print(("[Sanity Check] Full Write Access to '{}' ...".format(static_root)))
+                chmod_tree(static_root)
+                for static_files_folder in static_folders:
+                    print(("[Sanity Check] Full Write Access to '{}' ...".format(static_files_folder)))
+                    chmod_tree(static_files_folder)
+                for template_files_folder in template_folders:
+                    print(("[Sanity Check] Full Write Access to '{}' ...".format(template_files_folder)))
+                    chmod_tree(template_files_folder)
+                for locale_files_folder in locale_folders:
+                    print(("[Sanity Check] Full Write Access to '{}' ...".format(locale_files_folder)))
+                    chmod_tree(locale_files_folder)
+            except Exception:
+                print("...Sanity Checks on Folder failed. Please make sure that the current user has full WRITE access to the above folders (and sub-folders or files).")
+                print("Reason:")
+                raise
 
             if not skip_geoserver:
                 self.restore_geoserver_backup(settings, target_folder)
@@ -487,7 +329,15 @@ class Command(BaseCommand):
                     except Exception:
                         traceback.print_exc()
 
-                    return str(target_folder)
+                # store backup info
+                restored_backup = RestoredBackup(
+                    name=backup_file.rsplit('/', 1)[-1],
+                    archive_md5=backup_md5,
+                    creation_date=datetime.fromtimestamp(os.path.getmtime(backup_file))
+                )
+                restored_backup.save()
+
+                return str(target_folder)
 
             finally:
                 call_command('migrate', interactive=False, fake=True)
@@ -495,3 +345,249 @@ class Command(BaseCommand):
                 print("HINT: If you migrated from another site, do not forget to run the command 'migrate_baseurl' to fix Links")
                 print(" e.g.:  DJANGO_SETTINGS_MODULE=my_geonode.settings python manage.py migrate_baseurl --source-address=my-host-dev.geonode.org --target-address=my-host-prod.geonode.org")
                 print("Restore finished. Please find restored files and dumps into:")
+
+    def validate_backup_file_options(self, **options) -> None:
+        """
+        Method validating --backup-file and --backup-files-dir options
+
+        :param options: self.handle() method options
+        :raises: Django CommandError, if options violate requirements
+        :return: None
+        """
+
+        backup_file = options.get('backup_file')
+        backup_files_dir = options.get('backup_files_dir')
+
+        if not any([backup_file, backup_files_dir]):
+            raise CommandError("Mandatory option (--backup-file|--backup-dir|--backup-files-dir)")
+
+        if all([backup_file, backup_files_dir]):
+            raise CommandError("Exclusive option (--backup-file|--backup-dir|--backup-files-dir)")
+
+        if backup_file:
+            if not os.path.isfile(backup_file) or not zipfile.is_zipfile(backup_file):
+                raise CommandError("Provided '--backup-file' is not a .zip file")
+
+        if backup_files_dir and not os.path.isdir(backup_files_dir):
+            raise CommandError("Provided '--backup-files-dir' is not a directory")
+
+    def parse_backup_files_dir(self, backup_files_dir: str) -> Union[str, None]:
+        """
+        Method picking the Backup Archive to be restored from the Backup Files Directory.
+        Only archives created/modified AFTER the last restored dumps are considered.
+
+        :param backup_files_dir: path to the directory containing backup files
+        :return: backup file path, if a proper backup archive was found, and None otherwise
+        """
+        # get the latest modified backup file available in backup directory
+        backup_file = None
+
+        for file_name in os.listdir(backup_files_dir):
+            file = os.path.join(backup_files_dir, file_name)
+            if zipfile.is_zipfile(file):
+                backup_file = file if backup_file is None or os.path.getmtime(file) > os.path.getmtime(backup_file) else backup_file
+
+        if backup_file is None:
+            warnings.warn(
+                f"Nothing to do. No backup archive found in provided '--backup-file-dir' directory",
+                RuntimeWarning
+            )
+            return
+
+        # get the latest restored backup file
+        try:
+            last_restored_backup = RestoredBackup.objects.latest('restoration_date')
+        except RestoredBackup.DoesNotExist:
+            # existing if statement - backup_file will be restored, as no backup is currently loaded
+            pass
+        else:
+            # check if the latest modified backup file is younger than the last restored
+            if last_restored_backup.creation_date.timestamp() > os.path.getmtime(backup_file):
+                warnings.warn(
+                    f"Nothing to do. The newest backup file from --backup-files-dir: '{backup_file}' "
+                    f"is older than the last restored backup.",
+                    RuntimeWarning
+                )
+                return
+
+        return backup_file
+
+    def validate_backup_file_hash(self, backup_file: str) -> str:
+        """
+        Method calculating backup file's hash and validating it, if the proper *.md5 file
+        exists in the backup_file directory
+
+        :param backup_file: path to the backup_file
+        :return: backup_file hash
+        """
+        # calculate backup file's md5 hash
+        backup_hash = utils.md5_file_hash(backup_file)
+
+        # check md5 hash for backup archive, if the md5 file is in place
+        archive_md5_file = backup_file.rsplit('.', 1)[0] + '.md5'
+
+        if os.path.exists(archive_md5_file):
+            with open(archive_md5_file, 'r') as md5_file:
+                original_backup_md5 = md5_file.readline().strip()
+
+            if original_backup_md5 != backup_hash:
+                raise RuntimeError(
+                    f'Backup archive integrity failure. MD5 hash of the  archive '
+                    f'is different from the one provided in {archive_md5_file}'
+                )
+        else:
+            warnings.warn(
+                "Backup archive's MD5 file does not exist under expected path. Skipping integrity check.",
+                RuntimeWarning
+            )
+            # sleep for the proper console writing order
+            time.sleep(0.1)
+
+        return backup_hash
+
+    def restore_geoserver_backup(self, settings, target_folder):
+        """Restore GeoServer Catalog"""
+        url = settings.OGC_SERVER['default']['LOCATION']
+        user = settings.OGC_SERVER['default']['USER']
+        passwd = settings.OGC_SERVER['default']['PASSWORD']
+        geoserver_bk_file = os.path.join(target_folder, 'geoserver_catalog.zip')
+
+        if not os.path.exists(geoserver_bk_file):
+            print(('Skipping geoserver restore: ' +
+                  'file "{}" not found.'.format(geoserver_bk_file)))
+            return
+
+        print("Restoring 'GeoServer Catalog ["+url+"]' into '"+geoserver_bk_file+"'.")
+
+        # Best Effort Restore: 'options': {'option': ['BK_BEST_EFFORT=true']}
+        data = {'restore': {'archiveFile': geoserver_bk_file, 'options': {}}}
+        headers = {'Content-type': 'application/json'}
+        r = requests.post(url + 'rest/br/restore/', data=json.dumps(data),
+                          headers=headers, auth=HTTPBasicAuth(user, passwd))
+        error_backup = 'Could not successfully restore GeoServer ' + \
+                       'catalog [{}rest/br/restore/]: {} - {}'
+
+        if r.status_code in (200, 201, 406):
+            try:
+                r = requests.get(url + 'rest/br/restore.json',
+                                 auth=HTTPBasicAuth(user, passwd),
+                                 timeout=10)
+                if (r.status_code == 200):
+                    gs_backup = r.json()
+                    _url = gs_backup['restores']['restore'][len(gs_backup['restores']['restore']) - 1]['href']
+                    r = requests.get(_url,
+                                     auth=HTTPBasicAuth(user, passwd),
+                                     timeout=10)
+                    if (r.status_code == 200):
+                        gs_backup = r.json()
+
+                if (r.status_code != 200):
+                    raise ValueError(error_backup.format(_url, r.status_code, r.text))
+            except ValueError:
+                raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+            gs_bk_exec_id = gs_backup['restore']['execution']['id']
+            r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
+                             auth=HTTPBasicAuth(user, passwd),
+                             timeout=10)
+            if (r.status_code == 200):
+                gs_bk_exec_status = gs_backup['restore']['execution']['status']
+                gs_bk_exec_progress = gs_backup['restore']['execution']['progress']
+                gs_bk_exec_progress_updated = '0/0'
+                while (gs_bk_exec_status != 'COMPLETED' and gs_bk_exec_status != 'FAILED'):
+                    if (gs_bk_exec_progress != gs_bk_exec_progress_updated):
+                        gs_bk_exec_progress_updated = gs_bk_exec_progress
+                    r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
+                                     auth=HTTPBasicAuth(user, passwd),
+                                     timeout=10)
+                    if (r.status_code == 200):
+
+                        try:
+                            gs_backup = r.json()
+                        except ValueError:
+                            raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+                        gs_bk_exec_status = gs_backup['restore']['execution']['status']
+                        gs_bk_exec_progress = gs_backup['restore']['execution']['progress']
+                        print(str(gs_bk_exec_status) + ' - ' + gs_bk_exec_progress)
+                        time.sleep(3)
+                    else:
+                        raise ValueError(error_backup.format(url, r.status_code, r.text))
+            else:
+                raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+    def restore_geoserver_raster_data(self, config, settings, target_folder):
+        if (config.gs_data_dir):
+            if (config.gs_dump_raster_data):
+
+                gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
+                if not os.path.exists(gs_data_folder):
+                    print(('Skipping geoserver raster data restore: ' +
+                          'directory "{}" not found.'.format(gs_data_folder)))
+                    return
+
+                # Restore '$config.gs_data_dir/data/geonode'
+                gs_data_root = os.path.join(config.gs_data_dir, 'data', 'geonode')
+                if not os.path.isabs(gs_data_root):
+                    gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
+
+                try:
+                    chmod_tree(gs_data_root)
+                except Exception:
+                    print('Original GeoServer Data Dir "{}" must be writable by the current user. \
+                        Do not forget to copy it first. It will be wiped-out by the Restore procedure!'.format(gs_data_root))
+                    raise
+
+                try:
+                    shutil.rmtree(gs_data_root)
+                    print('Cleaned out old GeoServer Data Dir: ' + gs_data_root)
+                except Exception:
+                    pass
+
+                if not os.path.exists(gs_data_root):
+                    os.makedirs(gs_data_root)
+
+                copy_tree(gs_data_folder, gs_data_root)
+                chmod_tree(gs_data_root)
+                print("GeoServer Uploaded Data Restored to '"+gs_data_root+"'.")
+
+                # Cleanup '$config.gs_data_dir/gwc-layers'
+                gwc_layers_root = os.path.join(config.gs_data_dir, 'gwc-layers')
+                if not os.path.isabs(gwc_layers_root):
+                    gwc_layers_root = os.path.join(settings.PROJECT_ROOT, '..', gwc_layers_root)
+
+                try:
+                    shutil.rmtree(gwc_layers_root)
+                    print('Cleaned out old GeoServer GWC Layers Config: ' + gwc_layers_root)
+                except Exception:
+                    pass
+
+                if not os.path.exists(gwc_layers_root):
+                    os.makedirs(gwc_layers_root)
+
+    def restore_geoserver_vector_data(self, config, settings, target_folder):
+        """Restore Vectorial Data from DB"""
+        if (config.gs_dump_vector_data):
+
+            gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
+            if not os.path.exists(gs_data_folder):
+                print(('Skipping geoserver vector data restore: ' +
+                      'directory "{}" not found.'.format(gs_data_folder)))
+                return
+
+            datastore = settings.OGC_SERVER['default']['DATASTORE']
+            if (datastore):
+                ogc_db_name = settings.DATABASES[datastore]['NAME']
+                ogc_db_user = settings.DATABASES[datastore]['USER']
+                ogc_db_passwd = settings.DATABASES[datastore]['PASSWORD']
+                ogc_db_host = settings.DATABASES[datastore]['HOST']
+                ogc_db_port = settings.DATABASES[datastore]['PORT']
+
+                utils.restore_db(config, ogc_db_name, ogc_db_user, ogc_db_port,
+                                 ogc_db_host, ogc_db_passwd, gs_data_folder)
+
+    def restore_geoserver_externals(self, config, settings, target_folder):
+        """Restore external references from XML files"""
+        external_folder = os.path.join(target_folder, utils.EXTERNAL_ROOT)
+        if os.path.exists(external_folder):
+            dir_util.copy_tree(external_folder, '/')

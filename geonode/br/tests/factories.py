@@ -18,5 +18,33 @@
 #
 #########################################################################
 
-from geonode.br.tests.test_restore import *             # noqa aside
-from geonode.br.tests.test_restore_helpers import *     # noqa aside
+import random
+import string
+import factory
+import hashlib
+from datetime import datetime
+
+from geonode.br.models import RestoredBackup
+
+
+def random_md5_hash() -> str:
+    """
+    Method calculating MD5 hash of a random string
+
+    :return: hex representation of md5 hash of a random string
+    """
+    return hashlib.md5(
+        ''.join(
+            random.choices(string.ascii_uppercase + string.digits, k=15)
+        ).encode('utf-8')
+    ).hexdigest()
+
+
+class RestoredBackupFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = RestoredBackup
+
+    name = factory.Faker('word')
+    archive_md5 = factory.LazyFunction(random_md5_hash)
+    restoration_date = factory.LazyFunction(datetime.now)
+    creation_date = factory.Faker('date_time')
