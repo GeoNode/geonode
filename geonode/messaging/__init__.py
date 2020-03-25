@@ -18,6 +18,7 @@
 #
 #########################################################################
 from django.conf import settings
+
 from geonode.notifications_helper import NotificationsAppConfigBase
 
 connections = None
@@ -56,6 +57,9 @@ class MessagingAppConfig(NotificationsAppConfigBase):
         broker_transport_options = getattr(settings, 'BROKER_TRANSPORT_OPTIONS', {'socket_timeout': 10})
         broker_socket_timeout = getattr(broker_transport_options, 'socket_timeout', 10)
         connection = BrokerConnection(url, connect_timeout=broker_socket_timeout)
+
+        from geonode.messaging.notifications import initialize_notification_signal
+        initialize_notification_signal()
 
 
 default_app_config = 'geonode.messaging.MessagingAppConfig'

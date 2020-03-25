@@ -21,6 +21,7 @@
 from uuid import uuid4
 import logging
 
+from allauth.account.adapter import get_adapter
 from django.conf import settings
 
 from django.db import models
@@ -219,14 +220,15 @@ class Profile(AbstractUser):
                 }
 
                 email_template = 'pinax/notifications/account_active/account_active'
-
-                get_invitations_adapter().send_mail(
-                    email_template,
-                    self.email,
-                    ctx)
+                adapter = get_invitations_adapter()
+                adapter.send_invitation_email(email_template, self.email, ctx)
             except Exception:
                 import traceback
                 traceback.print_exc()
+
+    def send_mail(self, template_prefix, context):
+        if self.email:
+            get_adapter().send_mail(template_prefix, self.email, context)
 
 
 def get_anonymous_user_instance(user_model):

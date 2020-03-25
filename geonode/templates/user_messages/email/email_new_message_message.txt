@@ -1,0 +1,8 @@
+{% load i18n %}
+{% autoescape off %}
+
+You received a new message from {{ sender }}. Click the link below to view the message:
+
+{{ thread_url }}
+
+{% endautoescape %}
