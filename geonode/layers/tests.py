@@ -302,7 +302,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.failUnlessEqual(response.status_code, 200)
 
         from geonode.base.models import HierarchicalKeyword as hk
-        keywords = hk.dump_bulk_tree()
+        keywords = hk.dump_bulk_tree(type='layer')
         self.assertEqual(len(keywords), len([
             {"text": u"here", "href": "here", "id": 2},
             {"text": u"keywords", "href": "keywords", "id": 4},

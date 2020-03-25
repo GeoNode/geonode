@@ -104,6 +104,10 @@
       $('#treeview').treeview({
         data: data.data,
         multiSelect: true,
+        showIcon: true,
+        showCheckbox: false,
+        showTags: true,
+        tagsClass: 'badge',
         onNodeSelected: function($event, node) {
           $rootScope.$broadcast('select_h_keyword', node);
           if(node.nodes){
