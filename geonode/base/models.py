@@ -50,6 +50,8 @@ from agon_ratings.models import OverallRating
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
+from guardian.shortcuts import get_anonymous_user, get_objects_for_user
+
 from geonode.base.enumerations import (
     LINK_TYPES,
     ALL_LANGUAGES,
@@ -61,6 +63,7 @@ from geonode.utils import (
     bbox_to_wkt,
     forward_mercator)
 from geonode.security.models import PermissionLevelMixin
+from geonode.security.utils import get_visible_resources
 from taggit.managers import TaggableManager, _TaggableManager
 from taggit.models import TagBase, ItemBase
 from treebeard.mp_tree import MP_Node
@@ -327,9 +330,27 @@ class HierarchicalKeyword(TagBase, MP_Node):
     node_order_by = ['name']
 
     @classmethod
-    def dump_bulk_tree(cls, parent=None, keep_ids=True, type=None):
+    def dump_bulk_tree(cls, user, parent=None, keep_ids=True, type=None):
         """Dumps a tree branch to a python data structure."""
+        user = user or get_anonymous_user()
+        ctype_filter = [type, ] if type else ['layer', 'map', 'document']
         qset = cls._get_serializable_model().get_tree(parent)
+        if settings.SKIP_PERMS_FILTER:
+            resources = ResourceBase.objects.all()
+        else:
+            resources = get_objects_for_user(
+                user,
+                'base.view_resourcebase'
+            )
+        resources = resources.filter(
+            polymorphic_ctype__model__in=ctype_filter,
+        )
+        resources = get_visible_resources(
+            resources,
+            user,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
         ret, lnk = [], {}
         try:
             for pyobj in qset.order_by('name'):
@@ -340,7 +361,7 @@ class HierarchicalKeyword(TagBase, MP_Node):
                 tags_count = 0
                 try:
                     tags_count = TaggedContentItem.objects.filter(
-                        content_object__polymorphic_ctype__model=type,
+                        content_object__in=resources,
                         tag=HierarchicalKeyword.objects.get(slug=fields['slug'])).count()
                 except Exception:
                     pass
