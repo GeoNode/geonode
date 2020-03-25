@@ -167,6 +167,10 @@
             //   users.download_resourcebase=[]
             // };
 
+            if (typeof user_perms == 'undefined') {
+              user_perms = [];
+            }
+
             for (var perm in users){
               if(['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'].indexOf(user_perms[i]) >= 0){
                 if(users['manage_resourcebase'].indexOf(user)<0){
