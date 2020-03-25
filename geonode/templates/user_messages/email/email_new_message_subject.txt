@@ -1,0 +1,4 @@
+{% load i18n %}
+{% autoescape off %}
+New message in inbox in thread {{ thread_subject }}
+{% endautoescape %}
