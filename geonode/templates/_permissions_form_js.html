@@ -21,7 +21,7 @@
       delete data['view_anonymous'];
     }
     if (data.hasOwnProperty('download_anonymous')) {
-      if (permissions['users']['AnonymousUser'] != undefined){
+      if (typeof permissions['users']['AnonymousUser'] !== 'undefined'){
         permissions['users']['AnonymousUser'].push('download_resourcebase');
       } else {
         permissions['users']['AnonymousUser'] = ['download_resourcebase'];
@@ -167,7 +167,7 @@
             //   users.download_resourcebase=[]
             // };
 
-            if (user_perms == undefined) {
+            if (typeof user_perms === 'undefined') {
               user_perms = [];
             }
 

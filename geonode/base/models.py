@@ -53,6 +53,8 @@ from pinax.ratings.models import OverallRating
 
 from taggit.models import TagBase, ItemBase
 from taggit.managers import TaggableManager, _TaggableManager
+
+from guardian.shortcuts import get_anonymous_user, get_objects_for_user
 from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
 
 from geonode.singleton import SingletonModel
@@ -68,6 +70,7 @@ from geonode.utils import (
     forward_mercator)
 from geonode.groups.models import GroupProfile
 from geonode.security.models import PermissionLevelMixin
+from geonode.security.utils import get_visible_resources
 
 from geonode.people.enumerations import ROLE_VALUES
 
@@ -326,24 +329,42 @@ class HierarchicalKeyword(TagBase, MP_Node):
     objects = HierarchicalKeywordManager()
 
     @classmethod
-    def dump_bulk_tree(cls, parent=None, keep_ids=True, type=None):
+    def dump_bulk_tree(cls, user, parent=None, keep_ids=True, type=None):
         """Dumps a tree branch to a python data structure."""
+        user = user or get_anonymous_user()
+        ctype_filter = [type, ] if type else ['layer', 'map', 'document']
         qset = cls._get_serializable_model().get_tree(parent)
+        if settings.SKIP_PERMS_FILTER:
+            resources = ResourceBase.objects.all()
+        else:
+            resources = get_objects_for_user(
+                user,
+                'base.view_resourcebase'
+            )
+        resources = resources.filter(
+            polymorphic_ctype__model__in=ctype_filter,
+        )
+        resources = get_visible_resources(
+            resources,
+            user,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
         ret, lnk = [], {}
         try:
             for pyobj in qset.order_by('name'):
                 serobj = serializers.serialize('python', [pyobj])[0]
                 # django's serializer stores the attributes in 'fields'
                 fields = serobj['fields']
+                depth = fields['depth'] or 1
                 tags_count = 0
                 try:
                     tags_count = TaggedContentItem.objects.filter(
-                        content_object__polymorphic_ctype__model=type,
+                        content_object__in=resources,
                         tag=HierarchicalKeyword.objects.get(slug=fields['slug'])).count()
                 except Exception:
                     pass
                 if tags_count > 0:
-                    depth = fields['depth'] or 1
                     fields['text'] = fields['name']
                     fields['href'] = fields['slug']
                     fields['tags'] = [tags_count]
@@ -355,7 +376,6 @@ class HierarchicalKeyword(TagBase, MP_Node):
                     if 'id' in fields:
                         # this happens immediately after a load_bulk
                         del fields['id']
-
                     newobj = {}
                     for field in fields:
                         newobj[field] = fields[field]
