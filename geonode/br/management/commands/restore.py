@@ -36,12 +36,14 @@ from distutils import dir_util
 from requests.auth import HTTPBasicAuth
 
 from geonode.br.models import RestoredBackup
+from geonode.br.tasks import restore_notification
 from geonode.utils import (DisableDjangoSignals,
                            copy_tree,
                            extract_archive,
                            chmod_tree)
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
@@ -96,6 +98,15 @@ class Command(BaseCommand):
             help="Compares the backup file with restoration logs, and applies it only, if it hasn't been already restored"
         )
 
+        parser.add_argument(
+            '-n',
+            '--notify',
+            action='store_true',
+            dest='notify',
+            default=False,
+            help="Sends an email notification to the superusers on procedure error or finish."
+        )
+
     def handle(self, **options):
         self.validate_backup_file_options(**options)
 
@@ -105,6 +116,7 @@ class Command(BaseCommand):
         backup_file = options.get('backup_file')
         backup_files_dir = options.get('backup_files_dir')
         with_logs = options.get('with_logs')
+        notify = options.get('notify')
 
         # choose backup_file from backup_files_dir, if --backup-files-dir was provided
         if backup_files_dir:
@@ -120,6 +132,15 @@ class Command(BaseCommand):
                     'Backup archive has already been restored. If you want to restore '
                     'this backup anyway, run the script without "-l" argument.'
                 )
+
+        # get a list of instance administrators' emails
+        admin_emails = []
+
+        if notify:
+            admins = get_user_model().objects.filter(is_superuser=True)
+            for user in admins:
+                if user.email:
+                    admin_emails.append(user.email)
 
         print("Before proceeding with the Restore, please ensure that:")
         print(" 1. The backend (DB or whatever) is accessible and you have rights")
@@ -168,17 +189,29 @@ class Command(BaseCommand):
                 for locale_files_folder in locale_folders:
                     print(("[Sanity Check] Full Write Access to '{}' ...".format(locale_files_folder)))
                     chmod_tree(locale_files_folder)
-            except Exception:
+            except Exception as exception:
+                if notify:
+                    restore_notification.delay(admin_emails, backup_file, backup_md5, str(exception))
+
                 print("...Sanity Checks on Folder failed. Please make sure that the current user has full WRITE access to the above folders (and sub-folders or files).")
                 print("Reason:")
                 raise
 
             if not skip_geoserver:
-                self.restore_geoserver_backup(settings, target_folder)
-                self.restore_geoserver_raster_data(config, settings, target_folder)
-                self.restore_geoserver_vector_data(config, settings, target_folder)
-                print("Restoring geoserver external resources")
-                self.restore_geoserver_externals(config, settings, target_folder)
+
+                try:
+                    self.restore_geoserver_backup(settings, target_folder)
+                    self.restore_geoserver_raster_data(config, settings, target_folder)
+                    self.restore_geoserver_vector_data(config, settings, target_folder)
+                    print("Restoring geoserver external resources")
+                    self.restore_geoserver_externals(config, settings, target_folder)
+
+                except Exception as exception:
+                    if notify:
+                        restore_notification.delay(admin_emails, backup_file, backup_md5, str(exception))
+
+                    raise exception
+
             else:
                 print("Skipping geoserver backup restore")
 
@@ -339,12 +372,22 @@ class Command(BaseCommand):
 
                 return str(target_folder)
 
+            except Exception as exception:
+                if notify:
+                    restore_notification.delay(admin_emails, backup_file, backup_md5, str(exception))
+
             finally:
                 call_command('migrate', interactive=False, fake=True)
 
-                print("HINT: If you migrated from another site, do not forget to run the command 'migrate_baseurl' to fix Links")
-                print(" e.g.:  DJANGO_SETTINGS_MODULE=my_geonode.settings python manage.py migrate_baseurl --source-address=my-host-dev.geonode.org --target-address=my-host-prod.geonode.org")
-                print("Restore finished. Please find restored files and dumps into:")
+            if notify:
+                restore_notification.delay(admin_emails, backup_file, backup_md5)
+
+            print("HINT: If you migrated from another site, do not forget to run the command 'migrate_baseurl' to fix Links")
+            print(
+                " e.g.:  DJANGO_SETTINGS_MODULE=my_geonode.settings python manage.py migrate_baseurl "
+                "--source-address=my-host-dev.geonode.org --target-address=my-host-prod.geonode.org"
+            )
+            print("Restore finished.")
 
     def validate_backup_file_options(self, **options) -> None:
         """
