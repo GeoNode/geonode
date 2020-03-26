@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+from allauth.account.views import SignupView
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -35,6 +35,14 @@ from geonode.base.auth import get_or_create_token
 from geonode.people.forms import ForgotUsernameForm
 
 from dal import autocomplete
+
+
+class CustomSignupView(SignupView):
+
+    def get_context_data(self, **kwargs):
+        ret = super(CustomSignupView, self).get_context_data(**kwargs)
+        ret.update({'account_geonode_local_signup': settings.SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP})
+        return ret
 
 
 @login_required

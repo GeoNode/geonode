@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2020 OSGeo
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,5 +18,21 @@
 #
 #########################################################################
 
-from geonode.br.tests.test_restore import *             # noqa aside
-from geonode.br.tests.test_restore_helpers import *     # noqa aside
+from django.contrib import admin
+from geonode.br.models import RestoredBackup
+
+
+@admin.register(RestoredBackup)
+class RestoredBackupAdmin(admin.ModelAdmin):
+    readonly_fields = ('name', 'restoration_date', 'archive_md5', 'creation_date')
+    actions = None
+    list_display = ('name', 'restoration_date', 'archive_md5', 'creation_date')
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

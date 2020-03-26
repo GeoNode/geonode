@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2020 OSGeo
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,5 +18,16 @@
 #
 #########################################################################
 
-from geonode.br.tests.test_restore import *             # noqa aside
-from geonode.br.tests.test_restore_helpers import *     # noqa aside
+import logging
+from datetime import datetime
+
+from django.db import models
+
+logger = logging.getLogger(__name__)
+
+
+class RestoredBackup(models.Model):
+    name = models.CharField(blank=True, max_length=400)
+    archive_md5 = models.CharField(blank=False, null=False, max_length=32)
+    restoration_date = models.DateTimeField(blank=False, null=False, default=datetime.now)
+    creation_date = models.DateTimeField()
