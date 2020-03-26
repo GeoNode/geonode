@@ -31,6 +31,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 from django.db.models import signals
 from django.utils.timezone import now
+from django.contrib.staticfiles.templatetags import staticfiles
 
 from taggit.managers import TaggableManager
 from guardian.shortcuts import get_objects_for_group
@@ -215,6 +216,7 @@ class GroupProfile(models.Model):
 
     @property
     def logo_url(self):
+        _missing_thumbnail_url = staticfiles.static(settings.MISSING_THUMBNAIL)
         try:
             _base_path = os.path.split(self.logo.path)[0]
             _upload_path = os.path.split(self.logo.url)[1]
@@ -222,12 +224,13 @@ class GroupProfile(models.Model):
             if not os.path.exists(_upload_path):
                 copyfile(self.logo.path, _upload_path)
         except Exception as e:
-            logger.exception(e)
+            logger.debug(e)
         _url = None
         try:
             _url = self.logo.url
         except Exception as e:
-            logger.exception(e)
+            logger.debug(e)
+            return _missing_thumbnail_url
         return _url
 
 

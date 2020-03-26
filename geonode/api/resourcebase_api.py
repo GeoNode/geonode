@@ -262,19 +262,22 @@ class CommonModelApi(ModelResource):
         filtered = queryset.filter(Q(keywords__in=treeqs))
         return filtered
 
-    def filter_bbox(self, queryset, bbox):
-        """
-        modify the queryset q to limit to data that intersects with the
-        provided bbox
+    def filter_bbox(self, queryset, extent_filter):
+        from geonode.utils import bbox_to_projection
+        bbox = extent_filter.split(',')
+        bbox = list(map(str, bbox))
 
-        bbox - 4 tuple of floats representing 'southwest_lng,southwest_lat,
-        northeast_lng,northeast_lat'
-        returns the modified query
-        """
-        bbox = bbox.split(',')  # TODO: Why is this different when done through haystack?
-        bbox = list(map(str, bbox))  # 2.6 compat - float to decimal conversion
-        intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) |
-                       Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
+        intersects = (Q(bbox_x0__gte=bbox[0]) & Q(bbox_x1__lte=bbox[2]) &
+                      Q(bbox_y0__gte=bbox[1]) & Q(bbox_y1__lte=bbox[3]))
+
+        for proj in Layer.objects.order_by('srid').values('srid').distinct():
+            if proj['srid'] != 'EPSG:4326':
+                proj_bbox = bbox_to_projection(bbox + ['4326', ],
+                                               target_srid=int(proj['srid'][5:]))
+
+                if proj_bbox[-1] != 4326:
+                    intersects = intersects | (Q(bbox_x0__gte=proj_bbox[0]) & Q(bbox_x1__lte=proj_bbox[2]) & Q(
+                        bbox_y0__gte=proj_bbox[1]) & Q(bbox_y1__lte=proj_bbox[3]))
 
         return queryset.filter(intersects)
 

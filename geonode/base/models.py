@@ -27,28 +27,35 @@ import logging
 import traceback
 
 from django.db import models
-from django.core import serializers
-from django.db.models import Q, signals
-from django.utils.translation import ugettext_lazy as _
-from django.core.exceptions import ValidationError
 from django.conf import settings
-from django.contrib.staticfiles.templatetags import staticfiles
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
-from django.core.files.storage import default_storage as storage
-from django.core.files.base import ContentFile
-from django.contrib.gis.geos import GEOSGeometry
-from django.utils.timezone import now
+from django.core import serializers
 from django.utils.html import escape
+from django.utils.timezone import now
+from django.db.models import Q, signals
+from django.contrib.auth.models import Group
+from django.core.files.base import ContentFile
+from django.contrib.auth import get_user_model
+from django.contrib.gis.geos import GEOSGeometry
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.staticfiles.templatetags import staticfiles
+from django.core.files.storage import default_storage as storage
 
 from mptt.models import MPTTModel, TreeForeignKey
+
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
 from pinax.ratings.models import OverallRating
-from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill
+
+from taggit.models import TagBase, ItemBase
+from taggit.managers import TaggableManager, _TaggableManager
+
+from guardian.shortcuts import get_anonymous_user, get_objects_for_user
+from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
 
 from geonode.singleton import SingletonModel
 from geonode.base.enumerations import (
@@ -61,10 +68,9 @@ from geonode.utils import (
     add_url_params,
     bbox_to_wkt,
     forward_mercator)
+from geonode.groups.models import GroupProfile
 from geonode.security.models import PermissionLevelMixin
-from taggit.managers import TaggableManager, _TaggableManager
-from taggit.models import TagBase, ItemBase
-from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
+from geonode.security.utils import get_visible_resources
 
 from geonode.people.enumerations import ROLE_VALUES
 
@@ -323,43 +329,69 @@ class HierarchicalKeyword(TagBase, MP_Node):
     objects = HierarchicalKeywordManager()
 
     @classmethod
-    def dump_bulk_tree(cls, parent=None, keep_ids=True):
+    def dump_bulk_tree(cls, user, parent=None, keep_ids=True, type=None):
         """Dumps a tree branch to a python data structure."""
+        user = user or get_anonymous_user()
+        ctype_filter = [type, ] if type else ['layer', 'map', 'document']
         qset = cls._get_serializable_model().get_tree(parent)
+        if settings.SKIP_PERMS_FILTER:
+            resources = ResourceBase.objects.all()
+        else:
+            resources = get_objects_for_user(
+                user,
+                'base.view_resourcebase'
+            )
+        resources = resources.filter(
+            polymorphic_ctype__model__in=ctype_filter,
+        )
+        resources = get_visible_resources(
+            resources,
+            user,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
         ret, lnk = [], {}
         try:
-            for pyobj in qset:
+            for pyobj in qset.order_by('name'):
                 serobj = serializers.serialize('python', [pyobj])[0]
                 # django's serializer stores the attributes in 'fields'
                 fields = serobj['fields']
                 depth = fields['depth'] or 1
-                fields['text'] = fields['name']
-                fields['href'] = fields['slug']
-                del fields['name']
-                del fields['slug']
-                del fields['path']
-                del fields['numchild']
-                del fields['depth']
-                if 'id' in fields:
-                    # this happens immediately after a load_bulk
-                    del fields['id']
+                tags_count = 0
+                try:
+                    tags_count = TaggedContentItem.objects.filter(
+                        content_object__in=resources,
+                        tag=HierarchicalKeyword.objects.get(slug=fields['slug'])).count()
+                except Exception:
+                    pass
+                if tags_count > 0:
+                    fields['text'] = fields['name']
+                    fields['href'] = fields['slug']
+                    fields['tags'] = [tags_count]
+                    del fields['name']
+                    del fields['slug']
+                    del fields['path']
+                    del fields['numchild']
+                    del fields['depth']
+                    if 'id' in fields:
+                        # this happens immediately after a load_bulk
+                        del fields['id']
+                    newobj = {}
+                    for field in fields:
+                        newobj[field] = fields[field]
+                    if keep_ids:
+                        newobj['id'] = serobj['pk']
 
-                newobj = {}
-                for field in fields:
-                    newobj[field] = fields[field]
-                if keep_ids:
-                    newobj['id'] = serobj['pk']
-
-                if (not parent and depth == 1) or\
-                   (parent and depth == parent.depth):
-                    ret.append(newobj)
-                else:
-                    parentobj = pyobj.get_parent()
-                    parentser = lnk[parentobj.pk]
-                    if 'nodes' not in parentser:
-                        parentser['nodes'] = []
-                    parentser['nodes'].append(newobj)
-                lnk[pyobj.pk] = newobj
+                    if (not parent and depth == 1) or\
+                    (parent and depth == parent.depth):
+                        ret.append(newobj)
+                    else:
+                        parentobj = pyobj.get_parent()
+                        parentser = lnk[parentobj.pk]
+                        if 'nodes' not in parentser:
+                            parentser['nodes'] = []
+                        parentser['nodes'].append(newobj)
+                    lnk[pyobj.pk] = newobj
         except Exception:
             pass
         return ret
@@ -785,6 +817,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         default=False,
         help_text=_('Security Rules Are Not Synched with GeoServer!'))
 
+    users_geolimits = models.ManyToManyField(
+        "UserGeoLimit",
+        related_name="users_geolimits",
+        null=True,
+        blank=True)
+
+    groups_geolimits = models.ManyToManyField(
+        "GroupGeoLimit",
+        related_name="groups_geolimits",
+        null=True,
+        blank=True)
+
     def __str__(self):
         return "{0}".format(self.title)
 
@@ -856,6 +900,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             llbbox[2],  # y0
             llbbox[3],  # y1
             self.srid]
+
+    @property
+    def ll_bbox_string(self):
+        """WGS84 BBOX is in the format: [x0,y0,x1,y1]."""
+        return ",".join([str(self.ll_bbox[0]), str(self.ll_bbox[2]),
+                         str(self.ll_bbox[1]), str(self.ll_bbox[3])])
 
     @property
     def bbox_string(self):
@@ -1558,6 +1608,38 @@ class Configuration(SingletonModel):
 
     def __str__(self):
         return 'Configuration'
+
+
+class UserGeoLimit(models.Model):
+    user = models.ForeignKey(
+        get_user_model(),
+        null=False,
+        blank=False,
+        on_delete=models.CASCADE)
+    resource = models.ForeignKey(
+        ResourceBase,
+        null=False,
+        blank=False,
+        on_delete=models.CASCADE)
+    wkt = models.TextField(
+        db_column='wkt',
+        blank=True)
+
+
+class GroupGeoLimit(models.Model):
+    group = models.ForeignKey(
+        GroupProfile,
+        null=False,
+        blank=False,
+        on_delete=models.CASCADE)
+    resource = models.ForeignKey(
+        ResourceBase,
+        null=False,
+        blank=False,
+        on_delete=models.CASCADE)
+    wkt = models.TextField(
+        db_column='wkt',
+        blank=True)
 
 
 def resourcebase_post_save(instance, *args, **kwargs):

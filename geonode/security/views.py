@@ -21,16 +21,21 @@
 import json
 import traceback
 
-from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse
-from django.views.decorators.http import require_POST
-from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+from django.contrib.gis.geos import GEOSGeometry
+from django.core.exceptions import PermissionDenied
+from django.views.decorators.http import require_POST
 
 from geonode.utils import resolve_object
-from geonode.base.models import ResourceBase
+from geonode.base.models import (
+    ResourceBase,
+    UserGeoLimit,
+    GroupGeoLimit)
 from geonode.layers.models import Layer
+from geonode.groups.models import GroupProfile
 
 if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification
@@ -55,9 +60,8 @@ def resource_permissions(request, resource_id):
         resource = resolve_object(
             request, ResourceBase, {
                 'id': resource_id}, 'base.change_resourcebase_permissions')
-
     except PermissionDenied:
-        traceback.print_exc()
+        # traceback.print_exc()
         # we are handling this in a non-standard way
         return HttpResponse(
             'You are not allowed to change permissions for this resource',
@@ -96,7 +100,7 @@ def resource_permissions(request, resource_id):
                 content_type='text/plain'
             )
         except Exception:
-            traceback.print_exc()
+            # traceback.print_exc()
             success = False
             message = "Error updating permissions :("
             return HttpResponse(
@@ -113,11 +117,165 @@ def resource_permissions(request, resource_id):
             content_type='text/plain'
         )
     else:
-        traceback.print_exc()
+        # traceback.print_exc()
         return HttpResponse(
             'No methods other than get and post are allowed',
             status=401,
             content_type='text/plain')
+
+
+def resource_geolimits(request, resource_id):
+    try:
+        resource = resolve_object(
+            request, ResourceBase, {
+                'id': resource_id}, 'base.change_resourcebase_permissions')
+    except PermissionDenied:
+        return HttpResponse(
+            'You are not allowed to change permissions for this resource',
+            status=401,
+            content_type='text/plain')
+
+    can_change_permissions = request.user.has_perm(
+        'change_resourcebase_permissions',
+        resource)
+
+    if not can_change_permissions:
+        return HttpResponse(
+            'You are not allowed to change permissions for this resource',
+            status=401,
+            content_type='text/plain')
+
+    user_id = request.GET.get('user_id', None)
+    group_id = request.GET.get('group_id', None)
+    if request.method == 'POST':
+        try:
+            if request.body and len(request.body):
+                wkt = GEOSGeometry(request.body, srid=4326).ewkt
+            else:
+                wkt = None
+        except Exception:
+            return HttpResponse(
+                'Unprocessable geometry',
+                status=422,
+                content_type='text/plain')
+        if user_id:
+            if wkt:
+                geo_limit, _ = UserGeoLimit.objects.get_or_create(
+                    user=get_user_model().objects.get(id=user_id),
+                    resource=resource
+                )
+                geo_limit.wkt = wkt
+                geo_limit.save()
+                resource.users_geolimits.add(geo_limit)
+            else:
+                geo_limits = UserGeoLimit.objects.filter(
+                    user=get_user_model().objects.get(id=user_id),
+                    resource=resource
+                )
+                for geo_limit in geo_limits:
+                    resource.users_geolimits.remove(geo_limit)
+                geo_limits.delete()
+            return HttpResponse(
+                json.dumps({
+                    'user': user_id
+                }),
+                content_type="application/json"
+            )
+        elif group_id:
+            if wkt:
+                geo_limit, _ = GroupGeoLimit.objects.update_or_create(
+                    group=GroupProfile.objects.get(id=group_id),
+                    resource=resource
+                )
+                geo_limit.wkt = wkt
+                geo_limit.save()
+                resource.groups_geolimits.add(geo_limit)
+            else:
+                geo_limits = GroupGeoLimit.objects.filter(
+                    group=GroupProfile.objects.get(id=group_id),
+                    resource=resource
+                )
+                for geo_limit in geo_limits:
+                    resource.groups_geolimits.remove(geo_limit)
+                geo_limits.delete()
+            return HttpResponse(
+                json.dumps({
+                    'group': group_id
+                }),
+                content_type="application/json"
+            )
+    elif request.method == 'DELETE':
+        if user_id:
+            try:
+                geo_limits = UserGeoLimit.objects.filter(
+                    user=get_user_model().objects.get(id=user_id),
+                    resource=resource
+                )
+                for geo_limit in geo_limits:
+                    resource.users_geolimits.remove(geo_limit)
+                geo_limits.delete()
+                return HttpResponse(
+                    json.dumps({
+                        'user': user_id
+                    }),
+                    content_type="application/json"
+                )
+            except Exception as e:
+                return HttpResponse(
+                    str(e),
+                    status=400,
+                    content_type='text/plain')
+        elif group_id:
+            try:
+                geo_limits = GroupGeoLimit.objects.filter(
+                    group=GroupProfile.objects.get(id=group_id),
+                    resource=resource
+                )
+                for geo_limit in geo_limits:
+                    resource.groups_geolimits.remove(geo_limit)
+                geo_limits.delete()
+                return HttpResponse(
+                    json.dumps({
+                        'group': group_id
+                    }),
+                    content_type="application/json"
+                )
+            except Exception as e:
+                return HttpResponse(
+                    str(e),
+                    status=400,
+                    content_type='text/plain')
+    elif request.method == 'GET':
+        if user_id:
+            try:
+                _geo_limit = UserGeoLimit.objects.get(
+                    user=get_user_model().objects.get(id=user_id),
+                    resource=resource
+                ).wkt
+                return HttpResponse(
+                    GEOSGeometry(_geo_limit).wkt,
+                    status=200,
+                    content_type='text/plain')
+            except Exception:
+                return HttpResponse(
+                    'Could not fetch geometries from backend.',
+                    status=400,
+                    content_type='text/plain')
+        elif group_id:
+            try:
+                _geo_limit = GroupGeoLimit.objects.get(
+                    group=GroupProfile.objects.get(id=group_id),
+                    resource=resource
+                ).wkt
+                return HttpResponse(
+                    GEOSGeometry(_geo_limit).wkt,
+                    status=200,
+                    content_type='text/plain')
+            except Exception:
+                return HttpResponse(
+                    'Could not fetch geometries from backend.',
+                    status=400,
+                    content_type='text/plain')
 
 
 @require_POST
@@ -137,7 +295,7 @@ def invalidate_permissions_cache(request):
             content_type='text/plain'
         )
     else:
-        traceback.print_exc()
+        # traceback.print_exc()
         return HttpResponse(
             json.dumps({'success': 'false', 'message': 'You cannot modify this resource!'}),
             status=200,
@@ -186,7 +344,7 @@ def attributes_sats_refresh(request):
             layer.srid = gs_resource.projection
             layer.save()
         except Exception as e:
-            traceback.print_exc()
+            # traceback.print_exc()
             return HttpResponse(
                 json.dumps(
                     {
@@ -278,7 +436,7 @@ def request_permissions(request):
             status=200,
             content_type='text/plain')
     except Exception:
-        traceback.print_exc()
+        # traceback.print_exc()
         return HttpResponse(
             json.dumps({'error': 'error delivering notification'}),
             status=400,

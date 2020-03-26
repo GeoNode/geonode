@@ -21,7 +21,7 @@
       delete data['view_anonymous'];
     }
     if (data.hasOwnProperty('download_anonymous')) {
-      if (permissions['users']['AnonymousUser'] != undefined){
+      if (typeof permissions['users']['AnonymousUser'] !== 'undefined'){
         permissions['users']['AnonymousUser'].push('download_resourcebase');
       } else {
         permissions['users']['AnonymousUser'] = ['download_resourcebase'];
@@ -77,7 +77,7 @@
                 permissions[perm_key][perm_value] = [perms_to_assign[j]];
               }
             }
-          }             
+          }
         } else {
           for (var i=0;i<d_perms.split(',').length;i++){
             var perm_value = d_perms.split(',')[i];
@@ -166,6 +166,10 @@
             //   && perms_users['AnonymousUser'].indexOf('download_resourcebase') > -1){
             //   users.download_resourcebase=[]
             // };
+
+            if (typeof user_perms === 'undefined') {
+              user_perms = [];
+            }
 
             for (var perm in users){
               if(['change_resourcebase', 'delete_resourcebase', 'change_resourcebase_permissions', 'publish_resourcebase'].indexOf(user_perms[i]) >= 0){

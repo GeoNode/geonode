@@ -34,7 +34,7 @@
 {% if user.is_authenticated %}
 {% if user == profile %}
   {% for group in profile.group_list_all %}
-  <div ng-if="group.logo != ''" class="col-xs-1 pull-right group-logo">
+  <div ng-if="group.logo_url != ''" class="col-xs-1 pull-right group-logo">
     <a href="{{ group.get_absolute_url }}" ><img src="{{ group.logo_url }}" alt="{{ group.title }}" /></a>
   </div>
   <!-- <div class="col-xs-6 col-md-8">
@@ -46,7 +46,7 @@
   {% endfor %}
 {% else %}
   {% for group in profile.group_list_public %}
-  <div ng-if="group.logo != ''" class="col-xs-1 pull-right group-logo">
+  <div ng-if="group.logo_url != ''" class="col-xs-1 pull-right group-logo">
     <a href="{{ group.get_absolute_url }}" ><img src="{{ group.logo_url }}" alt="{{ group.title }}" /></a>
   </div>
   <!-- <div class="col-xs-6 col-md-8">
@@ -118,8 +118,8 @@
   </table>
   {% if USE_GEOSERVER and DISPLAY_WMS_LINKS %}
   <p>
-      {% if request.user.is_authenticated and 'access_token' in request.session %}
-        <a href="{% url 'capabilities_user' profile.username %}?access_token={{ request.session.access_token }}">
+      {% if request.user.is_authenticated and access_token %}
+        <a href="{% url 'capabilities_user' profile.username %}?access_token={{access_token}}">
       {% else %}
         <a href="{% url 'capabilities_user' profile.username %}">
       {% endif %}

@@ -60,8 +60,8 @@
 
         {% if USE_GEOSERVER and DISPLAY_WMS_LINKS %}
         <p>
-          {% if request.user.is_authenticated and 'access_token' in request.session %}
-            <a href="{% url 'capabilities_layer' resource.id %}?access_token={{ request.session.access_token }}">
+          {% if request.user.is_authenticated and access_token %}
+            <a href="{% url 'capabilities_layer' resource.id %}?access_token={{access_token}}">
           {% else %}
             <a href="{% url 'capabilities_layer' resource.id %}">
           {% endif %}
@@ -586,8 +586,8 @@
                   {% with "STYLE="|add:style.name as style_name %}
                   {% if legend.link_type == 'image' and style_name in legend.url %}
                     <p id="legend_sld_title" style="font-size:10px">{{ style.sld_title|default:style.name }}</p>
-                    {% if request.user.is_authenticated and 'access_token' in request.session %}
-                        <p><img id="legend_icon" src="{{ legend.url }}&access_token={{ request.session.access_token }}"></p>
+                    {% if request.user.is_authenticated and access_token %}
+                        <p><img id="legend_icon" src="{{ legend.url }}&access_token={{access_token}}"></p>
                     {% else %}
                         <p><img id="legend_icon" src="{{ legend.url }}"></p>
                     {% endif %}
@@ -968,8 +968,8 @@
               url: whole_url,
               data: { json_data: JSON.stringify({ layer_name: layer_name, filtered_attributes: filtered_attributes }) },
               beforeSend: function (xhr) {
-              {% if request.user.is_authenticated and 'access_token' in request.session %}
-                xhr.setRequestHeader ("Authorization", "Bearer {{ request.session.access_token }}");
+              {% if request.user.is_authenticated and access_token %}
+                xhr.setRequestHeader ("Authorization", "Bearer {{access_token}}");
               {% endif %}
                 $( ".loading_msg" ).show();
               },

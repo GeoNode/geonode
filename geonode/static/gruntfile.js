@@ -11,11 +11,17 @@ module.exports = function(grunt) {
   let leafletPluginsMinifiedJs = fileHandling["leaflet-plugins.min.js"].map (
     fileSegment => 'lib/js/' + fileSegment.substring(fileSegment.lastIndexOf('/')+1)
   );
+  let openlayersPluginsMinifiedJs = fileHandling["openlayers-plugins.min.js"].map(
+    fileSegment => 'lib/js/' + fileSegment.substring(fileSegment.lastIndexOf('/') + 1)
+  );
   let assetsMinifiedCss = fileHandling["assets.min.css"].map (
     fileSegment => 'lib/css/' + fileSegment.substring(fileSegment.lastIndexOf('/')+1)
   );
   let leafletMinifiedCss = fileHandling["leaflet.plugins.min.css"].map (
     fileSegment => 'lib/css/' + fileSegment.substring(fileSegment.lastIndexOf('/')+1)
+  );
+  let openlayersMinifiedCss = fileHandling["openlayers.plugins.min.css"].map(
+    fileSegment => 'lib/css/' + fileSegment.substring(fileSegment.lastIndexOf('/') + 1)
   );
 
   grunt.initConfig({
@@ -89,7 +95,7 @@ module.exports = function(grunt) {
           nonull: true,
           cwd: 'node_modules',
           dest: 'lib/css',
-          src: [fileHandling["assets.min.css"], fileHandling["leaflet.plugins.min.css"]]
+          src: [fileHandling["assets.min.css"], fileHandling["leaflet.plugins.min.css"], fileHandling["openlayers.plugins.min.css"]]
         }, {
           expand: true,
           flatten: true,
@@ -132,7 +138,7 @@ module.exports = function(grunt) {
           nonull: true,
           cwd: 'node_modules',
           dest: 'lib/js',
-          src: [fileHandling["assets.min.js"], fileHandling.other_dependencies, fileHandling["leaflet-plugins.min.js"]]
+          src: [fileHandling["assets.min.js"], fileHandling.other_dependencies, fileHandling["leaflet-plugins.min.js"], fileHandling["openlayers-plugins.min.js"]]
         }]
       }
     },
@@ -215,7 +221,8 @@ module.exports = function(grunt) {
         },
         files: {
           'lib/css/assets.min.css': assetsMinifiedCss,
-          'lib/css/leaflet-plugins.min.css': leafletMinifiedCss
+          'lib/css/leaflet-plugins.min.css': leafletMinifiedCss,
+          'lib/css/openlayers-plugins.min.css': openlayersMinifiedCss
         }
       }
     },
@@ -246,7 +253,8 @@ module.exports = function(grunt) {
         },
         files: {
           'lib/js/assets.min.js': assetsMinifiedJs,
-          'lib/js/leaflet-plugins.min.js': leafletPluginsMinifiedJs
+          'lib/js/leaflet-plugins.min.js': leafletPluginsMinifiedJs,
+          'lib/js/openlayers-plugins.min.js': openlayersPluginsMinifiedJs
         }
       },
       production: {
@@ -257,7 +265,8 @@ module.exports = function(grunt) {
         },
         files: {
           'lib/js/assets.min.js': assetsMinifiedJs,
-          'lib/js/leaflet-plugins.min.js': leafletPluginsMinifiedJs
+          'lib/js/leaflet-plugins.min.js': leafletPluginsMinifiedJs,
+          'lib/js/openlayers-plugins.min.js': openlayersPluginsMinifiedJs
         }
       }
     },

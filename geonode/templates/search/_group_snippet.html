@@ -3,7 +3,7 @@
   <article ng-repeat="group in results" resource_id="{{ group.id }}" ng-cloak class="ng-cloak">
     <div class="col-xs-12 item-container">
         <div class="col-xs-4">
-            <img class="img-responsive" ng-show="{{ group.group_profile.logo }}" ng-src="{{ group.group_profile.logo }}" alt="{{ group.group_profile.title }}">
+            <img class="img-responsive" ng-src="{{ group.group_profile.logo_url }}" alt="{{ group.group_profile.title }}">
         </div>
         <div class="col-xs-8 item-details">
           <h4><a href="{{ group.group_profile.detail_url }}">{{ group.group_profile.title }}</a></h4>

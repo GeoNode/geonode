@@ -142,7 +142,7 @@ def ident_json(request):
 
 def h_keywords(request):
     from geonode.base.models import HierarchicalKeyword as hk
-    keywords = json.dumps(hk.dump_bulk_tree())
+    keywords = json.dumps(hk.dump_bulk_tree(request.user, type=request.GET.get('type', None)))
     return HttpResponse(content=keywords)
 
 
