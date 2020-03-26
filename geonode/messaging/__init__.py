@@ -55,7 +55,7 @@ class MessagingAppConfig(NotificationsAppConfigBase):
         url = getattr(settings, 'BROKER_URL', 'memory://')
         task_serializer = getattr(settings, 'CELERY_TASK_SERIALIZER', 'pickle')
         broker_transport_options = getattr(settings, 'BROKER_TRANSPORT_OPTIONS', {'socket_timeout': 10})
-        broker_socket_timeout = getattr(broker_transport_options, 'socket_timeout', 10)
+        broker_socket_timeout = broker_transport_options['socket_timeout']
         connection = BrokerConnection(url, connect_timeout=broker_socket_timeout)
 
         from geonode.messaging.notifications import initialize_notification_signal

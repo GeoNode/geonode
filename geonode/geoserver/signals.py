@@ -84,8 +84,10 @@ def geoserver_post_save(instance, sender, created, **kwargs):
     if isinstance(instance, Layer):
         instance_dict = model_to_dict(instance)
         payload = json_serializer_producer(instance_dict)
-        producer.geoserver_upload_layer(payload)
-
+        try:
+            producer.geoserver_upload_layer(payload)
+        except Exception as e:
+            logger.error(e)
         if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
             instance.set_dirty_state()
 
