@@ -370,8 +370,6 @@ class Command(BaseCommand):
                 )
                 restored_backup.save()
 
-                return str(target_folder)
-
             except Exception as exception:
                 if notify:
                     restore_notification.delay(admin_emails, backup_file, backup_md5, str(exception))
