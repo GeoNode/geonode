@@ -698,7 +698,10 @@ class GroupCategoriesTestCase(GeoNodeBaseTestSupport):
         self.client.login(username='test', password='test')  # login necessary because settings.API_LOCKDOWN=True
         r = self.client.get(api_url)
         self.assertEqual(r.status_code, 200)
-        data = json.loads(r.content)
+        content = r.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        data = json.loads(content)
         self.assertEqual(
             data['meta']['total_count'],
             GroupCategory.objects.all().count())
@@ -714,6 +717,29 @@ class GroupCategoriesTestCase(GeoNodeBaseTestSupport):
                     slug=item['slug']).count() == 1)
             g = GroupCategory.objects.get(slug=item['slug'])
             self.assertEqual(item['member_count'], g.groups.all().count())
+
+        self.client.logout()
+        r = self.client.get(api_url)
+        self.assertEqual(r.status_code, 200)
+        content = r.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        data = json.loads(content)
+        self.assertEqual(
+            data['meta']['total_count'],
+            0)
+
+        # check if we have non-empty group category
+        self.assertTrue(
+            GroupCategory.objects.filter(
+                groups__isnull=False).exists())
+
+        for item in data['objects']:
+            self.assertTrue(
+                GroupCategory.objects.filter(
+                    slug=item['slug']).count() == 1)
+            g = GroupCategory.objects.get(slug=item['slug'])
+            self.assertEqual(item['member_count'], 0)
 
     def test_group_categories_list(self):
         view_url = reverse('group_category_list')

@@ -302,30 +302,29 @@ class GroupCategoryResource(TypeFilteredResource):
         authorization = ApiLockdownAuthorization()
 
     def apply_filters(self, request, applicable_filters):
-        user = request.user
-        semi_filtered = super(
+        filtered = super(
             GroupCategoryResource,
             self).apply_filters(
             request,
             applicable_filters)
-
-        filtered = semi_filtered
-        if not user.is_authenticated or user.is_anonymous:
-            filtered = semi_filtered.exclude(groups__access='private')
-        elif not user.is_superuser:
-            groups_member_of = user.group_list_all()
-            filtered = semi_filtered.filter(
-                Q(groups__in=groups_member_of) |
-                ~Q(groups__access='private')
-            )
-
         return filtered
 
     def dehydrate_detail_url(self, bundle):
         return bundle.obj.get_absolute_url()
 
     def dehydrate_member_count(self, bundle):
-        return bundle.obj.groups.all().count()
+        request = bundle.request
+        user = request.user
+        filtered = bundle.obj.groups.all()
+        if not user.is_authenticated or user.is_anonymous:
+            filtered = filtered.exclude(access='private')
+        elif not user.is_superuser:
+            categories_ids = user.group_list_all().values('categories')
+            filtered = filtered.filter(
+                Q(id__in=categories_ids) |
+                ~Q(access='private')
+            )
+        return filtered.count()
 
     def dehydrate(self, bundle):
         """Provide additional resource counts"""
