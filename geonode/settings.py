@@ -367,6 +367,7 @@ GEONODE_CORE_APPS = (
     # GeoNode internal apps
     'geonode.api',
     'geonode.base',
+    'geonode.br',
     'geonode.layers',
     'geonode.maps',
     'geonode.documents',
