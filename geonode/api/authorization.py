@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+from django.db.models import Q
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.authorization import DjangoAuthorization
 from tastypie.exceptions import Unauthorized
@@ -33,7 +33,6 @@ from geonode.utils import check_ogc_backend
 
 
 class GeoNodeAuthorization(DjangoAuthorization):
-
     """Object level API authorization based on GeoNode granular
     permission system"""
 
@@ -159,6 +158,7 @@ class ApiLockdownAuthorization(DjangoAuthorization):
     If setting "API_LOCKDOWN" is set to True, resource can only be accessed by authenticated users. For anonymous
     requests, empty lists are returned.
     """
+
     def read_list(self, object_list, bundle):
         user = bundle.request.user
         if settings.API_LOCKDOWN and not user.is_authenticated:
@@ -166,3 +166,27 @@ class ApiLockdownAuthorization(DjangoAuthorization):
             return []
         else:
             return object_list
+
+
+class GroupAuthorization(ApiLockdownAuthorization):
+
+    def read_list(self, object_list, bundle):
+        groups = super(GroupAuthorization, self).read_list(object_list, bundle)
+        user = bundle.request.user
+        if groups and (not user.is_authenticated or user.is_anonymous):
+            return groups.exclude(groupprofile__access='private')
+        elif groups and not user.is_superuser:
+            return groups.filter(Q(groupprofile__in=user.group_list_all()) | ~Q(groupprofile__access='private'))
+        return groups
+
+
+class GroupProfileAuthorization(ApiLockdownAuthorization):
+
+    def read_list(self, object_list, bundle):
+        groups = super(GroupProfileAuthorization, self).read_list(object_list, bundle)
+        user = bundle.request.user
+        if groups and (not user.is_authenticated or user.is_anonymous):
+            return groups.exclude(access='private')
+        elif groups and not user.is_superuser:
+            return groups.filter(Q(pk__in=user.group_list_all()) | ~Q(access='private'))
+        return groups

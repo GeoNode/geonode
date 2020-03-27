@@ -121,7 +121,6 @@ def group_update(request, slug):
 
 
 class GroupDetailView(ListView):
-
     """
     Mixes a detail view (the group) with a ListView (the members).
     """
@@ -298,25 +297,29 @@ class GroupActivityView(ListView):
             public=True,
             action_object_content_type__model='layer')
         context['action_list_layers'] = [
-            action
-            for action in actions
-            if action.action_object and action.action_object.group == self.group.group][:15]
+                                            action
+                                            for action in actions
+                                            if action.action_object and action.action_object.group == self.group.group][
+                                        :15]
         action_list.extend(context['action_list_layers'])
         actions = Action.objects.filter(
             public=True,
             action_object_content_type__model='map')[:15]
         context['action_list_maps'] = [
-            action
-            for action in actions
-            if action.action_object and action.action_object.group == self.group.group][:15]
+                                          action
+                                          for action in actions
+                                          if action.action_object and action.action_object.group == self.group.group][
+                                      :15]
         action_list.extend(context['action_list_maps'])
         actions = Action.objects.filter(
             public=True,
             action_object_content_type__model='document')[:15]
         context['action_list_documents'] = [
-            action
-            for action in actions
-            if action.action_object and action.action_object.group == self.group.group][:15]
+                                               action
+                                               for action in actions
+                                               if
+                                               action.action_object and action.action_object.group == self.group.group][
+                                           :15]
         action_list.extend(context['action_list_documents'])
         context['action_list_comments'] = Action.objects.filter(
             public=True,
@@ -337,13 +340,9 @@ class GroupProfileAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(title__icontains=self.q)
 
         if not user.is_authenticated or user.is_anonymous:
-            qs = qs.exclude(access='private')
+            return qs.exclude(access='private')
         elif not user.is_superuser:
-            groups_member_of = user.group_list_all()
-            qs = qs.filter(
-                Q(self__in=groups_member_of) |
-                ~Q(groupprofile__access='private'))
-
+            return qs.filter(Q(pk__in=user.group_list_all()) | ~Q(access='private'))
         return qs
 
 

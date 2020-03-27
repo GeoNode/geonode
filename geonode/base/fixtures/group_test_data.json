@@ -8,6 +8,14 @@
       }
     },
     {
+      "pk": 2,
+      "model": "auth.group",
+      "fields": {
+        "name": "registered-members",
+        "permissions": []
+      }
+    },
+    {
         "fields": {
             "access": "private",
             "description": "Registered Members",
