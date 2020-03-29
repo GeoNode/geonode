@@ -755,6 +755,7 @@ def final_step(upload_session, user, charset="UTF-8"):
 
     # Should we throw a clearer error here?
     assert saved_layer is not None
+    saved_layer.save()
 
     # Create a new upload session
     geonode_upload_session = UploadSession.objects.create(resource=saved_layer, user=user)
