@@ -29,7 +29,6 @@ from django.db.models import signals
 
 from django.urls import reverse
 from django.contrib.sites.models import Site
-from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.auth.signals import user_logged_in, user_logged_out
@@ -250,5 +249,5 @@ user_signed_up.connect(
 )
 signals.post_save.connect(
     profile_post_save,
-    sender=get_user_model()
+    sender=settings.AUTH_USER_MODEL
 )

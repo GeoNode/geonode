@@ -1612,7 +1612,7 @@ class Configuration(SingletonModel):
 
 class UserGeoLimit(models.Model):
     user = models.ForeignKey(
-        get_user_model(),
+        settings.AUTH_USER_MODEL,
         null=False,
         blank=False,
         on_delete=models.CASCADE)
