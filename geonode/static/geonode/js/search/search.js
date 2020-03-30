@@ -628,7 +628,11 @@
               $scope.query[query_key] = $('#text_search_input').val().toLowerCase().replace(/ /g,"-");
             } else {
               $scope.query[query_key] = $('#text_search_input').val();
+
             }
+            $scope.query['abstract__icontains'] = $('#text_search_input').val();
+            $scope.query['purpose__icontains'] = $('#text_search_input').val();
+            $scope.query['f_method'] = 'or';
         query_api($scope.query);
         }
     });
