@@ -41,6 +41,7 @@ from geonode.utils import (DisableDjangoSignals,
                            copy_tree,
                            extract_archive,
                            chmod_tree)
+from geonode.base.models import Configuration
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -107,7 +108,33 @@ class Command(BaseCommand):
             help="Sends an email notification to the superusers on procedure error or finish."
         )
 
+        parser.add_argument(
+            '--skip-read-only',
+            action='store_true',
+            dest='skip_read_only',
+            default=False,
+            help='Skips activation of the Read Only mode in restore procedure execution.'
+        )
+
     def handle(self, **options):
+        skip_read_only = options.get('skip_read_only')
+        config = Configuration.load()
+
+        # activate read only mode and store it's original config value
+        if not skip_read_only:
+            original_read_only_value = config.read_only
+            config.read_only = True
+            config.save()
+
+        try:
+            self.execute_restore(**options)
+        finally:
+            # restore read only mode's original value
+            if not skip_read_only:
+                config.read_only = original_read_only_value
+                config.save()
+
+    def execute_restore(self, **options):
         self.validate_backup_file_options(**options)
 
         config = utils.Config(options)
