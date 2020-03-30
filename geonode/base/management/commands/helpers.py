@@ -20,6 +20,7 @@
 
 from __future__ import with_statement
 import os
+import six
 import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "lib"))
