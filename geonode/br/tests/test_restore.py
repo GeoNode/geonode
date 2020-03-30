@@ -27,9 +27,15 @@ from django.core.management import call_command
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.br.tests.factories import RestoredBackupFactory
 from geonode.br.management.commands.utils.utils import md5_file_hash
+from geonode.base.models import Configuration
 
 
 class RestoreCommandTests(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super().setUp()
+        # make sure Configuration exists in the database for Read Only mode tests
+        Configuration.load()
 
     # force restore interruption before starting the procedure itself
     @mock.patch('geonode.br.management.commands.utils.utils.confirm', return_value=False)
@@ -71,3 +77,41 @@ class RestoreCommandTests(GeoNodeBaseTestSupport):
                 exc.exception.args[0],
                 '"Backup archive has already been restored" exception expected.'
             )
+
+    # force backup interruption before starting the procedure itself
+    @mock.patch('geonode.br.management.commands.utils.utils.confirm', return_value=False)
+    # mock geonode.base.models.Configuration save() method
+    @mock.patch('geonode.base.models.Configuration.save', return_value=None)
+    def test_with_read_only_mode(self, mock_configuration_save, fake_confirm):
+
+        # create the backup file
+        with tempfile.NamedTemporaryFile() as tmp_file:
+            with zipfile.ZipFile(tmp_file, 'w', zipfile.ZIP_DEFLATED) as archive:
+                archive.writestr('something.txt', 'Some Content Here')
+
+            args = []
+            kwargs = {'backup_file': tmp_file.name}
+
+            call_command('restore', *args, **kwargs)
+
+            # make sure Configuration was saved twice (Read-Only set, and revert)
+            self.assertEqual(mock_configuration_save.call_count, 2)
+
+    # force backup interruption before starting the procedure itself
+    @mock.patch('geonode.br.management.commands.utils.utils.confirm', return_value=False)
+    # mock geonode.base.models.Configuration save() method
+    @mock.patch('geonode.base.models.Configuration.save', return_value=None)
+    def test_without_read_only_mode(self, mock_configuration_save, fake_confirm):
+
+        # create the backup file
+        with tempfile.NamedTemporaryFile() as tmp_file:
+            with zipfile.ZipFile(tmp_file, 'w', zipfile.ZIP_DEFLATED) as archive:
+                archive.writestr('something.txt', 'Some Content Here')
+
+            args = ['--skip-read-only']
+            kwargs = {'backup_file': tmp_file.name}
+
+            call_command('restore', *args, **kwargs)
+
+            # make sure Configuration wasn't called at all
+            self.assertEqual(mock_configuration_save.call_count, 0)
