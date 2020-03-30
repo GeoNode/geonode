@@ -19,12 +19,8 @@
 #########################################################################
 
 from django.contrib import admin
-from django.contrib.admin import helpers
 from django.conf import settings
-from django.core.management import call_command
-from django.template.response import TemplateResponse
 
-import StringIO
 from autocomplete_light.forms import ModelForm
 from autocomplete_light.forms import modelform_factory
 from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
