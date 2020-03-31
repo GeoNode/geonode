@@ -32,6 +32,7 @@ from requests.auth import HTTPBasicAuth
 from django.conf import settings
 from django.db.models import Q
 from django.contrib.auth import get_user_model
+from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.contenttypes.models import ContentType
 # from django.contrib.auth import login
 from django.contrib.auth.models import Group, Permission
@@ -425,7 +426,8 @@ def set_geofence_all(instance):
         """
         headers = {'Content-type': 'application/xml'}
         payload = _get_geofence_payload(
-            layer=resource.layer.name,
+            layer=resource.layer,
+            layer_name=resource.layer.name,
             workspace=workspace,
             access="ALLOW"
         )
@@ -504,19 +506,19 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
                 _wkt = None
                 if users_geolimits.count():
                     _wkt = users_geolimits.last().wkt
-                _update_geofence_rule(_layer_name, _layer_workspace, service, user=_user, geo_limit=_wkt)
+                _update_geofence_rule(layer, _layer_name, _layer_workspace, service, user=_user, geo_limit=_wkt)
             elif not _group:
                 logger.debug("Adding to geofence the rule: %s %s *" % (layer, service))
                 _wkt = None
                 if anonymous_geolimits.count():
                     _wkt = anonymous_geolimits.last().wkt
-                _update_geofence_rule(_layer_name, _layer_workspace, service, geo_limit=_wkt)
+                _update_geofence_rule(layer, _layer_name, _layer_workspace, service, geo_limit=_wkt)
             if _group:
                 logger.debug("Adding 'group' to geofence the rule: %s %s %s" % (layer, service, _group))
                 _wkt = None
                 if groups_geolimits.count():
                     _wkt = groups_geolimits.last().wkt
-                _update_geofence_rule(_layer_name, _layer_workspace, service, group=_group, geo_limit=_wkt)
+                _update_geofence_rule(layer, _layer_name, _layer_workspace, service, group=_group, geo_limit=_wkt)
     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
         set_geofence_invalidate_cache()
     else:
@@ -570,7 +572,7 @@ def remove_object_permissions(instance):
                                          object_pk=instance.id).delete()
 
 
-def _get_geofence_payload(layer, workspace, access, user=None, group=None,
+def _get_geofence_payload(layer, layer_name, workspace, access, user=None, group=None,
                           service=None, geo_limit=None):
     highest_priority = get_highest_priority()
     root_el = etree.Element("Rule")
@@ -587,11 +589,23 @@ def _get_geofence_payload(layer, workspace, access, user=None, group=None,
     workspace_el = etree.SubElement(root_el, "workspace")
     workspace_el.text = workspace
     layer_el = etree.SubElement(root_el, "layer")
-    layer_el.text = layer
+    layer_el.text = layer_name
     if service is not None and service != "*":
         service_el = etree.SubElement(root_el, "service")
         service_el.text = service
     if service and service == "*" and geo_limit is not None and geo_limit != "":
+        if getattr(layer, 'storeType', None) == 'coverageStore' and getattr(layer, 'srid', None):
+            native_crs = layer.srid
+            if native_crs != 'EPSG:4326':
+                try:
+                    _native_srid = int(native_crs[5:])
+                    _wkt_wgs84 = geo_limit.split(';')[1]
+                    _poly = GEOSGeometry(_wkt_wgs84, srid=4326)
+                    _poly.transform(_native_srid)
+                    geo_limit = _poly.ewkt
+                except Exception as e:
+                    traceback.print_exc()
+                    logger.exception(e)
         access_el = etree.SubElement(root_el, "access")
         access_el.text = "LIMIT"
         limits = etree.SubElement(root_el, "limits")
@@ -605,9 +619,10 @@ def _get_geofence_payload(layer, workspace, access, user=None, group=None,
     return etree.tostring(root_el)
 
 
-def _update_geofence_rule(layer, workspace, service, user=None, group=None, geo_limit=None):
+def _update_geofence_rule(layer, layer_name, workspace, service, user=None, group=None, geo_limit=None):
     payload = _get_geofence_payload(
         layer=layer,
+        layer_name=layer_name,
         workspace=workspace,
         access="ALLOW",
         user=user,

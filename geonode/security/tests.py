@@ -531,6 +531,39 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                 self.assertEqual(rule_limits['catalogMode'], 'MIXED')
 
+        # Change Layer Type and SRID in order to force GeoFence allowed-area reprojection
+        _original_storeType = layer.storeType
+        _original_srid = layer.srid
+        layer.storeType = 'coverageStore'
+        layer.srid = 'EPSG:3857'
+        layer.save()
+
+        layer.set_permissions(perm_spec)
+        geofence_rules_count = get_geofence_rules_count()
+        self.assertEqual(geofence_rules_count, 6)
+
+        rules_objs = get_geofence_rules(entries=6)
+        self.assertEqual(len(rules_objs['rules']), 6)
+        for rule in rules_objs['rules']:
+            if rule['roleName'] == 'ROLE_BAR':
+                self.assertEqual(rule['service'], None)
+                self.assertEqual(rule['userName'], None)
+                self.assertEqual(rule['workspace'], 'CA')
+                self.assertEqual(rule['layer'], 'CA')
+                self.assertEqual(rule['access'], 'LIMIT')
+
+                self.assertTrue('limits' in rule)
+                rule_limits = rule['limits']
+                self.assertEqual(
+                    rule_limits['allowedArea'], 'MULTIPOLYGON (((16230898.48882036 -5235579.667806599, \
+16330572.37370424 -5241694.630069452, 16331795.3661564 -5323023.628164872, 16250466.36806109 \
+-5320577.64325973, 16230898.48882036 -5235579.667806599)))')
+                self.assertEqual(rule_limits['catalogMode'], 'MIXED')
+
+        layer.storeType = _original_storeType
+        layer.srid = _original_srid
+        layer.save()
+
         # Reset GeoFence Rules
         purge_geofence_all()
         geofence_rules_count = get_geofence_rules_count()
