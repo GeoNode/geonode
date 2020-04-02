@@ -182,6 +182,13 @@ class Command(BaseCommand):
                     os.makedirs(static_files_folders)
 
                 for static_files_folder in static_folders:
+
+                    # skip dumping of static files of apps not located under LOCAL_ROOT path
+                    # (check to prevent saving files from site-packages in project-template based GeoNode projects)
+                    if getattr(settings, 'LOCAL_ROOT', None) and not static_files_folder.startswith(settings.LOCAL_ROOT):
+                        print(f"Skipping static directory: {static_files_folder}. It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
+                        continue
+
                     static_folder = os.path.join(static_files_folders,
                                                  os.path.basename(os.path.normpath(static_files_folder)))
                     if not os.path.exists(static_folder):
@@ -204,6 +211,13 @@ class Command(BaseCommand):
                     os.makedirs(template_files_folders)
 
                 for template_files_folder in template_folders:
+
+                    # skip dumping of template files of apps not located under LOCAL_ROOT path
+                    # (check to prevent saving files from site-packages in project-template based GeoNode projects)
+                    if getattr(settings, 'LOCAL_ROOT', None) and not template_files_folder.startswith(settings.LOCAL_ROOT):
+                        print(f"Skipping template directory: {template_files_folder}. It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
+                        continue
+
                     template_folder = os.path.join(template_files_folders,
                                                    os.path.basename(os.path.normpath(template_files_folder)))
                     if not os.path.exists(template_folder):
@@ -219,6 +233,13 @@ class Command(BaseCommand):
                     os.makedirs(locale_files_folders)
 
                 for locale_files_folder in locale_folders:
+
+                    # skip dumping of locale files of apps not located under LOCAL_ROOT path
+                    # (check to prevent saving files from site-packages in project-template based GeoNode projects)
+                    if getattr(settings, 'LOCAL_ROOT', None) and not locale_files_folder.startswith(settings.LOCAL_ROOT):
+                        print(f"Skipping locale directory: {locale_files_folder}. It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
+                        continue
+
                     locale_folder = os.path.join(locale_files_folders,
                                                  os.path.basename(os.path.normpath(locale_files_folder)))
                     if not os.path.exists(locale_folder):
@@ -258,7 +279,7 @@ class Command(BaseCommand):
         data = {'backup': {'archiveFile': geoserver_bk_file, 'overwrite': 'true',
                            'options': {'option': ['BK_BEST_EFFORT=true']}}}
         headers = {
-            'Accept': 'text/plain',
+            'Accept': 'application/json',
             'Content-type': 'application/json'
         }
         r = requests.post(url + 'rest/br/backup/', data=json.dumps(data),
@@ -268,12 +289,14 @@ class Command(BaseCommand):
         if r.status_code in (200, 201, 406):
             try:
                 r = requests.get(url + 'rest/br/backup.json',
+                                 headers=headers,
                                  auth=HTTPBasicAuth(user, passwd),
                                  timeout=10)
                 if (r.status_code == 200):
                     gs_backup = r.json()
                     _url = gs_backup['backups']['backup'][len(gs_backup['backups']['backup']) - 1]['href']
                     r = requests.get(_url,
+                                     headers=headers,
                                      auth=HTTPBasicAuth(user, passwd),
                                      timeout=10)
                     if (r.status_code == 200):
@@ -286,6 +309,7 @@ class Command(BaseCommand):
 
             gs_bk_exec_id = gs_backup['backup']['execution']['id']
             r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
+                             headers=headers,
                              auth=HTTPBasicAuth(user, passwd),
                              timeout=10)
             if (r.status_code == 200):
@@ -296,6 +320,7 @@ class Command(BaseCommand):
                     if (gs_bk_exec_progress != gs_bk_exec_progress_updated):
                         gs_bk_exec_progress_updated = gs_bk_exec_progress
                     r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
+                                     headers=headers,
                                      auth=HTTPBasicAuth(user, passwd),
                                      timeout=10)
                     if (r.status_code == 200):
