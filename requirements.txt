@@ -68,7 +68,7 @@ django-autocomplete-light==3.5.1
 django-leaflet==0.26.0
 django-invitations<1.9.4
 django-recaptcha==2.0.6
-geonode-oauth-toolkit==1.1.4.6
+geonode-oauth-toolkit==1.1.5.1
 
 # GeoNode org maintained apps.
 django-mapstore-adapter>=2.0.2
