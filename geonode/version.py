@@ -36,8 +36,7 @@ def get_version(version=None):
     # sub = .devN - for pre-alpha releases
     #     | {a|b|c}N - for alpha, beta and rc releases
     git_changeset = get_git_changeset()
-    parts = 2 if version[2] == 0 else 3
-    main = '.'.join(str(x) for x in version[:parts])
+    main = '.'.join(str(x) for x in version[:3])
     sub = ''
     if version[3] not in ('unstable', 'final'):
         mapping = {'beta': 'b', 'rc': 'rc'}
