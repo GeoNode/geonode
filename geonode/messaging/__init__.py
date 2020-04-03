@@ -20,6 +20,7 @@
 from django.conf import settings
 
 from geonode.notifications_helper import NotificationsAppConfigBase
+from django.utils.translation import ugettext_noop as _
 
 connections = None
 producers = None
@@ -32,6 +33,8 @@ connection = None
 
 class MessagingAppConfig(NotificationsAppConfigBase):
     name = 'geonode.messaging'
+
+    NOTIFICATIONS = (("message_received", _("Message received"), _("New message received in one of your threads")),)
 
     def ready(self):
         super(MessagingAppConfig, self).ready()
