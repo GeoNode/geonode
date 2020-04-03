@@ -17,11 +17,12 @@
 #
 #########################################################################
 
-from user_messages.models import Thread, Message
-from geonode.messaging.notifications import notify_thread_participants
+from user_messages.models import Thread, Message, GroupMemberThread
+from geonode.messaging.notifications import message_sent_notification
 from geonode.people.models import Profile
 from geonode.tests.base import GeoNodeBaseTestSupport
 from unittest.mock import patch
+from django.contrib.auth.models import Group
 
 
 class TestSendEmail(GeoNodeBaseTestSupport):
@@ -30,13 +31,41 @@ class TestSendEmail(GeoNodeBaseTestSupport):
         self.p = Profile.objects.create(username='test', email='test1@test.test')
         self.p1 = Profile.objects.create(username='test1')
         self.sender = Profile.objects.create(username='sender', email='test1@test.test')
-        self.t = Thread.objects.create(subject='test')
-        self.t.single_users.add(self.p)
-        self.t.single_users.add(self.p1)
+
+        self.t = Thread.objects.create(subject='test', )
+        self.t2 = Thread.objects.create(subject='test2', )
+
+        GroupMemberThread.objects.create(thread=self.t2, group=Group.objects.get(pk=1), user=self.p)
+        GroupMemberThread.objects.create(thread=self.t2, group=Group.objects.get(pk=1), user=self.p1)
+
+        self.m2 = Message.objects.create(content='test', thread=self.t2, sender=self.sender)
         self.m = Message.objects.create(content='test', thread=self.t, sender=self.sender)
 
-    @patch('django.core.mail.message.EmailMessage.send')
-    def test_emails_sent(self, email_message):
-        notify_thread_participants(self.t.pk, self.m.pk)
+        self.t.single_users.add(self.p)
+        self.t.single_users.add(self.p1)
+        self.t2.group_users.add(self.p)
+        self.t2.group_users.add(self.p1)
+
+    @patch('geonode.notifications_backend.EmailBackend.deliver')
+    def test_email_sent(self, email_message):
+        message_sent_notification(message=self.m)
         email_message.assert_called_once()
-        pass
+
+    @patch('geonode.notifications_backend.EmailBackend.deliver')
+    def test_email_sent_many(self, email_message):
+        self.p1.email = 'test@test.test'
+        self.p1.save()
+        message_sent_notification(message=self.m)
+        self.assertEqual(email_message.call_count, 2)
+
+    @patch('geonode.notifications_backend.EmailBackend.deliver')
+    def test_email_sent_to_group(self, email_message):
+        self.p1.email = 'test@test.test'
+        self.p1.save()
+        message_sent_notification(message=self.m2)
+        self.assertEqual(email_message.call_count, 2)
+
+    @patch('geonode.notifications_backend.EmailBackend.deliver')
+    def test_email_sent_to_group_single(self, email_message):
+        message_sent_notification(message=self.m2)
+        self.assertEqual(email_message.call_count, 1)
