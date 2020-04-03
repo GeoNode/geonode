@@ -574,19 +574,19 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
     if user:
         _user = user if isinstance(user, string_types) else user.username
         users_geolimits = layer.users_geolimits.filter(user=get_user_model().objects.get(username=_user))
-        gf_services["*"] = users_geolimits.count() > 0
+        gf_services["*"] = users_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
         _disable_layer_cache = users_geolimits.count() > 0
 
     if group:
         _group = group if isinstance(group, string_types) else group.name
         if GroupProfile.objects.filter(group__name=_group).count() == 1:
             groups_geolimits = layer.groups_geolimits.filter(group=GroupProfile.objects.get(group__name=_group))
-            gf_services["*"] = groups_geolimits.count() > 0
+            gf_services["*"] = groups_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
             _disable_layer_cache = groups_geolimits.count() > 0
 
     if not user and not group:
         anonymous_geolimits = layer.users_geolimits.filter(user=get_anonymous_user())
-        gf_services["*"] = anonymous_geolimits.count() > 0
+        gf_services["*"] = anonymous_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
         _disable_layer_cache = anonymous_geolimits.count() > 0
 
     if _disable_layer_cache:
