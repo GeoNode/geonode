@@ -86,21 +86,21 @@
                                 {% if att in time_form.time_names %}
                                     <th data-field="{{ att }}" data-sortable="false" data-formatter="iso8601DateFormatter" >
                                         <div class="radio" title="{{ att|camelize }}">
-                                            <input type="radio" name="time_attribute" id="id_time_attribute" value="{{ att }}" style="display: none;">
+                                            <input type="radio" name="time_attribute" id="id_time_attribute" value="{{ att }}" style="display: none;margin-left: 0px !important;">
                                             <label for="id_time_attribute"><strong>{{ att|camelize }}</strong></label>
                                         </div>
                                     </th>
                                 {% elif att in time_form.text_names %}
                                     <th data-field="{{ att }}" data-sortable="false" data-formatter="iso8601Formatter" >
                                         <div class="radio" title="{{ att|camelize }}">
-                                            <input type="radio" name="text_attribute" id="id_text_attribute" value="{{ att }}" style="display: none;">
+                                            <input type="radio" name="text_attribute" id="id_text_attribute" value="{{ att }}" style="display: none;margin-left: 0px !important;">
                                             <label for="id_text_attribute"><strong>{{ att|camelize }}</strong></label>
                                         </div>
                                     </th>
                                 {% elif att in time_form.year_names %}
                                     <th data-field="{{ att }}" data-sortable="false" data-formatter="iso8601Formatter" >
                                         <div class="radio" title="{{ att|camelize }}">
-                                            <input type="radio" name="year_attribute" id="id_year_attribute" value="{{ att }}" style="display: none;">
+                                            <input type="radio" name="year_attribute" id="id_year_attribute" value="{{ att }}" style="display: none;margin-left: 0px !important;">
                                             <label for="id_year_attribute"><strong>{{ att|camelize }}</strong></label>
                                         </div>
                                     </th>
