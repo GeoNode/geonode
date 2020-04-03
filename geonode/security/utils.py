@@ -20,6 +20,8 @@
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 from lxml import etree
+import xml.etree.ElementTree as ET
+from defusedxml import lxml as dlxml
 
 import json
 import logging
@@ -32,7 +34,7 @@ from requests.auth import HTTPBasicAuth
 from django.conf import settings
 from django.db.models import Q
 from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import GEOSGeometry
+# from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.contenttypes.models import ContentType
 # from django.contrib.auth import login
 from django.contrib.auth.models import Group, Permission
@@ -345,6 +347,97 @@ def set_geofence_invalidate_cache():
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+def toggle_layer_cache(layer_name, enable=True, filters=None, formats=None):
+    """Disable/enable a GeoServer Tiled Layer Configuration"""
+    if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
+        try:
+            url = settings.OGC_SERVER['default']['LOCATION']
+            user = settings.OGC_SERVER['default']['USER']
+            passwd = settings.OGC_SERVER['default']['PASSWORD']
+            """
+            curl -v -u admin:geoserver -XGET \
+                "http://<host>:<port>/geoserver/gwc/rest/layers/geonode:tasmania_roads.xml"
+            """
+            r = requests.get(url + 'gwc/rest/layers/{}.xml'.format(layer_name),
+                             auth=HTTPBasicAuth(user, passwd))
+
+            if (r.status_code < 200 or r.status_code > 201):
+                logger.debug("Could not Retrieve {} Cache.".format(layer_name))
+                return False
+            try:
+                xml_content = r.content
+                tree = dlxml.fromstring(xml_content)
+
+                gwc_id = tree.find('id')
+                tree.remove(gwc_id)
+
+                gwc_enabled = tree.find('enabled')
+                if gwc_enabled is None:
+                    gwc_enabled = etree.Element('enabled')
+                    tree.append(gwc_enabled)
+                gwc_enabled.text = str(enable).lower()
+
+                gwc_mimeFormats = tree.find('mimeFormats')
+                if formats is None:
+                    tree.remove(gwc_mimeFormats)
+                else:
+                    for format in formats:
+                        gwc_format = etree.Element('string')
+                        gwc_format.text = format
+
+                        gwc_mimeFormats.append(gwc_format)
+
+                gwc_parameterFilters = tree.find('parameterFilters')
+                if filters is None:
+                    tree.remove(gwc_parameterFilters)
+                else:
+                    for filter in filters:
+                        for k, v in filter.items():
+                            """
+                            <parameterFilters>
+                                <styleParameterFilter>
+                                    <key>STYLES</key>
+                                    <defaultValue/>
+                                </styleParameterFilter>
+                            </parameterFilters>
+                            """
+                            gwc_parameter = etree.Element(k)
+                            for parameter_key, parameter_value in v.items():
+                                gwc_parameter_key = etree.Element('key')
+                                gwc_parameter_key.text = parameter_key
+                                gwc_parameter_value = etree.Element('defaultValue')
+                                gwc_parameter_value.text = parameter_value
+
+                                gwc_parameter.append(gwc_parameter_key)
+                                gwc_parameter.append(gwc_parameter_value)
+                            gwc_parameterFilters.append(gwc_parameter)
+
+                """
+                curl -v -u admin:geoserver -XPOST \
+                    -H "Content-type: text/xml" -d @poi.xml \
+                        "http://localhost:8080/geoserver/gwc/rest/layers/tiger:poi.xml"
+                """
+                headers = {'Content-type': 'text/xml'}
+                payload = ET.tostring(tree)
+                r = requests.post(url + 'gwc/rest/layers/{}.xml'.format(layer_name),
+                                  headers=headers,
+                                  data=payload,
+                                  auth=HTTPBasicAuth(user, passwd))
+                if (r.status_code < 200 or r.status_code > 201):
+                    logger.debug("Could not Update {} Cache.".format(layer_name))
+                    return False
+            except Exception:
+                tb = traceback.format_exc()
+                logger.debug(tb)
+                return False
+            return True
+        except Exception:
+            tb = traceback.format_exc()
+            logger.debug(tb)
+            return False
+
+
+@on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def delete_layer_cache(layer_name):
     """Delete a GeoServer Tiled Layer Configuration and all the cache"""
     if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
@@ -473,7 +566,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
 
     _user = None
     _group = None
-    _delete_layer_cache = False
+    _disable_layer_cache = False
     users_geolimits = None
     groups_geolimits = None
     anonymous_geolimits = None
@@ -482,22 +575,39 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
         _user = user if isinstance(user, string_types) else user.username
         users_geolimits = layer.users_geolimits.filter(user=get_user_model().objects.get(username=_user))
         gf_services["*"] = users_geolimits.count() > 0
-        _delete_layer_cache = users_geolimits.count() > 0
+        _disable_layer_cache = users_geolimits.count() > 0
 
     if group:
         _group = group if isinstance(group, string_types) else group.name
         if GroupProfile.objects.filter(group__name=_group).count() == 1:
             groups_geolimits = layer.groups_geolimits.filter(group=GroupProfile.objects.get(group__name=_group))
             gf_services["*"] = groups_geolimits.count() > 0
-            _delete_layer_cache = groups_geolimits.count() > 0
+            _disable_layer_cache = groups_geolimits.count() > 0
 
     if not user and not group:
         anonymous_geolimits = layer.users_geolimits.filter(user=get_anonymous_user())
         gf_services["*"] = anonymous_geolimits.count() > 0
-        _delete_layer_cache = anonymous_geolimits.count() > 0
+        _disable_layer_cache = anonymous_geolimits.count() > 0
 
-    if _delete_layer_cache:
-        delete_layer_cache('{}:{}'.format(_layer_workspace, _layer_name))
+    if _disable_layer_cache:
+        # delete_layer_cache('{}:{}'.format(_layer_workspace, _layer_name))
+        filters = None
+        formats = None
+    else:
+        filters = [{
+            "styleParameterFilter": {
+                "STYLES": ""
+            }
+        }]
+        formats = [
+            'application/json;type=utfgrid',
+            'image/png',
+            'image/vnd.jpeg-png',
+            'image/jpeg',
+            'image/gif',
+            'image/png8'
+        ]
+    toggle_layer_cache('{}:{}'.format(_layer_workspace, _layer_name), enable=True, filters=filters, formats=formats)
 
     for service, allowed in gf_services.items():
         if allowed:
@@ -594,18 +704,18 @@ def _get_geofence_payload(layer, layer_name, workspace, access, user=None, group
         service_el = etree.SubElement(root_el, "service")
         service_el.text = service
     if service and service == "*" and geo_limit is not None and geo_limit != "":
-        if getattr(layer, 'storeType', None) == 'coverageStore' and getattr(layer, 'srid', None):
-            native_crs = layer.srid
-            if native_crs != 'EPSG:4326':
-                try:
-                    _native_srid = int(native_crs[5:])
-                    _wkt_wgs84 = geo_limit.split(';')[1]
-                    _poly = GEOSGeometry(_wkt_wgs84, srid=4326)
-                    _poly.transform(_native_srid)
-                    geo_limit = _poly.ewkt
-                except Exception as e:
-                    traceback.print_exc()
-                    logger.exception(e)
+        # if getattr(layer, 'storeType', None) == 'coverageStore' and getattr(layer, 'srid', None):
+        #     native_crs = layer.srid
+        #     if native_crs != 'EPSG:4326':
+        #         try:
+        #             _native_srid = int(native_crs[5:])
+        #             _wkt_wgs84 = geo_limit.split(';')[1]
+        #             _poly = GEOSGeometry(_wkt_wgs84, srid=4326)
+        #             _poly.transform(_native_srid)
+        #             geo_limit = _poly.ewkt
+        #         except Exception as e:
+        #             traceback.print_exc()
+        #             logger.exception(e)
         access_el = etree.SubElement(root_el, "access")
         access_el.text = "LIMIT"
         limits = etree.SubElement(root_el, "limits")
