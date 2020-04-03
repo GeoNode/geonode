@@ -41,19 +41,19 @@ define(['upload/upload',
 
     function getSelectedTimeAttribute() {
         var selected_attribute;
-        $('input[id="id_time_attribute"]').each(function(index) {
-            if($('input[id="id_time_attribute"]')[index].checked) {
-                selected_attribute = $('input[id="id_time_attribute"]')[index].value;
+        $('input[id^="id_time_attribute"]').each(function(index) {
+            if($('input[id^="id_time_attribute"]')[index].checked) {
+                selected_attribute = $('input[id^="id_time_attribute"]')[index].value;
             }
         });
-        $('input[id="id_text_attribute"]').each(function(index) {
-            if($('input[id="id_text_attribute"]')[index].checked) {
-                selected_attribute = $('input[id="id_text_attribute"]')[index].value;
+        $('input[id^="id_text_attribute"]').each(function(index) {
+            if($('input[id^="id_text_attribute"]')[index].checked) {
+                selected_attribute = $('input[id^="id_text_attribute"]')[index].value;
             }
         });
-        $('input[id="id_year_attribute"]').each(function(index) {
-            if($('input[id="id_year_attribute"]')[index].checked) {
-                selected_attribute = $('input[id="id_year_attribute"]')[index].value;
+        $('input[id^="id_year_attribute"]').each(function(index) {
+            if($('input[id^="id_year_attribute"]')[index].checked) {
+                selected_attribute = $('input[id^="id_year_attribute"]')[index].value;
             }
         });
         return selected_attribute;
@@ -82,34 +82,34 @@ define(['upload/upload',
         var data_validation_toggled = data_validation;
         if(toggle) {
             data_validation = true;
-            $('input[id="id_time_attribute"]').each(function(index) {
-                if($($('input[id="id_time_attribute"]')[index]).attr('type') == 'hidden' ||
-                    $($('input[id="id_time_attribute"]')[index]).is(":hidden")) {
-                        $($('input[id="id_time_attribute"]')[index]).show();
+            $('input[id^="id_time_attribute"]').each(function(index) {
+                if($($('input[id^="id_time_attribute"]')[index]).attr('type') == 'hidden' ||
+                    $($('input[id^="id_time_attribute"]')[index]).is(":hidden")) {
+                        $($('input[id^="id_time_attribute"]')[index]).show();
                 }
             });
-            $('input[id="id_text_attribute"]').each(function(index) {
-                if($($('input[id="id_text_attribute"]')[index]).attr('type') == 'hidden' ||
-                    $($('input[id="id_text_attribute"]')[index]).is(":hidden")) {
-                        $($('input[id="id_text_attribute"]')[index]).show();
+            $('input[id^="id_text_attribute"]').each(function(index) {
+                if($($('input[id^="id_text_attribute"]')[index]).attr('type') == 'hidden' ||
+                    $($('input[id^="id_text_attribute"]')[index]).is(":hidden")) {
+                        $($('input[id^="id_text_attribute"]')[index]).show();
                 }
             });
-            $('input[id="id_year_attribute"]').each(function(index) {
-                if($($('input[id="id_year_attribute"]')[index]).attr('type') == 'hidden' ||
-                    $($('input[id="id_year_attribute"]')[index]).is(":hidden")) {
-                        $($('input[id="id_year_attribute"]')[index]).show();
+            $('input[id^="id_year_attribute"]').each(function(index) {
+                if($($('input[id^="id_year_attribute"]')[index]).attr('type') == 'hidden' ||
+                    $($('input[id^="id_year_attribute"]')[index]).is(":hidden")) {
+                        $($('input[id^="id_year_attribute"]')[index]).show();
                 }
             });
         } else {
             data_validation = false;
-            $('input[id="id_time_attribute"]').each(function(index) {
-                $($('input[id="id_time_attribute"]')[index]).hide();
+            $('input[id^="id_time_attribute"]').each(function(index) {
+                $($('input[id^="id_time_attribute"]')[index]).hide();
             });
-            $('input[id="id_text_attribute"]').each(function(index) {
-                $($('input[id="id_text_attribute"]')[index]).hide();
+            $('input[id^="id_text_attribute"]').each(function(index) {
+                $($('input[id^="id_text_attribute"]')[index]).hide();
             });
-            $('input[id="id_year_attribute"]').each(function(index) {
-                $($('input[id="id_year_attribute"]')[index]).hide();
+            $('input[id^="id_year_attribute"]').each(function(index) {
+                $($('input[id^="id_year_attribute"]')[index]).hide();
             });
         }
 
@@ -264,17 +264,17 @@ define(['upload/upload',
 
         $('input:radio').click(function(event){
             var obj = event.currentTarget
-            if(obj.id === 'id_time_attribute') {
+            if(obj.id.includes('id_time_attribute')) {
                 toggleTimeDataTableValidation(true);
                 if($('#existing') && !$('#existing')[0].checked) {
                     $('#existing')[0].checked = true;
                 }
-            } else if(obj.id === 'id_text_attribute') {
+            } else if(obj.id.includes('id_text_attribute')) {
                 toggleTimeDataTableValidation(true);
                 if($('#textattribute') && !$('#textattribute')[0].checked) {
                     $('#textattribute')[0].checked = true;
                 }
-            } else if(obj.id === 'id_year_attribute') {
+            } else if(obj.id.includes('id_year_attribute')) {
                 toggleTimeDataTableValidation(true);
                 if($('#convertnumber') && !$('#convertnumber')[0].checked) {
                     $('#convertnumber')[0].checked = true;
@@ -284,19 +284,19 @@ define(['upload/upload',
             } else if(obj.id === 'notime') {
                 toggleTimeDataTableValidation(false);
 
-                $('input[id="id_time_attribute"]').each(function(index) {
-                    if($('input[id="id_time_attribute"]')[index].checked) {
-                        $('input[id="id_time_attribute"]')[index].checked = false;
+                $('input[id^="id_time_attribute"]').each(function(index) {
+                    if($('input[id^="id_time_attribute"]')[index].checked) {
+                        $('input[id^="id_time_attribute"]')[index].checked = false;
                     }
                 });
-                $('input[id="id_text_attribute"]').each(function(index) {
-                    if($('input[id="id_text_attribute"]')[index].checked) {
-                        $('input[id="id_text_attribute"]')[index].checked = false;
+                $('input[id^="id_text_attribute"]').each(function(index) {
+                    if($('input[id^="id_text_attribute"]')[index].checked) {
+                        $('input[id^="id_text_attribute"]')[index].checked = false;
                     }
                 });
-                $('input[id="id_year_attribute"]').each(function(index) {
-                    if($('input[id="id_year_attribute"]')[index].checked) {
-                        $('input[id="id_year_attribute"]')[index].checked = false;
+                $('input[id^="id_year_attribute"]').each(function(index) {
+                    if($('input[id^="id_year_attribute"]')[index].checked) {
+                        $('input[id^="id_year_attribute"]')[index].checked = false;
                     }
                 });
             }
