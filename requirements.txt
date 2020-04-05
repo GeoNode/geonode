@@ -78,7 +78,7 @@ django-mapstore-adapter==1.0.17
 django-geonode-mapstore-client==1.4.8
 django-geonode-client==1.0.9
 geonode-user-messages==0.1.14
-geonode-avatar==3.0.4
+geonode-avatar==5.0.0
 geonode-announcements==1.0.13
 geonode-agon-ratings==0.3.8
 arcrest>=10.0
