@@ -590,7 +590,6 @@ define(function (require, exports) {
                 var req = $.ajaxSettings.xhr();
                 if (req) {
                     req.upload.addEventListener('progress', function(evt) {
-                        console.log(req.status)
                         if(evt.lengthComputable) {
                             var pct = (evt.loaded / evt.total) * 100;
                             $('#prog > .progress-bar').css('width', pct.toPrecision(3) + '%');
