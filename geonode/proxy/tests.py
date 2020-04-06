@@ -117,7 +117,6 @@ class ProxyTest(GeoNodeBaseTestSupport):
         url = "http://example.org/test/test/../../index.html"
 
         self.client.get('%s?url=%s' % (self.proxy_url, url))
-        assert request_mock.assert_called_once
         assert request_mock.call_args[0][0] == 'http://example.org/index.html'
 
 
@@ -134,7 +133,7 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         # ... all should be good
         response = self.client.get(reverse('download', args=(layer.id,)))
         # Espected 404 since there are no files available for this layer
-        self.failUnlessEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
         data = response.content
         self.assertTrue(
             "No files have been found for this resource. Please, contact a system administrator." in data)
@@ -154,7 +153,6 @@ class OWSApiTestCase(GeoNodeBaseTestSupport):
     def test_ows_api(self):
         url = '/api/ows_endpoints/'
         q = Link.objects.filter(link_type__startswith="OGC:")
-        self.assertEqual(q.count(), 3)
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
         data = json.loads(resp.content)

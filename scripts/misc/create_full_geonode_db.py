@@ -48,8 +48,9 @@ from geonode.layers.tasks import delete_layer
 def get_random_user():
     """ Get a random user """
     users_count = get_user_model().objects.all().count()
-    random_index = randint(0, users_count -1)
+    random_index = randint(0, users_count - 1)
     return get_user_model().objects.all()[random_index]
+
 
 def assign_random_category(resource):
     """ Assign a random category to a resource """
@@ -58,10 +59,12 @@ def assign_random_category(resource):
     resource.category = tc
     resource.save()
 
+
 def assign_keywords(resource):
     """ Assigns up to 5 keywords to resource """
     for i in range(0, randint(0, 5)):
         resource.keywords.add('keyword_%s' % randint(0, n_keywords))
+
 
 def assign_regions(resource):
     """ Assign up to 5 regions to resource """
@@ -70,12 +73,14 @@ def assign_regions(resource):
         region = Region.objects.all()[random_index]
         resource.regions.add(region)
 
+
 def create_users(n_users):
     """ Create n users in the database """
     for i in range(0, n_users):
         user = get_user_model()
         user.username = 'user_%s' % i
         user.save()
+
 
 def set_resource(resource):
     """ Assign poc, metadata_author, category and regions to resource """
@@ -84,10 +89,11 @@ def set_resource(resource):
     assign_random_category(resource)
     assign_regions(resource)
 
+
 def create_document(number):
     """ Creates a new document """
     file_list = glob.glob('%s*.jpg' % doc_path)
-    random_index = randint(0, len(file_list) -1)
+    random_index = randint(0, len(file_list) - 1)
     file_uri = file_list[random_index]
     title = 'Document N. %s' % number
     img_filename = '%s_img.jpg' % number
@@ -101,10 +107,11 @@ def create_document(number):
     resource = doc.get_self_resource()
     set_resource(resource)
 
+
 def create_layer(number):
     """ Creates a new layer """
     file_list = glob.glob('%s*.shp' % shp_path)
-    random_index = randint(0, len(file_list) -1)
+    random_index = randint(0, len(file_list) - 1)
     file_uri = file_list[random_index]
     layer = file_upload(file_uri)
     # keywords
@@ -112,6 +119,7 @@ def create_layer(number):
     # other stuff
     resource = layer.get_self_resource()
     set_resource(resource)
+
 
 # in doc_path set a path containing *.jpg files
 # in shp_path set a path containing *.shp files

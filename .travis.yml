@@ -248,6 +248,9 @@ jobs:
           - USER_ANALYTICS_ENABLED: 'True'
           - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
           - CELERY_ALWAYS_EAGER: 'True'
+          - DATABASE_URL: 'postgis://geonode:geonode@localhost:5432/upload_test'
+          - GEODATABASE_URL: 'postgis://geonode:geonode@localhost:5432/upload_test'
+          - DEFAULT_BACKEND_DATASTORE: 'datastore'
 
     - stage: integration-tests
       name: "QGis Server Integration Tests"
@@ -265,17 +268,19 @@ jobs:
           - SITEURL: http://localhost:8000/
           - QGIS_SERVER_PORT: 9000
           - ON_TRAVIS: 'True'
+          - TEST_RUNNER_KEEPDB: 'True'
           - TEST_RUN_INTEGRATION: 'True'
           - MONITORING_ENABLED: 'False'
           - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
           - CELERY_ALWAYS_EAGER: 'True'
+          - DATABASE_URL: 'postgresql://geonode:geonode@localhost:5432/upload_test'
+          - GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY: 'leaflet'
 
   fast_finish: true
 
   allow_failures:
     - name: "GeoServer-backend Upload Tests"
-    - name: "QGis Server-backend Core Modules Smoke Tests"
-    - name: "QGis Server-backend Contrib Apps Smoke Tests"
+    - name: "Backend Integration Tests"
     - name: "QGis Server Integration Tests"
 
 before_install:
@@ -292,6 +297,7 @@ before_install:
       scripts/misc/qgis_server_setup.sh before_install;
       sudo apt-get autoremove sqlite3;
     fi
+  - python --version;
 
 install:
   - set -ex;
