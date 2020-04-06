@@ -182,7 +182,7 @@ class Command(BaseCommand):
             # not be Geoserver data dir)
             # for dockerized project-template GeoNode projects, it should be located in /backup-restore,
             # otherwise default tmp directory is chosen
-            temp_dir_path = '/backup-restore' if os.path.exists('/backup-restore') else None
+            temp_dir_path = '/backup_restore' if os.path.exists('/backup_restore') else None
 
             with tempfile.TemporaryDirectory(dir=temp_dir_path) as restore_folder:
 
