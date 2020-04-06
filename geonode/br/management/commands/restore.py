@@ -148,8 +148,6 @@ class Command(BaseCommand):
         # choose backup_file from backup_files_dir, if --backup-files-dir was provided
         if backup_files_dir:
             backup_file = self.parse_backup_files_dir(backup_files_dir)
-        else:
-            backup_files_dir = os.path.dirname(backup_file)
 
         # calculate and validate backup archive hash
         backup_md5 = self.validate_backup_file_hash(backup_file)
