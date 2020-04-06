@@ -178,9 +178,13 @@ class Command(BaseCommand):
         if force_exec or utils.confirm(prompt=message, resp=False):
 
             # Create Target Folder
-            # target_folder must be located in the directory Geoserver has access to, for dockerized
-            # project-template GeoNode projects, it has to be located in /geoserver_data/data directory
-            with tempfile.TemporaryDirectory(dir=backup_files_dir) as restore_folder:
+            # restore_folder must be located in the directory Geoserver has access to (and it should
+            # not be Geoserver data dir)
+            # for dockerized project-template GeoNode projects, it should be located in /backup-restore,
+            # otherwise default tmp directory is chosen
+            temp_dir_path = '/backup-restore' if os.path.exists('/backup-restore') else None
+
+            with tempfile.TemporaryDirectory(dir=temp_dir_path) as restore_folder:
 
                 # Extract ZIP Archive to Target Folder
                 target_folder = extract_archive(backup_file, restore_folder)
