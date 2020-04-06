@@ -148,6 +148,8 @@ class Command(BaseCommand):
         # choose backup_file from backup_files_dir, if --backup-files-dir was provided
         if backup_files_dir:
             backup_file = self.parse_backup_files_dir(backup_files_dir)
+        else:
+            backup_files_dir = os.path.dirname(backup_file)
 
         # calculate and validate backup archive hash
         backup_md5 = self.validate_backup_file_hash(backup_file)
@@ -180,7 +182,7 @@ class Command(BaseCommand):
             # not be Geoserver data dir)
             # for dockerized project-template GeoNode projects, it should be located in /backup-restore,
             # otherwise default tmp directory is chosen
-            temp_dir_path = '/backup_restore' if os.path.exists('/backup_restore') else None
+            temp_dir_path = backup_files_dir if os.path.exists(backup_files_dir) else None
 
             with tempfile.TemporaryDirectory(dir=temp_dir_path) as restore_folder:
 
@@ -553,7 +555,7 @@ class Command(BaseCommand):
                   'file "{}" not found.'.format(geoserver_bk_file)))
             return
 
-        print("Restoring 'GeoServer Catalog ["+url+"]' into '"+geoserver_bk_file+"'.")
+        print("Restoring 'GeoServer Catalog ["+url+"]' from '"+geoserver_bk_file+"'.")
 
         # Best Effort Restore: 'options': {'option': ['BK_BEST_EFFORT=true']}
         data = {'restore': {'archiveFile': geoserver_bk_file, 'options': {}}}
@@ -630,14 +632,14 @@ class Command(BaseCommand):
         if (config.gs_data_dir):
             if (config.gs_dump_raster_data):
 
-                gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
+                gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'geonode')
                 if not os.path.exists(gs_data_folder):
                     print(('Skipping geoserver raster data restore: ' +
                           'directory "{}" not found.'.format(gs_data_folder)))
                     return
 
                 # Restore '$config.gs_data_dir/data/geonode'
-                gs_data_root = os.path.join(config.gs_data_dir, 'data', 'geonode')
+                gs_data_root = os.path.join(config.gs_data_dir, 'geonode')
                 if not os.path.isabs(gs_data_root):
                     gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
 
@@ -679,7 +681,7 @@ class Command(BaseCommand):
         """Restore Vectorial Data from DB"""
         if (config.gs_dump_vector_data):
 
-            gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
+            gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'geonode')
             if not os.path.exists(gs_data_folder):
                 print(('Skipping geoserver vector data restore: ' +
                       'directory "{}" not found.'.format(gs_data_folder)))
