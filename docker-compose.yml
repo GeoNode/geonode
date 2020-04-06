@@ -30,6 +30,7 @@ services:
       - data-dir-conf
     volumes:
       - geoserver-data-dir:/geoserver_data/data
+      - backup-restore:/backup_restore
     env_file:
       - ./scripts/docker/env/${SET_DOCKER_ENV}/geoserver.env
 
@@ -50,6 +51,7 @@ services:
     volumes:
       - statics:/mnt/volumes/statics
       - geoserver-data-dir:/geoserver_data/data
+      - backup-restore:/backup_restore
     env_file:
       - ./scripts/docker/env/${SET_DOCKER_ENV}/django.env
 
@@ -92,3 +94,5 @@ volumes:
     name: ${COMPOSE_PROJECT_NAME}-dbbackups
   rabbitmq:
     name: ${COMPOSE_PROJECT_NAME}-rabbitmq
+  backup-restore:
+    name: ${COMPOSE_PROJECT_NAME}-backup-restore
