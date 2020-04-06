@@ -277,7 +277,7 @@ class Command(BaseCommand):
 
         print("Dumping 'GeoServer Catalog ["+url+"]' into '"+geoserver_bk_file+"'.")
         data = {'backup': {'archiveFile': geoserver_bk_file, 'overwrite': 'true',
-                           'options': {'option': ['BK_BEST_EFFORT=true']}}}
+                           'options': {'option': ['BK_CLEANUP_TEMP=true']}}}
         headers = {
             'Accept': 'application/json',
             'Content-type': 'application/json'
@@ -336,6 +336,9 @@ class Command(BaseCommand):
                         time.sleep(3)
                     else:
                         raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+                if gs_bk_exec_status == 'FAILED':
+                    raise ValueError(error_backup.format(url, r.status_code, r.text))
             else:
                 raise ValueError(error_backup.format(url, r.status_code, r.text))
 
