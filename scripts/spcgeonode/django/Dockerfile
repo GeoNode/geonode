@@ -44,7 +44,7 @@ RUN pip install pygdal==$(gdal-config --version).*
 RUN mkdir /spcgeonode
 WORKDIR /spcgeonode/
 ADD . /spcgeonode/
-RUN pip install -e .
+RUN pip install -e . --upgrade
 RUN chmod +x scripts/spcgeonode/django/docker-entrypoint.sh
 
 # Export ports

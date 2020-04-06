@@ -6,8 +6,16 @@ This script initializes Geonode
 # Setting up the  context
 #########################################################
 
-import os, requests, json, uuid, django, datetime, time
+import os
+import requests
+import json
+import uuid
+import django
+import datetime
+import time
+
 django.setup()
+
 
 #########################################################
 # Imports
@@ -92,8 +100,8 @@ app, created = Application.objects.get_or_create(
     authorization_grant_type='authorization-code',
 )
 app.skip_authorization = True
-_host = os.getenv('HTTPS_HOST',"") if os.getenv('HTTPS_HOST',"") != "" else os.getenv('HTTP_HOST')
-_port = os.getenv('HTTPS_PORT') if os.getenv('HTTPS_HOST',"") != "" else os.getenv('HTTP_PORT')
+_host = os.getenv('HTTPS_HOST', "") if os.getenv('HTTPS_HOST', "") != "" else os.getenv('HTTP_HOST')
+_port = os.getenv('HTTPS_PORT') if os.getenv('HTTPS_HOST', "") != "" else os.getenv('HTTP_PORT')
 if _port and _port not in ("80", "443"):
     redirect_uris = [
         'http://{}:{}/geoserver'.format(_host, _port),
@@ -128,7 +136,8 @@ call_command('loaddata', 'initial_data')
 
 print("-----------------------------------------------------")
 print("6. Running updatemaplayerip")
-# call_command('updatelayers') # TODO CRITICAL : this overrides the layer thumbnail of existing layers even if unchanged !!!
+# call_command('updatelayers')
+#  TODO CRITICAL : this overrides the layer thumbnail of existing layers even if unchanged !!!
 call_command('updatemaplayerip')
 
 
@@ -164,18 +173,20 @@ print("9. Securing GeoServer")
 
 # Getting the old password
 try:
-    r1 = requests.get('http://geoserver:8080/geoserver/rest/security/masterpw.json', auth=(admin_username, admin_password))
-except requests.exceptions.ConnectionError as e:
+    r1 = requests.get('http://geoserver:8080/geoserver/rest/security/masterpw.json',
+                      auth=(admin_username, admin_password))
+except requests.exceptions.ConnectionError:
     print("Unable to connect to GeoServer. Make sure GeoServer is started and accessible.")
     exit(1)
 r1.raise_for_status()
 old_password = json.loads(r1.text)["oldMasterPassword"]
 
-if old_password=='M(cqp{V1':
+if old_password == 'M(cqp{V1':
     print("Randomizing master password")
     new_password = uuid.uuid4().hex
-    data = json.dumps({"oldMasterPassword":old_password,"newMasterPassword":new_password})
-    r2 = requests.put('http://geoserver:8080/geoserver/rest/security/masterpw.json', data=data, headers={'Content-Type': 'application/json'}, auth=(admin_username, admin_password))
+    data = json.dumps({"oldMasterPassword": old_password, "newMasterPassword": new_password})
+    r2 = requests.put('http://geoserver:8080/geoserver/rest/security/masterpw.json', data=data,
+                      headers={'Content-Type': 'application/json'}, auth=(admin_username, admin_password))
     r2.raise_for_status()
 else:
     print("Master password was already changed. No changes made.")
@@ -188,11 +199,13 @@ else:
 print("-----------------------------------------------------")
 print("10. Test User Model")
 
+
 def make_token_expiration(seconds=86400):
     _expire_seconds = getattr(settings, 'ACCESS_TOKEN_EXPIRE_SECONDS', seconds)
     _expire_time = datetime.datetime.now(timezone.get_current_timezone())
     _expire_delta = datetime.timedelta(seconds=_expire_seconds)
     return _expire_time + _expire_delta
+
 
 user = get_user_model().objects.get(username=admin_username)
 expires = make_token_expiration()

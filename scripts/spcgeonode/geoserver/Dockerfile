@@ -52,6 +52,7 @@ EXPOSE 8080
 # Set environnment variables
 ENV GEOSERVER_HOME=/geoserver
 ENV GEOSERVER_DATA_DIR=/spcgeonode-geodatadir
+ENV GEOSERVER_CSRF_DISABLED=true
 
 # Run geoserver
 CMD ["bin/startup.sh"]

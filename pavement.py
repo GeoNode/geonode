@@ -39,6 +39,7 @@ import zipfile
 from tqdm import tqdm
 import requests
 import math
+import psutil
 
 import yaml
 from paver.easy import (
@@ -145,6 +146,7 @@ def grab(src, dest, name):
 @cmdopts([
     ('geoserver=', 'g', 'The location of the geoserver build (.war file).'),
     ('jetty=', 'j', 'The location of the Jetty Runner (.jar file).'),
+    ('force_exec=', '', 'Force GeoServer Setup.')
 ])
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
@@ -152,7 +154,7 @@ def setup_geoserver(options):
     _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
     if _backend == 'geonode.qgis_server' or 'geonode.geoserver' not in INSTALLED_APPS:
         return
-    if _django_11 and on_travis:
+    if on_travis and not options.get('force_exec', False):
         """Will make use of the docker container for the Integration Tests"""
         pass
     else:
@@ -397,6 +399,9 @@ def upgradedb(options):
 
 
 @task
+@cmdopts([
+    ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
+])
 def updategeoip(options):
     """
     Update geoip db
@@ -507,7 +512,6 @@ def start(options):
     """
     Start GeoNode (Django, GeoServer & Client)
     """
-    sh('sleep 30')
     info("GeoNode is now available.")
 
 
@@ -522,12 +526,15 @@ def stop_django(options):
 
 
 @task
+@cmdopts([
+    ('force_exec=', '', 'Force GeoServer Stop.')
+])
 def stop_geoserver(options):
     """
     Stop GeoServer
     """
     # we use docker-compose for integration tests
-    if on_travis:
+    if on_travis and not options.get('force_exec', False):
         return
 
     # only start if using Geoserver backend
@@ -544,18 +551,14 @@ def stop_geoserver(options):
             "ps -ef | grep -i -e 'geoserver' | awk '{print $2}'",
             shell=True,
             stdout=subprocess.PIPE)
-        for pid in proc.stdout:
-            info('Stopping geoserver (process number %s)' % int(pid))
-            os.kill(int(pid), signal.SIGKILL)
-            os.kill(int(pid), 9)
-            sh('sleep 30')
+        for pid in map(int, proc.stdout):
+            info('Stopping geoserver (process number {})'.format(pid))
+            os.kill(pid, signal.SIGKILL)
+
             # Check if the process that we killed is alive.
-            try:
-                os.kill(int(pid), 0)
-                # raise Exception("""wasn't able to kill the process\nHINT:use
-                # signal.SIGKILL or signal.SIGABORT""")
-            except OSError:
-                continue
+            killed, alive = psutil.wait_procs([psutil.Process(pid=pid)], timeout=30)
+            for p in alive:
+                p.kill()
     except Exception as e:
         info(e)
 
@@ -609,6 +612,7 @@ def start_django(options):
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     bind = options.get('bind', '0.0.0.0:8000')
+    port = bind.split(":")[1]
     foreground = '' if options.get('foreground', False) else '&'
     sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
 
@@ -645,6 +649,12 @@ def start_django(options):
     if ASYNC_SIGNALS:
         sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
 
+    # wait for Django to start
+    started = waitfor("http://localhost:" + port)
+    if not started:
+        info('Django never started properly or timed out.')
+        sys.exit(1)
+
 
 @task
 def start_messaging(options):
@@ -660,14 +670,15 @@ def start_messaging(options):
 
 @task
 @cmdopts([
-    ('java_path=', 'j', 'Full path to java install for Windows')
+    ('java_path=', 'j', 'Full path to java install for Windows'),
+    ('force_exec=', '', 'Force GeoServer Start.')
 ])
 def start_geoserver(options):
     """
     Start GeoServer with GeoNode extensions
     """
     # we use docker-compose for integration tests
-    if on_travis:
+    if on_travis and not options.get('force_exec', False):
         return
 
     # only start if using Geoserver backend
@@ -735,7 +746,7 @@ def start_geoserver(options):
             if loggernullpath == "nul":
                 try:
                     open("../../downloaded/null.txt", 'w+').close()
-                except IOError as e:
+                except IOError:
                     print("Chances are that you have Geoserver currently running. You "
                           "can either stop all servers with paver stop or start only "
                           "the django application with paver start_django.")
@@ -764,7 +775,9 @@ def start_geoserver(options):
             sh((
                 '%(javapath)s -Xms512m -Xmx2048m -server -XX:+UseConcMarkSweepGC -XX:MaxPermSize=512m'
                 ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
+                ' -DGEOSERVER_CSRF_DISABLED=true'
                 ' -Dgeofence.dir=%(geofence_dir)s'
+                ' -Djava.awt.headless=true'
                 # ' -Dgeofence-ovr=geofence-datasource-ovr.properties'
                 # workaround for JAI sealed jar issue and jetty classloader
                 # ' -Dorg.eclipse.jetty.server.webapp.parentLoaderPriority=true'
@@ -891,18 +904,20 @@ def test_integration(options):
     settings = options.get('settings', '')
     success = False
     try:
-        call_task('setup', options={'settings': settings})
+        call_task('setup', options={'settings': settings, 'force_exec': True})
 
         if name and name in ('geonode.tests.csw', 'geonode.tests.integration', 'geonode.geoserver.tests.integration'):
+            if not settings:
+                settings = 'geonode.local_settings' if _backend == 'geonode.qgis_server' else 'geonode.settings'
+                settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
             call_task('sync', options={'settings': settings})
+            if _backend == 'geonode.geoserver':
+                call_task('start_geoserver', options={'settings': settings, 'force_exec': True})
             call_task('start', options={'settings': settings})
             call_task('setup_data', options={'settings': settings})
         elif not integration_csw_tests and _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
-            if _django_11:
-                sh("cp geonode/upload/tests/test_settings.py geonode/")
-                settings = 'geonode.test_settings'
-            else:
-                settings = 'geonode.upload.tests.test_settings'
+            sh("cp geonode/upload/tests/test_settings.py geonode/")
+            settings = 'geonode.test_settings'
             sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
                "makemigrations --noinput".format(settings))
             sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
@@ -930,20 +945,18 @@ def test_integration(options):
             live_server_option = ''
 
         info("Running the tests now...")
-
         sh(('%s %s manage.py test %s'
             ' %s --noinput %s' % (settings,
-                                    prefix,
-                                    name,
-                                    _keepdb,
-                                    live_server_option)))
+                                  prefix,
+                                  name,
+                                  _keepdb,
+                                  live_server_option)))
 
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
     else:
         success = True
     finally:
-        # don't use call task here - it won't run since it already has
         stop(options)
         _reset()
 
@@ -1192,19 +1205,17 @@ def kill(arg1, arg2):
         running = False
         for line in lines:
             # this kills all java.exe and python including self in windows
-            if ('%s' %
-                arg2 in line) or (os.name == 'nt' and '%s' %
-                                  arg1 in line):
+            if ('%s' % arg2 in str(line)) or (os.name == 'nt' and '%s' % arg1 in str(line)):
                 running = True
 
                 # Get pid
                 fields = line.strip().split()
 
-                info('Stopping %s (process number %s)' % (arg1, fields[1]))
+                info('Stopping %s (process number %s)' % (arg1, int(fields[1])))
                 if os.name == 'nt':
-                    kill = 'taskkill /F /PID "%s"' % fields[1]
+                    kill = 'taskkill /F /PID "%s"' % int(fields[1])
                 else:
-                    kill = 'kill -9 %s 2> /dev/null' % fields[1]
+                    kill = 'kill -9 %s 2> /dev/null' % int(fields[1])
                 os.system(kill)
 
         # Give it a little more time
@@ -1215,7 +1226,7 @@ def kill(arg1, arg2):
     if running:
         raise Exception('Could not stop %s: '
                         'Running processes are\n%s'
-                        % (arg1, '\n'.join([l.strip() for l in lines])))
+                        % (arg1, '\n'.join([str(l).strip() for l in lines])))
 
 
 def waitfor(url, timeout=300):

@@ -8,6 +8,14 @@
       }
     },
     {
+      "pk": 2,
+      "model": "auth.group",
+      "fields": {
+        "name": "registered-members",
+        "permissions": []
+      }
+    },
+    {
         "fields": {
             "access": "private",
             "description": "Registered Members",
@@ -33,16 +41,6 @@
         },
         "model": "groups.groupprofile",
         "pk": 2
-    },
-    {
-        "fields": {
-            "group": 2,
-            "joined": "2012-02-28 14:47:22",
-            "role": "manager",
-            "user": 1
-        },
-        "model": "groups.groupmember",
-        "pk": 1
     },
     {
         "fields": {

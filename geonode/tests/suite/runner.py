@@ -135,7 +135,7 @@ class ParallelTestSuiteRunner(object):
             group_tests = tests[group]
             del tests[group]
 
-            logger.info('Running tests in a main process: %s' % (group_tests))
+            logger.debug('Running tests in a main process: %s' % (group_tests))
             pending_not_thread_safe_tests[group] = group_tests
             result = self._tests_func(tests=group_tests, worker_index=None)
             results_queue.put((group, result), block=False)
@@ -165,13 +165,13 @@ class ParallelTestSuiteRunner(object):
             worker_count = worker_max
 
         worker_args = (tests_queue, results_queue, stop_event)
-        logger.info("Number of workers %s " % worker_count)
+        logger.debug("Number of workers %s " % worker_count)
         workers = self._create_worker_pool(pool_size=worker_count,
                                            target_func=self._run_tests_worker,
                                            worker_args=worker_args)
 
         for index, worker in enumerate(workers):
-            logger.info('Staring worker %s' % (index))
+            logger.debug('Staring worker %s' % (index))
             worker.start()
 
         if workers:
@@ -189,7 +189,7 @@ class ParallelTestSuiteRunner(object):
                         else:
                             pending_not_thread_safe_tests.pop(group)
                     except KeyError:
-                        logger.info('Got a result for unknown group: %s' % (group))
+                        logger.debug('Got a result for unknown group: %s' % (group))
                     else:
                         completed_tests[group] = result
                         self._print_result(result)
@@ -236,14 +236,14 @@ class ParallelTestSuiteRunner(object):
 
                     try:
                         result = None
-                        logger.info(
+                        logger.debug(
                             'Worker %s is running tests %s' %
                             (index, tests))
                         result = self._tests_func(
                             tests=tests, worker_index=index)
 
                         results_queue.put((group, result))
-                        logger.info(
+                        logger.debug(
                             'Worker %s has finished running tests %s' %
                             (index, tests))
                     except (KeyboardInterrupt, SystemExit):
@@ -257,19 +257,18 @@ class ParallelTestSuiteRunner(object):
                         import traceback
                         tb = traceback.format_exc()
                         logger.error(tb)
-                        logger.info('Running tests failed, reason: %s' % (str(e)))
+                        logger.debug('Running tests failed, reason: %s' % (str(e)))
 
                         result = TestResult().from_exception(e)
                         results_queue.put((group, result))
             except Empty:
-                logger.info(
+                logger.debug(
                     'Worker %s timed out while waiting for tests to run' %
                     (index))
         finally:
             tests_queue.close()
             results_queue.close()
-
-        logger.info('Worker %s is stopping' % (index))
+        logger.debug('Worker %s is stopping' % (index))
 
     def _pre_tests_func(self):
         # This method gets called before _tests_func is called
@@ -281,7 +280,7 @@ class ParallelTestSuiteRunner(object):
         pass
 
     def _tests_func(self, worker_index):
-        raise '_tests_func not implements'
+        raise Exception('_tests_func not implements')
 
     def _print_result(self, result):
         print >> sys.stderr, result.output

@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeLiveTestSupport
 
 import base64
 import json
@@ -50,6 +50,7 @@ from geonode.geoserver.helpers import (
     _prepare_thumbnail_body_from_opts)
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 san_andres_y_providencia_sld = """<?xml version="1.0" encoding="UTF-8"?>
@@ -564,7 +565,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         assign_perm('change_layer_style', bob, layer)
 
         logged_in = self.client.login(username='bobby', password='bob')
-        self.assertEquals(logged_in, True)
+        self.assertEqual(logged_in, True)
         response = self.client.get(
             reverse(
                 'layer_style_manage', args=(
@@ -576,7 +577,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             reverse(
                 'layer_style_manage', args=(
                     layer.alternate,)), data=form_data)
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_style_validity_and_name(self):
@@ -585,15 +586,19 @@ class LayerTests(GeoNodeBaseTestSupport):
         d = None
         try:
             d = tempfile.mkdtemp()
-            for f in ("san_andres_y_providencia.sld",
-                      "lac.sld",
-                      "freshgwabs2.sld",
-                      "raster.sld",
-                      "line.sld",):
+            files = (
+                "san_andres_y_providencia.sld",
+                "lac.sld",
+                "freshgwabs2.sld",
+                "raster.sld",
+                "line.sld",
+            )
+
+            for f in files:
                 path = os.path.join(d, f)
-                f = open(path, "wb")
-                f.write(SLDS[splitext(basename(path))[0]])
-                f.close()
+                with open(path, 'w') as f:
+                    name, ext = splitext(basename(path))
+                    f.write(SLDS[name])
 
             # Test 'san_andres_y_providencia.sld'
             san_andres_y_providencia_sld_file = os.path.join(
@@ -602,7 +607,7 @@ class LayerTests(GeoNodeBaseTestSupport):
                 san_andres_y_providencia_sld_file).read()
             san_andres_y_providencia_sld_name = extract_name_from_sld(
                 None, san_andres_y_providencia_sld_xml)
-            self.assertEquals(
+            self.assertEqual(
                 san_andres_y_providencia_sld_name,
                 'san_andres_y_providencia_administrative')
 
@@ -611,22 +616,21 @@ class LayerTests(GeoNodeBaseTestSupport):
             lac_sld_xml = open(lac_sld_file).read()
             lac_sld_name = extract_name_from_sld(
                 None, lac_sld_xml, sld_file=lac_sld_file)
-            self.assertEquals(lac_sld_name,
-                              'LAC NonIndigenous Access to Sanitation')
+            self.assertEqual(lac_sld_name, 'LAC NonIndigenous Access to Sanitation')
 
             # Test 'freshgwabs2.sld'
             freshgwabs2_sld_file = os.path.join(d, "freshgwabs2.sld")
             freshgwabs2_sld_xml = open(freshgwabs2_sld_file).read()
             freshgwabs2_sld_name = extract_name_from_sld(
                 None, freshgwabs2_sld_xml, sld_file=freshgwabs2_sld_file)
-            self.assertEquals(freshgwabs2_sld_name, 'freshgwabs2')
+            self.assertEqual(freshgwabs2_sld_name, 'freshgwabs2')
 
             # Test 'raster.sld'
             raster_sld_file = os.path.join(d, "raster.sld")
             raster_sld_xml = open(raster_sld_file).read()
             raster_sld_name = extract_name_from_sld(
                 None, raster_sld_xml, sld_file=raster_sld_file)
-            self.assertEquals(
+            self.assertEqual(
                 raster_sld_name,
                 'geonode-geonode_gwpollriskafriotest')
 
@@ -635,7 +639,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             line_sld_xml = open(line_sld_file).read()
             line_sld_name = extract_name_from_sld(
                 None, line_sld_xml, sld_file=line_sld_file)
-            self.assertEquals(line_sld_name, 'line 3')
+            self.assertEqual(line_sld_name, 'line 3')
         finally:
             if d is not None:
                 shutil.rmtree(d)
@@ -658,9 +662,9 @@ class LayerTests(GeoNodeBaseTestSupport):
                 args=(
                     invalid_layer_typename,
                 )))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.content)
-        self.assertEquals(response_json['authorized'], False)
+        self.assertEqual(response_json['authorized'], False)
 
         # First test un-authenticated
         response = self.client.post(
@@ -670,11 +674,11 @@ class LayerTests(GeoNodeBaseTestSupport):
                     valid_layer_typename,
                 )))
         response_json = json.loads(response.content)
-        self.assertEquals(response_json['authorized'], False)
+        self.assertEqual(response_json['authorized'], False)
 
         # Next Test with a user that has the proper perms (is owner)
         logged_in = self.client.login(username='bobby', password='bob')
-        self.assertEquals(logged_in, True)
+        self.assertEqual(logged_in, True)
         response = self.client.post(
             reverse(
                 'feature_edit_check',
@@ -682,7 +686,7 @@ class LayerTests(GeoNodeBaseTestSupport):
                     valid_layer_typename,
                 )))
         response_json = json.loads(response.content)
-        self.assertEquals(response_json['authorized'], True)
+        self.assertEqual(response_json['authorized'], True)
 
         # Let's change layer permissions and try again with non-owner
         norman = get_user_model().objects.get(username='norman')
@@ -693,7 +697,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         self.assertNotIn('change_layer_data', perms['users'][norman])
 
         logged_in = self.client.login(username='norman', password='norman')
-        self.assertEquals(logged_in, True)
+        self.assertEqual(logged_in, True)
         response = self.client.post(
             reverse(
                 'feature_edit_check',
@@ -701,7 +705,7 @@ class LayerTests(GeoNodeBaseTestSupport):
                     valid_layer_typename,
                 )))
         response_json = json.loads(response.content)
-        self.assertEquals(response_json['authorized'], False)
+        self.assertEqual(response_json['authorized'], False)
 
         response = self.client.post(
             reverse(
@@ -710,12 +714,11 @@ class LayerTests(GeoNodeBaseTestSupport):
                     valid_layer_typename,
                 )))
         response_json = json.loads(response.content)
-        self.assertEquals(response_json['authorized'], True)
+        self.assertEqual(response_json['authorized'], True)
 
         # Login as a user with the proper permission and test the endpoint
         logged_in = self.client.login(username='admin', password='admin')
-        self.assertEquals(logged_in, True)
-
+        self.assertEqual(logged_in, True)
         response = self.client.post(
             reverse(
                 'feature_edit_check',
@@ -724,7 +727,7 @@ class LayerTests(GeoNodeBaseTestSupport):
                 )))
 
         response_json = json.loads(response.content)
-        self.assertEquals(response_json['authorized'], True)
+        self.assertEqual(response_json['authorized'], True)
 
         layer = Layer.objects.all()[0]
         layer.storeType = "dataStore"
@@ -740,7 +743,7 @@ class LayerTests(GeoNodeBaseTestSupport):
                         valid_layer_typename,
                     )))
             response_json = json.loads(response.content)
-            self.assertEquals(response_json['authorized'], True)
+            self.assertEqual(response_json['authorized'], True)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_acls(self):
@@ -785,14 +788,14 @@ class LayerTests(GeoNodeBaseTestSupport):
         response = self.client.get(reverse('layer_acls'), **valid_auth_headers)
         response_json = json.loads(response.content)
         # 'ro' and 'rw' are unsorted collections
-        self.assertEquals(sorted(expected_result), sorted(response_json))
+        self.assertEqual(sorted(expected_result), sorted(response_json))
 
         # Test that requesting when supplying invalid credentials returns the
         # appropriate error code
         response = self.client.get(
             reverse('layer_acls'),
             **invalid_auth_headers)
-        self.assertEquals(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)
 
         # Test logging in using Djangos normal auth system
         self.client.login(username='admin', password='admin')
@@ -801,11 +804,8 @@ class LayerTests(GeoNodeBaseTestSupport):
         response = self.client.get(reverse('layer_acls'))
         response_json = json.loads(response.content)
 
-        self.assertEquals('admin', response_json['fullname'])
-        self.assertEquals('ad@m.in', response_json['email'])
-
-        # TODO Lots more to do here once jj0hns0n understands the ACL system
-        # better
+        self.assertEqual('admin', response_json['fullname'])
+        self.assertEqual('ad@m.in', response_json['email'])
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_resolve_user(self):
@@ -828,19 +828,18 @@ class LayerTests(GeoNodeBaseTestSupport):
             reverse('layer_resolve_user'),
             **valid_auth_headers)
         response_json = json.loads(response.content)
-        self.assertEquals({'geoserver': False,
-                           'superuser': True,
-                           'user': 'admin',
-                           'fullname': 'admin',
-                           'email': 'ad@m.in'},
-                          response_json)
+        self.assertEqual({'geoserver': False,
+                          'superuser': True,
+                          'user': 'admin',
+                          'fullname': 'admin',
+                          'email': 'ad@m.in'}, response_json)
 
         # Test that requesting when supplying invalid credentials returns the
         # appropriate error code
         response = self.client.get(
             reverse('layer_acls'),
             **invalid_auth_headers)
-        self.assertEquals(response.status_code, 401)
+        self.assertEqual(response.status_code, 401)
 
         # Test logging in using Djangos normal auth system
         self.client.login(username='admin', password='admin')
@@ -849,9 +848,9 @@ class LayerTests(GeoNodeBaseTestSupport):
         response = self.client.get(reverse('layer_resolve_user'))
         response_json = json.loads(response.content)
 
-        self.assertEquals('admin', response_json['user'])
-        self.assertEquals('admin', response_json['fullname'])
-        self.assertEquals('ad@m.in', response_json['email'])
+        self.assertEqual('admin', response_json['user'])
+        self.assertEqual('admin', response_json['fullname'])
+        self.assertEqual('ad@m.in', response_json['email'])
 
 
 class UtilsTests(GeoNodeBaseTestSupport):
@@ -1063,7 +1062,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
                               bbox,
                               srid)
         self.assertIsNotNone(wcs_links)
-        self.assertEquals(len(wcs_links), 2)
+        self.assertEqual(len(wcs_links), 2)
         wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wcs')
         identifier = urllib.urlencode({'coverageid': instance.alternate.encode('utf-8')})
         for _link in wcs_links:
@@ -1131,7 +1130,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
             OGC_Servers_Handler(ogc_server_settings)['default']
 
 
-class SignalsTests(GeoNodeBaseTestSupport):
+class SignalsTests(GeoNodeLiveTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_set_resources_links(self):

@@ -31,6 +31,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 from django.db.models import signals
 from django.utils.timezone import now
+from django.contrib.staticfiles.templatetags import staticfiles
 
 from taggit.managers import TaggableManager
 from guardian.shortcuts import get_objects_for_group
@@ -76,7 +77,7 @@ class GroupProfile(models.Model):
                         'such as a mailing list, shared email, or exchange group.')
 
     group = models.OneToOneField(Group, on_delete=models.CASCADE)
-    title = models.CharField(_('Title'), max_length=50)
+    title = models.CharField(_('Title'), max_length=1000)
     slug = models.SlugField(unique=True)
     logo = models.ImageField(_('Logo'), upload_to="people_group", blank=True)
     description = models.TextField(_('Description'))
@@ -95,9 +96,9 @@ class GroupProfile(models.Model):
         default="public'",
         choices=GROUP_CHOICES,
         help_text=access_help_text)
-    last_modified = models.DateTimeField(auto_now=True, blank=True, null=True)
     categories = models.ManyToManyField(GroupCategory, verbose_name=_("Categories"), blank=True, related_name='groups')
-    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    last_modified = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         group, created = Group.objects.get_or_create(name=self.slug)
@@ -105,7 +106,10 @@ class GroupProfile(models.Model):
         super(GroupProfile, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        Group.objects.filter(name=self.slug).delete()
+        try:
+            Group.objects.filter(name=str(self.slug)).delete()
+        except Exception as e:
+            logger.exception(e)
         super(GroupProfile, self).delete(*args, **kwargs)
 
     @classmethod
@@ -113,7 +117,7 @@ class GroupProfile(models.Model):
         """
         Returns the groups that user is a member of.  If the user is a superuser, all groups are returned.
         """
-        if user.is_authenticated():
+        if user.is_authenticated:
             if user.is_superuser:
                 return cls.objects.all()
             return cls.objects.filter(groupmember__user=user)
@@ -139,12 +143,15 @@ class GroupProfile(models.Model):
             self.group, [
                 'base.view_resourcebase', 'base.change_resourcebase'], any_perm=True)
 
+        _queryset = []
         if resource_type:
-            queryset = [
-                item for item in queryset if hasattr(
-                    item,
-                    resource_type)]
-
+            for item in queryset:
+                try:
+                    if hasattr(item, resource_type):
+                        _queryset.append(item)
+                except Exception as e:
+                    logger.exception(e)
+        queryset = _queryset if _queryset else queryset
         for resource in queryset:
             yield resource
 
@@ -162,24 +169,24 @@ class GroupProfile(models.Model):
                 flat=True)))
 
     def user_is_member(self, user):
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False
         elif user.is_superuser:
             return True
         return user.id in self.member_queryset().values_list("user", flat=True)
 
     def user_is_role(self, user, role):
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False
         elif user.is_superuser:
             return True
         return self.member_queryset().filter(user=user, role=role).exists()
 
     def can_view(self, user):
-        if user.is_superuser and user.is_authenticated():
+        if user.is_superuser and user.is_authenticated:
             return True
         if self.access == "private":
-            return user.is_authenticated() and self.user_is_member(user)
+            return user.is_authenticated and self.user_is_member(user)
         else:
             return True
 
@@ -210,6 +217,7 @@ class GroupProfile(models.Model):
 
     @property
     def logo_url(self):
+        _missing_thumbnail_url = staticfiles.static(settings.MISSING_THUMBNAIL)
         try:
             _base_path = os.path.split(self.logo.path)[0]
             _upload_path = os.path.split(self.logo.url)[1]
@@ -223,6 +231,7 @@ class GroupProfile(models.Model):
             _url = self.logo.url
         except Exception as e:
             logger.debug(e)
+            return _missing_thumbnail_url
         return _url
 
 
@@ -230,8 +239,8 @@ class GroupMember(models.Model):
     MANAGER = "manager"
     MEMBER = "member"
 
-    group = models.ForeignKey(GroupProfile)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    group = models.ForeignKey(GroupProfile, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     role = models.CharField(max_length=10, choices=[
         (MANAGER, _("Manager")),
         (MEMBER, _("Member")),
@@ -246,6 +255,14 @@ class GroupMember(models.Model):
     def delete(self, *args, **kwargs):
         self.user.groups.remove(self.group.group)
         super(GroupMember, self).delete(*args, **kwargs)
+
+    def promote(self, *args, **kwargs):
+        self.role = "manager"
+        super(GroupMember, self).save(*args, **kwargs)
+
+    def demote(self, *args, **kwargs):
+        self.role = "member"
+        super(GroupMember, self).save(*args, **kwargs)
 
 
 def group_pre_delete(instance, sender, **kwargs):

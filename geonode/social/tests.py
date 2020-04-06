@@ -39,6 +39,8 @@ from geonode.layers.models import Layer
 
 class SimpleTest(GeoNodeBaseTestSupport):
 
+    integration = True
+
     def setUp(self):
         super(SimpleTest, self).setUp()
 
