@@ -296,7 +296,7 @@ class Command(BaseCommand):
 
         _status_code = None
         _status_text = None
-        # Sometime It happens the, when Geoserver runs in a Docker container
+        # Sometime It happens tht, with Geoserver running in a Docker container
         # first call to the GS B/R plugin isn't able to dump correctly the catalog.
         # From our experience the second time it works. We retry three times for safety
         for _r in range(retries):
