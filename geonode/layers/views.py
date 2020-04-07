@@ -394,6 +394,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
 
+    # Add metadata_author or poc if missing
+    layer.add_missing_metadata_author_or_poc()
+
     def decimal_encode(bbox):
         import decimal
         _bbox = []
@@ -859,6 +862,9 @@ def layer_metadata(
     )
 
     topic_category = layer.category
+
+    # Add metadata_author or poc if missing
+    layer.add_missing_metadata_author_or_poc()
 
     poc = layer.poc
     metadata_author = layer.metadata_author

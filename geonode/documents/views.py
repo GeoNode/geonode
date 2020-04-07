@@ -110,6 +110,9 @@ def document_detail(request, docid):
         )
 
     else:
+        # Add metadata_author or poc if missing
+        document.add_missing_metadata_author_or_poc()
+
         related = get_related_resources(document)
 
         # Update count for popularity ranking,
@@ -361,6 +364,8 @@ def document_metadata(
         )
 
     else:
+        # Add metadata_author or poc if missing
+        document.add_missing_metadata_author_or_poc()
         poc = document.poc
         metadata_author = document.metadata_author
         topic_category = document.category
