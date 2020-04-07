@@ -28,6 +28,8 @@ import os
 import six
 import sys
 
+from django.core.management.base import CommandError
+
 
 MEDIA_ROOT = 'uploaded'
 STATIC_ROOT = 'static_root'
@@ -100,11 +102,13 @@ class Config(object):
         if options.get("dump_gs_raster_data", None) is not None:
             self.gs_dump_raster_data = options.get("dump_gs_raster_data")
 
-    def load_settings(self, settings_path=None):
+    def load_settings(self, settings_path):
 
         if not settings_path:
-            settings_dir = os.path.abspath(os.path.dirname(__file__))
-            settings_path = os.path.join(settings_dir, '../settings.ini')
+            raise CommandError("Mandatory option (-c / --config)")
+
+        if not os.path.exists(settings_path):
+            raise CommandError("Provided '-c' / '--config' file does not exist.")
 
         config = ConfigParser()
         config.read(settings_path)
@@ -120,8 +124,6 @@ class Config(object):
 
         self.app_names = config.get('fixtures', 'apps').split(',')
         self.dump_names = config.get('fixtures', 'dumps').split(',')
-        self.migrations = config.get('fixtures', 'migrations').split(',')
-        self.manglers = config.get('fixtures', 'manglers').split(',')
 
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "lib"))

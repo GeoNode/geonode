@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+import os
 import mock
 import zipfile
 import tempfile
@@ -50,7 +51,14 @@ class RestoreCommandTests(GeoNodeBaseTestSupport):
             RestoredBackupFactory(archive_md5='91162629d258a876ee994e9233b2ad87')
 
             args = ['-l']
-            kwargs = {'backup_file': tmp_file.name}
+            kwargs = {
+                'backup_file': tmp_file.name,
+                'config': os.path.join(
+                    os.path.dirname(os.path.abspath(__file__)),
+                    '..',
+                    'management/commands/settings_sample.ini'
+                )
+            }
 
             call_command('restore', *args, **kwargs)
 
@@ -67,7 +75,14 @@ class RestoreCommandTests(GeoNodeBaseTestSupport):
             RestoredBackupFactory(archive_md5=md5_file_hash(tmp_file.name))
 
             args = ['-l']
-            kwargs = {'backup_file': tmp_file.name}
+            kwargs = {
+                'backup_file': tmp_file.name,
+                'config': os.path.join(
+                    os.path.dirname(os.path.abspath(__file__)),
+                    '..',
+                    'management/commands/settings_sample.ini'
+                )
+            }
 
             with self.assertRaises(RuntimeError) as exc:
                 call_command('restore', *args, **kwargs)
@@ -90,7 +105,14 @@ class RestoreCommandTests(GeoNodeBaseTestSupport):
                 archive.writestr('something.txt', 'Some Content Here')
 
             args = []
-            kwargs = {'backup_file': tmp_file.name}
+            kwargs = {
+                'backup_file': tmp_file.name,
+                'config': os.path.join(
+                    os.path.dirname(os.path.abspath(__file__)),
+                    '..',
+                    'management/commands/settings_sample.ini'
+                )
+            }
 
             call_command('restore', *args, **kwargs)
 
@@ -109,7 +131,14 @@ class RestoreCommandTests(GeoNodeBaseTestSupport):
                 archive.writestr('something.txt', 'Some Content Here')
 
             args = ['--skip-read-only']
-            kwargs = {'backup_file': tmp_file.name}
+            kwargs = {
+                'backup_file': tmp_file.name,
+                'config': os.path.join(
+                    os.path.dirname(os.path.abspath(__file__)),
+                    '..',
+                    'management/commands/settings_sample.ini'
+                )
+            }
 
             call_command('restore', *args, **kwargs)
 
