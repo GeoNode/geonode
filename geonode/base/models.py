@@ -1397,6 +1397,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.is_approved = False
             self.is_published = False
 
+    def add_missing_metadata_author_or_poc(self):
+        """
+        Set missing metadata_author or point of contact to resource owner
+        """
+        if not self.metadata_author:
+            self.metadata_author = self.owner
+        if not self.poc:
+            self.poc = self.owner
+
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
     objects = ResourceBaseManager()

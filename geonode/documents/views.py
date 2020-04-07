@@ -361,6 +361,7 @@ def document_metadata(
         )
 
     else:
+        document.add_missing_metadata_author_or_poc()
         poc = document.poc
         metadata_author = document.metadata_author
         topic_category = document.category
