@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-25 02:28-0500\n"
+"POT-Creation-Date: 2020-04-07 12:08+0000\n"
 "PO-Revision-Date: 2016-08-23 11:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Indonesian (http://www.transifex.com/geonode/geonode/language/"
@@ -37,15 +37,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: geonode/static/geonode/js/search/search.js:373
-msgid "Enter your text here ..."
+#: geonode/monitoring/static/monitoring/bundle.js:170
+msgid "STORE_UPDATED"
 msgstr ""
 
-#: geonode/static/geonode/js/search/search.js:414
-msgid "Enter your region here ..."
+#: geonode/people/templates/people/profile_detail.html:77
+#: geonode/people/templates/people/profile_detail.html:86
+#: geonode/people/templates/people/profile_detail.html:98
+msgid "Not provided."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileType.js:33
+#: geonode/static/geonode/js/upload/FileType.js:50
 #, javascript-format
 msgid "Missing a %s file, which is required"
 msgstr "Hilang file %s, yang diperlukan"
@@ -55,146 +57,218 @@ msgid "ESRI Shapefile"
 msgstr "ESRI Shapefile"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:13
+msgid "ASCII Text File"
+msgstr ""
+
 #: geonode/static/geonode/js/upload/FileTypes.js:18
+#: geonode/static/geonode/js/upload/FileTypes.js:23
 msgid "GeoTIFF"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:24
+#: geonode/static/geonode/js/upload/FileTypes.js:29
 msgid "Comma Separated Value"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:29
+#: geonode/static/geonode/js/upload/FileTypes.js:34
 msgid "Google Earth KML"
 msgstr "Google Earth KML"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:34
+#: geonode/static/geonode/js/upload/FileTypes.js:39
+#, fuzzy
+#| msgid "Google Earth KML"
+msgid "Google Earth KML with a GroundOverlay"
+msgstr "Google Earth KML"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:45
+#, fuzzy
+#| msgid "Google Earth KML"
+msgid "Google Earth KMZ"
+msgstr "Google Earth KML"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:50
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:39
+#: geonode/static/geonode/js/upload/FileTypes.js:55
 msgid "Zip Archive"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:45
+#: geonode/static/geonode/js/upload/FileTypes.js:61
 msgid "ERDAS Imagine"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:50
-#: geonode/static/geonode/js/upload/FileTypes.js:55
+#: geonode/static/geonode/js/upload/FileTypes.js:66
+#: geonode/static/geonode/js/upload/FileTypes.js:71
 msgid "National Imagery Transmission Format"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:61
+#: geonode/static/geonode/js/upload/FileTypes.js:77
 msgid "Controlled Image Base-1 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:68
+#: geonode/static/geonode/js/upload/FileTypes.js:84
 msgid "Controlled Image Base-5 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:75
+#: geonode/static/geonode/js/upload/FileTypes.js:91
 msgid "Controlled Image Base-10 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:82
+#: geonode/static/geonode/js/upload/FileTypes.js:98
 msgid "CADRG-Global Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:89
+#: geonode/static/geonode/js/upload/FileTypes.js:105
 msgid "CADRG-Jet Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:96
+#: geonode/static/geonode/js/upload/FileTypes.js:112
 msgid "CADRG-Operational Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:103
+#: geonode/static/geonode/js/upload/FileTypes.js:119
 msgid "CADRG-Tactical Pilotage Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:110
+#: geonode/static/geonode/js/upload/FileTypes.js:126
 msgid "CADRG-Joint Operations Graphic"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:117
+#: geonode/static/geonode/js/upload/FileTypes.js:133
 msgid "CADRG-Topographic Line Map 100K"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:124
+#: geonode/static/geonode/js/upload/FileTypes.js:140
 msgid "CADRG-Topographic Line Map 50K"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:131
+#: geonode/static/geonode/js/upload/FileTypes.js:147
 msgid "JPEG2000"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:136
+#: geonode/static/geonode/js/upload/FileTypes.js:152
 msgid "MrSID-Multi-resolution Seamless Image Database"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:331
-msgid "Layer Info"
-msgstr "Lapisan Info"
+#: geonode/static/geonode/js/upload/FileTypes.js:157
+#, fuzzy
+#| msgid "Metadata Links:"
+msgid "XML Metadata File"
+msgstr "Link Metadata:"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:163
+msgid "Style Layer Descriptor"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:169
+msgid "JPEG"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:174
+msgid "PNG"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:179
+msgid "GIF"
+msgstr ""
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:332
+#: geonode/static/geonode/js/upload/LayerInfo.js:503
+msgid "Unexpected Error"
+msgstr "Kesalahan tak terduga"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:370
+#, fuzzy
+#| msgid "Layer Info"
+msgid " Info"
+msgstr "Lapisan Info"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:371
 msgid "Edit Metadata"
 msgstr "Ubah metadata"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:333
+#: geonode/static/geonode/js/upload/LayerInfo.js:372
+#, fuzzy
+#| msgid "Edit Metadata"
+msgid "Upload Metadata"
+msgstr "Ubah metadata"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:373
+msgid "Upload SLD"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:374
 msgid "Manage Styles"
 msgstr "Kelola Styles"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:336
+#: geonode/static/geonode/js/upload/LayerInfo.js:387
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:342
-msgid "Your layer was successfully uploaded"
-msgstr "Lapisan kamu telah diunggah"
+#: geonode/static/geonode/js/upload/LayerInfo.js:393
+msgid "Your "
+msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:371
+#: geonode/static/geonode/js/upload/LayerInfo.js:422
 msgid "Performing Final GeoServer Config Step"
 msgstr "Pertunjukan Akhir GeoServer Config Langkah"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:386
-#: geonode/static/geonode/js/upload/LayerInfo.js:412
+#: geonode/static/geonode/js/upload/LayerInfo.js:439
+#: geonode/static/geonode/js/upload/LayerInfo.js:483
 msgid "You need to specify more information in order to complete your upload"
 msgstr ""
 "Anda perlu menentukan informasi lebih lanjut untuk menyelesaikan upload"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:404
-msgid "You need to specify more information in order to complete your upload."
+#: geonode/static/geonode/js/upload/LayerInfo.js:463
+msgid "Files are ready to be ingested!"
 msgstr ""
-"Anda perlu menentukan informasi lebih lanjut untuk menyelesaikan upload Anda."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:404
-msgid "You can continue configuring your layer."
-msgstr "Anda dapat melanjutkan dengan mengkonfigurasi lapisan Anda."
+#: geonode/static/geonode/js/upload/LayerInfo.js:466
+msgid "A temporal dimension may be added to this Layer."
+msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:422
-#: geonode/static/geonode/js/upload/LayerInfo.js:509
-msgid "Unexpected Error"
-msgstr "Kesalahan tak terduga"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:438
+#: geonode/static/geonode/js/upload/LayerInfo.js:521
 msgid "Performing GeoServer Config Step"
 msgstr "Pertunjukan GeoServer Config Langkah"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:516
+#: geonode/static/geonode/js/upload/LayerInfo.js:609
+msgid ""
+"<br>Please check your network connection. In case of Layer Upload make sure "
+"GeoServer is running and accepting connections."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:613
+#: geonode/static/geonode/js/upload/LayerInfo.js:616
+#: geonode/static/geonode/js/upload/LayerInfo.js:623
+#: geonode/static/geonode/js/upload/LayerInfo.js:626
+msgid "<br>"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:618
+msgid "<br>Bad request or URL not found."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:628
+#, fuzzy
+#| msgid "Unknown Map"
+msgid "<br>Unknown."
+msgstr "Map tidak diketahui"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:636
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "File lapisan upload, mengkonfigurasi di GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:695
+#: geonode/static/geonode/js/upload/LayerInfo.js:787
 msgid "Remove"
 msgstr "Hapus"
 
-#: geonode/static/geonode/js/upload/upload.js:125
+#: geonode/static/geonode/js/upload/upload.js:126
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr ""
 "File %s adalah jenis file yang tidak didukung, silahkan pilih file lain."
 
-#: geonode/static/geonode/js/upload/upload.js:285
+#: geonode/static/geonode/js/upload/upload.js:296
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
 "options have been validated.\n"
@@ -202,479 +276,401 @@ msgid ""
 "Please check for errors in the form!"
 msgstr ""
 
-#: geonode/static/lib/js/assets.min.js:2
-msgid "<iframe frameborder='0' width='0' height='0'/>"
+#: geonode/templates/admin/base_site.html:4
+msgid "GeoNode site admin"
 msgstr ""
 
-#: geonode/static/lib/js/assets.min.js:4
-msgid "<script>"
+#: geonode/templates/admin/base_site.html:7
+msgid "GeoNode administration"
 msgstr ""
 
-#: geonode/static/lib/js/assets.min.js:4
-msgid "<div>"
+#: geonode/templates/index.html:19
+msgid "Welcome"
 msgstr ""
 
-#: geonode/templates/lang.js:9 geonode/templates/lang.js:236
-msgid "Cancel"
-msgstr "Batal"
-
-#: geonode/templates/lang.js:10
-msgid "Save as Copy"
-msgstr "Simpan sebagai salinan"
-
-#: geonode/templates/lang.js:11
-msgid "About this Map"
-msgstr "Tentang Peta ini"
-
-#: geonode/templates/lang.js:12 geonode/templates/lang.js:96
-#: geonode/templates/lang.js:165
-msgid "Abstract"
-msgstr "Abstrak"
-
-#: geonode/templates/lang.js:13
-msgid "Save"
-msgstr "Simpan"
-
-#: geonode/templates/lang.js:14 geonode/templates/lang.js:100
-#: geonode/templates/lang.js:109 geonode/templates/lang.js:162
-#: geonode/templates/lang.js:184 geonode/templates/lang.js:219
-msgid "Title"
-msgstr "Judul"
-
-#: geonode/templates/lang.js:20
-msgid "Connection Error"
-msgstr "Koneksi tidak berhasil"
-
-#: geonode/templates/lang.js:21
-msgid "The server returned an error"
-msgstr "Server menghasilkan error"
-
-#: geonode/templates/lang.js:22
-msgid "Details..."
-msgstr "Detail"
-
-#: geonode/templates/lang.js:28 geonode/templates/lang.js:31
-msgid "Add Layers"
-msgstr "Tambah Layer"
-
-#: geonode/templates/lang.js:29
-msgid "Area"
-msgstr "Area"
-
-#: geonode/templates/lang.js:30
-msgid "Background"
-msgstr "Latar"
-
-#: geonode/templates/lang.js:32
-msgid "Done"
-msgstr "Selesai"
-
-#: geonode/templates/lang.js:33
-msgid "Available Layers"
-msgstr "Layer yang tersedia"
-
-#: geonode/templates/lang.js:35 geonode/templates/lang.js:121
-msgid "Height"
-msgstr "Tinggi"
-
-#: geonode/templates/lang.js:36
-msgid "Get Feature Info"
-msgstr "Informasi Feature"
-
-#: geonode/templates/lang.js:37 geonode/templates/lang.js:122
-msgid "Large"
-msgstr "Besar"
-
-#: geonode/templates/lang.js:38
-msgid "or add a new server."
-msgstr "atau menambah server baru"
-
-#: geonode/templates/lang.js:39
-msgid "Map Layers"
-msgstr "Layer peta"
-
-#: geonode/templates/lang.js:40
-msgid "View available data from:"
-msgstr "Lihat data yang tersedia dari:"
-
-#: geonode/templates/lang.js:41
-msgid "Data"
-msgstr "Data"
-
-#: geonode/templates/lang.js:42
-msgid "Layers"
-msgstr "Layer"
-
-#: geonode/templates/lang.js:43
-msgid "Legend"
-msgstr "Legenda"
-
-#: geonode/templates/lang.js:44
-msgid "Length"
-msgstr "Panjang"
-
-#: geonode/templates/lang.js:45
-msgid "Loading Map..."
-msgstr "Mengambil Peta...."
-
-#: geonode/templates/lang.js:46 geonode/templates/lang.js:123
-msgid "Map Size"
-msgstr "Ukuran Peta"
-
-#: geonode/templates/lang.js:47
-msgid "Measure"
-msgstr "Ukuran"
-
-#: geonode/templates/lang.js:48 geonode/templates/lang.js:97
-#: geonode/templates/lang.js:163
-msgid "Contact"
-msgstr "Kontak"
-
-#: geonode/templates/lang.js:49 geonode/templates/lang.js:55
-msgid "Permalink"
-msgstr "Permalink"
-
-#: geonode/templates/lang.js:50 geonode/templates/lang.js:124
-msgid "Mini"
-msgstr "Mini"
-
-#: geonode/templates/lang.js:51
-msgid "Pan Map"
-msgstr "Geser Peta"
-
-#: geonode/templates/lang.js:52
-msgid "Zoom to Next Extent"
-msgstr "Zoom ke Extent berikutnya"
-
-#: geonode/templates/lang.js:53
-msgid "Zoom to Previous Extent"
-msgstr "Zoom ke Extent sebelumnya"
-
-#: geonode/templates/lang.js:54
-msgid "This map has not yet been saved."
-msgstr "Peta ini belum disimpan"
-
-#: geonode/templates/lang.js:56 geonode/templates/lang.js:125
-msgid "Premium"
-msgstr "Premium"
-
-#: geonode/templates/lang.js:57
-msgid "Print Map"
-msgstr "Cetak Peta"
-
-#: geonode/templates/lang.js:58
-msgid "Print Preview"
-msgstr "Tampilan Cetak"
-
-#: geonode/templates/lang.js:59
-msgid "Properties"
-msgstr "Propiedades"
-
-#: geonode/templates/lang.js:60 geonode/templates/lang.js:126
-msgid "Publish Map"
-msgstr "Publish Peta"
-
-#: geonode/templates/lang.js:61 geonode/templates/lang.js:62
-msgid "Remove Layer"
-msgstr "Hapus Layer"
-
-#: geonode/templates/lang.js:63
-msgid "Sorry, your map could not be saved."
-msgstr "Maaf peta anda tidak dapat disimpan"
-
-#: geonode/templates/lang.js:64
-msgid "Error While Saving"
-msgstr "Terdapat kesalahan pada saat menyimpan"
-
-#: geonode/templates/lang.js:65
-msgid "Save Map"
-msgstr "Simpan Peta"
-
-#: geonode/templates/lang.js:66
-msgid "You must be logged in to save this map."
-msgstr "Anda diharuskan login terlebih dahulu untuk menyimpan peta ini."
-
-#: geonode/templates/lang.js:67 geonode/templates/lang.js:128
-msgid "Small"
-msgstr "Kecil"
-
-#: geonode/templates/lang.js:68
+#: geonode/templates/index.html:21
 msgid ""
-"Error contacting server.\n"
-" Please check the url and try again."
+"GeoNode is an open source platform for sharing geospatial data and maps."
 msgstr ""
-"Error pada saat berkomunikasi dengan server.\n"
-"Silahkan cek URL yang dimasukkan dan coba lagi."
 
-#: geonode/templates/lang.js:69
-msgid "Layer Properties"
-msgstr "Data Layer"
-
-#: geonode/templates/lang.js:70
-msgid "Change layer format and style"
-msgstr "Ubah tampilan dan format layer"
-
-#: geonode/templates/lang.js:71
-msgid "Edit Styles"
-msgstr "Ubah Tampilan"
-
-#: geonode/templates/lang.js:72
-msgid "Edit layer styles"
-msgstr "Ubah tamplan layer"
-
-#: geonode/templates/lang.js:73
-msgid "Switch to Google Earth 3D Viewer"
-msgstr "Beralih ke tampilan Google Earth 3D"
-
-#: geonode/templates/lang.js:74
-msgid ""
-"The map that you are trying to load does not exist.  Creating a new map "
-"instead."
-msgstr "Peta yang anda coba muat tidak tersedia. Buatlah peta baru. "
-
-#: geonode/templates/lang.js:75
-msgid "Unknown Map"
-msgstr "Map tidak diketahui"
-
-#: geonode/templates/lang.js:76 geonode/templates/lang.js:129
-msgid "Width"
-msgstr "Lebar"
-
-#: geonode/templates/lang.js:77
-msgid "Zoom In"
-msgstr "Zoom In"
-
-#: geonode/templates/lang.js:78
-msgid "Zoom Out"
-msgstr "Zoom Out"
-
-#: geonode/templates/lang.js:79
-msgid "Zoom level"
-msgstr "Zoom level"
-
-#: geonode/templates/lang.js:80
-msgid "Zoom Level"
-msgstr "Zoom Level"
-
-#: geonode/templates/lang.js:81
-msgid "Zoom to Layer Extent"
-msgstr "Zoom to Layer Extent"
-
-#: geonode/templates/lang.js:82
-msgid "Zoom to Visible Extent"
-msgstr "Zoom to Visible Extent"
-
-#: geonode/templates/lang.js:88
-msgid "Zoom Level {zoom}"
-msgstr "Zoom Level {zoom}"
-
-#: geonode/templates/lang.js:94
-msgid "Create Map"
-msgstr "Buat Peta"
-
-#: geonode/templates/lang.js:95
-msgid "Export Map"
-msgstr "Kirim Peta"
-
-#: geonode/templates/lang.js:98
-msgid "Map"
-msgstr "Peta"
-
-#: geonode/templates/lang.js:99 geonode/templates/lang.js:166
-msgid "View this Map"
-msgstr "Lihat Peta ini"
-
-#: geonode/templates/lang.js:101
-msgid "Open Map"
-msgstr "Buka Peta"
-
-#: geonode/templates/lang.js:107 geonode/templates/lang.js:183
-msgid "Name"
-msgstr "Nama"
-
-#: geonode/templates/lang.js:108
-msgid "Queryable"
-msgstr "Dapat di query"
-
-#: geonode/templates/lang.js:115
-msgid "No background"
-msgstr "Tidak ada latar"
-
-#: geonode/templates/lang.js:127
-msgid ""
-"Your map is ready to be published to the web!  Simply copy the following "
-"HTML to embed the map in your website:"
+#: geonode/templates/index.html:25
+msgid "Get Started &raquo;"
 msgstr ""
-"Peta anda sudah siap untuk di publikasikan ke web! Untuk menyisipkan pada "
-"website silahkan salin kode HTML dibawah ini: "
 
-#: geonode/templates/lang.js:136 geonode/templates/lang.js:202
-msgid "Abstract:"
-msgstr "Abstrak:"
+#: geonode/templates/index.html:82 geonode/templates/index.html:102
+#, fuzzy
+#| msgid "Now"
+msgid "No"
+msgstr "Now"
 
-#: geonode/templates/lang.js:137 geonode/templates/lang.js:204
-msgid "No attribution information is provided for this layer."
-msgstr "Tidak ada informasi atribut yang disediakan untuk layer ini"
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "some schema mandatory fields are missing"
+msgstr ""
 
-#: geonode/templates/lang.js:138 geonode/templates/lang.js:205
-msgid "Provided by:"
-msgstr "Disediakan oleh:"
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "Metadata Schema mandatory fields completed"
+msgstr ""
 
-#: geonode/templates/lang.js:139 geonode/templates/lang.js:206
-msgid "Download:"
-msgstr "Unduh:"
+#: geonode/templates/metadata_form_js.html:244
+#: geonode/templates/metadata_form_js.html:283
+msgid ""
+"<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field "
+"declared Mandatory by the Metadata Schema</strong></p>"
+msgstr ""
 
-#: geonode/templates/lang.js:140 geonode/templates/lang.js:208
-msgid "No keywords are listed for this layer."
-msgstr "Tidak ada kata kunci yang disedikan untuk layer ini."
+#~ msgid "Your layer was successfully uploaded"
+#~ msgstr "Lapisan kamu telah diunggah"
 
-#: geonode/templates/lang.js:141 geonode/templates/lang.js:209
-msgid "Keywords:"
-msgstr "Kata Kunci:"
+#~ msgid ""
+#~ "You need to specify more information in order to complete your upload."
+#~ msgstr ""
+#~ "Anda perlu menentukan informasi lebih lanjut untuk menyelesaikan upload "
+#~ "Anda."
 
-#: geonode/templates/lang.js:142 geonode/templates/lang.js:210
-msgid "No metadata URLs are defined for this layer."
-msgstr "Tidak ada URL metadata yang didefinisikan untuk layer ini."
+#~ msgid "You can continue configuring your layer."
+#~ msgstr "Anda dapat melanjutkan dengan mengkonfigurasi lapisan Anda."
 
-#: geonode/templates/lang.js:143 geonode/templates/lang.js:211
-msgid "Metadata Links:"
-msgstr "Link Metadata:"
+#~ msgid "Cancel"
+#~ msgstr "Batal"
 
-#: geonode/templates/lang.js:149
-msgid "Paper size:"
-msgstr "Ukuran Kertas:"
+#~ msgid "Save as Copy"
+#~ msgstr "Simpan sebagai salinan"
 
-#: geonode/templates/lang.js:150
-msgid "Resolution:"
-msgstr "Resolusi"
+#~ msgid "About this Map"
+#~ msgstr "Tentang Peta ini"
 
-#: geonode/templates/lang.js:151
-msgid "Print"
-msgstr "Cetak"
+#~ msgid "Abstract"
+#~ msgstr "Abstrak"
 
-#: geonode/templates/lang.js:152
-msgid "Enter map title here."
-msgstr "Masukkan judul peta disini"
+#~ msgid "Save"
+#~ msgstr "Simpan"
 
-#: geonode/templates/lang.js:153
-msgid "Include legend?"
-msgstr "termasuk legenda?"
+#~ msgid "Title"
+#~ msgstr "Judul"
 
-#: geonode/templates/lang.js:154
-msgid "Enter comments here."
-msgstr "Tambahkan komentar disini."
+#~ msgid "Connection Error"
+#~ msgstr "Koneksi tidak berhasil"
 
-#: geonode/templates/lang.js:155
-msgid "Creating PDF..."
-msgstr "Membuat PDF..."
+#~ msgid "The server returned an error"
+#~ msgstr "Server menghasilkan error"
 
-#: geonode/templates/lang.js:164
-msgid "Last Modified"
-msgstr "Modifikasi Terakhir"
+#~ msgid "Details..."
+#~ msgstr "Detail"
 
-#: geonode/templates/lang.js:167 geonode/templates/lang.js:188
-msgid "Prev"
-msgstr "Sebelumnya"
+#~ msgid "Add Layers"
+#~ msgstr "Tambah Layer"
 
-#: geonode/templates/lang.js:168 geonode/templates/lang.js:189
-msgid "Next"
-msgstr "Selanjutnya"
+#~ msgid "Area"
+#~ msgstr "Area"
 
-#: geonode/templates/lang.js:169 geonode/templates/lang.js:190
-msgid "of"
-msgstr "dari"
+#~ msgid "Background"
+#~ msgstr "Latar"
 
-#: geonode/templates/lang.js:170 geonode/templates/lang.js:191
-msgid "Your search did not match any items."
-msgstr "Pencarian anda tidak ditemukan"
+#~ msgid "Done"
+#~ msgstr "Selesai"
 
-#: geonode/templates/lang.js:171
-msgid "Search Maps"
-msgstr "Mencari Peta"
+#~ msgid "Available Layers"
+#~ msgstr "Layer yang tersedia"
 
-#: geonode/templates/lang.js:172 geonode/templates/lang.js:192
-msgid "Search"
-msgstr "Cari"
+#~ msgid "Height"
+#~ msgstr "Tinggi"
 
-#: geonode/templates/lang.js:173 geonode/templates/lang.js:193
-msgid "Showing"
-msgstr "Menampilkan"
+#~ msgid "Get Feature Info"
+#~ msgstr "Informasi Feature"
 
-#: geonode/templates/lang.js:174
-msgid "Loading"
-msgstr "Memuat"
+#~ msgid "Large"
+#~ msgstr "Besar"
 
-#: geonode/templates/lang.js:175 geonode/templates/lang.js:195
-msgid "permalink"
-msgstr "permalink"
+#~ msgid "or add a new server."
+#~ msgstr "atau menambah server baru"
 
-#: geonode/templates/lang.js:182
-msgid "Select"
-msgstr "Pilih"
+#~ msgid "Map Layers"
+#~ msgstr "Layer peta"
 
-#: geonode/templates/lang.js:185
-msgid "Select:"
-msgstr "Pilih:"
+#~ msgid "View available data from:"
+#~ msgstr "Lihat data yang tersedia dari:"
 
-#: geonode/templates/lang.js:186
-msgid "All"
-msgstr "Seluruhnya"
+#~ msgid "Data"
+#~ msgstr "Data"
 
-#: geonode/templates/lang.js:187
-msgid "None"
-msgstr "Kosong"
+#~ msgid "Layers"
+#~ msgstr "Layer"
 
-#: geonode/templates/lang.js:194
-msgid "Loading..."
-msgstr "Memuat ..."
+#~ msgid "Legend"
+#~ msgstr "Legenda"
 
-#: geonode/templates/lang.js:196
-msgid "You do not have permission to view this data"
-msgstr "Anda tidak memiliki izin untuk melihat data ini"
+#~ msgid "Length"
+#~ msgstr "Panjang"
 
-#: geonode/templates/lang.js:197
-msgid "This data is stored on a remote server"
-msgstr "Data ini disimpan pada server"
+#~ msgid "Loading Map..."
+#~ msgstr "Mengambil Peta...."
 
-#: geonode/templates/lang.js:203
-msgid "No abstract is provided for this layer."
-msgstr "Tidak ada abstrak untuk layer ini"
+#~ msgid "Map Size"
+#~ msgstr "Ukuran Peta"
 
-#: geonode/templates/lang.js:207
-msgid "No download URLs are definied for this layer."
-msgstr "Tidak ada URL yang didefinisikan untuk mengunduh layer ini"
+#~ msgid "Measure"
+#~ msgstr "Ukuran"
 
-#: geonode/templates/lang.js:217
-msgid "Selected Layers"
-msgstr "Layer terpilih"
+#~ msgid "Contact"
+#~ msgstr "Kontak"
 
-#: geonode/templates/lang.js:218
-msgid "No Layers Selected"
-msgstr "Tidak ada layer yang terpilih"
+#~ msgid "Permalink"
+#~ msgstr "Permalink"
 
-#: geonode/templates/lang.js:220
-msgid "Clear Selected"
-msgstr "Hapus Pilihan"
+#~ msgid "Mini"
+#~ msgstr "Mini"
 
-#: geonode/templates/lang.js:221
-msgid "Clear All"
-msgstr "Hapus semua"
+#~ msgid "Pan Map"
+#~ msgstr "Geser Peta"
 
-#: geonode/templates/lang.js:227
-msgid "Operation Failed"
-msgstr "Operasi Gagal"
+#~ msgid "Zoom to Next Extent"
+#~ msgstr "Zoom ke Extent berikutnya"
 
-#: geonode/templates/lang.js:228
-msgid "No layers are currently selected."
-msgstr "Tidak ada layer yang dipilih"
+#~ msgid "Zoom to Previous Extent"
+#~ msgstr "Zoom ke Extent sebelumnya"
 
-#: geonode/templates/lang.js:235
-msgid "Downloading..."
-msgstr "Mengunduh..."
+#~ msgid "This map has not yet been saved."
+#~ msgstr "Peta ini belum disimpan"
 
-#: geonode/templates/lang.js:237
-msgid "Please wait"
-msgstr "Silakan menunggu"
+#~ msgid "Premium"
+#~ msgstr "Premium"
+
+#~ msgid "Print Map"
+#~ msgstr "Cetak Peta"
+
+#~ msgid "Print Preview"
+#~ msgstr "Tampilan Cetak"
+
+#~ msgid "Properties"
+#~ msgstr "Propiedades"
+
+#~ msgid "Publish Map"
+#~ msgstr "Publish Peta"
+
+#~ msgid "Remove Layer"
+#~ msgstr "Hapus Layer"
+
+#~ msgid "Sorry, your map could not be saved."
+#~ msgstr "Maaf peta anda tidak dapat disimpan"
+
+#~ msgid "Error While Saving"
+#~ msgstr "Terdapat kesalahan pada saat menyimpan"
+
+#~ msgid "Save Map"
+#~ msgstr "Simpan Peta"
+
+#~ msgid "You must be logged in to save this map."
+#~ msgstr "Anda diharuskan login terlebih dahulu untuk menyimpan peta ini."
+
+#~ msgid "Small"
+#~ msgstr "Kecil"
+
+#~ msgid ""
+#~ "Error contacting server.\n"
+#~ " Please check the url and try again."
+#~ msgstr ""
+#~ "Error pada saat berkomunikasi dengan server.\n"
+#~ "Silahkan cek URL yang dimasukkan dan coba lagi."
+
+#~ msgid "Layer Properties"
+#~ msgstr "Data Layer"
+
+#~ msgid "Change layer format and style"
+#~ msgstr "Ubah tampilan dan format layer"
+
+#~ msgid "Edit Styles"
+#~ msgstr "Ubah Tampilan"
+
+#~ msgid "Edit layer styles"
+#~ msgstr "Ubah tamplan layer"
+
+#~ msgid "Switch to Google Earth 3D Viewer"
+#~ msgstr "Beralih ke tampilan Google Earth 3D"
+
+#~ msgid ""
+#~ "The map that you are trying to load does not exist.  Creating a new map "
+#~ "instead."
+#~ msgstr "Peta yang anda coba muat tidak tersedia. Buatlah peta baru. "
+
+#~ msgid "Width"
+#~ msgstr "Lebar"
+
+#~ msgid "Zoom In"
+#~ msgstr "Zoom In"
+
+#~ msgid "Zoom Out"
+#~ msgstr "Zoom Out"
+
+#~ msgid "Zoom level"
+#~ msgstr "Zoom level"
+
+#~ msgid "Zoom Level"
+#~ msgstr "Zoom Level"
+
+#~ msgid "Zoom to Layer Extent"
+#~ msgstr "Zoom to Layer Extent"
+
+#~ msgid "Zoom to Visible Extent"
+#~ msgstr "Zoom to Visible Extent"
+
+#~ msgid "Zoom Level {zoom}"
+#~ msgstr "Zoom Level {zoom}"
+
+#~ msgid "Create Map"
+#~ msgstr "Buat Peta"
+
+#~ msgid "Export Map"
+#~ msgstr "Kirim Peta"
+
+#~ msgid "Map"
+#~ msgstr "Peta"
+
+#~ msgid "View this Map"
+#~ msgstr "Lihat Peta ini"
+
+#~ msgid "Open Map"
+#~ msgstr "Buka Peta"
+
+#~ msgid "Name"
+#~ msgstr "Nama"
+
+#~ msgid "Queryable"
+#~ msgstr "Dapat di query"
+
+#~ msgid "No background"
+#~ msgstr "Tidak ada latar"
+
+#~ msgid ""
+#~ "Your map is ready to be published to the web!  Simply copy the following "
+#~ "HTML to embed the map in your website:"
+#~ msgstr ""
+#~ "Peta anda sudah siap untuk di publikasikan ke web! Untuk menyisipkan pada "
+#~ "website silahkan salin kode HTML dibawah ini: "
+
+#~ msgid "Abstract:"
+#~ msgstr "Abstrak:"
+
+#~ msgid "No attribution information is provided for this layer."
+#~ msgstr "Tidak ada informasi atribut yang disediakan untuk layer ini"
+
+#~ msgid "Provided by:"
+#~ msgstr "Disediakan oleh:"
+
+#~ msgid "Download:"
+#~ msgstr "Unduh:"
+
+#~ msgid "No keywords are listed for this layer."
+#~ msgstr "Tidak ada kata kunci yang disedikan untuk layer ini."
+
+#~ msgid "Keywords:"
+#~ msgstr "Kata Kunci:"
+
+#~ msgid "No metadata URLs are defined for this layer."
+#~ msgstr "Tidak ada URL metadata yang didefinisikan untuk layer ini."
+
+#~ msgid "Paper size:"
+#~ msgstr "Ukuran Kertas:"
+
+#~ msgid "Resolution:"
+#~ msgstr "Resolusi"
+
+#~ msgid "Print"
+#~ msgstr "Cetak"
+
+#~ msgid "Enter map title here."
+#~ msgstr "Masukkan judul peta disini"
+
+#~ msgid "Include legend?"
+#~ msgstr "termasuk legenda?"
+
+#~ msgid "Enter comments here."
+#~ msgstr "Tambahkan komentar disini."
+
+#~ msgid "Creating PDF..."
+#~ msgstr "Membuat PDF..."
+
+#~ msgid "Last Modified"
+#~ msgstr "Modifikasi Terakhir"
+
+#~ msgid "Prev"
+#~ msgstr "Sebelumnya"
+
+#~ msgid "Next"
+#~ msgstr "Selanjutnya"
+
+#~ msgid "of"
+#~ msgstr "dari"
+
+#~ msgid "Your search did not match any items."
+#~ msgstr "Pencarian anda tidak ditemukan"
+
+#~ msgid "Search Maps"
+#~ msgstr "Mencari Peta"
+
+#~ msgid "Search"
+#~ msgstr "Cari"
+
+#~ msgid "Showing"
+#~ msgstr "Menampilkan"
+
+#~ msgid "Loading"
+#~ msgstr "Memuat"
+
+#~ msgid "permalink"
+#~ msgstr "permalink"
+
+#~ msgid "Select"
+#~ msgstr "Pilih"
+
+#~ msgid "Select:"
+#~ msgstr "Pilih:"
+
+#~ msgid "All"
+#~ msgstr "Seluruhnya"
+
+#~ msgid "None"
+#~ msgstr "Kosong"
+
+#~ msgid "Loading..."
+#~ msgstr "Memuat ..."
+
+#~ msgid "You do not have permission to view this data"
+#~ msgstr "Anda tidak memiliki izin untuk melihat data ini"
+
+#~ msgid "This data is stored on a remote server"
+#~ msgstr "Data ini disimpan pada server"
+
+#~ msgid "No abstract is provided for this layer."
+#~ msgstr "Tidak ada abstrak untuk layer ini"
+
+#~ msgid "No download URLs are definied for this layer."
+#~ msgstr "Tidak ada URL yang didefinisikan untuk mengunduh layer ini"
+
+#~ msgid "Selected Layers"
+#~ msgstr "Layer terpilih"
+
+#~ msgid "No Layers Selected"
+#~ msgstr "Tidak ada layer yang terpilih"
+
+#~ msgid "Clear Selected"
+#~ msgstr "Hapus Pilihan"
+
+#~ msgid "Clear All"
+#~ msgstr "Hapus semua"
+
+#~ msgid "Operation Failed"
+#~ msgstr "Operasi Gagal"
+
+#~ msgid "No layers are currently selected."
+#~ msgstr "Tidak ada layer yang dipilih"
+
+#~ msgid "Downloading..."
+#~ msgstr "Mengunduh..."
+
+#~ msgid "Please wait"
+#~ msgstr "Silakan menunggu"
 
 #~ msgid "Available %s"
 #~ msgstr "Available %s"
@@ -765,9 +761,6 @@ msgstr "Silakan menunggu"
 
 #~ msgid "Hide"
 #~ msgstr "Hide"
-
-#~ msgid "Now"
-#~ msgstr "Now"
 
 #~ msgid "Clock"
 #~ msgstr "Clock"

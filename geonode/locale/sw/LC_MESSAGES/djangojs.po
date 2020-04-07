@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-25 02:28-0500\n"
+"POT-Creation-Date: 2020-04-07 12:08+0000\n"
 "PO-Revision-Date: 2016-08-23 11:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Swahili (http://www.transifex.com/geonode/geonode/language/"
@@ -36,15 +36,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: geonode/static/geonode/js/search/search.js:373
-msgid "Enter your text here ..."
+#: geonode/monitoring/static/monitoring/bundle.js:170
+msgid "STORE_UPDATED"
 msgstr ""
 
-#: geonode/static/geonode/js/search/search.js:414
-msgid "Enter your region here ..."
+#: geonode/people/templates/people/profile_detail.html:77
+#: geonode/people/templates/people/profile_detail.html:86
+#: geonode/people/templates/people/profile_detail.html:98
+msgid "Not provided."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileType.js:33
+#: geonode/static/geonode/js/upload/FileType.js:50
 #, javascript-format
 msgid "Missing a %s file, which is required"
 msgstr "Faili la %s limekosekana na linahitajika"
@@ -54,144 +56,217 @@ msgid "ESRI Shapefile"
 msgstr "Shapefile ya ESRI"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:13
+msgid "ASCII Text File"
+msgstr ""
+
 #: geonode/static/geonode/js/upload/FileTypes.js:18
+#: geonode/static/geonode/js/upload/FileTypes.js:23
 msgid "GeoTIFF"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:24
+#: geonode/static/geonode/js/upload/FileTypes.js:29
 msgid "Comma Separated Value"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:29
+#: geonode/static/geonode/js/upload/FileTypes.js:34
 msgid "Google Earth KML"
 msgstr "KML ya Google Earth"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:34
+#: geonode/static/geonode/js/upload/FileTypes.js:39
+#, fuzzy
+#| msgid "Google Earth KML"
+msgid "Google Earth KML with a GroundOverlay"
+msgstr "KML ya Google Earth"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:45
+#, fuzzy
+#| msgid "Google Earth KML"
+msgid "Google Earth KMZ"
+msgstr "KML ya Google Earth"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:50
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:39
+#: geonode/static/geonode/js/upload/FileTypes.js:55
 msgid "Zip Archive"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:45
+#: geonode/static/geonode/js/upload/FileTypes.js:61
 msgid "ERDAS Imagine"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:50
-#: geonode/static/geonode/js/upload/FileTypes.js:55
+#: geonode/static/geonode/js/upload/FileTypes.js:66
+#: geonode/static/geonode/js/upload/FileTypes.js:71
 msgid "National Imagery Transmission Format"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:61
+#: geonode/static/geonode/js/upload/FileTypes.js:77
 msgid "Controlled Image Base-1 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:68
+#: geonode/static/geonode/js/upload/FileTypes.js:84
 msgid "Controlled Image Base-5 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:75
+#: geonode/static/geonode/js/upload/FileTypes.js:91
 msgid "Controlled Image Base-10 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:82
+#: geonode/static/geonode/js/upload/FileTypes.js:98
 msgid "CADRG-Global Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:89
+#: geonode/static/geonode/js/upload/FileTypes.js:105
 msgid "CADRG-Jet Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:96
+#: geonode/static/geonode/js/upload/FileTypes.js:112
 msgid "CADRG-Operational Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:103
+#: geonode/static/geonode/js/upload/FileTypes.js:119
 msgid "CADRG-Tactical Pilotage Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:110
+#: geonode/static/geonode/js/upload/FileTypes.js:126
 msgid "CADRG-Joint Operations Graphic"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:117
+#: geonode/static/geonode/js/upload/FileTypes.js:133
 msgid "CADRG-Topographic Line Map 100K"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:124
+#: geonode/static/geonode/js/upload/FileTypes.js:140
 msgid "CADRG-Topographic Line Map 50K"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:131
+#: geonode/static/geonode/js/upload/FileTypes.js:147
 msgid "JPEG2000"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:136
+#: geonode/static/geonode/js/upload/FileTypes.js:152
 msgid "MrSID-Multi-resolution Seamless Image Database"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:331
-msgid "Layer Info"
-msgstr "Maelezo ya Tabaka"
+#: geonode/static/geonode/js/upload/FileTypes.js:157
+#, fuzzy
+#| msgid "Metadata Links:"
+msgid "XML Metadata File"
+msgstr "Viungo vya metadata:"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:332
-msgid "Edit Metadata"
-msgstr "Hariri Metadata"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:333
-msgid "Manage Styles"
-msgstr "Simamia Mitindo"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:336
-msgid "The column %1 was renamed to %2 <br/>"
+#: geonode/static/geonode/js/upload/FileTypes.js:163
+msgid "Style Layer Descriptor"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:342
-msgid "Your layer was successfully uploaded"
-msgstr "Tabaka lako limepakiwa kwa mafanikio"
+#: geonode/static/geonode/js/upload/FileTypes.js:169
+msgid "JPEG"
+msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:371
-msgid "Performing Final GeoServer Config Step"
-msgstr "Inafanya hatua ya mwisho ya usanidi wa GeoServer"
+#: geonode/static/geonode/js/upload/FileTypes.js:174
+msgid "PNG"
+msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:386
-#: geonode/static/geonode/js/upload/LayerInfo.js:412
-msgid "You need to specify more information in order to complete your upload"
-msgstr "Unahitajika kuainisha maelezo zaidi ili kukamilisha upakiaji wako"
+#: geonode/static/geonode/js/upload/FileTypes.js:179
+msgid "GIF"
+msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:404
-msgid "You need to specify more information in order to complete your upload."
-msgstr "Unahitajika kuainisha maelezo zaidi ili kukamilisha upakiaji wako."
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:404
-msgid "You can continue configuring your layer."
-msgstr "Unaweza kuendelea kusanidi tabaka lako."
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:422
-#: geonode/static/geonode/js/upload/LayerInfo.js:509
+#: geonode/static/geonode/js/upload/LayerInfo.js:332
+#: geonode/static/geonode/js/upload/LayerInfo.js:503
 msgid "Unexpected Error"
 msgstr "Hitilafu isiyotarajiwa"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:438
+#: geonode/static/geonode/js/upload/LayerInfo.js:370
+#, fuzzy
+#| msgid "Layer Info"
+msgid " Info"
+msgstr "Maelezo ya Tabaka"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:371
+msgid "Edit Metadata"
+msgstr "Hariri Metadata"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:372
+#, fuzzy
+#| msgid "Edit Metadata"
+msgid "Upload Metadata"
+msgstr "Hariri Metadata"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:373
+msgid "Upload SLD"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:374
+msgid "Manage Styles"
+msgstr "Simamia Mitindo"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:387
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:393
+msgid "Your "
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:422
+msgid "Performing Final GeoServer Config Step"
+msgstr "Inafanya hatua ya mwisho ya usanidi wa GeoServer"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:439
+#: geonode/static/geonode/js/upload/LayerInfo.js:483
+msgid "You need to specify more information in order to complete your upload"
+msgstr "Unahitajika kuainisha maelezo zaidi ili kukamilisha upakiaji wako"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:463
+msgid "Files are ready to be ingested!"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:466
+msgid "A temporal dimension may be added to this Layer."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:521
 msgid "Performing GeoServer Config Step"
 msgstr "Inafanyanya usanidi wa GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:516
+#: geonode/static/geonode/js/upload/LayerInfo.js:609
+msgid ""
+"<br>Please check your network connection. In case of Layer Upload make sure "
+"GeoServer is running and accepting connections."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:613
+#: geonode/static/geonode/js/upload/LayerInfo.js:616
+#: geonode/static/geonode/js/upload/LayerInfo.js:623
+#: geonode/static/geonode/js/upload/LayerInfo.js:626
+msgid "<br>"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:618
+msgid "<br>Bad request or URL not found."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:628
+#, fuzzy
+#| msgid "Unknown Map"
+msgid "<br>Unknown."
+msgstr "Ramani isiyojulikana"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:636
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Mafaili ya tabaka yamepakiwa, usanidi katika GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:695
+#: geonode/static/geonode/js/upload/LayerInfo.js:787
 msgid "Remove"
 msgstr "Ondoa"
 
-#: geonode/static/geonode/js/upload/upload.js:125
+#: geonode/static/geonode/js/upload/upload.js:126
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr ""
 "Faili %s ni la aina ya faili isiyokubalika, tafadhali chagua faili lingine."
 
-#: geonode/static/geonode/js/upload/upload.js:285
+#: geonode/static/geonode/js/upload/upload.js:296
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
 "options have been validated.\n"
@@ -199,479 +274,401 @@ msgid ""
 "Please check for errors in the form!"
 msgstr ""
 
-#: geonode/static/lib/js/assets.min.js:2
-msgid "<iframe frameborder='0' width='0' height='0'/>"
+#: geonode/templates/admin/base_site.html:4
+msgid "GeoNode site admin"
 msgstr ""
 
-#: geonode/static/lib/js/assets.min.js:4
-msgid "<script>"
+#: geonode/templates/admin/base_site.html:7
+msgid "GeoNode administration"
 msgstr ""
 
-#: geonode/static/lib/js/assets.min.js:4
-msgid "<div>"
+#: geonode/templates/index.html:19
+msgid "Welcome"
 msgstr ""
 
-#: geonode/templates/lang.js:9 geonode/templates/lang.js:236
-msgid "Cancel"
-msgstr "Sitisha"
-
-#: geonode/templates/lang.js:10
-msgid "Save as Copy"
-msgstr "Hifadhi kama Nakala"
-
-#: geonode/templates/lang.js:11
-msgid "About this Map"
-msgstr "Kuhusu Ramani hii"
-
-#: geonode/templates/lang.js:12 geonode/templates/lang.js:96
-#: geonode/templates/lang.js:165
-msgid "Abstract"
-msgstr "Muhtasari"
-
-#: geonode/templates/lang.js:13
-msgid "Save"
-msgstr "Hifadhi"
-
-#: geonode/templates/lang.js:14 geonode/templates/lang.js:100
-#: geonode/templates/lang.js:109 geonode/templates/lang.js:162
-#: geonode/templates/lang.js:184 geonode/templates/lang.js:219
-msgid "Title"
-msgstr "Jina"
-
-#: geonode/templates/lang.js:20
-msgid "Connection Error"
-msgstr "Hitilafu katika uunganishaji"
-
-#: geonode/templates/lang.js:21
-msgid "The server returned an error"
-msgstr "Seva imerudisha hitilafu"
-
-#: geonode/templates/lang.js:22
-msgid "Details..."
-msgstr "Maelezo ..."
-
-#: geonode/templates/lang.js:28 geonode/templates/lang.js:31
-msgid "Add Layers"
-msgstr "Ongeza Matabaka"
-
-#: geonode/templates/lang.js:29
-msgid "Area"
-msgstr "Eneo"
-
-#: geonode/templates/lang.js:30
-msgid "Background"
-msgstr "Usuli"
-
-#: geonode/templates/lang.js:32
-msgid "Done"
-msgstr "Imefanyika"
-
-#: geonode/templates/lang.js:33
-msgid "Available Layers"
-msgstr "Mabaka yaliyomo"
-
-#: geonode/templates/lang.js:35 geonode/templates/lang.js:121
-msgid "Height"
-msgstr "Kimo"
-
-#: geonode/templates/lang.js:36
-msgid "Get Feature Info"
-msgstr "Pata taarifa za sura hii"
-
-#: geonode/templates/lang.js:37 geonode/templates/lang.js:122
-msgid "Large"
-msgstr "Kubwa"
-
-#: geonode/templates/lang.js:38
-msgid "or add a new server."
-msgstr "au ongeza seva mpya."
-
-#: geonode/templates/lang.js:39
-msgid "Map Layers"
-msgstr "Matabaka ya ramani"
-
-#: geonode/templates/lang.js:40
-msgid "View available data from:"
-msgstr "Tazama data zinazopatikana toka:"
-
-#: geonode/templates/lang.js:41
-msgid "Data"
-msgstr "Data"
-
-#: geonode/templates/lang.js:42
-msgid "Layers"
-msgstr "Matabaka"
-
-#: geonode/templates/lang.js:43
-msgid "Legend"
-msgstr "Ufunguo"
-
-#: geonode/templates/lang.js:44
-msgid "Length"
-msgstr "Urefu"
-
-#: geonode/templates/lang.js:45
-msgid "Loading Map..."
-msgstr "Ramani inapakiwa ..."
-
-#: geonode/templates/lang.js:46 geonode/templates/lang.js:123
-msgid "Map Size"
-msgstr "Ukubwa wa ramani"
-
-#: geonode/templates/lang.js:47
-msgid "Measure"
-msgstr "Pima"
-
-#: geonode/templates/lang.js:48 geonode/templates/lang.js:97
-#: geonode/templates/lang.js:163
-msgid "Contact"
-msgstr "Mawasiliano"
-
-#: geonode/templates/lang.js:49 geonode/templates/lang.js:55
-msgid "Permalink"
-msgstr "Kiungo cha kudumu"
-
-#: geonode/templates/lang.js:50 geonode/templates/lang.js:124
-msgid "Mini"
-msgstr "Mini"
-
-#: geonode/templates/lang.js:51
-msgid "Pan Map"
-msgstr "`Pan` Ramani"
-
-#: geonode/templates/lang.js:52
-msgid "Zoom to Next Extent"
-msgstr "Kuza kufikia kiwango kinachofuata"
-
-#: geonode/templates/lang.js:53
-msgid "Zoom to Previous Extent"
-msgstr "Kuza kufikia kiwango kilichopita"
-
-#: geonode/templates/lang.js:54
-msgid "This map has not yet been saved."
-msgstr "Ramani hii bado haijahifadhiwa."
-
-#: geonode/templates/lang.js:56 geonode/templates/lang.js:125
-msgid "Premium"
-msgstr "`Premium`"
-
-#: geonode/templates/lang.js:57
-msgid "Print Map"
-msgstr "Chapisha Ramani"
-
-#: geonode/templates/lang.js:58
-msgid "Print Preview"
-msgstr "Hakiki Chapisho"
-
-#: geonode/templates/lang.js:59
-msgid "Properties"
-msgstr "Sifa"
-
-#: geonode/templates/lang.js:60 geonode/templates/lang.js:126
-msgid "Publish Map"
-msgstr "Sambaza ramani"
-
-#: geonode/templates/lang.js:61 geonode/templates/lang.js:62
-msgid "Remove Layer"
-msgstr "Ondoa Tabaka"
-
-#: geonode/templates/lang.js:63
-msgid "Sorry, your map could not be saved."
-msgstr "Samahani, ramani yako hakuweza kuhifadhiwa."
-
-#: geonode/templates/lang.js:64
-msgid "Error While Saving"
-msgstr "Hitilafu Wakati wa Kuhifadhi"
-
-#: geonode/templates/lang.js:65
-msgid "Save Map"
-msgstr "Hifadhi Ramani"
-
-#: geonode/templates/lang.js:66
-msgid "You must be logged in to save this map."
-msgstr "Ni lazima ujisajili ili kuhifadhi ramani hii."
-
-#: geonode/templates/lang.js:67 geonode/templates/lang.js:128
-msgid "Small"
-msgstr "Ndogo"
-
-#: geonode/templates/lang.js:68
+#: geonode/templates/index.html:21
 msgid ""
-"Error contacting server.\n"
-" Please check the url and try again."
+"GeoNode is an open source platform for sharing geospatial data and maps."
 msgstr ""
-"Hitilafu katika kuwasiliana na seva. Tafadhali angalia `url` kisha jaribu "
-"tena."
 
-#: geonode/templates/lang.js:69
-msgid "Layer Properties"
-msgstr "Sifa za tabaka"
-
-#: geonode/templates/lang.js:70
-msgid "Change layer format and style"
-msgstr "Badilisha fomati na mtindo wa tabaka"
-
-#: geonode/templates/lang.js:71
-msgid "Edit Styles"
-msgstr "Hariri mitindo"
-
-#: geonode/templates/lang.js:72
-msgid "Edit layer styles"
-msgstr "Hariri mitindo ya tabaka"
-
-#: geonode/templates/lang.js:73
-msgid "Switch to Google Earth 3D Viewer"
-msgstr "Badili kwenda muonekano wa 3D kwa Google Earth"
-
-#: geonode/templates/lang.js:74
-msgid ""
-"The map that you are trying to load does not exist.  Creating a new map "
-"instead."
-msgstr "Ramani unayoitafuta haipo. Kutengeneza ramani mpya badala yake."
-
-#: geonode/templates/lang.js:75
-msgid "Unknown Map"
-msgstr "Ramani isiyojulikana"
-
-#: geonode/templates/lang.js:76 geonode/templates/lang.js:129
-msgid "Width"
-msgstr "Upana"
-
-#: geonode/templates/lang.js:77
-msgid "Zoom In"
-msgstr "Zoom In"
-
-#: geonode/templates/lang.js:78
-msgid "Zoom Out"
-msgstr "Zoom Out"
-
-#: geonode/templates/lang.js:79
-msgid "Zoom level"
-msgstr "Ngazi ya ku-zoom"
-
-#: geonode/templates/lang.js:80
-msgid "Zoom Level"
-msgstr "Zoom Level"
-
-#: geonode/templates/lang.js:81
-msgid "Zoom to Layer Extent"
-msgstr "Zoom kuendana na tabaka"
-
-#: geonode/templates/lang.js:82
-msgid "Zoom to Visible Extent"
-msgstr "Zoom hadi kiwango kinachonekana"
-
-#: geonode/templates/lang.js:88
-msgid "Zoom Level {zoom}"
-msgstr "Kiwango cha zoom  {zoom}"
-
-#: geonode/templates/lang.js:94
-msgid "Create Map"
-msgstr "Tengeneza Ramani"
-
-#: geonode/templates/lang.js:95
-msgid "Export Map"
-msgstr "Export Ramani"
-
-#: geonode/templates/lang.js:98
-msgid "Map"
-msgstr "Ramani"
-
-#: geonode/templates/lang.js:99 geonode/templates/lang.js:166
-msgid "View this Map"
-msgstr "Tazama Ramani hii"
-
-#: geonode/templates/lang.js:101
-msgid "Open Map"
-msgstr "Fungua Ramani"
-
-#: geonode/templates/lang.js:107 geonode/templates/lang.js:183
-msgid "Name"
-msgstr "Jina"
-
-#: geonode/templates/lang.js:108
-msgid "Queryable"
-msgstr "`Queryable`"
-
-#: geonode/templates/lang.js:115
-msgid "No background"
-msgstr "Hakuna usuli"
-
-#: geonode/templates/lang.js:127
-msgid ""
-"Your map is ready to be published to the web!  Simply copy the following "
-"HTML to embed the map in your website:"
+#: geonode/templates/index.html:25
+msgid "Get Started &raquo;"
 msgstr ""
-"Ramani yako ni tayari kwa kutolewa kwa mtandao! Nakili msimbo wa HTML "
-"ufuatao ukitaka kuambatanisha ramani katika tovuti yako:"
 
-#: geonode/templates/lang.js:136 geonode/templates/lang.js:202
-msgid "Abstract:"
-msgstr "Muhtasari:"
+#: geonode/templates/index.html:82 geonode/templates/index.html:102
+#, fuzzy
+#| msgid "Now"
+msgid "No"
+msgstr "Now"
 
-#: geonode/templates/lang.js:137 geonode/templates/lang.js:204
-msgid "No attribution information is provided for this layer."
-msgstr "Hakuna taarifa za `attribution` zilizotolewa kwa ajili ya tabaka hili."
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "some schema mandatory fields are missing"
+msgstr ""
 
-#: geonode/templates/lang.js:138 geonode/templates/lang.js:205
-msgid "Provided by:"
-msgstr "Imetolewa na:"
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "Metadata Schema mandatory fields completed"
+msgstr ""
 
-#: geonode/templates/lang.js:139 geonode/templates/lang.js:206
-msgid "Download:"
-msgstr "Pakua:"
+#: geonode/templates/metadata_form_js.html:244
+#: geonode/templates/metadata_form_js.html:283
+msgid ""
+"<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field "
+"declared Mandatory by the Metadata Schema</strong></p>"
+msgstr ""
 
-#: geonode/templates/lang.js:140 geonode/templates/lang.js:208
-msgid "No keywords are listed for this layer."
-msgstr "Hakuna maneno msingi yaliyoorodheshwa kwa ajili ya tabaka hili."
+#~ msgid "Your layer was successfully uploaded"
+#~ msgstr "Tabaka lako limepakiwa kwa mafanikio"
 
-#: geonode/templates/lang.js:141 geonode/templates/lang.js:209
-msgid "Keywords:"
-msgstr "Maneno msingi:"
+#~ msgid ""
+#~ "You need to specify more information in order to complete your upload."
+#~ msgstr "Unahitajika kuainisha maelezo zaidi ili kukamilisha upakiaji wako."
 
-#: geonode/templates/lang.js:142 geonode/templates/lang.js:210
-msgid "No metadata URLs are defined for this layer."
-msgstr "Hakuna URL za metadata zilizo bainishwa kwa tabaka hili."
+#~ msgid "You can continue configuring your layer."
+#~ msgstr "Unaweza kuendelea kusanidi tabaka lako."
 
-#: geonode/templates/lang.js:143 geonode/templates/lang.js:211
-msgid "Metadata Links:"
-msgstr "Viungo vya metadata:"
+#~ msgid "Cancel"
+#~ msgstr "Sitisha"
 
-#: geonode/templates/lang.js:149
-msgid "Paper size:"
-msgstr "Ukubwa  wa karatasi:"
+#~ msgid "Save as Copy"
+#~ msgstr "Hifadhi kama Nakala"
 
-#: geonode/templates/lang.js:150
-msgid "Resolution:"
-msgstr "Msongo:"
+#~ msgid "About this Map"
+#~ msgstr "Kuhusu Ramani hii"
 
-#: geonode/templates/lang.js:151
-msgid "Print"
-msgstr "Chapisha"
+#~ msgid "Abstract"
+#~ msgstr "Muhtasari"
 
-#: geonode/templates/lang.js:152
-msgid "Enter map title here."
-msgstr "Ingiza jina la ramani hapa."
+#~ msgid "Save"
+#~ msgstr "Hifadhi"
 
-#: geonode/templates/lang.js:153
-msgid "Include legend?"
-msgstr "Ambatanisha ufunguo?"
+#~ msgid "Title"
+#~ msgstr "Jina"
 
-#: geonode/templates/lang.js:154
-msgid "Enter comments here."
-msgstr "Ingiza maoni hapa."
+#~ msgid "Connection Error"
+#~ msgstr "Hitilafu katika uunganishaji"
 
-#: geonode/templates/lang.js:155
-msgid "Creating PDF..."
-msgstr "PDF inatengenezwa  ..."
+#~ msgid "The server returned an error"
+#~ msgstr "Seva imerudisha hitilafu"
 
-#: geonode/templates/lang.js:164
-msgid "Last Modified"
-msgstr "Mara ya mwisho kuboreshwa"
+#~ msgid "Details..."
+#~ msgstr "Maelezo ..."
 
-#: geonode/templates/lang.js:167 geonode/templates/lang.js:188
-msgid "Prev"
-msgstr "Yaliyopita"
+#~ msgid "Add Layers"
+#~ msgstr "Ongeza Matabaka"
 
-#: geonode/templates/lang.js:168 geonode/templates/lang.js:189
-msgid "Next"
-msgstr "kfuatayo"
+#~ msgid "Area"
+#~ msgstr "Eneo"
 
-#: geonode/templates/lang.js:169 geonode/templates/lang.js:190
-msgid "of"
-msgstr "ya"
+#~ msgid "Background"
+#~ msgstr "Usuli"
 
-#: geonode/templates/lang.js:170 geonode/templates/lang.js:191
-msgid "Your search did not match any items."
-msgstr "Utafutaji wako haukushabihiana na chochote."
+#~ msgid "Done"
+#~ msgstr "Imefanyika"
 
-#: geonode/templates/lang.js:171
-msgid "Search Maps"
-msgstr "Tafuta Ramani"
+#~ msgid "Available Layers"
+#~ msgstr "Mabaka yaliyomo"
 
-#: geonode/templates/lang.js:172 geonode/templates/lang.js:192
-msgid "Search"
-msgstr "Tafuta"
+#~ msgid "Height"
+#~ msgstr "Kimo"
 
-#: geonode/templates/lang.js:173 geonode/templates/lang.js:193
-msgid "Showing"
-msgstr "Inaonesha"
+#~ msgid "Get Feature Info"
+#~ msgstr "Pata taarifa za sura hii"
 
-#: geonode/templates/lang.js:174
-msgid "Loading"
-msgstr "Inapakia"
+#~ msgid "Large"
+#~ msgstr "Kubwa"
 
-#: geonode/templates/lang.js:175 geonode/templates/lang.js:195
-msgid "permalink"
-msgstr "kiungo cha kudumu"
+#~ msgid "or add a new server."
+#~ msgstr "au ongeza seva mpya."
 
-#: geonode/templates/lang.js:182
-msgid "Select"
-msgstr "Chagua"
+#~ msgid "Map Layers"
+#~ msgstr "Matabaka ya ramani"
 
-#: geonode/templates/lang.js:185
-msgid "Select:"
-msgstr "Chagua:"
+#~ msgid "View available data from:"
+#~ msgstr "Tazama data zinazopatikana toka:"
 
-#: geonode/templates/lang.js:186
-msgid "All"
-msgstr "Vyote"
+#~ msgid "Data"
+#~ msgstr "Data"
 
-#: geonode/templates/lang.js:187
-msgid "None"
-msgstr "Hakuna"
+#~ msgid "Layers"
+#~ msgstr "Matabaka"
 
-#: geonode/templates/lang.js:194
-msgid "Loading..."
-msgstr "Inapakia ..."
+#~ msgid "Legend"
+#~ msgstr "Ufunguo"
 
-#: geonode/templates/lang.js:196
-msgid "You do not have permission to view this data"
-msgstr "Huna ruhusa kutazama data hizi"
+#~ msgid "Length"
+#~ msgstr "Urefu"
 
-#: geonode/templates/lang.js:197
-msgid "This data is stored on a remote server"
-msgstr "Data hizi imehifadhiwa kwenye seva ya mbali"
+#~ msgid "Loading Map..."
+#~ msgstr "Ramani inapakiwa ..."
 
-#: geonode/templates/lang.js:203
-msgid "No abstract is provided for this layer."
-msgstr "Hakuna muhtasari uliotolewa kwa ajili ya tabaka hili."
+#~ msgid "Map Size"
+#~ msgstr "Ukubwa wa ramani"
 
-#: geonode/templates/lang.js:207
-msgid "No download URLs are definied for this layer."
-msgstr "Hakuna viungo vya kupakulia vilivyobainishwa kwa ajili ya tabaka hili"
+#~ msgid "Measure"
+#~ msgstr "Pima"
 
-#: geonode/templates/lang.js:217
-msgid "Selected Layers"
-msgstr "Matabaka yaliyochaguliwa"
+#~ msgid "Contact"
+#~ msgstr "Mawasiliano"
 
-#: geonode/templates/lang.js:218
-msgid "No Layers Selected"
-msgstr "Hakuna Tabaka Lililoshaguliwa"
+#~ msgid "Permalink"
+#~ msgstr "Kiungo cha kudumu"
 
-#: geonode/templates/lang.js:220
-msgid "Clear Selected"
-msgstr "Safisha vilivyo chaguliwa"
+#~ msgid "Mini"
+#~ msgstr "Mini"
 
-#: geonode/templates/lang.js:221
-msgid "Clear All"
-msgstr "Safisha vyote"
+#~ msgid "Pan Map"
+#~ msgstr "`Pan` Ramani"
 
-#: geonode/templates/lang.js:227
-msgid "Operation Failed"
-msgstr "Mchakato umeshindikana"
+#~ msgid "Zoom to Next Extent"
+#~ msgstr "Kuza kufikia kiwango kinachofuata"
 
-#: geonode/templates/lang.js:228
-msgid "No layers are currently selected."
-msgstr "Hakuna matabaka yaliyochaguliwa kwa sasa."
+#~ msgid "Zoom to Previous Extent"
+#~ msgstr "Kuza kufikia kiwango kilichopita"
 
-#: geonode/templates/lang.js:235
-msgid "Downloading..."
-msgstr "Inapakua ..."
+#~ msgid "This map has not yet been saved."
+#~ msgstr "Ramani hii bado haijahifadhiwa."
 
-#: geonode/templates/lang.js:237
-msgid "Please wait"
-msgstr "Tafadhali subiri"
+#~ msgid "Premium"
+#~ msgstr "`Premium`"
+
+#~ msgid "Print Map"
+#~ msgstr "Chapisha Ramani"
+
+#~ msgid "Print Preview"
+#~ msgstr "Hakiki Chapisho"
+
+#~ msgid "Properties"
+#~ msgstr "Sifa"
+
+#~ msgid "Publish Map"
+#~ msgstr "Sambaza ramani"
+
+#~ msgid "Remove Layer"
+#~ msgstr "Ondoa Tabaka"
+
+#~ msgid "Sorry, your map could not be saved."
+#~ msgstr "Samahani, ramani yako hakuweza kuhifadhiwa."
+
+#~ msgid "Error While Saving"
+#~ msgstr "Hitilafu Wakati wa Kuhifadhi"
+
+#~ msgid "Save Map"
+#~ msgstr "Hifadhi Ramani"
+
+#~ msgid "You must be logged in to save this map."
+#~ msgstr "Ni lazima ujisajili ili kuhifadhi ramani hii."
+
+#~ msgid "Small"
+#~ msgstr "Ndogo"
+
+#~ msgid ""
+#~ "Error contacting server.\n"
+#~ " Please check the url and try again."
+#~ msgstr ""
+#~ "Hitilafu katika kuwasiliana na seva. Tafadhali angalia `url` kisha jaribu "
+#~ "tena."
+
+#~ msgid "Layer Properties"
+#~ msgstr "Sifa za tabaka"
+
+#~ msgid "Change layer format and style"
+#~ msgstr "Badilisha fomati na mtindo wa tabaka"
+
+#~ msgid "Edit Styles"
+#~ msgstr "Hariri mitindo"
+
+#~ msgid "Edit layer styles"
+#~ msgstr "Hariri mitindo ya tabaka"
+
+#~ msgid "Switch to Google Earth 3D Viewer"
+#~ msgstr "Badili kwenda muonekano wa 3D kwa Google Earth"
+
+#~ msgid ""
+#~ "The map that you are trying to load does not exist.  Creating a new map "
+#~ "instead."
+#~ msgstr "Ramani unayoitafuta haipo. Kutengeneza ramani mpya badala yake."
+
+#~ msgid "Width"
+#~ msgstr "Upana"
+
+#~ msgid "Zoom In"
+#~ msgstr "Zoom In"
+
+#~ msgid "Zoom Out"
+#~ msgstr "Zoom Out"
+
+#~ msgid "Zoom level"
+#~ msgstr "Ngazi ya ku-zoom"
+
+#~ msgid "Zoom Level"
+#~ msgstr "Zoom Level"
+
+#~ msgid "Zoom to Layer Extent"
+#~ msgstr "Zoom kuendana na tabaka"
+
+#~ msgid "Zoom to Visible Extent"
+#~ msgstr "Zoom hadi kiwango kinachonekana"
+
+#~ msgid "Zoom Level {zoom}"
+#~ msgstr "Kiwango cha zoom  {zoom}"
+
+#~ msgid "Create Map"
+#~ msgstr "Tengeneza Ramani"
+
+#~ msgid "Export Map"
+#~ msgstr "Export Ramani"
+
+#~ msgid "Map"
+#~ msgstr "Ramani"
+
+#~ msgid "View this Map"
+#~ msgstr "Tazama Ramani hii"
+
+#~ msgid "Open Map"
+#~ msgstr "Fungua Ramani"
+
+#~ msgid "Name"
+#~ msgstr "Jina"
+
+#~ msgid "Queryable"
+#~ msgstr "`Queryable`"
+
+#~ msgid "No background"
+#~ msgstr "Hakuna usuli"
+
+#~ msgid ""
+#~ "Your map is ready to be published to the web!  Simply copy the following "
+#~ "HTML to embed the map in your website:"
+#~ msgstr ""
+#~ "Ramani yako ni tayari kwa kutolewa kwa mtandao! Nakili msimbo wa HTML "
+#~ "ufuatao ukitaka kuambatanisha ramani katika tovuti yako:"
+
+#~ msgid "Abstract:"
+#~ msgstr "Muhtasari:"
+
+#~ msgid "No attribution information is provided for this layer."
+#~ msgstr ""
+#~ "Hakuna taarifa za `attribution` zilizotolewa kwa ajili ya tabaka hili."
+
+#~ msgid "Provided by:"
+#~ msgstr "Imetolewa na:"
+
+#~ msgid "Download:"
+#~ msgstr "Pakua:"
+
+#~ msgid "No keywords are listed for this layer."
+#~ msgstr "Hakuna maneno msingi yaliyoorodheshwa kwa ajili ya tabaka hili."
+
+#~ msgid "Keywords:"
+#~ msgstr "Maneno msingi:"
+
+#~ msgid "No metadata URLs are defined for this layer."
+#~ msgstr "Hakuna URL za metadata zilizo bainishwa kwa tabaka hili."
+
+#~ msgid "Paper size:"
+#~ msgstr "Ukubwa  wa karatasi:"
+
+#~ msgid "Resolution:"
+#~ msgstr "Msongo:"
+
+#~ msgid "Print"
+#~ msgstr "Chapisha"
+
+#~ msgid "Enter map title here."
+#~ msgstr "Ingiza jina la ramani hapa."
+
+#~ msgid "Include legend?"
+#~ msgstr "Ambatanisha ufunguo?"
+
+#~ msgid "Enter comments here."
+#~ msgstr "Ingiza maoni hapa."
+
+#~ msgid "Creating PDF..."
+#~ msgstr "PDF inatengenezwa  ..."
+
+#~ msgid "Last Modified"
+#~ msgstr "Mara ya mwisho kuboreshwa"
+
+#~ msgid "Prev"
+#~ msgstr "Yaliyopita"
+
+#~ msgid "Next"
+#~ msgstr "kfuatayo"
+
+#~ msgid "of"
+#~ msgstr "ya"
+
+#~ msgid "Your search did not match any items."
+#~ msgstr "Utafutaji wako haukushabihiana na chochote."
+
+#~ msgid "Search Maps"
+#~ msgstr "Tafuta Ramani"
+
+#~ msgid "Search"
+#~ msgstr "Tafuta"
+
+#~ msgid "Showing"
+#~ msgstr "Inaonesha"
+
+#~ msgid "Loading"
+#~ msgstr "Inapakia"
+
+#~ msgid "permalink"
+#~ msgstr "kiungo cha kudumu"
+
+#~ msgid "Select"
+#~ msgstr "Chagua"
+
+#~ msgid "Select:"
+#~ msgstr "Chagua:"
+
+#~ msgid "All"
+#~ msgstr "Vyote"
+
+#~ msgid "None"
+#~ msgstr "Hakuna"
+
+#~ msgid "Loading..."
+#~ msgstr "Inapakia ..."
+
+#~ msgid "You do not have permission to view this data"
+#~ msgstr "Huna ruhusa kutazama data hizi"
+
+#~ msgid "This data is stored on a remote server"
+#~ msgstr "Data hizi imehifadhiwa kwenye seva ya mbali"
+
+#~ msgid "No abstract is provided for this layer."
+#~ msgstr "Hakuna muhtasari uliotolewa kwa ajili ya tabaka hili."
+
+#~ msgid "No download URLs are definied for this layer."
+#~ msgstr ""
+#~ "Hakuna viungo vya kupakulia vilivyobainishwa kwa ajili ya tabaka hili"
+
+#~ msgid "Selected Layers"
+#~ msgstr "Matabaka yaliyochaguliwa"
+
+#~ msgid "No Layers Selected"
+#~ msgstr "Hakuna Tabaka Lililoshaguliwa"
+
+#~ msgid "Clear Selected"
+#~ msgstr "Safisha vilivyo chaguliwa"
+
+#~ msgid "Clear All"
+#~ msgstr "Safisha vyote"
+
+#~ msgid "Operation Failed"
+#~ msgstr "Mchakato umeshindikana"
+
+#~ msgid "No layers are currently selected."
+#~ msgstr "Hakuna matabaka yaliyochaguliwa kwa sasa."
+
+#~ msgid "Downloading..."
+#~ msgstr "Inapakua ..."
+
+#~ msgid "Please wait"
+#~ msgstr "Tafadhali subiri"
 
 #~ msgid "Available %s"
 #~ msgstr "Available %s"
@@ -763,9 +760,6 @@ msgstr "Tafadhali subiri"
 
 #~ msgid "Hide"
 #~ msgstr "Hide"
-
-#~ msgid "Now"
-#~ msgstr "Now"
 
 #~ msgid "Clock"
 #~ msgstr "Clock"
