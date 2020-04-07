@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-25 02:28-0500\n"
+"POT-Creation-Date: 2020-04-07 12:08+0000\n"
 "PO-Revision-Date: 2016-08-23 11:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/geonode/geonode/language/"
@@ -36,15 +36,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: geonode/static/geonode/js/search/search.js:373
-msgid "Enter your text here ..."
+#: geonode/monitoring/static/monitoring/bundle.js:170
+msgid "STORE_UPDATED"
 msgstr ""
 
-#: geonode/static/geonode/js/search/search.js:414
-msgid "Enter your region here ..."
+#: geonode/people/templates/people/profile_detail.html:77
+#: geonode/people/templates/people/profile_detail.html:86
+#: geonode/people/templates/people/profile_detail.html:98
+msgid "Not provided."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileType.js:33
+#: geonode/static/geonode/js/upload/FileType.js:50
 #, javascript-format
 msgid "Missing a %s file, which is required"
 msgstr "Thiếu một %s file, đó là cần thiết"
@@ -54,145 +56,218 @@ msgid "ESRI Shapefile"
 msgstr "ESRI Shapefile"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:13
+msgid "ASCII Text File"
+msgstr ""
+
 #: geonode/static/geonode/js/upload/FileTypes.js:18
+#: geonode/static/geonode/js/upload/FileTypes.js:23
 msgid "GeoTIFF"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:24
+#: geonode/static/geonode/js/upload/FileTypes.js:29
 msgid "Comma Separated Value"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:29
+#: geonode/static/geonode/js/upload/FileTypes.js:34
 msgid "Google Earth KML"
 msgstr "Google Earth KML"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:34
+#: geonode/static/geonode/js/upload/FileTypes.js:39
+#, fuzzy
+#| msgid "Google Earth KML"
+msgid "Google Earth KML with a GroundOverlay"
+msgstr "Google Earth KML"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:45
+#, fuzzy
+#| msgid "Google Earth KML"
+msgid "Google Earth KMZ"
+msgstr "Google Earth KML"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:50
 msgid "GeoJSON"
 msgstr "GeoJSON còn"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:39
+#: geonode/static/geonode/js/upload/FileTypes.js:55
 msgid "Zip Archive"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:45
+#: geonode/static/geonode/js/upload/FileTypes.js:61
 msgid "ERDAS Imagine"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:50
-#: geonode/static/geonode/js/upload/FileTypes.js:55
+#: geonode/static/geonode/js/upload/FileTypes.js:66
+#: geonode/static/geonode/js/upload/FileTypes.js:71
 msgid "National Imagery Transmission Format"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:61
+#: geonode/static/geonode/js/upload/FileTypes.js:77
 msgid "Controlled Image Base-1 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:68
+#: geonode/static/geonode/js/upload/FileTypes.js:84
 msgid "Controlled Image Base-5 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:75
+#: geonode/static/geonode/js/upload/FileTypes.js:91
 msgid "Controlled Image Base-10 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:82
+#: geonode/static/geonode/js/upload/FileTypes.js:98
 msgid "CADRG-Global Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:89
+#: geonode/static/geonode/js/upload/FileTypes.js:105
 msgid "CADRG-Jet Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:96
+#: geonode/static/geonode/js/upload/FileTypes.js:112
 msgid "CADRG-Operational Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:103
+#: geonode/static/geonode/js/upload/FileTypes.js:119
 msgid "CADRG-Tactical Pilotage Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:110
+#: geonode/static/geonode/js/upload/FileTypes.js:126
 msgid "CADRG-Joint Operations Graphic"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:117
+#: geonode/static/geonode/js/upload/FileTypes.js:133
 msgid "CADRG-Topographic Line Map 100K"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:124
+#: geonode/static/geonode/js/upload/FileTypes.js:140
 msgid "CADRG-Topographic Line Map 50K"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:131
+#: geonode/static/geonode/js/upload/FileTypes.js:147
 msgid "JPEG2000"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:136
+#: geonode/static/geonode/js/upload/FileTypes.js:152
 msgid "MrSID-Multi-resolution Seamless Image Database"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:331
-msgid "Layer Info"
-msgstr "Layer Info"
+#: geonode/static/geonode/js/upload/FileTypes.js:157
+#, fuzzy
+#| msgid "Metadata Links:"
+msgid "XML Metadata File"
+msgstr "Liên kết siêu dữ liệu:"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:332
-msgid "Edit Metadata"
-msgstr "Chỉnh sửa Metadata"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:333
-msgid "Manage Styles"
-msgstr "Quản lý Styles"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:336
-msgid "The column %1 was renamed to %2 <br/>"
+#: geonode/static/geonode/js/upload/FileTypes.js:163
+msgid "Style Layer Descriptor"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:342
-msgid "Your layer was successfully uploaded"
-msgstr "Lớp của bạn đã được tải lên thành công"
+#: geonode/static/geonode/js/upload/FileTypes.js:169
+msgid "JPEG"
+msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:371
-msgid "Performing Final GeoServer Config Step"
-msgstr "Thực hiện cuối cùng GeoServer Config Bước"
+#: geonode/static/geonode/js/upload/FileTypes.js:174
+msgid "PNG"
+msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:386
-#: geonode/static/geonode/js/upload/LayerInfo.js:412
-msgid "You need to specify more information in order to complete your upload"
-msgstr "Bạn cần xác định thêm thông tin để hoàn thành tải lên của bạn"
+#: geonode/static/geonode/js/upload/FileTypes.js:179
+msgid "GIF"
+msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:404
-msgid "You need to specify more information in order to complete your upload."
-msgstr "Bạn cần xác định thêm thông tin để hoàn thành tải lên của bạn."
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:404
-msgid "You can continue configuring your layer."
-msgstr "Bạn có thể tiếp tục cấu hình lớp của bạn."
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:422
-#: geonode/static/geonode/js/upload/LayerInfo.js:509
+#: geonode/static/geonode/js/upload/LayerInfo.js:332
+#: geonode/static/geonode/js/upload/LayerInfo.js:503
 msgid "Unexpected Error"
 msgstr "Lỗi bất ngờ"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:438
+#: geonode/static/geonode/js/upload/LayerInfo.js:370
+#, fuzzy
+#| msgid "Layer Info"
+msgid " Info"
+msgstr "Layer Info"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:371
+msgid "Edit Metadata"
+msgstr "Chỉnh sửa Metadata"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:372
+#, fuzzy
+#| msgid "Edit Metadata"
+msgid "Upload Metadata"
+msgstr "Chỉnh sửa Metadata"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:373
+msgid "Upload SLD"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:374
+msgid "Manage Styles"
+msgstr "Quản lý Styles"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:387
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:393
+msgid "Your "
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:422
+msgid "Performing Final GeoServer Config Step"
+msgstr "Thực hiện cuối cùng GeoServer Config Bước"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:439
+#: geonode/static/geonode/js/upload/LayerInfo.js:483
+msgid "You need to specify more information in order to complete your upload"
+msgstr "Bạn cần xác định thêm thông tin để hoàn thành tải lên của bạn"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:463
+msgid "Files are ready to be ingested!"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:466
+msgid "A temporal dimension may be added to this Layer."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:521
 msgid "Performing GeoServer Config Step"
 msgstr "Thực hiện GeoServer Config Bước"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:516
+#: geonode/static/geonode/js/upload/LayerInfo.js:609
+msgid ""
+"<br>Please check your network connection. In case of Layer Upload make sure "
+"GeoServer is running and accepting connections."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:613
+#: geonode/static/geonode/js/upload/LayerInfo.js:616
+#: geonode/static/geonode/js/upload/LayerInfo.js:623
+#: geonode/static/geonode/js/upload/LayerInfo.js:626
+msgid "<br>"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:618
+msgid "<br>Bad request or URL not found."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:628
+#, fuzzy
+#| msgid "Unknown Map"
+msgid "<br>Unknown."
+msgstr "Không biết Bản đồ"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:636
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Các tập tin tải lên lớp, cấu hình trong GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:695
+#: geonode/static/geonode/js/upload/LayerInfo.js:787
 msgid "Remove"
 msgstr "Tẩy"
 
-#: geonode/static/geonode/js/upload/upload.js:125
+#: geonode/static/geonode/js/upload/upload.js:126
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr ""
 "Các tập tin%s là một loại tập tin không được hỗ trợ, xin vui lòng chọn tập "
 "tin khác."
 
-#: geonode/static/geonode/js/upload/upload.js:285
+#: geonode/static/geonode/js/upload/upload.js:296
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
 "options have been validated.\n"
@@ -200,479 +275,399 @@ msgid ""
 "Please check for errors in the form!"
 msgstr ""
 
-#: geonode/static/lib/js/assets.min.js:2
-msgid "<iframe frameborder='0' width='0' height='0'/>"
+#: geonode/templates/admin/base_site.html:4
+msgid "GeoNode site admin"
 msgstr ""
 
-#: geonode/static/lib/js/assets.min.js:4
-msgid "<script>"
+#: geonode/templates/admin/base_site.html:7
+msgid "GeoNode administration"
 msgstr ""
 
-#: geonode/static/lib/js/assets.min.js:4
-msgid "<div>"
+#: geonode/templates/index.html:19
+msgid "Welcome"
 msgstr ""
 
-#: geonode/templates/lang.js:9 geonode/templates/lang.js:236
-msgid "Cancel"
-msgstr "Hủy bỏ"
-
-#: geonode/templates/lang.js:10
-msgid "Save as Copy"
-msgstr "Tiết kiệm như Sao chép"
-
-#: geonode/templates/lang.js:11
-msgid "About this Map"
-msgstr "Về Bản đồ này"
-
-#: geonode/templates/lang.js:12 geonode/templates/lang.js:96
-#: geonode/templates/lang.js:165
-msgid "Abstract"
-msgstr "Trừu tượng"
-
-#: geonode/templates/lang.js:13
-msgid "Save"
-msgstr "Lưu"
-
-#: geonode/templates/lang.js:14 geonode/templates/lang.js:100
-#: geonode/templates/lang.js:109 geonode/templates/lang.js:162
-#: geonode/templates/lang.js:184 geonode/templates/lang.js:219
-msgid "Title"
-msgstr "Tiêu đề"
-
-#: geonode/templates/lang.js:20
-msgid "Connection Error"
-msgstr "Lỗi kết nối"
-
-#: geonode/templates/lang.js:21
-msgid "The server returned an error"
-msgstr "Các máy chủ trả về một lỗi"
-
-#: geonode/templates/lang.js:22
-msgid "Details..."
-msgstr "Xem chi tiết ..."
-
-#: geonode/templates/lang.js:28 geonode/templates/lang.js:31
-msgid "Add Layers"
-msgstr "Thêm Layers"
-
-#: geonode/templates/lang.js:29
-msgid "Area"
-msgstr "Khu vực"
-
-#: geonode/templates/lang.js:30
-msgid "Background"
-msgstr "Lý lịch"
-
-#: geonode/templates/lang.js:32
-msgid "Done"
-msgstr "Làm xong"
-
-#: geonode/templates/lang.js:33
-msgid "Available Layers"
-msgstr "Layers có sẵn"
-
-#: geonode/templates/lang.js:35 geonode/templates/lang.js:121
-msgid "Height"
-msgstr "Chiều cao"
-
-#: geonode/templates/lang.js:36
-msgid "Get Feature Info"
-msgstr "Nhận Tính năng Thông tin"
-
-#: geonode/templates/lang.js:37 geonode/templates/lang.js:122
-msgid "Large"
-msgstr "Lớn"
-
-#: geonode/templates/lang.js:38
-msgid "or add a new server."
-msgstr "hoặc thêm một máy chủ mới."
-
-#: geonode/templates/lang.js:39
-msgid "Map Layers"
-msgstr "Bản đồ Layers"
-
-#: geonode/templates/lang.js:40
-msgid "View available data from:"
-msgstr "Xem dữ liệu có sẵn từ:"
-
-#: geonode/templates/lang.js:41
-msgid "Data"
-msgstr "Dữ liệu"
-
-#: geonode/templates/lang.js:42
-msgid "Layers"
-msgstr "Layers"
-
-#: geonode/templates/lang.js:43
-msgid "Legend"
-msgstr "Huyền thoại"
-
-#: geonode/templates/lang.js:44
-msgid "Length"
-msgstr "Chiều dài"
-
-#: geonode/templates/lang.js:45
-msgid "Loading Map..."
-msgstr "Đang tải Bản đồ ..."
-
-#: geonode/templates/lang.js:46 geonode/templates/lang.js:123
-msgid "Map Size"
-msgstr "Bản đồ Kích"
-
-#: geonode/templates/lang.js:47
-msgid "Measure"
-msgstr "Biện pháp"
-
-#: geonode/templates/lang.js:48 geonode/templates/lang.js:97
-#: geonode/templates/lang.js:163
-msgid "Contact"
-msgstr "Tiếp xúc"
-
-#: geonode/templates/lang.js:49 geonode/templates/lang.js:55
-msgid "Permalink"
-msgstr "Liên kết"
-
-#: geonode/templates/lang.js:50 geonode/templates/lang.js:124
-msgid "Mini"
-msgstr "Mini"
-
-#: geonode/templates/lang.js:51
-msgid "Pan Map"
-msgstr "Pan Bản đồ"
-
-#: geonode/templates/lang.js:52
-msgid "Zoom to Next Extent"
-msgstr "Phóng to để Mức độ Tiếp theo"
-
-#: geonode/templates/lang.js:53
-msgid "Zoom to Previous Extent"
-msgstr "Phóng to để Mức độ trước"
-
-#: geonode/templates/lang.js:54
-msgid "This map has not yet been saved."
-msgstr "Bản đồ này vẫn chưa được lưu."
-
-#: geonode/templates/lang.js:56 geonode/templates/lang.js:125
-msgid "Premium"
-msgstr "Phí bảo hiểm"
-
-#: geonode/templates/lang.js:57
-msgid "Print Map"
-msgstr "In Bản"
-
-#: geonode/templates/lang.js:58
-msgid "Print Preview"
-msgstr "Print Preview"
-
-#: geonode/templates/lang.js:59
-msgid "Properties"
-msgstr "Thuộc tính"
-
-#: geonode/templates/lang.js:60 geonode/templates/lang.js:126
-msgid "Publish Map"
-msgstr "Xuất bản Bản đồ"
-
-#: geonode/templates/lang.js:61 geonode/templates/lang.js:62
-msgid "Remove Layer"
-msgstr "Hủy bỏ lớp"
-
-#: geonode/templates/lang.js:63
-msgid "Sorry, your map could not be saved."
-msgstr "Xin lỗi, bản đồ của bạn có thể không được lưu."
-
-#: geonode/templates/lang.js:64
-msgid "Error While Saving"
-msgstr "Lỗi khi tiết kiệm"
-
-#: geonode/templates/lang.js:65
-msgid "Save Map"
-msgstr "Lưu Bản đồ"
-
-#: geonode/templates/lang.js:66
-msgid "You must be logged in to save this map."
-msgstr "Bạn phải đăng nhập để lưu bản đồ này."
-
-#: geonode/templates/lang.js:67 geonode/templates/lang.js:128
-msgid "Small"
-msgstr "Nhỏ"
-
-#: geonode/templates/lang.js:68
+#: geonode/templates/index.html:21
 msgid ""
-"Error contacting server.\n"
-" Please check the url and try again."
-msgstr "Lỗi liên lạc với máy chủ. Vui lòng kiểm tra địa chỉ và thử lại."
-
-#: geonode/templates/lang.js:69
-msgid "Layer Properties"
-msgstr "Layer Properties"
-
-#: geonode/templates/lang.js:70
-msgid "Change layer format and style"
-msgstr "Thay đổi định dạng lớp và phong cách"
-
-#: geonode/templates/lang.js:71
-msgid "Edit Styles"
-msgstr "Chỉnh sửa Styles"
-
-#: geonode/templates/lang.js:72
-msgid "Edit layer styles"
-msgstr "Phong cách chỉnh sửa lớp"
-
-#: geonode/templates/lang.js:73
-msgid "Switch to Google Earth 3D Viewer"
-msgstr "Chuyển sang Google Earth 3D Viewer"
-
-#: geonode/templates/lang.js:74
-msgid ""
-"The map that you are trying to load does not exist.  Creating a new map "
-"instead."
+"GeoNode is an open source platform for sharing geospatial data and maps."
 msgstr ""
-"Các bản đồ mà bạn đang cố gắng để tải không tồn tại. Tạo một bản đồ mới thay "
-"thế."
 
-#: geonode/templates/lang.js:75
-msgid "Unknown Map"
-msgstr "Không biết Bản đồ"
-
-#: geonode/templates/lang.js:76 geonode/templates/lang.js:129
-msgid "Width"
-msgstr "Chiều rộng"
-
-#: geonode/templates/lang.js:77
-msgid "Zoom In"
-msgstr "Zoom In"
-
-#: geonode/templates/lang.js:78
-msgid "Zoom Out"
-msgstr "Thu nhỏ"
-
-#: geonode/templates/lang.js:79
-msgid "Zoom level"
-msgstr "Mức độ phóng"
-
-#: geonode/templates/lang.js:80
-msgid "Zoom Level"
-msgstr "Zoom Level"
-
-#: geonode/templates/lang.js:81
-msgid "Zoom to Layer Extent"
-msgstr "Phóng to Layer Mức độ"
-
-#: geonode/templates/lang.js:82
-msgid "Zoom to Visible Extent"
-msgstr "Phóng to để Mức độ Visible"
-
-#: geonode/templates/lang.js:88
-msgid "Zoom Level {zoom}"
-msgstr "Zoom Level {} zoom"
-
-#: geonode/templates/lang.js:94
-msgid "Create Map"
-msgstr "Tạo Bản đồ"
-
-#: geonode/templates/lang.js:95
-msgid "Export Map"
-msgstr "Bản đồ xuất khẩu"
-
-#: geonode/templates/lang.js:98
-msgid "Map"
-msgstr "Bản đồ"
-
-#: geonode/templates/lang.js:99 geonode/templates/lang.js:166
-msgid "View this Map"
-msgstr "Xem bản đồ này"
-
-#: geonode/templates/lang.js:101
-msgid "Open Map"
-msgstr "Mở Bản đồ"
-
-#: geonode/templates/lang.js:107 geonode/templates/lang.js:183
-msgid "Name"
-msgstr "Tên"
-
-#: geonode/templates/lang.js:108
-msgid "Queryable"
-msgstr "Queryable"
-
-#: geonode/templates/lang.js:115
-msgid "No background"
-msgstr "Không có hình nền"
-
-#: geonode/templates/lang.js:127
-msgid ""
-"Your map is ready to be published to the web!  Simply copy the following "
-"HTML to embed the map in your website:"
+#: geonode/templates/index.html:25
+msgid "Get Started &raquo;"
 msgstr ""
-"Bản đồ của bạn đã sẵn sàng để được xuất bản lên web! Đơn giản chỉ cần sao "
-"chép mã HTML sau đây để nhúng bản đồ trong trang web của bạn:"
 
-#: geonode/templates/lang.js:136 geonode/templates/lang.js:202
-msgid "Abstract:"
-msgstr "Tóm tắt:"
+#: geonode/templates/index.html:82 geonode/templates/index.html:102
+#, fuzzy
+#| msgid "Now"
+msgid "No"
+msgstr "Now"
 
-#: geonode/templates/lang.js:137 geonode/templates/lang.js:204
-msgid "No attribution information is provided for this layer."
-msgstr "Không có thông tin ghi nhận được cung cấp cho lớp này."
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "some schema mandatory fields are missing"
+msgstr ""
 
-#: geonode/templates/lang.js:138 geonode/templates/lang.js:205
-msgid "Provided by:"
-msgstr "Được cung cấp bởi:"
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "Metadata Schema mandatory fields completed"
+msgstr ""
 
-#: geonode/templates/lang.js:139 geonode/templates/lang.js:206
-msgid "Download:"
-msgstr "Tải về:"
+#: geonode/templates/metadata_form_js.html:244
+#: geonode/templates/metadata_form_js.html:283
+msgid ""
+"<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field "
+"declared Mandatory by the Metadata Schema</strong></p>"
+msgstr ""
 
-#: geonode/templates/lang.js:140 geonode/templates/lang.js:208
-msgid "No keywords are listed for this layer."
-msgstr "Chưa có từ khóa được liệt kê cho lớp này."
+#~ msgid "Your layer was successfully uploaded"
+#~ msgstr "Lớp của bạn đã được tải lên thành công"
 
-#: geonode/templates/lang.js:141 geonode/templates/lang.js:209
-msgid "Keywords:"
-msgstr "Từ khóa:"
+#~ msgid ""
+#~ "You need to specify more information in order to complete your upload."
+#~ msgstr "Bạn cần xác định thêm thông tin để hoàn thành tải lên của bạn."
 
-#: geonode/templates/lang.js:142 geonode/templates/lang.js:210
-msgid "No metadata URLs are defined for this layer."
-msgstr "Không có URL siêu dữ liệu được định nghĩa cho lớp này."
+#~ msgid "You can continue configuring your layer."
+#~ msgstr "Bạn có thể tiếp tục cấu hình lớp của bạn."
 
-#: geonode/templates/lang.js:143 geonode/templates/lang.js:211
-msgid "Metadata Links:"
-msgstr "Liên kết siêu dữ liệu:"
+#~ msgid "Cancel"
+#~ msgstr "Hủy bỏ"
 
-#: geonode/templates/lang.js:149
-msgid "Paper size:"
-msgstr "Kích thước giấy:"
+#~ msgid "Save as Copy"
+#~ msgstr "Tiết kiệm như Sao chép"
 
-#: geonode/templates/lang.js:150
-msgid "Resolution:"
-msgstr "Nghị quyết:"
+#~ msgid "About this Map"
+#~ msgstr "Về Bản đồ này"
 
-#: geonode/templates/lang.js:151
-msgid "Print"
-msgstr "In"
+#~ msgid "Abstract"
+#~ msgstr "Trừu tượng"
 
-#: geonode/templates/lang.js:152
-msgid "Enter map title here."
-msgstr "Nhập tiêu đề bản đồ ở đây."
+#~ msgid "Save"
+#~ msgstr "Lưu"
 
-#: geonode/templates/lang.js:153
-msgid "Include legend?"
-msgstr "Bao gồm huyền thoại?"
+#~ msgid "Title"
+#~ msgstr "Tiêu đề"
 
-#: geonode/templates/lang.js:154
-msgid "Enter comments here."
-msgstr "Nhập ý kiến ​​ở đây."
+#~ msgid "Connection Error"
+#~ msgstr "Lỗi kết nối"
 
-#: geonode/templates/lang.js:155
-msgid "Creating PDF..."
-msgstr "Tạo PDF ..."
+#~ msgid "The server returned an error"
+#~ msgstr "Các máy chủ trả về một lỗi"
 
-#: geonode/templates/lang.js:164
-msgid "Last Modified"
-msgstr "Last Modified"
+#~ msgid "Details..."
+#~ msgstr "Xem chi tiết ..."
 
-#: geonode/templates/lang.js:167 geonode/templates/lang.js:188
-msgid "Prev"
-msgstr "Trước"
+#~ msgid "Add Layers"
+#~ msgstr "Thêm Layers"
 
-#: geonode/templates/lang.js:168 geonode/templates/lang.js:189
-msgid "Next"
-msgstr "Tới"
+#~ msgid "Area"
+#~ msgstr "Khu vực"
 
-#: geonode/templates/lang.js:169 geonode/templates/lang.js:190
-msgid "of"
-msgstr "của"
+#~ msgid "Background"
+#~ msgstr "Lý lịch"
 
-#: geonode/templates/lang.js:170 geonode/templates/lang.js:191
-msgid "Your search did not match any items."
-msgstr "Tìm kiếm của bạn không phù hợp với bất kỳ mục."
+#~ msgid "Done"
+#~ msgstr "Làm xong"
 
-#: geonode/templates/lang.js:171
-msgid "Search Maps"
-msgstr "Search Maps"
+#~ msgid "Available Layers"
+#~ msgstr "Layers có sẵn"
 
-#: geonode/templates/lang.js:172 geonode/templates/lang.js:192
-msgid "Search"
-msgstr "Tìm kiếm"
+#~ msgid "Height"
+#~ msgstr "Chiều cao"
 
-#: geonode/templates/lang.js:173 geonode/templates/lang.js:193
-msgid "Showing"
-msgstr "Xếp"
+#~ msgid "Get Feature Info"
+#~ msgstr "Nhận Tính năng Thông tin"
 
-#: geonode/templates/lang.js:174
-msgid "Loading"
-msgstr "Đang tải"
+#~ msgid "Large"
+#~ msgstr "Lớn"
 
-#: geonode/templates/lang.js:175 geonode/templates/lang.js:195
-msgid "permalink"
-msgstr "permalink"
+#~ msgid "or add a new server."
+#~ msgstr "hoặc thêm một máy chủ mới."
 
-#: geonode/templates/lang.js:182
-msgid "Select"
-msgstr "Lựa chọn"
+#~ msgid "Map Layers"
+#~ msgstr "Bản đồ Layers"
 
-#: geonode/templates/lang.js:185
-msgid "Select:"
-msgstr "Chọn:"
+#~ msgid "View available data from:"
+#~ msgstr "Xem dữ liệu có sẵn từ:"
 
-#: geonode/templates/lang.js:186
-msgid "All"
-msgstr "Tất cả"
+#~ msgid "Data"
+#~ msgstr "Dữ liệu"
 
-#: geonode/templates/lang.js:187
-msgid "None"
-msgstr "Không ai"
+#~ msgid "Layers"
+#~ msgstr "Layers"
 
-#: geonode/templates/lang.js:194
-msgid "Loading..."
-msgstr "Loading ..."
+#~ msgid "Legend"
+#~ msgstr "Huyền thoại"
 
-#: geonode/templates/lang.js:196
-msgid "You do not have permission to view this data"
-msgstr "Bạn không có quyền để xem thông tin này"
+#~ msgid "Length"
+#~ msgstr "Chiều dài"
 
-#: geonode/templates/lang.js:197
-msgid "This data is stored on a remote server"
-msgstr "Những thông tin này được lưu trữ trên một máy chủ từ xa"
+#~ msgid "Loading Map..."
+#~ msgstr "Đang tải Bản đồ ..."
 
-#: geonode/templates/lang.js:203
-msgid "No abstract is provided for this layer."
-msgstr "Không trừu tượng được cung cấp cho lớp này."
+#~ msgid "Map Size"
+#~ msgstr "Bản đồ Kích"
 
-#: geonode/templates/lang.js:207
-msgid "No download URLs are definied for this layer."
-msgstr "Không có đường dẫn URL được definied cho lớp này."
+#~ msgid "Measure"
+#~ msgstr "Biện pháp"
 
-#: geonode/templates/lang.js:217
-msgid "Selected Layers"
-msgstr "Layers chọn"
+#~ msgid "Contact"
+#~ msgstr "Tiếp xúc"
 
-#: geonode/templates/lang.js:218
-msgid "No Layers Selected"
-msgstr "Không Layers chọn"
+#~ msgid "Permalink"
+#~ msgstr "Liên kết"
 
-#: geonode/templates/lang.js:220
-msgid "Clear Selected"
-msgstr "Rõ ràng chọn"
+#~ msgid "Mini"
+#~ msgstr "Mini"
 
-#: geonode/templates/lang.js:221
-msgid "Clear All"
-msgstr "Xóa tất cả"
+#~ msgid "Pan Map"
+#~ msgstr "Pan Bản đồ"
 
-#: geonode/templates/lang.js:227
-msgid "Operation Failed"
-msgstr "Không hoạt động"
+#~ msgid "Zoom to Next Extent"
+#~ msgstr "Phóng to để Mức độ Tiếp theo"
 
-#: geonode/templates/lang.js:228
-msgid "No layers are currently selected."
-msgstr "Không có lớp hiện đang được chọn."
+#~ msgid "Zoom to Previous Extent"
+#~ msgstr "Phóng to để Mức độ trước"
 
-#: geonode/templates/lang.js:235
-msgid "Downloading..."
-msgstr "Tải ..."
+#~ msgid "This map has not yet been saved."
+#~ msgstr "Bản đồ này vẫn chưa được lưu."
 
-#: geonode/templates/lang.js:237
-msgid "Please wait"
-msgstr "Xin vui lòng chờ"
+#~ msgid "Premium"
+#~ msgstr "Phí bảo hiểm"
+
+#~ msgid "Print Map"
+#~ msgstr "In Bản"
+
+#~ msgid "Print Preview"
+#~ msgstr "Print Preview"
+
+#~ msgid "Properties"
+#~ msgstr "Thuộc tính"
+
+#~ msgid "Publish Map"
+#~ msgstr "Xuất bản Bản đồ"
+
+#~ msgid "Remove Layer"
+#~ msgstr "Hủy bỏ lớp"
+
+#~ msgid "Sorry, your map could not be saved."
+#~ msgstr "Xin lỗi, bản đồ của bạn có thể không được lưu."
+
+#~ msgid "Error While Saving"
+#~ msgstr "Lỗi khi tiết kiệm"
+
+#~ msgid "Save Map"
+#~ msgstr "Lưu Bản đồ"
+
+#~ msgid "You must be logged in to save this map."
+#~ msgstr "Bạn phải đăng nhập để lưu bản đồ này."
+
+#~ msgid "Small"
+#~ msgstr "Nhỏ"
+
+#~ msgid ""
+#~ "Error contacting server.\n"
+#~ " Please check the url and try again."
+#~ msgstr "Lỗi liên lạc với máy chủ. Vui lòng kiểm tra địa chỉ và thử lại."
+
+#~ msgid "Layer Properties"
+#~ msgstr "Layer Properties"
+
+#~ msgid "Change layer format and style"
+#~ msgstr "Thay đổi định dạng lớp và phong cách"
+
+#~ msgid "Edit Styles"
+#~ msgstr "Chỉnh sửa Styles"
+
+#~ msgid "Edit layer styles"
+#~ msgstr "Phong cách chỉnh sửa lớp"
+
+#~ msgid "Switch to Google Earth 3D Viewer"
+#~ msgstr "Chuyển sang Google Earth 3D Viewer"
+
+#~ msgid ""
+#~ "The map that you are trying to load does not exist.  Creating a new map "
+#~ "instead."
+#~ msgstr ""
+#~ "Các bản đồ mà bạn đang cố gắng để tải không tồn tại. Tạo một bản đồ mới "
+#~ "thay thế."
+
+#~ msgid "Width"
+#~ msgstr "Chiều rộng"
+
+#~ msgid "Zoom In"
+#~ msgstr "Zoom In"
+
+#~ msgid "Zoom Out"
+#~ msgstr "Thu nhỏ"
+
+#~ msgid "Zoom level"
+#~ msgstr "Mức độ phóng"
+
+#~ msgid "Zoom Level"
+#~ msgstr "Zoom Level"
+
+#~ msgid "Zoom to Layer Extent"
+#~ msgstr "Phóng to Layer Mức độ"
+
+#~ msgid "Zoom to Visible Extent"
+#~ msgstr "Phóng to để Mức độ Visible"
+
+#~ msgid "Zoom Level {zoom}"
+#~ msgstr "Zoom Level {} zoom"
+
+#~ msgid "Create Map"
+#~ msgstr "Tạo Bản đồ"
+
+#~ msgid "Export Map"
+#~ msgstr "Bản đồ xuất khẩu"
+
+#~ msgid "Map"
+#~ msgstr "Bản đồ"
+
+#~ msgid "View this Map"
+#~ msgstr "Xem bản đồ này"
+
+#~ msgid "Open Map"
+#~ msgstr "Mở Bản đồ"
+
+#~ msgid "Name"
+#~ msgstr "Tên"
+
+#~ msgid "Queryable"
+#~ msgstr "Queryable"
+
+#~ msgid "No background"
+#~ msgstr "Không có hình nền"
+
+#~ msgid ""
+#~ "Your map is ready to be published to the web!  Simply copy the following "
+#~ "HTML to embed the map in your website:"
+#~ msgstr ""
+#~ "Bản đồ của bạn đã sẵn sàng để được xuất bản lên web! Đơn giản chỉ cần sao "
+#~ "chép mã HTML sau đây để nhúng bản đồ trong trang web của bạn:"
+
+#~ msgid "Abstract:"
+#~ msgstr "Tóm tắt:"
+
+#~ msgid "No attribution information is provided for this layer."
+#~ msgstr "Không có thông tin ghi nhận được cung cấp cho lớp này."
+
+#~ msgid "Provided by:"
+#~ msgstr "Được cung cấp bởi:"
+
+#~ msgid "Download:"
+#~ msgstr "Tải về:"
+
+#~ msgid "No keywords are listed for this layer."
+#~ msgstr "Chưa có từ khóa được liệt kê cho lớp này."
+
+#~ msgid "Keywords:"
+#~ msgstr "Từ khóa:"
+
+#~ msgid "No metadata URLs are defined for this layer."
+#~ msgstr "Không có URL siêu dữ liệu được định nghĩa cho lớp này."
+
+#~ msgid "Paper size:"
+#~ msgstr "Kích thước giấy:"
+
+#~ msgid "Resolution:"
+#~ msgstr "Nghị quyết:"
+
+#~ msgid "Print"
+#~ msgstr "In"
+
+#~ msgid "Enter map title here."
+#~ msgstr "Nhập tiêu đề bản đồ ở đây."
+
+#~ msgid "Include legend?"
+#~ msgstr "Bao gồm huyền thoại?"
+
+#~ msgid "Enter comments here."
+#~ msgstr "Nhập ý kiến ​​ở đây."
+
+#~ msgid "Creating PDF..."
+#~ msgstr "Tạo PDF ..."
+
+#~ msgid "Last Modified"
+#~ msgstr "Last Modified"
+
+#~ msgid "Prev"
+#~ msgstr "Trước"
+
+#~ msgid "Next"
+#~ msgstr "Tới"
+
+#~ msgid "of"
+#~ msgstr "của"
+
+#~ msgid "Your search did not match any items."
+#~ msgstr "Tìm kiếm của bạn không phù hợp với bất kỳ mục."
+
+#~ msgid "Search Maps"
+#~ msgstr "Search Maps"
+
+#~ msgid "Search"
+#~ msgstr "Tìm kiếm"
+
+#~ msgid "Showing"
+#~ msgstr "Xếp"
+
+#~ msgid "Loading"
+#~ msgstr "Đang tải"
+
+#~ msgid "permalink"
+#~ msgstr "permalink"
+
+#~ msgid "Select"
+#~ msgstr "Lựa chọn"
+
+#~ msgid "Select:"
+#~ msgstr "Chọn:"
+
+#~ msgid "All"
+#~ msgstr "Tất cả"
+
+#~ msgid "None"
+#~ msgstr "Không ai"
+
+#~ msgid "Loading..."
+#~ msgstr "Loading ..."
+
+#~ msgid "You do not have permission to view this data"
+#~ msgstr "Bạn không có quyền để xem thông tin này"
+
+#~ msgid "This data is stored on a remote server"
+#~ msgstr "Những thông tin này được lưu trữ trên một máy chủ từ xa"
+
+#~ msgid "No abstract is provided for this layer."
+#~ msgstr "Không trừu tượng được cung cấp cho lớp này."
+
+#~ msgid "No download URLs are definied for this layer."
+#~ msgstr "Không có đường dẫn URL được definied cho lớp này."
+
+#~ msgid "Selected Layers"
+#~ msgstr "Layers chọn"
+
+#~ msgid "No Layers Selected"
+#~ msgstr "Không Layers chọn"
+
+#~ msgid "Clear Selected"
+#~ msgstr "Rõ ràng chọn"
+
+#~ msgid "Clear All"
+#~ msgstr "Xóa tất cả"
+
+#~ msgid "Operation Failed"
+#~ msgstr "Không hoạt động"
+
+#~ msgid "No layers are currently selected."
+#~ msgstr "Không có lớp hiện đang được chọn."
+
+#~ msgid "Downloading..."
+#~ msgstr "Tải ..."
+
+#~ msgid "Please wait"
+#~ msgstr "Xin vui lòng chờ"
 
 #~ msgid "Available %s"
 #~ msgstr "Available %s"
@@ -763,9 +758,6 @@ msgstr "Xin vui lòng chờ"
 
 #~ msgid "Hide"
 #~ msgstr "Hide"
-
-#~ msgid "Now"
-#~ msgstr "Now"
 
 #~ msgid "Clock"
 #~ msgstr "Clock"

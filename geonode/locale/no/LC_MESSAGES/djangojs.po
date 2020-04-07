@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-25 02:28-0500\n"
+"POT-Creation-Date: 2020-04-07 12:08+0000\n"
 "PO-Revision-Date: 2016-08-23 11:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Norwegian (http://www.transifex.com/geonode/geonode/language/"
@@ -35,15 +35,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: geonode/static/geonode/js/search/search.js:373
-msgid "Enter your text here ..."
-msgstr "Tast inn tekst her ... "
+#: geonode/monitoring/static/monitoring/bundle.js:170
+msgid "STORE_UPDATED"
+msgstr ""
 
-#: geonode/static/geonode/js/search/search.js:414
-msgid "Enter your region here ..."
-msgstr "Tast inn området ditt her ..."
+#: geonode/people/templates/people/profile_detail.html:77
+#: geonode/people/templates/people/profile_detail.html:86
+#: geonode/people/templates/people/profile_detail.html:98
+msgid "Not provided."
+msgstr ""
 
-#: geonode/static/geonode/js/upload/FileType.js:33
+#: geonode/static/geonode/js/upload/FileType.js:50
 #, javascript-format
 msgid "Missing a %s file, which is required"
 msgstr "Mangler påkrevd %s fil"
@@ -53,143 +55,220 @@ msgid "ESRI Shapefile"
 msgstr "ESRI Shapefile"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:13
+msgid "ASCII Text File"
+msgstr ""
+
 #: geonode/static/geonode/js/upload/FileTypes.js:18
+#: geonode/static/geonode/js/upload/FileTypes.js:23
 msgid "GeoTIFF"
 msgstr "GeoTIFF"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:24
+#: geonode/static/geonode/js/upload/FileTypes.js:29
 msgid "Comma Separated Value"
 msgstr "kommaseparert verdi"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:29
+#: geonode/static/geonode/js/upload/FileTypes.js:34
 msgid "Google Earth KML"
 msgstr "Google Earth KML"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:34
+#: geonode/static/geonode/js/upload/FileTypes.js:39
+#, fuzzy
+#| msgid "Google Earth KML"
+msgid "Google Earth KML with a GroundOverlay"
+msgstr "Google Earth KML"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:45
+#, fuzzy
+#| msgid "Google Earth KML"
+msgid "Google Earth KMZ"
+msgstr "Google Earth KML"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:50
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:39
+#: geonode/static/geonode/js/upload/FileTypes.js:55
 msgid "Zip Archive"
 msgstr "Zip arkiv"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:45
+#: geonode/static/geonode/js/upload/FileTypes.js:61
 msgid "ERDAS Imagine"
 msgstr "ERDAS Imagine"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:50
-#: geonode/static/geonode/js/upload/FileTypes.js:55
+#: geonode/static/geonode/js/upload/FileTypes.js:66
+#: geonode/static/geonode/js/upload/FileTypes.js:71
 msgid "National Imagery Transmission Format"
 msgstr "National Imagery Transmission Format"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:61
+#: geonode/static/geonode/js/upload/FileTypes.js:77
 msgid "Controlled Image Base-1 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:68
+#: geonode/static/geonode/js/upload/FileTypes.js:84
 msgid "Controlled Image Base-5 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:75
+#: geonode/static/geonode/js/upload/FileTypes.js:91
 msgid "Controlled Image Base-10 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:82
+#: geonode/static/geonode/js/upload/FileTypes.js:98
 msgid "CADRG-Global Navigation Chart"
 msgstr "CADRG-Global Navigation Chart"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:89
+#: geonode/static/geonode/js/upload/FileTypes.js:105
 msgid "CADRG-Jet Navigation Chart"
 msgstr "CADRG-Jet Navigation Chart"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:96
+#: geonode/static/geonode/js/upload/FileTypes.js:112
 msgid "CADRG-Operational Navigation Chart"
 msgstr "CADRG-Operational Navigation Chart"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:103
+#: geonode/static/geonode/js/upload/FileTypes.js:119
 msgid "CADRG-Tactical Pilotage Chart"
 msgstr "CADRG-Tactical Pilotage Chart"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:110
+#: geonode/static/geonode/js/upload/FileTypes.js:126
 msgid "CADRG-Joint Operations Graphic"
 msgstr "CADRG-Joint Operations Graphic"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:117
+#: geonode/static/geonode/js/upload/FileTypes.js:133
 msgid "CADRG-Topographic Line Map 100K"
 msgstr "CADRG-Topogrfiske Linjer Kart 100K"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:124
+#: geonode/static/geonode/js/upload/FileTypes.js:140
 msgid "CADRG-Topographic Line Map 50K"
 msgstr "CADRG-Topogrfiske Linjer Kart 50K"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:131
+#: geonode/static/geonode/js/upload/FileTypes.js:147
 msgid "JPEG2000"
 msgstr "JPEG2000"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:136
+#: geonode/static/geonode/js/upload/FileTypes.js:152
 msgid "MrSID-Multi-resolution Seamless Image Database"
 msgstr "MrSID-Multi-resolution Seamless Image Database"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:331
-msgid "Layer Info"
-msgstr "Kartlag informasjon"
+#: geonode/static/geonode/js/upload/FileTypes.js:157
+#, fuzzy
+#| msgid "Metadata Links:"
+msgid "XML Metadata File"
+msgstr "Metadata lenker:"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:163
+msgid "Style Layer Descriptor"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:169
+#, fuzzy
+#| msgid "JPEG2000"
+msgid "JPEG"
+msgstr "JPEG2000"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:174
+msgid "PNG"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:179
+#, fuzzy
+#| msgid "GeoTIFF"
+msgid "GIF"
+msgstr "GeoTIFF"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:332
-msgid "Edit Metadata"
-msgstr "Endre Metadata"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:333
-msgid "Manage Styles"
-msgstr "Forvalte stilene"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:336
-msgid "The column %1 was renamed to %2 <br/>"
-msgstr "Navn til kolonne %1 ble endret til %2 <br/>"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:342
-msgid "Your layer was successfully uploaded"
-msgstr "Opplasting av kartlaget vellllykket"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:371
-msgid "Performing Final GeoServer Config Step"
-msgstr "Utfører siste steg i GeoServer konfigurasjon"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:386
-#: geonode/static/geonode/js/upload/LayerInfo.js:412
-msgid "You need to specify more information in order to complete your upload"
-msgstr ""
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:404
-msgid "You need to specify more information in order to complete your upload."
-msgstr ""
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:404
-msgid "You can continue configuring your layer."
-msgstr "Du kan fortsette med å konfigurere kartlaget."
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:422
-#: geonode/static/geonode/js/upload/LayerInfo.js:509
+#: geonode/static/geonode/js/upload/LayerInfo.js:503
 msgid "Unexpected Error"
 msgstr "Uventet feil"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:438
+#: geonode/static/geonode/js/upload/LayerInfo.js:370
+#, fuzzy
+#| msgid "Layer Info"
+msgid " Info"
+msgstr "Kartlag informasjon"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:371
+msgid "Edit Metadata"
+msgstr "Endre Metadata"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:372
+#, fuzzy
+#| msgid "Edit Metadata"
+msgid "Upload Metadata"
+msgstr "Endre Metadata"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:373
+msgid "Upload SLD"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:374
+msgid "Manage Styles"
+msgstr "Forvalte stilene"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:387
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr "Navn til kolonne %1 ble endret til %2 <br/>"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:393
+msgid "Your "
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:422
+msgid "Performing Final GeoServer Config Step"
+msgstr "Utfører siste steg i GeoServer konfigurasjon"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:439
+#: geonode/static/geonode/js/upload/LayerInfo.js:483
+msgid "You need to specify more information in order to complete your upload"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:463
+msgid "Files are ready to be ingested!"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:466
+msgid "A temporal dimension may be added to this Layer."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:521
 msgid "Performing GeoServer Config Step"
 msgstr "Utfører steg i GeoServer konfigurasjon"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:516
+#: geonode/static/geonode/js/upload/LayerInfo.js:609
+msgid ""
+"<br>Please check your network connection. In case of Layer Upload make sure "
+"GeoServer is running and accepting connections."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:613
+#: geonode/static/geonode/js/upload/LayerInfo.js:616
+#: geonode/static/geonode/js/upload/LayerInfo.js:623
+#: geonode/static/geonode/js/upload/LayerInfo.js:626
+msgid "<br>"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:618
+msgid "<br>Bad request or URL not found."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:628
+#, fuzzy
+#| msgid "Unknown Map"
+msgid "<br>Unknown."
+msgstr "Ukjennt kart"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:636
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Kartlag filer har blitt lastet opp, konfigurer GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:695
+#: geonode/static/geonode/js/upload/LayerInfo.js:787
 msgid "Remove"
 msgstr "Fjern"
 
-#: geonode/static/geonode/js/upload/upload.js:125
+#: geonode/static/geonode/js/upload/upload.js:126
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr "Formatet til fil %s støttes ikke, vennligst velg en annen fil."
 
-#: geonode/static/geonode/js/upload/upload.js:285
+#: geonode/static/geonode/js/upload/upload.js:296
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
 "options have been validated.\n"
@@ -197,475 +276,381 @@ msgid ""
 "Please check for errors in the form!"
 msgstr ""
 
-#: geonode/static/lib/js/assets.min.js:2
-msgid "<iframe frameborder='0' width='0' height='0'/>"
+#: geonode/templates/admin/base_site.html:4
+msgid "GeoNode site admin"
 msgstr ""
 
-#: geonode/static/lib/js/assets.min.js:4
-msgid "<script>"
+#: geonode/templates/admin/base_site.html:7
+msgid "GeoNode administration"
 msgstr ""
 
-#: geonode/static/lib/js/assets.min.js:4
-msgid "<div>"
+#: geonode/templates/index.html:19
+msgid "Welcome"
 msgstr ""
 
-#: geonode/templates/lang.js:9 geonode/templates/lang.js:236
-msgid "Cancel"
-msgstr "Avbryt"
-
-#: geonode/templates/lang.js:10
-msgid "Save as Copy"
-msgstr "Lagre som kopi"
-
-#: geonode/templates/lang.js:11
-msgid "About this Map"
-msgstr "Om kartet"
-
-#: geonode/templates/lang.js:12 geonode/templates/lang.js:96
-#: geonode/templates/lang.js:165
-msgid "Abstract"
-msgstr "Sammendrag"
-
-#: geonode/templates/lang.js:13
-msgid "Save"
-msgstr "Lagre"
-
-#: geonode/templates/lang.js:14 geonode/templates/lang.js:100
-#: geonode/templates/lang.js:109 geonode/templates/lang.js:162
-#: geonode/templates/lang.js:184 geonode/templates/lang.js:219
-msgid "Title"
-msgstr "Tittel"
-
-#: geonode/templates/lang.js:20
-msgid "Connection Error"
-msgstr "Forbindelses feil"
-
-#: geonode/templates/lang.js:21
-msgid "The server returned an error"
-msgstr "Feil på serveren"
-
-#: geonode/templates/lang.js:22
-msgid "Details..."
-msgstr "Detaljer..."
-
-#: geonode/templates/lang.js:28 geonode/templates/lang.js:31
-msgid "Add Layers"
-msgstr "Legg til kartlag"
-
-#: geonode/templates/lang.js:29
-msgid "Area"
-msgstr "Areal"
-
-#: geonode/templates/lang.js:30
-msgid "Background"
-msgstr "Bakgrunn"
-
-#: geonode/templates/lang.js:32
-msgid "Done"
-msgstr "Ferdig"
-
-#: geonode/templates/lang.js:33
-msgid "Available Layers"
-msgstr "Tilgjengelige kartlag"
-
-#: geonode/templates/lang.js:35 geonode/templates/lang.js:121
-msgid "Height"
-msgstr "Høyde"
-
-#: geonode/templates/lang.js:36
-msgid "Get Feature Info"
-msgstr ""
-
-#: geonode/templates/lang.js:37 geonode/templates/lang.js:122
-msgid "Large"
-msgstr "Stor"
-
-#: geonode/templates/lang.js:38
-msgid "or add a new server."
-msgstr "eller legg til ny server."
-
-#: geonode/templates/lang.js:39
-msgid "Map Layers"
-msgstr "Kartlag"
-
-#: geonode/templates/lang.js:40
-msgid "View available data from:"
-msgstr "Vis tilgjengelige data fra:"
-
-#: geonode/templates/lang.js:41
-msgid "Data"
-msgstr "Data"
-
-#: geonode/templates/lang.js:42
-msgid "Layers"
-msgstr "Kartlag"
-
-#: geonode/templates/lang.js:43
-msgid "Legend"
-msgstr "Tegnforklaring"
-
-#: geonode/templates/lang.js:44
-msgid "Length"
-msgstr "Lengde"
-
-#: geonode/templates/lang.js:45
-msgid "Loading Map..."
-msgstr "Laster kart..."
-
-#: geonode/templates/lang.js:46 geonode/templates/lang.js:123
-msgid "Map Size"
-msgstr "Kartstørrelse"
-
-#: geonode/templates/lang.js:47
-msgid "Measure"
-msgstr "Mål"
-
-#: geonode/templates/lang.js:48 geonode/templates/lang.js:97
-#: geonode/templates/lang.js:163
-msgid "Contact"
-msgstr "Kontakt"
-
-#: geonode/templates/lang.js:49 geonode/templates/lang.js:55
-msgid "Permalink"
-msgstr "Permalenke"
-
-#: geonode/templates/lang.js:50 geonode/templates/lang.js:124
-msgid "Mini"
-msgstr "Mini"
-
-#: geonode/templates/lang.js:51
-msgid "Pan Map"
-msgstr "Flytt kartutsnitt"
-
-#: geonode/templates/lang.js:52
-msgid "Zoom to Next Extent"
-msgstr "Zoom til neste utstrekning"
-
-#: geonode/templates/lang.js:53
-msgid "Zoom to Previous Extent"
-msgstr "Zoom til forrige utstrekning"
-
-#: geonode/templates/lang.js:54
-msgid "This map has not yet been saved."
-msgstr "Kartet har ikke blitt lagret."
-
-#: geonode/templates/lang.js:56 geonode/templates/lang.js:125
-msgid "Premium"
-msgstr "Premium"
-
-#: geonode/templates/lang.js:57
-msgid "Print Map"
-msgstr "Skriv ut kart"
-
-#: geonode/templates/lang.js:58
-msgid "Print Preview"
-msgstr "Skriv ut forhåndsvisning"
-
-#: geonode/templates/lang.js:59
-msgid "Properties"
-msgstr "Egenskaper"
-
-#: geonode/templates/lang.js:60 geonode/templates/lang.js:126
-msgid "Publish Map"
-msgstr "Publiser kart"
-
-#: geonode/templates/lang.js:61 geonode/templates/lang.js:62
-msgid "Remove Layer"
-msgstr "Fjern kartlag"
-
-#: geonode/templates/lang.js:63
-msgid "Sorry, your map could not be saved."
-msgstr "Beklager, kunne ikke lagre kartet ditt. "
-
-#: geonode/templates/lang.js:64
-msgid "Error While Saving"
-msgstr "Lagringsfeil"
-
-#: geonode/templates/lang.js:65
-msgid "Save Map"
-msgstr "Lagre kart"
-
-#: geonode/templates/lang.js:66
-msgid "You must be logged in to save this map."
-msgstr "Du må være innlogget for å kunne lagre kartet."
-
-#: geonode/templates/lang.js:67 geonode/templates/lang.js:128
-msgid "Small"
-msgstr "Liten"
-
-#: geonode/templates/lang.js:68
+#: geonode/templates/index.html:21
 msgid ""
-"Error contacting server.\n"
-" Please check the url and try again."
+"GeoNode is an open source platform for sharing geospatial data and maps."
 msgstr ""
 
-#: geonode/templates/lang.js:69
-msgid "Layer Properties"
-msgstr "Kartlag egenskaper"
+#: geonode/templates/index.html:25
+msgid "Get Started &raquo;"
+msgstr ""
 
-#: geonode/templates/lang.js:70
-msgid "Change layer format and style"
-msgstr "Endre format og stil til kartlaget"
+#: geonode/templates/index.html:82 geonode/templates/index.html:102
+#, fuzzy
+#| msgid "Now"
+msgid "No"
+msgstr "Now"
 
-#: geonode/templates/lang.js:71
-msgid "Edit Styles"
-msgstr "Endre stil"
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "some schema mandatory fields are missing"
+msgstr ""
 
-#: geonode/templates/lang.js:72
-msgid "Edit layer styles"
-msgstr "Endre kartlagets stil"
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "Metadata Schema mandatory fields completed"
+msgstr ""
 
-#: geonode/templates/lang.js:73
-msgid "Switch to Google Earth 3D Viewer"
-msgstr "Bytt til Google Earth 3D Viewer"
-
-#: geonode/templates/lang.js:74
+#: geonode/templates/metadata_form_js.html:244
+#: geonode/templates/metadata_form_js.html:283
 msgid ""
-"The map that you are trying to load does not exist.  Creating a new map "
-"instead."
-msgstr "Kartet du prøver å laste inn finnes ikke. Lag et nytt kart istedet."
-
-#: geonode/templates/lang.js:75
-msgid "Unknown Map"
-msgstr "Ukjennt kart"
-
-#: geonode/templates/lang.js:76 geonode/templates/lang.js:129
-msgid "Width"
-msgstr "Bredde"
-
-#: geonode/templates/lang.js:77
-msgid "Zoom In"
-msgstr "Zoom inn"
-
-#: geonode/templates/lang.js:78
-msgid "Zoom Out"
-msgstr "Zoom ut"
-
-#: geonode/templates/lang.js:79
-msgid "Zoom level"
-msgstr "Zoom-nivå"
-
-#: geonode/templates/lang.js:80
-msgid "Zoom Level"
-msgstr "Zoom-nivå"
-
-#: geonode/templates/lang.js:81
-msgid "Zoom to Layer Extent"
-msgstr "Zoom til kartlagets utstrekning"
-
-#: geonode/templates/lang.js:82
-msgid "Zoom to Visible Extent"
-msgstr "Zoom til synlig utstrekning"
-
-#: geonode/templates/lang.js:88
-msgid "Zoom Level {zoom}"
-msgstr "Zoom-nivå {zoom}"
-
-#: geonode/templates/lang.js:94
-msgid "Create Map"
-msgstr "Lag et kart"
-
-#: geonode/templates/lang.js:95
-msgid "Export Map"
-msgstr "Eksporter kart"
-
-#: geonode/templates/lang.js:98
-msgid "Map"
-msgstr "Kart"
-
-#: geonode/templates/lang.js:99 geonode/templates/lang.js:166
-msgid "View this Map"
-msgstr "Vis dette kartet"
-
-#: geonode/templates/lang.js:101
-msgid "Open Map"
-msgstr "Åpne kart"
-
-#: geonode/templates/lang.js:107 geonode/templates/lang.js:183
-msgid "Name"
-msgstr "Navn"
-
-#: geonode/templates/lang.js:108
-msgid "Queryable"
-msgstr "Søkbar"
-
-#: geonode/templates/lang.js:115
-msgid "No background"
-msgstr "Ingen bakgrunn"
-
-#: geonode/templates/lang.js:127
-msgid ""
-"Your map is ready to be published to the web!  Simply copy the following "
-"HTML to embed the map in your website:"
+"<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field "
+"declared Mandatory by the Metadata Schema</strong></p>"
 msgstr ""
 
-#: geonode/templates/lang.js:136 geonode/templates/lang.js:202
-msgid "Abstract:"
-msgstr "Sammendrag:"
+#~ msgid "Enter your text here ..."
+#~ msgstr "Tast inn tekst her ... "
 
-#: geonode/templates/lang.js:137 geonode/templates/lang.js:204
-msgid "No attribution information is provided for this layer."
-msgstr "Kartlaget mangler attributt-informasjon."
+#~ msgid "Enter your region here ..."
+#~ msgstr "Tast inn området ditt her ..."
 
-#: geonode/templates/lang.js:138 geonode/templates/lang.js:205
-msgid "Provided by:"
-msgstr ""
+#~ msgid "Your layer was successfully uploaded"
+#~ msgstr "Opplasting av kartlaget vellllykket"
 
-#: geonode/templates/lang.js:139 geonode/templates/lang.js:206
-msgid "Download:"
-msgstr "Nedlasting:"
+#~ msgid "You can continue configuring your layer."
+#~ msgstr "Du kan fortsette med å konfigurere kartlaget."
 
-#: geonode/templates/lang.js:140 geonode/templates/lang.js:208
-msgid "No keywords are listed for this layer."
-msgstr "Kartlaget mangler nøkkelord."
+#~ msgid "Cancel"
+#~ msgstr "Avbryt"
 
-#: geonode/templates/lang.js:141 geonode/templates/lang.js:209
-msgid "Keywords:"
-msgstr "Nøkkelord:"
+#~ msgid "Save as Copy"
+#~ msgstr "Lagre som kopi"
 
-#: geonode/templates/lang.js:142 geonode/templates/lang.js:210
-msgid "No metadata URLs are defined for this layer."
-msgstr "Kartlaget mangler metadata URLs."
+#~ msgid "About this Map"
+#~ msgstr "Om kartet"
 
-#: geonode/templates/lang.js:143 geonode/templates/lang.js:211
-msgid "Metadata Links:"
-msgstr "Metadata lenker:"
+#~ msgid "Abstract"
+#~ msgstr "Sammendrag"
 
-#: geonode/templates/lang.js:149
-msgid "Paper size:"
-msgstr "Papir størrelse:"
+#~ msgid "Save"
+#~ msgstr "Lagre"
 
-#: geonode/templates/lang.js:150
-msgid "Resolution:"
-msgstr "Oppløsning:"
+#~ msgid "Title"
+#~ msgstr "Tittel"
 
-#: geonode/templates/lang.js:151
-msgid "Print"
-msgstr "Skriv ut"
+#~ msgid "Connection Error"
+#~ msgstr "Forbindelses feil"
 
-#: geonode/templates/lang.js:152
-msgid "Enter map title here."
-msgstr "Tast inn kart-tittel her."
+#~ msgid "The server returned an error"
+#~ msgstr "Feil på serveren"
 
-#: geonode/templates/lang.js:153
-msgid "Include legend?"
-msgstr "Inkluder legende?"
+#~ msgid "Details..."
+#~ msgstr "Detaljer..."
 
-#: geonode/templates/lang.js:154
-msgid "Enter comments here."
-msgstr "Legg til kommentarer her."
+#~ msgid "Add Layers"
+#~ msgstr "Legg til kartlag"
 
-#: geonode/templates/lang.js:155
-msgid "Creating PDF..."
-msgstr "Lagrer PDF..."
+#~ msgid "Area"
+#~ msgstr "Areal"
 
-#: geonode/templates/lang.js:164
-msgid "Last Modified"
-msgstr "Sist endret"
+#~ msgid "Background"
+#~ msgstr "Bakgrunn"
 
-#: geonode/templates/lang.js:167 geonode/templates/lang.js:188
-msgid "Prev"
-msgstr "Forhåndsvisning"
+#~ msgid "Done"
+#~ msgstr "Ferdig"
 
-#: geonode/templates/lang.js:168 geonode/templates/lang.js:189
-msgid "Next"
-msgstr "Neste"
+#~ msgid "Available Layers"
+#~ msgstr "Tilgjengelige kartlag"
 
-#: geonode/templates/lang.js:169 geonode/templates/lang.js:190
-msgid "of"
-msgstr "av"
+#~ msgid "Height"
+#~ msgstr "Høyde"
 
-#: geonode/templates/lang.js:170 geonode/templates/lang.js:191
-msgid "Your search did not match any items."
-msgstr "Ingen treff."
+#~ msgid "Large"
+#~ msgstr "Stor"
 
-#: geonode/templates/lang.js:171
-msgid "Search Maps"
-msgstr "Søk etter kart"
+#~ msgid "or add a new server."
+#~ msgstr "eller legg til ny server."
 
-#: geonode/templates/lang.js:172 geonode/templates/lang.js:192
-msgid "Search"
-msgstr "Søk"
+#~ msgid "Map Layers"
+#~ msgstr "Kartlag"
 
-#: geonode/templates/lang.js:173 geonode/templates/lang.js:193
-msgid "Showing"
-msgstr "Fremviser"
+#~ msgid "View available data from:"
+#~ msgstr "Vis tilgjengelige data fra:"
 
-#: geonode/templates/lang.js:174
-msgid "Loading"
-msgstr "Laster"
+#~ msgid "Data"
+#~ msgstr "Data"
 
-#: geonode/templates/lang.js:175 geonode/templates/lang.js:195
-msgid "permalink"
-msgstr "permalenke"
+#~ msgid "Layers"
+#~ msgstr "Kartlag"
 
-#: geonode/templates/lang.js:182
-msgid "Select"
-msgstr "Velg"
+#~ msgid "Legend"
+#~ msgstr "Tegnforklaring"
 
-#: geonode/templates/lang.js:185
-msgid "Select:"
-msgstr "Velg:"
+#~ msgid "Length"
+#~ msgstr "Lengde"
 
-#: geonode/templates/lang.js:186
-msgid "All"
-msgstr "Alle"
+#~ msgid "Loading Map..."
+#~ msgstr "Laster kart..."
 
-#: geonode/templates/lang.js:187
-msgid "None"
-msgstr "Ingen"
+#~ msgid "Map Size"
+#~ msgstr "Kartstørrelse"
 
-#: geonode/templates/lang.js:194
-msgid "Loading..."
-msgstr "Laster..."
+#~ msgid "Measure"
+#~ msgstr "Mål"
 
-#: geonode/templates/lang.js:196
-msgid "You do not have permission to view this data"
-msgstr "Du har ikke retigheter for å se på disse dataene"
+#~ msgid "Contact"
+#~ msgstr "Kontakt"
 
-#: geonode/templates/lang.js:197
-msgid "This data is stored on a remote server"
-msgstr "Disse data er lagret på en ekstern server"
+#~ msgid "Permalink"
+#~ msgstr "Permalenke"
 
-#: geonode/templates/lang.js:203
-msgid "No abstract is provided for this layer."
-msgstr "Kartlaget mangler sammendrag."
+#~ msgid "Mini"
+#~ msgstr "Mini"
 
-#: geonode/templates/lang.js:207
-msgid "No download URLs are definied for this layer."
-msgstr "Kartlaget mangler URL for nedlasting."
+#~ msgid "Pan Map"
+#~ msgstr "Flytt kartutsnitt"
 
-#: geonode/templates/lang.js:217
-msgid "Selected Layers"
-msgstr "Valgte kartlag"
+#~ msgid "Zoom to Next Extent"
+#~ msgstr "Zoom til neste utstrekning"
 
-#: geonode/templates/lang.js:218
-msgid "No Layers Selected"
-msgstr "Ingen kartlag valgt"
+#~ msgid "Zoom to Previous Extent"
+#~ msgstr "Zoom til forrige utstrekning"
 
-#: geonode/templates/lang.js:220
-msgid "Clear Selected"
-msgstr "Tøm utvalgte"
+#~ msgid "This map has not yet been saved."
+#~ msgstr "Kartet har ikke blitt lagret."
 
-#: geonode/templates/lang.js:221
-msgid "Clear All"
-msgstr "Tøm alle"
+#~ msgid "Premium"
+#~ msgstr "Premium"
 
-#: geonode/templates/lang.js:227
-msgid "Operation Failed"
-msgstr "Operasjon mislykket"
+#~ msgid "Print Map"
+#~ msgstr "Skriv ut kart"
 
-#: geonode/templates/lang.js:228
-msgid "No layers are currently selected."
-msgstr "Ingen kartlag valgt for tiden."
+#~ msgid "Print Preview"
+#~ msgstr "Skriv ut forhåndsvisning"
 
-#: geonode/templates/lang.js:235
-msgid "Downloading..."
-msgstr "Laster ned..."
+#~ msgid "Properties"
+#~ msgstr "Egenskaper"
 
-#: geonode/templates/lang.js:237
-msgid "Please wait"
-msgstr "Vennligst vent"
+#~ msgid "Publish Map"
+#~ msgstr "Publiser kart"
+
+#~ msgid "Remove Layer"
+#~ msgstr "Fjern kartlag"
+
+#~ msgid "Sorry, your map could not be saved."
+#~ msgstr "Beklager, kunne ikke lagre kartet ditt. "
+
+#~ msgid "Error While Saving"
+#~ msgstr "Lagringsfeil"
+
+#~ msgid "Save Map"
+#~ msgstr "Lagre kart"
+
+#~ msgid "You must be logged in to save this map."
+#~ msgstr "Du må være innlogget for å kunne lagre kartet."
+
+#~ msgid "Small"
+#~ msgstr "Liten"
+
+#~ msgid "Layer Properties"
+#~ msgstr "Kartlag egenskaper"
+
+#~ msgid "Change layer format and style"
+#~ msgstr "Endre format og stil til kartlaget"
+
+#~ msgid "Edit Styles"
+#~ msgstr "Endre stil"
+
+#~ msgid "Edit layer styles"
+#~ msgstr "Endre kartlagets stil"
+
+#~ msgid "Switch to Google Earth 3D Viewer"
+#~ msgstr "Bytt til Google Earth 3D Viewer"
+
+#~ msgid ""
+#~ "The map that you are trying to load does not exist.  Creating a new map "
+#~ "instead."
+#~ msgstr "Kartet du prøver å laste inn finnes ikke. Lag et nytt kart istedet."
+
+#~ msgid "Width"
+#~ msgstr "Bredde"
+
+#~ msgid "Zoom In"
+#~ msgstr "Zoom inn"
+
+#~ msgid "Zoom Out"
+#~ msgstr "Zoom ut"
+
+#~ msgid "Zoom level"
+#~ msgstr "Zoom-nivå"
+
+#~ msgid "Zoom Level"
+#~ msgstr "Zoom-nivå"
+
+#~ msgid "Zoom to Layer Extent"
+#~ msgstr "Zoom til kartlagets utstrekning"
+
+#~ msgid "Zoom to Visible Extent"
+#~ msgstr "Zoom til synlig utstrekning"
+
+#~ msgid "Zoom Level {zoom}"
+#~ msgstr "Zoom-nivå {zoom}"
+
+#~ msgid "Create Map"
+#~ msgstr "Lag et kart"
+
+#~ msgid "Export Map"
+#~ msgstr "Eksporter kart"
+
+#~ msgid "Map"
+#~ msgstr "Kart"
+
+#~ msgid "View this Map"
+#~ msgstr "Vis dette kartet"
+
+#~ msgid "Open Map"
+#~ msgstr "Åpne kart"
+
+#~ msgid "Name"
+#~ msgstr "Navn"
+
+#~ msgid "Queryable"
+#~ msgstr "Søkbar"
+
+#~ msgid "No background"
+#~ msgstr "Ingen bakgrunn"
+
+#~ msgid "Abstract:"
+#~ msgstr "Sammendrag:"
+
+#~ msgid "No attribution information is provided for this layer."
+#~ msgstr "Kartlaget mangler attributt-informasjon."
+
+#~ msgid "Download:"
+#~ msgstr "Nedlasting:"
+
+#~ msgid "No keywords are listed for this layer."
+#~ msgstr "Kartlaget mangler nøkkelord."
+
+#~ msgid "Keywords:"
+#~ msgstr "Nøkkelord:"
+
+#~ msgid "No metadata URLs are defined for this layer."
+#~ msgstr "Kartlaget mangler metadata URLs."
+
+#~ msgid "Paper size:"
+#~ msgstr "Papir størrelse:"
+
+#~ msgid "Resolution:"
+#~ msgstr "Oppløsning:"
+
+#~ msgid "Print"
+#~ msgstr "Skriv ut"
+
+#~ msgid "Enter map title here."
+#~ msgstr "Tast inn kart-tittel her."
+
+#~ msgid "Include legend?"
+#~ msgstr "Inkluder legende?"
+
+#~ msgid "Enter comments here."
+#~ msgstr "Legg til kommentarer her."
+
+#~ msgid "Creating PDF..."
+#~ msgstr "Lagrer PDF..."
+
+#~ msgid "Last Modified"
+#~ msgstr "Sist endret"
+
+#~ msgid "Prev"
+#~ msgstr "Forhåndsvisning"
+
+#~ msgid "Next"
+#~ msgstr "Neste"
+
+#~ msgid "of"
+#~ msgstr "av"
+
+#~ msgid "Your search did not match any items."
+#~ msgstr "Ingen treff."
+
+#~ msgid "Search Maps"
+#~ msgstr "Søk etter kart"
+
+#~ msgid "Search"
+#~ msgstr "Søk"
+
+#~ msgid "Showing"
+#~ msgstr "Fremviser"
+
+#~ msgid "Loading"
+#~ msgstr "Laster"
+
+#~ msgid "permalink"
+#~ msgstr "permalenke"
+
+#~ msgid "Select"
+#~ msgstr "Velg"
+
+#~ msgid "Select:"
+#~ msgstr "Velg:"
+
+#~ msgid "All"
+#~ msgstr "Alle"
+
+#~ msgid "None"
+#~ msgstr "Ingen"
+
+#~ msgid "Loading..."
+#~ msgstr "Laster..."
+
+#~ msgid "You do not have permission to view this data"
+#~ msgstr "Du har ikke retigheter for å se på disse dataene"
+
+#~ msgid "This data is stored on a remote server"
+#~ msgstr "Disse data er lagret på en ekstern server"
+
+#~ msgid "No abstract is provided for this layer."
+#~ msgstr "Kartlaget mangler sammendrag."
+
+#~ msgid "No download URLs are definied for this layer."
+#~ msgstr "Kartlaget mangler URL for nedlasting."
+
+#~ msgid "Selected Layers"
+#~ msgstr "Valgte kartlag"
+
+#~ msgid "No Layers Selected"
+#~ msgstr "Ingen kartlag valgt"
+
+#~ msgid "Clear Selected"
+#~ msgstr "Tøm utvalgte"
+
+#~ msgid "Clear All"
+#~ msgstr "Tøm alle"
+
+#~ msgid "Operation Failed"
+#~ msgstr "Operasjon mislykket"
+
+#~ msgid "No layers are currently selected."
+#~ msgstr "Ingen kartlag valgt for tiden."
+
+#~ msgid "Downloading..."
+#~ msgstr "Laster ned..."
+
+#~ msgid "Please wait"
+#~ msgstr "Vennligst vent"
 
 #~ msgid "Available %s"
 #~ msgstr "Available %s"
@@ -757,9 +742,6 @@ msgstr "Vennligst vent"
 
 #~ msgid "Hide"
 #~ msgstr "Hide"
-
-#~ msgid "Now"
-#~ msgstr "Now"
 
 #~ msgid "Clock"
 #~ msgstr "Clock"

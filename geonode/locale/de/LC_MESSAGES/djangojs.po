@@ -30,7 +30,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-20 11:56+0200\n"
+"POT-Creation-Date: 2020-04-07 12:08+0000\n"
 "PO-Revision-Date: 2019-05-20 16:50+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/"
@@ -42,13 +42,15 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 2.2.1\n"
 
-#: geonode/static/geonode/js/search/search.js:522
-msgid "Enter your text here ..."
-msgstr "Geben Sie Ihren Text ein..."
+#: geonode/monitoring/static/monitoring/bundle.js:170
+msgid "STORE_UPDATED"
+msgstr ""
 
-#: geonode/static/geonode/js/search/search.js:564
-msgid "Enter your region here ..."
-msgstr "Geben Sie Ihre Region ein..."
+#: geonode/people/templates/people/profile_detail.html:77
+#: geonode/people/templates/people/profile_detail.html:86
+#: geonode/people/templates/people/profile_detail.html:98
+msgid "Not provided."
+msgstr ""
 
 #: geonode/static/geonode/js/upload/FileType.js:50
 #, javascript-format
@@ -170,8 +172,7 @@ msgid "GIF"
 msgstr "GIF"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:332
-#: geonode/static/geonode/js/upload/LayerInfo.js:488
-#: geonode/static/geonode/js/upload/LayerInfo.js:585
+#: geonode/static/geonode/js/upload/LayerInfo.js:503
 msgid "Unexpected Error"
 msgstr "Unerwarteter Fehler"
 
@@ -207,41 +208,64 @@ msgstr "Ihre "
 msgid "Performing Final GeoServer Config Step"
 msgstr "GeoServer Konfiguration abschliessen"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:437
-#: geonode/static/geonode/js/upload/LayerInfo.js:474
+#: geonode/static/geonode/js/upload/LayerInfo.js:439
+#: geonode/static/geonode/js/upload/LayerInfo.js:483
 msgid "You need to specify more information in order to complete your upload"
 msgstr ""
 "Sie müssen weitere Informationen angeben, um Ihre Upload abzuschließen "
 "angeben"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:457
+#: geonode/static/geonode/js/upload/LayerInfo.js:463
 msgid "Files are ready to be ingested!"
 msgstr "Die Dateien stehen bereit um hinzugefügt werden zu können!"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:460
+#: geonode/static/geonode/js/upload/LayerInfo.js:466
 msgid "A temporal dimension may be added to this Layer."
 msgstr "Zu dieser Ebene kann eine zeitliche Dimension hinzugefügt werden."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:504
+#: geonode/static/geonode/js/upload/LayerInfo.js:521
 msgid "Performing GeoServer Config Step"
 msgstr "GeoServer Konfiguration wird ausgeführt"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:592
+#: geonode/static/geonode/js/upload/LayerInfo.js:609
+msgid ""
+"<br>Please check your network connection. In case of Layer Upload make sure "
+"GeoServer is running and accepting connections."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:613
+#: geonode/static/geonode/js/upload/LayerInfo.js:616
+#: geonode/static/geonode/js/upload/LayerInfo.js:623
+#: geonode/static/geonode/js/upload/LayerInfo.js:626
+msgid "<br>"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:618
+msgid "<br>Bad request or URL not found."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:628
+#, fuzzy
+#| msgid "Unknown Map"
+msgid "<br>Unknown."
+msgstr "Unbekannte Karte"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:636
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Layer-Dateien hochgeladen, diese werden in GeoServer konfiguriert"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:743
+#: geonode/static/geonode/js/upload/LayerInfo.js:787
 msgid "Remove"
 msgstr "Entfernen"
 
-#: geonode/static/geonode/js/upload/upload.js:125
+#: geonode/static/geonode/js/upload/upload.js:126
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr ""
 "Die Datei %s ist ein nicht unterstütztes Dateityp, wählen Sie bitte eine "
 "andere Datei."
 
-#: geonode/static/geonode/js/upload/upload.js:285
+#: geonode/static/geonode/js/upload/upload.js:296
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
 "options have been validated.\n"
@@ -253,709 +277,587 @@ msgstr ""
 "\n"
 "Bitte prüfen Sie die Fehlermeldung im Formular!"
 
-#: geonode/templates/lang.js:9 geonode/templates/lang.js:61
-#: geonode/templates/lang.js:294
-msgid "Cancel"
-msgstr "Abbrechen"
+#: geonode/templates/admin/base_site.html:4
+msgid "GeoNode site admin"
+msgstr ""
 
-#: geonode/templates/lang.js:10 geonode/templates/lang.js:66
-msgid "Save as Copy"
-msgstr "Speichern als Kopie"
+#: geonode/templates/admin/base_site.html:7
+msgid "GeoNode administration"
+msgstr ""
 
-#: geonode/templates/lang.js:11
-msgid "About this Map"
-msgstr "Über diese Karte"
+#: geonode/templates/index.html:19
+msgid "Welcome"
+msgstr ""
 
-#: geonode/templates/lang.js:12 geonode/templates/lang.js:143
-#: geonode/templates/lang.js:212
-msgid "Abstract"
-msgstr "Kurzbeschreibung"
-
-#: geonode/templates/lang.js:13 geonode/templates/lang.js:30
-#: geonode/templates/lang.js:67 geonode/templates/lang.js:96
-msgid "Save"
-msgstr "Speichern"
-
-#: geonode/templates/lang.js:14 geonode/templates/lang.js:72
-#: geonode/templates/lang.js:147 geonode/templates/lang.js:156
-#: geonode/templates/lang.js:209 geonode/templates/lang.js:231
-#: geonode/templates/lang.js:276
-msgid "Title"
-msgstr "Titel"
-
-#: geonode/templates/lang.js:20 geonode/templates/lang.js:37
-msgid "Connection Error"
-msgstr "Verbindungsfehler"
-
-#: geonode/templates/lang.js:21 geonode/templates/lang.js:38
-msgid "The server returned an error"
-msgstr "Der Server gab einen Fehler zurück"
-
-#: geonode/templates/lang.js:22 geonode/templates/lang.js:39
-msgid "Details..."
-msgstr "Einzelheiten..."
-
-#: geonode/templates/lang.js:28 geonode/templates/lang.js:34
-#: geonode/templates/lang.js:279
-msgid "Add Layers"
-msgstr "Ebenen hinzufügen"
-
-#: geonode/templates/lang.js:29
-#, fuzzy
-msgid "Add ArcGIS REST Server"
-msgstr "ArcGIS REST Server hinzufügen"
-
-#: geonode/templates/lang.js:31 geonode/templates/lang.js:90
-#, fuzzy
-msgid "Link"
-msgstr "Link"
-
-#: geonode/templates/lang.js:32
-msgid "Area"
-msgstr "Fläche"
-
-#: geonode/templates/lang.js:33
-msgid "Background"
-msgstr "Hintergrund"
-
-#: geonode/templates/lang.js:35
-msgid "Done"
-msgstr "Fertig"
-
-#: geonode/templates/lang.js:36
-msgid "Available Layers"
-msgstr "Verfügbare Ebenen"
-
-#: geonode/templates/lang.js:40
-msgid "Add feeds"
-msgstr "Feed hinzufügen"
-
-#: geonode/templates/lang.js:41
-#, fuzzy
-msgid "Flickr"
-msgstr "Flickr"
-
-#: geonode/templates/lang.js:42
-#, fuzzy
-#| msgid "Google Earth KML"
-msgid "Google Earth"
-msgstr "Google Earth KML"
-
-#: geonode/templates/lang.js:43
+#: geonode/templates/index.html:21
 msgid ""
-"<p>Your map is ready to be published to the web! </p><p> Simply copy the "
-"following HTML to embed the map in your website: </p>"
+"GeoNode is an open source platform for sharing geospatial data and maps."
 msgstr ""
-"Ihre Karte ist bereit, um im Internet veröffentlicht zu werden! Kopieren Sie "
-"einfach den folgenden HTML-Code, um die Karte in Ihre Webseite einzubinden: "
 
-#: geonode/templates/lang.js:44 geonode/templates/lang.js:168
-msgid "Height"
-msgstr "Höhe"
-
-#: geonode/templates/lang.js:45
-#, fuzzy
-msgid "Help"
-msgstr "Hilfe"
-
-#: geonode/templates/lang.js:46
-msgid "Get Feature Info"
-msgstr "Feature-Abfrage"
-
-#: geonode/templates/lang.js:47
-#, fuzzy
-msgid "About"
-msgstr "Über"
-
-#: geonode/templates/lang.js:48
-msgid "About us"
-msgstr "Über uns"
-
-#: geonode/templates/lang.js:49 geonode/templates/lang.js:169
-msgid "Large"
-msgstr "Groß"
-
-#: geonode/templates/lang.js:50
-msgid "or add a new server."
-msgstr "oder einen neuen Server hinzufügen."
-
-#: geonode/templates/lang.js:51
-msgid "Map Layers"
-msgstr "Kartenebenen"
-
-#: geonode/templates/lang.js:52
-msgid "Upload your own data"
-msgstr "Eigene Daten hochladen"
-
-#: geonode/templates/lang.js:53
-msgid "View available data from:"
-msgstr "Zeige verfügbare Daten von:"
-
-#: geonode/templates/lang.js:54
-msgid "Data"
-msgstr "Daten"
-
-#: geonode/templates/lang.js:55
-msgid "Layers"
-msgstr "Ebenen"
-
-#: geonode/templates/lang.js:56
-msgid "Legend"
-msgstr "Legende"
-
-#: geonode/templates/lang.js:57
-msgid "Length"
-msgstr "Länge"
-
-#: geonode/templates/lang.js:58
-msgid "Loading Map..."
-msgstr "Karte lädt ..."
-
-#: geonode/templates/lang.js:59 geonode/templates/lang.js:170
-msgid "Map Size"
-msgstr "Kartengröße"
-
-#: geonode/templates/lang.js:60
-msgid "Measure"
-msgstr "Messen"
-
-#: geonode/templates/lang.js:62
-#, fuzzy
-msgid "Warning"
-msgstr "Warnung"
-
-#: geonode/templates/lang.js:63
-msgid ""
-"You now have %n layers in your map.  With more than %max layers you may "
-"experience problems with layer ordering, info balloon display, and general "
-"performance. "
+#: geonode/templates/index.html:25
+msgid "Get Started &raquo;"
 msgstr ""
-"Sie haben jetzt %n Ebenen in Ihrer Karte.  Mit mehr als %max Ebenen können "
-"Probleme mit der Ebenensortierung, der Info-Abfrage und der Performance "
-"auftreten. "
 
-#: geonode/templates/lang.js:64 geonode/templates/lang.js:144
-#: geonode/templates/lang.js:210
-msgid "Contact"
-msgstr "Kontakt"
-
-#: geonode/templates/lang.js:65 geonode/templates/lang.js:85
-msgid "Permalink"
-msgstr "Permalink"
-
-#: geonode/templates/lang.js:68
+#: geonode/templates/index.html:82 geonode/templates/index.html:102
 #, fuzzy
-msgid "Copy"
-msgstr "Kopie"
-
-#: geonode/templates/lang.js:69
-#, fuzzy
-#| msgid "About this Map"
-msgid "About this Map View"
-msgstr "Über diese Karte"
-
-#: geonode/templates/lang.js:70
-#, fuzzy
-msgid "Abstract (brief description)"
-msgstr "Zusammenfassung (kurze Beschreibung)"
-
-#: geonode/templates/lang.js:71
-#, fuzzy
-msgid "Introduction (tell visitors more about your map view)"
-msgstr "Einführung (erzählen Sie Ihren Besuchern mehr über Ihre Karte)"
-
-#: geonode/templates/lang.js:73
-#, fuzzy
-msgid "UserUrl"
-msgstr "UserUrl"
-
-#: geonode/templates/lang.js:74 geonode/templates/lang.js:171
-msgid "Mini"
-msgstr "Mini"
-
-#: geonode/templates/lang.js:75
-msgid "Add Category"
-msgstr "Kategorie hinzufügen"
-
-#: geonode/templates/lang.js:76
-msgid " Add a new category to the layer tree"
-msgstr " Füge eine neue Kategorie zum Ebenenbaum hinzu"
-
-#: geonode/templates/lang.js:77
-msgid " Rename Category"
-msgstr " Kategorie umbenennen"
-
-#: geonode/templates/lang.js:78
-msgid " Rename this category"
-msgstr " Dieser Kategorie umbenennen"
-
-#: geonode/templates/lang.js:79
-msgid " Remove Category"
-msgstr " Ebene entfernen"
-
-#: geonode/templates/lang.js:80
-msgid " Remove this category and layers"
-msgstr " Entfernen Sie diese Kategorie und die Ebenen"
-
-#: geonode/templates/lang.js:81
-msgid "Pan Map"
-msgstr "Karte Schieben"
-
-#: geonode/templates/lang.js:82
-msgid "Zoom to Next Extent"
-msgstr "Zoom auf nächsten Ausschnitt"
-
-#: geonode/templates/lang.js:83
-msgid "Zoom to Previous Extent"
-msgstr "Zoom zu vorherigen Ausschnitt"
-
-#: geonode/templates/lang.js:84
-msgid "This map has not yet been saved."
-msgstr "Diese Karte wurde noch nicht gespeichert."
-
-#: geonode/templates/lang.js:86 geonode/templates/lang.js:172
-msgid "Premium"
-msgstr "Premium"
-
-#: geonode/templates/lang.js:87
-msgid "Print Map"
-msgstr "Karte drucken"
-
-#: geonode/templates/lang.js:88
-msgid "Print Preview"
-msgstr "Druckvorschau"
-
-#: geonode/templates/lang.js:89
-msgid "Properties"
-msgstr "Eigenschaften"
-
-#: geonode/templates/lang.js:91 geonode/templates/lang.js:173
-msgid "Publish Map"
-msgstr "Karte veröffentlichen"
-
-#: geonode/templates/lang.js:92 geonode/templates/lang.js:93
-msgid "Remove Layer"
-msgstr "Ebene entfernen"
-
-#: geonode/templates/lang.js:94
-msgid "Sorry, your map could not be saved."
-msgstr "Leider konnte Ihre Karte nicht gespeichert werden."
-
-#: geonode/templates/lang.js:95
-msgid "Error While Saving"
-msgstr "Fehler beim speichern"
-
-#: geonode/templates/lang.js:97
-msgid "Save Map"
-msgstr "Karte speichern"
-
-#: geonode/templates/lang.js:98
-msgid "You must be logged in to save this map."
-msgstr "Um diese Karte zu speichern müssen Sie angemeldet sein."
-
-#: geonode/templates/lang.js:99 geonode/templates/lang.js:175
-msgid "Small"
-msgstr "Klein"
-
-#: geonode/templates/lang.js:100
-msgid " Share Layer"
-msgstr " Kartenebenen"
-
-#: geonode/templates/lang.js:101
-msgid ""
-"Error contacting server.\n"
-" Please check the url and try again."
-msgstr ""
-"Fehler beim Verbinden mit Server.\n"
-" Bitte überprüfen Sie die URL und versuchen Sie es erneut."
-
-#: geonode/templates/lang.js:102
-msgid "Layer Properties"
-msgstr "Ebeneneigenschaften"
-
-#: geonode/templates/lang.js:103
-msgid "Change layer format and style"
-msgstr "Ändern Sie das Ebenen-Format und den Stil"
-
-#: geonode/templates/lang.js:104
-msgid "Edit Styles"
-msgstr "Bearbeiten von Stilen"
-
-#: geonode/templates/lang.js:105
-msgid "Edit layer styles"
-msgstr "Bearbeiten von Ebenenstilen"
-
-#: geonode/templates/lang.js:106
-msgid "Switch to Google Earth 3D Viewer"
-msgstr "Wechseln Sie zu Google Earth 3D-Viewer"
-
-#: geonode/templates/lang.js:107
-msgid ""
-"The map that you are trying to load does not exist.  Creating a new map "
-"instead."
-msgstr ""
-"Die Karte, die Sie versuchen zu laden, existiert nicht. Stattdessen "
-"erstellen einer neuen Karte."
-
-#: geonode/templates/lang.js:108
-msgid "Unknown Map"
-msgstr "Unbekannte Karte"
-
-#: geonode/templates/lang.js:109
-msgid "Unsupported Layers"
-msgstr "nicht unterstützte Ebenen"
-
-#: geonode/templates/lang.js:110
-#, fuzzy
-msgid "The following layers cannot be printed:"
-msgstr "Folgende Ebenen können nicht gedruckt werden:"
-
-#: geonode/templates/lang.js:111 geonode/templates/lang.js:176
-msgid "Width"
-msgstr "Breite"
-
-#: geonode/templates/lang.js:112
-msgid "Zoom In"
-msgstr "Hineinzoomen"
-
-#: geonode/templates/lang.js:113
-msgid "Zoom Out"
-msgstr "Rauszoomen"
-
-#: geonode/templates/lang.js:114
-msgid "Zoom level"
-msgstr "Zoomstufe"
-
-#: geonode/templates/lang.js:115
-msgid "Zoom Level"
-msgstr "Zoomstufe"
-
-#: geonode/templates/lang.js:116
-msgid "Zoom to Layer Extent"
-msgstr "Zoom auf Ebenenausdehnung"
-
-#: geonode/templates/lang.js:117
-msgid "Zoom to Visible Extent"
-msgstr "Zoom auf sichtbare Ausdehnung"
-
-#: geonode/templates/lang.js:118
-#, fuzzy
-msgid "Picasa"
-msgstr "Picasa"
-
-#: geonode/templates/lang.js:119
-#, fuzzy
-msgid "YouTube"
-msgstr "YouTube"
-
-#: geonode/templates/lang.js:120
-#, fuzzy
-msgid "Harvard Geospatial Library"
-msgstr "Harvard Geodaten Bibliothek"
-
-#: geonode/templates/lang.js:121
-#, fuzzy
-#| msgid "Upload SLD"
-msgid "Upload Layer"
-msgstr "SLD hochladen"
-
-#: geonode/templates/lang.js:122
-msgid "Create Layer"
-msgstr "Ebene erstellen"
-
-#: geonode/templates/lang.js:123
-msgid "Rectify Layer"
-msgstr "Bildkorrektur"
-
-#: geonode/templates/lang.js:124
-#, fuzzy
-msgid "Submit a Map Service"
-msgstr "Einen Kartendienst einreichen"
-
-#: geonode/templates/lang.js:125 geonode/templates/lang.js:219
-#: geonode/templates/lang.js:240
-msgid "Search"
-msgstr "Suche"
-
-#: geonode/templates/lang.js:126
-#, fuzzy
-msgid "External Data"
-msgstr "Externe Daten"
-
-#: geonode/templates/lang.js:127
-#, fuzzy
-msgid "If you leave this page, unsaved changes will be lost."
-msgstr ""
-"Wenn Sie diese Seite verlassen, gehen nicht gespeicherte Änderungen verloren."
-
-#: geonode/templates/lang.js:128
-msgid "Center for Geographic Analysis"
-msgstr "Zentrum für Geographische Analysen"
-
-#: geonode/templates/lang.js:129
-#, fuzzy
-msgid "Bigdata and AMAP Innovation Team"
-msgstr "Bigdata und AMAP Innovation Team"
-
-#: geonode/templates/lang.js:135
-msgid "Zoom Level {zoom}"
-msgstr "Zoomstufe {zoom}"
-
-#: geonode/templates/lang.js:141
-msgid "Create Map"
-msgstr "Karte erstellen"
-
-#: geonode/templates/lang.js:142
-msgid "Export Map"
-msgstr "Karte exportieren"
-
-#: geonode/templates/lang.js:145
-msgid "Map"
-msgstr "Karte"
-
-#: geonode/templates/lang.js:146 geonode/templates/lang.js:213
-msgid "View this Map"
-msgstr "Karte ansehen"
-
-#: geonode/templates/lang.js:148
-msgid "Open Map"
-msgstr "Karte öffnen"
-
-#: geonode/templates/lang.js:154 geonode/templates/lang.js:230
-msgid "Name"
-msgstr "Name"
-
-#: geonode/templates/lang.js:155
-msgid "Queryable"
-msgstr "Abfragbar"
-
-#: geonode/templates/lang.js:162
-msgid "No background"
-msgstr "Kein Hintergrund"
-
-#: geonode/templates/lang.js:174
-msgid ""
-"Your map is ready to be published to the web!  Simply copy the following "
-"HTML to embed the map in your website:"
-msgstr ""
-"Ihre Karte ist bereit, um im Internet veröffentlicht zu werden! Kopieren Sie "
-"einfach den folgenden HTML-Code, um die Karte in Ihre Webseite einzubinden:"
-
-#: geonode/templates/lang.js:183 geonode/templates/lang.js:259
-msgid "Abstract:"
-msgstr "Kurzbeschreibung:"
-
-#: geonode/templates/lang.js:184 geonode/templates/lang.js:261
-msgid "No attribution information is provided for this layer."
-msgstr "Kein Attributinformationen für diese Ebene vorhanden."
-
-#: geonode/templates/lang.js:185 geonode/templates/lang.js:262
-msgid "Provided by:"
-msgstr "Bereitgestellt von:"
-
-#: geonode/templates/lang.js:186 geonode/templates/lang.js:263
-msgid "Download:"
-msgstr "Herunterladen:"
-
-#: geonode/templates/lang.js:187 geonode/templates/lang.js:265
-msgid "No keywords are listed for this layer."
-msgstr "Für diese Ebene sind keine Schlüsselwörter vorhanden."
-
-#: geonode/templates/lang.js:188 geonode/templates/lang.js:266
-msgid "Keywords:"
-msgstr "Schlüsselwörter:"
-
-#: geonode/templates/lang.js:189 geonode/templates/lang.js:267
-msgid "No metadata URLs are defined for this layer."
-msgstr "Für diese Ebene sind keine Metadaten-URLs definiert."
-
-#: geonode/templates/lang.js:190 geonode/templates/lang.js:268
-msgid "Metadata Links:"
-msgstr "Metatdaten Links:"
-
-#: geonode/templates/lang.js:196
-msgid "Paper size:"
-msgstr "Papiergröße:"
-
-#: geonode/templates/lang.js:197
-msgid "Resolution:"
-msgstr "Auflösung:"
-
-#: geonode/templates/lang.js:198
-msgid "Print"
-msgstr "Druck"
-
-#: geonode/templates/lang.js:199
-msgid "Enter map title here."
-msgstr "Hier Kartentitel eingeben."
-
-#: geonode/templates/lang.js:200
-msgid "Include legend?"
-msgstr "Legende einfügen?"
-
-#: geonode/templates/lang.js:201
-msgid "Enter comments here."
-msgstr "Kommentare hier eingeben."
-
-#: geonode/templates/lang.js:202
-msgid "Creating PDF..."
-msgstr "Erstelle PDF ..."
-
-#: geonode/templates/lang.js:211
-msgid "Last Modified"
-msgstr "Zuletzt geändert"
-
-#: geonode/templates/lang.js:214 geonode/templates/lang.js:235
-msgid "Prev"
-msgstr "Vorherige"
-
-#: geonode/templates/lang.js:215 geonode/templates/lang.js:236
-msgid "Next"
-msgstr "Nächste"
-
-#: geonode/templates/lang.js:216 geonode/templates/lang.js:237
-msgid "of"
-msgstr "von"
-
-#: geonode/templates/lang.js:217 geonode/templates/lang.js:238
-msgid "Your search did not match any items."
-msgstr "Ihre Suche brachte keine Ergebnisse."
-
-#: geonode/templates/lang.js:218
-msgid "Search Maps"
-msgstr "Suche Karten"
-
-#: geonode/templates/lang.js:220
-msgid "Showing"
-msgstr "Angezeigt"
-
-#: geonode/templates/lang.js:221
-msgid "Loading"
-msgstr "Laden"
-
-#: geonode/templates/lang.js:222 geonode/templates/lang.js:243
-msgid "permalink"
-msgstr "permalink"
-
-#: geonode/templates/lang.js:229
-msgid "Select"
-msgstr "Auswählen"
-
-#: geonode/templates/lang.js:232
-msgid "Select:"
-msgstr "Auswählen:"
-
-#: geonode/templates/lang.js:233
-msgid "All"
-msgstr "Alles"
-
-#: geonode/templates/lang.js:234
-msgid "None"
+#| msgid "None"
+msgid "No"
 msgstr "Nichts"
 
-#: geonode/templates/lang.js:239
-msgid "Keyword"
-msgstr "Schlüsselwörter"
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "some schema mandatory fields are missing"
+msgstr ""
 
-#: geonode/templates/lang.js:241
-msgid "Showing..."
-msgstr "Zeige..."
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "Metadata Schema mandatory fields completed"
+msgstr ""
 
-#: geonode/templates/lang.js:242
-msgid "Loading..."
-msgstr "Laden ..."
+#: geonode/templates/metadata_form_js.html:244
+#: geonode/templates/metadata_form_js.html:283
+msgid ""
+"<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field "
+"declared Mandatory by the Metadata Schema</strong></p>"
+msgstr ""
 
-#: geonode/templates/lang.js:244
-msgid "You do not have permission to view this data"
-msgstr "Sie haben keine Berechtigung, um diese Daten anzusehen"
+#~ msgid "Enter your text here ..."
+#~ msgstr "Geben Sie Ihren Text ein..."
 
-#: geonode/templates/lang.js:245
-msgid "This data is stored on a remote server"
-msgstr "Diese Daten werden auf einem Remote-Server gespeichert"
+#~ msgid "Enter your region here ..."
+#~ msgstr "Geben Sie Ihre Region ein..."
 
-#: geonode/templates/lang.js:246
+#~ msgid "Cancel"
+#~ msgstr "Abbrechen"
+
+#~ msgid "Save as Copy"
+#~ msgstr "Speichern als Kopie"
+
+#~ msgid "About this Map"
+#~ msgstr "Über diese Karte"
+
+#~ msgid "Abstract"
+#~ msgstr "Kurzbeschreibung"
+
+#~ msgid "Save"
+#~ msgstr "Speichern"
+
+#~ msgid "Title"
+#~ msgstr "Titel"
+
+#~ msgid "Connection Error"
+#~ msgstr "Verbindungsfehler"
+
+#~ msgid "The server returned an error"
+#~ msgstr "Der Server gab einen Fehler zurück"
+
+#~ msgid "Details..."
+#~ msgstr "Einzelheiten..."
+
+#~ msgid "Add Layers"
+#~ msgstr "Ebenen hinzufügen"
+
 #, fuzzy
-msgid "Invalid Query"
-msgstr "Ungültige Abfrage"
+#~ msgid "Add ArcGIS REST Server"
+#~ msgstr "ArcGIS REST Server hinzufügen"
 
-#: geonode/templates/lang.js:247
 #, fuzzy
-msgid "You need to specify a search term"
-msgstr "Sie müssen einen Suchbegriff angeben"
+#~ msgid "Link"
+#~ msgstr "Link"
 
-#: geonode/templates/lang.js:248 geonode/templates/lang.js:250
+#~ msgid "Area"
+#~ msgstr "Fläche"
+
+#~ msgid "Background"
+#~ msgstr "Hintergrund"
+
+#~ msgid "Done"
+#~ msgstr "Fertig"
+
+#~ msgid "Available Layers"
+#~ msgstr "Verfügbare Ebenen"
+
+#~ msgid "Add feeds"
+#~ msgstr "Feed hinzufügen"
+
 #, fuzzy
-msgid "Source"
-msgstr "Quelle"
+#~ msgid "Flickr"
+#~ msgstr "Flickr"
 
-#: geonode/templates/lang.js:249
-msgid "Data Type"
-msgstr "Datentyp"
-
-#: geonode/templates/lang.js:251
 #, fuzzy
-msgid "Date"
-msgstr "Datum"
+#~| msgid "Google Earth KML"
+#~ msgid "Google Earth"
+#~ msgstr "Google Earth KML"
 
-#: geonode/templates/lang.js:252
+#~ msgid ""
+#~ "<p>Your map is ready to be published to the web! </p><p> Simply copy the "
+#~ "following HTML to embed the map in your website: </p>"
+#~ msgstr ""
+#~ "Ihre Karte ist bereit, um im Internet veröffentlicht zu werden! Kopieren "
+#~ "Sie einfach den folgenden HTML-Code, um die Karte in Ihre Webseite "
+#~ "einzubinden: "
+
+#~ msgid "Height"
+#~ msgstr "Höhe"
+
 #, fuzzy
-msgid "from year"
-msgstr "Ab Jahr"
+#~ msgid "Help"
+#~ msgstr "Hilfe"
 
-#: geonode/templates/lang.js:253
+#~ msgid "Get Feature Info"
+#~ msgstr "Feature-Abfrage"
+
 #, fuzzy
-msgid "to year"
-msgstr "zum Jahr"
+#~ msgid "About"
+#~ msgstr "Über"
 
-#: geonode/templates/lang.js:254
+#~ msgid "About us"
+#~ msgstr "Über uns"
+
+#~ msgid "Large"
+#~ msgstr "Groß"
+
+#~ msgid "or add a new server."
+#~ msgstr "oder einen neuen Server hinzufügen."
+
+#~ msgid "Map Layers"
+#~ msgstr "Kartenebenen"
+
+#~ msgid "Upload your own data"
+#~ msgstr "Eigene Daten hochladen"
+
+#~ msgid "View available data from:"
+#~ msgstr "Zeige verfügbare Daten von:"
+
+#~ msgid "Data"
+#~ msgstr "Daten"
+
+#~ msgid "Layers"
+#~ msgstr "Ebenen"
+
+#~ msgid "Legend"
+#~ msgstr "Legende"
+
+#~ msgid "Length"
+#~ msgstr "Länge"
+
+#~ msgid "Loading Map..."
+#~ msgstr "Karte lädt ..."
+
+#~ msgid "Map Size"
+#~ msgstr "Kartengröße"
+
+#~ msgid "Measure"
+#~ msgstr "Messen"
+
 #, fuzzy
-msgid "Reset"
-msgstr "Zurücksetzen"
+#~ msgid "Warning"
+#~ msgstr "Warnung"
 
-#: geonode/templates/lang.js:260
-msgid "No abstract is provided for this layer."
-msgstr "Für diese Ebene ist keine Kurzbeschreibung vorhanden."
+#~ msgid ""
+#~ "You now have %n layers in your map.  With more than %max layers you may "
+#~ "experience problems with layer ordering, info balloon display, and "
+#~ "general performance. "
+#~ msgstr ""
+#~ "Sie haben jetzt %n Ebenen in Ihrer Karte.  Mit mehr als %max Ebenen "
+#~ "können Probleme mit der Ebenensortierung, der Info-Abfrage und der "
+#~ "Performance auftreten. "
 
-#: geonode/templates/lang.js:264
-msgid "No download URLs are definied for this layer."
-msgstr "Für diese Ebene sind keine URLs zum herunterladen definiert."
+#~ msgid "Contact"
+#~ msgstr "Kontakt"
 
-#: geonode/templates/lang.js:269
+#~ msgid "Permalink"
+#~ msgstr "Permalink"
+
 #, fuzzy
-msgid "Click here for more information about this layer."
-msgstr "Klicken Sie hier für weitere Informationen zu diese Ebene."
+#~ msgid "Copy"
+#~ msgstr "Kopie"
 
-#: geonode/templates/lang.js:274
-msgid "Selected Layers"
-msgstr "Ausgewählte Ebenen"
+#, fuzzy
+#~| msgid "About this Map"
+#~ msgid "About this Map View"
+#~ msgstr "Über diese Karte"
 
-#: geonode/templates/lang.js:275
-msgid "No Layers Selected"
-msgstr "Keine Ebenen ausgewählt"
+#, fuzzy
+#~ msgid "Abstract (brief description)"
+#~ msgstr "Zusammenfassung (kurze Beschreibung)"
 
-#: geonode/templates/lang.js:277
-msgid "Clear Selected"
-msgstr "Lösche ausgewählte"
+#, fuzzy
+#~ msgid "Introduction (tell visitors more about your map view)"
+#~ msgstr "Einführung (erzählen Sie Ihren Besuchern mehr über Ihre Karte)"
 
-#: geonode/templates/lang.js:278
-msgid "Clear All"
-msgstr "Alles löschen"
+#, fuzzy
+#~ msgid "UserUrl"
+#~ msgstr "UserUrl"
 
-#: geonode/templates/lang.js:285
-msgid "Operation Failed"
-msgstr "Der Vorgang ist fehlgeschlagen"
+#~ msgid "Mini"
+#~ msgstr "Mini"
 
-#: geonode/templates/lang.js:286
-msgid "No layers are currently selected."
-msgstr "Zur Zeit sind keine Ebenen ausgewählt."
+#~ msgid "Add Category"
+#~ msgstr "Kategorie hinzufügen"
 
-#: geonode/templates/lang.js:293
-msgid "Downloading..."
-msgstr "Herunterladen ..."
+#~ msgid " Add a new category to the layer tree"
+#~ msgstr " Füge eine neue Kategorie zum Ebenenbaum hinzu"
 
-#: geonode/templates/lang.js:295
-msgid "Please wait"
-msgstr "Bitte warten"
+#~ msgid " Rename Category"
+#~ msgstr " Kategorie umbenennen"
+
+#~ msgid " Rename this category"
+#~ msgstr " Dieser Kategorie umbenennen"
+
+#~ msgid " Remove Category"
+#~ msgstr " Ebene entfernen"
+
+#~ msgid " Remove this category and layers"
+#~ msgstr " Entfernen Sie diese Kategorie und die Ebenen"
+
+#~ msgid "Pan Map"
+#~ msgstr "Karte Schieben"
+
+#~ msgid "Zoom to Next Extent"
+#~ msgstr "Zoom auf nächsten Ausschnitt"
+
+#~ msgid "Zoom to Previous Extent"
+#~ msgstr "Zoom zu vorherigen Ausschnitt"
+
+#~ msgid "This map has not yet been saved."
+#~ msgstr "Diese Karte wurde noch nicht gespeichert."
+
+#~ msgid "Premium"
+#~ msgstr "Premium"
+
+#~ msgid "Print Map"
+#~ msgstr "Karte drucken"
+
+#~ msgid "Print Preview"
+#~ msgstr "Druckvorschau"
+
+#~ msgid "Properties"
+#~ msgstr "Eigenschaften"
+
+#~ msgid "Publish Map"
+#~ msgstr "Karte veröffentlichen"
+
+#~ msgid "Remove Layer"
+#~ msgstr "Ebene entfernen"
+
+#~ msgid "Sorry, your map could not be saved."
+#~ msgstr "Leider konnte Ihre Karte nicht gespeichert werden."
+
+#~ msgid "Error While Saving"
+#~ msgstr "Fehler beim speichern"
+
+#~ msgid "Save Map"
+#~ msgstr "Karte speichern"
+
+#~ msgid "You must be logged in to save this map."
+#~ msgstr "Um diese Karte zu speichern müssen Sie angemeldet sein."
+
+#~ msgid "Small"
+#~ msgstr "Klein"
+
+#~ msgid " Share Layer"
+#~ msgstr " Kartenebenen"
+
+#~ msgid ""
+#~ "Error contacting server.\n"
+#~ " Please check the url and try again."
+#~ msgstr ""
+#~ "Fehler beim Verbinden mit Server.\n"
+#~ " Bitte überprüfen Sie die URL und versuchen Sie es erneut."
+
+#~ msgid "Layer Properties"
+#~ msgstr "Ebeneneigenschaften"
+
+#~ msgid "Change layer format and style"
+#~ msgstr "Ändern Sie das Ebenen-Format und den Stil"
+
+#~ msgid "Edit Styles"
+#~ msgstr "Bearbeiten von Stilen"
+
+#~ msgid "Edit layer styles"
+#~ msgstr "Bearbeiten von Ebenenstilen"
+
+#~ msgid "Switch to Google Earth 3D Viewer"
+#~ msgstr "Wechseln Sie zu Google Earth 3D-Viewer"
+
+#~ msgid ""
+#~ "The map that you are trying to load does not exist.  Creating a new map "
+#~ "instead."
+#~ msgstr ""
+#~ "Die Karte, die Sie versuchen zu laden, existiert nicht. Stattdessen "
+#~ "erstellen einer neuen Karte."
+
+#~ msgid "Unsupported Layers"
+#~ msgstr "nicht unterstützte Ebenen"
+
+#, fuzzy
+#~ msgid "The following layers cannot be printed:"
+#~ msgstr "Folgende Ebenen können nicht gedruckt werden:"
+
+#~ msgid "Width"
+#~ msgstr "Breite"
+
+#~ msgid "Zoom In"
+#~ msgstr "Hineinzoomen"
+
+#~ msgid "Zoom Out"
+#~ msgstr "Rauszoomen"
+
+#~ msgid "Zoom level"
+#~ msgstr "Zoomstufe"
+
+#~ msgid "Zoom Level"
+#~ msgstr "Zoomstufe"
+
+#~ msgid "Zoom to Layer Extent"
+#~ msgstr "Zoom auf Ebenenausdehnung"
+
+#~ msgid "Zoom to Visible Extent"
+#~ msgstr "Zoom auf sichtbare Ausdehnung"
+
+#, fuzzy
+#~ msgid "Picasa"
+#~ msgstr "Picasa"
+
+#, fuzzy
+#~ msgid "YouTube"
+#~ msgstr "YouTube"
+
+#, fuzzy
+#~ msgid "Harvard Geospatial Library"
+#~ msgstr "Harvard Geodaten Bibliothek"
+
+#, fuzzy
+#~| msgid "Upload SLD"
+#~ msgid "Upload Layer"
+#~ msgstr "SLD hochladen"
+
+#~ msgid "Create Layer"
+#~ msgstr "Ebene erstellen"
+
+#~ msgid "Rectify Layer"
+#~ msgstr "Bildkorrektur"
+
+#, fuzzy
+#~ msgid "Submit a Map Service"
+#~ msgstr "Einen Kartendienst einreichen"
+
+#~ msgid "Search"
+#~ msgstr "Suche"
+
+#, fuzzy
+#~ msgid "External Data"
+#~ msgstr "Externe Daten"
+
+#, fuzzy
+#~ msgid "If you leave this page, unsaved changes will be lost."
+#~ msgstr ""
+#~ "Wenn Sie diese Seite verlassen, gehen nicht gespeicherte Änderungen "
+#~ "verloren."
+
+#~ msgid "Center for Geographic Analysis"
+#~ msgstr "Zentrum für Geographische Analysen"
+
+#, fuzzy
+#~ msgid "Bigdata and AMAP Innovation Team"
+#~ msgstr "Bigdata und AMAP Innovation Team"
+
+#~ msgid "Zoom Level {zoom}"
+#~ msgstr "Zoomstufe {zoom}"
+
+#~ msgid "Create Map"
+#~ msgstr "Karte erstellen"
+
+#~ msgid "Export Map"
+#~ msgstr "Karte exportieren"
+
+#~ msgid "Map"
+#~ msgstr "Karte"
+
+#~ msgid "View this Map"
+#~ msgstr "Karte ansehen"
+
+#~ msgid "Open Map"
+#~ msgstr "Karte öffnen"
+
+#~ msgid "Name"
+#~ msgstr "Name"
+
+#~ msgid "Queryable"
+#~ msgstr "Abfragbar"
+
+#~ msgid "No background"
+#~ msgstr "Kein Hintergrund"
+
+#~ msgid ""
+#~ "Your map is ready to be published to the web!  Simply copy the following "
+#~ "HTML to embed the map in your website:"
+#~ msgstr ""
+#~ "Ihre Karte ist bereit, um im Internet veröffentlicht zu werden! Kopieren "
+#~ "Sie einfach den folgenden HTML-Code, um die Karte in Ihre Webseite "
+#~ "einzubinden:"
+
+#~ msgid "Abstract:"
+#~ msgstr "Kurzbeschreibung:"
+
+#~ msgid "No attribution information is provided for this layer."
+#~ msgstr "Kein Attributinformationen für diese Ebene vorhanden."
+
+#~ msgid "Provided by:"
+#~ msgstr "Bereitgestellt von:"
+
+#~ msgid "Download:"
+#~ msgstr "Herunterladen:"
+
+#~ msgid "No keywords are listed for this layer."
+#~ msgstr "Für diese Ebene sind keine Schlüsselwörter vorhanden."
+
+#~ msgid "Keywords:"
+#~ msgstr "Schlüsselwörter:"
+
+#~ msgid "No metadata URLs are defined for this layer."
+#~ msgstr "Für diese Ebene sind keine Metadaten-URLs definiert."
+
+#~ msgid "Metadata Links:"
+#~ msgstr "Metatdaten Links:"
+
+#~ msgid "Paper size:"
+#~ msgstr "Papiergröße:"
+
+#~ msgid "Resolution:"
+#~ msgstr "Auflösung:"
+
+#~ msgid "Print"
+#~ msgstr "Druck"
+
+#~ msgid "Enter map title here."
+#~ msgstr "Hier Kartentitel eingeben."
+
+#~ msgid "Include legend?"
+#~ msgstr "Legende einfügen?"
+
+#~ msgid "Enter comments here."
+#~ msgstr "Kommentare hier eingeben."
+
+#~ msgid "Creating PDF..."
+#~ msgstr "Erstelle PDF ..."
+
+#~ msgid "Last Modified"
+#~ msgstr "Zuletzt geändert"
+
+#~ msgid "Prev"
+#~ msgstr "Vorherige"
+
+#~ msgid "Next"
+#~ msgstr "Nächste"
+
+#~ msgid "of"
+#~ msgstr "von"
+
+#~ msgid "Your search did not match any items."
+#~ msgstr "Ihre Suche brachte keine Ergebnisse."
+
+#~ msgid "Search Maps"
+#~ msgstr "Suche Karten"
+
+#~ msgid "Showing"
+#~ msgstr "Angezeigt"
+
+#~ msgid "Loading"
+#~ msgstr "Laden"
+
+#~ msgid "permalink"
+#~ msgstr "permalink"
+
+#~ msgid "Select"
+#~ msgstr "Auswählen"
+
+#~ msgid "Select:"
+#~ msgstr "Auswählen:"
+
+#~ msgid "All"
+#~ msgstr "Alles"
+
+#~ msgid "Keyword"
+#~ msgstr "Schlüsselwörter"
+
+#~ msgid "Showing..."
+#~ msgstr "Zeige..."
+
+#~ msgid "Loading..."
+#~ msgstr "Laden ..."
+
+#~ msgid "You do not have permission to view this data"
+#~ msgstr "Sie haben keine Berechtigung, um diese Daten anzusehen"
+
+#~ msgid "This data is stored on a remote server"
+#~ msgstr "Diese Daten werden auf einem Remote-Server gespeichert"
+
+#, fuzzy
+#~ msgid "Invalid Query"
+#~ msgstr "Ungültige Abfrage"
+
+#, fuzzy
+#~ msgid "You need to specify a search term"
+#~ msgstr "Sie müssen einen Suchbegriff angeben"
+
+#, fuzzy
+#~ msgid "Source"
+#~ msgstr "Quelle"
+
+#~ msgid "Data Type"
+#~ msgstr "Datentyp"
+
+#, fuzzy
+#~ msgid "Date"
+#~ msgstr "Datum"
+
+#, fuzzy
+#~ msgid "from year"
+#~ msgstr "Ab Jahr"
+
+#, fuzzy
+#~ msgid "to year"
+#~ msgstr "zum Jahr"
+
+#, fuzzy
+#~ msgid "Reset"
+#~ msgstr "Zurücksetzen"
+
+#~ msgid "No abstract is provided for this layer."
+#~ msgstr "Für diese Ebene ist keine Kurzbeschreibung vorhanden."
+
+#~ msgid "No download URLs are definied for this layer."
+#~ msgstr "Für diese Ebene sind keine URLs zum herunterladen definiert."
+
+#, fuzzy
+#~ msgid "Click here for more information about this layer."
+#~ msgstr "Klicken Sie hier für weitere Informationen zu diese Ebene."
+
+#~ msgid "Selected Layers"
+#~ msgstr "Ausgewählte Ebenen"
+
+#~ msgid "No Layers Selected"
+#~ msgstr "Keine Ebenen ausgewählt"
+
+#~ msgid "Clear Selected"
+#~ msgstr "Lösche ausgewählte"
+
+#~ msgid "Clear All"
+#~ msgstr "Alles löschen"
+
+#~ msgid "Operation Failed"
+#~ msgstr "Der Vorgang ist fehlgeschlagen"
+
+#~ msgid "No layers are currently selected."
+#~ msgstr "Zur Zeit sind keine Ebenen ausgewählt."
+
+#~ msgid "Downloading..."
+#~ msgstr "Herunterladen ..."
+
+#~ msgid "Please wait"
+#~ msgstr "Bitte warten"
 
 #~ msgid "emitReadable"
 #~ msgstr "emitReadable"
