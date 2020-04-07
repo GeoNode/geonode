@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-25 02:28-0500\n"
+"POT-Creation-Date: 2020-04-07 18:01+0000\n"
 "PO-Revision-Date: 2016-08-23 11:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Chinese (http://www.transifex.com/geonode/geonode/language/"
@@ -38,15 +38,743 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: geonode/static/geonode/js/search/search.js:373
+#: geonode/client/static/geonode/js/lang.js:7
+#: geonode/client/static/geonode/js/lang.js:59
+#: geonode/client/static/geonode/js/lang.js:291
+msgid "Cancel"
+msgstr "取消"
+
+#: geonode/client/static/geonode/js/lang.js:8
+#: geonode/client/static/geonode/js/lang.js:64
+msgid "Save as Copy"
+msgstr "另存为"
+
+#: geonode/client/static/geonode/js/lang.js:9
+msgid "About this Map"
+msgstr "关于此地图"
+
+#: geonode/client/static/geonode/js/lang.js:10
+#: geonode/client/static/geonode/js/lang.js:140
+#: geonode/client/static/geonode/js/lang.js:209
+msgid "Abstract"
+msgstr "摘要"
+
+#: geonode/client/static/geonode/js/lang.js:11
+#: geonode/client/static/geonode/js/lang.js:28
+#: geonode/client/static/geonode/js/lang.js:65
+#: geonode/client/static/geonode/js/lang.js:94
+msgid "Save"
+msgstr "保存"
+
+#: geonode/client/static/geonode/js/lang.js:12
+#: geonode/client/static/geonode/js/lang.js:70
+#: geonode/client/static/geonode/js/lang.js:144
+#: geonode/client/static/geonode/js/lang.js:153
+#: geonode/client/static/geonode/js/lang.js:206
+#: geonode/client/static/geonode/js/lang.js:228
+#: geonode/client/static/geonode/js/lang.js:273
+msgid "Title"
+msgstr "标题"
+
+#: geonode/client/static/geonode/js/lang.js:18
+#: geonode/client/static/geonode/js/lang.js:35
+msgid "Connection Error"
+msgstr "连接错误"
+
+#: geonode/client/static/geonode/js/lang.js:19
+#: geonode/client/static/geonode/js/lang.js:36
+msgid "The server returned an error"
+msgstr "服务器返回一个错误"
+
+#: geonode/client/static/geonode/js/lang.js:20
+#: geonode/client/static/geonode/js/lang.js:37
+msgid "Details..."
+msgstr "详情..."
+
+#: geonode/client/static/geonode/js/lang.js:26
+#: geonode/client/static/geonode/js/lang.js:32
+#: geonode/client/static/geonode/js/lang.js:276
+msgid "Add Layers"
+msgstr "添加图层"
+
+#: geonode/client/static/geonode/js/lang.js:27
+msgid "Add ArcGIS REST Server"
+msgstr "添加ArcGIS REST Server"
+
+#: geonode/client/static/geonode/js/lang.js:29
+#: geonode/client/static/geonode/js/lang.js:88
+msgid "Link"
+msgstr "发布地图"
+
+#: geonode/client/static/geonode/js/lang.js:30
+msgid "Area"
+msgstr "区域"
+
+#: geonode/client/static/geonode/js/lang.js:31
+msgid "Background"
+msgstr "背景"
+
+#: geonode/client/static/geonode/js/lang.js:33
+msgid "Done"
+msgstr "完成"
+
+#: geonode/client/static/geonode/js/lang.js:34
+msgid "Available Layers"
+msgstr "可用图层"
+
+#: geonode/client/static/geonode/js/lang.js:38
+msgid "Add feeds"
+msgstr "添加供给源"
+
+#: geonode/client/static/geonode/js/lang.js:39
+msgid "Flickr"
+msgstr "网络相簿"
+
+#: geonode/client/static/geonode/js/lang.js:40
+msgid "Google Earth"
+msgstr "谷歌地球"
+
+#: geonode/client/static/geonode/js/lang.js:41
+msgid ""
+"<p>Your map is ready to be published to the web! </p><p> Simply copy the "
+"following HTML to embed the map in your website: </p>"
+msgstr ""
+"<p>您的地图已准备好发布到网络上！ </p><p> 只需在浏览器中复制以下链接即可打开"
+"地图 ：</p>"
+
+#: geonode/client/static/geonode/js/lang.js:42
+#: geonode/client/static/geonode/js/lang.js:165
+msgid "Height"
+msgstr "高度"
+
+#: geonode/client/static/geonode/js/lang.js:43
+msgid "Help"
+msgstr "帮助"
+
+#: geonode/client/static/geonode/js/lang.js:44
+msgid "Get Feature Info"
+msgstr "获取要素信息"
+
+#: geonode/client/static/geonode/js/lang.js:45
+msgid "About"
+msgstr "关于"
+
+#: geonode/client/static/geonode/js/lang.js:46
+msgid "About us"
+msgstr "关于我们"
+
+#: geonode/client/static/geonode/js/lang.js:47
+#: geonode/client/static/geonode/js/lang.js:166
+msgid "Large"
+msgstr "大量"
+
+#: geonode/client/static/geonode/js/lang.js:48
+msgid "or add a new server."
+msgstr "或添加新的服务器。"
+
+#: geonode/client/static/geonode/js/lang.js:49
+msgid "Map Layers"
+msgstr "地图图层"
+
+#: geonode/client/static/geonode/js/lang.js:50
+msgid "Upload your own data"
+msgstr "上传你的数据"
+
+#: geonode/client/static/geonode/js/lang.js:51
+msgid "View available data from:"
+msgstr "查看可用的数据："
+
+#: geonode/client/static/geonode/js/lang.js:52
+msgid "Data"
+msgstr "数据"
+
+#: geonode/client/static/geonode/js/lang.js:53
+msgid "Layers"
+msgstr "图层"
+
+#: geonode/client/static/geonode/js/lang.js:54
+msgid "Legend"
+msgstr "图例"
+
+#: geonode/client/static/geonode/js/lang.js:55
+msgid "Length"
+msgstr "长度"
+
+#: geonode/client/static/geonode/js/lang.js:56
+msgid "Loading Map..."
+msgstr "载入地图..."
+
+#: geonode/client/static/geonode/js/lang.js:57
+#: geonode/client/static/geonode/js/lang.js:167
+msgid "Map Size"
+msgstr "地图大小"
+
+#: geonode/client/static/geonode/js/lang.js:58
+msgid "Measure"
+msgstr "测量"
+
+#: geonode/client/static/geonode/js/lang.js:60
+msgid "Warning"
+msgstr "警告"
+
+#: geonode/client/static/geonode/js/lang.js:61
+msgid ""
+"You now have %n layers in your map.  With more than %max layers you may "
+"experience problems with layer ordering, info balloon display, and general "
+"performance. "
+msgstr ""
+"您的地图现在拥有 %n 个图层。超过 %max 的图层可能会遇到层排序、信息激增显示和"
+"其他一般性能的问题。"
+
+#: geonode/client/static/geonode/js/lang.js:62
+#: geonode/client/static/geonode/js/lang.js:141
+#: geonode/client/static/geonode/js/lang.js:207
+msgid "Contact"
+msgstr "联系"
+
+#: geonode/client/static/geonode/js/lang.js:63
+#: geonode/client/static/geonode/js/lang.js:83
+msgid "Permalink"
+msgstr "固定"
+
+#: geonode/client/static/geonode/js/lang.js:66
+msgid "Copy"
+msgstr "拷贝"
+
+#: geonode/client/static/geonode/js/lang.js:67
+msgid "About this Map View"
+msgstr "关于该地图视图"
+
+#: geonode/client/static/geonode/js/lang.js:68
+msgid "Abstract (brief description)"
+msgstr "概述（简要描述）"
+
+#: geonode/client/static/geonode/js/lang.js:69
+msgid "Introduction (tell visitors more about your map view)"
+msgstr "介绍（向访问者展示更多底图信息）"
+
+#: geonode/client/static/geonode/js/lang.js:71
+msgid "UserUrl"
+msgstr "用户URL"
+
+#: geonode/client/static/geonode/js/lang.js:72
+#: geonode/client/static/geonode/js/lang.js:168
+msgid "Mini"
+msgstr "迷你"
+
+#: geonode/client/static/geonode/js/lang.js:73
+msgid "Add Category"
+msgstr "添加分类"
+
+#: geonode/client/static/geonode/js/lang.js:74
+#, fuzzy
+#| msgid "Add a new category to the layer tree"
+msgid " Add a new category to the layer tree"
+msgstr "向图层树添加新的分类"
+
+#: geonode/client/static/geonode/js/lang.js:75
+#, fuzzy
+#| msgid "Rename Category"
+msgid " Rename Category"
+msgstr "重命名分类"
+
+#: geonode/client/static/geonode/js/lang.js:76
+#, fuzzy
+#| msgid "Rename this category"
+msgid " Rename this category"
+msgstr "重命名该分类"
+
+#: geonode/client/static/geonode/js/lang.js:77
+#, fuzzy
+#| msgid "Remove Category"
+msgid " Remove Category"
+msgstr "移除分类"
+
+#: geonode/client/static/geonode/js/lang.js:78
+#, fuzzy
+#| msgid "Remove this category and layers"
+msgid " Remove this category and layers"
+msgstr "移除该分类以及其内图层"
+
+#: geonode/client/static/geonode/js/lang.js:79
+msgid "Pan Map"
+msgstr "平移地图"
+
+#: geonode/client/static/geonode/js/lang.js:80
+msgid "Zoom to Next Extent"
+msgstr "缩放到下一个区域"
+
+#: geonode/client/static/geonode/js/lang.js:81
+msgid "Zoom to Previous Extent"
+msgstr "缩放到下一个区域"
+
+#: geonode/client/static/geonode/js/lang.js:82
+msgid "This map has not yet been saved."
+msgstr "地图还没保存"
+
+#: geonode/client/static/geonode/js/lang.js:84
+#: geonode/client/static/geonode/js/lang.js:169
+msgid "Premium"
+msgstr "高级"
+
+#: geonode/client/static/geonode/js/lang.js:85
+msgid "Print Map"
+msgstr "打印地图"
+
+#: geonode/client/static/geonode/js/lang.js:86
+msgid "Print Preview"
+msgstr "打印预览"
+
+#: geonode/client/static/geonode/js/lang.js:87
+msgid "Properties"
+msgstr "属性"
+
+#: geonode/client/static/geonode/js/lang.js:89
+#: geonode/client/static/geonode/js/lang.js:170
+msgid "Publish Map"
+msgstr "发布地图"
+
+#: geonode/client/static/geonode/js/lang.js:90
+#: geonode/client/static/geonode/js/lang.js:91
+msgid "Remove Layer"
+msgstr "删除图层"
+
+#: geonode/client/static/geonode/js/lang.js:92
+msgid "Sorry, your map could not be saved."
+msgstr "对不起，您的地图不能保存"
+
+#: geonode/client/static/geonode/js/lang.js:93
+msgid "Error While Saving"
+msgstr "保存错误"
+
+#: geonode/client/static/geonode/js/lang.js:95
+msgid "Save Map"
+msgstr "保存地图"
+
+#: geonode/client/static/geonode/js/lang.js:96
+msgid "You must be logged in to save this map."
+msgstr "您必须登录才能保存地图。"
+
+#: geonode/client/static/geonode/js/lang.js:97
+#: geonode/client/static/geonode/js/lang.js:172
+msgid "Small"
+msgstr "小"
+
+#: geonode/client/static/geonode/js/lang.js:98
+#, fuzzy
+#| msgid "Share Layer"
+msgid " Share Layer"
+msgstr "分享图层"
+
+#: geonode/client/static/geonode/js/lang.js:99
+msgid ""
+"Error contacting server.\n"
+" Please check the url and try again."
+msgstr ""
+"连接服务时出错。\n"
+"请检查网址再重试。"
+
+#: geonode/client/static/geonode/js/lang.js:100
+msgid "Layer Properties"
+msgstr "图层属性"
+
+#: geonode/client/static/geonode/js/lang.js:101
+msgid "Change layer format and style"
+msgstr "更改图层格式和样式"
+
+#: geonode/client/static/geonode/js/lang.js:102
+msgid "Edit Styles"
+msgstr "编辑样式"
+
+#: geonode/client/static/geonode/js/lang.js:103
+msgid "Edit layer styles"
+msgstr "编辑图层样式"
+
+#: geonode/client/static/geonode/js/lang.js:104
+msgid "Switch to Google Earth 3D Viewer"
+msgstr "切换到谷歌地球3D查看器"
+
+#: geonode/client/static/geonode/js/lang.js:105
+msgid ""
+"The map that you are trying to load does not exist.  Creating a new map "
+"instead."
+msgstr "您加载的地图不存在。请创建一个新的地图"
+
+#: geonode/client/static/geonode/js/lang.js:106
+msgid "Unknown Map"
+msgstr "未知地图"
+
+#: geonode/client/static/geonode/js/lang.js:107
+msgid "Unsupported Layers"
+msgstr "不支持的图层"
+
+#: geonode/client/static/geonode/js/lang.js:108
+msgid "The following layers cannot be printed:"
+msgstr "下列图层不能打印："
+
+#: geonode/client/static/geonode/js/lang.js:109
+#: geonode/client/static/geonode/js/lang.js:173
+msgid "Width"
+msgstr "宽度"
+
+#: geonode/client/static/geonode/js/lang.js:110
+msgid "Zoom In"
+msgstr "放大"
+
+#: geonode/client/static/geonode/js/lang.js:111
+msgid "Zoom Out"
+msgstr "缩小"
+
+#: geonode/client/static/geonode/js/lang.js:112
+msgid "Zoom level"
+msgstr "缩放级别"
+
+#: geonode/client/static/geonode/js/lang.js:113
+msgid "Zoom Level"
+msgstr "缩放级别"
+
+#: geonode/client/static/geonode/js/lang.js:114
+msgid "Zoom to Layer Extent"
+msgstr "缩放范围"
+
+#: geonode/client/static/geonode/js/lang.js:115
+msgid "Zoom to Visible Extent"
+msgstr "缩放到可见范围"
+
+#: geonode/client/static/geonode/js/lang.js:116
+msgid "Picasa"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:117
+msgid "YouTube"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:118
+msgid "Harvard Geospatial Library"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:119
+msgid "Upload Layer"
+msgstr "上传图层"
+
+#: geonode/client/static/geonode/js/lang.js:120
+msgid "Create Layer"
+msgstr "创建图层"
+
+#: geonode/client/static/geonode/js/lang.js:121
+msgid "Rectify Layer"
+msgstr "校正图层"
+
+#: geonode/client/static/geonode/js/lang.js:122
+msgid "Submit a Map Service"
+msgstr "提交地图服务"
+
+#: geonode/client/static/geonode/js/lang.js:123
+msgid "External Data"
+msgstr "外部数据"
+
+#: geonode/client/static/geonode/js/lang.js:124
+msgid "If you leave this page, unsaved changes will be lost."
+msgstr "如果离开该页面，将丢失未保存的设置。"
+
+#: geonode/client/static/geonode/js/lang.js:125
+msgid "Center for Geographic Analysis"
+msgstr "哈佛大学地理分析中心"
+
+#: geonode/client/static/geonode/js/lang.js:126
+msgid "Bigdata and AMAP Innovation Team"
+msgstr "浙江大学大数据与学术地图创新团队"
+
+#: geonode/client/static/geonode/js/lang.js:132
+msgid "Zoom Level {zoom}"
+msgstr "缩放级别{缩放}"
+
+#: geonode/client/static/geonode/js/lang.js:138
+msgid "Create Map"
+msgstr "创建地图"
+
+#: geonode/client/static/geonode/js/lang.js:139
+msgid "Export Map"
+msgstr "导出地图"
+
+#: geonode/client/static/geonode/js/lang.js:142
+msgid "Map"
+msgstr "地图"
+
+#: geonode/client/static/geonode/js/lang.js:143
+#: geonode/client/static/geonode/js/lang.js:210
+msgid "View this Map"
+msgstr "查看地图"
+
+#: geonode/client/static/geonode/js/lang.js:145
+msgid "Open Map"
+msgstr "打开地图"
+
+#: geonode/client/static/geonode/js/lang.js:151
+#: geonode/client/static/geonode/js/lang.js:227
+msgid "Name"
+msgstr "名称"
+
+#: geonode/client/static/geonode/js/lang.js:152
+msgid "Queryable"
+msgstr "查询"
+
+#: geonode/client/static/geonode/js/lang.js:159
+msgid "No background"
+msgstr "没有背景"
+
+#: geonode/client/static/geonode/js/lang.js:171
+msgid ""
+"Your map is ready to be published to the web!  Simply copy the following "
+"HTML to embed the map in your website:"
+msgstr "您可以随时发布地图到网上！只需复制下面的HTML地图代码嵌入到您的网页："
+
+#: geonode/client/static/geonode/js/lang.js:180
+#: geonode/client/static/geonode/js/lang.js:256
+msgid "Abstract:"
+msgstr "摘要："
+
+#: geonode/client/static/geonode/js/lang.js:181
+#: geonode/client/static/geonode/js/lang.js:258
+msgid "No attribution information is provided for this layer."
+msgstr "此图层提供无属性信息。"
+
+#: geonode/client/static/geonode/js/lang.js:182
+#: geonode/client/static/geonode/js/lang.js:259
+msgid "Provided by:"
+msgstr "提供："
+
+#: geonode/client/static/geonode/js/lang.js:183
+#: geonode/client/static/geonode/js/lang.js:260
+msgid "Download:"
+msgstr "下载："
+
+#: geonode/client/static/geonode/js/lang.js:184
+#: geonode/client/static/geonode/js/lang.js:262
+msgid "No keywords are listed for this layer."
+msgstr "无关键字列出此图层。"
+
+#: geonode/client/static/geonode/js/lang.js:185
+#: geonode/client/static/geonode/js/lang.js:263
+msgid "Keywords:"
+msgstr "关键词："
+
+#: geonode/client/static/geonode/js/lang.js:186
+#: geonode/client/static/geonode/js/lang.js:264
+msgid "No metadata URLs are defined for this layer."
+msgstr "此图层没有指定元数据链接。"
+
+#: geonode/client/static/geonode/js/lang.js:187
+#: geonode/client/static/geonode/js/lang.js:265
+msgid "Metadata Links:"
+msgstr "元数据链接："
+
+#: geonode/client/static/geonode/js/lang.js:193
+msgid "Paper size:"
+msgstr "纸张尺寸："
+
+#: geonode/client/static/geonode/js/lang.js:194
+msgid "Resolution:"
+msgstr "分辨率："
+
+#: geonode/client/static/geonode/js/lang.js:195
+msgid "Print"
+msgstr "打印"
+
+#: geonode/client/static/geonode/js/lang.js:196
+msgid "Enter map title here."
+msgstr "在此处输入地图标题。"
+
+#: geonode/client/static/geonode/js/lang.js:197
+msgid "Include legend?"
+msgstr "包含图例吗？"
+
+#: geonode/client/static/geonode/js/lang.js:198
+msgid "Enter comments here."
+msgstr "在这里输入评论。"
+
+#: geonode/client/static/geonode/js/lang.js:199
+msgid "Creating PDF..."
+msgstr "生成PDF..."
+
+#: geonode/client/static/geonode/js/lang.js:208
+msgid "Last Modified"
+msgstr "最后修改"
+
+#: geonode/client/static/geonode/js/lang.js:211
+#: geonode/client/static/geonode/js/lang.js:232
+msgid "Prev"
+msgstr "上一页"
+
+#: geonode/client/static/geonode/js/lang.js:212
+#: geonode/client/static/geonode/js/lang.js:233
+msgid "Next"
+msgstr "下一页"
+
+#: geonode/client/static/geonode/js/lang.js:213
+#: geonode/client/static/geonode/js/lang.js:234
+msgid "of"
+msgstr "对于"
+
+#: geonode/client/static/geonode/js/lang.js:214
+#: geonode/client/static/geonode/js/lang.js:235
+msgid "Your search did not match any items."
+msgstr "没有搜索到您要的结果。"
+
+#: geonode/client/static/geonode/js/lang.js:215
+msgid "Search Maps"
+msgstr "查询地图"
+
+#: geonode/client/static/geonode/js/lang.js:216
+#: geonode/client/static/geonode/js/lang.js:237
+msgid "Search"
+msgstr "查询"
+
+#: geonode/client/static/geonode/js/lang.js:217
+msgid "Showing"
+msgstr "显示"
+
+#: geonode/client/static/geonode/js/lang.js:218
+msgid "Loading"
+msgstr "加载"
+
+#: geonode/client/static/geonode/js/lang.js:219
+#: geonode/client/static/geonode/js/lang.js:240
+msgid "permalink"
+msgstr "永久"
+
+#: geonode/client/static/geonode/js/lang.js:226
+msgid "Select"
+msgstr "选择"
+
+#: geonode/client/static/geonode/js/lang.js:229
+msgid "Select:"
+msgstr "选择："
+
+#: geonode/client/static/geonode/js/lang.js:230
+msgid "All"
+msgstr "全部"
+
+#: geonode/client/static/geonode/js/lang.js:231
+msgid "None"
+msgstr "没有"
+
+#: geonode/client/static/geonode/js/lang.js:236
+msgid "Keyword"
+msgstr "关键字"
+
+#: geonode/client/static/geonode/js/lang.js:238
+msgid "Showing..."
+msgstr "显示"
+
+#: geonode/client/static/geonode/js/lang.js:239
+msgid "Loading..."
+msgstr "载入中..."
+
+#: geonode/client/static/geonode/js/lang.js:241
+msgid "You do not have permission to view this data"
+msgstr "您没有权限查看此数据"
+
+#: geonode/client/static/geonode/js/lang.js:242
+msgid "This data is stored on a remote server"
+msgstr "此数据存储在远程服务器上"
+
+#: geonode/client/static/geonode/js/lang.js:243
+msgid "Invalid Query"
+msgstr "不正确的检索"
+
+#: geonode/client/static/geonode/js/lang.js:244
+msgid "You need to specify a search term"
+msgstr "您需要明确检索项"
+
+#: geonode/client/static/geonode/js/lang.js:245
+#: geonode/client/static/geonode/js/lang.js:247
+msgid "Source"
+msgstr "源"
+
+#: geonode/client/static/geonode/js/lang.js:246
+msgid "Data Type"
+msgstr "数据类型"
+
+#: geonode/client/static/geonode/js/lang.js:248
+msgid "Date"
+msgstr "日期"
+
+#: geonode/client/static/geonode/js/lang.js:249
+msgid "from year"
+msgstr "起始日期"
+
+#: geonode/client/static/geonode/js/lang.js:250
+msgid "to year"
+msgstr "终止时间"
+
+#: geonode/client/static/geonode/js/lang.js:251
+msgid "Reset"
+msgstr "重置"
+
+#: geonode/client/static/geonode/js/lang.js:257
+msgid "No abstract is provided for this layer."
+msgstr "此图层没有抽象摘要。"
+
+#: geonode/client/static/geonode/js/lang.js:261
+msgid "No download URLs are definied for this layer."
+msgstr "此图层没有下载的网址。"
+
+#: geonode/client/static/geonode/js/lang.js:266
+msgid "Click here for more information about this layer."
+msgstr "点击此处查看该图层的更多信息。"
+
+#: geonode/client/static/geonode/js/lang.js:271
+msgid "Selected Layers"
+msgstr "选定图层"
+
+#: geonode/client/static/geonode/js/lang.js:272
+msgid "No Layers Selected"
+msgstr "没有选择任何图层"
+
+#: geonode/client/static/geonode/js/lang.js:274
+msgid "Clear Selected"
+msgstr "清除选定"
+
+#: geonode/client/static/geonode/js/lang.js:275
+msgid "Clear All"
+msgstr "全部清除"
+
+#: geonode/client/static/geonode/js/lang.js:282
+msgid "Operation Failed"
+msgstr "操作失败"
+
+#: geonode/client/static/geonode/js/lang.js:283
+msgid "No layers are currently selected."
+msgstr "当前没有选择任何图层。"
+
+#: geonode/client/static/geonode/js/lang.js:290
+msgid "Downloading..."
+msgstr "下载..."
+
+#: geonode/client/static/geonode/js/lang.js:292
+msgid "Please wait"
+msgstr "请稍候"
+
+#: geonode/monitoring/static/monitoring/bundle.js:170
+msgid "STORE_UPDATED"
+msgstr ""
+
+#: geonode/people/templates/people/profile_detail.html:77
+#: geonode/people/templates/people/profile_detail.html:86
+#: geonode/people/templates/people/profile_detail.html:98
+msgid "Not provided."
+msgstr ""
+
+#: geonode/static/geonode/js/search/search.js:599
 msgid "Enter your text here ..."
 msgstr "在这里输入你的文本"
 
-#: geonode/static/geonode/js/search/search.js:414
+#: geonode/static/geonode/js/search/search.js:644
 msgid "Enter your region here ..."
 msgstr "在这里输入你的地区"
 
-#: geonode/static/geonode/js/upload/FileType.js:33
+#: geonode/static/geonode/js/upload/FileType.js:50
 #, javascript-format
 msgid "Missing a %s file, which is required"
 msgstr "缺少 %s 文件，这是必需的"
@@ -56,151 +784,216 @@ msgid "ESRI Shapefile"
 msgstr "ESRI shape文件"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:13
+msgid "ASCII Text File"
+msgstr ""
+
 #: geonode/static/geonode/js/upload/FileTypes.js:18
+#: geonode/static/geonode/js/upload/FileTypes.js:23
 msgid "GeoTIFF"
 msgstr "GeoTIFF"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:24
+#: geonode/static/geonode/js/upload/FileTypes.js:29
 msgid "Comma Separated Value"
 msgstr "标点分隔值"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:29
+#: geonode/static/geonode/js/upload/FileTypes.js:34
 msgid "Google Earth KML"
 msgstr "谷歌地球KML"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:34
+#: geonode/static/geonode/js/upload/FileTypes.js:39
+#, fuzzy
+#| msgid "Google Earth KML"
+msgid "Google Earth KML with a GroundOverlay"
+msgstr "谷歌地球KML"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:45
+#, fuzzy
+#| msgid "Google Earth KML"
+msgid "Google Earth KMZ"
+msgstr "谷歌地球KML"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:50
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:39
+#: geonode/static/geonode/js/upload/FileTypes.js:55
 msgid "Zip Archive"
 msgstr "压缩文档"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:45
+#: geonode/static/geonode/js/upload/FileTypes.js:61
 msgid "ERDAS Imagine"
 msgstr "ERDAS影像"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:50
-#: geonode/static/geonode/js/upload/FileTypes.js:55
+#: geonode/static/geonode/js/upload/FileTypes.js:66
+#: geonode/static/geonode/js/upload/FileTypes.js:71
 msgid "National Imagery Transmission Format"
 msgstr "国家影像传输格式"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:61
+#: geonode/static/geonode/js/upload/FileTypes.js:77
 msgid "Controlled Image Base-1 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:68
+#: geonode/static/geonode/js/upload/FileTypes.js:84
 msgid "Controlled Image Base-5 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:75
+#: geonode/static/geonode/js/upload/FileTypes.js:91
 msgid "Controlled Image Base-10 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:82
+#: geonode/static/geonode/js/upload/FileTypes.js:98
 msgid "CADRG-Global Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:89
+#: geonode/static/geonode/js/upload/FileTypes.js:105
 msgid "CADRG-Jet Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:96
+#: geonode/static/geonode/js/upload/FileTypes.js:112
 msgid "CADRG-Operational Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:103
+#: geonode/static/geonode/js/upload/FileTypes.js:119
 msgid "CADRG-Tactical Pilotage Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:110
+#: geonode/static/geonode/js/upload/FileTypes.js:126
 msgid "CADRG-Joint Operations Graphic"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:117
+#: geonode/static/geonode/js/upload/FileTypes.js:133
 msgid "CADRG-Topographic Line Map 100K"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:124
+#: geonode/static/geonode/js/upload/FileTypes.js:140
 msgid "CADRG-Topographic Line Map 50K"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:131
+#: geonode/static/geonode/js/upload/FileTypes.js:147
 msgid "JPEG2000"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:136
+#: geonode/static/geonode/js/upload/FileTypes.js:152
 msgid "MrSID-Multi-resolution Seamless Image Database"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:331
-msgid "Layer Info"
-msgstr "图层信息"
+#: geonode/static/geonode/js/upload/FileTypes.js:157
+#, fuzzy
+#| msgid "Metadata Links:"
+msgid "XML Metadata File"
+msgstr "元数据链接："
+
+#: geonode/static/geonode/js/upload/FileTypes.js:163
+msgid "Style Layer Descriptor"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:169
+msgid "JPEG"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:174
+msgid "PNG"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/FileTypes.js:179
+#, fuzzy
+#| msgid "GeoTIFF"
+msgid "GIF"
+msgstr "GeoTIFF"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:332
-msgid "Edit Metadata"
-msgstr "修改元数据"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:333
-msgid "Upload Metadata"
-msgstr "上传元数据"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:333
-msgid "Upload SLD"
-msgstr "上传SLD"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:333
-msgid "Manage Styles"
-msgstr "管理样式"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:336
-msgid "The column %1 was renamed to %2 <br/>"
-msgstr "属性列 %1 重命名为 %2 <br/>"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:342
-msgid "Your layer was successfully uploaded"
-msgstr "你的图层已成功上传"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:371
-msgid "Performing Final GeoServer Config Step"
-msgstr "执行最后的GeoServer配置步骤"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:386
-#: geonode/static/geonode/js/upload/LayerInfo.js:412
-msgid "You need to specify more information in order to complete your upload"
-msgstr "您需要在为了完成您指定上传的更多信息"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:404
-msgid "You need to specify more information in order to complete your upload."
-msgstr "您需要在为了完成您指定上传的更多信息。"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:404
-msgid "You can continue configuring your layer."
-msgstr "您可以继续配置图层。"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:422
-#: geonode/static/geonode/js/upload/LayerInfo.js:509
+#: geonode/static/geonode/js/upload/LayerInfo.js:503
 msgid "Unexpected Error"
 msgstr "意外错误"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:438
+#: geonode/static/geonode/js/upload/LayerInfo.js:370
+#, fuzzy
+#| msgid "Layer Info"
+msgid " Info"
+msgstr "图层信息"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:371
+msgid "Edit Metadata"
+msgstr "修改元数据"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:372
+msgid "Upload Metadata"
+msgstr "上传元数据"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:373
+msgid "Upload SLD"
+msgstr "上传SLD"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:374
+msgid "Manage Styles"
+msgstr "管理样式"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:387
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr "属性列 %1 重命名为 %2 <br/>"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:393
+msgid "Your "
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:422
+msgid "Performing Final GeoServer Config Step"
+msgstr "执行最后的GeoServer配置步骤"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:439
+#: geonode/static/geonode/js/upload/LayerInfo.js:483
+msgid "You need to specify more information in order to complete your upload"
+msgstr "您需要在为了完成您指定上传的更多信息"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:463
+msgid "Files are ready to be ingested!"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:466
+msgid "A temporal dimension may be added to this Layer."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:521
 msgid "Performing GeoServer Config Step"
 msgstr "展示GeoServer的配置步骤"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:516
+#: geonode/static/geonode/js/upload/LayerInfo.js:609
+msgid ""
+"<br>Please check your network connection. In case of Layer Upload make sure "
+"GeoServer is running and accepting connections."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:613
+#: geonode/static/geonode/js/upload/LayerInfo.js:616
+#: geonode/static/geonode/js/upload/LayerInfo.js:623
+#: geonode/static/geonode/js/upload/LayerInfo.js:626
+msgid "<br>"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:618
+msgid "<br>Bad request or URL not found."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:628
+#, fuzzy
+#| msgid "Unknown Map"
+msgid "<br>Unknown."
+msgstr "未知地图"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:636
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "图层文件上传，配置在GeoServer的"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:695
+#: geonode/static/geonode/js/upload/LayerInfo.js:787
 msgid "Remove"
 msgstr "删除"
 
-#: geonode/static/geonode/js/upload/upload.js:125
+#: geonode/static/geonode/js/upload/upload.js:126
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr "文件 %s 是不支持的文件类型，请选择其他文件。"
 
-#: geonode/static/geonode/js/upload/upload.js:285
+#: geonode/static/geonode/js/upload/upload.js:296
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
 "options have been validated.\n"
@@ -211,609 +1004,70 @@ msgstr ""
 "\n"
 "请检查表格中的错误。"
 
-#: geonode/static/lib/js/assets.min.js:2
-msgid "<iframe frameborder='0' width='0' height='0'/>"
-msgstr "<iframe frameborder='0' width='0' height='0'/>"
-
-#: geonode/static/lib/js/assets.min.js:4
-msgid "<script>"
-msgstr "<script>"
-
-#: geonode/static/lib/js/assets.min.js:4
-msgid "<div>"
-msgstr "<div>"
-
-#: geonode/templates/lang.js:9 geonode/templates/lang.js:236
-msgid "Cancel"
-msgstr "取消"
-
-#: geonode/templates/lang.js:10
-msgid "Save as Copy"
-msgstr "另存为"
-
-#: geonode/templates/lang.js:11
-msgid "About this Map"
-msgstr "关于此地图"
-
-#: geonode/templates/lang.js:12 geonode/templates/lang.js:96
-#: geonode/templates/lang.js:165
-msgid "Abstract"
-msgstr "摘要"
-
-#: geonode/templates/lang.js:13
-msgid "Save"
-msgstr "保存"
-
-#: geonode/templates/lang.js:14 geonode/templates/lang.js:100
-#: geonode/templates/lang.js:109 geonode/templates/lang.js:162
-#: geonode/templates/lang.js:184 geonode/templates/lang.js:219
-msgid "Title"
-msgstr "标题"
-
-#: geonode/templates/lang.js:20
-msgid "Connection Error"
-msgstr "连接错误"
-
-#: geonode/templates/lang.js:21
-msgid "The server returned an error"
-msgstr "服务器返回一个错误"
-
-#: geonode/templates/lang.js:22
-msgid "Details..."
-msgstr "详情..."
-
-#: geonode/templates/lang.js:28 geonode/templates/lang.js:31
-msgid "Add Layers"
-msgstr "添加图层"
-
-#: geonode/templates/lang.js:29
-msgid "Add ArcGIS REST Server"
-msgstr "添加ArcGIS REST Server"
-
-#: geonode/templates/lang.js:29
-msgid "Area"
-msgstr "区域"
-
-#: geonode/templates/lang.js:30
-msgid "Background"
-msgstr "背景"
-
-#: geonode/templates/lang.js:32
-msgid "Done"
-msgstr "完成"
-
-#: geonode/templates/lang.js:33
-msgid "Available Layers"
-msgstr "可用图层"
-
-#: geonode/templates/lang.js:38
-msgid "Add feeds"
-msgstr "添加供给源"
-
-#: geonode/templates/lang.js:39
-msgid "Flickr"
-msgstr "网络相簿"
-
-#: geonode/templates/lang.js:40
-msgid "Google Earth"
-msgstr "谷歌地球"
-
-#: geonode/templates/lang.js:40
-msgid "Upload your own data"
-msgstr "上传你的数据"
-
-#: geonode/templates/lang.js:43
-msgid "Help"
-msgstr "帮助"
-
-#: geonode/templates/lang.js:57
-msgid "Warning"
-msgstr "警告"
-
-#: geonode/templates/lang.js:58
-msgid "You now have %n layers in your map.  With more than %max layers you may experience problems with layer ordering, info balloon display, and general performance. "
-msgstr "您的地图现在拥有 %n 个图层。超过 %max 的图层可能会遇到层排序、信息激增显示和其他一般性能的问题。"
-msgid "Copy"
-msgstr "拷贝"
-msgid "About this Map View"
-msgstr "关于该地图视图"
-msgid "Abstract (brief description)"
-msgstr "概述（简要描述）"
-msgid "Introduction (tell visitors more about your map view)"
-msgstr "介绍（向访问者展示更多底图信息）"
-msgid "UserUrl"
-msgstr "用户URL"
-msgid "Add Category"
-msgstr "添加分类"
-msgid "Add a new category to the layer tree"
-msgstr "向图层树添加新的分类"
-msgid "Rename Category"
-msgstr "重命名分类"
-msgid "Rename this category"
-msgstr "重命名该分类"
-msgid "Remove Category"
-msgstr "移除分类"
-msgid "Remove this category and layers"
-msgstr "移除该分类以及其内图层"
-msgid "Share Layer"
-msgstr "分享图层"
-msgid "Unsupported Layers"
-msgstr "不支持的图层"
-msgid "The following layers cannot be printed:"
-msgstr "下列图层不能打印："
-msgid "Upload Layer"
-msgstr "上传图层"
-msgid "Create Layer"
-msgstr "创建图层"
-msgid "Rectify Layer"
-msgstr "校正图层"
-msgid "Submit a Map Service"
-msgstr "提交地图服务"
-msgid "External Data"
-msgstr "外部数据"
-msgid "If you leave this page, unsaved changes will be lost."
-msgstr "如果离开该页面，将丢失未保存的设置。"
-msgid "About"
-msgstr "关于"
-msgid "About us"
-msgstr "关于我们"
-msgid "Center for Geographic Analysis"
-msgstr "哈佛大学地理分析中心"
-msgid "Bigdata and AMAP Innovation Team"
-msgstr "浙江大学大数据与学术地图创新团队"
-
-#: geonode/templates/lang.js:41
-msgid "<p>Your map is ready to be published to the web! </p><p> Simply copy the following HTML to embed the map in your website: </p>"
-msgstr "<p>您的地图已准备好发布到网络上！ </p><p> 只需在浏览器中复制以下链接即可打开地图 ：</p>"
-
-#: geonode/templates/lang.js:35 geonode/templates/lang.js:121
-msgid "Height"
-msgstr "高度"
-
-#: geonode/templates/lang.js:36
-msgid "Get Feature Info"
-msgstr "获取要素信息"
-
-#: geonode/templates/lang.js:37 geonode/templates/lang.js:122
-msgid "Large"
-msgstr "大量"
-
-#: geonode/templates/lang.js:38
-msgid "or add a new server."
-msgstr "或添加新的服务器。"
-
-#: geonode/templates/lang.js:39
-msgid "Map Layers"
-msgstr "地图图层"
-
-#: geonode/templates/lang.js:40
-msgid "View available data from:"
-msgstr "查看可用的数据："
-
-#: geonode/templates/lang.js:41
-msgid "Data"
-msgstr "数据"
-
-#: geonode/templates/lang.js:42
-msgid "Layers"
-msgstr "图层"
-
-#: geonode/templates/lang.js:43
-msgid "Legend"
-msgstr "图例"
-
-#: geonode/templates/lang.js:44
-msgid "Length"
-msgstr "长度"
-
-#: geonode/templates/lang.js:45
-msgid "Loading Map..."
-msgstr "载入地图..."
-
-#: geonode/templates/lang.js:46 geonode/templates/lang.js:123
-msgid "Map Size"
-msgstr "地图大小"
-
-#: geonode/templates/lang.js:47
-msgid "Measure"
-msgstr "测量"
-
-#: geonode/templates/lang.js:48 geonode/templates/lang.js:97
-#: geonode/templates/lang.js:163
-msgid "Contact"
-msgstr "联系"
-
-#: geonode/templates/lang.js:49 geonode/templates/lang.js:55
-msgid "Permalink"
-msgstr "固定"
-
-#: geonode/templates/lang.js:50 geonode/templates/lang.js:124
-msgid "Mini"
-msgstr "迷你"
-
-#: geonode/templates/lang.js:51
-msgid "Pan Map"
-msgstr "平移地图"
-
-#: geonode/templates/lang.js:52
-msgid "Zoom to Next Extent"
-msgstr "缩放到下一个区域"
-
-#: geonode/templates/lang.js:53
-msgid "Zoom to Previous Extent"
-msgstr "缩放到下一个区域"
-
-#: geonode/templates/lang.js:54
-msgid "This map has not yet been saved."
-msgstr "地图还没保存"
-
-#: geonode/templates/lang.js:56 geonode/templates/lang.js:125
-msgid "Premium"
-msgstr "高级"
-
-#: geonode/templates/lang.js:57
-msgid "Print Map"
-msgstr "打印地图"
-
-#: geonode/templates/lang.js:58
-msgid "Print Preview"
-msgstr "打印预览"
-
-#: geonode/templates/lang.js:59
-msgid "Properties"
-msgstr "属性"
-
-#: geonode/templates/lang.js:60 geonode/templates/lang.js:126
-msgid "Link"
-msgstr "发布地图"
-
-#: geonode/templates/lang.js:60 geonode/templates/lang.js:126
-msgid "Publish Map"
-msgstr "发布地图"
-
-#: geonode/templates/lang.js:61 geonode/templates/lang.js:62
-msgid "Remove Layer"
-msgstr "删除图层"
-
-#: geonode/templates/lang.js:63
-msgid "Sorry, your map could not be saved."
-msgstr "对不起，您的地图不能保存"
-
-#: geonode/templates/lang.js:64
-msgid "Error While Saving"
-msgstr "保存错误"
-
-#: geonode/templates/lang.js:65
-msgid "Save Map"
-msgstr "保存地图"
-
-#: geonode/templates/lang.js:66
-msgid "You must be logged in to save this map."
-msgstr "您必须登录才能保存地图。"
-
-#: geonode/templates/lang.js:67 geonode/templates/lang.js:128
-msgid "Small"
-msgstr "小"
-
-#: geonode/templates/lang.js:68
-msgid ""
-"Error contacting server.\n"
-" Please check the url and try again."
+#: geonode/templates/admin/base_site.html:4
+msgid "GeoNode site admin"
 msgstr ""
-"连接服务时出错。\n"
-"请检查网址再重试。"
 
-#: geonode/templates/lang.js:69
-msgid "Layer Properties"
-msgstr "图层属性"
+#: geonode/templates/admin/base_site.html:7
+msgid "GeoNode administration"
+msgstr ""
 
-#: geonode/templates/lang.js:70
-msgid "Change layer format and style"
-msgstr "更改图层格式和样式"
+#: geonode/templates/index.html:19
+msgid "Welcome"
+msgstr ""
 
-#: geonode/templates/lang.js:71
-msgid "Edit Styles"
-msgstr "编辑样式"
-
-#: geonode/templates/lang.js:72
-msgid "Edit layer styles"
-msgstr "编辑图层样式"
-
-#: geonode/templates/lang.js:73
-msgid "Switch to Google Earth 3D Viewer"
-msgstr "切换到谷歌地球3D查看器"
-
-#: geonode/templates/lang.js:74
+#: geonode/templates/index.html:21
 msgid ""
-"The map that you are trying to load does not exist.  Creating a new map "
-"instead."
-msgstr "您加载的地图不存在。请创建一个新的地图"
+"GeoNode is an open source platform for sharing geospatial data and maps."
+msgstr ""
 
-#: geonode/templates/lang.js:75
-msgid "Unknown Map"
-msgstr "未知地图"
+#: geonode/templates/index.html:25
+msgid "Get Started &raquo;"
+msgstr ""
 
-#: geonode/templates/lang.js:76 geonode/templates/lang.js:129
-msgid "Width"
-msgstr "宽度"
+#: geonode/templates/index.html:76 geonode/templates/index.html:96
+#, fuzzy
+#| msgid "Now"
+msgid "No"
+msgstr "现在"
 
-#: geonode/templates/lang.js:77
-msgid "Zoom In"
-msgstr "放大"
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "some schema mandatory fields are missing"
+msgstr "缺少一些元数据模式强制性字段"
 
-#: geonode/templates/lang.js:78
-msgid "Zoom Out"
-msgstr "缩小"
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "Metadata Schema mandatory fields completed"
+msgstr "元数据模式强制性字段已完成"
 
-#: geonode/templates/lang.js:79
-msgid "Zoom level"
-msgstr "缩放级别"
-
-#: geonode/templates/lang.js:80
-msgid "Zoom Level"
-msgstr "缩放级别"
-
-#: geonode/templates/lang.js:81
-msgid "Zoom to Layer Extent"
-msgstr "缩放范围"
-
-#: geonode/templates/lang.js:82
-msgid "Zoom to Visible Extent"
-msgstr "缩放到可见范围"
-
-#: geonode/templates/lang.js:88
-msgid "Zoom Level {zoom}"
-msgstr "缩放级别{缩放}"
-
-#: geonode/templates/lang.js:94
-msgid "Create Map"
-msgstr "创建地图"
-
-#: geonode/templates/lang.js:95
-msgid "Export Map"
-msgstr "导出地图"
-
-#: geonode/templates/lang.js:98
-msgid "Map"
-msgstr "地图"
-
-#: geonode/templates/lang.js:99 geonode/templates/lang.js:166
-msgid "View this Map"
-msgstr "查看地图"
-
-#: geonode/templates/lang.js:101
-msgid "Open Map"
-msgstr "打开地图"
-
-#: geonode/templates/lang.js:107 geonode/templates/lang.js:183
-msgid "Name"
-msgstr "名称"
-
-#: geonode/templates/lang.js:108
-msgid "Queryable"
-msgstr "查询"
-
-#: geonode/templates/lang.js:115
-msgid "No background"
-msgstr "没有背景"
-
-#: geonode/templates/lang.js:127
+#: geonode/templates/metadata_form_js.html:238
+#: geonode/templates/metadata_form_js.html:278
 msgid ""
-"Your map is ready to be published to the web!  Simply copy the following "
-"HTML to embed the map in your website:"
-msgstr "您可以随时发布地图到网上！只需复制下面的HTML地图代码嵌入到您的网页："
+"<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field "
+"declared Mandatory by the Metadata Schema</strong></p>"
+msgstr ""
+"<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* 元数据"
+"模式声明的强制性字段</strong></p>"
 
-#: geonode/templates/lang.js:136 geonode/templates/lang.js:202
-msgid "Abstract:"
-msgstr "摘要："
+#~ msgid "Your layer was successfully uploaded"
+#~ msgstr "你的图层已成功上传"
 
-#: geonode/templates/lang.js:137 geonode/templates/lang.js:204
-msgid "No attribution information is provided for this layer."
-msgstr "此图层提供无属性信息。"
+#~ msgid ""
+#~ "You need to specify more information in order to complete your upload."
+#~ msgstr "您需要在为了完成您指定上传的更多信息。"
 
-#: geonode/templates/lang.js:138 geonode/templates/lang.js:205
-msgid "Provided by:"
-msgstr "提供："
+#~ msgid "You can continue configuring your layer."
+#~ msgstr "您可以继续配置图层。"
 
-#: geonode/templates/lang.js:139 geonode/templates/lang.js:206
-msgid "Download:"
-msgstr "下载："
+#~ msgid "<iframe frameborder='0' width='0' height='0'/>"
+#~ msgstr "<iframe frameborder='0' width='0' height='0'/>"
 
-#: geonode/templates/lang.js:140 geonode/templates/lang.js:208
-msgid "No keywords are listed for this layer."
-msgstr "无关键字列出此图层。"
+#~ msgid "<script>"
+#~ msgstr "<script>"
 
-#: geonode/templates/lang.js:141 geonode/templates/lang.js:209
-msgid "Keywords:"
-msgstr "关键词："
-
-#: geonode/templates/lang.js:142 geonode/templates/lang.js:210
-msgid "No metadata URLs are defined for this layer."
-msgstr "此图层没有指定元数据链接。"
-
-#: geonode/templates/lang.js:143 geonode/templates/lang.js:211
-msgid "Metadata Links:"
-msgstr "元数据链接："
-
-#: geonode/templates/lang.js:212
-msgid "Click here for more information about this layer."
-msgstr "点击此处查看该图层的更多信息。"
-
-#: geonode/templates/lang.js:149
-msgid "Paper size:"
-msgstr "纸张尺寸："
-
-#: geonode/templates/lang.js:150
-msgid "Resolution:"
-msgstr "分辨率："
-
-#: geonode/templates/lang.js:151
-msgid "Print"
-msgstr "打印"
-
-#: geonode/templates/lang.js:152
-msgid "Enter map title here."
-msgstr "在此处输入地图标题。"
-
-#: geonode/templates/lang.js:153
-msgid "Include legend?"
-msgstr "包含图例吗？"
-
-#: geonode/templates/lang.js:154
-msgid "Enter comments here."
-msgstr "在这里输入评论。"
-
-#: geonode/templates/lang.js:155
-msgid "Creating PDF..."
-msgstr "生成PDF..."
-
-#: geonode/templates/lang.js:164
-msgid "Last Modified"
-msgstr "最后修改"
-
-#: geonode/templates/lang.js:167 geonode/templates/lang.js:188
-msgid "Prev"
-msgstr "上一页"
-
-#: geonode/templates/lang.js:168 geonode/templates/lang.js:189
-msgid "Next"
-msgstr "下一页"
-
-#: geonode/templates/lang.js:169 geonode/templates/lang.js:190
-msgid "of"
-msgstr "对于"
-
-#: geonode/templates/lang.js:170 geonode/templates/lang.js:191
-msgid "Your search did not match any items."
-msgstr "没有搜索到您要的结果。"
-
-#:  geonode/templates/lang.js:194
-msgid "Keyword"
-msgstr "关键字"
-
-#:  geonode/templates/lang.js:196
-msgid "Showing..."
-msgstr "显示"
-
-#: geonode/templates/lang.js:205 geonode/templates/lang.js:203
-msgid "Source"
-msgstr "源"
-
-#: geonode/templates/lang.js:204
-msgid "Data Type"
-msgstr "数据类型"
-
-#: geonode/templates/lang.js:206
-msgid "Date"
-msgstr "日期"
-
-#: geonode/templates/lang.js:207
-msgid "from year"
-msgstr "起始日期"
-
-#: geonode/templates/lang.js:208
-msgid "to year"
-msgstr "终止时间"
-
-#: geonode/templates/lang.js:209
-msgid "Reset"
-msgstr "重置"
-
-#: geonode/templates/lang.js:171
-msgid "Search Maps"
-msgstr "查询地图"
-
-#: geonode/templates/lang.js:172 geonode/templates/lang.js:192
-msgid "Search"
-msgstr "查询"
-
-#: geonode/templates/lang.js:173 geonode/templates/lang.js:193
-msgid "Showing"
-msgstr "显示"
-
-#: geonode/templates/lang.js:174
-msgid "Loading"
-msgstr "加载"
-
-#: geonode/templates/lang.js:175 geonode/templates/lang.js:195
-msgid "permalink"
-msgstr "永久"
-
-#: geonode/templates/lang.js:182
-msgid "Select"
-msgstr "选择"
-
-#: geonode/templates/lang.js:185
-msgid "Select:"
-msgstr "选择："
-
-#: geonode/templates/lang.js:186
-msgid "All"
-msgstr "全部"
-
-#: geonode/templates/lang.js:187
-msgid "None"
-msgstr "没有"
-
-#: geonode/templates/lang.js:194
-msgid "Loading..."
-msgstr "载入中..."
-
-#: geonode/templates/lang.js:196
-msgid "You do not have permission to view this data"
-msgstr "您没有权限查看此数据"
-
-#: geonode/templates/lang.js:197
-msgid "This data is stored on a remote server"
-msgstr "此数据存储在远程服务器上"
-
-#: geonode/templates/lang.js:198
-msgid "Invalid Query"
-msgstr "不正确的检索"
-
-#: geonode/templates/lang.js:199
-msgid "You need to specify a search term"
-msgstr "您需要明确检索项"
-
-#: geonode/templates/lang.js:203
-msgid "No abstract is provided for this layer."
-msgstr "此图层没有抽象摘要。"
-
-#: geonode/templates/lang.js:207
-msgid "No download URLs are definied for this layer."
-msgstr "此图层没有下载的网址。"
-
-#: geonode/templates/lang.js:217
-msgid "Selected Layers"
-msgstr "选定图层"
-
-#: geonode/templates/lang.js:218
-msgid "No Layers Selected"
-msgstr "没有选择任何图层"
-
-#: geonode/templates/lang.js:220
-msgid "Clear Selected"
-msgstr "清除选定"
-
-#: geonode/templates/lang.js:221
-msgid "Clear All"
-msgstr "全部清除"
-
-#: geonode/templates/lang.js:227
-msgid "Operation Failed"
-msgstr "操作失败"
-
-#: geonode/templates/lang.js:228
-msgid "No layers are currently selected."
-msgstr "当前没有选择任何图层。"
-
-#: geonode/templates/lang.js:235
-msgid "Downloading..."
-msgstr "下载..."
-
-#: geonode/templates/lang.js:237
-msgid "Please wait"
-msgstr "请稍候"
+#~ msgid "<div>"
+#~ msgstr "<div>"
 
 #~ msgid "Available %s"
 #~ msgstr "可用的%s"
@@ -823,8 +1077,8 @@ msgstr "请稍候"
 #~ "in the box below and then clicking the \"Choose\" arrow between the two "
 #~ "boxes."
 #~ msgstr ""
-#~ "这是可用的%s列表。你可以通过在下方的框中选中它们，然后在两个框中点击\"Choose\"箭"
-#~ "头来选择。"
+#~ "这是可用的%s列表。你可以通过在下方的框中选中它们，然后在两个框中点击"
+#~ "\"Choose\"箭头来选择。"
 
 #~ msgid "Type into this box to filter down the list of available %s."
 #~ msgstr "在这个框中填入条件滤出可用的的%s列表。"
@@ -849,8 +1103,8 @@ msgstr "请稍候"
 #~ "the box below and then clicking the \"Remove\" arrow between the two "
 #~ "boxes."
 #~ msgstr ""
-#~ "这是一列被选中的%s。你可以通过在下方框中选中它们，然后在两个框中点击移除\"Remove\""
-#~ "箭头来移除一些。"
+#~ "这是一列被选中的%s。你可以通过在下方框中选中它们，然后在两个框中点击移除"
+#~ "\"Remove\"箭头来移除一些。"
 
 #~ msgid "Remove all"
 #~ msgstr "移除全部"
@@ -873,23 +1127,21 @@ msgstr "请稍候"
 #~ "individual fields yet. Please click OK to save. You'll need to re-run the "
 #~ "action."
 #~ msgstr ""
-#~ "你已经选中一个操作，但是你还没有保存你的改动到个人区域。"
-#~ "请点击OK进行保存。你将需要重新启动操作。"
+#~ "你已经选中一个操作，但是你还没有保存你的改动到个人区域。请点击OK进行保存。"
+#~ "你将需要重新启动操作。"
 
 #~ msgid ""
 #~ "You have selected an action, and you haven't made any changes on "
 #~ "individual fields. You're probably looking for the Go button rather than "
 #~ "the Save button."
 #~ msgstr ""
-#~ "你已经选中了一个操作，但是你还没有在个人区域里做任何改动。"
-#~ "你可能正在寻找Go按钮而不是保存按钮。"
+#~ "你已经选中了一个操作，但是你还没有在个人区域里做任何改动。你可能正在寻找Go"
+#~ "按钮而不是保存按钮。"
 
 #~ msgid ""
 #~ "January February March April May June July August September October "
 #~ "November December"
-#~ msgstr ""
-#~ "一月 二月 三月 四月 五月 六月 七月 八月 九月 十月 "
-#~ "十一月 十二月"
+#~ msgstr "一月 二月 三月 四月 五月 六月 七月 八月 九月 十月 十一月 十二月"
 
 #~ msgid "S M T W T F S"
 #~ msgstr "S M T W T F S"
@@ -899,9 +1151,6 @@ msgstr "请稍候"
 
 #~ msgid "Hide"
 #~ msgstr "隐藏"
-
-#~ msgid "Now"
-#~ msgstr "现在"
 
 #~ msgid "Clock"
 #~ msgstr "时钟"
@@ -969,20 +1218,14 @@ msgstr "请稍候"
 #~ msgid "No error message supplied"
 #~ msgstr "没有错误信息提供"
 
-#: geonode/templates/metadata_form_js.html
-msgid "some schema mandatory fields are missing"
-msgstr "缺少一些元数据模式强制性字段"
-msgid "Metadata Schema mandatory fields completed"
-msgstr "元数据模式强制性字段已完成"
-msgid "<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field declared Mandatory by the Metadata Schema</strong></p>"
-msgstr "<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* 元数据模式声明的强制性字段</strong></p>"
+#~ msgid "Title:"
+#~ msgstr "标题："
 
-#: camp/static/js/base.js
-msgid "Title:"
-msgstr "标题："
-msgid "Author:"
-msgstr "作者："
-msgid "Updated Date:"
-msgstr "更新时间："
-msgid "Popular Count:"
-msgstr "浏览量："
+#~ msgid "Author:"
+#~ msgstr "作者："
+
+#~ msgid "Updated Date:"
+#~ msgstr "更新时间："
+
+#~ msgid "Popular Count:"
+#~ msgstr "浏览量："

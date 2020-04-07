@@ -252,13 +252,19 @@
             <div class="modal-body">
 
               <div class="form-group">
-                <div class="input-group input-file" name="zipfile" id="zipfile" data-toggle="tooltip" data-placement="bottom" data-content="Mandatory files : SHP , DBF">
+                <div class="input-group input-file" name="zipfile" id="zipfile" data-toggle="tooltip" data-placement="bottom" 
+                      data-content="{% trans "Mandatory files : SHP , DBF" %}">
                   <span class="input-group-btn">
-                    <button class="btn btn-default btn-choose" type="button">Choose</button>
+                    <button id="geo-limits-upload-btn" class="btn btn-default btn-choose" type="button" 
+                            data-toggle="tooltip" data-placement="bottom"
+                            title="{% trans "Upload a ZIP file containing an ESRI Shapefile. If the ZIP provides also a .prj file, you don't have to specify the EPSG SRID" %}">{% trans "Choose" %}</button>
                   </span>
-                  <input type="text" class="form-control" placeholder='Choose a file...' />
+                  <input id="geo-limits-upload-txt" type="text" class="form-control" 
+                         data-toggle="tooltip" data-placement="bottom"
+                         title="{% trans "Upload a ZIP file containing an ESRI Shapefile. If the ZIP provides also a .prj file, you don't have to specify the EPSG SRID" %}"
+                         placeholder="{% trans "Choose a file..." %}" />
                   <span class="input-group-btn">
-                    <button class="btn btn-warning btn-reset" type="button">Reset</button>
+                    <button class="btn btn-warning btn-reset" type="button">{% trans "Reset" %}</button>
                   </span>
                 </div>
               </div>
@@ -268,13 +274,18 @@
               <div id="option">
                 <div class="input-group">
                   <span class="input-group-addon">EPSG</span>
-                  <input id="epsg" type="text" class="form-control" name="epsg" placeholder="Default : 4326" onfocus="this.value='';">
+                  <input id="epsg" type="text" class="form-control" name="epsg" 
+                         data-toggle="tooltip" data-placement="bottom"
+                         title="{% trans "Only the SRID number without the 'EPSG:' prefix!" %}"
+                         placeholder="{% trans "Default : 4326" %}" onfocus="this.value='';">
                 </div>
                 <div class="input-group">
                   <span class="input-group-addon">Encoding</span>
-                  <input id="encoding" type="text" class="form-control" name="encoding" placeholder="Set your desired encoding UTF-8, Big5, Big5-HKSCS ... " onfocus="this.value='';">
+                  <input id="encoding" type="text" class="form-control" name="encoding"
+                                       placeholder="{% trans "Set your desired encoding UTF-8, Big5, Big5-HKSCS ..." %}" 
+                                       onfocus="this.value='';">
                 </div>
-                <button type="button" id="loadShpZip" class="btn btn-primary">Upload</button>
+                <button type="button" id="loadShpZip" class="btn btn-primary">{% trans "Upload" %}</button>
               </div>
 
             </div>

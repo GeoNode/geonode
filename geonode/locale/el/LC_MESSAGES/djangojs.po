@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-03 23:36+0300\n"
+"POT-Creation-Date: 2020-04-07 18:01+0000\n"
 "PO-Revision-Date: 2019-07-19 12:32+0300\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Greek (http://www.transifex.com/geonode/geonode/language/"
@@ -39,11 +39,734 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 2.0.6\n"
 
-#: geonode/static/geonode/js/search/search.js:522
+#: geonode/client/static/geonode/js/lang.js:7
+#: geonode/client/static/geonode/js/lang.js:59
+#: geonode/client/static/geonode/js/lang.js:291
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+#: geonode/client/static/geonode/js/lang.js:8
+#: geonode/client/static/geonode/js/lang.js:64
+msgid "Save as Copy"
+msgstr "Αποθήκευση ως Αντίγραφο"
+
+#: geonode/client/static/geonode/js/lang.js:9
+msgid "About this Map"
+msgstr "Σχετικά με αυτό το χάρτη"
+
+#: geonode/client/static/geonode/js/lang.js:10
+#: geonode/client/static/geonode/js/lang.js:140
+#: geonode/client/static/geonode/js/lang.js:209
+msgid "Abstract"
+msgstr "Περίληψη"
+
+#: geonode/client/static/geonode/js/lang.js:11
+#: geonode/client/static/geonode/js/lang.js:28
+#: geonode/client/static/geonode/js/lang.js:65
+#: geonode/client/static/geonode/js/lang.js:94
+msgid "Save"
+msgstr "Αποθήκευση"
+
+#: geonode/client/static/geonode/js/lang.js:12
+#: geonode/client/static/geonode/js/lang.js:70
+#: geonode/client/static/geonode/js/lang.js:144
+#: geonode/client/static/geonode/js/lang.js:153
+#: geonode/client/static/geonode/js/lang.js:206
+#: geonode/client/static/geonode/js/lang.js:228
+#: geonode/client/static/geonode/js/lang.js:273
+msgid "Title"
+msgstr "Τίτλος"
+
+#: geonode/client/static/geonode/js/lang.js:18
+#: geonode/client/static/geonode/js/lang.js:35
+msgid "Connection Error"
+msgstr "Σφάλμα σύνδεσης"
+
+#: geonode/client/static/geonode/js/lang.js:19
+#: geonode/client/static/geonode/js/lang.js:36
+msgid "The server returned an error"
+msgstr "Ο εξυπηρετητής επέστρεψε ένα σφάλμα"
+
+#: geonode/client/static/geonode/js/lang.js:20
+#: geonode/client/static/geonode/js/lang.js:37
+msgid "Details..."
+msgstr "Λεπτομέρειες..."
+
+#: geonode/client/static/geonode/js/lang.js:26
+#: geonode/client/static/geonode/js/lang.js:32
+#: geonode/client/static/geonode/js/lang.js:276
+msgid "Add Layers"
+msgstr "Προσθήκη Επιπέδων"
+
+#: geonode/client/static/geonode/js/lang.js:27
+msgid "Add ArcGIS REST Server"
+msgstr "Προσθήκη ArcGIS REST Server"
+
+#: geonode/client/static/geonode/js/lang.js:29
+#: geonode/client/static/geonode/js/lang.js:88
+msgid "Link"
+msgstr "Σύνδεσμος"
+
+#: geonode/client/static/geonode/js/lang.js:30
+msgid "Area"
+msgstr "Εμβαδό"
+
+#: geonode/client/static/geonode/js/lang.js:31
+msgid "Background"
+msgstr "Υπόβαθρο"
+
+#: geonode/client/static/geonode/js/lang.js:33
+msgid "Done"
+msgstr "Ολοκληρώθηκε"
+
+#: geonode/client/static/geonode/js/lang.js:34
+msgid "Available Layers"
+msgstr "Διαθέσιμα Επίπεδα"
+
+#: geonode/client/static/geonode/js/lang.js:38
+msgid "Add feeds"
+msgstr "Προσθήκη ροών δεδομένων"
+
+#: geonode/client/static/geonode/js/lang.js:39
+msgid "Flickr"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:40
+msgid "Google Earth"
+msgstr "Google Earth"
+
+#: geonode/client/static/geonode/js/lang.js:41
+msgid ""
+"<p>Your map is ready to be published to the web! </p><p> Simply copy the "
+"following HTML to embed the map in your website: </p>"
+msgstr ""
+"<p>Ο χάρτης σας είναι έτοιμος να δημοσιευθεί στο διαδίκτυο!</p><p> Απλά "
+"αντιγράψτε τον παρακάτω σύνδεσμο HTML για να ενσωματώσετε τον χάρτη στην "
+"ιστοσελίδα σας:</p>"
+
+#: geonode/client/static/geonode/js/lang.js:42
+#: geonode/client/static/geonode/js/lang.js:165
+msgid "Height"
+msgstr "Ύψος"
+
+#: geonode/client/static/geonode/js/lang.js:43
+msgid "Help"
+msgstr "Βοήθεια"
+
+#: geonode/client/static/geonode/js/lang.js:44
+msgid "Get Feature Info"
+msgstr "Λήψη Πληροφοριών Χαρακτηριστικού"
+
+#: geonode/client/static/geonode/js/lang.js:45
+msgid "About"
+msgstr "Σχετικά"
+
+#: geonode/client/static/geonode/js/lang.js:46
+msgid "About us"
+msgstr "Σχετικά με εμάς"
+
+#: geonode/client/static/geonode/js/lang.js:47
+#: geonode/client/static/geonode/js/lang.js:166
+msgid "Large"
+msgstr "Μεγάλο"
+
+#: geonode/client/static/geonode/js/lang.js:48
+msgid "or add a new server."
+msgstr "ή προσθέστε εξυπηρετητή."
+
+#: geonode/client/static/geonode/js/lang.js:49
+msgid "Map Layers"
+msgstr "Επίπεδα Χάρτη"
+
+#: geonode/client/static/geonode/js/lang.js:50
+msgid "Upload your own data"
+msgstr "Μεταφορτώστε τα δικά σας δεδομένα"
+
+#: geonode/client/static/geonode/js/lang.js:51
+msgid "View available data from:"
+msgstr "Δείτε δεδομένα από:"
+
+#: geonode/client/static/geonode/js/lang.js:52
+msgid "Data"
+msgstr "Δεδομένα"
+
+#: geonode/client/static/geonode/js/lang.js:53
+msgid "Layers"
+msgstr "Επίπεδα"
+
+#: geonode/client/static/geonode/js/lang.js:54
+msgid "Legend"
+msgstr "Υπόμνημα"
+
+#: geonode/client/static/geonode/js/lang.js:55
+msgid "Length"
+msgstr "Μήκος"
+
+#: geonode/client/static/geonode/js/lang.js:56
+msgid "Loading Map..."
+msgstr "Φόρτωση χάρτη..."
+
+#: geonode/client/static/geonode/js/lang.js:57
+#: geonode/client/static/geonode/js/lang.js:167
+msgid "Map Size"
+msgstr "Μέγεθος Χάρτη"
+
+#: geonode/client/static/geonode/js/lang.js:58
+msgid "Measure"
+msgstr "Μέτρηση"
+
+#: geonode/client/static/geonode/js/lang.js:60
+msgid "Warning"
+msgstr "Προειδοποίηση"
+
+#: geonode/client/static/geonode/js/lang.js:61
+msgid ""
+"You now have %n layers in your map.  With more than %max layers you may "
+"experience problems with layer ordering, info balloon display, and general "
+"performance. "
+msgstr ""
+"Έχετε %n επίπεδα στον χάρτη σας. Με περισσότερα από %n επίπεδα μπορεί να "
+"έχετε προβλήματα με τον ορισμό σειράς των επιπέδων, την εμφάνιση πληροφοριών "
+"και την απόδοση γενικότερα."
+
+#: geonode/client/static/geonode/js/lang.js:62
+#: geonode/client/static/geonode/js/lang.js:141
+#: geonode/client/static/geonode/js/lang.js:207
+msgid "Contact"
+msgstr "Επικοινωνία"
+
+#: geonode/client/static/geonode/js/lang.js:63
+#: geonode/client/static/geonode/js/lang.js:83
+msgid "Permalink"
+msgstr "Μόνιμος σύνδεσμος"
+
+#: geonode/client/static/geonode/js/lang.js:66
+msgid "Copy"
+msgstr "Αντιγραφή"
+
+#: geonode/client/static/geonode/js/lang.js:67
+msgid "About this Map View"
+msgstr "Σχετικά με αυτό το χάρτη"
+
+#: geonode/client/static/geonode/js/lang.js:68
+msgid "Abstract (brief description)"
+msgstr "Περίληψη (σύντομη περιγραφή)"
+
+#: geonode/client/static/geonode/js/lang.js:69
+msgid "Introduction (tell visitors more about your map view)"
+msgstr "Εισαγωγή (πείτε περισσότερα στους επισκέπτες σχετικά με το χάρτη)"
+
+#: geonode/client/static/geonode/js/lang.js:71
+msgid "UserUrl"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:72
+#: geonode/client/static/geonode/js/lang.js:168
+msgid "Mini"
+msgstr "Μικρογραφία"
+
+#: geonode/client/static/geonode/js/lang.js:73
+msgid "Add Category"
+msgstr "Προσθήκη Κατηγορίας"
+
+#: geonode/client/static/geonode/js/lang.js:74
+msgid " Add a new category to the layer tree"
+msgstr " Πρόσθεσε νέα κατηγορία στη λίστα του χάρτη"
+
+#: geonode/client/static/geonode/js/lang.js:75
+msgid " Rename Category"
+msgstr " Μετονομασία Κατηγορίας"
+
+#: geonode/client/static/geonode/js/lang.js:76
+msgid " Rename this category"
+msgstr " Μετονομασία αυτής της κατηγορίας"
+
+#: geonode/client/static/geonode/js/lang.js:77
+msgid " Remove Category"
+msgstr " Κατάργηση Κατηγορίας"
+
+#: geonode/client/static/geonode/js/lang.js:78
+msgid " Remove this category and layers"
+msgstr " Αφαίρεση αυτής της κατηγορίας και των επιπέδων της"
+
+#: geonode/client/static/geonode/js/lang.js:79
+msgid "Pan Map"
+msgstr "Μετακίνηση Χάρτη"
+
+#: geonode/client/static/geonode/js/lang.js:80
+msgid "Zoom to Next Extent"
+msgstr "Ζουμ στο επόμενο Επίπεδο"
+
+#: geonode/client/static/geonode/js/lang.js:81
+msgid "Zoom to Previous Extent"
+msgstr "Ζουμ στο προηγούμενο Επίπεδο"
+
+#: geonode/client/static/geonode/js/lang.js:82
+msgid "This map has not yet been saved."
+msgstr "Ο χάρτης αυτός δεν έχει ακόμη αποθηκευτεί."
+
+#: geonode/client/static/geonode/js/lang.js:84
+#: geonode/client/static/geonode/js/lang.js:169
+msgid "Premium"
+msgstr "Εξαιρετικά ποιοτικό"
+
+#: geonode/client/static/geonode/js/lang.js:85
+msgid "Print Map"
+msgstr "Εκτύπωση Χάρτη"
+
+#: geonode/client/static/geonode/js/lang.js:86
+msgid "Print Preview"
+msgstr "Προεπισκόπηση εκτύπωσης"
+
+#: geonode/client/static/geonode/js/lang.js:87
+msgid "Properties"
+msgstr "Επιλογές"
+
+#: geonode/client/static/geonode/js/lang.js:89
+#: geonode/client/static/geonode/js/lang.js:170
+msgid "Publish Map"
+msgstr "Δημοσίευση Χάρτη"
+
+#: geonode/client/static/geonode/js/lang.js:90
+#: geonode/client/static/geonode/js/lang.js:91
+msgid "Remove Layer"
+msgstr "Κατάργηση Επιφάνειας"
+
+#: geonode/client/static/geonode/js/lang.js:92
+msgid "Sorry, your map could not be saved."
+msgstr "Λυπούμαστε, δεν μπορέσαμε να αποθηκεύσουμε τον χάρτη σας."
+
+#: geonode/client/static/geonode/js/lang.js:93
+msgid "Error While Saving"
+msgstr "Λάθος κατά την αποθήκευση"
+
+#: geonode/client/static/geonode/js/lang.js:95
+msgid "Save Map"
+msgstr "Αποθήκευση Χάρτη"
+
+#: geonode/client/static/geonode/js/lang.js:96
+msgid "You must be logged in to save this map."
+msgstr "Θα πρέπει να συνδεθείτε για να μπορείτε να σώσετε αυτό το χάρτη."
+
+#: geonode/client/static/geonode/js/lang.js:97
+#: geonode/client/static/geonode/js/lang.js:172
+msgid "Small"
+msgstr "Μικρό"
+
+#: geonode/client/static/geonode/js/lang.js:98
+msgid " Share Layer"
+msgstr " Διαμοιρασμός Επιπέδου"
+
+#: geonode/client/static/geonode/js/lang.js:99
+msgid ""
+"Error contacting server.\n"
+" Please check the url and try again."
+msgstr ""
+"Σφάλμα στην επικοινωνία με τον εξυπηρετητή.\n"
+"Παρακαλώ ελέγξτε τον σύνδεσμο και δοκιμάστε ξανά."
+
+#: geonode/client/static/geonode/js/lang.js:100
+msgid "Layer Properties"
+msgstr "Επιλογές Επιφάνειας"
+
+#: geonode/client/static/geonode/js/lang.js:101
+msgid "Change layer format and style"
+msgstr "Αλλαγή μορφής επιφάνειας και στυλ"
+
+#: geonode/client/static/geonode/js/lang.js:102
+msgid "Edit Styles"
+msgstr "Επεξεργασία στυλ"
+
+#: geonode/client/static/geonode/js/lang.js:103
+msgid "Edit layer styles"
+msgstr "Επεξεργασία στυλ επιφάνειας"
+
+#: geonode/client/static/geonode/js/lang.js:104
+msgid "Switch to Google Earth 3D Viewer"
+msgstr "Μεταβείτε στο Google Earth 3D Viewer"
+
+#: geonode/client/static/geonode/js/lang.js:105
+msgid ""
+"The map that you are trying to load does not exist.  Creating a new map "
+"instead."
+msgstr ""
+"Ο χάρτης που προσπαθείτε να φορτώσετε δεν υπάρχει. Δημιουργήστε ένα νέο "
+"χάρτη αντί αυτού."
+
+#: geonode/client/static/geonode/js/lang.js:106
+msgid "Unknown Map"
+msgstr "Άγνωστος Χάρτης"
+
+#: geonode/client/static/geonode/js/lang.js:107
+msgid "Unsupported Layers"
+msgstr "Μη Υποστηριζόμενα Επίπεδα"
+
+#: geonode/client/static/geonode/js/lang.js:108
+msgid "The following layers cannot be printed:"
+msgstr "Τα παρακάτω επίπεδα δεν μπορούν να εκτυπωθούν:"
+
+#: geonode/client/static/geonode/js/lang.js:109
+#: geonode/client/static/geonode/js/lang.js:173
+msgid "Width"
+msgstr "Πλάτος"
+
+#: geonode/client/static/geonode/js/lang.js:110
+msgid "Zoom In"
+msgstr "Μεγέθυνση"
+
+#: geonode/client/static/geonode/js/lang.js:111
+msgid "Zoom Out"
+msgstr "Σμίκρυνση"
+
+#: geonode/client/static/geonode/js/lang.js:112
+msgid "Zoom level"
+msgstr "Επίπεδο μεγέθυνσης"
+
+#: geonode/client/static/geonode/js/lang.js:113
+msgid "Zoom Level"
+msgstr "Επίπεδο Ζουμ"
+
+#: geonode/client/static/geonode/js/lang.js:114
+msgid "Zoom to Layer Extent"
+msgstr "Ζουμ σε Έκταση Επιφάνειας"
+
+#: geonode/client/static/geonode/js/lang.js:115
+msgid "Zoom to Visible Extent"
+msgstr "Ζουμ σε Ορατή Έκταση"
+
+#: geonode/client/static/geonode/js/lang.js:116
+msgid "Picasa"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:117
+msgid "YouTube"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:118
+msgid "Harvard Geospatial Library"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:119
+msgid "Upload Layer"
+msgstr "Μεταφόρτωση Επιπέδων"
+
+#: geonode/client/static/geonode/js/lang.js:120
+msgid "Create Layer"
+msgstr "Δημιουργία Επιπέδου"
+
+#: geonode/client/static/geonode/js/lang.js:121
+msgid "Rectify Layer"
+msgstr "Διόρθωση Επιπέδου"
+
+#: geonode/client/static/geonode/js/lang.js:122
+msgid "Submit a Map Service"
+msgstr "Υποβάλετε μια Υπηρεσία Θέασης"
+
+#: geonode/client/static/geonode/js/lang.js:123
+msgid "External Data"
+msgstr "Εξωτερικά Δεδομένα"
+
+#: geonode/client/static/geonode/js/lang.js:124
+msgid "If you leave this page, unsaved changes will be lost."
+msgstr "Αν φύγετε από την τρέχουσα σελίδα, μη αποθηκευμένες αλλαγές θα χαθούν."
+
+#: geonode/client/static/geonode/js/lang.js:125
+msgid "Center for Geographic Analysis"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:126
+msgid "Bigdata and AMAP Innovation Team"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:132
+msgid "Zoom Level {zoom}"
+msgstr "Επίπεδο ζουμ {zoom}"
+
+#: geonode/client/static/geonode/js/lang.js:138
+msgid "Create Map"
+msgstr "Δημιουργία Χάρτη"
+
+#: geonode/client/static/geonode/js/lang.js:139
+msgid "Export Map"
+msgstr "Εξαγωγή Χάρτη"
+
+#: geonode/client/static/geonode/js/lang.js:142
+msgid "Map"
+msgstr "Χάρτης"
+
+#: geonode/client/static/geonode/js/lang.js:143
+#: geonode/client/static/geonode/js/lang.js:210
+msgid "View this Map"
+msgstr "Δείτε αυτό το Χάρτη"
+
+#: geonode/client/static/geonode/js/lang.js:145
+msgid "Open Map"
+msgstr "Ανοίγμα Χάρτη"
+
+#: geonode/client/static/geonode/js/lang.js:151
+#: geonode/client/static/geonode/js/lang.js:227
+msgid "Name"
+msgstr "Όνομα"
+
+#: geonode/client/static/geonode/js/lang.js:152
+msgid "Queryable"
+msgstr "Αναζητήσιμο"
+
+#: geonode/client/static/geonode/js/lang.js:159
+msgid "No background"
+msgstr "Χωρίς φόντο"
+
+#: geonode/client/static/geonode/js/lang.js:171
+msgid ""
+"Your map is ready to be published to the web!  Simply copy the following "
+"HTML to embed the map in your website:"
+msgstr ""
+"Ο χάρτης σας είναι έτοιμος να δημοσιευθεί στο διαδίκτυο! Απλά αντιγράψτε τον "
+"παρακάτω σύνδεσμο HTML για να ενσωματώσετε τον χάρτη στην ιστοσελίδα σας:"
+
+#: geonode/client/static/geonode/js/lang.js:180
+#: geonode/client/static/geonode/js/lang.js:256
+msgid "Abstract:"
+msgstr "Περίληψη:"
+
+#: geonode/client/static/geonode/js/lang.js:181
+#: geonode/client/static/geonode/js/lang.js:258
+msgid "No attribution information is provided for this layer."
+msgstr "Δεν υπάρχουν πληροφορίες απόδοσης για αυτή την επιφάνεια."
+
+#: geonode/client/static/geonode/js/lang.js:182
+#: geonode/client/static/geonode/js/lang.js:259
+msgid "Provided by:"
+msgstr "Παρέχεται από:"
+
+#: geonode/client/static/geonode/js/lang.js:183
+#: geonode/client/static/geonode/js/lang.js:260
+msgid "Download:"
+msgstr "Λήψη:"
+
+#: geonode/client/static/geonode/js/lang.js:184
+#: geonode/client/static/geonode/js/lang.js:262
+msgid "No keywords are listed for this layer."
+msgstr "Δεν υπάρχουν λέξεις-κλειδιά για αυτή την επιφάνεια."
+
+#: geonode/client/static/geonode/js/lang.js:185
+#: geonode/client/static/geonode/js/lang.js:263
+msgid "Keywords:"
+msgstr "Λέξεις-κλειδιά:"
+
+#: geonode/client/static/geonode/js/lang.js:186
+#: geonode/client/static/geonode/js/lang.js:264
+msgid "No metadata URLs are defined for this layer."
+msgstr "Δεν ορίζονται διευθύνσεις μεταδεδομένων για αυτό το επίπεδο."
+
+#: geonode/client/static/geonode/js/lang.js:187
+#: geonode/client/static/geonode/js/lang.js:265
+msgid "Metadata Links:"
+msgstr "Σύνδεσμοι Μεταδεδομένων:"
+
+#: geonode/client/static/geonode/js/lang.js:193
+msgid "Paper size:"
+msgstr "Μέγεθος χαρτιού:"
+
+#: geonode/client/static/geonode/js/lang.js:194
+msgid "Resolution:"
+msgstr "Ανάλυση:"
+
+#: geonode/client/static/geonode/js/lang.js:195
+msgid "Print"
+msgstr "Εκτύπωση"
+
+#: geonode/client/static/geonode/js/lang.js:196
+msgid "Enter map title here."
+msgstr "Εισάγετε τον τίτλο χάρτη εδώ."
+
+#: geonode/client/static/geonode/js/lang.js:197
+msgid "Include legend?"
+msgstr "Συμπερίληψη υπομνήματος;"
+
+#: geonode/client/static/geonode/js/lang.js:198
+msgid "Enter comments here."
+msgstr "Εισάγετε σχόλια εδώ."
+
+#: geonode/client/static/geonode/js/lang.js:199
+msgid "Creating PDF..."
+msgstr "Δημιουργία PDF ..."
+
+#: geonode/client/static/geonode/js/lang.js:208
+msgid "Last Modified"
+msgstr "Τελευταία Τροποποίηση"
+
+#: geonode/client/static/geonode/js/lang.js:211
+#: geonode/client/static/geonode/js/lang.js:232
+msgid "Prev"
+msgstr "Προηγούμενη"
+
+#: geonode/client/static/geonode/js/lang.js:212
+#: geonode/client/static/geonode/js/lang.js:233
+msgid "Next"
+msgstr "Επόμενη"
+
+#: geonode/client/static/geonode/js/lang.js:213
+#: geonode/client/static/geonode/js/lang.js:234
+msgid "of"
+msgstr "από"
+
+#: geonode/client/static/geonode/js/lang.js:214
+#: geonode/client/static/geonode/js/lang.js:235
+msgid "Your search did not match any items."
+msgstr "Η αναζήτησή σας δεν επέστρεψε κανένα αποτέλεσμα."
+
+#: geonode/client/static/geonode/js/lang.js:215
+msgid "Search Maps"
+msgstr "Αναζήτηση Χαρτών"
+
+#: geonode/client/static/geonode/js/lang.js:216
+#: geonode/client/static/geonode/js/lang.js:237
+msgid "Search"
+msgstr "Αναζήτηση"
+
+#: geonode/client/static/geonode/js/lang.js:217
+msgid "Showing"
+msgstr "Έχουν βρεθεί"
+
+#: geonode/client/static/geonode/js/lang.js:218
+msgid "Loading"
+msgstr "Φόρτωση"
+
+#: geonode/client/static/geonode/js/lang.js:219
+#: geonode/client/static/geonode/js/lang.js:240
+msgid "permalink"
+msgstr "μόνιμος σύνδεσμος"
+
+#: geonode/client/static/geonode/js/lang.js:226
+msgid "Select"
+msgstr "Επιλέξτε"
+
+#: geonode/client/static/geonode/js/lang.js:229
+msgid "Select:"
+msgstr "Επιλέξτε:"
+
+#: geonode/client/static/geonode/js/lang.js:230
+msgid "All"
+msgstr "Όλα"
+
+#: geonode/client/static/geonode/js/lang.js:231
+msgid "None"
+msgstr "Κανένα"
+
+#: geonode/client/static/geonode/js/lang.js:236
+msgid "Keyword"
+msgstr "Λέξη κλειδί"
+
+#: geonode/client/static/geonode/js/lang.js:238
+msgid "Showing..."
+msgstr "Εμφανίζονται..."
+
+#: geonode/client/static/geonode/js/lang.js:239
+msgid "Loading..."
+msgstr "Φόρτωση..."
+
+#: geonode/client/static/geonode/js/lang.js:241
+msgid "You do not have permission to view this data"
+msgstr "Δεν έχετε άδεια για να δείτε αυτά τα δεδομένα"
+
+#: geonode/client/static/geonode/js/lang.js:242
+msgid "This data is stored on a remote server"
+msgstr "Αυτά τα δεδομένα είναι αποθηκευμένα σε έναν απομακρυσμένο εξυπηρετητή"
+
+#: geonode/client/static/geonode/js/lang.js:243
+msgid "Invalid Query"
+msgstr "Μη Έγκυρο Ερώτημα"
+
+#: geonode/client/static/geonode/js/lang.js:244
+msgid "You need to specify a search term"
+msgstr "Θα πρέπει να προσδιορίσετε έναν όρο αναζήτησης"
+
+#: geonode/client/static/geonode/js/lang.js:245
+#: geonode/client/static/geonode/js/lang.js:247
+msgid "Source"
+msgstr "Πηγή"
+
+#: geonode/client/static/geonode/js/lang.js:246
+msgid "Data Type"
+msgstr "Τύπος Δεδομένων"
+
+#: geonode/client/static/geonode/js/lang.js:248
+msgid "Date"
+msgstr "Ημερομηνία"
+
+#: geonode/client/static/geonode/js/lang.js:249
+msgid "from year"
+msgstr "από έτος"
+
+#: geonode/client/static/geonode/js/lang.js:250
+msgid "to year"
+msgstr "έως έτος"
+
+#: geonode/client/static/geonode/js/lang.js:251
+msgid "Reset"
+msgstr "Επαναφορά"
+
+#: geonode/client/static/geonode/js/lang.js:257
+msgid "No abstract is provided for this layer."
+msgstr "Δεν υπάρχει περίληψη για αυτή την επιφάνεια."
+
+#: geonode/client/static/geonode/js/lang.js:261
+msgid "No download URLs are definied for this layer."
+msgstr "Δεν έχουν οριστεί URL λήψης για αυτό το επίπεδο."
+
+#: geonode/client/static/geonode/js/lang.js:266
+msgid "Click here for more information about this layer."
+msgstr ""
+"Κάντε κλίκ εδώ για περισσότερες πληροφορίες σχετικά με αυτό το επίπεδο."
+
+#: geonode/client/static/geonode/js/lang.js:271
+msgid "Selected Layers"
+msgstr "Επιλεγμένα Επίπεδα"
+
+#: geonode/client/static/geonode/js/lang.js:272
+msgid "No Layers Selected"
+msgstr "Κανένα Επιλεγμένο Επίπεδο"
+
+#: geonode/client/static/geonode/js/lang.js:274
+msgid "Clear Selected"
+msgstr "Καθαρισμός Επιλεγμένων"
+
+#: geonode/client/static/geonode/js/lang.js:275
+msgid "Clear All"
+msgstr "Καθαρισμός Όλων"
+
+#: geonode/client/static/geonode/js/lang.js:282
+msgid "Operation Failed"
+msgstr "Η Λειτουργία Απέτυχε"
+
+#: geonode/client/static/geonode/js/lang.js:283
+msgid "No layers are currently selected."
+msgstr "Δεν έχει επιλεγεί κανένα επίπεδο μέχρι στιγμής."
+
+#: geonode/client/static/geonode/js/lang.js:290
+msgid "Downloading..."
+msgstr "Λήψη..."
+
+#: geonode/client/static/geonode/js/lang.js:292
+msgid "Please wait"
+msgstr "Παρακαλώ περιμένετε"
+
+#: geonode/monitoring/static/monitoring/bundle.js:170
+msgid "STORE_UPDATED"
+msgstr ""
+
+#: geonode/people/templates/people/profile_detail.html:77
+#: geonode/people/templates/people/profile_detail.html:86
+#: geonode/people/templates/people/profile_detail.html:98
+msgid "Not provided."
+msgstr ""
+
+#: geonode/static/geonode/js/search/search.js:599
 msgid "Enter your text here ..."
 msgstr "Εισάγετε το κείμενό σας εδώ ..."
 
-#: geonode/static/geonode/js/search/search.js:564
+#: geonode/static/geonode/js/search/search.js:644
 msgid "Enter your region here ..."
 msgstr "Εισάγετε την τοποθεσία σας εδώ ..."
 
@@ -167,8 +890,7 @@ msgid "GIF"
 msgstr ""
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:332
-#: geonode/static/geonode/js/upload/LayerInfo.js:488
-#: geonode/static/geonode/js/upload/LayerInfo.js:585
+#: geonode/static/geonode/js/upload/LayerInfo.js:503
 msgid "Unexpected Error"
 msgstr "Απρόσμενο Σφάλμα"
 
@@ -204,41 +926,64 @@ msgstr "To "
 msgid "Performing Final GeoServer Config Step"
 msgstr "Εκτέλεση των τελικών ρυθμίσεων GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:437
-#: geonode/static/geonode/js/upload/LayerInfo.js:474
+#: geonode/static/geonode/js/upload/LayerInfo.js:439
+#: geonode/static/geonode/js/upload/LayerInfo.js:483
 msgid "You need to specify more information in order to complete your upload"
 msgstr ""
 "Θα πρέπει να καθορίσετε περισσότερες πληροφορίες προκειμένου να ολοκληρωθεί "
 "η μεταφόρτωση"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:457
+#: geonode/static/geonode/js/upload/LayerInfo.js:463
 msgid "Files are ready to be ingested!"
 msgstr "Τα αρχεία είναι έτοιμα για αποθήκευση!"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:460
+#: geonode/static/geonode/js/upload/LayerInfo.js:466
 msgid "A temporal dimension may be added to this Layer."
 msgstr "Μια χωρική διάσταση μπορεί να προστεθεί σε αυτό το επίπεδο."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:504
+#: geonode/static/geonode/js/upload/LayerInfo.js:521
 msgid "Performing GeoServer Config Step"
 msgstr "Εκτέλεση Ρυθμίσεων GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:592
+#: geonode/static/geonode/js/upload/LayerInfo.js:609
+msgid ""
+"<br>Please check your network connection. In case of Layer Upload make sure "
+"GeoServer is running and accepting connections."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:613
+#: geonode/static/geonode/js/upload/LayerInfo.js:616
+#: geonode/static/geonode/js/upload/LayerInfo.js:623
+#: geonode/static/geonode/js/upload/LayerInfo.js:626
+msgid "<br>"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:618
+msgid "<br>Bad request or URL not found."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:628
+#, fuzzy
+#| msgid "Unknown Map"
+msgid "<br>Unknown."
+msgstr "Άγνωστος Χάρτης"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:636
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Έχουν φορτωθεί αρχεία επιπέδου, ρύθμιση GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:743
+#: geonode/static/geonode/js/upload/LayerInfo.js:787
 msgid "Remove"
 msgstr "Κατάργηση"
 
-#: geonode/static/geonode/js/upload/upload.js:125
+#: geonode/static/geonode/js/upload/upload.js:126
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr ""
 "Το αρχείο %s ανήκει σε ένα μη υποστηριζόμενο τύπο αρχείου, επιλέξτε ένα άλλο "
 "αρχείο."
 
-#: geonode/static/geonode/js/upload/upload.js:285
+#: geonode/static/geonode/js/upload/upload.js:296
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
 "options have been validated.\n"
@@ -250,678 +995,49 @@ msgstr ""
 "\n"
 "Παρακαλώ ελέγξτε για σφάλματα στη φόρμα!"
 
-#: geonode/templates/lang.js:9 geonode/templates/lang.js:61
-#: geonode/templates/lang.js:294
-msgid "Cancel"
-msgstr "Ακύρωση"
-
-#: geonode/templates/lang.js:10 geonode/templates/lang.js:66
-msgid "Save as Copy"
-msgstr "Αποθήκευση ως Αντίγραφο"
-
-#: geonode/templates/lang.js:11
-msgid "About this Map"
-msgstr "Σχετικά με αυτό το χάρτη"
-
-#: geonode/templates/lang.js:12 geonode/templates/lang.js:143
-#: geonode/templates/lang.js:212
-msgid "Abstract"
-msgstr "Περίληψη"
-
-#: geonode/templates/lang.js:13 geonode/templates/lang.js:30
-#: geonode/templates/lang.js:67 geonode/templates/lang.js:96
-msgid "Save"
-msgstr "Αποθήκευση"
-
-#: geonode/templates/lang.js:14 geonode/templates/lang.js:72
-#: geonode/templates/lang.js:147 geonode/templates/lang.js:156
-#: geonode/templates/lang.js:209 geonode/templates/lang.js:231
-#: geonode/templates/lang.js:276
-msgid "Title"
-msgstr "Τίτλος"
-
-#: geonode/templates/lang.js:20 geonode/templates/lang.js:37
-msgid "Connection Error"
-msgstr "Σφάλμα σύνδεσης"
-
-#: geonode/templates/lang.js:21 geonode/templates/lang.js:38
-msgid "The server returned an error"
-msgstr "Ο εξυπηρετητής επέστρεψε ένα σφάλμα"
-
-#: geonode/templates/lang.js:22 geonode/templates/lang.js:39
-msgid "Details..."
-msgstr "Λεπτομέρειες..."
-
-#: geonode/templates/lang.js:28 geonode/templates/lang.js:34
-#: geonode/templates/lang.js:279
-msgid "Add Layers"
-msgstr "Προσθήκη Επιπέδων"
-
-#: geonode/templates/lang.js:29
-msgid "Add ArcGIS REST Server"
-msgstr "Προσθήκη ArcGIS REST Server"
-
-#: geonode/templates/lang.js:31 geonode/templates/lang.js:90
-msgid "Link"
-msgstr "Σύνδεσμος"
-
-#: geonode/templates/lang.js:32
-msgid "Area"
-msgstr "Εμβαδό"
-
-#: geonode/templates/lang.js:33
-msgid "Background"
-msgstr "Υπόβαθρο"
-
-#: geonode/templates/lang.js:35
-msgid "Done"
-msgstr "Ολοκληρώθηκε"
-
-#: geonode/templates/lang.js:36
-msgid "Available Layers"
-msgstr "Διαθέσιμα Επίπεδα"
-
-#: geonode/templates/lang.js:40
-msgid "Add feeds"
-msgstr "Προσθήκη ροών δεδομένων"
-
-#: geonode/templates/lang.js:41
-msgid "Flickr"
+#: geonode/templates/admin/base_site.html:4
+msgid "GeoNode site admin"
 msgstr ""
 
-#: geonode/templates/lang.js:42
-msgid "Google Earth"
-msgstr "Google Earth"
+#: geonode/templates/admin/base_site.html:7
+msgid "GeoNode administration"
+msgstr ""
 
-#: geonode/templates/lang.js:43
+#: geonode/templates/index.html:19
+msgid "Welcome"
+msgstr ""
+
+#: geonode/templates/index.html:21
 msgid ""
-"<p>Your map is ready to be published to the web! </p><p> Simply copy the "
-"following HTML to embed the map in your website: </p>"
+"GeoNode is an open source platform for sharing geospatial data and maps."
 msgstr ""
-"<p>Ο χάρτης σας είναι έτοιμος να δημοσιευθεί στο διαδίκτυο!</p><p> Απλά "
-"αντιγράψτε τον παρακάτω σύνδεσμο HTML για να ενσωματώσετε τον χάρτη στην "
-"ιστοσελίδα σας:</p>"
 
-#: geonode/templates/lang.js:44 geonode/templates/lang.js:168
-msgid "Height"
-msgstr "Ύψος"
+#: geonode/templates/index.html:25
+msgid "Get Started &raquo;"
+msgstr ""
 
-#: geonode/templates/lang.js:45
-msgid "Help"
-msgstr "Βοήθεια"
+#: geonode/templates/index.html:76 geonode/templates/index.html:96
+#, fuzzy
+#| msgid "Now"
+msgid "No"
+msgstr "Now"
 
-#: geonode/templates/lang.js:46
-msgid "Get Feature Info"
-msgstr "Λήψη Πληροφοριών Χαρακτηριστικού"
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "some schema mandatory fields are missing"
+msgstr ""
 
-#: geonode/templates/lang.js:47
-msgid "About"
-msgstr "Σχετικά"
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "Metadata Schema mandatory fields completed"
+msgstr ""
 
-#: geonode/templates/lang.js:48
-msgid "About us"
-msgstr "Σχετικά με εμάς"
-
-#: geonode/templates/lang.js:49 geonode/templates/lang.js:169
-msgid "Large"
-msgstr "Μεγάλο"
-
-#: geonode/templates/lang.js:50
-msgid "or add a new server."
-msgstr "ή προσθέστε εξυπηρετητή."
-
-#: geonode/templates/lang.js:51
-msgid "Map Layers"
-msgstr "Επίπεδα Χάρτη"
-
-#: geonode/templates/lang.js:52
-msgid "Upload your own data"
-msgstr "Μεταφορτώστε τα δικά σας δεδομένα"
-
-#: geonode/templates/lang.js:53
-msgid "View available data from:"
-msgstr "Δείτε δεδομένα από:"
-
-#: geonode/templates/lang.js:54
-msgid "Data"
-msgstr "Δεδομένα"
-
-#: geonode/templates/lang.js:55
-msgid "Layers"
-msgstr "Επίπεδα"
-
-#: geonode/templates/lang.js:56
-msgid "Legend"
-msgstr "Υπόμνημα"
-
-#: geonode/templates/lang.js:57
-msgid "Length"
-msgstr "Μήκος"
-
-#: geonode/templates/lang.js:58
-msgid "Loading Map..."
-msgstr "Φόρτωση χάρτη..."
-
-#: geonode/templates/lang.js:59 geonode/templates/lang.js:170
-msgid "Map Size"
-msgstr "Μέγεθος Χάρτη"
-
-#: geonode/templates/lang.js:60
-msgid "Measure"
-msgstr "Μέτρηση"
-
-#: geonode/templates/lang.js:62
-msgid "Warning"
-msgstr "Προειδοποίηση"
-
-#: geonode/templates/lang.js:63
+#: geonode/templates/metadata_form_js.html:238
+#: geonode/templates/metadata_form_js.html:278
 msgid ""
-"You now have %n layers in your map.  With more than %max layers you may "
-"experience problems with layer ordering, info balloon display, and general "
-"performance. "
+"<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field "
+"declared Mandatory by the Metadata Schema</strong></p>"
 msgstr ""
-"Έχετε %n επίπεδα στον χάρτη σας. Με περισσότερα από %n επίπεδα μπορεί να "
-"έχετε προβλήματα με τον ορισμό σειράς των επιπέδων, την εμφάνιση πληροφοριών "
-"και την απόδοση γενικότερα."
-
-#: geonode/templates/lang.js:64 geonode/templates/lang.js:144
-#: geonode/templates/lang.js:210
-msgid "Contact"
-msgstr "Επικοινωνία"
-
-#: geonode/templates/lang.js:65 geonode/templates/lang.js:85
-msgid "Permalink"
-msgstr "Μόνιμος σύνδεσμος"
-
-#: geonode/templates/lang.js:68
-msgid "Copy"
-msgstr "Αντιγραφή"
-
-#: geonode/templates/lang.js:69
-msgid "About this Map View"
-msgstr "Σχετικά με αυτό το χάρτη"
-
-#: geonode/templates/lang.js:70
-msgid "Abstract (brief description)"
-msgstr "Περίληψη (σύντομη περιγραφή)"
-
-#: geonode/templates/lang.js:71
-msgid "Introduction (tell visitors more about your map view)"
-msgstr "Εισαγωγή (πείτε περισσότερα στους επισκέπτες σχετικά με το χάρτη)"
-
-#: geonode/templates/lang.js:73
-msgid "UserUrl"
-msgstr ""
-
-#: geonode/templates/lang.js:74 geonode/templates/lang.js:171
-msgid "Mini"
-msgstr "Μικρογραφία"
-
-#: geonode/templates/lang.js:75
-msgid "Add Category"
-msgstr "Προσθήκη Κατηγορίας"
-
-#: geonode/templates/lang.js:76
-msgid " Add a new category to the layer tree"
-msgstr " Πρόσθεσε νέα κατηγορία στη λίστα του χάρτη"
-
-#: geonode/templates/lang.js:77
-msgid " Rename Category"
-msgstr " Μετονομασία Κατηγορίας"
-
-#: geonode/templates/lang.js:78
-msgid " Rename this category"
-msgstr " Μετονομασία αυτής της κατηγορίας"
-
-#: geonode/templates/lang.js:79
-msgid " Remove Category"
-msgstr " Κατάργηση Κατηγορίας"
-
-#: geonode/templates/lang.js:80
-msgid " Remove this category and layers"
-msgstr " Αφαίρεση αυτής της κατηγορίας και των επιπέδων της"
-
-#: geonode/templates/lang.js:81
-msgid "Pan Map"
-msgstr "Μετακίνηση Χάρτη"
-
-#: geonode/templates/lang.js:82
-msgid "Zoom to Next Extent"
-msgstr "Ζουμ στο επόμενο Επίπεδο"
-
-#: geonode/templates/lang.js:83
-msgid "Zoom to Previous Extent"
-msgstr "Ζουμ στο προηγούμενο Επίπεδο"
-
-#: geonode/templates/lang.js:84
-msgid "This map has not yet been saved."
-msgstr "Ο χάρτης αυτός δεν έχει ακόμη αποθηκευτεί."
-
-#: geonode/templates/lang.js:86 geonode/templates/lang.js:172
-msgid "Premium"
-msgstr "Εξαιρετικά ποιοτικό"
-
-#: geonode/templates/lang.js:87
-msgid "Print Map"
-msgstr "Εκτύπωση Χάρτη"
-
-#: geonode/templates/lang.js:88
-msgid "Print Preview"
-msgstr "Προεπισκόπηση εκτύπωσης"
-
-#: geonode/templates/lang.js:89
-msgid "Properties"
-msgstr "Επιλογές"
-
-#: geonode/templates/lang.js:91 geonode/templates/lang.js:173
-msgid "Publish Map"
-msgstr "Δημοσίευση Χάρτη"
-
-#: geonode/templates/lang.js:92 geonode/templates/lang.js:93
-msgid "Remove Layer"
-msgstr "Κατάργηση Επιφάνειας"
-
-#: geonode/templates/lang.js:94
-msgid "Sorry, your map could not be saved."
-msgstr "Λυπούμαστε, δεν μπορέσαμε να αποθηκεύσουμε τον χάρτη σας."
-
-#: geonode/templates/lang.js:95
-msgid "Error While Saving"
-msgstr "Λάθος κατά την αποθήκευση"
-
-#: geonode/templates/lang.js:97
-msgid "Save Map"
-msgstr "Αποθήκευση Χάρτη"
-
-#: geonode/templates/lang.js:98
-msgid "You must be logged in to save this map."
-msgstr "Θα πρέπει να συνδεθείτε για να μπορείτε να σώσετε αυτό το χάρτη."
-
-#: geonode/templates/lang.js:99 geonode/templates/lang.js:175
-msgid "Small"
-msgstr "Μικρό"
-
-#: geonode/templates/lang.js:100
-msgid " Share Layer"
-msgstr " Διαμοιρασμός Επιπέδου"
-
-#: geonode/templates/lang.js:101
-msgid ""
-"Error contacting server.\n"
-" Please check the url and try again."
-msgstr ""
-"Σφάλμα στην επικοινωνία με τον εξυπηρετητή.\n"
-"Παρακαλώ ελέγξτε τον σύνδεσμο και δοκιμάστε ξανά."
-
-#: geonode/templates/lang.js:102
-msgid "Layer Properties"
-msgstr "Επιλογές Επιφάνειας"
-
-#: geonode/templates/lang.js:103
-msgid "Change layer format and style"
-msgstr "Αλλαγή μορφής επιφάνειας και στυλ"
-
-#: geonode/templates/lang.js:104
-msgid "Edit Styles"
-msgstr "Επεξεργασία στυλ"
-
-#: geonode/templates/lang.js:105
-msgid "Edit layer styles"
-msgstr "Επεξεργασία στυλ επιφάνειας"
-
-#: geonode/templates/lang.js:106
-msgid "Switch to Google Earth 3D Viewer"
-msgstr "Μεταβείτε στο Google Earth 3D Viewer"
-
-#: geonode/templates/lang.js:107
-msgid ""
-"The map that you are trying to load does not exist.  Creating a new map "
-"instead."
-msgstr ""
-"Ο χάρτης που προσπαθείτε να φορτώσετε δεν υπάρχει. Δημιουργήστε ένα νέο "
-"χάρτη αντί αυτού."
-
-#: geonode/templates/lang.js:108
-msgid "Unknown Map"
-msgstr "Άγνωστος Χάρτης"
-
-#: geonode/templates/lang.js:109
-msgid "Unsupported Layers"
-msgstr "Μη Υποστηριζόμενα Επίπεδα"
-
-#: geonode/templates/lang.js:110
-msgid "The following layers cannot be printed:"
-msgstr "Τα παρακάτω επίπεδα δεν μπορούν να εκτυπωθούν:"
-
-#: geonode/templates/lang.js:111 geonode/templates/lang.js:176
-msgid "Width"
-msgstr "Πλάτος"
-
-#: geonode/templates/lang.js:112
-msgid "Zoom In"
-msgstr "Μεγέθυνση"
-
-#: geonode/templates/lang.js:113
-msgid "Zoom Out"
-msgstr "Σμίκρυνση"
-
-#: geonode/templates/lang.js:114
-msgid "Zoom level"
-msgstr "Επίπεδο μεγέθυνσης"
-
-#: geonode/templates/lang.js:115
-msgid "Zoom Level"
-msgstr "Επίπεδο Ζουμ"
-
-#: geonode/templates/lang.js:116
-msgid "Zoom to Layer Extent"
-msgstr "Ζουμ σε Έκταση Επιφάνειας"
-
-#: geonode/templates/lang.js:117
-msgid "Zoom to Visible Extent"
-msgstr "Ζουμ σε Ορατή Έκταση"
-
-#: geonode/templates/lang.js:118
-msgid "Picasa"
-msgstr ""
-
-#: geonode/templates/lang.js:119
-msgid "YouTube"
-msgstr ""
-
-#: geonode/templates/lang.js:120
-msgid "Harvard Geospatial Library"
-msgstr ""
-
-#: geonode/templates/lang.js:121
-msgid "Upload Layer"
-msgstr "Μεταφόρτωση Επιπέδων"
-
-#: geonode/templates/lang.js:122
-msgid "Create Layer"
-msgstr "Δημιουργία Επιπέδου"
-
-#: geonode/templates/lang.js:123
-msgid "Rectify Layer"
-msgstr "Διόρθωση Επιπέδου"
-
-#: geonode/templates/lang.js:124
-msgid "Submit a Map Service"
-msgstr "Υποβάλετε μια Υπηρεσία Θέασης"
-
-#: geonode/templates/lang.js:125 geonode/templates/lang.js:219
-#: geonode/templates/lang.js:240
-msgid "Search"
-msgstr "Αναζήτηση"
-
-#: geonode/templates/lang.js:126
-msgid "External Data"
-msgstr "Εξωτερικά Δεδομένα"
-
-#: geonode/templates/lang.js:127
-msgid "If you leave this page, unsaved changes will be lost."
-msgstr "Αν φύγετε από την τρέχουσα σελίδα, μη αποθηκευμένες αλλαγές θα χαθούν."
-
-#: geonode/templates/lang.js:128
-msgid "Center for Geographic Analysis"
-msgstr ""
-
-#: geonode/templates/lang.js:129
-msgid "Bigdata and AMAP Innovation Team"
-msgstr ""
-
-#: geonode/templates/lang.js:135
-msgid "Zoom Level {zoom}"
-msgstr "Επίπεδο ζουμ {zoom}"
-
-#: geonode/templates/lang.js:141
-msgid "Create Map"
-msgstr "Δημιουργία Χάρτη"
-
-#: geonode/templates/lang.js:142
-msgid "Export Map"
-msgstr "Εξαγωγή Χάρτη"
-
-#: geonode/templates/lang.js:145
-msgid "Map"
-msgstr "Χάρτης"
-
-#: geonode/templates/lang.js:146 geonode/templates/lang.js:213
-msgid "View this Map"
-msgstr "Δείτε αυτό το Χάρτη"
-
-#: geonode/templates/lang.js:148
-msgid "Open Map"
-msgstr "Ανοίγμα Χάρτη"
-
-#: geonode/templates/lang.js:154 geonode/templates/lang.js:230
-msgid "Name"
-msgstr "Όνομα"
-
-#: geonode/templates/lang.js:155
-msgid "Queryable"
-msgstr "Αναζητήσιμο"
-
-#: geonode/templates/lang.js:162
-msgid "No background"
-msgstr "Χωρίς φόντο"
-
-#: geonode/templates/lang.js:174
-msgid ""
-"Your map is ready to be published to the web!  Simply copy the following "
-"HTML to embed the map in your website:"
-msgstr ""
-"Ο χάρτης σας είναι έτοιμος να δημοσιευθεί στο διαδίκτυο! Απλά αντιγράψτε τον "
-"παρακάτω σύνδεσμο HTML για να ενσωματώσετε τον χάρτη στην ιστοσελίδα σας:"
-
-#: geonode/templates/lang.js:183 geonode/templates/lang.js:259
-msgid "Abstract:"
-msgstr "Περίληψη:"
-
-#: geonode/templates/lang.js:184 geonode/templates/lang.js:261
-msgid "No attribution information is provided for this layer."
-msgstr "Δεν υπάρχουν πληροφορίες απόδοσης για αυτή την επιφάνεια."
-
-#: geonode/templates/lang.js:185 geonode/templates/lang.js:262
-msgid "Provided by:"
-msgstr "Παρέχεται από:"
-
-#: geonode/templates/lang.js:186 geonode/templates/lang.js:263
-msgid "Download:"
-msgstr "Λήψη:"
-
-#: geonode/templates/lang.js:187 geonode/templates/lang.js:265
-msgid "No keywords are listed for this layer."
-msgstr "Δεν υπάρχουν λέξεις-κλειδιά για αυτή την επιφάνεια."
-
-#: geonode/templates/lang.js:188 geonode/templates/lang.js:266
-msgid "Keywords:"
-msgstr "Λέξεις-κλειδιά:"
-
-#: geonode/templates/lang.js:189 geonode/templates/lang.js:267
-msgid "No metadata URLs are defined for this layer."
-msgstr "Δεν ορίζονται διευθύνσεις μεταδεδομένων για αυτό το επίπεδο."
-
-#: geonode/templates/lang.js:190 geonode/templates/lang.js:268
-msgid "Metadata Links:"
-msgstr "Σύνδεσμοι Μεταδεδομένων:"
-
-#: geonode/templates/lang.js:196
-msgid "Paper size:"
-msgstr "Μέγεθος χαρτιού:"
-
-#: geonode/templates/lang.js:197
-msgid "Resolution:"
-msgstr "Ανάλυση:"
-
-#: geonode/templates/lang.js:198
-msgid "Print"
-msgstr "Εκτύπωση"
-
-#: geonode/templates/lang.js:199
-msgid "Enter map title here."
-msgstr "Εισάγετε τον τίτλο χάρτη εδώ."
-
-#: geonode/templates/lang.js:200
-msgid "Include legend?"
-msgstr "Συμπερίληψη υπομνήματος;"
-
-#: geonode/templates/lang.js:201
-msgid "Enter comments here."
-msgstr "Εισάγετε σχόλια εδώ."
-
-#: geonode/templates/lang.js:202
-msgid "Creating PDF..."
-msgstr "Δημιουργία PDF ..."
-
-#: geonode/templates/lang.js:211
-msgid "Last Modified"
-msgstr "Τελευταία Τροποποίηση"
-
-#: geonode/templates/lang.js:214 geonode/templates/lang.js:235
-msgid "Prev"
-msgstr "Προηγούμενη"
-
-#: geonode/templates/lang.js:215 geonode/templates/lang.js:236
-msgid "Next"
-msgstr "Επόμενη"
-
-#: geonode/templates/lang.js:216 geonode/templates/lang.js:237
-msgid "of"
-msgstr "από"
-
-#: geonode/templates/lang.js:217 geonode/templates/lang.js:238
-msgid "Your search did not match any items."
-msgstr "Η αναζήτησή σας δεν επέστρεψε κανένα αποτέλεσμα."
-
-#: geonode/templates/lang.js:218
-msgid "Search Maps"
-msgstr "Αναζήτηση Χαρτών"
-
-#: geonode/templates/lang.js:220
-msgid "Showing"
-msgstr "Έχουν βρεθεί"
-
-#: geonode/templates/lang.js:221
-msgid "Loading"
-msgstr "Φόρτωση"
-
-#: geonode/templates/lang.js:222 geonode/templates/lang.js:243
-msgid "permalink"
-msgstr "μόνιμος σύνδεσμος"
-
-#: geonode/templates/lang.js:229
-msgid "Select"
-msgstr "Επιλέξτε"
-
-#: geonode/templates/lang.js:232
-msgid "Select:"
-msgstr "Επιλέξτε:"
-
-#: geonode/templates/lang.js:233
-msgid "All"
-msgstr "Όλα"
-
-#: geonode/templates/lang.js:234
-msgid "None"
-msgstr "Κανένα"
-
-#: geonode/templates/lang.js:239
-msgid "Keyword"
-msgstr "Λέξη κλειδί"
-
-#: geonode/templates/lang.js:241
-msgid "Showing..."
-msgstr "Εμφανίζονται..."
-
-#: geonode/templates/lang.js:242
-msgid "Loading..."
-msgstr "Φόρτωση..."
-
-#: geonode/templates/lang.js:244
-msgid "You do not have permission to view this data"
-msgstr "Δεν έχετε άδεια για να δείτε αυτά τα δεδομένα"
-
-#: geonode/templates/lang.js:245
-msgid "This data is stored on a remote server"
-msgstr "Αυτά τα δεδομένα είναι αποθηκευμένα σε έναν απομακρυσμένο εξυπηρετητή"
-
-#: geonode/templates/lang.js:246
-msgid "Invalid Query"
-msgstr "Μη Έγκυρο Ερώτημα"
-
-#: geonode/templates/lang.js:247
-msgid "You need to specify a search term"
-msgstr "Θα πρέπει να προσδιορίσετε έναν όρο αναζήτησης"
-
-#: geonode/templates/lang.js:248 geonode/templates/lang.js:250
-msgid "Source"
-msgstr "Πηγή"
-
-#: geonode/templates/lang.js:249
-msgid "Data Type"
-msgstr "Τύπος Δεδομένων"
-
-#: geonode/templates/lang.js:251
-msgid "Date"
-msgstr "Ημερομηνία"
-
-#: geonode/templates/lang.js:252
-msgid "from year"
-msgstr "από έτος"
-
-#: geonode/templates/lang.js:253
-msgid "to year"
-msgstr "έως έτος"
-
-#: geonode/templates/lang.js:254
-msgid "Reset"
-msgstr "Επαναφορά"
-
-#: geonode/templates/lang.js:260
-msgid "No abstract is provided for this layer."
-msgstr "Δεν υπάρχει περίληψη για αυτή την επιφάνεια."
-
-#: geonode/templates/lang.js:264
-msgid "No download URLs are definied for this layer."
-msgstr "Δεν έχουν οριστεί URL λήψης για αυτό το επίπεδο."
-
-#: geonode/templates/lang.js:269
-msgid "Click here for more information about this layer."
-msgstr ""
-"Κάντε κλίκ εδώ για περισσότερες πληροφορίες σχετικά με αυτό το επίπεδο."
-
-#: geonode/templates/lang.js:274
-msgid "Selected Layers"
-msgstr "Επιλεγμένα Επίπεδα"
-
-#: geonode/templates/lang.js:275
-msgid "No Layers Selected"
-msgstr "Κανένα Επιλεγμένο Επίπεδο"
-
-#: geonode/templates/lang.js:277
-msgid "Clear Selected"
-msgstr "Καθαρισμός Επιλεγμένων"
-
-#: geonode/templates/lang.js:278
-msgid "Clear All"
-msgstr "Καθαρισμός Όλων"
-
-#: geonode/templates/lang.js:285
-msgid "Operation Failed"
-msgstr "Η Λειτουργία Απέτυχε"
-
-#: geonode/templates/lang.js:286
-msgid "No layers are currently selected."
-msgstr "Δεν έχει επιλεγεί κανένα επίπεδο μέχρι στιγμής."
-
-#: geonode/templates/lang.js:293
-msgid "Downloading..."
-msgstr "Λήψη..."
-
-#: geonode/templates/lang.js:295
-msgid "Please wait"
-msgstr "Παρακαλώ περιμένετε"
 
 #~ msgid "Your layer was successfully uploaded"
 #~ msgstr "Στρώμα σας ανέβηκε με επιτυχία"
@@ -1025,9 +1141,6 @@ msgstr "Παρακαλώ περιμένετε"
 
 #~ msgid "Hide"
 #~ msgstr "Hide"
-
-#~ msgid "Now"
-#~ msgstr "Now"
 
 #~ msgid "Clock"
 #~ msgstr "Clock"
