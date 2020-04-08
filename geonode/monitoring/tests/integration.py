@@ -394,6 +394,25 @@ class RequestsTestCase(MonitoringTestBase):
                                         interval=interval)
             self.assertIsNotNone(metrics)
 
+    def test_collect_metrics_command(self):
+        """
+        Test that collect metrics command is executed sequentially
+        """
+        self.client.login_user(self.u)
+        self.assertTrue(get_user(self.client).is_authenticated)
+
+        from geonode.monitoring.tasks import collect_metrics
+        execution_times = []
+        for _r in range(10):
+            result = collect_metrics.delay()
+            exec_tuple = result.get()
+            if exec_tuple:
+                execution_times.append(exec_tuple[0])
+                execution_times.append(exec_tuple[1])
+
+        for _r in range(len(execution_times) - 1):
+            self.assertTrue(execution_times[_r] < execution_times[_r + 1])
+
 
 @override_settings(USE_TZ=True)
 class MonitoringUtilsTestCase(MonitoringTestBase):
