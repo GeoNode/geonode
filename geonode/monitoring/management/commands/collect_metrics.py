@@ -17,25 +17,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-import pytz
 import logging
-import timeout_decorator
 
-from datetime import datetime, timedelta
-from dateutil.tz import tzlocal
-
-from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.translation import ugettext_noop as _
 
 from geonode.utils import parse_datetime
-from geonode.monitoring.models import Service
-from geonode.monitoring.service_handlers import get_for_service
-from geonode.monitoring.collector import CollectorAPI
-from geonode.monitoring.utils import TypeChecks
-
-LOCAL_TIMEOUT = 8600
+from geonode.monitoring.utils import TypeChecks, collect_metric
 
 log = logging.getLogger(__name__)
 
@@ -68,80 +56,5 @@ class Command(BaseCommand):
         parser.add_argument('service', type=TypeChecks.service_type, nargs="?",
                             help=_("Collect data from this service only"))
 
-    @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def handle(self, *args, **options):
-        oservice = options['service']
-        if not oservice:
-            services = Service.objects.all()
-        else:
-            services = [oservice]
-        if options['list_services']:
-            print('available services')
-            for s in services:
-                print('  ', s.name, '(', s.url, ')')
-                print('   type', s.service_type.name)
-                print('   running on', s.host.name, s.host.ip)
-                print('   active:', s.active)
-                if s.last_check:
-                    print('    last check:', s.last_check)
-                else:
-                    print('    not checked yet')
-                print(' ')
-            return
-        c = CollectorAPI()
-        for s in services:
-            try:
-                self.run_check(s, collector=c,
-                               since=options['since'],
-                               until=options['until'],
-                               force_check=options['force_check'],
-                               format=options['format'])
-            except Exception as err:
-                log.error("Cannot collect from %s: %s", s, err, exc_info=err)
-                if options['halt_on_errors']:
-                    raise
-        if not options['do_not_clear']:
-            log.debug("Clearing old data")
-            c.clear_old_data()
-        if options['emit_notifications']:
-            log.debug("Processing notifications for %s", options['until'])
-            s = Service.objects.first()
-            interval = s.check_interval
-            now = datetime.utcnow().replace(tzinfo=pytz.utc)
-            notifications_check = now - interval
-            c.emit_notifications() #notifications_check)
-
-    @timeout_decorator.timeout(LOCAL_TIMEOUT)
-    def run_check(self, service, collector, since=None, until=None, force_check=None, format=None):
-        utc = pytz.utc
-        try:
-            local_tz = pytz.timezone(datetime.now(tzlocal()).tzname())
-        except Exception:
-            local_tz = pytz.timezone(settings.TIME_ZONE)
-        now = datetime.utcnow().replace(tzinfo=utc)
-        Handler = get_for_service(service.service_type.name)
-        try:
-            service.last_check = service.last_check.astimezone(utc)
-        except Exception:
-            service.last_check = service.last_check.replace(tzinfo=utc) if service.last_check else now
-
-        if not until:
-            until = now
-        else:
-            until = local_tz.localize(until).astimezone(utc).replace(tzinfo=utc)
-
-        last_check = local_tz.localize(since).astimezone(utc).replace(tzinfo=utc) if since else service.last_check
-        _monitoring_ttl_max = timedelta(days=365) if force_check else settings.MONITORING_DATA_TTL
-        if not last_check or last_check > until or (until - last_check) > _monitoring_ttl_max:
-            last_check = (until - _monitoring_ttl_max)
-            service.last_check = last_check
-
-        # print('[',now ,'] checking', service.name, 'since', last_check, 'until', until)
-        data_in = None
-        h = Handler(service, force_check=force_check)
-        data_in = h.collect(since=last_check, until=until, format=format)
-        if data_in:
-            try:
-                return collector.process(service, data_in, last_check, until)
-            finally:
-                h.mark_as_checked()
+        collect_metric(**options)
