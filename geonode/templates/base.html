@@ -281,7 +281,7 @@
                 <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a></li>
                 <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
                 <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
-                {% if user.is_authenticated %}
+                {% if user.is_authenticated and not READ_ONLY_MODE %}
                     <li role="separator" class="divider"></li>
                     <li><a href="{% url "layer_upload" %}">{% trans "Upload Layer" %}</a></li>
                     {% if USE_GEOSERVER and CREATE_LAYER %}
@@ -290,7 +290,9 @@
                     <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
                 {% endif %}
                 {% if user.is_superuser or user.is_staff %}
+                  {%  if not READ_ONLY_MODE %}
                     <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
+                  {% endif %}
                 {% endif %}
               </ul>
             </li>
@@ -299,7 +301,9 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Maps" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
                 <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
-                <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
+                {% if not READ_ONLY_MODE %}
+                  <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
+                {% endif %}
               </ul>
               {% else %}
               <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Maps" %}</a>
@@ -314,11 +318,11 @@
                 {% if perms.announcements.can_manage %}
                 <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
                 {% endif %}
-                {% if user.is_authenticated %}
+                {% if user.is_authenticated and not READ_ONLY_MODE %}
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
                 {% endif %}
-                {% if user.is_superuser %}
+                {% if user.is_superuser and not READ_ONLY_MODE %}
                 <li><a href="{{SITEURL}}admin/people/profile/add/">{% trans "Add User" %}</a></li>
                 <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
                 {% endif %}
@@ -352,8 +356,8 @@
                 </form>
               </div>
             </li>
-            {% if not user.is_authenticated and ACCOUNT_OPEN_SIGNUP %}
-            <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
+            {% if not user.is_authenticated and ACCOUNT_OPEN_SIGNUP and not READ_ONLY_MODE %}
+              <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
             {% endif %}
             {% if user.is_authenticated %}
             <li>
@@ -445,7 +449,7 @@
             <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a></li>
             <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
             <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
-            {% if user.is_authenticated %}
+            {% if user.is_authenticated and not READ_ONLY_MODE %}
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "layer_upload" %}">{% trans "Upload Layer" %}</a></li>
                 {% if USE_GEOSERVER and CREATE_LAYER %}
@@ -453,8 +457,10 @@
                 {% endif %}
                 <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
             {% endif %}
-            {% if user.is_superuser or user.is_staff %}
+            {% if user.is_staff or user.is_superuser %}
+              {% if not READ_ONLY_MODE %}
                 <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
+              {% endif %}
             {% endif %}
           </ul>
         </div>
@@ -462,8 +468,8 @@
           <ul class="list-unstyled">
             <li>{% trans "Maps" %}</li>
             <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
-            {% if user.is_authenticated %}
-            <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
+            {% if user.is_authenticated and not READ_ONLY_MODE %}
+              <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
             {% endif %}
           </ul>
         </div>
@@ -475,10 +481,10 @@
             {% if perms.announcements.can_manage %}
             <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
             {% endif %}
-            {% if user.is_authenticated %}
+            {% if user.is_authenticated and not READ_ONLY_MODE %}
             <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
             {% endif %}
-            {% if user.is_superuser %}
+            {% if user.is_superuser and not READ_ONLY_MODE %}
             <li><a href="{{SITEURL}}admin/people/profile/add/">{% trans "Add User" %}</a></li>
             <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
             {% endif %}
@@ -700,7 +706,7 @@
     </div>
 
     <div id="confirmMsgBoxModalOK" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <!-- How to use it: 
+      <!-- How to use it:
         $("#confirmMsgBoxModalOK").find('.modal-title').text('{% trans "Title" %}');
         $("#confirmMsgBoxModalOK").find('.modal-body').text('{% trans "Message. Do you want to proceed?" %}');
         $("#confirmMsgBoxModalOK_control_field").val('your_control_value');

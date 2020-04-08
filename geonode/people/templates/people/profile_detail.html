@@ -133,17 +133,23 @@
     </ul>
   {% if user == profile %}
     <ul class="list-group">
-      <li class="list-group-item"><a href="{% url "profile_edit" user.username %}"><i class="fa fa-edit"></i> {% trans "Edit profile" %}</a></li>
+      {% if not READ_ONLY_MODE %}
+        <li class="list-group-item"><a href="{% url "profile_edit" user.username %}"><i class="fa fa-edit"></i> {% trans "Edit profile" %}</a></li>
+      {% endif %}
       <li class="list-group-item"><a href="{% url "socialaccount_connections" %}"><i class="fa fa-sign-in"></i> {% trans "Connected social accounts" %}</a></li>
       <li class="list-group-item"><a href="{% url "account_email" %}"><i class="fa fa-envelope-o"></i> {% trans "Associated e-mails" %}</a></li>
-      <li class="list-group-item"><a href="{% url "account_change_password" %}"><i class="fa fa-lock"></i> {% trans "Set/Change password" %}</a></li>
+      {% if not READ_ONLY_MODE %}
+        <li class="list-group-item"><a href="{% url "account_change_password" %}"><i class="fa fa-lock"></i> {% trans "Set/Change password" %}</a></li>
+      {% endif %}
     </ul>
     <ul class="list-group">
-      <li class="list-group-item"><a href="{% url "layer_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload new layers" %}</a></li>
-      {% if USE_GEOSERVER and CREATE_LAYER %}
-        <li class="list-group-item"><a href="{% url "layer_create" %}"><i class="fa fa-map-o"></i> {% trans "Create a new layer" %}</a></li>
+      {% if not READ_ONLY_MODE %}
+        <li class="list-group-item"><a href="{% url "layer_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload new layers" %}</a></li>
+        {% if USE_GEOSERVER and CREATE_LAYER %}
+          <li class="list-group-item"><a href="{% url "layer_create" %}"><i class="fa fa-map-o"></i> {% trans "Create a new layer" %}</a></li>
+        {% endif %}
+        <li class="list-group-item"><a href="{% url "new_map" %}"><i class="fa fa-map-marker"></i> {% trans "Create a new map" %}</a></li>
       {% endif %}
-      <li class="list-group-item"><a href="{% url "new_map" %}"><i class="fa fa-map-marker"></i> {% trans "Create a new map" %}</a></li>
       <li class="list-group-item"><a href="{% url "user-activity" profile.username %}"><i class="fa fa-fire"></i> {% trans "My Activities" %}</a></li>
       {% if FAVORITE_ENABLED %}
       <li class="list-group-item"><a href="{% url "favorite_list" %}"><i class="fa fa-star"></i> {% trans "Favorites" %}</a></li>
@@ -158,14 +164,16 @@
       {% endif %}
     </ul>
     <ul class="list-group">
-      <li class="list-group-item"><a href="{% url "geonode.invitations:geonode-send-invite" %}"><i class="fa fa-edit"></i> {% trans "Invite Users" %}</a></li>
+      {% if not READ_ONLY_MODE %}
+        <li class="list-group-item"><a href="{% url "geonode.invitations:geonode-send-invite" %}"><i class="fa fa-edit"></i> {% trans "Invite Users" %}</a></li>
+      {% endif %}
       {% if user.is_superuser or user.is_staff %}
           <li class="list-group-item"><a href="{% url "proxy" %}?url={{ OGC_SERVER.default.LOCATION }}"><i class="fa fa-gears"></i> {% trans "GeoServer" %}</a></li>
           <li class="list-group-item"><a href="{% url "admin:index" %}"><i class="fa fa-cog"></i> {% trans "Admin" %}</a></li>
       {% endif %}
     </ul>
   {% else %}
-    {% if user.is_superuser %}
+    {% if user.is_superuser and not READ_ONLY_MODE %}
     <ul class="list-group">
       <li class="list-group-item"><a href="{% url "profile_edit" profile.username %}"><i class="fa fa-edit"></i> {% trans "Edit profile" %}</a></li>
     </ul>

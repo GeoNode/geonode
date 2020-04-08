@@ -22,9 +22,19 @@ import os
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.models import (
-    ResourceBase, MenuPlaceholder, Menu, MenuItem
+    ResourceBase, MenuPlaceholder, Menu, MenuItem, Configuration
 )
 from django.template import Template, Context
+from django.contrib.auth import get_user_model
+from django.test import Client
+from django.shortcuts import reverse
+
+from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
+from geonode import geoserver
+from geonode.decorators import on_ogc_backend
+
+from django.core.management import call_command
+from django.core.management.base import CommandError
 
 
 class ThumbnailTests(GeoNodeBaseTestSupport):
@@ -447,3 +457,163 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
                 self.menu_item_1_0_1.title
             )
         )
+
+
+class DeleteResourcesCommandTests(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super(DeleteResourcesCommandTests, self).setUp()
+
+    def test_delete_resources_no_arguments(self):
+        args = []
+        kwargs = {}
+
+        with self.assertRaises(CommandError) as exception:
+            call_command('delete_resources', *args, **kwargs)
+
+        self.assertIn(
+            'No configuration provided',
+            exception.exception.args[0],
+            '"No configuration" exception expected.'
+        )
+
+    def test_delete_resources_too_many_arguments(self):
+        args = []
+        kwargs = {'config_path': '/example/config.txt', 'map_filters': "*"}
+
+        with self.assertRaises(CommandError) as exception:
+            call_command('delete_resources', *args, **kwargs)
+
+        self.assertIn(
+            'Too many configuration options provided',
+            exception.exception.args[0],
+            '"Too many configuration options provided" exception expected.'
+        )
+
+    def test_delete_resource_config_file_not_existing(self):
+        args = []
+        kwargs = {'config_path': '/example/config.json'}
+
+        with self.assertRaises(CommandError) as exception:
+            call_command('delete_resources', *args, **kwargs)
+
+        self.assertIn(
+            'Specified configuration file does not exist',
+            exception.exception.args[0],
+            '"Specified configuration file does not exist" exception expected.'
+        )
+
+    def test_delete_resource_config_file_empty(self):
+        # create an empty config file
+        config_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'delete_resources_config.json')
+        open(config_file_path, 'a').close()
+
+        args = []
+        kwargs = {'config_path': config_file_path}
+
+        with self.assertRaises(CommandError) as exception:
+            call_command('delete_resources', *args, **kwargs)
+
+        self.assertIn(
+            'Specified configuration file is empty',
+            exception.exception.args[0],
+            '"Specified configuration file is empty" exception expected.'
+        )
+
+        # delete the config file
+        os.remove(config_file_path)
+
+
+class ConfigurationTest(GeoNodeBaseTestSupport):
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_read_only_whitelist(self):
+        web_client = Client()
+
+        # set read-only flag
+        config = Configuration.load()
+        config.read_only = True
+        config.maintenance = False
+        config.save()
+
+        # post to whitelisted URLs as AnonymousUser
+        for url_name in ReadOnlyMiddleware.WHITELISTED_URL_NAMES:
+            if url_name == 'login':
+                response = web_client.post(reverse('admin:login'))
+            elif url_name == 'logout':
+                response = web_client.post(reverse('admin:logout'))
+            else:
+                response = web_client.post(reverse(url_name))
+
+            self.assertNotEqual(response.status_code, 405, 'Whitelisted URL is not available.')
+
+    def test_read_only_casual_user_privileges(self):
+        web_client = Client()
+        url_name = 'autocomplete_region'
+
+        # set read-only flag
+        config = Configuration.load()
+        config.read_only = True
+        config.maintenance = False
+        config.save()
+
+        # get user
+        user = get_user_model().objects.get(username='user1')
+        web_client.force_login(user)
+
+        # post not whitelisted URL as superuser
+        response = web_client.post(reverse(url_name))
+
+        self.assertEqual(response.status_code, 405, 'User is allowed to post to forbidden URL')
+
+    def test_maintenance_whitelist(self):
+
+        web_client = Client()
+
+        # set read-only flag
+        config = Configuration.load()
+        config.read_only = False
+        config.maintenance = True
+        config.save()
+
+        # post to whitelisted URLs as AnonymousUser
+        for url_name in MaintenanceMiddleware.WHITELISTED_URL_NAMES:
+            if url_name == 'login':
+                response = web_client.get(reverse('admin:login'))
+            elif url_name == 'logout':
+                response = web_client.get(reverse('admin:logout'))
+            elif url_name == 'index':
+                # url needed in the middleware only for admin panel login redirection
+                continue
+            else:
+                response = web_client.get(reverse(url_name))
+
+            self.assertNotEqual(response.status_code, 503, 'Whitelisted URL is not available.')
+
+    def test_maintenance_false(self):
+        web_client = Client()
+
+        # set read-only flag
+        config = Configuration.load()
+        config.read_only = False
+        config.maintenance = False
+        config.save()
+
+        # post not whitelisted URL as superuser
+        response = web_client.get('/')
+
+        self.assertNotEqual(response.status_code, 503, 'User is allowed to get index page')
+
+    def test_maintenance_true(self):
+        web_client = Client()
+
+        # set read-only flag
+        config = Configuration.load()
+        config.read_only = False
+        config.maintenance = True
+        config.save()
+
+        # post not whitelisted URL as superuser
+        response = web_client.get('/')
+
+        self.assertEqual(response.status_code, 503, 'User is allowed to get index page')
