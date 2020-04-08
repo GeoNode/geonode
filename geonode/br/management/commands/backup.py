@@ -287,87 +287,73 @@ class Command(BaseCommand):
             if (r.status_code != 200):
                 raise ValueError('Could not reload GeoServer catalog!')
 
-        self.run_geoserver_backup(url, user, passwd, geoserver_bk_file)
-
-    def run_geoserver_backup(self, url, user, passwd, geoserver_bk_file, retries=3):
-
         error_backup = 'Could not successfully backup GeoServer ' + \
                        'catalog [{}rest/br/backup/]: {} - {}'
 
-        _status_code = None
-        _status_text = None
-        # Sometime It happens tht, with Geoserver running in a Docker container
-        # first call to the GS B/R plugin isn't able to dump correctly the catalog.
-        # From our experience the second time it works. We retry three times for safety
-        for _r in range(retries):
-            print("... GeoServer Backup tries {} of {}".format(_r + 1, retries))
-            data = {'backup': {'archiveFile': geoserver_bk_file, 'overwrite': 'true',
-                               'options': {'option': ['BK_CLEANUP_TEMP=true']}}}
-            headers = {
-                'Accept': 'application/json',
-                'Content-type': 'application/json'
-            }
-            r = requests.post(url + 'rest/br/backup/', data=json.dumps(data),
-                              headers=headers, auth=HTTPBasicAuth(user, passwd))
+        data = {'backup': {'archiveFile': geoserver_bk_file, 'overwrite': 'true',
+                           'options': {'option': ['BK_CLEANUP_TEMP=true']}}}
+        headers = {
+            'Accept': 'application/json',
+            'Content-type': 'application/json'
+        }
+        r = requests.post(url + 'rest/br/backup/', data=json.dumps(data),
+                          headers=headers, auth=HTTPBasicAuth(user, passwd))
 
-            if r.status_code in (200, 201, 406):
-                try:
-                    r = requests.get(url + 'rest/br/backup.json',
+        if r.status_code in (200, 201, 406):
+            try:
+                r = requests.get(url + 'rest/br/backup.json',
+                                 headers=headers,
+                                 auth=HTTPBasicAuth(user, passwd),
+                                 timeout=10)
+                if (r.status_code == 200):
+                    gs_backup = r.json()
+                    _url = gs_backup['backups']['backup'][len(gs_backup['backups']['backup']) - 1]['href']
+                    r = requests.get(_url,
                                      headers=headers,
                                      auth=HTTPBasicAuth(user, passwd),
                                      timeout=10)
                     if (r.status_code == 200):
                         gs_backup = r.json()
-                        _url = gs_backup['backups']['backup'][len(gs_backup['backups']['backup']) - 1]['href']
-                        r = requests.get(_url,
-                                         headers=headers,
-                                         auth=HTTPBasicAuth(user, passwd),
-                                         timeout=10)
-                        if (r.status_code == 200):
+
+                if (r.status_code != 200):
+                    raise ValueError(error_backup.format(_url, r.status_code, r.text))
+            except ValueError:
+                raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+            gs_bk_exec_id = gs_backup['backup']['execution']['id']
+            r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
+                             headers=headers,
+                             auth=HTTPBasicAuth(user, passwd),
+                             timeout=10)
+            if (r.status_code == 200):
+                gs_bk_exec_status = gs_backup['backup']['execution']['status']
+                gs_bk_exec_progress = gs_backup['backup']['execution']['progress']
+                gs_bk_exec_progress_updated = '0/0'
+                while (gs_bk_exec_status != 'COMPLETED' and gs_bk_exec_status != 'FAILED'):
+                    if (gs_bk_exec_progress != gs_bk_exec_progress_updated):
+                        gs_bk_exec_progress_updated = gs_bk_exec_progress
+                    r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
+                                     headers=headers,
+                                     auth=HTTPBasicAuth(user, passwd),
+                                     timeout=10)
+                    if (r.status_code == 200):
+
+                        try:
                             gs_backup = r.json()
-
-                    if (r.status_code != 200):
-                        raise ValueError(error_backup.format(_url, r.status_code, r.text))
-                except ValueError:
-                    raise ValueError(error_backup.format(url, r.status_code, r.text))
-
-                gs_bk_exec_id = gs_backup['backup']['execution']['id']
-                r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
-                                 headers=headers,
-                                 auth=HTTPBasicAuth(user, passwd),
-                                 timeout=10)
-                if (r.status_code == 200):
-                    gs_bk_exec_status = gs_backup['backup']['execution']['status']
-                    gs_bk_exec_progress = gs_backup['backup']['execution']['progress']
-                    gs_bk_exec_progress_updated = '0/0'
-                    while (gs_bk_exec_status != 'COMPLETED' and gs_bk_exec_status != 'FAILED'):
-                        if (gs_bk_exec_progress != gs_bk_exec_progress_updated):
-                            gs_bk_exec_progress_updated = gs_bk_exec_progress
-                        r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
-                                         headers=headers,
-                                         auth=HTTPBasicAuth(user, passwd),
-                                         timeout=10)
-                        if (r.status_code == 200):
-
-                            try:
-                                gs_backup = r.json()
-                            except ValueError:
-                                raise ValueError(error_backup.format(url, r.status_code, r.text))
-
-                            gs_bk_exec_status = gs_backup['backup']['execution']['status']
-                            gs_bk_exec_progress = gs_backup['backup']['execution']['progress']
-                            print(str(gs_bk_exec_status) + ' - ' + gs_bk_exec_progress)
-                            time.sleep(3)
-                        else:
+                        except ValueError:
                             raise ValueError(error_backup.format(url, r.status_code, r.text))
 
-                    if gs_bk_exec_status == 'COMPLETED':
-                        return
-                else:
+                        gs_bk_exec_status = gs_backup['backup']['execution']['status']
+                        gs_bk_exec_progress = gs_backup['backup']['execution']['progress']
+                        print(str(gs_bk_exec_status) + ' - ' + gs_bk_exec_progress)
+                        time.sleep(3)
+                    else:
+                        raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+                if gs_bk_exec_status == 'FAILED':
                     raise ValueError(error_backup.format(url, r.status_code, r.text))
-                _status_code = r.status_code
-                _status_text = r.text
-        raise ValueError(error_backup.format(url, _status_code, _status_text))
+            else:
+                raise ValueError(error_backup.format(url, r.status_code, r.text))
 
     def dump_geoserver_raster_data(self, config, settings, target_folder):
         if (config.gs_data_dir):
