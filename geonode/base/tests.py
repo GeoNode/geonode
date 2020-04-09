@@ -22,9 +22,16 @@ import os
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.models import (
-    ResourceBase, MenuPlaceholder, Menu, MenuItem
+    ResourceBase, MenuPlaceholder, Menu, MenuItem, Configuration
 )
 from django.template import Template, Context
+from django.contrib.auth import get_user_model
+from django.test import Client
+from django.shortcuts import reverse
+
+from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
+from geonode import geoserver
+from geonode.decorators import on_ogc_backend
 
 
 class ThumbnailTests(GeoNodeBaseTestSupport):
@@ -447,3 +454,98 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
                 self.menu_item_1_0_1.title
             )
         )
+
+
+class ConfigurationTest(GeoNodeBaseTestSupport):
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_read_only_whitelist(self):
+        web_client = Client()
+
+        # set read-only flag
+        config = Configuration.load()
+        config.read_only = True
+        config.maintenance = False
+        config.save()
+
+        # post to whitelisted URLs as AnonymousUser
+        for url_name in ReadOnlyMiddleware.WHITELISTED_URL_NAMES:
+            if url_name == 'login':
+                response = web_client.post(reverse('admin:login'))
+            elif url_name == 'logout':
+                response = web_client.post(reverse('admin:logout'))
+            else:
+                response = web_client.post(reverse(url_name))
+
+            self.assertNotEqual(response.status_code, 405, 'Whitelisted URL is not available.')
+
+    def test_read_only_casual_user_privileges(self):
+        web_client = Client()
+        url_name = 'csw_global_dispatch'
+
+        # set read-only flag
+        config = Configuration.load()
+        config.read_only = True
+        config.maintenance = False
+        config.save()
+
+        # get user
+        user = get_user_model().objects.get(username='user1')
+        web_client.force_login(user)
+
+        # post not whitelisted URL as superuser
+        response = web_client.post(reverse(url_name))
+
+        self.assertEqual(response.status_code, 405, 'User is allowed to post to forbidden URL')
+
+    def test_maintenance_whitelist(self):
+
+        web_client = Client()
+
+        # set read-only flag
+        config = Configuration.load()
+        config.read_only = False
+        config.maintenance = True
+        config.save()
+
+        # post to whitelisted URLs as AnonymousUser
+        for url_name in MaintenanceMiddleware.WHITELISTED_URL_NAMES:
+            if url_name == 'login':
+                response = web_client.get(reverse('admin:login'))
+            elif url_name == 'logout':
+                response = web_client.get(reverse('admin:logout'))
+            elif url_name == 'index':
+                # url needed in the middleware only for admin panel login redirection
+                continue
+            else:
+                response = web_client.get(reverse(url_name))
+
+            self.assertNotEqual(response.status_code, 503, 'Whitelisted URL is not available.')
+
+    def test_maintenance_false(self):
+        web_client = Client()
+
+        # set read-only flag
+        config = Configuration.load()
+        config.read_only = False
+        config.maintenance = False
+        config.save()
+
+        # post not whitelisted URL as superuser
+        response = web_client.get('/')
+
+        self.assertNotEqual(response.status_code, 503, 'User is allowed to get index page')
+
+    def test_maintenance_true(self):
+        web_client = Client()
+
+        # set read-only flag
+        config = Configuration.load()
+        config.read_only = False
+        config.maintenance = True
+        config.save()
+
+        # post not whitelisted URL as superuser
+        response = web_client.get('/')
+
+        self.assertEqual(response.status_code, 503, 'User is allowed to get index page')

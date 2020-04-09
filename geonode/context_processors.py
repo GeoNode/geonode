@@ -24,6 +24,7 @@ from geonode.catalogue import default_catalogue_backend
 from django.contrib.sites.models import Site
 
 from geonode.notifications_helper import has_notifications
+from geonode.base.models import Configuration
 
 
 def resource_urls(request):
@@ -179,6 +180,7 @@ def resource_urls(request):
         ),
         OGC_SERVER=getattr(settings, 'OGC_SERVER', None),
         DELAYED_SECURITY_SIGNALS=getattr(settings, 'DELAYED_SECURITY_SIGNALS', False),
+        READ_ONLY_MODE=getattr(Configuration.load(), 'read_only', False)
     )
 
     return defaults

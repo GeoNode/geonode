@@ -655,6 +655,8 @@ MIDDLEWARE_CLASSES = (
     # django-oauth-toolkit.
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
+    'geonode.base.middleware.MaintenanceMiddleware',
+    'geonode.base.middleware.ReadOnlyMiddleware',   # a Middleware enabling Read Only mode of Geonode
 )
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
