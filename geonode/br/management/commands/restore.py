@@ -25,9 +25,9 @@ import time
 import shutil
 import zipfile
 import requests
-import tempfile
 import warnings
 from datetime import datetime
+from backports.tempfile import TemporaryDirectory
 
 from .utils import utils
 
@@ -40,6 +40,7 @@ from geonode.utils import (DisableDjangoSignals,
                            copy_tree,
                            extract_archive,
                            chmod_tree)
+from geonode.base.models import Configuration
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -106,7 +107,33 @@ class Command(BaseCommand):
             help="Sends an email notification to the superusers on procedure error or finish."
         )
 
+        parser.add_argument(
+            '--skip-read-only',
+            action='store_true',
+            dest='skip_read_only',
+            default=False,
+            help='Skips activation of the Read Only mode in restore procedure execution.'
+        )
+
     def handle(self, **options):
+        skip_read_only = options.get('skip_read_only')
+        config = Configuration.load()
+
+        # activate read only mode and store it's original config value
+        if not skip_read_only:
+            original_read_only_value = config.read_only
+            config.read_only = True
+            config.save()
+
+        try:
+            self.execute_restore(**options)
+        finally:
+            # restore read only mode's original value
+            if not skip_read_only:
+                config.read_only = original_read_only_value
+                config.save()
+
+    def execute_restore(self, **options):
         self.validate_backup_file_options(**options)
 
         config = utils.Config(options)
@@ -120,6 +147,8 @@ class Command(BaseCommand):
         # choose backup_file from backup_files_dir, if --backup-files-dir was provided
         if backup_files_dir:
             backup_file = self.parse_backup_files_dir(backup_files_dir)
+        else:
+            backup_files_dir = os.path.dirname(backup_file)
 
         # calculate and validate backup archive hash
         backup_md5 = self.validate_backup_file_hash(backup_file)
@@ -148,243 +177,283 @@ class Command(BaseCommand):
         if force_exec or utils.confirm(prompt=message, resp=False):
 
             # Create Target Folder
-            restore_folder = os.path.join(tempfile.gettempdir(), 'restore')
-            if not os.path.exists(restore_folder):
-                os.makedirs(restore_folder)
+            # restore_folder must be located in the directory Geoserver has access to (and it should
+            # not be Geoserver data dir)
+            # for dockerized project-template GeoNode projects, it should be located in /backup-restore,
+            # otherwise default tmp directory is chosen
+            temp_dir_path = backup_files_dir if os.path.exists(backup_files_dir) else None
 
-            # Extract ZIP Archive to Target Folder
-            target_folder = extract_archive(backup_file, restore_folder)
+            with TemporaryDirectory(dir=temp_dir_path) as restore_folder:
 
-            # Write Checks
-            media_root = settings.MEDIA_ROOT
-            media_folder = os.path.join(target_folder, utils.MEDIA_ROOT)
-            static_root = settings.STATIC_ROOT
-            static_folder = os.path.join(target_folder, utils.STATIC_ROOT)
-            static_folders = settings.STATICFILES_DIRS
-            static_files_folders = os.path.join(target_folder, utils.STATICFILES_DIRS)
-            template_folders = []
-            try:
-                template_folders = settings.TEMPLATE_DIRS
-            except Exception:
+                # Extract ZIP Archive to Target Folder
+                target_folder = extract_archive(backup_file, restore_folder)
+
+                # Write Checks
+                media_root = settings.MEDIA_ROOT
+                media_folder = os.path.join(target_folder, utils.MEDIA_ROOT)
+                static_root = settings.STATIC_ROOT
+                static_folder = os.path.join(target_folder, utils.STATIC_ROOT)
+                static_folders = settings.STATICFILES_DIRS
+                static_files_folders = os.path.join(target_folder, utils.STATICFILES_DIRS)
+                template_folders = []
                 try:
-                    template_folders = settings.TEMPLATES[0]['DIRS']
+                    template_folders = settings.TEMPLATE_DIRS
                 except Exception:
-                    pass
-            template_files_folders = os.path.join(target_folder, utils.TEMPLATE_DIRS)
-            locale_folders = settings.LOCALE_PATHS
-            locale_files_folders = os.path.join(target_folder, utils.LOCALE_PATHS)
-
-            try:
-                print(("[Sanity Check] Full Write Access to '{}' ...".format(media_root)))
-                chmod_tree(media_root)
-                print(("[Sanity Check] Full Write Access to '{}' ...".format(static_root)))
-                chmod_tree(static_root)
-                for static_files_folder in static_folders:
-                    print(("[Sanity Check] Full Write Access to '{}' ...".format(static_files_folder)))
-                    chmod_tree(static_files_folder)
-                for template_files_folder in template_folders:
-                    print(("[Sanity Check] Full Write Access to '{}' ...".format(template_files_folder)))
-                    chmod_tree(template_files_folder)
-                for locale_files_folder in locale_folders:
-                    print(("[Sanity Check] Full Write Access to '{}' ...".format(locale_files_folder)))
-                    chmod_tree(locale_files_folder)
-            except Exception as exception:
-                if notify:
-                    restore_notification.delay(admin_emails, backup_file, backup_md5, str(exception))
-
-                print("...Sanity Checks on Folder failed. Please make sure that the current user has full WRITE access to the above folders (and sub-folders or files).")
-                print("Reason:")
-                raise
-
-            if not skip_geoserver:
+                    try:
+                        template_folders = settings.TEMPLATES[0]['DIRS']
+                    except Exception:
+                        pass
+                template_files_folders = os.path.join(target_folder, utils.TEMPLATE_DIRS)
+                locale_folders = settings.LOCALE_PATHS
+                locale_files_folders = os.path.join(target_folder, utils.LOCALE_PATHS)
 
                 try:
-                    self.restore_geoserver_backup(settings, target_folder)
-                    self.restore_geoserver_raster_data(config, settings, target_folder)
-                    self.restore_geoserver_vector_data(config, settings, target_folder)
-                    print("Restoring geoserver external resources")
-                    self.restore_geoserver_externals(config, settings, target_folder)
+                    print(("[Sanity Check] Full Write Access to '{}' ...".format(media_root)))
+                    chmod_tree(media_root)
+                    print(("[Sanity Check] Full Write Access to '{}' ...".format(static_root)))
+                    chmod_tree(static_root)
+                    for static_files_folder in static_folders:
+                        print(("[Sanity Check] Full Write Access to '{}' ...".format(static_files_folder)))
+                        chmod_tree(static_files_folder)
+                    for template_files_folder in template_folders:
+                        print(("[Sanity Check] Full Write Access to '{}' ...".format(template_files_folder)))
+                        chmod_tree(template_files_folder)
+                    for locale_files_folder in locale_folders:
+                        print(("[Sanity Check] Full Write Access to '{}' ...".format(locale_files_folder)))
+                        chmod_tree(locale_files_folder)
+                except Exception as exception:
+                    if notify:
+                        restore_notification.delay(admin_emails, backup_file, backup_md5, str(exception))
+
+                    print(
+                        "...Sanity Checks on Folder failed. Please make sure that the current user has full "
+                        "WRITE access to the above folders (and sub-folders or files)."
+                    )
+                    print("Reason:")
+                    raise
+
+                if not skip_geoserver:
+
+                    try:
+                        self.restore_geoserver_backup(settings, target_folder)
+                        self.restore_geoserver_raster_data(config, settings, target_folder)
+                        self.restore_geoserver_vector_data(config, settings, target_folder)
+                        print("Restoring geoserver external resources")
+                        self.restore_geoserver_externals(config, settings, target_folder)
+
+                    except Exception as exception:
+                        if notify:
+                            restore_notification.delay(admin_emails, backup_file, backup_md5, str(exception))
+
+                        raise exception
+
+                else:
+                    print("Skipping geoserver backup restore")
+
+                # Prepare Target DB
+                try:
+                    call_command('migrate', interactive=False)
+
+                    db_name = settings.DATABASES['default']['NAME']
+                    db_user = settings.DATABASES['default']['USER']
+                    db_port = settings.DATABASES['default']['PORT']
+                    db_host = settings.DATABASES['default']['HOST']
+                    db_passwd = settings.DATABASES['default']['PASSWORD']
+
+                    utils.patch_db(db_name, db_user, db_port, db_host, db_passwd, settings.MONITORING_ENABLED)
+                except Exception:
+                    traceback.print_exc()
+
+                try:
+                    # Deactivate GeoNode Signals
+                    with DisableDjangoSignals():
+                        # Flush DB
+                        try:
+                            db_name = settings.DATABASES['default']['NAME']
+                            db_user = settings.DATABASES['default']['USER']
+                            db_port = settings.DATABASES['default']['PORT']
+                            db_host = settings.DATABASES['default']['HOST']
+                            db_passwd = settings.DATABASES['default']['PASSWORD']
+
+                            utils.flush_db(db_name, db_user, db_port, db_host, db_passwd)
+                        except Exception:
+                            try:
+                                call_command('flush', interactive=False)
+                            except Exception:
+                                traceback.print_exc()
+                                raise
+
+                        # Restore Fixtures
+                        for app_name, dump_name in zip(config.app_names, config.dump_names):
+                            fixture_file = os.path.join(target_folder, dump_name+'.json')
+
+                            print("Deserializing "+fixture_file)
+                            try:
+                                call_command('loaddata', fixture_file, app_label=app_name)
+                            except Exception:
+                                traceback.print_exc()
+                                print("WARNING: No valid fixture data found for '"+dump_name+"'.")
+                                # helpers.load_fixture(app_name, fixture_file)
+                                raise
+
+                        # Restore Media Root
+                        try:
+                            shutil.rmtree(media_root)
+                        except Exception:
+                            pass
+
+                        if not os.path.exists(media_root):
+                            os.makedirs(media_root)
+
+                        copy_tree(media_folder, media_root)
+                        chmod_tree(media_root)
+                        print("Media Files Restored into '"+media_root+"'.")
+
+                        # Restore Static Root
+                        try:
+                            shutil.rmtree(static_root)
+                        except Exception:
+                            pass
+
+                        if not os.path.exists(static_root):
+                            os.makedirs(static_root)
+
+                        copy_tree(static_folder, static_root)
+                        chmod_tree(static_root)
+                        print("Static Root Restored into '"+static_root+"'.")
+
+                        # Restore Static Root
+                        try:
+                            shutil.rmtree(static_root)
+                        except Exception:
+                            pass
+
+                        if not os.path.exists(static_root):
+                            os.makedirs(static_root)
+
+                        copy_tree(static_folder, static_root)
+                        chmod_tree(static_root)
+                        print("Static Root Restored into '"+static_root+"'.")
+
+                        # Restore Static Folders
+                        for static_files_folder in static_folders:
+
+                            # skip restoration of static files of apps not located under LOCAL_ROOT path
+                            # (check to prevent overriding files from site-packages in project-template based GeoNode projects)
+                            if getattr(settings, 'LOCAL_ROOT', None) and not static_files_folder.startswith(settings.LOCAL_ROOT):
+                                print(
+                                    "Skipping static directory: {}. It's not located under LOCAL_ROOT path: {}.".format(
+                                        static_files_folder, settings.LOCAL_ROOT
+                                    )
+                                )
+                                continue
+
+                            try:
+                                shutil.rmtree(static_files_folder)
+                            except Exception:
+                                pass
+
+                            if not os.path.exists(static_files_folder):
+                                os.makedirs(static_files_folder)
+
+                            copy_tree(os.path.join(static_files_folders,
+                                                   os.path.basename(os.path.normpath(static_files_folder))),
+                                      static_files_folder)
+                            chmod_tree(static_files_folder)
+                            print "Static Files Restored into '"+static_files_folder+"'."
+
+                        # Restore Template Folders
+                        for template_files_folder in template_folders:
+
+                            # skip restoration of template files of apps not located under LOCAL_ROOT path
+                            # (check to prevent overriding files from site-packages in project-template based GeoNode projects)
+                            if getattr(settings, 'LOCAL_ROOT', None) and not template_files_folder.startswith(settings.LOCAL_ROOT):
+                                print(
+                                    "Skipping template directory: {}. It's not located under LOCAL_ROOT path: {}.".format(
+                                        template_files_folder, settings.LOCAL_ROOT
+                                    )
+                                )
+                                continue
+
+                            try:
+                                shutil.rmtree(template_files_folder)
+                            except Exception:
+                                pass
+
+                            if not os.path.exists(template_files_folder):
+                                os.makedirs(template_files_folder)
+
+                            copy_tree(os.path.join(template_files_folders,
+                                                   os.path.basename(os.path.normpath(template_files_folder))),
+                                      template_files_folder)
+                            chmod_tree(template_files_folder)
+                            print("Template Files Restored into '"+template_files_folder+"'.")
+
+                        # Restore Locale Folders
+                        for locale_files_folder in locale_folders:
+
+                            # skip restoration of locale files of apps not located under LOCAL_ROOT path
+                            # (check to prevent overriding files from site-packages in project-template based GeoNode projects)
+                            if getattr(settings, 'LOCAL_ROOT', None) and not locale_files_folder.startswith(settings.LOCAL_ROOT):
+                                print(
+                                    "Skipping locale directory: {}. It's not located under LOCAL_ROOT path: {}.".format(
+                                        locale_files_folder, settings.LOCAL_ROOT
+                                    )
+                                )
+                                continue
+
+                            try:
+                                shutil.rmtree(locale_files_folder)
+                            except Exception:
+                                pass
+
+                            if not os.path.exists(locale_files_folder):
+                                os.makedirs(locale_files_folder)
+
+                            copy_tree(os.path.join(locale_files_folders,
+                                                   os.path.basename(os.path.normpath(locale_files_folder))),
+                                      locale_files_folder)
+                            chmod_tree(locale_files_folder)
+                            print("Locale Files Restored into '"+locale_files_folder+"'.")
+
+                        call_command('collectstatic', interactive=False)
+
+                        # Cleanup DB
+                        try:
+                            db_name = settings.DATABASES['default']['NAME']
+                            db_user = settings.DATABASES['default']['USER']
+                            db_port = settings.DATABASES['default']['PORT']
+                            db_host = settings.DATABASES['default']['HOST']
+                            db_passwd = settings.DATABASES['default']['PASSWORD']
+
+                            utils.cleanup_db(db_name, db_user, db_port, db_host, db_passwd)
+                        except Exception:
+                            traceback.print_exc()
+
+                    # store backup info
+                    restored_backup = RestoredBackup(
+                        name=backup_file.rsplit('/', 1)[-1],
+                        archive_md5=backup_md5,
+                        creation_date=datetime.fromtimestamp(os.path.getmtime(backup_file))
+                    )
+                    restored_backup.save()
 
                 except Exception as exception:
                     if notify:
                         restore_notification.delay(admin_emails, backup_file, backup_md5, str(exception))
 
-                    raise exception
+                finally:
+                    call_command('migrate', interactive=False, fake=True)
 
-            else:
-                print("Skipping geoserver backup restore")
-
-            # Prepare Target DB
-            try:
-                call_command('migrate', interactive=False)
-
-                db_name = settings.DATABASES['default']['NAME']
-                db_user = settings.DATABASES['default']['USER']
-                db_port = settings.DATABASES['default']['PORT']
-                db_host = settings.DATABASES['default']['HOST']
-                db_passwd = settings.DATABASES['default']['PASSWORD']
-
-                utils.patch_db(db_name, db_user, db_port, db_host, db_passwd, settings.MONITORING_ENABLED)
-            except Exception:
-                traceback.print_exc()
-
-            try:
-                # Deactivate GeoNode Signals
-                with DisableDjangoSignals():
-                    # Flush DB
-                    try:
-                        db_name = settings.DATABASES['default']['NAME']
-                        db_user = settings.DATABASES['default']['USER']
-                        db_port = settings.DATABASES['default']['PORT']
-                        db_host = settings.DATABASES['default']['HOST']
-                        db_passwd = settings.DATABASES['default']['PASSWORD']
-
-                        utils.flush_db(db_name, db_user, db_port, db_host, db_passwd)
-                    except Exception:
-                        try:
-                            call_command('flush', interactive=False)
-                        except Exception:
-                            traceback.print_exc()
-                            raise
-
-                    # Restore Fixtures
-                    for app_name, dump_name in zip(config.app_names, config.dump_names):
-                        fixture_file = os.path.join(target_folder, dump_name+'.json')
-
-                        print("Deserializing "+fixture_file)
-                        try:
-                            call_command('loaddata', fixture_file, app_label=app_name)
-                        except Exception:
-                            traceback.print_exc()
-                            print("WARNING: No valid fixture data found for '"+dump_name+"'.")
-                            # helpers.load_fixture(app_name, fixture_file)
-                            raise
-
-                    # Restore Media Root
-                    try:
-                        shutil.rmtree(media_root)
-                    except Exception:
-                        pass
-
-                    if not os.path.exists(media_root):
-                        os.makedirs(media_root)
-
-                    copy_tree(media_folder, media_root)
-                    chmod_tree(media_root)
-                    print("Media Files Restored into '"+media_root+"'.")
-
-                    # Restore Static Root
-                    try:
-                        shutil.rmtree(static_root)
-                    except Exception:
-                        pass
-
-                    if not os.path.exists(static_root):
-                        os.makedirs(static_root)
-
-                    copy_tree(static_folder, static_root)
-                    chmod_tree(static_root)
-                    print("Static Root Restored into '"+static_root+"'.")
-
-                    # Restore Static Root
-                    try:
-                        shutil.rmtree(static_root)
-                    except Exception:
-                        pass
-
-                    if not os.path.exists(static_root):
-                        os.makedirs(static_root)
-
-                    copy_tree(static_folder, static_root)
-                    chmod_tree(static_root)
-                    print("Static Root Restored into '"+static_root+"'.")
-
-                    # Restore Static Folders
-                    for static_files_folder in static_folders:
-                        try:
-                            shutil.rmtree(static_files_folder)
-                        except Exception:
-                            pass
-
-                        if not os.path.exists(static_files_folder):
-                            os.makedirs(static_files_folder)
-
-                        copy_tree(os.path.join(static_files_folders,
-                                               os.path.basename(os.path.normpath(static_files_folder))),
-                                  static_files_folder)
-                        chmod_tree(static_files_folder)
-                        print("Static Files Restored into '"+static_files_folder+"'.")
-
-                    # Restore Template Folders
-                    for template_files_folder in template_folders:
-                        try:
-                            shutil.rmtree(template_files_folder)
-                        except Exception:
-                            pass
-
-                        if not os.path.exists(template_files_folder):
-                            os.makedirs(template_files_folder)
-
-                        copy_tree(os.path.join(template_files_folders,
-                                               os.path.basename(os.path.normpath(template_files_folder))),
-                                  template_files_folder)
-                        chmod_tree(template_files_folder)
-                        print("Template Files Restored into '"+template_files_folder+"'.")
-
-                    # Restore Locale Folders
-                    for locale_files_folder in locale_folders:
-                        try:
-                            shutil.rmtree(locale_files_folder)
-                        except Exception:
-                            pass
-
-                        if not os.path.exists(locale_files_folder):
-                            os.makedirs(locale_files_folder)
-
-                        copy_tree(os.path.join(locale_files_folders,
-                                               os.path.basename(os.path.normpath(locale_files_folder))),
-                                  locale_files_folder)
-                        chmod_tree(locale_files_folder)
-                        print("Locale Files Restored into '"+locale_files_folder+"'.")
-
-                    call_command('collectstatic', interactive=False)
-
-                    # Cleanup DB
-                    try:
-                        db_name = settings.DATABASES['default']['NAME']
-                        db_user = settings.DATABASES['default']['USER']
-                        db_port = settings.DATABASES['default']['PORT']
-                        db_host = settings.DATABASES['default']['HOST']
-                        db_passwd = settings.DATABASES['default']['PASSWORD']
-
-                        utils.cleanup_db(db_name, db_user, db_port, db_host, db_passwd)
-                    except Exception:
-                        traceback.print_exc()
-
-                # store backup info
-                restored_backup = RestoredBackup(
-                    name=backup_file.rsplit('/', 1)[-1],
-                    archive_md5=backup_md5,
-                    creation_date=datetime.fromtimestamp(os.path.getmtime(backup_file))
-                )
-                restored_backup.save()
-
-            except Exception as exception:
                 if notify:
-                    restore_notification.delay(admin_emails, backup_file, backup_md5, str(exception))
+                    restore_notification.delay(admin_emails, backup_file, backup_md5)
 
-            finally:
-                call_command('migrate', interactive=False, fake=True)
-
-            if notify:
-                restore_notification.delay(admin_emails, backup_file, backup_md5)
-
-            print("HINT: If you migrated from another site, do not forget to run the command 'migrate_baseurl' to fix Links")
-            print(
-                " e.g.:  DJANGO_SETTINGS_MODULE=my_geonode.settings python manage.py migrate_baseurl "
-                "--source-address=my-host-dev.geonode.org --target-address=my-host-prod.geonode.org"
-            )
-            print("Restore finished.")
+                print("HINT: If you migrated from another site, do not forget to run the command 'migrate_baseurl' to fix Links")
+                print(
+                    " e.g.:  DJANGO_SETTINGS_MODULE=my_geonode.settings python manage.py migrate_baseurl "
+                    "--source-address=my-host-dev.geonode.org --target-address=my-host-prod.geonode.org"
+                )
+                print("Restore finished.")
 
     def validate_backup_file_options(self, **options):
         """
@@ -499,11 +568,14 @@ class Command(BaseCommand):
                   'file "{}" not found.'.format(geoserver_bk_file)))
             return
 
-        print("Restoring 'GeoServer Catalog ["+url+"]' into '"+geoserver_bk_file+"'.")
+        print "Restoring 'GeoServer Catalog ["+url+"]' from '"+geoserver_bk_file+"'."
 
         # Best Effort Restore: 'options': {'option': ['BK_BEST_EFFORT=true']}
         data = {'restore': {'archiveFile': geoserver_bk_file, 'options': {}}}
-        headers = {'Content-type': 'application/json'}
+        headers = {
+            'Accept': 'application/json',
+            'Content-type': 'application/json'
+        }
         r = requests.post(url + 'rest/br/restore/', data=json.dumps(data),
                           headers=headers, auth=HTTPBasicAuth(user, passwd))
         error_backup = 'Could not successfully restore GeoServer ' + \
@@ -512,14 +584,18 @@ class Command(BaseCommand):
         if r.status_code in (200, 201, 406):
             try:
                 r = requests.get(url + 'rest/br/restore.json',
+                                 headers=headers,
                                  auth=HTTPBasicAuth(user, passwd),
                                  timeout=10)
+
                 if (r.status_code == 200):
                     gs_backup = r.json()
                     _url = gs_backup['restores']['restore'][len(gs_backup['restores']['restore']) - 1]['href']
                     r = requests.get(_url,
+                                     headers=headers,
                                      auth=HTTPBasicAuth(user, passwd),
                                      timeout=10)
+
                     if (r.status_code == 200):
                         gs_backup = r.json()
 
@@ -530,8 +606,10 @@ class Command(BaseCommand):
 
             gs_bk_exec_id = gs_backup['restore']['execution']['id']
             r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
+                             headers=headers,
                              auth=HTTPBasicAuth(user, passwd),
                              timeout=10)
+
             if (r.status_code == 200):
                 gs_bk_exec_status = gs_backup['restore']['execution']['status']
                 gs_bk_exec_progress = gs_backup['restore']['execution']['progress']
@@ -540,8 +618,10 @@ class Command(BaseCommand):
                     if (gs_bk_exec_progress != gs_bk_exec_progress_updated):
                         gs_bk_exec_progress_updated = gs_bk_exec_progress
                     r = requests.get(url + 'rest/br/restore/' + str(gs_bk_exec_id) + '.json',
+                                     headers=headers,
                                      auth=HTTPBasicAuth(user, passwd),
                                      timeout=10)
+
                     if (r.status_code == 200):
 
                         try:
@@ -558,18 +638,21 @@ class Command(BaseCommand):
             else:
                 raise ValueError(error_backup.format(url, r.status_code, r.text))
 
+        else:
+            raise ValueError(error_backup.format(url, r.status_code, r.text))
+
     def restore_geoserver_raster_data(self, config, settings, target_folder):
         if (config.gs_data_dir):
             if (config.gs_dump_raster_data):
 
-                gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
+                gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'geonode')
                 if not os.path.exists(gs_data_folder):
                     print(('Skipping geoserver raster data restore: ' +
                           'directory "{}" not found.'.format(gs_data_folder)))
                     return
 
                 # Restore '$config.gs_data_dir/data/geonode'
-                gs_data_root = os.path.join(config.gs_data_dir, 'data', 'geonode')
+                gs_data_root = os.path.join(config.gs_data_dir, 'geonode')
                 if not os.path.isabs(gs_data_root):
                     gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
 
@@ -611,7 +694,7 @@ class Command(BaseCommand):
         """Restore Vectorial Data from DB"""
         if (config.gs_dump_vector_data):
 
-            gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
+            gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'geonode')
             if not os.path.exists(gs_data_folder):
                 print(('Skipping geoserver vector data restore: ' +
                       'directory "{}" not found.'.format(gs_data_folder)))

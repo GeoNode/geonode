@@ -40,6 +40,8 @@ from geonode.utils import (DisableDjangoSignals,
                            zip_dir,
                            copy_tree)
 
+from geonode.base.models import Configuration
+
 
 class Command(BaseCommand):
 
@@ -79,6 +81,205 @@ class Command(BaseCommand):
             dest='backup_dir',
             help='Destination folder where to store the backup archive. It must be writable.')
 
+        parser.add_argument(
+            '--skip-read-only',
+            action='store_true',
+            dest='skip_read_only',
+            default=False,
+            help='Skips activation of the Read Only mode in backup procedure execution.'
+        )
+
+    def handle(self, **options):
+        skip_read_only = options.get('skip_read_only')
+        config = Configuration.load()
+
+        # activate read only mode and store it's original config value
+        if not skip_read_only:
+            original_read_only_value = config.read_only
+            config.read_only = True
+            config.save()
+
+        try:
+            # execute backup procedure
+            self.execute_backup(**options)
+        finally:
+            # restore read only mode's original value
+            if not skip_read_only:
+                config.read_only = original_read_only_value
+                config.save()
+
+    def execute_backup(self, **options):
+        # ignore_errors = options.get('ignore_errors')
+        config = utils.Config(options)
+        force_exec = options.get('force_exec')
+        backup_dir = options.get('backup_dir')
+        skip_geoserver = options.get('skip_geoserver')
+
+        if not backup_dir or len(backup_dir) == 0:
+            raise CommandError("Destination folder '--backup-dir' is mandatory")
+
+        print("Before proceeding with the Backup, please ensure that:")
+        print(" 1. The backend (DB or whatever) is accessible and you have rights")
+        print(" 2. The GeoServer is up and running and reachable from this machine")
+        message = 'You want to proceed?'
+
+        if force_exec or utils.confirm(prompt=message, resp=False):
+
+            # Create Target Folder
+            dir_time_suffix = get_dir_time_suffix()
+            target_folder = os.path.join(backup_dir, dir_time_suffix)
+            if not os.path.exists(target_folder):
+                os.makedirs(target_folder)
+            # Temporary folder to store backup files. It will be deleted at the end.
+            os.chmod(target_folder, 0o777)
+
+            if not skip_geoserver:
+                self.create_geoserver_backup(settings, target_folder)
+                self.dump_geoserver_raster_data(config, settings, target_folder)
+                self.dump_geoserver_vector_data(config, settings, target_folder)
+                print("Duming geoserver external resources")
+                self.dump_geoserver_externals(config, settings, target_folder)
+            else:
+                print("Skipping geoserver backup")
+
+            # Deactivate GeoNode Signals
+            with DisableDjangoSignals():
+
+                # Dump Fixtures
+                for app_name, dump_name in zip(config.app_names, config.dump_names):
+                    # prevent dumping BackupRestore application
+                    if app_name == 'br':
+                        continue
+
+                    print("Dumping '"+app_name+"' into '"+dump_name+".json'.")
+                    # Point stdout at a file for dumping data to.
+                    output = open(os.path.join(target_folder, dump_name+'.json'), 'w')
+                    call_command('dumpdata', app_name, format='json', indent=2, stdout=output)
+                    output.close()
+
+                # Store Media Root
+                media_root = settings.MEDIA_ROOT
+                media_folder = os.path.join(target_folder, utils.MEDIA_ROOT)
+                if not os.path.exists(media_folder):
+                    os.makedirs(media_folder)
+
+                copy_tree(media_root, media_folder)
+                print("Saved Media Files from '"+media_root+"'.")
+
+                # Store Static Root
+                static_root = settings.STATIC_ROOT
+                static_folder = os.path.join(target_folder, utils.STATIC_ROOT)
+                if not os.path.exists(static_folder):
+                    os.makedirs(static_folder)
+
+                copy_tree(static_root, static_folder)
+                print("Saved Static Root from '"+static_root+"'.")
+
+                # Store Static Folders
+                static_folders = settings.STATICFILES_DIRS
+                static_files_folders = os.path.join(target_folder, utils.STATICFILES_DIRS)
+                if not os.path.exists(static_files_folders):
+                    os.makedirs(static_files_folders)
+
+                for static_files_folder in static_folders:
+
+                    # skip dumping of static files of apps not located under LOCAL_ROOT path
+                    # (check to prevent saving files from site-packages in project-template based GeoNode projects)
+                    if getattr(settings, 'LOCAL_ROOT', None) and not static_files_folder.startswith(settings.LOCAL_ROOT):
+                        print(
+                            "Skipping static directory: {}. It's not located under LOCAL_ROOT path: {}.".format(
+                                static_files_folder, settings.LOCAL_ROOT
+                            )
+                        )
+                        continue
+
+                    static_folder = os.path.join(static_files_folders,
+                                                 os.path.basename(os.path.normpath(static_files_folder)))
+                    if not os.path.exists(static_folder):
+                        os.makedirs(static_folder)
+
+                    copy_tree(static_files_folder, static_folder)
+                    print("Saved Static Files from '"+static_files_folder+"'.")
+
+                # Store Template Folders
+                template_folders = []
+                try:
+                    template_folders = settings.TEMPLATE_DIRS
+                except Exception:
+                    try:
+                        template_folders = settings.TEMPLATES[0]['DIRS']
+                    except Exception:
+                        pass
+                template_files_folders = os.path.join(target_folder, utils.TEMPLATE_DIRS)
+                if not os.path.exists(template_files_folders):
+                    os.makedirs(template_files_folders)
+
+                for template_files_folder in template_folders:
+
+                    # skip dumping of template files of apps not located under LOCAL_ROOT path
+                    # (check to prevent saving files from site-packages in project-template based GeoNode projects)
+                    if getattr(settings, 'LOCAL_ROOT', None) and not template_files_folder.startswith(settings.LOCAL_ROOT):
+                        print(
+                            "Skipping template directory: {}. It's not located under LOCAL_ROOT path: {}.".format(
+                                template_files_folder, settings.LOCAL_ROOT
+                            )
+                        )
+                        continue
+
+                    template_folder = os.path.join(template_files_folders,
+                                                   os.path.basename(os.path.normpath(template_files_folder)))
+                    if not os.path.exists(template_folder):
+                        os.makedirs(template_folder)
+
+                    copy_tree(template_files_folder, template_folder)
+                    print("Saved Template Files from '"+template_files_folder+"'.")
+
+                # Store Locale Folders
+                locale_folders = settings.LOCALE_PATHS
+                locale_files_folders = os.path.join(target_folder, utils.LOCALE_PATHS)
+                if not os.path.exists(locale_files_folders):
+                    os.makedirs(locale_files_folders)
+
+                for locale_files_folder in locale_folders:
+
+                    # skip dumping of locale files of apps not located under LOCAL_ROOT path
+                    # (check to prevent saving files from site-packages in project-template based GeoNode projects)
+                    if getattr(settings, 'LOCAL_ROOT', None) and not locale_files_folder.startswith(settings.LOCAL_ROOT):
+                        print(
+                            "Skipping locale directory: {}. It's not located under LOCAL_ROOT path: {}.".format(
+                                locale_files_folder, settings.LOCAL_ROOT
+                            )
+                        )
+                        continue
+
+                    locale_folder = os.path.join(locale_files_folders,
+                                                 os.path.basename(os.path.normpath(locale_files_folder)))
+                    if not os.path.exists(locale_folder):
+                        os.makedirs(locale_folder)
+
+                    copy_tree(locale_files_folder, locale_folder)
+                    print("Saved Locale Files from '"+locale_files_folder+"'.")
+
+                # Create Final ZIP Archive
+                backup_archive = os.path.join(backup_dir, dir_time_suffix+'.zip')
+                zip_dir(target_folder, backup_archive)
+
+                # Generate a md5 hash of a backup archive and save it
+                backup_md5_file = os.path.join(backup_dir, dir_time_suffix+'.md5')
+                zip_archive_md5 = utils.md5_file_hash(backup_archive)
+                with open(backup_md5_file, 'w') as md5_file:
+                    md5_file.write(zip_archive_md5)
+
+                # Clean-up Temp Folder
+                try:
+                    shutil.rmtree(target_folder)
+                except Exception:
+                    print("WARNING: Could not be possible to delete the temp folder: '" + str(target_folder) + "'")
+
+                print("Backup Finished. Archive generated.")
+
+                return str(os.path.join(backup_dir, dir_time_suffix+'.zip'))
+
     def create_geoserver_backup(self, settings, target_folder):
         # Create GeoServer Backup
         url = settings.OGC_SERVER['default']['LOCATION']
@@ -87,25 +288,40 @@ class Command(BaseCommand):
         geoserver_bk_file = os.path.join(target_folder, 'geoserver_catalog.zip')
 
         print("Dumping 'GeoServer Catalog ["+url+"]' into '"+geoserver_bk_file+"'.")
+        r = requests.put(url + 'rest/reset/',
+                         auth=HTTPBasicAuth(user, passwd))
+        if r.status_code != 200:
+            if (r.status_code != 200):
+                raise ValueError('Could not reset GeoServer catalog!')
+        r = requests.put(url + 'rest/reload/',
+                         auth=HTTPBasicAuth(user, passwd))
+        if r.status_code != 200:
+            if (r.status_code != 200):
+                raise ValueError('Could not reload GeoServer catalog!')
+
+        error_backup = 'Could not successfully backup GeoServer ' + \
+                       'catalog [{}rest/br/backup/]: {} - {}'
+
         data = {'backup': {'archiveFile': geoserver_bk_file, 'overwrite': 'true',
-                           'options': {'option': ['BK_BEST_EFFORT=true']}}}
+                           'options': {'option': ['BK_CLEANUP_TEMP=true']}}}
         headers = {
-            'Accept': 'text/plain',
+            'Accept': 'application/json',
             'Content-type': 'application/json'
         }
         r = requests.post(url + 'rest/br/backup/', data=json.dumps(data),
                           headers=headers, auth=HTTPBasicAuth(user, passwd))
-        error_backup = 'Could not successfully backup GeoServer ' + \
-                       'catalog [{}rest/br/backup/]: {} - {}'
+
         if r.status_code in (200, 201, 406):
             try:
                 r = requests.get(url + 'rest/br/backup.json',
+                                 headers=headers,
                                  auth=HTTPBasicAuth(user, passwd),
                                  timeout=10)
                 if (r.status_code == 200):
                     gs_backup = r.json()
                     _url = gs_backup['backups']['backup'][len(gs_backup['backups']['backup']) - 1]['href']
                     r = requests.get(_url,
+                                     headers=headers,
                                      auth=HTTPBasicAuth(user, passwd),
                                      timeout=10)
                     if (r.status_code == 200):
@@ -118,6 +334,7 @@ class Command(BaseCommand):
 
             gs_bk_exec_id = gs_backup['backup']['execution']['id']
             r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
+                             headers=headers,
                              auth=HTTPBasicAuth(user, passwd),
                              timeout=10)
             if (r.status_code == 200):
@@ -128,6 +345,7 @@ class Command(BaseCommand):
                     if (gs_bk_exec_progress != gs_bk_exec_progress_updated):
                         gs_bk_exec_progress_updated = gs_bk_exec_progress
                     r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
+                                     headers=headers,
                                      auth=HTTPBasicAuth(user, passwd),
                                      timeout=10)
                     if (r.status_code == 200):
@@ -143,6 +361,9 @@ class Command(BaseCommand):
                         time.sleep(3)
                     else:
                         raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+                if gs_bk_exec_status == 'FAILED':
+                    raise ValueError(error_backup.format(url, r.status_code, r.text))
             else:
                 raise ValueError(error_backup.format(url, r.status_code, r.text))
 
@@ -150,10 +371,10 @@ class Command(BaseCommand):
         if (config.gs_data_dir):
             if (config.gs_dump_raster_data):
                 # Dump '$config.gs_data_dir/data/geonode'
-                gs_data_root = os.path.join(config.gs_data_dir, 'data', 'geonode')
+                gs_data_root = os.path.join(config.gs_data_dir, 'geonode')
                 if not os.path.isabs(gs_data_root):
                     gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
-                gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
+                gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'geonode')
                 if not os.path.exists(gs_data_folder):
                     os.makedirs(gs_data_folder)
 
@@ -171,7 +392,7 @@ class Command(BaseCommand):
                 ogc_db_host = settings.DATABASES[datastore]['HOST']
                 ogc_db_port = settings.DATABASES[datastore]['PORT']
 
-                gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
+                gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'geonode')
                 if not os.path.exists(gs_data_folder):
                     os.makedirs(gs_data_folder)
 
@@ -252,142 +473,3 @@ class Command(BaseCommand):
                 for filename in filter(is_xml_file, files):
                     path = os.path.join(root, filename)
                     dump_external_resources_from_xml(path)
-
-    def handle(self, **options):
-        # ignore_errors = options.get('ignore_errors')
-        config = utils.Config(options)
-        force_exec = options.get('force_exec')
-        backup_dir = options.get('backup_dir')
-        skip_geoserver = options.get('skip_geoserver')
-
-        if not backup_dir or len(backup_dir) == 0:
-            raise CommandError("Destination folder '--backup-dir' is mandatory")
-
-        print("Before proceeding with the Backup, please ensure that:")
-        print(" 1. The backend (DB or whatever) is accessible and you have rights")
-        print(" 2. The GeoServer is up and running and reachable from this machine")
-        message = 'You want to proceed?'
-
-        if force_exec or utils.confirm(prompt=message, resp=False):
-
-            # Create Target Folder
-            dir_time_suffix = get_dir_time_suffix()
-            target_folder = os.path.join(backup_dir, dir_time_suffix)
-            if not os.path.exists(target_folder):
-                os.makedirs(target_folder)
-            # Temporary folder to store backup files. It will be deleted at the end.
-            os.chmod(target_folder, 0o777)
-
-            if not skip_geoserver:
-                self.create_geoserver_backup(settings, target_folder)
-                self.dump_geoserver_raster_data(config, settings, target_folder)
-                self.dump_geoserver_vector_data(config, settings, target_folder)
-                print("Duming geoserver external resources")
-                self.dump_geoserver_externals(config, settings, target_folder)
-            else:
-                print("Skipping geoserver backup")
-
-            # Deactivate GeoNode Signals
-            with DisableDjangoSignals():
-
-                # Dump Fixtures
-                for app_name, dump_name in zip(config.app_names, config.dump_names):
-                    # prevent dumping BackupRestore application
-                    if app_name == 'br':
-                        continue
-
-                    print("Dumping '"+app_name+"' into '"+dump_name+".json'.")
-                    # Point stdout at a file for dumping data to.
-                    output = open(os.path.join(target_folder, dump_name+'.json'), 'w')
-                    call_command('dumpdata', app_name, format='json', indent=2, stdout=output)
-                    output.close()
-
-                # Store Media Root
-                media_root = settings.MEDIA_ROOT
-                media_folder = os.path.join(target_folder, utils.MEDIA_ROOT)
-                if not os.path.exists(media_folder):
-                    os.makedirs(media_folder)
-
-                copy_tree(media_root, media_folder)
-                print("Saved Media Files from '"+media_root+"'.")
-
-                # Store Static Root
-                static_root = settings.STATIC_ROOT
-                static_folder = os.path.join(target_folder, utils.STATIC_ROOT)
-                if not os.path.exists(static_folder):
-                    os.makedirs(static_folder)
-
-                copy_tree(static_root, static_folder)
-                print("Saved Static Root from '"+static_root+"'.")
-
-                # Store Static Folders
-                static_folders = settings.STATICFILES_DIRS
-                static_files_folders = os.path.join(target_folder, utils.STATICFILES_DIRS)
-                if not os.path.exists(static_files_folders):
-                    os.makedirs(static_files_folders)
-
-                for static_files_folder in static_folders:
-                    static_folder = os.path.join(static_files_folders,
-                                                 os.path.basename(os.path.normpath(static_files_folder)))
-                    if not os.path.exists(static_folder):
-                        os.makedirs(static_folder)
-
-                    copy_tree(static_files_folder, static_folder)
-                    print("Saved Static Files from '"+static_files_folder+"'.")
-
-                # Store Template Folders
-                template_folders = []
-                try:
-                    template_folders = settings.TEMPLATE_DIRS
-                except Exception:
-                    try:
-                        template_folders = settings.TEMPLATES[0]['DIRS']
-                    except Exception:
-                        pass
-                template_files_folders = os.path.join(target_folder, utils.TEMPLATE_DIRS)
-                if not os.path.exists(template_files_folders):
-                    os.makedirs(template_files_folders)
-
-                for template_files_folder in template_folders:
-                    template_folder = os.path.join(template_files_folders,
-                                                   os.path.basename(os.path.normpath(template_files_folder)))
-                    if not os.path.exists(template_folder):
-                        os.makedirs(template_folder)
-
-                    copy_tree(template_files_folder, template_folder)
-                    print("Saved Template Files from '"+template_files_folder+"'.")
-
-                # Store Locale Folders
-                locale_folders = settings.LOCALE_PATHS
-                locale_files_folders = os.path.join(target_folder, utils.LOCALE_PATHS)
-                if not os.path.exists(locale_files_folders):
-                    os.makedirs(locale_files_folders)
-
-                for locale_files_folder in locale_folders:
-                    locale_folder = os.path.join(locale_files_folders,
-                                                 os.path.basename(os.path.normpath(locale_files_folder)))
-                    if not os.path.exists(locale_folder):
-                        os.makedirs(locale_folder)
-
-                    copy_tree(locale_files_folder, locale_folder)
-                    print("Saved Locale Files from '"+locale_files_folder+"'.")
-
-                # Create Final ZIP Archive
-                backup_archive = os.path.join(backup_dir, dir_time_suffix+'.zip')
-                zip_dir(target_folder, backup_archive)
-
-                # Generate a md5 hash of a backup archive and save it
-                backup_md5_file = os.path.join(backup_dir, dir_time_suffix+'.md5')
-                zip_archive_md5 = utils.md5_file_hash(backup_archive)
-                with open(backup_md5_file, 'w') as md5_file:
-                    md5_file.write(zip_archive_md5)
-
-                # Clean-up Temp Folder
-                try:
-                    shutil.rmtree(target_folder)
-                except Exception:
-                    print("WARNING: Could not be possible to delete the temp folder: '" + str(target_folder) + "'")
-
-                print("Backup Finished. Archive generated.")
-
-                return str(os.path.join(backup_dir, dir_time_suffix+'.zip'))
