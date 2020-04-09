@@ -33,9 +33,6 @@ from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 
-from django.core.management import call_command
-from django.core.management.base import CommandError
-
 
 class ThumbnailTests(GeoNodeBaseTestSupport):
 
