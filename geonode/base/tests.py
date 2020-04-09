@@ -549,7 +549,7 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
 
     def test_read_only_casual_user_privileges(self):
         web_client = Client()
-        url_name = 'autocomplete_region'
+        url_name = 'csw_global_dispatch'
 
         # set read-only flag
         config = Configuration.load()

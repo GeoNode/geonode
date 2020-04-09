@@ -198,7 +198,7 @@ class ConfigurationAdmin(admin.ModelAdmin):
         return False
 
     def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
+        form = super(ConfigurationAdmin, self).get_form(request, obj, **kwargs)
 
         # allow only superusers to modify Configuration
         if not request.user.is_superuser:
