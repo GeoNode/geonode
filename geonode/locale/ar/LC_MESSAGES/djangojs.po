@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-30 12:37+0200\n"
+"POT-Creation-Date: 2020-04-07 18:01+0000\n"
 "PO-Revision-Date: 2019-06-13 09:53+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Arabic (http://www.transifex.com/geonode/geonode/language/"
@@ -32,256 +32,942 @@ msgstr ""
 "&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 "X-Generator: Poedit 2.2.3\n"
 
-#: geonode/static/geonode/js/search/search.js:522
-#: geonode/static_root/geonode/js/search/search.js:522
+#: geonode/client/static/geonode/js/lang.js:7
+#: geonode/client/static/geonode/js/lang.js:59
+#: geonode/client/static/geonode/js/lang.js:291
+msgid "Cancel"
+msgstr "إلغاء"
+
+#: geonode/client/static/geonode/js/lang.js:8
+#: geonode/client/static/geonode/js/lang.js:64
+msgid "Save as Copy"
+msgstr "حفظ ك صورة"
+
+#: geonode/client/static/geonode/js/lang.js:9
+msgid "About this Map"
+msgstr "حول هذه الخريطة"
+
+#: geonode/client/static/geonode/js/lang.js:10
+#: geonode/client/static/geonode/js/lang.js:140
+#: geonode/client/static/geonode/js/lang.js:209
+msgid "Abstract"
+msgstr "ملخص"
+
+#: geonode/client/static/geonode/js/lang.js:11
+#: geonode/client/static/geonode/js/lang.js:28
+#: geonode/client/static/geonode/js/lang.js:65
+#: geonode/client/static/geonode/js/lang.js:94
+msgid "Save"
+msgstr "حفظ"
+
+#: geonode/client/static/geonode/js/lang.js:12
+#: geonode/client/static/geonode/js/lang.js:70
+#: geonode/client/static/geonode/js/lang.js:144
+#: geonode/client/static/geonode/js/lang.js:153
+#: geonode/client/static/geonode/js/lang.js:206
+#: geonode/client/static/geonode/js/lang.js:228
+#: geonode/client/static/geonode/js/lang.js:273
+msgid "Title"
+msgstr "عنوان"
+
+#: geonode/client/static/geonode/js/lang.js:18
+#: geonode/client/static/geonode/js/lang.js:35
+msgid "Connection Error"
+msgstr "خطأ اتصال"
+
+#: geonode/client/static/geonode/js/lang.js:19
+#: geonode/client/static/geonode/js/lang.js:36
+msgid "The server returned an error"
+msgstr "عاد الخادم خطأ"
+
+#: geonode/client/static/geonode/js/lang.js:20
+#: geonode/client/static/geonode/js/lang.js:37
+msgid "Details..."
+msgstr "التفاصيل ..."
+
+#: geonode/client/static/geonode/js/lang.js:26
+#: geonode/client/static/geonode/js/lang.js:32
+#: geonode/client/static/geonode/js/lang.js:276
+msgid "Add Layers"
+msgstr "إضافة طبقات"
+
+#: geonode/client/static/geonode/js/lang.js:27
+msgid "Add ArcGIS REST Server"
+msgstr "إضافة خادم ArcGIS REST"
+
+#: geonode/client/static/geonode/js/lang.js:29
+#: geonode/client/static/geonode/js/lang.js:88
+msgid "Link"
+msgstr "رابط"
+
+#: geonode/client/static/geonode/js/lang.js:30
+msgid "Area"
+msgstr "منطقة"
+
+#: geonode/client/static/geonode/js/lang.js:31
+msgid "Background"
+msgstr "خلفية"
+
+#: geonode/client/static/geonode/js/lang.js:33
+msgid "Done"
+msgstr "منته"
+
+#: geonode/client/static/geonode/js/lang.js:34
+msgid "Available Layers"
+msgstr "الطبقات المتاحة"
+
+#: geonode/client/static/geonode/js/lang.js:38
+msgid "Add feeds"
+msgstr "إضافة مواجز"
+
+#: geonode/client/static/geonode/js/lang.js:39
+msgid "Flickr"
+msgstr "Flickr"
+
+#: geonode/client/static/geonode/js/lang.js:40
+msgid "Google Earth"
+msgstr "Google Earth"
+
+#: geonode/client/static/geonode/js/lang.js:41
+msgid ""
+"<p>Your map is ready to be published to the web! </p><p> Simply copy the "
+"following HTML to embed the map in your website: </p>"
+msgstr ""
+"<p> خريطتك جاهزة للنشر على الويب! </p> <p> ما عليك سوى نسخ HTML التالي "
+"لتضمين الخريطة في موقع الويب الخاص بك: </p>"
+
+#: geonode/client/static/geonode/js/lang.js:42
+#: geonode/client/static/geonode/js/lang.js:165
+msgid "Height"
+msgstr "ارتفاع"
+
+#: geonode/client/static/geonode/js/lang.js:43
+msgid "Help"
+msgstr "مساعدة"
+
+#: geonode/client/static/geonode/js/lang.js:44
+msgid "Get Feature Info"
+msgstr "ميزة الحصول على معلومات"
+
+#: geonode/client/static/geonode/js/lang.js:45
+msgid "About"
+msgstr "حول"
+
+#: geonode/client/static/geonode/js/lang.js:46
+msgid "About us"
+msgstr "معلومات عنا"
+
+#: geonode/client/static/geonode/js/lang.js:47
+#: geonode/client/static/geonode/js/lang.js:166
+msgid "Large"
+msgstr "كبير"
+
+#: geonode/client/static/geonode/js/lang.js:48
+msgid "or add a new server."
+msgstr "أو إضافة خادم جديد."
+
+#: geonode/client/static/geonode/js/lang.js:49
+msgid "Map Layers"
+msgstr "طبقات الخريطة"
+
+#: geonode/client/static/geonode/js/lang.js:50
+msgid "Upload your own data"
+msgstr "قم بتحميل البيانات الخاصة بك"
+
+#: geonode/client/static/geonode/js/lang.js:51
+msgid "View available data from:"
+msgstr "عرض البيانات المتاحة من:"
+
+#: geonode/client/static/geonode/js/lang.js:52
+msgid "Data"
+msgstr "معطيات"
+
+#: geonode/client/static/geonode/js/lang.js:53
+msgid "Layers"
+msgstr "طبقات"
+
+#: geonode/client/static/geonode/js/lang.js:54
+msgid "Legend"
+msgstr "مفتاح رسم بياني"
+
+#: geonode/client/static/geonode/js/lang.js:55
+msgid "Length"
+msgstr "طول"
+
+#: geonode/client/static/geonode/js/lang.js:56
+msgid "Loading Map..."
+msgstr "تحميل الخريطة ..."
+
+#: geonode/client/static/geonode/js/lang.js:57
+#: geonode/client/static/geonode/js/lang.js:167
+msgid "Map Size"
+msgstr "حجم الخريطة"
+
+#: geonode/client/static/geonode/js/lang.js:58
+msgid "Measure"
+msgstr "قياس"
+
+#: geonode/client/static/geonode/js/lang.js:60
+msgid "Warning"
+msgstr "تحذير"
+
+#: geonode/client/static/geonode/js/lang.js:61
+msgid ""
+"You now have %n layers in your map.  With more than %max layers you may "
+"experience problems with layer ordering, info balloon display, and general "
+"performance. "
+msgstr ""
+"لديك الآن %n طبقات في الخريطة.  مع أكثر من% طبقات كحد اقصي قد تواجه مشاكل مع "
+"ترتيب الطبقة ، وعرض بالون المعلومات ، والأداء العام."
+
+#: geonode/client/static/geonode/js/lang.js:62
+#: geonode/client/static/geonode/js/lang.js:141
+#: geonode/client/static/geonode/js/lang.js:207
+msgid "Contact"
+msgstr "اتصال"
+
+#: geonode/client/static/geonode/js/lang.js:63
+#: geonode/client/static/geonode/js/lang.js:83
+msgid "Permalink"
+msgstr "الرابط الثابت"
+
+#: geonode/client/static/geonode/js/lang.js:66
+msgid "Copy"
+msgstr "نسخ"
+
+#: geonode/client/static/geonode/js/lang.js:67
+msgid "About this Map View"
+msgstr "حول عرض هذه الخريطة"
+
+#: geonode/client/static/geonode/js/lang.js:68
+msgid "Abstract (brief description)"
+msgstr "ملخص (وصف موجز)"
+
+#: geonode/client/static/geonode/js/lang.js:69
+msgid "Introduction (tell visitors more about your map view)"
+msgstr "مقدمة (أخبر الزوار المزيد عن عرض الخريطة)"
+
+#: geonode/client/static/geonode/js/lang.js:71
+msgid "UserUrl"
+msgstr "عنوان المستخدم"
+
+#: geonode/client/static/geonode/js/lang.js:72
+#: geonode/client/static/geonode/js/lang.js:168
+msgid "Mini"
+msgstr "مصغرة"
+
+#: geonode/client/static/geonode/js/lang.js:73
+msgid "Add Category"
+msgstr "إضافة فئة"
+
+#: geonode/client/static/geonode/js/lang.js:74
+msgid " Add a new category to the layer tree"
+msgstr " أضف فئة جديدة إلى شجرة الطبقة"
+
+#: geonode/client/static/geonode/js/lang.js:75
+msgid " Rename Category"
+msgstr " أعاده تسمية الفئة"
+
+#: geonode/client/static/geonode/js/lang.js:76
+msgid " Rename this category"
+msgstr " أعاده تسمية هذه الفئة"
+
+#: geonode/client/static/geonode/js/lang.js:77
+msgid " Remove Category"
+msgstr " إزالة الفئة"
+
+#: geonode/client/static/geonode/js/lang.js:78
+msgid " Remove this category and layers"
+msgstr "أزالة هذه الفئة والطبقات"
+
+#: geonode/client/static/geonode/js/lang.js:79
+msgid "Pan Map"
+msgstr "خريطة عموم"
+
+#: geonode/client/static/geonode/js/lang.js:80
+msgid "Zoom to Next Extent"
+msgstr "تكبير للبعد التالي"
+
+#: geonode/client/static/geonode/js/lang.js:81
+msgid "Zoom to Previous Extent"
+msgstr "تكبير للبعد السابق"
+
+#: geonode/client/static/geonode/js/lang.js:82
+msgid "This map has not yet been saved."
+msgstr "لم يتم حفظ هذه الخريطة."
+
+#: geonode/client/static/geonode/js/lang.js:84
+#: geonode/client/static/geonode/js/lang.js:169
+msgid "Premium"
+msgstr "قيمة"
+
+#: geonode/client/static/geonode/js/lang.js:85
+msgid "Print Map"
+msgstr "أطبع الخريطة"
+
+#: geonode/client/static/geonode/js/lang.js:86
+msgid "Print Preview"
+msgstr "معاينة قبل الطباعة"
+
+#: geonode/client/static/geonode/js/lang.js:87
+msgid "Properties"
+msgstr "خواص"
+
+#: geonode/client/static/geonode/js/lang.js:89
+#: geonode/client/static/geonode/js/lang.js:170
+msgid "Publish Map"
+msgstr "نشر خريطة"
+
+#: geonode/client/static/geonode/js/lang.js:90
+#: geonode/client/static/geonode/js/lang.js:91
+msgid "Remove Layer"
+msgstr "إزالة طبقة"
+
+#: geonode/client/static/geonode/js/lang.js:92
+msgid "Sorry, your map could not be saved."
+msgstr "آسف، لا يمكن أن يتم حفظ الخريطة الخاصة بك."
+
+#: geonode/client/static/geonode/js/lang.js:93
+msgid "Error While Saving"
+msgstr "خطأ أثناء الحفظ"
+
+#: geonode/client/static/geonode/js/lang.js:95
+msgid "Save Map"
+msgstr "حفظ خريطة"
+
+#: geonode/client/static/geonode/js/lang.js:96
+msgid "You must be logged in to save this map."
+msgstr "يجب أن تكون مسجلا لحفظ هذه الخريطة."
+
+#: geonode/client/static/geonode/js/lang.js:97
+#: geonode/client/static/geonode/js/lang.js:172
+msgid "Small"
+msgstr "صغير"
+
+#: geonode/client/static/geonode/js/lang.js:98
+msgid " Share Layer"
+msgstr "شارك طبقة"
+
+#: geonode/client/static/geonode/js/lang.js:99
+msgid ""
+"Error contacting server.\n"
+" Please check the url and try again."
+msgstr ""
+"خطأ خادم الاتصال.\n"
+" يرجى التحقق من عنوان الموقع وحاول مرة أخرى."
+
+#: geonode/client/static/geonode/js/lang.js:100
+msgid "Layer Properties"
+msgstr "خصائص الطبقة"
+
+#: geonode/client/static/geonode/js/lang.js:101
+msgid "Change layer format and style"
+msgstr "تغيير تنسيق الطبقة والنمط"
+
+#: geonode/client/static/geonode/js/lang.js:102
+msgid "Edit Styles"
+msgstr "تحرير أنماط"
+
+#: geonode/client/static/geonode/js/lang.js:103
+msgid "Edit layer styles"
+msgstr "أساليب تحرير طبقة"
+
+#: geonode/client/static/geonode/js/lang.js:104
+msgid "Switch to Google Earth 3D Viewer"
+msgstr "قم بالتبديل إلى Google Earth 3D Viewer"
+
+#: geonode/client/static/geonode/js/lang.js:105
+msgid ""
+"The map that you are trying to load does not exist.  Creating a new map "
+"instead."
+msgstr "الخريطة التي تحاول تحميلها غير موجودة. إنشاء خريطة جديدة بدلا من ذلك."
+
+#: geonode/client/static/geonode/js/lang.js:106
+msgid "Unknown Map"
+msgstr "خريطة مجهولة"
+
+#: geonode/client/static/geonode/js/lang.js:107
+msgid "Unsupported Layers"
+msgstr "طبقات غير مدعومة"
+
+#: geonode/client/static/geonode/js/lang.js:108
+msgid "The following layers cannot be printed:"
+msgstr "لا يمكن طباعة الطبقات التالية:"
+
+#: geonode/client/static/geonode/js/lang.js:109
+#: geonode/client/static/geonode/js/lang.js:173
+msgid "Width"
+msgstr "عرض"
+
+#: geonode/client/static/geonode/js/lang.js:110
+msgid "Zoom In"
+msgstr "تكبير"
+
+#: geonode/client/static/geonode/js/lang.js:111
+msgid "Zoom Out"
+msgstr "تصغير"
+
+#: geonode/client/static/geonode/js/lang.js:112
+msgid "Zoom level"
+msgstr "مستوى التكبير"
+
+#: geonode/client/static/geonode/js/lang.js:113
+msgid "Zoom Level"
+msgstr "مستوى التكبير"
+
+#: geonode/client/static/geonode/js/lang.js:114
+msgid "Zoom to Layer Extent"
+msgstr "تكبير إلى أَبعاد الطبقة"
+
+#: geonode/client/static/geonode/js/lang.js:115
+msgid "Zoom to Visible Extent"
+msgstr "تكبير لمدى المرئية"
+
+#: geonode/client/static/geonode/js/lang.js:116
+msgid "Picasa"
+msgstr "Picasa"
+
+#: geonode/client/static/geonode/js/lang.js:117
+msgid "YouTube"
+msgstr "YouTube"
+
+#: geonode/client/static/geonode/js/lang.js:118
+msgid "Harvard Geospatial Library"
+msgstr "مكتبة هارفارد الجغرافية المكانية"
+
+#: geonode/client/static/geonode/js/lang.js:119
+msgid "Upload Layer"
+msgstr "تحميل طبقة"
+
+#: geonode/client/static/geonode/js/lang.js:120
+msgid "Create Layer"
+msgstr "إنشاء طبقة"
+
+#: geonode/client/static/geonode/js/lang.js:121
+msgid "Rectify Layer"
+msgstr "تصحيح الطبقة"
+
+#: geonode/client/static/geonode/js/lang.js:122
+msgid "Submit a Map Service"
+msgstr "تقديم خدمة خريطة"
+
+#: geonode/client/static/geonode/js/lang.js:123
+msgid "External Data"
+msgstr "البيانات الخارجية"
+
+#: geonode/client/static/geonode/js/lang.js:124
+msgid "If you leave this page, unsaved changes will be lost."
+msgstr "إذا غادرت هذه الصفحة ، فستفقد التغييرات غير المحفوظة."
+
+#: geonode/client/static/geonode/js/lang.js:125
+msgid "Center for Geographic Analysis"
+msgstr "مركز التحليل الجغرافي"
+
+#: geonode/client/static/geonode/js/lang.js:126
+msgid "Bigdata and AMAP Innovation Team"
+msgstr "فريق ابتكار البيانات الضخمة وخريطة عمل البحر المتوسط"
+
+#: geonode/client/static/geonode/js/lang.js:132
+msgid "Zoom Level {zoom}"
+msgstr "مستوى التكبير {zoom}"
+
+#: geonode/client/static/geonode/js/lang.js:138
+msgid "Create Map"
+msgstr "إنشاء خريطة"
+
+#: geonode/client/static/geonode/js/lang.js:139
+msgid "Export Map"
+msgstr "تصدير خريطة"
+
+#: geonode/client/static/geonode/js/lang.js:142
+msgid "Map"
+msgstr "خريطة"
+
+#: geonode/client/static/geonode/js/lang.js:143
+#: geonode/client/static/geonode/js/lang.js:210
+msgid "View this Map"
+msgstr "عرض هذه الخريطة"
+
+#: geonode/client/static/geonode/js/lang.js:145
+msgid "Open Map"
+msgstr "افتح الخريطة"
+
+#: geonode/client/static/geonode/js/lang.js:151
+#: geonode/client/static/geonode/js/lang.js:227
+msgid "Name"
+msgstr "اسم"
+
+#: geonode/client/static/geonode/js/lang.js:152
+msgid "Queryable"
+msgstr "Queryable"
+
+#: geonode/client/static/geonode/js/lang.js:159
+msgid "No background"
+msgstr "من غير خلفية"
+
+#: geonode/client/static/geonode/js/lang.js:171
+msgid ""
+"Your map is ready to be published to the web!  Simply copy the following "
+"HTML to embed the map in your website:"
+msgstr ""
+"الخريطة الخاصة بك جاهزة لنشرها على شبكة الإنترنت! ببساطة قم بنسخ الHTML "
+"التالي لتضمين الخريطة في موقع الويب الخاص بك:"
+
+#: geonode/client/static/geonode/js/lang.js:180
+#: geonode/client/static/geonode/js/lang.js:256
+msgid "Abstract:"
+msgstr "الملخص:"
+
+#: geonode/client/static/geonode/js/lang.js:181
+#: geonode/client/static/geonode/js/lang.js:258
+msgid "No attribution information is provided for this layer."
+msgstr "لم يتم توفير معلومات الإحالة لهذه الطبقة."
+
+#: geonode/client/static/geonode/js/lang.js:182
+#: geonode/client/static/geonode/js/lang.js:259
+msgid "Provided by:"
+msgstr "تقدمها:"
+
+#: geonode/client/static/geonode/js/lang.js:183
+#: geonode/client/static/geonode/js/lang.js:260
+msgid "Download:"
+msgstr "التحميل:"
+
+#: geonode/client/static/geonode/js/lang.js:184
+#: geonode/client/static/geonode/js/lang.js:262
+msgid "No keywords are listed for this layer."
+msgstr "لم يتم إدراج أي كلمات دليلية لهذه الطبقة."
+
+#: geonode/client/static/geonode/js/lang.js:185
+#: geonode/client/static/geonode/js/lang.js:263
+msgid "Keywords:"
+msgstr "الكلمات الدالة:"
+
+#: geonode/client/static/geonode/js/lang.js:186
+#: geonode/client/static/geonode/js/lang.js:264
+msgid "No metadata URLs are defined for this layer."
+msgstr "لم يتم تعريف عناوين للبيانات الوصفية لهذه الطبقة."
+
+#: geonode/client/static/geonode/js/lang.js:187
+#: geonode/client/static/geonode/js/lang.js:265
+msgid "Metadata Links:"
+msgstr "روابط البيانات الوصفية:"
+
+#: geonode/client/static/geonode/js/lang.js:193
+msgid "Paper size:"
+msgstr "حجم الورق:"
+
+#: geonode/client/static/geonode/js/lang.js:194
+msgid "Resolution:"
+msgstr "الدقة:"
+
+#: geonode/client/static/geonode/js/lang.js:195
+msgid "Print"
+msgstr "طباعة"
+
+#: geonode/client/static/geonode/js/lang.js:196
+msgid "Enter map title here."
+msgstr "أدخل عنوان خريطة هنا."
+
+#: geonode/client/static/geonode/js/lang.js:197
+msgid "Include legend?"
+msgstr "دمج مفتاح رسم بياني؟"
+
+#: geonode/client/static/geonode/js/lang.js:198
+msgid "Enter comments here."
+msgstr "إدخال تعليقات هنا."
+
+#: geonode/client/static/geonode/js/lang.js:199
+msgid "Creating PDF..."
+msgstr "جار إنشاء PDF ..."
+
+#: geonode/client/static/geonode/js/lang.js:208
+msgid "Last Modified"
+msgstr "آخر تعديل"
+
+#: geonode/client/static/geonode/js/lang.js:211
+#: geonode/client/static/geonode/js/lang.js:232
+msgid "Prev"
+msgstr "السابق"
+
+#: geonode/client/static/geonode/js/lang.js:212
+#: geonode/client/static/geonode/js/lang.js:233
+msgid "Next"
+msgstr "التالي"
+
+#: geonode/client/static/geonode/js/lang.js:213
+#: geonode/client/static/geonode/js/lang.js:234
+msgid "of"
+msgstr "من"
+
+#: geonode/client/static/geonode/js/lang.js:214
+#: geonode/client/static/geonode/js/lang.js:235
+msgid "Your search did not match any items."
+msgstr "البحث لم يتوافق مع أي من البنود."
+
+#: geonode/client/static/geonode/js/lang.js:215
+msgid "Search Maps"
+msgstr "بحث خرائط"
+
+#: geonode/client/static/geonode/js/lang.js:216
+#: geonode/client/static/geonode/js/lang.js:237
+msgid "Search"
+msgstr "بحث"
+
+#: geonode/client/static/geonode/js/lang.js:217
+msgid "Showing"
+msgstr "عرض"
+
+#: geonode/client/static/geonode/js/lang.js:218
+msgid "Loading"
+msgstr "تحميل"
+
+#: geonode/client/static/geonode/js/lang.js:219
+#: geonode/client/static/geonode/js/lang.js:240
+msgid "permalink"
+msgstr "الرابط الثابت"
+
+#: geonode/client/static/geonode/js/lang.js:226
+msgid "Select"
+msgstr "اختار"
+
+#: geonode/client/static/geonode/js/lang.js:229
+msgid "Select:"
+msgstr "تحديد:"
+
+#: geonode/client/static/geonode/js/lang.js:230
+msgid "All"
+msgstr "جميع"
+
+#: geonode/client/static/geonode/js/lang.js:231
+msgid "None"
+msgstr "لا شيء"
+
+#: geonode/client/static/geonode/js/lang.js:236
+msgid "Keyword"
+msgstr "الكلمات الدالة"
+
+#: geonode/client/static/geonode/js/lang.js:238
+msgid "Showing..."
+msgstr "عرض ..."
+
+#: geonode/client/static/geonode/js/lang.js:239
+msgid "Loading..."
+msgstr "جار التحميل…"
+
+#: geonode/client/static/geonode/js/lang.js:241
+msgid "You do not have permission to view this data"
+msgstr "ليس لديك إذن لعرض هذه البيانات"
+
+#: geonode/client/static/geonode/js/lang.js:242
+msgid "This data is stored on a remote server"
+msgstr "يتم تخزين هذه البيانات على السيرفر المتحكم"
+
+#: geonode/client/static/geonode/js/lang.js:243
+msgid "Invalid Query"
+msgstr "استعلام غير صالح"
+
+#: geonode/client/static/geonode/js/lang.js:244
+msgid "You need to specify a search term"
+msgstr "تحتاج إلى تحديد مصطلح بحث"
+
+#: geonode/client/static/geonode/js/lang.js:245
+#: geonode/client/static/geonode/js/lang.js:247
+msgid "Source"
+msgstr "مصدر"
+
+#: geonode/client/static/geonode/js/lang.js:246
+msgid "Data Type"
+msgstr "نوع البيانات"
+
+#: geonode/client/static/geonode/js/lang.js:248
+msgid "Date"
+msgstr "تاريخ"
+
+#: geonode/client/static/geonode/js/lang.js:249
+msgid "from year"
+msgstr "من سنة"
+
+#: geonode/client/static/geonode/js/lang.js:250
+msgid "to year"
+msgstr "إلى سنة"
+
+#: geonode/client/static/geonode/js/lang.js:251
+msgid "Reset"
+msgstr "إعادة تعيين"
+
+#: geonode/client/static/geonode/js/lang.js:257
+msgid "No abstract is provided for this layer."
+msgstr "لم يتم توفير ملخص لهذه الطبقة."
+
+#: geonode/client/static/geonode/js/lang.js:261
+msgid "No download URLs are definied for this layer."
+msgstr "لم يتم تعريف عناوين للتنزيل لهذه الطبقة."
+
+#: geonode/client/static/geonode/js/lang.js:266
+msgid "Click here for more information about this layer."
+msgstr "انقر هنا للمزيد من المعلومات حول هذه الطبقة."
+
+#: geonode/client/static/geonode/js/lang.js:271
+msgid "Selected Layers"
+msgstr "الطبقات المحددة"
+
+#: geonode/client/static/geonode/js/lang.js:272
+msgid "No Layers Selected"
+msgstr "لا يوجد طبقات محددة"
+
+#: geonode/client/static/geonode/js/lang.js:274
+msgid "Clear Selected"
+msgstr "مسح المحدد"
+
+#: geonode/client/static/geonode/js/lang.js:275
+msgid "Clear All"
+msgstr "امسح الكل"
+
+#: geonode/client/static/geonode/js/lang.js:282
+msgid "Operation Failed"
+msgstr "فشلت العملية"
+
+#: geonode/client/static/geonode/js/lang.js:283
+msgid "No layers are currently selected."
+msgstr "لم يتم تحديد أية طبقات حاليا."
+
+#: geonode/client/static/geonode/js/lang.js:290
+msgid "Downloading..."
+msgstr "جارى التحميل…"
+
+#: geonode/client/static/geonode/js/lang.js:292
+msgid "Please wait"
+msgstr "يرجى الانتظار"
+
+#: geonode/monitoring/static/monitoring/bundle.js:170
+msgid "STORE_UPDATED"
+msgstr ""
+
+#: geonode/people/templates/people/profile_detail.html:77
+#: geonode/people/templates/people/profile_detail.html:86
+#: geonode/people/templates/people/profile_detail.html:98
+msgid "Not provided."
+msgstr ""
+
+#: geonode/static/geonode/js/search/search.js:599
 msgid "Enter your text here ..."
 msgstr "أدخل النص هنا …"
 
-#: geonode/static/geonode/js/search/search.js:564
-#: geonode/static_root/geonode/js/search/search.js:564
+#: geonode/static/geonode/js/search/search.js:644
 msgid "Enter your region here ..."
 msgstr "أدخل منطقتك هنا …"
 
 #: geonode/static/geonode/js/upload/FileType.js:50
-#: geonode/static_root/geonode/js/upload/FileType.js:50
 #, javascript-format
 msgid "Missing a %s file, which is required"
 msgstr "ملف %s مفقود، وهو مطلوب"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:7
-#: geonode/static_root/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
 msgstr "ESRI بحلقات"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:13
-#: geonode/static_root/geonode/js/upload/FileTypes.js:13
 msgid "ASCII Text File"
 msgstr "ملف نصي ASCII"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:18
 #: geonode/static/geonode/js/upload/FileTypes.js:23
-#: geonode/static_root/geonode/js/upload/FileTypes.js:18
-#: geonode/static_root/geonode/js/upload/FileTypes.js:23
 msgid "GeoTIFF"
 msgstr "GeoTIFF"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:29
-#: geonode/static_root/geonode/js/upload/FileTypes.js:29
 msgid "Comma Separated Value"
 msgstr "قيمه مفصوله بفاصله"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:34
-#: geonode/static_root/geonode/js/upload/FileTypes.js:34
 msgid "Google Earth KML"
 msgstr "Google Earth KML"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:39
-#: geonode/static_root/geonode/js/upload/FileTypes.js:39
 msgid "Google Earth KML with a GroundOverlay"
 msgstr "Google Earth KML مع تطبيق GroundOverlay"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:45
-#: geonode/static_root/geonode/js/upload/FileTypes.js:45
 msgid "Google Earth KMZ"
 msgstr "Google Earth KMZ"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:50
-#: geonode/static_root/geonode/js/upload/FileTypes.js:50
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:55
-#: geonode/static_root/geonode/js/upload/FileTypes.js:55
 msgid "Zip Archive"
 msgstr "أرشيفات الملفات المضغوطة"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:61
-#: geonode/static_root/geonode/js/upload/FileTypes.js:61
 msgid "ERDAS Imagine"
 msgstr "تخيل ERDAS"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:66
 #: geonode/static/geonode/js/upload/FileTypes.js:71
-#: geonode/static_root/geonode/js/upload/FileTypes.js:66
-#: geonode/static_root/geonode/js/upload/FileTypes.js:71
 msgid "National Imagery Transmission Format"
 msgstr "تنسيق نقل الصور الوطنية"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:77
-#: geonode/static_root/geonode/js/upload/FileTypes.js:77
 msgid "Controlled Image Base-1 Meter"
 msgstr "قاعده الصورة المتحكم بها-1 متر"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:84
-#: geonode/static_root/geonode/js/upload/FileTypes.js:84
 msgid "Controlled Image Base-5 Meter"
 msgstr "قاعده الصورة المتحكم بها-5 متر"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:91
-#: geonode/static_root/geonode/js/upload/FileTypes.js:91
 msgid "Controlled Image Base-10 Meter"
 msgstr "قاعده الصورة المتحكم بها-10 متر"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:98
-#: geonode/static_root/geonode/js/upload/FileTypes.js:98
 msgid "CADRG-Global Navigation Chart"
 msgstr "CADRG- خريطة الملاحة العالمية"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:105
-#: geonode/static_root/geonode/js/upload/FileTypes.js:105
 msgid "CADRG-Jet Navigation Chart"
 msgstr "الرسم البياني CADRG-Jet للملاحة"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:112
-#: geonode/static_root/geonode/js/upload/FileTypes.js:112
 msgid "CADRG-Operational Navigation Chart"
 msgstr "CADRG ، الرسم البياني للملاحة التشغيلية"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:119
-#: geonode/static_root/geonode/js/upload/FileTypes.js:119
 msgid "CADRG-Tactical Pilotage Chart"
 msgstr "الرسم البياني للإرشاد التكتيكي CADRG"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:126
-#: geonode/static_root/geonode/js/upload/FileTypes.js:126
 msgid "CADRG-Joint Operations Graphic"
 msgstr "رسم CADRG-للعمليات المشتركة"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:133
-#: geonode/static_root/geonode/js/upload/FileTypes.js:133
 msgid "CADRG-Topographic Line Map 100K"
 msgstr "CADRG-خريطة الخط الطبوغرافية 100K"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:140
-#: geonode/static_root/geonode/js/upload/FileTypes.js:140
 msgid "CADRG-Topographic Line Map 50K"
 msgstr "CADRG-خريطة الخط الطبوغرافية 50K"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:147
-#: geonode/static_root/geonode/js/upload/FileTypes.js:147
 msgid "JPEG2000"
 msgstr "JPEG2000"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:152
-#: geonode/static_root/geonode/js/upload/FileTypes.js:152
 msgid "MrSID-Multi-resolution Seamless Image Database"
 msgstr "MrSID-قاعدة بيانات الصور غير الملحومة متعددة الدقة"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:157
-#: geonode/static_root/geonode/js/upload/FileTypes.js:157
 msgid "XML Metadata File"
 msgstr "ملف بيانات تعريف XML"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:163
-#: geonode/static_root/geonode/js/upload/FileTypes.js:163
 msgid "Style Layer Descriptor"
 msgstr "نمط واصف الطبقة"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:169
-#: geonode/static_root/geonode/js/upload/FileTypes.js:169
 msgid "JPEG"
 msgstr "JPEG"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:174
-#: geonode/static_root/geonode/js/upload/FileTypes.js:174
 msgid "PNG"
 msgstr "PNG"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:179
-#: geonode/static_root/geonode/js/upload/FileTypes.js:179
 msgid "GIF"
 msgstr "Gif"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:332
-#: geonode/static/geonode/js/upload/LayerInfo.js:488
-#: geonode/static/geonode/js/upload/LayerInfo.js:585
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:332
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:488
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:585
+#: geonode/static/geonode/js/upload/LayerInfo.js:503
 msgid "Unexpected Error"
 msgstr "خطأ غير متوقع"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:370
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:370
 msgid " Info"
 msgstr "معلومات"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:371
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:371
 msgid "Edit Metadata"
 msgstr "تعديل البيانات الوصفية"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:372
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:372
 msgid "Upload Metadata"
 msgstr "تحميل البيانات الوصفية"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:373
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:373
 msgid "Upload SLD"
 msgstr "تحميل SLD"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:374
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:374
 msgid "Manage Styles"
 msgstr "إدارة أنماط"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:387
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:387
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr "تمت إعادة تسمية العمود %1 إلى %2 <br/>"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:393
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:393
 msgid "Your "
 msgstr "ك "
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:422
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:422
 msgid "Performing Final GeoServer Config Step"
 msgstr "أداء خطوة إعداد GeoServer النهائي"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:437
-#: geonode/static/geonode/js/upload/LayerInfo.js:474
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:437
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:474
+#: geonode/static/geonode/js/upload/LayerInfo.js:439
+#: geonode/static/geonode/js/upload/LayerInfo.js:483
 msgid "You need to specify more information in order to complete your upload"
 msgstr "تحتاج إلى تحديد مزيد من المعلومات لاستكمال التحميل"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:457
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:457
+#: geonode/static/geonode/js/upload/LayerInfo.js:463
 msgid "Files are ready to be ingested!"
 msgstr "الملفات جاهزة للاستيعاب!"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:460
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:460
+#: geonode/static/geonode/js/upload/LayerInfo.js:466
 msgid "A temporal dimension may be added to this Layer."
 msgstr "يمكن أضافة بعد زمني إلى هذه الطبقة."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:504
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:504
+#: geonode/static/geonode/js/upload/LayerInfo.js:521
 msgid "Performing GeoServer Config Step"
 msgstr "خطوة إعداد أداء الGeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:592
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:592
+#: geonode/static/geonode/js/upload/LayerInfo.js:609
+msgid ""
+"<br>Please check your network connection. In case of Layer Upload make sure "
+"GeoServer is running and accepting connections."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:613
+#: geonode/static/geonode/js/upload/LayerInfo.js:616
+#: geonode/static/geonode/js/upload/LayerInfo.js:623
+#: geonode/static/geonode/js/upload/LayerInfo.js:626
+msgid "<br>"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:618
+msgid "<br>Bad request or URL not found."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:628
+#, fuzzy
+#| msgid "Unknown Map"
+msgid "<br>Unknown."
+msgstr "خريطة مجهولة"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:636
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "ملفات الطبقة التي تم تحميلها، تعد الGeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:743
-#: geonode/static_root/admin/js/SelectFilter2.js:86
-#: geonode/static_root/geonode/js/upload/LayerInfo.js:743
+#: geonode/static/geonode/js/upload/LayerInfo.js:787
 msgid "Remove"
 msgstr "إزالة"
 
-#: geonode/static/geonode/js/upload/upload.js:125
-#: geonode/static_root/geonode/js/upload/upload.js:125
+#: geonode/static/geonode/js/upload/upload.js:126
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr "الملف %s هو نوع ملف غير مدعوم، الرجاء اختيار ملف آخر."
 
-#: geonode/static/geonode/js/upload/upload.js:285
-#: geonode/static_root/geonode/js/upload/upload.js:285
+#: geonode/static/geonode/js/upload/upload.js:296
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
 "options have been validated.\n"
@@ -293,947 +979,223 @@ msgstr ""
 "‬\n"
 "‫يرجى التحقق من وجود أخطاء في النموذج!"
 
-#: geonode/static_root/admin/js/SelectFilter2.js:47
-#, javascript-format
-msgid "Available %s"
-msgstr "متوفر %s"
-
-#: geonode/static_root/admin/js/SelectFilter2.js:53
-#, javascript-format
-msgid ""
-"This is the list of available %s. You may choose some by selecting them in "
-"the box below and then clicking the \"Choose\" arrow between the two boxes."
+#: geonode/templates/admin/base_site.html:4
+msgid "GeoNode site admin"
 msgstr ""
-"هذه هي قائمة%s المتاحة. يمكنك اختيار بعضها عن طريق تحديدها في المربع أدناه "
-"ثم النقر فوق السهم \"اختيار\" بين المربعين."
 
-#: geonode/static_root/admin/js/SelectFilter2.js:69
-#, javascript-format
-msgid "Type into this box to filter down the list of available %s."
-msgstr "اكتب في هذا المربع لتصفية قائمة المتاحين %s."
-
-#: geonode/static_root/admin/js/SelectFilter2.js:74
-msgid "Filter"
-msgstr "فلتر"
-
-#: geonode/static_root/admin/js/SelectFilter2.js:78
-msgid "Choose all"
-msgstr "اختيار الكل"
-
-#: geonode/static_root/admin/js/SelectFilter2.js:78
-#, javascript-format
-msgid "Click to choose all %s at once."
-msgstr "انقر لاختيار جميع %s في آن واحد."
-
-#: geonode/static_root/admin/js/SelectFilter2.js:84
-msgid "Choose"
-msgstr "اختيار"
-
-#: geonode/static_root/admin/js/SelectFilter2.js:92
-#, javascript-format
-msgid "Chosen %s"
-msgstr "تم اختيار %s"
-
-#: geonode/static_root/admin/js/SelectFilter2.js:98
-#, javascript-format
-msgid ""
-"This is the list of chosen %s. You may remove some by selecting them in the "
-"box below and then clicking the \"Remove\" arrow between the two boxes."
+#: geonode/templates/admin/base_site.html:7
+msgid "GeoNode administration"
 msgstr ""
-"هذه هي قائمة المختارين %s. يمكنك إزالة بعض من خلال تحديدها في المربع أدناه "
-"ثم النقر فوق السهم “إزالة” بين المربعين."
 
-#: geonode/static_root/admin/js/SelectFilter2.js:108
-msgid "Remove all"
-msgstr "حذف الكل"
-
-#: geonode/static_root/admin/js/SelectFilter2.js:108
-#, javascript-format
-msgid "Click to remove all chosen %s at once."
-msgstr "انقر لإزالة كل %s المختارة في آن واحد."
-
-#: geonode/static_root/admin/js/actions.js:48
-#: geonode/static_root/admin/js/actions.min.js:2
-msgid "%(sel)s of %(cnt)s selected"
-msgid_plural "%(sel)s of %(cnt)s selected"
-msgstr[0] "تم تحديد %(sel)s من %(cnt)s"
-msgstr[1] "تم تحديد %(sel)s من %(cnt)s"
-msgstr[2] "تم تحديد %(sel)s من %(cnt)s"
-msgstr[3] "تم تحديد %(sel)s من %(cnt)s"
-msgstr[4] "تم تحديد %(sel)s من %(cnt)s"
-msgstr[5] "تم تحديد %(sel)s من %(cnt)s"
-
-#: geonode/static_root/admin/js/actions.js:117
-#: geonode/static_root/admin/js/actions.min.js:4
-msgid ""
-"You have unsaved changes on individual editable fields. If you run an "
-"action, your unsaved changes will be lost."
+#: geonode/templates/index.html:19
+msgid "Welcome"
 msgstr ""
-"لديك تغييرات لم يتم حفظها على حقول فردية قابلة للتعديل. إذا قمت بتشغيل "
-"إجراء، فستفقد التغييرات التي لم يتم حفظها."
 
-#: geonode/static_root/admin/js/actions.js:129
-#: geonode/static_root/admin/js/actions.min.js:5
+#: geonode/templates/index.html:21
 msgid ""
-"You have selected an action, but you haven't saved your changes to "
-"individual fields yet. Please click OK to save. You'll need to re-run the "
-"action."
+"GeoNode is an open source platform for sharing geospatial data and maps."
 msgstr ""
-"لقد حددت إجراء، ولكنك لم تحفظ التغييرات التي أجريتها على حقول فردية حتى "
-"الآن. الرجاء النقر فوق موافق للحفظ. ستحتاج إلى إعادة تشغيل الإجراء."
 
-#: geonode/static_root/admin/js/actions.js:131
-#: geonode/static_root/admin/js/actions.min.js:5
-msgid ""
-"You have selected an action, and you haven't made any changes on individual "
-"fields. You're probably looking for the Go button rather than the Save "
-"button."
+#: geonode/templates/index.html:25
+msgid "Get Started &raquo;"
 msgstr ""
-"لقد حددت إجراء ولم تقم بإجراء أية تغييرات على حقول فردية. ربما كنت تبحث عن "
-"زر الذهاب بدلا من زر حفظ."
 
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:74
-#, javascript-format
-msgid "Note: You are %s hour ahead of server time."
-msgid_plural "Note: You are %s hours ahead of server time."
-msgstr[0] "ملاحظه: أنت %s ساعة قبل وقت الخادم."
-msgstr[1] "ملاحظة: أنت ساعة قبل من وقت الخادم."
-msgstr[2] "ملاحظة: أنت ساعتين قبل من وقت الخادم."
-msgstr[3] "ملاحظه: أنت %s ساعات قبل وقت الخادم."
-msgstr[4] "ملاحظه: أنت %s ساعة قبل وقت الخادم."
-msgstr[5] "ملاحظه: أنت %s ساعة قبل وقت الخادم."
-
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:82
-#, javascript-format
-msgid "Note: You are %s hour behind server time."
-msgid_plural "Note: You are %s hours behind server time."
-msgstr[0] "ملاحظه: أنت %s ساعة خلف وقت الخادم."
-msgstr[1] "ملاحظه: أنت ساعة خلف وقت الخادم."
-msgstr[2] "ملاحظه: أنت ساعتين خلف وقت الخادم."
-msgstr[3] "ملاحظه: أنت %s ساعات خلف وقت الخادم."
-msgstr[4] "ملاحظه: أنت %s ساعة خلف وقت الخادم."
-msgstr[5] "ملاحظه: أنت %s ساعة خلف وقت الخادم."
-
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:109
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:160
-msgid "Now"
+#: geonode/templates/index.html:76 geonode/templates/index.html:96
+#, fuzzy
+#| msgid "Now"
+msgid "No"
 msgstr "الآن"
 
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:127
-msgid "Choose a Time"
-msgstr "اختيار الوقت"
-
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:157
-msgid "Choose a time"
-msgstr "اختيار الوقت"
-
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:165
-msgid "Midnight"
-msgstr "منتصف الليل"
-
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:170
-msgid "6 a.m."
-msgstr "6 صباحا ."
-
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:175
-msgid "Noon"
-msgstr "وقت الظهيرة"
-
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:180
-msgid "6 p.m."
-msgstr "6 مساءً."
-
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:188
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:348
-#: geonode/templates/lang.js:9 geonode/templates/lang.js:61
-#: geonode/templates/lang.js:293
-msgid "Cancel"
-msgstr "إلغاء"
-
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:253
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:333
-msgid "Today"
-msgstr "اليوم"
-
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:270
-msgid "Choose a Date"
-msgstr "اختيار تاريخ"
-
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:327
-msgid "Yesterday"
-msgstr "البارحه"
-
-#: geonode/static_root/admin/js/admin/DateTimeShortcuts.js:339
-msgid "Tomorrow"
-msgstr "غدا"
-
-#: geonode/static_root/admin/js/calendar.js:12
-msgid "January"
-msgstr "يناير"
-
-#: geonode/static_root/admin/js/calendar.js:13
-msgid "February"
-msgstr "فبراير"
-
-#: geonode/static_root/admin/js/calendar.js:14
-msgid "March"
-msgstr "مارس"
-
-#: geonode/static_root/admin/js/calendar.js:15
-msgid "April"
-msgstr "ابريل"
-
-#: geonode/static_root/admin/js/calendar.js:16
-msgid "May"
-msgstr "مايو"
-
-#: geonode/static_root/admin/js/calendar.js:17
-msgid "June"
-msgstr "يونيو"
-
-#: geonode/static_root/admin/js/calendar.js:18
-msgid "July"
-msgstr "يوليو"
-
-#: geonode/static_root/admin/js/calendar.js:19
-msgid "August"
-msgstr "أغسطس"
-
-#: geonode/static_root/admin/js/calendar.js:20
-msgid "September"
-msgstr "سبتمبر"
-
-#: geonode/static_root/admin/js/calendar.js:21
-msgid "October"
-msgstr "أكتوبر"
-
-#: geonode/static_root/admin/js/calendar.js:22
-msgid "November"
-msgstr "نوفمبر"
-
-#: geonode/static_root/admin/js/calendar.js:23
-msgid "December"
-msgstr "ديسمبر"
-
-#: geonode/static_root/admin/js/calendar.js:26
-msgctxt "one letter Sunday"
-msgid "S"
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "some schema mandatory fields are missing"
 msgstr ""
 
-#: geonode/static_root/admin/js/calendar.js:27
-msgctxt "one letter Monday"
-msgid "M"
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "Metadata Schema mandatory fields completed"
 msgstr ""
 
-#: geonode/static_root/admin/js/calendar.js:28
-msgctxt "one letter Tuesday"
-msgid "T"
-msgstr ""
-
-#: geonode/static_root/admin/js/calendar.js:29
-msgctxt "one letter Wednesday"
-msgid "W"
-msgstr ""
-
-#: geonode/static_root/admin/js/calendar.js:30
-msgctxt "one letter Thursday"
-msgid "T"
-msgstr ""
-
-#: geonode/static_root/admin/js/calendar.js:31
-msgctxt "one letter Friday"
-msgid "F"
-msgstr ""
-
-#: geonode/static_root/admin/js/calendar.js:32
-msgctxt "one letter Saturday"
-msgid "S"
-msgstr ""
-
-#: geonode/static_root/admin/js/collapse.js:10
-#: geonode/static_root/admin/js/collapse.js:21
-#: geonode/static_root/admin/js/collapse.min.js:1
-msgid "Show"
-msgstr "عرض"
-
-#: geonode/static_root/admin/js/collapse.js:18
-#: geonode/static_root/admin/js/collapse.min.js:1
-msgid "Hide"
-msgstr "إخفاء"
-
-#: geonode/static_root/treebeard/treebeard-admin.js:158
-msgid "Abort"
-msgstr "إجهاض"
-
-#: geonode/static_root/treebeard/treebeard-admin.js:180
-msgid "As Sibling"
-msgstr "كأخوه"
-
-#: geonode/static_root/treebeard/treebeard-admin.js:198
-msgid "As child"
-msgstr "كطفل"
-
-#: geonode/templates/lang.js:10 geonode/templates/lang.js:66
-msgid "Save as Copy"
-msgstr "حفظ ك صورة"
-
-#: geonode/templates/lang.js:11
-msgid "About this Map"
-msgstr "حول هذه الخريطة"
-
-#: geonode/templates/lang.js:12 geonode/templates/lang.js:142
-#: geonode/templates/lang.js:211
-msgid "Abstract"
-msgstr "ملخص"
-
-#: geonode/templates/lang.js:13 geonode/templates/lang.js:30
-#: geonode/templates/lang.js:67 geonode/templates/lang.js:96
-msgid "Save"
-msgstr "حفظ"
-
-#: geonode/templates/lang.js:14 geonode/templates/lang.js:72
-#: geonode/templates/lang.js:146 geonode/templates/lang.js:155
-#: geonode/templates/lang.js:208 geonode/templates/lang.js:230
-#: geonode/templates/lang.js:275
-msgid "Title"
-msgstr "عنوان"
-
-#: geonode/templates/lang.js:20 geonode/templates/lang.js:37
-msgid "Connection Error"
-msgstr "خطأ اتصال"
-
-#: geonode/templates/lang.js:21 geonode/templates/lang.js:38
-msgid "The server returned an error"
-msgstr "عاد الخادم خطأ"
-
-#: geonode/templates/lang.js:22 geonode/templates/lang.js:39
-msgid "Details..."
-msgstr "التفاصيل ..."
-
-#: geonode/templates/lang.js:28 geonode/templates/lang.js:34
-#: geonode/templates/lang.js:278
-msgid "Add Layers"
-msgstr "إضافة طبقات"
-
-#: geonode/templates/lang.js:29
-msgid "Add ArcGIS REST Server"
-msgstr "إضافة خادم ArcGIS REST"
-
-#: geonode/templates/lang.js:31 geonode/templates/lang.js:90
-msgid "Link"
-msgstr "رابط"
-
-#: geonode/templates/lang.js:32
-msgid "Area"
-msgstr "منطقة"
-
-#: geonode/templates/lang.js:33
-msgid "Background"
-msgstr "خلفية"
-
-#: geonode/templates/lang.js:35
-msgid "Done"
-msgstr "منته"
-
-#: geonode/templates/lang.js:36
-msgid "Available Layers"
-msgstr "الطبقات المتاحة"
-
-#: geonode/templates/lang.js:40
-msgid "Add feeds"
-msgstr "إضافة مواجز"
-
-#: geonode/templates/lang.js:41
-msgid "Flickr"
-msgstr "Flickr"
-
-#: geonode/templates/lang.js:42
-msgid "Google Earth"
-msgstr "Google Earth"
-
-#: geonode/templates/lang.js:43
+#: geonode/templates/metadata_form_js.html:238
+#: geonode/templates/metadata_form_js.html:278
 msgid ""
-"<p>Your map is ready to be published to the web! </p><p> Simply copy the "
-"following HTML to embed the map in your website: </p>"
+"<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field "
+"declared Mandatory by the Metadata Schema</strong></p>"
 msgstr ""
-"<p> خريطتك جاهزة للنشر على الويب! </p> <p> ما عليك سوى نسخ HTML التالي "
-"لتضمين الخريطة في موقع الويب الخاص بك: </p>"
-
-#: geonode/templates/lang.js:44 geonode/templates/lang.js:167
-msgid "Height"
-msgstr "ارتفاع"
-
-#: geonode/templates/lang.js:45
-msgid "Help"
-msgstr "مساعدة"
-
-#: geonode/templates/lang.js:46
-msgid "Get Feature Info"
-msgstr "ميزة الحصول على معلومات"
-
-#: geonode/templates/lang.js:47
-msgid "About"
-msgstr "حول"
-
-#: geonode/templates/lang.js:48
-msgid "About us"
-msgstr "معلومات عنا"
-
-#: geonode/templates/lang.js:49 geonode/templates/lang.js:168
-msgid "Large"
-msgstr "كبير"
-
-#: geonode/templates/lang.js:50
-msgid "or add a new server."
-msgstr "أو إضافة خادم جديد."
-
-#: geonode/templates/lang.js:51
-msgid "Map Layers"
-msgstr "طبقات الخريطة"
-
-#: geonode/templates/lang.js:52
-msgid "Upload your own data"
-msgstr "قم بتحميل البيانات الخاصة بك"
-
-#: geonode/templates/lang.js:53
-msgid "View available data from:"
-msgstr "عرض البيانات المتاحة من:"
-
-#: geonode/templates/lang.js:54
-msgid "Data"
-msgstr "معطيات"
-
-#: geonode/templates/lang.js:55
-msgid "Layers"
-msgstr "طبقات"
-
-#: geonode/templates/lang.js:56
-msgid "Legend"
-msgstr "مفتاح رسم بياني"
-
-#: geonode/templates/lang.js:57
-msgid "Length"
-msgstr "طول"
-
-#: geonode/templates/lang.js:58
-msgid "Loading Map..."
-msgstr "تحميل الخريطة ..."
-
-#: geonode/templates/lang.js:59 geonode/templates/lang.js:169
-msgid "Map Size"
-msgstr "حجم الخريطة"
-
-#: geonode/templates/lang.js:60
-msgid "Measure"
-msgstr "قياس"
-
-#: geonode/templates/lang.js:62
-msgid "Warning"
-msgstr "تحذير"
-
-#: geonode/templates/lang.js:63
-msgid ""
-"You now have %n layers in your map.  With more than %max layers you may "
-"experience problems with layer ordering, info balloon display, and general "
-"performance. "
-msgstr ""
-"لديك الآن %n طبقات في الخريطة.  مع أكثر من% طبقات كحد اقصي قد تواجه مشاكل مع "
-"ترتيب الطبقة ، وعرض بالون المعلومات ، والأداء العام."
-
-#: geonode/templates/lang.js:64 geonode/templates/lang.js:143
-#: geonode/templates/lang.js:209
-msgid "Contact"
-msgstr "اتصال"
-
-#: geonode/templates/lang.js:65 geonode/templates/lang.js:85
-msgid "Permalink"
-msgstr "الرابط الثابت"
-
-#: geonode/templates/lang.js:68
-msgid "Copy"
-msgstr "نسخ"
-
-#: geonode/templates/lang.js:69
-msgid "About this Map View"
-msgstr "حول عرض هذه الخريطة"
-
-#: geonode/templates/lang.js:70
-msgid "Abstract (brief description)"
-msgstr "ملخص (وصف موجز)"
 
-#: geonode/templates/lang.js:71
-msgid "Introduction (tell visitors more about your map view)"
-msgstr "مقدمة (أخبر الزوار المزيد عن عرض الخريطة)"
+#~ msgid "Available %s"
+#~ msgstr "متوفر %s"
+
+#~ msgid ""
+#~ "This is the list of available %s. You may choose some by selecting them "
+#~ "in the box below and then clicking the \"Choose\" arrow between the two "
+#~ "boxes."
+#~ msgstr ""
+#~ "هذه هي قائمة%s المتاحة. يمكنك اختيار بعضها عن طريق تحديدها في المربع "
+#~ "أدناه ثم النقر فوق السهم \"اختيار\" بين المربعين."
+
+#~ msgid "Type into this box to filter down the list of available %s."
+#~ msgstr "اكتب في هذا المربع لتصفية قائمة المتاحين %s."
+
+#~ msgid "Filter"
+#~ msgstr "فلتر"
+
+#~ msgid "Choose all"
+#~ msgstr "اختيار الكل"
+
+#~ msgid "Click to choose all %s at once."
+#~ msgstr "انقر لاختيار جميع %s في آن واحد."
+
+#~ msgid "Choose"
+#~ msgstr "اختيار"
+
+#~ msgid "Chosen %s"
+#~ msgstr "تم اختيار %s"
+
+#~ msgid ""
+#~ "This is the list of chosen %s. You may remove some by selecting them in "
+#~ "the box below and then clicking the \"Remove\" arrow between the two "
+#~ "boxes."
+#~ msgstr ""
+#~ "هذه هي قائمة المختارين %s. يمكنك إزالة بعض من خلال تحديدها في المربع "
+#~ "أدناه ثم النقر فوق السهم “إزالة” بين المربعين."
+
+#~ msgid "Remove all"
+#~ msgstr "حذف الكل"
+
+#~ msgid "Click to remove all chosen %s at once."
+#~ msgstr "انقر لإزالة كل %s المختارة في آن واحد."
+
+#~ msgid "%(sel)s of %(cnt)s selected"
+#~ msgid_plural "%(sel)s of %(cnt)s selected"
+#~ msgstr[0] "تم تحديد %(sel)s من %(cnt)s"
+#~ msgstr[1] "تم تحديد %(sel)s من %(cnt)s"
+#~ msgstr[2] "تم تحديد %(sel)s من %(cnt)s"
+#~ msgstr[3] "تم تحديد %(sel)s من %(cnt)s"
+#~ msgstr[4] "تم تحديد %(sel)s من %(cnt)s"
+#~ msgstr[5] "تم تحديد %(sel)s من %(cnt)s"
+
+#~ msgid ""
+#~ "You have unsaved changes on individual editable fields. If you run an "
+#~ "action, your unsaved changes will be lost."
+#~ msgstr ""
+#~ "لديك تغييرات لم يتم حفظها على حقول فردية قابلة للتعديل. إذا قمت بتشغيل "
+#~ "إجراء، فستفقد التغييرات التي لم يتم حفظها."
+
+#~ msgid ""
+#~ "You have selected an action, but you haven't saved your changes to "
+#~ "individual fields yet. Please click OK to save. You'll need to re-run the "
+#~ "action."
+#~ msgstr ""
+#~ "لقد حددت إجراء، ولكنك لم تحفظ التغييرات التي أجريتها على حقول فردية حتى "
+#~ "الآن. الرجاء النقر فوق موافق للحفظ. ستحتاج إلى إعادة تشغيل الإجراء."
 
-#: geonode/templates/lang.js:73
-msgid "UserUrl"
-msgstr "عنوان المستخدم"
-
-#: geonode/templates/lang.js:74 geonode/templates/lang.js:170
-msgid "Mini"
-msgstr "مصغرة"
-
-#: geonode/templates/lang.js:75
-msgid "Add Category"
-msgstr "إضافة فئة"
-
-#: geonode/templates/lang.js:76
-msgid " Add a new category to the layer tree"
-msgstr " أضف فئة جديدة إلى شجرة الطبقة"
-
-#: geonode/templates/lang.js:77
-msgid " Rename Category"
-msgstr " أعاده تسمية الفئة"
-
-#: geonode/templates/lang.js:78
-msgid " Rename this category"
-msgstr " أعاده تسمية هذه الفئة"
-
-#: geonode/templates/lang.js:79
-msgid " Remove Category"
-msgstr " إزالة الفئة"
-
-#: geonode/templates/lang.js:80
-msgid " Remove this category and layers"
-msgstr "أزالة هذه الفئة والطبقات"
-
-#: geonode/templates/lang.js:81
-msgid "Pan Map"
-msgstr "خريطة عموم"
-
-#: geonode/templates/lang.js:82
-msgid "Zoom to Next Extent"
-msgstr "تكبير للبعد التالي"
-
-#: geonode/templates/lang.js:83
-msgid "Zoom to Previous Extent"
-msgstr "تكبير للبعد السابق"
-
-#: geonode/templates/lang.js:84
-msgid "This map has not yet been saved."
-msgstr "لم يتم حفظ هذه الخريطة."
-
-#: geonode/templates/lang.js:86 geonode/templates/lang.js:171
-msgid "Premium"
-msgstr "قيمة"
-
-#: geonode/templates/lang.js:87
-msgid "Print Map"
-msgstr "أطبع الخريطة"
-
-#: geonode/templates/lang.js:88
-msgid "Print Preview"
-msgstr "معاينة قبل الطباعة"
-
-#: geonode/templates/lang.js:89
-msgid "Properties"
-msgstr "خواص"
-
-#: geonode/templates/lang.js:91 geonode/templates/lang.js:172
-msgid "Publish Map"
-msgstr "نشر خريطة"
-
-#: geonode/templates/lang.js:92 geonode/templates/lang.js:93
-msgid "Remove Layer"
-msgstr "إزالة طبقة"
-
-#: geonode/templates/lang.js:94
-msgid "Sorry, your map could not be saved."
-msgstr "آسف، لا يمكن أن يتم حفظ الخريطة الخاصة بك."
-
-#: geonode/templates/lang.js:95
-msgid "Error While Saving"
-msgstr "خطأ أثناء الحفظ"
-
-#: geonode/templates/lang.js:97
-msgid "Save Map"
-msgstr "حفظ خريطة"
-
-#: geonode/templates/lang.js:98
-msgid "You must be logged in to save this map."
-msgstr "يجب أن تكون مسجلا لحفظ هذه الخريطة."
-
-#: geonode/templates/lang.js:99 geonode/templates/lang.js:174
-msgid "Small"
-msgstr "صغير"
-
-#: geonode/templates/lang.js:100
-msgid " Share Layer"
-msgstr "شارك طبقة"
-
-#: geonode/templates/lang.js:101
-msgid ""
-"Error contacting server.\n"
-" Please check the url and try again."
-msgstr ""
-"خطأ خادم الاتصال.\n"
-" يرجى التحقق من عنوان الموقع وحاول مرة أخرى."
-
-#: geonode/templates/lang.js:102
-msgid "Layer Properties"
-msgstr "خصائص الطبقة"
-
-#: geonode/templates/lang.js:103
-msgid "Change layer format and style"
-msgstr "تغيير تنسيق الطبقة والنمط"
-
-#: geonode/templates/lang.js:104
-msgid "Edit Styles"
-msgstr "تحرير أنماط"
-
-#: geonode/templates/lang.js:105
-msgid "Edit layer styles"
-msgstr "أساليب تحرير طبقة"
-
-#: geonode/templates/lang.js:106
-msgid "Switch to Google Earth 3D Viewer"
-msgstr "قم بالتبديل إلى Google Earth 3D Viewer"
-
-#: geonode/templates/lang.js:107
-msgid ""
-"The map that you are trying to load does not exist.  Creating a new map "
-"instead."
-msgstr "الخريطة التي تحاول تحميلها غير موجودة. إنشاء خريطة جديدة بدلا من ذلك."
-
-#: geonode/templates/lang.js:108
-msgid "Unknown Map"
-msgstr "خريطة مجهولة"
-
-#: geonode/templates/lang.js:109
-msgid "Unsupported Layers"
-msgstr "طبقات غير مدعومة"
-
-#: geonode/templates/lang.js:110
-msgid "The following layers cannot be printed:"
-msgstr "لا يمكن طباعة الطبقات التالية:"
-
-#: geonode/templates/lang.js:111 geonode/templates/lang.js:175
-msgid "Width"
-msgstr "عرض"
-
-#: geonode/templates/lang.js:112
-msgid "Zoom In"
-msgstr "تكبير"
-
-#: geonode/templates/lang.js:113
-msgid "Zoom Out"
-msgstr "تصغير"
-
-#: geonode/templates/lang.js:114
-msgid "Zoom level"
-msgstr "مستوى التكبير"
-
-#: geonode/templates/lang.js:115
-msgid "Zoom Level"
-msgstr "مستوى التكبير"
-
-#: geonode/templates/lang.js:116
-msgid "Zoom to Layer Extent"
-msgstr "تكبير إلى أَبعاد الطبقة"
-
-#: geonode/templates/lang.js:117
-msgid "Zoom to Visible Extent"
-msgstr "تكبير لمدى المرئية"
-
-#: geonode/templates/lang.js:118
-msgid "Picasa"
-msgstr "Picasa"
-
-#: geonode/templates/lang.js:119
-msgid "YouTube"
-msgstr "YouTube"
-
-#: geonode/templates/lang.js:120
-msgid "Harvard Geospatial Library"
-msgstr "مكتبة هارفارد الجغرافية المكانية"
-
-#: geonode/templates/lang.js:121
-msgid "Upload Layer"
-msgstr "تحميل طبقة"
-
-#: geonode/templates/lang.js:122
-msgid "Create Layer"
-msgstr "إنشاء طبقة"
-
-#: geonode/templates/lang.js:123
-msgid "Rectify Layer"
-msgstr "تصحيح الطبقة"
-
-#: geonode/templates/lang.js:124
-msgid "Submit a Map Service"
-msgstr "تقديم خدمة خريطة"
-
-#: geonode/templates/lang.js:125
-msgid "External Data"
-msgstr "البيانات الخارجية"
-
-#: geonode/templates/lang.js:126
-msgid "If you leave this page, unsaved changes will be lost."
-msgstr "إذا غادرت هذه الصفحة ، فستفقد التغييرات غير المحفوظة."
-
-#: geonode/templates/lang.js:127
-msgid "Center for Geographic Analysis"
-msgstr "مركز التحليل الجغرافي"
-
-#: geonode/templates/lang.js:128
-msgid "Bigdata and AMAP Innovation Team"
-msgstr "فريق ابتكار البيانات الضخمة وخريطة عمل البحر المتوسط"
-
-#: geonode/templates/lang.js:134
-msgid "Zoom Level {zoom}"
-msgstr "مستوى التكبير {zoom}"
-
-#: geonode/templates/lang.js:140
-msgid "Create Map"
-msgstr "إنشاء خريطة"
-
-#: geonode/templates/lang.js:141
-msgid "Export Map"
-msgstr "تصدير خريطة"
-
-#: geonode/templates/lang.js:144
-msgid "Map"
-msgstr "خريطة"
-
-#: geonode/templates/lang.js:145 geonode/templates/lang.js:212
-msgid "View this Map"
-msgstr "عرض هذه الخريطة"
-
-#: geonode/templates/lang.js:147
-msgid "Open Map"
-msgstr "افتح الخريطة"
-
-#: geonode/templates/lang.js:153 geonode/templates/lang.js:229
-msgid "Name"
-msgstr "اسم"
-
-#: geonode/templates/lang.js:154
-msgid "Queryable"
-msgstr "Queryable"
-
-#: geonode/templates/lang.js:161
-msgid "No background"
-msgstr "من غير خلفية"
-
-#: geonode/templates/lang.js:173
-msgid ""
-"Your map is ready to be published to the web!  Simply copy the following "
-"HTML to embed the map in your website:"
-msgstr ""
-"الخريطة الخاصة بك جاهزة لنشرها على شبكة الإنترنت! ببساطة قم بنسخ الHTML "
-"التالي لتضمين الخريطة في موقع الويب الخاص بك:"
-
-#: geonode/templates/lang.js:182 geonode/templates/lang.js:258
-msgid "Abstract:"
-msgstr "الملخص:"
-
-#: geonode/templates/lang.js:183 geonode/templates/lang.js:260
-msgid "No attribution information is provided for this layer."
-msgstr "لم يتم توفير معلومات الإحالة لهذه الطبقة."
-
-#: geonode/templates/lang.js:184 geonode/templates/lang.js:261
-msgid "Provided by:"
-msgstr "تقدمها:"
-
-#: geonode/templates/lang.js:185 geonode/templates/lang.js:262
-msgid "Download:"
-msgstr "التحميل:"
-
-#: geonode/templates/lang.js:186 geonode/templates/lang.js:264
-msgid "No keywords are listed for this layer."
-msgstr "لم يتم إدراج أي كلمات دليلية لهذه الطبقة."
-
-#: geonode/templates/lang.js:187 geonode/templates/lang.js:265
-msgid "Keywords:"
-msgstr "الكلمات الدالة:"
-
-#: geonode/templates/lang.js:188 geonode/templates/lang.js:266
-msgid "No metadata URLs are defined for this layer."
-msgstr "لم يتم تعريف عناوين للبيانات الوصفية لهذه الطبقة."
-
-#: geonode/templates/lang.js:189 geonode/templates/lang.js:267
-msgid "Metadata Links:"
-msgstr "روابط البيانات الوصفية:"
-
-#: geonode/templates/lang.js:195
-msgid "Paper size:"
-msgstr "حجم الورق:"
-
-#: geonode/templates/lang.js:196
-msgid "Resolution:"
-msgstr "الدقة:"
-
-#: geonode/templates/lang.js:197
-msgid "Print"
-msgstr "طباعة"
-
-#: geonode/templates/lang.js:198
-msgid "Enter map title here."
-msgstr "أدخل عنوان خريطة هنا."
-
-#: geonode/templates/lang.js:199
-msgid "Include legend?"
-msgstr "دمج مفتاح رسم بياني؟"
-
-#: geonode/templates/lang.js:200
-msgid "Enter comments here."
-msgstr "إدخال تعليقات هنا."
-
-#: geonode/templates/lang.js:201
-msgid "Creating PDF..."
-msgstr "جار إنشاء PDF ..."
-
-#: geonode/templates/lang.js:210
-msgid "Last Modified"
-msgstr "آخر تعديل"
-
-#: geonode/templates/lang.js:213 geonode/templates/lang.js:234
-msgid "Prev"
-msgstr "السابق"
-
-#: geonode/templates/lang.js:214 geonode/templates/lang.js:235
-msgid "Next"
-msgstr "التالي"
-
-#: geonode/templates/lang.js:215 geonode/templates/lang.js:236
-msgid "of"
-msgstr "من"
-
-#: geonode/templates/lang.js:216 geonode/templates/lang.js:237
-msgid "Your search did not match any items."
-msgstr "البحث لم يتوافق مع أي من البنود."
-
-#: geonode/templates/lang.js:217
-msgid "Search Maps"
-msgstr "بحث خرائط"
-
-#: geonode/templates/lang.js:218 geonode/templates/lang.js:239
-msgid "Search"
-msgstr "بحث"
-
-#: geonode/templates/lang.js:219
-msgid "Showing"
-msgstr "عرض"
-
-#: geonode/templates/lang.js:220
-msgid "Loading"
-msgstr "تحميل"
-
-#: geonode/templates/lang.js:221 geonode/templates/lang.js:242
-msgid "permalink"
-msgstr "الرابط الثابت"
-
-#: geonode/templates/lang.js:228
-msgid "Select"
-msgstr "اختار"
-
-#: geonode/templates/lang.js:231
-msgid "Select:"
-msgstr "تحديد:"
-
-#: geonode/templates/lang.js:232
-msgid "All"
-msgstr "جميع"
-
-#: geonode/templates/lang.js:233
-msgid "None"
-msgstr "لا شيء"
-
-#: geonode/templates/lang.js:238
-msgid "Keyword"
-msgstr "الكلمات الدالة"
-
-#: geonode/templates/lang.js:240
-msgid "Showing..."
-msgstr "عرض ..."
-
-#: geonode/templates/lang.js:241
-msgid "Loading..."
-msgstr "جار التحميل…"
-
-#: geonode/templates/lang.js:243
-msgid "You do not have permission to view this data"
-msgstr "ليس لديك إذن لعرض هذه البيانات"
-
-#: geonode/templates/lang.js:244
-msgid "This data is stored on a remote server"
-msgstr "يتم تخزين هذه البيانات على السيرفر المتحكم"
-
-#: geonode/templates/lang.js:245
-msgid "Invalid Query"
-msgstr "استعلام غير صالح"
-
-#: geonode/templates/lang.js:246
-msgid "You need to specify a search term"
-msgstr "تحتاج إلى تحديد مصطلح بحث"
-
-#: geonode/templates/lang.js:247 geonode/templates/lang.js:249
-msgid "Source"
-msgstr "مصدر"
-
-#: geonode/templates/lang.js:248
-msgid "Data Type"
-msgstr "نوع البيانات"
-
-#: geonode/templates/lang.js:250
-msgid "Date"
-msgstr "تاريخ"
-
-#: geonode/templates/lang.js:251
-msgid "from year"
-msgstr "من سنة"
-
-#: geonode/templates/lang.js:252
-msgid "to year"
-msgstr "إلى سنة"
-
-#: geonode/templates/lang.js:253
-msgid "Reset"
-msgstr "إعادة تعيين"
-
-#: geonode/templates/lang.js:259
-msgid "No abstract is provided for this layer."
-msgstr "لم يتم توفير ملخص لهذه الطبقة."
-
-#: geonode/templates/lang.js:263
-msgid "No download URLs are definied for this layer."
-msgstr "لم يتم تعريف عناوين للتنزيل لهذه الطبقة."
-
-#: geonode/templates/lang.js:268
-msgid "Click here for more information about this layer."
-msgstr "انقر هنا للمزيد من المعلومات حول هذه الطبقة."
-
-#: geonode/templates/lang.js:273
-msgid "Selected Layers"
-msgstr "الطبقات المحددة"
-
-#: geonode/templates/lang.js:274
-msgid "No Layers Selected"
-msgstr "لا يوجد طبقات محددة"
-
-#: geonode/templates/lang.js:276
-msgid "Clear Selected"
-msgstr "مسح المحدد"
-
-#: geonode/templates/lang.js:277
-msgid "Clear All"
-msgstr "امسح الكل"
-
-#: geonode/templates/lang.js:284
-msgid "Operation Failed"
-msgstr "فشلت العملية"
-
-#: geonode/templates/lang.js:285
-msgid "No layers are currently selected."
-msgstr "لم يتم تحديد أية طبقات حاليا."
-
-#: geonode/templates/lang.js:292
-msgid "Downloading..."
-msgstr "جارى التحميل…"
-
-#: geonode/templates/lang.js:294
-msgid "Please wait"
-msgstr "يرجى الانتظار"
+#~ msgid ""
+#~ "You have selected an action, and you haven't made any changes on "
+#~ "individual fields. You're probably looking for the Go button rather than "
+#~ "the Save button."
+#~ msgstr ""
+#~ "لقد حددت إجراء ولم تقم بإجراء أية تغييرات على حقول فردية. ربما كنت تبحث "
+#~ "عن زر الذهاب بدلا من زر حفظ."
+
+#~ msgid "Note: You are %s hour ahead of server time."
+#~ msgid_plural "Note: You are %s hours ahead of server time."
+#~ msgstr[0] "ملاحظه: أنت %s ساعة قبل وقت الخادم."
+#~ msgstr[1] "ملاحظة: أنت ساعة قبل من وقت الخادم."
+#~ msgstr[2] "ملاحظة: أنت ساعتين قبل من وقت الخادم."
+#~ msgstr[3] "ملاحظه: أنت %s ساعات قبل وقت الخادم."
+#~ msgstr[4] "ملاحظه: أنت %s ساعة قبل وقت الخادم."
+#~ msgstr[5] "ملاحظه: أنت %s ساعة قبل وقت الخادم."
+
+#~ msgid "Note: You are %s hour behind server time."
+#~ msgid_plural "Note: You are %s hours behind server time."
+#~ msgstr[0] "ملاحظه: أنت %s ساعة خلف وقت الخادم."
+#~ msgstr[1] "ملاحظه: أنت ساعة خلف وقت الخادم."
+#~ msgstr[2] "ملاحظه: أنت ساعتين خلف وقت الخادم."
+#~ msgstr[3] "ملاحظه: أنت %s ساعات خلف وقت الخادم."
+#~ msgstr[4] "ملاحظه: أنت %s ساعة خلف وقت الخادم."
+#~ msgstr[5] "ملاحظه: أنت %s ساعة خلف وقت الخادم."
+
+#~ msgid "Choose a Time"
+#~ msgstr "اختيار الوقت"
+
+#~ msgid "Choose a time"
+#~ msgstr "اختيار الوقت"
+
+#~ msgid "Midnight"
+#~ msgstr "منتصف الليل"
+
+#~ msgid "6 a.m."
+#~ msgstr "6 صباحا ."
+
+#~ msgid "Noon"
+#~ msgstr "وقت الظهيرة"
+
+#~ msgid "6 p.m."
+#~ msgstr "6 مساءً."
+
+#~ msgid "Today"
+#~ msgstr "اليوم"
+
+#~ msgid "Choose a Date"
+#~ msgstr "اختيار تاريخ"
+
+#~ msgid "Yesterday"
+#~ msgstr "البارحه"
+
+#~ msgid "Tomorrow"
+#~ msgstr "غدا"
+
+#~ msgid "January"
+#~ msgstr "يناير"
+
+#~ msgid "February"
+#~ msgstr "فبراير"
+
+#~ msgid "March"
+#~ msgstr "مارس"
+
+#~ msgid "April"
+#~ msgstr "ابريل"
+
+#~ msgid "May"
+#~ msgstr "مايو"
+
+#~ msgid "June"
+#~ msgstr "يونيو"
+
+#~ msgid "July"
+#~ msgstr "يوليو"
+
+#~ msgid "August"
+#~ msgstr "أغسطس"
+
+#~ msgid "September"
+#~ msgstr "سبتمبر"
+
+#~ msgid "October"
+#~ msgstr "أكتوبر"
+
+#~ msgid "November"
+#~ msgstr "نوفمبر"
+
+#~ msgid "December"
+#~ msgstr "ديسمبر"
+
+#~ msgid "Show"
+#~ msgstr "عرض"
+
+#~ msgid "Hide"
+#~ msgstr "إخفاء"
+
+#~ msgid "Abort"
+#~ msgstr "إجهاض"
+
+#~ msgid "As Sibling"
+#~ msgstr "كأخوه"
+
+#~ msgid "As child"
+#~ msgstr "كطفل"
 
 #~ msgid "Add user..."
 #~ msgstr "إضافة المستخدم ..."

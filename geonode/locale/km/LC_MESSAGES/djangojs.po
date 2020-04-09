@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-25 02:28-0500\n"
+"POT-Creation-Date: 2020-04-07 18:01+0000\n"
 "PO-Revision-Date: 2016-08-23 11:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Khmer (http://www.transifex.com/geonode/geonode/language/"
@@ -35,15 +35,761 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: geonode/static/geonode/js/search/search.js:373
+#: geonode/client/static/geonode/js/lang.js:7
+#: geonode/client/static/geonode/js/lang.js:59
+#: geonode/client/static/geonode/js/lang.js:291
+msgid "Cancel"
+msgstr "បោះបង់"
+
+#: geonode/client/static/geonode/js/lang.js:8
+#: geonode/client/static/geonode/js/lang.js:64
+msgid "Save as Copy"
+msgstr "រក្សាទុក​ជា​ច្បាប់​ចម្លង"
+
+#: geonode/client/static/geonode/js/lang.js:9
+msgid "About this Map"
+msgstr "អំពី​ផែនទី​នេះ"
+
+#: geonode/client/static/geonode/js/lang.js:10
+#: geonode/client/static/geonode/js/lang.js:140
+#: geonode/client/static/geonode/js/lang.js:209
+msgid "Abstract"
+msgstr "អរូបី"
+
+#: geonode/client/static/geonode/js/lang.js:11
+#: geonode/client/static/geonode/js/lang.js:28
+#: geonode/client/static/geonode/js/lang.js:65
+#: geonode/client/static/geonode/js/lang.js:94
+msgid "Save"
+msgstr "រក្សា​ទុក"
+
+#: geonode/client/static/geonode/js/lang.js:12
+#: geonode/client/static/geonode/js/lang.js:70
+#: geonode/client/static/geonode/js/lang.js:144
+#: geonode/client/static/geonode/js/lang.js:153
+#: geonode/client/static/geonode/js/lang.js:206
+#: geonode/client/static/geonode/js/lang.js:228
+#: geonode/client/static/geonode/js/lang.js:273
+msgid "Title"
+msgstr "ចំណងជើង"
+
+#: geonode/client/static/geonode/js/lang.js:18
+#: geonode/client/static/geonode/js/lang.js:35
+msgid "Connection Error"
+msgstr "កំហុស​ក្នុង​ការ​តភ្ជាប់"
+
+#: geonode/client/static/geonode/js/lang.js:19
+#: geonode/client/static/geonode/js/lang.js:36
+msgid "The server returned an error"
+msgstr "ម៉ាស៊ីន​បម្រើ​បាន​ត្រឡប់​កំហុស​មួយ"
+
+#: geonode/client/static/geonode/js/lang.js:20
+#: geonode/client/static/geonode/js/lang.js:37
+msgid "Details..."
+msgstr "ព័ត៌មាន​លំអិត ..."
+
+#: geonode/client/static/geonode/js/lang.js:26
+#: geonode/client/static/geonode/js/lang.js:32
+#: geonode/client/static/geonode/js/lang.js:276
+msgid "Add Layers"
+msgstr "បន្ថែម​ស្រទាប់"
+
+#: geonode/client/static/geonode/js/lang.js:27
+msgid "Add ArcGIS REST Server"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:29
+#: geonode/client/static/geonode/js/lang.js:88
+msgid "Link"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:30
+msgid "Area"
+msgstr "តំបន់"
+
+#: geonode/client/static/geonode/js/lang.js:31
+msgid "Background"
+msgstr "ផ្ទៃ​ខាង​ក្រោយ"
+
+#: geonode/client/static/geonode/js/lang.js:33
+msgid "Done"
+msgstr "ធ្វើ"
+
+#: geonode/client/static/geonode/js/lang.js:34
+msgid "Available Layers"
+msgstr "ស្រទាប់​ដែល​អាច​ប្រើ​បាន"
+
+#: geonode/client/static/geonode/js/lang.js:38
+#, fuzzy
+#| msgid "Add Layers"
+msgid "Add feeds"
+msgstr "បន្ថែម​ស្រទាប់"
+
+#: geonode/client/static/geonode/js/lang.js:39
+msgid "Flickr"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:40
+#, fuzzy
+#| msgid "Google Earth KML"
+msgid "Google Earth"
+msgstr "ផែនដី Google ឯកសារ KML"
+
+#: geonode/client/static/geonode/js/lang.js:41
+#, fuzzy
+#| msgid ""
+#| "Your map is ready to be published to the web!  Simply copy the following "
+#| "HTML to embed the map in your website:"
+msgid ""
+"<p>Your map is ready to be published to the web! </p><p> Simply copy the "
+"following HTML to embed the map in your website: </p>"
+msgstr ""
+"ផែនទី​របស់​អ្នក​គឺ​ត្រៀម​ខ្លួន​ជា​ស្រេច​ដែល​នឹង​ត្រូវ​បាន​បោះ​ពុម្ព​ផ្សាយ​ទៅ​តំបន់​ប​ណ្តា​ញ​! គ្រាន់​តែ​ចម្លង​ជា HTML "
+"ផែនទី​ខាងក្រោម​ដើម្បី​បង្កប់​ក្នុង​គេហទំព័រ​របស់​អ្នក​:"
+
+#: geonode/client/static/geonode/js/lang.js:42
+#: geonode/client/static/geonode/js/lang.js:165
+msgid "Height"
+msgstr "កម្ពស់"
+
+#: geonode/client/static/geonode/js/lang.js:43
+msgid "Help"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:44
+msgid "Get Feature Info"
+msgstr "ទទួល​បាន​បំពាក់​ព័ត៌មាន"
+
+#: geonode/client/static/geonode/js/lang.js:45
+msgid "About"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:46
+#, fuzzy
+#| msgid "About this Map"
+msgid "About us"
+msgstr "អំពី​ផែនទី​នេះ"
+
+#: geonode/client/static/geonode/js/lang.js:47
+#: geonode/client/static/geonode/js/lang.js:166
+msgid "Large"
+msgstr "ធំ"
+
+#: geonode/client/static/geonode/js/lang.js:48
+msgid "or add a new server."
+msgstr "ឬ​បន្ថែម​ម៉ាស៊ីន​បម្រើ​ថ្មី​។"
+
+#: geonode/client/static/geonode/js/lang.js:49
+msgid "Map Layers"
+msgstr "ស្រទាប់​ផែនទី"
+
+#: geonode/client/static/geonode/js/lang.js:50
+msgid "Upload your own data"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:51
+msgid "View available data from:"
+msgstr "មើល​ទិន្នន័យ​ដែល​អាច​រក​បាន​ពី​:"
+
+#: geonode/client/static/geonode/js/lang.js:52
+msgid "Data"
+msgstr "ទិន្នន័យ"
+
+#: geonode/client/static/geonode/js/lang.js:53
+msgid "Layers"
+msgstr "ស្រទាប់"
+
+#: geonode/client/static/geonode/js/lang.js:54
+msgid "Legend"
+msgstr "តាង"
+
+#: geonode/client/static/geonode/js/lang.js:55
+msgid "Length"
+msgstr "ប្រវែង"
+
+#: geonode/client/static/geonode/js/lang.js:56
+msgid "Loading Map..."
+msgstr "កំពុង​ផ្ទុក​ផែនទី ..."
+
+#: geonode/client/static/geonode/js/lang.js:57
+#: geonode/client/static/geonode/js/lang.js:167
+msgid "Map Size"
+msgstr "ទំហំ​ផែនទី"
+
+#: geonode/client/static/geonode/js/lang.js:58
+msgid "Measure"
+msgstr "វិធានការ"
+
+#: geonode/client/static/geonode/js/lang.js:60
+msgid "Warning"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:61
+msgid ""
+"You now have %n layers in your map.  With more than %max layers you may "
+"experience problems with layer ordering, info balloon display, and general "
+"performance. "
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:62
+#: geonode/client/static/geonode/js/lang.js:141
+#: geonode/client/static/geonode/js/lang.js:207
+msgid "Contact"
+msgstr "ទំ​ន​ក់​ទំនង"
+
+#: geonode/client/static/geonode/js/lang.js:63
+#: geonode/client/static/geonode/js/lang.js:83
+msgid "Permalink"
+msgstr "គេ​តែង"
+
+#: geonode/client/static/geonode/js/lang.js:66
+msgid "Copy"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:67
+#, fuzzy
+#| msgid "About this Map"
+msgid "About this Map View"
+msgstr "អំពី​ផែនទី​នេះ"
+
+#: geonode/client/static/geonode/js/lang.js:68
+msgid "Abstract (brief description)"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:69
+msgid "Introduction (tell visitors more about your map view)"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:71
+msgid "UserUrl"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:72
+#: geonode/client/static/geonode/js/lang.js:168
+msgid "Mini"
+msgstr "កាត Mini"
+
+#: geonode/client/static/geonode/js/lang.js:73
+#, fuzzy
+#| msgid "Add Layers"
+msgid "Add Category"
+msgstr "បន្ថែម​ស្រទាប់"
+
+#: geonode/client/static/geonode/js/lang.js:74
+msgid " Add a new category to the layer tree"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:75
+msgid " Rename Category"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:76
+msgid " Rename this category"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:77
+#, fuzzy
+#| msgid "Remove Layer"
+msgid " Remove Category"
+msgstr "យក​ចេញ​ស្រទាប់"
+
+#: geonode/client/static/geonode/js/lang.js:78
+msgid " Remove this category and layers"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:79
+msgid "Pan Map"
+msgstr "ប៉ាន់​ផែនទី"
+
+#: geonode/client/static/geonode/js/lang.js:80
+msgid "Zoom to Next Extent"
+msgstr "ពង្រីក​វិសាលភាព​បន្ទាប់"
+
+#: geonode/client/static/geonode/js/lang.js:81
+msgid "Zoom to Previous Extent"
+msgstr "ពង្រីក​វិសាលភាព​មុន"
+
+#: geonode/client/static/geonode/js/lang.js:82
+msgid "This map has not yet been saved."
+msgstr "ផែនទី​នេះ​មិន​ទាន់​ត្រូវ​បាន​គេ​រក្សា​ទុក​។"
+
+#: geonode/client/static/geonode/js/lang.js:84
+#: geonode/client/static/geonode/js/lang.js:169
+msgid "Premium"
+msgstr "ពិសេស"
+
+#: geonode/client/static/geonode/js/lang.js:85
+msgid "Print Map"
+msgstr "ការ​បោះពុម្ព​ផែនទី"
+
+#: geonode/client/static/geonode/js/lang.js:86
+msgid "Print Preview"
+msgstr "មើល​មុន​បោះពុម្ព"
+
+#: geonode/client/static/geonode/js/lang.js:87
+msgid "Properties"
+msgstr "លក្ខណៈ​សម្បត្តិ"
+
+#: geonode/client/static/geonode/js/lang.js:89
+#: geonode/client/static/geonode/js/lang.js:170
+msgid "Publish Map"
+msgstr "បោះ​ពុ​ម្ភ​ផែនទី"
+
+#: geonode/client/static/geonode/js/lang.js:90
+#: geonode/client/static/geonode/js/lang.js:91
+msgid "Remove Layer"
+msgstr "យក​ចេញ​ស្រទាប់"
+
+#: geonode/client/static/geonode/js/lang.js:92
+msgid "Sorry, your map could not be saved."
+msgstr "សូម​អភ័យ​ទោស​, ផែនទី​របស់​អ្នក​មិន​អាច​ត្រូវ​បាន​រក្សា​ទុក​។"
+
+#: geonode/client/static/geonode/js/lang.js:93
+msgid "Error While Saving"
+msgstr "មាន​កំហុស​ខណៈ​ពេល​រក្សាទុក"
+
+#: geonode/client/static/geonode/js/lang.js:95
+msgid "Save Map"
+msgstr "រក្សា​ទុក​ផែនទី"
+
+#: geonode/client/static/geonode/js/lang.js:96
+msgid "You must be logged in to save this map."
+msgstr "អ្នក​ត្រូវ​តែ​ចូល​ក្នុង​ដើម្បី​រក្សា​ទុក​ផែនទី​នេះ​។"
+
+#: geonode/client/static/geonode/js/lang.js:97
+#: geonode/client/static/geonode/js/lang.js:172
+msgid "Small"
+msgstr "តូច"
+
+#: geonode/client/static/geonode/js/lang.js:98
+#, fuzzy
+#| msgid "Map Layers"
+msgid " Share Layer"
+msgstr "ស្រទាប់​ផែនទី"
+
+#: geonode/client/static/geonode/js/lang.js:99
+msgid ""
+"Error contacting server.\n"
+" Please check the url and try again."
+msgstr "កំហុស​ទាក់ទង​ម៉ាស៊ីន​បម្រើ​។ សូម​ពិនិត្យ​មើល URL និង​ព្យាយាម​ម្ដង​ទៀត​។"
+
+#: geonode/client/static/geonode/js/lang.js:100
+msgid "Layer Properties"
+msgstr "លក្ខណៈ​សម្បត្តិ​ស្រទាប់"
+
+#: geonode/client/static/geonode/js/lang.js:101
+msgid "Change layer format and style"
+msgstr "ការ​ផ្លាស់​ប្តូ​រ​ទ្រង់ទ្រាយ​ស្រទាប់​និង​រចនាប័ទ្ម"
+
+#: geonode/client/static/geonode/js/lang.js:102
+msgid "Edit Styles"
+msgstr "កែសម្រួល​រចនាប័ទ្ម"
+
+#: geonode/client/static/geonode/js/lang.js:103
+msgid "Edit layer styles"
+msgstr "រចនាប័ទ្ម​កែ​សម្រួល​ស្រទាប់"
+
+#: geonode/client/static/geonode/js/lang.js:104
+msgid "Switch to Google Earth 3D Viewer"
+msgstr "ប្តូ​រ​កម្មវិធី​មើល 3D ផែនដី Google ទៅ"
+
+#: geonode/client/static/geonode/js/lang.js:105
+msgid ""
+"The map that you are trying to load does not exist.  Creating a new map "
+"instead."
+msgstr "ផែនទី​ដែល​អ្នក​កំពុង​តែ​ព្យាយាម​ដើម្បី​ផ្ទុក​មិន​មាន​ទេ​។ ការ​បង្កើត​ផែនទី​ថ្មី​មួយ​ជំនួស​វិញ​។"
+
+#: geonode/client/static/geonode/js/lang.js:106
+msgid "Unknown Map"
+msgstr "មិន​ស្គាល់​ផែនទី"
+
+#: geonode/client/static/geonode/js/lang.js:107
+#, fuzzy
+#| msgid "Selected Layers"
+msgid "Unsupported Layers"
+msgstr "ស្រទាប់​ដែល​បាន​ជ្រើស"
+
+#: geonode/client/static/geonode/js/lang.js:108
+msgid "The following layers cannot be printed:"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:109
+#: geonode/client/static/geonode/js/lang.js:173
+msgid "Width"
+msgstr "ទទឹង"
+
+#: geonode/client/static/geonode/js/lang.js:110
+msgid "Zoom In"
+msgstr "ពង្រីក"
+
+#: geonode/client/static/geonode/js/lang.js:111
+msgid "Zoom Out"
+msgstr "បង្រួម"
+
+#: geonode/client/static/geonode/js/lang.js:112
+msgid "Zoom level"
+msgstr "កម្រិត​ពង្រីក"
+
+#: geonode/client/static/geonode/js/lang.js:113
+msgid "Zoom Level"
+msgstr "កម្រិត​ពង្រីក"
+
+#: geonode/client/static/geonode/js/lang.js:114
+msgid "Zoom to Layer Extent"
+msgstr "ពង្រីក​ទៅ​ស្រទាប់​វិសាលភាព"
+
+#: geonode/client/static/geonode/js/lang.js:115
+msgid "Zoom to Visible Extent"
+msgstr "ពង្រីក​ទំហំ​មើល​ឃើញ"
+
+#: geonode/client/static/geonode/js/lang.js:116
+msgid "Picasa"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:117
+msgid "YouTube"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:118
+msgid "Harvard Geospatial Library"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:119
+#, fuzzy
+#| msgid "Add Layers"
+msgid "Upload Layer"
+msgstr "បន្ថែម​ស្រទាប់"
+
+#: geonode/client/static/geonode/js/lang.js:120
+#, fuzzy
+#| msgid "Create Map"
+msgid "Create Layer"
+msgstr "បង្កើត​ផែនទី"
+
+#: geonode/client/static/geonode/js/lang.js:121
+#, fuzzy
+#| msgid "Selected Layers"
+msgid "Rectify Layer"
+msgstr "ស្រទាប់​ដែល​បាន​ជ្រើស"
+
+#: geonode/client/static/geonode/js/lang.js:122
+msgid "Submit a Map Service"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:123
+msgid "External Data"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:124
+msgid "If you leave this page, unsaved changes will be lost."
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:125
+msgid "Center for Geographic Analysis"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:126
+msgid "Bigdata and AMAP Innovation Team"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:132
+msgid "Zoom Level {zoom}"
+msgstr "ពង្រីក​កម្រិត​ពង្រីក​} {"
+
+#: geonode/client/static/geonode/js/lang.js:138
+msgid "Create Map"
+msgstr "បង្កើត​ផែនទី"
+
+#: geonode/client/static/geonode/js/lang.js:139
+msgid "Export Map"
+msgstr "នាំចេញ​ផែនទី"
+
+#: geonode/client/static/geonode/js/lang.js:142
+msgid "Map"
+msgstr "ផែនទី"
+
+#: geonode/client/static/geonode/js/lang.js:143
+#: geonode/client/static/geonode/js/lang.js:210
+msgid "View this Map"
+msgstr "មើល​ផែនទី​នេះ"
+
+#: geonode/client/static/geonode/js/lang.js:145
+msgid "Open Map"
+msgstr "បើក​ទូលាយ​ផែនទី"
+
+#: geonode/client/static/geonode/js/lang.js:151
+#: geonode/client/static/geonode/js/lang.js:227
+msgid "Name"
+msgstr "ឈ្មោះ"
+
+#: geonode/client/static/geonode/js/lang.js:152
+msgid "Queryable"
+msgstr "Queryable"
+
+#: geonode/client/static/geonode/js/lang.js:159
+msgid "No background"
+msgstr "គ្មាន​ផ្ទៃ​ខាង​ក្រោយ"
+
+#: geonode/client/static/geonode/js/lang.js:171
+msgid ""
+"Your map is ready to be published to the web!  Simply copy the following "
+"HTML to embed the map in your website:"
+msgstr ""
+"ផែនទី​របស់​អ្នក​គឺ​ត្រៀម​ខ្លួន​ជា​ស្រេច​ដែល​នឹង​ត្រូវ​បាន​បោះ​ពុម្ព​ផ្សាយ​ទៅ​តំបន់​ប​ណ្តា​ញ​! គ្រាន់​តែ​ចម្លង​ជា HTML "
+"ផែនទី​ខាងក្រោម​ដើម្បី​បង្កប់​ក្នុង​គេហទំព័រ​របស់​អ្នក​:"
+
+#: geonode/client/static/geonode/js/lang.js:180
+#: geonode/client/static/geonode/js/lang.js:256
+msgid "Abstract:"
+msgstr "អរូបី​:"
+
+#: geonode/client/static/geonode/js/lang.js:181
+#: geonode/client/static/geonode/js/lang.js:258
+msgid "No attribution information is provided for this layer."
+msgstr "គ្មាន​ព័ត៌មាន​បញ្ជាក់​ត្រូវ​បាន​ផ្ដល់​សម្រាប់​ស្រទាប់​នេះ​។"
+
+#: geonode/client/static/geonode/js/lang.js:182
+#: geonode/client/static/geonode/js/lang.js:259
+msgid "Provided by:"
+msgstr "ផ្តល់​ដោយ​:"
+
+#: geonode/client/static/geonode/js/lang.js:183
+#: geonode/client/static/geonode/js/lang.js:260
+msgid "Download:"
+msgstr "ទាញ​យក​:"
+
+#: geonode/client/static/geonode/js/lang.js:184
+#: geonode/client/static/geonode/js/lang.js:262
+msgid "No keywords are listed for this layer."
+msgstr "គ្មាន​ពាក្យ​គន្លឹះ​ត្រូវ​បាន​រាយ​បញ្ជី​សម្រាប់​ស្រទាប់​នេះ​។"
+
+#: geonode/client/static/geonode/js/lang.js:185
+#: geonode/client/static/geonode/js/lang.js:263
+msgid "Keywords:"
+msgstr "ពាក្យ​គន្លឹះ​:"
+
+#: geonode/client/static/geonode/js/lang.js:186
+#: geonode/client/static/geonode/js/lang.js:264
+msgid "No metadata URLs are defined for this layer."
+msgstr "គ្មាន URLs ដែល​ទិន្នន័យ​មេតា​ត្រូវ​បាន​កំណត់​សម្រាប់​ស្រទាប់​នេះ​។"
+
+#: geonode/client/static/geonode/js/lang.js:187
+#: geonode/client/static/geonode/js/lang.js:265
+msgid "Metadata Links:"
+msgstr "ភ្ជាប់​ទិន្នន័យ​មេតា​:"
+
+#: geonode/client/static/geonode/js/lang.js:193
+msgid "Paper size:"
+msgstr "ទំហំ​ក្រដាស​:"
+
+#: geonode/client/static/geonode/js/lang.js:194
+msgid "Resolution:"
+msgstr "គុណភាព​បង្ហាញ​:"
+
+#: geonode/client/static/geonode/js/lang.js:195
+msgid "Print"
+msgstr "បោះពុម្ព"
+
+#: geonode/client/static/geonode/js/lang.js:196
+msgid "Enter map title here."
+msgstr "បញ្ចូល​ចំណង​ជើង​ផែនទី​នៅ​ទីនេះ​។"
+
+#: geonode/client/static/geonode/js/lang.js:197
+msgid "Include legend?"
+msgstr "រួម​បញ្ចូល​រឿងព្រេង​?"
+
+#: geonode/client/static/geonode/js/lang.js:198
+msgid "Enter comments here."
+msgstr "បញ្ចូល​មតិ​នៅ​ទីនេះ​។"
+
+#: geonode/client/static/geonode/js/lang.js:199
+msgid "Creating PDF..."
+msgstr "ការ​បង្កើត​ឯកសារ PDF ..."
+
+#: geonode/client/static/geonode/js/lang.js:208
+msgid "Last Modified"
+msgstr "បាន​កែប្រែ​ចុង​ក្រោយ"
+
+#: geonode/client/static/geonode/js/lang.js:211
+#: geonode/client/static/geonode/js/lang.js:232
+msgid "Prev"
+msgstr "មុន"
+
+#: geonode/client/static/geonode/js/lang.js:212
+#: geonode/client/static/geonode/js/lang.js:233
+msgid "Next"
+msgstr "បន្ទាប់"
+
+#: geonode/client/static/geonode/js/lang.js:213
+#: geonode/client/static/geonode/js/lang.js:234
+msgid "of"
+msgstr "នៃ"
+
+#: geonode/client/static/geonode/js/lang.js:214
+#: geonode/client/static/geonode/js/lang.js:235
+msgid "Your search did not match any items."
+msgstr "ការ​ស្វែងរក​របស់​អ្នក​មិន​បាន​ផ្គូផ្គង​ធាតុ​ណា​មួយ​ឡើយ​។"
+
+#: geonode/client/static/geonode/js/lang.js:215
+msgid "Search Maps"
+msgstr "ស្វែងរក​ផែនទី"
+
+#: geonode/client/static/geonode/js/lang.js:216
+#: geonode/client/static/geonode/js/lang.js:237
+msgid "Search"
+msgstr "ស្វែងរក"
+
+#: geonode/client/static/geonode/js/lang.js:217
+msgid "Showing"
+msgstr "ការ​បង្ហាញ"
+
+#: geonode/client/static/geonode/js/lang.js:218
+msgid "Loading"
+msgstr "កំពុង​ផ្ទុក"
+
+#: geonode/client/static/geonode/js/lang.js:219
+#: geonode/client/static/geonode/js/lang.js:240
+msgid "permalink"
+msgstr "Permalink"
+
+#: geonode/client/static/geonode/js/lang.js:226
+msgid "Select"
+msgstr "ជ្រើស"
+
+#: geonode/client/static/geonode/js/lang.js:229
+msgid "Select:"
+msgstr "ជ្រើស​:"
+
+#: geonode/client/static/geonode/js/lang.js:230
+msgid "All"
+msgstr "ទាំងអស់"
+
+#: geonode/client/static/geonode/js/lang.js:231
+msgid "None"
+msgstr "គ្មាន"
+
+#: geonode/client/static/geonode/js/lang.js:236
+#, fuzzy
+#| msgid "Keywords:"
+msgid "Keyword"
+msgstr "ពាក្យ​គន្លឹះ​:"
+
+#: geonode/client/static/geonode/js/lang.js:238
+#, fuzzy
+#| msgid "Showing"
+msgid "Showing..."
+msgstr "ការ​បង្ហាញ"
+
+#: geonode/client/static/geonode/js/lang.js:239
+msgid "Loading..."
+msgstr "កំពុង​ផ្ទុក ..."
+
+#: geonode/client/static/geonode/js/lang.js:241
+msgid "You do not have permission to view this data"
+msgstr "អ្នក​មិន​មាន​សិទ្ធិ​ដើម្បី​មើល​ទិន្នន័យ​នេះ"
+
+#: geonode/client/static/geonode/js/lang.js:242
+msgid "This data is stored on a remote server"
+msgstr "ទិន្នន័យ​នេះ​ត្រូវ​បាន​រក្សា​ទុក​នៅ​លើ​ម៉ាស៊ីន​បម្រើ​ពី​ចម្ងាយ"
+
+#: geonode/client/static/geonode/js/lang.js:243
+msgid "Invalid Query"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:244
+msgid "You need to specify a search term"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:245
+#: geonode/client/static/geonode/js/lang.js:247
+msgid "Source"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:246
+#, fuzzy
+#| msgid "Data"
+msgid "Data Type"
+msgstr "ទិន្នន័យ"
+
+#: geonode/client/static/geonode/js/lang.js:248
+msgid "Date"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:249
+msgid "from year"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:250
+msgid "to year"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:251
+msgid "Reset"
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:257
+msgid "No abstract is provided for this layer."
+msgstr "គ្មាន​អរូបី​ត្រូវ​បាន​ផ្តល់​ជូន​សម្រាប់​ស្រទាប់​នេះ​។"
+
+#: geonode/client/static/geonode/js/lang.js:261
+msgid "No download URLs are definied for this layer."
+msgstr "គ្មាន URLs ដែល​ទាញ​យក​ត្រូវ​បាន definied សម្រាប់​ស្រទាប់​នេះ​។"
+
+#: geonode/client/static/geonode/js/lang.js:266
+msgid "Click here for more information about this layer."
+msgstr ""
+
+#: geonode/client/static/geonode/js/lang.js:271
+msgid "Selected Layers"
+msgstr "ស្រទាប់​ដែល​បាន​ជ្រើស"
+
+#: geonode/client/static/geonode/js/lang.js:272
+msgid "No Layers Selected"
+msgstr "គ្មាន​ស្រទាប់​ដែល​បាន​ជ្រើស"
+
+#: geonode/client/static/geonode/js/lang.js:274
+msgid "Clear Selected"
+msgstr "ច្បាស់​ណាស់​ដែល​បាន​ជ្រើស"
+
+#: geonode/client/static/geonode/js/lang.js:275
+msgid "Clear All"
+msgstr "ជម្រះ​ទាំង​អស់"
+
+#: geonode/client/static/geonode/js/lang.js:282
+msgid "Operation Failed"
+msgstr "ប្រតិ​ប​ត្ដិ​ការ​បាន​បរាជ័យ"
+
+#: geonode/client/static/geonode/js/lang.js:283
+msgid "No layers are currently selected."
+msgstr "គ្មាន​ស្រទាប់​ត្រូវ​បាន​ជ្រើស​បច្ចុប្បន្ន​។"
+
+#: geonode/client/static/geonode/js/lang.js:290
+msgid "Downloading..."
+msgstr "ទាញ​យក ..."
+
+#: geonode/client/static/geonode/js/lang.js:292
+msgid "Please wait"
+msgstr "សូម​រង់ចាំ"
+
+#: geonode/monitoring/static/monitoring/bundle.js:170
+msgid "STORE_UPDATED"
+msgstr ""
+
+#: geonode/people/templates/people/profile_detail.html:77
+#: geonode/people/templates/people/profile_detail.html:86
+#: geonode/people/templates/people/profile_detail.html:98
+msgid "Not provided."
+msgstr ""
+
+#: geonode/static/geonode/js/search/search.js:599
 msgid "Enter your text here ..."
 msgstr ""
 
-#: geonode/static/geonode/js/search/search.js:414
+#: geonode/static/geonode/js/search/search.js:644
 msgid "Enter your region here ..."
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileType.js:33
+#: geonode/static/geonode/js/upload/FileType.js:50
 #, javascript-format
 msgid "Missing a %s file, which is required"
 msgstr "ការ​បាត់​ឯកសារ​ %s មួយ​ដែល​ត្រូវ​បាន​ទាមទារ"
@@ -53,143 +799,216 @@ msgid "ESRI Shapefile"
 msgstr "Shapefile ESRI"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:13
+msgid "ASCII Text File"
+msgstr ""
+
 #: geonode/static/geonode/js/upload/FileTypes.js:18
+#: geonode/static/geonode/js/upload/FileTypes.js:23
 msgid "GeoTIFF"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:24
+#: geonode/static/geonode/js/upload/FileTypes.js:29
 msgid "Comma Separated Value"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:29
+#: geonode/static/geonode/js/upload/FileTypes.js:34
 msgid "Google Earth KML"
 msgstr "ផែនដី Google ឯកសារ KML"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:34
+#: geonode/static/geonode/js/upload/FileTypes.js:39
+#, fuzzy
+#| msgid "Google Earth KML"
+msgid "Google Earth KML with a GroundOverlay"
+msgstr "ផែនដី Google ឯកសារ KML"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:45
+#, fuzzy
+#| msgid "Google Earth KML"
+msgid "Google Earth KMZ"
+msgstr "ផែនដី Google ឯកសារ KML"
+
+#: geonode/static/geonode/js/upload/FileTypes.js:50
 msgid "GeoJSON"
 msgstr "GeoJSON"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:39
+#: geonode/static/geonode/js/upload/FileTypes.js:55
 msgid "Zip Archive"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:45
+#: geonode/static/geonode/js/upload/FileTypes.js:61
 msgid "ERDAS Imagine"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:50
-#: geonode/static/geonode/js/upload/FileTypes.js:55
+#: geonode/static/geonode/js/upload/FileTypes.js:66
+#: geonode/static/geonode/js/upload/FileTypes.js:71
 msgid "National Imagery Transmission Format"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:61
+#: geonode/static/geonode/js/upload/FileTypes.js:77
 msgid "Controlled Image Base-1 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:68
+#: geonode/static/geonode/js/upload/FileTypes.js:84
 msgid "Controlled Image Base-5 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:75
+#: geonode/static/geonode/js/upload/FileTypes.js:91
 msgid "Controlled Image Base-10 Meter"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:82
+#: geonode/static/geonode/js/upload/FileTypes.js:98
 msgid "CADRG-Global Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:89
+#: geonode/static/geonode/js/upload/FileTypes.js:105
 msgid "CADRG-Jet Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:96
+#: geonode/static/geonode/js/upload/FileTypes.js:112
 msgid "CADRG-Operational Navigation Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:103
+#: geonode/static/geonode/js/upload/FileTypes.js:119
 msgid "CADRG-Tactical Pilotage Chart"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:110
+#: geonode/static/geonode/js/upload/FileTypes.js:126
 msgid "CADRG-Joint Operations Graphic"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:117
+#: geonode/static/geonode/js/upload/FileTypes.js:133
 msgid "CADRG-Topographic Line Map 100K"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:124
+#: geonode/static/geonode/js/upload/FileTypes.js:140
 msgid "CADRG-Topographic Line Map 50K"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:131
+#: geonode/static/geonode/js/upload/FileTypes.js:147
 msgid "JPEG2000"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/FileTypes.js:136
+#: geonode/static/geonode/js/upload/FileTypes.js:152
 msgid "MrSID-Multi-resolution Seamless Image Database"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:331
-msgid "Layer Info"
-msgstr "ស្រទាប់​ព​ត៌​មាន"
+#: geonode/static/geonode/js/upload/FileTypes.js:157
+#, fuzzy
+#| msgid "Metadata Links:"
+msgid "XML Metadata File"
+msgstr "ភ្ជាប់​ទិន្នន័យ​មេតា​:"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:332
-msgid "Edit Metadata"
-msgstr "កែសម្រួល​ទិន្នន័យ​មេតា"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:333
-msgid "Manage Styles"
-msgstr "គ្រប់គ្រង​រចនាប័ទ្ម"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:336
-msgid "The column %1 was renamed to %2 <br/>"
+#: geonode/static/geonode/js/upload/FileTypes.js:163
+msgid "Style Layer Descriptor"
 msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:342
-msgid "Your layer was successfully uploaded"
-msgstr "ស្រទាប់​របស់​អ្នក​ត្រូវ​បាន​ផ្ទុក​ឡើង​ដោយ​ជោគជ័យ"
+#: geonode/static/geonode/js/upload/FileTypes.js:169
+msgid "JPEG"
+msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:371
-msgid "Performing Final GeoServer Config Step"
-msgstr "ការ​ស​ម្តែ​ង GeoServer កំណត់​រចនាសម្ព័ន្ធ​ជំហាន​ចុងក្រោយ"
+#: geonode/static/geonode/js/upload/FileTypes.js:174
+msgid "PNG"
+msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:386
-#: geonode/static/geonode/js/upload/LayerInfo.js:412
-msgid "You need to specify more information in order to complete your upload"
-msgstr "អ្នក​ត្រូវ​បញ្ជាក់​ព័​ត៌​មាន​បន្ថែម​ទៀត​នៅ​ក្នុង​គោល​បំណង​ដើម្បី​បញ្ចប់​ការ​ផ្ទុក​ឡើង​របស់​អ្នក"
+#: geonode/static/geonode/js/upload/FileTypes.js:179
+msgid "GIF"
+msgstr ""
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:404
-msgid "You need to specify more information in order to complete your upload."
-msgstr "អ្នក​ត្រូវ​បញ្ជាក់​ព័​ត៌​មាន​បន្ថែម​ទៀត​នៅ​ក្នុង​គោល​បំណង​ដើម្បី​បញ្ចប់​ការ​ផ្ទុក​ឡើង​របស់​អ្នក​។"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:404
-msgid "You can continue configuring your layer."
-msgstr "អ្នក​អាច​បន្ត​ការ​កំណត់​រចនា​សម្ព័ន្ធ​ស្រទាប់​របស់​អ្នក​។"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:422
-#: geonode/static/geonode/js/upload/LayerInfo.js:509
+#: geonode/static/geonode/js/upload/LayerInfo.js:332
+#: geonode/static/geonode/js/upload/LayerInfo.js:503
 msgid "Unexpected Error"
 msgstr "មាន​កំហុស​ដែល​មិន​រំពឹង​ទុក"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:438
+#: geonode/static/geonode/js/upload/LayerInfo.js:370
+#, fuzzy
+#| msgid "Layer Info"
+msgid " Info"
+msgstr "ស្រទាប់​ព​ត៌​មាន"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:371
+msgid "Edit Metadata"
+msgstr "កែសម្រួល​ទិន្នន័យ​មេតា"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:372
+#, fuzzy
+#| msgid "Edit Metadata"
+msgid "Upload Metadata"
+msgstr "កែសម្រួល​ទិន្នន័យ​មេតា"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:373
+msgid "Upload SLD"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:374
+msgid "Manage Styles"
+msgstr "គ្រប់គ្រង​រចនាប័ទ្ម"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:387
+msgid "The column %1 was renamed to %2 <br/>"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:393
+msgid "Your "
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:422
+msgid "Performing Final GeoServer Config Step"
+msgstr "ការ​ស​ម្តែ​ង GeoServer កំណត់​រចនាសម្ព័ន្ធ​ជំហាន​ចុងក្រោយ"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:439
+#: geonode/static/geonode/js/upload/LayerInfo.js:483
+msgid "You need to specify more information in order to complete your upload"
+msgstr "អ្នក​ត្រូវ​បញ្ជាក់​ព័​ត៌​មាន​បន្ថែម​ទៀត​នៅ​ក្នុង​គោល​បំណង​ដើម្បី​បញ្ចប់​ការ​ផ្ទុក​ឡើង​របស់​អ្នក"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:463
+msgid "Files are ready to be ingested!"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:466
+msgid "A temporal dimension may be added to this Layer."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:521
 msgid "Performing GeoServer Config Step"
 msgstr "ការ​ស​ម្តែ​ង GeoServer កំណត់​រចនាសម្ព័ន្ធ​ជំហាន​ទី"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:516
+#: geonode/static/geonode/js/upload/LayerInfo.js:609
+msgid ""
+"<br>Please check your network connection. In case of Layer Upload make sure "
+"GeoServer is running and accepting connections."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:613
+#: geonode/static/geonode/js/upload/LayerInfo.js:616
+#: geonode/static/geonode/js/upload/LayerInfo.js:623
+#: geonode/static/geonode/js/upload/LayerInfo.js:626
+msgid "<br>"
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:618
+msgid "<br>Bad request or URL not found."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:628
+#, fuzzy
+#| msgid "Unknown Map"
+msgid "<br>Unknown."
+msgstr "មិន​ស្គាល់​ផែនទី"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:636
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "ឯកសារ​ស្រទាប់​ដែល​បាន​ផ្ទុក​ឡើង​, កំណត់​រចនាសម្ព័ន្ធ​ក្នុង​ការ GeoServer"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:695
+#: geonode/static/geonode/js/upload/LayerInfo.js:787
 msgid "Remove"
 msgstr "យក"
 
-#: geonode/static/geonode/js/upload/upload.js:125
+#: geonode/static/geonode/js/upload/upload.js:126
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr "ឯកសារ​ %s គឺ​ប្រភេទ​ឯកសារ​មួយ​ដែល​មិន​បាន​គាំទ្រ​សូម​ជ្រើស​ឯកសារ​មួយ​ផ្សេង​ទៀត​។"
 
-#: geonode/static/geonode/js/upload/upload.js:285
+#: geonode/static/geonode/js/upload/upload.js:296
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
 "options have been validated.\n"
@@ -197,477 +1016,59 @@ msgid ""
 "Please check for errors in the form!"
 msgstr ""
 
-#: geonode/static/lib/js/assets.min.js:2
-msgid "<iframe frameborder='0' width='0' height='0'/>"
+#: geonode/templates/admin/base_site.html:4
+msgid "GeoNode site admin"
 msgstr ""
 
-#: geonode/static/lib/js/assets.min.js:4
-msgid "<script>"
+#: geonode/templates/admin/base_site.html:7
+msgid "GeoNode administration"
 msgstr ""
 
-#: geonode/static/lib/js/assets.min.js:4
-msgid "<div>"
+#: geonode/templates/index.html:19
+msgid "Welcome"
 msgstr ""
 
-#: geonode/templates/lang.js:9 geonode/templates/lang.js:236
-msgid "Cancel"
-msgstr "បោះបង់"
-
-#: geonode/templates/lang.js:10
-msgid "Save as Copy"
-msgstr "រក្សាទុក​ជា​ច្បាប់​ចម្លង"
-
-#: geonode/templates/lang.js:11
-msgid "About this Map"
-msgstr "អំពី​ផែនទី​នេះ"
-
-#: geonode/templates/lang.js:12 geonode/templates/lang.js:96
-#: geonode/templates/lang.js:165
-msgid "Abstract"
-msgstr "អរូបី"
-
-#: geonode/templates/lang.js:13
-msgid "Save"
-msgstr "រក្សា​ទុក"
-
-#: geonode/templates/lang.js:14 geonode/templates/lang.js:100
-#: geonode/templates/lang.js:109 geonode/templates/lang.js:162
-#: geonode/templates/lang.js:184 geonode/templates/lang.js:219
-msgid "Title"
-msgstr "ចំណងជើង"
-
-#: geonode/templates/lang.js:20
-msgid "Connection Error"
-msgstr "កំហុស​ក្នុង​ការ​តភ្ជាប់"
-
-#: geonode/templates/lang.js:21
-msgid "The server returned an error"
-msgstr "ម៉ាស៊ីន​បម្រើ​បាន​ត្រឡប់​កំហុស​មួយ"
-
-#: geonode/templates/lang.js:22
-msgid "Details..."
-msgstr "ព័ត៌មាន​លំអិត ..."
-
-#: geonode/templates/lang.js:28 geonode/templates/lang.js:31
-msgid "Add Layers"
-msgstr "បន្ថែម​ស្រទាប់"
-
-#: geonode/templates/lang.js:29
-msgid "Area"
-msgstr "តំបន់"
-
-#: geonode/templates/lang.js:30
-msgid "Background"
-msgstr "ផ្ទៃ​ខាង​ក្រោយ"
-
-#: geonode/templates/lang.js:32
-msgid "Done"
-msgstr "ធ្វើ"
-
-#: geonode/templates/lang.js:33
-msgid "Available Layers"
-msgstr "ស្រទាប់​ដែល​អាច​ប្រើ​បាន"
-
-#: geonode/templates/lang.js:35 geonode/templates/lang.js:121
-msgid "Height"
-msgstr "កម្ពស់"
-
-#: geonode/templates/lang.js:36
-msgid "Get Feature Info"
-msgstr "ទទួល​បាន​បំពាក់​ព័ត៌មាន"
-
-#: geonode/templates/lang.js:37 geonode/templates/lang.js:122
-msgid "Large"
-msgstr "ធំ"
-
-#: geonode/templates/lang.js:38
-msgid "or add a new server."
-msgstr "ឬ​បន្ថែម​ម៉ាស៊ីន​បម្រើ​ថ្មី​។"
-
-#: geonode/templates/lang.js:39
-msgid "Map Layers"
-msgstr "ស្រទាប់​ផែនទី"
-
-#: geonode/templates/lang.js:40
-msgid "View available data from:"
-msgstr "មើល​ទិន្នន័យ​ដែល​អាច​រក​បាន​ពី​:"
-
-#: geonode/templates/lang.js:41
-msgid "Data"
-msgstr "ទិន្នន័យ"
-
-#: geonode/templates/lang.js:42
-msgid "Layers"
-msgstr "ស្រទាប់"
-
-#: geonode/templates/lang.js:43
-msgid "Legend"
-msgstr "តាង"
-
-#: geonode/templates/lang.js:44
-msgid "Length"
-msgstr "ប្រវែង"
-
-#: geonode/templates/lang.js:45
-msgid "Loading Map..."
-msgstr "កំពុង​ផ្ទុក​ផែនទី ..."
-
-#: geonode/templates/lang.js:46 geonode/templates/lang.js:123
-msgid "Map Size"
-msgstr "ទំហំ​ផែនទី"
-
-#: geonode/templates/lang.js:47
-msgid "Measure"
-msgstr "វិធានការ"
-
-#: geonode/templates/lang.js:48 geonode/templates/lang.js:97
-#: geonode/templates/lang.js:163
-msgid "Contact"
-msgstr "ទំ​ន​ក់​ទំនង"
-
-#: geonode/templates/lang.js:49 geonode/templates/lang.js:55
-msgid "Permalink"
-msgstr "គេ​តែង"
-
-#: geonode/templates/lang.js:50 geonode/templates/lang.js:124
-msgid "Mini"
-msgstr "កាត Mini"
-
-#: geonode/templates/lang.js:51
-msgid "Pan Map"
-msgstr "ប៉ាន់​ផែនទី"
-
-#: geonode/templates/lang.js:52
-msgid "Zoom to Next Extent"
-msgstr "ពង្រីក​វិសាលភាព​បន្ទាប់"
-
-#: geonode/templates/lang.js:53
-msgid "Zoom to Previous Extent"
-msgstr "ពង្រីក​វិសាលភាព​មុន"
-
-#: geonode/templates/lang.js:54
-msgid "This map has not yet been saved."
-msgstr "ផែនទី​នេះ​មិន​ទាន់​ត្រូវ​បាន​គេ​រក្សា​ទុក​។"
-
-#: geonode/templates/lang.js:56 geonode/templates/lang.js:125
-msgid "Premium"
-msgstr "ពិសេស"
-
-#: geonode/templates/lang.js:57
-msgid "Print Map"
-msgstr "ការ​បោះពុម្ព​ផែនទី"
-
-#: geonode/templates/lang.js:58
-msgid "Print Preview"
-msgstr "មើល​មុន​បោះពុម្ព"
-
-#: geonode/templates/lang.js:59
-msgid "Properties"
-msgstr "លក្ខណៈ​សម្បត្តិ"
-
-#: geonode/templates/lang.js:60 geonode/templates/lang.js:126
-msgid "Publish Map"
-msgstr "បោះ​ពុ​ម្ភ​ផែនទី"
-
-#: geonode/templates/lang.js:61 geonode/templates/lang.js:62
-msgid "Remove Layer"
-msgstr "យក​ចេញ​ស្រទាប់"
-
-#: geonode/templates/lang.js:63
-msgid "Sorry, your map could not be saved."
-msgstr "សូម​អភ័យ​ទោស​, ផែនទី​របស់​អ្នក​មិន​អាច​ត្រូវ​បាន​រក្សា​ទុក​។"
-
-#: geonode/templates/lang.js:64
-msgid "Error While Saving"
-msgstr "មាន​កំហុស​ខណៈ​ពេល​រក្សាទុក"
-
-#: geonode/templates/lang.js:65
-msgid "Save Map"
-msgstr "រក្សា​ទុក​ផែនទី"
-
-#: geonode/templates/lang.js:66
-msgid "You must be logged in to save this map."
-msgstr "អ្នក​ត្រូវ​តែ​ចូល​ក្នុង​ដើម្បី​រក្សា​ទុក​ផែនទី​នេះ​។"
-
-#: geonode/templates/lang.js:67 geonode/templates/lang.js:128
-msgid "Small"
-msgstr "តូច"
-
-#: geonode/templates/lang.js:68
+#: geonode/templates/index.html:21
 msgid ""
-"Error contacting server.\n"
-" Please check the url and try again."
-msgstr "កំហុស​ទាក់ទង​ម៉ាស៊ីន​បម្រើ​។ សូម​ពិនិត្យ​មើល URL និង​ព្យាយាម​ម្ដង​ទៀត​។"
-
-#: geonode/templates/lang.js:69
-msgid "Layer Properties"
-msgstr "លក្ខណៈ​សម្បត្តិ​ស្រទាប់"
-
-#: geonode/templates/lang.js:70
-msgid "Change layer format and style"
-msgstr "ការ​ផ្លាស់​ប្តូ​រ​ទ្រង់ទ្រាយ​ស្រទាប់​និង​រចនាប័ទ្ម"
-
-#: geonode/templates/lang.js:71
-msgid "Edit Styles"
-msgstr "កែសម្រួល​រចនាប័ទ្ម"
-
-#: geonode/templates/lang.js:72
-msgid "Edit layer styles"
-msgstr "រចនាប័ទ្ម​កែ​សម្រួល​ស្រទាប់"
-
-#: geonode/templates/lang.js:73
-msgid "Switch to Google Earth 3D Viewer"
-msgstr "ប្តូ​រ​កម្មវិធី​មើល 3D ផែនដី Google ទៅ"
-
-#: geonode/templates/lang.js:74
-msgid ""
-"The map that you are trying to load does not exist.  Creating a new map "
-"instead."
-msgstr "ផែនទី​ដែល​អ្នក​កំពុង​តែ​ព្យាយាម​ដើម្បី​ផ្ទុក​មិន​មាន​ទេ​។ ការ​បង្កើត​ផែនទី​ថ្មី​មួយ​ជំនួស​វិញ​។"
-
-#: geonode/templates/lang.js:75
-msgid "Unknown Map"
-msgstr "មិន​ស្គាល់​ផែនទី"
-
-#: geonode/templates/lang.js:76 geonode/templates/lang.js:129
-msgid "Width"
-msgstr "ទទឹង"
-
-#: geonode/templates/lang.js:77
-msgid "Zoom In"
-msgstr "ពង្រីក"
-
-#: geonode/templates/lang.js:78
-msgid "Zoom Out"
-msgstr "បង្រួម"
-
-#: geonode/templates/lang.js:79
-msgid "Zoom level"
-msgstr "កម្រិត​ពង្រីក"
-
-#: geonode/templates/lang.js:80
-msgid "Zoom Level"
-msgstr "កម្រិត​ពង្រីក"
-
-#: geonode/templates/lang.js:81
-msgid "Zoom to Layer Extent"
-msgstr "ពង្រីក​ទៅ​ស្រទាប់​វិសាលភាព"
-
-#: geonode/templates/lang.js:82
-msgid "Zoom to Visible Extent"
-msgstr "ពង្រីក​ទំហំ​មើល​ឃើញ"
-
-#: geonode/templates/lang.js:88
-msgid "Zoom Level {zoom}"
-msgstr "ពង្រីក​កម្រិត​ពង្រីក​} {"
-
-#: geonode/templates/lang.js:94
-msgid "Create Map"
-msgstr "បង្កើត​ផែនទី"
-
-#: geonode/templates/lang.js:95
-msgid "Export Map"
-msgstr "នាំចេញ​ផែនទី"
-
-#: geonode/templates/lang.js:98
-msgid "Map"
-msgstr "ផែនទី"
-
-#: geonode/templates/lang.js:99 geonode/templates/lang.js:166
-msgid "View this Map"
-msgstr "មើល​ផែនទី​នេះ"
-
-#: geonode/templates/lang.js:101
-msgid "Open Map"
-msgstr "បើក​ទូលាយ​ផែនទី"
-
-#: geonode/templates/lang.js:107 geonode/templates/lang.js:183
-msgid "Name"
-msgstr "ឈ្មោះ"
-
-#: geonode/templates/lang.js:108
-msgid "Queryable"
-msgstr "Queryable"
-
-#: geonode/templates/lang.js:115
-msgid "No background"
-msgstr "គ្មាន​ផ្ទៃ​ខាង​ក្រោយ"
-
-#: geonode/templates/lang.js:127
-msgid ""
-"Your map is ready to be published to the web!  Simply copy the following "
-"HTML to embed the map in your website:"
+"GeoNode is an open source platform for sharing geospatial data and maps."
 msgstr ""
-"ផែនទី​របស់​អ្នក​គឺ​ត្រៀម​ខ្លួន​ជា​ស្រេច​ដែល​នឹង​ត្រូវ​បាន​បោះ​ពុម្ព​ផ្សាយ​ទៅ​តំបន់​ប​ណ្តា​ញ​! គ្រាន់​តែ​ចម្លង​ជា HTML "
-"ផែនទី​ខាងក្រោម​ដើម្បី​បង្កប់​ក្នុង​គេហទំព័រ​របស់​អ្នក​:"
 
-#: geonode/templates/lang.js:136 geonode/templates/lang.js:202
-msgid "Abstract:"
-msgstr "អរូបី​:"
+#: geonode/templates/index.html:25
+msgid "Get Started &raquo;"
+msgstr ""
 
-#: geonode/templates/lang.js:137 geonode/templates/lang.js:204
-msgid "No attribution information is provided for this layer."
-msgstr "គ្មាន​ព័ត៌មាន​បញ្ជាក់​ត្រូវ​បាន​ផ្ដល់​សម្រាប់​ស្រទាប់​នេះ​។"
+#: geonode/templates/index.html:76 geonode/templates/index.html:96
+#, fuzzy
+#| msgid "Now"
+msgid "No"
+msgstr "Now"
 
-#: geonode/templates/lang.js:138 geonode/templates/lang.js:205
-msgid "Provided by:"
-msgstr "ផ្តល់​ដោយ​:"
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "some schema mandatory fields are missing"
+msgstr ""
 
-#: geonode/templates/lang.js:139 geonode/templates/lang.js:206
-msgid "Download:"
-msgstr "ទាញ​យក​:"
+#: geonode/templates/metadata_form_js.html:75
+#: geonode/templates/metadata_form_js.html:80
+msgid "Metadata Schema mandatory fields completed"
+msgstr ""
 
-#: geonode/templates/lang.js:140 geonode/templates/lang.js:208
-msgid "No keywords are listed for this layer."
-msgstr "គ្មាន​ពាក្យ​គន្លឹះ​ត្រូវ​បាន​រាយ​បញ្ជី​សម្រាប់​ស្រទាប់​នេះ​។"
+#: geonode/templates/metadata_form_js.html:238
+#: geonode/templates/metadata_form_js.html:278
+msgid ""
+"<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field "
+"declared Mandatory by the Metadata Schema</strong></p>"
+msgstr ""
 
-#: geonode/templates/lang.js:141 geonode/templates/lang.js:209
-msgid "Keywords:"
-msgstr "ពាក្យ​គន្លឹះ​:"
+#~ msgid "Your layer was successfully uploaded"
+#~ msgstr "ស្រទាប់​របស់​អ្នក​ត្រូវ​បាន​ផ្ទុក​ឡើង​ដោយ​ជោគជ័យ"
 
-#: geonode/templates/lang.js:142 geonode/templates/lang.js:210
-msgid "No metadata URLs are defined for this layer."
-msgstr "គ្មាន URLs ដែល​ទិន្នន័យ​មេតា​ត្រូវ​បាន​កំណត់​សម្រាប់​ស្រទាប់​នេះ​។"
+#~ msgid ""
+#~ "You need to specify more information in order to complete your upload."
+#~ msgstr "អ្នក​ត្រូវ​បញ្ជាក់​ព័​ត៌​មាន​បន្ថែម​ទៀត​នៅ​ក្នុង​គោល​បំណង​ដើម្បី​បញ្ចប់​ការ​ផ្ទុក​ឡើង​របស់​អ្នក​។"
 
-#: geonode/templates/lang.js:143 geonode/templates/lang.js:211
-msgid "Metadata Links:"
-msgstr "ភ្ជាប់​ទិន្នន័យ​មេតា​:"
-
-#: geonode/templates/lang.js:149
-msgid "Paper size:"
-msgstr "ទំហំ​ក្រដាស​:"
-
-#: geonode/templates/lang.js:150
-msgid "Resolution:"
-msgstr "គុណភាព​បង្ហាញ​:"
-
-#: geonode/templates/lang.js:151
-msgid "Print"
-msgstr "បោះពុម្ព"
-
-#: geonode/templates/lang.js:152
-msgid "Enter map title here."
-msgstr "បញ្ចូល​ចំណង​ជើង​ផែនទី​នៅ​ទីនេះ​។"
-
-#: geonode/templates/lang.js:153
-msgid "Include legend?"
-msgstr "រួម​បញ្ចូល​រឿងព្រេង​?"
-
-#: geonode/templates/lang.js:154
-msgid "Enter comments here."
-msgstr "បញ្ចូល​មតិ​នៅ​ទីនេះ​។"
-
-#: geonode/templates/lang.js:155
-msgid "Creating PDF..."
-msgstr "ការ​បង្កើត​ឯកសារ PDF ..."
-
-#: geonode/templates/lang.js:164
-msgid "Last Modified"
-msgstr "បាន​កែប្រែ​ចុង​ក្រោយ"
-
-#: geonode/templates/lang.js:167 geonode/templates/lang.js:188
-msgid "Prev"
-msgstr "មុន"
-
-#: geonode/templates/lang.js:168 geonode/templates/lang.js:189
-msgid "Next"
-msgstr "បន្ទាប់"
-
-#: geonode/templates/lang.js:169 geonode/templates/lang.js:190
-msgid "of"
-msgstr "នៃ"
-
-#: geonode/templates/lang.js:170 geonode/templates/lang.js:191
-msgid "Your search did not match any items."
-msgstr "ការ​ស្វែងរក​របស់​អ្នក​មិន​បាន​ផ្គូផ្គង​ធាតុ​ណា​មួយ​ឡើយ​។"
-
-#: geonode/templates/lang.js:171
-msgid "Search Maps"
-msgstr "ស្វែងរក​ផែនទី"
-
-#: geonode/templates/lang.js:172 geonode/templates/lang.js:192
-msgid "Search"
-msgstr "ស្វែងរក"
-
-#: geonode/templates/lang.js:173 geonode/templates/lang.js:193
-msgid "Showing"
-msgstr "ការ​បង្ហាញ"
-
-#: geonode/templates/lang.js:174
-msgid "Loading"
-msgstr "កំពុង​ផ្ទុក"
-
-#: geonode/templates/lang.js:175 geonode/templates/lang.js:195
-msgid "permalink"
-msgstr "Permalink"
-
-#: geonode/templates/lang.js:182
-msgid "Select"
-msgstr "ជ្រើស"
-
-#: geonode/templates/lang.js:185
-msgid "Select:"
-msgstr "ជ្រើស​:"
-
-#: geonode/templates/lang.js:186
-msgid "All"
-msgstr "ទាំងអស់"
-
-#: geonode/templates/lang.js:187
-msgid "None"
-msgstr "គ្មាន"
-
-#: geonode/templates/lang.js:194
-msgid "Loading..."
-msgstr "កំពុង​ផ្ទុក ..."
-
-#: geonode/templates/lang.js:196
-msgid "You do not have permission to view this data"
-msgstr "អ្នក​មិន​មាន​សិទ្ធិ​ដើម្បី​មើល​ទិន្នន័យ​នេះ"
-
-#: geonode/templates/lang.js:197
-msgid "This data is stored on a remote server"
-msgstr "ទិន្នន័យ​នេះ​ត្រូវ​បាន​រក្សា​ទុក​នៅ​លើ​ម៉ាស៊ីន​បម្រើ​ពី​ចម្ងាយ"
-
-#: geonode/templates/lang.js:203
-msgid "No abstract is provided for this layer."
-msgstr "គ្មាន​អរូបី​ត្រូវ​បាន​ផ្តល់​ជូន​សម្រាប់​ស្រទាប់​នេះ​។"
-
-#: geonode/templates/lang.js:207
-msgid "No download URLs are definied for this layer."
-msgstr "គ្មាន URLs ដែល​ទាញ​យក​ត្រូវ​បាន definied សម្រាប់​ស្រទាប់​នេះ​។"
-
-#: geonode/templates/lang.js:217
-msgid "Selected Layers"
-msgstr "ស្រទាប់​ដែល​បាន​ជ្រើស"
-
-#: geonode/templates/lang.js:218
-msgid "No Layers Selected"
-msgstr "គ្មាន​ស្រទាប់​ដែល​បាន​ជ្រើស"
-
-#: geonode/templates/lang.js:220
-msgid "Clear Selected"
-msgstr "ច្បាស់​ណាស់​ដែល​បាន​ជ្រើស"
-
-#: geonode/templates/lang.js:221
-msgid "Clear All"
-msgstr "ជម្រះ​ទាំង​អស់"
-
-#: geonode/templates/lang.js:227
-msgid "Operation Failed"
-msgstr "ប្រតិ​ប​ត្ដិ​ការ​បាន​បរាជ័យ"
-
-#: geonode/templates/lang.js:228
-msgid "No layers are currently selected."
-msgstr "គ្មាន​ស្រទាប់​ត្រូវ​បាន​ជ្រើស​បច្ចុប្បន្ន​។"
-
-#: geonode/templates/lang.js:235
-msgid "Downloading..."
-msgstr "ទាញ​យក ..."
-
-#: geonode/templates/lang.js:237
-msgid "Please wait"
-msgstr "សូម​រង់ចាំ"
+#~ msgid "You can continue configuring your layer."
+#~ msgstr "អ្នក​អាច​បន្ត​ការ​កំណត់​រចនា​សម្ព័ន្ធ​ស្រទាប់​របស់​អ្នក​។"
 
 #~ msgid "Available %s"
 #~ msgstr "Available %s"
@@ -758,9 +1159,6 @@ msgstr "សូម​រង់ចាំ"
 
 #~ msgid "Hide"
 #~ msgstr "Hide"
-
-#~ msgid "Now"
-#~ msgstr "Now"
 
 #~ msgid "Clock"
 #~ msgstr "Clock"
