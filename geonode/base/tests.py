@@ -49,6 +49,20 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         self.assertTrue('missing_thumb' in os.path.splitext(missing)[0])
 
 
+class TestCreationOfMissingMetadataAuthorsOrPOC(ThumbnailTests):
+
+    def test_add_missing_metadata_author_or_poc(self):
+        """
+        Test that calling add_missing_metadata_author_or_poc resource method sets
+        a missing metadata_author and/or point of contact (poc) to resource owner
+        """
+        user = get_user_model().objects.create(username='zlatan_i')
+        self.rb.owner = user
+        self.rb.add_missing_metadata_author_or_poc()
+        self.assertEqual(self.rb.metadata_author.username, 'zlatan_i')
+        self.assertEqual(self.rb.poc.username, 'zlatan_i')
+
+
 class RenderMenuTagTest(GeoNodeBaseTestSupport):
     """
     Test class for render_menu and render_top_menu custom tags of base_tags

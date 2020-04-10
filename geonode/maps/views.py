@@ -128,6 +128,9 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
 
+    # Add metadata_author or poc if missing
+    map_obj.add_missing_metadata_author_or_poc()
+
     # Update count for popularity ranking,
     # but do not includes admins or resource owners
     if request.user != map_obj.owner and not request.user.is_superuser:
@@ -208,6 +211,8 @@ def map_metadata(
         'base.change_resourcebase_metadata',
         _PERMISSION_MSG_VIEW)
 
+    # Add metadata_author or poc if missing
+    map_obj.add_missing_metadata_author_or_poc()
     poc = map_obj.poc
 
     metadata_author = map_obj.metadata_author
