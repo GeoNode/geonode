@@ -40,9 +40,12 @@ from .utils import (get_users_with_perms,
 
 logger = logging.getLogger("geonode.security.models")
 
-ADMIN_PERMISSIONS = [
+VIEW_PERMISSIONS = [
     'view_resourcebase',
     'download_resourcebase',
+]
+
+ADMIN_PERMISSIONS = [
     'change_resourcebase_metadata',
     'change_resourcebase',
     'delete_resourcebase',
@@ -82,11 +85,24 @@ class PermissionLevelMixin(object):
                     if managers:
                         for manager in managers:
                             if manager not in users and not manager.is_superuser:
-                                for perm in ADMIN_PERMISSIONS:
+                                for perm in ADMIN_PERMISSIONS + VIEW_PERMISSIONS:
                                     assign_perm(perm, manager, resource)
-                                users[manager] = ADMIN_PERMISSIONS
+                                users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS
                 except GroupProfile.DoesNotExist:
                     pass
+        if resource.group:
+            try:
+                group_profile = GroupProfile.objects.get(slug=resource.group.name)
+                managers = group_profile.get_managers()
+                if managers:
+                    for manager in managers:
+                        if manager not in users and not manager.is_superuser and \
+                        manager != resource.owner:
+                            for perm in ADMIN_PERMISSIONS + VIEW_PERMISSIONS:
+                                assign_perm(perm, manager, resource)
+                            users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS
+            except GroupProfile.DoesNotExist:
+                pass
         info = {
             'users': users,
             'groups': groups}
@@ -99,7 +115,6 @@ class PermissionLevelMixin(object):
                     'groups': get_groups_with_perms(
                         self.layer,
                         attach_perms=True)}
-
                 for user in info_layer['users']:
                     if user in info['users']:
                         info['users'][user] = info['users'][user] + info_layer['users'][user]

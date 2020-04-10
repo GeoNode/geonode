@@ -23,7 +23,6 @@
     relationships, actstream user_messages and potentially others
 """
 import logging
-import datetime
 from collections import defaultdict
 from dialogos.models import Comment
 
@@ -237,42 +236,3 @@ if relationships and activity:
     signals.pre_delete.connect(relationship_pre_delete_actstream, sender=Relationship)
 if relationships and has_notifications:
     signals.post_save.connect(relationship_post_save, sender=Relationship)
-
-
-def json_serializer_producer(dictionary):
-    output = {}
-    # pop no useful information for others services which wants to connect to geonode
-    if 'supplemental_information_en' in dictionary.keys():
-        dictionary.pop('supplemental_information_en', None)
-    if 'supplemental_information' in dictionary.keys():
-        dictionary.pop('supplemental_information', None)
-    if 'doc_file' in dictionary.keys():
-        file_object = dictionary['doc_file']
-        dictionary['doc_file'] = str(file_object)
-    if 'regions' in dictionary.keys():
-        keys = dictionary['regions']
-        dictionary['regions'] = str(keys)
-    if 'keywords' in dictionary.keys():
-        keys = dictionary['keywords']
-        dictionary['keywords'] = str(keys)
-    if 'tkeywords' in dictionary.keys():
-        keys = dictionary['tkeywords']
-        dictionary['tkeywords'] = str(keys)
-    if 'styles' in dictionary.keys():
-        keys = dictionary['styles']
-        dictionary['styles'] = str(keys)
-    if 'contacts' in dictionary.keys():
-        keys = dictionary['contacts']
-        dictionary['contacts'] = str(keys)
-    for (x, y) in dictionary.items():
-        if not y:
-            # this is used to solve
-            # TypeError: [] is not JSON serializable when it is null
-            y = str(y)
-        # check datetime object
-        # TODO: Use instanceof
-        if isinstance(y, datetime.datetime):
-            y = str(y)
-
-        output[x] = y
-    return output

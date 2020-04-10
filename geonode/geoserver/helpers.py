@@ -17,30 +17,28 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from collections import namedtuple, defaultdict
-import datetime
-from decimal import Decimal
+import os
+import re
+import sys
+import time
+import uuid
+# import base64
+import json
 import errno
-from itertools import cycle
+import logging
+import datetime
+import traceback
+
 from six import (
     string_types,
     reraise as raise_
 )
-import json
-import logging
-import traceback
-import os
+from itertools import cycle
+from decimal import Decimal
+from collections import namedtuple, defaultdict
 from os.path import basename, splitext, isfile
-import re
-import sys
 from threading import local
-import time
-import uuid
-# import base64
-
 from urllib.parse import urlencode, urlsplit, urljoin
-
 from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
 from dialogos.models import Comment

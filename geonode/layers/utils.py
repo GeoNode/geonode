@@ -599,9 +599,10 @@ def file_upload(filename,
     # by default, if RESOURCE_PUBLISHING=True then layer.is_published
     # must be set to False
     if not overwrite:
-        if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
-            is_approved = False
+        if settings.RESOURCE_PUBLISHING:
             is_published = False
+        if settings.ADMIN_MODERATE_UPLOADS:
+            is_approved = False
 
     defaults = {
         'upload_session': upload_session,

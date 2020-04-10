@@ -75,11 +75,11 @@ def sync_if_local_memory(func, *args, **kwargs):
                 tb = traceback.format_exc()
                 msg = "Exception while publishing message: {}".format(tb)
                 logger.error(msg)
-                raise
+                raise Exception(msg)
         elif not getattr(connection.connection, 'driver_name', None):
             msg = "Exception while getting connection to {}".format(url)
             logger.error(msg)
-            raise
+            raise Exception(msg)
 
 
 @sync_if_local_memory
@@ -89,7 +89,6 @@ def send_email_producer(layer_uuid, user_id):
         payload = {
             "layer_uuid": layer_uuid,
             "user_id": user_id
-
         }
         producer.publish(
             payload,

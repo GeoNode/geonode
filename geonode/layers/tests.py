@@ -62,7 +62,6 @@ from geonode.layers import LayersAppConfig
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.layers import utils
-from geonode.utils import designals
 from geonode.layers.views import _resolve_layer
 
 logger = logging.getLogger(__name__)
@@ -76,7 +75,6 @@ class LayersTest(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(LayersTest, self).setUp()
-        designals()
         create_layer_data()
         self.user = 'admin'
         self.passwd = 'admin'
@@ -1003,7 +1001,6 @@ class UnpublishedObjectTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(UnpublishedObjectTests, self).setUp()
-        designals()
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
@@ -1073,7 +1070,6 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
         super(LayerModerationTestCase, self).setUp()
         self.user = 'admin'
         self.passwd = 'admin'
-        designals()
         create_layer_data()
         self.anonymous_user = get_anonymous_user()
         self.u = get_user_model().objects.get(username=self.user)
@@ -1112,14 +1108,14 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
                 files['charset'] = 'utf-8'
                 files['layer_title'] = 'test layer'
                 resp = self.client.post(layer_upload_url, data=files)
-            self.assertEqual(resp.status_code, 200)
+                self.assertEqual(resp.status_code, 200)
             content = resp.content
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
             data = json.loads(content)
             lname = data['url'].split(':')[-1]
             _l = Layer.objects.get(name=lname)
-
+            self.assertTrue(_l.is_approved)
             self.assertTrue(_l.is_published)
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
@@ -1141,15 +1137,15 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
                 files['charset'] = 'utf-8'
                 files['layer_title'] = 'test layer'
                 resp = self.client.post(layer_upload_url, data=files)
-            self.assertEqual(resp.status_code, 200)
+                self.assertEqual(resp.status_code, 200)
             content = resp.content
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
             data = json.loads(content)
             lname = data['url'].split(':')[-1]
             _l = Layer.objects.get(name=lname)
-
-            self.assertFalse(_l.is_published)
+            self.assertFalse(_l.is_approved)
+            self.assertTrue(_l.is_published)
 
 
 class LayerNotificationsTestCase(NotificationsTestsHelper):
@@ -1160,7 +1156,6 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
         super(LayerNotificationsTestCase, self).setUp()
         self.user = 'admin'
         self.passwd = 'admin'
-        designals()
         create_layer_data()
         self.anonymous_user = get_anonymous_user()
         self.u = get_user_model().objects.get(username=self.user)
@@ -1199,7 +1194,6 @@ class SetLayersPermissions(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(SetLayersPermissions, self).setUp()
-        designals()
         create_layer_data()
         self.username = 'test_username'
         self.passwd = 'test_password'
@@ -1228,7 +1222,8 @@ class SetLayersPermissions(GeoNodeBaseTestSupport):
         layer_after = Layer.objects.get(name=layer.name)
         perm_spec = layer_after.get_all_level_info()
         for perm in utils.WRITE_PERMISSIONS:
-            self.assertNotIn(perm, perm_spec["users"][self.user])
+            if self.user in perm_spec["users"]:
+                self.assertNotIn(perm, perm_spec["users"][self.user])
 
 
 class LayersUploaderTests(GeoNodeBaseTestSupport):

@@ -176,11 +176,11 @@ class Map(ResourceBase, GXPMapBase):
                 pass
 
         conf = context.get("config", {})
-        if not isinstance(conf, dict):
+        if not isinstance(conf, dict) or isinstance(conf, bytes):
             try:
                 conf = json.loads(ensure_string(conf))
             except Exception:
-                pass
+                conf = {}
 
         about = conf.get("about", {})
         self.title = conf.get("title", about.get("title", ""))

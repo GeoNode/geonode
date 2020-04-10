@@ -43,7 +43,6 @@ if "notification" in settings.INSTALLED_APPS:
 
 def _perms_info(obj):
     info = obj.get_all_level_info()
-
     return info
 
 
@@ -51,7 +50,6 @@ def _perms_info_json(obj):
     info = _perms_info(obj)
     info['users'] = {u.username: perms for u, perms in info['users'].items()}
     info['groups'] = {g.name: perms for g, perms in info['groups'].items()}
-
     return json.dumps(info)
 
 

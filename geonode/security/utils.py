@@ -144,7 +144,7 @@ def get_users_with_perms(obj):
     """
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
-    PERMISSIONS_TO_FETCH = models.ADMIN_PERMISSIONS + models.LAYER_ADMIN_PERMISSIONS
+    PERMISSIONS_TO_FETCH = models.VIEW_PERMISSIONS + models.ADMIN_PERMISSIONS + models.LAYER_ADMIN_PERMISSIONS
 
     for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
         permissions[perm.id] = perm.codename
@@ -639,10 +639,11 @@ def set_owner_permissions(resource):
     """assign all admin permissions to the owner"""
     if resource.polymorphic_ctype:
         # Set the GeoFence Owner Rule
+        admin_perms = models.VIEW_PERMISSIONS + models.ADMIN_PERMISSIONS
         if resource.polymorphic_ctype.name == 'layer':
             for perm in models.LAYER_ADMIN_PERMISSIONS:
                 assign_perm(perm, resource.owner, resource.layer)
-        for perm in models.ADMIN_PERMISSIONS:
+        for perm in admin_perms:
             assign_perm(perm, resource.owner, resource.get_self_resource())
 
 

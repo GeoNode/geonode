@@ -26,48 +26,50 @@ import copy
 import json
 import time
 import base64
-import logging
 import select
 import shutil
 import string
+import logging
 import tarfile
-import weakref
 import datetime
 import requests
 import tempfile
 import traceback
 import subprocess
 
-from collections import defaultdict
-from django.db.models import signals
 from osgeo import ogr
-from slugify import slugify
 from io import StringIO
+from decimal import Decimal
+from slugify import slugify
 from contextlib import closing
+from collections import defaultdict
 from math import atan, exp, log, pi, sin, tan, floor
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
 from requests.packages.urllib3.util.retry import Retry
 
 from django.conf import settings
 from django.core.cache import cache
-from django.core.exceptions import PermissionDenied
-from django.http import Http404, HttpResponse
+from django.db.models import signals
 from django.utils.http import is_safe_url
+from django.apps import apps as django_apps
 from django.middleware.csrf import get_token
-from django.shortcuts import get_object_or_404
-# use lazy gettext because some translated strings are used before
-# i18n infra is up
-from django.utils.translation import ugettext_lazy as _
-from django.db import models, connection, transaction
-from django.contrib.gis.geos import GEOSGeometry
-from django.core.serializers.json import DjangoJSONEncoder
+from django.http import Http404, HttpResponse
+from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+from django.contrib.gis.geos import GEOSGeometry
+from django.core.exceptions import PermissionDenied
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db import models, connection, transaction
+from django.utils.translation import ugettext_lazy as _
+
 from geonode import geoserver, qgis_server, GeoNodeException  # noqa
 from geonode.compat import ensure_string
-from geonode.base.auth import (extend_token,
-                               get_or_create_token,
-                               get_token_from_auth_header,
-                               get_token_object_from_session)
+from geonode.base.auth import (
+    extend_token,
+    get_or_create_token,
+    get_token_from_auth_header,
+    get_token_object_from_session)
 
 from urllib.parse import (
     urljoin,
@@ -1222,81 +1224,6 @@ def printsignals():
             logger.debug(signal)
 
 
-def designals():
-    global signals_store
-
-    for signalname in signalnames:
-        if signalname in signals_store:
-            try:
-                signaltype = getattr(models.signals, signalname)
-            except Exception:
-                continue
-            logger.debug("RETRIEVE: %s: %d" %
-                         (signalname, len(signaltype.receivers)))
-            signals_store[signalname] = []
-            signals = signaltype.receivers[:]
-            for signal in signals:
-                uid = receiv_call = None
-                sender_ista = sender_call = None
-                # first tuple element:
-                # - case (id(instance), id(method))
-                if not isinstance(signal[0], tuple):
-                    raise Exception("Malformed signal")
-
-                lookup = signal[0]
-
-                if isinstance(lookup[0], tuple):
-                    # receiv_ista = id_to_obj(lookup[0][0])
-                    receiv_call = id_to_obj(lookup[0][1])
-                else:
-                    # - case id(function) or uid
-                    try:
-                        receiv_call = id_to_obj(lookup[0])
-                    except Exception:
-                        uid = lookup[0]
-
-                if isinstance(lookup[1], tuple):
-                    sender_call = id_to_obj(lookup[1][0])
-                    sender_ista = id_to_obj(lookup[1][1])
-                else:
-                    sender_ista = id_to_obj(lookup[1])
-
-                # second tuple element
-                if (isinstance(signal[1], weakref.ReferenceType)):
-                    is_weak = True
-                    receiv_call = signal[1]()
-                else:
-                    is_weak = False
-                    receiv_call = signal[1]
-
-                signals_store[signalname].append({
-                    'uid': uid, 'is_weak': is_weak,
-                    'sender_ista': sender_ista, 'sender_call': sender_call,
-                    'receiv_call': receiv_call,
-                })
-
-                signaltype.disconnect(
-                    receiver=receiv_call,
-                    sender=sender_ista,
-                    weak=is_weak,
-                    dispatch_uid=uid)
-
-
-def resignals():
-    global signals_store
-
-    for signalname in signalnames:
-        if signalname in signals_store:
-            signals = signals_store[signalname]
-            signaltype = getattr(models.signals, signalname)
-            for signal in signals:
-                signaltype.connect(
-                    signal['receiv_call'],
-                    sender=signal['sender_ista'],
-                    weak=signal['is_weak'],
-                    dispatch_uid=signal['uid'])
-
-
 class DisableDjangoSignals:
     """
     Python3 class temporarily disabling django signals on model creation.
@@ -2136,3 +2063,72 @@ def add_url_params(url, params):
     ).geturl()
 
     return new_url
+
+
+json_serializer_k_map = {
+    'user': settings.AUTH_USER_MODEL,
+    'owner': settings.AUTH_USER_MODEL,
+    'restriction_code_type': 'base.RestrictionCodeType',
+    'license': 'base.License',
+    'category': 'base.TopicCategory',
+    'spatial_representation_type': 'base.SpatialRepresentationType',
+    'group': 'auth.Group',
+    'default_style': 'layers.Style',
+    'upload_session': 'layers.UploadSession'
+}
+
+
+def json_serializer_producer(dictionary):
+    """
+     - usage:
+            serialized_obj =
+                json_serializer_producer(model_to_dict(instance))
+
+     - dump to file:
+        with open('data.json', 'w') as outfile:
+            json.dump(serialized_obj, outfile)
+
+     - read from file:
+        with open('data.json', 'r') as infile:
+            serialized_obj = json.load(infile)
+    """
+    def to_json(keys):
+        if isinstance(keys, datetime.datetime):
+            return str(keys)
+        elif isinstance(keys, six.string_types) or isinstance(keys, int):
+            return keys
+        elif isinstance(keys, dict):
+            return json_serializer_producer(keys)
+        elif isinstance(keys, list):
+            return [json_serializer_producer(model_to_dict(k)) for k in keys]
+        elif isinstance(keys, models.Model):
+            return json_serializer_producer(model_to_dict(keys))
+        elif isinstance(keys, Decimal):
+            return float(keys)
+        else:
+            return str(keys)
+
+    output = {}
+
+    _keys_to_skip = [
+        'email',
+        'password',
+        'last_login',
+        'date_joined',
+        'is_staff',
+        'is_active',
+        'is_superuser',
+        'permissions',
+        'user_permissions',
+    ]
+
+    for (x, y) in dictionary.items():
+        if x not in _keys_to_skip:
+            if x in json_serializer_k_map.keys():
+                instance = django_apps.get_model(
+                    json_serializer_k_map[x], require_ready=False)
+                if instance.objects.filter(id=y):
+                    _obj = instance.objects.get(id=y)
+                    y = model_to_dict(_obj)
+            output[x] = to_json(y)
+    return output

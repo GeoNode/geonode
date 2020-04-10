@@ -41,6 +41,7 @@ from django.forms.utils import ErrorList
 from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm
+from geonode.base.auth import get_or_create_token
 from geonode.base.forms import CategoryForm, TKeywordForm
 from geonode.base.models import (
     Thesaurus,
@@ -89,7 +90,6 @@ def document_detail(request, docid):
             docid,
             'base.view_resourcebase',
             _PERMISSION_MSG_VIEW)
-
     except Http404:
         return HttpResponse(
             loader.render_to_string(
@@ -108,7 +108,6 @@ def document_detail(request, docid):
             content_type="text/plain",
             status=401
         )
-
     else:
         # Add metadata_author or poc if missing
         document.add_missing_metadata_author_or_poc()
@@ -125,18 +124,33 @@ def document_detail(request, docid):
         metadata = document.link_set.metadata().filter(
             name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
+        # Call this first in order to be sure "perms_list" is correct
+        permissions_json = _perms_info_json(document)
+
+        perms_list = get_perms(
+            request.user,
+            document.get_self_resource()) + get_perms(request.user, document)
+
         group = None
         if document.group:
             try:
                 group = GroupProfile.objects.get(slug=document.group.name)
             except ObjectDoesNotExist:
                 group = None
+
+        access_token = None
+        if request and request.user:
+            access_token = get_or_create_token(request.user)
+            if access_token and not access_token.is_expired():
+                access_token = access_token.token
+            else:
+                access_token = None
+
         context_dict = {
-            'perms_list': get_perms(
-                request.user,
-                document.get_self_resource()) + get_perms(request.user, document),
-            'permissions_json': _perms_info_json(document),
+            'access_token': access_token,
             'resource': document,
+            'perms_list': perms_list,
+            'permissions_json': permissions_json,
             'group': group,
             'metadata': metadata,
             'imgtypes': IMGTYPES,
@@ -213,14 +227,11 @@ class DocumentUploadView(CreateView):
         """
         self.object = form.save(commit=False)
         self.object.owner = self.request.user
-        # by default, if RESOURCE_PUBLISHING=True then document.is_published
-        # must be set to False
-        # RESOURCE_PUBLISHING works in similar way as ADMIN_MODERATE_UPLOADS,
-        # but is applied to documents only. ADMIN_MODERATE_UPLOADS has wider
-        # usage
-        is_published = not (
-            settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS)
-        self.object.is_published = is_published
+
+        if settings.ADMIN_MODERATE_UPLOADS:
+            self.object.is_approved = False
+        if settings.RESOURCE_PUBLISHING:
+            self.object.is_published = False
         self.object.save()
         form.save_many2many()
         self.object.set_permissions(form.cleaned_data['permissions'])
@@ -532,8 +543,9 @@ def document_metadata(
 
         if settings.ADMIN_MODERATE_UPLOADS:
             if not request.user.is_superuser:
-                document_form.fields['is_published'].widget.attrs.update(
-                    {'disabled': 'true'})
+                if settings.RESOURCE_PUBLISHING:
+                    document_form.fields['is_published'].widget.attrs.update(
+                        {'disabled': 'true'})
 
                 can_change_metadata = request.user.has_perm(
                     'change_resourcebase_metadata',

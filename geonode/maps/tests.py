@@ -220,8 +220,6 @@ community."
         except Exception:
             pass
 
-        self.client.logout()
-
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_map_fetch(self):
         """/maps/[id]/data -> Test fetching a map in JSON"""
@@ -932,7 +930,7 @@ class MapModerationTestCase(GeoNodeBaseTestSupport):
                 content = content.decode('UTF-8')
             map_id = int(json.loads(content)['id'])
             _l = Map.objects.get(id=map_id)
-
+            self.assertTrue(_l.is_approved)
             self.assertTrue(_l.is_published)
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
@@ -947,8 +945,8 @@ class MapModerationTestCase(GeoNodeBaseTestSupport):
                 content = content.decode('UTF-8')
             map_id = int(json.loads(content)['id'])
             _l = Map.objects.get(id=map_id)
-
-            self.assertFalse(_l.is_published)
+            self.assertFalse(_l.is_approved)
+            self.assertTrue(_l.is_published)
 
 
 class MapsNotificationsTestCase(NotificationsTestsHelper):
