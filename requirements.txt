@@ -9,7 +9,7 @@ Django==2.2.12
 amqp==2.5.2
 pyyaml>=4.2b1
 beautifulsoup4==4.9.0
-httplib2<0.17.2
+httplib2<0.17.3
 hyperlink==19.0.0
 idna>=2.5,<2.9
 urllib3==1.25.8
