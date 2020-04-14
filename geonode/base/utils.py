@@ -29,13 +29,19 @@ from datetime import datetime, timedelta
 
 # Django functionality
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.files.storage import FileSystemStorage
 from django.core.files.storage import default_storage as storage
 
 # Geonode functionality
+from guardian.shortcuts import get_perms, remove_perm, assign_perm
+
+from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, Link, Configuration
 from geonode.geoserver.helpers import ogc_server_settings
+from geonode.maps.models import Map
+from geonode.services.models import Service
 
 logger = logging.getLogger('geonode.base.utils')
 
@@ -83,7 +89,8 @@ def remove_duplicate_links(resource):
     if isinstance(resource, Layer):
         # fixup Legend links
         layer = resource
-        legend_url_template = ogc_server_settings.PUBLIC_LOCATION + \
+        legend_url_template = \
+            ogc_server_settings.PUBLIC_LOCATION + \
             'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
             '{alternate}&STYLE={style_name}' + \
             '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
@@ -100,7 +107,6 @@ def remove_duplicate_links(resource):
 
 
 def configuration_session_cache(session):
-
     CONFIG_CACHE_TIMEOUT_SEC = 60
 
     _config = session.get('config')
@@ -118,3 +124,61 @@ def configuration_session_cache(session):
             cached_config['configuration'][field_name] = getattr(config, field_name)
 
         session['config'] = cached_config
+
+
+class OwnerRightsRequestViewUtils:
+
+    @staticmethod
+    def get_message_recipients():
+        User = get_user_model()
+        allowed_users = User.objects.none()
+        if OwnerRightsRequestViewUtils.is_admin_publish_mode():
+            allowed_users |= User.objects.filter(is_superuser=True)
+        return allowed_users
+
+    @staticmethod
+    def get_resource(resource_base):
+        if resource_base.polymorphic_ctype.name == 'layer':
+            return Layer.objects.get(pk=resource_base.pk)
+        elif resource_base.polymorphic_ctype.name == 'document':
+            return Document.objects.get(pk=resource_base.pk)
+        elif resource_base.polymorphic_ctype.name == 'map':
+            return Map.objects.get(pk=resource_base.pk)
+        else:
+            return Service.objects.get(pk=resource_base.pk)
+
+    @staticmethod
+    def is_admin_publish_mode():
+        return settings.ADMIN_MODERATE_UPLOADS
+
+
+class ManageResourceOwnerPermissions:
+    def __init__(self, resource):
+        self.resource = resource
+
+    def set_owner_permissions_according_to_workflow(self):
+        if self.resource.is_approved and OwnerRightsRequestViewUtils.is_admin_publish_mode():
+            self._disable_owner_write_permissions()
+        else:
+            self._restore_owner_permissions()
+
+    def _disable_owner_write_permissions(self):
+
+        for perm in get_perms(self.resource.owner, self.resource.get_self_resource()):
+            remove_perm(perm, self.resource.owner, self.resource.get_self_resource())
+
+        for perm in get_perms(self.resource.owner, self.resource):
+            remove_perm(perm, self.resource.owner, self.resource)
+
+        for perm in self.resource.BASE_PERMISSIONS.get('read') + self.resource.BASE_PERMISSIONS.get('download'):
+            assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
+
+    def _restore_owner_permissions(self):
+
+        for perm_list in self.resource.BASE_PERMISSIONS.values():
+            for perm in perm_list:
+                assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
+
+        for perm_list in self.resource.PERMISSIONS.values():
+            for perm in perm_list:
+                assign_perm(perm, self.resource.owner, self.resource)

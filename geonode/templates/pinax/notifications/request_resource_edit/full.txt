@@ -1,0 +1,6 @@
+{% load i18n %}
+{% autoescape off %}
+The resource owner requested to modify the resource: <a href="{{ site_url }}{{ resource.get_absolute_url }}">{{ resource.title }}</a> ({{ site_url }}{{ resource.get_absolute_url }}) <br>
+Reason for the request: "{{ reason }}" <br>
+To allow the change, set the resource to not "Approved" under the metadata settings, and write message to the owner to notify him.
+{% endautoescape %}

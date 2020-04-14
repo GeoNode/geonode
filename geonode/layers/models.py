@@ -150,6 +150,13 @@ class Layer(ResourceBase):
     Layer (inherits ResourceBase fields)
     """
 
+    PERMISSIONS = {
+        'write': [
+            'change_layer_data',
+            'change_layer_style',
+        ]
+    }
+
     # internal fields
     objects = LayerManager()
     workspace = models.CharField(_('Workspace'), max_length=128)

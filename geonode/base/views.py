@@ -20,23 +20,29 @@
 
 
 # Geonode functionality
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
+from django.utils.translation import ugettext as _
+from django.views.generic import FormView
 
 from guardian.shortcuts import get_objects_for_user
 from dal import views, autocomplete
+from user_messages.models import Message
 
+from geonode.base.utils import OwnerRightsRequestViewUtils
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.base.models import ResourceBase, Region, HierarchicalKeyword, ThesaurusKeywordLabel
 from geonode.utils import resolve_object
 from geonode.security.utils import get_visible_resources
-from .forms import BatchEditForm
-from .forms import CuratedThumbnailForm
+from geonode.base.forms import BatchEditForm, OwnerRightsRequestForm
+from geonode.base.forms import CuratedThumbnailForm
+from geonode.notifications_helper import send_notification
 
 
 def batch_modify(request, ids, model):
@@ -179,13 +185,11 @@ class ResourceBaseAutocomplete(autocomplete.Select2QuerySetView):
 
 
 class RegionAutocomplete(SimpleSelect2View):
-
     model = Region
     filter_arg = 'name__icontains'
 
 
 class HierarchicalKeywordAutocomplete(SimpleSelect2View):
-
     model = HierarchicalKeyword
     filter_arg = 'slug__icontains'
 
@@ -217,3 +221,54 @@ class ThesaurusKeywordLabelAutocomplete(autocomplete.Select2QuerySetView):
                 'selected_text': self.get_selected_result_label(result),
             } for result in context['object_list']
         ]
+
+
+class OwnerRightsRequestView(LoginRequiredMixin, FormView):
+    template_name = 'owner_rights_request.html'
+    form_class = OwnerRightsRequestForm
+    resource = None
+    redirect_field_name = 'next'
+
+    def get_success_url(self):
+        return self.resource.get_absolute_url()
+
+    def get(self, request, *args, **kwargs):
+        r_base = ResourceBase.objects.get(pk=kwargs.get('pk'))
+        self.resource = OwnerRightsRequestViewUtils.get_resource(r_base)
+        initial = {
+            'resource': r_base
+        }
+        form = self.form_class(initial=initial)
+        return render(request, self.template_name, {'form': form, 'resource': self.resource})
+
+    def post(self, request, *args, **kwargs):
+        r_base = ResourceBase.objects.get(pk=kwargs.get('pk'))
+        self.resource = OwnerRightsRequestViewUtils.get_resource(r_base)
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            reason = form.cleaned_data['reason']
+            # object.save()
+            notice_type_label = 'request_resource_edit'
+            recipients = OwnerRightsRequestViewUtils.get_message_recipients()
+
+            Message.objects.new_message(
+                from_user=request.user,
+                to_users=recipients,
+                subject=_('System message: A request to modify resource'),
+                content=_('The resource owner has requested to modify the resource') + '.'
+                ' ' +
+                _('Resource title') + ': ' + self.resource.title + '.'
+                ' ' +
+                _('Reason for the request') + ': "' + reason + '".' +
+                ' ' +
+                _('To allow the change, set the resource to not "Approved" under the metadata settings' +
+                  'and write message to the owner to notify him') + '.'
+            )
+            send_notification(recipients, notice_type_label, {
+                'resource': self.resource,
+                'site_url': settings.SITEURL[:-1],
+                'reason': reason
+            })
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)

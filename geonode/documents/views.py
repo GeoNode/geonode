@@ -38,6 +38,7 @@ from django.views.generic.edit import UpdateView, CreateView
 from django.db.models import F
 from django.forms.utils import ErrorList
 
+from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm
@@ -109,6 +110,9 @@ def document_detail(request, docid):
             status=401
         )
     else:
+        permission_manager = ManageResourceOwnerPermissions(document)
+        permission_manager.set_owner_permissions_according_to_workflow()
+
         # Add metadata_author or poc if missing
         document.add_missing_metadata_author_or_poc()
 
@@ -346,7 +350,6 @@ def document_metadata(
         docid,
         template='documents/document_metadata.html',
         ajax=True):
-
     document = None
     try:
         document = _resolve_document(
@@ -388,7 +391,7 @@ def document_metadata(
                 prefix="resource")
             category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
                 request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
-                request.POST["category_choice_field"] else None)
+                                                          request.POST["category_choice_field"] else None)
             tkeywords_form = TKeywordForm(request.POST)
         else:
             document_form = DocumentForm(instance=document, prefix="resource")
@@ -413,8 +416,8 @@ def document_metadata(
                                 tkl_ids = ",".join(
                                     map(str, tkl.values_list('id', flat=True)))
                                 tkeywords_list += "," + \
-                                    tkl_ids if len(
-                                        tkeywords_list) > 0 else tkl_ids
+                                                  tkl_ids if len(
+                                    tkeywords_list) > 0 else tkl_ids
                     except Exception:
                         tb = traceback.format_exc()
                         logger.error(tb)
@@ -429,8 +432,8 @@ def document_metadata(
             new_regions = document_form.cleaned_data['regions']
 
             new_category = None
-            if category_form and 'category_choice_field' in category_form.cleaned_data and\
-            category_form.cleaned_data['category_choice_field']:
+            if category_form and 'category_choice_field' in category_form.cleaned_data and \
+                    category_form.cleaned_data['category_choice_field']:
                 new_category = TopicCategory.objects.get(
                     id=int(category_form.cleaned_data['category_choice_field']))
 
@@ -539,7 +542,7 @@ def document_metadata(
                 all_metadata_author_groups = GroupProfile.objects.exclude(
                     access="private").exclude(access="public-invite")
             [metadata_author_groups.append(item) for item in all_metadata_author_groups
-                if item not in metadata_author_groups]
+             if item not in metadata_author_groups]
 
         if settings.ADMIN_MODERATE_UPLOADS:
             if not request.user.is_superuser:

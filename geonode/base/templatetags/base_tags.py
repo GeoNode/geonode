@@ -279,8 +279,7 @@ def facets(context):
             facets['group'] = GroupProfile.objects.exclude(
                 access="private").count()
 
-            facets['layer'] = facets['raster'] + \
-                facets['vector'] + facets['remote'] + facets['wms']  # + facets['vector_time']
+            facets['layer'] = facets['raster'] + facets['vector'] + facets['remote'] + facets['wms']
 
     return facets
 
@@ -339,3 +338,14 @@ def render_nav_menu(placeholder_name):
         pass
 
     return {'menus': OrderedDict(menus.items())}
+
+
+@register.simple_tag
+def display_edit_request_button(resource, user, perms):
+    def _has_owner_his_permissions():
+        return (set(resource.BASE_PERMISSIONS.get('owner') + resource.BASE_PERMISSIONS.get('write')) - set(
+            perms)) == set()
+
+    if not _has_owner_his_permissions() and resource.owner.pk == user.pk:
+        return True
+    return False

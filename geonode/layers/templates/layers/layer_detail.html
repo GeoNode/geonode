@@ -441,6 +441,14 @@
         <button class="btn btn-primary btn-md btn-block">{% trans "Metadata Detail" %}</button>
       </a>
     </li>
+    {% display_edit_request_button resource request.user perms_list as display_request_button %}
+    {% if display_request_button %}
+        <li class="list-group-item">
+            <a href="{% url "owner_rights_request" resource.id %}">
+                <button class="btn btn-primary btn-md btn-block">{% trans "Request change" %}</button>
+            </a>
+        </li>
+    {% endif %}
     {% if not READ_ONLY_MODE %}
       {% if "change_resourcebase_metadata" in perms_list or "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list or "change_layer_style" in layer_perms %}
       <li class="list-group-item">

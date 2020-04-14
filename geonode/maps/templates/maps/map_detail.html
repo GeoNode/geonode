@@ -185,7 +185,14 @@
           </div>
           {% endif %}
         {% endif %}
-
+        {% display_edit_request_button resource request.user perms_list as display_request_button %}
+        {% if display_request_button %}
+            <li class="list-group-item">
+                <a href="{% url "owner_rights_request" resource.id %}">
+                    <button class="btn btn-primary btn-md btn-block">{% trans "Request change" %}</button>
+                </a>
+            </li>
+        {% endif %}
         <li class="list-group-item">
         {% if "change_resourcebase" not in perms_list and "change_resourcebase_metadata" not in perms_list %}
           <a href="{% url "map_view" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View Map" %}</a>

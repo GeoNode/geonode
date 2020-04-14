@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-07 12:09+0000\n"
+"POT-Creation-Date: 2020-04-09 16:00+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Swahili (http://www.transifex.com/geonode/geonode/language/"
@@ -48,6 +48,18 @@ msgstr "upande unaomiliki rasilimali"
 #| msgid "party that owns the resource"
 msgid "A request for downloading a resource was sent"
 msgstr "upande unaomiliki rasilimali"
+
+#: geonode/base/__init__.py:29
+#, fuzzy
+#| msgid "Resources"
+msgid "Request resource change"
+msgstr "Rasilimali"
+
+#: geonode/base/__init__.py:30
+#, fuzzy
+#| msgid "Set permissions for this resource"
+msgid "Owner has requested permission to change resource"
+msgstr "Seti ruhusa kwa rasilimali hii"
 
 #: geonode/base/enumerations.py:27
 msgid "series"
@@ -173,7 +185,7 @@ msgstr "data husasishwa kila baada ya miezi mitatu"
 msgid "No information provided"
 msgstr "Hakuna taarifa zilizotolewa"
 
-#: geonode/base/forms.py:282
+#: geonode/base/forms.py:283
 #: geonode/base/templates/base/_resourcebase_info_panel.html:77
 #: geonode/catalogue/templates/geonode_metadata_full.html:145
 #: geonode/documents/templates/documents/document_metadata_advanced.html:76
@@ -186,23 +198,23 @@ msgstr "Hakuna taarifa zilizotolewa"
 msgid "Category"
 msgstr "Kundi"
 
-#: geonode/base/forms.py:293
+#: geonode/base/forms.py:294
 msgid "Category is required."
 msgstr "Kundi linahitajika"
 
-#: geonode/base/forms.py:314
+#: geonode/base/forms.py:315
 msgid "Keywords from Thesaurus"
 msgstr ""
 
-#: geonode/base/forms.py:316
+#: geonode/base/forms.py:317
 msgid "List of keywords from Thesaurus"
 msgstr ""
 
-#: geonode/base/forms.py:336 geonode/base/models.py:597
+#: geonode/base/forms.py:337 geonode/base/models.py:630
 msgid "Owner"
 msgstr "Mmiliki"
 
-#: geonode/base/forms.py:342
+#: geonode/base/forms.py:343
 #: geonode/base/templates/base/_resourcebase_info_panel.html:34
 #: geonode/catalogue/templates/geonode_metadata_full.html:58
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
@@ -211,21 +223,21 @@ msgstr "Mmiliki"
 msgid "Date"
 msgstr "Tarehe"
 
-#: geonode/base/forms.py:348 geonode/base/models.py:701
+#: geonode/base/forms.py:349 geonode/base/models.py:734
 #, fuzzy
 #| msgid "temporal extent end"
 msgid "temporal extent start"
 msgstr "temporal extent end"
 
-#: geonode/base/forms.py:355 geonode/base/models.py:706
+#: geonode/base/forms.py:356 geonode/base/models.py:739
 msgid "temporal extent end"
 msgstr "temporal extent end"
 
-#: geonode/base/forms.py:363 geonode/base/forms.py:371
+#: geonode/base/forms.py:364 geonode/base/forms.py:372
 msgid "Person outside GeoNode (fill form)"
 msgstr ""
 
-#: geonode/base/forms.py:364
+#: geonode/base/forms.py:365
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
 #: geonode/base/templates/base/_resourcebase_info_panel.html:104
 #: geonode/catalogue/templates/geonode_metadata_full.html:75
@@ -242,7 +254,7 @@ msgstr ""
 msgid "Point of Contact"
 msgstr "Mawasiliano"
 
-#: geonode/base/forms.py:372
+#: geonode/base/forms.py:373
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
 #: geonode/documents/templates/documents/document_metadata.html:38
 #: geonode/documents/templates/documents/document_metadata_advanced.html:43
@@ -252,13 +264,13 @@ msgstr "Mawasiliano"
 msgid "Metadata Author"
 msgstr "Mwandishi wa Metadata"
 
-#: geonode/base/forms.py:379
+#: geonode/base/forms.py:380
 #, fuzzy
 #| msgid "Keywords"
 msgid "Free-text Keywords"
 msgstr "Maneno muhimu"
 
-#: geonode/base/forms.py:381
+#: geonode/base/forms.py:382
 #, fuzzy
 #| msgid "A space or comma-separated list of keywords"
 msgid ""
@@ -266,13 +278,17 @@ msgid ""
 "Hierarchical tree."
 msgstr "Orodha ya maneno muhimu yalionganishwa kwa nafasi au koma "
 
-#: geonode/base/forms.py:393
+#: geonode/base/forms.py:394
 #: geonode/base/templates/base/_resourcebase_info_panel.html:87
 #: geonode/catalogue/templates/geonode_metadata_full.html:149
 #: geonode/templates/metadata_detail.html:98
 #: geonode/templates/search/_region_filter.html:5
 msgid "Regions"
 msgstr "Maeneo"
+
+#: geonode/base/forms.py:563
+msgid "Short reasoning behind the request"
+msgstr ""
 
 #: geonode/base/management/commands/updategeoip.py:44
 msgid "Write result to file, default GEOIP_PATH: {}"
@@ -288,31 +304,31 @@ msgstr ""
 msgid "Overwrite file if exists"
 msgstr ""
 
-#: geonode/base/models.py:94 geonode/services/models.py:194
+#: geonode/base/models.py:112 geonode/services/models.py:194
 msgid "function performed by the responsible party"
 msgstr "kazi iliyofanywa na chama kuwajibika"
 
-#: geonode/base/models.py:547
+#: geonode/base/models.py:580
 msgid "reference date for the cited resource"
 msgstr "tarehe rejea kwa ajili ya rasilimali alitoa"
 
-#: geonode/base/models.py:548
+#: geonode/base/models.py:581
 msgid "identification of when a given event occurred"
 msgstr "utambulisho wa wakati tukio kupewa ilitokea"
 
-#: geonode/base/models.py:549
+#: geonode/base/models.py:582
 msgid "version of the cited resource"
 msgstr "toleo la rasilimali alitoa"
 
-#: geonode/base/models.py:551
+#: geonode/base/models.py:584
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "kifupi maelezo muhtasari wa maudhui ya rasilimali (s)"
 
-#: geonode/base/models.py:553
+#: geonode/base/models.py:586
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "muhtasari wa nia na ambayo rasilimali (s) ilitengenezwa"
 
-#: geonode/base/models.py:555
+#: geonode/base/models.py:588
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
@@ -320,7 +336,7 @@ msgstr ""
 "na kasi ambayo marekebisho na kufuta maneno yaliyotolewa na data baada ya "
 "kwanza zinazozalishwa"
 
-#: geonode/base/models.py:558
+#: geonode/base/models.py:591
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
@@ -328,7 +344,7 @@ msgstr ""
 "maneno yanayotumika mara kwa mara au maneno rasimi au misemo inayotumika "
 "kuelezea kitu hiki (tenganisha kwa nafasi au koma)"
 
-#: geonode/base/models.py:561
+#: geonode/base/models.py:594
 #, fuzzy
 #| msgid ""
 #| "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
@@ -340,16 +356,16 @@ msgstr ""
 "maneno yanayotumika mara kwa mara au maneno rasimi au misemo inayotumika "
 "kuelezea kitu hiki (tenganisha kwa nafasi au koma)"
 
-#: geonode/base/models.py:563
+#: geonode/base/models.py:596
 msgid "keyword identifies a location"
 msgstr "Maneno muhimu yanayotambulisha eneo"
 
-#: geonode/base/models.py:565
+#: geonode/base/models.py:598
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr ""
 "Kizuizi (au vizuizi) vilivyowekwa juu ya upataikanaji au matumizi ya data"
 
-#: geonode/base/models.py:567
+#: geonode/base/models.py:600
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
@@ -357,15 +373,15 @@ msgstr ""
 "vikwazo vingine na matakwa ya kisheria katika kupata na kutumia rasilimali "
 "au metadata"
 
-#: geonode/base/models.py:569
+#: geonode/base/models.py:602
 msgid "license of the dataset"
 msgstr "leseni ya kanzidata"
 
-#: geonode/base/models.py:570
+#: geonode/base/models.py:603
 msgid "language used within the dataset"
 msgstr "lugha iliyotumika kwenye kanzidata"
 
-#: geonode/base/models.py:572
+#: geonode/base/models.py:605
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
@@ -373,84 +389,84 @@ msgstr ""
 "Uhusiano wa juu wa data unaoweza kusaidia katika kutafuta au kuainisha kundi "
 "la data za kijiografia zilizopo"
 
-#: geonode/base/models.py:575
+#: geonode/base/models.py:608
 msgid "method used to represent geographic information in the dataset."
 msgstr "mbinu kutumika kuwakilisha kijiografia habari katika CCD."
 
-#: geonode/base/models.py:577
+#: geonode/base/models.py:610
 msgid "time period covered by the content of the dataset (start)"
 msgstr "Mwanzo wa kipindi kilichojumishwa katika maudui kanzidata"
 
-#: geonode/base/models.py:579
+#: geonode/base/models.py:612
 msgid "time period covered by the content of the dataset (end)"
 msgstr "Mwisho wa kipindi kilichojumishwa katika maudui kanzidata"
 
-#: geonode/base/models.py:581
+#: geonode/base/models.py:614
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr "maelezo ya jumla ya maarifa data uzalishaji kuhusu ukoo wa CCD"
 
-#: geonode/base/models.py:584
+#: geonode/base/models.py:617
 msgid "a DOI will be added by Admin before publication."
 msgstr ""
 
-#: geonode/base/models.py:586
+#: geonode/base/models.py:619
 #: geonode/base/templates/base/_resourcebase_info_panel.html:114
 #: geonode/templates/metadata_detail.html:116
 msgid "DOI"
 msgstr ""
 
-#: geonode/base/models.py:602
+#: geonode/base/models.py:635
 msgid "title"
 msgstr "kichwa"
 
-#: geonode/base/models.py:603
+#: geonode/base/models.py:636
 msgid "name by which the cited resource is known"
 msgstr "jina la rasilimali tajwa"
 
-#: geonode/base/models.py:606
+#: geonode/base/models.py:639
 msgid "date"
 msgstr "tarehe"
 
-#: geonode/base/models.py:610
+#: geonode/base/models.py:643
 msgid "date type"
 msgstr "aina ya tarehe"
 
-#: geonode/base/models.py:616
+#: geonode/base/models.py:649
 msgid "edition"
 msgstr "toleo"
 
-#: geonode/base/models.py:622
+#: geonode/base/models.py:655
 msgid "abstract"
 msgstr "muhtasari"
 
-#: geonode/base/models.py:627
+#: geonode/base/models.py:660
 msgid "purpose"
 msgstr "kusudi"
 
-#: geonode/base/models.py:633
+#: geonode/base/models.py:666
 msgid "maintenance frequency"
 msgstr "wastani wa mzunguko wa matengenezo"
 
-#: geonode/base/models.py:640 geonode/base/models.py:647
+#: geonode/base/models.py:673 geonode/base/models.py:680
 #: geonode/people/models.py:117
 msgid "keywords"
 msgstr "maneno muhimu"
 
-#: geonode/base/models.py:653
+#: geonode/base/models.py:686
 msgid "keywords region"
 msgstr "eneo la maneno muhimu"
 
-#: geonode/base/models.py:659
+#: geonode/base/models.py:692
 msgid "restrictions"
 msgstr "vikwazo"
 
-#: geonode/base/models.py:666
+#: geonode/base/models.py:699
 msgid "restrictions other"
 msgstr "vikwazo vingine"
 
-#: geonode/base/models.py:674
+#: geonode/base/models.py:707
 #: geonode/base/templates/base/_resourcebase_info_panel.html:16
 #: geonode/base/templates/base/_resourcebase_info_panel.html:134
 #: geonode/catalogue/templates/geonode_metadata_full.html:98
@@ -459,114 +475,114 @@ msgstr "vikwazo vingine"
 msgid "License"
 msgstr "Leseni"
 
-#: geonode/base/models.py:678 geonode/people/models.py:121
+#: geonode/base/models.py:711 geonode/people/models.py:121
 msgid "language"
 msgstr "lugha"
 
-#: geonode/base/models.py:696
+#: geonode/base/models.py:729
 #, fuzzy
 #| msgid "Spatial Representation Type"
 msgid "spatial representation type"
 msgstr "Aina ya Uwakilishaji  wa Kijiografia"
 
-#: geonode/base/models.py:711
+#: geonode/base/models.py:744
 msgid "supplemental information"
 msgstr "maelezo ya ziada"
 
-#: geonode/base/models.py:714
+#: geonode/base/models.py:747
 msgid "any other descriptive information about the dataset"
 msgstr "maelezo mengine yoyote ya ufafanuzi kuhusu kanzidata"
 
-#: geonode/base/models.py:718
+#: geonode/base/models.py:751
 msgid "data quality statement"
 msgstr "Taarifa ya ubora wa data"
 
-#: geonode/base/models.py:759
+#: geonode/base/models.py:792
 msgid "CSW typename"
 msgstr "CSW typename"
 
-#: geonode/base/models.py:764
+#: geonode/base/models.py:797
 msgid "CSW schema"
 msgstr "CSW schema"
 
-#: geonode/base/models.py:769
+#: geonode/base/models.py:802
 msgid "CSW source"
 msgstr "chanzo cha CSW"
 
-#: geonode/base/models.py:774
+#: geonode/base/models.py:807
 msgid "CSW insert date"
 msgstr "tarehe ya kuingiza CSW"
 
-#: geonode/base/models.py:776
+#: geonode/base/models.py:809
 msgid "CSW type"
 msgstr "CSW aina"
 
-#: geonode/base/models.py:781
+#: geonode/base/models.py:814
 msgid "CSW anytext"
 msgstr "CSW anytext"
 
-#: geonode/base/models.py:783
+#: geonode/base/models.py:816
 msgid "CSW WKT geometry"
 msgstr "Jometria ya CSW WKT"
 
-#: geonode/base/models.py:789
+#: geonode/base/models.py:822
 #, fuzzy
 #| msgid "Metadata Provider"
 msgid "Metadata uploaded preserve"
 msgstr "Mtoa metadata"
 
-#: geonode/base/models.py:796 geonode/templates/metadata_detail.html:108
+#: geonode/base/models.py:829 geonode/templates/metadata_detail.html:108
 msgid "Featured"
 msgstr ""
 
-#: geonode/base/models.py:797
+#: geonode/base/models.py:830
 msgid "Should this resource be advertised in home page?"
 msgstr "Je, rasilimali hii kutangazwa katika ukurasa wa mbele?"
 
-#: geonode/base/models.py:799
+#: geonode/base/models.py:832
 #, fuzzy
 #| msgid "Published From"
 msgid "Is Published"
 msgstr "Toleo kutoka"
 
-#: geonode/base/models.py:801
+#: geonode/base/models.py:834
 msgid "Should this resource be published and searchable?"
 msgstr ""
 "Je, rasilimali hii inatakiwa kusambazwa na kupatikana katika utafutaji?"
 
-#: geonode/base/models.py:803 geonode/templates/metadata_detail.html:102
+#: geonode/base/models.py:836 geonode/templates/metadata_detail.html:102
 #, fuzzy
 #| msgid "Not provided"
 msgid "Approved"
 msgstr "Haijaainishwa"
 
-#: geonode/base/models.py:805
+#: geonode/base/models.py:838
 msgid "Is this resource validated from a publisher or editor?"
 msgstr ""
 
-#: geonode/base/models.py:808
+#: geonode/base/models.py:841
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Thumbnail url"
 msgstr "Thumbnail"
 
-#: geonode/base/models.py:816
+#: geonode/base/models.py:849
 msgid "Dirty State"
 msgstr ""
 
-#: geonode/base/models.py:818
+#: geonode/base/models.py:851
 msgid "Security Rules Are Not Synched with GeoServer!"
 msgstr ""
 
-#: geonode/base/models.py:1462
+#: geonode/base/models.py:1495
 msgid "For example \"kml\""
 msgstr "Kwa mfano \"kml\""
 
-#: geonode/base/models.py:1467
+#: geonode/base/models.py:1500
 msgid "For example \"View in Google Earth\""
 msgstr "Kwa mfano \"Tazama katika Google Earth\""
 
-#: geonode/base/models.py:1469
+#: geonode/base/models.py:1502
 msgid "For example \"text/xml\""
 msgstr "Kwa mfano \"text/xml\""
 
@@ -596,7 +612,7 @@ msgstr ""
 #: geonode/groups/models.py:80
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:20
 #: geonode/services/forms.py:113
-#: geonode/services/templates/services/service_detail.html:22
+#: geonode/services/templates/services/service_detail.html:23
 #: geonode/services/templates/services/service_list.html:17
 #: geonode/templates/announcements/announcement_list.html:21
 #: geonode/templates/base.html:711 geonode/templates/metadata_detail.html:43
@@ -619,15 +635,15 @@ msgstr ""
 #: geonode/catalogue/templates/geonode_metadata_full.html:61
 #: geonode/client/templates/leaflet/maps/map_view.html:106
 #: geonode/services/forms.py:131
-#: geonode/services/templates/services/service_detail.html:10
+#: geonode/services/templates/services/service_detail.html:11
 #: geonode/templates/metadata_detail.html:48
 msgid "Abstract"
 msgstr "Muhtasari"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:45
 #: geonode/catalogue/templates/geonode_metadata_full.html:91
-#: geonode/layers/templates/layers/layer_detail.html:700
-#: geonode/services/templates/services/service_detail.html:8
+#: geonode/layers/templates/layers/layer_detail.html:708
+#: geonode/services/templates/services/service_detail.html:9
 #: geonode/services/templates/services/service_list.html:19
 #: geonode/templates/metadata_detail.html:76
 msgid "Type"
@@ -637,7 +653,7 @@ msgstr "Aina"
 #: geonode/catalogue/templates/geonode_metadata_full.html:142
 #: geonode/groups/models.py:90 geonode/people/forms.py:92
 #: geonode/people/templates/people/profile_detail.html:106
-#: geonode/services/templates/services/service_detail.html:11
+#: geonode/services/templates/services/service_detail.html:12
 #: geonode/templates/metadata_detail.html:81
 #: geonode/templates/metadata_detail.html:152
 #: geonode/templates/metadata_detail.html:294
@@ -747,7 +763,7 @@ msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
 #: geonode/base/templates/base/_resourcebase_snippet.html:59
-#: geonode/layers/templates/layers/layer_detail.html:729
+#: geonode/layers/templates/layers/layer_detail.html:737
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Sync permissions immediately"
@@ -762,7 +778,7 @@ msgid "UNPUBLISHED"
 msgstr ""
 
 #: geonode/base/templates/base/_resourcebase_snippet.html:79
-#: geonode/layers/templates/layers/layer_detail.html:625
+#: geonode/layers/templates/layers/layer_detail.html:633
 #: geonode/templates/search/_search_content.html:11
 msgid "Create a Map"
 msgstr "Tengeneza Ramani"
@@ -836,10 +852,10 @@ msgid "Remove (and use auto generated thumbnail)"
 msgstr ""
 
 #: geonode/base/templates/base/thumbnail_upload.html:35
-#: geonode/documents/templates/documents/document_detail.html:153
+#: geonode/documents/templates/documents/document_detail.html:160
 #: geonode/documents/templates/documents/document_upload.html:15
-#: geonode/layers/templates/layers/layer_detail.html:478
-#: geonode/layers/templates/layers/layer_detail.html:499
+#: geonode/layers/templates/layers/layer_detail.html:486
+#: geonode/layers/templates/layers/layer_detail.html:507
 #: geonode/maps/templates/maps/map_detail.html:166
 #: geonode/monitoring/models.py:355
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:58
@@ -855,6 +871,26 @@ msgstr "kupakiwa"
 msgid "me"
 msgstr "mimi"
 
+#: geonode/base/views.py:257
+msgid "System message: A request to modify resource"
+msgstr ""
+
+#: geonode/base/views.py:258
+#, fuzzy
+#| msgid "Set permissions for this resource"
+msgid "The resource owner has requested to modify the resource"
+msgstr "Seti ruhusa kwa rasilimali hii"
+
+#: geonode/base/views.py:260
+#, fuzzy
+#| msgid "Resources"
+msgid "Resource title"
+msgstr "Rasilimali"
+
+#: geonode/base/views.py:262
+msgid "Reason"
+msgstr ""
+
 #: geonode/catalogue/templates/geonode_metadata_full.html:40
 #, fuzzy
 #| msgid "Edit Service Metadata"
@@ -862,8 +898,8 @@ msgid "Resource Metadata"
 msgstr "Hariri Metadata za Huduma"
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:49
-#: geonode/documents/templates/documents/document_detail.html:152
-#: geonode/layers/templates/layers/layer_detail.html:495
+#: geonode/documents/templates/documents/document_detail.html:159
+#: geonode/layers/templates/layers/layer_detail.html:503
 #: geonode/layers/templates/layouts/panels.html:275
 #: geonode/maps/templates/layouts/map_panels.html:271
 #: geonode/maps/templates/maps/map_detail.html:164
@@ -916,7 +952,7 @@ msgstr "jina la sifa"
 #: geonode/layers/templates/layouts/panels.html:546
 #: geonode/people/templates/people/profile_detail.html:101
 #: geonode/services/forms.py:123
-#: geonode/services/templates/services/service_detail.html:23
+#: geonode/services/templates/services/service_detail.html:24
 #: geonode/services/templates/services/service_resources_harvest.html:32
 msgid "Description"
 msgstr "Maelezo"
@@ -990,11 +1026,11 @@ msgid "Save Map"
 msgstr "Tengeneza Ramani"
 
 #: geonode/client/templates/leaflet/maps/map_view.html:115
-#: geonode/documents/templates/documents/document_detail.html:171
-#: geonode/documents/templates/documents/document_detail.html:207
+#: geonode/documents/templates/documents/document_detail.html:178
+#: geonode/documents/templates/documents/document_detail.html:214
 #: geonode/layers/templates/layers/layer_detail.html:425
-#: geonode/layers/templates/layers/layer_detail.html:522
-#: geonode/layers/templates/layers/layer_detail.html:573
+#: geonode/layers/templates/layers/layer_detail.html:530
+#: geonode/layers/templates/layers/layer_detail.html:581
 #: geonode/layers/templates/upload/layer_upload_time.html:282
 #: geonode/layers/templates/upload/layer_upload_time.html:302
 #: geonode/maps/templates/maps/map_detail.html:134
@@ -1173,7 +1209,7 @@ msgid "The URL of the document if it is external."
 msgstr "URL ya hati kama ni kutoka nje."
 
 #: geonode/documents/models.py:68 geonode/monitoring/models.py:179
-#: geonode/services/templates/services/service_detail.html:9
+#: geonode/services/templates/services/service_detail.html:10
 #: geonode/services/templates/services/service_list.html:18
 msgid "URL"
 msgstr "URL"
@@ -1230,13 +1266,18 @@ msgid "Request Download"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_detail.html:126
-#: geonode/documents/templates/documents/document_detail.html:136
+#: geonode/documents/templates/documents/document_detail.html:143
 msgid "Edit Document"
 msgstr "Hariri Hati"
 
-#: geonode/documents/templates/documents/document_detail.html:144
+#: geonode/documents/templates/documents/document_detail.html:134
+#: geonode/layers/templates/layers/layer_detail.html:448
+msgid "Request change"
+msgstr ""
+
+#: geonode/documents/templates/documents/document_detail.html:151
 #: geonode/documents/templates/documents/document_metadata.html:17
-#: geonode/layers/templates/layers/layer_detail.html:461
+#: geonode/layers/templates/layers/layer_detail.html:469
 #: geonode/layers/templates/layers/layer_metadata.html:19
 #: geonode/maps/templates/maps/map_detail.html:156
 #: geonode/maps/templates/maps/map_metadata.html:20
@@ -1244,19 +1285,19 @@ msgstr "Hariri Hati"
 msgid "Metadata"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:145
-#: geonode/layers/templates/layers/layer_detail.html:462
+#: geonode/documents/templates/documents/document_detail.html:152
+#: geonode/layers/templates/layers/layer_detail.html:470
 #: geonode/maps/templates/maps/map_detail.html:157
 msgid "Wizard"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:146
-#: geonode/layers/templates/layers/layer_detail.html:463
+#: geonode/documents/templates/documents/document_detail.html:153
+#: geonode/layers/templates/layers/layer_detail.html:471
 #: geonode/maps/templates/maps/map_detail.html:158
 msgid "Advanced Edit"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:159
+#: geonode/documents/templates/documents/document_detail.html:166
 #: geonode/monitoring/models.py:176 geonode/templates/index.html:92
 #: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:7
 #, fuzzy
@@ -1266,75 +1307,75 @@ msgid_plural "Documents"
 msgstr[0] "Waraka"
 msgstr[1] "Waraka"
 
-#: geonode/documents/templates/documents/document_detail.html:161
-#: geonode/layers/templates/layers/layer_detail.html:507
+#: geonode/documents/templates/documents/document_detail.html:168
+#: geonode/layers/templates/layers/layer_detail.html:515
 msgid "Replace"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:164
+#: geonode/documents/templates/documents/document_detail.html:171
 #: geonode/groups/templates/groups/group_members.html:42
 #: geonode/groups/templates/groups/group_members.html:82
 #: geonode/groups/templates/groups/group_members.html:114
-#: geonode/layers/templates/layers/layer_detail.html:515
+#: geonode/layers/templates/layers/layer_detail.html:523
 #: geonode/maps/templates/maps/map_detail.html:174
 #: geonode/monitoring/models.py:362 geonode/templates/account/email.html:36
 #: geonode/templates/socialaccount/connections.html:33
 msgid "Remove"
 msgstr "Ondoa"
 
-#: geonode/documents/templates/documents/document_detail.html:178
 #: geonode/documents/templates/documents/document_detail.html:185
-#: geonode/layers/templates/layers/layer_detail.html:535
+#: geonode/documents/templates/documents/document_detail.html:192
 #: geonode/layers/templates/layers/layer_detail.html:543
+#: geonode/layers/templates/layers/layer_detail.html:551
 msgid "Download Metadata"
 msgstr "Pakua Metadata"
 
-#: geonode/documents/templates/documents/document_detail.html:190
-#: geonode/layers/templates/layers/layer_detail.html:548
+#: geonode/documents/templates/documents/document_detail.html:197
+#: geonode/layers/templates/layers/layer_detail.html:556
 #, fuzzy
 #| msgid "Download Metadata"
 msgid "Full metadata"
 msgstr "Pakua Metadata"
 
-#: geonode/documents/templates/documents/document_detail.html:193
-#: geonode/layers/templates/layers/layer_detail.html:551
+#: geonode/documents/templates/documents/document_detail.html:200
+#: geonode/layers/templates/layers/layer_detail.html:559
 #, fuzzy
 #| msgid "format"
 msgid "Text format"
 msgstr "muundo"
 
-#: geonode/documents/templates/documents/document_detail.html:194
-#: geonode/layers/templates/layers/layer_detail.html:552
+#: geonode/documents/templates/documents/document_detail.html:201
+#: geonode/layers/templates/layers/layer_detail.html:560
 #, fuzzy
 #| msgid "format"
 msgid "HTML format"
 msgstr "muundo"
 
-#: geonode/documents/templates/documents/document_detail.html:198
-#: geonode/layers/templates/layers/layer_detail.html:557
+#: geonode/documents/templates/documents/document_detail.html:205
+#: geonode/layers/templates/layers/layer_detail.html:565
 msgid "Standard Metadata - XML format"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:214
+#: geonode/documents/templates/documents/document_detail.html:221
 #, fuzzy
 #| msgid "Resource using this document"
 msgid "Resources using this document"
 msgstr "Rasilimali zinazotumia hati hii"
 
-#: geonode/documents/templates/documents/document_detail.html:216
+#: geonode/documents/templates/documents/document_detail.html:223
 msgid "List of resources using this document:"
 msgstr "Orodha ya rasilimali zinazotumia hati hii"
 
-#: geonode/documents/templates/documents/document_detail.html:222
+#: geonode/documents/templates/documents/document_detail.html:229
 msgid "This document is not related to any maps or layers"
 msgstr "Hati hii haihusiani na ramani au tabaka lolote"
 
-#: geonode/documents/templates/documents/document_detail.html:230
+#: geonode/documents/templates/documents/document_detail.html:237
 #: geonode/documents/templates/documents/document_thumb_upload.html:64
 #: geonode/documents/templates/documents/document_upload.html:24
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:50
 #: geonode/groups/templates/groups/group_detail.html:73
-#: geonode/layers/templates/layers/layer_detail.html:725
+#: geonode/layers/templates/layers/layer_detail.html:733
 #: geonode/layers/templates/layers/layer_metadata_upload.html:101
 #: geonode/layers/templates/layers/layer_metadata_upload.html:111
 #: geonode/layers/templates/layers/layer_replace.html:111
@@ -1346,11 +1387,11 @@ msgstr "Hati hii haihusiani na ramani au tabaka lolote"
 msgid "Permissions"
 msgstr "Vibali"
 
-#: geonode/documents/templates/documents/document_detail.html:231
+#: geonode/documents/templates/documents/document_detail.html:238
 msgid "Click the button below to change the permissions of this document."
 msgstr "Bonyeza kitufe hapo chini kubadilisha vibali vya hati hii."
 
-#: geonode/documents/templates/documents/document_detail.html:232
+#: geonode/documents/templates/documents/document_detail.html:239
 msgid "Change Document Permissions"
 msgstr "Badilisha Vibali vya Hati"
 
@@ -1604,9 +1645,9 @@ msgid "Done!"
 msgstr ""
 
 #: geonode/documents/templates/layouts/doc_panels.html:223
-#: geonode/layers/templates/layers/layer_detail.html:474
-#: geonode/layers/templates/layers/layer_detail.html:476
-#: geonode/layers/templates/layers/layer_detail.html:488
+#: geonode/layers/templates/layers/layer_detail.html:482
+#: geonode/layers/templates/layers/layer_detail.html:484
+#: geonode/layers/templates/layers/layer_detail.html:496
 #: geonode/layers/templates/layouts/panels.html:221
 #: geonode/layers/templates/layouts/panels.html:290
 #: geonode/maps/templates/layouts/map_panels.html:220
@@ -1726,41 +1767,41 @@ msgstr ""
 msgid "Publishing"
 msgstr "Umma "
 
-#: geonode/documents/views.py:64
+#: geonode/documents/views.py:65
 msgid "You are not permitted to delete this document"
 msgstr "Hauruhusiwi kufuta hati hii"
 
-#: geonode/documents/views.py:65
+#: geonode/documents/views.py:66
 msgid "You do not have permissions for this document."
 msgstr "Huna kibali cha hati hii."
 
-#: geonode/documents/views.py:66
+#: geonode/documents/views.py:67
 msgid "You are not permitted to modify this document"
 msgstr "Huruhusiwi kubadilisha hati hii"
 
-#: geonode/documents/views.py:68
+#: geonode/documents/views.py:69
 msgid "You are not permitted to modify this document's metadata"
 msgstr "Hauruhusiwi kubadilisha metadata za hati hii"
 
-#: geonode/documents/views.py:69
+#: geonode/documents/views.py:70
 msgid "You are not permitted to view this document"
 msgstr "Huna kibali cha kutazama hati hii"
 
-#: geonode/documents/views.py:103 geonode/documents/views.py:177
+#: geonode/documents/views.py:104 geonode/documents/views.py:181
 msgid "You are not allowed to view this document."
 msgstr "Hauruhusiwi kutazama hati hii"
 
-#: geonode/documents/views.py:354
+#: geonode/documents/views.py:350
 msgid "You are not allowed to edit this document."
 msgstr "Hauruhusiwi kuhariri hati hii"
 
-#: geonode/documents/views.py:435 geonode/layers/views.py:1005
+#: geonode/documents/views.py:432 geonode/layers/views.py:1009
 #, fuzzy
 #| msgid "Set permissions for this resource"
 msgid "You must set a point of contact for this resource"
 msgstr "Seti ruhusa kwa rasilimali hii"
 
-#: geonode/documents/views.py:452 geonode/layers/views.py:1022
+#: geonode/documents/views.py:449 geonode/layers/views.py:1026
 #, fuzzy
 #| msgid "Set permissions for this resource"
 msgid "You must set an author for this resource"
@@ -1968,7 +2009,7 @@ msgid ""
 "The following are not valid usernames: %(errors)s; not added to the group"
 msgstr ""
 
-#: geonode/groups/models.py:44 geonode/layers/models.py:158
+#: geonode/groups/models.py:44 geonode/layers/models.py:165
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
 #: geonode/services/templates/services/service_resources_harvest.html:31
 #: geonode/templates/metadata_detail.html:130
@@ -2459,176 +2500,176 @@ msgstr "toleo la sld"
 msgid "sld url"
 msgstr "url ya sld"
 
-#: geonode/layers/models.py:155
+#: geonode/layers/models.py:162
 msgid "Workspace"
 msgstr ""
 
-#: geonode/layers/models.py:156
+#: geonode/layers/models.py:163
 #, fuzzy
 #| msgid "date type"
 msgid "Store"
 msgstr "aina ya tarehe"
 
-#: geonode/layers/models.py:157
+#: geonode/layers/models.py:164
 #, fuzzy
 #| msgid "date type"
 msgid "Storetype"
 msgstr "aina ya tarehe"
 
-#: geonode/layers/models.py:159
+#: geonode/layers/models.py:166
 #, fuzzy
 #| msgid "CSW typename"
 msgid "Typename"
 msgstr "CSW typename"
 
-#: geonode/layers/models.py:161
+#: geonode/layers/models.py:168
 msgid "Is mosaic?"
 msgstr ""
 
-#: geonode/layers/models.py:162
+#: geonode/layers/models.py:169
 msgid "Has time?"
 msgstr ""
 
-#: geonode/layers/models.py:163
+#: geonode/layers/models.py:170
 msgid "Has elevation?"
 msgstr ""
 
-#: geonode/layers/models.py:165
+#: geonode/layers/models.py:172
 msgid "Time regex"
 msgstr ""
 
-#: geonode/layers/models.py:170
+#: geonode/layers/models.py:177
 msgid "Elevation regex"
 msgstr ""
 
-#: geonode/layers/models.py:275
+#: geonode/layers/models.py:282
 msgid "File cannot be opened, maybe check the encoding"
 msgstr ""
 
-#: geonode/layers/models.py:386
+#: geonode/layers/models.py:393
 #, fuzzy
 #| msgid "attribute name"
 msgid "attribute name"
 msgstr "jina la sifa"
 
-#: geonode/layers/models.py:387
+#: geonode/layers/models.py:394
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr ""
 "jina la sifa kama kuhifadhiwa katika shapefile au hifadhidata ya kijiografia"
 
-#: geonode/layers/models.py:393
+#: geonode/layers/models.py:400
 #, fuzzy
 #| msgid "distribution description"
 msgid "attribute description"
 msgstr "distribution description"
 
-#: geonode/layers/models.py:394
+#: geonode/layers/models.py:401
 msgid "description of attribute to be used in metadata"
 msgstr "maelezo ya sifa kwa ajili ya metadata"
 
-#: geonode/layers/models.py:399
+#: geonode/layers/models.py:406
 msgid "attribute label"
 msgstr "lebo ya sifa"
 
-#: geonode/layers/models.py:400
+#: geonode/layers/models.py:407
 msgid "title of attribute as displayed in GeoNode"
 msgstr "jina la sifa kama kuonyeshwa katika GeoNode"
 
-#: geonode/layers/models.py:406
+#: geonode/layers/models.py:413
 msgid "attribute type"
 msgstr "aina ya sifa"
 
-#: geonode/layers/models.py:407
+#: geonode/layers/models.py:414
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "aina ya data ya sifa (integer, string, geometry, nk)"
 
-#: geonode/layers/models.py:414
+#: geonode/layers/models.py:421
 msgid "visible?"
 msgstr "inaonekana?"
 
-#: geonode/layers/models.py:415
+#: geonode/layers/models.py:422
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "Inabainisha ikiwa sifa ionyeshwe katika kuonesha matokeo"
 
-#: geonode/layers/models.py:417
+#: geonode/layers/models.py:424
 msgid "display order"
 msgstr "mpangilio wa kuonesha"
 
-#: geonode/layers/models.py:418
+#: geonode/layers/models.py:425
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr "Inabainisha mpangilio ambao sifa inatakiwa kuonyeshwa katika matokeo"
 
-#: geonode/layers/models.py:422
+#: geonode/layers/models.py:429
 #, fuzzy
 #| msgid "count"
 msgid "count"
 msgstr "hesabu"
 
-#: geonode/layers/models.py:423
+#: geonode/layers/models.py:430
 msgid "count value for this field"
 msgstr "hesabu ya thamani kwa uga huu"
 
-#: geonode/layers/models.py:426
+#: geonode/layers/models.py:433
 msgid "min"
 msgstr "kiwango cha chini"
 
-#: geonode/layers/models.py:427
+#: geonode/layers/models.py:434
 msgid "minimum value for this field"
 msgstr "Kiwango cha chini kwa uga huu"
 
-#: geonode/layers/models.py:434
+#: geonode/layers/models.py:441
 msgid "max"
 msgstr "kiwango cha juu"
 
-#: geonode/layers/models.py:435
+#: geonode/layers/models.py:442
 msgid "maximum value for this field"
 msgstr "kiwango cha juu kwa uga huu"
 
-#: geonode/layers/models.py:442
+#: geonode/layers/models.py:449
 msgid "average"
 msgstr "wastani"
 
-#: geonode/layers/models.py:443
+#: geonode/layers/models.py:450
 msgid "average value for this field"
 msgstr "wastani wa kiwango ya uga huu"
 
-#: geonode/layers/models.py:450
+#: geonode/layers/models.py:457
 msgid "median"
 msgstr "kiwango cha katikati"
 
-#: geonode/layers/models.py:451
+#: geonode/layers/models.py:458
 msgid "median value for this field"
 msgstr "kiwango cha kati kwa sehemu hii"
 
-#: geonode/layers/models.py:458
+#: geonode/layers/models.py:465
 msgid "standard deviation"
 msgstr "kiwango kupotoka"
 
-#: geonode/layers/models.py:459
+#: geonode/layers/models.py:466
 msgid "standard deviation for this field"
 msgstr "standard deviation ya uga huu"
 
-#: geonode/layers/models.py:466
+#: geonode/layers/models.py:473
 msgid "sum"
 msgstr "jumla"
 
-#: geonode/layers/models.py:467
+#: geonode/layers/models.py:474
 msgid "sum value for this field"
 msgstr "Jumla ya thamani ya uga huu"
 
-#: geonode/layers/models.py:474
+#: geonode/layers/models.py:481
 msgid "unique values for this field"
 msgstr "thamani maalum kwa uga huu"
 
-#: geonode/layers/models.py:478
+#: geonode/layers/models.py:485
 #, fuzzy
 #| msgid "last modified"
 msgid "last modified"
 msgstr "maboresho ya mwisho"
 
-#: geonode/layers/models.py:479
+#: geonode/layers/models.py:486
 msgid "date when attribute statistics were last updated"
 msgstr "tarehe ambapo takwimu za sifa zilisasishwa kwa mara ya mwisho"
 
@@ -2838,7 +2879,7 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:447
+#: geonode/layers/templates/layers/layer_detail.html:455
 #: geonode/maps/templates/maps/map_detail.html:142
 #: geonode/maps/templates/maps/map_detail.html:149
 #, fuzzy
@@ -2846,34 +2887,34 @@ msgstr ""
 msgid "Editing Tools"
 msgstr "Hariri maelezo ya"
 
-#: geonode/layers/templates/layers/layer_detail.html:454
+#: geonode/layers/templates/layers/layer_detail.html:462
 msgid "Edit Layer"
 msgstr "Hariri Tabaka"
 
-#: geonode/layers/templates/layers/layer_detail.html:464
+#: geonode/layers/templates/layers/layer_detail.html:472
 #, fuzzy
 #| msgid "Download Metadata"
 msgid "Upload Metadata"
 msgstr "Pakua Metadata"
 
-#: geonode/layers/templates/layers/layer_detail.html:472
-#: geonode/layers/templates/layers/layer_detail.html:487
-#: geonode/layers/templates/layers/layer_detail.html:659
+#: geonode/layers/templates/layers/layer_detail.html:480
+#: geonode/layers/templates/layers/layer_detail.html:495
+#: geonode/layers/templates/layers/layer_detail.html:667
 msgid "Styles"
 msgstr "Mitindo"
 
-#: geonode/layers/templates/layers/layer_detail.html:479
-#: geonode/services/templates/services/service_detail.html:105
+#: geonode/layers/templates/layers/layer_detail.html:487
+#: geonode/services/templates/services/service_detail.html:100
 #: geonode/services/templates/services/service_resources_harvest.html:153
 msgid "Manage"
 msgstr "Kuratibu"
 
-#: geonode/layers/templates/layers/layer_detail.html:497
+#: geonode/layers/templates/layers/layer_detail.html:505
 #: geonode/maps/templates/maps/map_detail.html:165
 msgid "Set"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:505
+#: geonode/layers/templates/layers/layer_detail.html:513
 #: geonode/monitoring/models.py:173 geonode/templates/index.html:72
 #: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:5
 msgid "Layer"
@@ -2881,76 +2922,76 @@ msgid_plural "Layers"
 msgstr[0] "Safu"
 msgstr[1] "Tabaka"
 
-#: geonode/layers/templates/layers/layer_detail.html:511
+#: geonode/layers/templates/layers/layer_detail.html:519
 msgid "Edit data"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:531
+#: geonode/layers/templates/layers/layer_detail.html:539
 #, fuzzy
 #| msgid "Edit Layer"
 msgid "View Layer"
 msgstr "Hariri Tabaka"
 
-#: geonode/layers/templates/layers/layer_detail.html:566
+#: geonode/layers/templates/layers/layer_detail.html:574
 #, fuzzy
 #| msgid "format"
 msgid "Attribute Information"
 msgstr "muundo"
 
-#: geonode/layers/templates/layers/layer_detail.html:568
+#: geonode/layers/templates/layers/layer_detail.html:576
 msgid "ISO Feature Catalogue"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:581
+#: geonode/layers/templates/layers/layer_detail.html:589
 msgid "Legend"
 msgstr "Ufunguo"
 
-#: geonode/layers/templates/layers/layer_detail.html:609
+#: geonode/layers/templates/layers/layer_detail.html:617
 msgid "Maps using this layer"
 msgstr "Ramani zinazotumia tabaka hili"
 
-#: geonode/layers/templates/layers/layer_detail.html:611
+#: geonode/layers/templates/layers/layer_detail.html:619
 msgid "List of maps using this layer:"
 msgstr "Orodha ya ramani zinzotumia tabaka hili"
 
-#: geonode/layers/templates/layers/layer_detail.html:617
+#: geonode/layers/templates/layers/layer_detail.html:625
 msgid "This layer is not currently used in any maps."
 msgstr "Tabaka hili kwa sasa halitumiwi na ramani yoyote"
 
-#: geonode/layers/templates/layers/layer_detail.html:623
+#: geonode/layers/templates/layers/layer_detail.html:631
 msgid "Create a map using this layer"
 msgstr "Tengeza ramani kwa kutumia tabaka hili"
 
-#: geonode/layers/templates/layers/layer_detail.html:624
+#: geonode/layers/templates/layers/layer_detail.html:632
 msgid "Click the button below to generate a new map based on this layer."
 msgstr ""
 "Bonyeza kitufe hapo chini kutengenza ramani mpya kutokana na tabaka hili."
 
-#: geonode/layers/templates/layers/layer_detail.html:630
+#: geonode/layers/templates/layers/layer_detail.html:638
 msgid "Add the layer to an existing map"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:638
+#: geonode/layers/templates/layers/layer_detail.html:646
 #, fuzzy
 #| msgid "Click the button below to change the permissions of this layer."
 msgid "Click the button below to add the layer to the selected map."
 msgstr "Bonyeza kitufe hapo chini ili kubadili vibali vya safu hii."
 
-#: geonode/layers/templates/layers/layer_detail.html:640
+#: geonode/layers/templates/layers/layer_detail.html:648
 #, fuzzy
 #| msgid "Edit Map"
 msgid "Add to Map"
 msgstr "Hariri Ramani"
 
-#: geonode/layers/templates/layers/layer_detail.html:647
+#: geonode/layers/templates/layers/layer_detail.html:655
 msgid "Documents related to this layer"
 msgstr "Hati zinazohusiana na tabaka hili"
 
-#: geonode/layers/templates/layers/layer_detail.html:648
+#: geonode/layers/templates/layers/layer_detail.html:656
 msgid "List of documents related to this layer:"
 msgstr "Orodha ya hati kuhusiana na safu hii:"
 
-#: geonode/layers/templates/layers/layer_detail.html:660
+#: geonode/layers/templates/layers/layer_detail.html:668
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
@@ -2958,78 +2999,78 @@ msgstr ""
 "Mitindo ifuatayo inahusishwa na tabaka hili. Chagua mtindo ukitaka kuutazama "
 "kwenye ramani"
 
-#: geonode/layers/templates/layers/layer_detail.html:667
-#: geonode/layers/templates/layers/layer_detail.html:681
+#: geonode/layers/templates/layers/layer_detail.html:675
+#: geonode/layers/templates/layers/layer_detail.html:689
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:30
 #, fuzzy
 #| msgid "Layer Default Style"
 msgid "(default style)"
 msgstr "Mtindo msingoi wa tabaka"
 
-#: geonode/layers/templates/layers/layer_detail.html:674
-#: geonode/layers/templates/layers/layer_detail.html:688
+#: geonode/layers/templates/layers/layer_detail.html:682
+#: geonode/layers/templates/layers/layer_detail.html:696
 msgid "No styles associated with this layer"
 msgstr "Hakuna mitindo iliyosishwa na safu hii"
 
-#: geonode/layers/templates/layers/layer_detail.html:697
+#: geonode/layers/templates/layers/layer_detail.html:705
 msgid "External service layer"
 msgstr "Tabaka kutoka huduma ya nje"
 
-#: geonode/layers/templates/layers/layer_detail.html:698
+#: geonode/layers/templates/layers/layer_detail.html:706
 msgid "Source"
 msgstr "Chanzo"
 
-#: geonode/layers/templates/layers/layer_detail.html:708
+#: geonode/layers/templates/layers/layer_detail.html:716
 msgid "Refresh Attributes and Statistics of this layer"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:709
+#: geonode/layers/templates/layers/layer_detail.html:717
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
 "Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:710
+#: geonode/layers/templates/layers/layer_detail.html:718
 msgid "Refresh Attributes and Statistics"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:714
+#: geonode/layers/templates/layers/layer_detail.html:722
 #, fuzzy
 #| msgid "Create a map using this layer"
 msgid "Clear the Server Cache of this layer"
 msgstr "Tengeza ramani kwa kutumia tabaka hili"
 
-#: geonode/layers/templates/layers/layer_detail.html:715
+#: geonode/layers/templates/layers/layer_detail.html:723
 #, fuzzy
 #| msgid "Click the button below to change the permissions of this layer."
 msgid "Click the button below to wipe the tile-cache of this layer."
 msgstr "Bonyeza kitufe hapo chini ili kubadili vibali vya safu hii."
 
-#: geonode/layers/templates/layers/layer_detail.html:716
+#: geonode/layers/templates/layers/layer_detail.html:724
 msgid "Empty Tiled-Layer Cache"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:726
+#: geonode/layers/templates/layers/layer_detail.html:734
 #: geonode/layers/templates/layers/layer_metadata_upload.html:102
 #: geonode/layers/templates/layers/layer_replace.html:112
 #: geonode/layers/templates/layers/layer_style_upload.html:103
 msgid "Click the button below to change the permissions of this layer."
 msgstr "Bonyeza kitufe hapo chini ili kubadili vibali vya safu hii."
 
-#: geonode/layers/templates/layers/layer_detail.html:727
+#: geonode/layers/templates/layers/layer_detail.html:735
 #: geonode/layers/templates/layers/layer_metadata_upload.html:103
 #: geonode/layers/templates/layers/layer_replace.html:113
 #: geonode/layers/templates/layers/layer_style_upload.html:104
 msgid "Change Layer Permissions"
 msgstr "Badilisha Vibali vya Tabaka"
 
-#: geonode/layers/templates/layers/layer_detail.html:743
+#: geonode/layers/templates/layers/layer_detail.html:751
 #: geonode/templates/base.html:679 geonode/templates/metadata_base.html:144
 msgid "Processing..."
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:748
+#: geonode/layers/templates/layers/layer_detail.html:756
 #, fuzzy
 #| msgid "Permissions"
 msgid "Updating Permissions..."
@@ -3385,8 +3426,8 @@ msgstr ""
 #: geonode/layers/templates/upload/layer_upload_crs.html:56
 #: geonode/layers/templates/upload/layer_upload_csv.html:58
 #: geonode/layers/templates/upload/layer_upload_time.html:120
-#: geonode/services/templates/services/service_detail.html:70
-#: geonode/services/templates/services/service_detail.html:72
+#: geonode/services/templates/services/service_detail.html:71
+#: geonode/services/templates/services/service_detail.html:73
 #: geonode/services/templates/services/service_resources_harvest.html:95
 #: geonode/services/templates/services/service_resources_harvest.html:98
 msgid "Next"
@@ -3911,11 +3952,11 @@ msgstr "sasa"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr ""
 
-#: geonode/layers/utils.py:502 geonode/layers/views.py:1222
+#: geonode/layers/utils.py:502 geonode/layers/views.py:1226
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 
-#: geonode/layers/utils.py:505 geonode/layers/views.py:1226
+#: geonode/layers/utils.py:505 geonode/layers/views.py:1230
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
@@ -3940,7 +3981,7 @@ msgstr ""
 msgid "Some error occurred while trying to access the uploaded schema: %s"
 msgstr ""
 
-#: geonode/layers/views.py:127
+#: geonode/layers/views.py:128
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
@@ -3948,51 +3989,51 @@ msgstr ""
 "Kulitokea hitilafu katika kujaribu kuakia data yako. Tafadhali jaribu tena, "
 "au wasiliana na msimamizi kama tatizo litaendelea."
 
-#: geonode/layers/views.py:130
+#: geonode/layers/views.py:131
 msgid ""
 "Note: this layer's orginal metadata was populated and preserved by importing "
 "a metadata XML file. This metadata cannot be edited."
 msgstr ""
 
-#: geonode/layers/views.py:134
+#: geonode/layers/views.py:135
 msgid "You are not permitted to delete this layer"
 msgstr "Huna kibali cha kufuta tabaka hili"
 
-#: geonode/layers/views.py:135
+#: geonode/layers/views.py:136
 msgid "You do not have permissions for this layer."
 msgstr "Huna kibali cha tabaka hili"
 
-#: geonode/layers/views.py:136
+#: geonode/layers/views.py:137
 msgid "You are not permitted to modify this layer"
 msgstr "Huna kibali cha kubadilisha kitu katika tabaka hili"
 
-#: geonode/layers/views.py:138
+#: geonode/layers/views.py:139
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "Huna kibali cha kubadilisha metadata za tabaka hili"
 
-#: geonode/layers/views.py:139
+#: geonode/layers/views.py:140
 msgid "You are not permitted to view this layer"
 msgstr "Huna kibali cha kutazama tabaka  hili"
 
-#: geonode/layers/views.py:277
+#: geonode/layers/views.py:278
 #, fuzzy
 #| msgid "Files to be uploaded"
 msgid "Failed to upload the layer"
 msgstr "Mafaili yakupakia"
 
-#: geonode/layers/views.py:1322 geonode/layers/views.py:1367
+#: geonode/layers/views.py:1326 geonode/layers/views.py:1371
 #, fuzzy
 #| msgid "Files to be uploaded"
 msgid "Unable to delete layer"
 msgstr "Mafaili yakupakia"
 
-#: geonode/layers/views.py:1326 geonode/layers/views.py:1371
+#: geonode/layers/views.py:1330 geonode/layers/views.py:1375
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 
-#: geonode/layers/views.py:1419 geonode/maps/views.py:1417
+#: geonode/layers/views.py:1423 geonode/maps/views.py:1422
 msgid "couldn't generate thumbnail"
 msgstr ""
 
@@ -4388,41 +4429,41 @@ msgid ""
 "        "
 msgstr ""
 
-#: geonode/maps/views.py:96
+#: geonode/maps/views.py:98
 msgid "You are not permitted to delete this map."
 msgstr "You hawaruhusiwi kufuta ramani hii."
 
-#: geonode/maps/views.py:97
+#: geonode/maps/views.py:99
 msgid "You do not have permissions for this map."
 msgstr "Huna ruhusa kwa ramani hii."
 
-#: geonode/maps/views.py:98
+#: geonode/maps/views.py:100
 msgid "You must be logged in to save this map"
 msgstr "Ni lazima uwe watumiaji katika kuokoa ramani hii"
 
-#: geonode/maps/views.py:99
+#: geonode/maps/views.py:101
 msgid "You are not permitted to save or edit this map."
 msgstr "Wewe hawaruhusiwi kuokoa au hariri ramani hii."
 
-#: geonode/maps/views.py:101
+#: geonode/maps/views.py:103
 msgid "You are not allowed to modify this map's metadata."
 msgstr "Wewe hawaruhusiwi kurekebisha metadata ya ramani hii."
 
-#: geonode/maps/views.py:102
+#: geonode/maps/views.py:104
 msgid "You are not allowed to view this map."
 msgstr "Wewe hawaruhusiwi kuangalia ramani hii."
 
-#: geonode/maps/views.py:103
+#: geonode/maps/views.py:105
 msgid "An unknown error has occured."
 msgstr "hitilafu isiyojulikana imetokea."
 
-#: geonode/maps/views.py:1424
+#: geonode/maps/views.py:1429
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Thumbnail saved"
 msgstr "Thumbnail"
 
-#: geonode/maps/views.py:1427
+#: geonode/maps/views.py:1432
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "error saving thumbnail"
@@ -5461,59 +5502,59 @@ msgstr ""
 msgid "Could not contact"
 msgstr "Mawasiliano"
 
-#: geonode/services/templates/services/service_detail.html:12
+#: geonode/services/templates/services/service_detail.html:13
 #, fuzzy
 #| msgid "Contact:"
 msgid "Contact"
 msgstr "Mawasiliano:"
 
-#: geonode/services/templates/services/service_detail.html:15
+#: geonode/services/templates/services/service_detail.html:16
 #, fuzzy
 #| msgid "Resources"
 msgid "Service Resources"
 msgstr "Rasilimali"
 
-#: geonode/services/templates/services/service_detail.html:17
+#: geonode/services/templates/services/service_detail.html:18
 msgid "No resources have been imported yet."
 msgstr ""
 
-#: geonode/services/templates/services/service_detail.html:35
+#: geonode/services/templates/services/service_detail.html:36
 #, fuzzy
 #| msgid "Retry"
 msgid "Retry job"
 msgstr "Jaribu tena"
 
-#: geonode/services/templates/services/service_detail.html:64
-#: geonode/services/templates/services/service_detail.html:66
+#: geonode/services/templates/services/service_detail.html:65
+#: geonode/services/templates/services/service_detail.html:67
 #: geonode/services/templates/services/service_resources_harvest.html:88
 #: geonode/services/templates/services/service_resources_harvest.html:90
 msgid "previous"
 msgstr ""
 
-#: geonode/services/templates/services/service_detail.html:70
-#: geonode/services/templates/services/service_detail.html:72
+#: geonode/services/templates/services/service_detail.html:71
+#: geonode/services/templates/services/service_detail.html:73
 #: geonode/services/templates/services/service_resources_harvest.html:96
 #: geonode/services/templates/services/service_resources_harvest.html:98
 msgid "next"
 msgstr ""
 
-#: geonode/services/templates/services/service_detail.html:83
+#: geonode/services/templates/services/service_detail.html:84
 #: geonode/services/templates/services/service_register.html:24
 #: geonode/services/templates/services/service_resources_harvest.html:113
 msgid "Connecting to service..."
 msgstr ""
 
-#: geonode/services/templates/services/service_detail.html:109
+#: geonode/services/templates/services/service_detail.html:101
 msgid "Edit Service Metadata"
 msgstr "Hariri Metadata za Huduma"
 
-#: geonode/services/templates/services/service_detail.html:110
+#: geonode/services/templates/services/service_detail.html:102
 #, fuzzy
 #| msgid "Remote Services"
 msgid "Import Service Resources"
 msgstr "Huduma ukiwa mbali"
 
-#: geonode/services/templates/services/service_detail.html:115
+#: geonode/services/templates/services/service_detail.html:104
 msgid "Remove Service"
 msgstr "Ondoa Huduma"
 
@@ -5632,47 +5673,47 @@ msgstr ""
 msgid "Re-scan Service for new Resources"
 msgstr ""
 
-#: geonode/services/views.py:96
+#: geonode/services/views.py:97
 #, fuzzy
 #| msgid "service interfaces"
 msgid "Service registered successfully"
 msgstr "kusano za huduma"
 
-#: geonode/services/views.py:193
+#: geonode/services/views.py:194
 msgid "The selected resources are being imported"
 msgstr ""
 
-#: geonode/services/views.py:194
+#: geonode/services/views.py:195
 msgid "The selected resources have been imported"
 msgstr ""
 
-#: geonode/services/views.py:224
+#: geonode/services/views.py:225
 msgid "Resource is already being processed"
 msgstr ""
 
-#: geonode/services/views.py:230
+#: geonode/services/views.py:231
 #, fuzzy
 #| msgid "Resources"
 msgid "Resource {} is being processed"
 msgstr "Rasilimali"
 
-#: geonode/services/views.py:259
+#: geonode/services/views.py:260
 #, fuzzy
 #| msgid "Password changed successfully."
 msgid "Service rescanned successfully"
 msgstr "Nenosiri limebadilishwa kwa mafanikio."
 
-#: geonode/services/views.py:329
+#: geonode/services/views.py:332
 #, fuzzy
 #| msgid "You are not permitted to remove this service."
 msgid "You are not permitted to change this service."
 msgstr "Hauruhusiwi kuondoa huduma hii."
 
-#: geonode/services/views.py:357
+#: geonode/services/views.py:360
 msgid "You are not permitted to remove this service."
 msgstr "Hauruhusiwi kuondoa huduma hii."
 
-#: geonode/services/views.py:368
+#: geonode/services/views.py:371
 #, fuzzy
 #| msgid "Service has been created:"
 msgid "Service {} has been deleted"
@@ -7600,6 +7641,22 @@ msgstr ""
 
 #: geonode/templates/metadata_detail.html:320
 msgid "Online Link"
+msgstr ""
+
+#: geonode/templates/owner_rights_request.html:6
+#, fuzzy
+#| msgid "Set permissions"
+msgid "Request perission"
+msgstr "Idhinisha ruhusa"
+
+#: geonode/templates/owner_rights_request.html:8
+#, fuzzy
+#| msgid "party that owns the resource"
+msgid "Request editing for resource: "
+msgstr "upande unaomiliki rasilimali"
+
+#: geonode/templates/owner_rights_request.html:16
+msgid "Send request"
 msgstr ""
 
 #: geonode/templates/pinax/notifications/account_active/account_active_message.txt:2
