@@ -509,7 +509,7 @@ if UNOCONV_ENABLE:
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
             'format': '%(levelname)s %(asctime)s %(module)s %(process)d '
@@ -526,7 +526,7 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'INFO',
+            'level': 'ERROR',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
@@ -540,7 +540,7 @@ LOGGING = {
         "django": {
             "handlers": ["console"], "level": "ERROR", },
         "geonode": {
-            "handlers": ["console"], "level": "INFO", },
+            "handlers": ["console"], "level": "ERROR", },
         "geonode.qgis_server": {
             "handlers": ["console"], "level": "ERROR", },
         "geoserver-restconfig.catalog": {
@@ -550,7 +550,7 @@ LOGGING = {
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
         "celery": {
-            "handlers": ["console"], "level": "ERROR", },
+            'handlers': ["console"], 'level': 'ERROR', },
     },
 }
 
@@ -1228,9 +1228,6 @@ API_LIMIT_PER_PAGE = int(os.getenv('API_LIMIT_PER_PAGE', '200'))
 API_INCLUDE_REGIONS_COUNT = ast.literal_eval(
     os.getenv('API_INCLUDE_REGIONS_COUNT', 'False'))
 
-# option to enable/disable resource unpublishing for administrators
-RESOURCE_PUBLISHING = ast.literal_eval(os.getenv('RESOURCE_PUBLISHING', 'False'))
-
 # Settings for EXIF plugin
 EXIF_ENABLED = ast.literal_eval(os.getenv('EXIF_ENABLED', 'True'))
 
@@ -1717,6 +1714,33 @@ if os.name == 'nt':
 # Filter: (boolean, optional, default false) a filter option on that thesaurus will appear in the main search page
 # THESAURUS = {'name': 'inspire_themes', 'required': True, 'filter': True}
 
+# ######################################################## #
+# Advanced Resource Publishing Worklow Settings - START    #
+# ######################################################## #
+"""
+    - if [ RESOURCE_PUBLISHING == True ]
+      By default the uploaded resources will be "unpublished".
+      The owner will be able to change them to "published" **UNLESS** the ADMIN_MODERATE_UPLOADS is activated.
+      If the owner assigns unpublished resources to a Group, both from Metadata and Permissions, in any case
+       the Group "Managers" will be able to edit the Resource.
+
+    - if [ ADMIN_MODERATE_UPLOADS == True ]
+      1. The owner won't be able to change to neither "approved" nor "published" state (unless he is a superuser)
+      2. If the Resource belongs to a Group somehow, the Managers will be able to change the state to "approved"
+         but **NOT** to "published". Only a superuser can publish a resource.
+      3. Superusers can do enything.
+
+    - if [ GROUP_PRIVATE_RESOURCES == True ]
+      The "unapproved" and "unpublished" Resources will be accessible **ONLY** by owners, superusers and member of 
+       the belonging groups.
+
+    - if [ GROUP_MANDATORY_RESOURCES == True ]
+      Editor will be **FORCED** to select a Group when editing the resource metadata.
+"""
+
+# option to enable/disable resource unpublishing for administrators
+RESOURCE_PUBLISHING = ast.literal_eval(os.getenv('RESOURCE_PUBLISHING', 'False'))
+
 # Each uploaded Layer must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get('ADMIN_MODERATE_UPLOADS', 'False'))
 
@@ -1727,6 +1751,9 @@ GROUP_PRIVATE_RESOURCES = ast.literal_eval(os.environ.get('GROUP_PRIVATE_RESOURC
 # If this option is enabled, Groups will become strictly Mandatory on
 # Metadata Wizard
 GROUP_MANDATORY_RESOURCES = ast.literal_eval(os.environ.get('GROUP_MANDATORY_RESOURCES', 'False'))
+# ######################################################## #
+# Advanced Resource Publishing Worklow Settings - END      #
+# ######################################################## #
 
 # A boolean which specifies wether to display the email in user's profile
 SHOW_PROFILE_EMAIL = ast.literal_eval(os.environ.get('SHOW_PROFILE_EMAIL', 'False'))
@@ -1875,7 +1902,7 @@ if MONITORING_ENABLED:
 
     CELERY_BEAT_SCHEDULE['collect_metrics'] = {
         'task': 'geonode.monitoring.tasks.collect_metrics',
-        'schedule': 60.0,
+        'schedule': 300.0,
     }
 
 USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'False'))

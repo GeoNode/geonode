@@ -476,7 +476,7 @@ class ThesaurusKeywordLabel(models.Model):
     lang = models.CharField(max_length=3)
     # read from the RDF file
     label = models.CharField(max_length=255)
-#    note  = models.CharField(max_length=511)
+    # note  = models.CharField(max_length=511)
 
     keyword = models.ForeignKey('ThesaurusKeyword', related_name='keyword', on_delete=models.CASCADE)
 
@@ -1393,9 +1393,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return the_ma
 
     def handle_moderated_uploads(self):
-        if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
-            self.is_approved = False
+        if settings.RESOURCE_PUBLISHING:
             self.is_published = False
+        if settings.ADMIN_MODERATE_UPLOADS:
+            self.is_approved = False
 
     def add_missing_metadata_author_or_poc(self):
         """

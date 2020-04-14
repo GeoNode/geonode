@@ -28,8 +28,6 @@ from geonode.layers.models import Layer, Style
 from geonode.maps.models import Map, MapLayer
 from geonode.base.models import Link
 
-from geonode.utils import designals, resignals
-
 
 class Command(BaseCommand):
 
@@ -74,11 +72,6 @@ Styles and Links Base URLs from [%s] to [%s]." % (source_address, target_address
 
         if force_exec or helpers.confirm(prompt=message, resp=False):
             try:
-                # Deactivate GeoNode Signals
-                print("Deactivating GeoNode Signals...")
-                designals()
-                print("...done!")
-
                 _cnt = Map.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
                         F('thumbnail_url'),Value(source_address),Value(target_address),function='replace'))
@@ -118,7 +111,4 @@ Styles and Links Base URLs from [%s] to [%s]." % (source_address, target_address
                         F('metadata_xml'), Value(source_address), Value(target_address), function='replace'))
                 print("Updated %s ResourceBases" % _cnt)
             finally:
-                # Reactivate GeoNode Signals
-                print("Reactivating GeoNode Signals...")
-                resignals()
                 print("...done!")

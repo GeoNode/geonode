@@ -149,6 +149,13 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     layers = MapLayer.objects.filter(map=map_obj.id)
     links = map_obj.link_set.download()
 
+    # Call this first in order to be sure "perms_list" is correct
+    permissions_json = _perms_info_json(map_obj)
+
+    perms_list = get_perms(
+        request.user,
+        map_obj.get_self_resource()) + get_perms(request.user, map_obj)
+
     group = None
     if map_obj.group:
         try:
@@ -170,10 +177,8 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
         'resource': map_obj,
         'group': group,
         'layers': layers,
-        'perms_list': get_perms(
-            request.user,
-            map_obj.get_self_resource()) + get_perms(request.user, map_obj),
-        'permissions_json': _perms_info_json(map_obj),
+        'perms_list': perms_list,
+        'permissions_json': permissions_json,
         "documents": get_related_documents(map_obj),
         'links': links,
         'preview': getattr(
@@ -371,8 +376,9 @@ def map_metadata(
 
     if settings.ADMIN_MODERATE_UPLOADS:
         if not request.user.is_superuser:
-            map_form.fields['is_published'].widget.attrs.update(
-                {'disabled': 'true'})
+            if settings.RESOURCE_PUBLISHING:
+                map_form.fields['is_published'].widget.attrs.update(
+                    {'disabled': 'true'})
 
             can_change_metadata = request.user.has_perm(
                 'change_resourcebase_metadata',

@@ -313,8 +313,11 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_default_anonymous_permissions(self):
-        with override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False,
+        with override_settings(RESOURCE_PUBLISHING=False,
+                               ADMIN_MODERATE_UPLOADS=False,
+                               DEFAULT_ANONYMOUS_VIEW_PERMISSION=False,
                                DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False):
+            self.client.login(username='norman', password='norman')
             norman = get_user_model().objects.get(username="norman")
             saved_layer = file_upload(
                 os.path.join(
@@ -328,19 +331,17 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
                 namespaces = {'wms': 'http://www.opengis.net/wms',
                               'xlink': 'http://www.w3.org/1999/xlink',
                               'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
-
-                self.client.login(username='norman', password='norman')
-                url = reverse('capabilities_layer', args=[saved_layer.id])
+                url = urljoin(settings.SITEURL, reverse('capabilities_layer', args=[saved_layer.id]))
                 resp = self.client.get(url)
-                layercap = dlxml.fromstring(resp.content)
+                content = resp.content
+                self.assertTrue(content)
+                layercap = dlxml.fromstring(content)
                 rootdoc = etree.ElementTree(layercap)
                 layernodes = rootdoc.findall('./[wms:Name]', namespaces)
                 layernode = layernodes[0]
-
                 self.assertEqual(1, len(layernodes))
                 self.assertEqual(layernode.find('wms:Name', namespaces).text,
                                  saved_layer.name)
-
                 self.client.logout()
                 resp = self.client.get(url)
                 with self.assertRaises(Exception):

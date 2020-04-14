@@ -18,38 +18,42 @@
 #
 #########################################################################
 
+import io
 import os
 import re
+import gzip
+import json
 import shutil
 import logging
 import tempfile
 import traceback
-import io
-import gzip
 
 from hyperlink import URL
 from slugify import slugify
 from urllib.parse import urlparse, urlsplit, urljoin
 
 from django.conf import settings
-from django.http import HttpResponse
-from django.http.request import validate_host
-from django.views.generic import View
-from django.views.decorators.csrf import requires_csrf_token
 from django.template import loader
+from django.http import HttpResponse
+from django.views.generic import View
 from distutils.version import StrictVersion
+from django.http.request import validate_host
+from django.forms.models import model_to_dict
 from django.utils.translation import ugettext as _
 from django.core.files.storage import FileSystemStorage
+from django.views.decorators.csrf import requires_csrf_token
 
 from geonode.base.models import Link
 from geonode.layers.models import Layer, LayerFile
-from geonode.utils import (resolve_object,
-                           check_ogc_backend,
-                           get_dir_time_suffix,
-                           zip_dir,
-                           get_headers,
-                           http_client,
-                           json_response)
+from geonode.utils import (
+    resolve_object,
+    check_ogc_backend,
+    get_dir_time_suffix,
+    zip_dir,
+    get_headers,
+    http_client,
+    json_response,
+    json_serializer_producer)
 from geonode.base.enumerations import LINK_TYPES as _LT
 
 from geonode import geoserver, qgis_server  # noqa
@@ -311,6 +315,11 @@ def download(request, resourceid, sender=Layer):
                 os.makedirs(target_md_folder)
 
             try:
+                dump_file = os.path.join(target_md_folder, "".join([instance.name, ".dump"]))
+                with open(dump_file, 'w') as outfile:
+                    serialized_obj = json_serializer_producer(model_to_dict(instance))
+                    json.dump(serialized_obj, outfile)
+
                 links = Link.objects.filter(resource=instance.resourcebase_ptr)
                 for link in links:
                     link_name = slugify(link.name)

@@ -54,7 +54,6 @@ from geonode.monitoring.models import do_autoconfigure
 from geonode.compat import ensure_string
 from geonode.monitoring.collector import CollectorAPI
 from geonode.monitoring.utils import generate_periods, align_period_start
-from geonode.utils import designals
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.documents.models import Document
@@ -181,9 +180,6 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
             os.unlink('integration_settings.py')
 
     def setUp(self):
-
-        designals()
-
         # await startup
         cl = Client(
             GEONODE_URL, GEONODE_USER, GEONODE_PASSWD

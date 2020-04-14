@@ -18,9 +18,9 @@
 #
 #########################################################################
 
-import logging
 import os
 import uuid
+import logging
 from urllib.parse import urlparse
 
 from django.db import models

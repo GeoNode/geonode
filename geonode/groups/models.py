@@ -34,7 +34,13 @@ from django.utils.timezone import now
 from django.contrib.staticfiles.templatetags import staticfiles
 
 from taggit.managers import TaggableManager
-from guardian.shortcuts import get_objects_for_group
+
+from guardian.shortcuts import (
+    get_objects_for_user,
+    get_objects_for_group,
+    assign_perm,
+    remove_perm
+)
 
 logger = logging.getLogger(__name__)
 
@@ -202,6 +208,7 @@ class GroupProfile(models.Model):
             raise ValueError("The invited user cannot be anonymous")
         member, created = GroupMember.objects.get_or_create(group=self, user=user, defaults=kwargs)
         if not created:
+            member.demote()
             user.groups.remove(self.group)
             member.delete()
         else:
@@ -257,10 +264,24 @@ class GroupMember(models.Model):
 
     def promote(self, *args, **kwargs):
         self.role = "manager"
+        if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
+            from geonode.security.models import ADMIN_PERMISSIONS
+            queryset = get_objects_for_user(
+                self.user, 'base.view_resourcebase').filter(group=self.group.group)
+            for _r in queryset.exclude(owner=self.user):
+                for perm in ADMIN_PERMISSIONS:
+                    assign_perm(perm, self.user, _r.get_self_resource())
         super(GroupMember, self).save(*args, **kwargs)
 
     def demote(self, *args, **kwargs):
         self.role = "member"
+        if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
+            from geonode.security.models import ADMIN_PERMISSIONS
+            queryset = get_objects_for_user(
+                self.user, 'base.view_resourcebase').filter(group=self.group.group)
+            for _r in queryset.exclude(owner=self.user):
+                for perm in ADMIN_PERMISSIONS:
+                    remove_perm(perm, self.user, _r.get_self_resource())
         super(GroupMember, self).save(*args, **kwargs)
 
 

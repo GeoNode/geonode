@@ -578,6 +578,13 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
                 granules = {"features": []}
                 all_granules = {"features": []}
 
+    # Call this first in order to be sure "perms_list" is correct
+    permissions_json = _perms_info_json(layer)
+
+    perms_list = get_perms(
+        request.user,
+        layer.get_self_resource()) + get_perms(request.user, layer)
+
     group = None
     if layer.group:
         try:
@@ -627,10 +634,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     metadata = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
-    perms_list = get_perms(
-        request.user,
-        layer.get_self_resource()) + get_perms(request.user, layer)
-
     access_token = None
     if request and request.user:
         access_token = get_or_create_token(request.user)
@@ -644,7 +647,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'resource': layer,
         'group': group,
         'perms_list': perms_list,
-        "permissions_json": _perms_info_json(layer),
+        "permissions_json": permissions_json,
         "documents": get_related_documents(layer),
         "metadata": metadata,
         "is_layer": True,
@@ -1097,8 +1100,9 @@ def layer_metadata(
 
     if settings.ADMIN_MODERATE_UPLOADS:
         if not request.user.is_superuser:
-            layer_form.fields['is_published'].widget.attrs.update(
-                {'disabled': 'true'})
+            if settings.RESOURCE_PUBLISHING:
+                layer_form.fields['is_published'].widget.attrs.update(
+                    {'disabled': 'true'})
 
             can_change_metadata = request.user.has_perm(
                 'change_resourcebase_metadata',
