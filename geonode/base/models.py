@@ -597,8 +597,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         ' dataset')
     doi_help_text = _(
         'a DOI will be added by Admin before publication.')
-    doi = models.TextField(
+    doi = models.CharField(
         _('DOI'),
+        max_length=255,
         blank=True,
         null=True,
         help_text=doi_help_text)

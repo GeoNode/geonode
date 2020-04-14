@@ -391,14 +391,8 @@ span.grippy::after {
                                         {{ layer_form.license }}
                                     </div>
                                     <div>
-                                      <span><label
-                                          for="{{ layer_form.doi|id }}">{{ layer_form.doi.label }}</label></span>
-                                      <input id="id_resource-doi" name="resource-doi" type="text"
-                                        class="has-external-popover" data-container="body"
-                                        data-content="a DOI will be added by Admin before publication." data-html="true"
-                                        data-placement="right"
-                                        placeholder="a DOI will be added by Admin before publication."
-                                        value="{{ layer_form.doi.value }}">
+                                        <span><label for="{{ layer_form.doi|id }}">{{ layer_form.doi.label }}</label></span>
+                                        {{ layer_form.doi }}
                                     </div>
                                 </div>
                                 <div class="col-lg-4">

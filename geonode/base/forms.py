@@ -402,7 +402,6 @@ class ResourceBaseForm(TranslationModelForm):
         super(ResourceBaseForm, self).__init__(*args, **kwargs)
         for field in self.fields:
             help_text = self.fields[field].help_text
-            self.fields[field].help_text = None
             if help_text != '':
                 self.fields[field].widget.attrs.update(
                     {
@@ -438,9 +437,9 @@ class ResourceBaseForm(TranslationModelForm):
             if not isinstance(_k, six.string_types):
                 for _kk in [x.strip() for x in _k]:
                     # Simulate JS Unescape
-                    _kk = _kk.replace('%u', r'\u'). \
-                        encode('unicode-escape').replace(b'\\\\u',
-                                                         b'\\u').decode('unicode-escape') if '%u' in _kk else _kk
+                    _kk = _kk.replace('%u', r'\u').encode('unicode-escape').replace(
+                        b'\\\\u',
+                        b'\\u').decode('unicode-escape') if '%u' in _kk else _kk
                     _hk = HierarchicalKeyword.objects.filter(name__iexact='%s' % _kk.strip())
                     if _hk and len(_hk) > 0:
                         _unsescaped_kwds.append(str(_hk[0]))
