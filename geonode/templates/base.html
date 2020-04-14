@@ -632,6 +632,8 @@
       // Autocomplete instance for the search found in the header.
       $(document).ready(function() {
         window.autocomplete2 = new Autocomplete({
+          form_btn: null,
+          form_submit: '#search',
           form_selector: '#search',
           input_selector: '#search_input',
           container_selector: '#search-container',
@@ -640,12 +642,6 @@
         window.autocomplete2.setup()
       })
 
-      $('#search_input').bind('selectChoice', function(e, choice) {
-          if(choice[0].children[0] == undefined) {
-              $('#search_input').val($(choice[0]).text());
-              $('#search').submit();
-          }
-      });
       $('#search').on('submit', (e) => {
           $('#search_abstract_input')[0].value =$('#search_input')[0].value;
           $('#search_purpose_input')[0].value = $('#search_input')[0].value;
