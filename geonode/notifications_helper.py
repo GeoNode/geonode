@@ -23,7 +23,7 @@ from importlib import import_module
 
 from django.apps import AppConfig
 from django.conf import settings
-from django.db.models import signals
+from django.db.models import signals, Q
 
 from geonode.tasks.tasks import send_queued_notifications
 
@@ -68,6 +68,7 @@ def call_celery(func):
         if settings.PINAX_NOTIFICATIONS_QUEUE_ALL:
             send_queued_notifications.delay()
         return ret
+
     return wrap
 
 
@@ -114,4 +115,11 @@ def get_notification_recipients(notice_type_label, exclude_user=None):
     profiles = get_user_model().objects.filter(id__in=recipients_ids)
     if exclude_user:
         profiles.exclude(username=exclude_user.username)
+
+    return profiles
+
+
+def get_comment_notification_recipients(notice_type_label, instance_owner, exclude_user=None):
+    profiles = get_notification_recipients(notice_type_label, exclude_user)
+    profiles = profiles.filter(Q(pk=instance_owner.pk) | Q(is_superuser=True))
     return profiles

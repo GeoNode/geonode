@@ -28,6 +28,7 @@ from dialogos.models import Comment
 
 from django.conf import settings
 from django.db.models import signals
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 # from actstream.exceptions import ModelNotActionable
@@ -36,7 +37,8 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.notifications_helper import (send_notification, queue_notification,
-                                          has_notifications, get_notification_recipients)
+                                          has_notifications, get_notification_recipients,
+                                          get_comment_notification_recipients)
 
 logger = logging.getLogger(__name__)
 
@@ -216,8 +218,12 @@ def comment_post_save(instance, sender, created, **kwargs):
     been submitted
     """
     notice_type_label = '%s_comment' % instance.content_type.model.lower()
-    recipients = get_notification_recipients(notice_type_label, instance.author)
-    send_notification(recipients, notice_type_label, {"instance": instance})
+    recipients = get_comment_notification_recipients(notice_type_label, instance.content_object.owner)
+    send_notification(recipients,
+                      notice_type_label,
+                      extra_context={
+                          "instance": instance, 'notice_settings_url': reverse('pinax_notifications:notice_settings')
+                      })
 
 
 # signals
