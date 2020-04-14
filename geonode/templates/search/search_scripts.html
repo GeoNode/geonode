@@ -39,6 +39,8 @@
   // Register autocomplete for text filters
   $(document).ready(function() {
     window.autocomplete = new Autocomplete({
+      form_btn: '#text_search_btn',
+      form_submit: null,
       form_selector: '#text-search-autocomplete',
       input_selector: '#text_search_input',
       container_selector: '#text-search-container'
@@ -49,6 +51,8 @@
   // Register autocomplete for region filters
   $(document).ready(function() {
     window.autocomplete = new Autocomplete({
+      form_btn: '#region_search_btn',
+      form_submit: null,
       form_selector: '#region-search-autocomplete',
       input_selector: '#region_search_input',
       container_selector: '#region-search-container',

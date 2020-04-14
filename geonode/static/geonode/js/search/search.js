@@ -594,14 +594,6 @@
       }
     }
 
-
-    $('#text_search_input').bind('selectChoice', function(e, choice) {
-          if(choice[0].children[0] == undefined) {
-              $('#text_search_input').val($(choice[0]).text());
-              $('#text_search_btn').click();
-          }
-    });
-
     $('#text_search_btn').click(function(){
         if (HAYSTACK_SEARCH) {
             $scope.query['q'] = $('#text_search_input').val();
@@ -615,33 +607,16 @@
                 var query_key = 'name__icontains';
             } else if (AUTOCOMPLETE_URL_RESOURCEBASE == "/groups/autocomplete/" ) {
                 // Adding in this conditional since both groups autocomplete and searches requests need to search name not title.
-                var query_key = 'name';
+                var query_key = $('#text_search_input').data('query-key')||'title';
             } else {
                 var query_key = $('#text_search_input').data('query-key')||'title__icontains';
             }
-
-            // Groups searching by name requires the query text to be in the form 'test-name' the autocomplete returns the title of the groupprofile
-            // but the backend currently searches group.name field.
-            // There might be a better way to use the query key along the lines of 'groupprofile___title__icontains' as this should be supported on backend.
-            // Testing this method so far did not seem to work though.
-            if (AUTOCOMPLETE_URL_RESOURCEBASE == "/groups/autocomplete/" ) {
-              $scope.query[query_key] = $('#text_search_input').val().toLowerCase().replace(/ /g,"-");
-            } else {
-              $scope.query[query_key] = $('#text_search_input').val();
-
-            }
-            $scope.query['abstract__icontains'] = $('#text_search_input').val();
-            $scope.query['purpose__icontains'] = $('#text_search_input').val();
-            $scope.query['f_method'] = 'or';
-        query_api($scope.query);
+            $scope.query[query_key] = $('#text_search_input').val();
         }
-    });
-
-    $('#region_search_input').bind('selectChoice', function(e, choice, region_autocomplete) {
-          if(choice[0].children[0] == undefined) {
-              $('#region_search_input').val(choice[0].innerHTML);
-              $('#region_search_btn').click();
-          }
+        $scope.query['abstract__icontains'] = $('#text_search_input').val();
+        $scope.query['purpose__icontains'] = $('#text_search_input').val();
+        $scope.query['f_method'] = 'or';
+        query_api($scope.query);
     });
 
     $('#region_search_btn').click(function(){

@@ -320,30 +320,5 @@
     <script src="{% static "geonode/js/base/base.js" %}"></script>
     <script type="text/javascript" src="{% url "javascript-catalog" %}"></script>
     {% block extra_script %}{% endblock extra_script %}
-    <script type="text/javascript">
-        $('#search_input').bind('selectChoice', function(e, choice) {
-            if(choice[0].children[0] == undefined) {
-                $('#search_input').val(choice[0].innerHTML);
-                $('#search').submit();
-            }
-        });
-    </script>
-    <script>
-        // Workaround to fix the autocomplete box positions
-        yourlabs.Autocomplete.prototype.fixPosition = function(html) {
-            this.input.parents().filter(function() {
-                return $(this).css('overflow') === 'hidden';
-            }).first().css('overflow', 'visible');
-            if(this.input.attr('name') !== 'resource-keywords'){
-              this.box.insertAfter(this.input).css({top: 0, left: 0});
-            }else{
-              var pos = $.extend({}, this.input.position(), {
-                height: this.input.outerHeight()
-              });
-              this.box.insertAfter(this.input).css({top: pos.top + pos.height, left: pos.left});
-            }
-        };
-    </script>
-
   </body>
 </html>

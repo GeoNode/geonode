@@ -6,8 +6,10 @@
  * @param {object} options Options object for autocomplete including DOM selectors and url
  */
 var Autocomplete = function(options) {
-      
+
     // Multiple selelectors to make this reusable 
+    this.form_btn = options.form_btn
+    this.form_submit = options.form_submit
     this.form_selector = options.form_selector
     this.input_selector = options.input_selector
     this.container_selector = options.container_selector
@@ -49,6 +51,12 @@ var Autocomplete = function(options) {
     this.form_elem.on('click', '.ac-result', function(ev) {
       self.query_box.val($(this).text())
       $('.ac-results').remove()
+      if (typeof self.form_btn !== 'undefined') {
+        $(self.form_btn).click();
+      }
+      if (typeof self.form_submit !== 'undefined') {
+        $(self.form_submit).submit();
+      }
       return false
     })
   }
@@ -79,7 +87,6 @@ var Autocomplete = function(options) {
     var results_wrapper = $('<div class="ac-results"></div>')
     var base_elem = $('<div class="result-wrapper"><a href="#" class="ac-result"></a></div>')
 
-
     if(results.length > 0) {
       for(var res_offset in results) {
         var elem = base_elem.clone()
@@ -97,4 +104,18 @@ var Autocomplete = function(options) {
     }
 
     this.query_box.after(results_wrapper)
+  }
+
+  Autocomplete.prototype.fixPosition = function(html) {
+    this.input.parents().filter(function() {
+        return $(this).css('overflow') === 'hidden';
+    }).first().css('overflow', 'visible');
+    if(this.input.attr('name') !== 'resource-keywords'){
+      this.box.insertAfter(this.input).css({top: 0, left: 0});
+    }else{
+      var pos = $.extend({}, this.input.position(), {
+        height: this.input.outerHeight()
+      });
+      this.box.insertAfter(this.input).css({top: pos.top + pos.height, left: pos.left});
+    }
   }
