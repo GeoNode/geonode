@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-09 16:00+0000\n"
+"POT-Creation-Date: 2020-04-14 14:05+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Chinese (http://www.transifex.com/geonode/geonode/language/"
@@ -55,7 +55,7 @@ msgstr "资源"
 #: geonode/base/__init__.py:30
 #, fuzzy
 #| msgid "A user has requested access to the site"
-msgid "Owner has requested permission to change resource"
+msgid "Owner has requested permissions to modify a resource"
 msgstr "一个用户已经请求进入网站"
 
 #: geonode/base/enumerations.py:27
@@ -203,7 +203,7 @@ msgstr "来自 Thesauri 的关键词"
 msgid "List of keywords from Thesaurus"
 msgstr "来自 Thesauri 的关键词列表"
 
-#: geonode/base/forms.py:337 geonode/base/models.py:630
+#: geonode/base/forms.py:337 geonode/base/models.py:612
 msgid "Owner"
 msgstr "所有者"
 
@@ -216,11 +216,11 @@ msgstr "所有者"
 msgid "Date"
 msgstr "日期"
 
-#: geonode/base/forms.py:349 geonode/base/models.py:734
+#: geonode/base/forms.py:349 geonode/base/models.py:716
 msgid "temporal extent start"
 msgstr "起始时间"
 
-#: geonode/base/forms.py:356 geonode/base/models.py:739
+#: geonode/base/forms.py:356 geonode/base/models.py:721
 msgid "temporal extent end"
 msgstr "结束时间"
 
@@ -293,43 +293,43 @@ msgstr ""
 msgid "Overwrite file if exists"
 msgstr ""
 
-#: geonode/base/models.py:112 geonode/services/models.py:194
+#: geonode/base/models.py:94 geonode/services/models.py:194
 msgid "function performed by the responsible party"
 msgstr "责任方履行职务"
 
-#: geonode/base/models.py:580
+#: geonode/base/models.py:562
 msgid "reference date for the cited resource"
 msgstr "资料引用日期"
 
-#: geonode/base/models.py:581
+#: geonode/base/models.py:563
 msgid "identification of when a given event occurred"
 msgstr "特定事件发生的标识码"
 
-#: geonode/base/models.py:582
+#: geonode/base/models.py:564
 msgid "version of the cited resource"
 msgstr "引用文献的版本"
 
-#: geonode/base/models.py:584
+#: geonode/base/models.py:566
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "资料简介"
 
-#: geonode/base/models.py:586
+#: geonode/base/models.py:568
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "总结生成资源的动机"
 
-#: geonode/base/models.py:588
+#: geonode/base/models.py:570
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
 msgstr "数据首次生成后的修改及删除频率"
 
-#: geonode/base/models.py:591
+#: geonode/base/models.py:573
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 "the subject (space or comma-separated"
 msgstr "常用词汇或固定短语(用空格或逗号隔开"
 
-#: geonode/base/models.py:594
+#: geonode/base/models.py:576
 #, fuzzy
 #| msgid ""
 #| "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
@@ -339,112 +339,112 @@ msgid ""
 "subject (space or comma-separated"
 msgstr "常用词汇或固定短语(用空格或逗号隔开"
 
-#: geonode/base/models.py:596
+#: geonode/base/models.py:578
 msgid "keyword identifies a location"
 msgstr "定位关键词"
 
-#: geonode/base/models.py:598
+#: geonode/base/models.py:580
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr "限制（多个）放置在所述数据的访问或使用。"
 
-#: geonode/base/models.py:600
+#: geonode/base/models.py:582
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
 msgstr "使用资料或元数据的限制及法律前提"
 
-#: geonode/base/models.py:602
+#: geonode/base/models.py:584
 msgid "license of the dataset"
 msgstr "数据集的许可"
 
-#: geonode/base/models.py:603
+#: geonode/base/models.py:585
 msgid "language used within the dataset"
 msgstr "数据集使用语言"
 
-#: geonode/base/models.py:605
+#: geonode/base/models.py:587
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
 msgstr "用以助于地理信息搜集的高层次地理信息分类"
 
-#: geonode/base/models.py:608
+#: geonode/base/models.py:590
 msgid "method used to represent geographic information in the dataset."
 msgstr "方法用于表示数据集中的地理信息。"
 
-#: geonode/base/models.py:610
+#: geonode/base/models.py:592
 msgid "time period covered by the content of the dataset (start)"
 msgstr "数据集所覆盖时间段 (起始日期)"
 
-#: geonode/base/models.py:612
+#: geonode/base/models.py:594
 msgid "time period covered by the content of the dataset (end)"
 msgstr "数据集所覆盖时间段 (结束日期)"
 
-#: geonode/base/models.py:614
+#: geonode/base/models.py:596
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr "数据生产者对于数据集沿袭知识的基本解释"
 
-#: geonode/base/models.py:617
+#: geonode/base/models.py:599
 msgid "a DOI will be added by Admin before publication."
 msgstr ""
 
-#: geonode/base/models.py:619
+#: geonode/base/models.py:601
 #: geonode/base/templates/base/_resourcebase_info_panel.html:114
 #: geonode/templates/metadata_detail.html:116
 msgid "DOI"
 msgstr ""
 
-#: geonode/base/models.py:635
+#: geonode/base/models.py:617
 msgid "title"
 msgstr "标题"
 
-#: geonode/base/models.py:636
+#: geonode/base/models.py:618
 msgid "name by which the cited resource is known"
 msgstr "用已知资源命名"
 
-#: geonode/base/models.py:639
+#: geonode/base/models.py:621
 msgid "date"
 msgstr "日期"
 
-#: geonode/base/models.py:643
+#: geonode/base/models.py:625
 msgid "date type"
 msgstr "日期类型"
 
-#: geonode/base/models.py:649
+#: geonode/base/models.py:631
 msgid "edition"
 msgstr "版本"
 
-#: geonode/base/models.py:655
+#: geonode/base/models.py:637
 msgid "abstract"
 msgstr "摘要"
 
-#: geonode/base/models.py:660
+#: geonode/base/models.py:642
 msgid "purpose"
 msgstr "目标"
 
-#: geonode/base/models.py:666
+#: geonode/base/models.py:648
 msgid "maintenance frequency"
 msgstr "维护频率"
 
-#: geonode/base/models.py:673 geonode/base/models.py:680
+#: geonode/base/models.py:655 geonode/base/models.py:662
 #: geonode/people/models.py:117
 msgid "keywords"
 msgstr "关键词"
 
-#: geonode/base/models.py:686
+#: geonode/base/models.py:668
 msgid "keywords region"
 msgstr "关键词区域"
 
-#: geonode/base/models.py:692
+#: geonode/base/models.py:674
 msgid "restrictions"
 msgstr "限制"
 
-#: geonode/base/models.py:699
+#: geonode/base/models.py:681
 msgid "restrictions other"
 msgstr "其他限制"
 
-#: geonode/base/models.py:707
+#: geonode/base/models.py:689
 #: geonode/base/templates/base/_resourcebase_info_panel.html:16
 #: geonode/base/templates/base/_resourcebase_info_panel.html:134
 #: geonode/catalogue/templates/geonode_metadata_full.html:98
@@ -453,103 +453,103 @@ msgstr "其他限制"
 msgid "License"
 msgstr "许可"
 
-#: geonode/base/models.py:711 geonode/people/models.py:121
+#: geonode/base/models.py:693 geonode/people/models.py:121
 msgid "language"
 msgstr "语言"
 
-#: geonode/base/models.py:729
+#: geonode/base/models.py:711
 msgid "spatial representation type"
 msgstr "空间呈现类型"
 
-#: geonode/base/models.py:744
+#: geonode/base/models.py:726
 msgid "supplemental information"
 msgstr "补充信息"
 
-#: geonode/base/models.py:747
+#: geonode/base/models.py:729
 msgid "any other descriptive information about the dataset"
 msgstr "其他关于数据的描述性信息"
 
-#: geonode/base/models.py:751
+#: geonode/base/models.py:733
 msgid "data quality statement"
 msgstr "数据质量描述"
 
-#: geonode/base/models.py:792
+#: geonode/base/models.py:774
 msgid "CSW typename"
 msgstr "CSW类型名称"
 
-#: geonode/base/models.py:797
+#: geonode/base/models.py:779
 msgid "CSW schema"
 msgstr "CSW 图解"
 
-#: geonode/base/models.py:802
+#: geonode/base/models.py:784
 msgid "CSW source"
 msgstr "CSW资源"
 
-#: geonode/base/models.py:807
+#: geonode/base/models.py:789
 msgid "CSW insert date"
 msgstr "CSW 插入日期"
 
-#: geonode/base/models.py:809
+#: geonode/base/models.py:791
 msgid "CSW type"
 msgstr "CSW类型"
 
-#: geonode/base/models.py:814
+#: geonode/base/models.py:796
 msgid "CSW anytext"
 msgstr "CSW文本"
 
-#: geonode/base/models.py:816
+#: geonode/base/models.py:798
 msgid "CSW WKT geometry"
 msgstr "CSW WKT几何图形"
 
-#: geonode/base/models.py:822
+#: geonode/base/models.py:804
 msgid "Metadata uploaded preserve"
 msgstr "上传的元数据是否保存？"
 
-#: geonode/base/models.py:829 geonode/templates/metadata_detail.html:108
+#: geonode/base/models.py:811 geonode/templates/metadata_detail.html:108
 msgid "Featured"
 msgstr "是否作为特色"
 
-#: geonode/base/models.py:830
+#: geonode/base/models.py:812
 msgid "Should this resource be advertised in home page?"
 msgstr "该资源应该发布到主页上吗？"
 
-#: geonode/base/models.py:832
+#: geonode/base/models.py:814
 msgid "Is Published"
 msgstr "是否发布"
 
-#: geonode/base/models.py:834
+#: geonode/base/models.py:816
 msgid "Should this resource be published and searchable?"
 msgstr "该资源可否被发布和查询？"
 
-#: geonode/base/models.py:836 geonode/templates/metadata_detail.html:102
+#: geonode/base/models.py:818 geonode/templates/metadata_detail.html:102
 msgid "Approved"
 msgstr "是否被准许"
 
-#: geonode/base/models.py:838
+#: geonode/base/models.py:820
 msgid "Is this resource validated from a publisher or editor?"
 msgstr "该资源是否被发布者或编辑者准许？"
 
-#: geonode/base/models.py:841
+#: geonode/base/models.py:823
 msgid "Thumbnail url"
 msgstr "缩略图链接"
 
-#: geonode/base/models.py:849
+#: geonode/base/models.py:831
 msgid "Dirty State"
 msgstr ""
 
-#: geonode/base/models.py:851
+#: geonode/base/models.py:833
 msgid "Security Rules Are Not Synched with GeoServer!"
 msgstr ""
 
-#: geonode/base/models.py:1495
+#: geonode/base/models.py:1487
 msgid "For example \"kml\""
 msgstr "比如“kml”"
 
-#: geonode/base/models.py:1500
+#: geonode/base/models.py:1492
 msgid "For example \"View in Google Earth\""
 msgstr "比如“在谷歌地球中查看”"
 
-#: geonode/base/models.py:1502
+#: geonode/base/models.py:1494
 msgid "For example \"text/xml\""
 msgstr "比如“text/xml”"
 
@@ -578,10 +578,10 @@ msgstr "责任方"
 #: geonode/base/templates/base/_resourcebase_info_panel.html:6
 #: geonode/catalogue/templates/geonode_metadata_full.html:55
 #: geonode/client/templates/leaflet/maps/map_view.html:101
-#: geonode/groups/models.py:80
+#: geonode/groups/models.py:86
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:20
 #: geonode/services/forms.py:113
-#: geonode/services/templates/services/service_detail.html:23
+#: geonode/services/templates/services/service_detail.html:22
 #: geonode/services/templates/services/service_list.html:17
 #: geonode/templates/announcements/announcement_list.html:21
 #: geonode/templates/base.html:711 geonode/templates/metadata_detail.html:43
@@ -606,7 +606,7 @@ msgstr "更多信息"
 #: geonode/catalogue/templates/geonode_metadata_full.html:61
 #: geonode/client/templates/leaflet/maps/map_view.html:106
 #: geonode/services/forms.py:131
-#: geonode/services/templates/services/service_detail.html:11
+#: geonode/services/templates/services/service_detail.html:10
 #: geonode/templates/metadata_detail.html:48
 msgid "Abstract"
 msgstr "摘要"
@@ -614,7 +614,7 @@ msgstr "摘要"
 #: geonode/base/templates/base/_resourcebase_info_panel.html:45
 #: geonode/catalogue/templates/geonode_metadata_full.html:91
 #: geonode/layers/templates/layers/layer_detail.html:708
-#: geonode/services/templates/services/service_detail.html:9
+#: geonode/services/templates/services/service_detail.html:8
 #: geonode/services/templates/services/service_list.html:19
 #: geonode/templates/metadata_detail.html:76
 msgid "Type"
@@ -622,9 +622,9 @@ msgstr "类型"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:50
 #: geonode/catalogue/templates/geonode_metadata_full.html:142
-#: geonode/groups/models.py:90 geonode/people/forms.py:92
+#: geonode/groups/models.py:96 geonode/people/forms.py:92
 #: geonode/people/templates/people/profile_detail.html:106
-#: geonode/services/templates/services/service_detail.html:12
+#: geonode/services/templates/services/service_detail.html:11
 #: geonode/templates/metadata_detail.html:81
 #: geonode/templates/metadata_detail.html:152
 #: geonode/templates/metadata_detail.html:294
@@ -752,8 +752,8 @@ msgstr "创建一张地图"
 
 #: geonode/base/templates/base/_resourcebase_snippet.html:85
 #: geonode/client/templates/leaflet/maps/map_view.html:8
-#: geonode/maps/templates/maps/map_detail.html:189
-#: geonode/maps/templates/maps/map_detail.html:191
+#: geonode/maps/templates/maps/map_detail.html:198
+#: geonode/maps/templates/maps/map_detail.html:200
 msgid "View Map"
 msgstr "浏览地图"
 
@@ -825,7 +825,7 @@ msgstr ""
 #: geonode/documents/templates/documents/document_upload.html:15
 #: geonode/layers/templates/layers/layer_detail.html:486
 #: geonode/layers/templates/layers/layer_detail.html:507
-#: geonode/maps/templates/maps/map_detail.html:166
+#: geonode/maps/templates/maps/map_detail.html:167
 #: geonode/monitoring/models.py:355
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:58
 #: geonode/templates/_permissions_form.html:288
@@ -855,7 +855,13 @@ msgid "Resource title"
 msgstr "资源"
 
 #: geonode/base/views.py:262
-msgid "Reason"
+msgid "Reason for the request"
+msgstr ""
+
+#: geonode/base/views.py:264
+msgid ""
+"To allow the change, set the resource to not \"Approved\" under the metadata "
+"settingsand write message to the owner to notify him"
 msgstr ""
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:40
@@ -869,7 +875,7 @@ msgstr "基础元数据"
 #: geonode/layers/templates/layers/layer_detail.html:503
 #: geonode/layers/templates/layouts/panels.html:275
 #: geonode/maps/templates/layouts/map_panels.html:271
-#: geonode/maps/templates/maps/map_detail.html:164
+#: geonode/maps/templates/maps/map_detail.html:165
 msgid "Thumbnail"
 msgstr "缩略图"
 
@@ -915,13 +921,13 @@ msgid "Attribute name"
 msgstr "属性名称"
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:167
-#: geonode/groups/models.py:45 geonode/groups/models.py:83
+#: geonode/groups/models.py:51 geonode/groups/models.py:89
 #: geonode/layers/templates/layers/layer_detail.html:178
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:128
 #: geonode/layers/templates/layouts/panels.html:546
 #: geonode/people/templates/people/profile_detail.html:101
 #: geonode/services/forms.py:123
-#: geonode/services/templates/services/service_detail.html:24
+#: geonode/services/templates/services/service_detail.html:23
 #: geonode/services/templates/services/service_resources_harvest.html:32
 msgid "Description"
 msgstr "描述"
@@ -967,7 +973,7 @@ msgid "Update"
 msgstr "更新"
 
 #: geonode/client/templates/leaflet/maps/map_list.html:10
-#: geonode/maps/templates/maps/map_detail.html:244
+#: geonode/maps/templates/maps/map_detail.html:255
 #: geonode/maps/templates/maps/map_list.html:10
 msgid "Create a New Map"
 msgstr "生成新地图"
@@ -1003,9 +1009,9 @@ msgstr "移除地图"
 #: geonode/layers/templates/upload/layer_upload_time.html:282
 #: geonode/layers/templates/upload/layer_upload_time.html:302
 #: geonode/maps/templates/maps/map_detail.html:134
-#: geonode/maps/templates/maps/map_detail.html:180
-#: geonode/maps/templates/maps/map_detail.html:292
-#: geonode/maps/templates/maps/map_detail.html:312
+#: geonode/maps/templates/maps/map_detail.html:181
+#: geonode/maps/templates/maps/map_detail.html:303
+#: geonode/maps/templates/maps/map_detail.html:323
 #: geonode/templates/500.html:233
 #: geonode/templates/_bulk_permissions_form.html:19
 #: geonode/templates/base.html:570 geonode/templates/metadata_base.html:134
@@ -1129,23 +1135,23 @@ msgstr "错误"
 msgid "Speed Rating"
 msgstr "速度打分"
 
-#: geonode/documents/forms.py:87 geonode/documents/forms.py:168
+#: geonode/documents/forms.py:90 geonode/documents/forms.py:171
 msgid "Link to"
 msgstr "链接"
 
-#: geonode/documents/forms.py:133 geonode/documents/forms.py:202
+#: geonode/documents/forms.py:136 geonode/documents/forms.py:206
 msgid "Document must be a file or url."
 msgstr "文档必须是一个文件或URL。"
 
-#: geonode/documents/forms.py:137 geonode/documents/forms.py:206
+#: geonode/documents/forms.py:140 geonode/documents/forms.py:211
 msgid "A document cannot have both a file and a url."
 msgstr "文档不可兼得的文件和网址。"
 
-#: geonode/documents/forms.py:150 geonode/documents/forms.py:219
+#: geonode/documents/forms.py:153 geonode/documents/forms.py:225
 msgid "This file type is not allowed"
 msgstr "该文件类型不允许"
 
-#: geonode/documents/forms.py:191
+#: geonode/documents/forms.py:194
 msgid "Permissions must be valid JSON."
 msgstr "权限必须是有效的JSON。"
 
@@ -1158,7 +1164,7 @@ msgid "The URL of the document if it is external."
 msgstr "的文档的URL，如果它是外部的。"
 
 #: geonode/documents/models.py:68 geonode/monitoring/models.py:179
-#: geonode/services/templates/services/service_detail.html:10
+#: geonode/services/templates/services/service_detail.html:9
 #: geonode/services/templates/services/service_list.html:18
 msgid "URL"
 msgstr "网址"
@@ -1221,6 +1227,7 @@ msgstr "编辑文件"
 
 #: geonode/documents/templates/documents/document_detail.html:134
 #: geonode/layers/templates/layers/layer_detail.html:448
+#: geonode/maps/templates/maps/map_detail.html:192
 #, fuzzy
 #| msgid "Request Download"
 msgid "Request change"
@@ -1230,7 +1237,7 @@ msgstr "请求下载"
 #: geonode/documents/templates/documents/document_metadata.html:17
 #: geonode/layers/templates/layers/layer_detail.html:469
 #: geonode/layers/templates/layers/layer_metadata.html:19
-#: geonode/maps/templates/maps/map_detail.html:156
+#: geonode/maps/templates/maps/map_detail.html:157
 #: geonode/maps/templates/maps/map_metadata.html:20
 #: geonode/templates/metadata_detail.html:32
 msgid "Metadata"
@@ -1238,13 +1245,13 @@ msgstr "元数据"
 
 #: geonode/documents/templates/documents/document_detail.html:152
 #: geonode/layers/templates/layers/layer_detail.html:470
-#: geonode/maps/templates/maps/map_detail.html:157
+#: geonode/maps/templates/maps/map_detail.html:158
 msgid "Wizard"
 msgstr "向导"
 
 #: geonode/documents/templates/documents/document_detail.html:153
 #: geonode/layers/templates/layers/layer_detail.html:471
-#: geonode/maps/templates/maps/map_detail.html:158
+#: geonode/maps/templates/maps/map_detail.html:159
 msgid "Advanced Edit"
 msgstr "高级编辑"
 
@@ -1267,7 +1274,7 @@ msgstr "代替"
 #: geonode/groups/templates/groups/group_members.html:82
 #: geonode/groups/templates/groups/group_members.html:114
 #: geonode/layers/templates/layers/layer_detail.html:523
-#: geonode/maps/templates/maps/map_detail.html:174
+#: geonode/maps/templates/maps/map_detail.html:175
 #: geonode/monitoring/models.py:362 geonode/templates/account/email.html:36
 #: geonode/templates/socialaccount/connections.html:33
 msgid "Remove"
@@ -1320,7 +1327,7 @@ msgstr "列出用到此文件的资源"
 msgid "This document is not related to any maps or layers"
 msgstr "当前文件未被任何地图或图层使用"
 
-#: geonode/documents/templates/documents/document_detail.html:237
+#: geonode/documents/templates/documents/document_detail.html:238
 #: geonode/documents/templates/documents/document_thumb_upload.html:64
 #: geonode/documents/templates/documents/document_upload.html:24
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:50
@@ -1333,15 +1340,15 @@ msgstr "当前文件未被任何地图或图层使用"
 #: geonode/layers/templates/layers/layer_style_upload.html:102
 #: geonode/layers/templates/layers/layer_style_upload.html:112
 #: geonode/layers/templates/upload/layer_upload.html:114
-#: geonode/maps/templates/maps/map_detail.html:232 geonode/people/admin.py:57
+#: geonode/maps/templates/maps/map_detail.html:242 geonode/people/admin.py:57
 msgid "Permissions"
 msgstr "权限"
 
-#: geonode/documents/templates/documents/document_detail.html:238
+#: geonode/documents/templates/documents/document_detail.html:239
 msgid "Click the button below to change the permissions of this document."
 msgstr "点击下方按钮以改变此文件的使用权限"
 
-#: geonode/documents/templates/documents/document_detail.html:239
+#: geonode/documents/templates/documents/document_detail.html:240
 msgid "Change Document Permissions"
 msgstr "更改文件权限"
 
@@ -1601,7 +1608,7 @@ msgstr "完成！"
 #: geonode/layers/templates/layouts/panels.html:290
 #: geonode/maps/templates/layouts/map_panels.html:220
 #: geonode/maps/templates/layouts/map_panels.html:285
-#: geonode/maps/templates/maps/map_detail.html:173
+#: geonode/maps/templates/maps/map_detail.html:174
 msgid "Edit"
 msgstr "编辑"
 
@@ -1704,39 +1711,39 @@ msgstr "好的"
 msgid "Publishing"
 msgstr "发布属性"
 
-#: geonode/documents/views.py:65
+#: geonode/documents/views.py:66
 msgid "You are not permitted to delete this document"
 msgstr "您无权删除此文件"
 
-#: geonode/documents/views.py:66
+#: geonode/documents/views.py:67
 msgid "You do not have permissions for this document."
 msgstr "您没有此文件的权限"
 
-#: geonode/documents/views.py:67
+#: geonode/documents/views.py:68
 msgid "You are not permitted to modify this document"
 msgstr "您没有修改此文件的权限"
 
-#: geonode/documents/views.py:69
+#: geonode/documents/views.py:70
 msgid "You are not permitted to modify this document's metadata"
 msgstr "您没有权限修改此文件的元数据"
 
-#: geonode/documents/views.py:70
+#: geonode/documents/views.py:71
 msgid "You are not permitted to view this document"
 msgstr "您无权以查看此文件"
 
-#: geonode/documents/views.py:104 geonode/documents/views.py:181
+#: geonode/documents/views.py:104 geonode/documents/views.py:198
 msgid "You are not allowed to view this document."
 msgstr "您不"
 
-#: geonode/documents/views.py:350
+#: geonode/documents/views.py:371
 msgid "You are not allowed to edit this document."
 msgstr "您不允许编辑此文档。"
 
-#: geonode/documents/views.py:432 geonode/layers/views.py:1009
+#: geonode/documents/views.py:454 geonode/layers/views.py:1018
 msgid "You must set a point of contact for this resource"
 msgstr "您必须为该资源设置一个联系点"
 
-#: geonode/documents/views.py:449 geonode/layers/views.py:1026
+#: geonode/documents/views.py:471 geonode/layers/views.py:1035
 msgid "You must set an author for this resource"
 msgstr "您必须为该资源设置一个作者"
 
@@ -1840,15 +1847,15 @@ msgstr "属性"
 msgid "Create"
 msgstr "创建地图"
 
-#: geonode/geoserver/helpers.py:681
+#: geonode/geoserver/helpers.py:679
 msgid "No abstract provided"
 msgstr "没有摘要"
 
-#: geonode/geoserver/helpers.py:1433
+#: geonode/geoserver/helpers.py:1431
 msgid "An exception occurred loading data to PostGIS"
 msgstr "在加载数据倒PostGIS时出现了一个异常"
 
-#: geonode/geoserver/helpers.py:1438
+#: geonode/geoserver/helpers.py:1436
 msgid " Additionally an error occured during database cleanup"
 msgstr "在数据库清理时又发生了一个错误"
 
@@ -1934,7 +1941,7 @@ msgid ""
 "The following are not valid usernames: %(errors)s; not added to the group"
 msgstr "以下用户名无效：%(errors)s；将无法加入到群体中"
 
-#: geonode/groups/models.py:44 geonode/layers/models.py:165
+#: geonode/groups/models.py:50 geonode/layers/models.py:165
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
 #: geonode/services/templates/services/service_resources_harvest.html:31
 #: geonode/templates/metadata_detail.html:130
@@ -1943,25 +1950,25 @@ msgstr "以下用户名无效：%(errors)s；将无法加入到群体中"
 msgid "Name"
 msgstr "名称"
 
-#: geonode/groups/models.py:48 geonode/templates/base.html:320
+#: geonode/groups/models.py:54 geonode/templates/base.html:320
 #: geonode/templates/search/_general_filters.html:76
 #: geonode/templates/search/_search_user_content.html:28
 msgid "Group Categories"
 msgstr "群体类别"
 
-#: geonode/groups/models.py:66
+#: geonode/groups/models.py:72
 msgid "Public"
 msgstr "公开"
 
-#: geonode/groups/models.py:67
+#: geonode/groups/models.py:73
 msgid "Public (invite-only)"
 msgstr "公开（只邀请）"
 
-#: geonode/groups/models.py:68
+#: geonode/groups/models.py:74
 msgid "Private"
 msgstr "私人"
 
-#: geonode/groups/models.py:71
+#: geonode/groups/models.py:77
 msgid ""
 "Public: Any registered user can view and join a public group.<br>Public "
 "(invite-only):Any registered user can view the group.  Only invited users "
@@ -1972,42 +1979,43 @@ msgstr ""
 "可以查看该群体，但只有被邀请的用户可以加入。 <br>私有：注册用户无法查看私有群"
 "体的详细信息，只有被邀请的用户可以加入。"
 
-#: geonode/groups/models.py:76
+#: geonode/groups/models.py:82
 msgid ""
 "Email used to contact one or all group members, such as a mailing list, "
 "shared email, or exchange group."
 msgstr "电子邮件用于联系一个或所有组成员，如邮件列表，共享电子邮件或交流群。"
 
-#: geonode/groups/models.py:82
+#: geonode/groups/models.py:88
 msgid "Logo"
 msgstr "标志"
 
-#: geonode/groups/models.py:85
+#: geonode/groups/models.py:91
 #: geonode/people/templates/people/profile_detail.html:67
 #: geonode/templates/invitations/forms/_invite.html:14
 msgid "Email"
 msgstr "邮件"
 
-#: geonode/groups/models.py:91 geonode/people/forms.py:94
+#: geonode/groups/models.py:97 geonode/people/forms.py:94
 msgid "A space or comma-separated list of keywords"
 msgstr "用空格或者逗号隔开的关键词"
 
-#: geonode/groups/models.py:94
+#: geonode/groups/models.py:100
 msgid "Access"
 msgstr "通道"
 
-#: geonode/groups/models.py:99 geonode/templates/search/_general_filters.html:4
+#: geonode/groups/models.py:105
+#: geonode/templates/search/_general_filters.html:4
 msgid "Categories"
 msgstr "种类"
 
-#: geonode/groups/models.py:244
+#: geonode/groups/models.py:251
 #: geonode/groups/templates/groups/group_members.html:37
 #: geonode/groups/templates/groups/group_members.html:77
 #: geonode/groups/templates/groups/group_members.html:109
 msgid "Manager"
 msgstr "管理员"
 
-#: geonode/groups/models.py:245
+#: geonode/groups/models.py:252
 msgid "Member"
 msgstr "成员"
 
@@ -2762,8 +2770,8 @@ msgid "Warning"
 msgstr "注意"
 
 #: geonode/layers/templates/layers/layer_detail.html:455
-#: geonode/maps/templates/maps/map_detail.html:142
-#: geonode/maps/templates/maps/map_detail.html:149
+#: geonode/maps/templates/maps/map_detail.html:143
+#: geonode/maps/templates/maps/map_detail.html:150
 #, fuzzy
 #| msgid "Editing details for"
 msgid "Editing Tools"
@@ -2786,13 +2794,13 @@ msgid "Styles"
 msgstr "样式"
 
 #: geonode/layers/templates/layers/layer_detail.html:487
-#: geonode/services/templates/services/service_detail.html:100
+#: geonode/services/templates/services/service_detail.html:105
 #: geonode/services/templates/services/service_resources_harvest.html:153
 msgid "Manage"
 msgstr "管理"
 
 #: geonode/layers/templates/layers/layer_detail.html:505
-#: geonode/maps/templates/maps/map_detail.html:165
+#: geonode/maps/templates/maps/map_detail.html:166
 msgid "Set"
 msgstr "设置"
 
@@ -3308,8 +3316,8 @@ msgstr ""
 #: geonode/layers/templates/upload/layer_upload_crs.html:56
 #: geonode/layers/templates/upload/layer_upload_csv.html:58
 #: geonode/layers/templates/upload/layer_upload_time.html:120
-#: geonode/services/templates/services/service_detail.html:71
-#: geonode/services/templates/services/service_detail.html:73
+#: geonode/services/templates/services/service_detail.html:70
+#: geonode/services/templates/services/service_detail.html:72
 #: geonode/services/templates/services/service_resources_harvest.html:95
 #: geonode/services/templates/services/service_resources_harvest.html:98
 msgid "Next"
@@ -3830,11 +3838,11 @@ msgstr "现在"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr "您正在试图用栅格数据代替一个矢量图层。"
 
-#: geonode/layers/utils.py:502 geonode/layers/views.py:1226
+#: geonode/layers/utils.py:502 geonode/layers/views.py:1236
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr "您正在试图用栅格数据代替一个矢量图层。"
 
-#: geonode/layers/utils.py:505 geonode/layers/views.py:1230
+#: geonode/layers/utils.py:505 geonode/layers/views.py:1240
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr "您正在试图用一个矢量代替一个栅格图层。"
 
@@ -3899,19 +3907,19 @@ msgstr "您无权以查看此图层"
 msgid "Failed to upload the layer"
 msgstr "文件上传"
 
-#: geonode/layers/views.py:1326 geonode/layers/views.py:1371
+#: geonode/layers/views.py:1336 geonode/layers/views.py:1381
 #, fuzzy
 #| msgid "Unable to delete layer"
 msgid "Unable to delete layer"
 msgstr "不能删除图层"
 
-#: geonode/layers/views.py:1330 geonode/layers/views.py:1375
+#: geonode/layers/views.py:1340 geonode/layers/views.py:1385
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr "该图层是一个图层组的成员，您必须在删除之前从群体中移除该图层。"
 
-#: geonode/layers/views.py:1423 geonode/maps/views.py:1422
+#: geonode/layers/views.py:1433 geonode/maps/views.py:1434
 msgid "couldn't generate thumbnail"
 msgstr ""
 
@@ -4086,96 +4094,96 @@ msgstr "给此地图评分"
 msgid "Download Map"
 msgstr "下载地图"
 
-#: geonode/maps/templates/maps/map_detail.html:172
+#: geonode/maps/templates/maps/map_detail.html:173
 #: geonode/maps/templates/maps/map_view.html:7 geonode/monitoring/models.py:174
 #: geonode/templates/index.html:82
 msgid "Map"
 msgid_plural "Maps"
 msgstr[0] "地图"
 
-#: geonode/maps/templates/maps/map_detail.html:202
+#: geonode/maps/templates/maps/map_detail.html:211
 msgid "Map Layers"
 msgstr "地图图层"
 
-#: geonode/maps/templates/maps/map_detail.html:203
+#: geonode/maps/templates/maps/map_detail.html:212
 msgid "This map uses the following layers:"
 msgstr "这张地图用了以下图层"
 
-#: geonode/maps/templates/maps/map_detail.html:219
+#: geonode/maps/templates/maps/map_detail.html:228
 msgid "Documents related to this map"
 msgstr "与此地图有关的文件"
 
-#: geonode/maps/templates/maps/map_detail.html:220
+#: geonode/maps/templates/maps/map_detail.html:229
 msgid "List of documents related to this map:"
 msgstr "列出与此地图有关文件"
 
-#: geonode/maps/templates/maps/map_detail.html:233
+#: geonode/maps/templates/maps/map_detail.html:243
 msgid "Specify which users can view or modify this map"
 msgstr "指定可以浏览或修改该地图的用户"
 
-#: geonode/maps/templates/maps/map_detail.html:234
+#: geonode/maps/templates/maps/map_detail.html:244
 msgid "Change Permissions of this Map"
 msgstr "改变此地图的访问权限"
 
-#: geonode/maps/templates/maps/map_detail.html:242
+#: geonode/maps/templates/maps/map_detail.html:253
 msgid "Copy this map"
 msgstr "复制该地图"
 
-#: geonode/maps/templates/maps/map_detail.html:243
+#: geonode/maps/templates/maps/map_detail.html:254
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "复制该地图并且根据您自己的需要进行修改"
 
-#: geonode/maps/templates/maps/map_detail.html:250
+#: geonode/maps/templates/maps/map_detail.html:261
 #, fuzzy
 #| msgid "Copy this map"
 msgid "Embed this map"
 msgstr "复制该地图"
 
-#: geonode/maps/templates/maps/map_detail.html:251
+#: geonode/maps/templates/maps/map_detail.html:262
 #, fuzzy
 #| msgid "Duplicate this map and modify it for your own purposes"
 msgid "Embed this map to your own sites"
 msgstr "复制该地图并且根据您自己的需要进行修改"
 
-#: geonode/maps/templates/maps/map_detail.html:255
+#: geonode/maps/templates/maps/map_detail.html:266
 #, fuzzy
 #| msgid "Edit Map"
 msgid "Embed Map"
 msgstr "编辑地图"
 
-#: geonode/maps/templates/maps/map_detail.html:258
+#: geonode/maps/templates/maps/map_detail.html:269
 msgid "Embed Iframe Link"
 msgstr ""
 
-#: geonode/maps/templates/maps/map_detail.html:260
+#: geonode/maps/templates/maps/map_detail.html:271
 msgid "Embed Widget Link"
 msgstr ""
 
-#: geonode/maps/templates/maps/map_detail.html:262
+#: geonode/maps/templates/maps/map_detail.html:273
 #, fuzzy
 #| msgid "Download Layer"
 msgid "Download Leaflet page"
 msgstr "下载图层"
 
-#: geonode/maps/templates/maps/map_detail.html:282
+#: geonode/maps/templates/maps/map_detail.html:293
 msgid "Embed Iframe"
 msgstr ""
 
-#: geonode/maps/templates/maps/map_detail.html:285
+#: geonode/maps/templates/maps/map_detail.html:296
 msgid ""
 "To embed this map, add the following code snippet and customize its "
 "properties (scrolling, width, height) based on your needs to your site"
 msgstr ""
 
-#: geonode/maps/templates/maps/map_detail.html:304
+#: geonode/maps/templates/maps/map_detail.html:315
 msgid "Embed Widget"
 msgstr ""
 
-#: geonode/maps/templates/maps/map_detail.html:307
+#: geonode/maps/templates/maps/map_detail.html:318
 msgid "To embed this map, copy the following code snippet into your own page"
 msgstr ""
 
-#: geonode/maps/templates/maps/map_detail.html:311
+#: geonode/maps/templates/maps/map_detail.html:322
 msgid "Copy to Clipboard"
 msgstr ""
 
@@ -4333,11 +4341,11 @@ msgstr "您无权查看此地图。"
 msgid "An unknown error has occured."
 msgstr "未知出错。"
 
-#: geonode/maps/views.py:1429
+#: geonode/maps/views.py:1441
 msgid "Thumbnail saved"
 msgstr "缩略图已保存"
 
-#: geonode/maps/views.py:1432
+#: geonode/maps/views.py:1444
 msgid "error saving thumbnail"
 msgstr "缩略图保存出错"
 
@@ -4369,47 +4377,47 @@ msgstr ""
 msgid "Enter valid email addresses."
 msgstr "确认您的邮件地址"
 
-#: geonode/monitoring/management/commands/collect_metrics.py:50
+#: geonode/monitoring/management/commands/collect_metrics.py:38
 msgid "Show list of services"
 msgstr ""
 
-#: geonode/monitoring/management/commands/collect_metrics.py:52
+#: geonode/monitoring/management/commands/collect_metrics.py:40
 #: geonode/monitoring/management/commands/render_metrics.py:57
 msgid ""
 "Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
 "provided, last sync will be used."
 msgstr ""
 
-#: geonode/monitoring/management/commands/collect_metrics.py:55
+#: geonode/monitoring/management/commands/collect_metrics.py:43
 #: geonode/monitoring/management/commands/render_metrics.py:59
 msgid ""
 "Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
 "provided, now will be used."
 msgstr ""
 
-#: geonode/monitoring/management/commands/collect_metrics.py:58
+#: geonode/monitoring/management/commands/collect_metrics.py:46
 msgid "Force check"
 msgstr ""
 
-#: geonode/monitoring/management/commands/collect_metrics.py:60
+#: geonode/monitoring/management/commands/collect_metrics.py:48
 msgid "Format of audit log (xml, json)"
 msgstr ""
 
-#: geonode/monitoring/management/commands/collect_metrics.py:62
+#: geonode/monitoring/management/commands/collect_metrics.py:50
 msgid ""
 "Should old data be preserved (default: no, data older than settings."
 "MONITORING_DATA_TTL will be removed)"
 msgstr ""
 
-#: geonode/monitoring/management/commands/collect_metrics.py:65
+#: geonode/monitoring/management/commands/collect_metrics.py:53
 msgid "Should stop on first error occured (default: no)"
 msgstr ""
 
-#: geonode/monitoring/management/commands/collect_metrics.py:67
+#: geonode/monitoring/management/commands/collect_metrics.py:55
 msgid "Should process and send notifications as well (default: no)"
 msgstr ""
 
-#: geonode/monitoring/management/commands/collect_metrics.py:69
+#: geonode/monitoring/management/commands/collect_metrics.py:57
 msgid "Collect data from this service only"
 msgstr ""
 
@@ -5141,32 +5149,32 @@ msgstr "用户名已发送到您的电子邮箱。"
 msgid "No user could be found with that email address."
 msgstr "找不到使用此email的用户。"
 
-#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:224
+#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:228
 #, fuzzy
 #| msgid "You are not permitted to save or edit this map."
 msgid "You are not permitted to save or edit this resource."
 msgstr "您不允许保存或编辑此地图。"
 
-#: geonode/proxy/views.py:223
+#: geonode/proxy/views.py:227
 #, fuzzy
 #| msgid "requested you to download this resource"
 msgid "You are not authorized to download this resource."
 msgstr "请您下载该资源"
 
-#: geonode/proxy/views.py:225
+#: geonode/proxy/views.py:229
 msgid ""
 "No files have been found for this resource. Please, contact a system "
 "administrator."
 msgstr ""
 
-#: geonode/proxy/views.py:259 geonode/proxy/views.py:270
-#: geonode/proxy/views.py:371
+#: geonode/proxy/views.py:263 geonode/proxy/views.py:274
+#: geonode/proxy/views.py:380
 #, fuzzy
 #| msgid "Documents"
 msgid "No files found."
 msgstr "文件"
 
-#: geonode/proxy/views.py:379
+#: geonode/proxy/views.py:388
 #, fuzzy
 #| msgid "Not provided"
 msgid "Not Authorized"
@@ -5358,61 +5366,61 @@ msgstr "服务名"
 msgid "Could not contact"
 msgstr "切点"
 
-#: geonode/services/templates/services/service_detail.html:13
+#: geonode/services/templates/services/service_detail.html:12
 #, fuzzy
 #| msgid "Contact:"
 msgid "Contact"
 msgstr "联系："
 
-#: geonode/services/templates/services/service_detail.html:16
+#: geonode/services/templates/services/service_detail.html:15
 #, fuzzy
 #| msgid "Resources"
 msgid "Service Resources"
 msgstr "资源"
 
-#: geonode/services/templates/services/service_detail.html:18
+#: geonode/services/templates/services/service_detail.html:17
 #, fuzzy
 #| msgid "A resource's download has been requested"
 msgid "No resources have been imported yet."
 msgstr "一个资源的下载请求已提交"
 
-#: geonode/services/templates/services/service_detail.html:36
+#: geonode/services/templates/services/service_detail.html:35
 #, fuzzy
 #| msgid "Retry"
 msgid "Retry job"
 msgstr "重试"
 
-#: geonode/services/templates/services/service_detail.html:65
-#: geonode/services/templates/services/service_detail.html:67
+#: geonode/services/templates/services/service_detail.html:64
+#: geonode/services/templates/services/service_detail.html:66
 #: geonode/services/templates/services/service_resources_harvest.html:88
 #: geonode/services/templates/services/service_resources_harvest.html:90
 msgid "previous"
 msgstr ""
 
-#: geonode/services/templates/services/service_detail.html:71
-#: geonode/services/templates/services/service_detail.html:73
+#: geonode/services/templates/services/service_detail.html:70
+#: geonode/services/templates/services/service_detail.html:72
 #: geonode/services/templates/services/service_resources_harvest.html:96
 #: geonode/services/templates/services/service_resources_harvest.html:98
 msgid "next"
 msgstr ""
 
-#: geonode/services/templates/services/service_detail.html:84
+#: geonode/services/templates/services/service_detail.html:83
 #: geonode/services/templates/services/service_register.html:24
 #: geonode/services/templates/services/service_resources_harvest.html:113
 msgid "Connecting to service..."
 msgstr ""
 
-#: geonode/services/templates/services/service_detail.html:101
+#: geonode/services/templates/services/service_detail.html:109
 msgid "Edit Service Metadata"
 msgstr "编辑元数据服务"
 
-#: geonode/services/templates/services/service_detail.html:102
+#: geonode/services/templates/services/service_detail.html:110
 #, fuzzy
 #| msgid "Remote Services"
 msgid "Import Service Resources"
 msgstr "远程服务"
 
-#: geonode/services/templates/services/service_detail.html:104
+#: geonode/services/templates/services/service_detail.html:115
 msgid "Remove Service"
 msgstr "删除服务"
 
@@ -5533,79 +5541,79 @@ msgstr ""
 msgid "Re-scan Service for new Resources"
 msgstr ""
 
-#: geonode/services/views.py:97
+#: geonode/services/views.py:96
 #, fuzzy
 #| msgid "service interfaces"
 msgid "Service registered successfully"
 msgstr "服务接口"
 
-#: geonode/services/views.py:194
+#: geonode/services/views.py:193
 #, fuzzy
 #| msgid "A resource's download has been requested"
 msgid "The selected resources are being imported"
 msgstr "一个资源的下载请求已提交"
 
-#: geonode/services/views.py:195
+#: geonode/services/views.py:194
 #, fuzzy
 #| msgid "A resource's download has been requested"
 msgid "The selected resources have been imported"
 msgstr "一个资源的下载请求已提交"
 
-#: geonode/services/views.py:225
+#: geonode/services/views.py:224
 #, fuzzy
 #| msgid "A resource's download has been requested"
 msgid "Resource is already being processed"
 msgstr "一个资源的下载请求已提交"
 
-#: geonode/services/views.py:231
+#: geonode/services/views.py:230
 #, fuzzy
 #| msgid "A resource's download has been requested"
 msgid "Resource {} is being processed"
 msgstr "一个资源的下载请求已提交"
 
-#: geonode/services/views.py:260
+#: geonode/services/views.py:259
 #, fuzzy
 #| msgid "Password changed successfully."
 msgid "Service rescanned successfully"
 msgstr "密码更改成功。"
 
-#: geonode/services/views.py:332
+#: geonode/services/views.py:329
 #, fuzzy
 #| msgid "You are not permitted to remove this service."
 msgid "You are not permitted to change this service."
 msgstr "您不得删除此服务。"
 
-#: geonode/services/views.py:360
+#: geonode/services/views.py:357
 msgid "You are not permitted to remove this service."
 msgstr "您不得删除此服务。"
 
-#: geonode/services/views.py:371
+#: geonode/services/views.py:368
 #, fuzzy
 #| msgid "Service has been created:"
 msgid "Service {} has been deleted"
 msgstr "服务已创建："
 
-#: geonode/social/signals.py:81
+#: geonode/social/signals.py:80
 msgid "created"
 msgstr "创建"
 
-#: geonode/social/signals.py:82 geonode/social/tests.py:104
+#: geonode/social/signals.py:81 geonode/social/tests.py:104
 msgid "deleted"
 msgstr "删除"
 
-#: geonode/social/signals.py:85
+#: geonode/social/signals.py:84
 msgid "updated"
 msgstr "更新"
 
-#: geonode/social/signals.py:95 geonode/social/tests.py:124
+#: geonode/social/signals.py:94 geonode/social/tests.py:124
 msgid "added a comment"
 msgstr "添加评论"
 
-#: geonode/social/signals.py:97
+#: geonode/social/signals.py:96
 msgid "updated a comment"
 msgstr "最新评论"
 
-#: geonode/social/signals.py:103 geonode/social/signals.py:108
+#: geonode/social/signals.py:102 geonode/social/signals.py:107
 #: geonode/social/tests.py:78
 msgid "uploaded"
 msgstr "上传"
@@ -7804,6 +7812,12 @@ msgstr "设置权限"
 msgid "Request editing for resource: "
 msgstr "请求下载资源"
 
+#: geonode/templates/owner_rights_request.html:9
+#, fuzzy
+#| msgid "Resources"
+msgid "Back to resource"
+msgstr "资源"
+
 #: geonode/templates/owner_rights_request.html:16
 msgid "Send request"
 msgstr ""
@@ -8610,11 +8624,11 @@ msgstr "无法找到兼容的投影任何图层。"
 msgid "Unsupported DataBase for Mosaics!"
 msgstr ""
 
-#: geonode/utils.py:87
+#: geonode/utils.py:89
 msgid "Invalid permission level."
 msgstr "权限等级不够。"
 
-#: geonode/utils.py:967
+#: geonode/utils.py:969
 msgid "Permission Denied"
 msgstr "权限级别"
 
