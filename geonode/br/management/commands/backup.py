@@ -30,6 +30,7 @@ from .utils import utils
 
 from requests.auth import HTTPBasicAuth
 from xmltodict import parse as parse_xml
+from urllib.parse import urlparse, urljoin
 
 from django.conf import settings
 from django.core.management import call_command
@@ -307,7 +308,8 @@ class Command(BaseCommand):
                                  timeout=10)
                 if (r.status_code == 200):
                     gs_backup = r.json()
-                    _url = gs_backup['backups']['backup'][len(gs_backup['backups']['backup']) - 1]['href']
+                    _url = urlparse(gs_backup['backups']['backup'][len(gs_backup['backups']['backup']) - 1]['href'])
+                    _url = '{}?{}'.format(urljoin(url, _url.path), _url.query)
                     r = requests.get(_url,
                                      headers=headers,
                                      auth=HTTPBasicAuth(user, passwd),
@@ -316,7 +318,7 @@ class Command(BaseCommand):
                         gs_backup = r.json()
 
                 if (r.status_code != 200):
-                    raise ValueError(error_backup.format(_url, r.status_code, r.text))
+                    raise ValueError(error_backup.format(url, r.status_code, r.text))
             except ValueError:
                 raise ValueError(error_backup.format(url, r.status_code, r.text))
 
