@@ -304,7 +304,7 @@ class License(models.Model):
             return bullets
 
     class Meta:
-        ordering = ("name", )
+        ordering = ("name",)
         verbose_name_plural = 'Licenses'
 
 
@@ -382,8 +382,8 @@ class HierarchicalKeyword(TagBase, MP_Node):
                     if keep_ids:
                         newobj['id'] = serobj['pk']
 
-                    if (not parent and depth == 1) or\
-                    (parent and depth == parent.depth):
+                    if (not parent and depth == 1) or \
+                            (parent and depth == parent.depth):
                         ret.append(newobj)
                     else:
                         parentobj = pyobj.get_parent()
@@ -540,6 +540,21 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     """
     Base Resource Object loosely based on ISO 19115:2003
     """
+    BASE_PERMISSIONS = {
+        'read': ['view_resourcebase'],
+        'write': [
+            'change_resourcebase_metadata'
+        ],
+        'download': ['download_resourcebase'],
+        'owner': [
+            'change_resourcebase',
+            'delete_resourcebase',
+            'change_resourcebase_permissions',
+            'publish_resourcebase'
+        ]
+    }
+
+    PERMISSIONS = {}
 
     VALID_DATE_TYPES = [(x.lower(), _(x))
                         for x in ['Creation', 'Publication', 'Revision']]
@@ -1045,7 +1060,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         # taken from http://wiki.openstreetmap.org/wiki/Zoom_levels
         # it might be not precise but enough for the purpose
-        distance_per_pixel = 40075160 * math.cos(lat) / 2**(zoom + 8)
+        distance_per_pixel = 40075160 * math.cos(lat) / 2 ** (zoom + 8)
 
         # calculate the distance from the center of the map in degrees
         # we use the calculated degree length on the x axis and the
@@ -1486,7 +1501,6 @@ class Link(models.Model):
 
 
 class MenuPlaceholder(models.Model):
-
     name = models.CharField(
         max_length=255,
         null=False,
@@ -1499,7 +1513,6 @@ class MenuPlaceholder(models.Model):
 
 
 class Menu(models.Model):
-
     title = models.CharField(
         max_length=255,
         null=False,
@@ -1526,7 +1539,6 @@ class Menu(models.Model):
 
 
 class MenuItem(models.Model):
-
     title = models.CharField(
         max_length=255,
         null=False,

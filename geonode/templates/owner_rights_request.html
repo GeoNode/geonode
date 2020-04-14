@@ -1,0 +1,19 @@
+{% extends "geonode_base.html" %}
+
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% block title %}{% trans "Request perission" %} {% endblock %}
+{% block body %}
+<h3>{% trans "Request editing for resource: " %} {{ resource.title }}</h3>
+    <a href="{{ resource.get_absolute_url }}" class="btn btn-primary" type="button">{% trans "Back to resource" %}</a>
+<form method="post" action="{% url 'owner_rights_request' resource.id %}">
+  {% csrf_token %}
+  <table width=100%>
+    {{ form|as_bootstrap }}
+  </table>
+  <div class="form-actions">
+    <input type="submit" value="{% trans "Send request" %}"  class="btn btn-primary" type="button"/>
+  </div>
+</form>
+{% endblock %}

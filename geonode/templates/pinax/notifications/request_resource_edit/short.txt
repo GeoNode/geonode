@@ -1,0 +1,4 @@
+{% load i18n %}
+{% autoescape off %}
+New request to modify approved resource
+{% endautoescape %}

@@ -26,6 +26,8 @@ class BaseAppConfig(NotificationsAppConfigBase):
     name = 'geonode.base'
     NOTIFICATIONS = (("request_download_resourcebase", _("Request to download a resource"),
                       _("A request for downloading a resource was sent")),
+                     ("request_resource_edit", _("Request resource change"),
+                      _("Owner has requested permissions to modify a resource")),
                      )
 
 

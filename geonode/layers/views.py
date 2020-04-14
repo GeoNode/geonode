@@ -109,6 +109,7 @@ from .tasks import delete_layer
 
 from geonode.geoserver.helpers import (ogc_server_settings,
                                        set_layer_style)  # cascading_delete
+from geonode.base.utils import ManageResourceOwnerPermissions
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import (_render_thumbnail,
@@ -393,6 +394,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         layername,
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
+
+    permission_manager = ManageResourceOwnerPermissions(layer)
+    permission_manager.set_owner_permissions_according_to_workflow()
 
     # Add metadata_author or poc if missing
     layer.add_missing_metadata_author_or_poc()

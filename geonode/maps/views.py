@@ -79,6 +79,8 @@ from deprecated import deprecated
 
 from dal import autocomplete
 
+from geonode.base.utils import ManageResourceOwnerPermissions
+
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
@@ -127,6 +129,9 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
         mapid,
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
+
+    permission_manager = ManageResourceOwnerPermissions(map_obj)
+    permission_manager.set_owner_permissions_according_to_workflow()
 
     # Add metadata_author or poc if missing
     map_obj.add_missing_metadata_author_or_poc()
@@ -822,7 +827,6 @@ def new_map_config(request):
             map_obj.owner = request.user
 
         config = map_obj.viewer_json(request)
-        map_obj.handle_moderated_uploads()
         del config['id']
     else:
         if request.method == 'GET':
@@ -839,6 +843,8 @@ def new_map_config(request):
                 request, map_obj, params.getlist('layer'))
         else:
             config = DEFAULT_MAP_CONFIG
+    if map_obj:
+        map_obj.handle_moderated_uploads()
     return map_obj, json.dumps(config)
 
 

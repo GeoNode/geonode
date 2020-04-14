@@ -23,7 +23,7 @@ from django.conf.urls import url
 
 from .views import (
     ResourceBaseAutocomplete, RegionAutocomplete,
-    HierarchicalKeywordAutocomplete, ThesaurusKeywordLabelAutocomplete)
+    HierarchicalKeywordAutocomplete, ThesaurusKeywordLabelAutocomplete, OwnerRightsRequestView)
 
 
 urlpatterns = [
@@ -49,5 +49,10 @@ urlpatterns = [
         r'^thesaurus_autocomplete/$',
         ThesaurusKeywordLabelAutocomplete.as_view(),
         name='thesaurus_autocomplete',
+    ),
+    url(
+        r'^resource_rights/(?P<pk>\d+)$',
+        OwnerRightsRequestView.as_view(),
+        name='owner_rights_request',
     ),
 ]

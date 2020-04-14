@@ -20,13 +20,20 @@
 
 import os
 
+from guardian.shortcuts import get_perms
+
+from geonode.base.utils import OwnerRightsRequestViewUtils, ManageResourceOwnerPermissions
+from geonode.documents.models import Document
+from geonode.layers.models import Layer
+from geonode.maps.models import Map
+from geonode.services.models import Service
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.models import (
     ResourceBase, MenuPlaceholder, Menu, MenuItem, Configuration
 )
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
-from django.test import Client
+from django.test import Client, TestCase, override_settings
 from django.shortcuts import reverse
 
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
@@ -631,3 +638,112 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
         response = web_client.get('/')
 
         self.assertEqual(response.status_code, 503, 'User is allowed to get index page')
+
+
+class TestOwnerPermissionManagement(TestCase):
+    """
+    Only Layers has custom permissions so this is the only model which is tested.
+    Models are always treat in the same way
+    """
+
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create(username='test', email='test@test.com')
+        self.la = Layer.objects.create(owner=self.user, title='test', is_approved=True)
+
+    @override_settings(ADMIN_MODERATE_UPLOADS=True)
+    def test_owner_has_no_permissions(self):
+        l_manager = ManageResourceOwnerPermissions(self.la)
+        l_manager.set_owner_permissions_according_to_workflow()
+
+        self.assertEqual(self._retrieve_resource_perms_definition(self.la, ['read', 'download']).sort(),
+                         get_perms(self.user, self.la.get_self_resource()).sort()
+                         )
+
+    @override_settings(ADMIN_MODERATE_UPLOADS=False)
+    def test_user_has_own_permissions(self):
+        l_manager = ManageResourceOwnerPermissions(self.la)
+        l_manager.set_owner_permissions_according_to_workflow()
+
+        self.assertEqual(self._retrieve_resource_perms_definition(self.la).sort(),
+                         get_perms(self.user, self.la.get_self_resource()).sort()
+                         )
+
+    @override_settings(ADMIN_MODERATE_UPLOADS=True)
+    def test_user_has_permissions_restored(self):
+        self.la.is_approved = False
+        self.la.save()
+        l_manager = ManageResourceOwnerPermissions(self.la)
+        l_manager.set_owner_permissions_according_to_workflow()
+
+        self.assertEqual(self._retrieve_resource_perms_definition(self.la).sort(),
+                         get_perms(self.user, self.la.get_self_resource()).sort()
+                         )
+
+    @override_settings(ADMIN_MODERATE_UPLOADS=True)
+    def test_remove_and_add_perms(self):
+        l_manager = ManageResourceOwnerPermissions(self.la)
+        l_manager.set_owner_permissions_according_to_workflow()
+
+        self.assertEqual(self._retrieve_resource_perms_definition(self.la, ['read', 'download']).sort(),
+                         get_perms(self.user, self.la.get_self_resource()).sort()
+                         )
+
+        self.la.is_approved = False
+        self.la.save()
+
+        l_manager.set_owner_permissions_according_to_workflow()
+
+        self.assertEqual(self._retrieve_resource_perms_definition(self.la).sort(),
+                         get_perms(self.user, self.la.get_self_resource()).sort()
+                         )
+
+    def _retrieve_resource_perms_definition(self, resource, perm_key_bundle=[]):
+        ret = []
+        if perm_key_bundle:
+            for key in perm_key_bundle:
+                ret.extend(resource.BASE_PERMISSIONS.get(key, []))
+                ret.extend(resource.PERMISSIONS.get(key, []))
+        else:
+            [ret.extend(r) for r in list(resource.BASE_PERMISSIONS.values()) + list(resource.PERMISSIONS.values())]
+        return ret
+
+
+class TestOwnerRightsRequestUtils(TestCase):
+
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create(username='test', email='test@test.com')
+        self.admin = User.objects.create(username='admin', email='test@test.com', is_superuser=True)
+        self.d = Document.objects.create(owner=self.user, title='test', is_approved=True)
+        self.la = Layer.objects.create(owner=self.user, title='test', is_approved=True)
+        self.s = Service.objects.create(owner=self.user, title='test', is_approved=True)
+        self.m = Map.objects.create(owner=self.user, title='test', is_approved=True, zoom=0, center_x=0.0,
+                                    center_y=0.0)
+
+    def test_get_concrete_resource(self):
+        self.assertTrue(isinstance(
+            OwnerRightsRequestViewUtils.get_resource(ResourceBase.objects.get(pk=self.d.id)), Document
+        ))
+
+        self.assertTrue(isinstance(
+            OwnerRightsRequestViewUtils.get_resource(ResourceBase.objects.get(pk=self.la.id)), Layer
+        ))
+
+        self.assertTrue(isinstance(
+            OwnerRightsRequestViewUtils.get_resource(ResourceBase.objects.get(pk=self.s.id)), Service
+        ))
+
+        self.assertTrue(isinstance(
+            OwnerRightsRequestViewUtils.get_resource(ResourceBase.objects.get(pk=self.m.id)), Map
+        ))
+
+    @override_settings(ADMIN_MODERATE_UPLOADS=True)
+    def test_msg_recipients_admin_mode(self):
+        users_count = 1
+        self.assertEqual(users_count, OwnerRightsRequestViewUtils.get_message_recipients().count())
+
+    @override_settings(ADMIN_MODERATE_UPLOADS=False)
+    def test_msg_recipients_workflow_off(self):
+        users_count = 0
+        self.assertEqual(users_count, OwnerRightsRequestViewUtils.get_message_recipients().count())

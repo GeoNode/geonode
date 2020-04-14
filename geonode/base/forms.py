@@ -48,7 +48,8 @@ from django.utils.encoding import (
 from bootstrap3_datetime.widgets import DateTimePicker
 from modeltranslation.forms import TranslationModelForm
 
-from geonode.base.models import HierarchicalKeyword, TopicCategory, Region, License, CuratedThumbnail
+from geonode.base.models import HierarchicalKeyword, TopicCategory, Region, License, CuratedThumbnail, \
+    ResourceBase
 from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.documents.models import Document
 from geonode.base.enumerations import ALL_LANGUAGES
@@ -108,10 +109,10 @@ class CategoryChoiceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
         return '<i class="fa ' + obj.fa_class + ' fa-2x unchecked"></i>' \
-               '<i class="fa ' + obj.fa_class + ' fa-2x checked"></i>' \
-               '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" ' \
-               'data-content="' + obj.description + '" trigger="hover">' \
-               '<br/><strong>' + obj.gn_description + '</strong></span>'
+                         '<i class="fa ' + obj.fa_class + ' fa-2x checked"></i>' \
+                         '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" ' \
+                         'data-content="' + obj.description + '" trigger="hover">' \
+                                                              '<br/><strong>' + obj.gn_description + '</strong></span>'
 
 
 # NOTE: This is commented as it needs updating to work with select2 and autocomlete light.
@@ -228,7 +229,7 @@ class RegionsSelect(forms.Select):
         for option_value, option_label in self.choices:
             if not isinstance(
                     option_label, (list, tuple)) and isinstance(
-                    option_label, six.string_types):
+                        option_label, six.string_types):
                 output.append(
                     self.render_option_value(
                         selected_choices,
@@ -239,7 +240,7 @@ class RegionsSelect(forms.Select):
         for option_value, option_label in self.choices:
             if isinstance(
                     option_label, (list, tuple)) and not isinstance(
-                    option_label, six.string_types):
+                        option_label, six.string_types):
                 output.append(
                     format_html(
                         '<optgroup label="{}">',
@@ -247,10 +248,10 @@ class RegionsSelect(forms.Select):
                 for option in option_label:
                     if isinstance(
                             option, (list, tuple)) and not isinstance(
-                            option, six.string_types):
+                                option, six.string_types):
                         if isinstance(
                                 option[1][0], (list, tuple)) and not isinstance(
-                                option[1][0], six.string_types):
+                                    option[1][0], six.string_types):
                             for option_child in option[1][0]:
                                 output.append(
                                     self.render_option_value(
@@ -282,7 +283,7 @@ class CategoryForm(forms.Form):
         label='*' + _('Category'),
         empty_label=None,
         queryset=TopicCategory.objects.filter(
-            is_choice=True) .extra(
+            is_choice=True).extra(
             order_by=['description']))
 
     def clean(self):
@@ -313,7 +314,7 @@ class TKeywordForm(forms.ModelForm):
         ),
         label=_("Keywords from Thesaurus"),
         required=False,
-        help_text=_("List of keywords from Thesaurus",),
+        help_text=_("List of keywords from Thesaurus", ),
     )
 
 
@@ -429,6 +430,7 @@ class ResourceBaseForm(TranslationModelForm):
                 else:
                     escaped += char
             return escaped
+
         keywords = self.cleaned_data['keywords']
         _unsescaped_kwds = []
         for k in keywords:
@@ -436,7 +438,7 @@ class ResourceBaseForm(TranslationModelForm):
             if not isinstance(_k, six.string_types):
                 for _kk in [x.strip() for x in _k]:
                     # Simulate JS Unescape
-                    _kk = _kk.replace('%u', r'\u').\
+                    _kk = _kk.replace('%u', r'\u'). \
                         encode('unicode-escape').replace(b'\\\\u',
                                                          b'\\u').decode('unicode-escape') if '%u' in _kk else _kk
                     _hk = HierarchicalKeyword.objects.filter(name__iexact='%s' % _kk.strip())
@@ -550,7 +552,15 @@ class BatchPermissionsForm(forms.Form):
 
 
 class CuratedThumbnailForm(ModelForm):
-
     class Meta:
         model = CuratedThumbnail
         fields = ['img']
+
+
+class OwnerRightsRequestForm(forms.Form):
+    resource = forms.ModelChoiceField(queryset=ResourceBase.objects.all(),
+                                      widget=forms.HiddenInput())
+    reason = forms.CharField(widget=forms.Textarea, help_text=_('Short reasoning behind the request'), required=True)
+
+    class Meta:
+        fields = ['reason', 'resource']
