@@ -250,8 +250,8 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
         for table in file_names:
             print("Restoring GeoServer Vectorial Data : {}:{} ".format(db_name, os.path.splitext(table)[0]))
             pg_rstcmd = 'PGPASSWORD="' + db_passwd + '" ' + config.pg_restore_cmd + ' -c -h ' + db_host + \
-                        ' -p ' + str(db_port) + ' -U ' + db_user + ' -F c ' + \
-                        ' -t \'"' + os.path.splitext(table)[0] + '"\' ' +\
+                        ' -p ' + str(db_port) + ' -U ' + db_user + ' --role=' + db_user + \
+                        ' -F c -t "' + os.path.splitext(table)[0] + '" ' +\
                         os.path.join(source_folder, table) + ' -d ' + db_name
             os.system(pg_rstcmd)
 
