@@ -5,6 +5,6 @@
 {{ message }}
 </p>
 <p>
-{% blocktrans %}To change how you receive notifications, please go to{% endblocktrans %} {{ default_http_protocol }}://{{ current_site }}{{ notices_url }}
+{% blocktrans %}To change how you receive notifications, please go to {% endblocktrans %} {{ default_http_protocol }}://{{ current_site }}{{ notice_settings_url }}
 </p>
 </body>
