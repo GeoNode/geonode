@@ -33,6 +33,7 @@ from .utils import utils
 
 from distutils import dir_util
 from requests.auth import HTTPBasicAuth
+from urlparse import urlparse, urljoin
 
 from geonode.br.models import RestoredBackup
 from geonode.br.tasks import restore_notification
@@ -539,7 +540,7 @@ class Command(BaseCommand):
 
         if os.path.exists(archive_md5_file):
             with open(archive_md5_file, 'r') as md5_file:
-                original_backup_md5 = md5_file.readline().strip()
+                original_backup_md5 = md5_file.readline().strip().split(" ")[0]
 
             if original_backup_md5 != backup_hash:
                 raise RuntimeError(
@@ -590,7 +591,8 @@ class Command(BaseCommand):
 
                 if (r.status_code == 200):
                     gs_backup = r.json()
-                    _url = gs_backup['restores']['restore'][len(gs_backup['restores']['restore']) - 1]['href']
+                    _url = urlparse(gs_backup['restores']['restore'][len(gs_backup['restores']['restore']) - 1]['href'])
+                    _url = '{}?{}'.format(urljoin(url, _url.path), _url.query)
                     r = requests.get(_url,
                                      headers=headers,
                                      auth=HTTPBasicAuth(user, passwd),
@@ -600,7 +602,7 @@ class Command(BaseCommand):
                         gs_backup = r.json()
 
                 if (r.status_code != 200):
-                    raise ValueError(error_backup.format(_url, r.status_code, r.text))
+                    raise ValueError(error_backup.format(url, r.status_code, r.text))
             except ValueError:
                 raise ValueError(error_backup.format(url, r.status_code, r.text))
 

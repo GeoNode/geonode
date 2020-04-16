@@ -22,34 +22,17 @@ from django.contrib import admin
 from geonode.br.models import RestoredBackup
 
 
+@admin.register(RestoredBackup)
 class RestoredBackupAdmin(admin.ModelAdmin):
+    readonly_fields = ('name', 'restoration_date', 'archive_md5', 'creation_date')
+    actions = None
     list_display = ('name', 'restoration_date', 'archive_md5', 'creation_date')
-
-    def __init__(self, *args, **kwargs):
-        super(RestoredBackupAdmin, self).__init__(*args, **kwargs)
-        self.readonly_fields = [field.name for field in self.model._meta.get_fields()]
-
-    def get_actions(self, request):
-        actions = super(RestoredBackupAdmin, self).get_actions(request)
-        del_action = "delete_selected"
-        if del_action in actions:
-            del actions[del_action]
-        return actions
 
     def has_add_permission(self, request):
         return False
 
-    def has_delete_permission(self, request, obj=None):
+    def has_change_permission(self, request, obj=None):
         return False
 
-    def save_model(self, request, obj, form, change):
-        pass
-
-    def delete_model(self, request, obj):
-        pass
-
-    def save_related(self, request, form, formsets, change):
-        pass
-
-
-admin.site.register(RestoredBackup, RestoredBackupAdmin)
+    def has_delete_permission(self, request, obj=None):
+        return False

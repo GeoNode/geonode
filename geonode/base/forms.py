@@ -395,13 +395,13 @@ class ResourceBaseForm(TranslationModelForm):
         required=False,
         choices=get_tree_data(),
         widget=RegionsSelect)
+
     regions.widget.attrs = {"size": 20}
 
     def __init__(self, *args, **kwargs):
         super(ResourceBaseForm, self).__init__(*args, **kwargs)
         for field in self.fields:
             help_text = self.fields[field].help_text
-            self.fields[field].help_text = None
             if help_text != '':
                 self.fields[field].widget.attrs.update(
                     {
@@ -551,7 +551,6 @@ class BatchPermissionsForm(forms.Form):
 
 
 class CuratedThumbnailForm(ModelForm):
-
     class Meta:
         model = CuratedThumbnail
         fields = ['img']
