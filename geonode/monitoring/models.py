@@ -127,11 +127,11 @@ class Service(models.Model):
         unique=True,
         blank=False,
         null=False)
-    host = models.ForeignKey(Host, null=False)
+    host = models.ForeignKey(Host, null=False, on_delete=models.CASCADE)
     check_interval = models.DurationField(
         null=False, blank=False, default=timedelta(seconds=60))
     last_check = models.DateTimeField(null=True, blank=True, auto_now_add=True)
-    service_type = models.ForeignKey(ServiceType, null=False)
+    service_type = models.ForeignKey(ServiceType, null=False, on_delete=models.CASCADE)
     active = models.BooleanField(null=False, blank=False, default=True)
     notes = models.TextField(null=True, blank=True)
     url = models.URLField(null=True, blank=True, default='')
@@ -317,8 +317,8 @@ class Metric(models.Model):
 
 
 class ServiceTypeMetric(models.Model):
-    service_type = models.ForeignKey(ServiceType, related_name='metric')
-    metric = models.ForeignKey(Metric, related_name='service_type')
+    service_type = models.ForeignKey(ServiceType, related_name='metric', on_delete=models.CASCADE)
+    metric = models.ForeignKey(Metric, related_name='service_type', on_delete=models.CASCADE)
 
     def __unicode__(self):
         return '{} - {}'.format(self.service_type, self.metric)
@@ -412,8 +412,8 @@ class RequestEvent(models.Model):
     METHODS = zip(_methods, _methods)
     created = models.DateTimeField(db_index=True, null=False)
     received = models.DateTimeField(db_index=True, null=False)
-    service = models.ForeignKey(Service)
-    event_type = models.ForeignKey(EventType, blank=True, null=True)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    event_type = models.ForeignKey(EventType, blank=True, null=True, on_delete=models.CASCADE)
     host = models.CharField(max_length=255, blank=True, default='')
     request_path = models.TextField(blank=False, default='')
 
@@ -556,7 +556,7 @@ class RequestEvent(models.Model):
     @classmethod
     def _get_user_consent(cls, request):
         return settings.USER_ANALYTICS_ENABLED
-        # if  request.user.is_authenticated():
+        # if  request.user.is_authenticated:
         #    return request.user.allow_analytics
         # return True
 
@@ -788,7 +788,7 @@ class RequestEvent(models.Model):
 
         inst = cls.objects.create(**data)
         resource_names = (rd.get('resources') or {}).get('string') or []
-        if not isinstance(resource_names, (list, tuple,)):
+        if not isinstance(resource_names, (list, tuple)):
             resource_names = [resource_names]
         resources = cls._get_resources('layer', resource_names)
         if rd.get('error'):
@@ -817,11 +817,11 @@ class RequestEvent(models.Model):
 class ExceptionEvent(models.Model):
     created = models.DateTimeField(db_index=True, null=False)
     received = models.DateTimeField(db_index=True, null=False)
-    service = models.ForeignKey(Service)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
     error_type = models.CharField(max_length=255, null=False, db_index=True)
-    error_message = models.TextField(null=True, blank=True)
-    error_data = models.TextField(null=True, blank=True)
-    request = models.ForeignKey(RequestEvent, related_name='exceptions')
+    error_message = models.CharField(max_length=255, null=False, default='')
+    error_data = models.TextField(null=False, default='')
+    request = models.ForeignKey(RequestEvent, related_name='exceptions', on_delete=models.CASCADE)
 
     @classmethod
     def add_error(cls, from_service, error_type, stack_trace,
@@ -832,7 +832,7 @@ class ExceptionEvent(models.Model):
             error_type = '{}.{}'.format(_cls.__module__, _cls.__name__)
         if not message:
             message = str(error_type)
-        if isinstance(stack_trace, (list, tuple,)):
+        if isinstance(stack_trace, (list, tuple)):
             stack_trace = ''.join(stack_trace)
 
         if not isinstance(created, datetime):
@@ -902,19 +902,21 @@ class MetricLabel(models.Model):
 class MetricValue(models.Model):
     valid_from = models.DateTimeField(db_index=True, null=False)
     valid_to = models.DateTimeField(db_index=True, null=False)
-    service_metric = models.ForeignKey(ServiceTypeMetric)
-    service = models.ForeignKey(Service)
+    service_metric = models.ForeignKey(ServiceTypeMetric, on_delete=models.CASCADE)
+    service = models.ForeignKey(Service, on_delete=models.CASCADE)
     event_type = models.ForeignKey(
         EventType,
         null=True,
         blank=True,
+        on_delete=models.CASCADE,
         related_name='metric_values')
     resource = models.ForeignKey(
         MonitoredResource,
         null=True,
         blank=True,
+        on_delete=models.CASCADE,
         related_name='metric_values')
-    label = models.ForeignKey(MetricLabel, related_name='metric_values')
+    label = models.ForeignKey(MetricLabel, related_name='metric_values', on_delete=models.CASCADE)
     value = models.CharField(max_length=255, null=False, blank=False)
     value_num = models.DecimalField(
         max_digits=20,
@@ -1196,8 +1198,7 @@ class NotificationCheck(models.Model):
 
     @classmethod
     def get_steps(cls, min_, max_, thresholds):
-        if isinstance(thresholds, (int, int,
-                                   float, Decimal,)):
+        if isinstance(thresholds, (int, float, Decimal)):
             if min_ is None or max_ is None:
                 raise ValueError(
                     "Cannot use numeric threshold if one of min/max is None")
@@ -1208,7 +1209,7 @@ class NotificationCheck(models.Model):
                 thresholds.append(current)
                 current += step
 
-        if isinstance(thresholds, (tuple, types.GeneratorType,)):
+        if isinstance(thresholds, (tuple, types.GeneratorType)):
             thresholds = list(thresholds)
         elif isinstance(thresholds, list) or thresholds is None:
             pass
@@ -1221,8 +1222,6 @@ class NotificationCheck(models.Model):
     @classmethod
     def create(cls, name, description, user_threshold, severity=None):
         inst, _ = cls.objects.get_or_create(name=name)
-        if not _:
-            raise ValueError("Alert definition already exists")
         inst.description = description
         user_thresholds = {}
         for (metric_name, field_opt, use_service,
@@ -1244,9 +1243,9 @@ class NotificationCheck(models.Model):
             #  ('request.count', 'min_value', True, True, True, True,
             #    0, None, (100, 200, 500, 1000,)
 
-            metric = Metric.objects.get(name=metric_name)
+            metric, _ = Metric.objects.get_or_create(name=metric_name)
             steps = cls.get_steps(minimum, maximum, thresholds)
-            nm = NotificationMetricDefinition.objects.create(
+            nm, _ = NotificationMetricDefinition.objects.get_or_create(
                 notification_check=inst,
                 metric=metric,
                 description=_description,
@@ -1375,8 +1374,8 @@ class NotificationCheck(models.Model):
 
 class NotificationReceiver(models.Model):
     notification_check = models.ForeignKey(
-        NotificationCheck, related_name='receivers')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
+        NotificationCheck, related_name='receivers', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     email = models.EmailField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
@@ -1395,8 +1394,8 @@ class NotificationMetricDefinition(models.Model):
         (FIELD_OPTION_MAX_TIMEOUT, _("Last update must not be older than"),))
 
     notification_check = models.ForeignKey(
-        NotificationCheck, related_name='definitions')
-    metric = models.ForeignKey(Metric, related_name='notification_checks')
+        NotificationCheck, related_name='definitions', on_delete=models.CASCADE)
+    metric = models.ForeignKey(Metric, related_name='notification_checks', on_delete=models.CASCADE)
     use_service = models.BooleanField(null=False, default=False)
     use_resource = models.BooleanField(null=False, default=False)
     use_label = models.BooleanField(null=False, default=False)
@@ -1517,16 +1516,17 @@ class NotificationMetricDefinition(models.Model):
 
 class MetricNotificationCheck(models.Model):
     notification_check = models.ForeignKey(
-        NotificationCheck, related_name="checks")
-    metric = models.ForeignKey(Metric, related_name="checks")
+        NotificationCheck, related_name="checks", on_delete=models.CASCADE)
+    metric = models.ForeignKey(Metric, related_name="checks", on_delete=models.CASCADE)
     service = models.ForeignKey(
         Service,
         related_name="checks",
         null=True,
-        blank=True)
-    resource = models.ForeignKey(MonitoredResource, null=True, blank=True)
-    label = models.ForeignKey(MetricLabel, null=True, blank=True)
-    event_type = models.ForeignKey(EventType, null=True, blank=True)
+        blank=True,
+        on_delete=models.CASCADE)
+    resource = models.ForeignKey(MonitoredResource, null=True, blank=True, on_delete=models.CASCADE)
+    label = models.ForeignKey(MetricLabel, null=True, blank=True, on_delete=models.CASCADE)
+    event_type = models.ForeignKey(EventType, null=True, blank=True, on_delete=models.CASCADE)
     min_value = models.DecimalField(
         max_digits=20,
         decimal_places=4,
@@ -1548,7 +1548,8 @@ class MetricNotificationCheck(models.Model):
     definition = models.OneToOneField(
         NotificationMetricDefinition,
         null=True,
-        related_name='metric_check')
+        related_name='metric_check',
+        on_delete=models.CASCADE)
 
     def __unicode__(self):
         indicator = []
@@ -1585,16 +1586,16 @@ class MetricNotificationCheck(models.Model):
             self.metric = metric
             self.check = check
             self.message = message
-            self.name = metric.service_metric.metric.name
+            self.name = metric.service_metric.metric.name if hasattr(metric, 'service_metric') else str(metric)
             self.offending_value = offending_value
             self.threshold_value = threshold_value
-            self.severity = check.notification_check.severity
-            self.check_url = check.notification_check.url
-            self.check_id = check.notification_check.id
+            self.severity = check.notification_check.severity if hasattr(check, 'notification_check') else None
+            self.check_url = check.notification_check.url if hasattr(check, 'notification_check') else None
+            self.check_id = check.notification_check.id if hasattr(check, 'notification_check') else None
             self.spotted_at = datetime.utcnow().replace(tzinfo=pytz.utc)
             self.description = description
-
-            self.valid_from, self.valid_to = metric.valid_from, metric.valid_to
+            self.valid_from = metric.valid_from if hasattr(metric, 'valid_from') else None
+            self.valid_to = metric.valid_to if hasattr(metric, 'valid_to') else None
 
         def __unicode__(self):
             return "MetricValueError({}: metric {} misses {} check: {})".format(self.severity,
@@ -1612,77 +1613,82 @@ class MetricNotificationCheck(models.Model):
         unit_name = ' {}'.format(m.unit) if not m.is_count else ''
         had_check = False
 
-        def_msg = self.definition.description
-        msg_prefix = []
-        if self.event_type:
-            os = self.event_type
-            if os.is_all or os.is_other:
-                msg_prefix.append("for {} OWS".format(os.name))
-            else:
-                msg_prefix.append("for {} OWS".format(os.name))
-        if self.service:
-            msg_prefix.append("for {} service".format(self.service.name))
-        if self.resource:
-            msg_prefix.append(
-                "for {}[{}] resource".format(
-                    self.resource.name,
-                    self.resource.type))
+        if self.definition:
+            def_msg = self.definition.description
+            msg_prefix = []
+            if self.event_type:
+                os = self.event_type
+                if os.is_all or os.is_other:
+                    msg_prefix.append("for {} OWS".format(os.name))
+                else:
+                    msg_prefix.append("for {} OWS".format(os.name))
+            if self.service:
+                msg_prefix.append("for {} service".format(self.service.name))
+            if self.resource:
+                msg_prefix.append(
+                    "for {}[{}] resource".format(
+                        self.resource.name,
+                        self.resource.type))
 
-        msg_prefix = ' '.join(msg_prefix)
-        description_tmpl = ("{} {} should be {{}} "
-                            "{{:0.0f}}{}, got {{:0.0f}}{} instead").format(msg_prefix,
-                                                                           metric_name,
-                                                                           unit_name,
-                                                                           unit_name)\
-            .strip()
+            msg_prefix = ' '.join(msg_prefix)
+            description_tmpl = ("{} {} should be {{}} "
+                                "{{:0.0f}}{}, got {{:0.0f}}{} instead").format(msg_prefix,
+                                                                               metric_name,
+                                                                               unit_name,
+                                                                               unit_name)\
+                .strip()
 
-        if self.min_value is not None:
-            had_check = True
-            if v < self.min_value:
-                msg = "{} {} {}".format(
-                    def_msg, int(self.min_value), unit_name)
-                description = description_tmpl.format(
-                    'at least', self.min_value, v)
-                raise self.MetricValueError(
-                    metric, self, msg, v, self.min_value, description)
-        if self.max_value is not None:
-            had_check = True
-            if v > self.max_value:
-                msg = "{} {} {}".format(
-                    def_msg, int(self.max_value), unit_name)
-                description = description_tmpl.format(
-                    'at most', self.min_value, v)
-                raise self.MetricValueError(
-                    metric, self, msg, v, self.max_value, description)
+            if v is not None and self.min_value is not None:
+                had_check = True
+                if float(v) < float(self.min_value):
+                    msg = "{} {} {}".format(
+                        def_msg, int(self.min_value), unit_name)
+                    description = description_tmpl.format(
+                        'at least', float(self.min_value), float(v))
+                    raise self.MetricValueError(
+                        metric, self, msg, v, self.min_value, description)
+            if v is not None and self.max_value is not None:
+                had_check = True
+                if float(v) > float(self.max_value):
+                    msg = "{} {} {}".format(
+                        def_msg, int(self.max_value), unit_name)
+                    description = description_tmpl.format(
+                        'at most', float(self.max_value), float(v))
+                    raise self.MetricValueError(
+                        metric, self, msg, v, self.max_value, description)
 
-        if self.max_timeout is not None:
-            had_check = True
+            if self.max_timeout is not None:
+                had_check = True
 
-            # we have to check for now, because valid_on may be in the past,
-            # metric may be at the valid_on point in time
-            valid_on = datetime.utcnow().replace(tzinfo=pytz.utc)
-            metric.valid_to = metric.valid_to.replace(tzinfo=pytz.utc)
-            if (valid_on - metric.valid_to) > self.max_timeout:
-                total_seconds = self.max_timeout.total_seconds()
-                actual_seconds = (valid_on - metric.valid_to).total_seconds()
-                msg = "{} {} seconds".format(def_msg, int(total_seconds))
-                description = description_tmpl.format('recored at most ',
-                                                      '{} seconds ago'.format(
-                                                          total_seconds),
-                                                      '{} seconds'.format(actual_seconds))
-                raise self.MetricValueError(metric, self,
-                                            msg,
-                                            metric.valid_to,
-                                            valid_on,
-                                            description
-                                            )
+                # we have to check for now, because valid_on may be in the past,
+                # metric may be at the valid_on point in time
+                valid_on = datetime.utcnow().replace(tzinfo=pytz.utc)
+                metric.valid_to = metric.valid_to.replace(tzinfo=pytz.utc)
+                if (valid_on - metric.valid_to) > self.max_timeout:
+                    total_seconds = self.max_timeout.total_seconds()
+                    actual_seconds = (valid_on - metric.valid_to).total_seconds()
+                    msg = "{} {} seconds".format(def_msg, int(total_seconds))
+                    description = description_tmpl.format('recored at most ',
+                                                          '{} seconds ago'.format(
+                                                              total_seconds),
+                                                          '{} seconds'.format(actual_seconds))
+                    raise self.MetricValueError(metric,
+                                                self,
+                                                msg,
+                                                metric.valid_to,
+                                                valid_on,
+                                                description)
         if not had_check:
-            raise ValueError(
+            raise self.MetricValueError(
+                metric,
+                self,
+                "",
+                None,
+                None,
                 "Metric check {} is not checking anything".format(self))
 
     def check_metric(self, for_timestamp=None):
         """
-
         """
         if not for_timestamp:
             for_timestamp = datetime.utcnow().replace(tzinfo=pytz.utc)
@@ -1700,9 +1706,13 @@ class MetricNotificationCheck(models.Model):
         else:
             metrics = MetricValue.get_for(**qfilter)
         if not metrics:
-            raise ValueError(
-                "Cannot find metric values for {} on {}".format(
-                    self.metric, for_timestamp))
+            raise self.MetricValueError(
+                self.metric,
+                "",
+                "",
+                None,
+                None,
+                "Cannot find metric values for {} on {}".format(self.metric, for_timestamp))
         for m in metrics:
             self.check_value(m, for_timestamp)
         return True
@@ -1863,8 +1873,8 @@ def do_autoconfigure():
     for host in hosts:
         try:
             h = Host.objects.get(name=host[0])
-            if h.ip != host[1]:
-                log.warning("Different ip. got", h.ip, "instead of", host[1])
+            # if h.ip != host[1]:
+            #     log.warning("Different ip. got", h.ip, "instead of", host[1])
         except Host.DoesNotExist:
             h = Host.objects.create(name=host[0], ip=host[1])
         hosts_map[h.name] = h

@@ -24,7 +24,6 @@ import timeout_decorator
 
 import os
 import json
-import math
 import time
 import gisdata
 import logging
@@ -278,10 +277,10 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             bbox_y1 = Decimal('-5.303545551999900')
             srid = 'EPSG:4326'
 
-            self.assertTrue(math.isclose(bbox_x0, uploaded.bbox_x0))
-            self.assertTrue(math.isclose(bbox_x1, uploaded.bbox_x1))
-            self.assertTrue(math.isclose(bbox_y0, uploaded.bbox_y0))
-            self.assertTrue(math.isclose(bbox_y1, uploaded.bbox_y1))
+            self.assertEqual(bbox_x0, uploaded.bbox_x0)
+            self.assertEqual(bbox_x1, uploaded.bbox_x1)
+            self.assertEqual(bbox_y0, uploaded.bbox_y0)
+            self.assertEqual(bbox_y1, uploaded.bbox_y1)
             self.assertEqual(srid, uploaded.srid)
 
             # bbox format: [xmin,xmax,ymin,ymax]
@@ -292,36 +291,28 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 Decimal('-5.303545551999900'),
                 'EPSG:4326'
             ]
-            self.assertTrue(math.isclose(expected_bbox[0], uploaded.bbox[0]))
-            self.assertTrue(math.isclose(expected_bbox[1], uploaded.bbox[1]))
-            self.assertTrue(math.isclose(expected_bbox[2], uploaded.bbox[2]))
-            self.assertTrue(math.isclose(expected_bbox[3], uploaded.bbox[3]))
+            self.assertEqual(expected_bbox[0], uploaded.bbox[0])
+            self.assertEqual(expected_bbox[1], uploaded.bbox[1])
+            self.assertEqual(expected_bbox[2], uploaded.bbox[2])
+            self.assertEqual(expected_bbox[3], uploaded.bbox[3])
 
             # bbox format: [xmin,ymin,xmax,ymax]
             expected_bbox_string = '96.956000000000000,-5.518732999999900,97.109705320000000,-5.303545551999900'
-            self.assertTrue(
-                math.isclose(
-                    Decimal(expected_bbox_string.split(',')[0]),
-                    Decimal(uploaded.bbox_string.split(',')[0])
-                )
+            self.assertEqual(
+                Decimal(expected_bbox_string.split(',')[0]),
+                Decimal(uploaded.bbox_string.split(',')[0])
             )
-            self.assertTrue(
-                math.isclose(
-                    Decimal(expected_bbox_string.split(',')[1]),
-                    Decimal(uploaded.bbox_string.split(',')[1])
-                )
+            self.assertEqual(
+                Decimal(expected_bbox_string.split(',')[1]),
+                Decimal(uploaded.bbox_string.split(',')[1])
             )
-            self.assertTrue(
-                math.isclose(
-                    Decimal(expected_bbox_string.split(',')[2]),
-                    Decimal(uploaded.bbox_string.split(',')[2])
-                )
+            self.assertEqual(
+                Decimal(expected_bbox_string.split(',')[2]),
+                Decimal(uploaded.bbox_string.split(',')[2])
             )
-            self.assertTrue(
-                math.isclose(
-                    Decimal(expected_bbox_string.split(',')[3]),
-                    Decimal(uploaded.bbox_string.split(',')[3])
-                )
+            self.assertEqual(
+                Decimal(expected_bbox_string.split(',')[3]),
+                Decimal(uploaded.bbox_string.split(',')[3])
             )
         finally:
             # Clean up and completely delete the layer

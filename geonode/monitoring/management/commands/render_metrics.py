@@ -20,9 +20,7 @@
 from __future__ import print_function
 
 import pytz
-import types
 import logging
-import argparse
 import timeout_decorator
 
 from datetime import datetime, timedelta
@@ -31,8 +29,6 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext_noop as _
 
 from geonode.utils import parse_datetime
-from geonode.monitoring.models import Service, MonitoredResource, MetricLabel
-from geonode.monitoring.service_handlers import get_for_service
 from geonode.monitoring.collector import CollectorAPI
 from geonode.monitoring.utils import TypeChecks
 

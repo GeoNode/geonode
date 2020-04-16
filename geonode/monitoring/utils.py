@@ -26,11 +26,14 @@ import xmljson
 import requests
 import threading
 import traceback
+import timeout_decorator
 
+from hashlib import md5
 from math import floor, ceil
 from urllib import urlencode
 from urlparse import urlsplit
 from bs4 import BeautifulSoup as bs
+from dateutil.tz import tzlocal
 from datetime import datetime, timedelta
 from defusedxml import lxml as dlxml
 
@@ -396,3 +399,111 @@ def extend_datetime_input_formats(formats):
     else:
         raise ValueError("Input parameter must be tuple or list.")
     return input_formats
+
+
+def collect_metric(**options):
+    from geonode.celery_app import app
+    from geonode.tasks.tasks import memcache_lock
+    from geonode.monitoring.models import Service
+    from geonode.monitoring.collector import CollectorAPI
+
+    _start_time = None
+    _end_time = None
+    # The cache key consists of the task name and the MD5 digest
+    # of the name.
+    name = b'collect_metric'
+    hexdigest = md5(name).hexdigest()
+    lock_id = '{0}-lock-{1}'.format(name, hexdigest)
+    _start_time = datetime.utcnow().isoformat()
+    log.info('[{}] Collecting Metrics - started @ {}'.format(
+        lock_id,
+        _start_time))
+    with memcache_lock(lock_id, app.oid) as acquired:
+        if acquired:
+            oservice = options['service']
+            if not oservice:
+                services = Service.objects.all()
+            else:
+                services = [oservice]
+            if options['list_services']:
+                print('available services')
+                for s in services:
+                    print('  ', s.name, '(', s.url, ')')
+                    print('   type', s.service_type.name)
+                    print('   running on', s.host.name, s.host.ip)
+                    print('   active:', s.active)
+                    if s.last_check:
+                        print('    last check:', s.last_check)
+                    else:
+                        print('    not checked yet')
+                    print(' ')
+                return
+            c = CollectorAPI()
+            for s in services:
+                try:
+                    run_check(s,
+                              collector=c,
+                              since=options['since'],
+                              until=options['until'],
+                              force_check=options['force_check'],
+                              format=options['format'])
+                except Exception as err:
+                    log.error("Cannot collect from %s: %s", s, err, exc_info=err)
+                    if options['halt_on_errors']:
+                        raise
+            if not options['do_not_clear']:
+                log.debug("Clearing old data")
+                c.clear_old_data()
+            if options['emit_notifications']:
+                log.debug("Processing notifications for %s", options['until'])
+                # s = Service.objects.first()
+                # interval = s.check_interval
+                # now = datetime.utcnow().replace(tzinfo=pytz.utc)
+                # notifications_check = now - interval
+                c.emit_notifications()  # notifications_check))
+            _end_time = datetime.utcnow().isoformat()
+            log.info('[{}] Collecting Metrics - finished @ {}'.format(
+                lock_id,
+                _end_time))
+    return (_start_time, _end_time)
+
+
+LOCAL_TIMEOUT = 8600
+
+
+@timeout_decorator.timeout(LOCAL_TIMEOUT)
+def run_check(service, collector, since=None, until=None, force_check=None, format=None):
+    from geonode.monitoring.service_handlers import get_for_service
+
+    utc = pytz.utc
+    try:
+        local_tz = pytz.timezone(datetime.now(tzlocal()).tzname())
+    except Exception:
+        local_tz = pytz.timezone(settings.TIME_ZONE)
+    now = datetime.utcnow().replace(tzinfo=utc)
+    Handler = get_for_service(service.service_type.name)
+    try:
+        service.last_check = service.last_check.astimezone(utc)
+    except Exception:
+        service.last_check = service.last_check.replace(tzinfo=utc) if service.last_check else now
+
+    if not until:
+        until = now
+    else:
+        until = local_tz.localize(until).astimezone(utc).replace(tzinfo=utc)
+
+    last_check = local_tz.localize(since).astimezone(utc).replace(tzinfo=utc) if since else service.last_check
+    _monitoring_ttl_max = timedelta(days=365) if force_check else settings.MONITORING_DATA_TTL
+    if not last_check or last_check > until or (until - last_check) > _monitoring_ttl_max:
+        last_check = (until - _monitoring_ttl_max)
+        service.last_check = last_check
+
+    # print('[',now ,'] checking', service.name, 'since', last_check, 'until', until)
+    data_in = None
+    h = Handler(service, force_check=force_check)
+    data_in = h.collect(since=last_check, until=until, format=format)
+    if data_in:
+        try:
+            return collector.process(service, data_in, last_check, until)
+        finally:
+            h.mark_as_checked()
