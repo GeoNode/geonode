@@ -527,7 +527,7 @@ class Command(BaseCommand):
 
         if os.path.exists(archive_md5_file):
             with open(archive_md5_file, 'r') as md5_file:
-                original_backup_md5 = md5_file.readline().strip()
+                original_backup_md5 = md5_file.readline().strip().split(" ")[0]
 
             if original_backup_md5 != backup_hash:
                 raise RuntimeError(
