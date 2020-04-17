@@ -76,6 +76,18 @@ class Command(BaseCommand):
             help='Skips geoserver backup')
 
         parser.add_argument(
+            '--skip-geoserver-info',
+            action='store_true',
+            default=True,
+            help='Skips geoserver Global Infos')
+
+        parser.add_argument(
+            '--skip-geoserver-security',
+            action='store_true',
+            default=True,
+            help='Skips geoserver Security Settings')
+
+        parser.add_argument(
             '--backup-file',
             dest='backup_file',
             default=None,
@@ -141,6 +153,8 @@ class Command(BaseCommand):
         config = utils.Config(options)
         force_exec = options.get('force_exec')
         skip_geoserver = options.get('skip_geoserver')
+        skip_geoserver_info = options.get('skip_geoserver_info')
+        skip_geoserver_security = options.get('skip_geoserver_security')
         backup_file = options.get('backup_file')
         backup_files_dir = options.get('backup_files_dir')
         with_logs = options.get('with_logs')
@@ -234,7 +248,8 @@ class Command(BaseCommand):
                 if not skip_geoserver:
 
                     try:
-                        self.restore_geoserver_backup(settings, target_folder)
+                        self.restore_geoserver_backup(settings, target_folder,
+                                                      skip_geoserver_info, skip_geoserver_security)
                         self.restore_geoserver_raster_data(config, settings, target_folder)
                         self.restore_geoserver_vector_data(config, settings, target_folder)
                         print("Restoring geoserver external resources")
@@ -544,7 +559,7 @@ class Command(BaseCommand):
 
         return backup_hash
 
-    def restore_geoserver_backup(self, settings, target_folder):
+    def restore_geoserver_backup(self, settings, target_folder, skip_geoserver_info, skip_geoserver_security):
         """Restore GeoServer Catalog"""
         url = settings.OGC_SERVER['default']['LOCATION']
         user = settings.OGC_SERVER['default']['USER']
@@ -559,7 +574,12 @@ class Command(BaseCommand):
         print("Restoring 'GeoServer Catalog ["+url+"]' from '"+geoserver_bk_file+"'.")
 
         # Best Effort Restore: 'options': {'option': ['BK_BEST_EFFORT=true']}
-        data = {'restore': {'archiveFile': geoserver_bk_file, 'options': {}}}
+        _options = [
+            'BK_SKIP_SETTINGS={}'.format('true' if skip_geoserver_info else 'false'),
+            'BK_SKIP_SECURITY={}'.format('true' if skip_geoserver_security else 'false')
+        ]
+        data = {'restore': {'archiveFile': geoserver_bk_file,
+                            'options': {'option': _options}}}
         headers = {
             'Accept': 'application/json',
             'Content-type': 'application/json'

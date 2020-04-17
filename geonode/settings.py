@@ -1388,9 +1388,6 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             'mapstore2_adapter',
             'geonode_mapstore_client',)
 
-    # This must be set to True in case you run the client in DEBUG mode with `npm run start`
-    MAPSTORE_DEBUG = False
-
     def get_geonode_catalogue_service():
         if PYCSW:
             pycsw_config = PYCSW["CONFIGURATION"]
@@ -1465,6 +1462,19 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "visibility": False,
             "args": ["Empty Background", {"visibility": False}]
        }
+       # Custom XYZ Tile Provider
+        # {
+        #     "type": "tileprovider",
+        #     "title": "Title",
+        #     "provider": "custom", // or undefined
+        #     "name": "Name",
+        #     "group": "background",
+        #     "visibility": false,
+        #     "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        #     "options": {
+        #         "subdomains": [ "a", "b"]
+        #     }
+        # }
     ]
 
     if MAPBOX_ACCESS_TOKEN:
