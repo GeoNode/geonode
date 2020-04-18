@@ -368,7 +368,6 @@ if 'geonode.geoserver' in INSTALLED_APPS:
 #         'geonode_mapstore_client',)
 # GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'mapstore'  # DEPRECATED use HOOKSET instead
 # GEONODE_CLIENT_HOOKSET = "geonode_mapstore_client.hooksets.MapStoreHookSet"
-# MAPSTORE_DEBUG = False
 
 
 

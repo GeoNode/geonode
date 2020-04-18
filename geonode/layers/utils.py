@@ -1168,14 +1168,14 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
             if bbox is None:
                 bbox = list(_bbox)
             else:
-                if bbox[0] > _bbox[0]:
-                    bbox[0] = _bbox[0]
-                if bbox[1] < _bbox[1]:
-                    bbox[1] = _bbox[1]
-                if bbox[2] > _bbox[2]:
-                    bbox[2] = _bbox[2]
-                if bbox[3] < _bbox[3]:
-                    bbox[3] = _bbox[3]
+                if float(bbox[0]) > float(_bbox[0]):
+                    bbox[0] = float(_bbox[0])
+                if float(bbox[1]) < float(_bbox[1]):
+                    bbox[1] = float(_bbox[1])
+                if float(bbox[2]) > float(_bbox[2]):
+                    bbox[2] = float(_bbox[2])
+                if float(bbox[3]) < float(_bbox[3]):
+                    bbox[3] = float(_bbox[3])
 
     wms_endpoint = getattr(ogc_server_settings, 'WMS_ENDPOINT') or 'ows'
     wms_version = getattr(ogc_server_settings, 'WMS_VERSION') or '1.1.1'
