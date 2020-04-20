@@ -27,7 +27,7 @@ wrapt==1.12.0
 
 # Django Apps
 django-allauth==0.40.0
-django-appconf==1.0.3
+django-appconf==1.0.4
 django-filter==1.1.0
 django-imagekit==4.0.2
 django-jsonfield<1.4.1
