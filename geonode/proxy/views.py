@@ -164,9 +164,21 @@ def proxy(request, url=None, response_callback=None,
         _url = ('%s%saccess_token=%s' %
                 (_url, query_separator, access_token))
 
+    _data = request.body
+
+    # Avoid translating local geoserver calls into external ones
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+        from geonode.geoserver.helpers import ogc_server_settings
+        _url = _url.replace(
+            '%s%s' % (settings.SITEURL, 'geoserver'),
+            ogc_server_settings.LOCATION.rstrip('/'))
+        _data = _data.replace(
+            '%s%s' % (settings.SITEURL, 'geoserver'),
+            ogc_server_settings.LOCATION.rstrip('/'))
+
     response, content = http_client.request(_url,
                                             method=request.method,
-                                            data=request.body,
+                                            data=_data,
                                             headers=headers,
                                             timeout=timeout,
                                             user=request.user)
