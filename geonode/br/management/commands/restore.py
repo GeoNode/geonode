@@ -464,6 +464,7 @@ class Command(BaseCommand):
 
                 finally:
                     call_command('migrate', interactive=False, fake=True)
+                    call_command('sync_geonode_layers', updatepermissions=True, ignore_errors=True)
 
                 if notify:
                     restore_notification.delay(admin_emails, backup_file, backup_md5)
