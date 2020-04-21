@@ -575,6 +575,7 @@ class Command(BaseCommand):
 
         # Best Effort Restore: 'options': {'option': ['BK_BEST_EFFORT=true']}
         _options = [
+            'BK_CLEANUP_TEMP=true',
             'BK_SKIP_SETTINGS={}'.format('true' if skip_geoserver_info else 'false'),
             'BK_SKIP_SECURITY={}'.format('true' if skip_geoserver_security else 'false')
         ]
