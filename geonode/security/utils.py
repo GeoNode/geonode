@@ -614,19 +614,19 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
             if _user:
                 logger.debug("Adding 'user' to geofence the rule: %s %s %s" % (layer, service, _user))
                 _wkt = None
-                if users_geolimits.count():
+                if users_geolimits and users_geolimits.count():
                     _wkt = users_geolimits.last().wkt
                 _update_geofence_rule(layer, _layer_name, _layer_workspace, service, user=_user, geo_limit=_wkt)
             elif not _group:
                 logger.debug("Adding to geofence the rule: %s %s *" % (layer, service))
                 _wkt = None
-                if anonymous_geolimits.count():
+                if anonymous_geolimits and anonymous_geolimits.count():
                     _wkt = anonymous_geolimits.last().wkt
                 _update_geofence_rule(layer, _layer_name, _layer_workspace, service, geo_limit=_wkt)
             if _group:
                 logger.debug("Adding 'group' to geofence the rule: %s %s %s" % (layer, service, _group))
                 _wkt = None
-                if groups_geolimits.count():
+                if groups_geolimits and groups_geolimits.count():
                     _wkt = groups_geolimits.last().wkt
                 _update_geofence_rule(layer, _layer_name, _layer_workspace, service, group=_group, geo_limit=_wkt)
     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
