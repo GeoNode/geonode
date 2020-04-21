@@ -303,8 +303,13 @@ class Command(BaseCommand):
         error_backup = 'Could not successfully backup GeoServer ' + \
                        'catalog [{}rest/br/backup/]: {} - {}'
 
+        _options = [
+            'BK_CLEANUP_TEMP=true',
+            'BK_SKIP_SETTINGS=false',
+            'BK_SKIP_SECURITY=false'
+        ]
         data = {'backup': {'archiveFile': geoserver_bk_file, 'overwrite': 'true',
-                           'options': {'option': ['BK_CLEANUP_TEMP=true']}}}
+                           'options': {'option': _options}}}
         headers = {
             'Accept': 'application/json',
             'Content-type': 'application/json'
