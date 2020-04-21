@@ -287,7 +287,7 @@ community."
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
         cfg = json.loads(content)
-        self.assertEqual(cfg['defaultSourceType'], "gxp_wmscsource")
+        self.assertEqual(cfg['defaultSourceType'], "gxp_osmsource")
 
     def test_map_details(self):
         """/maps/1 -> Test accessing the map browse view function"""
