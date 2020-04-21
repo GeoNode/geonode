@@ -43,7 +43,12 @@ services:
     volumes:
       - ./_volume_certificates:/spcgeonode-certificates/
 
-  pgdumper:
+  pgdumper_nogeo:
+    image: geonode/spcgeonode:pgdumper-3.0
+    volumes:
+      - ./_volume_pgdumps:/spcgeonode-pgdumps/
+
+  pgdumper_geo:
     image: geonode/spcgeonode:pgdumper-3.0
     volumes:
       - ./_volume_pgdumps:/spcgeonode-pgdumps/
