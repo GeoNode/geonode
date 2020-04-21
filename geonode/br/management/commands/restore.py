@@ -72,24 +72,33 @@ class Command(BaseCommand):
         parser.add_argument(
             '--skip-geoserver',
             action='store_true',
+            dest='skip_geoserver',
             default=False,
             help='Skips geoserver backup')
 
         parser.add_argument(
             '--skip-geoserver-info',
             action='store_true',
+            dest='skip_geoserver_info',
             default=True,
             help='Skips geoserver Global Infos')
 
         parser.add_argument(
             '--skip-geoserver-security',
             action='store_true',
+            dest='skip_geoserver_security',
             default=True,
             help='Skips geoserver Security Settings')
 
         parser.add_argument(
             '--backup-file',
             dest='backup_file',
+            default=None,
+            help='Backup archive containing GeoNode data to restore.')
+
+        parser.add_argument(
+            '--recovery-file',
+            dest='recovery_file',
             default=None,
             help='Backup archive containing GeoNode data to restore.')
 
@@ -156,6 +165,7 @@ class Command(BaseCommand):
         skip_geoserver_info = options.get('skip_geoserver_info')
         skip_geoserver_security = options.get('skip_geoserver_security')
         backup_file = options.get('backup_file')
+        recovery_file = options.get('recovery_file')
         backup_files_dir = options.get('backup_files_dir')
         with_logs = options.get('with_logs')
         notify = options.get('notify')
@@ -246,7 +256,6 @@ class Command(BaseCommand):
                     raise
 
                 if not skip_geoserver:
-
                     try:
                         self.restore_geoserver_backup(settings, target_folder,
                                                       skip_geoserver_info, skip_geoserver_security)
@@ -254,11 +263,17 @@ class Command(BaseCommand):
                         self.restore_geoserver_vector_data(config, settings, target_folder)
                         print("Restoring geoserver external resources")
                         self.restore_geoserver_externals(config, settings, target_folder)
-
                     except Exception as exception:
+                        if recovery_file:
+                            with tempfile.TemporaryDirectory(dir=temp_dir_path) as restore_folder:
+                                recovery_folder = extract_archive(recovery_file, restore_folder)
+                                self.restore_geoserver_backup(settings, recovery_folder,
+                                                              skip_geoserver_info, skip_geoserver_security)
+                                self.restore_geoserver_raster_data(config, settings, recovery_folder)
+                                self.restore_geoserver_vector_data(config, settings, recovery_folder)
+                                self.restore_geoserver_externals(config, settings, recovery_folder)
                         if notify:
                             restore_notification.delay(admin_emails, backup_file, backup_md5, str(exception))
-
                         raise exception
 
                 else:
@@ -645,6 +660,10 @@ class Command(BaseCommand):
                         time.sleep(3)
                     else:
                         raise ValueError(error_backup.format(url, r.status_code, r.text))
+
+                if gs_bk_exec_status != 'COMPLETED':
+                    raise ValueError(error_backup.format(url, r.status_code, r.text))
+
             else:
                 raise ValueError(error_backup.format(url, r.status_code, r.text))
 
