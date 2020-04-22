@@ -138,7 +138,7 @@ class Command(BaseCommand):
                 self.create_geoserver_backup(settings, target_folder)
                 self.dump_geoserver_raster_data(config, settings, target_folder)
                 self.dump_geoserver_vector_data(config, settings, target_folder)
-                print("Duming geoserver external resources")
+                print("Dumping geoserver external resources")
                 self.dump_geoserver_externals(config, settings, target_folder)
             else:
                 print("Skipping geoserver backup")
