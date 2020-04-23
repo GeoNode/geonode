@@ -687,51 +687,67 @@ class Command(BaseCommand):
     def restore_geoserver_raster_data(self, config, settings, target_folder):
         if (config.gs_data_dir):
             if (config.gs_dump_raster_data):
-
+                # Restore '$config.gs_data_dir/geonode'
                 gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'geonode')
-                if not os.path.exists(gs_data_folder):
+                if os.path.exists(gs_data_folder):
+                    gs_data_root = os.path.join(config.gs_data_dir, 'geonode')
+                    if not os.path.isabs(gs_data_root):
+                        gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
+
+                    try:
+                        chmod_tree(gs_data_root)
+                    except Exception:
+                        print('Original GeoServer Data Dir "{}" must be writable by the current user. \
+                              Do not forget to copy it first. It will be wiped-out by the Restore procedure!'.format(
+                            gs_data_root))
+                        raise
+
+                    try:
+                        shutil.rmtree(gs_data_root)
+                        print('Cleaned out old GeoServer Data Dir: ' + gs_data_root)
+                    except Exception:
+                        pass
+
+                    if not os.path.exists(gs_data_root):
+                        os.makedirs(gs_data_root)
+
+                    copy_tree(gs_data_folder, gs_data_root)
+                    chmod_tree(gs_data_root)
+                    print("GeoServer Uploaded Data Restored to '" + gs_data_root + "'.")
+                else:
                     print(('Skipping geoserver raster data restore: ' +
                           'directory "{}" not found.'.format(gs_data_folder)))
-                    return
 
                 # Restore '$config.gs_data_dir/data/geonode'
-                gs_data_root = os.path.join(config.gs_data_dir, 'geonode')
-                if not os.path.isabs(gs_data_root):
-                    gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
+                gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
+                if os.path.exists(gs_data_folder):
+                    gs_data_root = os.path.join(config.gs_data_dir, 'data', 'geonode')
+                    if not os.path.isabs(gs_data_root):
+                        gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
 
-                try:
+                    try:
+                        chmod_tree(gs_data_root)
+                    except Exception:
+                        print('Original GeoServer Data Dir "{}" must be writable by the current user. \
+                              Do not forget to copy it first. It will be wiped-out by the Restore procedure!'.format(
+                            gs_data_root))
+                        raise
+
+                    try:
+                        shutil.rmtree(gs_data_root)
+                        print('Cleaned out old GeoServer Data Dir: ' + gs_data_root)
+                    except Exception:
+                        pass
+
+                    if not os.path.exists(gs_data_root):
+                        os.makedirs(gs_data_root)
+
+                    copy_tree(gs_data_folder, gs_data_root)
                     chmod_tree(gs_data_root)
-                except Exception:
-                    print('Original GeoServer Data Dir "{}" must be writable by the current user. \
-                        Do not forget to copy it first. It will be wiped-out by the Restore procedure!'.format(gs_data_root))
-                    raise
-
-                try:
-                    shutil.rmtree(gs_data_root)
-                    print('Cleaned out old GeoServer Data Dir: ' + gs_data_root)
-                except Exception:
-                    pass
-
-                if not os.path.exists(gs_data_root):
-                    os.makedirs(gs_data_root)
-
-                copy_tree(gs_data_folder, gs_data_root)
-                chmod_tree(gs_data_root)
-                print("GeoServer Uploaded Data Restored to '"+gs_data_root+"'.")
-
-                # Cleanup '$config.gs_data_dir/gwc-layers'
-                gwc_layers_root = os.path.join(config.gs_data_dir, 'gwc-layers')
-                if not os.path.isabs(gwc_layers_root):
-                    gwc_layers_root = os.path.join(settings.PROJECT_ROOT, '..', gwc_layers_root)
-
-                try:
-                    shutil.rmtree(gwc_layers_root)
-                    print('Cleaned out old GeoServer GWC Layers Config: ' + gwc_layers_root)
-                except Exception:
-                    pass
-
-                if not os.path.exists(gwc_layers_root):
-                    os.makedirs(gwc_layers_root)
+                    print("GeoServer Uploaded Data Restored to '" + gs_data_root + "'.")
+                else:
+                    print(('Skipping geoserver raster data restore: ' +
+                           'directory "{}" not found.'.format(gs_data_folder)))
 
     def restore_geoserver_vector_data(self, config, settings, target_folder):
         """Restore Vectorial Data from DB"""
