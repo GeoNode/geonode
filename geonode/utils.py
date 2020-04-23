@@ -1634,6 +1634,12 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             logger.debug(" -- Resource Links[Create Raw Data download link]...")
             download_url = urljoin(settings.SITEURL,
                                    reverse('download', args=[instance.id]))
+            while Link.objects.filter(
+                    resource=instance.resourcebase_ptr,
+                    url=download_url).count() > 1:
+                Link.objects.filter(
+                    resource=instance.resourcebase_ptr,
+                    url=download_url).first().delete()
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
                 url=download_url,
