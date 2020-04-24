@@ -477,6 +477,7 @@ class Command(BaseCommand):
                         restore_notification.delay(admin_emails, backup_file, backup_md5, str(exception))
 
                 finally:
+                    call_command('makemigrations', interactive=False)
                     call_command('migrate', interactive=False, fake=True)
                     call_command('sync_geonode_layers', updatepermissions=True, ignore_errors=True)
 
