@@ -21,7 +21,6 @@
 import json
 import traceback
 import os
-import sys
 import time
 import uuid
 import shutil
@@ -152,13 +151,11 @@ class Command(BaseCommand):
             self.execute_restore(**options)
         except Exception:
             traceback.print_exc()
-            sys.exit(1)
         finally:
             # restore read only mode's original value
             if not skip_read_only:
                 config.read_only = original_read_only_value
                 config.save()
-        sys.exit(0)
 
     def execute_restore(self, **options):
         self.validate_backup_file_options(**options)
@@ -487,6 +484,7 @@ class Command(BaseCommand):
                         restore_notification.delay(admin_emails, backup_file, backup_md5, str(exception))
 
                 finally:
+                    call_command('makemigrations', interactive=False)
                     call_command('migrate', interactive=False, fake=True)
                     call_command('sync_geonode_layers', updatepermissions=True, ignore_errors=True)
 
