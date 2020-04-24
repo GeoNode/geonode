@@ -21,13 +21,14 @@
 import json
 import traceback
 import os
+import sys
 import time
+import uuid
 import shutil
 import zipfile
 import requests
 import warnings
 from datetime import datetime
-from backports.tempfile import TemporaryDirectory
 
 from .utils import utils
 
@@ -149,11 +150,15 @@ class Command(BaseCommand):
 
         try:
             self.execute_restore(**options)
+        except Exception:
+            traceback.print_exc()
+            sys.exit(1)
         finally:
             # restore read only mode's original value
             if not skip_read_only:
                 config.read_only = original_read_only_value
                 config.save()
+        sys.exit(0)
 
     def execute_restore(self, **options):
         self.validate_backup_file_options(**options)
@@ -208,8 +213,12 @@ class Command(BaseCommand):
             # otherwise default tmp directory is chosen
             temp_dir_path = backup_files_dir if os.path.exists(backup_files_dir) else None
 
-            with TemporaryDirectory(dir=temp_dir_path) as restore_folder:
-
+            restore_folder = os.path.join(temp_dir_path, '{}{}'.format('tmp', str(uuid.uuid4())[:4]))
+            try:
+                os.makedirs(restore_folder)
+            except Exception as e:
+                raise e
+            try:
                 # Extract ZIP Archive to Target Folder
                 target_folder = extract_archive(backup_file, restore_folder)
 
@@ -233,6 +242,8 @@ class Command(BaseCommand):
                 locale_files_folders = os.path.join(target_folder, utils.LOCALE_PATHS)
 
                 try:
+                    print(("[Sanity Check] Full Write Access to '{}' ...".format(restore_folder)))
+                    chmod_tree(restore_folder)
                     print(("[Sanity Check] Full Write Access to '{}' ...".format(media_root)))
                     chmod_tree(media_root)
                     print(("[Sanity Check] Full Write Access to '{}' ...".format(static_root)))
@@ -259,8 +270,11 @@ class Command(BaseCommand):
 
                 if not skip_geoserver:
                     try:
+                        print(("[Sanity Check] Full Write Access to '{}' ...".format(target_folder)))
+                        chmod_tree(target_folder)
                         self.restore_geoserver_backup(settings, target_folder,
                                                       skip_geoserver_info, skip_geoserver_security)
+                        self.prepare_geoserver_gwc_config(config, settings)
                         self.restore_geoserver_raster_data(config, settings, target_folder)
                         self.restore_geoserver_vector_data(config, settings, target_folder)
                         print("Restoring geoserver external resources")
@@ -277,7 +291,6 @@ class Command(BaseCommand):
                         if notify:
                             restore_notification.delay(admin_emails, backup_file, backup_md5, str(exception))
                         raise exception
-
                 else:
                     print("Skipping geoserver backup restore")
 
@@ -486,6 +499,8 @@ class Command(BaseCommand):
                     "--source-address=my-host-dev.geonode.org --target-address=my-host-prod.geonode.org"
                 )
                 print("Restore finished.")
+            finally:
+                shutil.rmtree(restore_folder)
 
     def validate_backup_file_options(self, **options):
         """
@@ -595,10 +610,9 @@ class Command(BaseCommand):
         passwd = settings.OGC_SERVER['default']['PASSWORD']
         geoserver_bk_file = os.path.join(target_folder, 'geoserver_catalog.zip')
 
-        if not os.path.exists(geoserver_bk_file):
-            print(('Skipping geoserver restore: ' +
+        if not os.path.exists(geoserver_bk_file) or not os.access(geoserver_bk_file, os.R_OK):
+            raise Exception(('ERROR: geoserver restore: ' +
                   'file "{}" not found.'.format(geoserver_bk_file)))
-            return
 
         print "Restoring 'GeoServer Catalog ["+url+"]' from '"+geoserver_bk_file+"'."
 
@@ -684,6 +698,20 @@ class Command(BaseCommand):
         else:
             raise ValueError(error_backup.format(url, r.status_code, r.text))
 
+    def prepare_geoserver_gwc_config(self, config, settings):
+        if (config.gs_data_dir):
+            # Cleanup '$config.gs_data_dir/gwc-layers'
+            gwc_layers_root = os.path.join(config.gs_data_dir, 'gwc-layers')
+            if not os.path.isabs(gwc_layers_root):
+                gwc_layers_root = os.path.join(settings.PROJECT_ROOT, '..', gwc_layers_root)
+            try:
+                shutil.rmtree(gwc_layers_root)
+                print('Cleaned out old GeoServer GWC Layers Config: ' + gwc_layers_root)
+            except Exception:
+                pass
+            if not os.path.exists(gwc_layers_root):
+                os.makedirs(gwc_layers_root)
+
     def restore_geoserver_raster_data(self, config, settings, target_folder):
         if (config.gs_data_dir):
             if (config.gs_dump_raster_data):
@@ -694,26 +722,11 @@ class Command(BaseCommand):
                     if not os.path.isabs(gs_data_root):
                         gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
 
-                    try:
-                        chmod_tree(gs_data_root)
-                    except Exception:
-                        print('Original GeoServer Data Dir "{}" must be writable by the current user. \
-                              Do not forget to copy it first. It will be wiped-out by the Restore procedure!'.format(
-                            gs_data_root))
-                        raise
-
-                    try:
-                        shutil.rmtree(gs_data_root)
-                        print('Cleaned out old GeoServer Data Dir: ' + gs_data_root)
-                    except Exception:
-                        pass
-
                     if not os.path.exists(gs_data_root):
                         os.makedirs(gs_data_root)
 
                     copy_tree(gs_data_folder, gs_data_root)
-                    chmod_tree(gs_data_root)
-                    print("GeoServer Uploaded Data Restored to '" + gs_data_root + "'.")
+                    print("GeoServer Uploaded Raster Data Restored to '" + gs_data_root + "'.")
                 else:
                     print(('Skipping geoserver raster data restore: ' +
                           'directory "{}" not found.'.format(gs_data_folder)))
@@ -725,25 +738,10 @@ class Command(BaseCommand):
                     if not os.path.isabs(gs_data_root):
                         gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
 
-                    try:
-                        chmod_tree(gs_data_root)
-                    except Exception:
-                        print('Original GeoServer Data Dir "{}" must be writable by the current user. \
-                              Do not forget to copy it first. It will be wiped-out by the Restore procedure!'.format(
-                            gs_data_root))
-                        raise
-
-                    try:
-                        shutil.rmtree(gs_data_root)
-                        print('Cleaned out old GeoServer Data Dir: ' + gs_data_root)
-                    except Exception:
-                        pass
-
                     if not os.path.exists(gs_data_root):
                         os.makedirs(gs_data_root)
 
                     copy_tree(gs_data_folder, gs_data_root)
-                    chmod_tree(gs_data_root)
                     print("GeoServer Uploaded Data Restored to '" + gs_data_root + "'.")
                 else:
                     print(('Skipping geoserver raster data restore: ' +

@@ -20,9 +20,11 @@
 
 import json
 import os
+import sys
 import time
 import shutil
 import requests
+import traceback
 import re
 import six
 
@@ -103,11 +105,15 @@ class Command(BaseCommand):
         try:
             # execute backup procedure
             self.execute_backup(**options)
+        except Exception:
+            traceback.print_exc()
+            sys.exit(1)
         finally:
             # restore read only mode's original value
             if not skip_read_only:
                 config.read_only = original_read_only_value
                 config.save()
+        sys.exit(0)
 
     def execute_backup(self, **options):
         # ignore_errors = options.get('ignore_errors')
