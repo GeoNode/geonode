@@ -150,7 +150,7 @@ class Command(BaseCommand):
         try:
             self.execute_restore(**options)
         except Exception:
-            traceback.print_exc()
+            raise
         finally:
             # restore read only mode's original value
             if not skip_read_only:

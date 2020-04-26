@@ -105,7 +105,7 @@ class Command(BaseCommand):
             # execute backup procedure
             self.execute_backup(**options)
         except Exception:
-            traceback.print_exc()
+            raise
         finally:
             # restore read only mode's original value
             if not skip_read_only:
