@@ -1536,10 +1536,16 @@ def chmod_tree(dst, permissions=0o777):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
             os.chmod(path, permissions)
+            status = os.stat(path)
+            if oct(status.st_mode & 0o777) != str(oct(permissions)):
+                raise Exception("Could not update permissions of {}".format(path))
 
         for dirname in dirnames:
             path = os.path.join(dirpath, dirname)
             os.chmod(path, permissions)
+            status = os.stat(path)
+            if oct(status.st_mode & 0o777) != str(oct(permissions)):
+                raise Exception("Could not update permissions of {}".format(path))
 
 
 def slugify_zh(text, separator='_'):
@@ -1634,6 +1640,12 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             logger.debug(" -- Resource Links[Create Raw Data download link]...")
             download_url = urljoin(settings.SITEURL,
                                    reverse('download', args=[instance.id]))
+            while Link.objects.filter(
+                    resource=instance.resourcebase_ptr,
+                    url=download_url).count() > 1:
+                Link.objects.filter(
+                    resource=instance.resourcebase_ptr,
+                    url=download_url).first().delete()
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
                 url=download_url,

@@ -23,6 +23,7 @@ import os
 import time
 import shutil
 import requests
+import traceback
 import re
 import six
 
@@ -103,6 +104,8 @@ class Command(BaseCommand):
         try:
             # execute backup procedure
             self.execute_backup(**options)
+        except Exception:
+            traceback.print_exc()
         finally:
             # restore read only mode's original value
             if not skip_read_only:
@@ -138,7 +141,7 @@ class Command(BaseCommand):
                 self.create_geoserver_backup(settings, target_folder)
                 self.dump_geoserver_raster_data(config, settings, target_folder)
                 self.dump_geoserver_vector_data(config, settings, target_folder)
-                print("Duming geoserver external resources")
+                print("Dumping geoserver external resources")
                 self.dump_geoserver_externals(config, settings, target_folder)
             else:
                 print("Skipping geoserver backup")
@@ -365,16 +368,35 @@ class Command(BaseCommand):
     def dump_geoserver_raster_data(self, config, settings, target_folder):
         if (config.gs_data_dir):
             if (config.gs_dump_raster_data):
-                # Dump '$config.gs_data_dir/data/geonode'
+                # Dump '$config.gs_data_dir/geonode'
                 gs_data_root = os.path.join(config.gs_data_dir, 'geonode')
                 if not os.path.isabs(gs_data_root):
                     gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
-                gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'geonode')
-                if not os.path.exists(gs_data_folder):
-                    os.makedirs(gs_data_folder)
+                print("Dumping GeoServer Uploaded Data from '"+gs_data_root+"'.")
+                if os.path.exists(gs_data_root):
+                    gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'geonode')
+                    if not os.path.exists(gs_data_folder):
+                        os.makedirs(gs_data_folder)
 
-                copy_tree(gs_data_root, gs_data_folder)
-                print("Dumped GeoServer Uploaded Data from '"+gs_data_root+"'.")
+                    copy_tree(gs_data_root, gs_data_folder)
+                    print("Dumped GeoServer Uploaded Data from '"+gs_data_root+"'.")
+                else:
+                    print("Skipped GeoServer Uploaded Data '"+gs_data_root+"'.")
+
+                # Dump '$config.gs_data_dir/data/geonode'
+                gs_data_root = os.path.join(config.gs_data_dir, 'data', 'geonode')
+                if not os.path.isabs(gs_data_root):
+                    gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
+                print("Dumping GeoServer Uploaded Data from '"+gs_data_root+"'.")
+                if os.path.exists(gs_data_root):
+                    gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
+                    if not os.path.exists(gs_data_folder):
+                        os.makedirs(gs_data_folder)
+
+                    copy_tree(gs_data_root, gs_data_folder)
+                    print("Dumped GeoServer Uploaded Data from '" + gs_data_root + "'.")
+                else:
+                    print("Skipped GeoServer Uploaded Data '"+gs_data_root+"'.")
 
     def dump_geoserver_vector_data(self, config, settings, target_folder):
         if (config.gs_dump_vector_data):
@@ -417,22 +439,30 @@ class Command(BaseCommand):
                 match = regexp.match(text.decode("utf-8"))
                 if match:
                     relpath = match.group(1)
-                    abspath = relpath if os.path.isabs(relpath) else \
-                        os.path.abspath(
-                            os.path.join(os.path.dirname(path), relpath))
-                    if os.path.exists(abspath):
-                        return abspath
+                    try:
+                        abspath = relpath if os.path.isabs(relpath) else \
+                            os.path.abspath(
+                                os.path.join(os.path.dirname(path), relpath))
+                        if os.path.exists(abspath):
+                            return abspath
+                    except Exception:
+                        print("WARNING: Error while trying to dump {}".format(text))
+                        return
 
         def match_fileurl(key, text, regexp=re.compile("^file:(.+)$")):
             if key in ('url', ):
                 match = regexp.match(text.decode("utf-8"))
                 if match:
                     relpath = match.group(1)
-                    abspath = relpath if os.path.isabs(relpath) else \
-                        os.path.abspath(
-                            os.path.join(config.gs_data_dir, relpath))
-                    if os.path.exists(abspath):
-                        return abspath
+                    try:
+                        abspath = relpath if os.path.isabs(relpath) else \
+                            os.path.abspath(
+                                os.path.join(config.gs_data_dir, relpath))
+                        if os.path.exists(abspath):
+                            return abspath
+                    except Exception:
+                        print("WARNING: Error while trying to dump {}".format(text))
+                        return
 
         def dump_external_resources_from_xml(path):
 
