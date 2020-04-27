@@ -129,7 +129,7 @@ parse-type==0.5.2
 requests-toolbelt==0.9.1
 flake8==3.7.9
 pytest==5.4.1
-pytest-bdd==3.2.1
+pytest-bdd==3.3.0
 splinter==0.13.0
 pytest-splinter==2.0.1
 pytest-django==3.9.0
