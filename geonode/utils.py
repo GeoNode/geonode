@@ -1508,7 +1508,7 @@ def copy_tree(src, dst, symlinks=False, ignore=None):
                         except Exception:
                             pass
                 try:
-                    shutil.copytree(s, d, symlinks, ignore)
+                    shutil.copytree(s, d, symlinks=symlinks, ignore=ignore)
                 except Exception:
                     pass
             else:

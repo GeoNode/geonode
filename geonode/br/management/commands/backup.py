@@ -138,7 +138,7 @@ class Command(BaseCommand):
             os.chmod(target_folder, 0o777)
 
             if not skip_geoserver:
-                self.create_geoserver_backup(settings, target_folder)
+                self.create_geoserver_backup(config, settings, target_folder)
                 self.dump_geoserver_raster_data(config, settings, target_folder)
                 self.dump_geoserver_vector_data(config, settings, target_folder)
                 print("Dumping geoserver external resources")
@@ -167,7 +167,8 @@ class Command(BaseCommand):
                 if not os.path.exists(media_folder):
                     os.makedirs(media_folder)
 
-                copy_tree(media_root, media_folder)
+                copy_tree(media_root, media_folder,
+                          ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
                 print("Saved Media Files from '"+media_root+"'.")
 
                 # Store Static Root
@@ -176,7 +177,8 @@ class Command(BaseCommand):
                 if not os.path.exists(static_folder):
                     os.makedirs(static_folder)
 
-                copy_tree(static_root, static_folder)
+                copy_tree(static_root, static_folder,
+                          ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
                 print("Saved Static Root from '"+static_root+"'.")
 
                 # Store Static Folders
@@ -198,7 +200,8 @@ class Command(BaseCommand):
                     if not os.path.exists(static_folder):
                         os.makedirs(static_folder)
 
-                    copy_tree(static_files_folder, static_folder)
+                    copy_tree(static_files_folder, static_folder,
+                              ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
                     print("Saved Static Files from '"+static_files_folder+"'.")
 
                 # Store Template Folders
@@ -227,7 +230,8 @@ class Command(BaseCommand):
                     if not os.path.exists(template_folder):
                         os.makedirs(template_folder)
 
-                    copy_tree(template_files_folder, template_folder)
+                    copy_tree(template_files_folder, template_folder,
+                              ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
                     print("Saved Template Files from '"+template_files_folder+"'.")
 
                 # Store Locale Folders
@@ -249,7 +253,8 @@ class Command(BaseCommand):
                     if not os.path.exists(locale_folder):
                         os.makedirs(locale_folder)
 
-                    copy_tree(locale_files_folder, locale_folder)
+                    copy_tree(locale_files_folder, locale_folder,
+                              ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
                     print("Saved Locale Files from '"+locale_files_folder+"'.")
 
                 # Create Final ZIP Archive
@@ -272,7 +277,7 @@ class Command(BaseCommand):
 
                 return str(os.path.join(backup_dir, dir_time_suffix+'.zip'))
 
-    def create_geoserver_backup(self, settings, target_folder):
+    def create_geoserver_backup(self, config, settings, target_folder):
         # Create GeoServer Backup
         url = settings.OGC_SERVER['default']['LOCATION']
         user = settings.OGC_SERVER['default']['USER']
@@ -297,7 +302,8 @@ class Command(BaseCommand):
         _options = [
             'BK_CLEANUP_TEMP=true',
             'BK_SKIP_SETTINGS=false',
-            'BK_SKIP_SECURITY=false'
+            'BK_SKIP_SECURITY=false',
+            'exclude.file.path={}'.format(config.gs_exclude_file_path)
         ]
         data = {'backup': {'archiveFile': geoserver_bk_file, 'overwrite': 'true',
                            'options': {'option': _options}}}
@@ -377,8 +383,8 @@ class Command(BaseCommand):
                     gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'geonode')
                     if not os.path.exists(gs_data_folder):
                         os.makedirs(gs_data_folder)
-
-                    copy_tree(gs_data_root, gs_data_folder)
+                    copy_tree(gs_data_root, gs_data_folder,
+                              ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
                     print("Dumped GeoServer Uploaded Data from '"+gs_data_root+"'.")
                 else:
                     print("Skipped GeoServer Uploaded Data '"+gs_data_root+"'.")
@@ -393,7 +399,8 @@ class Command(BaseCommand):
                     if not os.path.exists(gs_data_folder):
                         os.makedirs(gs_data_folder)
 
-                    copy_tree(gs_data_root, gs_data_folder)
+                    copy_tree(gs_data_root, gs_data_folder,
+                              ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
                     print("Dumped GeoServer Uploaded Data from '" + gs_data_root + "'.")
                 else:
                     print("Skipped GeoServer Uploaded Data '"+gs_data_root+"'.")
