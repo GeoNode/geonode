@@ -269,7 +269,7 @@ class Command(BaseCommand):
                     try:
                         print(("[Sanity Check] Full Write Access to '{}' ...".format(target_folder)))
                         chmod_tree(target_folder)
-                        self.restore_geoserver_backup(settings, target_folder,
+                        self.restore_geoserver_backup(config, settings, target_folder,
                                                       skip_geoserver_info, skip_geoserver_security)
                         self.prepare_geoserver_gwc_config(config, settings)
                         self.restore_geoserver_raster_data(config, settings, target_folder)
@@ -280,7 +280,7 @@ class Command(BaseCommand):
                         if recovery_file:
                             with tempfile.TemporaryDirectory(dir=temp_dir_path) as restore_folder:
                                 recovery_folder = extract_archive(recovery_file, restore_folder)
-                                self.restore_geoserver_backup(settings, recovery_folder,
+                                self.restore_geoserver_backup(config, settings, recovery_folder,
                                                               skip_geoserver_info, skip_geoserver_security)
                                 self.restore_geoserver_raster_data(config, settings, recovery_folder)
                                 self.restore_geoserver_vector_data(config, settings, recovery_folder)
@@ -293,7 +293,8 @@ class Command(BaseCommand):
 
                 # Prepare Target DB
                 try:
-                    call_command('migrate', interactive=False)
+                    call_command('makemigrations', interactive=False)
+                    call_command('migrate', interactive=False, load_initial_data=False)
 
                     db_name = settings.DATABASES['default']['NAME']
                     db_user = settings.DATABASES['default']['USER']
@@ -601,7 +602,7 @@ class Command(BaseCommand):
 
         return backup_hash
 
-    def restore_geoserver_backup(self, settings, target_folder, skip_geoserver_info, skip_geoserver_security):
+    def restore_geoserver_backup(self, config, settings, target_folder, skip_geoserver_info, skip_geoserver_security):
         """Restore GeoServer Catalog"""
         url = settings.OGC_SERVER['default']['LOCATION']
         user = settings.OGC_SERVER['default']['USER']
@@ -618,7 +619,8 @@ class Command(BaseCommand):
         _options = [
             'BK_CLEANUP_TEMP=true',
             'BK_SKIP_SETTINGS={}'.format('true' if skip_geoserver_info else 'false'),
-            'BK_SKIP_SECURITY={}'.format('true' if skip_geoserver_security else 'false')
+            'BK_SKIP_SECURITY={}'.format('true' if skip_geoserver_security else 'false'),
+            'exclude.file.path={}'.format(config.gs_exclude_file_path)
         ]
         data = {'restore': {'archiveFile': geoserver_bk_file,
                             'options': {'option': _options}}}
