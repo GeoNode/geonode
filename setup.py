@@ -21,7 +21,11 @@
 try:
     # pip >=20
     from pip._internal.network.session import PipSession
-    from pip._internal.req import parse_requirements
+    try:
+        from pip._internal.req import parse_requirements
+    except ImportError:
+        # pip >=21
+        from pip._internal.req.req_file import parse_requirements
 except ImportError:
     try:
         # 10.0.0 <= pip <= 19.3.1
@@ -44,7 +48,7 @@ sys.path.append(current_directory)
 
 # Parse requirements.txt to get the list of dependencies
 inst_req = parse_requirements("requirements.txt", session=PipSession())
-REQUIREMENTS = [str(r.req) for r in inst_req]
+REQUIREMENTS = [str(r.req if hasattr(r, 'req') else r.requirement) for r in inst_req]
 
 setup(
     name="GeoNode",
