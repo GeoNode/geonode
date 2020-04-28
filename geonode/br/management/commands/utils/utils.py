@@ -18,15 +18,16 @@
 #
 #########################################################################
 
-
-import hashlib
-import traceback
-import psycopg2
-
-from configparser import ConfigParser
 import os
+import re
 import six
 import sys
+import hashlib
+import psycopg2
+import traceback
+import dateutil.parser
+
+from configparser import ConfigParser
 
 from django.core.management.base import CommandError
 
@@ -106,7 +107,11 @@ class Config(object):
 
         if not settings_path:
             raise CommandError("Mandatory option (-c / --config)")
-
+        if not os.path.isabs(settings_path):
+            settings_path = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                os.pardir,
+                settings_path)
         if not os.path.exists(settings_path):
             raise CommandError("Provided '-c' / '--config' file does not exist.")
 
@@ -117,10 +122,35 @@ class Config(object):
         self.pg_restore_cmd = config.get('database', 'pgrestore')
 
         self.gs_data_dir = config.get('geoserver', 'datadir')
+
+        if config.has_option('geoserver', 'datadir_exclude_file_path'):
+            self.gs_exclude_file_path = \
+                ';'.join(config.get('geoserver', 'datadir_exclude_file_path').split(','))
+        else:
+            self.gs_exclude_file_path = ''
+
         self.gs_dump_vector_data = \
             config.getboolean('geoserver', 'dumpvectordata')
         self.gs_dump_raster_data = \
             config.getboolean('geoserver', 'dumprasterdata')
+
+        if config.has_option('geoserver', 'data_dt_filter'):
+            self.gs_data_dt_filter = \
+                config.get('geoserver', 'data_dt_filter').split(' ')
+        else:
+            self.gs_data_dt_filter = (None, None)
+
+        if config.has_option('geoserver', 'data_layername_filter'):
+            self.gs_data_layername_filter = \
+                config.get('geoserver', 'data_layername_filter').split(',')
+        else:
+            self.gs_data_layername_filter = ''
+
+        if config.has_option('geoserver', 'data_layername_exclude_filter'):
+            self.gs_data_layername_exclude_filter = \
+                config.get('geoserver', 'data_layername_exclude_filter').split(',')
+        else:
+            self.gs_data_layername_exclude_filter = ''
 
         self.app_names = config.get('fixtures', 'apps').split(',')
         self.dump_names = config.get('fixtures', 'dumps').split(',')
@@ -217,13 +247,26 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
     try:
         sql_dump = """SELECT tablename from pg_tables where tableowner = '%s'""" % (db_user)
         curs.execute(sql_dump)
-        pg_tables = curs.fetchall()
+        pg_all_tables = [table[0] for table in curs.fetchall()]
+        pg_tables = []
+        if config.gs_data_layername_filter:
+            for pat in config.gs_data_layername_filter:
+                pg_tables += glob_filter(pg_all_tables, pat)
+        elif config.gs_data_layername_exclude_filter:
+            pg_tables = pg_all_tables
+            for pat in config.gs_data_layername_exclude_filter:
+                names = ','.join(glob_filter(pg_all_tables, pat))
+                for exclude_table in names.split(','):
+                    pg_tables.remove(exclude_table)
+        else:
+            pg_tables = pg_all_tables
+
         for table in pg_tables:
-            print("Dumping GeoServer Vectorial Data : {}:{}".format(db_name, table[0]))
+            print("Dumping GeoServer Vectorial Data : {}:{}".format(db_name, table))
             os.system('PGPASSWORD="' + db_passwd + '" ' + config.pg_dump_cmd + ' -h ' + db_host +
                       ' -p ' + str(db_port) + ' -U ' + db_user + ' -F c -b' +
-                      ' -t \'"' + str(table[0]) + '"\' -f ' +
-                      os.path.join(target_folder, table[0] + '.dump ' + db_name))
+                      ' -t \'"' + str(table) + '"\' -f ' +
+                      os.path.join(target_folder, table + '.dump ' + db_name))
 
     except Exception:
         try:
@@ -317,3 +360,65 @@ def md5_file_hash(file_path):
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
+
+
+def ignore_time(cmp_operator, iso_date):
+    def ignoref(directory, contents):
+        if not cmp_operator or not iso_date:
+            return []
+        _timestamp = dateutil.parser.isoparse(iso_date).timestamp()
+        if cmp_operator == '<':
+            return (f for f in contents if os.path.getmtime(os.path.join(directory, f)) > _timestamp)
+        elif cmp_operator == '<=':
+            return (f for f in contents if os.path.getmtime(os.path.join(directory, f)) >= _timestamp)
+        elif cmp_operator == '=':
+            return (f for f in contents if os.path.getmtime(os.path.join(directory, f)) == _timestamp)
+        elif cmp_operator == '>':
+            return (f for f in contents if os.path.getmtime(os.path.join(directory, f)) > _timestamp)
+        elif cmp_operator == '>=':
+            return (f for f in contents if os.path.getmtime(os.path.join(directory, f)) <= _timestamp)
+    return ignoref
+
+
+def glob2re(pat):
+    """Translate a shell PATTERN to a regular expression.
+
+    There is no way to quote meta-characters.
+    """
+
+    i, n = 0, len(pat)
+    res = ''
+    while i < n:
+        c = pat[i]
+        i = i+1
+        if c == '*':
+            #res = res + '.*'
+            res = res + '[^/]*'
+        elif c == '?':
+            #res = res + '.'
+            res = res + '[^/]'
+        elif c == '[':
+            j = i
+            if j < n and pat[j] == '!':
+                j = j+1
+            if j < n and pat[j] == ']':
+                j = j+1
+            while j < n and pat[j] != ']':
+                j = j+1
+            if j >= n:
+                res = res + '\\['
+            else:
+                stuff = pat[i:j].replace('\\', '\\\\')
+                i = j+1
+                if stuff[0] == '!':
+                    stuff = '^' + stuff[1:]
+                elif stuff[0] == '^':
+                    stuff = '\\' + stuff
+                res = '%s[%s]' % (res, stuff)
+        else:
+            res = res + re.escape(c)
+    return res + '\Z(?ms)'
+
+
+def glob_filter(names, pat):
+    return (name for name in names if re.match(glob2re(pat), name))
