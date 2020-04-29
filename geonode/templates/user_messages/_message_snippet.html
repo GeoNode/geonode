@@ -13,7 +13,7 @@
         <tr>
             <td class="col-sm-1">
                 <div class="inbox-checkbox">
-                    <input name="thread_{{ thread.pk }}" id={{ input_id }} type="checkbox">
+                    <input name=thread_{{ thread.pk }} id={{ input_id }} type="checkbox">
                     <label for={{ input_id }} class="inbox-marker-checkmark"></label>
                 </div>
             </td>
@@ -28,8 +28,7 @@
                 {{ thread.latest_message.sent_at}}
             </td>
             <td class="col-md-1">
-                <form id="thread_delete_{{ thread.pk }}" method="post"
-                      action="{% url "messages_thread_delete" thread.pk %}">
+                <form method="post" action="{% url "messages_thread_delete" thread.pk %}">
                     {% csrf_token %}
                     <button class="btn btn-danger message_delete_btn">{% trans "Delete" %}</button>
                 </form>

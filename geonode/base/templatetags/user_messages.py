@@ -9,7 +9,8 @@ register = template.Library()
 
 @register.simple_tag
 def is_unread(thread, user):
-    if thread.userthread_set.filter(user=user, unread=True).count() > 0:
+    if thread.userthread_set.filter(user=user, unread=True).count() > 0 or \
+            thread.groupmemberthread_set.filter(user=user, unread=True).count() > 0:
         return True
     return False
 
