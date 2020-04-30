@@ -339,11 +339,6 @@ class Command(BaseCommand):
                                 raise
 
                         # Restore Media Root
-                        try:
-                            shutil.rmtree(media_root)
-                        except Exception:
-                            pass
-
                         if not os.path.exists(media_root):
                             os.makedirs(media_root)
 
@@ -352,11 +347,6 @@ class Command(BaseCommand):
                         print("Media Files Restored into '"+media_root+"'.")
 
                         # Restore Static Root
-                        try:
-                            shutil.rmtree(static_root)
-                        except Exception:
-                            pass
-
                         if not os.path.exists(static_root):
                             os.makedirs(static_root)
 
@@ -365,11 +355,6 @@ class Command(BaseCommand):
                         print("Static Root Restored into '"+static_root+"'.")
 
                         # Restore Static Root
-                        try:
-                            shutil.rmtree(static_root)
-                        except Exception:
-                            pass
-
                         if not os.path.exists(static_root):
                             os.makedirs(static_root)
 
@@ -389,11 +374,6 @@ class Command(BaseCommand):
                                     )
                                 )
                                 continue
-
-                            try:
-                                shutil.rmtree(static_files_folder)
-                            except Exception:
-                                pass
 
                             if not os.path.exists(static_files_folder):
                                 os.makedirs(static_files_folder)
@@ -417,11 +397,6 @@ class Command(BaseCommand):
                                 )
                                 continue
 
-                            try:
-                                shutil.rmtree(template_files_folder)
-                            except Exception:
-                                pass
-
                             if not os.path.exists(template_files_folder):
                                 os.makedirs(template_files_folder)
 
@@ -443,11 +418,6 @@ class Command(BaseCommand):
                                     )
                                 )
                                 continue
-
-                            try:
-                                shutil.rmtree(locale_files_folder)
-                            except Exception:
-                                pass
 
                             if not os.path.exists(locale_files_folder):
                                 os.makedirs(locale_files_folder)
