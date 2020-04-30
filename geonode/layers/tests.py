@@ -288,16 +288,16 @@ class LayersTest(GeoNodeBaseTestSupport):
         lyr.keywords.add(*["saving", "keywords"])
         lyr.save()
         self.assertEqual(
-            lyr.keyword_list(), [
-                'here', 'keywords', 'populartag', 'saving'])
+            set(lyr.keyword_list()), {
+                'here', 'keywords', 'populartag', 'saving'})
 
         # Test exotic encoding Keywords
         lyr.keywords.add(*['論語', 'ä', 'ö', 'ü', 'ß'])
         lyr.save()
         self.assertEqual(
-            lyr.keyword_list(), [
+            set(lyr.keyword_list()), {
                 'here', 'keywords', 'populartag', 'saving',
-                'ß', 'ä', 'ö', 'ü', '論語'])
+                'ß', 'ä', 'ö', 'ü', '論語'})
 
         # Test input escape
         lyr.keywords.add(*["Europe<script>true;</script>",
@@ -305,10 +305,10 @@ class LayersTest(GeoNodeBaseTestSupport):
                            "<IMG SRC='javascript:true;'>Science"])
 
         self.assertEqual(
-            lyr.keyword_list(), [
+            set(lyr.keyword_list()), {
                 '&lt;IMG SRC=&#39;javascript:true;&#39;&gt;Science', 'Europe&lt;script&gt;true;&lt;/script&gt;',
                 'here', 'keywords', 'land_&lt;script&gt;true;&lt;/script&gt;covering', 'populartag', 'saving',
-                'ß', 'ä', 'ö', 'ü', '論語'])
+                'ß', 'ä', 'ö', 'ü', '論語'})
 
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('layer_detail', args=(lyr.alternate,)))

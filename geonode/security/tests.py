@@ -421,7 +421,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             3. Set permissions to a group of users
             4. Try to sync a layer from GeoServer
         """
-        layer = Layer.objects.all()[0]
+        layer = Layer.objects.first()
         self.client.login(username='admin', password='admin')
 
         # Reset GeoFence Rules
@@ -623,7 +623,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             permissions=permissions,
             execute_signals=True)
 
-        saved_layer = Layer.objects.get(title='boxes_with_date_by_bobby')
+        title = 'boxes_with_date_by_bobby'
+        saved_layer = Layer.objects.filter(title=title).first()
         check_layer(saved_layer)
 
         from lxml import etree
@@ -644,8 +645,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         user = settings.OGC_SERVER['default']['USER']
         passwd = settings.OGC_SERVER['default']['PASSWORD']
 
-        rest_path = 'rest/workspaces/geonode/datastores/{lyr_name}/featuretypes/{lyr_name}.xml'.\
-            format(lyr_name=name)
+        rest_path = 'rest/workspaces/geonode/datastores/{lyr_title}/featuretypes/{lyr_name}.xml'.\
+            format(lyr_title=title, lyr_name=name)
         import requests
         from requests.auth import HTTPBasicAuth
         r = requests.get(url + rest_path,
@@ -831,7 +832,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             permissions=permissions,
             execute_signals=True)
 
-        layer = Layer.objects.get(title='san_andres_y_providencia_poi')
+        layer = Layer.objects.filter(title='san_andres_y_providencia_poi').first()
         check_layer(layer)
 
         geofence_rules_count = get_geofence_rules_count()
@@ -1156,7 +1157,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         bob = get_user_model().objects.get(username='bobby')
 
         # grab a layer
-        layer = Layer.objects.all()[0]
+        layer = Layer.objects.first()
         layer.set_default_permissions()
         # verify bobby has view/change permissions on it but not manage
         self.assertTrue(
