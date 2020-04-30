@@ -135,7 +135,7 @@
         <h3>{% trans "Add new members" %}</h3>
         <form method="POST" action="{% url "group_members_add" group.slug %}">
             {% csrf_token %}
-            <div id="member_form_container"
+            <div id="member_form_container">
                 {{ member_form|as_bootstrap }}<br/><br/>
             </div>
             <input type="submit" value="{% trans "Add Group Members" %}" class="btn btn-primary"/>

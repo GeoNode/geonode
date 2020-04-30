@@ -35,10 +35,14 @@
                 $("#id-inbox-form").submit();
             });
         </script>
-
-        <form method="POST" id="id-inbox-form" action={% url "msg_status" %}>
+        <form method="POST" id="id-inbox-form" action={% url "msg_status" %} >
             {% csrf_token %}
             <input id="id-action-type" name="action_type" type="hidden" value="">
+            {% for thread in  threads_all%}
+                <input name=thread_{{ thread.pk }} id=read_unread_{{ thread.pk }} type="hidden" value="">
+            {% endfor %}
+        </form>
+
             <div class="tab-content">
               <article id="inbox" class="tab-pane active">
                 {% with threads_unread as threads %}
@@ -51,7 +55,6 @@
                 {% endwith %}
               </article>
             </div>
-        </form>
       </div>
     </div>
   </div>
@@ -68,8 +71,17 @@
 {% block extra_script %}
 {{ block.super }}
 <script type="text/javascript">
+
+function prepare_read_unread_form(objectClicked) {
+    if (objectClicked.type === 'checkbox') {
+        $("#read_unread_" + objectClicked.name.split("_")[1])[0].value = objectClicked.checked;
+    }
+}
+
 $('.tab-content').click(function(event) {
-  objectClicked = event.target;
+  const objectClicked = event.target;
+  prepare_read_unread_form(objectClicked)
+
   // If we clicked the delete button
   if ($(objectClicked)[0].className.indexOf('message_delete_btn') >= 0) {
     // Grab the correct form
