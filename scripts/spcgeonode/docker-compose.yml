@@ -93,6 +93,8 @@ services:
     environment:
       - HTTPS_HOST=${HTTPS_HOST}
       - HTTP_HOST=${HTTP_HOST}
+      - HTTPS_PORT=${HTTPS_PORT}
+      - HTTP_PORT=${HTTP_PORT}
       - LETSENCRYPT_MODE=${LETSENCRYPT_MODE}
       - RESOLVER=127.0.0.11
     ports:

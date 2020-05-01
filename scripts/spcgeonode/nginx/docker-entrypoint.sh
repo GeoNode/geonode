@@ -33,8 +33,8 @@ else
 fi
 
 echo "Replacing environement variables"
-envsubst '\$HTTP_HOST \$HTTPS_HOST \$RESOLVER' < /etc/nginx/nginx.conf.envsubst > /etc/nginx/nginx.conf
-envsubst '\$HTTP_HOST \$HTTPS_HOST \$RESOLVER' < /etc/nginx/nginx.https.available.conf.envsubst > /etc/nginx/nginx.https.available.conf
+envsubst '\$HTTP_PORT \$HTTPS_PORT \$HTTP_HOST \$HTTPS_HOST \$RESOLVER' < /etc/nginx/nginx.conf.envsubst > /etc/nginx/nginx.conf
+envsubst '\$HTTP_PORT \$HTTPS_PORT \$HTTP_HOST \$HTTPS_HOST \$RESOLVER' < /etc/nginx/nginx.https.available.conf.envsubst > /etc/nginx/nginx.https.available.conf
 
 echo "Enabling or not https configuration"
 if [ -z "${HTTPS_HOST}" ]; then 
