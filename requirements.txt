@@ -20,7 +20,7 @@ celery==4.4.2
 kombu==4.6.8
 boto3==1.12.49
 six==1.12.0
-tqdm==4.45.0
+tqdm==4.46.0
 Deprecated==1.2.9
 wrapt==1.12.1
 
