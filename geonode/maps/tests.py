@@ -285,7 +285,7 @@ community."
             to a new JSON map configuration"""
         response = self.client.get(reverse('new_map_json'))
         cfg = json.loads(response.content)
-        self.assertEquals(cfg['defaultSourceType'], "gxp_wmscsource")
+        self.assertEquals(cfg['defaultSourceType'], "gxp_osmsource")
 
     @dump_func_name
     def test_map_details(self):

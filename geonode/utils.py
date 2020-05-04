@@ -659,7 +659,7 @@ class GXPMapBase(object):
                 'abstract': self.abstract
             },
             'aboutUrl': '../about',
-            'defaultSourceType': "gxp_wmscsource",
+            'defaultSourceType': "gxp_osmsource",
             'sources': sources,
             'map': {
                 'layers': [layer_config(l, user=user) for l in layers],
