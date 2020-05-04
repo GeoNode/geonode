@@ -90,18 +90,25 @@ def geoserver_option_list(parser):
 class Config(object):
 
     def __init__(self, options):
+        self.config_parser = None
         self.load_settings(settings_path=options.get('config'))
         self.load_options(options)
 
     def load_options(self, options):
         if options.get("gs_data_dir", None):
             self.gs_data_dir = options.get("gs_data_dir")
+            if self.config_parser:
+                self.config_parser['geoserver']['datadir'] = self.gs_data_dir
 
         if options.get("dump_gs_vector_data", None) is not None:
             self.gs_dump_vector_data = options.get("dump_gs_vector_data")
+            if self.config_parser:
+                self.config_parser['geoserver']['dumpvectordata'] = self.gs_dump_vector_data
 
         if options.get("dump_gs_raster_data", None) is not None:
             self.gs_dump_raster_data = options.get("dump_gs_raster_data")
+            if self.config_parser:
+                self.config_parser['geoserver']['dumprasterdata'] = self.gs_dump_raster_data
 
     def load_settings(self, settings_path):
 
@@ -154,6 +161,8 @@ class Config(object):
 
         self.app_names = config.get('fixtures', 'apps').split(',')
         self.dump_names = config.get('fixtures', 'dumps').split(',')
+
+        self.config_parser = config
 
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "lib"))
