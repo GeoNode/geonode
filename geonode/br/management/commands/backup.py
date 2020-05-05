@@ -279,6 +279,11 @@ class Command(BaseCommand):
                 with open(backup_md5_file, 'w') as md5_file:
                     md5_file.write(zip_archive_md5)
 
+                # Generate the ini file with the current settings used by the backup command
+                backup_ini_file = os.path.join(backup_dir, dir_time_suffix + '.ini')
+                with open(backup_ini_file, 'w') as configfile:
+                    config.config_parser.write(configfile)
+
                 # Clean-up Temp Folder
                 try:
                     shutil.rmtree(target_folder)
@@ -380,6 +385,11 @@ class Command(BaseCommand):
 
                 if gs_bk_exec_status == 'FAILED':
                     raise ValueError(error_backup.format(url, r.status_code, r.text))
+                _permissions = 0o777
+                os.chmod(geoserver_bk_file, _permissions)
+                status = os.stat(geoserver_bk_file)
+                if oct(status.st_mode & 0o777) != str(oct(_permissions)):
+                    raise Exception("Could not update permissions of {}".format(geoserver_bk_file))
             else:
                 raise ValueError(error_backup.format(url, r.status_code, r.text))
 
@@ -451,7 +461,11 @@ class Command(BaseCommand):
             if not os.path.isdir(external_dir):
                 os.makedirs(external_dir)
 
-            shutil.copy(abspath, external_path)
+            try:
+                if not os.path.isdir(external_path) and os.path.exists(external_path):
+                    shutil.copy2(abspath, external_path)
+            except shutil.SameFileError:
+                print("WARNING: {} and {} are the same file!".format(abspath, external_path))
 
         def match_filename(key, text, regexp=re.compile("^(.+)$")):
             if key in ('filename', ):
@@ -501,7 +515,7 @@ class Command(BaseCommand):
                         if found:
                             yield found
 
-            with open(path) as fd:
+            with open(path, 'rb') as fd:
                 content = fd.read()
                 tree = parse_xml(content)
                 for found in find_external(tree):
