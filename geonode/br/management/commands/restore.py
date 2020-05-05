@@ -160,7 +160,6 @@ class Command(BaseCommand):
     def execute_restore(self, **options):
         self.validate_backup_file_options(**options)
 
-        config = utils.Config(options)
         force_exec = options.get('force_exec')
         skip_geoserver = options.get('skip_geoserver')
         skip_geoserver_info = options.get('skip_geoserver_info')
@@ -179,6 +178,12 @@ class Command(BaseCommand):
 
         # calculate and validate backup archive hash
         backup_md5 = self.validate_backup_file_hash(backup_file)
+
+        # check if the original backup file ini setting are available or not
+        backup_ini = self.check_backup_ini_settings(backup_file)
+        if backup_ini:
+            options['config'] = backup_ini
+        config = utils.Config(options)
 
         # check if the backup has already been restored
         if with_logs:
@@ -578,6 +583,21 @@ class Command(BaseCommand):
             time.sleep(0.1)
 
         return backup_hash
+
+    def check_backup_ini_settings(self, backup_file):
+        """
+        Method checking backup file's original settings availability
+
+        :param backup_file: path to the backup_file
+        :return: backup_ini_file_path original settings used by the backup file
+        """
+        # check if the ini file is in place
+        backup_ini_file_path = backup_file.rsplit('.', 1)[0] + '.ini'
+
+        if os.path.exists(backup_ini_file_path):
+            return backup_ini_file_path
+
+        return None
 
     def restore_geoserver_backup(self, config, settings, target_folder, skip_geoserver_info, skip_geoserver_security):
         """Restore GeoServer Catalog"""
