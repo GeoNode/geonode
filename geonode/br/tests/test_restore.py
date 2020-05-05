@@ -24,6 +24,7 @@ import zipfile
 import tempfile
 
 from django.core.management import call_command
+from django.core.management.base import CommandError
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.br.tests.factories import RestoredBackupFactory
@@ -144,3 +145,62 @@ class RestoreCommandTests(GeoNodeBaseTestSupport):
 
             # make sure Configuration wasn't called at all
             self.assertEqual(mock_configuration_save.call_count, 0)
+
+    # force backup interruption before starting the procedure itself
+    @mock.patch('geonode.br.management.commands.utils.utils.confirm', return_value=False)
+    # mock geonode.base.models.Configuration save() method
+    @mock.patch('geonode.base.models.Configuration.save', return_value=None)
+    def test_config_files(self, mock_configuration_save, fake_confirm):
+
+        # create the backup file
+        with tempfile.NamedTemporaryFile() as tmp_file:
+            with zipfile.ZipFile(tmp_file, 'w', zipfile.ZIP_DEFLATED) as archive:
+                archive.writestr('something.txt', 'Some Content Here')
+
+            args = ['--skip-read-only']
+            kwargs = {
+                'backup_file': tmp_file.name
+            }
+
+            with self.assertRaises(CommandError) as exc:
+                call_command('restore', *args, **kwargs)
+
+            self.assertIn(
+                'Mandatory option (-c / --config)',
+                exc.exception.args[0],
+                '"Mandatory option (-c / --config)" exception expected.'
+            )
+
+        # create the backup file with ini file
+        with tempfile.NamedTemporaryFile() as tmp_file:
+            with zipfile.ZipFile(tmp_file, 'w', zipfile.ZIP_DEFLATED) as archive:
+                archive.writestr('something.txt', 'Some Content Here')
+
+            tmp_ini_file = tmp_file.name.rsplit('.', 1)[0] + '.ini'
+            from configparser import ConfigParser
+            config = ConfigParser()
+            config['database'] = {
+                'pgdump': 'pg_dump',
+                'pgrestore': 'pg_restore'
+            }
+
+            config['geoserver'] = {
+                'datadir': 'geoserver/data',
+                'dumpvectordata': 'yes',
+                'dumprasterdata': 'yes'
+            }
+
+            config['fixtures'] = {
+                'apps': 'fake',
+                'dumps': 'fake'
+            }
+
+            with open(tmp_ini_file, 'w') as configfile:
+                config.write(configfile)
+
+            args = ['--skip-read-only']
+            kwargs = {
+                'backup_file': tmp_file.name
+            }
+
+            call_command('restore', *args, **kwargs)
