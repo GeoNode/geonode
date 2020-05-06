@@ -32,6 +32,14 @@ else
         ln -sf "/spcgeonode-certificates/autoissued" /certificate_symlink
 fi
 
+echo "Sanity checks on http/s ports configuration"
+if [ -z "${HTTP_PORT}" ]; then
+        HTTP_PORT=443
+fi
+if [ -z "${HTTPS_PORT}" ]; then
+        HTTPS_PORT=443
+fi
+
 echo "Replacing environement variables"
 envsubst '\$HTTP_HOST \$HTTPS_HOST \$RESOLVER' < /etc/nginx/nginx.conf.envsubst > /etc/nginx/nginx.conf
 envsubst '\$HTTP_HOST \$HTTPS_HOST \$RESOLVER' < /etc/nginx/nginx.https.available.conf.envsubst > /etc/nginx/nginx.https.available.conf
