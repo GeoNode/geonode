@@ -20,7 +20,7 @@ class BBOXHelper:
         :param xy: collection of coordinates as [xmin, xmax, ymin, ymax]
         """
         xy[1], xy[2] = xy[2], xy[1]
-        return cls()
+        return cls(xy)
 
     def as_polygon(self):
         return Polygon.from_bbox((self.xmin, self.ymin, self.xmax, self.ymax))
@@ -28,7 +28,7 @@ class BBOXHelper:
 
 
 
-def normalize_x_value(self, value):
+def normalize_x_value(value):
     """
     Normalise x-axis value/longtitude to fall within [-180, 180]
     """
@@ -49,6 +49,8 @@ def filter_bbox(queryset, bbox):
 
     :param bbox: Comma-separated coordinates as "xmin,ymin,xmax,ymax"
     """
+    assert queryset.model.__class__.__name__ == "Layer"
+
     bbox = bbox.split(',')
     bbox = list(map(Decimal, bbox))
 
