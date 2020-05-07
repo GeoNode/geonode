@@ -963,8 +963,6 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
         _thumbnail_path = os.path.join(_thumbnail_dir, thumbnail_name)
         _thumb_exists = storage.exists(_thumbnail_path)
     if overwrite or not _thumb_exists:
-        BBOX_DIFFERENCE_THRESHOLD = 1e-5
-
         is_remote = False
         if not thumbnail_create_url:
             thumbnail_create_url = thumbnail_remote_url

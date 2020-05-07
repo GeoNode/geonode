@@ -19,10 +19,8 @@
 #########################################################################
 import json
 import re
-from decimal import Decimal
 
 from django.urls import resolve
-from django.contrib.gis.geos import Polygon
 from django.db.models import Q
 from django.http import HttpResponse
 from django.conf import settings

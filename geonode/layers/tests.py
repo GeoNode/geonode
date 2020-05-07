@@ -217,7 +217,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             bbox_to_projection([float(coord) for coord in layer_bbox] + [lyr.srid, ],
                                target_srid=3857)[:4])
         solution = [-20037397.023298454, -74299743.40065672,
-                          20037397.02329845, 74299743.40061197]
+                    20037397.02329845, 74299743.40061197]
         logger.debug(projected_bbox)
         for coord, check in zip(projected_bbox, solution):
             self.assertAlmostEqual(coord, check)
@@ -1192,7 +1192,7 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             self.clear_notifications_queue()
             _l = Layer.objects.create(
                 name='test notifications',
-                bbox_polygon=Polygon.from_bbox((-180,-90,180,90)),
+                bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
                 srid='EPSG:4326')
             self.assertTrue(self.check_notification_out('layer_created', self.u))
             _l.name = 'test notifications 2'

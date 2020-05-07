@@ -32,4 +32,3 @@ def loads(strng):
         strng,
         _loads=partial(json.loads, object_hook=decode_hook)
     )
-

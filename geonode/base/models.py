@@ -68,8 +68,7 @@ from geonode.base.enumerations import (
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.utils import (
     add_url_params,
-    bbox_to_wkt,
-    forward_mercator)
+    bbox_to_wkt)
 from geonode.groups.models import GroupProfile
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.utils import get_visible_resources
@@ -962,7 +961,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         bbox = self.bbox_polygon
         if bbox.srid != 4326:
             bbox = bbox.transform(4326, clone=True)
-        
+
         bbox = BBOXHelper(bbox.extent)
         # TODO: This should be 4326, why was `self.srid` used here previously?
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(self.srid)]
@@ -985,7 +984,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         bbox = self.bbox_polygon
         if bbox.srid != 4326:
             bbox = bbox.transform(4326, clone=True)
-    
+
         return str(bbox)
 
     @property
@@ -1091,11 +1090,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             [xmin, ymin, xmax, ymax]
         :param srid: srid as string (e.g. 'EPSG:4326' or '4326')
         """
-        
+
         bbox_polygon = Polygon.from_bbox(bbox)
-        
+
         try:
-            match = re.match('^(EPSG:)?(?P<srid>\d{4,5})$', str(srid))
+            match = re.match(r'^(EPSG:)?(?P<srid>\d{4,5})$', str(srid))
             bbox_polygon.srid = int(match.group('srid'))
         except AttributeError:
             logger.warning("No srid found for layer %s bounding box", self)
@@ -1153,17 +1152,17 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         Calculate zoom level and center coordinates in mercator.
 
-        :param bbox: BBOX is either a `geos.Pologyon` or in the 
+        :param bbox: BBOX is either a `geos.Pologyon` or in the
             format: [x0, x1, y0, y1], which is:
             [min lon, max lon, min lat, max lat] or
             [xmin, xmax, ymin, ymax]
         :type bbox: list
-        """       
+        """
         if isinstance(bbox, Polygon):
             self.srid = bbox.srid
             self.set_bbox_polygon(bbox.extent, bbox.srid)
             self.set_center_zoom()
-            return 
+            return
 
         if not bbox or len(bbox) < 4:
             raise ValidationError(

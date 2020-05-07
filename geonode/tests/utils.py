@@ -297,7 +297,7 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
         # Create dummy layer to attach attributes to
         _l = Layer.objects.create(
             name='dummy_layer',
-            bbox_polygon=Polygon.from_bbox((-180,-90,180,90)),
+            bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
             srid='EPSG:4326')
 
         # Reconnect the signal if it was disconnected

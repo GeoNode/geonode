@@ -26,13 +26,12 @@ class BBOXHelper:
         return Polygon.from_bbox((self.xmin, self.ymin, self.xmax, self.ymax))
 
 
-
-
 def normalize_x_value(value):
     """
     Normalise x-axis value/longtitude to fall within [-180, 180]
     """
     return ((value + 180) % 360) - 180
+
 
 def polygon_from_bbox(bbox, srid=4326):
     """
@@ -57,7 +56,7 @@ def filter_bbox(queryset, bbox):
     # Return all layers when the search extent exceeds 360deg
     if abs(bbox[0] - bbox[2]) >= 360:
         return queryset.all()
-    
+
     x_min = normalize_x_value(bbox[0])
     x_max = normalize_x_value(bbox[2])
 
