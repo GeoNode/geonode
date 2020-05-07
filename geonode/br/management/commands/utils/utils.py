@@ -22,6 +22,7 @@ import os
 import re
 import six
 import sys
+import time
 import hashlib
 import psycopg2
 import traceback
@@ -375,7 +376,8 @@ def ignore_time(cmp_operator, iso_date):
     def ignoref(directory, contents):
         if not cmp_operator or not iso_date:
             return []
-        _timestamp = dateutil.parser.isoparse(iso_date).timestamp()
+        _timestamp = dateutil.parser.isoparse(iso_date)
+        _timestamp = time.mktime(_timestamp.timetuple())
         if cmp_operator == '<':
             return (f for f in contents if os.path.getmtime(os.path.join(directory, f)) > _timestamp)
         elif cmp_operator == '<=':
@@ -383,7 +385,7 @@ def ignore_time(cmp_operator, iso_date):
         elif cmp_operator == '=':
             return (f for f in contents if os.path.getmtime(os.path.join(directory, f)) == _timestamp)
         elif cmp_operator == '>':
-            return (f for f in contents if os.path.getmtime(os.path.join(directory, f)) > _timestamp)
+            return (f for f in contents if os.path.getmtime(os.path.join(directory, f)) < _timestamp)
         elif cmp_operator == '>=':
             return (f for f in contents if os.path.getmtime(os.path.join(directory, f)) <= _timestamp)
     return ignoref
