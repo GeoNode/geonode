@@ -383,7 +383,7 @@ def ignore_time(cmp_operator, iso_date):
         elif cmp_operator == '=':
             return (f for f in contents if os.path.getmtime(os.path.join(directory, f)) == _timestamp)
         elif cmp_operator == '>':
-            return (f for f in contents if os.path.getmtime(os.path.join(directory, f)) > _timestamp)
+            return (f for f in contents if os.path.getmtime(os.path.join(directory, f)) < _timestamp)
         elif cmp_operator == '>=':
             return (f for f in contents if os.path.getmtime(os.path.join(directory, f)) <= _timestamp)
     return ignoref
