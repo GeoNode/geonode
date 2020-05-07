@@ -29,6 +29,7 @@ import traceback
 from django.db import models
 from django.conf import settings
 from django.core import serializers
+from django.utils.functional import cached_property
 from django.utils.html import escape
 from django.utils.timezone import now
 from django.db.models import Q, signals
@@ -956,8 +957,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         bbox = self.bbox_helper
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, self.srid]
 
-    @property
+    @cached_property
     def ll_bbox(self):
+        """BBOX is in the format [x0, x1, y0, y1, "EPSG:srid"]. Provides backwards
+        compatibility after transition to polygons."""
         bbox = self.bbox_polygon
         if bbox.srid != 4326:
             bbox = bbox.transform(4326, clone=True)
@@ -966,13 +969,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         # TODO: This should be 4326, why was `self.srid` used here previously?
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(self.srid)]
 
-    @property
+    @cached_property
     def bbox_string(self):
-        """BBOX is in the format: [x0, y0, x1, y1]."""
+        """BBOX is in the format: [x0, y0, x1, y1]. Provides backwards compatibility
+        after transition to polygons."""
         # TODO: This carries no information about SRS, and should probably be WKT string
-        return ",".join(str(coord) for coord in self.bbox_polygon.extent)
+        return ",".join(map(str, self.bbox_polygon.extent))
 
-    @property
+    @cached_property
     def bbox_helper(self):
         return BBOXHelper(self.bbox_polygon.extent)
 
