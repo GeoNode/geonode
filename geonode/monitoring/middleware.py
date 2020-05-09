@@ -28,6 +28,7 @@ from django.conf import settings
 from geonode.monitoring.models import Service, Host
 from geonode.monitoring.utils import MonitoringHandler
 from django.http import HttpResponse
+from django.utils.deprecation import MiddlewareMixin
 
 
 FILTER_URLS = (settings.MEDIA_URL,
@@ -40,14 +41,11 @@ FILTER_URLS = (settings.MEDIA_URL,
                '/admin/jsi18n/',)
 
 
-class MonitoringMiddleware(object):
+class MonitoringMiddleware(MiddlewareMixin):
 
     def __init__(self, get_response):
         self.get_response = get_response
         self.setup_logging()
-
-    def __call__(self, request):
-        return self.get_response(request)
 
     def setup_logging(self):
         self.log = logging.getLogger('{}.catcher'.format(__name__))
@@ -126,8 +124,9 @@ class MonitoringMiddleware(object):
                 }
 
         if settings.USER_ANALYTICS_ENABLED:
+            _session_key = request.session.session_key.encode() if request.session.session_key else ''
             meta.update({
-                'user_identifier': hashlib.sha256(request.session.session_key or '').hexdigest(),
+                'user_identifier': hashlib.sha256(_session_key).hexdigest(),
                 'user_username': request.user.username if request.user.is_authenticated else 'AnonymousUser'
             })
 
