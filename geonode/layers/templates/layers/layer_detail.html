@@ -353,16 +353,15 @@
                               <div class="input-group-btn">
                                 <div class="btn-group btn-group-sm">
                                     <div class="dropdown">
-                                      <button class="btn btn-primary dropdown-toggle" id="modal-button-attributes" type="button" data-toggle="dropdown">{% trans "Attribute" %}
-                                      <span class="caret"></span></button>
+                                      <button class="btn btn-primary dropdown-toggle" id="modal-button-attributes" type="button" data-toggle="dropdown">{% trans "Attribute" %}<span class="caret"></span></button>
                                       <ul class="dropdown-menu dropdown-menu-attribute" id="attribute_list" data-modal-button-id="attribute">
                                         {% if schema %}
                                           {% for key, values in schema.properties.items %}
-                                            <li><a href="#" id= {{ key }} data-type= {{ values }} data-schema= 'yes'>{{ key }}</a></li>
+                                            <li><a href="#" id={{ key }} data-type={{ values }} data-schema= 'yes'>{{ key }}</a></li>
                                           {% endfor %}
-                                        {% else %}
+                                        {% elif resource.attributes %}
                                           {% for attribute in resource.attributes %}
-                                            <li><a href="#" id= {{ attribute }} data-type= 'string' data-schema= 'no'> {{ attribute }} </a></li>
+                                            <li><a href="#" id={{ attribute }} data-type='string' data-schema='no'>{{ attribute }}</a></li>
                                           {% endfor %}
                                         {% endif %}
                                       </ul>
@@ -370,8 +369,7 @@
                                 </div>
                                 <div class="btn-group btn-group-sm">
                                   <div class="dropdown">
-                                    <button class="btn btn-primary dropdown-toggle" id="modal-button-operator" type="button" data-toggle="dropdown">{% trans "Operator" %}
-                                    <span class="caret"></span></button>
+                                    <button class="btn btn-primary dropdown-toggle" id="modal-button-operator" type="button" data-toggle="dropdown">{% trans "Operator" %}<span class="caret"></span></button>
                                     <ul class="dropdown-menu dropdown-menu-operator" id="operator_list" data-modal-button-id="operator">
                                       <li><a href="#" id="=">=</a></li>
                                       <li><a href="#" id="&lt;&gt;">&lt;&gt;</a></li>
@@ -999,11 +997,12 @@
                     selected_data_prepare.push(jsonString);
                   }
 
-                  $(".js-data-array").select2({
+                  $("#single_value").empty();
+                  $("#single_value").select2({
                     data: selected_data_prepare,
                     // allow new values by the user
                     tags: true
-                  })
+                  });
                 });
                 ajax_loaded = true;
               }
@@ -1011,14 +1010,13 @@
           } else {
             $('#tabContent, .query_builder_tab').show();
           }
-
         } else {
           $("#button-toggle").css(enable_filter_style);
           $('#tabContent, .query_builder_tab').hide();
         }
         // clear filters
         $(document.body).on("click", "#clear_filter",function(e){
-          $( "#added_rules" ).empty();
+          $('#added_rules').empty();
           $('#max_features').val("");
           query=[];
           $("#button-toggle").removeClass( "clicked" );
