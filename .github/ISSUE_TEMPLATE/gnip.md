@@ -58,6 +58,7 @@ Project Steering Committee:
 * Paolo Corti:
 * Simone Dalmasso:
 * Toni Schoenbuchner:
+* Florian Hoedt:
 
 ## Links
 
