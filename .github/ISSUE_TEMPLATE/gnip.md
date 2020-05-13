@@ -55,9 +55,10 @@ Project Steering Committee:
 
 * Alessio Fabiani:
 * Francesco Bartoli:
-* Paolo Corti:
+* Giovanni Allegri:
 * Simone Dalmasso:
 * Toni Schoenbuchner:
+* Florian Hoedt:
 
 ## Links
 
