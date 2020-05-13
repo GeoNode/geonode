@@ -84,7 +84,7 @@ class GroupProfile(models.Model):
 
     group = models.OneToOneField(Group, on_delete=models.CASCADE)
     title = models.CharField(_('Title'), max_length=1000)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True, max_length=1000)
     logo = models.ImageField(_('Logo'), upload_to="people_group", blank=True)
     description = models.TextField(_('Description'))
     email = models.EmailField(
