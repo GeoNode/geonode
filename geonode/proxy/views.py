@@ -401,16 +401,44 @@ class OWSListView(View):
         out = {'success': True}
         data = []
         out['data'] = data
-        # per-layer links
-        # for link in Link.objects.filter(link_type__in=LINK_TYPES):  # .distinct('url'):
-        #     data.append({'url': link.url, 'type': link.link_type})
-        data.append({'url': ows._wcs_get_capabilities(), 'type': 'OGC:WCS'})
-        data.append({'url': ows._wfs_get_capabilities(), 'type': 'OGC:WFS'})
-        data.append({'url': ows._wms_get_capabilities(), 'type': 'OGC:WMS'})
+        # WMS
+        _raw_url = ows._wms_get_capabilities()
+        _url = urlsplit(_raw_url)
+        headers, access_token = get_headers(request, _url, _raw_url)
+        if access_token:
+            _j = '&' if _url.query else '?'
+            _raw_url = _j.join([_raw_url, 'access_token={}'.format(access_token)])
+        data.append({'url': _raw_url, 'type': 'OGC:WMS'})
+
+        # WCS
+        _raw_url = ows._wcs_get_capabilities()
+        _url = urlsplit(_raw_url)
+        headers, access_token = get_headers(request, _url, _raw_url)
+        if access_token:
+            _j = '&' if _url.query else '?'
+            _raw_url = _j.join([_raw_url, 'access_token={}'.format(access_token)])
+        data.append({'url': _raw_url, 'type': 'OGC:WCS'})
+
+        # WFS
+        _raw_url = ows._wfs_get_capabilities()
+        _url = urlsplit(_raw_url)
+        headers, access_token = get_headers(request, _url, _raw_url)
+        if access_token:
+            _j = '&' if _url.query else '?'
+            _raw_url = _j.join([_raw_url, 'access_token={}'.format(access_token)])
+        data.append({'url': _raw_url, 'type': 'OGC:WFS'})
 
         # catalogue from configuration
         for catname, catconf in settings.CATALOGUE.items():
-            data.append({'url': catconf['URL'], 'type': 'OGC:CSW'})
+            # CSW
+            _raw_url = catconf['URL']
+            _url = urlsplit(_raw_url)
+            headers, access_token = get_headers(request, _url, _raw_url)
+            if access_token:
+                _j = '&' if _url.query else '?'
+                _raw_url = _j.join([_raw_url, 'access_token={}'.format(access_token)])
+            data.append({'url': _raw_url, 'type': 'OGC:CSW'})
+
         # main site url
         data.append({'url': settings.SITEURL, 'type': 'WWW:LINK'})
         return json_response(out)
