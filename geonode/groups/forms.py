@@ -31,7 +31,6 @@ from geonode.groups.models import GroupProfile
 class GroupForm(TranslationModelForm):
 
     slug = forms.SlugField(
-        max_length=20,
         help_text=_("a short version of the name consisting only of letters, numbers, underscores and hyphens."),
         widget=forms.HiddenInput,
         required=False)
