@@ -1092,7 +1092,7 @@ msgid "A Document was commented on"
 msgstr "Er werd een reactie gegeven op een document"
 
 #: geonode/documents/__init__.py:33
-msgid "Document for Map"
+msgid "Rating for Document"
 msgstr "Document voor Kaart"
 
 #: geonode/documents/__init__.py:33

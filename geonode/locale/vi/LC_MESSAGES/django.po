@@ -1125,8 +1125,8 @@ msgstr "Một bản đồ được nhận xét về"
 #: geonode/documents/__init__.py:33
 #, fuzzy
 #| msgid "Comment on Map"
-msgid "Document for Map"
-msgstr "Bình luận trên bản đồ"
+msgid "Rating for Document"
+msgstr "Xếp hạng cho Tài liệu"
 
 #: geonode/documents/__init__.py:33
 #, fuzzy

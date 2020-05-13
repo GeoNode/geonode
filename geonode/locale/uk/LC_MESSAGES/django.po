@@ -1121,8 +1121,8 @@ msgstr "Карта була прокоментував"
 #: geonode/documents/__init__.py:33
 #, fuzzy
 #| msgid "Comment on Map"
-msgid "Document for Map"
-msgstr "Прокоментувати мапі"
+msgid "Rating for Document"
+msgstr "Рейтинг документа"
 
 #: geonode/documents/__init__.py:33
 #, fuzzy

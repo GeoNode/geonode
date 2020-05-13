@@ -1123,8 +1123,8 @@ msgstr "Mapa została skomentował"
 #: geonode/documents/__init__.py:33
 #, fuzzy
 #| msgid "Comment on Map"
-msgid "Document for Map"
-msgstr "Komentarz na mapie"
+msgid "Rating for Document"
+msgstr "Ocena dokumentu"
 
 #: geonode/documents/__init__.py:33
 #, fuzzy

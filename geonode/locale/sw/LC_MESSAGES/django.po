@@ -1126,8 +1126,8 @@ msgstr "ramani ilikuwa maoni juu ya"
 #: geonode/documents/__init__.py:33
 #, fuzzy
 #| msgid "Comment on Map"
-msgid "Document for Map"
-msgstr "Maoni juu ya Ramani"
+msgid "Rating for Document"
+msgstr "Ukadiriaji wa Hati"
 
 #: geonode/documents/__init__.py:33
 #, fuzzy

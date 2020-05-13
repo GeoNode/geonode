@@ -1099,8 +1099,8 @@ msgid "A Document was commented on"
 msgstr "დოკუნეტი იყო დაკომენტარებული"
 
 #: geonode/documents/__init__.py:33
-msgid "Document for Map"
-msgstr "დოკუნეტი რუკისთვის"
+msgid "Rating for Document"
+msgstr "დოკუმენტის შეფასება"
 
 #: geonode/documents/__init__.py:33
 msgid "A rating was given to a document"
