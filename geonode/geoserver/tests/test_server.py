@@ -1108,7 +1108,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertIsNotNone(wcs_links)
         self.assertEqual(len(wcs_links), 2)
         wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wcs')
-        identifier = urlencode({'coverageid': instance.alternate})
+        identifier = urlencode({'coverageid': instance.alternate.replace(':', '__', 1)})
         for _link in wcs_links:
             logger.debug('%s --> %s' % (wcs_url, _link[3]))
             self.assertTrue(wcs_url in _link[3])
