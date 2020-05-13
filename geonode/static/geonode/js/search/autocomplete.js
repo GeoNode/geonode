@@ -96,12 +96,6 @@ var Autocomplete = function(options) {
         results_wrapper.append(elem)
       }
     }
-    else {
-      // No results are found
-      var elem = base_elem.clone()
-      elem.text("No results found.")
-      results_wrapper.append(elem)
-    }
 
     this.query_box.after(results_wrapper)
   }
