@@ -1118,8 +1118,8 @@ msgstr "Peta dikomentari pada"
 #: geonode/documents/__init__.py:33
 #, fuzzy
 #| msgid "Comment on Map"
-msgid "Document for Map"
-msgstr "Komentar pada Peta"
+msgid "Rating for Document"
+msgstr "Peringkat untuk Dokumen"
 
 #: geonode/documents/__init__.py:33
 #, fuzzy

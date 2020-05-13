@@ -1122,8 +1122,8 @@ msgstr "'N kaart is kommentaar op"
 #: geonode/documents/__init__.py:33
 #, fuzzy
 #| msgid "Comment on Map"
-msgid "Document for Map"
-msgstr "Kommentaar op kaart"
+msgid "Rating for Document"
+msgstr "Gradering vir dokument"
 
 #: geonode/documents/__init__.py:33
 #, fuzzy

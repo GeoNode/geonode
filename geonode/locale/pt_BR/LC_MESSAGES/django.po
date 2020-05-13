@@ -1107,8 +1107,8 @@ msgid "A Document was commented on"
 msgstr "Um documento foi comentado"
 
 #: geonode/documents/__init__.py:33
-msgid "Document for Map"
-msgstr "Documento para mapa"
+msgid "Rating for Document"
+msgstr "Classificação para Documento"
 
 #: geonode/documents/__init__.py:33
 msgid "A rating was given to a document"

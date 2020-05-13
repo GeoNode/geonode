@@ -1115,8 +1115,8 @@ msgstr "ផែនទី​មួយ​ត្រូវ​បាន​អធិប
 #: geonode/documents/__init__.py:33
 #, fuzzy
 #| msgid "Comment on Map"
-msgid "Document for Map"
-msgstr "អត្ថាធិប្បាយ​លើ​ផែនទី"
+msgid "Rating for Document"
+msgstr ""
 
 #: geonode/documents/__init__.py:33
 #, fuzzy

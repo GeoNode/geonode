@@ -1103,8 +1103,8 @@ msgid "A Document was commented on"
 msgstr "একটি ডকুমেন্টে মন্তব্য করা হয়েছে"
 
 #: geonode/documents/__init__.py:33
-msgid "Document for Map"
-msgstr "মানচিত্র জন্য নথি"
+msgid "Rating for Document"
+msgstr ""
 
 #: geonode/documents/__init__.py:33
 msgid "A rating was given to a document"

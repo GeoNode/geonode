@@ -1099,8 +1099,8 @@ msgid "A Document was commented on"
 msgstr "ஆவணம் ஒன்றிற்கான கருத்து வழங்கப்பட்டுள்ளது "
 
 #: geonode/documents/__init__.py:33
-msgid "Document for Map"
-msgstr "வரைபடத்திற்கான ஆவணம்"
+msgid "Rating for Document"
+msgstr "ஆவணத்திற்கான மதிப்பீடு"
 
 #: geonode/documents/__init__.py:33
 msgid "A rating was given to a document"

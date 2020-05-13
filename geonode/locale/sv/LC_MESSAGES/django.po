@@ -1118,8 +1118,8 @@ msgstr "En karta kommenterades"
 #: geonode/documents/__init__.py:33
 #, fuzzy
 #| msgid "Comment on Map"
-msgid "Document for Map"
-msgstr "Kommentera Karta"
+msgid "Rating for Document"
+msgstr "Betyg för dokument"
 
 #: geonode/documents/__init__.py:33
 #, fuzzy

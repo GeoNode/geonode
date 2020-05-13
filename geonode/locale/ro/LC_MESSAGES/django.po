@@ -1123,8 +1123,8 @@ msgstr "O hartă a fost comentat"
 #: geonode/documents/__init__.py:33
 #, fuzzy
 #| msgid "Comment on Map"
-msgid "Document for Map"
-msgstr "Comment on Harta"
+msgid "Rating for Document"
+msgstr "Evaluare pentru document"
 
 #: geonode/documents/__init__.py:33
 #, fuzzy

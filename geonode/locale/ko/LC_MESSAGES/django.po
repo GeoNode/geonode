@@ -1101,8 +1101,8 @@ msgid "A Document was commented on"
 msgstr "문서에 댓글이 달렸습니다"
 
 #: geonode/documents/__init__.py:33
-msgid "Document for Map"
-msgstr "지도에 대한 문서"
+msgid "Rating for Document"
+msgstr "문서 등급"
 
 #: geonode/documents/__init__.py:33
 msgid "A rating was given to a document"

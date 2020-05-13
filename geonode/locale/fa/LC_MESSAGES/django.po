@@ -1119,8 +1119,8 @@ msgstr "نقشه نظر شد"
 #: geonode/documents/__init__.py:33
 #, fuzzy
 #| msgid "Comment on Map"
-msgid "Document for Map"
-msgstr "اظهار نظر در مورد نقشه"
+msgid "Rating for Document"
+msgstr "امتیاز برای سند"
 
 #: geonode/documents/__init__.py:33
 #, fuzzy

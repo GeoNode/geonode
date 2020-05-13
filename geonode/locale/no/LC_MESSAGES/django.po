@@ -1086,8 +1086,8 @@ msgid "A Document was commented on"
 msgstr "Et kartlag ble kommentert på"
 
 #: geonode/documents/__init__.py:33
-msgid "Document for Map"
-msgstr "Dokument til kart"
+msgid "Rating for Document"
+msgstr "Rangering for dokument"
 
 #: geonode/documents/__init__.py:33
 #, fuzzy

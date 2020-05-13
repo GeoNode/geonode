@@ -1041,8 +1041,8 @@ msgid "A Document was commented on"
 msgstr "تم التعليق على الوثيقة"
 
 #: geonode/documents/__init__.py:33
-msgid "Document for Map"
-msgstr "وثيقة للخريطة"
+msgid "Rating for Document"
+msgstr "تصنيف المستند"
 
 #: geonode/documents/__init__.py:33
 msgid "A rating was given to a document"
