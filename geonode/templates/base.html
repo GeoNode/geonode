@@ -646,6 +646,14 @@
           $('#search_abstract_input')[0].value =$('#search_input')[0].value;
           $('#search_purpose_input')[0].value = $('#search_input')[0].value;
       });
+
+      $(window).on('load', function() {
+          setTimeout(() => {
+              document.body.scrollTop = 0;
+              document.documentElement.scrollTop = 0;
+          });
+        });
+
       $(".datepicker").datepicker({
           format: "yyyy-mm-dd"
       });
