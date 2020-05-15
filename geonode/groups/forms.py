@@ -84,7 +84,7 @@ class GroupUpdateForm(forms.ModelForm):
 class GroupMemberForm(forms.Form):
     user_identifiers = forms.CharField(
         label=_("User Identifiers"),
-        widget=forms.Select(
+        widget=forms.SelectMultiple(
             attrs={
                 'class': 'user-select',
                 'style': 'width:300px'
@@ -97,10 +97,10 @@ class GroupMemberForm(forms.Form):
     )
 
     def clean_user_identifiers(self):
-        value = self.cleaned_data["user_identifiers"]
+        values = self.cleaned_data['user_identifiers'].strip('][').split(', ')
         new_members = []
         errors = []
-        for name in (v.strip() for v in value.split(",")):
+        for name in (v.strip('\'') for v in values):
             try:
                 new_members.append(get_user_model().objects.get(username=name))
             except get_user_model().DoesNotExist:
