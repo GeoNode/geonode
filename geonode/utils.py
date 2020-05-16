@@ -1019,7 +1019,10 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
         status = 200
 
     if not isinstance(body, six.string_types):
-        body = json.dumps(body, cls=DjangoJSONEncoder)
+        try:
+            body = json.dumps(body, cls=DjangoJSONEncoder)
+        except Exception:
+            body = str(body)
     return HttpResponse(body, content_type=content_type, status=status)
 
 
