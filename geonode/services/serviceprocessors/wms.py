@@ -52,7 +52,7 @@ logger = logging.getLogger(__name__)
 
 
 def WebMapService(url,
-                  version='1.1.1',
+                  version='1.3.0',
                   xml=None,
                   username=None,
                   password=None,
@@ -110,7 +110,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
     def __init__(self, url):
         self.proxy_base = urljoin(
             settings.SITEURL, reverse('proxy'))
-        self.url, _service = WebMapService(url, proxy_base=None)
+        _url, _service = WebMapService(url, proxy_base=None)
+        self.url = url
         self.indexing_method = (
             INDEXED if self._offers_geonode_projection() else CASCADED)
         self.name = slugify(self.url)[:255]
@@ -205,10 +206,13 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
             resource_fields["is_approved"] = False
             resource_fields["is_published"] = False
-        geonode_layer = self._create_layer(geonode_service, **resource_fields)
-        self._create_layer_service_link(geonode_layer)
-        self._create_layer_legend_link(geonode_layer)
-        self._create_layer_thumbnail(geonode_layer)
+        try:
+            geonode_layer = self._create_layer(geonode_service, **resource_fields)
+            self._create_layer_service_link(geonode_layer)
+            self._create_layer_legend_link(geonode_layer)
+            self._create_layer_thumbnail(geonode_layer)
+        except Exception as e:
+            logger.error(e)
 
     def has_resources(self):
         _url, parsed_service = WebMapService(self.url, proxy_base=None)
@@ -228,7 +232,10 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             **resource_fields
         )
         geonode_layer.full_clean()
-        geonode_layer.save()
+        try:
+            geonode_layer.save(notify=True)
+        except Exception as e:
+            logger.error(e)
         geonode_layer.keywords.add(*keywords)
         geonode_layer.set_default_permissions()
         return geonode_layer
@@ -486,10 +493,13 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
             resource_fields["is_approved"] = False
             resource_fields["is_published"] = False
-        geonode_layer = self._create_layer(geonode_service, **resource_fields)
-        self._enrich_layer_metadata(geonode_layer)
-        self._create_layer_service_link(geonode_layer)
-        self._create_layer_legend_link(geonode_layer)
+        try:
+            geonode_layer = self._create_layer(geonode_service, **resource_fields)
+            self._enrich_layer_metadata(geonode_layer)
+            self._create_layer_service_link(geonode_layer)
+            self._create_layer_legend_link(geonode_layer)
+        except Exception as e:
+            logger.error(e)
 
     def _probe_geonode_wms(self, raw_url):
         url = urlsplit(raw_url)
@@ -604,7 +614,10 @@ class GeoNodeServiceHandler(WmsServiceHandler):
             except Exception:
                 traceback.print_exc()
             finally:
-                geonode_layer.save()
+                try:
+                    geonode_layer.save(notify=True)
+                except Exception as e:
+                    logger.error(e)
 
 
 def _get_valid_name(proposed_name):
