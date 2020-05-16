@@ -696,7 +696,7 @@ def gs_slurp(
             # in some cases we need to explicitily save the resource to execute the signals
             # (for sure when running updatelayers)
             if execute_signals:
-                layer.save()
+                layer.save(notify=True)
 
             # Fix metadata links if the ip has changed
             if layer.link_set.metadata().count() > 0:

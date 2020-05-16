@@ -721,7 +721,6 @@ def file_upload(filename,
         # Blank out the store if overwrite is true.
         # geoserver_post_save_signal should upload the new file if needed
         layer.store = '' if overwrite else layer.store
-        layer.save()
 
         if upload_session:
             upload_session.resource = layer
@@ -758,7 +757,6 @@ def file_upload(filename,
     # Assign and save the charset using the Layer class' object (layer)
     if charset != 'UTF-8':
         layer.charset = charset
-        layer.save()
 
     to_update = {}
     if defaults.get('title', title) is not None:
@@ -789,7 +787,7 @@ def file_upload(filename,
             import traceback
             tb = traceback.format_exc()
             logger.error(tb)
-
+    layer.save(notify=True)
     return layer
 
 

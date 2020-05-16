@@ -311,7 +311,7 @@ def map_metadata(
         map_obj.regions.clear()
         map_obj.regions.add(*new_regions)
         map_obj.category = new_category
-        map_obj.save()
+        map_obj.save(notify=True)
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, map_obj)
         if not ajax:

@@ -933,6 +933,6 @@ def final_step(upload_session, user, charset="UTF-8"):
 
     signals.upload_complete.send(sender=final_step, layer=saved_layer)
     geonode_upload_session.save()
-    saved_layer.save()
+    saved_layer.save(notify=not created)
     cat._cache.clear()
     return saved_layer

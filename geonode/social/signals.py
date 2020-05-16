@@ -62,7 +62,6 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
     """
     Creates new activities after a Map, Layer, or Comment is  created/updated/deleted.
 
-
     action_settings:
     actor: the user who performed the activity
     action_object: the object that received the action
@@ -171,40 +170,6 @@ if activity:
     signals.post_delete.connect(activity_post_modify_object, sender=Document)
 
 
-def notification_post_save_resource(instance, sender, created, **kwargs):
-    """ Send a notification when a layer, map or document is created or
-    updated
-    """
-    notice_type_label = '%s_created' if created else '%s_updated'
-    notice_type_label = notice_type_label % instance.class_name.lower()
-    recipients = get_notification_recipients(notice_type_label)
-    send_notification(recipients, notice_type_label, {'resource': instance})
-
-    # Approval Notifications Here
-    if settings.ADMIN_MODERATE_UPLOADS:
-        if instance.is_approved and not instance.is_published:
-            notice_type_label = '%s_approved'
-            notice_type_label = notice_type_label % instance.class_name.lower()
-            recipients = get_notification_recipients(notice_type_label)
-            send_notification(recipients, notice_type_label, {'resource': instance})
-
-    # Publishing Notifications Here
-    if settings.RESOURCE_PUBLISHING:
-        if instance.is_approved and instance.is_published:
-            notice_type_label = '%s_published'
-            notice_type_label = notice_type_label % instance.class_name.lower()
-            recipients = get_notification_recipients(notice_type_label)
-            send_notification(recipients, notice_type_label, {'resource': instance})
-
-
-def notification_post_delete_resource(instance, sender, **kwargs):
-    """ Send a notification when a layer, map or document is deleted
-    """
-    notice_type_label = '%s_deleted' % instance.class_name.lower()
-    recipients = get_notification_recipients(notice_type_label)
-    send_notification(recipients, notice_type_label, {'resource': instance})
-
-
 def rating_post_save(instance, sender, created, **kwargs):
     """ Send a notification when rating a layer, map or document
     """
@@ -227,11 +192,7 @@ def comment_post_save(instance, sender, created, **kwargs):
 
 
 # signals
-# layer/map/document notifications
-for resource in (Layer, Map, Document):
-    signals.post_save.connect(notification_post_save_resource, sender=resource)
-    signals.post_delete.connect(notification_post_delete_resource, sender=resource)
-
+# comments notifications
 signals.post_save.connect(comment_post_save, sender=Comment)
 
 # rating notifications

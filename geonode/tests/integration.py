@@ -283,7 +283,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             self.assertTrue(math.isclose(bbox_x1, uploaded.bbox_x1))
             self.assertTrue(math.isclose(bbox_y0, uploaded.bbox_y0))
             self.assertTrue(math.isclose(bbox_y1, uploaded.bbox_y1))
-            self.assertEqual(srid, uploaded.srid)
+            self.assertTrue(uploaded.srid in srid)
 
             # bbox format: [xmin,xmax,ymin,ymax]
             expected_bbox = [

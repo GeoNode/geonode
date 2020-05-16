@@ -234,7 +234,7 @@ class Map(ResourceBase, GXPMapBase):
                     self.id, MapLayer, layer, source_for(layer), ordering
                 ))
 
-        self.save()
+        self.save(notify=True)
 
         if layer_names != set([l.alternate for l in self.local_layers]):
             map_changed_signal.send_robust(sender=self, what_changed='layers')
@@ -328,7 +328,7 @@ class Map(ResourceBase, GXPMapBase):
         # Save again to persist the zoom and bbox changes and
         # to generate the thumbnail.
         self.set_missing_info()
-        self.save()
+        self.save(notify=True)
 
     @property
     def sender(self):

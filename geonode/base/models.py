@@ -71,7 +71,9 @@ from geonode.utils import (
 from geonode.groups.models import GroupProfile
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.utils import get_visible_resources
-
+from geonode.notifications_helper import (
+    send_notification,
+    get_notification_recipients)
 from geonode.people.enumerations import ROLE_VALUES
 
 from pyproj import transform, Proj
@@ -845,8 +847,83 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         null=True,
         blank=True)
 
+    __is_approved = None
+    __is_published = None
+
+    objects = ResourceBaseManager()
+
+    class Meta:
+        # custom permissions,
+        # add, change and delete are standard in django-guardian
+        permissions = (
+            # ('view_resourcebase', 'Can view resource'),
+            ('change_resourcebase_permissions', 'Can change resource permissions'),
+            ('download_resourcebase', 'Can download resource'),
+            ('publish_resourcebase', 'Can publish resource'),
+            ('change_resourcebase_metadata', 'Can change resource metadata'),
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(ResourceBase, self).__init__(*args, **kwargs)
+        self.__is_approved = self.is_approved
+        self.__is_published = self.is_published
+
     def __str__(self):
         return "{0}".format(self.title)
+
+    def save(self, notify=False, *args, **kwargs):
+        """
+        Send a notification when a resource is created or updated
+        """
+        if hasattr(self, 'class_name') and (self.pk is None or notify):
+            if self.pk is None:
+                # Resource Created
+                notice_type_label = '%s_created' % self.class_name.lower()
+                recipients = get_notification_recipients(notice_type_label)
+                send_notification(recipients, notice_type_label, {'resource': self})
+
+            else:
+                # Resource Updated
+                _notification_sent = False
+
+                # Approval Notifications Here
+                if settings.ADMIN_MODERATE_UPLOADS:
+                    if self.is_approved and not self.is_published and \
+                    self.__is_approved != self.is_approved:
+                        notice_type_label = '%s_approved' % self.class_name.lower()
+                        recipients = get_notification_recipients(notice_type_label)
+                        send_notification(recipients, notice_type_label, {'resource': self})
+                        _notification_sent = True
+
+                # Publishing Notifications Here
+                if not _notification_sent and settings.RESOURCE_PUBLISHING:
+                    if self.is_approved and self.is_published and \
+                    self.__is_published != self.is_published:
+                        notice_type_label = '%s_published' % self.class_name.lower()
+                        recipients = get_notification_recipients(notice_type_label)
+                        send_notification(recipients, notice_type_label, {'resource': self})
+                        _notification_sent = True
+
+                # Updated Notifications Here
+                if not _notification_sent:
+                    notice_type_label = '%s_updated' % self.class_name.lower()
+                    recipients = get_notification_recipients(notice_type_label)
+                    send_notification(recipients, notice_type_label, {'resource': self})
+
+        super(ResourceBase, self).save(*args, **kwargs)
+        self.__is_approved = self.is_approved
+        self.__is_published = self.is_published
+
+    def delete(self, notify=True, *args, **kwargs):
+        """
+        Send a notification when a layer, map or document is deleted
+        """
+        if hasattr(self, 'class_name') and notify:
+            notice_type_label = '%s_deleted' % self.class_name.lower()
+            recipients = get_notification_recipients(notice_type_label)
+            send_notification(recipients, notice_type_label, {'resource': self})
+
+        super(ResourceBase, self).delete(*args, **kwargs)
 
     def get_upload_session(self):
         raise NotImplementedError()
@@ -1424,19 +1501,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.poc = self.owner
 
     metadata_author = property(_get_metadata_author, _set_metadata_author)
-
-    objects = ResourceBaseManager()
-
-    class Meta:
-        # custom permissions,
-        # add, change and delete are standard in django-guardian
-        permissions = (
-            # ('view_resourcebase', 'Can view resource'),
-            ('change_resourcebase_permissions', 'Can change resource permissions'),
-            ('download_resourcebase', 'Can download resource'),
-            ('publish_resourcebase', 'Can publish resource'),
-            ('change_resourcebase_metadata', 'Can change resource metadata'),
-        )
 
 
 class LinkManager(models.Manager):
