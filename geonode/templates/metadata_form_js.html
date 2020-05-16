@@ -67,7 +67,7 @@
       $('#profileCompleteness .progress-bar').html(parseFloat(((completeness)*100).toFixed(0)) + ' %').width(parseFloat(((completeness)*100).toFixed(2)) + '%');
       $('#profileCompleteness .completed').toggle(completeness === 1);
       $('#profileCompleteness .not-completed').toggle(completeness !== 1);
-      var mandatoryMissing =  $('#mandatory').find('.input-empty:not([id^=autocomlete])').length > 0;
+      var mandatoryMissing = $('#mandatory').find('.input-empty:not([class^="select2"])').length > 0;
       var advancedMissing = $('#advanced').find('.input-empty').length > 0;
       $('#completeness-hints .mandatory-hint')
         .toggleClass('progress-bar-danger', mandatoryMissing)
@@ -252,6 +252,7 @@
              }
           } catch (err) {
             // Log error
+            console.log(err);
             return false;
           }
           return true;
@@ -266,6 +267,7 @@
           }
 
           var is_mandatory = (el.id.indexOf("autocomplete") < 0 &&
+                        (typeof $(el).attr("class") !== 'undefined' && $(el).attr("class").indexOf("select2") < 0) &&
                         !$(el).hasClass('value-select') &&
                         el.type !== 'radio' &&
                         el.type !== 'button');
@@ -460,7 +462,6 @@
                 $('#preview_pleaseWaitDialog').modal();
                 metadata_update_done = true;
                 metadata_preview = false;
-                $('#metadata_update').submit();
             }
         });
 
