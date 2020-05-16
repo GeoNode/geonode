@@ -574,7 +574,7 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
             _d = Document.objects.create(title='test notifications', owner=self.u)
             self.assertTrue(self.check_notification_out('document_created', self.u))
             _d.title = 'test notifications 2'
-            _d.save()
+            _d.save(notify=True)
             self.assertTrue(self.check_notification_out('document_updated', self.u))
 
             from dialogos.models import Comment

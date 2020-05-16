@@ -993,9 +993,7 @@ def layer_metadata(
                 except Exception:
                     tb = traceback.format_exc()
                     logger.error(tb)
-
         tkeywords_form = TKeywordForm(instance=layer)
-
     if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid(
     ) and category_form.is_valid():
         new_poc = layer_form.cleaned_data['poc']
@@ -1067,7 +1065,6 @@ def layer_metadata(
         if new_regions:
             layer.regions.add(*new_regions)
         layer.category = new_category
-        layer.save()
 
         up_sessions = UploadSession.objects.filter(layer=layer)
         if up_sessions.count() > 0 and up_sessions[0].user != layer.owner:
@@ -1100,6 +1097,7 @@ def layer_metadata(
             tb = traceback.format_exc()
             logger.error(tb)
 
+        layer.save(notify=True)
         return HttpResponse(json.dumps({'message': message}))
 
     if settings.ADMIN_MODERATE_UPLOADS:

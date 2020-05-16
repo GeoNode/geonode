@@ -228,7 +228,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             **resource_fields
         )
         geonode_layer.full_clean()
-        geonode_layer.save()
+        geonode_layer.save(notify=True)
         geonode_layer.keywords.add(*keywords)
         geonode_layer.set_default_permissions()
         return geonode_layer
@@ -604,7 +604,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
             except Exception:
                 traceback.print_exc()
             finally:
-                geonode_layer.save()
+                geonode_layer.save(notify=True)
 
 
 def _get_valid_name(proposed_name):

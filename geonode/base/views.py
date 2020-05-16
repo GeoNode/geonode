@@ -79,7 +79,7 @@ def batch_modify(request, ids, model):
                     resource.keywords.clear()
                     for word in keywords.split(','):
                         resource.keywords.add(word.strip())
-                resource.save()
+                resource.save(notify=True)
             return HttpResponseRedirect(
                 '/admin/{model}s/{model}/'.format(model=model.lower())
             )
@@ -247,7 +247,6 @@ class OwnerRightsRequestView(LoginRequiredMixin, FormView):
         form = self.form_class(request.POST)
         if form.is_valid():
             reason = form.cleaned_data['reason']
-            # object.save()
             notice_type_label = 'request_resource_edit'
             recipients = OwnerRightsRequestViewUtils.get_message_recipients()
 

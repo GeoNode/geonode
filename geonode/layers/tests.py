@@ -1174,8 +1174,9 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
                 bbox_y0=-90,
                 bbox_y1=90,
                 srid='EPSG:4326')
+            self.assertTrue(self.check_notification_out('layer_created', self.u))
             _l.name = 'test notifications 2'
-            _l.save()
+            _l.save(notify=True)
             self.assertTrue(self.check_notification_out('layer_updated', self.u))
 
             from dialogos.models import Comment

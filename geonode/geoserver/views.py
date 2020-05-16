@@ -128,7 +128,7 @@ def layer_style(request, layername):
     layer.default_style = new_style
     layer.styles = [
         s for s in layer.styles if s.name != style_name] + [old_default]
-    layer.save()
+    layer.save(notify=True)
 
     # Invalidate GeoWebCache for the updated resource
     try:

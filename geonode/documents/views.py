@@ -236,7 +236,7 @@ class DocumentUploadView(CreateView):
             self.object.is_approved = False
         if settings.RESOURCE_PUBLISHING:
             self.object.is_published = False
-        self.object.save()
+        self.object.save(notify=True)
         form.save_many2many()
         self.object.set_permissions(form.cleaned_data['permissions'])
 
@@ -482,7 +482,7 @@ def document_metadata(
             document.regions.clear()
             document.regions.add(*new_regions)
             document.category = new_category
-            document.save()
+            document.save(notify=True)
             document_form.save_many2many()
 
             register_event(request, EventType.EVENT_CHANGE_METADATA, document)
