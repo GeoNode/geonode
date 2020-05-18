@@ -820,7 +820,7 @@ max\ connections={db_conn_max}"""
 
     files_to_upload = []
     if not append_to_mosaic_opts and spatial_files:
-        z = zipfile.ZipFile(dirname + '/' + head + '.zip', "w")
+        z = zipfile.ZipFile(dirname + '/' + head + '.zip', "w", allowZip64=True)
         for spatial_file in spatial_files:
             f = spatial_file.base_file
             dst_basename = os.path.basename(f)

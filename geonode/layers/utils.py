@@ -270,7 +270,7 @@ def layer_type(filename):
     base_name, extension = os.path.splitext(filename)
 
     if extension.lower() == '.zip':
-        zf = ZipFile(filename)
+        zf = ZipFile(filename, allowZip64=True)
         # ZipFile doesn't support with statement in 2.6, so don't do it
         try:
             for n in zf.namelist():

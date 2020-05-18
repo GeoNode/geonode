@@ -837,7 +837,7 @@ def final_step(upload_session, user, charset="UTF-8"):
         # If it's contained within a zip, need to extract it
         if upload_session.base_file.archive:
             archive = upload_session.base_file.archive
-            zf = zipfile.ZipFile(archive, 'r')
+            zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
             zf.extract(xml_file[0], os.path.dirname(archive))
             # Assign the absolute path to this file
             xml_file[0] = os.path.dirname(archive) + '/' + xml_file[0]
@@ -897,7 +897,7 @@ def final_step(upload_session, user, charset="UTF-8"):
         # If it's contained within a zip, need to extract it
         if upload_session.base_file.archive:
             archive = upload_session.base_file.archive
-            zf = zipfile.ZipFile(archive, 'r')
+            zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
             zf.extract(sld_file[0], os.path.dirname(archive))
             # Assign the absolute path to this file
             sld_file[0] = os.path.dirname(archive) + '/' + sld_file[0]

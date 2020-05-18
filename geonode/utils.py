@@ -137,7 +137,7 @@ def unzip_file(upload_file, extension='.shp', tempdir=None):
     if not os.path.isdir(tempdir):
         os.makedirs(tempdir)
 
-    the_zip = ZipFile(upload_file)
+    the_zip = ZipFile(upload_file, allowZip64=True)
     the_zip.extractall(tempdir)
     for item in the_zip.namelist():
         if item.endswith(extension):
