@@ -323,7 +323,7 @@ def _process_zip(zip_path, destination_dir, scan_hint=None, charset=None):
 
     """
     safe_zip_path = _rename_files([zip_path])[0]
-    with zipfile.ZipFile(safe_zip_path, "r") as zip_handler:
+    with zipfile.ZipFile(safe_zip_path, "r", allowZip64=True) as zip_handler:
         if scan_hint in _keep_original_data:
             extracted_paths = _extract_zip(zip_handler, destination_dir, charset)
         else:

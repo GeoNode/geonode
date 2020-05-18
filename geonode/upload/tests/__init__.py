@@ -49,7 +49,7 @@ def create_files(names, zipped=False):
                 print("Test does not work in Windows")
     if zipped:
         basefile = os.path.join(tmpdir, 'files.zip')
-        zf = zipfile.ZipFile(basefile, 'w')
+        zf = zipfile.ZipFile(basefile, 'w', allowZip64=True)
         for f in names:
             zf.write(f, os.path.basename(f))
         zf.close()

@@ -112,7 +112,7 @@ class LayerUploadForm(forms.Form):
         dbf_file = shx_file = prj_file = xml_file = sld_file = None
         base_name = base_ext = None
         if zipfile.is_zipfile(cleaned["base_file"]):
-            filenames = zipfile.ZipFile(cleaned["base_file"]).namelist()
+            filenames = zipfile.ZipFile(cleaned["base_file"], allowZip64=True).namelist()
             for filename in filenames:
                 name, ext = os.path.splitext(filename)
                 if ext.lower() == '.shp':

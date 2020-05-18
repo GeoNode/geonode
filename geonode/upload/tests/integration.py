@@ -530,7 +530,7 @@ class TestUpload(UploaderBase):
         """Test uploading a zipped shapefile"""
         fd, abspath = self.temp_file('.zip')
         fp = os.fdopen(fd, 'wb')
-        zf = ZipFile(fp, 'w')
+        zf = ZipFile(fp, 'w', allowZip64=True)
         fpath = os.path.join(
             GOOD_DATA,
             'vector',
