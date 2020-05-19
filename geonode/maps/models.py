@@ -128,7 +128,7 @@ class Map(ResourceBase, GXPMapBase):
                 pass
 
         if layer_filter:
-            layers = [l for l in layers if layer_filter(l)]
+            layers = [lyr for lyr in layers if layer_filter(lyr)]
 
         # the readme text will appear in a README file in the zip
         readme = (
@@ -222,8 +222,8 @@ class Map(ResourceBase, GXPMapBase):
                 else:
                     return {}
 
-        layers = [l for l in _map.get("layers", [])]
-        layer_names = set(l.alternate for l in self.local_layers)
+        layers = [lyr for lyr in _map.get("layers", [])]
+        layer_names = set(lyr.alternate for lyr in self.local_layers)
 
         self.layer_set.all().delete()
         self.keywords.add(*_map.get('keywords', []))
@@ -236,7 +236,7 @@ class Map(ResourceBase, GXPMapBase):
 
         self.save(notify=True)
 
-        if layer_names != set([l.alternate for l in self.local_layers]):
+        if layer_names != set([lyr.alternate for lyr in self.local_layers]):
             map_changed_signal.send_robust(sender=self, what_changed='layers')
 
         return template_name
@@ -405,7 +405,7 @@ class Map(ResourceBase, GXPMapBase):
                 style = ml.styles or getattr(layer.default_style, 'name', '')
                 layers.append(layer)
                 lg_styles.append(style)
-        lg_layers = [l.name for l in layers]
+        lg_layers = [lyr.name for lyr in layers]
 
         # Group layer bounds and name
         lg_bounds = [str(coord) for coord in self.bbox]

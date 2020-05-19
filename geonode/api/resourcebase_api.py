@@ -823,8 +823,8 @@ class LayerResource(CommonModelApi):
         links = obj.link_set.all()
         if link_types:
             links = links.filter(link_type__in=link_types)
-        for l in links:
-            formatted_link = model_to_dict(l, fields=link_fields)
+        for lnk in links:
+            formatted_link = model_to_dict(lnk, fields=link_fields)
             dehydrated.append(formatted_link)
 
         return dehydrated

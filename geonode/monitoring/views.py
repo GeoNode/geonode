@@ -726,9 +726,9 @@ class StatusCheckView(View):
                 levels.add(ncd.severity)
                 problems.append(dump(ncd, self.fields))
         if levels:
-            for l in _levels:
-                if l in levels:
-                    d['health_level'] = l
+            for lyr in _levels:
+                if lyr in levels:
+                    d['health_level'] = lyr
                     break
 
         return json_response(data)

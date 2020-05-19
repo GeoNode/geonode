@@ -61,8 +61,8 @@ def original_link_available(context, resourceid, url):
                 layer_files = [
                     item for idx, item in enumerate(LayerFile.objects.filter(upload_session=upload_session))]
                 if layer_files:
-                    for l in layer_files:
-                        if not storage.exists(str(l.file)):
+                    for lyr in layer_files:
+                        if not storage.exists(str(lyr.file)):
                             return False
         except Exception:
             traceback.print_exc()

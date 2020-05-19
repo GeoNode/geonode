@@ -144,9 +144,9 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
     def _parse_layers(self, layers):
         map_layers = []
-        for l in layers:
-            map_layers.append(self._layer_meta(l))
-            map_layers.extend(self._parse_layers(l.subLayers))
+        for lyr in layers:
+            map_layers.append(self._layer_meta(lyr))
+            map_layers.extend(self._parse_layers(lyr.subLayers))
         return map_layers
 
     def _layer_meta(self, layer):

@@ -142,8 +142,8 @@ class GeoServerMonitorClient(object):
             verify=False)
         doc = bs(resp.content, features="lxml")
         links = doc.find_all('a')
-        for l in links:
-            href = self.get_href(l, format)
+        for lyr in links:
+            href = self.get_href(lyr, format)
             data = self.get_request(href, format=format)
             if data:
                 yield data

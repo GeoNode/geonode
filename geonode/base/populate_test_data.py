@@ -51,12 +51,12 @@ f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
 
 def all_public():
     '''ensure all layers, maps and documents are publicly viewable'''
-    for l in Layer.objects.all():
-        l.set_default_permissions()
-    for m in Map.objects.all():
-        m.set_default_permissions()
-    for d in Document.objects.all():
-        d.set_default_permissions()
+    for lyr in Layer.objects.all():
+        lyr.set_default_permissions()
+    for mp in Map.objects.all():
+        mp.set_default_permissions()
+    for doc in Document.objects.all():
+        doc.set_default_permissions()
 
 
 def create_fixtures():
@@ -242,7 +242,7 @@ def remove_models(obj_ids, type=None, integration=False):
             remove_models(None, type=b'document')
         if type == 'map':
             try:
-                m_ids = obj_ids or [m.id for m in Map.objects.all()]
+                m_ids = obj_ids or [mp.id for mp in Map.objects.all()]
                 for id in m_ids:
                     m = Map.objects.get(pk=id)
                     m.delete()
@@ -250,7 +250,7 @@ def remove_models(obj_ids, type=None, integration=False):
                 pass
         elif type == 'layer':
             try:
-                l_ids = obj_ids or [l.id for l in Layer.objects.all()]
+                l_ids = obj_ids or [lyr.id for lyr in Layer.objects.all()]
                 for id in l_ids:
                     layer = Layer.objects.get(pk=id)
                     layer.delete()
@@ -258,7 +258,7 @@ def remove_models(obj_ids, type=None, integration=False):
                 pass
         elif type == 'document':
             try:
-                d_ids = obj_ids or [d.id for d in Document.objects.all()]
+                d_ids = obj_ids or [doc.id for doc in Document.objects.all()]
                 for id in d_ids:
                     d = Document.objects.get(pk=id)
                     d.delete()

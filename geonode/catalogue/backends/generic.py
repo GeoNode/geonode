@@ -78,7 +78,7 @@ class Catalogue(CatalogueServiceWeb):
         self.base = '%s://%s/' % (upurl.scheme, upurl.netloc)
 
         # User and Password are optional
-        if 'USER'in kwargs:
+        if 'USER' in kwargs:
             self.user = kwargs['USER']
         if 'PASSWORD' in kwargs:
             self.password = kwargs['PASSWORD']
