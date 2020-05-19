@@ -1213,7 +1213,7 @@ class NotificationCheck(models.Model):
             pass
         else:
             raise TypeError(
-                "Unsupported threshold type: %s (%s)".format(
+                "Unsupported threshold type: {} ({})".format(
                     thresholds, type(thresholds)))
         return thresholds
 

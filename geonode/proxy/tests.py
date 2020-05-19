@@ -152,9 +152,9 @@ class OWSApiTestCase(GeoNodeBaseTestSupport):
         create_models(type='layer')
         # prepare some WMS endpoints
         q = Link.objects.all()
-        for l in q[:3]:
-            l.link_type = 'OGC:WMS'
-            l.save()
+        for lyr in q[:3]:
+            lyr.link_type = 'OGC:WMS'
+            lyr.save()
 
     def test_ows_api(self):
         url = '/api/ows_endpoints/'
