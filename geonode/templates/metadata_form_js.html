@@ -335,6 +335,8 @@
         document.querySelector('select[name="resource-keywords"]').onchange=onInputChange
 
         $('#id_resource-regions').change(onInputChange).change();
+$('#id_resource-temporal_extent_end').on('blur', function() {$(this).change(onInputChange).change();})
+$('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(onInputChange).change();})
         $('#mandatory').find(":input:not(.value-select):not(.autocomplete)").each(function(){
             if(isMandatoryField(this)) {
                 prevNum++;
