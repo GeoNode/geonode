@@ -30,6 +30,7 @@ addons:
 branches:
   only:
     - master
+    - 3.x
 
 jobs:
   include:
