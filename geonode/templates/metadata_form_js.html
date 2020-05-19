@@ -68,7 +68,27 @@
       $('#profileCompleteness .completed').toggle(completeness === 1);
       $('#profileCompleteness .not-completed').toggle(completeness !== 1);
       var mandatoryMissing = $('#mandatory').find('.input-empty:not([class^="select2"])').length > 0;
+          if (mandatoryMissing) {
+            var inputs = $('#mandatory').find('.input-empty:not([class^="select2"])');
+            var empty = inputs.length;
+            for (var i=0; i<inputs.length; i++) {
+              if (typeof inputs[i].value !== undefined && inputs[i].value !== '') {
+                empty--;
+              }
+            }
+            mandatoryMissing = empty > 0;
+          }
       var advancedMissing = $('#advanced').find('.input-empty').length > 0;
+          if (advancedMissing) {
+            var inputs = $('#advanced').find('.input-empty');
+            var empty = inputs.length;
+            for (var i=0; i<inputs.length; i++) {
+              if (typeof inputs[i].value !== undefined && inputs[i].value !== '') {
+                empty--;
+              }
+            }
+            advancedMissing = empty > 0;
+          }
       $('#completeness-hints .mandatory-hint')
         .toggleClass('progress-bar-danger', mandatoryMissing)
         .toggleClass('progress-bar-success', !mandatoryMissing)
@@ -228,7 +248,7 @@
                 otherRestrictions = true;
             }
           } catch (err) {
-              otherRestrictions = false;
+              otherRestrictions = true;
           }
           return otherRestrictions;
         }
