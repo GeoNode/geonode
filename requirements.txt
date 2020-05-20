@@ -83,7 +83,7 @@ geonode-announcements==1.0.13
 geonode-agon-ratings==0.3.8
 arcrest>=10.0
 geonode-dialogos==1.2
-geoserver-restconfig==1.0.5
+geoserver-restconfig==1.0.6
 gn-gsimporter==1.0.17
 gisdata==0.5.4
 
