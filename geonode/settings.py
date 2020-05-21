@@ -23,6 +23,7 @@ import os
 import re
 import ast
 import sys
+import subprocess
 from datetime import timedelta
 from distutils.util import strtobool  # noqa
 from urllib.parse import urlparse, urlunparse, urljoin
@@ -35,6 +36,10 @@ import dj_database_url
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
 from geonode import get_version
 from kombu import Queue, Exchange
+
+# To workaround Shapely/Spatialite interaction bug for Spatialite < 5
+if int(subprocess.run(["spatialite", "-version"], stdout=subprocess.PIPE).stdout.decode()[0]) < 5:
+    from shapely import speedups
 
 SILENCED_SYSTEM_CHECKS = [
     '1_8.W001',
@@ -102,7 +107,7 @@ if not SITEURL.endswith('/'):
 
 DATABASE_URL = os.getenv(
     'DATABASE_URL',
-    'sqlite:///{path}'.format(
+    'spatialite:///{path}'.format(
         path=os.path.join(PROJECT_ROOT, 'development.db')
     )
 )
