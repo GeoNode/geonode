@@ -121,8 +121,6 @@ DATABASE_URL = os.getenv(
 # see https://docs.djangoproject.com/en/1.8/ref/contrib/gis/db-api/#module-django.contrib.gis.db.backends for
 # detailed list of supported backends and notes.
 _db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=5)
-if 'spatialite' in DATABASE_URL:
-    SPATIALITE_LIBRARY_PATH = 'mod_spatialite.so'
 
 if 'CONN_TOUT' in _db_conf:
     _db_conf['CONN_TOUT'] = 5
