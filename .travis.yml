@@ -316,8 +316,7 @@ install:
       sudo apt-get install -y libgdal1i python3-gdal gdal-bin spatialite-bin;
       sudo apt-get install -y python3-virtualenv python3-pil python3-lxml python3-pyproj python3-shapely python3-httplib2 python3-httplib2 gettext;
       sudo apt-get install -y python3-dev libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev git default-jdk;
-      sudo apt-add-repository -y ppa:jonathonf/backports;
-      sudo apt-get -y update && sudo apt-get install -y sqlite3 spatialite-bin libsqlite3-mod-spatialite;
+      sudo apt-get install -y sqlite3 spatialite-bin libsqlite3-mod-spatialite;
       sudo apt install -y openjdk-8-jre openjdk-8-jdk ant maven;
       sudo update-java-alternatives --set java-1.8.0-openjdk-amd64;
       export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::");
