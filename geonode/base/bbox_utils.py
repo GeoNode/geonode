@@ -48,7 +48,7 @@ def filter_bbox(queryset, bbox):
 
     :param bbox: Comma-separated coordinates as "xmin,ymin,xmax,ymax"
     """
-    assert queryset.model.__class__.__name__ == "Layer"
+    assert queryset.model.__class__.__name__ == "PolymorphicModelBase"
 
     bbox = bbox.split(',')
     bbox = list(map(Decimal, bbox))
