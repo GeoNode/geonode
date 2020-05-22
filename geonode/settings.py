@@ -37,10 +37,6 @@ from django.conf.global_settings import DATETIME_INPUT_FORMATS
 from geonode import get_version
 from kombu import Queue, Exchange
 
-# To workaround Shapely/Spatialite interaction bug for Spatialite < 5
-if int(subprocess.run(["spatialite", "-version"], stdout=subprocess.PIPE).stdout.decode()[0]) < 5:
-    from shapely import speedups
-
 SILENCED_SYSTEM_CHECKS = [
     '1_8.W001',
     'fields.W340',
@@ -111,6 +107,16 @@ DATABASE_URL = os.getenv(
         path=os.path.join(PROJECT_ROOT, 'development.db')
     )
 )
+
+if DATABASE_URL.startswith("spatialite"):
+    try:
+        spatialite_proc = subprocess.run(["spatialite", "-version"], stdout=subprocess.PIPE)
+        spatialite_version = int(spatialite_proc.stdout.decode()[0])
+        if spatialite_version < 5:
+            # To workaround Shapely/Spatialite interaction bug for Spatialite < 5
+            from shapely import speedups
+    except FileNotFoundError as ex:
+        print(ex)
 
 # DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
 
