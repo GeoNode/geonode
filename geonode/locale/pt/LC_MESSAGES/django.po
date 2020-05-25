@@ -34,7 +34,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-14 14:05+0000\n"
-"PO-Revision-Date: 2020-05-03 09:27+0100\n"
+"PO-Revision-Date: 2020-05-25 23:49+0100\n"
 "Last-Translator: João Gaspar <joao.f.r.gaspar@gmail.com>\n"
 "Language-Team: Portuguese (http://www.transifex.com/geonode/geonode/language/"
 "pt/)\n"
@@ -43,7 +43,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 2.3.1\n"
 
 #: geonode/base/__init__.py:27
 msgid "Request to download a resource"
@@ -512,10 +512,8 @@ msgid "CSW WKT geometry"
 msgstr "CSW WKT geometry"
 
 #: geonode/base/models.py:804
-#, fuzzy
-#| msgid "Metadata Provider"
 msgid "Metadata uploaded preserve"
-msgstr "Fornecedor de Metadados"
+msgstr "Preservar metadados carregados"
 
 #: geonode/base/models.py:811 geonode/templates/metadata_detail.html:108
 msgid "Featured"
@@ -798,8 +796,6 @@ msgstr "Enviar"
 
 #: geonode/base/templates/base/batch_permissions.html:6
 #: geonode/base/templates/base/batch_permissions.html:12
-#, fuzzy
-#| msgid "Set permissions"
 msgid "Set Permissions"
 msgstr "Definir permissões"
 
@@ -1046,7 +1042,7 @@ msgstr "Um Documento foi comentado no"
 
 #: geonode/documents/__init__.py:33
 msgid "Rating for Document"
-msgstr "Classificação para Documento"
+msgstr "Classificação para o Documento"
 
 #: geonode/documents/__init__.py:33
 msgid "A rating was given to a document"
@@ -1329,8 +1325,6 @@ msgstr "Carregar Documentos"
 #: geonode/services/templates/services/services_base.html:6
 #: geonode/templates/metadata_base.html:120
 #: geonode/templates/metadata_detail.html:7
-#, fuzzy
-#| msgid "dataset"
 msgid "data"
 msgstr "conjunto de dados"
 
@@ -1518,10 +1512,8 @@ msgstr "Ficheiros a serem carregados"
 #: geonode/documents/templates/documents/document_thumb_upload.html:49
 #: geonode/layers/templates/layers/layer_metadata_upload.html:82
 #: geonode/layers/templates/layers/layer_style_upload.html:82
-#, fuzzy
-#| msgid "Download Metadata"
 msgid "Is Upload Metadata XML Form"
-msgstr "Baixar Metadados"
+msgstr "É o formulário XML de metadados do carregamento"
 
 #: geonode/documents/templates/documents/document_thumb_upload.html:56
 #: geonode/layers/templates/layers/layer_metadata_upload.html:89
@@ -1534,13 +1526,11 @@ msgstr "Carregar camada"
 #: geonode/templates/500.html:163 geonode/templates/base.html:293
 #: geonode/templates/base.html:469
 msgid "Upload Document"
-msgstr "Subir Documento"
+msgstr "Carregar Documento"
 
 #: geonode/documents/templates/documents/document_upload_base.html:15
-#, fuzzy
-#| msgid "Upload Documents"
 msgid "Allowed document types"
-msgstr "Subir Documentos"
+msgstr "Tipos de documento permitidos"
 
 #: geonode/documents/templates/layouts/doc_panels.html:219
 #: geonode/layers/templates/layouts/panels.html:216
@@ -1563,10 +1553,8 @@ msgstr "Editar"
 #: geonode/documents/templates/layouts/doc_panels.html:229
 #: geonode/layers/templates/layouts/panels.html:227
 #: geonode/maps/templates/layouts/map_panels.html:226
-#, fuzzy
-#| msgid "Ratings"
 msgid "Settings"
-msgstr "Classificações"
+msgstr "Configurações"
 
 #: geonode/documents/templates/layouts/doc_panels.html:238
 #: geonode/documents/templates/layouts/doc_panels.html:241
@@ -1580,10 +1568,8 @@ msgstr "Obrigatório"
 #: geonode/documents/templates/layouts/doc_panels.html:244
 #: geonode/layers/templates/layouts/panels.html:242
 #: geonode/maps/templates/layouts/map_panels.html:241
-#, fuzzy
-#| msgid "Time Options"
 msgid "Optional"
-msgstr "Opções de hora"
+msgstr "Opcional"
 
 #: geonode/documents/templates/layouts/doc_panels.html:249
 #: geonode/layers/templates/layouts/panels.html:247
@@ -1607,18 +1593,14 @@ msgstr "Metadados opcionais"
 #: geonode/layers/templates/layouts/panels.html:328
 #: geonode/layers/templates/layouts/panels.html:348
 #: geonode/maps/templates/layouts/map_panels.html:342
-#, fuzzy
-#| msgid "This action affects the following maps:"
 msgid "Choose one of the following..."
-msgstr "Esta ação afeta os seguintes mapas:"
+msgstr "Escolha um dos seguintes..."
 
 #: geonode/documents/templates/layouts/doc_panels.html:438
 #: geonode/layers/templates/layouts/panels.html:441
 #: geonode/maps/templates/layouts/map_panels.html:434
-#, fuzzy
-#| msgid "Download Metadata"
 msgid "Other, Optional, Metadata"
-msgstr "Baixar Metadados"
+msgstr "Outro, Opcional, Metadados"
 
 #: geonode/documents/templates/layouts/doc_panels.html:485
 #: geonode/layers/templates/layouts/panels.html:488
@@ -1629,19 +1611,15 @@ msgstr "Partes Resposáveis"
 #: geonode/documents/templates/layouts/doc_panels.html:492
 #: geonode/layers/templates/layouts/panels.html:495
 #: geonode/maps/templates/layouts/map_panels.html:488
-#, fuzzy
-#| msgid "Change Layer Permissions"
 msgid "Responsible and Permissions"
-msgstr "Mudar Permissões da Camada"
+msgstr "Responsabilidade e Permissões"
 
 #: geonode/documents/templates/layouts/doc_panels.html:514
 #: geonode/layers/templates/layouts/panels.html:517
 #: geonode/maps/templates/layouts/map_panels.html:510
 #: geonode/templates/_permissions_form.html:236 geonode/templates/base.html:697
-#, fuzzy
-#| msgid "Message Inbox"
 msgid "Message box"
-msgstr "Mensagens"
+msgstr "Caixa de entrada"
 
 #: geonode/documents/templates/layouts/doc_panels.html:520
 #: geonode/layers/templates/layouts/panels.html:523
@@ -1694,16 +1672,12 @@ msgid "You are not allowed to edit this document."
 msgstr "Você não tem permissão para editar este documento."
 
 #: geonode/documents/views.py:454 geonode/layers/views.py:1018
-#, fuzzy
-#| msgid "Set permissions for this resource"
 msgid "You must set a point of contact for this resource"
-msgstr "Definir permissões para este recurso"
+msgstr "Tem de definir um ponto de contato para este recurso"
 
 #: geonode/documents/views.py:471 geonode/layers/views.py:1035
-#, fuzzy
-#| msgid "Set permissions for this resource"
 msgid "You must set an author for this resource"
-msgstr "Definir permissões para este recurso"
+msgstr "Tem de definir um autor para este recurso"
 
 #: geonode/favorite/templates/favorite/_favorite.html:5
 #: geonode/templates/_actions.html:23
@@ -1905,14 +1879,10 @@ msgstr "Nome"
 #: geonode/groups/models.py:54 geonode/templates/base.html:320
 #: geonode/templates/search/_general_filters.html:76
 #: geonode/templates/search/_search_user_content.html:28
-#, fuzzy
-#| msgid "Categories"
 msgid "Group Categories"
-msgstr "Categorias"
+msgstr "Grupo de Categorias"
 
 #: geonode/groups/models.py:72
-#, fuzzy
-#| msgid "Public"
 msgid "Public"
 msgstr "Público"
 
@@ -1933,9 +1903,10 @@ msgid ""
 msgstr ""
 "Público: Qualquer utilizador registado pode ver e participar de um grupo "
 "público. <br> Público (somente para convidados): Qualquer utilizador "
-"registado pode ver o grupo. Apenas usuários convidados podem entrar. <br> "
-"Privado: Os usuários registrados não pode ver todos os detalhes sobre o "
-"grupo, incluindo os de adesão. Apenas usuários convidados podem entrar."
+"registado pode ver o grupo. Apenas utilizadores convidados podem entrar. "
+"<br> Privado: Os utilizadores registrados não pode ver todos os detalhes "
+"sobre o grupo, incluindo os de adesão. Apenas utilizadores convidados podem "
+"entrar."
 
 #: geonode/groups/models.py:82
 msgid ""
@@ -2209,16 +2180,12 @@ msgid "Remove selected maps/data"
 msgstr "Remover mapas seleccionados / dados"
 
 #: geonode/groups/templates/groups/group_update.html:6
-#, fuzzy
-#| msgid "updated"
 msgid "groups update"
-msgstr "atualizado"
+msgstr "grupos atualizado"
 
 #: geonode/groups/templates/groups/groupcategory_detail.html:24
-#, fuzzy
-#| msgid "Edit Group Details"
 msgid "Edit Group Category Details"
-msgstr "Editar Detalhes do grupo"
+msgstr "Editar Detalhes da Categoria do Grupo"
 
 #: geonode/groups/templates/groups/groupcategory_detail.html:31
 #: geonode/templates/500.html:70 geonode/templates/500.html:185
@@ -2229,23 +2196,17 @@ msgid "Groups"
 msgstr "Grupos"
 
 #: geonode/groups/templates/groups/groupcategory_form.html:4
-#, fuzzy
-#| msgid "Create Group"
 msgid "Create Group Category"
-msgstr "Criar Grupo"
+msgstr "Criar Categoria de Grupo"
 
 #: geonode/groups/templates/groups/groupcategory_form.html:6
-#, fuzzy
-#| msgid "Create a Group"
 msgid "Create a Group Category"
-msgstr "Criar um Grupo"
+msgstr "Criar uma Categoria de Grupo"
 
 #: geonode/groups/templates/groups/groupcategory_update_form.html:4
 #: geonode/groups/templates/groups/groupcategory_update_form.html:6
-#, fuzzy
-#| msgid "Create Group"
 msgid "Edit Group Category"
-msgstr "Criar Grupo"
+msgstr "Editar Categoria de Grupo"
 
 #: geonode/invitations/forms.py:53
 #, python-format
@@ -2281,64 +2242,44 @@ msgstr ""
 "%(error)s (%(type)s)"
 
 #: geonode/layers/__init__.py:28
-#, fuzzy
-#| msgid "Map Created"
 msgid "Layer Created"
-msgstr "Mapa Criado"
+msgstr "Camada Criada"
 
 #: geonode/layers/__init__.py:28
-#, fuzzy
-#| msgid "A layer was commented on"
 msgid "A Layer was created"
-msgstr "Uma camada foi comentada em"
+msgstr "Uma camada foi criada"
 
 #: geonode/layers/__init__.py:29
-#, fuzzy
-#| msgid "Layer Uploaded"
 msgid "Layer Updated"
-msgstr "Camada Carregada"
+msgstr "Camada Atualizada"
 
 #: geonode/layers/__init__.py:29
-#, fuzzy
-#| msgid "A layer was commented on"
 msgid "A Layer was updated"
-msgstr "Uma camada foi comentada em"
+msgstr "Uma camada foi atualizada"
 
 #: geonode/layers/__init__.py:30
-#, fuzzy
-#| msgid "Not provided"
 msgid "Layer Approved"
-msgstr "Não fornecido"
+msgstr "Camada Aprovada"
 
 #: geonode/layers/__init__.py:30
-#, fuzzy
-#| msgid "A layer was commented on"
 msgid "A Layer was approved by a Manager"
-msgstr "Uma camada foi comentada em"
+msgstr "A camada foi aprovada por um Gestor"
 
 #: geonode/layers/__init__.py:31
-#, fuzzy
-#| msgid "Published From"
 msgid "Layer Published"
-msgstr "Publicado de"
+msgstr "Camada Publicada"
 
 #: geonode/layers/__init__.py:31
-#, fuzzy
-#| msgid "A layer was commented on"
 msgid "A Layer was published"
-msgstr "Uma camada foi comentada em"
+msgstr "Uma camada foi publicada"
 
 #: geonode/layers/__init__.py:32
-#, fuzzy
-#| msgid "Layer Default Style"
 msgid "Layer Deleted"
-msgstr "Estilo padrão da camada"
+msgstr "Camada Eliminada"
 
 #: geonode/layers/__init__.py:32
-#, fuzzy
-#| msgid "A layer was commented on"
 msgid "A Layer was deleted"
-msgstr "Uma camada foi comentada em"
+msgstr "Uma camada foi eliminada"
 
 #: geonode/layers/models.py:52
 msgid "YYYYMMDD"
@@ -2373,22 +2314,16 @@ msgid "Workspace"
 msgstr "Espaço de trabalho"
 
 #: geonode/layers/models.py:163
-#, fuzzy
-#| msgid "date type"
 msgid "Store"
-msgstr "tipo de data"
+msgstr "Store"
 
 #: geonode/layers/models.py:164
-#, fuzzy
-#| msgid "date type"
 msgid "Storetype"
-msgstr "tipo de data"
+msgstr "Storetype"
 
 #: geonode/layers/models.py:166
-#, fuzzy
-#| msgid "CSW typename"
 msgid "Typename"
-msgstr "CSW typename"
+msgstr "Typename"
 
 #: geonode/layers/models.py:168
 msgid "Is mosaic?"
@@ -2404,19 +2339,17 @@ msgstr "Tem elevação?"
 
 #: geonode/layers/models.py:172
 msgid "Time regex"
-msgstr ""
+msgstr "Regex de Tempo"
 
 #: geonode/layers/models.py:177
 msgid "Elevation regex"
-msgstr ""
+msgstr "Regex de Elevação"
 
 #: geonode/layers/models.py:282
 msgid "File cannot be opened, maybe check the encoding"
 msgstr "O ficheiro não pode ser aberto, verifique a codificação"
 
 #: geonode/layers/models.py:393
-#, fuzzy
-#| msgid "attribute name"
 msgid "attribute name"
 msgstr "nome do atributo"
 
@@ -2425,10 +2358,8 @@ msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "nome do atributo como armazenado no shapefile/banco de dados espacial"
 
 #: geonode/layers/models.py:400
-#, fuzzy
-#| msgid "distribution description"
 msgid "attribute description"
-msgstr "distribution description"
+msgstr "descrição do atributo"
 
 #: geonode/layers/models.py:401
 msgid "description of attribute to be used in metadata"
@@ -2473,10 +2404,8 @@ msgstr ""
 "ferramenta de identificação"
 
 #: geonode/layers/models.py:429
-#, fuzzy
-#| msgid "count"
 msgid "count"
-msgstr "total"
+msgstr "contagem"
 
 #: geonode/layers/models.py:430
 msgid "count value for this field"
@@ -2535,8 +2464,6 @@ msgid "unique values for this field"
 msgstr "valores únicos para este campo"
 
 #: geonode/layers/models.py:485
-#, fuzzy
-#| msgid "last modified"
 msgid "last modified"
 msgstr "última modificação"
 
@@ -2560,10 +2487,8 @@ msgstr "Associar um novo ponto de contato às camadas abaixo:"
 #: geonode/layers/templates/layers/layer_detail.html:32
 #: geonode/layers/templates/layers/layer_style_edit.html:27
 #: geonode/layers/templates/layers/layer_style_manage.html:6
-#, fuzzy
-#| msgid "Layers"
 msgid "layers"
-msgstr "Camadas"
+msgstr "camadas"
 
 #: geonode/layers/templates/layers/layer_detail.html:68
 msgid "Layer WMS GetCapabilities document"
@@ -2571,7 +2496,7 @@ msgstr "Documento WMS GetCapabilities da camada"
 
 #: geonode/layers/templates/layers/layer_detail.html:78
 msgid "Filter Granules"
-msgstr ""
+msgstr "Filtrar Representação do Mosaico"
 
 #: geonode/layers/templates/layers/layer_detail.html:81
 msgid "Active Filter:"
@@ -2579,7 +2504,7 @@ msgstr "Filtro Ativo:"
 
 #: geonode/layers/templates/layers/layer_detail.html:87
 msgid "Granule ID"
-msgstr ""
+msgstr "ID da Representação do Mosaico"
 
 #: geonode/layers/templates/layers/layer_detail.html:88
 msgid "Bounding Box"
@@ -2599,16 +2524,12 @@ msgid "Actions"
 msgstr "Acções"
 
 #: geonode/layers/templates/layers/layer_detail.html:103
-#, fuzzy
-#| msgid "Preview"
 msgid "Granule Preview"
-msgstr "Pré-visualizar"
+msgstr "Pré-visualização da Representação do Mosaico"
 
 #: geonode/layers/templates/layers/layer_detail.html:104
-#, fuzzy
-#| msgid "Remove"
 msgid "Granule Remove"
-msgstr "Remover"
+msgstr "Removido Representação do Mosaico"
 
 #: geonode/layers/templates/layers/layer_detail.html:153
 msgid "Dimension"
@@ -2620,7 +2541,7 @@ msgstr "Ativado"
 
 #: geonode/layers/templates/layers/layer_detail.html:155
 msgid "Regex"
-msgstr ""
+msgstr "Regex"
 
 #: geonode/layers/templates/layers/layer_detail.html:160
 msgid "TIME"
@@ -2677,47 +2598,39 @@ msgstr "Imagens"
 #: geonode/templates/500.html:153 geonode/templates/base.html:282
 #: geonode/templates/base.html:459
 msgid "Data"
-msgstr ""
+msgstr "Conjunto de dados"
 
 #: geonode/layers/templates/layers/layer_detail.html:313
 msgid "Click to filter the layer"
 msgstr "Click para filtrar a camada"
 
 #: geonode/layers/templates/layers/layer_detail.html:314
-#, fuzzy
-#| msgid "Are you sure you want to log out?"
 msgid "Do you want to filter it?"
-msgstr "Tem certeza que deseja sair?"
+msgstr "Deseja filtrá-lo?"
 
 #: geonode/layers/templates/layers/layer_detail.html:317
 msgid "Loading..."
 msgstr "Carregando..."
 
 #: geonode/layers/templates/layers/layer_detail.html:321
-#, fuzzy
-#| msgid "Select an attribute"
 msgid "Filter by attributes"
-msgstr "Selecione um atributo"
+msgstr "Filtrar por atributos"
 
 #: geonode/layers/templates/layers/layer_detail.html:328
 msgid "Match"
 msgstr "Coincide"
 
 #: geonode/layers/templates/layers/layer_detail.html:336
-#, fuzzy
-#| msgid "All"
 msgid "all"
-msgstr "Todos"
+msgstr "todos"
 
 #: geonode/layers/templates/layers/layer_detail.html:337
 msgid "any"
 msgstr "qualquer"
 
 #: geonode/layers/templates/layers/layer_detail.html:343
-#, fuzzy
-#| msgid "The following users:"
 msgid "of the following:"
-msgstr "Os seguintes usuários:"
+msgstr "dos seguintes:"
 
 #: geonode/layers/templates/layers/layer_detail.html:350
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:126
@@ -2730,10 +2643,8 @@ msgid "Operator"
 msgstr "Operador"
 
 #: geonode/layers/templates/layers/layer_detail.html:394
-#, fuzzy
-#| msgid "feature type"
 msgid "Feature limit"
-msgstr "tipo de feição"
+msgstr "Limite de elementos"
 
 #: geonode/layers/templates/layers/layer_detail.html:403
 msgid "Pick your download format:"
@@ -2755,20 +2666,16 @@ msgstr "Aviso"
 #: geonode/layers/templates/layers/layer_detail.html:455
 #: geonode/maps/templates/maps/map_detail.html:143
 #: geonode/maps/templates/maps/map_detail.html:150
-#, fuzzy
-#| msgid "Editing details for "
 msgid "Editing Tools"
-msgstr "Editar detalhes para"
+msgstr "Ferramentas de Edição"
 
 #: geonode/layers/templates/layers/layer_detail.html:462
 msgid "Edit Layer"
 msgstr "Editar Camada"
 
 #: geonode/layers/templates/layers/layer_detail.html:472
-#, fuzzy
-#| msgid "Download Metadata"
 msgid "Upload Metadata"
-msgstr "Baixar Metadados"
+msgstr "Carregar Metadados"
 
 #: geonode/layers/templates/layers/layer_detail.html:480
 #: geonode/layers/templates/layers/layer_detail.html:495
@@ -2800,16 +2707,12 @@ msgid "Edit data"
 msgstr "Editar dados"
 
 #: geonode/layers/templates/layers/layer_detail.html:539
-#, fuzzy
-#| msgid "Edit Layer"
 msgid "View Layer"
-msgstr "Editar Camada"
+msgstr "Ver Camada"
 
 #: geonode/layers/templates/layers/layer_detail.html:574
-#, fuzzy
-#| msgid "format"
 msgid "Attribute Information"
-msgstr "formato"
+msgstr "Informação do Atributo"
 
 #: geonode/layers/templates/layers/layer_detail.html:576
 msgid "ISO Feature Catalogue"
@@ -2844,16 +2747,12 @@ msgid "Add the layer to an existing map"
 msgstr "Adicionar camada a um mapa existente"
 
 #: geonode/layers/templates/layers/layer_detail.html:646
-#, fuzzy
-#| msgid "Click the button below to change the permissions of this layer."
 msgid "Click the button below to add the layer to the selected map."
-msgstr "Pressione o botão baixo para alterar as permissões dessa camada."
+msgstr "Clique no botão em baixo para adicionar a camada ao mapa selecionado."
 
 #: geonode/layers/templates/layers/layer_detail.html:648
-#, fuzzy
-#| msgid "Edit Map"
 msgid "Add to Map"
-msgstr "Editar Mapa"
+msgstr "Adicionar ao Mapa"
 
 #: geonode/layers/templates/layers/layer_detail.html:655
 msgid "Documents related to this layer"
@@ -2874,10 +2773,8 @@ msgstr ""
 #: geonode/layers/templates/layers/layer_detail.html:675
 #: geonode/layers/templates/layers/layer_detail.html:689
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:30
-#, fuzzy
-#| msgid "Layer Default Style"
 msgid "(default style)"
-msgstr "Estilo padrão da camada"
+msgstr "(estilo padrão)"
 
 #: geonode/layers/templates/layers/layer_detail.html:682
 #: geonode/layers/templates/layers/layer_detail.html:696
@@ -2911,16 +2808,13 @@ msgid "Refresh Attributes and Statistics"
 msgstr "Atualizar Atributos e Estatísticas"
 
 #: geonode/layers/templates/layers/layer_detail.html:722
-#, fuzzy
-#| msgid "Create a map using this layer"
 msgid "Clear the Server Cache of this layer"
-msgstr "Criar um mapa usando esta camada"
+msgstr "Limpar Cache desta camada no Servidor"
 
 #: geonode/layers/templates/layers/layer_detail.html:723
-#, fuzzy
-#| msgid "Click the button below to change the permissions of this layer."
 msgid "Click the button below to wipe the tile-cache of this layer."
-msgstr "Pressione o botão baixo para alterar as permissões dessa camada."
+msgstr ""
+"Clique no botão em baixo para limpar os mosaicos em cache desta camada."
 
 #: geonode/layers/templates/layers/layer_detail.html:724
 msgid "Empty Tiled-Layer Cache"
@@ -2946,14 +2840,12 @@ msgid "Processing..."
 msgstr "Processando..."
 
 #: geonode/layers/templates/layers/layer_detail.html:756
-#, fuzzy
-#| msgid "Permissions"
 msgid "Updating Permissions..."
-msgstr "Permissões"
+msgstr "Atualizando Permissões..."
 
 #: geonode/layers/templates/layers/layer_granule_remove.html:9
 msgid "Remove Mosaic Granules"
-msgstr ""
+msgstr "Remover Representações do Mosaico"
 
 #: geonode/layers/templates/layers/layer_granule_remove.html:14
 #, python-format
@@ -2963,6 +2855,10 @@ msgid ""
 "Mosaic <a href=\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
 "        "
 msgstr ""
+"\n"
+"           Tem a certeza que quer remove Grânulo %(granule_id)s do Mosaico "
+"<a href=\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
+"        "
 
 #: geonode/layers/templates/layers/layer_granule_remove.html:30
 #: geonode/layers/templates/layers/layer_remove.html:30
@@ -2975,17 +2871,15 @@ msgid "No maps are using this layer"
 msgstr "Nenhum mapa está usando esta camada"
 
 #: geonode/layers/templates/layers/layer_list.html:7
-#, fuzzy
-#| msgid "A layer was uploaded"
 msgid "layers explore"
-msgstr "Uma camada foi carregada"
+msgstr "explorar camadas"
 
 #: geonode/layers/templates/layers/layer_list.html:12
 #: geonode/layers/templates/upload/layer_upload.html:18
 #: geonode/layers/templates/upload/layer_upload_base.html:162
 #: geonode/templates/500.html:268
 msgid "Upload Layers"
-msgstr "Subir Camadas"
+msgstr "Carregar Camadas"
 
 #: geonode/layers/templates/layers/layer_metadata.html:19
 #, python-format
@@ -3048,19 +2942,15 @@ msgstr "Ordem para mostrar"
 #: geonode/layers/templates/layers/layer_metadata_upload.html:26
 #: geonode/layers/templates/layers/layer_style_upload.html:11
 #: geonode/layers/templates/upload/layer_upload_metadata_base.html:11
-#, fuzzy
-#| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
-msgstr "Carregar Camada"
+msgstr "Carregar Metadados da Camada"
 
 #: geonode/layers/templates/layers/layer_metadata_upload.html:13
 #: geonode/layers/templates/layers/layer_replace.html:13
 #: geonode/layers/templates/layers/layer_style_upload.html:13
 #: geonode/layers/templates/upload/layer_upload.html:7
-#, fuzzy
-#| msgid "A layer was uploaded"
 msgid "layers upload"
-msgstr "Uma camada foi carregada"
+msgstr "carregamento de camadas"
 
 #: geonode/layers/templates/layers/layer_metadata_upload.html:26
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
@@ -3148,10 +3038,8 @@ msgstr "Substituir Camada"
 
 #: geonode/layers/templates/layers/layer_replace.html:80
 #: geonode/layers/templates/upload/layer_upload.html:89
-#, fuzzy
-#| msgid "Edit Service Metadata"
 msgid "Preserve Metadata XML"
-msgstr "Editar Serviço de Metadados"
+msgstr "Preservar XML dos Metadados"
 
 #: geonode/layers/templates/layers/layer_replace.html:85
 #: geonode/layers/templates/upload/layer_upload.html:94
@@ -3196,10 +3084,8 @@ msgid "Update Available Styles"
 msgstr "Atualizar Estilos Disponíveis"
 
 #: geonode/layers/templates/layers/layer_style_upload.html:26
-#, fuzzy
-#| msgid "Upload Layer Step 2"
 msgid "Upload Layer Style"
-msgstr "Carregar camada Passo 2"
+msgstr "Carregar Estilo da Camada"
 
 #: geonode/layers/templates/layers/layer_style_upload.html:26
 msgid "(SLD - Style Layer Descriptor 1.0, 1.1)"
@@ -3218,17 +3104,13 @@ msgid "Preview"
 msgstr "Pré-visualizar"
 
 #: geonode/layers/templates/layouts/panels.html:256
-#, fuzzy
-#| msgid "Attributes"
 msgid "Dataset Attributes"
-msgstr "Atributos"
+msgstr "Atributos do Conjunto de dados"
 
 #: geonode/layers/templates/layouts/panels.html:613
 #: geonode/maps/templates/layouts/map_panels.html:565
-#, fuzzy
-#| msgid "Notice settings"
 msgid "Other Settings"
-msgstr "Notice settings"
+msgstr "Outras Configurações"
 
 #: geonode/layers/templates/upload/layer_upload.html:5
 #: geonode/templates/500.html:159 geonode/templates/base.html:289
@@ -3237,10 +3119,8 @@ msgid "Upload Layer"
 msgstr "Carregar Camada"
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:8
-#, fuzzy
-#| msgid "Upload Layer Step 2"
 msgid "Upload Layer Step: Set SRS"
-msgstr "Carregar camada Passo 2"
+msgstr "Etapa de Carregamento de Camada: Definir SRS"
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:16
 msgid "Provide CRS for "
@@ -3251,16 +3131,6 @@ msgid "Coordinate Reference System"
 msgstr "Sistema de coordenadas de referência"
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:23
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "        A coordinate reference system for this layer could not be "
-#| "determined.\n"
-#| "        Locate or enter the appropriate ESPG code for this layer below.\n"
-#| "        One way to do this is do visit:\n"
-#| "        <a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a>\n"
-#| "        and enter the following:\n"
-#| "    "
 msgid ""
 "\n"
 "                A coordinate reference system for this layer could not be "
@@ -3274,13 +3144,15 @@ msgid ""
 "            "
 msgstr ""
 "\n"
-"       Não foi possível determinar um sistema de coordenadas de referência "
-"para esta camada.\n"
-"        Localize ou insira abaixo o código ESPG apropriado para a camada.\n"
-"        Uma das formas de fazer isso é visitar o endereço\n"
-"        <a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a>\n"
-"        e inserir:\n"
-"    "
+"                Não foi possível determinar o sistema de coordenadas para "
+"esta camada. \n"
+"                Localize ou insira abaixo o código ESPG apropriado para a "
+"camada.\n"
+"                Uma das formas de fazer isto é visitar:\n"
+"                <a href=\"http://prj2epsg.org/search\" target=\"_"
+"\">prj2epsg</a>\n"
+"                e inserir o seguinte:\n"
+"            "
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:32
 msgid "Native CRS could not be found!"
@@ -3340,10 +3212,8 @@ msgstr "Próximo"
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:62
 #: geonode/layers/templates/upload/layer_upload_time.html:127
-#, fuzzy
-#| msgid "Time Options"
 msgid "Advanced Options"
-msgstr "Opções de hora"
+msgstr "Opções Avançadas"
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:67
 msgid "Target SRS"
@@ -3355,10 +3225,8 @@ msgid "EPSG Code (Target SRS)"
 msgstr "Código EPSG (SRS de Destino)"
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:74
-#, fuzzy
-#| msgid "Select an attribute"
 msgid "Select a Target SRS"
-msgstr "Selecione um atributo"
+msgstr "Selecione o SRS de Destino"
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:78
 msgid "leave it empty to use only Source SRS"
@@ -3370,10 +3238,8 @@ msgid "Additional Help"
 msgstr "Ajuda Adicional"
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:89
-#, fuzzy
-#| msgid "Coordinate Reference System"
 msgid "Spatial Reference System"
-msgstr "Sistema de coordenadas de referência"
+msgstr "Sistema remoto indisponível"
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:90
 msgid ""
@@ -3394,6 +3260,26 @@ msgid ""
 "                            OGC Abstract Specification, Topic 2: Spatial "
 "referencing by coordinate."
 msgstr ""
+"Um sistema de referência espacial (SRS) ou sistema de referência de "
+"coordenadas (SRC) é um local baseado em coordenadas,\n"
+"                            sistema regional ou global usado para localizar "
+"entidades geográficas. Um sistema de referência espacial define um mapa "
+"específico\n"
+"                            projeção, bem como transformações entre "
+"diferentes sistemas de referência espacial. Os sistemas de referência "
+"espacial são\n"
+"                            definido pelo acesso a recursos simples do OGC "
+"usando texto bem conhecido, e o suporte foi implementado por vários\n"
+"                            sistemas de informação geográfica baseados em "
+"padrões. Os sistemas de referência espacial podem ser referidos usando um "
+"número inteiro SRID,\n"
+"                            incluindo códigos EPSG definidos pela Associação "
+"Internacional de Produtores de Petróleo e Gás.\n"
+"                            Este está especificado na ISO 19111: 2007 "
+"Informações geográficas - referência espacial por coordenadas, também "
+"publicada como\n"
+"                            Resumo de Especificação OGC, Tópico 2: "
+"Referenciação espacial por coordenadas."
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:98
 msgid "Identifiers"
@@ -3412,6 +3298,19 @@ msgid ""
 "                        such as the European Petroleum Survey Group (EPSG).\n"
 "                        "
 msgstr ""
+"\n"
+"                         Um SRID (Spatial Reference System Identifier) é um "
+"valor exclusivo usado para identificar de maneira inequívoca projeções, "
+"projeções,\n"
+"                         e definições de sistema de coordenadas espaciais "
+"locais. Esses sistemas de coordenadas formam o coração de todos as aplicação "
+"SIG.\n"
+"\n"
+"                         Virtualmente, todos os principais fornecedores "
+"espaciais criaram sua própria implementação SRID ou se referem aos de uma "
+"autoridade,\n"
+"                         como o da European Petroleum Survey Group (EPSG).\n"
+"                         "
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:109
 msgid ""
@@ -3420,6 +3319,10 @@ msgid ""
 "                            Association of Oil & Gas Producers (OGP) "
 "Surveying & Positioning Committee"
 msgstr ""
+"NOTA: A partir de 2005, os valores do EPSG SRID agora são mantidos pelo "
+"Comité\n"
+"                             Internacional de Inspeção e Posicionamento da "
+"Associação de Produtores de Petróleo e Gás (OGP)"
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:113
 msgid ""
@@ -3430,6 +3333,12 @@ msgid ""
 "1.2, which is defined as follows:\n"
 "                        "
 msgstr ""
+"\n"
+"                         Os SRIDs são a chave primária da tabela de "
+"metadados spatial_ref_sys do Open Geospatial Consortium (OGC) para o Simple\n"
+"                         Features para a Especificação SQL, Versões 1.1 e "
+"1.2, definidas da seguinte maneira:\n"
+"                         "
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:129
 msgid ""
@@ -3445,6 +3354,19 @@ msgid ""
 "system (SRTEXT, above). From the Well Known Text Wikipedia page\n"
 "                        "
 msgstr ""
+"\n"
+"                        Em base de dados espacialmente habilitadas (como IBM "
+"DB2, IBM Informix, Microsoft SQL Server, MySQL, Oracle RDBMS, Teradata, "
+"PostGIS e\n"
+"                        SQL Anywhere), os SRIDs são usados para identificar "
+"exclusivamente os sistemas de coordenadas usados para definir colunas de "
+"dados espaciais ou individuais\n"
+"                        objetos espaciais numa coluna espacial (dependendo "
+"da implementação espacial). SRIDs são tipicamente associados a uma definição "
+"Well \n"
+"                        Known Text (WKT) do sistema de coordenadas (SRTEXT, "
+"acima). A partir da página Wikipédia Well Known Text\n"
+"                        "
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:137
 msgid ""
@@ -3452,6 +3374,9 @@ msgid ""
 "coordinate system,\n"
 "                            and map projection of the spatial objects”."
 msgstr ""
+"\"Uma sequência WKT para um sistema de referência espacial descreve o datum, "
+"geóide, sistema de coordenadas,\n"
+"                            e projeção de mapas dos objetos espaciais\"."
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:141
 msgid ""
@@ -3460,6 +3385,10 @@ msgid ""
 "EPSG SRID value followed by their well known text:\n"
 "                        "
 msgstr ""
+"\n"
+"                        Aqui estão dois sistemas de coordenadas comuns com "
+"seu valor EPSG SRID seguido pelo seu well know text:\n"
+"                        "
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:147
 msgid ""
@@ -3492,6 +3421,14 @@ msgid ""
 "objects in others.\n"
 "                        "
 msgstr ""
+"\n"
+"                        Os valores de SRID associados aos dados espaciais "
+"podem ser usados para restringir operações espaciais — por exemplo, as "
+"operações espaciais não podem ser realizadas\n"
+"                        entre objetos espaciais com SRIDs diferentes em "
+"alguns sistemas, ou desencadear transformações de sistema de coordenadas "
+"entre objetos espaciais em outros.\n"
+"                        "
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:204
 msgid ""
@@ -3502,6 +3439,12 @@ msgid ""
 "geospatial data itself, it\n"
 "                            must be manually declared by the operator."
 msgstr ""
+"O Código fonte SRS EPSG é obrigatório e representa os dados nativos do "
+"Sistema de Referência Espacial. Isso deve ser coerente com o\n"
+"                            os Valores de geometria (coordenadas lon/lat "
+"como uma instância) armazenados no conjunto de dados geoespaciais. Se não "
+"especificado nos dados geoespaciais em si, ele\n"
+"                            deve ser declarado manualmente pelo operador."
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:208
 msgid ""
@@ -3509,12 +3452,13 @@ msgid ""
 "project the coordinates from Source SRS to another one.\n"
 "                        "
 msgstr ""
+"O Código SRS EPSG de destino é opcional. Isto só deve ser usado se "
+"precisarmos reprojetar as coordenadas do SRS origem para outro.\n"
+"                        "
 
 #: geonode/layers/templates/upload/layer_upload_csv.html:7
-#, fuzzy
-#| msgid "Upload Layer Step 2"
 msgid "Upload Layer Step: CSV Field Mapping"
-msgstr "Carregar camada Passo 2"
+msgstr "Etapa de Carregamento de Camada: Mapeamento dos Atributos CSV"
 
 #: geonode/layers/templates/upload/layer_upload_csv.html:15
 msgid "Geospatial Data"
@@ -3529,21 +3473,16 @@ msgstr ""
 "dados CSV."
 
 #: geonode/layers/templates/upload/layer_upload_csv.html:20
-#, fuzzy
-#| msgid ""
-#| "With this data, GeoNode was able to guess which attributes contain the\n"
-#| "latitude and longitude coordinates, but please confirm that the correct\n"
-#| "attributes are selected below."
 msgid ""
 "With this data, GeoNode was able to guess which attributes contain the\n"
 "                latitude and longitude coordinates, but please confirm that "
 "the correct\n"
 "                attributes are selected below."
 msgstr ""
-"Com esses dados, o GeoNode conseguiu detectar quais atributos contêm as\n"
-"coordenadas de latitude e longitude, mas é importante que você confirme se "
-"os\n"
-"atributos corretos estão selecionados abaixo."
+"Com estes dados, o GeoNode conseguiu detetar quais atributos contêm as\n"
+"                coordenadas de latitude e longitude, mas é importante que "
+"você confirme se os\n"
+"                atributos corretos são os abaixo selecionados."
 
 #: geonode/layers/templates/upload/layer_upload_csv.html:33
 #: geonode/layers/templates/upload/layer_upload_csv.html:46
@@ -3551,13 +3490,6 @@ msgid "Select an attribute"
 msgstr "Selecione um atributo"
 
 #: geonode/layers/templates/upload/layer_upload_csv.html:70
-#, fuzzy
-#| msgid ""
-#| "We did not detect columns that could be used for the latitude and "
-#| "longitude.\n"
-#| "Please verify that you have two columns in your csv file that can be used "
-#| "for\n"
-#| "the latitude and longitude."
 msgid ""
 "We did not detect columns that could be used for the latitude and "
 "longitude.\n"
@@ -3565,9 +3497,10 @@ msgid ""
 "used for\n"
 "        the latitude and longitude."
 msgstr ""
-"Não detectamos colunas que poderiam ser usadas para latitude e longitude.\n"
-"Verifique se o seu arquivo csv tem duas colunas que podem ser usadas para\n"
-"a latitude e a longitude."
+"Não detetamos colunas que poderiam ser usadas para latitude e longitude.\n"
+"        Verifique se o seu ficheiro csv tem duas colunas que podem ser "
+"usadas para\n"
+"        a latitude e a longitude."
 
 #: geonode/layers/templates/upload/layer_upload_invalid.html:6
 #: geonode/layers/templates/upload/no_upload.html:6
@@ -3584,14 +3517,12 @@ msgid "Upload Form"
 msgstr "Carregar formulário"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:8
-#, fuzzy
-#| msgid "Upload Layer Step 2"
 msgid "Upload Layer Step: Time"
-msgstr "Carregar camada Passo 2"
+msgstr "Etapa de Carregamento de Camada: Tempo"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:16
 msgid "Inspect data for "
-msgstr ""
+msgstr "Inspecionando o conjunto de dados para "
 
 #: geonode/layers/templates/upload/layer_upload_time.html:25
 msgid "Configure as Time-Series"
@@ -3610,6 +3541,17 @@ msgid ""
 "in the \"Additional Help\" sections.\n"
 "                      "
 msgstr ""
+"A mistura deste seletor permite configurar (ou não) estes dados como uma "
+"série temporal; neste caso, você também terá que selecionar um atributo\n"
+"                      para conduzir a dimensão do tempo.\n"
+"                      <br><br>\n"
+"                      Se o GeoNode não for capaz de analisar qualquer um dos "
+"valores para os marcadores vermelhos de atributo selecionado, aparecerá para "
+"destacar os problemas.\n"
+"                      <br><br>\n"
+"                      Mais informações são fornecidas na parte inferior da "
+"página nas seções \"Ajuda adicional\".\n"
+"                      "
 
 #: geonode/layers/templates/upload/layer_upload_time.html:43
 #: geonode/templates/index.html:72 geonode/templates/index.html:82
@@ -3623,32 +3565,28 @@ msgstr "Não"
 #: geonode/layers/templates/upload/layer_upload_time.html:46
 #: geonode/layers/templates/upload/layer_upload_time.html:159
 msgid "Use an existing timestamp attribute in the data"
-msgstr ""
+msgstr "Use um atributo com formato de data/hora existente nos dados"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:48
-#, fuzzy
-#| msgid "Existing Time Attribute"
 msgid "Yes: with an existing Time-Attribute"
-msgstr "Atributo temporal existente"
+msgstr "Sim: com um atributo Temporal existente"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:53
 msgid ""
 "Yes: by converting data to a timestamp using standard date/time "
 "representation"
 msgstr ""
+"Sim: convertendo dados num carimbo de data/hora usando a representação de "
+"data/hora padrão"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:56
 #: geonode/layers/templates/upload/layer_upload_time.html:182
-#, fuzzy
-#| msgid "Convert Number (As Year)"
 msgid "Convert a number field into a year"
-msgstr "Converter número (como Ano)"
+msgstr "Converter campo do número em ano"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:58
-#, fuzzy
-#| msgid "Convert Number (As Year)"
 msgid "Yes: by converting a number as Year"
-msgstr "Converter número (como Ano)"
+msgstr "Sim: converter o número como Ano"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:64
 msgid ""
@@ -3668,10 +3606,8 @@ msgid "Date Format"
 msgstr "Formato de Data"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:139
-#, fuzzy
-#| msgid "Attribute Name"
 msgid "Text Attribute Date Format"
-msgstr "Nome do Atributo"
+msgstr "Formato da Data do atributo de texto"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:142
 #: geonode/layers/templates/upload/layer_upload_time.html:174
@@ -3684,10 +3620,8 @@ msgid "Custom"
 msgstr "Personalizado"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:152
-#, fuzzy
-#| msgid "Choose optional end time attribute"
 msgid "Optional End-Time attribute"
-msgstr "Escolher atributo opcional de hora de término"
+msgstr "Atributo opcional de hora de término"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:161
 msgid "Existing Time Attribute"
@@ -3702,10 +3636,8 @@ msgid "Convert Number (As Year)"
 msgstr "Converter número (como Ano)"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:193
-#, fuzzy
-#| msgid "attribute description"
 msgid "Time attribute Presentation"
-msgstr "descrição do atributo"
+msgstr "Forma de apresentação do atributo de Tempo"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:201
 msgid "List"
@@ -3744,14 +3676,6 @@ msgid "Enabling Time"
 msgstr "Ativação de hora"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:231
-#, fuzzy
-#| msgid ""
-#| "A feature can currently support one or two time attributes. If a single\n"
-#| "    attribute is used, the feature is considered relevant at that single "
-#| "point in time. If two\n"
-#| "    attributes are used, the second attribute represents the end of a "
-#| "valid period for the\n"
-#| "    feature."
 msgid ""
 "A layer can support one or two time attributes. If a single\n"
 "                        attribute is used, the layer is considered to "
@@ -3761,20 +3685,21 @@ msgid ""
 "                        to contain data that is valid at certain periods in "
 "time."
 msgstr ""
-"Atualmente uma feição é compatível apenas com um ou dois atributos de hora. "
-"Caso um único atributo seja usado, a feição é considerada relevante naquele "
-"momento. Se dois atributos forem usados, o segundo atributo representa o "
-"término de um período válido para a feição."
+"Uma camada pode suportar um ou dois atributos de tempo. Se um único\n"
+"                        atributo é usado, a camada é considerada para conter "
+"dados válidos em pontos únicos no tempo. Se dois\n"
+"                        atributos são usados, o segundo atributo representa "
+"o fim de um período válido, portanto, a camada é considerada\n"
+"                        para conter dados válidos em determinados períodos "
+"de tempo."
 
 #: geonode/layers/templates/upload/layer_upload_time.html:235
 msgid "Selecting an Attribute"
 msgstr "Seleção de um atributo"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:236
-#, fuzzy
-#| msgid "A time attribute can be one of"
 msgid "A time attribute can be"
-msgstr "Um atributo de hora pode ser"
+msgstr "Um atributo de tempo pode ser"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:238
 msgid "An existing date"
@@ -3820,18 +3745,18 @@ msgstr ""
 #: geonode/layers/templates/upload/layer_upload_time.html:276
 #: geonode/layers/templates/upload/layer_upload_time.html:296
 msgid "Modal Header"
-msgstr ""
+msgstr "Cabeçalho Modal"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:279
 #: geonode/layers/templates/upload/layer_upload_time.html:299
 #: geonode/templates/base.html:730
 msgid "Some text in the modal"
-msgstr ""
+msgstr "Algum texto no modal"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:338
 #: geonode/layers/templates/upload/layer_upload_time.html:354
 msgid " does NOT match any valid ISO-8601 Date-Time string!"
-msgstr ""
+msgstr " NÃO corresponde a nenhuma sequência de data / hora ISO-8601 válida!"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:411
 msgid "Valid ISO-8601 for"
@@ -3839,21 +3764,19 @@ msgstr "ISO-8601 válido para"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:412
 msgid "matches a valid ISO-8601 Date-Time string!"
-msgstr ""
+msgstr "corresponde a uma sequência de data e hora ISO-8601 válida!"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:415
 msgid "Not Valid ISO-8601 for"
-msgstr ""
+msgstr "ISO-8601 inválido para"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:416
 msgid "does NOT match any valid ISO-8601 Date-Time string!"
-msgstr ""
+msgstr "não CORRESPONDE a nenhuma string ISO-8601 Data-Tempo válida!"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:420
-#, fuzzy
-#| msgid "Your selections"
 msgid "Wrong Selection"
-msgstr "Your selections"
+msgstr "Seleção Errada"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:421
 msgid "Please, select one Time Attribute to test!"
@@ -3893,6 +3816,8 @@ msgstr "Você está a tentar substituir uma camada raster por um vetorial."
 msgid ""
 "Please ensure the name is consistent with the file you are trying to replace."
 msgstr ""
+"Certifique-se de que o nome é consistente com o ficheiro que você está a "
+"tentar substituir."
 
 #: geonode/layers/utils.py:533
 msgid "Local GeoNode layer has no geometry type."
@@ -3904,11 +3829,15 @@ msgid ""
 "type                                 that is consistent with the file you "
 "are trying to replace."
 msgstr ""
+"Por favor, certifique-se de que há pelo menos um tipo de "
+"geometria                                  que é consistente com o ficheiro "
+"que está a tentar substituir."
 
 #: geonode/layers/utils.py:542
 #, python-format
 msgid "Some error occurred while trying to access the uploaded schema: %s"
 msgstr ""
+"Ocorreu algum tipo de erro enquanto tentava aceder ao esquema carregado: %s"
 
 #: geonode/layers/views.py:128
 msgid ""
@@ -3923,6 +3852,9 @@ msgid ""
 "Note: this layer's orginal metadata was populated and preserved by importing "
 "a metadata XML file. This metadata cannot be edited."
 msgstr ""
+"Nota: os metadados originais desta camada foram preenchidos e preservados "
+"importando um ficheiro XML de metadados. Esses metadados não podem ser "
+"editados."
 
 #: geonode/layers/views.py:135
 msgid "You are not permitted to delete this layer"
@@ -3945,22 +3877,20 @@ msgid "You are not permitted to view this layer"
 msgstr "Você não tem permissão para ver esta camada"
 
 #: geonode/layers/views.py:278
-#, fuzzy
-#| msgid "Files to be uploaded"
 msgid "Failed to upload the layer"
-msgstr "Arquivos a serem subidos"
+msgstr "Falha no carregamento da camada"
 
 #: geonode/layers/views.py:1336 geonode/layers/views.py:1381
-#, fuzzy
-#| msgid "Files to be uploaded"
 msgid "Unable to delete layer"
-msgstr "Arquivos a serem subidos"
+msgstr "Não foi possível eliminar a camada"
 
 #: geonode/layers/views.py:1340 geonode/layers/views.py:1385
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
+"Esta camada é um membro de um grupo de camadas, deve remover a camada do "
+"grupo antes de excluir."
 
 #: geonode/layers/views.py:1433 geonode/maps/views.py:1434
 msgid "couldn't generate thumbnail"
@@ -3971,56 +3901,40 @@ msgid "Map Created"
 msgstr "Mapa Criado"
 
 #: geonode/maps/__init__.py:28
-#, fuzzy
-#| msgid "A map was commented on"
 msgid "A Map was created"
-msgstr "Um Mapa foi comentado."
+msgstr "Um Mapa foi criado"
 
 #: geonode/maps/__init__.py:29
-#, fuzzy
-#| msgid "Map Created"
 msgid "Map Updated"
-msgstr "Mapa Criado"
+msgstr "Mapa Atualizado"
 
 #: geonode/maps/__init__.py:29
-#, fuzzy
-#| msgid "last updated on"
 msgid "A Map was updated"
-msgstr "última atualização em"
+msgstr "Um Mapa foi atualizado"
 
 #: geonode/maps/__init__.py:30
-#, fuzzy
-#| msgid "Not provided"
 msgid "Map Approved"
-msgstr "Não fornecido"
+msgstr "Mapa aprovado"
 
 #: geonode/maps/__init__.py:30
 msgid "A Map was approved by a Manager"
 msgstr "O Mapa foi aprovado pelo Gestor"
 
 #: geonode/maps/__init__.py:31
-#, fuzzy
-#| msgid "Published From"
 msgid "Map Published"
-msgstr "Publicado de"
+msgstr "Mapa publicado"
 
 #: geonode/maps/__init__.py:31
-#, fuzzy
-#| msgid "Published From"
 msgid "A Map was published"
-msgstr "Publicado de"
+msgstr "Um mapa foi publicado"
 
 #: geonode/maps/__init__.py:32
-#, fuzzy
-#| msgid "Map Created"
 msgid "Map Deleted"
-msgstr "Mapa Criado"
+msgstr "Mapa Eliminado"
 
 #: geonode/maps/__init__.py:32
-#, fuzzy
-#| msgid "A map was commented on"
 msgid "A Map was deleted"
-msgstr "Um Mapa foi comentado."
+msgstr "Um Mapa foi eliminado"
 
 #: geonode/maps/__init__.py:33
 msgid "Comment on Map"
@@ -4043,20 +3957,18 @@ msgid "zoom"
 msgstr "zoom"
 
 #: geonode/maps/models.py:68
-#, fuzzy
-#| msgid "projection"
 msgid "projection"
 msgstr "projeção"
 
 # Is necessary to have this in this order for pt_pt context
 #: geonode/maps/models.py:72
 msgid "center X"
-msgstr "X central"
+msgstr "centro X"
 
 # Is necessary to have this in this order for pt_pt context
 #: geonode/maps/models.py:76
 msgid "center Y"
-msgstr "Y central"
+msgstr "centro Y"
 
 #: geonode/maps/models.py:83
 msgid "Site URL"
@@ -4071,8 +3983,6 @@ msgid "stack order"
 msgstr "ordem"
 
 #: geonode/maps/models.py:448
-#, fuzzy
-#| msgid "format"
 msgid "format"
 msgstr "formato"
 
@@ -4101,8 +4011,6 @@ msgid "fixed"
 msgstr "fixo"
 
 #: geonode/maps/models.py:480
-#, fuzzy
-#| msgid "group"
 msgid "group"
 msgstr "grupo"
 
@@ -4113,7 +4021,7 @@ msgstr "visibilidade"
 # Is necessary to have this in this order for pt_pt context
 #: geonode/maps/models.py:487
 msgid "ows URL"
-msgstr "URL ows"
+msgstr "url OWS"
 
 #: geonode/maps/models.py:490
 msgid "layer params"
@@ -4133,7 +4041,7 @@ msgstr "mapas"
 
 #: geonode/maps/templates/maps/map_detail.html:63
 msgid "Map layers WMS GetCapabilities document"
-msgstr ""
+msgstr "Documento WMS GetCapabilities do mapa de camadas"
 
 #: geonode/maps/templates/maps/map_detail.html:82
 msgid "Rate this Map"
@@ -4170,7 +4078,7 @@ msgstr "Lista de documentos relacionados a este mapa:"
 
 #: geonode/maps/templates/maps/map_detail.html:243
 msgid "Specify which users can view or modify this map"
-msgstr "Especifique quais usuários podem ver ou modificar este mapa"
+msgstr "Especifique que utilizadores podem ver ou modificar este mapa"
 
 #: geonode/maps/templates/maps/map_detail.html:244
 msgid "Change Permissions of this Map"
@@ -4185,22 +4093,16 @@ msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Duplicar este mapa e modificá-lo para seu próprio objetivo"
 
 #: geonode/maps/templates/maps/map_detail.html:261
-#, fuzzy
-#| msgid "Copy this map"
 msgid "Embed this map"
-msgstr "Copiar este mapa"
+msgstr "Incorporar este mapa"
 
 #: geonode/maps/templates/maps/map_detail.html:262
-#, fuzzy
-#| msgid "Duplicate this map and modify it for your own purposes"
 msgid "Embed this map to your own sites"
-msgstr "Duplicar este mapa e modificá-lo para seu próprio objetivo"
+msgstr "Incorpore este mapa no seus websites"
 
 #: geonode/maps/templates/maps/map_detail.html:266
-#, fuzzy
-#| msgid "Edit Map"
 msgid "Embed Map"
-msgstr "Editar Mapa"
+msgstr "Incorporar Mapa"
 
 #: geonode/maps/templates/maps/map_detail.html:269
 msgid "Embed Iframe Link"
@@ -4211,10 +4113,8 @@ msgid "Embed Widget Link"
 msgstr "Ligação do Widget Embebido"
 
 #: geonode/maps/templates/maps/map_detail.html:273
-#, fuzzy
-#| msgid "Download Layer"
 msgid "Download Leaflet page"
-msgstr "Baixar Camada"
+msgstr "Transferir página Leaflet"
 
 #: geonode/maps/templates/maps/map_detail.html:293
 msgid "Embed Iframe"
@@ -4225,6 +4125,9 @@ msgid ""
 "To embed this map, add the following code snippet and customize its "
 "properties (scrolling, width, height) based on your needs to your site"
 msgstr ""
+"Para incorporar este mapa, adicione o seguinte excerto de código e "
+"personalize as suas propriedades (scrolling, largura, altura) baseando-se "
+"nas necessidades do seu website"
 
 #: geonode/maps/templates/maps/map_detail.html:315
 msgid "Embed Widget"
@@ -4233,6 +4136,7 @@ msgstr "Widget Embebido"
 #: geonode/maps/templates/maps/map_detail.html:318
 msgid "To embed this map, copy the following code snippet into your own page"
 msgstr ""
+"Para incorporar este mapa, copie o seguinte excerto de código na sua página"
 
 #: geonode/maps/templates/maps/map_detail.html:322
 msgid "Copy to Clipboard"
@@ -4313,10 +4217,8 @@ msgid "Download Failed"
 msgstr "Falha no download"
 
 #: geonode/maps/templates/maps/map_list.html:5
-#, fuzzy
-#| msgid "GeoExplorer"
 msgid "maps explore"
-msgstr "GeoExplorer"
+msgstr "explorar mapas"
 
 #: geonode/maps/templates/maps/map_metadata.html:20
 #, python-format
@@ -4349,10 +4251,8 @@ msgstr ""
 "      "
 
 #: geonode/maps/templates/maps/map_new.html:7
-#, fuzzy
-#| msgid "View Map"
 msgid "New Map"
-msgstr "Ver Mapa"
+msgstr "Novo Mapa"
 
 #: geonode/maps/templates/maps/map_remove.html:10
 msgid "Remove Map"
@@ -4400,16 +4300,12 @@ msgid "An unknown error has occured."
 msgstr "Um erro desconhecido ocorreu."
 
 #: geonode/maps/views.py:1441
-#, fuzzy
-#| msgid "Thumbnail"
 msgid "Thumbnail saved"
-msgstr "Thumbnail"
+msgstr "Thumbnail guardada"
 
 #: geonode/maps/views.py:1444
-#, fuzzy
-#| msgid "Thumbnail"
 msgid "error saving thumbnail"
-msgstr "Thumbnail"
+msgstr "erro ao guardar thumbnail"
 
 #: geonode/messaging/__init__.py:37
 msgid "Message received"
@@ -4429,13 +4325,11 @@ msgstr "Situação de alerta reportado pela monitorização"
 
 #: geonode/monitoring/collector.py:1008
 msgid "GeoNode Monitoring on {} reports errors: {}"
-msgstr ""
+msgstr "A Monitorização do Geonode no {} reportou os erros: {}"
 
 #: geonode/monitoring/forms.py:30
-#, fuzzy
-#| msgid "Email Address"
 msgid "Enter valid email addresses."
-msgstr "Endereço de Email"
+msgstr "Introduza um endereço de email válido."
 
 #: geonode/monitoring/management/commands/collect_metrics.py:38
 msgid "Show list of services"
@@ -4447,6 +4341,8 @@ msgid ""
 "Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
 "provided, last sync will be used."
 msgstr ""
+"Processa os dados desde um período de tempo (formato YYYY-MM-DD HH:MM:SS)- "
+"Se não for fornecido, é utilizada a última sincronização."
 
 #: geonode/monitoring/management/commands/collect_metrics.py:43
 #: geonode/monitoring/management/commands/render_metrics.py:59
@@ -4454,6 +4350,8 @@ msgid ""
 "Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
 "provided, now will be used."
 msgstr ""
+"Processa os dados até um período de tempo específico (formato YYYY-MM-DD HH:"
+"MM:SS)- Se não for fornecido, agora será utilizada."
 
 #: geonode/monitoring/management/commands/collect_metrics.py:46
 msgid "Force check"
@@ -4468,14 +4366,16 @@ msgid ""
 "Should old data be preserved (default: no, data older than settings."
 "MONITORING_DATA_TTL will be removed)"
 msgstr ""
+"Os dados antigos devem ser preservados (padrão: não, dados mais antigos que "
+"as settings.MONITORING_DATA_TTL serão removidos)"
 
 #: geonode/monitoring/management/commands/collect_metrics.py:53
 msgid "Should stop on first error occured (default: no)"
-msgstr ""
+msgstr "Deverá parar quando ocorre o primeiro erro"
 
 #: geonode/monitoring/management/commands/collect_metrics.py:55
 msgid "Should process and send notifications as well (default: no)"
-msgstr ""
+msgstr "Deverá processar e enviar também as notificações (padrão: não)"
 
 #: geonode/monitoring/management/commands/collect_metrics.py:57
 msgid "Collect data from this service only"
@@ -4487,41 +4387,33 @@ msgstr "Mostrar lista de métricas"
 
 #: geonode/monitoring/management/commands/render_metrics.py:51
 msgid "Show list of labels for metric"
-msgstr ""
+msgstr "Mostrar lista de rótulos para as métricas"
 
 #: geonode/monitoring/management/commands/render_metrics.py:54
-#, fuzzy
-#| msgid "List of resources using this document:"
 msgid "Show list of resources for metric"
-msgstr "Lista de recursos usando este documento:"
+msgstr "Mostrar a lista de recursos para a métrica"
 
 #: geonode/monitoring/management/commands/render_metrics.py:62
 msgid "Data aggregation interval in seconds (default: 60)"
-msgstr ""
+msgstr "Agregação de informação em intervalo de segundos (padrão: 60)"
 
 #: geonode/monitoring/management/commands/render_metrics.py:63
-#, fuzzy
-#| msgid "attribute name"
 msgid "Metric name"
-msgstr "nome do atributo"
+msgstr "Nome da métrica"
 
 #: geonode/monitoring/management/commands/render_metrics.py:66
-#, fuzzy
-#| msgid "reference date for the cited resource"
 msgid "Show data for specific resource in resource_type=resource_name format"
-msgstr "data de referência para o recurso citado"
+msgstr ""
+"Exibir conjunto de dados para um recurso específico no formato "
+"resource_type=resource_name"
 
 #: geonode/monitoring/management/commands/render_metrics.py:69
-#, fuzzy
-#| msgid "reference date for the cited resource"
 msgid "Show data for specific resource"
-msgstr "data de referência para o recurso citado"
+msgstr "Exibir conjunto de dados para um recurso específico"
 
 #: geonode/monitoring/management/commands/render_metrics.py:72
-#, fuzzy
-#| msgid "reference date for the cited resource"
 msgid "Show data for specific label"
-msgstr "data de referência para o recurso citado"
+msgstr "Exibir conjunto de dados para um rótulo específico"
 
 #: geonode/monitoring/models.py:100 geonode/templates/500.html:203
 #: geonode/templates/base.html:525
@@ -4535,34 +4427,24 @@ msgid "GeoServer"
 msgstr "GeoServer"
 
 #: geonode/monitoring/models.py:102
-#, fuzzy
-#| msgid "GeoServer"
 msgid "Host (GeoServer)"
-msgstr "GeoServer"
+msgstr "Servidor (GeoServer)"
 
 #: geonode/monitoring/models.py:103
-#, fuzzy
-#| msgid "About GeoNode"
 msgid "Host (GeoNode)"
-msgstr "Sobre o GeoNode"
+msgstr "Servidor (GeoNode)"
 
 #: geonode/monitoring/models.py:172
-#, fuzzy
-#| msgid "Resources"
 msgid "No resource"
-msgstr "Recursos"
+msgstr "Sem recurso"
 
 #: geonode/monitoring/models.py:175
-#, fuzzy
-#| msgid "Resources"
 msgid "Resource base"
-msgstr "Recursos"
+msgstr "Recursos base"
 
 #: geonode/monitoring/models.py:177
-#, fuzzy
-#| msgid "Styles"
 msgid "Style"
-msgstr "Estilos"
+msgstr "Estilo"
 
 #: geonode/monitoring/models.py:178
 #: geonode/people/templates/people/profile_detail.html:173
@@ -4579,10 +4461,8 @@ msgid "Rate"
 msgstr "Avaliação"
 
 #: geonode/monitoring/models.py:211 geonode/monitoring/models.py:263
-#, fuzzy
-#| msgid "count"
 msgid "Count"
-msgstr "total"
+msgstr "Contagem"
 
 #: geonode/monitoring/models.py:212
 msgid "Value"
@@ -4633,10 +4513,8 @@ msgid "Percentage"
 msgstr "Percentagem"
 
 #: geonode/monitoring/models.py:351
-#, fuzzy
-#| msgid "local OWS"
 msgid "Not OWS"
-msgstr "OWS local"
+msgstr "Sem OWS"
 
 #: geonode/monitoring/models.py:352
 msgid "Any OWS"
@@ -4648,44 +4526,32 @@ msgid "Change"
 msgstr "Aplicar"
 
 #: geonode/monitoring/models.py:357
-#, fuzzy
-#| msgid "Edit Metadata"
 msgid "Change Metadata"
-msgstr "Editar Metadados"
+msgstr "Alterar Metadados"
 
 #: geonode/monitoring/models.py:358
-#, fuzzy
-#| msgid "Edit Metadata"
 msgid "View Metadata"
-msgstr "Editar Metadados"
+msgstr "Ver Metadados"
 
 #: geonode/monitoring/models.py:359
 msgid "View"
 msgstr "View"
 
 #: geonode/monitoring/models.py:361
-#, fuzzy
-#| msgid "Public"
 msgid "Publish"
-msgstr "Público"
+msgstr "Publicar"
 
 #: geonode/monitoring/models.py:363
-#, fuzzy
-#| msgid "GeoServer"
 msgid "Geoserver event"
-msgstr "GeoServer"
+msgstr "Evento do GeoServer"
 
 #: geonode/monitoring/models.py:432
-#, fuzzy
-#| msgid "List of resources using this document:"
 msgid "List of resources affected"
-msgstr "Lista de recursos usando este documento:"
+msgstr "Lista de recursos afetada"
 
 #: geonode/monitoring/models.py:439
-#, fuzzy
-#| msgid "Resource using this document"
 msgid "Response processing time in ms"
-msgstr "Recursos usando este documento"
+msgstr "Tempo de resposta do processamento em ms"
 
 #: geonode/monitoring/models.py:1071
 msgid "1 minute"
@@ -4723,15 +4589,15 @@ msgstr "Valores min/máx esperados para a configuração do utilizador"
 
 #: geonode/monitoring/models.py:1106
 msgid "Marker of last delivery"
-msgstr ""
+msgstr "Marcador da última entrega"
 
 #: geonode/monitoring/models.py:1109
 msgid "Minimum time between subsequent notifications"
-msgstr ""
+msgstr "Duração mínima entre notificações subsequentes"
 
 #: geonode/monitoring/models.py:1114
 msgid "How severe would be error from this notification"
-msgstr ""
+msgstr "Que tipo de gravidade seria o erro desta notificação"
 
 #: geonode/monitoring/models.py:1119
 msgid "Is it active"
@@ -4756,6 +4622,7 @@ msgstr "A última atualização não dever ser mais antigo que"
 #: geonode/monitoring/models.py:1542
 msgid "Max timeout for given metric before error should be raised"
 msgstr ""
+"Tempo limite máximo para uma dada métrica antes de um erro ser reportado"
 
 #: geonode/monitoring/templates/monitoring/index.html:5
 #: geonode/monitoring/templates/monitoring/non_superuser.html:4
@@ -4774,14 +4641,12 @@ msgstr "Olá,"
 #: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:5
 #: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:3
 msgid "Monitoring on"
-msgstr ""
+msgstr "Monitorizando no"
 
 #: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:5
 #: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:3
-#, fuzzy
-#| msgid "The following groups:"
 msgid "has detected following problems :"
-msgstr "Os seguintes grupos:"
+msgstr "foram detetados os seguintes problemas:"
 
 #: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:9
 #: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:6
@@ -4799,17 +4664,15 @@ msgstr "atrás"
 #: geonode/monitoring/templates/pinax/notifications/monitoring_alert/full.txt:10
 #: geonode/monitoring/templates/pinax/notifications/monitoring_alert/short.txt:7
 msgid "emerged"
-msgstr ""
+msgstr "surgiu"
 
 #: geonode/people/__init__.py:26
 msgid "User following you"
 msgstr "Usuário seguindo você"
 
 #: geonode/people/__init__.py:26
-#, fuzzy
-#| msgid "This user is not following anyone"
 msgid "Another user has started following you"
-msgstr "Este usuário não está seguindo ninguém"
+msgstr "Este utilizador não segue ninguém"
 
 #: geonode/people/__init__.py:27
 msgid "User requested access"
@@ -4820,10 +4683,8 @@ msgid "A new user has requested access to the site"
 msgstr "Um novo utilizado efetuou um pedido para aceder ao site"
 
 #: geonode/people/__init__.py:29
-#, fuzzy
-#| msgid "Recent activity"
 msgid "Account activated"
-msgstr "Atividade recente"
+msgstr "Conta ativada"
 
 #: geonode/people/__init__.py:30
 msgid "This account is now active and can log in the site"
@@ -4838,10 +4699,8 @@ msgid "Important dates"
 msgstr "Datas importantes"
 
 #: geonode/people/admin.py:60
-#, fuzzy
-#| msgid "Edit profile"
 msgid "Extended profile"
-msgstr "Editar perfil"
+msgstr "Perfil completo"
 
 #: geonode/people/admin.py:159
 msgid "Password changed successfully."
@@ -4908,14 +4767,10 @@ msgid "key party responsible for gathering information and conducting research"
 msgstr "responsável chave pela obtenção de informações e condução de pesquisa"
 
 #: geonode/people/forms.py:75
-#, fuzzy
-#| msgid "Email Address"
 msgid "Email Address"
 msgstr "Endereço de Email"
 
 #: geonode/people/models.py:66
-#, fuzzy
-#| msgid "Organization Name"
 msgid "Organization Name"
 msgstr "Nome da Organização"
 
@@ -4989,21 +4844,19 @@ msgstr "Área Administrativa"
 
 #: geonode/people/models.py:103
 msgid "state, province of the location"
-msgstr "estado da localização"
+msgstr "estado, município da localização"
 
 #: geonode/people/models.py:105
 msgid "Postal Code"
-msgstr "CEP"
+msgstr "Código Postal"
 
 #: geonode/people/models.py:109
 msgid "ZIP or other postal code"
-msgstr "CEP"
+msgstr "Código Postal"
 
 #: geonode/people/models.py:111
-#, fuzzy
-#| msgid "count"
 msgid "Country"
-msgstr "total"
+msgstr "País"
 
 #: geonode/people/models.py:116
 msgid "country of the physical address"
@@ -5024,21 +4877,19 @@ msgstr "Timezone"
 #: geonode/people/templates/people/_profile_about_item.html:17
 #: geonode/templates/_permissions_form.html:125
 msgid "No Group"
-msgstr "Nenhum grupo"
+msgstr "Sem Grupos"
 
 #: geonode/people/templates/people/_profile_filters.html:4
 msgid "All contents"
 msgstr "Todos os conteúdos"
 
 #: geonode/people/templates/people/_profile_list_item.html:18
-#, fuzzy
-#| msgid "Organization Name"
 msgid "No Organization Info"
-msgstr "Nome da Organização"
+msgstr "Sem Informação da Organização"
 
 #: geonode/people/templates/people/forgot_username_form.html:6
 msgid "Forgot Username"
-msgstr "Esqueceu usuário"
+msgstr "Esqueceu-se do Nome do Utilizador"
 
 #: geonode/people/templates/people/forgot_username_form.html:10
 msgid ""
@@ -5058,10 +4909,8 @@ msgid "Profile of "
 msgstr "Perfil de "
 
 #: geonode/people/templates/people/profile_detail.html:20
-#, fuzzy
-#| msgid "GeoExplorer"
 msgid "people explore"
-msgstr "GeoExplorer"
+msgstr "explorar pessoas"
 
 #: geonode/people/templates/people/profile_detail.html:71
 #: geonode/people/templates/people/profile_detail.html:77
@@ -5109,7 +4958,7 @@ msgstr "Fax"
 
 #: geonode/people/templates/people/profile_detail.html:126
 msgid "User layers WMS GetCapabilities document"
-msgstr ""
+msgstr "Documento WMS GetCapabilities das camadas do Utilizador"
 
 #: geonode/people/templates/people/profile_detail.html:132
 msgid "Message User"
@@ -5129,10 +4978,8 @@ msgid "Associated e-mails"
 msgstr "E-mais associados"
 
 #: geonode/people/templates/people/profile_detail.html:142
-#, fuzzy
-#| msgid "Change password"
 msgid "Set/Change password"
-msgstr "Alterar a senha"
+msgstr "Definir/Alterar a senha"
 
 #: geonode/people/templates/people/profile_detail.html:147
 msgid "Upload new layers"
@@ -5140,16 +4987,12 @@ msgstr "Carregar nova camada"
 
 #: geonode/people/templates/people/profile_detail.html:149
 #: geonode/templates/500.html:161
-#, fuzzy
-#| msgid "Create a new map"
 msgid "Create a new layer"
-msgstr "Criar um novo mapa"
+msgstr "Criar uma novo camada"
 
 #: geonode/people/templates/people/profile_detail.html:151
-#, fuzzy
-#| msgid "Upload Document"
 msgid "Upload new document"
-msgstr "Subir Documento"
+msgstr "Carregar novo documento"
 
 #: geonode/people/templates/people/profile_detail.html:152
 msgid "Create a new map"
@@ -5181,10 +5024,8 @@ msgstr "Anúncios"
 #: geonode/templates/500.html:190 geonode/templates/500.html:280
 #: geonode/templates/base.html:326 geonode/templates/base.html:496
 #: geonode/templates/invitations/forms/_invite.html:7
-#, fuzzy
-#| msgid "Invite User"
 msgid "Invite Users"
-msgstr "Convidar Usuário"
+msgstr "Convidar Utilizador"
 
 #: geonode/people/templates/people/profile_detail.html:183
 msgid "User Activities"
@@ -5195,10 +5036,8 @@ msgid "Resources"
 msgstr "Recursos"
 
 #: geonode/people/templates/people/profile_edit.html:5
-#, fuzzy
-#| msgid "Invite people"
 msgid "edit people"
-msgstr "Convidar pessoas"
+msgstr "editar pessoas"
 
 #: geonode/people/templates/people/profile_edit.html:10
 msgid "Edit Your Profile"
@@ -5227,23 +5066,19 @@ msgstr "O seu utilizador para "
 
 #: geonode/people/views.py:124
 msgid "Your username has been emailed to you."
-msgstr "Seu usuário foi enviado por email para você."
+msgstr "O seu nome de utilizador foi enviado para si via email."
 
 #: geonode/people/views.py:126
 msgid "No user could be found with that email address."
-msgstr "Nenhum usuário foi encontrado com esse endereço de email."
+msgstr "Nenhum utilizador foi encontrado com este endereço de email."
 
 #: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:228
-#, fuzzy
-#| msgid "You are not permitted to save or edit this map."
 msgid "You are not permitted to save or edit this resource."
-msgstr "Você não tem permissão para salvar ou editar este mapa."
+msgstr "Não tem permissão para guardar ou editar este recurso."
 
 #: geonode/proxy/views.py:227
-#, fuzzy
-#| msgid "You are not allowed to view this document."
 msgid "You are not authorized to download this resource."
-msgstr "Você não tem permissão para ver este documento."
+msgstr "Não tem permissão para transferir este recurso."
 
 #: geonode/proxy/views.py:229
 msgid ""
@@ -5255,34 +5090,24 @@ msgstr ""
 
 #: geonode/proxy/views.py:263 geonode/proxy/views.py:274
 #: geonode/proxy/views.py:380
-#, fuzzy
-#| msgid "Documents"
 msgid "No files found."
-msgstr "Documentos"
+msgstr "Nenhuns ficheiros encontrados."
 
 #: geonode/proxy/views.py:388
-#, fuzzy
-#| msgid "Not provided"
 msgid "Not Authorized"
-msgstr "Não fornecido"
+msgstr "Não Autorizado"
 
 #: geonode/qgis_server/models.py:200
-#, fuzzy
-#| msgid "style name"
 msgid "style xml"
-msgstr "nome do estilo"
+msgstr "xml do estilo"
 
 #: geonode/qgis_server/models.py:201
-#, fuzzy
-#| msgid "sld url"
 msgid "style url"
-msgstr "url do sld"
+msgstr "url do estilo"
 
 #: geonode/qgis_server/models.py:203
-#, fuzzy
-#| msgid "sld url"
 msgid "style legend url"
-msgstr "url do sld"
+msgstr "url da legenda do estilo"
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:10
 msgid "Layer Style changed. Redirecting to apply changes..."
@@ -5294,28 +5119,20 @@ msgid "You may also use browser reload."
 msgstr "Deve também recarregar o seu browser."
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:21
-#, fuzzy
-#| msgid "Actions"
 msgid "Action"
-msgstr "Acções"
+msgstr "Ação"
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:36
-#, fuzzy
-#| msgid "Layer Default Style"
 msgid "Set As Default Style"
-msgstr "Estilo padrão da camada"
+msgstr "Definir Estilo Como Padrão"
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:38
-#, fuzzy
-#| msgid "Download Layer"
 msgid "Download Style"
-msgstr "Baixar Camada"
+msgstr "Transferir Estilo"
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:39
-#, fuzzy
-#| msgid "Remove Service"
 msgid "Remove Style"
-msgstr "Remover Serviço"
+msgstr "Remover Estilo"
 
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:50
 msgid "Reload to see changes"
@@ -5351,16 +5168,12 @@ msgid "Catalogue Service"
 msgstr "Serviço de Catálogo"
 
 #: geonode/services/enumerations.py:49 geonode/services/forms.py:58
-#, fuzzy
-#| msgid "ArcGIS REST Service"
 msgid "ArcGIS REST MapServer"
-msgstr "ArcGIS REST Service"
+msgstr "Serviço ArcGIS REST MapServer"
 
 #: geonode/services/enumerations.py:50
-#, fuzzy
-#| msgid "ArcGIS REST Service"
 msgid "ArcGIS REST ImageServer"
-msgstr "ArcGIS REST Service"
+msgstr "Serviço ArcGIS REST ImageServer"
 
 #: geonode/services/enumerations.py:51 geonode/services/models.py:51
 msgid "OpenGeoPortal"
@@ -5371,16 +5184,12 @@ msgid "Harvard Geospatial Library"
 msgstr "Harvard Geospatial Biblioteca"
 
 #: geonode/services/enumerations.py:53 geonode/services/forms.py:55
-#, fuzzy
-#| msgid "GeoNode's Web Services"
 msgid "GeoNode (Web Map Service)"
-msgstr "Web Services do GeoNode"
+msgstr "Serviçod de Mapas (GeoNode)"
 
 #: geonode/services/enumerations.py:54
-#, fuzzy
-#| msgid "Catalogue Service"
 msgid "GeoNode (Catalogue Service)"
-msgstr "Serviço de Catálogo"
+msgstr "Serviço de Catálogo (Geonode)"
 
 #: geonode/services/forms.py:37
 msgid "Service URL"
@@ -5391,25 +5200,25 @@ msgid "Service Type"
 msgstr "Tipo de Serviço"
 
 #: geonode/services/forms.py:72
-#, fuzzy, python-format
-#| msgid "service interfaces"
+#, python-format
 msgid "Service %(url)s is already registered"
-msgstr "interfaces de serviço"
+msgstr "Serviço %(url)s já está atualmente registado"
 
 #: geonode/services/forms.py:88
 #, python-format
 msgid "Could not connect to the service at %(url)s"
-msgstr ""
+msgstr "Não foi possível ligar ao serviço em %(url)s"
 
 #: geonode/services/forms.py:93
 #, python-format
 msgid "Could not find importable resources for the service at %(url)s"
 msgstr ""
+"Não foi possível encontrar recursos para importar no serviço em %(url)s"
 
 #: geonode/services/forms.py:100
 #, python-format
 msgid "Found service of type %(found_type)s instead of %(service_type)s"
-msgstr ""
+msgstr "Serviço encontrado do tipo %(found_type)s em vez de %(service_type)s"
 
 #: geonode/services/models.py:46
 msgid "Local"
@@ -5432,36 +5241,28 @@ msgid "Live"
 msgstr "Vivo"
 
 #: geonode/services/models.py:211
-#, fuzzy
-#| msgid "Resources"
 msgid "Resource is queued"
-msgstr "Recursos"
+msgstr "Recurso esta em fila de espera"
 
 #: geonode/services/templates/services/remote_service_unavailable.html:5
-#, fuzzy
-#| msgid "Remote Services"
 msgid "Remote service unavailable"
-msgstr "Serviços Remotos"
+msgstr "Serviço remoto indisponível"
 
 #: geonode/services/templates/services/remote_service_unavailable.html:9
 msgid "Service unavailable"
 msgstr "Serviço indisponível"
 
 #: geonode/services/templates/services/remote_service_unavailable.html:11
-#, fuzzy
-#| msgid "Point of Contact"
 msgid "Could not contact"
-msgstr "Ponto de contacto"
+msgstr "Não foi possível contatar"
 
 #: geonode/services/templates/services/service_detail.html:12
 msgid "Contact"
-msgstr "Contato:"
+msgstr "Contato"
 
 #: geonode/services/templates/services/service_detail.html:15
-#, fuzzy
-#| msgid "Resources"
 msgid "Service Resources"
-msgstr "Recursos"
+msgstr "Recursos do Serviço"
 
 #: geonode/services/templates/services/service_detail.html:17
 msgid "No resources have been imported yet."
@@ -5569,7 +5370,7 @@ msgstr "recursos podem ser importados"
 
 #: geonode/services/templates/services/service_resources_harvest.html:20
 msgid "- These will be cascaded through your local geoserver instance"
-msgstr "- Estes serão acedidos pela sua instalação local do geoserver."
+msgstr "- Estes serão acedidos pela sua instalação local do geoserver"
 
 #: geonode/services/templates/services/service_resources_harvest.html:30
 msgid "Id"
@@ -5684,10 +5485,6 @@ msgid "Not Permitted"
 msgstr "Não Permitido"
 
 #: geonode/templates/401.html:20
-#| msgid ""
-#| "\n"
-#| "          You are not allowed to perform this operation.  \n"
-#| "      "
 msgid ""
 "\n"
 "          You are not allowed to perform this operation.\n"
@@ -5699,7 +5496,7 @@ msgstr ""
 
 #: geonode/templates/401.html:26
 msgid "Please verify that you are logged in as the correct user."
-msgstr "Por favor, verifique se você está logado como o usuário correto."
+msgstr "Por favor, verifique se você está logado como o utilizador correto."
 
 #: geonode/templates/401.html:28
 msgid "Please login or register and retry."
@@ -5707,14 +5504,9 @@ msgstr "Por favor, faça o login ou registre-se e tente novamente."
 
 #: geonode/templates/404.html:5
 msgid "Page Not Found"
-msgstr "Página não encontrada"
+msgstr "Página Não Encontrada"
 
 #: geonode/templates/404.html:9
-#| msgid ""
-#| "\n"
-#| "      The page you requested does not exist.  Perhaps you are using an "
-#| "outdated bookmark?\n"
-#| "  "
 msgid ""
 "\n"
 "          The page you requested does not exist.  Perhaps you are using an "
@@ -5728,12 +5520,12 @@ msgstr ""
 
 #: geonode/templates/500.html:45
 msgid "Toggle navigation"
-msgstr ""
+msgstr "Alternar a navegação"
 
 #: geonode/templates/500.html:67 geonode/templates/500.html:184
 #: geonode/templates/base.html:318 geonode/templates/base.html:490
 msgid "People"
-msgstr "Usuários"
+msgstr "Utilizadores"
 
 #: geonode/templates/500.html:79 geonode/templates/_permissions_form.html:107
 #: geonode/templates/_permissions_form.html:165 geonode/templates/base.html:356
@@ -5779,6 +5571,13 @@ msgid ""
 "GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "            "
 msgstr ""
+"\n"
+"Entre em contato com o administrador do GeoNode (eles podem ter recebido um "
+"e-mail automaticamente se o configuraram corretamente).\n"
+"            Se você é o administrador do site, ative o modo de depuração "
+"para ver o erro real e corrigi-lo ou preencher um erro <a href=\"http://"
+"github.com/GeoNode/geonode/issues\">no registo de problemas do GeoNode</a>\n"
+"            "
 
 #: geonode/templates/500.html:167 geonode/templates/base.html:297
 #: geonode/templates/base.html:473
@@ -5850,7 +5649,7 @@ msgstr "Informação"
 
 #: geonode/templates/_actions.html:8
 msgid "Granules"
-msgstr ""
+msgstr "Representações de Mosaicos"
 
 #: geonode/templates/_actions.html:11
 msgid "Share"
@@ -5909,7 +5708,7 @@ msgstr "Qualquer um"
 #: geonode/templates/_permissions.html:142
 #: geonode/templates/_permissions.html:169
 msgid "The following users:"
-msgstr "Os seguintes usuários:"
+msgstr "Os seguintes utilizadores:"
 
 #: geonode/templates/_permissions.html:37
 #: geonode/templates/_permissions.html:69
@@ -5991,6 +5790,8 @@ msgid ""
 "Upload a ZIP file containing an ESRI Shapefile. If the ZIP provides also a ."
 "prj file, you don't have to specify the EPSG SRID"
 msgstr ""
+"Carregue o ficheiro ZIP contendo a Shapefile ESRI. Se for fornecido no ZIP o "
+"ficheiro .prj, não necessita de especificar o SRID EPSG"
 
 #: geonode/templates/_permissions_form.html:260
 msgid "Choose"
@@ -6006,7 +5807,7 @@ msgstr "Redefinir"
 
 #: geonode/templates/_permissions_form.html:279
 msgid "Only the SRID number without the 'EPSG:' prefix!"
-msgstr ""
+msgstr "Apenas o número SRID sem o prefixo 'EPSG:'!"
 
 #: geonode/templates/_permissions_form.html:280
 msgid "Default : 4326"
@@ -6014,7 +5815,7 @@ msgstr "Padrão: 4326"
 
 #: geonode/templates/_permissions_form.html:285
 msgid "Set your desired encoding UTF-8, Big5, Big5-HKSCS ..."
-msgstr ""
+msgstr "Coloque a codificação desejada: UTF-8, Big5, Big5-HKSCS ..."
 
 #: geonode/templates/_permissions_form.html:474
 msgid "Load SHP-ZIP"
@@ -6027,50 +5828,60 @@ msgid ""
 "order to store the Geo Limits you will need to <strong>save</strong> them "
 "anyway.</p><p>Do you want to proceed?</p>"
 msgstr ""
+"<p>Isto removerá os Limites Geo atualmente desenhados no mapa.</p><p>Para "
+"armazenar os Limites Geo precisará de <strong>guardar-los</strong> de "
+"qualquer maneira.</p><p>Pretende continuar?</p>"
 
 #: geonode/templates/_permissions_form.html:496
 msgid ""
 "<p>This will override the current stored Geo Limits on the DB.</p><p>To "
 "apply them you will need to click on <strong>\\"
 msgstr ""
+"<p>Esta ação substituirá os limites geográficos armazenados atualmente na BD."
+"</p><p>Para aplicá-los, precisará de clicar em <strong>\\</strong>"
 
 #: geonode/templates/_permissions_form.html:541
 #: geonode/templates/_permissions_form.html:546
 msgid "Save Geo Limit"
-msgstr ""
+msgstr "Guardar Limite Geográfico"
 
 #: geonode/templates/_permissions_form.html:542
 msgid ""
 "<p>Geometry <strong>successfully</strong> saved!</p><p>To apply them you "
 "will need to click on <strong>\\"
 msgstr ""
+"<p>Geometria guardada <strong>com sucesso!</strong></p><p>Para aplicá-los, "
+"você precisará clicar em <strong>\\</strong>"
 
 #: geonode/templates/_permissions_form.html:547
 msgid "<p><strong>Error</strong> while trying to save the Geometry!</p>"
-msgstr ""
+msgstr "<p><strong>Erro</strong> ao tentar guardar a Geometria!</p>"
 
 #: geonode/templates/_permissions_form.html:561
 msgid "Load Geo Limits"
-msgstr ""
+msgstr "Carregar Limites Geográficos"
 
 #: geonode/templates/_permissions_form.html:617
 msgid "Load Geo Limit"
-msgstr ""
+msgstr "Carregar Limite Geográfico"
 
 #: geonode/templates/_permissions_form.html:618
 msgid "<p><strong>No Geometry</strong> found!</p>"
-msgstr ""
+msgstr "<p>Não foi encontrada<strong>nenhuma geometria</strong>!</p>"
 
 #: geonode/templates/_permissions_form.html:633
 msgid ""
 "<p>This will <strong>permanently</strong> remove the Geo Limits from the DB."
 "</p><p>To apply them you will need to click on <strong>\\"
 msgstr ""
+"<p>Esta ação removerá <strong>permanentemente</strong> os Limites "
+"Geográficos da BD.</p><p>Para aplicá-los, você precisará clicar em <strong>"
+"\\</strong>"
 
 #: geonode/templates/_permissions_form.html:659
 #: geonode/templates/_permissions_form.html:667
 msgid "Delete Geo Limit"
-msgstr ""
+msgstr "Apagar Limite Geográfico"
 
 #: geonode/templates/_permissions_form.html:660
 msgid "<p><strong>Geo Limitsy</strong> successfully deleted!</p>"
@@ -6080,10 +5891,11 @@ msgstr "<p><strong>Limite geográfico</strong>excluído com sucesso!</p>"
 msgid ""
 "<p><strong>Error</strong> occurred while trying to delete Geo Limits:</p>"
 msgstr ""
+"<p>Ocorreu um <strong>Erro</strong> ao tentar eliminar os Limites Geo:</p>"
 
 #: geonode/templates/_permissions_form_js.html:300
 msgid "Choose users..."
-msgstr "Escolha os usuários ..."
+msgstr "Escolha os utilizadores..."
 
 #: geonode/templates/_permissions_form_js.html:377
 msgid "Choose groups..."
@@ -6091,11 +5903,11 @@ msgstr "Escolha grupos ..."
 
 #: geonode/templates/_status_message.html:4
 msgid "Placeholder for status-message"
-msgstr ""
+msgstr "Espaço reservado para status-message"
 
 #: geonode/templates/_status_message.html:5
 msgid "Placeholder for status-message-body"
-msgstr ""
+msgstr "Espaço reservado para status-message-body"
 
 #: geonode/templates/about.html:4 geonode/templates/about.html:8
 msgid "About GeoNode"
@@ -6109,6 +5921,11 @@ msgid ""
 "interface allowing non-specialized users to share data and create "
 "interactive maps."
 msgstr ""
+"O GeoNode é um sistema de gestão de conteúdo geoespacial, uma plataforma "
+"para a gestão e publicação de dados geo espaciais. A plataforma reúne "
+"projetos de software de código aberto maduros e estáveis sob uma interface "
+"consistente e fácil de usar, permitindo que utilizadores não especializados "
+"partilhem dados e criem mapas interativos."
 
 #: geonode/templates/about.html:14
 msgid ""
@@ -6119,6 +5936,14 @@ msgid ""
 "development of communities around each platform to facilitate the use, "
 "management, and quality control of the data the GeoNode instance contains."
 msgstr ""
+"As ferramentas de gestão de dados incorporadas ao GeoNode permitem a criação "
+"integrada de dados, metadados e visualizações de mapas. Cada conjunto de "
+"dados no sistema pode ser partilhado publicamente ou de forma restrita para "
+"permitir o acesso apenas aos utilizadores específicos. Funcionalidades "
+"sociais como perfis de utilizador, sistemas de comentários e classificação "
+"permitem o desenvolvimento de comunidades em torno de cada plataforma para "
+"facilitar o uso, gestão e controle de qualidade dos dados que a instância do "
+"GeoNode contém."
 
 #: geonode/templates/about.html:17
 msgid ""
@@ -6126,20 +5951,23 @@ msgid ""
 "extend, modify or integrate against to meet requirements in their own "
 "applications."
 msgstr ""
+"Também foi projetado para ser uma plataforma flexível na qual os "
+"programadores de software podem estender, modificar ou integrar para atender "
+"aos requisitos das suas próprias aplicações."
 
 #: geonode/templates/account/account_inactive.html:5
 #: geonode/templates/account/account_inactive.html:8
 msgid "Account Inactive"
-msgstr ""
+msgstr "Conta inativa"
 
 #: geonode/templates/account/account_inactive.html:10
 msgid "This account is inactive."
-msgstr ""
+msgstr "Esta conta está inativa."
 
 #: geonode/templates/account/admin_approval_sent.html:5
 #: geonode/templates/account/admin_approval_sent.html:10
 msgid "Account Pending Approval"
-msgstr ""
+msgstr "Aprovação de Conta Pendente"
 
 #: geonode/templates/account/admin_approval_sent.html:13
 #, python-format
@@ -6148,6 +5976,9 @@ msgid ""
 "with <b>%(email)s</b>. If the account is approved, you will receive a "
 "confirmation notice."
 msgstr ""
+"Nós enviamos aos administradores uma nota para aprovar a sua conta associada "
+"ao email <b>%(email)s</b>. Se a conta for aprovada, irá receber uma notícia "
+"de confirmação."
 
 #: geonode/templates/account/email.html:5
 msgid "Account"
@@ -6159,15 +5990,15 @@ msgstr "Endereço de Email"
 
 #: geonode/templates/account/email.html:10
 msgid "The following e-mail addresses are associated with your account:"
-msgstr ""
+msgstr "O seguinte endereço de e-mail será associado à sua conta:"
 
 #: geonode/templates/account/email.html:24
 msgid "Verified"
-msgstr ""
+msgstr "Verificada"
 
 #: geonode/templates/account/email.html:26
 msgid "Unverified"
-msgstr ""
+msgstr "Não Verificada"
 
 #: geonode/templates/account/email.html:28
 msgid "Primary"
@@ -6175,7 +6006,7 @@ msgstr "Primário"
 
 #: geonode/templates/account/email.html:34
 msgid "Make Primary"
-msgstr ""
+msgstr "Torná-lo Principal"
 
 #: geonode/templates/account/email.html:35
 msgid "Re-send Verification"
@@ -6183,13 +6014,15 @@ msgstr "Re-enviar Verificação"
 
 #: geonode/templates/account/email.html:43
 msgid "Warning:"
-msgstr ""
+msgstr "Aviso:"
 
 #: geonode/templates/account/email.html:43
 msgid ""
 "You currently do not have any e-mail address set up. You should really add "
 "an e-mail address so you can receive notifications, reset your password, etc."
 msgstr ""
+"Atualmente não tem definido e-mail. Deverá adicionar um endereço e-mail para "
+"que possa receber notificações, redefinir senha, etc."
 
 #: geonode/templates/account/email.html:48
 msgid "Add E-mail Address"
@@ -6197,11 +6030,11 @@ msgstr "Adicionar Endereço de Email"
 
 #: geonode/templates/account/email.html:53
 msgid "Add E-mail"
-msgstr ""
+msgstr "Adicionar E-mail"
 
 #: geonode/templates/account/email.html:62
 msgid "Do you really want to remove the selected e-mail address?"
-msgstr ""
+msgstr "Deseja mesmo remover o endereço de e-mail selecionado?"
 
 #: geonode/templates/account/email/email_confirmation_message.txt:1
 #, python-format
@@ -6213,6 +6046,12 @@ msgid ""
 "\n"
 "To confirm this is correct, go to %(activate_url)s\n"
 msgstr ""
+"Olá a parti do %(site_name)s!\n"
+"\n"
+"Está a receber este e-mail porque o utilizador %(user_display)s forneceu o "
+"seu e-mail para permitir a ligação à sua conta.\n"
+"\n"
+"Para confirmar se está correto, vá a %(activate_url)s\n"
 
 #: geonode/templates/account/email/email_confirmation_message.txt:7
 #, python-format
@@ -6220,6 +6059,8 @@ msgid ""
 "Thank you from %(site_name)s!\n"
 "%(site_domain)s"
 msgstr ""
+"Agradecemos do %(site_name)s!\n"
+"%(site_domain)s"
 
 #: geonode/templates/account/email/email_confirmation_subject.txt:1
 #, python-format
@@ -6229,7 +6070,7 @@ msgstr "Por favor confirme o endereço de e-mail para %(site_name)s"
 #: geonode/templates/account/email/invite_user.txt:1
 #, python-format
 msgid "You have been invited to sign up at %(site_name)s."
-msgstr ""
+msgstr "Foi convidado para se registar no %(site_name)s."
 
 #: geonode/templates/account/email/invite_user_subject.txt:1
 #, python-format
@@ -6240,6 +6081,7 @@ msgstr "Criar conta no %(site_name)s"
 msgid ""
 "This is the email notification to confirm your password has been changed on"
 msgstr ""
+"Esta é a notificação por e-mail para confirmar que sua senha foi alterada em"
 
 #: geonode/templates/account/email/password_change_subject.txt:1
 msgid "Change password email notification"
@@ -6265,7 +6107,7 @@ msgstr ""
 #: geonode/templates/account/email/password_reset_key.txt:8
 #, python-format
 msgid "In case you forgot, your username is %(username)s."
-msgstr ""
+msgstr "No caso de ter se esquecido, o seu nome de utilizador é %(username)s."
 
 #: geonode/templates/account/email/password_reset_key.txt:10
 #, python-format
@@ -6273,6 +6115,8 @@ msgid ""
 "Thank you for using %(site_name)s!\n"
 "%(site_domain)s"
 msgstr ""
+"Obrigado por usar o %(site_name)s!\n"
+"%(site_domain)s"
 
 #: geonode/templates/account/email/password_reset_key_subject.txt:1
 #, python-format
@@ -6290,6 +6134,8 @@ msgid ""
 "Please confirm that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-mail "
 "address for user %(user_display)s."
 msgstr ""
+"Por favor confirme que <a href=\"mailto:%(email)s\">%(email)s</a> é um "
+"endereço e-mail para o utilizador %(user_display)s."
 
 #: geonode/templates/account/email_confirm.html:20
 #: geonode/templates/base.html:727
@@ -6303,6 +6149,8 @@ msgid ""
 "This e-mail confirmation link expired or is invalid. Please <a href="
 "\"%(email_url)s\">issue a new e-mail confirmation request</a>."
 msgstr ""
+"Este link de confirmação de e-mail expirou ou é inválido. Por favor, emita "
+"um novo pedido de confirmação de e-mail <a href=\"%(email_url)s\"></a>."
 
 #: geonode/templates/account/login.html:7
 msgid "Log in"
@@ -6320,10 +6168,14 @@ msgid ""
 "\">sign up</a>\n"
 "      for a %(site_name)s account and sign in below:"
 msgstr ""
+"Faça login com uma\n"
+"      de suas contas de terceiros existentes. Ou, <a href=\"%(signup_url)s"
+"\"> inscreva-se </a>\n"
+"      em uma conta do %(site_name)s e faça login abaixo:"
 
 #: geonode/templates/account/login.html:28
 msgid "or"
-msgstr ""
+msgstr "ou"
 
 #: geonode/templates/account/login.html:34
 #, python-format
@@ -6331,6 +6183,8 @@ msgid ""
 "If you have not created an account yet, then please\n"
 "      <a href=\"%(signup_url)s\">sign up</a> first."
 msgstr ""
+"Se ainda não criou uma conta, então\n"
+"      primeiro <a href=\"%(signup_url)s\">registe-se</a>."
 
 #: geonode/templates/account/login.html:44 geonode/templates/base.html:594
 msgid "Forgot Password?"
@@ -6346,19 +6200,19 @@ msgstr "Tem certeza que deseja sair?"
 
 #: geonode/templates/account/password_change.html:6
 msgid "Password change"
-msgstr ""
+msgstr "Senha alterada"
 
 #: geonode/templates/account/password_change.html:10
 msgid "Password Change"
-msgstr ""
+msgstr "Senha alterada"
 
 #: geonode/templates/account/password_change.html:14
 msgid "Change your password here"
-msgstr ""
+msgstr "Altere a sua senha aqui"
 
 #: geonode/templates/account/password_change.html:20
 msgid "Change my password"
-msgstr ""
+msgstr "Alterar senha"
 
 #: geonode/templates/account/password_reset.html:7
 msgid "Password reset"
@@ -6368,17 +6222,19 @@ msgstr "Redefinir senha"
 #: geonode/templates/account/password_reset_done.html:6
 #: geonode/templates/account/password_reset_done.html:9
 msgid "Password Reset"
-msgstr ""
+msgstr "Redefinição de Senha"
 
 #: geonode/templates/account/password_reset.html:20
 msgid "Forgotten your password?"
-msgstr ""
+msgstr "Esquece-se da sua senha?"
 
 #: geonode/templates/account/password_reset.html:21
 msgid ""
 "Enter your email address below, and we'll send you an email allowing you to "
 "reset it."
 msgstr ""
+"Introduza o seu endereço de email em baixo, e enviaremos um email para que "
+"possa redefini-la."
 
 #: geonode/templates/account/password_reset.html:27
 msgid "Reset my password"
@@ -6400,6 +6256,8 @@ msgid ""
 "We have sent you an e-mail. Please contact us if you do not receive it "
 "within a few minutes."
 msgstr ""
+"Enviamos um e-mail. Por favor contate-nos se não receber dentro de poucos "
+"minutos."
 
 #: geonode/templates/account/password_reset_from_key.html:4
 #: geonode/templates/account/password_reset_from_key.html:7
@@ -6410,7 +6268,7 @@ msgstr "Alterar a senha"
 
 #: geonode/templates/account/password_reset_from_key.html:7
 msgid "Bad Token"
-msgstr ""
+msgstr "Mau Token"
 
 #: geonode/templates/account/password_reset_from_key.html:11
 #, python-format
@@ -6419,6 +6277,9 @@ msgid ""
 "used.  Please request a <a href=\"%(passwd_reset_url)s\">new password reset</"
 "a>."
 msgstr ""
+"O link de redefinição de senha foi inválida, possivelmente por estar a usá-"
+"la. Por favor, peça uma  <a href=\"%(passwd_reset_url)s\">nova redefinição "
+"de senha</a>."
 
 #: geonode/templates/account/password_reset_from_key.html:17
 msgid "change password"
@@ -6427,15 +6288,13 @@ msgstr "alterar a senha"
 #: geonode/templates/account/password_reset_from_key.html:20
 #: geonode/templates/account/password_reset_from_key_done.html:8
 msgid "Your password is now changed."
-msgstr ""
+msgstr "A sua senha está agora alterada."
 
 #: geonode/templates/account/password_set.html:6
 msgid "Set Password"
 msgstr "Definir Senha"
 
 #: geonode/templates/account/password_set.html:10
-#, fuzzy
-#| msgid "Password reset"
 msgid "Password Set"
 msgstr "Redefinir senha"
 
@@ -6458,6 +6317,8 @@ msgid ""
 "Sign up with one\n"
 "              of your existing third party accounts"
 msgstr ""
+"Registe-se com uma\n"
+"              das contas de terceiros existentes"
 
 #: geonode/templates/account/signup.html:25
 msgid "Create a new local account"
@@ -6466,25 +6327,25 @@ msgstr "Criar uma nova conta local"
 #: geonode/templates/account/signup_closed.html:5
 #: geonode/templates/account/signup_closed.html:8
 msgid "Sign Up Closed"
-msgstr ""
+msgstr "Registo Fechado"
 
 #: geonode/templates/account/signup_closed.html:10
 msgid "We are sorry, but the sign up is currently closed."
-msgstr ""
+msgstr "Pedimos desculpa, mas a inscrição está atualmente fechada."
 
 #: geonode/templates/account/snippets/already_logged_in.html:5
 msgid "Note"
-msgstr "Note"
+msgstr "Nota"
 
 #: geonode/templates/account/snippets/already_logged_in.html:5
 #, python-format
 msgid "you are already logged in as %(user_display)s."
-msgstr ""
+msgstr "já está autenticado como  %(user_display)s."
 
 #: geonode/templates/account/verification_sent.html:5
 #: geonode/templates/account/verification_sent.html:10
 msgid "Verify your email address"
-msgstr ""
+msgstr "Verifique o seu endereço de email"
 
 #: geonode/templates/account/verification_sent.html:13
 msgid ""
@@ -6493,6 +6354,10 @@ msgid ""
 "do\n"
 "    not receive it within a few minutes"
 msgstr ""
+"Enviámos um email para verificação. Siga o\n"
+"    link fornecido para finalizar o processo de registo. Por favor contate-"
+"nos se não\n"
+"    recebe-lo dentro de minutos"
 
 #: geonode/templates/account/verified_email_required.html:5
 #: geonode/templates/account/verified_email_required.html:8
@@ -6505,6 +6370,9 @@ msgid ""
 "you are who you claim to be. For this purpose, we require that you\n"
 "verify ownership of your e-mail address. "
 msgstr ""
+"Esta parte do site requer que nós verifiquemos que\n"
+"você é quem alega ser. Para essa finalidade, nós requeremos que você\n"
+"verifique a legitimidade do seu endereço de e-mail. "
 
 #: geonode/templates/account/verified_email_required.html:16
 msgid ""
@@ -6512,6 +6380,9 @@ msgid ""
 "verification. Please click on the link inside this e-mail. Please\n"
 "contact us if you do not receive it within a few minutes."
 msgstr ""
+"Enviámos um e-mail para\n"
+"verificação. Por favor clique no link dentro deste e-mail. Por favor\n"
+"conte-nos se não deseja recebe-lo dentro de minutos."
 
 #: geonode/templates/account/verified_email_required.html:20
 #, python-format
@@ -6519,6 +6390,8 @@ msgid ""
 "<strong>Note:</strong> you can still <a href=\"%(email_url)s\">change your e-"
 "mail address</a>."
 msgstr ""
+"<strong>Nota:</strong> poderá ainda <a href=\"%(email_url)s\">mudar o seu "
+"endereço de e-mail</a>."
 
 #: geonode/templates/actstream/actor.html:7
 #: geonode/templates/actstream/actor.html:8
@@ -6548,11 +6421,11 @@ msgstr "Administração GeoNode"
 
 #: geonode/templates/announcements/announcement_confirm_delete.html:9
 msgid "Delete Announcement?"
-msgstr ""
+msgstr "Apagar Anúncio?"
 
 #: geonode/templates/announcements/announcement_confirm_delete.html:12
 msgid "Are you sure you want to delete this announcement?"
-msgstr ""
+msgstr "Tem certeza que deseja remover este anúncio?"
 
 #: geonode/templates/announcements/announcement_form.html:10
 msgid "Edit Announcement"
@@ -6568,7 +6441,7 @@ msgstr "Novo anúncio"
 
 #: geonode/templates/announcements/announcement_list.html:22
 msgid "Level"
-msgstr ""
+msgstr "Nível"
 
 #: geonode/templates/announcements/announcement_list.html:23
 msgid "Announcement"
@@ -6586,6 +6459,10 @@ msgid ""
 "b>.\n"
 "          "
 msgstr ""
+"\n"
+"          Publicado desde <b>%(publish_start)s</b> a <b>%(publish_end)s</"
+"b>.\n"
+"          "
 
 #: geonode/templates/announcements/detail.html:4
 #, python-format
@@ -6615,7 +6492,7 @@ msgstr "Escolher nova pré-definição"
 
 #: geonode/templates/avatar/change.html:23
 msgid "Delete Your Avatar"
-msgstr ""
+msgstr "Apagar o seu Avatar"
 
 #: geonode/templates/avatar/confirm_delete.html:6
 msgid "Please select the avatars that you would like to delete."
@@ -6644,7 +6521,7 @@ msgstr "Contate-nos"
 
 #: geonode/templates/base.html:518
 msgid "Tel"
-msgstr ""
+msgstr "Tel"
 
 #: geonode/templates/base.html:662
 msgid "Uploading..."
@@ -6656,7 +6533,7 @@ msgstr "Carregamento m processo..."
 
 #: geonode/templates/base.html:684
 msgid "Updating Thumbnail..."
-msgstr "Atualizar Thumbnail"
+msgstr "Atualizar Thumbnail..."
 
 #: geonode/templates/base.html:712
 msgid "Message. Do you want to proceed?"
@@ -6668,7 +6545,7 @@ msgstr "Informações para Desenvolvedores"
 
 #: geonode/templates/developer.html:13
 msgid "Useful information for developers interested in GeoNode."
-msgstr "informações úteis para programadores interessados no GeoNode."
+msgstr "Informações úteis para programadores interessados no GeoNode."
 
 #: geonode/templates/developer.html:14
 #, python-format
@@ -6771,6 +6648,106 @@ msgid ""
 "</p>\n"
 "    "
 msgstr ""
+"\n"
+"    <p><a href=\"http://geonode.org/\">O GeoNode</a>é um serviço aberto "
+"criado em software de código aberto. Incentivamos a criar novas aplicações "
+"usando os componentes e recursos que ele fornece. Esta página é um ponto de "
+"partida para programadores interessados em tirar o máximo proveito do "
+"GeoNode. Ele também inclui links para o código-fonte do projeto, para que "
+"qualquer pessoa possa criar e personalizar seu próprio GeoNode.</p>\n"
+"\n"
+"    <h3>Software GeoNode</h3>\n"
+"\n"
+"    <p> Todo o código executado pelo GeoNode é de código aberto. O código "
+"está disponível em <a href=\"http://github.com/GeoNode/geonode\"> http://"
+"github.com/GeoNode/geonode/ </a>. O rastreio de problemas do projeto é feito "
+"em <a href=\"http://github.com/GeoNode/geonode/issues\"> http://github.com/"
+"GeoNode/geonode/issues </a>. </p>\n"
+"\n"
+"    <p>O GeoNode é construído usando vários projetos de código aberto, cada "
+"um com sua própria comunidade. Se você estiver interessado em contribuir com "
+"novos recursos para o GeoNode, recomendamos que você o faça contribuindo "
+"para um dos projetos nos quais ele é construído:</p>\n"
+"    <ul>\n"
+"      <li><a href=\"http://geoserver.org\">GeoServer</a> - Servidor baseado "
+"em padrões para informações geoespaciais</li>\n"
+"      <li><a href=\"http://geowebcache.org\">GeoWebCache</a> - Mecanismo de "
+"cache para mosaicos WMS</li><li><a href=\"http://openlayers.org"
+"\">OpenLayers</a> - Biblioteca JavaScript pura que alimenta os mapas do "
+"GeoExt</li>\n"
+"      <li><a href=\"http://pycsw.org\">pycsw</a> - CSW, Servidor de catálogo "
+"de metadados OpenSearch e OAI-PMH</li>\n"
+"    </ul>\n"
+"\n"
+"    <h3>O que são serviços OGC?</h3>\n"
+"    <p>Os dados desta aplicação estão veiculados usando padrões abertos "
+"endossados pela ISO e pelo <a href=\"http://opengeospatial.org/\"> Open "
+"Geospatial Consortium </a>; em particular, o WMS (Web Map Service) é usado "
+"para aceder mapas, o WFS (Web Feature Service) é usado para aceder dados "
+"vetoriais e o WCS (Web Coverage Service) é usado para aceder a dados "
+"rasterizados. O WMC (Web Map Context Documents) é usado para partilhar "
+"mapas. Pode usar estes serviços nas suas aplicações usando bibliotecas como "
+"OpenLayers, GeoTools e OGR (todos eles software de código aberto e "
+"disponíveis a custo zero). Além disso, o CSW (Serviço de Catálogo para a "
+"Web) oferece suporte de acesso a coleções de informações descritivas "
+"(metadados) sobre dados e serviços.</p>\n"
+"\n"
+"    <h3>O que é o GeoWebCache?</h3>\n"
+"    <p>O GeoWebCache fornece mosaicos compatíveis com vários mecanismos de "
+"mapeamento, incluindo Google Maps, Bing Maps e OpenLayers. Todos os dados "
+"hospedados pelo GeoNode também estão disponíveis no GeoWebCache. O "
+"GeoWebCache aprimora o WMS, armazenando em cache os dados e fornecendo mapas "
+"mais responsivos.</p>\n"
+"\n"
+"    <h3>Código Exemplo CSW</h3>\n"
+"    <p>Para interagir com o GeoNode CSW, você pode usar qualquer cliente CSW "
+"(QGIS MetaSearch, GRASS, etc.). O exemplo a seguir ilustra uma chamada "
+"simples usando o pacote OWSLib Python:</p>\n"
+"    <p><code>from owslib.csw import CatalogueServiceWeb</code></p>\n"
+"    <p><code>from owslib.fes import PropertyIsLike</code></p>\n"
+"    <p><code>csw = CatalogueServiceWeb('%(CATALOGUE_BASE_URL)s')</code></p>\n"
+"    <p><code>anytext = PropertyIsLike('csw:AnyText', 'birds')')</code></p>\n"
+"    <p><code>csw.getrecords2(constraints=[anytext])</code></p>\n"
+"    <p><code>print csw.results</code></p>\n"
+"    <p><code>print csw.records</code></p>\n"
+"\n"
+"    <h3>Código Exemplo OpenLayers</h3>\n"
+"\n"
+"    <p>Para incluir uma camada de mapa GeoNode num mapa OpenLayers, primeiro "
+"localize o nome dessa camada. Isso é encontrado no campo <code> name </code> "
+"da camada (não <code> title </code>) da lista de camadas. Neste exemplo, "
+"usaremos a camada de segundo plano dos limites políticos da Nicarágua, cujo "
+"nome é <code> risk: nicaragua_admin </code>. Em seguida, crie uma instância "
+"do OpenLayers.Layer.WMS:</p>\n"
+"    <p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data"
+"\", \"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:"
+"nicaragua_admin\" });</code></p>\n"
+"\n"
+"    <h3>Código exemplo Google Maps</h3>\n"
+"    <p>Para incluir uma camada do mapa GeoNode no Google Map, inclua o nome "
+"da layer no template URL</p>\n"
+"    <p><code>var tilelayer =  new GTileLayer(null, null, null, "
+"{tileUrlTemplate: 'http://demo.geonode.org/geoserver/gwc/service/gmaps?"
+"layers=risk:nicaragua_admin&#38;zoom={Z}&#38;x={X}&#38;y={Y}', isPng:true, "
+"opacity:0.5 } );</code></p>\n"
+"\n"
+"    <h3>Ficheiro de Saída Shapefile/GeoJSON/GML</h3>\n"
+"    <p>Para obter dados dos serviços web GeoNode, use o protocolo WFS. Por "
+"exemplo, para obter os limites completos do administrador da Nicarágua, use:"
+"</p>\n"
+"    <p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
+"typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
+"    <p>Alterando o formato de saída para <code> json </code>, <code> GML2 </"
+"code>, <code> GML3 </code> ou <code> csv </code> obterá dados nesses "
+"formatos. O protocolo WFS também pode lidar com consultas mais precisas, "
+"especificando uma caixa delimitadora ou vários filtros espaciais e não "
+"espaciais com base nos atributos dos dados.</p>\n"
+"\n"
+"    <h3>Código Exemplo GeoTools</h3>\n"
+"    <p>Crie um DataStore e extraía-a um FeatureType dele, de seguida corra a "
+"query. Está tudo documentado no wiki em <code>http://geotools.org/</code>.</"
+"p>\n"
+"    "
 
 #: geonode/templates/developer.html:64
 msgid "GeoNode's Web Services"
@@ -6798,15 +6775,15 @@ msgstr "Busca de metadados via CSW:"
 
 #: geonode/templates/developer.html:84
 msgid "Metadata search via OpenSearch:"
-msgstr ""
+msgstr "Pesquisa de metadados através do OpenSearch:"
 
 #: geonode/templates/developer.html:88
 msgid "Metadata search via OAI-PMH:"
-msgstr ""
+msgstr "Pesquisa de metadados através do OAI-PMH:"
 
 #: geonode/templates/developer.html:92
 msgid "Open Data:"
-msgstr ""
+msgstr "Dados Abertos:"
 
 #: geonode/templates/developer.html:96
 msgid "Cached tiles via WMTS:"
@@ -6814,7 +6791,7 @@ msgstr "Tiles cacheados via WMTS:"
 
 #: geonode/templates/help.html:4
 msgid "User Guide"
-msgstr "Guia do Usuário"
+msgstr "Guia do Utilizador"
 
 #: geonode/templates/help.html:8
 msgid "GeoNode Help"
@@ -6917,6 +6894,99 @@ msgid ""
 "<a href=\"/maps\">Maps</a> tab.</p>\n"
 "    "
 msgstr ""
+"\n"
+"    <p>O GeoNode fornece acesso a conjuntos de dados e uma aplicação de "
+"edição de mapas permite que os utilizadores naveguem nos mapas existentes e "
+"contribuam com seus próprios.</p>\n"
+"\n"
+"    <h4 id=\"browsing-data\">Pesquisas Camadas</h4>\n"
+"    <p>O separador <a href=\"/layers\">Camadas</a> permite pesquisar "
+"informação carregada no GeoNode.</p>\n"
+"    <p>Todos os dados podem ser baixados em vários formatos, para uso em "
+"outras aplicações.</p>\n"
+"\n"
+"    <h4 id=\"developer-access\">Acesso a Programadores</h4>\n"
+"    <p>A página<a href=\"/developer\"> Programador</a> é o sítio para os "
+"programadores começarem a construir as aplicações com o GeoNode. Inclui "
+"instruções sobre o uso dos serviços da Web, links para o código-fonte do "
+"GeoNode e informações sobre os projetos de código-fonte aberto usados para "
+"criá-lo.</p>\n"
+"\n"
+"    <h4 id=\"browsing-maps\">Pesquisar Mapas</h4>\n"
+"    <p>O GeoNode permite que os utilizadores criem e partilhem mapas entre "
+"si.</p>\n"
+"    <p>O separador <a href=\"/maps\">Mapas</a> é um gateway para a "
+"exploração de mapas no GeoNode.  A partir daqui pode <strong>pesquisar por "
+"um mapa</strong> ou <strong>criar um mapa</strong>, que irá abir o<a href=\"/"
+"maps/new\">Compositor de Mapa</a>.</p>\n"
+"    <h5>Modo Google Earth</h5>\n"
+"    <p>Qualquer mapa visualizado no editor de mapa interativo pode ser visto "
+"no modo 3D com o plug-in do Google Earth. Para alternar para o modo 3D, "
+"selecione o logotipo do globo do Google Earth, o botão mais à direita na "
+"barra de ferramentas superior. Se você não possui o plug-in do Google Earth "
+"instalado, será solicitado a instalá-lo.</p>\n"
+"\n"
+"    <h4 id=\"creating-a-map\">Criando um Mapa</h4>\n"
+"    <p>Para criar um novo mapa, vá para a guia <a href=\"/maps\"> Mapas "
+"Partilhados</a> e clique em <a href=\"/maps/new\"> crie seu próprio mapa </"
+"a>.</p>\n"
+"    <p>Isto irá levá-lo ao <a href=\"/maps/new\">Compositor de Mapas</a> com "
+"uma camada base carregada.</p>\n"
+"    <p>Para adicionar camadas de dados do GeoNode, clique no botão verde "
+"localizado mais abaixo do separador Camadas, no lado esquerdo do ecrã. Isso "
+"abrirá uma caixa de diálogo exibindo todas as camadas disponíveis no GeoNode."
+"</p>\n"
+"    <p>Para adicionar camadas ao seu mapa, selecione-as e pressione o botão "
+"<strong> Adicionar camadas </strong>. Quando terminar, você pode pressionar "
+"<strong> Concluído </strong> para fechar a caixa de diálogo e voltar ao mapa."
+"</p>\n"
+"\n"
+"    <h5>Reordenar e Remer camadas</h5>\n"
+"    <p>Altere a ordem de exibição das camadas listadas no separador dos "
+"dados, simplesmente arrastando e soltando seus nomes. A ordem no mapa será "
+"atualizada para refletir isso. Para desativar a visibilidade de uma camada, "
+"simplesmente desmarque-a e, para removê-la completamente, selecione-a e "
+"pressione o botão vermelho de menos.</p>\n"
+"\n"
+"    <h5>Guardando o seu mapa</h5>\n"
+"    <p>Depois que um conjunto adequado de camadas e nível de zoom for "
+"encontrado, é hora de guardá-lo para que outros possam vê-lo. Clique no "
+"botão Guardar - o ícone mais à esquerda na barra de ferramentas superior, "
+"uma imagem de um mapa com um disco - no menu superior e preencha o título e "
+"o resumo do mapa.</p>\n"
+"\n"
+"    <h4 id=\"exporting-a-map\">Publicando um Mapa</h4>\n"
+"    <p>Qualquer mapa do GeoNode pode ser embutido para ser usado noutro site "
+"ou blog. Para publicar o mapa:</p>\n"
+"    <ol>\n"
+"      <li>Selecione a partir da lista de mapas da comunidade ou da página de "
+"mapas e pressione no botão 'Publicar mapa'.</li>\n"
+"      <li>Escolha a altura e a largura desejadas para o widget no assistente."
+"</li>\n"
+"      <li>Copie o snippet HTML fornecido no assistente para qualquer página "
+"HTML ou postagem de blog que suporte o iFrame.</li>\n"
+"    </ol>\n"
+"    <p>Isso colocará um widget interativo mostrando o mapa em sua página da "
+"web ou postagem no blog.</p>\n"
+"    <p>Note que o <a href=\"/maps/new\">Compositor de Mapas</a> também tem "
+"um botão para publicar mapas. Certifique-se de guardar o mapa antes de "
+"publicar, se houver alterações que você deseja que outras pessoas vejam. Ele "
+"publica a última versão guardada, não a última versão visualizada.</p>\n"
+"\n"
+"    <h4 id=\"remixing-a-map\">Remisturando Mapas</h4>\n"
+"    <p>Qualquer mapa disponível pode servir como ponto de partida para um "
+"novo mapa.</p>\n"
+"    <ol>\n"
+"      <li>Abra o mapa no Compositor de Mapas.</li>\n"
+"      <li>Adicione e remova camadas como desejar.</li>\n"
+"      <li>Mova e aproxime para destacar a área de interesse.</li>\n"
+"      <li><strong>IMPORTANTE:</strong>Atualize o título, resumo, informações "
+"de contato e tags para refletir o novo mapa.</li>\n"
+"      <li>Guarde o mapa.</li>\n"
+"    </ol>\n"
+"    <p>Você poderá ver o seu novo mapa ao procurá-lo no site no separador <a "
+"href=\"/maps\">Mapas</a>.</p>\n"
+"    "
 
 #: geonode/templates/help.html:66
 msgid "Sections"
@@ -6963,7 +7033,7 @@ msgstr ""
 
 #: geonode/templates/index.html:24
 msgid "https://docs.geonode.org/en/master/usage/index.html"
-msgstr ""
+msgstr "https://docs.geonode.org/en/master/usage/index.html"
 
 #: geonode/templates/index.html:25
 msgid "Get Started &raquo;"
@@ -6975,37 +7045,33 @@ msgstr "Pesquisar Dados."
 
 #: geonode/templates/index.html:57
 msgid "Advanced Search"
-msgstr ""
+msgstr "Pesquisa Avançada"
 
 #: geonode/templates/index.html:73
 msgid ""
 "Click to search for geospatial data published by other users, organizations "
 "and public sources. Download data in standard formats."
 msgstr ""
-"Clique para procurar dados geoespaciais publicadas por outros usuários, "
-"organizações e fontes públicas. Download de dados em formatos padrão."
+"Clique para procurar dados geoespaciais publicadas por outros utilizadores, "
+"organizações e fontes públicas. Transferência de dados nos formatos padrão."
 
 #: geonode/templates/index.html:75
 msgid "Add layers"
-msgstr ""
+msgstr "Adicionar camadas"
 
 #: geonode/templates/index.html:77
 msgid "Explore layers"
-msgstr ""
+msgstr "Explorar camadas"
 
 #: geonode/templates/index.html:83
-#, fuzzy
-#| msgid ""
-#| "Data is available for browsing, aggregating and styling to generate maps "
-#| "which can be shared publicly or restricted to specific users only."
 msgid ""
 "Data is available for browsing, aggregating and styling to generate maps "
 "which can be saved, downloaded, shared publicly or restricted to specify "
 "users only."
 msgstr ""
-"Os dados estão disponíveis para navegação, agregando e styling para gerar "
-"mapas que podem ser compartilhadas publicamente ou restrito apenas a "
-"usuários específicos."
+"Os dados estão disponíveis para navegação, agregação e definição de estilos "
+"para gerar mapas que podem ser partilhadas publicamente ou restrito apenas a "
+"utilizadores específicos."
 
 #: geonode/templates/index.html:85
 msgid "Create maps"
@@ -7013,13 +7079,15 @@ msgstr "Criar mapas"
 
 #: geonode/templates/index.html:87
 msgid "Explore maps"
-msgstr ""
+msgstr "Explorar mapas"
 
 #: geonode/templates/index.html:93
 msgid ""
 "As for the layers and maps GeoNode allows to publish tabular and text data, "
 "manage theirs metadata and associated documents."
 msgstr ""
+"Quanto às camadas e mapas, o GeoNode permite publicar informações tabulares "
+"e de texto, gerir os seus metadados e documentos associados."
 
 #: geonode/templates/index.html:95
 msgid "Add documents"
@@ -7033,57 +7101,60 @@ msgstr "Explorar documentos"
 #: geonode/templates/pinax/notifications/account_approve/full.txt:1
 msgid "User"
 msgid_plural "Users"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Utilizador"
+msgstr[1] "Utilizadores"
 
 #: geonode/templates/index.html:103
-#, fuzzy
-#| msgid ""
-#| "GeoNode allows registered users to easily upload geospatial data in "
-#| "several formats including shapefile and GeoTiff."
 msgid ""
 "Geonode allows registered users to easily upload geospatial data and various "
 "documents in several formats."
 msgstr ""
-"GeoNode permite que os usuários registrados para carregar facilmente dados "
-"geoespaciais em vários formatos, incluindo shapefile e GeoTiff."
+"O GeoNode permite que os utilizadores registados carreguem facilmente dados "
+"geoespaciais em vários formatos."
 
 #: geonode/templates/index.html:104
 msgid "See users"
-msgstr ""
+msgstr "Ver utilizadores"
 
 #: geonode/templates/index.html:118
 msgid "Discover the available datasets."
-msgstr ""
+msgstr "Descobrir conjunto de dados disponíveis."
 
 #: geonode/templates/index.html:123
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
 msgstr ""
+"Flora e/ou fauna em ambiente natural. Exemplos: vida selvagem, vegetação, "
+"ciências biológicas, ecologia, natureza selvagem, vida marinha, zonas "
+"húmidas, habitat."
 
 #: geonode/templates/index.html:125
 msgid "Biota"
-msgstr ""
+msgstr "Biota"
 
 #: geonode/templates/index.html:132
 msgid ""
 "Legal land descriptions. Examples: political and administrative boundaries."
 msgstr ""
+"Descrições legais do território. Exemplos: limites políticos e "
+"administrativos."
 
 #: geonode/templates/index.html:134
 msgid "Boundaries"
-msgstr ""
+msgstr "Limites Geográficos"
 
 #: geonode/templates/index.html:141
 msgid ""
 "Processes and phenomena of the atmosphere. Examples: cloud cover, weather, "
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
+"Processos e fenómenos da atmosfera. Exemplos: cobertura de nuvens, clima, "
+"clima, condições atmosféricas, mudanças climáticas, precipitação."
 
 #: geonode/templates/index.html:143
 msgid "Climate"
-msgstr ""
+msgstr "Clima"
 
 #: geonode/templates/index.html:150
 msgid ""
@@ -7092,16 +7163,22 @@ msgid ""
 "fisheries, commercial or subsistence hunting, exploration and exploitation "
 "of resources such as minerals, oil and gas."
 msgstr ""
+"Atividades económicas, condições e emprego. Exemplos: produção, mão-de-obra, "
+"receita, comércio, indústria, turismo e ecoturismo, silvicultura, pesca, "
+"caça comercial ou de subsistência, exploração e exploração de recursos como "
+"minerais, petróleo e gás."
 
 #: geonode/templates/index.html:152
 msgid "Economy"
-msgstr ""
+msgstr "Economia"
 
 #: geonode/templates/index.html:159
 msgid ""
 "Height above or below sea level. Examples: altitude, bathymetry, digital "
 "elevation models, slope, derived products."
 msgstr ""
+"Altura acima ou abaixo do nível do mar. Exemplos: altitude, batimetria, "
+"modelos digitais de elevação, declive, produtos derivados."
 
 #: geonode/templates/index.html:168
 msgid ""
@@ -7109,6 +7186,9 @@ msgid ""
 "environmental pollution, waste storage and treatment, environmental impact "
 "assessment, monitoring environmental risk, nature reserves, landscape."
 msgstr ""
+"Recursos ambientais, proteção e conservação. Exemplos: poluição ambiental, "
+"armazenamento e tratamento de resíduos, avaliação de impato ambiental, "
+"monitorização de riscos ambientais, reservas naturais, paisagem."
 
 #: geonode/templates/index.html:170
 msgid "Environment"
@@ -7120,10 +7200,13 @@ msgid ""
 "irrigation, aquaculture, plantations, herding, pests and diseases affecting "
 "crops and livestock."
 msgstr ""
+"Criação de animais e / ou cultivo de plantas. Exemplos: agricultura, "
+"irrigação, aquicultura, plantações, pastagens, pragas e doenças que afetam "
+"as culturas e o gado."
 
 #: geonode/templates/index.html:179
 msgid "Farming"
-msgstr ""
+msgstr "Agricultura"
 
 #: geonode/templates/index.html:186
 msgid ""
@@ -7133,10 +7216,15 @@ msgid ""
 "activity, landslides, gravity information, soils, permafrost, hydrogeology, "
 "erosion."
 msgstr ""
+"Informações relativas às ciências da terra. Exemplos: características e "
+"processos geofísicos, geologia, minerais, ciências que lidam com a "
+"composição, estrutura e origem das rochas da terra, riscos de terremotos, "
+"atividade vulcânica, deslizamentos de terra, informações de gravidade, "
+"solos, permafrost, hidrogeologia, erosão."
 
 #: geonode/templates/index.html:188
 msgid "Geoscience"
-msgstr ""
+msgstr "Geociência"
 
 #: geonode/templates/index.html:195
 msgid ""
@@ -7144,16 +7232,21 @@ msgid ""
 "illness, factors affecting health, hygiene, substance abuse, mental and "
 "physical health, health services."
 msgstr ""
+"Saúde, serviços de saúde, ecologia humana e segurança. Exemplos: doença e "
+"causa, fatores que afetam a saúde, higiene, abuso de substâncias, saúde "
+"mental e física, serviços de saúde."
 
 #: geonode/templates/index.html:197
 msgid "Health"
-msgstr ""
+msgstr "Saúde"
 
 #: geonode/templates/index.html:204
 msgid ""
 "Base maps. Examples: land cover, topographic maps, imagery, unclassified "
 "images, annotations."
 msgstr ""
+"Mapas de base. Exemplos: cobertura do solo, mapas topográficos, imagens, "
+"imagens não classificadas, anotações."
 
 #: geonode/templates/index.html:206
 msgid "Base Maps"
@@ -7165,46 +7258,60 @@ msgid ""
 "rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
 "floods, water quality, hydrographic charts."
 msgstr ""
+"Características das águas interiores, sistemas de drenagem e suas "
+"características. Exemplos: rios e glaciares, lagos salgados, planos de "
+"utilização de água, barragens, correntes, inundações, qualidade da água, "
+"cartas hidrográficas."
 
 #: geonode/templates/index.html:215
 msgid "Inland Waters"
-msgstr ""
+msgstr "Corpos de Água"
 
 #: geonode/templates/index.html:222
 msgid ""
 "Military bases, structures, activities. Examples: barracks, training "
 "grounds, military transportation, information collection."
 msgstr ""
+"Bases, estruturas, atividades militares. Exemplos: quartéis, campos de "
+"treino, transporte militar, recolha de informações."
 
 #: geonode/templates/index.html:224
 msgid "Intelligence"
-msgstr ""
+msgstr "Inteligência"
 
 #: geonode/templates/index.html:231
 msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
 "control points, postal zones and services, place names."
 msgstr ""
+"Informações e serviços posicionais. Exemplos: endereços, redes geodésicas, "
+"pontos de controlo, zonas e serviços postais, nomes de lugares."
 
 #: geonode/templates/index.html:240
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). "
 "Examples: tides, tidal waves, coastal information, reefs."
 msgstr ""
+"Características e características das massas de água salgada (excluindo as "
+"águas interiores). Exemplos: marés, maremotos, informações costeiras, "
+"recifes."
 
 #: geonode/templates/index.html:242
 msgid "Oceans"
-msgstr ""
+msgstr "Oceanos"
 
 #: geonode/templates/index.html:249
 msgid ""
 "Information used for appropriate actions for future use of the land. "
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
+"Informações usadas para ações apropriadas para uso futuro da terra. "
+"Exemplos: mapas de uso da terra, mapas de zoneamento, levantamentos "
+"cadastrais, propriedade da terra."
 
 #: geonode/templates/index.html:251
 msgid "Planning"
-msgstr ""
+msgstr "Planeamento"
 
 #: geonode/templates/index.html:258
 msgid ""
@@ -7213,10 +7320,14 @@ msgid ""
 "social impact assessments, crime and justice, census information. Economic "
 "activities, conditions and employment."
 msgstr ""
+"Estabelecimentos, antropologia, arqueologia, educação, crenças tradicionais, "
+"maneiras e costumes, dados demográficos, áreas e atividades recreativas, "
+"avaliações de impacto social, crime e justiça, informações de censos. "
+"Atividades económicas, condições e emprego."
 
 #: geonode/templates/index.html:260
 msgid "Population"
-msgstr ""
+msgstr "População"
 
 #: geonode/templates/index.html:267
 msgid ""
@@ -7225,20 +7336,27 @@ msgid ""
 "customs, demographic data, recreational areas and activities, social impact "
 "assessments, crime and justice, census information."
 msgstr ""
+"Caraterísticas da sociedade e culturas. Exemplos: estabelecimentos, "
+"antropologia, arqueologia, educação, crenças tradicionais, maneiras e "
+"costumes, dados demográficos, áreas e atividades recreativas, avaliações de "
+"impacto social, crime e justiça, informações de censos. Atividades "
+"económicas, condições e emprego."
 
 #: geonode/templates/index.html:269
 msgid "Society"
-msgstr ""
+msgstr "Sociedade"
 
 #: geonode/templates/index.html:276
 msgid ""
 "Man-made construction. Examples: buildings, museums, churches, factories, "
 "housing, monuments, shops, towers."
 msgstr ""
+"Construção feita pelo Homem. Exemplos: edifícios, museus, igrejas, fábricas, "
+"casas, monumentos, lojas, torres."
 
 #: geonode/templates/index.html:278
 msgid "Structure"
-msgstr ""
+msgstr "Estruturas"
 
 #: geonode/templates/index.html:285
 msgid ""
@@ -7246,10 +7364,14 @@ msgid ""
 "airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel "
 "location, aeronautical charts, railways."
 msgstr ""
+"Meios e auxílios para o transporte de pessoas e/ou mercadorias. Exemplos: "
+"estradas, aeroportos/pistas de aterragem, rotas de navegação, túneis, cartas "
+"náuticas, localização de veículos ou embarcações, cartas aeronáuticas, "
+"ferrovias."
 
 #: geonode/templates/index.html:287
 msgid "Transportation"
-msgstr "formato"
+msgstr "Transportes"
 
 #: geonode/templates/index.html:294
 msgid ""
@@ -7259,46 +7381,45 @@ msgid ""
 "disposal, electricity and gas distribution, data communication, "
 "telecommunication, radio, communication networks."
 msgstr ""
+"Sistemas de energia, água e resíduos e infraestrutura e serviços de "
+"comunicação. Exemplos: hidro-eletricidade, fontes de energia geotérmica, "
+"solar e nuclear, purificação e distribuição de água, recolha e distribuição "
+"de esgotos, distribuição de eletricidade e gás, comunicação de dados, "
+"telecomunicações, rádio, redes de comunicação."
 
 #: geonode/templates/index.html:296
-#, fuzzy
-#| msgid "User Activities"
 msgid "Utilities"
-msgstr "Atividades do Usuário"
+msgstr "Serviços de Utilidade Pública"
 
 #: geonode/templates/index.html:305
-#, fuzzy
-#| msgid "feature type"
 msgid "Featured Datasets"
-msgstr "tipo de feição"
+msgstr "Conjunto de dados em Destaque"
 
 #: geonode/templates/index.html:324
 msgid "Our partners"
-msgstr ""
+msgstr "Parceiros"
 
 #: geonode/templates/index.html:349
 msgid "Accept"
 msgstr "Aceito"
 
 #: geonode/templates/index.html:350
-#, fuzzy
-#| msgid "Subject"
 msgid "Reject"
-msgstr "Assunto"
+msgstr "Rejeitado"
 
 #: geonode/templates/index.html:351
 msgid "Leave"
-msgstr ""
+msgstr "Deixar"
 
 #: geonode/templates/invitations/email/email_invite_message.html:2
 #: geonode/templates/invitations/email/email_invite_message.txt:3
 msgid "Dear Sir/Madam,"
-msgstr ""
+msgstr "Caro Sr./Sra,"
 
 #: geonode/templates/invitations/email/email_invite_message.html:3
 #, python-format
 msgid "is inviting you to join (%(site_name)s)."
-msgstr ""
+msgstr "está a convidar para se juntar (%(site_name)s)."
 
 #: geonode/templates/invitations/email/email_invite_message.html:5
 #, python-format
@@ -7306,6 +7427,8 @@ msgid ""
 "To do so, please register at <a href=\"%(invite_url)s\">%(site_name)s "
 "Registration</a>."
 msgstr ""
+"Para fazer isso, registe-se em <a href=\"%(invite_url)s\">Registo "
+"%(site_name)s </a>."
 
 #: geonode/templates/invitations/email/email_invite_message.html:8
 #: geonode/templates/invitations/email/email_invite_message.txt:9
@@ -7313,71 +7436,69 @@ msgid ""
 "Once you receive the confirmation that your account is activated, you can "
 "notify"
 msgstr ""
+"Depois de receber a confirmação de que sua conta está ativada, poderá "
+"notificar"
 
 #: geonode/templates/invitations/email/email_invite_message.html:8
 msgid "that you wish to join her/his group(s) through"
-msgstr ""
+msgstr "que você deseja integrar no seu (s) grupo (s) através"
 
 #: geonode/templates/invitations/email/email_invite_message.html:8
 msgid "this link"
-msgstr ""
+msgstr "esta ligação"
 
 #: geonode/templates/invitations/email/email_invite_message.html:10
 #, python-format
 msgid ""
 "<strong>%(inviter_name)s</strong> is a member of the following group(s):"
-msgstr ""
+msgstr "<strong>%(inviter_name)s</strong> é membro do seguinte grupo(s):"
 
 #: geonode/templates/invitations/email/email_invite_message.html:16
 #: geonode/templates/invitations/email/email_invite_message.txt:18
 msgid "We look forward to seeing you on the platform,"
-msgstr ""
+msgstr "Esperamos vê-lo na plataforma,"
 
 #: geonode/templates/invitations/email/email_invite_message.html:17
 #: geonode/templates/invitations/email/email_invite_message.txt:20
 msgid "The GeoNode team."
-msgstr "A equipa GeoNode"
+msgstr "A equipa GeoNode."
 
 #: geonode/templates/invitations/email/email_invite_message.txt:5
 msgid "is inviting you to join"
-msgstr ""
+msgstr "está a convida-lo para participar"
 
 #: geonode/templates/invitations/email/email_invite_message.txt:7
 msgid "To do so, please register at"
-msgstr ""
+msgstr "Para isso, registe-se em"
 
 #: geonode/templates/invitations/email/email_invite_message.txt:9
 msgid "that you wish to join her/his group(s) through this link"
-msgstr ""
+msgstr "que você deseja integrar no grupo(s) dela/dele através deste link"
 
 #: geonode/templates/invitations/email/email_invite_message.txt:13
-#, fuzzy
-#| msgid "The following groups:"
 msgid "is a member of the following group(s)"
-msgstr "Os seguintes grupos:"
+msgstr "é membro do seguinte grupo(s)"
 
 #: geonode/templates/metadata_base.html:149
-#, fuzzy
-#| msgid "Download Metadata"
 msgid "Updating Metadata..."
-msgstr "Baixar Metadados"
+msgstr "Atualizando Metadados..."
 
 #: geonode/templates/metadata_base.html:162
 #: geonode/templates/metadata_base.html:179
 msgid "ERROR"
-msgstr ""
+msgstr "ERRO"
 
 #: geonode/templates/metadata_base.html:165
 msgid "Topic Category is mandatory and cannot be empty!"
-msgstr ""
+msgstr "Categoria do Tópico é obrigatório e tem de ser preenchido!"
 
 #: geonode/templates/metadata_base.html:182
 msgid "Group is mandatory and cannot be empty!"
-msgstr ""
+msgstr "O Grupo é obrigatório e tem de ser preenchido!"
 
 #: geonode/templates/metadata_detail.html:26
 msgid "Return to Document"
-msgstr ""
+msgstr "Voltar ao Documento"
 
 #: geonode/templates/metadata_detail.html:30
 msgid "Return to Map"
@@ -7385,17 +7506,17 @@ msgstr "Voltar ao Mapa"
 
 #: geonode/templates/metadata_detail.html:38
 msgid "Identification"
-msgstr ""
+msgstr "Identificação"
 
 #: geonode/templates/metadata_detail.html:103
 #: geonode/templates/metadata_detail.html:106
 #: geonode/templates/metadata_detail.html:109
 msgid "Yes"
-msgstr ""
+msgstr "Sim"
 
 #: geonode/templates/metadata_detail.html:105
 msgid "Published"
-msgstr ""
+msgstr "Publicado"
 
 #: geonode/templates/metadata_detail.html:133
 #: geonode/templates/metadata_detail.html:275
@@ -7409,7 +7530,7 @@ msgstr "Informação"
 
 #: geonode/templates/metadata_detail.html:168
 msgid "Identification Image"
-msgstr ""
+msgstr "Imagem de Identificação"
 
 #: geonode/templates/metadata_detail.html:177
 msgid "Spatial Extent"
@@ -7421,53 +7542,51 @@ msgstr "Sistema de Projeção"
 
 #: geonode/templates/metadata_detail.html:183
 msgid "Extension x0"
-msgstr ""
+msgstr "Extensão x0"
 
 #: geonode/templates/metadata_detail.html:186
 msgid "Extension x1"
-msgstr ""
+msgstr "Extensão x1"
 
 #: geonode/templates/metadata_detail.html:189
 msgid "Extension y0"
-msgstr ""
+msgstr "Extensão y0"
 
 #: geonode/templates/metadata_detail.html:192
 msgid "Extension y1"
-msgstr ""
+msgstr "Extensão y1"
 
 #: geonode/templates/metadata_detail.html:197
 msgid "Features"
-msgstr ""
+msgstr "Elementos"
 
 #: geonode/templates/metadata_detail.html:267
 msgid "Contact Points"
-msgstr ""
+msgstr "Pontos de Contato"
 
 #: geonode/templates/metadata_detail.html:308
 msgid "References"
-msgstr ""
+msgstr "Referências"
 
 #: geonode/templates/metadata_detail.html:313
 msgid "Link Online"
-msgstr ""
+msgstr "Link Online"
 
 #: geonode/templates/metadata_detail.html:316
 msgid "Metadata Page"
-msgstr ""
+msgstr "Página de Metadados"
 
 #: geonode/templates/metadata_detail.html:320
 msgid "Online Link"
-msgstr ""
+msgstr "Link Online"
 
 #: geonode/templates/owner_rights_request.html:6
 msgid "Request perission"
 msgstr "Pedir permissão"
 
 #: geonode/templates/owner_rights_request.html:8
-#, fuzzy
-#| msgid "party that owns the resource"
 msgid "Request editing for resource: "
-msgstr "responsável pela propriedade do recurso"
+msgstr "Pedido para edição do recurso: "
 
 #: geonode/templates/owner_rights_request.html:9
 msgid "Back to resource"
@@ -7475,46 +7594,44 @@ msgstr "Voltar ao recurso"
 
 #: geonode/templates/owner_rights_request.html:16
 msgid "Send request"
-msgstr ""
+msgstr "Enviar pedido"
 
 #: geonode/templates/pinax/notifications/account_active/account_active_message.txt:2
 #: geonode/templates/pinax/notifications/account_active/full.txt:2
 msgid "Your account has been approved and is now active."
-msgstr ""
+msgstr "A sua conta foi aprovada e está agora ativa."
 
 #: geonode/templates/pinax/notifications/account_active/account_active_message.txt:3
 #: geonode/templates/pinax/notifications/account_active/full.txt:3
 msgid "You can use the login form at"
-msgstr ""
+msgstr "Pode usar o formulário de acesso em"
 
 #: geonode/templates/pinax/notifications/account_active/account_active_subject.txt:1
 msgid "Welcome at"
 msgstr "Bem-vindo a"
 
 #: geonode/templates/pinax/notifications/account_active/short.txt:3
-#, fuzzy
-#| msgid "Recent activity"
 msgid "Your account is now active"
-msgstr "Atividade recente"
+msgstr "A sua conta está agora ativa"
 
 #: geonode/templates/pinax/notifications/account_approve/full.txt:1
 msgid "has requested access to the site."
-msgstr ""
+msgstr "efetuou um pedido para aceder ao site."
 
 #: geonode/templates/pinax/notifications/account_approve/full.txt:1
 msgid ""
 "You can enable access by setting the user as active on the admin section"
 msgstr ""
+"Poe ativar o acesso definindo o utilizador como ativo na seção de "
+"administração"
 
 #: geonode/templates/pinax/notifications/account_approve/short.txt:3
 msgid "A user has requested access to the site"
-msgstr ""
+msgstr "Um utilizador efetuou um pedido para aceder ao site"
 
 #: geonode/templates/pinax/notifications/document_approved/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
 msgid "The following document was approved"
-msgstr "Os seguintes usuários:"
+msgstr "O seguinte documento foi aprovado"
 
 #: geonode/templates/pinax/notifications/document_approved/full.txt:3
 #: geonode/templates/pinax/notifications/document_deleted/full.txt:3
@@ -7531,10 +7648,8 @@ msgstr "Os seguintes usuários:"
 #: geonode/templates/pinax/notifications/map_published/full.txt:3
 #: geonode/templates/pinax/notifications/map_rated/full.txt:5
 #: geonode/templates/pinax/notifications/map_updated/full.txt:3
-#, fuzzy
-#| msgid "Powered by"
 msgid "owned by"
-msgstr "Powered by"
+msgstr "propriedade de"
 
 #: geonode/templates/pinax/notifications/document_approved/full.txt:4
 #: geonode/templates/pinax/notifications/document_comment/full.txt:3
@@ -7542,31 +7657,25 @@ msgstr "Powered by"
 #: geonode/templates/pinax/notifications/document_published/full.txt:4
 #: geonode/templates/pinax/notifications/document_updated/full.txt:4
 msgid "You can visit the document's detail page here"
-msgstr ""
+msgstr "Pode visitar os detalhes da página do documento aqui"
 
 #: geonode/templates/pinax/notifications/document_approved/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
 msgid "A document has been approved"
-msgstr "Serviço foi criado:"
+msgstr "Um documento foi aprovado"
 
 #: geonode/templates/pinax/notifications/document_comment/full.txt:2
-#, fuzzy
-#| msgid "You do not have permissions for this document."
 msgid "A comment has been posted for the document"
-msgstr "Você não possui permissões para este documento."
+msgstr "Um comentário foi publicado no documento"
 
 #: geonode/templates/pinax/notifications/document_comment/full.txt:2
 #: geonode/templates/pinax/notifications/layer_comment/full.txt:2
 #: geonode/templates/pinax/notifications/map_comment/full.txt:3
 msgid "by the user"
-msgstr ""
+msgstr "pelo utilizador"
 
 #: geonode/templates/pinax/notifications/document_comment/short.txt:3
-#, fuzzy
-#| msgid "You do not have permissions for this document."
 msgid "A comment has been posted for a document"
-msgstr "Você não possui permissões para este documento."
+msgstr "Um comentário foi publicado num documento"
 
 #: geonode/templates/pinax/notifications/document_created/full.txt:2
 #: geonode/templates/pinax/notifications/document_rated/full.txt:2
@@ -7575,60 +7684,42 @@ msgstr "Você não possui permissões para este documento."
 #: geonode/templates/pinax/notifications/map_created/full.txt:2
 #: geonode/templates/pinax/notifications/map_rated/full.txt:2
 #: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:2
-#, fuzzy
-#| msgid "Choose users..."
 msgid "The user"
-msgstr "Escolha os usuários ..."
+msgstr "O utilizador"
 
 #: geonode/templates/pinax/notifications/document_created/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
 msgid "uploaded the following document"
-msgstr "Os seguintes usuários:"
+msgstr "o seguinte documento foi carregado"
 
 #: geonode/templates/pinax/notifications/document_created/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
 msgid "A document has been uploaded"
-msgstr "Serviço foi criado:"
+msgstr "Um documento foi carregado"
 
 #: geonode/templates/pinax/notifications/document_deleted/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
 msgid "The following document was deleted"
-msgstr "Os seguintes usuários:"
+msgstr "O seguinte documento foi apagado"
 
 #: geonode/templates/pinax/notifications/document_deleted/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
 msgid "A document has been deleted"
-msgstr "Serviço foi criado:"
+msgstr "Um documento foi eliminado"
 
 #: geonode/templates/pinax/notifications/document_published/full.txt:2
-#, fuzzy
-#| msgid "The following groups:"
 msgid "The following document was published"
-msgstr "Os seguintes grupos:"
+msgstr "O seguinte documento foi publicado"
 
 #: geonode/templates/pinax/notifications/document_published/short.txt:3
-#, fuzzy
-#| msgid "Documents"
 msgid "A document has been published"
-msgstr "Documentos"
+msgstr "Um documento foi publicado"
 
 #: geonode/templates/pinax/notifications/document_rated/full.txt:3
 #: geonode/templates/pinax/notifications/layer_rated/full.txt:3
 #: geonode/templates/pinax/notifications/map_rated/full.txt:3
-#, fuzzy
-#| msgid "created"
 msgid "rated"
-msgstr "criado"
+msgstr "avaliado"
 
 #: geonode/templates/pinax/notifications/document_rated/full.txt:4
-#, fuzzy
-#| msgid "The following users:"
 msgid "the following document"
-msgstr "Os seguintes usuários:"
+msgstr "o seguinte documento"
 
 #: geonode/templates/pinax/notifications/document_rated/full.txt:6
 #: geonode/templates/pinax/notifications/layer_approved/full.txt:4
@@ -7638,95 +7729,70 @@ msgstr "Os seguintes usuários:"
 #: geonode/templates/pinax/notifications/layer_rated/full.txt:6
 #: geonode/templates/pinax/notifications/layer_updated/full.txt:4
 msgid "You can visit the layer's detail page here"
-msgstr ""
+msgstr "Pode visitar os detalhes da página da layer aqui"
 
 #: geonode/templates/pinax/notifications/document_rated/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
 msgid "A document has been rated"
-msgstr "Serviço foi criado:"
+msgstr "Um documento foi classificado"
 
 #: geonode/templates/pinax/notifications/document_updated/full.txt:2
-#, fuzzy
-#| msgid "The following users:"
 msgid "The following document was updated"
-msgstr "Os seguintes usuários:"
+msgstr "O seguinte documento foi atualizado"
 
 #: geonode/templates/pinax/notifications/document_updated/short.txt:3
-#, fuzzy
-#| msgid "Service has been created:"
 msgid "A document has been updated"
-msgstr "Serviço foi criado:"
+msgstr "Um documento foi carregado"
 
 #: geonode/templates/pinax/notifications/email_body.txt:3
-#, fuzzy
-#| msgid "You have the following incomplete uploads"
 msgid "You have received the following notice from"
-msgstr "Você tem estes carregamentos incompletos"
+msgstr "Recebeu o seguinte anúncio do"
 
 #: geonode/templates/pinax/notifications/email_body.txt:8
 msgid "To change how you receive notifications, please go to"
-msgstr ""
+msgstr "Para mudar a forma como recebe as notificações, por favor dirija-se a"
 
 #: geonode/templates/pinax/notifications/email_subject.txt:1
 #, python-format
 msgid "[%(current_site)s] %(message)s"
-msgstr ""
+msgstr "[%(current_site)s] %(message)s"
 
 #: geonode/templates/pinax/notifications/full.txt:1
 #: geonode/templates/pinax/notifications/short.txt:1
-#, fuzzy, python-format
-#| msgid "Notices"
+#, python-format
 msgid "%(notice)s"
-msgstr "Notices"
+msgstr "%(notice)s"
 
 #: geonode/templates/pinax/notifications/layer_approved/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
 msgid "The following layer was approved"
-msgstr "As camadas seguintes serão importados"
+msgstr "A seguinte camada foi aprovada"
 
 #: geonode/templates/pinax/notifications/layer_approved/short.txt:3
-#, fuzzy
-#| msgid "A layer was commented on"
 msgid "A layer has been approved"
-msgstr "Uma camada foi comentada em"
+msgstr "Uma camada foi aprovada"
 
 #: geonode/templates/pinax/notifications/layer_comment/full.txt:2
-#, fuzzy
-#| msgid "Documents related to this layer"
 msgid "A comment has been posted for the layer"
-msgstr "Documentos relacionados à esta camada"
+msgstr "Um comentário foi publicado na camada"
 
 #: geonode/templates/pinax/notifications/layer_comment/short.txt:3
-#, fuzzy
-#| msgid "A rating was given to a layer"
 msgid "A comment has been posted for a layer"
-msgstr "Uma classificação foi dada à camada"
+msgstr "Um comentário foi publicado na camada"
 
 #: geonode/templates/pinax/notifications/layer_created/full.txt:2
-#, fuzzy
-#| msgid "This map uses the following layers:"
 msgid "uploaded the following layer"
-msgstr "Este mapa tem as seguintes camadas:"
+msgstr "carregada a seguinte camada"
 
 #: geonode/templates/pinax/notifications/layer_created/short.txt:3
-#, fuzzy
-#| msgid "A layer was uploaded"
 msgid "A new layer has been uploaded"
-msgstr "Uma camada foi carregada"
+msgstr "Uma nova camada foi carregada"
 
 #: geonode/templates/pinax/notifications/layer_deleted/full.txt:2
-#, fuzzy
-#| msgid "The following layers will be imported"
 msgid "The following layer was deleted"
-msgstr "As camadas seguintes serão importados"
+msgstr "A seguinte camada foi eliminada"
 
 #: geonode/templates/pinax/notifications/layer_deleted/short.txt:3
-#, fuzzy
-#| msgid "A layer was commented on"
 msgid "A layer has been deleted"
-msgstr "Uma camada foi comentada em"
+msgstr "Uma camada foi eliminada"
 
 #: geonode/templates/pinax/notifications/layer_published/full.txt:2
 msgid "The following layer was published"
@@ -7738,7 +7804,7 @@ msgstr "Uma camada foi publicada"
 
 #: geonode/templates/pinax/notifications/layer_rated/full.txt:4
 msgid "the following layer"
-msgstr "a seguinte camad"
+msgstr "a seguinte camada"
 
 #: geonode/templates/pinax/notifications/layer_rated/short.txt:3
 msgid "A layer has been rated"
@@ -7763,7 +7829,7 @@ msgstr "O seguinte mapa foi aprovado"
 #: geonode/templates/pinax/notifications/map_rated/full.txt:6
 #: geonode/templates/pinax/notifications/map_updated/full.txt:4
 msgid "You can visit the map's detail page here"
-msgstr ""
+msgstr "Pode visitar os detalhes da página do mapa aqui"
 
 #: geonode/templates/pinax/notifications/map_approved/short.txt:3
 msgid "A map has been approved"
@@ -7815,7 +7881,7 @@ msgstr "O seguinte mapa foi atualizado"
 
 #: geonode/templates/pinax/notifications/map_updated/short.txt:3
 msgid "A map has been updated"
-msgstr "Um Mapa foi atualizado."
+msgstr "Um Mapa foi atualizado"
 
 #: geonode/templates/pinax/notifications/notice_settings.html:7
 #: geonode/templates/pinax/notifications/notice_settings.html:10
@@ -7833,6 +7899,13 @@ msgid ""
 "        </p>\n"
 "        "
 msgstr ""
+"\n"
+"        <p class=\"alert alert-warning\">\n"
+"            <span class=\"warning\">Nota</span>:\n"
+"            Não verificou o endereço de email para que receba as "
+"notificações. <a href=\"%(email_url)s\">Adicione um</a> agora.\n"
+"        </p>\n"
+"        "
 
 #: geonode/templates/pinax/notifications/notice_settings.html:26
 msgid "Notification Type"
@@ -7846,6 +7919,8 @@ msgstr "foi-lhe feito um pedido de transferência deste recurso"
 msgid ""
 "Please go to resource page and assign the download permissions if you wish"
 msgstr ""
+"Se desejar, por favor vá à página de recursos e atribua permissões de "
+"transferência"
 
 #: geonode/templates/pinax/notifications/request_download_resourcebase/short.txt:3
 msgid "A resource's download has been requested"
@@ -7867,7 +7942,7 @@ msgstr "Seguindo"
 
 #: geonode/templates/relationships/_list_connections.html:10
 msgid "This user is not following anyone"
-msgstr "Este usuário não está seguindo ninguém"
+msgstr "Este utilizador não segue ninguém"
 
 #: geonode/templates/relationships/_list_connections.html:12
 msgid "Followers"
@@ -7875,7 +7950,7 @@ msgstr "Seguidores"
 
 #: geonode/templates/relationships/_list_connections.html:18
 msgid "No one is following this user"
-msgstr "Ninguém está seguindo este usuário"
+msgstr "Ninguém está seguindo este utilizador"
 
 #: geonode/templates/relationships/_manage_connections.html:3
 msgid "Manage Connections"
@@ -7932,7 +8007,7 @@ msgstr "Perfil %(to_user_username)s"
 
 #: geonode/templates/search/_general_filters.html:30
 msgid "Responsibles"
-msgstr ""
+msgstr "Responsáveis"
 
 #: geonode/templates/search/_general_filters.html:110
 msgid "Date begins after:"
@@ -8013,7 +8088,7 @@ msgstr "Mais popular"
 
 #: geonode/templates/search/_t_keywords_filter.html:7
 msgid "Thesaurus"
-msgstr ""
+msgstr "Thesaurus"
 
 #: geonode/templates/search/_text_filter.html:5
 msgid "Text"
@@ -8049,15 +8124,17 @@ msgid ""
 "You can sign in to your account using any of the following already connected "
 "third party accounts:"
 msgstr ""
+"Você pode entrar na sua conta usando qualquer uma das seguintes contas de "
+"terceiros já ligadas:"
 
 #: geonode/templates/socialaccount/connections.html:39
 msgid ""
 "You currently have no social network accounts connected to this account."
-msgstr ""
+msgstr "Atualmente não tem nenhuma conta de redes sociais ligada a esta conta."
 
 #: geonode/templates/socialaccount/connections.html:46
 msgid "Add a 3rd Party Account"
-msgstr ""
+msgstr "Adicionar Conta de terceiros"
 
 #: geonode/templates/socialaccount/login_cancelled.html:5
 #: geonode/templates/socialaccount/login_cancelled.html:9
@@ -8071,6 +8148,9 @@ msgid ""
 "accounts. If this was a mistake, please proceed to <a href=\"%(login_url)s"
 "\">sign in</a>."
 msgstr ""
+"Você decidiu cancelar o login no nosso site usando uma das suas contas "
+"existentes. Se isso isto é um erro, prossiga para <a href=\"%(login_url)s"
+"\">Entrar </a>."
 
 #: geonode/templates/socialaccount/signup.html:6
 msgid "Signup"
@@ -8087,6 +8167,9 @@ msgid ""
 "You are about to use your %(provider_name)s account to login to\n"
 "%(site_name)s. As a final step, please complete the following form:"
 msgstr ""
+"Está prestes a usar a sua conta %(provider_name)s para fazer login no\n"
+" \n"
+"%(site_name)s. Como etapa final, preencha o seguinte formulário:"
 
 #: geonode/templates/socialaccount/snippets/provider_list.html:19
 #: geonode/templates/socialaccount/snippets/remaining_providers_list.html:19
@@ -8096,7 +8179,7 @@ msgstr "Entrar com"
 #: geonode/templates/socialaccount/snippets/provider_list.html:21
 #: geonode/templates/socialaccount/snippets/remaining_providers_list.html:21
 msgid "Connect with"
-msgstr ""
+msgstr "Ligado com"
 
 #: geonode/templates/socialaccount/snippets/provider_list.html:23
 #: geonode/templates/socialaccount/snippets/remaining_providers_list.html:23
@@ -8168,7 +8251,7 @@ msgstr "Enviar resposta"
 
 #: geonode/themes/apps.py:28
 msgid "GeoNode Themes Library"
-msgstr "Biblioteca de temas do Geonode"
+msgstr "Biblioteca de Temas do Geonode"
 
 #: geonode/upload/files.py:262
 msgid "Could not access to uploaded data."
@@ -8179,16 +8262,20 @@ msgid ""
 "One or more XML files was provided, but no matching files were found for "
 "them."
 msgstr ""
+"Um os mais ficheiros XML fornecidos, mas não coincidem com os que "
+"encontrámos para eles."
 
 #: geonode/upload/files.py:310
 msgid ""
 "One or more SLD files was provided, but no matching files were found for "
 "them."
 msgstr ""
+"Um os mais ficheiros SLD fornecidos, mas não coincidem com os que "
+"encontrámos para eles."
 
 #: geonode/upload/upload_validators.py:66
 msgid "Invalid zip file detected"
-msgstr ""
+msgstr "Detetado ficheiro zip inválido"
 
 #: geonode/upload/upload_validators.py:82
 msgid "Could not find any valid spatial file inside the uploaded zip"
@@ -8198,7 +8285,7 @@ msgstr ""
 
 #: geonode/upload/upload_validators.py:85
 msgid "Invalid kmz file detected"
-msgstr ""
+msgstr "Detetado ficheiro kmz inválido"
 
 #: geonode/upload/upload_validators.py:89
 msgid "Could not find any kml files inside the uploaded kmz"
@@ -8207,29 +8294,31 @@ msgstr ""
 
 #: geonode/upload/upload_validators.py:124
 msgid "Only one shapefile per zip is allowed"
-msgstr ""
+msgstr "Apenas um ficheiro shapefile por ZIP é permitido"
 
 #: geonode/upload/upload_validators.py:170
 msgid "kml files with more than one GroundOverlay are not supported"
-msgstr ""
+msgstr "não são suportados ficheiros kml com mais que um GroudOverlay"
 
 #: geonode/upload/upload_validators.py:181
 msgid "Ground overlay image declared in kml file cannot be found"
-msgstr ""
+msgstr "Não foi possível encontrar GroundOverlay declarada no ficheiro kml"
 
 #: geonode/upload/upload_validators.py:218
 msgid "Only one kml file per ZIP is allowed"
-msgstr ""
+msgstr "Apenas um ficheiro kml por ZIP é permitido"
 
 #: geonode/upload/upload_validators.py:233
 msgid "Only one kml file per kmz is allowed"
-msgstr ""
+msgstr "Apenas um ficheiro kmz por ZIP é permitido"
 
 #: geonode/upload/upload_validators.py:287
 msgid ""
 "You are trying to upload multiple GeoTIFFs without a valid 'indexer."
 "properties' file."
 msgstr ""
+"Você está a tentar carregar vários GeoTIFFs sem um ficheiro 'indexer."
+"properties' válido."
 
 #: geonode/upload/upload_validators.py:292
 msgid "Only one raster file per ZIP is allowed"
@@ -8237,43 +8326,43 @@ msgstr "Apenas um ficheiro raster por ZIP é permitido"
 
 #: geonode/upload/upload_validators.py:297
 msgid "No multiple rasters allowed"
-msgstr ""
+msgstr "Múltiplos rasters não são permitidos"
 
 #: geonode/upload/utils.py:98
 msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
+"Para suportar a opção de tempo, tem de ativar a opção DATASTORE OGC_SERVER"
 
 #: geonode/upload/utils.py:261
 #, python-format
 msgid "Unsupported file type: %s"
-msgstr ""
+msgstr "Tipo de ficheiro não suportado: %s"
 
 #: geonode/upload/utils.py:526
 #, python-format
 msgid "File does not exist: %s"
-msgstr ""
+msgstr "O ficheiro não existe: %s"
 
 #: geonode/upload/utils.py:583
 #, python-format
 msgid "unknown item state: %s"
-msgstr ""
+msgstr "estado do item desconhecido: %s"
 
 #: geonode/upload/utils.py:591
 #, python-format
 msgid "error during import: %s"
-msgstr ""
+msgstr "erro durante a importação: %s"
 
 #: geonode/upload/utils.py:701
-#, fuzzy
-#| msgid "Could not find any layers in a compatible projection."
 msgid "Could not find any valid Time Regex for the Mosaic files."
 msgstr ""
-"Não foi possível encontrar todas as camadas em uma projeção compatível."
+"Não foi possível encontrar um Regex de Tempo válido para os ficheiros do "
+"Mosaico."
 
 #: geonode/upload/utils.py:732 geonode/upload/utils.py:764
 msgid "Unsupported DataBase for Mosaics!"
-msgstr ""
+msgstr "Base de dados não Suportada para os Mosaicos!"
 
 #: geonode/utils.py:89
 msgid "Invalid permission level."
