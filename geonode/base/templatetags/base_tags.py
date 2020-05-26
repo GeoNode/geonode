@@ -22,6 +22,7 @@ from django import template
 
 from pinax.ratings.models import Rating
 from django.db.models import Q
+from django.utils.translation import ugettext
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.db.models import Count
@@ -48,6 +49,14 @@ FACETS = {
     'remote': 'Remote Layer',
     'wms': 'WMS Cascade Layer'
 }
+
+
+@register.filter(name='template_trans')
+def template_trans(text):
+    try:
+        return ugettext(text)
+    except Exception:
+        return text
 
 
 @register.simple_tag
