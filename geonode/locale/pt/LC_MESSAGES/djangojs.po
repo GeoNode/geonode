@@ -29,8 +29,8 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-14 14:04+0000\n"
-"PO-Revision-Date: 2020-05-03 08:26+0100\n"
-"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
+"PO-Revision-Date: 2020-05-11 20:26+0100\n"
+"Last-Translator: João Gaspar <joao.f.r.gaspar@gmail.com>\n"
 "Language-Team: Portuguese (http://www.transifex.com/geonode/geonode/language/"
 "pt/)\n"
 "Language: pt\n"
@@ -38,7 +38,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 2.3.1\n"
 
 #: geonode/monitoring/static/monitoring/bundle.js:170
 msgid "STORE_UPDATED"
@@ -243,7 +243,7 @@ msgstr "<br>"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:618
 msgid "<br>Bad request or URL not found."
-msgstr "<br>Pedido incorreto ou URL não encontrado"
+msgstr "<br>Pedido incorreto ou URL não encontrado."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:628
 msgid "<br>Unknown."
