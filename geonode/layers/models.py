@@ -256,7 +256,10 @@ class Layer(ResourceBase):
         """
 
         # If there was no upload_session return None
-        if self.upload_session is None:
+        try:
+            if self.upload_session is None:
+                return None, None
+        except Exception:
             return None, None
 
         base_exts = [x.replace('.', '') for x in cov_exts + vec_exts]
