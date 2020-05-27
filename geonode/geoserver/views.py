@@ -540,9 +540,9 @@ def _response_callback(**kwargs):
     content_type_list = ['application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json']
 
     if content:
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
         if not content_type:
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
             if (re.match(r'^<.+>$', content)):
                 content_type = 'application/xml'
             elif (re.match(r'^({|[).+(}|])$', content)):
