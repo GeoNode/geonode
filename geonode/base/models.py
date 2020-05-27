@@ -1102,7 +1102,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             bbox_polygon.srid = int(match.group('srid'))
         except AttributeError:
             logger.warning("No srid found for layer %s bounding box", self)
-            pass
 
         self.bbox_polygon = bbox_polygon
 
