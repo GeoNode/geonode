@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('base', '0043_resourcebase_bbox_polygon'),
+        ('base', '0044_resourcebase_bbox_polygon'),
     ]
 
     operations = [

@@ -15,7 +15,7 @@ def populate_polygon(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('base', '0043_resourcebase_bbox_polygon'),
+        ('base', '0044_resourcebase_bbox_polygon'),
         ('layers', '0027_auto_20170801_1228_squashed_0033_auto_20180606_1543'),
     ]
 
