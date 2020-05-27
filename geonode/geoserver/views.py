@@ -552,9 +552,13 @@ def _response_callback(**kwargs):
 
         # Replace Proxy URL
         try:
+            if isinstance(content, bytes):
+                _content = content.decode('UTF-8')
+            else:
+                _content = content
             if re.findall(r"(?=(\b" + '|'.join(content_type_list) + r"\b))", content_type):
                 _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
-                content = content\
+                content = _content\
                     .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
                     .replace(ogc_server_settings.PUBLIC_LOCATION, _gn_proxy_url)
         except Exception as e:
