@@ -82,6 +82,7 @@ from pyproj import transform, Proj
 
 from urllib.parse import urlparse, urlsplit, urljoin
 from imagekit.cachefiles.backends import Simple
+from decimal import Decimal
 
 logger = logging.getLogger(__name__)
 
@@ -979,6 +980,22 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @cached_property
     def bbox_helper(self):
         return BBOXHelper(self.bbox_polygon.extent)
+
+    @property
+    def bbox_x0(self):
+        return Decimal(self.bbox_helper.xmin)
+
+    @property
+    def bbox_x1(self):
+        return Decimal(self.bbox_helper.xmax)
+
+    @property
+    def bbox_y0(self):
+        return Decimal(self.bbox_helper.ymin)
+
+    @property
+    def bbox_y1(self):
+        return Decimal(self.bbox_helper.ymax)
 
     @property
     def geographic_bounding_box(self):
