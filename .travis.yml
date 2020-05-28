@@ -311,8 +311,7 @@ install:
       mkdir bin;
       tar zxf geckodriver.tar.gz -C bin;
       git clone -b search-by-extent-postgis https://github.com/mtnorthcott/postgis-docker.git;
-      docker build -t geonode/postgis:10 ./postgis-docker/.;
-      docker tag geonode/postgis:10 geonode/postgis:11;
+      docker build -t geonode/postgis:11 ./postgis-docker/.;
       export PATH=$PATH:$PWD/bin;
     else
       sudo apt-get -qq -y update;
