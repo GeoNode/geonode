@@ -25,6 +25,7 @@ import shutil
 
 from osgeo import ogr, osr, gdal
 from django.conf import settings
+from django.contrib.gis.geos import Polygon
 from django.urls import reverse
 from django.db.models import signals
 from django.dispatch import Signal
@@ -351,10 +352,12 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
     bbox = instance.get_bbox_from_layers(instance.local_layers)
     instance.set_bounds_from_bbox(bbox, instance.srid)
     Map.objects.filter(id=map_id).update(
-        bbox_x0=instance.bbox_x0,
-        bbox_x1=instance.bbox_x1,
-        bbox_y0=instance.bbox_y0,
-        bbox_y1=instance.bbox_y1,
+        bbox_polygon=Polygon.from_bbox((
+            instance.bbox_x0,
+            instance.bbox_x1,
+            instance.bbox_y0,
+            instance.bbox_y1
+        )),
         srid=instance.srid,
         zoom=instance.zoom,
         center_x=instance.center_x,
