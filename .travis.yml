@@ -236,7 +236,7 @@ jobs:
           - MONITORING_ENABLED: 'False'
           - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
           - CELERY_ALWAYS_EAGER: 'True'
-          - DATABASE_URL: 'postgresql://geonode:geonode@localhost:5432/upload_test'
+          - DATABASE_URL: 'postgis://geonode:geonode@localhost:5432/upload_test'
           - GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY: 'leaflet'
 
     - stage: frontend-tests
