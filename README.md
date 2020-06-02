@@ -168,3 +168,68 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along
 with GeoNode. If not, see http://www.gnu.org/licenses.
+
+**HDN Customizations**
+Alterações separadas por data:
+
+01/04/2020
+- Criação do Campo Ano de Criação do Conjunto de Dados;
+- Criação do Campo Escala;
+- Criação do Campo Link VINDE;
+- Criação do Campo INDE.
+
+02/04/2020
+- Criação do Campo Frequência de Manutenção (Manter a lista);
+- Criação do Campo Licença (Manter a lista);
+- Criação do Campo Lista de Autores (Manter a lista);
+- Criação do Campo Lista de Restrições.
+- Criação do Campo Embrapa_Keywords
+
+03/04/2020
+- Mantido o Campo Pontos de Contato com uma única escolha;
+- Customização de opções do Campo Frequência de Manutenção;
+
+07/04/2020
+- Customização conteúdo do Campo "Licença";
+- Customização no Campo Regiões.
+
+08/04/2020
+- Ajustes no formulário de metadados;
+- Correções de erros nos documentos e no metadata_detail.
+
+09/04/2020
+- Tradução dos campos;
+- Ajustes no campo Language;
+
+14/04/2020
+- Alocação dos campos do formulário ao novo painel de metadados;
+- Ajustes no template do formulário para alocação dos campos Ano de Criação do Conjunto de Dados,
+	Autores, Escala, Link VINDE, Embrapa_Keywords, INDE.
+- Custmizações nos textos explicativos.
+
+15/04/2020
+- Correção de bugs na hora do submit da camada;
+
+24/04/2020
+- Alterações no views.py da aplicação 'layers', alocado o campo embrapa_keywords com o método "add()";
+
+27/04/2020
+- Alteração no campo embrapa_keywords, alterado de MultipleChoiceField para TagField;
+
+04/05/2020
+- Alterações no banco de dados, renomeado o nome da tabela "base_resourcebase_embrapa_keywords" para "base_keywords_embrapa";
+- Ajustes na consistência dos dados, remoção de espaços entre outros aspectos.
+
+05/05/2020
+- Ajustes nos dados da tabela "base_resourcebase";
+
+20/05/2020
+- Tratamento dos dados "Finalidade", "Autores" e "Declaração da Qualidade do Dado";
+
+29/05/2020
+- Criação do Campo Unidade e Customização do Campo Finalidade (transformando-o de TextField para ChoiceField);
+
+01/06/2020
+- Início da chamada para as api's INTEGRO e IDEARE para o Campo Finalidade;
+
+
