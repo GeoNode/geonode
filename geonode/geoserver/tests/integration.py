@@ -181,7 +181,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
 
             self.assertEqual(1, len(layernodes))
             self.assertEqual(layernode.find('wms:Name', namespaces).text,
-                             layer1.name)
+                             "geonode:{}".format(layer1.name))
 
             # 1. test capabilities_user
             url = reverse('capabilities_user', args=[norman.username])
@@ -196,9 +196,9 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             # the norman two layers are named layer1 and layer2
             count = 0
             for layernode in layernodes:
-                if layernode.find('wms:Name', namespaces).text == layer1.name:
+                if layernode.find('wms:Name', namespaces).text == '%s:%s' % ('geonode', layer1.name):
                     count += 1
-                elif layernode.find('wms:Name', namespaces).text == layer2.name:
+                elif layernode.find('wms:Name', namespaces).text == '%s:%s' % ('geonode', layer2.name):
                     count += 1
             self.assertEqual(1, count)
 
@@ -215,11 +215,11 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             # the layers for category are named layer1 and layer3
             count = 0
             for layernode in layernodes:
-                if layernode.find('wms:Name', namespaces).text == layer1.name:
+                if layernode.find('wms:Name', namespaces).text == '%s:%s' % ('geonode', layer1.name):
                     count += 1
-                elif layernode.find('wms:Name', namespaces).text == layer3.name:
+                elif layernode.find('wms:Name', namespaces).text == '%s:%s' % ('geonode', layer3.name):
                     count += 1
-            self.assertEqual(0, count)
+            self.assertEqual(1, count)
 
             # 3. test for a map
             # TODO
@@ -313,11 +313,8 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_default_anonymous_permissions(self):
-        with override_settings(RESOURCE_PUBLISHING=False,
-                               ADMIN_MODERATE_UPLOADS=False,
-                               DEFAULT_ANONYMOUS_VIEW_PERMISSION=False,
+        with override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False,
                                DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False):
-            self.client.login(username='norman', password='norman')
             norman = get_user_model().objects.get(username="norman")
             saved_layer = file_upload(
                 os.path.join(
@@ -331,17 +328,19 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
                 namespaces = {'wms': 'http://www.opengis.net/wms',
                               'xlink': 'http://www.w3.org/1999/xlink',
                               'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
-                url = urljoin(settings.SITEURL, reverse('capabilities_layer', args=[saved_layer.id]))
+
+                self.client.login(username='norman', password='norman')
+                url = reverse('capabilities_layer', args=[saved_layer.id])
                 resp = self.client.get(url)
-                content = resp.content
-                self.assertTrue(content)
-                layercap = dlxml.fromstring(content)
+                layercap = dlxml.fromstring(resp.content)
                 rootdoc = etree.ElementTree(layercap)
                 layernodes = rootdoc.findall('./[wms:Name]', namespaces)
                 layernode = layernodes[0]
+
                 self.assertEqual(1, len(layernodes))
                 self.assertEqual(layernode.find('wms:Name', namespaces).text,
-                                 saved_layer.name)
+                                 "geonode:{}".format(saved_layer.name))
+
                 self.client.logout()
                 resp = self.client.get(url)
                 with self.assertRaises(Exception):

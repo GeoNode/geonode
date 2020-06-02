@@ -97,8 +97,11 @@ class GeoNodeSendInvite(SendInvite):
         })
 
         email_template = 'invitations/email/email_invite'
-        adapter = get_invitations_adapter()
-        adapter.send_invitation_email(email_template, invite.email, ctx)
+
+        get_invitations_adapter().send_mail(
+            email_template,
+            invite.email,
+            ctx)
         invite.sent = timezone.now()
         invite.save()
 

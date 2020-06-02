@@ -21,7 +21,6 @@
 from uuid import uuid4
 import logging
 
-from allauth.account.adapter import get_adapter
 from django.conf import settings
 
 from django.db import models
@@ -29,6 +28,7 @@ from django.db.models import signals
 
 from django.urls import reverse
 from django.contrib.sites.models import Site
+from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.auth.signals import user_logged_in, user_logged_out
@@ -37,9 +37,11 @@ from taggit.managers import TaggableManager
 
 from geonode.base.enumerations import COUNTRIES
 from geonode.groups.models import GroupProfile
+# from geonode.notifications_helper import send_notification
 
 from allauth.account.signals import user_signed_up
 from allauth.socialaccount.signals import social_account_added
+# from account.models import EmailAddress
 
 from .utils import format_address
 from .signals import (
@@ -56,10 +58,11 @@ logger = logging.getLogger(__name__)
 
 class ProfileUserManager(UserManager):
     def get_by_natural_key(self, username):
-        return self.get(username=username)
+        return self.get(username__iexact=username)
 
 
 class Profile(AbstractUser):
+
     """Fully featured Geonode user"""
 
     organization = models.CharField(
@@ -180,18 +183,6 @@ class Profile(AbstractUser):
             return self.username
 
     @property
-    def full_name_or_nick(self):
-        if self.first_name and self.last_name:
-            return '%s %s' % (self.first_name,
-                              self.last_name)
-        else:
-            return self.username
-
-    @property
-    def first_name_or_nick(self):
-        return self.first_name if self.first_name else self.username
-
-    @property
     def location(self):
         return format_address(self.delivery, self.zipcode,
                               self.city, self.area, self.country)
@@ -219,15 +210,14 @@ class Profile(AbstractUser):
                 }
 
                 email_template = 'pinax/notifications/account_active/account_active'
-                adapter = get_invitations_adapter()
-                adapter.send_invitation_email(email_template, self.email, ctx)
+
+                get_invitations_adapter().send_mail(
+                    email_template,
+                    self.email,
+                    ctx)
             except Exception:
                 import traceback
                 traceback.print_exc()
-
-    def send_mail(self, template_prefix, context):
-        if self.email:
-            get_adapter().send_mail(template_prefix, self.email, context)
 
 
 def get_anonymous_user_instance(user_model):
@@ -249,5 +239,5 @@ user_signed_up.connect(
 )
 signals.post_save.connect(
     profile_post_save,
-    sender=settings.AUTH_USER_MODEL
+    sender=get_user_model()
 )

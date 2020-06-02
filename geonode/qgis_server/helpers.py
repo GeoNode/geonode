@@ -898,18 +898,18 @@ def create_qgis_project(
         ))
     elif isinstance(layer, list):
         qgis_layer = []
-        for lyr in layer:
-            qgis_layer.append(QGISServerLayer.objects.get(layer=lyr))
+        for l in layer:
+            qgis_layer.append(QGISServerLayer.objects.get(layer=l))
         files = [ql.base_layer_path for ql in qgis_layer]
 
-        for fl in files:
+        for f in files:
             logger.debug('File %s is exists: %s' % (
-                fl, str(os.path.exists(fl))
+                f, str(os.path.exists(f))
             ))
 
         files = ';'.join(files)
 
-        names = [lyr.name for lyr in layer]
+        names = [l.name for l in layer]
         names = ';'.join(names)
     else:
         raise ValueError(

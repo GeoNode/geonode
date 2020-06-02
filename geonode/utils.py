@@ -17,6 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from pprint import pprint
+
 import os
 import gc
 import re
@@ -26,50 +28,48 @@ import copy
 import json
 import time
 import base64
+import logging
 import select
 import shutil
 import string
-import logging
 import tarfile
+import weakref
 import datetime
 import requests
 import tempfile
 import traceback
 import subprocess
 
-from osgeo import ogr
-from io import StringIO
-from decimal import Decimal
-from slugify import slugify
-from contextlib import closing
 from collections import defaultdict
+from django.db.models import signals
+from osgeo import ogr
+from slugify import slugify
+from io import StringIO
+from contextlib import closing
 from math import atan, exp, log, pi, sin, tan, floor
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
 from requests.packages.urllib3.util.retry import Retry
 
 from django.conf import settings
 from django.core.cache import cache
-from django.db.models import signals
-from django.utils.http import is_safe_url
-from django.apps import apps as django_apps
-from django.middleware.csrf import get_token
-from django.http import Http404, HttpResponse
-from django.forms.models import model_to_dict
-from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
-from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
-from django.core.serializers.json import DjangoJSONEncoder
-from django.db import models, connection, transaction
+from django.http import Http404, HttpResponse
+from django.utils.http import is_safe_url
+from django.middleware.csrf import get_token
+from django.shortcuts import get_object_or_404
+# use lazy gettext because some translated strings are used before
+# i18n infra is up
 from django.utils.translation import ugettext_lazy as _
-
+from django.db import models, connection, transaction
+from django.contrib.gis.geos import GEOSGeometry
+from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib.auth import get_user_model
 from geonode import geoserver, qgis_server, GeoNodeException  # noqa
 from geonode.compat import ensure_string
-from geonode.base.auth import (
-    extend_token,
-    get_or_create_token,
-    get_token_from_auth_header,
-    get_token_object_from_session)
+from geonode.base.auth import (extend_token,
+                               get_or_create_token,
+                               get_token_from_auth_header,
+                               get_token_object_from_session)
 
 from urllib.parse import (
     urljoin,
@@ -124,7 +124,7 @@ def unzip_file(upload_file, extension='.shp', tempdir=None):
     if not os.path.isdir(tempdir):
         os.makedirs(tempdir)
 
-    the_zip = ZipFile(upload_file, allowZip64=True)
+    the_zip = ZipFile(upload_file)
     the_zip.extractall(tempdir)
     for item in the_zip.namelist():
         if item.endswith(extension):
@@ -570,7 +570,7 @@ class GXPMapBase(object):
                     results.append(x)
             return results
 
-        configs = [lyr.source_config(access_token) for lyr in layers]
+        configs = [l.source_config(access_token) for l in layers]
 
         i = 0
         for source in uniqify(configs):
@@ -585,9 +585,9 @@ class GXPMapBase(object):
                     return k
             return None
 
-        def layer_config(lyr, user=None):
-            cfg = lyr.layer_config(user=user)
-            src_cfg = lyr.source_config(access_token)
+        def layer_config(l, user=None):
+            cfg = l.layer_config(user=user)
+            src_cfg = l.source_config(access_token)
             source = source_lookup(src_cfg)
             if source:
                 cfg["source"] = source
@@ -649,7 +649,7 @@ class GXPMapBase(object):
             'defaultSourceType': "gxp_wmscsource",
             'sources': sources,
             'map': {
-                'layers': [layer_config(lyr, user=user) for lyr in layers],
+                'layers': [layer_config(l, user=user) for l in layers],
                 'center': [self.center_x, self.center_y],
                 'projection': self.projection,
                 'zoom': self.zoom
@@ -870,8 +870,21 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     permission_required - if False, allow get methods to proceed
     permission_msg - optional message to use in 403
     """
-    obj = get_object_or_404(model, **query)
+    print(model)
+    pprint(vars(model))
+    obj = get_object_or_404 (model, **query)
     obj_to_check = obj.get_self_resource()
+
+    # print("resolve_object")
+    # obj_dict = vars(obj)
+    # obj_dict.pop("metadata_xml")
+    # obj_dict.pop("csw_anytext")
+    # pprint(obj_dict)
+    # print("resolve_object_to_check")
+    # obj_to_check_dict = vars(obj)
+    # obj_to_check_dict.pop("metadata_xml")
+    # obj_to_check_dict.pop("csw_anytext")
+    # pprint(obj_to_check_dict)
 
     from guardian.shortcuts import assign_perm, get_groups_with_perms
     from geonode.groups.models import GroupProfile
@@ -1019,10 +1032,7 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
         status = 200
 
     if not isinstance(body, six.string_types):
-        try:
-            body = json.dumps(body, cls=DjangoJSONEncoder)
-        except Exception:
-            body = str(body)
+        body = json.dumps(body, cls=DjangoJSONEncoder)
     return HttpResponse(body, content_type=content_type, status=status)
 
 
@@ -1227,6 +1237,81 @@ def printsignals():
             logger.debug(signal)
 
 
+def designals():
+    global signals_store
+
+    for signalname in signalnames:
+        if signalname in signals_store:
+            try:
+                signaltype = getattr(models.signals, signalname)
+            except Exception:
+                continue
+            logger.debug("RETRIEVE: %s: %d" %
+                         (signalname, len(signaltype.receivers)))
+            signals_store[signalname] = []
+            signals = signaltype.receivers[:]
+            for signal in signals:
+                uid = receiv_call = None
+                sender_ista = sender_call = None
+                # first tuple element:
+                # - case (id(instance), id(method))
+                if not isinstance(signal[0], tuple):
+                    raise Exception("Malformed signal")
+
+                lookup = signal[0]
+
+                if isinstance(lookup[0], tuple):
+                    # receiv_ista = id_to_obj(lookup[0][0])
+                    receiv_call = id_to_obj(lookup[0][1])
+                else:
+                    # - case id(function) or uid
+                    try:
+                        receiv_call = id_to_obj(lookup[0])
+                    except Exception:
+                        uid = lookup[0]
+
+                if isinstance(lookup[1], tuple):
+                    sender_call = id_to_obj(lookup[1][0])
+                    sender_ista = id_to_obj(lookup[1][1])
+                else:
+                    sender_ista = id_to_obj(lookup[1])
+
+                # second tuple element
+                if (isinstance(signal[1], weakref.ReferenceType)):
+                    is_weak = True
+                    receiv_call = signal[1]()
+                else:
+                    is_weak = False
+                    receiv_call = signal[1]
+
+                signals_store[signalname].append({
+                    'uid': uid, 'is_weak': is_weak,
+                    'sender_ista': sender_ista, 'sender_call': sender_call,
+                    'receiv_call': receiv_call,
+                })
+
+                signaltype.disconnect(
+                    receiver=receiv_call,
+                    sender=sender_ista,
+                    weak=is_weak,
+                    dispatch_uid=uid)
+
+
+def resignals():
+    global signals_store
+
+    for signalname in signalnames:
+        if signalname in signals_store:
+            signals = signals_store[signalname]
+            signaltype = getattr(models.signals, signalname)
+            for signal in signals:
+                signaltype.connect(
+                    signal['receiv_call'],
+                    sender=signal['sender_ista'],
+                    weak=signal['is_weak'],
+                    dispatch_uid=signal['uid'])
+
+
 class DisableDjangoSignals:
     """
     Python3 class temporarily disabling django signals on model creation.
@@ -1235,8 +1320,7 @@ class DisableDjangoSignals:
     with DisableDjangoSignals():
         # do some fancy stuff here
     """
-    def __init__(self, disabled_signals=None, skip=False):
-        self.skip = skip
+    def __init__(self, disabled_signals=None):
         self.stashed_signals = defaultdict(list)
         self.disabled_signals = disabled_signals or [
             signals.pre_init, signals.post_init,
@@ -1247,14 +1331,12 @@ class DisableDjangoSignals:
         ]
 
     def __enter__(self):
-        if not self.skip:
-            for signal in self.disabled_signals:
-                self.disconnect(signal)
+        for signal in self.disabled_signals:
+            self.disconnect(signal)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if not self.skip:
-            for signal in list(self.stashed_signals):
-                self.reconnect(signal)
+        for signal in list(self.stashed_signals):
+            self.reconnect(signal)
 
     def disconnect(self, signal):
         self.stashed_signals[signal] = signal.receivers
@@ -1511,7 +1593,7 @@ def copy_tree(src, dst, symlinks=False, ignore=None):
                         except Exception:
                             pass
                 try:
-                    shutil.copytree(s, d, symlinks=symlinks, ignore=ignore)
+                    shutil.copytree(s, d, symlinks, ignore)
                 except Exception:
                     pass
             else:
@@ -1539,16 +1621,10 @@ def chmod_tree(dst, permissions=0o777):
         for filename in filenames:
             path = os.path.join(dirpath, filename)
             os.chmod(path, permissions)
-            status = os.stat(path)
-            if oct(status.st_mode & 0o777) != str(oct(permissions)):
-                raise Exception("Could not update permissions of {}".format(path))
 
         for dirname in dirnames:
             path = os.path.join(dirpath, dirname)
             os.chmod(path, permissions)
-            status = os.stat(path)
-            if oct(status.st_mode & 0o777) != str(oct(permissions)):
-                raise Exception("Could not update permissions of {}".format(path))
 
 
 def slugify_zh(text, separator='_'):
@@ -1643,12 +1719,6 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             logger.debug(" -- Resource Links[Create Raw Data download link]...")
             download_url = urljoin(settings.SITEURL,
                                    reverse('download', args=[instance.id]))
-            while Link.objects.filter(
-                    resource=instance.resourcebase_ptr,
-                    url=download_url).count() > 1:
-                Link.objects.filter(
-                    resource=instance.resourcebase_ptr,
-                    url=download_url).first().delete()
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
                 url=download_url,
@@ -2078,72 +2148,3 @@ def add_url_params(url, params):
     ).geturl()
 
     return new_url
-
-
-json_serializer_k_map = {
-    'user': settings.AUTH_USER_MODEL,
-    'owner': settings.AUTH_USER_MODEL,
-    'restriction_code_type': 'base.RestrictionCodeType',
-    'license': 'base.License',
-    'category': 'base.TopicCategory',
-    'spatial_representation_type': 'base.SpatialRepresentationType',
-    'group': 'auth.Group',
-    'default_style': 'layers.Style',
-    'upload_session': 'layers.UploadSession'
-}
-
-
-def json_serializer_producer(dictionary):
-    """
-     - usage:
-            serialized_obj =
-                json_serializer_producer(model_to_dict(instance))
-
-     - dump to file:
-        with open('data.json', 'w') as outfile:
-            json.dump(serialized_obj, outfile)
-
-     - read from file:
-        with open('data.json', 'r') as infile:
-            serialized_obj = json.load(infile)
-    """
-    def to_json(keys):
-        if isinstance(keys, datetime.datetime):
-            return str(keys)
-        elif isinstance(keys, six.string_types) or isinstance(keys, int):
-            return keys
-        elif isinstance(keys, dict):
-            return json_serializer_producer(keys)
-        elif isinstance(keys, list):
-            return [json_serializer_producer(model_to_dict(k)) for k in keys]
-        elif isinstance(keys, models.Model):
-            return json_serializer_producer(model_to_dict(keys))
-        elif isinstance(keys, Decimal):
-            return float(keys)
-        else:
-            return str(keys)
-
-    output = {}
-
-    _keys_to_skip = [
-        'email',
-        'password',
-        'last_login',
-        'date_joined',
-        'is_staff',
-        'is_active',
-        'is_superuser',
-        'permissions',
-        'user_permissions',
-    ]
-
-    for (x, y) in dictionary.items():
-        if x not in _keys_to_skip:
-            if x in json_serializer_k_map.keys():
-                instance = django_apps.get_model(
-                    json_serializer_k_map[x], require_ready=False)
-                if instance.objects.filter(id=y):
-                    _obj = instance.objects.get(id=y)
-                    y = model_to_dict(_obj)
-            output[x] = to_json(y)
-    return output

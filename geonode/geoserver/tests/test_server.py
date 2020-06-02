@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeLiveTestSupport
+from geonode.tests.base import GeoNodeBaseTestSupport
 
 import base64
 import json
@@ -1108,7 +1108,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertIsNotNone(wcs_links)
         self.assertEqual(len(wcs_links), 2)
         wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wcs')
-        identifier = urlencode({'coverageid': instance.alternate.replace(':', '__', 1)})
+        identifier = urlencode({'coverageid': instance.alternate})
         for _link in wcs_links:
             logger.debug('%s --> %s' % (wcs_url, _link[3]))
             self.assertTrue(wcs_url in _link[3])
@@ -1174,7 +1174,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
             OGC_Servers_Handler(ogc_server_settings)['default']
 
 
-class SignalsTests(GeoNodeLiveTestSupport):
+class SignalsTests(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_set_resources_links(self):

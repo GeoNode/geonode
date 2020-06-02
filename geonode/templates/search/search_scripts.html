@@ -4,7 +4,7 @@
 {% if DEBUG_STATIC %}
 <script src="{% static "lib/js/angular.js" %}"></script>
 <script src="{% static "lib/js/angular-cookies.js" %}"></script>
-<script src="{% static "lib/js/angular-openlayers-directive.js" %}"></script>
+<script src="{% static "lib/js/angular-leaflet-directive.js" %}"></script>
 {% endif %}
 
 {% if include_spatial == 'true' %}
@@ -13,6 +13,8 @@
     height: 300px;
   }
 </style>
+
+{% include 'search/_spatial_tags.html' %}
 
 {% endif %}
 <script src="{% static "geonode/js/search/explore.js" %}"></script>
@@ -39,8 +41,6 @@
   // Register autocomplete for text filters
   $(document).ready(function() {
     window.autocomplete = new Autocomplete({
-      form_btn: '#text_search_btn',
-      form_submit: null,
       form_selector: '#text-search-autocomplete',
       input_selector: '#text_search_input',
       container_selector: '#text-search-container'
@@ -51,8 +51,6 @@
   // Register autocomplete for region filters
   $(document).ready(function() {
     window.autocomplete = new Autocomplete({
-      form_btn: '#region_search_btn',
-      form_submit: null,
       form_selector: '#region-search-autocomplete',
       input_selector: '#region_search_input',
       container_selector: '#region-search-container',
@@ -88,7 +86,7 @@
 
   var deps = ['search'];
   {% if include_spatial == 'true' %}
-  deps.push('openlayers-directive');
+  deps.push('leaflet-directive');
   {% endif %}
   angular.bootstrap(document, deps);
 </script>

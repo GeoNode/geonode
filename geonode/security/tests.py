@@ -33,20 +33,12 @@ from django.http import HttpRequest
 from django.urls import reverse
 from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth import get_user_model
-from guardian.shortcuts import (
-    get_anonymous_user,
-    assign_perm,
-    remove_perm
-)
+from guardian.shortcuts import get_anonymous_user, assign_perm, remove_perm
 from geonode import qgis_server, geoserver
-from geonode.base.models import (
-    UserGeoLimit,
-    GroupGeoLimit
-)
 from geonode.base.populate_test_data import all_public
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import Layer
-from geonode.groups.models import Group, GroupProfile
+from geonode.groups.models import Group
 from geonode.compat import ensure_string
 from geonode.utils import check_ogc_backend
 from geonode.tests.utils import check_layer
@@ -57,7 +49,6 @@ from geonode.layers.populate_layers_data import create_layer_data
 
 from .utils import (purge_geofence_all,
                     get_users_with_perms,
-                    get_geofence_rules,
                     get_geofence_rules_count,
                     get_highest_priority,
                     set_geofence_all,
@@ -421,6 +412,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             3. Set permissions to a group of users
             4. Try to sync a layer from GeoServer
         """
+
         layer = Layer.objects.all()[0]
         self.client.login(username='admin', password='admin')
 
@@ -460,110 +452,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         _log("5. geofence_rules_count: %s " % geofence_rules_count)
         self.assertEqual(geofence_rules_count, 5)
 
-        # Testing GeoLimits
-        # grab bobby
-        bobby = get_user_model().objects.get(username="bobby")
-
-        geo_limit, _ = UserGeoLimit.objects.get_or_create(
-            user=bobby,
-            resource=layer.get_self_resource()
-        )
-        geo_limit.wkt = 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
-146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
-145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))'
-        geo_limit.save()
-        layer.users_geolimits.add(geo_limit)
-        self.assertEqual(layer.users_geolimits.all().count(), 1)
-
-        perm_spec = {
-            "users": {"bobby": ["view_resourcebase"]}, "groups": []}
-        layer.set_permissions(perm_spec)
-        geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 5)
-
-        rules_objs = get_geofence_rules(entries=5)
-        self.assertEqual(len(rules_objs['rules']), 5)
-        for rule in rules_objs['rules']:
-            if rule['service'] is None:
-                self.assertEqual(rule['userName'], 'bobby')
-                self.assertEqual(rule['workspace'], 'CA')
-                self.assertEqual(rule['layer'], 'CA')
-                self.assertEqual(rule['access'], 'LIMIT')
-
-                self.assertTrue('limits' in rule)
-                rule_limits = rule['limits']
-                self.assertEqual(rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
-146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
-145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
-                self.assertEqual(rule_limits['catalogMode'], 'MIXED')
-
-        geo_limit, _ = GroupGeoLimit.objects.get_or_create(
-            group=GroupProfile.objects.get(group__name='bar'),
-            resource=layer.get_self_resource()
-        )
-        geo_limit.wkt = 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
-146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
-145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))'
-        geo_limit.save()
-        layer.groups_geolimits.add(geo_limit)
-        self.assertEqual(layer.groups_geolimits.all().count(), 1)
-
-        perm_spec = {
-            'users': {}, 'groups': {'bar': ['change_resourcebase']}}
-        layer.set_permissions(perm_spec)
-        geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 6)
-
-        rules_objs = get_geofence_rules(entries=6)
-        self.assertEqual(len(rules_objs['rules']), 6)
-        for rule in rules_objs['rules']:
-            if rule['roleName'] == 'ROLE_BAR':
-                self.assertEqual(rule['service'], None)
-                self.assertEqual(rule['userName'], None)
-                self.assertEqual(rule['workspace'], 'CA')
-                self.assertEqual(rule['layer'], 'CA')
-                self.assertEqual(rule['access'], 'LIMIT')
-
-                self.assertTrue('limits' in rule)
-                rule_limits = rule['limits']
-                self.assertEqual(rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
-146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
-145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
-                self.assertEqual(rule_limits['catalogMode'], 'MIXED')
-
-        # Change Layer Type and SRID in order to force GeoFence allowed-area reprojection
-        _original_storeType = layer.storeType
-        _original_srid = layer.srid
-        layer.storeType = 'coverageStore'
-        layer.srid = 'EPSG:3857'
-        layer.save()
-
-        layer.set_permissions(perm_spec)
-        geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 6)
-
-        rules_objs = get_geofence_rules(entries=6)
-        self.assertEqual(len(rules_objs['rules']), 6)
-        for rule in rules_objs['rules']:
-            if rule['roleName'] == 'ROLE_BAR':
-                self.assertEqual(rule['service'], None)
-                self.assertEqual(rule['userName'], None)
-                self.assertEqual(rule['workspace'], 'CA')
-                self.assertEqual(rule['layer'], 'CA')
-                self.assertEqual(rule['access'], 'LIMIT')
-
-                self.assertTrue('limits' in rule)
-                rule_limits = rule['limits']
-                self.assertEqual(
-                    rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, 146.7000276171853 \
--42.53655428642583, 146.7110139453067 -43.07256577359489, 145.9804231249952 \
--43.05651288026286, 145.8046418749977 -42.49606500060302)))')
-                self.assertEqual(rule_limits['catalogMode'], 'MIXED')
-
-        layer.storeType = _original_storeType
-        layer.srid = _original_srid
-        layer.save()
-
         # Reset GeoFence Rules
         purge_geofence_all()
         geofence_rules_count = get_geofence_rules_count()
@@ -581,8 +469,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # grab bobby
         bobby = get_user_model().objects.get(username="bobby")
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
-
-        self.assertTrue(self.client.login(username='bobby', password='bob'))
 
         # Upload to GeoServer
         saved_layer = geoserver_upload(
@@ -694,7 +580,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         _log(etree.tostring(metadata[0], encoding='utf8', method='xml'))
         self.assertEqual(len(metadata), 1)
 
-        saved_layer.set_permissions(permissions)
+        saved_layer.set_default_permissions()
 
         from geonode.geoserver.views import get_layer_capabilities
         capab = get_layer_capabilities(saved_layer, tolerant=True)
@@ -724,59 +610,59 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                                 all_times = dim_values.split(",")
                                 break
 
-        if all_times:
-            self.assertEqual(all_times, [
-                '2000-03-01T00:00:00.000Z', '2000-03-02T00:00:00.000Z',
-                '2000-03-03T00:00:00.000Z', '2000-03-04T00:00:00.000Z',
-                '2000-03-05T00:00:00.000Z', '2000-03-06T00:00:00.000Z',
-                '2000-03-07T00:00:00.000Z', '2000-03-08T00:00:00.000Z',
-                '2000-03-09T00:00:00.000Z', '2000-03-10T00:00:00.000Z',
-                '2000-03-11T00:00:00.000Z', '2000-03-12T00:00:00.000Z',
-                '2000-03-13T00:00:00.000Z', '2000-03-14T00:00:00.000Z',
-                '2000-03-15T00:00:00.000Z', '2000-03-16T00:00:00.000Z',
-                '2000-03-17T00:00:00.000Z', '2000-03-18T00:00:00.000Z',
-                '2000-03-19T00:00:00.000Z', '2000-03-20T00:00:00.000Z',
-                '2000-03-21T00:00:00.000Z', '2000-03-22T00:00:00.000Z',
-                '2000-03-23T00:00:00.000Z', '2000-03-24T00:00:00.000Z',
-                '2000-03-25T00:00:00.000Z', '2000-03-26T00:00:00.000Z',
-                '2000-03-27T00:00:00.000Z', '2000-03-28T00:00:00.000Z',
-                '2000-03-29T00:00:00.000Z', '2000-03-30T00:00:00.000Z',
-                '2000-03-31T00:00:00.000Z', '2000-04-01T00:00:00.000Z',
-                '2000-04-02T00:00:00.000Z', '2000-04-03T00:00:00.000Z',
-                '2000-04-04T00:00:00.000Z', '2000-04-05T00:00:00.000Z',
-                '2000-04-06T00:00:00.000Z', '2000-04-07T00:00:00.000Z',
-                '2000-04-08T00:00:00.000Z', '2000-04-09T00:00:00.000Z',
-                '2000-04-10T00:00:00.000Z', '2000-04-11T00:00:00.000Z',
-                '2000-04-12T00:00:00.000Z', '2000-04-13T00:00:00.000Z',
-                '2000-04-14T00:00:00.000Z', '2000-04-15T00:00:00.000Z',
-                '2000-04-16T00:00:00.000Z', '2000-04-17T00:00:00.000Z',
-                '2000-04-18T00:00:00.000Z', '2000-04-19T00:00:00.000Z',
-                '2000-04-20T00:00:00.000Z', '2000-04-21T00:00:00.000Z',
-                '2000-04-22T00:00:00.000Z', '2000-04-23T00:00:00.000Z',
-                '2000-04-24T00:00:00.000Z', '2000-04-25T00:00:00.000Z',
-                '2000-04-26T00:00:00.000Z', '2000-04-27T00:00:00.000Z',
-                '2000-04-28T00:00:00.000Z', '2000-04-29T00:00:00.000Z',
-                '2000-04-30T00:00:00.000Z', '2000-05-01T00:00:00.000Z',
-                '2000-05-02T00:00:00.000Z', '2000-05-03T00:00:00.000Z',
-                '2000-05-04T00:00:00.000Z', '2000-05-05T00:00:00.000Z',
-                '2000-05-06T00:00:00.000Z', '2000-05-07T00:00:00.000Z',
-                '2000-05-08T00:00:00.000Z', '2000-05-09T00:00:00.000Z',
-                '2000-05-10T00:00:00.000Z', '2000-05-11T00:00:00.000Z',
-                '2000-05-12T00:00:00.000Z', '2000-05-13T00:00:00.000Z',
-                '2000-05-14T00:00:00.000Z', '2000-05-15T00:00:00.000Z',
-                '2000-05-16T00:00:00.000Z', '2000-05-17T00:00:00.000Z',
-                '2000-05-18T00:00:00.000Z', '2000-05-19T00:00:00.000Z',
-                '2000-05-20T00:00:00.000Z', '2000-05-21T00:00:00.000Z',
-                '2000-05-22T00:00:00.000Z', '2000-05-23T00:00:00.000Z',
-                '2000-05-24T00:00:00.000Z', '2000-05-25T00:00:00.000Z',
-                '2000-05-26T00:00:00.000Z', '2000-05-27T00:00:00.000Z',
-                '2000-05-28T00:00:00.000Z', '2000-05-29T00:00:00.000Z',
-                '2000-05-30T00:00:00.000Z', '2000-05-31T00:00:00.000Z',
-                '2000-06-01T00:00:00.000Z', '2000-06-02T00:00:00.000Z',
-                '2000-06-03T00:00:00.000Z', '2000-06-04T00:00:00.000Z',
-                '2000-06-05T00:00:00.000Z', '2000-06-06T00:00:00.000Z',
-                '2000-06-07T00:00:00.000Z', '2000-06-08T00:00:00.000Z',
-            ])
+        self.assertIsNotNone(all_times)
+        self.assertEqual(all_times, [
+            '2000-03-01T00:00:00.000Z', '2000-03-02T00:00:00.000Z',
+            '2000-03-03T00:00:00.000Z', '2000-03-04T00:00:00.000Z',
+            '2000-03-05T00:00:00.000Z', '2000-03-06T00:00:00.000Z',
+            '2000-03-07T00:00:00.000Z', '2000-03-08T00:00:00.000Z',
+            '2000-03-09T00:00:00.000Z', '2000-03-10T00:00:00.000Z',
+            '2000-03-11T00:00:00.000Z', '2000-03-12T00:00:00.000Z',
+            '2000-03-13T00:00:00.000Z', '2000-03-14T00:00:00.000Z',
+            '2000-03-15T00:00:00.000Z', '2000-03-16T00:00:00.000Z',
+            '2000-03-17T00:00:00.000Z', '2000-03-18T00:00:00.000Z',
+            '2000-03-19T00:00:00.000Z', '2000-03-20T00:00:00.000Z',
+            '2000-03-21T00:00:00.000Z', '2000-03-22T00:00:00.000Z',
+            '2000-03-23T00:00:00.000Z', '2000-03-24T00:00:00.000Z',
+            '2000-03-25T00:00:00.000Z', '2000-03-26T00:00:00.000Z',
+            '2000-03-27T00:00:00.000Z', '2000-03-28T00:00:00.000Z',
+            '2000-03-29T00:00:00.000Z', '2000-03-30T00:00:00.000Z',
+            '2000-03-31T00:00:00.000Z', '2000-04-01T00:00:00.000Z',
+            '2000-04-02T00:00:00.000Z', '2000-04-03T00:00:00.000Z',
+            '2000-04-04T00:00:00.000Z', '2000-04-05T00:00:00.000Z',
+            '2000-04-06T00:00:00.000Z', '2000-04-07T00:00:00.000Z',
+            '2000-04-08T00:00:00.000Z', '2000-04-09T00:00:00.000Z',
+            '2000-04-10T00:00:00.000Z', '2000-04-11T00:00:00.000Z',
+            '2000-04-12T00:00:00.000Z', '2000-04-13T00:00:00.000Z',
+            '2000-04-14T00:00:00.000Z', '2000-04-15T00:00:00.000Z',
+            '2000-04-16T00:00:00.000Z', '2000-04-17T00:00:00.000Z',
+            '2000-04-18T00:00:00.000Z', '2000-04-19T00:00:00.000Z',
+            '2000-04-20T00:00:00.000Z', '2000-04-21T00:00:00.000Z',
+            '2000-04-22T00:00:00.000Z', '2000-04-23T00:00:00.000Z',
+            '2000-04-24T00:00:00.000Z', '2000-04-25T00:00:00.000Z',
+            '2000-04-26T00:00:00.000Z', '2000-04-27T00:00:00.000Z',
+            '2000-04-28T00:00:00.000Z', '2000-04-29T00:00:00.000Z',
+            '2000-04-30T00:00:00.000Z', '2000-05-01T00:00:00.000Z',
+            '2000-05-02T00:00:00.000Z', '2000-05-03T00:00:00.000Z',
+            '2000-05-04T00:00:00.000Z', '2000-05-05T00:00:00.000Z',
+            '2000-05-06T00:00:00.000Z', '2000-05-07T00:00:00.000Z',
+            '2000-05-08T00:00:00.000Z', '2000-05-09T00:00:00.000Z',
+            '2000-05-10T00:00:00.000Z', '2000-05-11T00:00:00.000Z',
+            '2000-05-12T00:00:00.000Z', '2000-05-13T00:00:00.000Z',
+            '2000-05-14T00:00:00.000Z', '2000-05-15T00:00:00.000Z',
+            '2000-05-16T00:00:00.000Z', '2000-05-17T00:00:00.000Z',
+            '2000-05-18T00:00:00.000Z', '2000-05-19T00:00:00.000Z',
+            '2000-05-20T00:00:00.000Z', '2000-05-21T00:00:00.000Z',
+            '2000-05-22T00:00:00.000Z', '2000-05-23T00:00:00.000Z',
+            '2000-05-24T00:00:00.000Z', '2000-05-25T00:00:00.000Z',
+            '2000-05-26T00:00:00.000Z', '2000-05-27T00:00:00.000Z',
+            '2000-05-28T00:00:00.000Z', '2000-05-29T00:00:00.000Z',
+            '2000-05-30T00:00:00.000Z', '2000-05-31T00:00:00.000Z',
+            '2000-06-01T00:00:00.000Z', '2000-06-02T00:00:00.000Z',
+            '2000-06-03T00:00:00.000Z', '2000-06-04T00:00:00.000Z',
+            '2000-06-05T00:00:00.000Z', '2000-06-06T00:00:00.000Z',
+            '2000-06-07T00:00:00.000Z', '2000-06-08T00:00:00.000Z',
+        ])
 
         saved_layer.set_default_permissions()
         url = reverse('layer_metadata', args=[saved_layer.service_typename])
@@ -1374,6 +1260,7 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertIsNotNone(test_perm_layer.bbox)
             self.assertIsNotNone(test_perm_layer.srid)
             self.assertIsNotNone(test_perm_layer.link_set)
+            self.assertEqual(len(test_perm_layer.link_set.all()), 7)
 
             # Layer Manipulation
             from geonode.geoserver.signals import gs_catalog

@@ -22,7 +22,6 @@ from django import template
 
 from pinax.ratings.models import Rating
 from django.db.models import Q
-from django.utils.translation import ugettext
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.db.models import Count
@@ -49,14 +48,6 @@ FACETS = {
     'remote': 'Remote Layer',
     'wms': 'WMS Cascade Layer'
 }
-
-
-@register.filter(name='template_trans')
-def template_trans(text):
-    try:
-        return ugettext(text)
-    except Exception:
-        return text
 
 
 @register.simple_tag
@@ -153,20 +144,11 @@ def facets(context):
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
         if extent_filter:
-            from geonode.utils import bbox_to_projection
-            bbox = extent_filter.split(',')
-            bbox = list(map(str, bbox))
-
-            intersects = (Q(bbox_x0__gt=bbox[0]) & Q(bbox_x1__lt=bbox[2]) &
-                          Q(bbox_y0__gt=bbox[1]) & Q(bbox_y1__lt=bbox[3]))
-
-            for proj in Layer.objects.order_by('srid').values('srid').distinct():
-                if proj['srid'] != 'EPSG:4326':
-                    proj_bbox = bbox_to_projection(bbox + ['4326', ],
-                                                   target_srid=int(proj['srid'][5:]))
-                    if proj_bbox[-1] != 4326:
-                        intersects = intersects | (Q(bbox_x0__gt=proj_bbox[0]) & Q(bbox_x1__lt=proj_bbox[2]) & Q(
-                            bbox_y0__gt=proj_bbox[1]) & Q(bbox_y1__lt=proj_bbox[3]))
+            bbox = extent_filter.split(
+                ',')  # TODO: Why is this different when done through haystack?
+            bbox = list(map(str, bbox))  # 2.6 compat - float to decimal conversion
+            intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) |
+                           Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
 
             layers = layers.filter(intersects)
 
@@ -288,7 +270,8 @@ def facets(context):
             facets['group'] = GroupProfile.objects.exclude(
                 access="private").count()
 
-            facets['layer'] = facets['raster'] + facets['vector'] + facets['remote'] + facets['wms']
+            facets['layer'] = facets['raster'] + \
+                facets['vector'] + facets['remote'] + facets['wms']  # + facets['vector_time']
 
     return facets
 
@@ -347,14 +330,3 @@ def render_nav_menu(placeholder_name):
         pass
 
     return {'menus': OrderedDict(menus.items())}
-
-
-@register.simple_tag
-def display_edit_request_button(resource, user, perms):
-    def _has_owner_his_permissions():
-        return (set(resource.BASE_PERMISSIONS.get('owner') + resource.BASE_PERMISSIONS.get('write')) - set(
-            perms)) == set()
-
-    if not _has_owner_his_permissions() and resource.owner.pk == user.pk:
-        return True
-    return False

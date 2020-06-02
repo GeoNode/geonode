@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-14 14:04+0000\n"
+"POT-Creation-Date: 2016-08-25 02:28-0500\n"
 "PO-Revision-Date: 2016-08-23 11:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Tamil (http://www.transifex.com/geonode/geonode/language/"
@@ -36,17 +36,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: geonode/monitoring/static/monitoring/bundle.js:170
-msgid "STORE_UPDATED"
-msgstr ""
+#: geonode/static/geonode/js/search/search.js:373
+msgid "Enter your text here ..."
+msgstr "உங்கள் வாசகத்தை இங்கே குறிப்பிடுக"
 
-#: geonode/people/templates/people/profile_detail.html:77
-#: geonode/people/templates/people/profile_detail.html:86
-#: geonode/people/templates/people/profile_detail.html:98
-msgid "Not provided."
-msgstr ""
+#: geonode/static/geonode/js/search/search.js:414
+msgid "Enter your region here ..."
+msgstr "உங்கள் பிராந்தியத்தை இங்கே குறிப்பிடுக"
 
-#: geonode/static/geonode/js/upload/FileType.js:50
+#: geonode/static/geonode/js/upload/FileType.js:33
 #, javascript-format
 msgid "Missing a %s file, which is required"
 msgstr "தேவைப்படும் ஒரு %s மிஸ்ஸிங்"
@@ -56,221 +54,144 @@ msgid "ESRI Shapefile"
 msgstr "ESRI ஷேப்ஃபைல்"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:13
-msgid "ASCII Text File"
-msgstr ""
-
 #: geonode/static/geonode/js/upload/FileTypes.js:18
-#: geonode/static/geonode/js/upload/FileTypes.js:23
 msgid "GeoTIFF"
 msgstr "GeoTIFF"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:29
+#: geonode/static/geonode/js/upload/FileTypes.js:24
 msgid "Comma Separated Value"
 msgstr "காற்புள்ளியினால் பிரிக்கப்பட்ட பெருமதி"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:34
+#: geonode/static/geonode/js/upload/FileTypes.js:29
 msgid "Google Earth KML"
 msgstr "கூகிள் எர்த் செய்"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:39
-#, fuzzy
-#| msgid "Google Earth KML"
-msgid "Google Earth KML with a GroundOverlay"
-msgstr "கூகிள் எர்த் செய்"
-
-#: geonode/static/geonode/js/upload/FileTypes.js:45
-#, fuzzy
-#| msgid "Google Earth KML"
-msgid "Google Earth KMZ"
-msgstr "கூகிள் எர்த் செய்"
-
-#: geonode/static/geonode/js/upload/FileTypes.js:50
+#: geonode/static/geonode/js/upload/FileTypes.js:34
 msgid "GeoJSON"
 msgstr "GeoJSON "
 
-#: geonode/static/geonode/js/upload/FileTypes.js:55
+#: geonode/static/geonode/js/upload/FileTypes.js:39
 msgid "Zip Archive"
 msgstr "Zip காப்பகம் "
 
-#: geonode/static/geonode/js/upload/FileTypes.js:61
+#: geonode/static/geonode/js/upload/FileTypes.js:45
 msgid "ERDAS Imagine"
 msgstr "ERDAS பாணி"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:66
-#: geonode/static/geonode/js/upload/FileTypes.js:71
+#: geonode/static/geonode/js/upload/FileTypes.js:50
+#: geonode/static/geonode/js/upload/FileTypes.js:55
 msgid "National Imagery Transmission Format"
 msgstr "தேசிய தோற்ற சொலுத்துகை வடிவம்"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:77
+#: geonode/static/geonode/js/upload/FileTypes.js:61
 msgid "Controlled Image Base-1 Meter"
 msgstr "கட்டுப்பாட்டு உருத் தளம் - 1 மீற்றர்"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:84
+#: geonode/static/geonode/js/upload/FileTypes.js:68
 msgid "Controlled Image Base-5 Meter"
 msgstr "கட்டுப்பாட்டு உருத் தளம் - 5 மீற்றர்"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:91
+#: geonode/static/geonode/js/upload/FileTypes.js:75
 msgid "Controlled Image Base-10 Meter"
 msgstr "கட்டுப்பாட்டு உருத் தளம் - 10 மீற்றர்"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:98
+#: geonode/static/geonode/js/upload/FileTypes.js:82
 msgid "CADRG-Global Navigation Chart"
 msgstr "CADRG- பூகோள வழிநிலையோடல் பட்டியல்"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:105
+#: geonode/static/geonode/js/upload/FileTypes.js:89
 msgid "CADRG-Jet Navigation Chart"
 msgstr "CADRG- செற் வழிநிலையோடல் பட்டியல்"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:112
+#: geonode/static/geonode/js/upload/FileTypes.js:96
 msgid "CADRG-Operational Navigation Chart"
 msgstr "CADRG- செயற்பாட்டு  வழிநிலையோடல் பட்டியல்"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:119
+#: geonode/static/geonode/js/upload/FileTypes.js:103
 msgid "CADRG-Tactical Pilotage Chart"
 msgstr "CADRG-நுட்ப நெறிகாட்டி பட்டியல்"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:126
+#: geonode/static/geonode/js/upload/FileTypes.js:110
 msgid "CADRG-Joint Operations Graphic"
 msgstr "CADRG-இணை செயற்பாட்டு படம்"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:133
+#: geonode/static/geonode/js/upload/FileTypes.js:117
 msgid "CADRG-Topographic Line Map 100K"
 msgstr "CADRG-இட அமைவு கோட்டு வரைபடம் 100K"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:140
+#: geonode/static/geonode/js/upload/FileTypes.js:124
 msgid "CADRG-Topographic Line Map 50K"
 msgstr "CADRG-இட அமைவு கோட்டு வரைபடம் 50K"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:147
+#: geonode/static/geonode/js/upload/FileTypes.js:131
 msgid "JPEG2000"
 msgstr "JPEG2000"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:152
+#: geonode/static/geonode/js/upload/FileTypes.js:136
 msgid "MrSID-Multi-resolution Seamless Image Database"
 msgstr "MrSID- பல்பிரிதிறன் இடைவெளியற்ற உருவ தரவுத்தளம்"
 
-#: geonode/static/geonode/js/upload/FileTypes.js:157
-#, fuzzy
-#| msgid "Metadata Links:"
-msgid "XML Metadata File"
-msgstr "ளன இணைப்புகள்:"
-
-#: geonode/static/geonode/js/upload/FileTypes.js:163
-msgid "Style Layer Descriptor"
-msgstr ""
-
-#: geonode/static/geonode/js/upload/FileTypes.js:169
-#, fuzzy
-#| msgid "JPEG2000"
-msgid "JPEG"
-msgstr "JPEG2000"
-
-#: geonode/static/geonode/js/upload/FileTypes.js:174
-msgid "PNG"
-msgstr ""
-
-#: geonode/static/geonode/js/upload/FileTypes.js:179
-#, fuzzy
-#| msgid "GeoTIFF"
-msgid "GIF"
-msgstr "GeoTIFF"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:332
-#: geonode/static/geonode/js/upload/LayerInfo.js:503
-msgid "Unexpected Error"
-msgstr "எதிர்பாராத பிழை"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:370
-#, fuzzy
-#| msgid "Layer Info"
-msgid " Info"
+#: geonode/static/geonode/js/upload/LayerInfo.js:331
+msgid "Layer Info"
 msgstr "அடுக்கு தகவல்"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:371
+#: geonode/static/geonode/js/upload/LayerInfo.js:332
 msgid "Edit Metadata"
 msgstr "நுண்தரவுகளை சரிசெய்க"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:372
-#, fuzzy
-#| msgid "Edit Metadata"
-msgid "Upload Metadata"
-msgstr "நுண்தரவுகளை சரிசெய்க"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:373
-msgid "Upload SLD"
-msgstr ""
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:374
+#: geonode/static/geonode/js/upload/LayerInfo.js:333
 msgid "Manage Styles"
 msgstr "பாங்குகள் நிர்வகிக்கவும்"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:387
+#: geonode/static/geonode/js/upload/LayerInfo.js:336
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr "%1 நிரல் %2 ஆக பெயர் மாற்றப்பட்டுள்ளது<br/>"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:393
-msgid "Your "
-msgstr ""
+#: geonode/static/geonode/js/upload/LayerInfo.js:342
+msgid "Your layer was successfully uploaded"
+msgstr "உங்கள் அடுக்கு வெற்றிகரமாக பதிவேற்றப்பட்டது"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:422
+#: geonode/static/geonode/js/upload/LayerInfo.js:371
 msgid "Performing Final GeoServer Config Step"
 msgstr "இறுதி ஜியோ கட்டமைப்பு படி அரங்கேற்றக்"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:439
-#: geonode/static/geonode/js/upload/LayerInfo.js:483
+#: geonode/static/geonode/js/upload/LayerInfo.js:386
+#: geonode/static/geonode/js/upload/LayerInfo.js:412
 msgid "You need to specify more information in order to complete your upload"
 msgstr "உங்கள் பதிவேற்ற முடிக்க பொருட்டு மேலும் தகவலுக்கு குறிப்பிட வேண்டும்"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:463
-msgid "Files are ready to be ingested!"
-msgstr ""
+#: geonode/static/geonode/js/upload/LayerInfo.js:404
+msgid "You need to specify more information in order to complete your upload."
+msgstr "உங்கள் பதிவேற்ற முடிக்க பொருட்டு மேலும் தகவலுக்கு குறிப்பிட வேண்டும்."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:466
-msgid "A temporal dimension may be added to this Layer."
-msgstr ""
+#: geonode/static/geonode/js/upload/LayerInfo.js:404
+msgid "You can continue configuring your layer."
+msgstr "நீங்கள் உங்கள் அடுக்கு கட்டமைக்கும் தொடரலாம்."
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:521
+#: geonode/static/geonode/js/upload/LayerInfo.js:422
+#: geonode/static/geonode/js/upload/LayerInfo.js:509
+msgid "Unexpected Error"
+msgstr "எதிர்பாராத பிழை"
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:438
 msgid "Performing GeoServer Config Step"
 msgstr "செயற்பாட்டு ஜியோ அமைப்பு படி"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:609
-msgid ""
-"<br>Please check your network connection. In case of Layer Upload make sure "
-"GeoServer is running and accepting connections."
-msgstr ""
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:613
-#: geonode/static/geonode/js/upload/LayerInfo.js:616
-#: geonode/static/geonode/js/upload/LayerInfo.js:623
-#: geonode/static/geonode/js/upload/LayerInfo.js:626
-msgid "<br>"
-msgstr ""
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:618
-msgid "<br>Bad request or URL not found."
-msgstr ""
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:628
-#, fuzzy
-#| msgid "Unknown Map"
-msgid "<br>Unknown."
-msgstr "தெரியாத வரைபடம்"
-
-#: geonode/static/geonode/js/upload/LayerInfo.js:636
+#: geonode/static/geonode/js/upload/LayerInfo.js:516
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "அடுக்கு கோப்புகளை, பதிவேற்றிய ஜியோ கட்டமைத்தல்"
 
-#: geonode/static/geonode/js/upload/LayerInfo.js:787
+#: geonode/static/geonode/js/upload/LayerInfo.js:695
 msgid "Remove"
 msgstr "அகற்று"
 
-#: geonode/static/geonode/js/upload/upload.js:126
+#: geonode/static/geonode/js/upload/upload.js:125
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr ""
 "கோப்பு %s ள் ஆதரிக்கப்படாத கோப்பு வகை, மற்றொரு கோப்பைத் தேர்ந்தெடுத்து ஆகிறது."
 
-#: geonode/static/geonode/js/upload/upload.js:296
+#: geonode/static/geonode/js/upload/upload.js:285
 msgid ""
 "You are trying to upload an incomplete set of files or not all mandatory "
 "options have been validated.\n"
@@ -282,405 +203,478 @@ msgstr ""
 "\n"
 "தயவு செய்து படிவத்தில் தவறுகளை சரிபார்க்கவும்  "
 
-#: geonode/templates/admin/base_site.html:4
-msgid "GeoNode site admin"
+#: geonode/static/lib/js/assets.min.js:2
+msgid "<iframe frameborder='0' width='0' height='0'/>"
 msgstr ""
 
-#: geonode/templates/admin/base_site.html:7
-msgid "GeoNode administration"
+#: geonode/static/lib/js/assets.min.js:4
+msgid "<script>"
 msgstr ""
 
-#: geonode/templates/index.html:19
-msgid "Welcome"
+#: geonode/static/lib/js/assets.min.js:4
+msgid "<div>"
 msgstr ""
 
-#: geonode/templates/index.html:21
+#: geonode/templates/lang.js:9 geonode/templates/lang.js:236
+msgid "Cancel"
+msgstr "நீக்கு "
+
+#: geonode/templates/lang.js:10
+msgid "Save as Copy"
+msgstr "நகலாக சேமி"
+
+#: geonode/templates/lang.js:11
+msgid "About this Map"
+msgstr "இந்த வரைபடம் பற்றி"
+
+#: geonode/templates/lang.js:12 geonode/templates/lang.js:96
+#: geonode/templates/lang.js:165
+msgid "Abstract"
+msgstr "சுருக்கம்"
+
+#: geonode/templates/lang.js:13
+msgid "Save"
+msgstr "சேமி"
+
+#: geonode/templates/lang.js:14 geonode/templates/lang.js:100
+#: geonode/templates/lang.js:109 geonode/templates/lang.js:162
+#: geonode/templates/lang.js:184 geonode/templates/lang.js:219
+msgid "Title"
+msgstr "தலைப்பு "
+
+#: geonode/templates/lang.js:20
+msgid "Connection Error"
+msgstr "இணைப்பு பிழை"
+
+#: geonode/templates/lang.js:21
+msgid "The server returned an error"
+msgstr "சேவையகம் ஒரு பிழையை"
+
+#: geonode/templates/lang.js:22
+msgid "Details..."
+msgstr "விவரங்கள் ..."
+
+#: geonode/templates/lang.js:28 geonode/templates/lang.js:31
+msgid "Add Layers"
+msgstr "அடுக்குகள் சேர்"
+
+#: geonode/templates/lang.js:29
+msgid "Area"
+msgstr "பகுதி"
+
+#: geonode/templates/lang.js:30
+msgid "Background"
+msgstr "பின்னணி"
+
+#: geonode/templates/lang.js:32
+msgid "Done"
+msgstr "முடிந்தது"
+
+#: geonode/templates/lang.js:33
+msgid "Available Layers"
+msgstr "கிடைக்கும் அடுக்குகள்"
+
+#: geonode/templates/lang.js:35 geonode/templates/lang.js:121
+msgid "Height"
+msgstr "உயரம்"
+
+#: geonode/templates/lang.js:36
+msgid "Get Feature Info"
+msgstr "தகவல் வசதியை பெற"
+
+#: geonode/templates/lang.js:37 geonode/templates/lang.js:122
+msgid "Large"
+msgstr "பெரிய"
+
+#: geonode/templates/lang.js:38
+msgid "or add a new server."
+msgstr "அல்லது ஒரு புதிய சர்வர் சேர்க்க."
+
+#: geonode/templates/lang.js:39
+msgid "Map Layers"
+msgstr "வரைபட படுகைகள் "
+
+#: geonode/templates/lang.js:40
+msgid "View available data from:"
+msgstr "காண்க தரவிலிருந்து:"
+
+#: geonode/templates/lang.js:41
+msgid "Data"
+msgstr "டேட்டா"
+
+#: geonode/templates/lang.js:42
+msgid "Layers"
+msgstr "படுகை  "
+
+#: geonode/templates/lang.js:43
+msgid "Legend"
+msgstr "விளக்கம்"
+
+#: geonode/templates/lang.js:44
+msgid "Length"
+msgstr "நீளம்"
+
+#: geonode/templates/lang.js:45
+msgid "Loading Map..."
+msgstr "ஏற்றுகிறது வரைபடம் ..."
+
+#: geonode/templates/lang.js:46 geonode/templates/lang.js:123
+msgid "Map Size"
+msgstr "வரைபடத்தின் அளவு"
+
+#: geonode/templates/lang.js:47
+msgid "Measure"
+msgstr "நடவடிக்கை"
+
+#: geonode/templates/lang.js:48 geonode/templates/lang.js:97
+#: geonode/templates/lang.js:163
+msgid "Contact"
+msgstr "தொடர்பு"
+
+#: geonode/templates/lang.js:49 geonode/templates/lang.js:55
+msgid "Permalink"
+msgstr "அதன்"
+
+#: geonode/templates/lang.js:50 geonode/templates/lang.js:124
+msgid "Mini"
+msgstr "மினி"
+
+#: geonode/templates/lang.js:51
+msgid "Pan Map"
+msgstr "பான் வரைபடம்"
+
+#: geonode/templates/lang.js:52
+msgid "Zoom to Next Extent"
+msgstr "அடுத்த விஸ்தீரணம் பெரிதாக்கவும்"
+
+#: geonode/templates/lang.js:53
+msgid "Zoom to Previous Extent"
+msgstr "முந்தைய விஸ்தீரணம் பெரிதாக்கவும்"
+
+#: geonode/templates/lang.js:54
+msgid "This map has not yet been saved."
+msgstr "இந்த வரைபடத்தை இன்னும் சேமிக்கப்படும்."
+
+#: geonode/templates/lang.js:56 geonode/templates/lang.js:125
+msgid "Premium"
+msgstr "பிரீமியம்"
+
+#: geonode/templates/lang.js:57
+msgid "Print Map"
+msgstr "அச்சு வரைபடம்"
+
+#: geonode/templates/lang.js:58
+msgid "Print Preview"
+msgstr "அச்சு முன்னோட்டம்"
+
+#: geonode/templates/lang.js:59
+msgid "Properties"
+msgstr "பண்புகள்"
+
+#: geonode/templates/lang.js:60 geonode/templates/lang.js:126
+msgid "Publish Map"
+msgstr "வரைபடம் வெளியிடு"
+
+#: geonode/templates/lang.js:61 geonode/templates/lang.js:62
+msgid "Remove Layer"
+msgstr "அடுக்கு நீக்க"
+
+#: geonode/templates/lang.js:63
+msgid "Sorry, your map could not be saved."
+msgstr "மன்னிக்கவும், உங்கள் வரைபடத்தை சேமிக்க முடியவில்லை."
+
+#: geonode/templates/lang.js:64
+msgid "Error While Saving"
+msgstr "பிழை போது சேமிப்பு"
+
+#: geonode/templates/lang.js:65
+msgid "Save Map"
+msgstr "சேமி வரைபடம்"
+
+#: geonode/templates/lang.js:66
+msgid "You must be logged in to save this map."
+msgstr "இந்த வரைபடம் காப்பாற்ற வெளியேற்ற வேண்டும்."
+
+#: geonode/templates/lang.js:67 geonode/templates/lang.js:128
+msgid "Small"
+msgstr "சிறிய"
+
+#: geonode/templates/lang.js:68
 msgid ""
-"GeoNode is an open source platform for sharing geospatial data and maps."
-msgstr ""
+"Error contacting server.\n"
+" Please check the url and try again."
+msgstr "சர்வர் தொடர்பு பிழை. URL ஐ சரிபார்க்க மற்றும் மீண்டும் முயற்சிக்கவும்."
 
-#: geonode/templates/index.html:25
-msgid "Get Started &raquo;"
-msgstr ""
+#: geonode/templates/lang.js:69
+msgid "Layer Properties"
+msgstr "அடுக்கு குணங்கள்"
 
-#: geonode/templates/index.html:82 geonode/templates/index.html:102
-#, fuzzy
-#| msgid "Now"
-msgid "No"
-msgstr "Now"
+#: geonode/templates/lang.js:70
+msgid "Change layer format and style"
+msgstr "மாற்றம் அடுக்கு வடிவமைப்பு மற்றும் பாணி"
 
-#: geonode/templates/metadata_form_js.html:75
-#: geonode/templates/metadata_form_js.html:80
-msgid "some schema mandatory fields are missing"
-msgstr ""
+#: geonode/templates/lang.js:71
+msgid "Edit Styles"
+msgstr "வடிவத்தை சரிசெய்க "
 
-#: geonode/templates/metadata_form_js.html:75
-#: geonode/templates/metadata_form_js.html:80
-msgid "Metadata Schema mandatory fields completed"
-msgstr ""
+#: geonode/templates/lang.js:72
+msgid "Edit layer styles"
+msgstr "திருத்த அடுக்கு பாணிகள்"
 
-#: geonode/templates/metadata_form_js.html:244
-#: geonode/templates/metadata_form_js.html:283
+#: geonode/templates/lang.js:73
+msgid "Switch to Google Earth 3D Viewer"
+msgstr "கூகிள் எர்த் 3D பார்வையாளர் மாற"
+
+#: geonode/templates/lang.js:74
 msgid ""
-"<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field "
-"declared Mandatory by the Metadata Schema</strong></p>"
+"The map that you are trying to load does not exist.  Creating a new map "
+"instead."
 msgstr ""
-
-#~ msgid "Enter your text here ..."
-#~ msgstr "உங்கள் வாசகத்தை இங்கே குறிப்பிடுக"
-
-#~ msgid "Enter your region here ..."
-#~ msgstr "உங்கள் பிராந்தியத்தை இங்கே குறிப்பிடுக"
-
-#~ msgid "Your layer was successfully uploaded"
-#~ msgstr "உங்கள் அடுக்கு வெற்றிகரமாக பதிவேற்றப்பட்டது"
-
-#~ msgid ""
-#~ "You need to specify more information in order to complete your upload."
-#~ msgstr "உங்கள் பதிவேற்ற முடிக்க பொருட்டு மேலும் தகவலுக்கு குறிப்பிட வேண்டும்."
-
-#~ msgid "You can continue configuring your layer."
-#~ msgstr "நீங்கள் உங்கள் அடுக்கு கட்டமைக்கும் தொடரலாம்."
-
-#~ msgid "Cancel"
-#~ msgstr "நீக்கு "
-
-#~ msgid "Save as Copy"
-#~ msgstr "நகலாக சேமி"
-
-#~ msgid "About this Map"
-#~ msgstr "இந்த வரைபடம் பற்றி"
-
-#~ msgid "Abstract"
-#~ msgstr "சுருக்கம்"
-
-#~ msgid "Save"
-#~ msgstr "சேமி"
-
-#~ msgid "Title"
-#~ msgstr "தலைப்பு "
-
-#~ msgid "Connection Error"
-#~ msgstr "இணைப்பு பிழை"
-
-#~ msgid "The server returned an error"
-#~ msgstr "சேவையகம் ஒரு பிழையை"
-
-#~ msgid "Details..."
-#~ msgstr "விவரங்கள் ..."
-
-#~ msgid "Add Layers"
-#~ msgstr "அடுக்குகள் சேர்"
-
-#~ msgid "Area"
-#~ msgstr "பகுதி"
-
-#~ msgid "Background"
-#~ msgstr "பின்னணி"
-
-#~ msgid "Done"
-#~ msgstr "முடிந்தது"
-
-#~ msgid "Available Layers"
-#~ msgstr "கிடைக்கும் அடுக்குகள்"
-
-#~ msgid "Height"
-#~ msgstr "உயரம்"
-
-#~ msgid "Get Feature Info"
-#~ msgstr "தகவல் வசதியை பெற"
-
-#~ msgid "Large"
-#~ msgstr "பெரிய"
-
-#~ msgid "or add a new server."
-#~ msgstr "அல்லது ஒரு புதிய சர்வர் சேர்க்க."
-
-#~ msgid "Map Layers"
-#~ msgstr "வரைபட படுகைகள் "
-
-#~ msgid "View available data from:"
-#~ msgstr "காண்க தரவிலிருந்து:"
-
-#~ msgid "Data"
-#~ msgstr "டேட்டா"
-
-#~ msgid "Layers"
-#~ msgstr "படுகை  "
-
-#~ msgid "Legend"
-#~ msgstr "விளக்கம்"
-
-#~ msgid "Length"
-#~ msgstr "நீளம்"
-
-#~ msgid "Loading Map..."
-#~ msgstr "ஏற்றுகிறது வரைபடம் ..."
-
-#~ msgid "Map Size"
-#~ msgstr "வரைபடத்தின் அளவு"
-
-#~ msgid "Measure"
-#~ msgstr "நடவடிக்கை"
-
-#~ msgid "Contact"
-#~ msgstr "தொடர்பு"
-
-#~ msgid "Permalink"
-#~ msgstr "அதன்"
-
-#~ msgid "Mini"
-#~ msgstr "மினி"
-
-#~ msgid "Pan Map"
-#~ msgstr "பான் வரைபடம்"
-
-#~ msgid "Zoom to Next Extent"
-#~ msgstr "அடுத்த விஸ்தீரணம் பெரிதாக்கவும்"
-
-#~ msgid "Zoom to Previous Extent"
-#~ msgstr "முந்தைய விஸ்தீரணம் பெரிதாக்கவும்"
-
-#~ msgid "This map has not yet been saved."
-#~ msgstr "இந்த வரைபடத்தை இன்னும் சேமிக்கப்படும்."
-
-#~ msgid "Premium"
-#~ msgstr "பிரீமியம்"
-
-#~ msgid "Print Map"
-#~ msgstr "அச்சு வரைபடம்"
-
-#~ msgid "Print Preview"
-#~ msgstr "அச்சு முன்னோட்டம்"
-
-#~ msgid "Properties"
-#~ msgstr "பண்புகள்"
-
-#~ msgid "Publish Map"
-#~ msgstr "வரைபடம் வெளியிடு"
-
-#~ msgid "Remove Layer"
-#~ msgstr "அடுக்கு நீக்க"
-
-#~ msgid "Sorry, your map could not be saved."
-#~ msgstr "மன்னிக்கவும், உங்கள் வரைபடத்தை சேமிக்க முடியவில்லை."
-
-#~ msgid "Error While Saving"
-#~ msgstr "பிழை போது சேமிப்பு"
-
-#~ msgid "Save Map"
-#~ msgstr "சேமி வரைபடம்"
-
-#~ msgid "You must be logged in to save this map."
-#~ msgstr "இந்த வரைபடம் காப்பாற்ற வெளியேற்ற வேண்டும்."
-
-#~ msgid "Small"
-#~ msgstr "சிறிய"
-
-#~ msgid ""
-#~ "Error contacting server.\n"
-#~ " Please check the url and try again."
-#~ msgstr "சர்வர் தொடர்பு பிழை. URL ஐ சரிபார்க்க மற்றும் மீண்டும் முயற்சிக்கவும்."
-
-#~ msgid "Layer Properties"
-#~ msgstr "அடுக்கு குணங்கள்"
-
-#~ msgid "Change layer format and style"
-#~ msgstr "மாற்றம் அடுக்கு வடிவமைப்பு மற்றும் பாணி"
-
-#~ msgid "Edit Styles"
-#~ msgstr "வடிவத்தை சரிசெய்க "
-
-#~ msgid "Edit layer styles"
-#~ msgstr "திருத்த அடுக்கு பாணிகள்"
-
-#~ msgid "Switch to Google Earth 3D Viewer"
-#~ msgstr "கூகிள் எர்த் 3D பார்வையாளர் மாற"
-
-#~ msgid ""
-#~ "The map that you are trying to load does not exist.  Creating a new map "
-#~ "instead."
-#~ msgstr ""
-#~ "நீங்கள் இல்லை ஏற்ற முயற்சி என்று வரைபடம். அதற்கு பதிலாக ஒரு புதிய வரைபடத்தை "
-#~ "உருவாக்குதல்."
-
-#~ msgid "Width"
-#~ msgstr "அகலம்"
-
-#~ msgid "Zoom In"
-#~ msgstr "பெரிதாக்கு"
-
-#~ msgid "Zoom Out"
-#~ msgstr "சிறிதாக்கு"
-
-#~ msgid "Zoom level"
-#~ msgstr "ஜூம் நிலை"
-
-#~ msgid "Zoom Level"
-#~ msgstr "பெரிதாக்கு நிலை"
-
-#~ msgid "Zoom to Layer Extent"
-#~ msgstr "விஸ்தீரணம் அடுக்கு பெரிதாக்கவும்"
-
-#~ msgid "Zoom to Visible Extent"
-#~ msgstr "தெரியும் விஸ்தீரணம் பெரிதாக்கவும்"
-
-#~ msgid "Zoom Level {zoom}"
-#~ msgstr "ஜூம் நிலை {ஜூம்}"
-
-#~ msgid "Create Map"
-#~ msgstr "வரைபடம் உருவாக்குவது"
-
-#~ msgid "Export Map"
-#~ msgstr "ஏற்றுமதி வரைபடம்"
-
-#~ msgid "Map"
-#~ msgstr "வரைபடம்"
-
-#~ msgid "View this Map"
-#~ msgstr "இந்த வரைபடம் காண்க"
-
-#~ msgid "Open Map"
-#~ msgstr "திறந்த வரைபடம்"
-
-#~ msgid "Name"
-#~ msgstr "பெயர்"
-
-#~ msgid "Queryable"
-#~ msgstr "Queryable"
-
-#~ msgid "No background"
-#~ msgstr "இல்லை பின்னணி"
-
-#~ msgid ""
-#~ "Your map is ready to be published to the web!  Simply copy the following "
-#~ "HTML to embed the map in your website:"
-#~ msgstr ""
-#~ "உங்கள் வரைபடத்தை வலையில் வெளியிடப்படலாம் தயாராக உள்ளது! வெறுமனே உங்கள் இணையதளத்தில் "
-#~ "வரைபடம் பதித்துள்ளது பின்வரும் HTML நகலெடுக்க:"
-
-#~ msgid "Abstract:"
-#~ msgstr "சுருக்கம்:"
-
-#~ msgid "No attribution information is provided for this layer."
-#~ msgstr "இல்லை பண்பு தகவலுக்கு இந்த அடுக்கு வழங்கப்படும்."
-
-#~ msgid "Provided by:"
-#~ msgstr "வழங்கியவர்:"
-
-#~ msgid "Download:"
-#~ msgstr "பதிவிறக்க:"
-
-#~ msgid "No keywords are listed for this layer."
-#~ msgstr "முக்கிய வார்த்தைகள் இல்லை இந்த அடுக்கு பட்டியலிடப்பட்டுள்ளது."
-
-#~ msgid "Keywords:"
-#~ msgstr "முக்கிய வார்த்தைகள்:"
-
-#~ msgid "No metadata URLs are defined for this layer."
-#~ msgstr "இல்லை மெட்டாடேட்டா களை இந்த அடுக்கு வரையறுக்கப்படுகிறது."
-
-#~ msgid "Paper size:"
-#~ msgstr "காகித அளவு:"
-
-#~ msgid "Resolution:"
-#~ msgstr "தீர்மானம்:"
-
-#~ msgid "Print"
-#~ msgstr "அச்சு"
-
-#~ msgid "Enter map title here."
-#~ msgstr "இங்கே வரைபடத்தின் தலைப்பை உள்ளிடவும்."
-
-#~ msgid "Include legend?"
-#~ msgstr "புராண சேர்க்கவும்?"
-
-#~ msgid "Enter comments here."
-#~ msgstr "இங்கே கருத்துக்கள் உள்ளிடவும்."
-
-#~ msgid "Creating PDF..."
-#~ msgstr "PDF உருவாக்கி ..."
-
-#~ msgid "Last Modified"
-#~ msgstr "கடைசியாக மாற்றப்பட்டது"
-
-#~ msgid "Prev"
-#~ msgstr "முன்"
-
-#~ msgid "Next"
-#~ msgstr "அடுத்தது "
-
-#~ msgid "of"
-#~ msgstr "என்ற"
-
-#~ msgid "Your search did not match any items."
-#~ msgstr "உங்கள் தேடல் எந்த உருப்படிகள் பொருந்த."
-
-#~ msgid "Search Maps"
-#~ msgstr "தேடல் வரைப்படங்கள்"
-
-#~ msgid "Search"
-#~ msgstr "தேடுக "
-
-#~ msgid "Showing"
-#~ msgstr "காட்டும்"
-
-#~ msgid "Loading"
-#~ msgstr "ஏற்றுகிறது"
-
-#~ msgid "permalink"
-#~ msgstr "பெர்மாலின்க்"
-
-#~ msgid "Select"
-#~ msgstr "வாய்ப்புகள்"
-
-#~ msgid "Select:"
-#~ msgstr "தேர்வு:"
-
-#~ msgid "All"
-#~ msgstr "அனைத்து"
-
-#~ msgid "None"
-#~ msgstr "எதுவும்"
-
-#~ msgid "Loading..."
-#~ msgstr "ஏற்றுகிறது ..."
-
-#~ msgid "You do not have permission to view this data"
-#~ msgstr "நீங்கள் இந்த தரவு பார்க்க அனுமதி இல்லை"
-
-#~ msgid "This data is stored on a remote server"
-#~ msgstr "இந்த தரவு ஒரு தொலை சர்வரில் சேமிக்கப்படும்"
-
-#~ msgid "No abstract is provided for this layer."
-#~ msgstr "இல்லை சுருக்க இந்த அடுக்கு வழங்கப்படும்."
-
-#~ msgid "No download URLs are definied for this layer."
-#~ msgstr "இல்லை பதிவிறக்க URL இந்த அடுக்கு definied."
-
-#~ msgid "Selected Layers"
-#~ msgstr "தேர்ந்தெடுக்கப்பட்ட அடுக்குகள்"
-
-#~ msgid "No Layers Selected"
-#~ msgstr "லேயர்கள் எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
-
-#~ msgid "Clear Selected"
-#~ msgstr "தேர்ந்தெடுத்ததை"
-
-#~ msgid "Clear All"
-#~ msgstr "அழி"
-
-#~ msgid "Operation Failed"
-#~ msgstr "செயல்பாடு தோல்வி"
-
-#~ msgid "No layers are currently selected."
-#~ msgstr "லேயர்கள் தற்போது தேர்வு."
-
-#~ msgid "Downloading..."
-#~ msgstr "பதிவிறக்குகிறது ..."
-
-#~ msgid "Please wait"
-#~ msgstr "தயவு செய்து, காத்திருக்க"
+"நீங்கள் இல்லை ஏற்ற முயற்சி என்று வரைபடம். அதற்கு பதிலாக ஒரு புதிய வரைபடத்தை உருவாக்குதல்."
+
+#: geonode/templates/lang.js:75
+msgid "Unknown Map"
+msgstr "தெரியாத வரைபடம்"
+
+#: geonode/templates/lang.js:76 geonode/templates/lang.js:129
+msgid "Width"
+msgstr "அகலம்"
+
+#: geonode/templates/lang.js:77
+msgid "Zoom In"
+msgstr "பெரிதாக்கு"
+
+#: geonode/templates/lang.js:78
+msgid "Zoom Out"
+msgstr "சிறிதாக்கு"
+
+#: geonode/templates/lang.js:79
+msgid "Zoom level"
+msgstr "ஜூம் நிலை"
+
+#: geonode/templates/lang.js:80
+msgid "Zoom Level"
+msgstr "பெரிதாக்கு நிலை"
+
+#: geonode/templates/lang.js:81
+msgid "Zoom to Layer Extent"
+msgstr "விஸ்தீரணம் அடுக்கு பெரிதாக்கவும்"
+
+#: geonode/templates/lang.js:82
+msgid "Zoom to Visible Extent"
+msgstr "தெரியும் விஸ்தீரணம் பெரிதாக்கவும்"
+
+#: geonode/templates/lang.js:88
+msgid "Zoom Level {zoom}"
+msgstr "ஜூம் நிலை {ஜூம்}"
+
+#: geonode/templates/lang.js:94
+msgid "Create Map"
+msgstr "வரைபடம் உருவாக்குவது"
+
+#: geonode/templates/lang.js:95
+msgid "Export Map"
+msgstr "ஏற்றுமதி வரைபடம்"
+
+#: geonode/templates/lang.js:98
+msgid "Map"
+msgstr "வரைபடம்"
+
+#: geonode/templates/lang.js:99 geonode/templates/lang.js:166
+msgid "View this Map"
+msgstr "இந்த வரைபடம் காண்க"
+
+#: geonode/templates/lang.js:101
+msgid "Open Map"
+msgstr "திறந்த வரைபடம்"
+
+#: geonode/templates/lang.js:107 geonode/templates/lang.js:183
+msgid "Name"
+msgstr "பெயர்"
+
+#: geonode/templates/lang.js:108
+msgid "Queryable"
+msgstr "Queryable"
+
+#: geonode/templates/lang.js:115
+msgid "No background"
+msgstr "இல்லை பின்னணி"
+
+#: geonode/templates/lang.js:127
+msgid ""
+"Your map is ready to be published to the web!  Simply copy the following "
+"HTML to embed the map in your website:"
+msgstr ""
+"உங்கள் வரைபடத்தை வலையில் வெளியிடப்படலாம் தயாராக உள்ளது! வெறுமனே உங்கள் இணையதளத்தில் "
+"வரைபடம் பதித்துள்ளது பின்வரும் HTML நகலெடுக்க:"
+
+#: geonode/templates/lang.js:136 geonode/templates/lang.js:202
+msgid "Abstract:"
+msgstr "சுருக்கம்:"
+
+#: geonode/templates/lang.js:137 geonode/templates/lang.js:204
+msgid "No attribution information is provided for this layer."
+msgstr "இல்லை பண்பு தகவலுக்கு இந்த அடுக்கு வழங்கப்படும்."
+
+#: geonode/templates/lang.js:138 geonode/templates/lang.js:205
+msgid "Provided by:"
+msgstr "வழங்கியவர்:"
+
+#: geonode/templates/lang.js:139 geonode/templates/lang.js:206
+msgid "Download:"
+msgstr "பதிவிறக்க:"
+
+#: geonode/templates/lang.js:140 geonode/templates/lang.js:208
+msgid "No keywords are listed for this layer."
+msgstr "முக்கிய வார்த்தைகள் இல்லை இந்த அடுக்கு பட்டியலிடப்பட்டுள்ளது."
+
+#: geonode/templates/lang.js:141 geonode/templates/lang.js:209
+msgid "Keywords:"
+msgstr "முக்கிய வார்த்தைகள்:"
+
+#: geonode/templates/lang.js:142 geonode/templates/lang.js:210
+msgid "No metadata URLs are defined for this layer."
+msgstr "இல்லை மெட்டாடேட்டா களை இந்த அடுக்கு வரையறுக்கப்படுகிறது."
+
+#: geonode/templates/lang.js:143 geonode/templates/lang.js:211
+msgid "Metadata Links:"
+msgstr "ளன இணைப்புகள்:"
+
+#: geonode/templates/lang.js:149
+msgid "Paper size:"
+msgstr "காகித அளவு:"
+
+#: geonode/templates/lang.js:150
+msgid "Resolution:"
+msgstr "தீர்மானம்:"
+
+#: geonode/templates/lang.js:151
+msgid "Print"
+msgstr "அச்சு"
+
+#: geonode/templates/lang.js:152
+msgid "Enter map title here."
+msgstr "இங்கே வரைபடத்தின் தலைப்பை உள்ளிடவும்."
+
+#: geonode/templates/lang.js:153
+msgid "Include legend?"
+msgstr "புராண சேர்க்கவும்?"
+
+#: geonode/templates/lang.js:154
+msgid "Enter comments here."
+msgstr "இங்கே கருத்துக்கள் உள்ளிடவும்."
+
+#: geonode/templates/lang.js:155
+msgid "Creating PDF..."
+msgstr "PDF உருவாக்கி ..."
+
+#: geonode/templates/lang.js:164
+msgid "Last Modified"
+msgstr "கடைசியாக மாற்றப்பட்டது"
+
+#: geonode/templates/lang.js:167 geonode/templates/lang.js:188
+msgid "Prev"
+msgstr "முன்"
+
+#: geonode/templates/lang.js:168 geonode/templates/lang.js:189
+msgid "Next"
+msgstr "அடுத்தது "
+
+#: geonode/templates/lang.js:169 geonode/templates/lang.js:190
+msgid "of"
+msgstr "என்ற"
+
+#: geonode/templates/lang.js:170 geonode/templates/lang.js:191
+msgid "Your search did not match any items."
+msgstr "உங்கள் தேடல் எந்த உருப்படிகள் பொருந்த."
+
+#: geonode/templates/lang.js:171
+msgid "Search Maps"
+msgstr "தேடல் வரைப்படங்கள்"
+
+#: geonode/templates/lang.js:172 geonode/templates/lang.js:192
+msgid "Search"
+msgstr "தேடுக "
+
+#: geonode/templates/lang.js:173 geonode/templates/lang.js:193
+msgid "Showing"
+msgstr "காட்டும்"
+
+#: geonode/templates/lang.js:174
+msgid "Loading"
+msgstr "ஏற்றுகிறது"
+
+#: geonode/templates/lang.js:175 geonode/templates/lang.js:195
+msgid "permalink"
+msgstr "பெர்மாலின்க்"
+
+#: geonode/templates/lang.js:182
+msgid "Select"
+msgstr "வாய்ப்புகள்"
+
+#: geonode/templates/lang.js:185
+msgid "Select:"
+msgstr "தேர்வு:"
+
+#: geonode/templates/lang.js:186
+msgid "All"
+msgstr "அனைத்து"
+
+#: geonode/templates/lang.js:187
+msgid "None"
+msgstr "எதுவும்"
+
+#: geonode/templates/lang.js:194
+msgid "Loading..."
+msgstr "ஏற்றுகிறது ..."
+
+#: geonode/templates/lang.js:196
+msgid "You do not have permission to view this data"
+msgstr "நீங்கள் இந்த தரவு பார்க்க அனுமதி இல்லை"
+
+#: geonode/templates/lang.js:197
+msgid "This data is stored on a remote server"
+msgstr "இந்த தரவு ஒரு தொலை சர்வரில் சேமிக்கப்படும்"
+
+#: geonode/templates/lang.js:203
+msgid "No abstract is provided for this layer."
+msgstr "இல்லை சுருக்க இந்த அடுக்கு வழங்கப்படும்."
+
+#: geonode/templates/lang.js:207
+msgid "No download URLs are definied for this layer."
+msgstr "இல்லை பதிவிறக்க URL இந்த அடுக்கு definied."
+
+#: geonode/templates/lang.js:217
+msgid "Selected Layers"
+msgstr "தேர்ந்தெடுக்கப்பட்ட அடுக்குகள்"
+
+#: geonode/templates/lang.js:218
+msgid "No Layers Selected"
+msgstr "லேயர்கள் எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
+
+#: geonode/templates/lang.js:220
+msgid "Clear Selected"
+msgstr "தேர்ந்தெடுத்ததை"
+
+#: geonode/templates/lang.js:221
+msgid "Clear All"
+msgstr "அழி"
+
+#: geonode/templates/lang.js:227
+msgid "Operation Failed"
+msgstr "செயல்பாடு தோல்வி"
+
+#: geonode/templates/lang.js:228
+msgid "No layers are currently selected."
+msgstr "லேயர்கள் தற்போது தேர்வு."
+
+#: geonode/templates/lang.js:235
+msgid "Downloading..."
+msgstr "பதிவிறக்குகிறது ..."
+
+#: geonode/templates/lang.js:237
+msgid "Please wait"
+msgstr "தயவு செய்து, காத்திருக்க"
 
 #~ msgid "Available %s"
 #~ msgstr "Available %s"
@@ -772,6 +766,9 @@ msgstr ""
 
 #~ msgid "Hide"
 #~ msgstr "Hide"
+
+#~ msgid "Now"
+#~ msgstr "Now"
 
 #~ msgid "Clock"
 #~ msgstr "Clock"

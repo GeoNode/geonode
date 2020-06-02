@@ -17,13 +17,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import errno
 import logging
-import geoserver
-
 from time import sleep
-from geoserver.layer import Layer as GsLayer
-
 from django.conf import settings
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
@@ -31,24 +28,25 @@ from django.contrib.auth import get_user_model
 # use different name to avoid module clash
 from . import BACKEND_PACKAGE
 from geonode import GeoNodeException
-from geonode.utils import (
-    set_resource_default_links,
-    json_serializer_producer)
+from geonode.utils import set_resource_default_links
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.upload import geoserver_upload
-from geonode.geoserver.helpers import (
-    cascading_delete,
-    set_attributes_from_geoserver,
-    set_styles,
-    gs_catalog,
-    ogc_server_settings,
-    create_gs_thumbnail,
-    _stylefilterparams_geowebcache_layer,
-    _invalidate_geowebcache_layer)
+from geonode.geoserver.helpers import (cascading_delete,
+                                       set_attributes_from_geoserver,
+                                       set_styles,
+                                       gs_catalog,
+                                       ogc_server_settings,
+                                       create_gs_thumbnail,
+                                       _stylefilterparams_geowebcache_layer,
+                                       _invalidate_geowebcache_layer)
 from geonode.catalogue.models import catalogue_post_save
 from geonode.base.models import ResourceBase
 from geonode.layers.models import Layer
+from geonode.social.signals import json_serializer_producer
 from geonode.services.enumerations import CASCADED
+
+import geoserver
+from geoserver.layer import Layer as GsLayer
 
 logger = logging.getLogger("geonode.geoserver.signals")
 
@@ -86,10 +84,8 @@ def geoserver_post_save(instance, sender, created, **kwargs):
     if isinstance(instance, Layer):
         instance_dict = model_to_dict(instance)
         payload = json_serializer_producer(instance_dict)
-        try:
-            producer.geoserver_upload_layer(payload)
-        except Exception as e:
-            logger.error(e)
+        producer.geoserver_upload_layer(payload)
+
         if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
             instance.set_dirty_state()
 
@@ -215,7 +211,10 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                                        'href': None,
                                        'url': None,
                                        'type': None}
+            # embrapa #
             profile = get_user_model().objects.get(username=instance.poc.username)
+            #profile = get_user_model().objects.get(username=instance.poc[0].username)
+
             site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
             gs_resource.attribution_link = site_url + profile.get_absolute_url()
             # gs_resource should only be called if

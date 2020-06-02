@@ -27,4 +27,4 @@ def collect_metrics():
     """
     Collect metrics events data
     """
-    return call_command('collect_metrics', '-n', '-t', 'xml')
+    call_command('collect_metrics', '-n', '-t', 'xml')

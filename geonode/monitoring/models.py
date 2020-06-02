@@ -282,7 +282,7 @@ class Metric(models.Model):
     def get_aggregate_name(self):
         return self.AGGREGATE_MAP[self.type]
 
-    def __unicode__(self):
+    def __unicode__de__(self):
         return "Metric: {}".format(self.name)
 
     @property
@@ -895,7 +895,7 @@ class MetricLabel(models.Model):
         null=True,
         blank=True)
 
-    def __unicode__(self):
+    def __unicode__de__(self):
         return 'Metric Label: {}'.format(self.name.encode('ascii', 'ignore'))
 
 
@@ -1213,7 +1213,7 @@ class NotificationCheck(models.Model):
             pass
         else:
             raise TypeError(
-                "Unsupported threshold type: {} ({})".format(
+                "Unsupported threshold type: %s (%s)".format(
                     thresholds, type(thresholds)))
         return thresholds
 

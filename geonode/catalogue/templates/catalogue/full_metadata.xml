@@ -204,6 +204,16 @@
                </gmd:dateType>
              </gmd:CI_Date>
            </gmd:date>
+           <gmd:date>
+             <gmd:CI_Date>
+               <gmd:date>
+                 <gco:DateTime>{{layer.data_criacao|date:"Y-m-d\TH:i:s\Z"}}</gco:DateTime>
+               </gmd:date>
+               <gmd:dateType>
+                 <gmd:CI_DateTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="Creation">Creation</gmd:CI_DateTypeCode>
+               </gmd:dateType>
+             </gmd:CI_Date>
+           </gmd:date>
            <gmd:edition {% if not layer.edition %}gco:nilReason="missing"{% endif %}>
                  {% if layer.edition %}<gco:CharacterString>{{layer.edition}}</gco:CharacterString>{% endif %}
            </gmd:edition>
@@ -300,6 +310,52 @@
          </gmd:CI_ResponsibleParty>
        </gmd:pointOfContact>
        {% endwith %}
+       <!-- EMBRAPA -->
+       
+       {% for poc in layer.embrapa_autores_list %}   
+       <gmd:pointOfContact> 
+           <gmd:CI_ResponsibleParty>
+               <gmd:individualName {% if not poc %}gco:nilReason="missing"{% endif %}>
+                   <gco:CharacterString>{{ poc }}</gco:CharacterString>
+               </gmd:individualName>
+               <gmd:organisationName gco:nilReason="missing">
+               </gmd:organisationName>
+               <gmd:positionName gco:nilReason="missing">
+               </gmd:positionName>
+               <gmd:contactInfo>
+                   <gmd:CI_Contact>
+                       <gmd:phone>
+                           <gmd:CI_Telephone>
+                               <gmd:voice gco:nilReason="missing">
+                               </gmd:voice>
+                               <gmd:facsimile gco:nilReason="missing">
+                               </gmd:facsimile>
+                           </gmd:CI_Telephone>
+                       </gmd:phone>
+                       <gmd:address>
+                           <gmd:CI_Address>
+                               <gmd:deliveryPoint gco:nilReason="missing">
+                               </gmd:deliveryPoint>
+                               <gmd:city gco:nilReason="missing">
+                               </gmd:city>
+                               <gmd:administrativeArea gco:nilReason="missing">
+                               </gmd:administrativeArea>
+                               <gmd:postalCode gco:nilReason="missing">
+                               </gmd:postalCode>
+                               <gmd:country gco:nilReason="missing">
+                               </gmd:country>
+                               <gmd:electronicMailAddress gco:nilReason="missing">
+                               </gmd:electronicMailAddress>
+                           </gmd:CI_Address>
+                       </gmd:address>
+                   </gmd:CI_Contact>
+               </gmd:contactInfo>
+               <gmd:role>
+                   <gmd:CI_RoleCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="author">Autor do Plano de Informação</gmd:CI_RoleCode>
+               </gmd:role>
+           </gmd:CI_ResponsibleParty>
+       </gmd:pointOfContact>
+       {% endfor %}
 
        {% if layer.maintenance_frequency %}
        <gmd:resourceMaintenance>
@@ -337,6 +393,20 @@
            </gmd:version>
          </gmd:MD_Format>
        </gmd:resourceFormat>
+       {% if layer.embrapa_keyword_list %}
+       <gmd:descriptiveKeywords>
+           <gmd:MD_Keywords>
+               {% for kw in layer.embrapa_keyword_list %}
+               <gmd:keyword>
+                   <gco:CharacterString>{{kw}}</gco:CharacterString>
+               </gmd:keyword>
+               {% endfor %}
+               <gmd:type>
+                   <gmd:MD_KeywordTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme">theme</gmd:MD_KeywordTypeCode>
+               </gmd:type>
+           </gmd:MD_Keywords>
+       </gmd:descriptiveKeywords>
+       {% endif %}
        {% if layer.keyword_list %}
        <gmd:descriptiveKeywords>
          <gmd:MD_Keywords>
@@ -405,6 +475,17 @@
        <gmd:spatialRepresentationType>
          <gmd:MD_SpatialRepresentationTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="{{layer.spatial_representation_type.identifier}}">{{layer.spatial_representation_type.identifier}}</gmd:MD_SpatialRepresentationTypeCode>
        </gmd:spatialRepresentationType>
+       <gmd:spatialResolution>
+          <gmd:MD_Resolution>
+            <gmd:equivalentScale>
+              <gmd:MD_RepresentativeFraction>
+                <gmd:denominator>
+                  <gco:Integer>{% if not layer.scale %} 0 {% else %} {{layer.scale}} {% endif %}</gco:Integer>
+                </gmd:denominator> 
+              </gmd:MD_RepresentativeFraction>
+            </gmd:equivalentScale>
+          </gmd:MD_Resolution>
+       </gmd:spatialResolution>
        <gmd:language>
          <gco:CharacterString>{{layer.language}}</gco:CharacterString>
        </gmd:language>
@@ -528,6 +609,19 @@
              </gmd:CI_OnlineResource>
            </gmd:onLine>
            {% endfor %}
+           {% if layer.link_vinde %}
+           <gmd:CI_OnlineResource>
+                   <gmd:linkage>
+                       <gmd:URL>{{ layer.link_vinde }}</gmd:URL>
+                   </gmd:linkage>
+                   <gmd:protocol>
+                       <gco:CharacterString>WWW:LINK-1.0-http--link</gco:CharacterString>
+                   </gmd:protocol>
+                   <gmd:description>
+                       <gco:CharacterString>Acesso ao dado no portal VINDE (Visualizador da Infraestrutura de Dados Espaciais do Brasil )</gco:CharacterString>
+                   </gmd:description>
+           </gmd:CI_OnlineResource>
+           {% endif %}
          </gmd:MD_DigitalTransferOptions>
        </gmd:transferOptions>
      </gmd:MD_Distribution>

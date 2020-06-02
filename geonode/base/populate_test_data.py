@@ -51,12 +51,12 @@ f = SimpleUploadedFile('test_img_file.gif', imgfile.read(), 'image/gif')
 
 def all_public():
     '''ensure all layers, maps and documents are publicly viewable'''
-    for lyr in Layer.objects.all():
-        lyr.set_default_permissions()
-    for mp in Map.objects.all():
-        mp.set_default_permissions()
-    for doc in Document.objects.all():
-        doc.set_default_permissions()
+    for l in Layer.objects.all():
+        l.set_default_permissions()
+    for m in Map.objects.all():
+        m.set_default_permissions()
+    for d in Document.objects.all():
+        d.set_default_permissions()
 
 
 def create_fixtures():
@@ -138,7 +138,7 @@ def create_fixtures():
     return map_data, user_data, people_data, layer_data, document_data
 
 
-def create_models(type=None, integration=False):
+def create_models(type=None):
     from django.contrib.auth.models import Group
     map_data, user_data, people_data, layer_data, document_data = create_fixtures()
     anonymous_group, created = Group.objects.get_or_create(name='anonymous')
@@ -161,109 +161,107 @@ def create_models(type=None, integration=False):
     get_user_model().objects.get(username='AnonymousUser').groups.add(anonymous_group)
 
     obj_ids = []
-    from geonode.utils import DisableDjangoSignals
-    with DisableDjangoSignals(skip=integration):
-        if not type or ensure_string(type) == 'map':
-            for md, user in zip(map_data, cycle(users)):
-                title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = md
-                m = Map(title=title,
-                        abstract=abstract,
-                        zoom=4,
-                        projection='EPSG:4326',
-                        center_x=42,
-                        center_y=-73,
-                        owner=user,
-                        bbox_x0=bbox_x0,
-                        bbox_x1=bbox_x1,
-                        bbox_y0=bbox_y0,
-                        bbox_y1=bbox_y1,
-                        srid='EPSG:4326',
-                        category=category,
-                        )
+    if not type or ensure_string(type) == 'map':
+        for md, user in zip(map_data, cycle(users)):
+            title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = md
+            m = Map(title=title,
+                    abstract=abstract,
+                    zoom=4,
+                    projection='EPSG:4326',
+                    center_x=42,
+                    center_y=-73,
+                    owner=user,
+                    bbox_x0=bbox_x0,
+                    bbox_x1=bbox_x1,
+                    bbox_y0=bbox_y0,
+                    bbox_y1=bbox_y1,
+                    srid='EPSG:4326',
+                    category=category,
+                    )
+            m.save()
+            obj_ids.append(m.id)
+            for kw in kws:
+                m.keywords.add(kw)
                 m.save()
-                obj_ids.append(m.id)
-                for kw in kws:
-                    m.keywords.add(kw)
-                    m.save()
 
-        if not type or ensure_string(type) == 'document':
-            for dd, user in zip(document_data, cycle(users)):
-                title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = dd
-                m = Document(title=title,
-                             abstract=abstract,
-                             owner=user,
-                             bbox_x0=bbox_x0,
-                             bbox_x1=bbox_x1,
-                             bbox_y0=bbox_y0,
-                             bbox_y1=bbox_y1,
-                             srid='EPSG:4326',
-                             category=category,
-                             doc_file=f)
+    if not type or ensure_string(type) == 'document':
+        for dd, user in zip(document_data, cycle(users)):
+            title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = dd
+            m = Document(title=title,
+                         abstract=abstract,
+                         owner=user,
+                         bbox_x0=bbox_x0,
+                         bbox_x1=bbox_x1,
+                         bbox_y0=bbox_y0,
+                         bbox_y1=bbox_y1,
+                         srid='EPSG:4326',
+                         category=category,
+                         doc_file=f)
+            m.save()
+            obj_ids.append(m.id)
+            for kw in kws:
+                m.keywords.add(kw)
                 m.save()
-                obj_ids.append(m.id)
-                for kw in kws:
-                    m.keywords.add(kw)
-                    m.save()
 
-        if not type or ensure_string(type) == 'layer':
-            for ld, owner, storeType in zip(layer_data, cycle(users), cycle(('coverageStore', 'dataStore'))):
-                title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
-                end = start + timedelta(days=365)
-                layer = Layer(title=title,
-                              abstract=abstract,
-                              name=name,
-                              alternate=alternate,
-                              bbox_x0=bbox_x0,
-                              bbox_x1=bbox_x1,
-                              bbox_y0=bbox_y0,
-                              bbox_y1=bbox_y1,
-                              srid='EPSG:4326',
-                              uuid=str(uuid4()),
-                              owner=owner,
-                              temporal_extent_start=start,
-                              temporal_extent_end=end,
-                              date=start,
-                              storeType=storeType,
-                              category=category)
+    if not type or ensure_string(type) == 'layer':
+        for ld, owner, storeType in zip(layer_data, cycle(users), cycle(('coverageStore', 'dataStore'))):
+            title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
+            end = start + timedelta(days=365)
+            layer = Layer(title=title,
+                          abstract=abstract,
+                          name=name,
+                          alternate=alternate,
+                          bbox_x0=bbox_x0,
+                          bbox_x1=bbox_x1,
+                          bbox_y0=bbox_y0,
+                          bbox_y1=bbox_y1,
+                          srid='EPSG:4326',
+                          uuid=str(uuid4()),
+                          owner=owner,
+                          temporal_extent_start=start,
+                          temporal_extent_end=end,
+                          date=start,
+                          storeType=storeType,
+                          category=category,
+                          )
+            layer.save()
+            obj_ids.append(layer.id)
+            for kw in kws:
+                layer.keywords.add(kw)
                 layer.save()
-                obj_ids.append(layer.id)
-                for kw in kws:
-                    layer.keywords.add(kw)
-                    layer.save()
     return obj_ids
 
 
-def remove_models(obj_ids, type=None, integration=False):
-    from geonode.utils import DisableDjangoSignals
-    with DisableDjangoSignals(skip=integration):
-        if not type:
-            remove_models(None, type=b'map')
-            remove_models(None, type=b'layer')
-            remove_models(None, type=b'document')
-        if type == 'map':
-            try:
-                m_ids = obj_ids or [mp.id for mp in Map.objects.all()]
-                for id in m_ids:
-                    m = Map.objects.get(pk=id)
-                    m.delete()
-            except Exception:
-                pass
-        elif type == 'layer':
-            try:
-                l_ids = obj_ids or [lyr.id for lyr in Layer.objects.all()]
-                for id in l_ids:
-                    layer = Layer.objects.get(pk=id)
-                    layer.delete()
-            except Exception:
-                pass
-        elif type == 'document':
-            try:
-                d_ids = obj_ids or [doc.id for doc in Document.objects.all()]
-                for id in d_ids:
-                    d = Document.objects.get(pk=id)
-                    d.delete()
-            except Exception:
-                pass
+def remove_models(obj_ids, type=None):
+    if not type:
+        remove_models(None, type=b'map')
+        remove_models(None, type=b'layer')
+        remove_models(None, type=b'document')
+
+    if type == 'map':
+        try:
+            m_ids = obj_ids or [m.id for m in Map.objects.all()]
+            for id in m_ids:
+                m = Map.objects.get(pk=id)
+                m.delete()
+        except Exception:
+            pass
+    elif type == 'layer':
+        try:
+            l_ids = obj_ids or [l.id for l in Layer.objects.all()]
+            for id in l_ids:
+                layer = Layer.objects.get(pk=id)
+                layer.delete()
+        except Exception:
+            pass
+    elif type == 'document':
+        try:
+            d_ids = obj_ids or [d.id for d in Document.objects.all()]
+            for id in d_ids:
+                d = Document.objects.get(pk=id)
+                d.delete()
+        except Exception:
+            pass
 
 
 def dump_models(path=None):

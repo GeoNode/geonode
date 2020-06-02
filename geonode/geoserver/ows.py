@@ -52,7 +52,7 @@ def _wcs_link(wcs_url, identifier, mime, srid=None, bbox=None):
     wcs_params = {
         'service': 'WCS',
         'request': 'GetCoverage',
-        'coverageid': identifier.replace(':', '__', 1),
+        'coverageid': identifier,
         'format': mime,
         'version': '2.0.1',
     }

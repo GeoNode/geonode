@@ -54,7 +54,8 @@ form #mdeditor_form label{
 #mdeditor_form #id_resource-metadata_uploaded_preserve,
 #mdeditor_form #id_resource-is_approved,
 #mdeditor_form #id_resource-is_published,
-#mdeditor_form #id_resource-featured  {
+#mdeditor_form #id_resource-featured,
+#mdeditor_form #id_resource-is_inde  {
   float: right;
 }
 
@@ -301,6 +302,12 @@ span.grippy::after {
                                         <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
                                         {{ layer_form.abstract }}
                                     </div>
+                                    <!-- Palavras-Chave Embrapa - EMBRAPA -->
+                                    <div>
+                                        <span><label for="{{ layer_form.embrapa_keywords|id }}">{{ layer_form.embrapa_keywords.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
+                                        {{ layer_form.embrapa_keywords }}
+                                    </div>
                                 </div>
                                 <div class="col-lg-5">
                                     <div class="col-lg-12">
@@ -322,6 +329,20 @@ span.grippy::after {
                                         <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
                                         {{ layer_form.date }}
                                     </div>
+                                    <!-- ESCALA - EMBRAPA -->
+                                    <div class="col-lg-6 col-xs-12">
+                                        <span><label for="{{ layer_form.scale|id }}">{{ layer_form.scale.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
+                                        {{ layer_form.scale }}
+                                    </div>
+
+                                    <!-- DATA DE CRIAÇÃO - EMBRAPA -->
+                                    <div class="col-lg-6 col-xs-12">
+                                        <span><label for="{{ layer_form.data_criacao|id }}">{{ layer_form.data_criacao.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
+                                        {{ layer_form.data_criacao }}
+                                    </div>
+                                    
                                     <div id="basicCategoryInfo" class="col-lg-12">
                                         <span><label for="{{ category_form.category_choice_field|id }}" class="control-label required-field">{% trans "Category" %}</label></span>
                                         <select
@@ -391,8 +412,14 @@ span.grippy::after {
                                         {{ layer_form.license }}
                                     </div>
                                     <div>
-                                        <span><label for="{{ layer_form.doi|id }}">{{ layer_form.doi.label }}</label></span>
-                                        {{ layer_form.doi }}
+                                      <span><label
+                                          for="{{ layer_form.doi|id }}">{{ layer_form.doi.label }}</label></span>
+                                      <input id="id_resource-doi" name="resource-doi" type="text"
+                                        class="has-external-popover" data-container="body"
+                                        data-content="a DOI will be added by Admin before publication." data-html="true"
+                                        data-placement="right"
+                                        placeholder="a DOI will be added by Admin before publication."
+                                        value="{{ layer_form.doi.value }}">
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
@@ -444,6 +471,16 @@ span.grippy::after {
                     {{ layer_form.purpose }}
                 </div>
                 <div>
+                    <span><label for="{{ layer_form.embrapa_purpose|id }}">{{ layer_form.embrapa_purpose.label }}</label></span>
+                    <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
+                    {{ layer_form.embrapa_purpose }}
+                </div>
+                <div>
+                    <span><label for="{{ layer_form.embrapa_unity|id }}">{{ layer_form.embrapa_unity.label }}</label></span>
+                    <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
+                    {{ layer_form.embrapa_unity }}
+                </div>
+                <div>
                     <span><label for="{{ layer_form.supplemental_information|id }}">{{ layer_form.supplemental_information.label }}</label></span>
                     <!--<p class="xxs-font-size">(Any other descriptive information about the dataset)</p>-->
                     {{ layer_form.supplemental_information }}
@@ -475,6 +512,13 @@ span.grippy::after {
                         <!--<p class="xxs-font-size">(Method used to represent geographic information in the dataset)</p>-->
                         {{ layer_form.spatial_representation_type }}
                     </div>
+                    <!-- LINK VINDE ! - EMBRAPA -->
+                    <div style="margin-top: 5px">
+                        <span><label for="{{ layer_form.link_vinde|id }}">{{ layer_form.link_vinde.label }}</label></span>
+                        <!--<p class="xxs-font-size">(Method used to represent geographic information in the dataset)</p>-->
+                        {{ layer_form.link_vinde }}
+                    </div>
+
                 </div>
             </div>
             <div class="col-xs-12 col-lg-3">
@@ -498,6 +542,7 @@ span.grippy::after {
                           <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
                           {{ layer_form.metadata_author }}
                       </div>
+
                       {% if GEONODE_SECURITY_ENABLED %}
                       <!--<hr />
                       <div class="modal-body" id="_permissions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -588,6 +633,11 @@ span.grippy::after {
                         <div>
                             <span><label for="{{ layer_form.is_published|id }}">{{ layer_form.is_published.label }}</label></span>
                             {{ layer_form.is_published }}
+                        </div>
+                        <!-- INDE EMBRAPA -->
+                        <div>
+                            <span><label for="{{ layer_form.is_inde|id }}">{{ layer_form.is_inde.label }}</label></span>
+                            {{ layer_form.is_inde }}
                         </div>
                         <div>
                             <span><label for="{{ layer_form.featured|id }}">{{ layer_form.featured.label }}</label></span>

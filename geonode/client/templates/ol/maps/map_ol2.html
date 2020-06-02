@@ -1,7 +1,6 @@
-{% load static from staticfiles %}
-<!-- script src="{% static "geonode/js/proj4js/proj4.js" %}" type="text/javascript"></script -->
-<script src="{% static "geonode/js/ol-2.13/OpenLayers.js" %}" type="text/javascript"></script>
-<script src="{% static "geonode/js/ol-2.13/lib/OpenLayers/Layer/ArcGISCache.js" %}" type="text/javascript"></script>
+<link rel="stylesheet" href="{% url "proxy" %}?url=http://dev.openlayers.org/releases/OpenLayers-2.13.1/theme/default/style.css" type="text/css">
+<script src="{% url "proxy" %}?url=http://dev.openlayers.org/releases/OpenLayers-2.13.1/OpenLayers.js" type="text/javascript"></script>
+<script src="{% url "proxy" %}?url=http://dev.openlayers.org/releases/OpenLayers-2.13.1/lib/OpenLayers/Layer/ArcGISCache.js" type="text/javascript"></script>
 
 <style>
     .olControlAttribution {
@@ -12,43 +11,62 @@
 <script type="text/javascript">
 
   document.addEventListener("DOMContentLoaded", function(event) {
-    var config = {{ config|safe }};
-    var model_crs = config['map']['projection'];
+
+  	// document.getElementById('preview_map').setAttribute("style", "height:600px");
+
+    var layers = [];
     var zoom = {{ map.zoom }};
     var center_x = {{ map.center_x }};
     var center_y = {{ map.center_y }};
     var center = [center_x, center_y];
-    var settings_crs = '{{ crs }}';
+    var settings_crs = '{{ crs }}'
+
     if (settings_crs != 'EPSG:4326') {
-        settings_crs = 'EPSG:900913';
+        settings_crs = 'EPSG:3857';
     }
-    if ('EPSG:4326' != model_crs) {
+
+    var config = {{ config|safe }};
+
+    var model_crs = config['map']['projection'];
+
+    if (settings_crs != model_crs) {
         // if the two crs are not the same, user must have switched default crs for project after map was created
-        center = new OpenLayers.LonLat(center).transform(
-            new OpenLayers.Projection('EPSG:4326'),
-            new OpenLayers.Projection(settings_crs));
+        center = new OpenLayers.LonLat(center).transform(new OpenLayers.Projection(model_crs),new OpenLayers.Projection(settings_crs));
     }
+
     var config_layers = config['map']['layers']
-    var layers = [
-        new OpenLayers.Layer.OSM("OpenCycleMap",
-            ["https://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
-            "https://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
-            "https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"])
-    ];
+    for (layer in config_layers) {
+        if (config_layers[layer]['title'] == 'OpenStreetMap') {
+            // if (config_layers[layer]['visibility'] == true) {
+                layers.push(
+                    new OpenLayers.Layer.OSM("OpenCycleMap",
+                      ["http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
+                       "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
+                       "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"])
+                );
+            // }
+            break;
+        }
+    }
+
+    var source;
+
     {% for layer in layers %}
-        {% if layer.ows_url != None and layer.local %}
-            var source = new OpenLayers.Layer.WMS(
-                "{{ layer.name|safe }}",
+        {% if layer.ows_url != None %}
+            source = new OpenLayers.Layer.WMS("{{ layer.name|safe }}",
                 '{{ layer.ows_url|safe }}',
-                {layers: '{{ layer.name|safe }}', transparent: true},
+                {layers: '{{ layer.name }}', transparent: true},
                 {isBaseLayer: false}
             );
+
         layers.push(source);
         {% endif %}
     {% endfor %}
+
     var map = new OpenLayers.Map({
         div: 'preview_map',
-        projection: new OpenLayers.Projection('EPSG:900913'),
+        projection: new OpenLayers.Projection(settings_crs),
+        // controls: [],
         layers: layers,
         center: center,
         zoom: zoom

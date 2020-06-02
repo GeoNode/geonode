@@ -36,8 +36,6 @@
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
 
     <link rel="shortcut icon" href="{% static 'geonode/img/favicon.ico' %}" />
-    <link href="{% static "lib/css/ol.css" %}" rel="stylesheet" />
-    <script src="{% static "lib/js/ol.js" %}"></script>
 
     {% block head %}
 
@@ -50,7 +48,7 @@
           <link href="{% static "lib/css/jquery-ui.structure.css" %}" rel="stylesheet"/>
           <link href="{% static "lib/css/bootstrap-treeview.css" %}" rel="stylesheet"/>
       {% else %}
-      <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet"/>
+        <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet"/>
       {% endif %}
 
       <link href="{% static "geonode/css/base.css" %}" rel="stylesheet" />
@@ -284,7 +282,7 @@
                 <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a></li>
                 <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
                 <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
-                {% if user.is_authenticated and not READ_ONLY_MODE %}
+                {% if user.is_authenticated %}
                     <li role="separator" class="divider"></li>
                     <li><a href="{% url "layer_upload" %}">{% trans "Upload Layer" %}</a></li>
                     {% if USE_GEOSERVER and CREATE_LAYER %}
@@ -293,9 +291,7 @@
                     <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
                 {% endif %}
                 {% if user.is_superuser or user.is_staff %}
-                  {%  if not READ_ONLY_MODE %}
                     <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
-                  {% endif %}
                 {% endif %}
               </ul>
             </li>
@@ -304,9 +300,7 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Maps" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
                 <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
-                {% if not READ_ONLY_MODE %}
-                  <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
-                {% endif %}
+                <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
               </ul>
               {% else %}
               <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Maps" %}</a>
@@ -321,11 +315,11 @@
                 {% if perms.announcements.can_manage %}
                 <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
                 {% endif %}
-                {% if user.is_authenticated and not READ_ONLY_MODE %}
+                {% if user.is_authenticated %}
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
                 {% endif %}
-                {% if user.is_superuser and not READ_ONLY_MODE %}
+                {% if user.is_superuser %}
                 <li><a href="{{SITEURL}}admin/people/profile/add/">{% trans "Add User" %}</a></li>
                 <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
                 {% endif %}
@@ -354,26 +348,20 @@
                   <div id="search-container" class="autocomplete-input">
                     {% if HAYSTACK_SEARCH %}
                     <input autocomplete="off" id="search_input" type="text" placeholder="{% trans 'Search' %}" name="q">
-                    <input type="hidden" name="abstract__icontains" id="search_abstract_input" placeholder="Search" >
-                    <input type="hidden" name="purpose__icontains" id="search_purpose_input" placeholder="Search" >
-                    <input type="hidden" name="f_method" id="filtering_type" value="or" >
                     {% else %}
                     <input autocomplete="off" type="text" name="title__icontains" id="search_input" placeholder="Search" >
-                    <input type="hidden" name="abstract__icontains" id="search_abstract_input" placeholder="Search" >
-                    <input type="hidden" name="purpose__icontains" id="search_purpose_input" placeholder="Search" >
-                    <input type="hidden" name="f_method" id="filtering_type" value="or" >
                     {% endif %}
                   </div>
                 </form>
               </div>
             </li>
-            {% if not user.is_authenticated and ACCOUNT_OPEN_SIGNUP and not READ_ONLY_MODE %}
-              <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
+            {% if not user.is_authenticated and ACCOUNT_OPEN_SIGNUP %}
+            <li><a href="{% url "account_signup" %}">{% trans "Register" %}</a></li>
             {% endif %}
             {% if user.is_authenticated %}
             <li>
               <a href="#" class="dropdown-toggle avatar" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                {% autoescape off %}{% avatar user 40 %}{% endautoescape %}
+                {% autoescape off %}{% avatar user 42 %}{% endautoescape %}
                 {% with full_name=user.first_name|add:' '|add:user.last_name %}
                   {% if full_name.strip %}
                     {{ full_name | truncatechars:20 }}
@@ -460,7 +448,7 @@
             <li><a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Layers" %}</a></li>
             <li><a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a></li>
             <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
-            {% if user.is_authenticated and not READ_ONLY_MODE %}
+            {% if user.is_authenticated %}
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "layer_upload" %}">{% trans "Upload Layer" %}</a></li>
                 {% if USE_GEOSERVER and CREATE_LAYER %}
@@ -468,10 +456,8 @@
                 {% endif %}
                 <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
             {% endif %}
-            {% if user.is_staff or user.is_superuser %}
-              {% if not READ_ONLY_MODE %}
+            {% if user.is_superuser or user.is_staff %}
                 <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
-              {% endif %}
             {% endif %}
           </ul>
         </div>
@@ -479,8 +465,8 @@
           <ul class="list-unstyled">
             <li>{% trans "Maps" %}</li>
             <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
-            {% if user.is_authenticated and not READ_ONLY_MODE %}
-              <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
+            {% if user.is_authenticated %}
+            <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
             {% endif %}
           </ul>
         </div>
@@ -492,10 +478,10 @@
             {% if perms.announcements.can_manage %}
             <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
             {% endif %}
-            {% if user.is_authenticated and not READ_ONLY_MODE %}
+            {% if user.is_authenticated %}
             <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
             {% endif %}
-            {% if user.is_superuser and not READ_ONLY_MODE %}
+            {% if user.is_superuser %}
             <li><a href="{{SITEURL}}admin/people/profile/add/">{% trans "Add User" %}</a></li>
             <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
             {% endif %}
@@ -632,8 +618,6 @@
       // Autocomplete instance for the search found in the header.
       $(document).ready(function() {
         window.autocomplete2 = new Autocomplete({
-          form_btn: null,
-          form_submit: '#search',
           form_selector: '#search',
           input_selector: '#search_input',
           container_selector: '#search-container',
@@ -642,18 +626,12 @@
         window.autocomplete2.setup()
       })
 
-      $('#search').on('submit', (e) => {
-          $('#search_abstract_input')[0].value =$('#search_input')[0].value;
-          $('#search_purpose_input')[0].value = $('#search_input')[0].value;
+      $('#search_input').bind('selectChoice', function(e, choice) {
+          if(choice[0].children[0] == undefined) {
+              $('#search_input').val($(choice[0]).text());
+              $('#search').submit();
+          }
       });
-
-      $(window).on('load', function() {
-          setTimeout(() => {
-              document.body.scrollTop = 0;
-              document.documentElement.scrollTop = 0;
-          });
-        });
-
       $(".datepicker").datepicker({
           format: "yyyy-mm-dd"
       });
@@ -705,37 +683,6 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "OK" %}</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="confirmMsgBoxModalOK" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <!-- How to use it: 
-        $("#confirmMsgBoxModalOK").find('.modal-title').text('{% trans "Title" %}');
-        $("#confirmMsgBoxModalOK").find('.modal-body').text('{% trans "Message. Do you want to proceed?" %}');
-        $("#confirmMsgBoxModalOK_control_field").val('your_control_value');
-        $("#confirmMsgBoxModalOK").modal("show");
-
-        $('#confirmMsgBoxModalOK').find('.modal-footer #confirm').on('click', function() {
-          if ($("#control_field").val() == 'your_control_value') {
-            CONFIRMED
-          }
-        });
-      -->
-      <div class="modal-dialog">
-        <input type="hidden" class="form-control" id="confirmMsgBoxModalOK_control_field" />
-        <div class="modal-content panel-success">
-          <div class="modal-header panel-heading">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">{% trans "Confirm" %}</h4>
-          </div>
-          <div class="modal-body">
-            <p>{% trans "Some text in the modal" %}.</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
-            <button type="button" class="btn btn-danger confirm" id="confirm">{% trans "OK" %}</button>
           </div>
         </div>
       </div>

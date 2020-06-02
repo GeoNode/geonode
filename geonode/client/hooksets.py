@@ -22,54 +22,54 @@ import json
 from six import string_types
 
 
-class BaseHookSet(object):
+class GeoExtHookSet(object):
 
     # Layers
     def layer_detail_template(self, context=None):
-        return NotImplemented
+        return 'geoext/layers/layer_geoext_map.html'
 
     def layer_new_template(self, context=None):
-        return NotImplemented
+        return 'geoext/layers/layer_geoext_map.html'
 
     def layer_view_template(self, context=None):
-        return NotImplemented
+        return 'geoext/layers/layer_geoext_map.html'
 
     def layer_edit_template(self, context=None):
-        return NotImplemented
+        return 'geoext/layers/layer_geoext_map.html'
 
     def layer_update_template(self, context=None):
-        return NotImplemented
+        return 'geoext/layers/layer_geoext_map.html'
 
     def layer_embed_template(self, context=None):
-        return NotImplemented
+        return 'geoext/layers/layer_geoext_map.html'
 
     def layer_download_template(self, context=None):
-        return NotImplemented
+        return 'geoext/layers/layer_geoext_map.html'
 
     def layer_style_edit_template(self, context=None):
-        return NotImplemented
+        return 'geoext/layers/layer_geoext_map.html'
 
     # Maps
     def map_detail_template(self, context=None):
-        return NotImplemented
+        return 'geoext/maps/map_include.html'
 
     def map_new_template(self, context=None):
-        return NotImplemented
+        return 'geoext/maps/map_geoexplorer.js'
 
     def map_view_template(self, context=None):
-        return NotImplemented
+        return 'geoext/maps/map_geoexplorer.js'
 
     def map_edit_template(self, context=None):
-        return NotImplemented
+        return 'geoext/maps/map_geoexplorer.js'
 
     def map_update_template(self, context=None):
-        return NotImplemented
+        return 'geoext/maps/map_geoexplorer.js'
 
     def map_embed_template(self, context=None):
-        return NotImplemented
+        return 'geoext/maps/map_geoexplorer_viewer.js'
 
     def map_download_template(self, context=None):
-        return NotImplemented
+        return 'geoext/maps/map_geoexplorer.js'
 
     # Map Persisting
     def viewer_json(self, conf, context=None):
@@ -83,10 +83,10 @@ class BaseHookSet(object):
     def update_from_viewer(self, conf, context=None):
         conf = self.viewer_json(conf, context=context)
         context['config'] = conf
-        return 'maps/map_edit.html'
+        return 'geoext/maps/map_geoexplorer.js'
 
 
-class LeafletHookSet(BaseHookSet):
+class LeafletHookSet(GeoExtHookSet):
 
     # Layers
     def layer_detail_template(self, context=None):
@@ -136,7 +136,7 @@ class LeafletHookSet(BaseHookSet):
         return 'leaflet/maps/map_embed.html'
 
 
-class ReactHookSet(BaseHookSet):
+class ReactHookSet(GeoExtHookSet):
 
     # Layers
     def layer_detail_template(self, context=None):

@@ -144,9 +144,9 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
     def _parse_layers(self, layers):
         map_layers = []
-        for lyr in layers:
-            map_layers.append(self._layer_meta(lyr))
-            map_layers.extend(self._parse_layers(lyr.subLayers))
+        for l in layers:
+            map_layers.append(self._layer_meta(l))
+            map_layers.extend(self._parse_layers(l.subLayers))
         return map_layers
 
     def _layer_meta(self, layer):
@@ -256,7 +256,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             **resource_fields
         )
         geonode_layer.full_clean()
-        geonode_layer.save(notify=True)
+        geonode_layer.save()
         geonode_layer.keywords.add(*keywords)
         geonode_layer.set_default_permissions()
         return geonode_layer
@@ -269,8 +269,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             "request": "GetMap",
             "layers": geonode_layer.alternate,
             "bbox": geonode_layer.bbox_string,
-            "srs": geonode_layer.srid,
-            "crs": geonode_layer.srid,
+            "srs": "EPSG:4326",
             "width": "200",
             "height": "150",
             "format": "image/png",

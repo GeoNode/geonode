@@ -62,6 +62,8 @@ urlpatterns = [  # 'geonode.documents.views',
         name='document_batch_metadata'),
     url(r'^(?P<docid>\d+)/metadata_advanced$', views.document_metadata_advanced,
         name='document_metadata_advanced'),
+    url(r'^(?P<docid>[^/]*)/thumb_upload$',
+        views.document_thumb_upload, name='document_thumb_upload'),
     url(r'^autocomplete/$',
         DocumentAutocomplete.as_view(), name='autocomplete_document'),
 ]

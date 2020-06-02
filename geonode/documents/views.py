@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+import os
 import json
 import logging
 import traceback
@@ -33,16 +34,16 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django_downloadview.response import DownloadResponse
 from django.views.generic.edit import UpdateView, CreateView
 from django.db.models import F
 from django.forms.utils import ErrorList
 
-from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm
-from geonode.base.auth import get_or_create_token
 from geonode.base.forms import CategoryForm, TKeywordForm
 from geonode.base.models import (
     Thesaurus,
@@ -50,6 +51,7 @@ from geonode.base.models import (
 from geonode.documents.models import Document, get_related_resources
 from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
 from geonode.documents.models import IMGTYPES
+from geonode.documents.renderers import generate_thumbnail_content, MissingPILError
 from geonode.utils import build_social_links
 from geonode.groups.models import GroupProfile
 from geonode.base.views import batch_modify
@@ -91,6 +93,7 @@ def document_detail(request, docid):
             docid,
             'base.view_resourcebase',
             _PERMISSION_MSG_VIEW)
+
     except Http404:
         return HttpResponse(
             loader.render_to_string(
@@ -109,13 +112,8 @@ def document_detail(request, docid):
             content_type="text/plain",
             status=401
         )
+
     else:
-        permission_manager = ManageResourceOwnerPermissions(document)
-        permission_manager.set_owner_permissions_according_to_workflow()
-
-        # Add metadata_author or poc if missing
-        document.add_missing_metadata_author_or_poc()
-
         related = get_related_resources(document)
 
         # Update count for popularity ranking,
@@ -128,33 +126,18 @@ def document_detail(request, docid):
         metadata = document.link_set.metadata().filter(
             name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
-        # Call this first in order to be sure "perms_list" is correct
-        permissions_json = _perms_info_json(document)
-
-        perms_list = get_perms(
-            request.user,
-            document.get_self_resource()) + get_perms(request.user, document)
-
         group = None
         if document.group:
             try:
                 group = GroupProfile.objects.get(slug=document.group.name)
             except ObjectDoesNotExist:
                 group = None
-
-        access_token = None
-        if request and request.user:
-            access_token = get_or_create_token(request.user)
-            if access_token and not access_token.is_expired():
-                access_token = access_token.token
-            else:
-                access_token = None
-
         context_dict = {
-            'access_token': access_token,
+            'perms_list': get_perms(
+                request.user,
+                document.get_self_resource()) + get_perms(request.user, document),
+            'permissions_json': _perms_info_json(document),
             'resource': document,
-            'perms_list': perms_list,
-            'permissions_json': permissions_json,
             'group': group,
             'metadata': metadata,
             'imgtypes': IMGTYPES,
@@ -231,12 +214,15 @@ class DocumentUploadView(CreateView):
         """
         self.object = form.save(commit=False)
         self.object.owner = self.request.user
-
-        if settings.ADMIN_MODERATE_UPLOADS:
-            self.object.is_approved = False
-        if settings.RESOURCE_PUBLISHING:
-            self.object.is_published = False
-        self.object.save(notify=True)
+        # by default, if RESOURCE_PUBLISHING=True then document.is_published
+        # must be set to False
+        # RESOURCE_PUBLISHING works in similar way as ADMIN_MODERATE_UPLOADS,
+        # but is applied to documents only. ADMIN_MODERATE_UPLOADS has wider
+        # usage
+        is_published = not (
+            settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS)
+        self.object.is_published = is_published
+        self.object.save()
         form.save_many2many()
         self.object.set_permissions(form.cleaned_data['permissions'])
 
@@ -350,6 +336,7 @@ def document_metadata(
         docid,
         template='documents/document_metadata.html',
         ajax=True):
+
     document = None
     try:
         document = _resolve_document(
@@ -378,8 +365,6 @@ def document_metadata(
         )
 
     else:
-        # Add metadata_author or poc if missing
-        document.add_missing_metadata_author_or_poc()
         poc = document.poc
         metadata_author = document.metadata_author
         topic_category = document.category
@@ -391,7 +376,7 @@ def document_metadata(
                 prefix="resource")
             category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
                 request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
-                                                          request.POST["category_choice_field"] else None)
+                request.POST["category_choice_field"] else None)
             tkeywords_form = TKeywordForm(request.POST)
         else:
             document_form = DocumentForm(instance=document, prefix="resource")
@@ -416,8 +401,8 @@ def document_metadata(
                                 tkl_ids = ",".join(
                                     map(str, tkl.values_list('id', flat=True)))
                                 tkeywords_list += "," + \
-                                                  tkl_ids if len(
-                                    tkeywords_list) > 0 else tkl_ids
+                                    tkl_ids if len(
+                                        tkeywords_list) > 0 else tkl_ids
                     except Exception:
                         tb = traceback.format_exc()
                         logger.error(tb)
@@ -432,8 +417,8 @@ def document_metadata(
             new_regions = document_form.cleaned_data['regions']
 
             new_category = None
-            if category_form and 'category_choice_field' in category_form.cleaned_data and \
-                    category_form.cleaned_data['category_choice_field']:
+            if category_form and 'category_choice_field' in category_form.cleaned_data and\
+            category_form.cleaned_data['category_choice_field']:
                 new_category = TopicCategory.objects.get(
                     id=int(category_form.cleaned_data['category_choice_field']))
 
@@ -482,7 +467,7 @@ def document_metadata(
             document.regions.clear()
             document.regions.add(*new_regions)
             document.category = new_category
-            document.save(notify=True)
+            document.save()
             document_form.save_many2many()
 
             register_event(request, EventType.EVENT_CHANGE_METADATA, document)
@@ -520,6 +505,7 @@ def document_metadata(
 
         # Request.GET
         if poc is not None:
+            # embrapa # 
             document_form.fields['poc'].initial = poc.id
             poc_form = ProfileForm(prefix="poc")
             poc_form.hidden = True
@@ -542,13 +528,12 @@ def document_metadata(
                 all_metadata_author_groups = GroupProfile.objects.exclude(
                     access="private").exclude(access="public-invite")
             [metadata_author_groups.append(item) for item in all_metadata_author_groups
-             if item not in metadata_author_groups]
+                if item not in metadata_author_groups]
 
         if settings.ADMIN_MODERATE_UPLOADS:
             if not request.user.is_superuser:
-                if settings.RESOURCE_PUBLISHING:
-                    document_form.fields['is_published'].widget.attrs.update(
-                        {'disabled': 'true'})
+                document_form.fields['is_published'].widget.attrs.update(
+                    {'disabled': 'true'})
 
                 can_change_metadata = request.user.has_perm(
                     'change_resourcebase_metadata',
@@ -582,6 +567,82 @@ def document_metadata_advanced(request, docid):
         request,
         docid,
         template='documents/document_metadata_advanced.html')
+
+
+@login_required
+def document_thumb_upload(
+        request,
+        docid,
+        template='documents/document_thumb_upload.html'):
+    document = None
+    try:
+        document = _resolve_document(
+            request,
+            docid,
+            'base.change_resourcebase',
+            _PERMISSION_MSG_MODIFY)
+
+    except Http404:
+        return HttpResponse(
+            loader.render_to_string(
+                '404.html', context={
+                }, request=request), status=404)
+
+    except PermissionDenied:
+        return HttpResponse(
+            loader.render_to_string(
+                '401.html', context={
+                    'error_message': _("You are not allowed to edit this document.")}, request=request), status=403)
+
+    if document is None:
+        return HttpResponse(
+            'An unknown error has occured.',
+            content_type="text/plain",
+            status=401
+        )
+
+    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+    if request.method == 'GET':
+        return render(request, template, context={
+            "resource": document,
+            "docid": docid,
+            'SITEURL': site_url
+        })
+    elif request.method == 'POST':
+        status_code = 401
+        out = {'success': False}
+        if docid and request.FILES:
+            data = request.FILES.get('base_file')
+            if data:
+                filename = 'document-{}-thumb.png'.format(document.uuid)
+                path = default_storage.save(
+                    'tmp/' + filename, ContentFile(data.read()))
+                image_path = os.path.join(settings.MEDIA_ROOT, path)
+                thumbnail_content = None
+                try:
+                    thumbnail_content = generate_thumbnail_content(image_path)
+                except MissingPILError:
+                    logger.error(
+                        'Pillow not installed, could not generate thumbnail.')
+
+                if not thumbnail_content:
+                    logger.warning("Thumbnail for document #{} empty.".format(docid))
+                document.save_thumbnail(filename, thumbnail_content)
+                logger.debug(
+                    "Thumbnail for document #{} created.".format(docid))
+            status_code = 200
+            out['success'] = True
+            out['resource'] = docid
+        else:
+            out['success'] = False
+            out['errors'] = 'An unknown error has occured.'
+        out['url'] = reverse(
+            'document_detail', args=[
+                docid])
+        return HttpResponse(
+            json.dumps(out),
+            content_type='application/json',
+            status=status_code)
 
 
 def document_search_page(request):

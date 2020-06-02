@@ -31,16 +31,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 from django.db.models import signals
 from django.utils.timezone import now
-from django.contrib.staticfiles.templatetags import staticfiles
 
 from taggit.managers import TaggableManager
-
-from guardian.shortcuts import (
-    get_objects_for_user,
-    get_objects_for_group,
-    assign_perm,
-    remove_perm
-)
+from guardian.shortcuts import get_objects_for_group
 
 logger = logging.getLogger(__name__)
 
@@ -83,8 +76,8 @@ class GroupProfile(models.Model):
                         'such as a mailing list, shared email, or exchange group.')
 
     group = models.OneToOneField(Group, on_delete=models.CASCADE)
-    title = models.CharField(_('Title'), max_length=1000)
-    slug = models.SlugField(unique=True, max_length=1000)
+    title = models.CharField(_('Title'), max_length=50)
+    slug = models.SlugField(unique=True)
     logo = models.ImageField(_('Logo'), upload_to="people_group", blank=True)
     description = models.TextField(_('Description'))
     email = models.EmailField(
@@ -208,7 +201,6 @@ class GroupProfile(models.Model):
             raise ValueError("The invited user cannot be anonymous")
         member, created = GroupMember.objects.get_or_create(group=self, user=user, defaults=kwargs)
         if not created:
-            member.demote()
             user.groups.remove(self.group)
             member.delete()
         else:
@@ -223,7 +215,6 @@ class GroupProfile(models.Model):
 
     @property
     def logo_url(self):
-        _missing_thumbnail_url = staticfiles.static(settings.MISSING_THUMBNAIL)
         try:
             _base_path = os.path.split(self.logo.path)[0]
             _upload_path = os.path.split(self.logo.url)[1]
@@ -231,13 +222,12 @@ class GroupProfile(models.Model):
             if not os.path.exists(_upload_path):
                 copyfile(self.logo.path, _upload_path)
         except Exception as e:
-            logger.debug(e)
+            logger.exception(e)
         _url = None
         try:
             _url = self.logo.url
         except Exception as e:
-            logger.debug(e)
-            return _missing_thumbnail_url
+            logger.exception(e)
         return _url
 
 
@@ -261,28 +251,6 @@ class GroupMember(models.Model):
     def delete(self, *args, **kwargs):
         self.user.groups.remove(self.group.group)
         super(GroupMember, self).delete(*args, **kwargs)
-
-    def promote(self, *args, **kwargs):
-        self.role = "manager"
-        if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
-            from geonode.security.models import ADMIN_PERMISSIONS
-            queryset = get_objects_for_user(
-                self.user, 'base.view_resourcebase').filter(group=self.group.group)
-            for _r in queryset.exclude(owner=self.user):
-                for perm in ADMIN_PERMISSIONS:
-                    assign_perm(perm, self.user, _r.get_self_resource())
-        super(GroupMember, self).save(*args, **kwargs)
-
-    def demote(self, *args, **kwargs):
-        self.role = "member"
-        if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
-            from geonode.security.models import ADMIN_PERMISSIONS
-            queryset = get_objects_for_user(
-                self.user, 'base.view_resourcebase').filter(group=self.group.group)
-            for _r in queryset.exclude(owner=self.user):
-                for perm in ADMIN_PERMISSIONS:
-                    remove_perm(perm, self.user, _r.get_self_resource())
-        super(GroupMember, self).save(*args, **kwargs)
 
 
 def group_pre_delete(instance, sender, **kwargs):

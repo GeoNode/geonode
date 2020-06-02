@@ -24,7 +24,7 @@ from django.conf import settings
 from django.contrib.auth import logout
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from django.utils.deprecation import MiddlewareMixin
+# from django.http.response import HttpResponse
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -58,7 +58,7 @@ else:
 white_list = [compile(x) for x in white_list_paths + getattr(settings, "AUTH_EXEMPT_URLS", ())]
 
 
-class LoginRequiredMiddleware(MiddlewareMixin):
+class LoginRequiredMiddleware(object):
 
     """
     Requires a user to be logged in to access any page that is not white-listed.
@@ -68,6 +68,12 @@ class LoginRequiredMiddleware(MiddlewareMixin):
 
     def __init__(self, get_response):
         self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
+
+    # def process_exception(self, request, exception):
+    #     return HttpResponse("in exception")
 
     def process_request(self, request):
         if not request.user.is_authenticated or \
@@ -79,7 +85,7 @@ class LoginRequiredMiddleware(MiddlewareMixin):
                         request_path=request.path))
 
 
-class SessionControlMiddleware(MiddlewareMixin):
+class SessionControlMiddleware(object):
     """
     Middleware that checks if session variables have been correctly set.
     """
@@ -88,6 +94,12 @@ class SessionControlMiddleware(MiddlewareMixin):
 
     def __init__(self, get_response):
         self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
+
+    # def process_exception(self, request, exception):
+    #     return HttpResponse("in exception")
 
     def process_request(self, request):
         if request and request.user and not request.user.is_anonymous:
@@ -107,6 +119,8 @@ class SessionControlMiddleware(MiddlewareMixin):
     def do_logout(self, request):
         try:
             logout(request)
+        except Exception:
+            pass
         finally:
             try:
                 from django.contrib import messages

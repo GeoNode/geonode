@@ -61,14 +61,6 @@ class Command(BaseCommand):
             help='Remove duplicates first.'
         )
         parser.add_argument(
-            '-p',
-            '--prune',
-            action='store_true',
-            dest='prune',
-            default=False,
-            help='Prune Old Links.'
-        )
-        parser.add_argument(
             '-t',
             '--delete-orphaned-thumbs',
             action='store_true',
@@ -92,7 +84,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         ignore_errors = options.get('ignore_errors')
         remove_duplicates = options.get('remove_duplicates')
-        prune = options.get('prune')
         delete_orphaned_thumbnails = options.get('delete_orphaned_thumbnails')
         filter = options.get('filter')
         if not options.get('username'):
@@ -113,7 +104,7 @@ class Command(BaseCommand):
                 set_attributes(layer, overwrite=True)
 
                 # refresh metadata links
-                set_resource_default_links(layer, layer, prune=prune)
+                set_resource_default_links(layer, layer, prune=False)
 
                 # refresh catalogue metadata records
                 catalogue_post_save(instance=layer, sender=layer.__class__)

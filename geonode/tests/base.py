@@ -39,7 +39,6 @@ from geonode import geoserver, qgis_server  # noqa
 from geonode.utils import check_ogc_backend
 from geonode.base.populate_test_data import create_models, remove_models
 
-import faulthandler
 import logging
 
 logger = logging.getLogger(__name__)
@@ -53,7 +52,6 @@ class GeoNodeBaseTestSupport(TestCase):
 
     type = None
     obj_ids = []
-    integration = False
 
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         fixtures = [
@@ -75,42 +73,36 @@ class GeoNodeBaseTestSupport(TestCase):
     def get_obj_ids(cls):
         return cls.obj_ids
 
-    @classproperty
-    def get_integration(cls):
-        return cls.integration
-
     def setUp(self):
         super(GeoNodeBaseTestSupport, self).setUp()
-        faulthandler.enable()
         logging.debug(" Test setUp. Creating models.")
-        self.get_obj_ids = create_models(type=self.get_type, integration=self.get_integration)
+        self.get_obj_ids = create_models(type=self.get_type)
 
     def tearDown(self):
+        super(GeoNodeBaseTestSupport, self).tearDown()
         logging.debug(" Test tearDown. Destroying models / Cleaning up Server.")
-        remove_models(self.get_obj_ids, type=self.get_type, integration=self.get_integration)
+        remove_models(self.get_obj_ids, type=self.get_type)
         from django.conf import settings
         if settings.OGC_SERVER['default'].get(
                 "GEOFENCE_SECURITY_ENABLED", False):
             from geonode.security.utils import purge_geofence_all
             purge_geofence_all()
-        super(GeoNodeBaseTestSupport, self).tearDown()
 
 
 class GeoNodeLiveTestSupport(GeoNodeBaseTestSupport,
                              LiveServerTestCase):
 
-    integration = True
     port = 8000
 
     def setUp(self):
         super(GeoNodeLiveTestSupport, self).setUp()
         logging.debug(" Test setUp. Creating models.")
-        self.get_obj_ids = create_models(type=self.get_type, integration=self.get_integration)
+        self.get_obj_ids = create_models(type=self.get_type)
 
     def tearDown(self):
         super(GeoNodeLiveTestSupport, self).tearDown()
         logging.debug(" Test tearDown. Destroying models / Cleaning up Server.")
-        remove_models(self.get_obj_ids, type=self.get_type, integration=self.get_integration)
+        remove_models(self.get_obj_ids, type=self.get_type)
         from django.conf import settings
         if settings.OGC_SERVER['default'].get(
                 "GEOFENCE_SECURITY_ENABLED", False):

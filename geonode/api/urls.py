@@ -27,12 +27,12 @@ api = Api(api_name='api')
 
 api.register(resources.GroupCategoryResource())
 api.register(resources.GroupResource())
-api.register(resources.GroupProfileResource())
 api.register(resources.OwnersResource())
 api.register(resources.ProfileResource())
 api.register(resources.RegionResource())
 api.register(resources.StyleResource())
 api.register(resources.TagResource())
+api.register(resources.EmbrapaTagResource()) #embrapa
 api.register(resources.ThesaurusKeywordResource())
 api.register(resources.TopicCategoryResource())
 api.register(resourcebase_resources.DocumentResource())

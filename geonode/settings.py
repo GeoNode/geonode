@@ -83,14 +83,14 @@ else:
 _DEFAULT_SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
 SECRET_KEY = os.getenv('SECRET_KEY', _DEFAULT_SECRET_KEY)
 
-DATABASE_URL = os.getenv(
-    'DATABASE_URL',
-    'sqlite:///{path}'.format(
-        path=os.path.join(PROJECT_ROOT, 'development.db')
-    )
-)
+#DATABASE_URL = os.getenv(
+    #'DATABASE_URL',
+    #'sqlite:///{path}'.format(
+        #path=os.path.join(PROJECT_ROOT, 'development.db')
+    #)
+#)
 
-# DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
+DATABASE_URL = 'postgresql://postgres:__geoinfo__@192.168.15.124:5432/cnpm_geonode'
 
 # Defines settings for development
 
@@ -155,7 +155,7 @@ USE_L10N = ast.literal_eval(os.getenv('USE_I18N', 'True'))
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = os.getenv('LANGUAGE_CODE', "en")
 
-_DEFAULT_LANGUAGES = """(
+_DEFAULT_LANGUAGES = (
     ('af', 'Afrikaans'),
     ('sq', 'Albanian'),
     ('am', 'Amharic'),
@@ -187,9 +187,9 @@ _DEFAULT_LANGUAGES = """(
     ('zh-cn', '中文'),
     ('ja', '日本語'),
     ('ko', '한국어'),
-)"""
+)
 
-LANGUAGES = ast.literal_eval(os.getenv('LANGUAGES', _DEFAULT_LANGUAGES))
+LANGUAGES = os.getenv('LANGUAGES', _DEFAULT_LANGUAGES)
 
 EXTRA_LANG_INFO = {
     'am': {
@@ -364,7 +364,6 @@ GEONODE_CORE_APPS = (
     # GeoNode internal apps
     'geonode.api',
     'geonode.base',
-    'geonode.br',
     'geonode.layers',
     'geonode.maps',
     'geonode.documents',
@@ -509,7 +508,7 @@ if UNOCONV_ENABLE:
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
     'formatters': {
         'verbose': {
             'format': '%(levelname)s %(asctime)s %(module)s %(process)d '
@@ -526,7 +525,7 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'ERROR',
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
@@ -540,7 +539,7 @@ LOGGING = {
         "django": {
             "handlers": ["console"], "level": "ERROR", },
         "geonode": {
-            "handlers": ["console"], "level": "ERROR", },
+            "handlers": ["console"], "level": "INFO", },
         "geonode.qgis_server": {
             "handlers": ["console"], "level": "ERROR", },
         "geoserver-restconfig.catalog": {
@@ -550,7 +549,7 @@ LOGGING = {
         "pycsw": {
             "handlers": ["console"], "level": "ERROR", },
         "celery": {
-            'handlers': ["console"], 'level': 'ERROR', },
+            "handlers": ["console"], "level": "ERROR", },
     },
 }
 
@@ -641,8 +640,6 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
-    'geonode.base.middleware.MaintenanceMiddleware',
-    'geonode.base.middleware.ReadOnlyMiddleware',   # a Middleware enabling Read Only mode of Geonode
 )
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
@@ -887,7 +884,7 @@ GEOFENCE_SECURITY_ENABLED = False if TEST and not INTEGRATION else ast.literal_e
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
     'default': {
-        'BACKEND': os.getenv('BACKEND', 'geonode.geoserver'),
+        'BACKEND': 'geonode.geoserver',
         'LOCATION': GEOSERVER_LOCATION,
         'WEB_UI_LOCATION': GEOSERVER_WEB_UI_LOCATION,
         'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
@@ -905,7 +902,7 @@ OGC_SERVER = {
         'GEOFENCE_URL': os.getenv('GEOFENCE_URL', 'internal:/'),
         'WMST_ENABLED': ast.literal_eval(os.getenv('WMST_ENABLED', 'False')),
         'BACKEND_WRITE_ENABLED': ast.literal_eval(os.getenv('BACKEND_WRITE_ENABLED', 'True')),
-        'WPS_ENABLED': ast.literal_eval(os.getenv('WPS_ENABLED', 'False')),
+        'WPS_ENABLED': ast.literal_eval(os.getenv('WPS_ENABLED', 'True')),
         'LOG_FILE': '%s/geoserver/data/logs/geoserver.log'
         % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to name of database in DATABASES dictionary to enable
@@ -1121,7 +1118,7 @@ try:
     ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
 except ValueError:
     # fallback to regular list of values separated with misc chars
-    ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('ALLOWED_HOSTS') is None \
+    ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode', '192.168.15.83', '192.168.15.124','192.168.15.157','hdnembrapa.ddns.net','hdnembrapa.ddns.net:8000'] if os.getenv('ALLOWED_HOSTS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
 # AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
@@ -1228,6 +1225,9 @@ API_LIMIT_PER_PAGE = int(os.getenv('API_LIMIT_PER_PAGE', '200'))
 API_INCLUDE_REGIONS_COUNT = ast.literal_eval(
     os.getenv('API_INCLUDE_REGIONS_COUNT', 'False'))
 
+# option to enable/disable resource unpublishing for administrators
+RESOURCE_PUBLISHING = ast.literal_eval(os.getenv('RESOURCE_PUBLISHING', 'False'))
+
 # Settings for EXIF plugin
 EXIF_ENABLED = ast.literal_eval(os.getenv('EXIF_ENABLED', 'True'))
 
@@ -1295,6 +1295,88 @@ GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = os.getenv('GEONODE_CLIENT_LAYER_PREVIEW_L
 MAP_BASELAYERS = [{}]
 
 """
+To enable the GeoExt based Client:
+1. pip install django-geoexplorer==4.0.42
+2. add 'geoexplorer' to INSTALLED_APPS
+3. enable those:
+"""
+# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'geoext'  # DEPRECATED use HOOKSET instead
+if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'geoext':
+    GEONODE_CLIENT_HOOKSET = os.getenv('GEONODE_CLIENT_HOOKSET', 'geonode.client.hooksets.GeoExtHookSet')
+
+    if 'geoexplorer' not in INSTALLED_APPS:
+        INSTALLED_APPS += ('geoexplorer', )
+
+    MAP_BASELAYERS += [{
+            "source": {"ptype": "gxp_olsource"},
+            "type": "OpenLayers.Layer",
+            "args": ["No background"],
+            "name": "background",
+            "visibility": False,
+            "fixed": True,
+            "group": "background"
+        },
+        {
+            "source": {"ptype": "gxp_osmsource"},
+            "type": "OpenLayers.Layer.OSM",
+            "name": "mapnik",
+            "visibility": True,
+            "fixed": True,
+            "group": "background"
+        }]
+
+    # MAP_BASELAYERS += [
+    # {
+    #     "source": {"ptype": "gxp_olsource"},
+    #     "type": "OpenLayers.Layer.XYZ",
+    #     "title": "TEST TILE",
+    #     "args": ["TEST_TILE", "http://test_tiles/tiles/${z}/${x}/${y}.png"],
+    #     "name": "background",
+    #     "attribution": "&copy; TEST TILE",
+    #     "visibility": False,
+    #     "fixed": True,
+    #     "group":"background"
+    # }]
+
+    if BING_API_KEY:
+        BASEMAP = {
+            'source': {
+                'ptype': 'gxp_bingsource',
+                'apiKey': BING_API_KEY
+            },
+            'name': 'AerialWithLabels',
+            'fixed': True,
+            'visibility': True,
+            'group': 'background'
+        }
+        MAP_BASELAYERS.append(BASEMAP)
+
+    if GOOGLE_API_KEY:
+        BASEMAP = {
+            'source': {
+                 'ptype': 'gxp_googlesource',
+                 'apiKey': GOOGLE_API_KEY
+            },
+            'name': 'SATELLITE',
+            'fixed': True,
+            'visibility': True,
+            'group': 'background'
+        }
+        MAP_BASELAYERS.append(BASEMAP)
+
+    if USE_GEOSERVER:
+        LOCAL_GEOSERVER = {
+            "source": {
+                "ptype": "gxp_wmscsource",
+                "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "wms",
+                "restUrl": "/gs/rest"
+            }
+        }
+        baselayers = MAP_BASELAYERS
+        MAP_BASELAYERS = [LOCAL_GEOSERVER]
+        MAP_BASELAYERS.extend(baselayers)
+
+"""
 To enable the REACT based Client:
 1. pip install pip install django-geonode-client==1.0.9
 2. enable those:
@@ -1312,68 +1394,72 @@ To enable the Leaflet based Client:
 if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'leaflet':
     GEONODE_CLIENT_HOOKSET = os.getenv('GEONODE_CLIENT_HOOKSET', 'geonode.client.hooksets.LeafletHookSet')
 
-    LEAFLET_CONFIG = {
-        'TILES': [
-            # Find tiles at:
-            # http://leaflet-extras.github.io/leaflet-providers/preview/
+    CORS_ORIGIN_WHITELIST = (
+        HOSTNAME
+    )
 
-            # Stamen toner lite.
-            ('Watercolor',
-                'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
-                'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-                <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
-                &mdash; Map data &copy; \
-                <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-                <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
-                CC-BY-SA</a>'),
-            ('Toner Lite',
-                'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
-                'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
-                <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
-                &mdash; Map data &copy; \
-                <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
-                <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
-                CC-BY-SA</a>'),
-        ],
-        'PLUGINS': {
-            'esri-leaflet': {
-                'js': 'lib/js/leaflet.js',
-                'auto-include': True,
-            },
-            'leaflet-fullscreen': {
-                'css': 'lib/css/leaflet.fullscreen.css',
-                'js': 'lib/js/Leaflet.fullscreen.min.js',
-                'auto-include': True,
-            },
-            'leaflet-opacity': {
-                'css': 'lib/css/L.Control.Opacity.css',
-                'js': 'lib/js/L.Control.Opacity.js',
-                'auto-include': True,
-            },
-            'leaflet-navbar': {
-                'css': 'lib/css/Leaflet.NavBar.css',
-                'js': 'lib/js/index.js',
-                'auto-include': True,
-            },
-            'leaflet-measure': {
-                'css': 'lib/css/leaflet-measure.css',
-                'js': 'lib/js/leaflet-measure.js',
-                'auto-include': True,
-            },
+LEAFLET_CONFIG = {
+    'TILES': [
+        # Find tiles at:
+        # http://leaflet-extras.github.io/leaflet-providers/preview/
+
+        # Stamen toner lite.
+        ('Watercolor',
+            'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
+            'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+            <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
+            &mdash; Map data &copy; \
+            <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+            <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
+            CC-BY-SA</a>'),
+        ('Toner Lite',
+            'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
+            'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+            <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
+            &mdash; Map data &copy; \
+            <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+            <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
+            CC-BY-SA</a>'),
+    ],
+    'PLUGINS': {
+        'esri-leaflet': {
+            'js': 'lib/js/leaflet.js',
+            'auto-include': True,
         },
-        'SRID': 3857,
-        'RESET_VIEW': False
-    }
+        'leaflet-fullscreen': {
+            'css': 'lib/css/leaflet.fullscreen.css',
+            'js': 'lib/js/Leaflet.fullscreen.min.js',
+            'auto-include': True,
+        },
+        'leaflet-opacity': {
+            'css': 'lib/css/L.Control.Opacity.css',
+            'js': 'lib/js/L.Control.Opacity.js',
+            'auto-include': True,
+        },
+        'leaflet-navbar': {
+            'css': 'lib/css/Leaflet.NavBar.css',
+            'js': 'lib/js/index.js',
+            'auto-include': True,
+        },
+        'leaflet-measure': {
+            'css': 'lib/css/leaflet-measure.css',
+            'js': 'lib/js/leaflet-measure.js',
+            'auto-include': True,
+        },
+    },
+    'SRID': 3857,
+    'RESET_VIEW': False
+}
 
-    if not DEBUG_STATIC:
-        # if not DEBUG_STATIC, use minified css and js
-        LEAFLET_CONFIG['PLUGINS'] = {
-            'leaflet-plugins': {
-                'js': 'lib/js/leaflet-plugins.min.js',
-                'css': 'lib/css/leaflet-plugins.min.css',
-                'auto-include': True,
-            }
+if not DEBUG_STATIC:
+    # if not DEBUG_STATIC, use minified css and js
+    LEAFLET_CONFIG['PLUGINS'] = {
+        'leaflet-plugins': {
+            'js': 'lib/js/leaflet-plugins.min.js',
+            'css': 'lib/css/leaflet-plugins.min.css',
+            'auto-include': True,
         }
+    }
 
 """
 To enable the MapStore2 REACT based Client:
@@ -1387,6 +1473,9 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
         INSTALLED_APPS += (
             'mapstore2_adapter',
             'geonode_mapstore_client',)
+
+    # This must be set to True in case you run the client in DEBUG mode with `npm run start`
+    MAPSTORE_DEBUG = False
 
     def get_geonode_catalogue_service():
         if PYCSW:
@@ -1462,19 +1551,6 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "visibility": False,
             "args": ["Empty Background", {"visibility": False}]
        }
-       # Custom XYZ Tile Provider
-        # {
-        #     "type": "tileprovider",
-        #     "title": "Title",
-        #     "provider": "custom", // or undefined
-        #     "name": "Name",
-        #     "group": "background",
-        #     "visibility": false,
-        #     "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        #     "options": {
-        #         "subdomains": [ "a", "b"]
-        #     }
-        # }
     ]
 
     if MAPBOX_ACCESS_TOKEN:
@@ -1724,33 +1800,6 @@ if os.name == 'nt':
 # Filter: (boolean, optional, default false) a filter option on that thesaurus will appear in the main search page
 # THESAURUS = {'name': 'inspire_themes', 'required': True, 'filter': True}
 
-# ######################################################## #
-# Advanced Resource Publishing Worklow Settings - START    #
-# ######################################################## #
-"""
-    - if [ RESOURCE_PUBLISHING == True ]
-      By default the uploaded resources will be "unpublished".
-      The owner will be able to change them to "published" **UNLESS** the ADMIN_MODERATE_UPLOADS is activated.
-      If the owner assigns unpublished resources to a Group, both from Metadata and Permissions, in any case
-       the Group "Managers" will be able to edit the Resource.
-
-    - if [ ADMIN_MODERATE_UPLOADS == True ]
-      1. The owner won't be able to change to neither "approved" nor "published" state (unless he is a superuser)
-      2. If the Resource belongs to a Group somehow, the Managers will be able to change the state to "approved"
-         but **NOT** to "published". Only a superuser can publish a resource.
-      3. Superusers can do enything.
-
-    - if [ GROUP_PRIVATE_RESOURCES == True ]
-      The "unapproved" and "unpublished" Resources will be accessible **ONLY** by owners, superusers and member of 
-       the belonging groups.
-
-    - if [ GROUP_MANDATORY_RESOURCES == True ]
-      Editor will be **FORCED** to select a Group when editing the resource metadata.
-"""
-
-# option to enable/disable resource unpublishing for administrators
-RESOURCE_PUBLISHING = ast.literal_eval(os.getenv('RESOURCE_PUBLISHING', 'False'))
-
 # Each uploaded Layer must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get('ADMIN_MODERATE_UPLOADS', 'False'))
 
@@ -1761,9 +1810,6 @@ GROUP_PRIVATE_RESOURCES = ast.literal_eval(os.environ.get('GROUP_PRIVATE_RESOURC
 # If this option is enabled, Groups will become strictly Mandatory on
 # Metadata Wizard
 GROUP_MANDATORY_RESOURCES = ast.literal_eval(os.environ.get('GROUP_MANDATORY_RESOURCES', 'False'))
-# ######################################################## #
-# Advanced Resource Publishing Worklow Settings - END      #
-# ######################################################## #
 
 # A boolean which specifies wether to display the email in user's profile
 SHOW_PROFILE_EMAIL = ast.literal_eval(os.environ.get('SHOW_PROFILE_EMAIL', 'False'))
@@ -1785,8 +1831,6 @@ ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION', 'optio
 
 SOCIALACCOUNT_ADAPTER = 'geonode.people.adapters.SocialAccountAdapter'
 SOCIALACCOUNT_AUTO_SIGNUP = False
-#This will hide or show local registration form in allauth view. True will show form
-SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP = strtobool(os.environ.get('SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP', 'True'))
 
 # Uncomment this to enable Linkedin and Facebook login
 # INSTALLED_APPS += (
@@ -1876,7 +1920,7 @@ MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
 MONITORING_SERVICE_NAME = os.getenv("MONITORING_SERVICE_NAME", 'geonode')
 
 # how long monitoring data should be stored
-MONITORING_DATA_TTL = timedelta(days=int(os.getenv("MONITORING_DATA_TTL", 365)))
+MONITORING_DATA_TTL = timedelta(days=int(os.getenv("MONITORING_DATA_TTL", 7)))
 
 # this will disable csrf check for notification config views,
 # use with caution - for dev purpose only
@@ -1912,13 +1956,11 @@ if MONITORING_ENABLED:
 
     CELERY_BEAT_SCHEDULE['collect_metrics'] = {
         'task': 'geonode.monitoring.tasks.collect_metrics',
-        'schedule': 300.0,
+        'schedule': 600.0,
     }
 
 USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'False'))
 USER_ANALYTICS_GZIP = ast.literal_eval(os.getenv('USER_ANALYTICS_GZIP', 'False'))
 
 GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat'))
-#This controls if tastypie search on resourches is performed only with titles
-SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'True'))
 # -- END Settings for MONITORING plugin

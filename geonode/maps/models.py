@@ -128,7 +128,7 @@ class Map(ResourceBase, GXPMapBase):
                 pass
 
         if layer_filter:
-            layers = [lyr for lyr in layers if layer_filter(lyr)]
+            layers = [l for l in layers if layer_filter(l)]
 
         # the readme text will appear in a README file in the zip
         readme = (
@@ -176,11 +176,11 @@ class Map(ResourceBase, GXPMapBase):
                 pass
 
         conf = context.get("config", {})
-        if not isinstance(conf, dict) or isinstance(conf, bytes):
+        if not isinstance(conf, dict):
             try:
                 conf = json.loads(ensure_string(conf))
             except Exception:
-                conf = {}
+                pass
 
         about = conf.get("about", {})
         self.title = conf.get("title", about.get("title", ""))
@@ -222,8 +222,8 @@ class Map(ResourceBase, GXPMapBase):
                 else:
                     return {}
 
-        layers = [lyr for lyr in _map.get("layers", [])]
-        layer_names = set(lyr.alternate for lyr in self.local_layers)
+        layers = [l for l in _map.get("layers", [])]
+        layer_names = set(l.alternate for l in self.local_layers)
 
         self.layer_set.all().delete()
         self.keywords.add(*_map.get('keywords', []))
@@ -234,9 +234,9 @@ class Map(ResourceBase, GXPMapBase):
                     self.id, MapLayer, layer, source_for(layer), ordering
                 ))
 
-        self.save(notify=True)
+        self.save()
 
-        if layer_names != set([lyr.alternate for lyr in self.local_layers]):
+        if layer_names != set([l.alternate for l in self.local_layers]):
             map_changed_signal.send_robust(sender=self, what_changed='layers')
 
         return template_name
@@ -328,7 +328,7 @@ class Map(ResourceBase, GXPMapBase):
         # Save again to persist the zoom and bbox changes and
         # to generate the thumbnail.
         self.set_missing_info()
-        self.save(notify=True)
+        self.save()
 
     @property
     def sender(self):
@@ -405,7 +405,7 @@ class Map(ResourceBase, GXPMapBase):
                 style = ml.styles or getattr(layer.default_style, 'name', '')
                 layers.append(layer)
                 lg_styles.append(style)
-        lg_layers = [lyr.name for lyr in layers]
+        lg_layers = [l.name for l in layers]
 
         # Group layer bounds and name
         lg_bounds = [str(coord) for coord in self.bbox]

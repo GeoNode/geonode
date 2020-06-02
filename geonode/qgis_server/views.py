@@ -87,7 +87,7 @@ def download_zip(request, layername):
     s = io.StringIO()
 
     # The zip compressor
-    zf = zipfile.ZipFile(s, "w", allowZip64=True)
+    zf = zipfile.ZipFile(s, "w")
 
     for fpath in filenames:
         # Calculate path for file in zip
@@ -159,7 +159,7 @@ def download_map(request, mapid):
     s = io.StringIO()
 
     # The zip compressor
-    zf = zipfile.ZipFile(s, "w", allowZip64=True)
+    zf = zipfile.ZipFile(s, "w")
 
     for map_layer in map_layers:
         if 'osm' not in map_layer.layer_title and 'OpenMap' not in map_layer.layer_title:

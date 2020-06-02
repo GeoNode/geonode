@@ -20,23 +20,21 @@
           <hr>
       {% endif %}
     </div>
-    {% if account_geonode_local_signup %}
-        <div class="row">
-          <p>{% trans "Create a new local account" %}</p>
-          <form id="signup_form" method="post" action="{% url "account_signup" %}" autocapitalize="off" {% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
-              <fieldset>
-                  {% csrf_token %}
-                  {{ form|as_bootstrap }}
-                  {% if redirect_field_value %}
-                      <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-                  {% endif %}
-                  <div class="form-actions">
-                      <button type="submit" class="btn btn-primary">{% trans "Sign up" %}</button>
-                  </div>
-              </fieldset>
-          </form>
-        </div>
-    {% endif %}
+    <div class="row">
+      <p>{% trans "Create a new local account" %}</p>
+      <form id="signup_form" method="post" action="{% url "account_signup" %}" autocapitalize="off" {% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
+          <fieldset>
+              {% csrf_token %}
+              {{ form|as_bootstrap }}
+              {% if redirect_field_value %}
+                  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+              {% endif %}
+              <div class="form-actions">
+                  <button type="submit" class="btn btn-primary">{% trans "Sign up" %}</button>
+              </div>
+          </fieldset>
+      </form>
+    </div>
 {% endblock %}
 
 {% block extra_script %}

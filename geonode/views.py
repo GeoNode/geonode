@@ -22,6 +22,11 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate, login, get_user_model
 from django.http import HttpResponse, HttpResponseRedirect
+
+# embrapa #
+
+# from django.http import JsonResponse
+
 from django.urls import reverse
 import json
 from django.db.models import Q
@@ -142,9 +147,18 @@ def ident_json(request):
 
 def h_keywords(request):
     from geonode.base.models import HierarchicalKeyword as hk
-    keywords = json.dumps(hk.dump_bulk_tree(request.user, type=request.GET.get('type', None)))
+
+    #print("Função h_keywords do views do Geonode: ")
+    keywords = json.dumps(hk.dump_bulk_tree())
+    #print(keywords)
     return HttpResponse(content=keywords)
 
+# Embrapa #
+def em_keywords(request):
+    from geonode.base.models import Embrapa_Keywords as ek
+    embrapa_kws = json.dumps(ek.dump_bulk_tree())
+    return HttpResponse(content=embrapa_kws)
+#   return JsonResponse(embrapa_kws)
 
 def moderator_contacted(request, inactive_user=None):
     """Used when a user signs up."""

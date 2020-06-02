@@ -21,16 +21,11 @@ import logging
 import traceback
 
 from django.conf import settings
-from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
-
-from guardian.shortcuts import (
-    assign_perm,
-    get_groups_with_perms
-)
-
 from geonode.groups.models import GroupProfile
+from guardian.shortcuts import assign_perm, get_groups_with_perms
 
 from .utils import (get_users_with_perms,
                     set_owner_permissions,
@@ -40,12 +35,9 @@ from .utils import (get_users_with_perms,
 
 logger = logging.getLogger("geonode.security.models")
 
-VIEW_PERMISSIONS = [
+ADMIN_PERMISSIONS = [
     'view_resourcebase',
     'download_resourcebase',
-]
-
-ADMIN_PERMISSIONS = [
     'change_resourcebase_metadata',
     'change_resourcebase',
     'delete_resourcebase',
@@ -85,24 +77,11 @@ class PermissionLevelMixin(object):
                     if managers:
                         for manager in managers:
                             if manager not in users and not manager.is_superuser:
-                                for perm in ADMIN_PERMISSIONS + VIEW_PERMISSIONS:
+                                for perm in ADMIN_PERMISSIONS:
                                     assign_perm(perm, manager, resource)
-                                users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS
+                                users[manager] = ADMIN_PERMISSIONS
                 except GroupProfile.DoesNotExist:
                     pass
-        if resource.group:
-            try:
-                group_profile = GroupProfile.objects.get(slug=resource.group.name)
-                managers = group_profile.get_managers()
-                if managers:
-                    for manager in managers:
-                        if manager not in users and not manager.is_superuser and \
-                        manager != resource.owner:
-                            for perm in ADMIN_PERMISSIONS + VIEW_PERMISSIONS:
-                                assign_perm(perm, manager, resource)
-                            users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS
-            except GroupProfile.DoesNotExist:
-                pass
         info = {
             'users': users,
             'groups': groups}
@@ -115,6 +94,7 @@ class PermissionLevelMixin(object):
                     'groups': get_groups_with_perms(
                         self.layer,
                         attach_perms=True)}
+
                 for user in info_layer['users']:
                     if user in info['users']:
                         info['users'][user] = info['users'][user] + info_layer['users'][user]
@@ -170,17 +150,6 @@ class PermissionLevelMixin(object):
             assign_perm('change_layer_style', self.owner, self)
             if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                 purge_geofence_layer_rules(self.get_self_resource())
-
-                # Owner
-                perms = [
-                    "view_resourcebase",
-                    "change_layer_data",
-                    "change_layer_style",
-                    "change_resourcebase",
-                    "change_resourcebase_permissions",
-                    "download_resourcebase"]
-                sync_geofence_with_guardian(self.layer, perms, user=self.owner)
-
                 # Anonymous
                 if anonymous_can_view:
                     perms = ["view_resourcebase"]
@@ -188,6 +157,13 @@ class PermissionLevelMixin(object):
                 if anonymous_can_download:
                     perms = ["download_resourcebase"]
                     sync_geofence_with_guardian(self.layer, perms, user=None, group=None)
+                # Owner
+                perms = [
+                    "change_resourcebase",
+                    "change_resourcebase_permissions",
+                    "view_resourcebase",
+                    "download_resourcebase"]
+                sync_geofence_with_guardian(self.layer, perms, user=self.owner)
 
     def set_permissions(self, perm_spec):
         """
@@ -228,11 +204,9 @@ class PermissionLevelMixin(object):
             if self.polymorphic_ctype.name == 'layer':
                 purge_geofence_layer_rules(self.get_self_resource())
                 perms = [
-                    "view_resourcebase",
-                    "change_layer_data",
-                    "change_layer_style",
                     "change_resourcebase",
                     "change_resourcebase_permissions",
+                    "view_resourcebase",
                     "download_resourcebase"]
                 sync_geofence_with_guardian(self.layer, perms, user=self.owner)
 
@@ -240,19 +214,19 @@ class PermissionLevelMixin(object):
         if 'users' in perm_spec and len(perm_spec['users']) > 0:
             for user, perms in perm_spec['users'].items():
                 _user = get_user_model().objects.get(username=user)
-                if _user != self.owner and user != "AnonymousUser":
-                    for perm in perms:
-                        if self.polymorphic_ctype.name == 'layer' and perm in (
-                                'change_layer_data', 'change_layer_style',
-                                'add_layer', 'change_layer', 'delete_layer',):
-                            assign_perm(perm, _user, self.layer)
-                        else:
-                            assign_perm(perm, _user, self.get_self_resource())
-
-                    # Set the GeoFence Rules
-                    if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-                        if self.polymorphic_ctype.name == 'layer':
-                            sync_geofence_with_guardian(self.layer, perms, user=user)
+                for perm in perms:
+                    if self.polymorphic_ctype.name == 'layer' and perm in (
+                            'change_layer_data', 'change_layer_style',
+                            'add_layer', 'change_layer', 'delete_layer',):
+                        assign_perm(perm, _user, self.layer)
+                    else:
+                        assign_perm(perm, _user, self.get_self_resource())
+                # Set the GeoFence Rules
+                if user and user == "AnonymousUser":
+                    user = None
+                if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
+                    if self.polymorphic_ctype.name == 'layer':
+                        sync_geofence_with_guardian(self.layer, perms, user=user)
 
         # All the other groups
         if 'groups' in perm_spec and len(perm_spec['groups']) > 0:
@@ -265,28 +239,9 @@ class PermissionLevelMixin(object):
                         assign_perm(perm, _group, self.layer)
                     else:
                         assign_perm(perm, _group, self.get_self_resource())
-
                 # Set the GeoFence Rules
                 if _group and _group.name and _group.name == 'anonymous':
                     _group = None
-
                 if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                     if self.polymorphic_ctype.name == 'layer':
                         sync_geofence_with_guardian(self.layer, perms, group=_group)
-
-        # AnonymousUser
-        if 'users' in perm_spec and len(perm_spec['users']) > 0:
-            if "AnonymousUser" in perm_spec['users']:
-                perms = perm_spec['users']["AnonymousUser"]
-                for perm in perms:
-                    if self.polymorphic_ctype.name == 'layer' and perm in (
-                            'change_layer_data', 'change_layer_style',
-                            'add_layer', 'change_layer', 'delete_layer',):
-                        assign_perm(perm, _user, self.layer)
-                    else:
-                        assign_perm(perm, _user, self.get_self_resource())
-
-                # Set the GeoFence Rules (user = None)
-                if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-                    if self.polymorphic_ctype.name == 'layer':
-                        sync_geofence_with_guardian(self.layer, perms)

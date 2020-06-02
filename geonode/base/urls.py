@@ -20,10 +20,12 @@
 
 
 from django.conf.urls import url
+from django.conf import settings
 
 from .views import (
     ResourceBaseAutocomplete, RegionAutocomplete,
-    HierarchicalKeywordAutocomplete, ThesaurusKeywordLabelAutocomplete, OwnerRightsRequestView)
+    HierarchicalKeywordAutocomplete, ThesaurusKeywordLabelAutocomplete, 
+    EmbrapaKeywordsAutocomplete, EmbrapaUnityAutocomplete, EmbrapaPurposeAutocomplete)
 
 
 urlpatterns = [
@@ -44,15 +46,32 @@ urlpatterns = [
         HierarchicalKeywordAutocomplete.as_view(),
         name='autocomplete_hierachical_keyword',
     ),
-
     url(
+        r'^autocomplete_embrapa_keywords/$',
+        EmbrapaKeywordsAutocomplete.as_view(),
+        name='autocomplete_embrapa_keywords',
+    ),
+    url(
+        r'^autocomplete_embrapa_unity/$',
+        EmbrapaUnityAutocomplete.as_view(),
+        name='autocomplete_embrapa_unity',
+    ),
+    url(
+        r'^autocomplete_embrapa_purpose/$',
+        EmbrapaPurposeAutocomplete.as_view(),
+        name='autocomplete_embrapa_purpose',
+    ),
+]
+
+#Adicionado a url do embrapa_keywords
+
+# Only register the url for thesuarus if it is enabled in settings
+if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
+
+    urlpatterns.append(
+        url(
         r'^thesaurus_autocomplete/$',
         ThesaurusKeywordLabelAutocomplete.as_view(),
         name='thesaurus_autocomplete',
-    ),
-    url(
-        r'^resource_rights/(?P<pk>\d+)$',
-        OwnerRightsRequestView.as_view(),
-        name='owner_rights_request',
-    ),
-]
+        ),
+    )

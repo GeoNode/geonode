@@ -31,6 +31,7 @@ from geonode.groups.models import GroupProfile
 class GroupForm(TranslationModelForm):
 
     slug = forms.SlugField(
+        max_length=20,
         help_text=_("a short version of the name consisting only of letters, numbers, underscores and hyphens."),
         widget=forms.HiddenInput,
         required=False)
@@ -84,7 +85,7 @@ class GroupUpdateForm(forms.ModelForm):
 class GroupMemberForm(forms.Form):
     user_identifiers = forms.CharField(
         label=_("User Identifiers"),
-        widget=forms.SelectMultiple(
+        widget=forms.Select(
             attrs={
                 'class': 'user-select',
                 'style': 'width:300px'
@@ -97,10 +98,10 @@ class GroupMemberForm(forms.Form):
     )
 
     def clean_user_identifiers(self):
-        values = self.cleaned_data['user_identifiers'].strip('][').split(', ')
+        value = self.cleaned_data["user_identifiers"]
         new_members = []
         errors = []
-        for name in (v.strip('\'') for v in values):
+        for name in (v.strip() for v in value.split(",")):
             try:
                 new_members.append(get_user_model().objects.get(username=name))
             except get_user_model().DoesNotExist:

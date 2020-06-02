@@ -18,42 +18,38 @@
 #
 #########################################################################
 
-import io
 import os
 import re
-import gzip
-import json
 import shutil
 import logging
 import tempfile
 import traceback
+import io
+import gzip
 
 from hyperlink import URL
 from slugify import slugify
 from urllib.parse import urlparse, urlsplit, urljoin
 
 from django.conf import settings
-from django.template import loader
 from django.http import HttpResponse
-from django.views.generic import View
-from distutils.version import StrictVersion
 from django.http.request import validate_host
-from django.forms.models import model_to_dict
+from django.views.generic import View
+from django.views.decorators.csrf import requires_csrf_token
+from django.template import loader
+from distutils.version import StrictVersion
 from django.utils.translation import ugettext as _
 from django.core.files.storage import FileSystemStorage
-from django.views.decorators.csrf import requires_csrf_token
 
 from geonode.base.models import Link
 from geonode.layers.models import Layer, LayerFile
-from geonode.utils import (
-    resolve_object,
-    check_ogc_backend,
-    get_dir_time_suffix,
-    zip_dir,
-    get_headers,
-    http_client,
-    json_response,
-    json_serializer_producer)
+from geonode.utils import (resolve_object,
+                           check_ogc_backend,
+                           get_dir_time_suffix,
+                           zip_dir,
+                           get_headers,
+                           http_client,
+                           json_response)
 from geonode.base.enumerations import LINK_TYPES as _LT
 
 from geonode import geoserver, qgis_server  # noqa
@@ -170,21 +166,9 @@ def proxy(request, url=None, response_callback=None,
         _url = ('%s%saccess_token=%s' %
                 (_url, query_separator, access_token))
 
-    _data = request.body.decode('utf-8')
-
-    # Avoid translating local geoserver calls into external ones
-    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        from geonode.geoserver.helpers import ogc_server_settings
-        _url = _url.replace(
-            '%s%s' % (settings.SITEURL, 'geoserver'),
-            ogc_server_settings.LOCATION.rstrip('/'))
-        _data = _data.replace(
-            '%s%s' % (settings.SITEURL, 'geoserver'),
-            ogc_server_settings.LOCATION.rstrip('/'))
-
     response, content = http_client.request(_url,
                                             method=request.method,
-                                            data=_data,
+                                            data=request.body,
                                             headers=headers,
                                             timeout=timeout,
                                             user=request.user)
@@ -262,9 +246,9 @@ def download(request, resourceid, sender=Layer):
                     item for idx, item in enumerate(LayerFile.objects.filter(upload_session=upload_session))]
                 if layer_files:
                     # Copy all Layer related files into a temporary folder
-                    for lyr in layer_files:
-                        if storage.exists(str(lyr.file)):
-                            geonode_layer_path = storage.path(str(lyr.file))
+                    for l in layer_files:
+                        if storage.exists(str(l.file)):
+                            geonode_layer_path = storage.path(str(l.file))
                             base_filename, original_ext = os.path.splitext(geonode_layer_path)
                             shutil.copy2(geonode_layer_path, target_folder)
                         else:
@@ -327,11 +311,6 @@ def download(request, resourceid, sender=Layer):
                 os.makedirs(target_md_folder)
 
             try:
-                dump_file = os.path.join(target_md_folder, "".join([instance.name, ".dump"]))
-                with open(dump_file, 'w') as outfile:
-                    serialized_obj = json_serializer_producer(model_to_dict(instance))
-                    json.dump(serialized_obj, outfile)
-
                 links = Link.objects.filter(resource=instance.resourcebase_ptr)
                 for link in links:
                     link_name = slugify(link.name)
@@ -410,44 +389,16 @@ class OWSListView(View):
         out = {'success': True}
         data = []
         out['data'] = data
-        # WMS
-        _raw_url = ows._wms_get_capabilities()
-        _url = urlsplit(_raw_url)
-        headers, access_token = get_headers(request, _url, _raw_url)
-        if access_token:
-            _j = '&' if _url.query else '?'
-            _raw_url = _j.join([_raw_url, 'access_token={}'.format(access_token)])
-        data.append({'url': _raw_url, 'type': 'OGC:WMS'})
-
-        # WCS
-        _raw_url = ows._wcs_get_capabilities()
-        _url = urlsplit(_raw_url)
-        headers, access_token = get_headers(request, _url, _raw_url)
-        if access_token:
-            _j = '&' if _url.query else '?'
-            _raw_url = _j.join([_raw_url, 'access_token={}'.format(access_token)])
-        data.append({'url': _raw_url, 'type': 'OGC:WCS'})
-
-        # WFS
-        _raw_url = ows._wfs_get_capabilities()
-        _url = urlsplit(_raw_url)
-        headers, access_token = get_headers(request, _url, _raw_url)
-        if access_token:
-            _j = '&' if _url.query else '?'
-            _raw_url = _j.join([_raw_url, 'access_token={}'.format(access_token)])
-        data.append({'url': _raw_url, 'type': 'OGC:WFS'})
+        # per-layer links
+        # for link in Link.objects.filter(link_type__in=LINK_TYPES):  # .distinct('url'):
+        #     data.append({'url': link.url, 'type': link.link_type})
+        data.append({'url': ows._wcs_get_capabilities(), 'type': 'OGC:WCS'})
+        data.append({'url': ows._wfs_get_capabilities(), 'type': 'OGC:WFS'})
+        data.append({'url': ows._wms_get_capabilities(), 'type': 'OGC:WMS'})
 
         # catalogue from configuration
         for catname, catconf in settings.CATALOGUE.items():
-            # CSW
-            _raw_url = catconf['URL']
-            _url = urlsplit(_raw_url)
-            headers, access_token = get_headers(request, _url, _raw_url)
-            if access_token:
-                _j = '&' if _url.query else '?'
-                _raw_url = _j.join([_raw_url, 'access_token={}'.format(access_token)])
-            data.append({'url': _raw_url, 'type': 'OGC:CSW'})
-
+            data.append({'url': catconf['URL'], 'type': 'OGC:CSW'})
         # main site url
         data.append({'url': settings.SITEURL, 'type': 'WWW:LINK'})
         return json_response(out)

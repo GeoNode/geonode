@@ -120,21 +120,12 @@
         {%  endif %}
       {%  endif %}
       </li>
-      {% if not READ_ONLY_MODE %}
-        {% if "change_resourcebase_metadata" in perms_list or "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list %}
-          <li class="list-group-item">
-            <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-document">{% trans "Edit Document" %}</button>
-          </li>
-        {% endif %}
+      {% if "change_resourcebase_metadata" in perms_list or "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list %}
+      <li class="list-group-item">
+        <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-document">{% trans "Edit Document" %}</button>
+      </li>
       {% endif %}
-        {% display_edit_request_button resource request.user perms_list as display_request_button %}
-        {% if display_request_button %}
-            <li class="list-group-item">
-                <a href="{% url "owner_rights_request" resource.id %}">
-                    <button class="btn btn-primary btn-md btn-block">{% trans "Request change" %}</button>
-                </a>
-            </li>
-        {% endif %}
+
       <div class="modal fade" id="edit-document" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -144,42 +135,43 @@
             </div>
             <div class="modal-body">
 
-                <div class="row edit-modal">
-                  {% if "change_resourcebase_metadata" in perms_list %}
-                  <div class="col-sm-3">
-                    <i class="fa fa-list-alt fa-3x"></i>
-                    <h4>{% trans "Metadata" %}</h4>
-                    <a class="btn btn-default btn-block btn-xs" href="{% url "document_metadata" resource.id %}">{% trans "Wizard" %}</a>
-                    <a class="btn btn-default btn-block btn-xs" href="{% url "document_metadata_advanced" resource.id %}">{% trans "Advanced Edit" %}</a>
-                  </div>
-                  {% endif %}
+              <div class="row edit-modal">
+                {% if "change_resourcebase_metadata" in perms_list %}
+                <div class="col-sm-3">
+                  <i class="fa fa-list-alt fa-3x"></i>
+                  <h4>{% trans "Metadata" %}</h4>
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "document_metadata" resource.id %}">{% trans "Wizard" %}</a>
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "document_metadata_advanced" resource.id %}">{% trans "Advanced Edit" %}</a>
+                </div>
+                {% endif %}
+                {% if "change_resourcebase" in perms_list %}
+                <div class="col-sm-3">
+                  <i class="fa fa-photo fa-3x"></i>
+                  <h4>{% trans "Thumbnail" %}</h4>
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "document_thumb_upload" resource.id %}" id="set_thumbnail">{% trans "Set" %}</a>
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "thumbnail_upload" resource.resourcebase_ptr.id %}">{% trans "Upload" %}</a>
+                </div>
+                {% endif %}
+                {% if "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list %}
+                <div class="col-sm-3">
+                  <i class="fa fa-file-text-o fa-3x"></i>
+                  <h4>{% trans "Document" %}</h4>
                   {% if "change_resourcebase" in perms_list %}
-                  <div class="col-sm-3">
-                    <i class="fa fa-photo fa-3x"></i>
-                    <h4>{% trans "Thumbnail" %}</h4>
-                    <a class="btn btn-default btn-block btn-xs" href="{% url "thumbnail_upload" resource.resourcebase_ptr.id %}">{% trans "Upload" %}</a>
-                  </div>
+                  <a class="btn btn-default btn-block btn-xs" href="{% url "document_replace" resource.id %}">{% trans "Replace" %}</a>
                   {% endif %}
-                  {% if "change_resourcebase" in perms_list or "delete_resourcebase" in perms_list %}
-                  <div class="col-sm-3">
-                    <i class="fa fa-file-text-o fa-3x"></i>
-                    <h4>{% trans "Document" %}</h4>
-                    {% if "change_resourcebase" in perms_list %}
-                    <a class="btn btn-default btn-block btn-xs" href="{% url "document_replace" resource.id %}">{% trans "Replace" %}</a>
-                    {% endif %}
-                    {% if "delete_resourcebase" in perms_list %}
-                    <a class="btn btn-danger btn-block btn-xs" href="{% url "document_remove" resource.id %}">{% trans "Remove" %}</a>
-                    {% endif %}
-                  </div>
+                  {% if "delete_resourcebase" in perms_list %}
+                  <a class="btn btn-danger btn-block btn-xs" href="{% url "document_remove" resource.id %}">{% trans "Remove" %}</a>
                   {% endif %}
                 </div>
+                {% endif %}
               </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
-              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
             </div>
           </div>
         </div>
+      </div>
 
       <li class="list-group-item">
         <button class="btn btn-default btn-md btn-block" data-toggle="modal" data-target="#download-metadata">{% trans "Download Metadata" %}</button>
@@ -231,17 +223,13 @@
         </ul>
       </li>
 
-      {% if GEONODE_SECURITY_ENABLED %}
-        {% if "change_resourcebase_permissions" in perms_list %}
-          {% if not READ_ONLY_MODE %}
-            <li class="list-group-item">
-              <h4>{% trans "Permissions" %}</h4>
-              <p>{% trans "Click the button below to change the permissions of this document." %}</p>
-              <p><a href="#modal_perms" data-toggle="modal" class="btn btn-primary btn-block" data-target="#_permissions">{% trans "Change Document Permissions" %}</a></p>
-            </li>
-            {% include "_permissions_form.html" %}
-          {% endif %}
-        {% endif %}
+      {% if "change_resourcebase_permissions" in perms_list %}
+      <li class="list-group-item">
+        <h4>{% trans "Permissions" %}</h4>
+        <p>{% trans "Click the button below to change the permissions of this document." %}</p>
+        <p><a href="#modal_perms" data-toggle="modal" class="btn btn-primary btn-block" data-target="#_permissions">{% trans "Change Document Permissions" %}</a></p>
+      </li>
+      {% include "_permissions_form.html" %}
       {% endif %}
 
       {% include "base/_resourcebase_contact_snippet.html" %}

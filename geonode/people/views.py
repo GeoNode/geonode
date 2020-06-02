@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from allauth.account.views import SignupView
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -29,20 +29,11 @@ from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.db.models import Q
 
-from geonode.tasks.tasks import send_email
 from geonode.people.forms import ProfileForm
-from geonode.base.auth import get_or_create_token
 from geonode.people.forms import ForgotUsernameForm
+from geonode.tasks.tasks import send_email
 
 from dal import autocomplete
-
-
-class CustomSignupView(SignupView):
-
-    def get_context_data(self, **kwargs):
-        ret = super(CustomSignupView, self).get_context_data(**kwargs)
-        ret.update({'account_geonode_local_signup': settings.SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP})
-        return ret
 
 
 @login_required
@@ -83,16 +74,7 @@ def profile_detail(request, username):
     profile = get_object_or_404(get_user_model(), Q(is_active=True), username=username)
     # combined queryset from each model content type
 
-    access_token = None
-    if request and request.user:
-        access_token = get_or_create_token(request.user)
-        if access_token and not access_token.is_expired():
-            access_token = access_token.token
-        else:
-            access_token = None
-
     return render(request, "people/profile_detail.html", {
-        'access_token': access_token,
         "profile": profile,
     })
 

@@ -48,14 +48,43 @@ from django.utils.encoding import (
 from bootstrap3_datetime.widgets import DateTimePicker
 from modeltranslation.forms import TranslationModelForm
 
-from geonode.base.models import HierarchicalKeyword, TopicCategory, Region, License, CuratedThumbnail, \
-    ResourceBase
+from geonode.base.models import HierarchicalKeyword, TopicCategory, Region, License, CuratedThumbnail
 from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.documents.models import Document
 from geonode.base.enumerations import ALL_LANGUAGES
 from geonode.base.widgets import TaggitSelect2Custom
 
+# embrapa #
+#from mptt.forms import TreeNodeMultipleChoiceField
+#import autocomplete_light
+#from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
+from geonode.base.models import Embrapa_Keywords, Embrapa_Unity, Embrapa_Purpose
+import requests
+
 logger = logging.getLogger(__name__)
+
+def choice_unity():
+    # Rota da api que retorna as unidades
+    unity_endpoint = 'https://sistemas.sede.embrapa.br/corporativows/rest/corporativoservice/unidades/lista/todas'
+
+    # Fazer a chamada na api
+    response = requests.get(unity_endpoint)
+    
+    # Transformar em JSON
+    data = response.json()
+
+    # Pegar o índice "unidadesEmbrapa"
+    data_ids = data["unidadesEmbrapa"]
+
+    # Construir uma lista de ids com o tamanho informado
+    embrapa_only_ids = [i for i in range(len(data_ids))]
+
+    # Colocando apenas os ids na lista
+    for i in range(len(data_ids)):
+        embrapa_only_ids[i] = data_ids[i]["id"]
+
+    # Retornando a lista de ids
+    return embrapa_only_ids
 
 
 def get_tree_data():
@@ -109,10 +138,10 @@ class CategoryChoiceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
         return '<i class="fa ' + obj.fa_class + ' fa-2x unchecked"></i>' \
-                         '<i class="fa ' + obj.fa_class + ' fa-2x checked"></i>' \
-                         '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" ' \
-                         'data-content="' + obj.description + '" trigger="hover">' \
-                                                              '<br/><strong>' + obj.gn_description + '</strong></span>'
+               '<i class="fa ' + obj.fa_class + ' fa-2x checked"></i>' \
+               '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" ' \
+               'data-content="' + obj.description + '" trigger="hover">' \
+               '<br/><strong>' + obj.gn_description + '</strong></span>'
 
 
 # NOTE: This is commented as it needs updating to work with select2 and autocomlete light.
@@ -150,7 +179,6 @@ class RegionsMultipleChoiceField(forms.MultipleChoiceField):
         if self.required and not value:
             raise forms.ValidationError(
                 self.error_messages['required'], code='required')
-
 
 class RegionsSelect(forms.Select):
     allow_multiple_selected = True
@@ -229,7 +257,7 @@ class RegionsSelect(forms.Select):
         for option_value, option_label in self.choices:
             if not isinstance(
                     option_label, (list, tuple)) and isinstance(
-                        option_label, six.string_types):
+                    option_label, six.string_types):
                 output.append(
                     self.render_option_value(
                         selected_choices,
@@ -240,7 +268,7 @@ class RegionsSelect(forms.Select):
         for option_value, option_label in self.choices:
             if isinstance(
                     option_label, (list, tuple)) and not isinstance(
-                        option_label, six.string_types):
+                    option_label, six.string_types):
                 output.append(
                     format_html(
                         '<optgroup label="{}">',
@@ -248,10 +276,10 @@ class RegionsSelect(forms.Select):
                 for option in option_label:
                     if isinstance(
                             option, (list, tuple)) and not isinstance(
-                                option, six.string_types):
+                            option, six.string_types):
                         if isinstance(
                                 option[1][0], (list, tuple)) and not isinstance(
-                                    option[1][0], six.string_types):
+                                option[1][0], six.string_types):
                             for option_child in option[1][0]:
                                 output.append(
                                     self.render_option_value(
@@ -283,7 +311,7 @@ class CategoryForm(forms.Form):
         label='*' + _('Category'),
         empty_label=None,
         queryset=TopicCategory.objects.filter(
-            is_choice=True).extra(
+            is_choice=True) .extra(
             order_by=['description']))
 
     def clean(self):
@@ -314,7 +342,7 @@ class TKeywordForm(forms.ModelForm):
         ),
         label=_("Keywords from Thesaurus"),
         required=False,
-        help_text=_("List of keywords from Thesaurus", ),
+        help_text=_("List of keywords from Thesaurus",),
     )
 
 
@@ -333,84 +361,187 @@ class ResourceBaseForm(TranslationModelForm):
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
 
     owner = forms.ModelChoiceField(
-        empty_label="Owner",
-        label=_("Owner"),
+        empty_label="Proprietário",
+        label=_("Proprietário"),
         required=False,
         queryset=get_user_model().objects.exclude(username='AnonymousUser'),
         widget=autocomplete.ModelSelect2(url='autocomplete_profile'))
 
     date = forms.DateTimeField(
-        label=_("Date"),
+        label=_("Data de Publicação"),
         localize=True,
         input_formats=['%Y-%m-%d %H:%M %p'],
         widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
     )
     temporal_extent_start = forms.DateTimeField(
-        label=_("temporal extent start"),
+        label=_("Extensão Temporal - Inicio"),
         required=False,
         localize=True,
         input_formats=['%Y-%m-%d %H:%M %p'],
         widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
     )
     temporal_extent_end = forms.DateTimeField(
-        label=_("temporal extent end"),
+        label=_("Extensão Temporal - Fim"),
         required=False,
         localize=True,
         input_formats=['%Y-%m-%d %H:%M %p'],
         widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
     )
 
+    # embrapa #
     poc = forms.ModelChoiceField(
         empty_label=_("Person outside GeoNode (fill form)"),
-        label=_("Point of Contact"),
+        label=_("Ponto de Contato"),
         required=False,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=autocomplete.ModelSelect2(url='autocomplete_profile'))
 
+    #poc = forms.ModelMultipleChoiceField(
+        #empty_label=_("Person outside GeoNode (fill form)"),
+        #label=_("Pontos de Contato"),
+        #required=False,
+        #help_text='Indicar o(s) autor(es) do conjunto de dados geograficos.',
+        #queryset=get_user_model().objects.exclude(
+            #username='AnonymousUser'),
+        #widget=TaggitSelect2Custom(url='autocomplete_profile'))
+        #widget=autocomplete.ModelSelect2(url='autocomplete_profile')
+
     metadata_author = forms.ModelChoiceField(
         empty_label=_("Person outside GeoNode (fill form)"),
-        label=_("Metadata Author"),
+        label=_("Autor do Metadado"),
         required=False,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=autocomplete.ModelSelect2(url='autocomplete_profile'))
 
     keywords = TagField(
-        label=_("Free-text Keywords"),
+        label=_("Termos livres"),
         required=False,
-        help_text=_("A space or comma-separated list of keywords. Use the widget to select from Hierarchical tree."),
+        help_text=_("Caso deseje adicionar alguma palavra-chave que nao consta na lista controlada disponivel no campo 'Palavras-Chave Embrapa', insira palavras-chave adicionais, separando-as por virgula"),
         # widget=TreeWidget(url='autocomplete_hierachical_keyword'), #Needs updating to work with select2
         widget=TaggitSelect2Custom(url='autocomplete_hierachical_keyword'))
+    
+    # embrapa #
+    data_criacao = forms.DateTimeField(
+        label = _("Ano de criação do conjunto de dados"),
+        localize=True,
+        input_formats=['%Y-%m-%d %H:%M %p'],
+        help_text="Insira a data de criação do conjunto de dados",
+        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"}))
 
-    """
-    regions = TreeNodeMultipleChoiceField(
-        label=_("Regions"),
+    #embrapa_keywords = forms.ModelMultipleChoiceField(
+     #   label="Palavras-Chave Embrapa",
+     #   required=False,
+     #   help_text="Insira as palavras-chave, para indexacao do documento, de acordo com o vocabulario controlado elaborado pela equipe de geoinformacao da IDE-Embrapa",
+     #   queryset=Embrapa_Keywords.objects.all(),
+     #   widget=TaggitSelect2Custom(url='autocomplete_embrapa_keywords'))
+        
+    #outra tentativa
+    #embrapa_keywords = EmbrapaKeywordsMultipleChoiceField(
+    #    label=_("Palavras-Chave Embrapa"),
+    #    required=False,
+    #    help_text="Insira as palavras-chave, para indexacao do documento, de acordo com o vocabulario controlado elaborado pela equipe de geoinformacao da IDE-Embrapa",
+    #    choices=Embrapa_Keywords.objects.all(),
+    #    widget=TaggitSelect2Custom(url='autocomplete_embrapa_keywords')
+    #)
+    embrapa_keywords = TagField(
+        label=_("Palavras-Chave Embrapa"),
+        required=False,
+        help_text="Insira as palavras-chave, para indexacao do documento, de acordo com o vocabulario controlado elaborado pela equipe de geoinformacao da IDE-Embrapa",
+        widget=TaggitSelect2Custom(url='autocomplete_embrapa_keywords')
+    )
+
+    #ARRUMAR O EMBRAPA_KEYWORDS_AUTOCOMPLETE
+    
+    '''regions = TreeNodeMultipleChoiceField(
+        label=_("Regiões"),
         required=False,
         queryset=Region.objects.all(),
         level_indicator=u'___')
-    """
+    '''
+    
     regions = RegionsMultipleChoiceField(
-        label=_("Regions"),
+        label=_("Regiões"),
         required=False,
         choices=get_tree_data(),
         widget=RegionsSelect)
-
+    embrapa_unity = forms.ModelChoiceField(
+        empty_label=_("Unidade Embrapa"),
+        label=_("Unidade Embrapa"),
+        required=False,
+        queryset= Embrapa_Unity.objects.all(),
+        widget= autocomplete.ModelSelect2(url='autocomplete_embrapa_unity')
+    )
+    embrapa_purpose = forms.ModelChoiceField(
+        empty_label=_("Finalidade Embrapa"),
+        label=_("Finalidade Embrapa"),
+        required=False,
+        queryset= Embrapa_Purpose.objects.all(),
+        widget=autocomplete.ModelSelect2(url='autocomplete_embrapa_purpose')
+    )
+    
     regions.widget.attrs = {"size": 20}
 
     def __init__(self, *args, **kwargs):
         super(ResourceBaseForm, self).__init__(*args, **kwargs)
         for field in self.fields:
             help_text = self.fields[field].help_text
+            #self.fields[field].help_text = "Teste"
             if help_text != '':
                 self.fields[field].widget.attrs.update(
                     {
+                        'placeholder': '',
                         'class': 'has-popover',
                         'data-content': help_text,
                         'data-placement': 'right',
                         'data-container': 'body',
-                        'data-html': 'true'})
+                        'data-html': 'true',
+                        })
 
+    #É AQUI QUE TÁ SEPARANDO POR VIRGULAS AS PALAVRAS CHAVE
+    def clean_embrapa_keywords(self):
+        from urllib.parse import unquote
+        from html.entities import codepoint2name
+
+        def unicode_escape(unistr):
+            """
+            Tidys up unicode entities into HTML friendly entities
+            Takes a unicode string as an argument
+            Returns a unicode string
+            """
+            escaped = ""
+            for char in unistr:
+                if ord(char) in codepoint2name:
+                    name = codepoint2name.get(ord(char))
+                    escaped += '&%s;' % name if 'nbsp' not in name else ' '
+                else:
+                    escaped += char
+            return escaped
+        embrapa_keywords = self.cleaned_data['embrapa_keywords']
+        _unsescaped_embrapa_kwds = []
+        for k in embrapa_keywords:
+            _k = unquote(('%s' % k)).split(",")
+            if not isinstance(_k, six.string_types):
+                for _kk in [x.strip() for x in _k]:
+                    # Simulate JS Unescape
+                    _kk = _kk.replace('%u', r'\u').\
+                        encode('unicode-escape').replace(b'\\\\u',
+                                                         b'\\u').decode('unicode-escape') if '%u' in _kk else _kk
+                    _ek = Embrapa_Keywords.objects.filter(name__iexact='%s' % _kk.strip())
+                    if _ek and len(_ek) > 0:
+                        _unsescaped_embrapa_kwds.append(str(_ek[0]))
+                    else:
+                        _unsescaped_embrapa_kwds.append(str(_kk))
+            else:
+                _ek = Embrapa_Keywords.objects.filter(name__iexact=_k.strip())
+                if _ek and len(_ek) > 0:
+                    _unsescaped_embrapa_kwds.append(str(_ek[0]))
+                else:
+                    _unsescaped_embrapa_kwds.append(str(_k))
+        return _unsescaped_embrapa_kwds
+
+    #É AQUI QUE TÁ SEPARANDO POR VIRGULAS AS PALAVRAS CHAVE
     def clean_keywords(self):
         from urllib.parse import unquote
         from html.entities import codepoint2name
@@ -429,7 +560,6 @@ class ResourceBaseForm(TranslationModelForm):
                 else:
                     escaped += char
             return escaped
-
         keywords = self.cleaned_data['keywords']
         _unsescaped_kwds = []
         for k in keywords:
@@ -437,9 +567,9 @@ class ResourceBaseForm(TranslationModelForm):
             if not isinstance(_k, six.string_types):
                 for _kk in [x.strip() for x in _k]:
                     # Simulate JS Unescape
-                    _kk = _kk.replace('%u', r'\u').encode('unicode-escape').replace(
-                        b'\\\\u',
-                        b'\\u').decode('unicode-escape') if '%u' in _kk else _kk
+                    _kk = _kk.replace('%u', r'\u').\
+                        encode('unicode-escape').replace(b'\\\\u',
+                                                         b'\\u').decode('unicode-escape') if '%u' in _kk else _kk
                     _hk = HierarchicalKeyword.objects.filter(name__iexact='%s' % _kk.strip())
                     if _hk and len(_hk) > 0:
                         _unsescaped_kwds.append(str(_hk[0]))
@@ -481,7 +611,7 @@ class ResourceBaseForm(TranslationModelForm):
             'tkeywords',
         )
 
-
+# testar esse aqui também
 class ValuesListField(forms.Field):
 
     def to_python(self, value):
@@ -551,15 +681,7 @@ class BatchPermissionsForm(forms.Form):
 
 
 class CuratedThumbnailForm(ModelForm):
+
     class Meta:
         model = CuratedThumbnail
         fields = ['img']
-
-
-class OwnerRightsRequestForm(forms.Form):
-    resource = forms.ModelChoiceField(queryset=ResourceBase.objects.all(),
-                                      widget=forms.HiddenInput())
-    reason = forms.CharField(widget=forms.Textarea, help_text=_('Short reasoning behind the request'), required=True)
-
-    class Meta:
-        fields = ['reason', 'resource']

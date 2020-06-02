@@ -25,7 +25,7 @@ import requests
 import traceback
 
 from uuid import uuid4
-from urllib.parse import urlparse, urlsplit, urljoin
+from urllib.parse import urlsplit, urljoin
 
 from django.conf import settings
 from django.urls import reverse
@@ -52,7 +52,7 @@ logger = logging.getLogger(__name__)
 
 
 def WebMapService(url,
-                  version='1.3.0',
+                  version='1.1.1',
                   xml=None,
                   username=None,
                   password=None,
@@ -110,8 +110,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
     def __init__(self, url):
         self.proxy_base = urljoin(
             settings.SITEURL, reverse('proxy'))
-        _url, _service = WebMapService(url, proxy_base=None)
-        self.url = url
+        self.url, _service = WebMapService(url, proxy_base=None)
         self.indexing_method = (
             INDEXED if self._offers_geonode_projection() else CASCADED)
         self.name = slugify(self.url)[:255]
@@ -206,13 +205,10 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
             resource_fields["is_approved"] = False
             resource_fields["is_published"] = False
-        try:
-            geonode_layer = self._create_layer(geonode_service, **resource_fields)
-            self._create_layer_service_link(geonode_layer)
-            self._create_layer_legend_link(geonode_layer)
-            self._create_layer_thumbnail(geonode_layer)
-        except Exception as e:
-            logger.error(e)
+        geonode_layer = self._create_layer(geonode_service, **resource_fields)
+        self._create_layer_service_link(geonode_layer)
+        self._create_layer_legend_link(geonode_layer)
+        self._create_layer_thumbnail(geonode_layer)
 
     def has_resources(self):
         _url, parsed_service = WebMapService(self.url, proxy_base=None)
@@ -232,10 +228,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             **resource_fields
         )
         geonode_layer.full_clean()
-        try:
-            geonode_layer.save(notify=True)
-        except Exception as e:
-            logger.error(e)
+        geonode_layer.save()
         geonode_layer.keywords.add(*keywords)
         geonode_layer.set_default_permissions()
         return geonode_layer
@@ -243,24 +236,21 @@ class WmsServiceHandler(base.ServiceHandlerBase,
     def _create_layer_thumbnail(self, geonode_layer):
         """Create a thumbnail with a WMS request."""
         _url, parsed_service = WebMapService(self.url, proxy_base=None)
-        _p_url = urlparse(self.url)
-        _q_separator = "&" if _p_url.query else "?"
         params = {
             "service": "WMS",
             "version": parsed_service.version,
             "request": "GetMap",
             "layers": geonode_layer.alternate,
             "bbox": geonode_layer.bbox_string,
-            "srs": geonode_layer.srid,
-            "crs": geonode_layer.srid,
+            "srs": "EPSG:4326",
             "width": "200",
             "height": "150",
             "format": "image/png",
             "styles": ""
         }
         kvp = "&".join("{}={}".format(*item) for item in params.items())
-        thumbnail_remote_url = "{}{}{}".format(
-            geonode_layer.remote_service.service_url, _q_separator, kvp)
+        thumbnail_remote_url = "{}?{}".format(
+            geonode_layer.remote_service.service_url, kvp)
         logger.debug("thumbnail_remote_url: {}".format(thumbnail_remote_url))
         create_thumbnail(
             instance=geonode_layer,
@@ -278,8 +268,6 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         service.
         """
         _url, parsed_service = WebMapService(self.url, proxy_base=None)
-        _p_url = urlparse(self.url)
-        _q_separator = "&" if _p_url.query else "?"
         params = {
             "service": "WMS",
             "version": parsed_service.version,
@@ -292,8 +280,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                 "fontAntiAliasing:true;fontSize:12;forceLabels:on")
         }
         kvp = "&".join("{}={}".format(*item) for item in params.items())
-        legend_url = "{}{}{}".format(
-            geonode_layer.remote_service.service_url, _q_separator, kvp)
+        legend_url = "{}?{}".format(
+            geonode_layer.remote_service.service_url, kvp)
         logger.debug("legend_url: {}".format(legend_url))
         Link.objects.get_or_create(
             resource=geonode_layer.resourcebase_ptr,
@@ -498,13 +486,10 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
             resource_fields["is_approved"] = False
             resource_fields["is_published"] = False
-        try:
-            geonode_layer = self._create_layer(geonode_service, **resource_fields)
-            self._enrich_layer_metadata(geonode_layer)
-            self._create_layer_service_link(geonode_layer)
-            self._create_layer_legend_link(geonode_layer)
-        except Exception as e:
-            logger.error(e)
+        geonode_layer = self._create_layer(geonode_service, **resource_fields)
+        self._enrich_layer_metadata(geonode_layer)
+        self._create_layer_service_link(geonode_layer)
+        self._create_layer_legend_link(geonode_layer)
 
     def _probe_geonode_wms(self, raw_url):
         url = urlsplit(raw_url)
@@ -619,10 +604,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
             except Exception:
                 traceback.print_exc()
             finally:
-                try:
-                    geonode_layer.save(notify=True)
-                except Exception as e:
-                    logger.error(e)
+                geonode_layer.save()
 
 
 def _get_valid_name(proposed_name):

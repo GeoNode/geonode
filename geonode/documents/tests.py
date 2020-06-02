@@ -31,19 +31,16 @@ import json
 
 import gisdata
 from datetime import datetime
-from django.urls import reverse
-from django.contrib.auth.models import Group
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from django.core.files.uploadedfile import SimpleUploadedFile
+from django.urls import reverse
+from django.contrib.auth.models import Group
 
-from guardian.shortcuts import get_perms, get_anonymous_user
+from guardian.shortcuts import get_anonymous_user
 
 from .forms import DocumentCreateForm
 
-from geonode.groups.models import (
-    GroupProfile,
-    GroupMember)
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.compat import ensure_string
@@ -451,8 +448,6 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
         self.passwd = 'admin'
         create_models(type=b'document')
         create_models(type=b'map')
-        self.document_upload_url = "{}?no__redirect=true".format(
-            reverse('document_upload'))
         self.u = get_user_model().objects.get(username=self.user)
         self.u.email = 'test@email.com'
         self.u.is_active = True
@@ -467,6 +462,7 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
         Test if moderation flag works
         """
         with self.settings(ADMIN_MODERATE_UPLOADS=False):
+            document_upload_url = reverse('document_upload')
             self.client.login(username=self.user, password=self.passwd)
 
             input_path = self._get_input_path()
@@ -474,12 +470,12 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             with open(input_path, 'rb') as f:
                 data = {'title': 'document title',
                         'doc_file': f,
+                        'doc_url': '',
                         'resource': '',
-                        'extension': 'txt',
                         'permissions': '{}',
                         }
-                resp = self.client.post(self.document_upload_url, data=data)
-                self.assertEqual(resp.status_code, 200)
+                resp = self.client.post(document_upload_url, data=data)
+            self.assertEqual(resp.status_code, 302)
             dname = 'document title'
             _d = Document.objects.get(title=dname)
 
@@ -507,52 +503,24 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             self.assertTrue(_cnt == 0)
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
+            document_upload_url = reverse('document_upload')
             self.client.login(username=self.user, password=self.passwd)
 
-            norman = get_user_model().objects.get(username="norman")
-            group = GroupProfile.objects.get(slug="bar")
             input_path = self._get_input_path()
+
             with open(input_path, 'rb') as f:
                 data = {'title': 'document title',
                         'doc_file': f,
+                        'doc_url': '',
                         'resource': '',
-                        'extension': 'txt',
                         'permissions': '{}',
                         }
-                resp = self.client.post(self.document_upload_url, data=data)
-                self.assertEqual(resp.status_code, 200)
+                resp = self.client.post(document_upload_url, data=data)
+            self.assertEqual(resp.status_code, 302)
             dname = 'document title'
             _d = Document.objects.get(title=dname)
-            self.assertFalse(_d.is_approved)
-            self.assertTrue(_d.is_published)
 
-            group.join(norman)
-            self.assertFalse(group.user_is_role(norman, "manager"))
-            GroupMember.objects.get(group=group, user=norman).promote()
-            self.assertTrue(group.user_is_role(norman, "manager"))
-
-            self.client.login(username="norman", password="norman")
-            resp = self.client.get(
-                reverse('document_detail', args=(_d.id,)))
-            # Forbidden
-            self.assertEqual(resp.status_code, 403)
-            _d.group = group.group
-            _d.save()
-            resp = self.client.get(
-                reverse('document_detail', args=(_d.id,)))
-            # Allowed - edit permissions
-            self.assertEqual(resp.status_code, 200)
-            perms_list = get_perms(norman, _d.get_self_resource()) + get_perms(norman, _d)
-            self.assertTrue('change_resourcebase_metadata' in perms_list)
-            GroupMember.objects.get(group=group, user=norman).demote()
-            self.assertFalse(group.user_is_role(norman, "manager"))
-            resp = self.client.get(
-                reverse('document_detail', args=(_d.id,)))
-            # Allowed - no edit
-            self.assertEqual(resp.status_code, 200)
-            perms_list = get_perms(norman, _d.get_self_resource()) + get_perms(norman, _d)
-            self.assertFalse('change_resourcebase_metadata' in perms_list)
-            group.leave(norman)
+            self.assertFalse(_d.is_published)
 
 
 class DocumentNotificationsTestCase(NotificationsTestsHelper):
@@ -574,7 +542,7 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
             _d = Document.objects.create(title='test notifications', owner=self.u)
             self.assertTrue(self.check_notification_out('document_created', self.u))
             _d.title = 'test notifications 2'
-            _d.save(notify=True)
+            _d.save()
             self.assertTrue(self.check_notification_out('document_updated', self.u))
 
             from dialogos.models import Comment

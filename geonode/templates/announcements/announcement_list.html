@@ -8,9 +8,7 @@
 
 {% block body_outer %}
 <div class="page-header">
-  {% if not READ_ONLY_MODE %}
-    <a href="{% url "announcements_create" %}" class="btn btn-primary pull-right">{% trans "New Announcement" %}</a>
-  {% endif %}
+  <a href="{% url "announcements_create" %}" class="btn btn-primary pull-right">{% trans "New Announcement" %}</a>
   <h2>{% trans "Announcements" %}</h2>
 </div>
 

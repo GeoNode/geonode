@@ -185,7 +185,7 @@ def _byteify(data, ignore_dicts=False):
 def get_kml_doc(kml_bytes):
     """Parse and return an etree element with the kml file's content"""
     kml_doc = dlxml.fromstring(
-        kml_bytes,
+        kml_bytes.encode(),
         parser=etree.XMLParser(resolve_entities=False)
     )
     ns = kml_doc.nsmap.copy()
@@ -821,7 +821,7 @@ max\ connections={db_conn_max}"""
 
     files_to_upload = []
     if not append_to_mosaic_opts and spatial_files:
-        z = zipfile.ZipFile(dirname + '/' + head + '.zip', "w", allowZip64=True)
+        z = zipfile.ZipFile(dirname + '/' + head + '.zip', "w")
         for spatial_file in spatial_files:
             f = spatial_file.base_file
             dst_basename = os.path.basename(f)

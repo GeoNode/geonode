@@ -20,30 +20,26 @@
 
 
 # Geonode functionality
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
-from django.utils.translation import ugettext as _
-from django.views.generic import FormView
 
 from guardian.shortcuts import get_objects_for_user
 from dal import views, autocomplete
-from user_messages.models import Message
 
-from geonode.base.utils import OwnerRightsRequestViewUtils
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.base.models import ResourceBase, Region, HierarchicalKeyword, ThesaurusKeywordLabel
+from geonode.base.models import ResourceBase, Region, HierarchicalKeyword, ThesaurusKeywordLabel, Embrapa_Keywords, Embrapa_Unity, Embrapa_Purpose
 from geonode.utils import resolve_object
 from geonode.security.utils import get_visible_resources
-from geonode.base.forms import BatchEditForm, OwnerRightsRequestForm
-from geonode.base.forms import CuratedThumbnailForm
-from geonode.notifications_helper import send_notification
+from .forms import BatchEditForm
+from .forms import CuratedThumbnailForm
 
+# embrapa #
+from django.db.models import Q
 
 def batch_modify(request, ids, model):
     if not request.user.is_superuser:
@@ -70,6 +66,8 @@ def batch_modify(request, ids, model):
                 resource.category = form.cleaned_data['category'] or resource.category
                 resource.license = form.cleaned_data['license'] or resource.license
                 resource.date = form.cleaned_data['date'] or resource.date
+                #embrapa#
+                #resource.data_criacao = form.cleaned_data['data_criacao'] or resource.data_criacao
                 resource.language = form.cleaned_data['language'] or resource.language
                 new_region = form.cleaned_data['regions']
                 if new_region:
@@ -79,7 +77,14 @@ def batch_modify(request, ids, model):
                     resource.keywords.clear()
                     for word in keywords.split(','):
                         resource.keywords.add(word.strip())
-                resource.save(notify=True)
+                #embrapa#
+                #embrapa_keywords = form.cleaned_data['embrapa_keywords']
+                #if embrapa_keywords:
+                #    resource.embrapa_keywords.clear()
+                #    for embrapa_word in embrapa_keywords.split(','):
+                #        resource.embrapa_keywords.add(embrapa_word.strip())
+
+                resource.save()
             return HttpResponseRedirect(
                 '/admin/{model}s/{model}/'.format(model=model.lower())
             )
@@ -109,10 +114,12 @@ def thumbnail_upload(
         request,
         res_id,
         template='base/thumbnail_upload.html'):
+
     try:
         res = resolve_object(
             request, ResourceBase, {
                 'id': res_id}, 'base.change_resourcebase')
+
     except PermissionDenied:
         return HttpResponse(
             'You are not allowed to change permissions for this resource',
@@ -156,7 +163,6 @@ class SimpleSelect2View(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
         qs = super(views.BaseQuerySetView, self).get_queryset()
-
         if self.q:
             qs = qs.filter(**{self.filter_arg: self.q})
         return qs
@@ -185,12 +191,61 @@ class ResourceBaseAutocomplete(autocomplete.Select2QuerySetView):
 
 
 class RegionAutocomplete(SimpleSelect2View):
+
     model = Region
     filter_arg = 'name__icontains'
 
 
 class HierarchicalKeywordAutocomplete(SimpleSelect2View):
+
     model = HierarchicalKeyword
+    filter_arg = 'slug__icontains'
+
+### embrapa ###
+'''
+class EmbrapaKeywordsAutocomplete(autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        search_fields = ['^name']
+
+        qs = Embrapa_Keywords.objects.all()
+
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
+
+        return qs
+'''
+class EmbrapaPurposeAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        search_fields = ['^title']
+
+        #form = BatchEditForm(request.GET)
+        # Verificar se isso da certo pra poder fazer o filtro tanto para ação gerencial quanto para projeto para separá-los
+        # Tentar alocar a chamada da api e o método de save aqui
+        # SE A DATA QUE É DE HOJE (MENOS) A DATA QUE VEIO DO BANCO É (MAIOR) QUE O TEMPO EM SEGUNDOS DE UM MÊS, 
+        # DAI ENTRA PRA SALVAR, SE NÃO, CONTINUA (E SE SALVAR DEPOIS DE UM TEMPO, ATUALIZAR A DATA DE SAVE COM UM UPDATE VIA DJANGO)
+        # Criar uma tabela pra salvar a data e atualizar ela quando for salvar a base de dados vindos da api
+        print("Teste no views.py do base")
+        qs = Embrapa_Purpose.objects.all()
+
+        if self.q:
+            qs = qs.filter(Q(title__icontains=self.q) | Q(identifier__icontains=self.q) | Q(project_code__icontains=self.q))
+
+        return qs
+
+#class EmbrapaPurposeAutocomplete(SimpleSelect2View):
+
+#   model = Embrapa_Purpose
+#   filter_arg = 'title__icontains'
+
+class EmbrapaUnityAutocomplete(SimpleSelect2View):
+
+   model = Embrapa_Unity
+   filter_arg = 'unity__icontains'
+
+class EmbrapaKeywordsAutocomplete(SimpleSelect2View):
+
+    model = Embrapa_Keywords
     filter_arg = 'slug__icontains'
 
 
@@ -221,53 +276,3 @@ class ThesaurusKeywordLabelAutocomplete(autocomplete.Select2QuerySetView):
                 'selected_text': self.get_selected_result_label(result),
             } for result in context['object_list']
         ]
-
-
-class OwnerRightsRequestView(LoginRequiredMixin, FormView):
-    template_name = 'owner_rights_request.html'
-    form_class = OwnerRightsRequestForm
-    resource = None
-    redirect_field_name = 'next'
-
-    def get_success_url(self):
-        return self.resource.get_absolute_url()
-
-    def get(self, request, *args, **kwargs):
-        r_base = ResourceBase.objects.get(pk=kwargs.get('pk'))
-        self.resource = OwnerRightsRequestViewUtils.get_resource(r_base)
-        initial = {
-            'resource': r_base
-        }
-        form = self.form_class(initial=initial)
-        return render(request, self.template_name, {'form': form, 'resource': self.resource})
-
-    def post(self, request, *args, **kwargs):
-        r_base = ResourceBase.objects.get(pk=kwargs.get('pk'))
-        self.resource = OwnerRightsRequestViewUtils.get_resource(r_base)
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            reason = form.cleaned_data['reason']
-            notice_type_label = 'request_resource_edit'
-            recipients = OwnerRightsRequestViewUtils.get_message_recipients()
-
-            Message.objects.new_message(
-                from_user=request.user,
-                to_users=recipients,
-                subject=_('System message: A request to modify resource'),
-                content=_('The resource owner has requested to modify the resource') + '.'
-                ' ' +
-                _('Resource title') + ': ' + self.resource.title + '.'
-                ' ' +
-                _('Reason for the request') + ': "' + reason + '".' +
-                ' ' +
-                _('To allow the change, set the resource to not "Approved" under the metadata settings' +
-                  'and write message to the owner to notify him') + '.'
-            )
-            send_notification(recipients, notice_type_label, {
-                'resource': self.resource,
-                'site_url': settings.SITEURL[:-1],
-                'reason': reason
-            })
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)

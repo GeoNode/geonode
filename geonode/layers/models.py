@@ -150,13 +150,6 @@ class Layer(ResourceBase):
     Layer (inherits ResourceBase fields)
     """
 
-    PERMISSIONS = {
-        'write': [
-            'change_layer_data',
-            'change_layer_style',
-        ]
-    }
-
     # internal fields
     objects = LayerManager()
     workspace = models.CharField(_('Workspace'), max_length=128)
@@ -256,10 +249,7 @@ class Layer(ResourceBase):
         """
 
         # If there was no upload_session return None
-        try:
-            if self.upload_session is None:
-                return None, None
-        except Exception:
+        if self.upload_session is None:
             return None, None
 
         base_exts = [x.replace('.', '') for x in cov_exts + vec_exts]
@@ -302,8 +292,8 @@ class Layer(ResourceBase):
         visible_attributes = self.attribute_set.visible()
         if (visible_attributes.count() > 0):
             cfg["getFeatureInfo"] = {
-                "fields": [lyr.attribute for lyr in visible_attributes],
-                "propertyNames": dict([(lyr.attribute, lyr.attribute_label) for lyr in visible_attributes])
+                "fields": [l.attribute for l in visible_attributes],
+                "propertyNames": dict([(l.attribute, l.attribute_label) for l in visible_attributes])
             }
         return cfg
 
@@ -492,7 +482,8 @@ class Attribute(models.Model):
 
     def __str__(self):
         return "{0}".format(
-            self.attribute_label if self.attribute_label else self.attribute)
+            self.attribute_label.encode(
+                "utf-8", "replace") if self.attribute_label else self.attribute.encode("utf-8", "replace"))
 
     def unique_values_as_list(self):
         return self.unique_values.split(',')

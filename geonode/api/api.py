@@ -39,8 +39,7 @@ from tastypie.exceptions import BadRequest
 
 from geonode import qgis_server, geoserver
 from geonode.api.paginator import CrossSiteXHRPaginator
-from geonode.api.authorization import GeoNodeStyleAuthorization, ApiLockdownAuthorization, \
-    GroupAuthorization, GroupProfileAuthorization
+from geonode.api.authorization import GeoNodeStyleAuthorization, ApiLockdownAuthorization
 from geonode.qgis_server.models import QGISServerStyle
 from guardian.shortcuts import get_objects_for_user
 from tastypie.bundle import Bundle
@@ -49,6 +48,11 @@ from geonode.base.models import ResourceBase
 from geonode.base.models import TopicCategory
 from geonode.base.models import Region
 from geonode.base.models import HierarchicalKeyword
+
+# embrapa #
+
+from geonode.base.models import Embrapa_Keywords
+
 from geonode.base.models import ThesaurusKeywordLabel
 from geonode.layers.models import Layer, Style
 from geonode.maps.models import Map
@@ -171,6 +175,36 @@ class TagResource(TypeFilteredResource):
         serializer = CountJSONSerializer()
         authorization = ApiLockdownAuthorization()
 
+# embrapa #
+class EmbrapaTagResource(TypeFilteredResource):
+    """Tags api"""
+
+    #print("TESTE NA API EMBRAPATAGRESOURCE")
+
+    def serialize(self, request, data, format, options=None):
+        #print("TESTE NA API EMBRAPATAGRESOURCE OPTIONS")
+        #print(options)
+        if options is None:
+            options = {}
+        options['count_type'] = 'embrapa_keywords'
+
+        #print("TESTE NA API EMBRAPATAGRESOURCE2")
+        #print(options['count_type'])
+
+        return super(EmbrapaTagResource, self).serialize(request, data, format, options)
+
+    class Meta:
+        #print("TESTE NA API EMBRAPATAGRESOURCE3")
+        queryset = Embrapa_Keywords.objects.all().order_by('name')
+        #print(queryset)
+        resource_name = 'embrapa_keywords'
+        allowed_methods = ['get']
+        filtering = {
+            'slug': ALL,
+        }
+        serializer = CountJSONSerializer()
+        authorization = ApiLockdownAuthorization()
+
 
 class ThesaurusKeywordResource(TypeFilteredResource):
     """ThesaurusKeyword api"""
@@ -211,10 +245,10 @@ class ThesaurusKeywordResource(TypeFilteredResource):
 
     class Meta:
         queryset = ThesaurusKeywordLabel.objects \
-            .all() \
-            .order_by('label') \
-            .select_related('keyword') \
-            .select_related('keyword__thesaurus')
+                                        .all() \
+                                        .order_by('label') \
+                                        .select_related('keyword') \
+                                        .select_related('keyword__thesaurus')
 
         resource_name = 'thesaurus/keywords'
         allowed_methods = ['get']
@@ -303,29 +337,30 @@ class GroupCategoryResource(TypeFilteredResource):
         authorization = ApiLockdownAuthorization()
 
     def apply_filters(self, request, applicable_filters):
-        filtered = super(
+        user = request.user
+        semi_filtered = super(
             GroupCategoryResource,
             self).apply_filters(
             request,
             applicable_filters)
+
+        filtered = semi_filtered
+        if not user.is_authenticated or user.is_anonymous:
+            filtered = semi_filtered.exclude(groups__access='private')
+        elif not user.is_superuser:
+            groups_member_of = user.group_list_all()
+            filtered = semi_filtered.filter(
+                Q(groups__in=groups_member_of) |
+                ~Q(groups__access='private')
+            )
+
         return filtered
 
     def dehydrate_detail_url(self, bundle):
         return bundle.obj.get_absolute_url()
 
     def dehydrate_member_count(self, bundle):
-        request = bundle.request
-        user = request.user
-        filtered = bundle.obj.groups.all()
-        if not user.is_authenticated or user.is_anonymous:
-            filtered = filtered.exclude(access='private')
-        elif not user.is_superuser:
-            categories_ids = user.group_list_all().values('categories')
-            filtered = filtered.filter(
-                Q(id__in=categories_ids) |
-                ~Q(access='private')
-            )
-        return filtered.count()
+        return bundle.obj.groups.all().count()
 
     def dehydrate(self, bundle):
         """Provide additional resource counts"""
@@ -349,7 +384,6 @@ class GroupProfileResource(ModelResource):
     )
     member_count = fields.CharField()
     manager_count = fields.CharField()
-    logo_url = fields.CharField()
     detail_url = fields.CharField()
 
     class Meta:
@@ -362,7 +396,7 @@ class GroupProfileResource(ModelResource):
             'categories': ALL_WITH_RELATIONS,
         }
         ordering = ['title', 'last_modified']
-        authorization = GroupProfileAuthorization()
+        authorization = ApiLockdownAuthorization()
 
     def dehydrate_member_count(self, bundle):
         """Provide relative URL to the geonode UI's page on the group"""
@@ -375,9 +409,6 @@ class GroupProfileResource(ModelResource):
     def dehydrate_detail_url(self, bundle):
         """Return relative URL to the geonode UI's page on the group"""
         return reverse('group_detail', args=[bundle.obj.slug])
-
-    def dehydrate_logo_url(self, bundle):
-        return bundle.obj.logo_url
 
 
 class GroupResource(ModelResource):
@@ -396,11 +427,30 @@ class GroupResource(ModelResource):
         allowed_methods = ['get']
         filtering = {
             'name': ALL,
-            'title': ALL,
             'group_profile': ALL_WITH_RELATIONS,
         }
         ordering = ['name', 'last_modified']
-        authorization = GroupAuthorization()
+        authorization = ApiLockdownAuthorization()
+
+    def apply_filters(self, request, applicable_filters):
+        user = request.user
+        semi_filtered = super(
+            GroupResource,
+            self).apply_filters(
+            request,
+            applicable_filters)
+
+        filtered = semi_filtered
+        if not user.is_authenticated or user.is_anonymous:
+            filtered = semi_filtered.exclude(groupprofile__access='private')
+        elif not user.is_superuser:
+            groups_member_of = user.group_list_all()
+            filtered = semi_filtered.filter(
+                Q(groupprofile__in=groups_member_of) |
+                ~Q(groupprofile__access='private')
+            )
+
+        return filtered
 
     def dehydrate(self, bundle):
         """Provide additional resource counts"""
@@ -851,11 +901,11 @@ def _get_resource_counts(user, resourcebase_filter_kwargs):
 
     """
     resources = get_visible_resources(
-        ResourceBase.objects.filter(**resourcebase_filter_kwargs),
-        user,
-        admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-        unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-        private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
+            ResourceBase.objects.filter(**resourcebase_filter_kwargs),
+            user,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
     values = resources.values(
         'polymorphic_ctype__model',
         'is_approved',

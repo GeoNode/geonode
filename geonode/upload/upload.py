@@ -755,7 +755,6 @@ def final_step(upload_session, user, charset="UTF-8"):
 
     # Should we throw a clearer error here?
     assert saved_layer is not None
-    saved_layer.save()
 
     # Create a new upload session
     geonode_upload_session = UploadSession.objects.create(resource=saved_layer, user=user)
@@ -837,7 +836,7 @@ def final_step(upload_session, user, charset="UTF-8"):
         # If it's contained within a zip, need to extract it
         if upload_session.base_file.archive:
             archive = upload_session.base_file.archive
-            zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
+            zf = zipfile.ZipFile(archive, 'r')
             zf.extract(xml_file[0], os.path.dirname(archive))
             # Assign the absolute path to this file
             xml_file[0] = os.path.dirname(archive) + '/' + xml_file[0]
@@ -897,7 +896,7 @@ def final_step(upload_session, user, charset="UTF-8"):
         # If it's contained within a zip, need to extract it
         if upload_session.base_file.archive:
             archive = upload_session.base_file.archive
-            zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
+            zf = zipfile.ZipFile(archive, 'r')
             zf.extract(sld_file[0], os.path.dirname(archive))
             # Assign the absolute path to this file
             sld_file[0] = os.path.dirname(archive) + '/' + sld_file[0]
@@ -933,6 +932,6 @@ def final_step(upload_session, user, charset="UTF-8"):
 
     signals.upload_complete.send(sender=final_step, layer=saved_layer)
     geonode_upload_session.save()
-    saved_layer.save(notify=not created)
+    saved_layer.save()
     cat._cache.clear()
     return saved_layer

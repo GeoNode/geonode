@@ -128,7 +128,7 @@ def layer_style(request, layername):
     layer.default_style = new_style
     layer.styles = [
         s for s in layer.styles if s.name != style_name] + [old_default]
-    layer.save(notify=True)
+    layer.save()
 
     # Invalidate GeoWebCache for the updated resource
     try:
@@ -537,32 +537,19 @@ def _response_callback(**kwargs):
     content = kwargs['content']
     status = kwargs['status']
     content_type = kwargs['content_type']
-    content_type_list = ['application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json']
 
-    if content:
-        if not content_type:
+    # Replace Proxy URL
+    content_type_list = ['application/xml', 'text/xml', 'text/plain', 'application/json', 'text/json']
+    try:
+        if re.findall(r"(?=(\b" + '|'.join(content_type_list) + r"\b))", content_type):
+            _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
-            if (re.match(r'^<.+>$', content)):
-                content_type = 'application/xml'
-            elif (re.match(r'^({|[).+(}|])$', content)):
-                content_type = 'application/json'
-            else:
-                content_type = 'text/plain'
-
-        # Replace Proxy URL
-        try:
-            if isinstance(content, bytes):
-                _content = content.decode('UTF-8')
-            else:
-                _content = content
-            if re.findall(r"(?=(\b" + '|'.join(content_type_list) + r"\b))", content_type):
-                _gn_proxy_url = urljoin(settings.SITEURL, '/gs/')
-                content = _content\
-                    .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
-                    .replace(ogc_server_settings.PUBLIC_LOCATION, _gn_proxy_url)
-        except Exception as e:
-            logger.exception(e)
+            content = content\
+                .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
+                .replace(ogc_server_settings.PUBLIC_LOCATION, _gn_proxy_url)
+    except Exception as e:
+        logger.exception(e)
 
     if 'affected_layers' in kwargs and kwargs['affected_layers']:
         for layer in kwargs['affected_layers']:

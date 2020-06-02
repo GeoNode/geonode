@@ -17,6 +17,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+# teste print embrapa
+from pprint import pprint
+
 import re
 import os
 import sys
@@ -107,9 +111,15 @@ from geonode.utils import (
 
 from .tasks import delete_layer
 
+## EMBRAPA ##
+
+from geonode.base.models import Embrapa_Purpose, Embrapa_Unity
+from geonode.layers.utils import get_only_year
+import requests
+from django.forms.models import model_to_dict
+
 from geonode.geoserver.helpers import (ogc_server_settings,
                                        set_layer_style)  # cascading_delete
-from geonode.base.utils import ManageResourceOwnerPermissions
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import (_render_thumbnail,
@@ -395,12 +405,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
 
-    permission_manager = ManageResourceOwnerPermissions(layer)
-    permission_manager.set_owner_permissions_according_to_workflow()
-
-    # Add metadata_author or poc if missing
-    layer.add_missing_metadata_author_or_poc()
-
     def decimal_encode(bbox):
         import decimal
         _bbox = []
@@ -582,13 +586,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
                 granules = {"features": []}
                 all_granules = {"features": []}
 
-    # Call this first in order to be sure "perms_list" is correct
-    permissions_json = _perms_info_json(layer)
-
-    perms_list = get_perms(
-        request.user,
-        layer.get_self_resource()) + get_perms(request.user, layer)
-
     group = None
     if layer.group:
         try:
@@ -638,20 +635,13 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     metadata = layer.link_set.metadata().filter(
         name__in=settings.DOWNLOAD_FORMATS_METADATA)
 
-    access_token = None
-    if request and request.user:
-        access_token = get_or_create_token(request.user)
-        if access_token and not access_token.is_expired():
-            access_token = access_token.token
-        else:
-            access_token = None
-
     context_dict = {
-        'access_token': access_token,
         'resource': layer,
         'group': group,
-        'perms_list': perms_list,
-        "permissions_json": permissions_json,
+        'perms_list': get_perms(
+            request.user,
+            layer.get_self_resource()) + get_perms(request.user, layer),
+        "permissions_json": _perms_info_json(layer),
         "documents": get_related_documents(layer),
         "metadata": metadata,
         "is_layer": True,
@@ -665,12 +655,20 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         # "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True
     }
 
+    access_token = None
+    if request and request.user:
+        access_token = get_or_create_token(request.user)
+        if access_token and not access_token.is_expired():
+            access_token = access_token.token
+        else:
+            access_token = None
+
     context_dict["viewer"] = json.dumps(map_obj.viewer_json(
         request, * (NON_WMS_BASE_LAYERS + [maplayer])))
     context_dict["preview"] = getattr(
         settings,
         'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
-        'mapstore')
+        'geoext')
     context_dict["crs"] = getattr(
         settings,
         'DEFAULT_MAP_CRS',
@@ -740,14 +738,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         if getattr(settings, 'FAVORITE_ENABLED', False):
             from geonode.favorite.utils import get_favorite_info
             context_dict["favorite_info"] = get_favorite_info(request.user, layer)
-
-    if request.user.is_authenticated and (request.user.is_superuser or "change_resourcebase_permissions" in perms_list):
-        context_dict['users'] = [user for user in get_user_model().objects.all().exclude(
-            id=request.user.id).exclude(is_superuser=True)]
-        if request.user.is_superuser:
-            context_dict['groups'] = [group for group in GroupProfile.objects.all()]
-        else:
-            context_dict['groups'] = [group for group in request.user.group_list_all()]
 
     register_event(request, 'view', layer)
     return TemplateResponse(
@@ -868,10 +858,11 @@ def layer_metadata(
         form=LayerAttributeForm,
     )
 
-    topic_category = layer.category
+    #print teste 01:
+    #print("Teste 01")
+    #pprint(vars(layer))
 
-    # Add metadata_author or poc if missing
-    layer.add_missing_metadata_author_or_poc()
+    topic_category = layer.category
 
     poc = layer.poc
     metadata_author = layer.metadata_author
@@ -931,8 +922,12 @@ def layer_metadata(
     NON_WMS_BASE_LAYERS = [
         la for la in default_map_config(request)[1] if la.ows_url is None]
 
+    #print teste 02:
+    print("Teste 02")
     if request.method == "POST":
+        print("Teste 02.1")
         if layer.metadata_uploaded_preserve:  # layer metadata cannot be edited
+            print("Teste 02.2")
             out = {
                 'success': False,
                 'errors': METADATA_UPLOADED_PRESERVE_ERROR
@@ -941,9 +936,14 @@ def layer_metadata(
                 json.dumps(out),
                 content_type='application/json',
                 status=400)
-
+        # embrapa #
+        # montar a lógica do embrapa_keywords em algum lugar para poder printar o cleaned_data dele # 
         layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
+        print("Teste 02.2.1")
+        print(layer_form.is_valid())
         if not layer_form.is_valid():
+            print("Teste 02.3")
+            print(layer_form.errors)
             out = {
                 'success': False,
                 'errors': layer_form.errors
@@ -962,6 +962,7 @@ def layer_metadata(
             request.POST["category_choice_field"] else None)
         tkeywords_form = TKeywordForm(request.POST)
     else:
+        # embrapa #
         layer_form = LayerForm(instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(
             instance=layer,
@@ -993,11 +994,135 @@ def layer_metadata(
                 except Exception:
                     tb = traceback.format_exc()
                     logger.error(tb)
+
         tkeywords_form = TKeywordForm(instance=layer)
+
+    print("request.method:")
+    print(request.method)
+    if request.method == "GET":
+        # Rota da api que retorna as unidades
+        unity_endpoint = 'https://sistemas.sede.embrapa.br/corporativows/rest/corporativoservice/unidades/lista/todas'
+
+        # Fazer a chamada na api
+        response = requests.get(unity_endpoint)
+        
+        # Transformar em JSON
+        data = response.json()
+
+        # Pegar o índice "unidadesEmbrapa"
+        data_ids = data["unidadesEmbrapa"]
+
+        # Construir uma lista de ids com o tamanho informado
+        embrapa_only_ids = [i for i in range(len(data_ids))]
+
+        # Colocando apenas os ids na lista
+        for i in range(len(data_ids)):
+            embrapa_only_ids[i] = data_ids[i]["id"]
+
+        try:
+            for i in range(len(data_ids)):
+                embrapa_unity_creates, created = Embrapa_Unity.objects.get_or_create(unity= embrapa_only_ids[i])
+                if created:
+                    embrapa_unity_creates.save()
+                else:
+                    pass
+        except Exception as error:
+            print(error)
+
+        for unity_id in embrapa_only_ids:
+            try:
+                current_year = get_only_year()
+
+                # Chamada para ação gerencial
+                acao_gerencial_endpoint = 'https://sistemas.sede.embrapa.br/corporativows/rest/corporativoservice/lista/acoesgerenciais/poridunidadeembrapaano/{0}/{1}'.format(unity_id, current_year)
+
+                response = requests.get(acao_gerencial_endpoint)
+
+                data = response.json()
+
+                data_acao_gerencial = data["acaoGerencial"]
+
+                embrapa_acao_gerencial = [i for i in range(len(data_acao_gerencial))]
+
+                embrapa_acao_gerencial_ids = [i for i in range(len(data_acao_gerencial))]
+
+                for i in range(len(data_acao_gerencial)):
+                    embrapa_acao_gerencial[i] = data_acao_gerencial[i]["titulo"]
+
+                for i in range(len(data_acao_gerencial)):
+                    embrapa_acao_gerencial_ids[i] = data_acao_gerencial[i]["acaoGerencialId"]
+
+                for i in range(len(data_acao_gerencial)):
+                    embrapa_acao_gerencial_creates, created = Embrapa_Purpose.objects.get_or_create(
+                        identifier= 'Ação Gerencial', project_code= embrapa_acao_gerencial_ids[i], title= embrapa_acao_gerencial[i])
+                    if created:
+                        embrapa_acao_gerencial_creates.save()
+                    else:
+                        pass
+            except Exception as error2:
+                print(error2)
+                pass
+
+        for unity_id in embrapa_only_ids:        
+            try:
+                # Chamada para projeto
+                projeto_endpoint = 'https://sistemas.sede.embrapa.br/corporativows/rest/corporativoservice/projeto/lista/poridunidadeembrapa?id_unidadeembrapa={0}'.format(unity_id)
+
+                response = requests.get(projeto_endpoint)
+
+                data = response.json()
+
+                data_projeto_id_titulo = data["projeto"]
+
+                embrapa_id_projeto = [i for i in range(len(data_projeto_id_titulo))]
+
+                embrapa_titulo_projeto = [i for i in range(len(data_projeto_id_titulo))]
+
+                for i in range(len(data_projeto_id_titulo)):
+                    embrapa_id_projeto[i] = data_projeto_id_titulo[i]["id"]
+
+                for i in range(len(data_projeto_id_titulo)):
+                    embrapa_titulo_projeto[i] = data_projeto_id_titulo[i]["titulo"]
+
+                for i in range(len(data_projeto_id_titulo)):
+                    embrapa_projeto_creates, created = Embrapa_Purpose.objects.get_or_create(
+                        identifier= 'Projeto', project_code= embrapa_id_projeto[i], title= embrapa_titulo_projeto[i])
+                    if created:
+                        embrapa_projeto_creates.save()
+                    else:
+                        pass
+            except Exception as error3:
+                print(error3)
+                pass
+
+
+    # USAR O CREATE PRA CRIAR OS DADOS PRO BANCO
+    # Try catch (Se já existem os dados no banco, verificar as constraints únicas)
+    # Ao clicar no botão ação gerencial traria um embrapapurpose.objects.filter com ação gerencial
+    # E ao clicar em projeto traria com o filter em projeto
+
+    #print teste 03:
+    print("Teste 03")
+    ''' print(request.method)
+    print(layer_form.is_valid())
+    print(attribute_form.is_valid())
+    print(category_form.is_valid())
+    print("Vars do attribute:")
+    pprint(vars(attribute_form))
+    print("Vars do category_form:")
+    pprint(vars(category_form))'''
+    #pprint(layer_form.__dict__)
+
     if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid(
     ) and category_form.is_valid():
         new_poc = layer_form.cleaned_data['poc']
         new_author = layer_form.cleaned_data['metadata_author']
+
+        #print(layer_form.cleaned_data['embrapa_keywords'])
+
+        #print teste 03:
+        print("Teste 03.1")
+        #pprint(vars(layer))
 
         if new_poc is None:
             if poc is None:
@@ -1056,15 +1181,54 @@ def layer_metadata(
                 layer.metadata_author = new_author
 
         new_keywords = layer_form.cleaned_data['keywords']
+        new_embrapa_keywords = layer_form.cleaned_data['embrapa_keywords']
         new_regions = [x.strip() for x in layer_form.cleaned_data['regions']]
 
+        print("Teste 04")
         layer.keywords.clear()
         if new_keywords:
             layer.keywords.add(*new_keywords)
+            
         layer.regions.clear()
         if new_regions:
             layer.regions.add(*new_regions)
         layer.category = new_category
+
+        layer.embrapa_keywords.clear()
+        if new_embrapa_keywords:
+           layer.embrapa_keywords.add(*new_embrapa_keywords)
+
+        # embrapa #
+        print("Teste 04.1")
+        ### guarda o valor de keyword_csv na keywords_plain para habilitar a busca dentro das palavras chave
+        # layer.keywords_plain = ' '.join([word for word in new_keywords])
+        ### concatena também a lista de palavras-chave reservadas da embrapa
+        # embrapa_keywords = layer_form.cleaned_data['embrapa_keywords']
+        #layer_form.cleaned_data['embrapa_keywords'] = model_to_dict(embrapa_keywords)
+        #print("Atributos do embrapa_keywords")
+        #print(embrapa_keywords)
+        # keys = embrapa_keywords
+        #layer.keywords_plain = layer.keywords_plain + ' '.join([word for word in embrapa_keywords])
+        # layer.keywords_plain = layer.keywords_plain + ' '.join([word for word in keys]) #mudança para testes
+
+        # print("Atributos do HierarchicalKeywords")
+        # print(new_keywords)
+        print("Atributos da unidade:")
+        unity = layer_form.cleaned_data['embrapa_unity']
+        print(unity)
+
+        print("Atributos da finalidade:")
+        purpose = layer_form.cleaned_data['embrapa_purpose']
+        print(purpose)
+
+        #print teste 04:
+        print("Teste 05")
+        #pprint(vars(layer))
+        try:
+            layer.save()
+        except Exception as e:
+            print(e)
+        print("Teste 06")
 
         up_sessions = UploadSession.objects.filter(layer=layer)
         if up_sessions.count() > 0 and up_sessions[0].user != layer.owner:
@@ -1097,14 +1261,12 @@ def layer_metadata(
             tb = traceback.format_exc()
             logger.error(tb)
 
-        layer.save(notify=True)
         return HttpResponse(json.dumps({'message': message}))
 
     if settings.ADMIN_MODERATE_UPLOADS:
         if not request.user.is_superuser:
-            if settings.RESOURCE_PUBLISHING:
-                layer_form.fields['is_published'].widget.attrs.update(
-                    {'disabled': 'true'})
+            layer_form.fields['is_published'].widget.attrs.update(
+                {'disabled': 'true'})
 
             can_change_metadata = request.user.has_perm(
                 'change_resourcebase_metadata',
@@ -1118,7 +1280,11 @@ def layer_metadata(
                     {'disabled': 'true'})
 
     if poc is not None:
+        # embrapa #
         layer_form.fields['poc'].initial = poc.id
+        
+        #layer_form.fields['poc'].initial = poc
+
         poc_form = ProfileForm(prefix="poc")
         poc_form.hidden = True
     else:
@@ -1162,7 +1328,7 @@ def layer_metadata(
         "category_form": category_form,
         "tkeywords_form": tkeywords_form,
         "viewer": viewer,
-        "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'mapstore'),
+        "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'geoext'),
         "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857'),
         "metadataxsl": getattr(settings, 'GEONODE_CATALOGUE_METADATA_XSL', True),
         "freetext_readonly": getattr(
@@ -1186,7 +1352,7 @@ def layer_metadata_advanced(request, layername):
 @login_required
 def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
     layers = Layer.objects.filter(id__in=ids.split('_'))
-
+    #verificar aqui tambem embrapa#
     if request.method == 'POST':
         form = PocForm(request.POST)
         if form.is_valid():
@@ -1250,6 +1416,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                             pass
                         out['ogc_backend'] = qgis_server.BACKEND_PACKAGE
 
+                    # verificar isso aqui tambem (embrapa) # alocar os campos aqui para ver se são salvos
                     saved_layer = file_upload(
                         base_file,
                         layer=layer,
@@ -1257,12 +1424,14 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                         abstract=layer.abstract,
                         is_approved=layer.is_approved,
                         is_published=layer.is_published,
+                        #is_inde=layer.is_inde,
                         name=layer.name,
                         user=layer.owner,
                         # user=request.user,
                         license=layer.license.name if layer.license else None,
                         category=layer.category,
                         keywords=list(layer.keywords.all()),
+                        #embrapa_keywords=list(layer.embrapa_keywrods.all()),
                         regions=list(layer.regions.values_list('name', flat=True)),
                         # date=layer.date,
                         overwrite=True,

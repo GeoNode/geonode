@@ -41,20 +41,6 @@
                   {% csrf_token %}
                   <button type="submit" class="btn btn-danger btn-xs">{% trans 'Remove' %}</button>
                 </form>
-                {% if member.role == 'member' %}
-                  |
-                  <form style="display: inline;" method="POST" action="{% url "group_member_promote" group.slug member.user.username %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-success btn-xs">{% trans 'Promote' %}</button>
-                  </form>
-                {% endif %}
-                {% if member.role == 'manager' %}
-                  |
-                  <form style="display: inline;" method="POST" action="{% url "group_member_demote" group.slug member.user.username %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-warning btn-xs">{% trans 'Demote' %}</button>
-                  </form>
-                {% endif %}
               <h4>
               <h5>
                   {% trans 'Role' %}: {{ member.role }}
@@ -80,11 +66,6 @@
                 <form style="display: inline;" method="POST" action="{% url "group_member_remove" group.slug member.user.username %}">
                   {% csrf_token %}
                   <button type="submit" class="btn btn-danger btn-xs">{% trans 'Remove' %}</button>
-                </form>
-                |
-                <form style="display: inline;" method="POST" action="{% url "group_member_demote" group.slug member.user.username %}">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-warning btn-xs">{% trans 'Demote' %}</button>
                 </form>
               <h4>
               <h5>
@@ -113,11 +94,6 @@
                   {% csrf_token %}
                   <button type="submit" class="btn btn-danger btn-xs">{% trans 'Remove' %}</button>
                 </form>
-                |
-                <form style="display: inline;" method="POST" action="{% url "group_member_promote" group.slug member.user.username %}">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-success btn-xs">{% trans 'Promote' %}</button>
-                </form>
               <h4>
               <h5>
                   {% trans 'Role' %}: {{ member.role }}
@@ -135,7 +111,7 @@
         <h3>{% trans "Add new members" %}</h3>
         <form method="POST" action="{% url "group_members_add" group.slug %}">
             {% csrf_token %}
-            <div id="member_form_container">
+            <div id="member_form_container"
                 {{ member_form|as_bootstrap }}<br/><br/>
             </div>
             <input type="submit" value="{% trans "Add Group Members" %}" class="btn btn-primary"/>
