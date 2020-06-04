@@ -227,6 +227,7 @@ def geoserver_upload(
         try:
             overwrite = style or False
             cat.create_style(name, sld, overwrite=overwrite, raw=True, workspace=settings.DEFAULT_WORKSPACE)
+            cat.reset()
         except geoserver.catalog.ConflictingDataError as e:
             msg = ('There was already a style named %s in GeoServer, '
                    'try to use: "%s"' % (name + "_layer", str(e)))
@@ -248,6 +249,7 @@ def geoserver_upload(
                     overwrite = style or False
                     cat.create_style(name + '_layer', sld, overwrite=overwrite, raw=True,
                                      workspace=settings.DEFAULT_WORKSPACE)
+                    cat.reset()
                     style = cat.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
                         cat.get_style(name + '_layer')
                 except geoserver.catalog.ConflictingDataError as e:

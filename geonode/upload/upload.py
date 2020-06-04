@@ -630,6 +630,7 @@ def final_step(upload_session, user, charset="UTF-8"):
                 sld,
                 raw=True,
                 workspace=settings.DEFAULT_WORKSPACE)
+            cat.reset()
         except geoserver.catalog.ConflictingDataError as e:
             msg = 'There was already a style named %s in GeoServer, try using another name: "%s"' % (
                 name, str(e))
@@ -639,6 +640,7 @@ def final_step(upload_session, user, charset="UTF-8"):
                     sld,
                     raw=True,
                     workspace=settings.DEFAULT_WORKSPACE)
+                cat.reset()
             except geoserver.catalog.ConflictingDataError as e:
                 msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (
                     name, str(e))
