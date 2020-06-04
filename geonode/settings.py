@@ -43,6 +43,10 @@ SILENCED_SYSTEM_CHECKS = [
     'urls.W002'
 ]
 
+# Embrapa Unity
+
+EMBRAPA_UNITY_DEFAULT = '96'
+
 # GeoNode Version
 VERSION = get_version()
 

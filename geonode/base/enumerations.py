@@ -20,6 +20,7 @@
 
 from django.utils.translation import ugettext_lazy as _
 
+
 LINK_TYPES = ['original', 'data', 'image', 'metadata', 'html',
               'OGC:WMS', 'OGC:WFS', 'OGC:WCS']
 
@@ -319,6 +320,8 @@ COUNTRIES = (
 )
 
 # Taken from http://www.w3.org/WAI/ER/IG/ert/iso639.htm
+
+# embrapa
 
 ALL_LANGUAGES = (
     ('eng', 'English'),

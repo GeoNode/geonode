@@ -29,7 +29,7 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
-from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_post_save
+from geonode.base.models import (ResourceBase, ResourceBaseManager, resourcebase_post_save)
 from geonode.people.utils import get_valid_user
 from pinax.ratings.models import OverallRating
 from geonode.utils import check_shp_columnnames

@@ -113,7 +113,7 @@ from .tasks import delete_layer
 
 ## EMBRAPA ##
 
-from geonode.base.models import Embrapa_Purpose, Embrapa_Unity
+#from geonode.base.models import Embrapa_Purpose
 from geonode.layers.utils import get_only_year
 import requests
 from django.forms.models import model_to_dict
@@ -999,6 +999,9 @@ def layer_metadata(
 
     print("request.method:")
     print(request.method)
+    print(request.GET.__dict__)
+    
+    '''
     if request.method == "GET":
         # Rota da api que retorna as unidades
         unity_endpoint = 'https://sistemas.sede.embrapa.br/corporativows/rest/corporativoservice/unidades/lista/todas'
@@ -1094,7 +1097,8 @@ def layer_metadata(
             except Exception as error3:
                 print(error3)
                 pass
-
+    '''
+    
 
     # USAR O CREATE PRA CRIAR OS DADOS PRO BANCO
     # Try catch (Se já existem os dados no banco, verificar as constraints únicas)
@@ -1218,7 +1222,7 @@ def layer_metadata(
         print(unity)
 
         print("Atributos da finalidade:")
-        purpose = layer_form.cleaned_data['embrapa_purpose']
+        purpose = layer_form.cleaned_data['purpose']
         print(purpose)
 
         #print teste 04:

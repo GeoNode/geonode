@@ -47,7 +47,6 @@ from django.utils.encoding import (
 
 from bootstrap3_datetime.widgets import DateTimePicker
 from modeltranslation.forms import TranslationModelForm
-
 from geonode.base.models import HierarchicalKeyword, TopicCategory, Region, License, CuratedThumbnail
 from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.documents.models import Document
@@ -58,34 +57,12 @@ from geonode.base.widgets import TaggitSelect2Custom
 #from mptt.forms import TreeNodeMultipleChoiceField
 #import autocomplete_light
 #from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
-from geonode.base.models import Embrapa_Keywords, Embrapa_Unity, Embrapa_Purpose
+from geonode.base.models import Embrapa_Keywords
+from django_filters import FilterSet
 import requests
+from geonode.base.utils import choice_unity, choice_purpose
 
 logger = logging.getLogger(__name__)
-
-def choice_unity():
-    # Rota da api que retorna as unidades
-    unity_endpoint = 'https://sistemas.sede.embrapa.br/corporativows/rest/corporativoservice/unidades/lista/todas'
-
-    # Fazer a chamada na api
-    response = requests.get(unity_endpoint)
-    
-    # Transformar em JSON
-    data = response.json()
-
-    # Pegar o índice "unidadesEmbrapa"
-    data_ids = data["unidadesEmbrapa"]
-
-    # Construir uma lista de ids com o tamanho informado
-    embrapa_only_ids = [i for i in range(len(data_ids))]
-
-    # Colocando apenas os ids na lista
-    for i in range(len(data_ids)):
-        embrapa_only_ids[i] = data_ids[i]["id"]
-
-    # Retornando a lista de ids
-    return embrapa_only_ids
-
 
 def get_tree_data():
     def rectree(parent, path):
@@ -355,7 +332,17 @@ class ResourceBaseDateTimePicker(DateTimePicker):
         base_attrs.update(kwargs)
         return super(ResourceBaseDateTimePicker, self).build_attrs(base_attrs)
         # return base_attrs
-
+'''
+class EmbrapaUnityForm(forms.Form):
+    CHOICES = (('1', '1'),
+                ('2', '2'),
+                ('3', '3'),)
+    embrapa_unity = forms.ModelMultipleChoiceField(
+        choices=CHOICES,
+        queryset=CHOICES,
+        widget=forms.CheckboxSelectMultiple()
+    )
+'''
 
 class ResourceBaseForm(TranslationModelForm):
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
@@ -466,19 +453,32 @@ class ResourceBaseForm(TranslationModelForm):
         required=False,
         choices=get_tree_data(),
         widget=RegionsSelect)
-    embrapa_unity = forms.ModelChoiceField(
-        empty_label=_("Unidade Embrapa"),
-        label=_("Unidade Embrapa"),
+    #embrapa_unity = forms.ModelChoiceField(
+    #    empty_label=_("Unidade Embrapa"),
+    #    label=_("Unidade Embrapa"),
+    #    required=False,
+    #    queryset= Embrapa_Unity.objects.all(),
+    #    widget= autocomplete.ModelSelect2(url='autocomplete_embrapa_unity')
+    #)
+    embrapa_unity = autocomplete.Select2ListChoiceField(
+        label=_("Unidade Embrapa TESTE"),
         required=False,
-        queryset= Embrapa_Unity.objects.all(),
-        widget= autocomplete.ModelSelect2(url='autocomplete_embrapa_unity')
+        choice_list=choice_unity(),
+        widget= autocomplete.ListSelect2(url='autocomplete_embrapa_unity')
     )
-    embrapa_purpose = forms.ModelChoiceField(
-        empty_label=_("Finalidade Embrapa"),
+    #embrapa_purpose = forms.ModelChoiceField(
+    #    empty_label=_("Finalidade Embrapa"),
+    #    label=_("Finalidade Embrapa"),
+    #    required=False,
+    #    queryset= Embrapa_Purpose.objects.all(),
+    #    widget=autocomplete.ModelSelect2(url='autocomplete_embrapa_purpose')
+    #)
+
+    purpose = autocomplete.Select2ListChoiceField(
         label=_("Finalidade Embrapa"),
         required=False,
-        queryset= Embrapa_Purpose.objects.all(),
-        widget=autocomplete.ModelSelect2(url='autocomplete_embrapa_purpose')
+        choice_list=choice_purpose(),
+        widget= autocomplete.ListSelect2(url='autocomplete_embrapa_purpose')
     )
     
     regions.widget.attrs = {"size": 20}

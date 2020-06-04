@@ -79,7 +79,6 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-
 class ContactRole(models.Model):
     """
     ContactRole is an intermediate model to bind Profiles as Contacts to Resources and apply roles.
@@ -177,38 +176,44 @@ class SpatialRepresentationType(models.Model):
         verbose_name_plural = 'Metadata Spatial Representation Types'
 
 # embrapa #
-class Embrapa_Purpose(models.Model):
+class Embrapa_Last_Updated(models.Model):
+    last_updated = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("last_updated",)
+
+#class Embrapa_Purpose(models.Model):
 
     # identifier serve para saber se é ação gerencial ou projeto
-    identifier = models.CharField(max_length=300)
+#    identifier = models.CharField(max_length=300)
     # project_code é pra pegar o código do projeto caso for escolhido a opção projeto
-    project_code = models.IntegerField(default=0, unique=True)
+#    project_code = models.IntegerField(default=0, unique=True)
     # title é o título do projeto, serve tanto para ação gerencial quanto para projeto
-    title = models.TextField(default='')
+#    title = models.TextField(default='')
 
-    def __unicode__(self):
-        return self.title
+#    def __unicode__(self):
+#       return self.title
 
-    def __str__(self):
-        return self.title
+#    def __str__(self):
+#        return self.title
 
-    class Meta:
-        ordering = ("title", )
-        verbose_name_plural = 'Finalidades'
+#    class Meta:
+#        ordering = ("title", )
+#        verbose_name_plural = 'Finalidades'
 
-class Embrapa_Unity(models.Model):
+#class Embrapa_Unity(models.Model):
     # unity é a unidade da embrapa onde estão armazenados os dados correspondentes a finalidade
-    unity = models.CharField(max_length=20, unique=True) #Será trocado de lugar possivelmente
+#    unity = models.CharField(choices=(('1', 'um'),('2', 'dois')), max_length=20, default=settings.EMBRAPA_UNITY_DEFAULT, unique=True) #Será trocado de lugar possivelmente
 
-    def __unicode__(self):
-        return self.unity
+#    def __unicode__(self):
+#        return self.unity
 
-    def __str__(self):
-        return self.unity
+#    def __str__(self):
+#        return self.unity
 
-    class Meta:
-        ordering = ("unity",)
-        verbose_name_plural = 'Unidades'
+#    class Meta:
+#        ordering = ("unity",)
+#        verbose_name_plural = 'Unidades'
         
 # O que levar pro projeto oficial:
 
@@ -804,13 +809,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         null=True,
         blank=True,
         help_text=purpose_help_text)
-    embrapa_purpose = models.ForeignKey(
-        Embrapa_Purpose,
-        null=True,
-        blank=True,
-        verbose_name=_("EmbrapaPurpose"),
-        help_text= purpose_embrapa_help_text,
-        on_delete=models.CASCADE)
+    #embrapa_purpose = models.ForeignKey(
+    #    Embrapa_Purpose,
+    #    null=True,
+    #    blank=True,
+    #    verbose_name=_("EmbrapaPurpose"),
+    #    help_text= purpose_embrapa_help_text,
+    #    on_delete=models.CASCADE)
     maintenance_frequency = models.CharField(
         _('maintenance frequency'),
         max_length=255,
@@ -846,12 +851,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True, 
         null=True, 
         help_text='insira o link do visualizador da INDE - somente para CDGs publicados na INDE')
-    embrapa_unity = models.ForeignKey(
-        Embrapa_Unity,
-        null=True,
-        blank=True,
-        help_text = embrapa_unity_help_text,
-        on_delete=models.CASCADE)
+    #embrapa_unity = models.ForeignKey(
+    #    Embrapa_Unity,
+    #    null=True,
+    #    blank=True,
+    #    help_text = embrapa_unity_help_text,
+    #    on_delete=models.CASCADE)
+    embrapa_unity = models.CharField(
+        _('embrapa unity'),
+        max_length=20,
+        editable=True,
+        default=settings.EMBRAPA_UNITY_DEFAULT,
+        help_text=embrapa_unity_help_text)
     embrapa_keywords = TaggableManager(
         _('embrapa keywords'), 
         through=Keywords_Embrapa,
@@ -1199,13 +1210,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def embrapa_keyword_slug_list(self):
         return [kw.slug for kw in self.embrapa_keywords.all()]
 
-    def embrapa_unity_list(self):
+    #def embrapa_unity_list(self):
         # return [uni.unity for uni in self.embrapa_unity.all()]
-        return self.embrapa_unity.unity
+    #    return self.embrapa_unity.unity
 
-    def embrapa_purpose_list(self):
+    #def embrapa_purpose_list(self):
         # return [purpo.title for purpo in self.embrapa_purpose.all()]
-        return self.embrapa_purpose.title
+    #    return self.embrapa_purpose.title
 
     def region_name_list(self):
         return [region.name for region in self.regions.all()]
