@@ -46,7 +46,6 @@ from django.db import transaction
 from django.core.files import File
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import Polygon
 from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.storage import default_storage as storage
@@ -55,6 +54,7 @@ from django.utils.translation import ugettext as _
 # Geonode functionality
 from geonode.maps.models import Map
 from geonode.base.auth import get_or_create_token
+from geonode.base.bbox_utils import BBOXHelper
 from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import UploadSession, LayerFile
@@ -600,7 +600,7 @@ def file_upload(filename,
 
     # Get a bounding box
     *bbox, srid = get_bbox(filename)
-    bbox_polygon = Polygon.from_bbox(bbox)
+    bbox_polygon = BBOXHelper.from_xy(bbox).as_polygon()
 
     if srid:
         srid_url = "http://www.spatialreference.org/ref/" + srid.replace(':', '/').lower() + "/"  # noqa
