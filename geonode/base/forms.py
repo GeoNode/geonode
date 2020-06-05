@@ -60,7 +60,7 @@ from geonode.base.widgets import TaggitSelect2Custom
 from geonode.base.models import Embrapa_Keywords
 from django_filters import FilterSet
 import requests
-from geonode.base.utils import choice_unity, choice_purpose
+from geonode.base.utils import choice_unity, choice_purpose, choice_purpose_list
 
 logger = logging.getLogger(__name__)
 
@@ -485,6 +485,13 @@ class ResourceBaseForm(TranslationModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ResourceBaseForm, self).__init__(*args, **kwargs)
+        print("purpose no forms do base")
+        self.fields['purpose'] = autocomplete.Select2ListChoiceField(
+            label=_("Finalidade Embrapa"),
+            required=False,
+            choice_list=choice_purpose(),
+            widget= autocomplete.ListSelect2(url='autocomplete_embrapa_purpose')
+        )
         for field in self.fields:
             help_text = self.fields[field].help_text
             #self.fields[field].help_text = "Teste"

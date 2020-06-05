@@ -49,6 +49,14 @@ from django.db.models.functions import (ExtractDay, ExtractMonth, ExtractYear, E
 ExtractSecond)
 import requests
 
+def choice_purpose_list():
+
+    embrapaunity = settings.EMBRAPA_UNITY_DEFAULT
+
+    result = choice_purpose()
+
+    return result
+
 def choice_purpose():
     current_year = get_only_year()
 

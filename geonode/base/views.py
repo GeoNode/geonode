@@ -242,7 +242,7 @@ class EmbrapaKeywordsAutocomplete(autocomplete.Select2QuerySetView):
 
 class EmbrapaPurposeAutocomplete(autocomplete.Select2GroupListView):
     def get_list(self):
-
+        
         embrapa_purposes = choice_purpose()
 
         print("Unidade da Embrapa:")
