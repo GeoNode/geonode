@@ -1216,6 +1216,20 @@ AUTO_GENERATE_AVATAR_SIZES = (
 )
 AVATAR_GRAVATAR_SSL = ast.literal_eval(os.getenv('AVATAR_GRAVATAR_SSL', 'False'))
 
+AVATAR_DEFAULT_URL = os.getenv('AVATAR_DEFAULT_URL', '/geonode/img/avatar.png')
+
+try:
+    # try to parse python notation, default in dockerized env
+    AVATAR_PROVIDERS = ast.literal_eval(os.getenv('AVATAR_PROVIDERS'))
+except ValueError:
+    # fallback to regular list of values separated with misc chars
+    AVATAR_PROVIDERS = (
+    'avatar.providers.PrimaryAvatarProvider',
+    'avatar.providers.GravatarAvatarProvider',
+    'avatar.providers.DefaultAvatarProvider'
+   ) if os.getenv('AVATAR_PROVIDERS') is None \
+        else re.split(r' *[,|:|;] *', os.getenv('AVATAR_PROVIDERS'))
+
 # Number of results per page listed in the GeoNode search pages
 CLIENT_RESULTS_LIMIT = int(os.getenv('CLIENT_RESULTS_LIMIT', '5'))
 
