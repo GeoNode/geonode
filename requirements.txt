@@ -19,7 +19,7 @@ decorator==4.4.2
 celery==4.4.5
 kombu==4.6.10
 boto3==1.13.24
-six==1.12.0
+six==1.15.0
 tqdm==4.46.1
 Deprecated==1.2.10
 wrapt==1.12.1
