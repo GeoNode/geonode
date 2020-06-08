@@ -476,6 +476,11 @@ span.grippy::after {
                     {{ layer_form.embrapa_unity }}
                 </div>
                 <div>
+                    <span><label for="{{ layer_form.embrapa_data_quality_statement|id }}">{{ layer_form.embrapa_data_quality_statement.label }}</label></span>
+                    <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
+                    {{ layer_form.embrapa_data_quality_statement }}
+                </div>
+                <div>
                     <span><label for="{{ layer_form.supplemental_information|id }}">{{ layer_form.supplemental_information.label }}</label></span>
                     <!--<p class="xxs-font-size">(Any other descriptive information about the dataset)</p>-->
                     {{ layer_form.supplemental_information }}

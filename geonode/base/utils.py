@@ -44,10 +44,46 @@ _names = ['Zipped Shapefile', 'Zipped', 'Shapefile', 'GML 2.0', 'GML 3.1.1', 'CS
 
 # embrapa #
 from datetime import datetime
-from geonode.base.models import Embrapa_Last_Updated
+from geonode.base.models import Embrapa_Last_Updated, Embrapa_Data_Quality_Statement
 from django.db.models.functions import (ExtractDay, ExtractMonth, ExtractYear, ExtractHour, ExtractMinute, 
 ExtractSecond)
 import requests
+
+def choice_data_quality_statement():
+
+    data_quality_statement_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/data-quality-statement'
+
+    response = requests.get(data_quality_statement_endpoint)
+
+    data = response.json()
+
+    data_quality_statement_content_database = Embrapa_Data_Quality_Statement.objects.values_list('name', flat=True).order_by('name')
+
+    data_quality_statement_range_api = [i for i in range(len(data))]
+
+    data_quality_statement_range_database = [i for i in range(len(data_quality_statement_content_database))]
+
+    data_quality_statement_total_range = len(data_quality_statement_range_api) + len(data_quality_statement_range_database)
+
+    data_quality_statement_content_reference = [i for i in range(data_quality_statement_total_range)]
+
+    j = 0
+
+    for i in range(len(data)):
+        data_quality_statement_content_reference[j] = data[i]["referenciaBibliografica"]
+        j = j + 1
+
+    for i in range(len(data_quality_statement_content_database)):
+        data_quality_statement_content_reference[j] = data_quality_statement_content_database[i]
+        j = j + 1
+
+    data_quality_statement_content_reference = list(dict.fromkeys(data_quality_statement_content_reference))
+
+    data_quality_statement_content_reference_tuples = list(zip(data_quality_statement_content_reference,data_quality_statement_content_reference))
+
+    return data_quality_statement_content_reference_tuples
+
+    #return data_quality_statement_content_reference
 
 def choice_purpose_list():
 

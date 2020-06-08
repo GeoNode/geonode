@@ -41,7 +41,7 @@ from .forms import CuratedThumbnailForm
 # embrapa #
 from django.db.models import Q
 from datetime import datetime
-from geonode.base.utils import get_last_update
+from geonode.base.utils import get_last_update, choice_data_quality_statement
 from geonode.base.forms import choice_unity, choice_purpose
 
 def batch_modify(request, ids, model):
@@ -240,9 +240,18 @@ class EmbrapaKeywordsAutocomplete(autocomplete.Select2QuerySetView):
 
 #        return qs
 
+class EmbrapaDataQualityStatementAutocomplete(autocomplete.Select2GroupListView):
+    def get_list(self):
+
+        embrapa_data_quality_statements = choice_data_quality_statement()
+
+        print("Views declaração da qualidade do dado:")
+
+        return embrapa_data_quality_statements
+
 class EmbrapaPurposeAutocomplete(autocomplete.Select2GroupListView):
     def get_list(self):
-        
+
         embrapa_purposes = choice_purpose()
 
         print("Unidade da Embrapa:")

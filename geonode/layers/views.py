@@ -112,6 +112,9 @@ from geonode.utils import (
 from .tasks import delete_layer
 
 ## EMBRAPA ##
+from geonode.layers.forms import EmbrapaDataQualityStatementForm
+from django.utils.text import slugify
+from geonode.base.models import Embrapa_Data_Quality_Statement
 
 #from geonode.base.models import Embrapa_Purpose
 from geonode.layers.utils import get_only_year
@@ -839,6 +842,35 @@ def layer_feature_catalogue(
         context=context_dict,
         content_type='application/xml')
 
+@login_required
+def add_embrapa_data_quality_statement(request):
+    template_name = 'layouts/add_embrapa_data_quality_statement.html'
+    form = EmbrapaDataQualityStatementForm(instance=request.user)
+    context = {
+        'form' : form
+    }
+    if request.method == 'POST':
+        form = EmbrapaDataQualityStatementForm(request.POST, instance=request.user)
+        if form.is_valid():
+            print("Nome views do layers:")
+            name = form.cleaned_data['name']
+            name_slug = slugify(name)
+
+            print("Name como slug:")
+            print(name_slug)
+
+            embrapa_data_quality_statement_creates, created = Embrapa_Data_Quality_Statement.objects.get_or_create(name=name, slug=name_slug, depth=1, numchild=0)
+            if created:
+                embrapa_data_quality_statement_creates.save()
+            
+            form.save()
+            form = EmbrapaDataQualityStatementForm(instance=request.user)
+            context['success'] = True
+        else:
+            form = EmbrapaDataQualityStatementForm(instance=request.user)
+        context['form'] = form
+
+    return render(request, template_name, context)
 
 @login_required
 def layer_metadata(
@@ -1186,7 +1218,9 @@ def layer_metadata(
 
         new_keywords = layer_form.cleaned_data['keywords']
         new_embrapa_keywords = layer_form.cleaned_data['embrapa_keywords']
+        new_embrapa_data_quality_statement = layer_form.cleaned_data['embrapa_data_quality_statement']
         new_regions = [x.strip() for x in layer_form.cleaned_data['regions']]
+
 
         print("Teste 04")
         layer.keywords.clear()
@@ -1201,6 +1235,10 @@ def layer_metadata(
         layer.embrapa_keywords.clear()
         if new_embrapa_keywords:
            layer.embrapa_keywords.add(*new_embrapa_keywords)
+
+        layer.embrapa_data_quality_statement.clear()
+        if new_embrapa_data_quality_statement:
+            layer.embrapa_data_quality_statement.add(*new_embrapa_data_quality_statement)
 
         # embrapa #
         print("Teste 04.1")
@@ -1225,6 +1263,21 @@ def layer_metadata(
         purpose = layer_form.cleaned_data['purpose']
         print(purpose)
 
+        print("Atributos da declaração da qualidade do dado:")
+        data_quality_statement = layer_form.cleaned_data['embrapa_data_quality_statement']
+        print(data_quality_statement)
+
+        #for i in range(len(data_quality_statement)):
+        #    if i != 0:
+        #        format_data_quality_statement += ' ; ' + data_quality_statement[i]
+        #    else:
+        #        format_data_quality_statement = data_quality_statement[i]
+        #print("Formtado antes de salvar:")
+        #print(format_data_quality_statement)
+        #layer_form.cleaned_data['embrapa_data_quality_statement'] = format_data_quality_statement
+
+        #print("Layer_form com o dado editado:")
+        #print(layer_form.cleaned_data['embrapa_data_quality_statement'])
         #print teste 04:
         print("Teste 05")
         #pprint(vars(layer))

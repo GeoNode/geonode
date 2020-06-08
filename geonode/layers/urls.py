@@ -34,6 +34,8 @@ layers_list = register_url_event()(TemplateView.as_view(template_name='layers/la
 
 urlpatterns = [
     # 'geonode.layers.views',
+    # Embrapa
+    url(r'^add_embrapa_data_quality_statement$', views.add_embrapa_data_quality_statement, name='embrapa_data_quality_statement_create'),
     url(r'^$',
         layers_list,
         {'facet_type': 'layers', 'is_layer': True},

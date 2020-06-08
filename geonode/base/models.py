@@ -609,6 +609,127 @@ class _HierarchicalTagManager(_TaggableManager):
             except Exception as e:
                 logger.exception(e)
 
+class EmbrapaDataQualityStatementQuerySet(MP_NodeQuerySet):
+    """QuerySet to automatically create a root node if `depth` not given."""
+
+    def create(self, **kwargs):
+        if 'name' not in kwargs:
+            return self.model.add_root(**kwargs)
+        return super(EmbrapaDataQualityStatementQuerySet, self).create(**kwargs)
+
+
+class EmbrapaDataQualityStatementManager(MP_NodeManager):
+
+    def get_queryset(self):
+        return EmbrapaDataQualityStatementQuerySet(self.model).order_by('name')
+
+class Embrapa_Data_Quality_Statement(TagBase, MP_Node):
+
+    node_order_by = ['name']
+
+    objects = EmbrapaDataQualityStatementManager()
+
+    #print("Embrapa_Keywords 01:")
+    #print("Objects :")
+    #pprint(vars(objects))
+    #print("Depois de printar objects ")
+
+    @classmethod
+    def dump_bulk_tree(cls, parent=None, keep_ids=True):
+
+        qset = cls._get_serializable_model().get_tree(parent)
+        ret, lnk = [], {}
+        #print("qset embrapa_keywords:")
+        #print(qset)
+        #print("Embrapa_Keywords 02:")
+        #print("Objects 2 :")
+        #print(objects.__dict__)
+        try:
+            for pyobj in qset:
+                #print("Embrapa_Keywords 03:")
+                serobj = serializers.serialize('python', [pyobj])[0]
+                #print("serobj - Embrapa_Keywords:")
+                #print(serobj)
+                fields = serobj['fields']
+                fields['text'] = fields['name']
+                fields['href'] = fields['slug']
+                del fields['name']
+                del fields['slug']
+                del fields['path']
+                del fields['numchild']
+                del fields['depth']
+                if 'id' in fields:
+                    del fields['id']
+
+                newobj = {}
+                for field in fields:
+                    newobj[field] = fields[field]
+                if keep_ids:
+                    newobj['id'] = serobj['pk']
+
+                if (not parent and depth == 1) or\
+                   (parent and depth == parent.depth):
+                    ret.append(newobj)
+                else:
+                    parentobj = pyobj.get_parent()
+                    parentser = lnk[parentobj.pk]
+                    if 'nodes' not in parentser:
+                        parentser['nodes'] = []
+                    parentser['nodes'].append(newobj)
+
+                lnk[pyobj.pk] = newobj
+        except Exception:
+            pass
+        return ret
+
+class Embrapa_Data_Quality_Statement_ResourceBase(ItemBase):
+    content_object = models.ForeignKey('ResourceBase', on_delete=models.CASCADE)
+    tag = models.ForeignKey('Embrapa_Data_Quality_Statement', 
+        related_name='embrapa_data_quality_statement', on_delete=models.CASCADE)
+
+    @classmethod
+    def tags_for(cls, model, instance=None):
+        if instance is not None:
+            return cls.tag_model().objects.filter(**{
+                '%s__content_object' % cls.tag_relname(): instance
+            })
+        return cls.tag_model().objects.filter(**{
+            '%s__content_object__isnull' % cls.tag_relname(): False
+        }).distinct()
+
+class _EmbrapaDataTagManager(_TaggableManager):
+    def add(self, *tags):
+        str_tags = set([
+            t
+            for t in tags
+            if not isinstance(t, self.through.tag_model())
+        ])
+        #print("_EmbrapaTagManager 1")
+        #print(str_tags)
+        tag_objs = set(tags) - str_tags
+        #print("_EmbrapaTagManager 2")
+        #print(tag_objs)
+
+        existing = self.through.tag_model().objects.filter(
+            name__in=str_tags
+        )
+        
+        #print("_EmbrapaTagManager 3")
+        #print(existing)
+        tag_objs.update(existing)
+        for new_tag in str_tags - set(t.name for t in existing):
+            if new_tag:
+                new_tag = escape(new_tag)
+                tag_objs.add(Embrapa_Data_Quality_Statement.add_root(name=new_tag))
+
+        #print("_EmbrapaTagManager 4")
+        for tag in tag_objs:
+            try:
+                self.through.objects.get_or_create(
+                    tag=tag, **self._lookup_kwargs())
+            except Exception as e:
+                logger.exception(e)
+
 
 class Thesaurus(models.Model):
     """
@@ -863,6 +984,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         editable=True,
         default=settings.EMBRAPA_UNITY_DEFAULT,
         help_text=embrapa_unity_help_text)
+    #embrapa_data_quality_statement = models.TextField(
+    #    _('embrapa data quality statement'),
+    #    max_length=2000,
+    #    blank=True,
+    #    null=True,
+    #    help_text=data_quality_statement_help_text)
+    embrapa_data_quality_statement = TaggableManager(
+        _('embrapa data quality statement'), 
+        through=Embrapa_Data_Quality_Statement_ResourceBase,
+        blank=True,
+        help_text=data_quality_statement_help_text, 
+        manager= _EmbrapaDataTagManager)
     embrapa_keywords = TaggableManager(
         _('embrapa keywords'), 
         through=Keywords_Embrapa,
@@ -1217,6 +1350,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     #def embrapa_purpose_list(self):
         # return [purpo.title for purpo in self.embrapa_purpose.all()]
     #    return self.embrapa_purpose.title
+
+    def embrapa_data_quality_statement_list(self):
+        return [data.name for data in self.embrapa_data_quality_statement.all()]
 
     def region_name_list(self):
         return [region.name for region in self.regions.all()]
@@ -1606,9 +1742,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return [v for i, v in enumerate(
             UPDATE_FREQUENCIES) if v[0] == self.maintenance_frequency][0][1].title()
 
-    def language_title(self):
-        return [v for i, v in enumerate(
-            ALL_LANGUAGES) if v[0] == self.language][0][1].title()
+    #def embrapa_data_quality_statement_title(self):
+    #    return [v for i, v in enumerate(
+    #        ('1','2')) if v[0] == self.embrapa_data_quality_statement][0][1].title()
+
+    #def language_title(self):
+    #    return [v for i, v in enumerate(
+    #        ALL_LANGUAGES) if v[0] == self.language][0][1].title()
 
     def _set_poc(self, poc):
         # embrapa #

@@ -60,7 +60,7 @@ from geonode.base.widgets import TaggitSelect2Custom
 from geonode.base.models import Embrapa_Keywords
 from django_filters import FilterSet
 import requests
-from geonode.base.utils import choice_unity, choice_purpose, choice_purpose_list
+from geonode.base.utils import choice_unity, choice_purpose, choice_data_quality_statement
 
 logger = logging.getLogger(__name__)
 
@@ -480,6 +480,14 @@ class ResourceBaseForm(TranslationModelForm):
         choice_list=choice_purpose(),
         widget= autocomplete.ListSelect2(url='autocomplete_embrapa_purpose')
     )
+
+    embrapa_data_quality_statement = forms.MultipleChoiceField(
+        label=_("Declaração da Qualidade do Dado Embrapa"),
+        required=False,
+        choices=choice_data_quality_statement(),
+        widget = autocomplete.Select2Multiple(url='autocomplete_embrapa_data_quality_statement')
+        #widget= autocomplete.ListSelect2(url='autocomplete_embrapa_data_quality_statement')
+    )
     
     regions.widget.attrs = {"size": 20}
 
@@ -491,6 +499,12 @@ class ResourceBaseForm(TranslationModelForm):
             required=False,
             choice_list=choice_purpose(),
             widget= autocomplete.ListSelect2(url='autocomplete_embrapa_purpose')
+        )
+        self.fields['embrapa_data_quality_statement'] = forms.MultipleChoiceField(
+            label=_("Declaração da Qualidade do Dado Embrapa"),
+            required=False,
+            choices=choice_data_quality_statement(),
+            widget= autocomplete.Select2Multiple(url='autocomplete_embrapa_data_quality_statement')
         )
         for field in self.fields:
             help_text = self.fields[field].help_text
@@ -505,6 +519,33 @@ class ResourceBaseForm(TranslationModelForm):
                         'data-container': 'body',
                         'data-html': 'true',
                         })
+
+    def clean_embrapa_data_quality_statement(self):
+        embrapa_data_quality_statement = self.cleaned_data['embrapa_data_quality_statement']
+        _unsescaped_embrapa_data_quality_statement = []
+        print("CLEAN DO FORMS")
+        print(embrapa_data_quality_statement)
+        print("Tamanho da lista:")
+        print(range(len(embrapa_data_quality_statement)))
+
+        # Aqui pode criar os data_quality_statements no banco pra referenciar
+
+        #if len(embrapa_data_quality_statement) > 1:
+        #    embrapa_data_quality_statement_str = str(embrapa_data_quality_statement)
+        #    embrapa_data_quality_statement_str = embrapa_data_quality_statement_str.replace("['","")
+        #    embrapa_data_quality_statement_str = embrapa_data_quality_statement_str.replace("']","")
+        #    embrapa_data_quality_statement_str = embrapa_data_quality_statement_str.replace("',","")
+        #    embrapa_data_quality_statement_str = embrapa_data_quality_statement_str.replace(" '"," ")
+
+        #else:
+        #    embrapa_data_quality_statement_str = str(embrapa_data_quality_statement)
+        #    embrapa_data_quality_statement_str = embrapa_data_quality_statement_str.replace("['","")
+        #    embrapa_data_quality_statement_str = embrapa_data_quality_statement_str.replace("']","")
+
+        #print("CLEAN DO FORMS: DEPOIS DO REPLACE")
+        #print(embrapa_data_quality_statement_str)
+
+        return embrapa_data_quality_statement
 
     #É AQUI QUE TÁ SEPARANDO POR VIRGULAS AS PALAVRAS CHAVE
     def clean_embrapa_keywords(self):

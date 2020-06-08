@@ -32,6 +32,15 @@ import json
 from geonode.utils import unzip_file
 from geonode.layers.models import Layer, Attribute
 
+# Embrapa#
+from geonode.base.models import Embrapa_Data_Quality_Statement
+
+class EmbrapaDataQualityStatementForm(forms.ModelForm):
+
+    class Meta:
+        model = Embrapa_Data_Quality_Statement
+        fields = ['name']
+
 
 class JSONField(forms.CharField):
 
