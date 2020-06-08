@@ -23,17 +23,16 @@ import uuid
 import logging
 import json
 
-from six import string_types
-
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
-
-from geoserver.catalog import FailedRequestError
 
 from geonode import GeoNodeException
 from geonode.layers.models import Layer
 from geonode.layers.utils import get_valid_name
-from geonode.geoserver.helpers import gs_catalog, ogc_server_settings
+from geonode.geoserver.helpers import (
+    gs_catalog,
+    ogc_server_settings,
+    create_geoserver_db_featurestore)
 
 
 logger = logging.getLogger(__name__)
@@ -144,42 +143,8 @@ def get_or_create_datastore(cat, workspace=None, charset="UTF-8"):
     """
     Get a PostGIS database store or create it in GeoServer if does not exist.
     """
-
-    # TODO refactor this and geoserver.helpers._create_db_featurestore
-    # dsname = ogc_server_settings.DATASTORE
     dsname = ogc_server_settings.datastore_db['NAME']
-    if not ogc_server_settings.DATASTORE:
-        msg = ("To use the createlayer application you must set ogc_server_settings.datastore_db['ENGINE']"
-               " to 'django.contrib.gis.db.backends.postgis")
-        logger.error(msg)
-        raise GeoNodeException(msg)
-
-    try:
-        ds = cat.get_store(dsname, workspace=workspace)
-    except FailedRequestError:
-        ds = cat.create_datastore(dsname, workspace=workspace)
-
-    db = ogc_server_settings.datastore_db
-    ds.connection_parameters.update(
-        {'validate connections': 'true',
-         'max connections': '10',
-         'min connections': '1',
-         'fetch size': '1000',
-         'host': db['HOST'],
-         'port': db['PORT'] if isinstance(
-             db['PORT'], string_types) else str(db['PORT']) or '5432',
-         'database': db['NAME'],
-         'user': db['USER'],
-         'passwd': db['PASSWORD'],
-         'dbtype': 'postgis'}
-    )
-
-    cat.save(ds)
-
-    # we need to reload the ds as gsconfig-1.0.6 apparently does not populate ds.type
-    # using create_datastore (TODO fix this in gsconfig)
-    ds = cat.get_store(dsname, workspace=workspace)
-
+    ds = create_geoserver_db_featurestore(store_name=dsname, workspace=workspace)
     return ds
 
 
