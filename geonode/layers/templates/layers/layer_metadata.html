@@ -103,6 +103,9 @@
           </div>
         </div>
       </form>
-
+          <form id='call_apis' class="form-horizontal" action="{% url "layer_metadata" layer.service_typename %}" method="GET">
+            <input type="submit" id="btn_projeto_embrapa" name= "list_projects" class="btn btn-primary" value="{% trans "Listar Projetos" %}"/>
+            <input type="submit" id="btn_acao_gerencial_embrapa" name= "list_management_actions" class="btn btn-primary" value="{% trans "Listar Ações Gerenciais" %}"/>
+          </form>
 {{ block.super }}
 {% endblock body_outer %}

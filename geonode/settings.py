@@ -46,6 +46,8 @@ SILENCED_SYSTEM_CHECKS = [
 # Embrapa Unity
 
 EMBRAPA_UNITY_DEFAULT = '96'
+ACAO_GERENCIAL_API = False
+PROJETO_API = False
 
 # GeoNode Version
 VERSION = get_version()

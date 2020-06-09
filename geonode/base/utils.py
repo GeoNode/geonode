@@ -49,6 +49,55 @@ from django.db.models.functions import (ExtractDay, ExtractMonth, ExtractYear, E
 ExtractSecond)
 import requests
 
+class AuthorObjects:
+    def __init__(self, nome, afiliacao, autoria):
+        self.nome = nome
+        self.afiliacao = afiliacao
+        self.autoria = autoria
+
+def autores_objects_api():
+
+    autores_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/ws/rest/listaAutores'
+
+    response = requests.get(autores_endpoint)
+
+    data = response.json()
+
+    autores_afiliacao = [i for i in range(len(data))]
+    autores_autoria = [i for i in range(len(data))]
+    autores_nome = [i for i in range(len(data))]
+
+    for i in range(len(data)):
+        autores_afiliacao[i] = data[i]["afiliacao"]
+        autores_autoria[i] = data[i]["autoria"]
+        autores_nome[i] = data[i]["nome"]
+
+    objects_author = []
+
+    for i in range(len(data)):
+        objects_author.append(AuthorObjects(autores_nome[i], autores_afiliacao[i], autores_autoria[i]))
+
+    return objects_author
+
+def choice_authors():
+
+    autores_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/ws/rest/listaAutores'
+
+    response = requests.get(autores_endpoint)
+
+    data = response.json()
+
+    autores_afiliacao = [i for i in range(len(data))]
+    autores_autoria = [i for i in range(len(data))]
+    autores_nome = [i for i in range(len(data))]
+
+    for i in range(len(data)):
+        autores_afiliacao[i] = data[i]["afiliacao"]
+        autores_autoria[i] = data[i]["autoria"]
+        autores_nome[i] = data[i]["nome"]
+
+    return autores_nome
+
 def choice_data_quality_statement():
 
     data_quality_statement_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/data-quality-statement'
@@ -121,6 +170,23 @@ def choice_purpose():
     tamanho_projeto = [i for i in range(len(data_projeto_id_titulo))]
 
     embrapa_acao_gerencial_projeto_ids = [i for i in range(len(tamanho_acao_gerencial + tamanho_projeto))]
+
+    embrapa_acao_gerencial = [i for i in range(len(data_acao_gerencial))]
+
+    embrapa_projeto = [i for i in range(len(data_projeto_id_titulo))]
+
+    if settings.ACAO_GERENCIAL_API:
+        for i in range(len(data_acao_gerencial)):
+            embrapa_acao_gerencial[i] = data_acao_gerencial[i]["acaoGerencialId"] + ' - ' + data_acao_gerencial[i]["titulo"]
+
+        return embrapa_acao_gerencial
+
+    elif settings.PROJETO_API:
+        for i in range(len(data_projeto_id_titulo)):
+            embrapa_projeto[i] = data_projeto_id_titulo[i]["id"] + ' - ' + data_projeto_id_titulo[i]["titulo"]
+
+        return embrapa_projeto
+
 
     for i in range(len(tamanho_acao_gerencial)):
         embrapa_acao_gerencial_projeto_ids[i] = data_acao_gerencial[i]["acaoGerencialId"] + ' - ' + data_acao_gerencial[i]["titulo"]

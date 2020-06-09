@@ -1148,6 +1148,18 @@ def layer_metadata(
     print("Vars do category_form:")
     pprint(vars(category_form))'''
     #pprint(layer_form.__dict__)
+    if request.method == "GET":
+        print("TESTE NO LAYERS!!!")
+        project = request.GET.get("list_projects")
+        management_actions = request.GET.get("list_management_actions")
+        if project:
+            print("CLIQUEI EM PROJETO!!")
+            settings.PROJETO_API = True
+            settings.ACAO_GERENCIAL_API = False
+        elif management_actions:
+            print("CLIQUEI EM AÇÃO GERENCIAL")
+            settings.ACAO_GERENCIAL_API = True
+            settings.PROJETO_API = False
 
     if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid(
     ) and category_form.is_valid():
@@ -1397,6 +1409,24 @@ def layer_metadata(
         "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
     })
 
+# embrapa 
+#@login_required
+#def projeto_api_click(request):
+
+#    settings.PROJETO_API = True
+
+#    template_name = 'layers/layer_metadata.html'
+
+#   return render(request, template_name)
+
+#@login_required
+#def acao_gerencial_api_click(request):
+
+#    settings.ACAO_GERENCIAL_API = True
+
+#    template_name = 'layers/layer_metadata.html'
+
+#    return render(request, template_name)
 
 @login_required
 def layer_metadata_advanced(request, layername):
