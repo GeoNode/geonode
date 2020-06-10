@@ -457,12 +457,14 @@ class Attribute(models.Model):
     TYPE_IMAGE = 'type_image'
     TYPE_VIDEO = 'type_video'
     TYPE_AUDIO = 'type_audio'
+    TYPE_IFRAME = 'type_iframe'
 
     TYPES = ((TYPE_PROPERTY, _("Property-Label"),),
              (TYPE_HREF, _("HREF-Link"),),
              (TYPE_IMAGE, _("Image",),),
              (TYPE_VIDEO, _("Video",),),
              (TYPE_AUDIO, _("Audio",),),
+             (TYPE_IFRAME, _("iFrame",),),
              )
     featureinfo_type = models.CharField(
         _('featureinfo type'),
