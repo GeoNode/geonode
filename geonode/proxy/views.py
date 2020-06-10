@@ -21,6 +21,7 @@
 import io
 import os
 import re
+import six
 import gzip
 import json
 import shutil
@@ -198,6 +199,19 @@ def proxy(request, url=None, response_callback=None,
         buf = io.BytesIO(content)
         f = gzip.GzipFile(fileobj=buf)
         content = f.read()
+
+    PLAIN_CONTENT_TYPES = [
+        'text',
+        'plain',
+        'html',
+        'json',
+        'xml',
+        'gml'
+    ]
+    for _ct in PLAIN_CONTENT_TYPES:
+        if _ct in content_type and not isinstance(content, six.string_types):
+            content = content.decode()
+            break
 
     if response and response_callback:
         kwargs = {} if not kwargs else kwargs
