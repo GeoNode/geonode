@@ -1047,6 +1047,7 @@ def layer_metadata(
             la.attribute_label = form["attribute_label"]
             la.visible = True if form["attribute_label"] else False  # form["visible"]
             la.display_order = form["display_order"]
+            la.featureinfo_type = form["featureinfo_type"]
             la.save()
 
         if new_poc is not None or new_author is not None:

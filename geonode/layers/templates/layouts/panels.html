@@ -528,37 +528,42 @@ span.grippy::after {
     </div>
     <div id="dataset" class="tab-pane fade">
       <div class="panel-group"><div class="panel panel-default"><div class="panel-body">
-      <div>
+        <div>
           <div style="padding: 15px">
-                      <div>
-                          {{ attribute_form.management_form }}
-                          <table class="table table-striped table-bordered table-condensed">
-                              <tr class="table-header">
-                                  <th style="width:25px;background: #efefef;"></th>
-                                  <th>{% trans "Attribute" %}</th>
-                                  <th>{% trans "Label" %}</th>
-                                  <th>{% trans "Description" %}</th>
-                                  <th>{% trans "Display Order" %}</th>
-                              </tr>
-                              {% for form in attribute_form.forms %}
-                                  {% if form.attribute %}
-                                      <tr>
-                                          <td style="width:25px;background: #efefef;"> <span class="grippy"></span></td>
-                                          <td><div style="display:none">{{form.id}}</div>{{form.attribute}}</td>
-                                          <td>{{form.attribute_label}}</td>
-                                          <td>{{form.description}}</td>
-                                          <td>{{form.display_order}}</td>
-                                      </tr>
-                                  {% endif %}
-                              {% endfor %}
-                          </table>
-                        </div>
-                  </div>
-                </div>
+            <div>
+                {{ attribute_form.management_form }}
+                <table class="table table-striped table-bordered table-condensed">
+                    <tr class="table-header">
+                        <th style="width:25px;background: #efefef;"></th>
+                        <th>{% trans "Attribute" %}</th>
+                        <th>{% trans "Label" %}</th>
+                        <th>{% trans "Description" %}</th>
+                        <th>{% trans "Display Order" %}</th>
+                        <th>{% trans "Display Type" %}</th>
+                    </tr>
+                    {% for form in attribute_form.forms %}
+                    {% if form.attribute %}
+                    <tr>
+                        <td style="width:25px;background: #efefef;"> <span class="grippy"></span></td>
+                        <td><div style="display:none">{{form.id}}</div>{{form.attribute}}</td>
+                        <td>{{form.attribute_label}}</td>
+                        <td>{{form.description}}</td>
+                        <td>{{form.display_order}}</td>
+                        <td>{{form.featureinfo_type}}</td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </table>
+                <label>{% trans "Use a custom template?" %}</label>
+                {{layer_form.use_featureinfo_custom_template}}
+                {{layer_form.featureinfo_custom_template}}
               </div>
             </div>
+          </div>
+        </div>
       </div>
     </div>
+  </div>
 </div>
 <div id="preview" class="tab-pane fade" style="overflow: hidden;">
     <!-- <iframe id="preview_encoder_iframe" height="100%" width="100%" style="width:0;height:0;border:0;border:none;" src="{% url 'layer_metadata_detail' resource.alternate %}"></iframe> -->
