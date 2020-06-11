@@ -261,6 +261,7 @@ jobs:
           - ON_TRAVIS: 'True'
           - TEST_RUNNER_KEEPDB: 'True'
           - TEST_RUN_INTEGRATION: 'True'
+          - TEST_RUN_INTEGRATION_SERVER: 'True'
           - MONITORING_ENABLED: 'False'
           - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
           - CELERY_ALWAYS_EAGER: 'True'
