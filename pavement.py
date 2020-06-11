@@ -908,7 +908,8 @@ def test_integration(options):
             if _backend == 'geonode.geoserver':
                 call_task('start_geoserver', options={'settings': settings, 'force_exec': True})
             call_task('start', options={'settings': settings})
-            call_task('setup_data', options={'settings': settings})
+            if integration_server_tests:
+                call_task('setup_data', options={'settings': settings})
         elif not integration_csw_tests and _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
             sh("cp geonode/upload/tests/test_settings.py geonode/")
             settings = 'geonode.test_settings'
