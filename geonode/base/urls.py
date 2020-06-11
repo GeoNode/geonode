@@ -25,7 +25,8 @@ from django.conf import settings
 from .views import (
     ResourceBaseAutocomplete, RegionAutocomplete,
     HierarchicalKeywordAutocomplete, ThesaurusKeywordLabelAutocomplete, 
-    EmbrapaKeywordsAutocomplete, EmbrapaUnityAutocomplete, EmbrapaPurposeAutocomplete, EmbrapaDataQualityStatementAutocomplete)
+    EmbrapaKeywordsAutocomplete, EmbrapaUnityAutocomplete, EmbrapaPurposeAutocomplete, EmbrapaDataQualityStatementAutocomplete,
+    EmbrapaAuthorsAutocomplete)
 
 from .models import Embrapa_Data_Quality_Statement
 
@@ -66,6 +67,11 @@ urlpatterns = [
         r'^autocomplete_embrapa_data_quality_statement/$',
         EmbrapaDataQualityStatementAutocomplete.as_view(),
         name='autocomplete_embrapa_data_quality_statement',
+    ),
+    url(
+        r'^autocomplete_embrapa_autores/$',
+        EmbrapaAuthorsAutocomplete.as_view(),
+        name='autocomplete_embrapa_autores',
     ),
 ]
 

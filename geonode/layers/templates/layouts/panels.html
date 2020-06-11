@@ -542,6 +542,11 @@ span.grippy::after {
                           <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
                           {{ layer_form.metadata_author }}
                       </div>
+                      <div>
+                          <span><label for="{{ layer_form.embrapa_autores|id }}">{{ layer_form.embrapa_autores.label }}</label></span>
+                          <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
+                          {{ layer_form.embrapa_autores }}
+                      </div>
 
                       {% if GEONODE_SECURITY_ENABLED %}
                       <!--<hr />

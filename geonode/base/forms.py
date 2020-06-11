@@ -57,10 +57,11 @@ from geonode.base.widgets import TaggitSelect2Custom
 #from mptt.forms import TreeNodeMultipleChoiceField
 #import autocomplete_light
 #from autocomplete_light.contrib.taggit_field import TaggitField, TaggitWidget
-from geonode.base.models import Embrapa_Keywords
+from geonode.base.models import Embrapa_Keywords, Embrapa_Authors
 from django_filters import FilterSet
 import requests
-from geonode.base.utils import choice_unity, choice_purpose, choice_data_quality_statement
+from django.utils.text import slugify
+from geonode.base.utils import choice_unity, choice_purpose, choice_data_quality_statement, choice_authors, authors_objects_api
 
 logger = logging.getLogger(__name__)
 
@@ -461,7 +462,7 @@ class ResourceBaseForm(TranslationModelForm):
     #    widget= autocomplete.ModelSelect2(url='autocomplete_embrapa_unity')
     #)
     embrapa_unity = autocomplete.Select2ListChoiceField(
-        label=_("Unidade Embrapa TESTE"),
+        label=_("Unidade Embrapa"),
         required=False,
         choice_list=choice_unity(),
         widget= autocomplete.ListSelect2(url='autocomplete_embrapa_unity')
@@ -488,6 +489,13 @@ class ResourceBaseForm(TranslationModelForm):
         widget = autocomplete.Select2Multiple(url='autocomplete_embrapa_data_quality_statement')
         #widget= autocomplete.ListSelect2(url='autocomplete_embrapa_data_quality_statement')
     )
+
+    embrapa_autores = forms.MultipleChoiceField(
+        label=_("Autores Embrapa"),
+        required=False,
+        choices=choice_authors(),
+        widget= autocomplete.Select2Multiple(url='autocomplete_embrapa_autores')
+    )
     
     regions.widget.attrs = {"size": 20}
 
@@ -500,11 +508,19 @@ class ResourceBaseForm(TranslationModelForm):
             choice_list=choice_purpose(),
             widget= autocomplete.ListSelect2(url='autocomplete_embrapa_purpose')
         )
+        print("data_quality_statement no forms do base")
         self.fields['embrapa_data_quality_statement'] = forms.MultipleChoiceField(
             label=_("Declaração da Qualidade do Dado Embrapa"),
             required=False,
             choices=choice_data_quality_statement(),
             widget= autocomplete.Select2Multiple(url='autocomplete_embrapa_data_quality_statement')
+        )
+        print("authors no forms do base")
+        self.fields['embrapa_autores'] = forms.MultipleChoiceField(
+            label=_("Autores Embrapa"),
+            required=False,
+            choices=choice_authors(),
+            widget= autocomplete.Select2Multiple(url='autocomplete_embrapa_autores')
         )
         for field in self.fields:
             help_text = self.fields[field].help_text
@@ -520,13 +536,35 @@ class ResourceBaseForm(TranslationModelForm):
                         'data-html': 'true',
                         })
 
+    def clean_embrapa_autores(self):
+        embrapa_autores = self.cleaned_data['embrapa_autores']
+        print("Clean autores:")
+        print(embrapa_autores)
+
+        name_slug = [i for i in range(len(embrapa_autores))]
+
+        for i in range(len(embrapa_autores)):
+            name_slug[i] = slugify(embrapa_autores[i])
+
+        objects_author = authors_objects_api()
+
+        for obj in objects_author:
+            for i in range(len(embrapa_autores)):
+                if obj.nome == embrapa_autores[i]:
+                    embrapa_autores_creates, created = Embrapa_Authors.objects.get_or_create(name=obj.nome, 
+                        slug=name_slug[i], depth=1, numchild=0, afiliacao=obj.afiliacao, autoria=obj.autoria)
+                    if created:
+                        embrapa_autores_creates.save()
+
+        return embrapa_autores
+
     def clean_embrapa_data_quality_statement(self):
         embrapa_data_quality_statement = self.cleaned_data['embrapa_data_quality_statement']
-        _unsescaped_embrapa_data_quality_statement = []
-        print("CLEAN DO FORMS")
-        print(embrapa_data_quality_statement)
-        print("Tamanho da lista:")
-        print(range(len(embrapa_data_quality_statement)))
+        #_unsescaped_embrapa_data_quality_statement = []
+        #print("CLEAN DO FORMS")
+        #print(embrapa_data_quality_statement)
+        #print("Tamanho da lista:")
+        #print(range(len(embrapa_data_quality_statement)))
 
         # Aqui pode criar os data_quality_statements no banco pra referenciar
 

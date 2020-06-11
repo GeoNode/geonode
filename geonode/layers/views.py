@@ -112,9 +112,9 @@ from geonode.utils import (
 from .tasks import delete_layer
 
 ## EMBRAPA ##
-from geonode.layers.forms import EmbrapaDataQualityStatementForm
+from geonode.layers.forms import EmbrapaDataQualityStatementForm, EmbrapaAuthorsForm
 from django.utils.text import slugify
-from geonode.base.models import Embrapa_Data_Quality_Statement
+from geonode.base.models import Embrapa_Data_Quality_Statement, Embrapa_Authors
 
 #from geonode.base.models import Embrapa_Purpose
 from geonode.layers.utils import get_only_year
@@ -843,6 +843,45 @@ def layer_feature_catalogue(
         content_type='application/xml')
 
 @login_required
+def add_embrapa_autores(request):
+    template_name = 'layouts/add_embrapa_autores.html'
+    form = EmbrapaAuthorsForm(instance=request.user)
+    context = {
+        'form' : form
+    }
+    if request.method == 'POST':
+        form = EmbrapaAuthorsForm(request.POST, instance=request.user)
+        if form.is_valid():
+            print("Nome views do layers:")
+            name = form.cleaned_data['name']
+            name_slug = slugify(name)
+            print(name)
+            print("Nome como slug:")
+            print(name_slug)
+
+            autoria = form.cleaned_data['autoria']
+            print("Autoria views do layers:")
+            print(autoria)
+
+            afiliacao = form.cleaned_data['afiliacao']
+            print("Afiliação views do layers:")
+            print(afiliacao)
+
+            embrapa_autores_creates, created = Embrapa_Authors.objects.get_or_create(name=name, 
+                        slug=name_slug, depth=1, numchild=0, afiliacao=afiliacao, autoria=autoria)
+            if created:
+                embrapa_autores_creates.save()
+
+            form.save()
+            form = EmbrapaAuthorsForm(instance=request.user)
+            context['success'] = True
+        else:
+            form = EmbrapaAuthorsForm(instance=request.user)
+        context['form'] = form
+
+    return render(request, template_name, context)
+
+@login_required
 def add_embrapa_data_quality_statement(request):
     template_name = 'layouts/add_embrapa_data_quality_statement.html'
     form = EmbrapaDataQualityStatementForm(instance=request.user)
@@ -1231,6 +1270,7 @@ def layer_metadata(
         new_keywords = layer_form.cleaned_data['keywords']
         new_embrapa_keywords = layer_form.cleaned_data['embrapa_keywords']
         new_embrapa_data_quality_statement = layer_form.cleaned_data['embrapa_data_quality_statement']
+        new_embrapa_autores = layer_form.cleaned_data['embrapa_autores']
         new_regions = [x.strip() for x in layer_form.cleaned_data['regions']]
 
 
@@ -1251,6 +1291,10 @@ def layer_metadata(
         layer.embrapa_data_quality_statement.clear()
         if new_embrapa_data_quality_statement:
             layer.embrapa_data_quality_statement.add(*new_embrapa_data_quality_statement)
+
+        layer.embrapa_autores.clear()
+        if new_embrapa_autores:
+            layer.embrapa_autores.add(*new_embrapa_autores)
 
         # embrapa #
         print("Teste 04.1")
@@ -1278,6 +1322,10 @@ def layer_metadata(
         print("Atributos da declaração da qualidade do dado:")
         data_quality_statement = layer_form.cleaned_data['embrapa_data_quality_statement']
         print(data_quality_statement)
+
+        print("Atributos de embrapa_autores:")
+        autores = layer_form.cleaned_data['embrapa_autores']
+        print(autores)
 
         #for i in range(len(data_quality_statement)):
         #    if i != 0:

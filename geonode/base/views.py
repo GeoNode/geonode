@@ -41,8 +41,7 @@ from .forms import CuratedThumbnailForm
 # embrapa #
 from django.db.models import Q
 from datetime import datetime
-from geonode.base.utils import get_last_update, choice_data_quality_statement
-from geonode.base.forms import choice_unity, choice_purpose
+from geonode.base.utils import get_last_update, choice_data_quality_statement, choice_authors, choice_unity, choice_purpose
 
 def batch_modify(request, ids, model):
     if not request.user.is_superuser:
@@ -240,6 +239,21 @@ class EmbrapaKeywordsAutocomplete(autocomplete.Select2QuerySetView):
 
 #        return qs
 
+class EmbrapaAuthorsAutocomplete(autocomplete.Select2GroupListView):
+    def get_list(self):
+
+        if not self.q:
+            print("Tá vazia")
+            embrapa_autores = None
+        else:
+            embrapa_autores = choice_authors()
+
+
+        print("Views autores:")
+
+        return embrapa_autores
+
+
 class EmbrapaDataQualityStatementAutocomplete(autocomplete.Select2GroupListView):
     def get_list(self):
 
@@ -271,67 +285,6 @@ class EmbrapaUnityAutocomplete(autocomplete.Select2GroupListView):
             settings.EMBRAPA_UNITY_DEFAULT = self.q
 
         return embrapa_unities
-
-class EmbrapaUnity_Autocomplete(autocomplete.Select2QuerySetView):
-    def get_queryset(self):
-        search_fields = ['^unity']
-
-        print("Teste no views.py do base - Unity")
-
-        print("Data que vem do banco")
-
-        dates = get_last_update()
-
-        print("Indice 0:")
-        print(dates[0])
-
-        print("Indice 1:")
-        print(dates[1])
-
-        print("Diferença entre as datas:")
-        print(dates[0] - dates[1])
-
-        if dates[0] - dates[1] > 30:
-
-            '''
-            # Rota da api que retorna as unidades
-            unity_endpoint = 'https://sistemas.sede.embrapa.br/corporativows/rest/corporativoservice/unidades/lista/todas'
-
-            # Fazer a chamada na api
-            response = requests.get(unity_endpoint)
-            
-            # Transformar em JSON
-            data = response.json()
-
-            # Pegar o índice "unidadesEmbrapa"
-            data_ids = data["unidadesEmbrapa"]
-
-            # Construir uma lista de ids com o tamanho informado
-            embrapa_only_ids = [i for i in range(len(data_ids))]
-
-            # Colocando apenas os ids na lista
-            for i in range(len(data_ids)):
-                embrapa_only_ids[i] = data_ids[i]["id"]
-
-            try:
-                for i in range(len(data_ids)):
-                    embrapa_unity_creates, created = Embrapa_Unity.objects.get_or_create(unity= embrapa_only_ids[i])
-                    if created:
-                        embrapa_unity_creates.save()
-                    else:
-                        pass
-            except Exception as error:
-                print(error)
-
-            data_update = Embrapa_Last_Updated.objects.update(last_updated=datetime.now())
-            '''
-
-        qs = Embrapa_Unity.objects.all()
-
-        if self.q:
-            qs = qs.filter(Q(unity__icontains=self.q))
-
-        return qs
 
 class EmbrapaKeywordsAutocomplete(SimpleSelect2View):
 

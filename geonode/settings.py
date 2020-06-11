@@ -48,6 +48,7 @@ SILENCED_SYSTEM_CHECKS = [
 EMBRAPA_UNITY_DEFAULT = '96'
 ACAO_GERENCIAL_API = False
 PROJETO_API = False
+FILTRO_AUTOR = 'Andre'
 
 # GeoNode Version
 VERSION = get_version()
@@ -415,6 +416,9 @@ INSTALLED_APPS = (
     # Boostrap admin theme
     # 'django_admin_bootstrapped.bootstrap3',
     # 'django_admin_bootstrapped',
+
+    # Bootstrap modal forms
+    'bootstrap_modal_forms',
 
     # Apps bundled with Django
     'modeltranslation',

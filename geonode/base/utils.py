@@ -44,7 +44,7 @@ _names = ['Zipped Shapefile', 'Zipped', 'Shapefile', 'GML 2.0', 'GML 3.1.1', 'CS
 
 # embrapa #
 from datetime import datetime
-from geonode.base.models import Embrapa_Last_Updated, Embrapa_Data_Quality_Statement
+from geonode.base.models import Embrapa_Last_Updated, Embrapa_Data_Quality_Statement, Embrapa_Authors
 from django.db.models.functions import (ExtractDay, ExtractMonth, ExtractYear, ExtractHour, ExtractMinute, 
 ExtractSecond)
 import requests
@@ -55,7 +55,7 @@ class AuthorObjects:
         self.afiliacao = afiliacao
         self.autoria = autoria
 
-def autores_objects_api():
+def authors_objects_api():
 
     autores_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/ws/rest/listaAutores'
 
@@ -83,20 +83,39 @@ def choice_authors():
 
     autores_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/ws/rest/listaAutores'
 
+    #autores_endpoint = 'http://www.ainfo-h.cnptia.embrapa.br/ws/rest/listaAutoriaByAutoria?autoria={0}'.format(settings.FILTRO_AUTOR)
+
     response = requests.get(autores_endpoint)
 
     data = response.json()
 
-    autores_afiliacao = [i for i in range(len(data))]
-    autores_autoria = [i for i in range(len(data))]
-    autores_nome = [i for i in range(len(data))]
+    autores_database = Embrapa_Authors.objects.values_list('name', flat=True).order_by('name')
+
+    autores_range_database = [i for i in range(len(autores_database))]
+
+    autores_total_range = len(autores_range_database) + len(data)
+
+    autores_nome = [i for i in range(autores_total_range)]
+    autores_afiliacao = [i for i in range(autores_total_range)]
+    autores_autoria = [i for i in range(autores_total_range)]
+
+    j = 0
 
     for i in range(len(data)):
-        autores_afiliacao[i] = data[i]["afiliacao"]
-        autores_autoria[i] = data[i]["autoria"]
-        autores_nome[i] = data[i]["nome"]
+        autores_afiliacao[j] = data[i]["afiliacao"]
+        autores_autoria[j] = data[i]["autoria"]
+        autores_nome[j] = data[i]["nome"]
+        j = j + 1
 
-    return autores_nome
+    for i in range(len(autores_database)):
+        autores_nome[j] = autores_database[i]
+        j = j + 1
+
+    autores_nome = list(dict.fromkeys(autores_nome))
+
+    autores_nome_tuples = list(zip(autores_nome,autores_nome))
+
+    return autores_nome_tuples
 
 def choice_data_quality_statement():
 

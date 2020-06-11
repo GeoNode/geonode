@@ -1,0 +1,19 @@
+<form class="pure-form pure-form-stacked" method="post">
+	{% csrf_token %}
+	{% if success %}
+	<p>Os dados foram salvos com sucesso</p>
+	{% endif %}
+	<fieldset>
+		{{ form.non_field_errors }}
+		{% for field in form %}
+		<div class="pure-control-group">
+			{{ field.label_tag }}
+			{{ field }}
+			{{ field.errors }}
+		</div>
+		{% endfor %}
+		<div class="pure-controls">
+			<button type="submit" class="pure-button pure-button-primary">Salvar</button>
+		</div>
+	</fieldset>
+</form>
