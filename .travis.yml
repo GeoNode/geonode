@@ -261,6 +261,7 @@ jobs:
           - ON_TRAVIS: 'True'
           - TEST_RUNNER_KEEPDB: 'True'
           - TEST_RUN_INTEGRATION: 'True'
+          - TEST_RUN_INTEGRATION_SERVER: 'True'
           - MONITORING_ENABLED: 'False'
           - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
           - CELERY_ALWAYS_EAGER: 'True'
@@ -303,9 +304,9 @@ install:
       :;
     elif [ "$TEST_RUN_SELENIUM" = "True" ]; then
       pip install -r geonode-selenium/requirements.txt --upgrade --no-cache;
-      wget https://download.osgeo.org/geotiff/samples/spot/chicago/UTM2GTIF.TIF -P geonode-selenium/data;
-      wget https://download.osgeo.org/geotiff/samples/made_up/ntf_nord.tif -P geonode-selenium/data;
-      wget https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz -O geckodriver.tar.gz;
+      wget --no-check-certificate https://download.osgeo.org/geotiff/samples/spot/chicago/UTM2GTIF.TIF -P geonode-selenium/data;
+      wget --no-check-certificate https://download.osgeo.org/geotiff/samples/made_up/ntf_nord.tif -P geonode-selenium/data;
+      wget --no-check-certificate https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz -O geckodriver.tar.gz;
       mkdir bin;
       tar zxf geckodriver.tar.gz -C bin;
       export PATH=$PATH:$PWD/bin;
