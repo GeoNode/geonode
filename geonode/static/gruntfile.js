@@ -54,7 +54,8 @@ module.exports = function(grunt) {
         files: [
           {
             'geonode/css/base.css': 'geonode/less/base.less',
-            'geonode/css/crop_widget.css': 'geonode/less/crop_widget.less'
+            'geonode/css/crop_widget.css': 'geonode/less/crop_widget.less',
+            'geonode/css/geonode-rtl.css': 'geonode/less/geonode-rtl.less'
           }
         ]
       },
@@ -69,7 +70,8 @@ module.exports = function(grunt) {
         files: [
           {
             'geonode/css/base.css': 'geonode/less/base.less',
-            'geonode/css/crop_widget.css': 'geonode/less/crop_widget.less'
+            'geonode/css/crop_widget.css': 'geonode/less/crop_widget.less',
+            'geonode/css/geonode-rtl.css': 'geonode/less/geonode-rtl.less'
           }
         ]
       }
@@ -222,7 +224,8 @@ module.exports = function(grunt) {
         files: {
           'lib/css/assets.min.css': assetsMinifiedCss,
           'lib/css/leaflet-plugins.min.css': leafletMinifiedCss,
-          'lib/css/openlayers-plugins.min.css': openlayersMinifiedCss
+          'lib/css/openlayers-plugins.min.css': openlayersMinifiedCss,
+          'geonode/css/geonode-rtl.min.css': ['geonode/css/geonode-rtl.css']
         }
       }
     },
