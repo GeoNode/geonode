@@ -237,6 +237,9 @@
        <gmd:purpose {% if not layer.purpose %}gco:nilReason="missing"{% endif %}>
              {% if layer.purpose %}<gco:CharacterString>{{layer.purpose}}</gco:CharacterString>{% endif %}
        </gmd:purpose>
+       <gmd:embrapa_unity {% if not layer.embrapa_unity %}gco:nilReason="missing"{% endif %}>
+             {% if layer.embrapa_unity %}<gco:CharacterString>{{layer.embrapa_unity}}</gco:CharacterString>{% endif %}
+       </gmd:embrapa_unity>
        <gmd:status>
          <gmd:MD_ProgressCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="completed">completed</gmd:MD_ProgressCode>
        </gmd:status>
@@ -311,8 +314,7 @@
        </gmd:pointOfContact>
        {% endwith %}
        <!-- EMBRAPA -->
-       
-       {% for poc in layer.embrapa_autores_list %}   
+       {% for poc in layer.embrapa_authors_list %}   
        <gmd:pointOfContact> 
            <gmd:CI_ResponsibleParty>
                <gmd:individualName {% if not poc %}gco:nilReason="missing"{% endif %}>
@@ -637,7 +639,19 @@
        </gmd:scope>
        <gmd:lineage>
          <gmd:LI_Lineage>
-           <gmd:statement {% if not layer.data_quality_statement %}gco:nilReason="missing"/>{% else %}><gco:CharacterString>{{layer.data_quality_statement}}</gco:CharacterString></gmd:statement>{% endif %}
+           <gmd:statement {% if not layer.embrapa_data_quality_statement %}gco:nilReason="missing"/>{% else %}>
+           {% if layer.embrapa_data_quality_statement_list %}
+           <gmd:descriptiveDataQualityStatement>
+            <gmd:MD_DataQualityStatement>
+              {% for data_quality in layer.embrapa_data_quality_statement_list %}
+              <gmd:dataQuality>
+                <gco:CharacterString>{{data_quality}}</gco:CharacterString>
+              </gmd:dataQuality>
+              {% endfor %}
+            </gmd:MD_DataQualityStatement>
+           </gmd:descriptiveDataQualityStatement>
+           {% endif %}
+           </gmd:statement>{% endif %}
          </gmd:LI_Lineage>
        </gmd:lineage>
      </gmd:DQ_DataQuality>

@@ -476,14 +476,14 @@ class ResourceBaseForm(TranslationModelForm):
     #)
 
     purpose = autocomplete.Select2ListChoiceField(
-        label=_("Finalidade Embrapa"),
+        label=_("Finalidade"),
         required=False,
         choice_list=choice_purpose(),
         widget= autocomplete.ListSelect2(url='autocomplete_embrapa_purpose')
     )
 
     embrapa_data_quality_statement = forms.MultipleChoiceField(
-        label=_("Declaração da Qualidade do Dado Embrapa"),
+        label=_("Declaração da Qualidade do Dado"),
         required=False,
         choices=choice_data_quality_statement(),
         widget = autocomplete.Select2Multiple(url='autocomplete_embrapa_data_quality_statement')
@@ -491,7 +491,7 @@ class ResourceBaseForm(TranslationModelForm):
     )
 
     embrapa_autores = forms.MultipleChoiceField(
-        label=_("Autores Embrapa"),
+        label=_("Autores"),
         required=False,
         choices=choice_authors(),
         widget= autocomplete.Select2Multiple(url='autocomplete_embrapa_autores')
@@ -503,21 +503,21 @@ class ResourceBaseForm(TranslationModelForm):
         super(ResourceBaseForm, self).__init__(*args, **kwargs)
         print("purpose no forms do base")
         self.fields['purpose'] = autocomplete.Select2ListChoiceField(
-            label=_("Finalidade Embrapa"),
+            label=_("Finalidade"),
             required=False,
             choice_list=choice_purpose(),
             widget= autocomplete.ListSelect2(url='autocomplete_embrapa_purpose')
         )
         print("data_quality_statement no forms do base")
         self.fields['embrapa_data_quality_statement'] = forms.MultipleChoiceField(
-            label=_("Declaração da Qualidade do Dado Embrapa"),
+            label=_("Declaração da Qualidade do Dado"),
             required=False,
             choices=choice_data_quality_statement(),
             widget= autocomplete.Select2Multiple(url='autocomplete_embrapa_data_quality_statement')
         )
         print("authors no forms do base")
         self.fields['embrapa_autores'] = forms.MultipleChoiceField(
-            label=_("Autores Embrapa"),
+            label=_("Autores"),
             required=False,
             choices=choice_authors(),
             widget= autocomplete.Select2Multiple(url='autocomplete_embrapa_autores')

@@ -94,8 +94,6 @@
             {% if not layer.metadata_uploaded_preserve %}
             <div class="form-actions">
               <a href="{% url 'layer_detail' layername=resource.alternate %}" class="btn btn-primary">{% trans "Return to Layer" %}</a>
-              <a href="{% url 'embrapa_data_quality_statement_create' %}" target="_blank" class="btn btn-primary">{% trans "Adicionar Referência" %}</a>
-              <a href="{% url 'embrapa_autores_create' %}" target="_blank" class="btn btn-primary">{% trans "Adicionar Autores" %}</a>
               <input type="button" id="btn_back_dwn" class="btn btn-primary" style="display: none" value="{% trans "<< Back" %}"/>
               <input type="submit" id="btn_upd_md_dwn" class="btn btn-primary" value="{% trans "Update" %}"/>
               <input type="button" id="btn_next_dwn" class="btn btn-primary" value="{% trans "Next >>" %}"/>
@@ -104,9 +102,5 @@
           </div>
         </div>
       </form>
-          <form id='call_apis' class="form-horizontal" action="{% url "layer_metadata" layer.service_typename %}" method="GET">
-            <input type="submit" id="btn_projeto_embrapa" name="list_projects" class="btn btn-primary" value="{% trans "Listar Projetos" %}"/>
-            <input type="submit" id="btn_acao_gerencial_embrapa" name="list_management_actions" class="btn btn-primary" value="{% trans "Listar Ações Gerenciais" %}"/>
-          </form>
 {{ block.super }}
 {% endblock body_outer %}

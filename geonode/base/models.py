@@ -1487,7 +1487,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     #    return self.embrapa_purpose.title
 
     def embrapa_authors_list(self):
-        return [author.name for author in self.embrapa_autores.all()]
+        #return [author.name for author in self.embrapa_autores.all()]
+        return self.embrapa_autores.name
 
     def embrapa_data_quality_statement_list(self):
         return [data.name for data in self.embrapa_data_quality_statement.all()]

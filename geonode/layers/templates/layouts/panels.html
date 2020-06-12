@@ -17,7 +17,50 @@
 <script type="text/javascript" src="{% static "autocomplete_light/select2.js" %}"></script>
 <script type="text/javascript" src="{% static "autocomplete_light/jquery.post-setup.js" %}"></script>
 
+<script>
+
+function submitBtn(id){
+	var action = "{% url 'layer_metadata' layer.service_typename %}";
+	var form = document.createElement('FORM');
+	form.setAttribute('action', action);
+	form.setAttribute('method', 'GET');
+	var btn_projeto_embrapa = document.createElement('INPUT');
+	btn_projeto_embrapa.setAttribute('type','submit');
+	btn_projeto_embrapa.setAttribute('id', 'btn_projeto_embrapa');
+	btn_projeto_embrapa.setAttribute('name', 'list_projects');
+	var btn_acao_gerencial_embrapa = document.createElement('INPUT');
+	btn_acao_gerencial_embrapa.setAttribute('type','submit');
+	btn_acao_gerencial_embrapa.setAttribute('id', 'btn_acao_gerencial_embrapa');
+	btn_acao_gerencial_embrapa.setAttribute('name', 'list_management_actions');
+	form.appendChild(btn_projeto_embrapa);
+	form.appendChild(btn_acao_gerencial_embrapa);
+	console.log(id);
+	console.log(action);
+	document.body.appendChild(form);
+	if (id === 'btn_projeto_embrapa'){
+		const btnAction = document.getElementById('btn_projeto_embrapa');
+		btnAction.click();
+	}else if(id === 'btn_acao_gerencial_embrapa'){
+		const btnAction = document.getElementById('btn_acao_gerencial_embrapa');
+		btnAction.click();
+	}
+}
+</script>
+
 <style>
+
+.ebp-modal{
+	background: #fff;
+	padding: 16px;
+	position: fixed!important;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	z-index: 99999;
+	border: 2px solid #f00;
+	border-radius: 8px;
+}
+
 /* general panel styles */
 #mdeditor_form .panel-group .panel{
   overflow: visible;
@@ -428,10 +471,11 @@ span.grippy::after {
                                           {{ layer_form.regions }}
                                       </div>
                                       <div>
-                                          <span><label for="{{ layer_form.data_quality_statement|id }}">{{ layer_form.data_quality_statement.label }}</label></span>
-                                          <!--<p class="xxs-font-size">(General explanation of the data producer's knowledge about the lineage)</p>-->
-                                          {{ layer_form.data_quality_statement }}
+                                        <span><label for="{{ layer_form.embrapa_data_quality_statement|id }}">{{ layer_form.embrapa_data_quality_statement.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
+                                      {{ layer_form.embrapa_data_quality_statement }}
                                       </div>
+                                      <a href="{% url 'embrapa_data_quality_statement_create' %}" target="_blank" class="btn btn-primary">{% trans "Adicionar Referência" %}</a>
                                 </div>
                                 <div class="col-lg-4">
                                     <div>
@@ -470,15 +514,16 @@ span.grippy::after {
                     <!--<p class="xxs-font-size">(Brief narrative summary of the intentions with which the resource/s ...)</p>-->
                     {{ layer_form.purpose }}
                 </div>
+				<!--<form id='call_apis' class="form-horizontal" action="{% url "layer_metadata" layer.service_typename %}" method="GET">
+					<input type="submit" id="btn_projeto_embrapa" name="list_projects" class="btn btn-primary" value="{% trans "Listar Projetos" %}"/>
+					<input type="submit" id="btn_acao_gerencial_embrapa" name="list_management_actions" class="btn btn-primary" value="{% trans "Listar Ações Gerenciais" %}"/>
+				</form>-->
+				<button type="button" onclick="submitBtn('btn_projeto_embrapa')" class="btn btn-primary">Listar Projetos</button>
+				<button type="button" onclick="submitBtn('btn_acao_gerencial_embrapa')" class="btn btn-primary">Listar Ações Gerenciais</button>
                 <div>
                     <span><label for="{{ layer_form.embrapa_unity|id }}">{{ layer_form.embrapa_unity.label }}</label></span>
                     <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
                     {{ layer_form.embrapa_unity }}
-                </div>
-                <div>
-                    <span><label for="{{ layer_form.embrapa_data_quality_statement|id }}">{{ layer_form.embrapa_data_quality_statement.label }}</label></span>
-                    <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
-                    {{ layer_form.embrapa_data_quality_statement }}
                 </div>
                 <div>
                     <span><label for="{{ layer_form.supplemental_information|id }}">{{ layer_form.supplemental_information.label }}</label></span>
@@ -547,7 +592,7 @@ span.grippy::after {
                           <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
                           {{ layer_form.embrapa_autores }}
                       </div>
-
+                      <a href="{% url 'embrapa_autores_create' %}" target="_blank" class="btn btn-primary">{% trans "Adicionar Autores" %}</a>
                       {% if GEONODE_SECURITY_ENABLED %}
                       <!--<hr />
                       <div class="modal-body" id="_permissions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -691,3 +736,5 @@ span.grippy::after {
 </div>
 </div>
 {% endblock %}
+
+
