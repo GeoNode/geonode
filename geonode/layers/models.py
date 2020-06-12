@@ -455,16 +455,26 @@ class Attribute(models.Model):
     TYPE_PROPERTY = 'type_property'
     TYPE_HREF = 'type_href'
     TYPE_IMAGE = 'type_image'
-    TYPE_VIDEO = 'type_video'
+    TYPE_VIDEO_MP4 = 'type_video_mp4'
+    TYPE_VIDEO_OGG = 'type_video_ogg'
+    TYPE_VIDEO_WEBM = 'type_video_webm'
+    TYPE_VIDEO_3GP = 'type_video_3gp'
+    TYPE_VIDEO_FLV = 'type_video_flv'
+    TYPE_VIDEO_YOUTUBE = 'type_video_youtube'
     TYPE_AUDIO = 'type_audio'
     TYPE_IFRAME = 'type_iframe'
 
-    TYPES = ((TYPE_PROPERTY, _("Property-Label"),),
-             (TYPE_HREF, _("HREF-Link"),),
+    TYPES = ((TYPE_PROPERTY, _("Label"),),
+             (TYPE_HREF, _("URL"),),
              (TYPE_IMAGE, _("Image",),),
-             (TYPE_VIDEO, _("Video",),),
+             (TYPE_VIDEO_MP4, _("Video (mp4)",),),
+             (TYPE_VIDEO_OGG, _("Video (ogg)",),),
+             (TYPE_VIDEO_WEBM, _("Video (webm)",),),
+             (TYPE_VIDEO_3GP, _("Video (3gp)",),),
+             (TYPE_VIDEO_FLV, _("Video (flv)",),),
+             (TYPE_VIDEO_YOUTUBE, _("Video (YouTube/VIMEO - embedded)",),),
              (TYPE_AUDIO, _("Audio",),),
-             (TYPE_IFRAME, _("iFrame",),),
+             (TYPE_IFRAME, _("IFRAME",),),
              )
     featureinfo_type = models.CharField(
         _('featureinfo type'),
