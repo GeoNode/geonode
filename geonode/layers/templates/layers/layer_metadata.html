@@ -105,3 +105,30 @@
 
 {{ block.super }}
 {% endblock body_outer %}
+
+{% block extra_script %}
+  {{ block.super }}
+  <script type="text/javascript">
+    {% autoescape off %}
+    tinyMCE_default_config = {{ TINYMCE_DEFAULT_CONFIG }};
+    tinyMCE_default_config['file_picker_callback'] = function (callback, value, meta) {
+        /* Provide file and text for the link dialog */
+        if (meta.filetype === 'file') {
+          callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
+        }
+
+        /* Provide image and alt text for the image dialog */
+        if (meta.filetype === 'image') {
+          callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
+        }
+
+        /* Provide alternative source and posted for the media dialog */
+        if (meta.filetype === 'media') {
+          callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
+        }
+      };
+    console.log(tinyMCE_default_config);
+    tinyMCE.init(tinyMCE_default_config);
+    {% endautoescape %}
+  </script>
+{% endblock extra_script %}

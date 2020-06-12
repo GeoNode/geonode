@@ -85,7 +85,9 @@
     "underscore/underscore.js",
     "zeroclipboard/dist/ZeroClipboard.js",
     "cropperjs/dist/cropper.js",
-    "@yaireo/tagify/dist/tagify.min.js"
+    "@yaireo/tagify/dist/tagify.min.js",
+
+    "tinymce/tinymce.min.js"
   ],
   "leaflet-plugins.min.js": [
     "leaflet/dist/leaflet.js",
