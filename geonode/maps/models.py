@@ -526,6 +526,8 @@ class MapLayer(models.Model, GXPLayerBase):
                         alternate=self.name,
                         remote_service__base_url=self.ows_url)
                 attribute_cfg = layer.attribute_config()
+                if "ftInfoTemplate" in attribute_cfg:
+                    cfg["ftInfoTemplate"] = attribute_cfg["ftInfoTemplate"]
                 if "getFeatureInfo" in attribute_cfg:
                     cfg["getFeatureInfo"] = attribute_cfg["getFeatureInfo"]
                 if not user.has_perm(

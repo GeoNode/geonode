@@ -55,6 +55,7 @@
     "select2": "4.0.10",
     "sortable": "^2.0.0",
     "timeago": "^1.6.7",
+    "tinymce": "^5.3.1",
     "tree-filter": "^0.0.4",
     "tree-multiselect": "^2.6.1",
     "underscore": "^1.9.1",
