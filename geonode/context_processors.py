@@ -42,6 +42,7 @@ def resource_urls(request):
         SITEURL=settings.SITEURL,
         INSTALLED_APPS=settings.INSTALLED_APPS,
         THEME_ACCOUNT_CONTACT_EMAIL=settings.THEME_ACCOUNT_CONTACT_EMAIL,
+        TINYMCE_DEFAULT_CONFIG=settings.TINYMCE_DEFAULT_CONFIG,
         DEBUG_STATIC=getattr(
             settings,
             "DEBUG_STATIC",
