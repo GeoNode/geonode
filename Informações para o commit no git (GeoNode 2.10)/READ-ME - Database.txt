@@ -1,0 +1,46 @@
+15/05/2020:
+
+- Renomeada a tabela "base_resourcebase_embrapa_keywords" para "base_keywords_embrapa";
+- Dropada a tabela "base_embrapa_keywords" e recriada no prompt de comando (cmd) no diretório '/opt/geonode' com o comando 'python manage.py makemigrations' e em seguida 'paver sync';
+	** Reinserido os dados na tabela "base_embrapa_keywords" removendo os espaços entre outras irregularidades;
+	** SCRIPTS: 'embrapa_keywords tratados.txt' para a tabela "base_embrapa_keywords" e 'keywords_embrapa - ids tratados.txt' para a tabela "base_keywords_embrapa".
+
+16/05/2020:
+
+- Transferência dos dados das tabelas 'taggit_tag' e 'taggit_taggeditem' para 'base_hierarchicalkeyword' e 'base_taggedcontentitem' respectivamente;
+	** SCRIPTS: 'hierarchicalkeywords tratados.txt' para a tabela "base_hierarchicalkeyword" e 'hierarchicalkeywords - ids tratados.txt' para a tabela "base_taggedcontentitem".
+
+
+02/06/2020:
+- O que fazer no banco da embrapa:
+	** Dropar a tabela base_embrapa_keywords e reinserir os dados com o script;
+	** Dropar a tabela base_hierarchicalkeyword e reinserir os dados com o script;
+	** Dropar a tabela base_resourcebase_embrapa_keywords e criar a base_keywords_embrapa e reinserir os dados com o script;
+	** Dropar a tabela base_taggedcontentitem e recriar ela inserindo os scripts que estão nos txts;
+
+12/06/2020:
+OBS:
+******************** TODAS AS TABELAS SÃO GERADAS VIA MIGRATION (CÓDIGO ESTRUTURADO NO ARQUIVO: models.py DA PASTA BASE) ********************
+
+- Gerar as tabelas "base_embrapa_autores" e "base_embrapa_authors_resourcebase" e inserir os scripts que estão nos txts (com os mesmos nomes das tabelas);
+- Gerar as tabelas "base_embrapa_data_quality_statements" e "base_embrapa_data_quality_statements_resourcebase" e inserir os scripts que estão nos txts (com os mesmos nomes das tabelas);
+- Após gerar todas as tabelas, executar o script:
+	DELETE FROM django_migrations WHERE app = 'upload';
+	DROP TABLE upload_upload CASCADE;
+	DROP TABLE upload_uploadfile;
+OBS: Serve para sinalizar ao django que a migração foi concluída com sucesso. Após isso execute no path /opt/geonode o seguinte comando:
+"python manage.py migrate upload".
+
+- Após tudo isso, execute os seguintes comandos SQL (necessários para a customização dos campos Autores e Declaração da Qualidade do Dado funcionarem):
+	ALTER TABLE public.base_embrapa_authors DROP CONSTRAINT base_embrapa_authors_path_key;
+	ALTER TABLE public.base_embrapa_authors DROP CONSTRAINT base_embrapa_authors_name_key;
+	ALTER TABLE public.base_embrapa_authors DROP CONSTRAINT base_embrapa_authors_slug_key;
+	ALTER TABLE base_embrapa_authors ALTER COLUMN name TYPE VARCHAR(4000);
+	ALTER TABLE base_embrapa_authors ALTER COLUMN slug TYPE VARCHAR(4000);
+	ALTER TABLE public.base_embrapa_data_quality_statement DROP CONSTRAINT base_embrapa_data_quality_statement_name_key;
+	ALTER TABLE public.base_embrapa_data_quality_statement DROP CONSTRAINT base_embrapa_data_quality_statement_slug_key;
+	ALTER TABLE base_embrapa_data_quality_statement ALTER COLUMN name TYPE VARCHAR(10000);
+	ALTER TABLE base_embrapa_data_quality_statement ALTER COLUMN slug TYPE VARCHAR(10000);
+	ALTER TABLE public.base_embrapa_data_quality_statement DROP CONSTRAINT base_embrapa_data_quality_statement_path_key;
+
+
