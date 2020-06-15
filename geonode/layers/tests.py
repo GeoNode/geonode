@@ -50,7 +50,7 @@ from guardian.shortcuts import assign_perm, remove_perm
 
 from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.decorators import on_ogc_backend
-from geonode.layers.models import Layer, Style
+from geonode.layers.models import Layer, Style, Attribute
 from geonode.layers.utils import layer_type, get_files, get_valid_name, \
     get_valid_layer_name
 from geonode.people.utils import get_valid_user
@@ -233,7 +233,8 @@ class LayersTest(GeoNodeBaseTestSupport):
 
     def test_layer_attribute_config(self):
         lyr = Layer.objects.all().first()
-        custom_attributes = (lyr.attribute_config())["getFeatureInfo"]
+        attribute_config = lyr.attribute_config()
+        custom_attributes = attribute_config["getFeatureInfo"]
         self.assertEqual(
             custom_attributes["fields"], [
                 "place_name", "description", 'N\xfamero_De_M\xe9dicos'])
@@ -243,6 +244,23 @@ class LayersTest(GeoNodeBaseTestSupport):
         self.assertEqual(
             custom_attributes["propertyNames"]["place_name"],
             "Place Name")
+
+        attributes = Attribute.objects.filter(layer=lyr)
+        for _att in attributes:
+            self.assertEqual(_att.featureinfo_type, 'type_property')
+
+        lyr.featureinfo_custom_template = "<h1>Test HTML</h1>"
+        lyr.use_featureinfo_custom_template = True
+        lyr.save()
+        attribute_config = lyr.attribute_config()
+        self.assertTrue("ftInfoTemplate" in attribute_config)
+        self.assertEqual(
+            attribute_config["ftInfoTemplate"],
+            "<h1>Test HTML</h1>")
+        lyr.use_featureinfo_custom_template = False
+        lyr.save()
+        attribute_config = lyr.attribute_config()
+        self.assertTrue("ftInfoTemplate" not in attribute_config)
 
     def test_layer_styles(self):
         lyr = Layer.objects.all().first()

@@ -29,9 +29,12 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 from django.core.files.storage import FileSystemStorage
+
+from pinax.ratings.models import OverallRating
+from tinymce.models import HTMLField
+
 from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_post_save
 from geonode.people.utils import get_valid_user
-from pinax.ratings.models import OverallRating
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.utils import remove_object_permissions
@@ -189,6 +192,18 @@ class Layer(ResourceBase):
 
     upload_session = models.ForeignKey(UploadSession, blank=True, null=True, on_delete=models.CASCADE)
 
+    use_featureinfo_custom_template = models.BooleanField(
+        _('use featureinfo custom template?'),
+        help_text=_('specifies wether or not use a custom GetFeatureInfo template.'),
+        default=False
+    )
+    featureinfo_custom_template = HTMLField(
+        _('featureinfo custom template'),
+        help_text=_('the custom GetFeatureInfo template HTML contents.'),
+        unique=False,
+        blank=True,
+        null=True)
+
     def is_vector(self):
         return self.storeType == 'dataStore'
 
@@ -303,8 +318,13 @@ class Layer(ResourceBase):
         if (visible_attributes.count() > 0):
             cfg["getFeatureInfo"] = {
                 "fields": [lyr.attribute for lyr in visible_attributes],
-                "propertyNames": dict([(lyr.attribute, lyr.attribute_label) for lyr in visible_attributes])
+                "propertyNames": dict([(lyr.attribute, lyr.attribute_label) for lyr in visible_attributes]),
+                "displayTypes": dict([(lyr.attribute, lyr.featureinfo_type) for lyr in visible_attributes])
             }
+
+        if self.use_featureinfo_custom_template:
+            cfg["ftInfoTemplate"] = self.featureinfo_custom_template
+
         return cfg
 
     def __str__(self):
@@ -424,8 +444,37 @@ class Attribute(models.Model):
         _('visible?'),
         help_text=_('specifies if the attribute should be displayed in identify results'),
         default=True)
-    display_order = models.IntegerField(_('display order'), help_text=_(
-        'specifies the order in which attribute should be displayed in identify results'), default=1)
+    display_order = models.IntegerField(
+        _('display order'),
+        help_text=_('specifies the order in which attribute should be displayed in identify results'),
+        default=1)
+
+    """
+    Attribute FeatureInfo-Type list
+    """
+    TYPE_PROPERTY = 'type_property'
+    TYPE_HREF = 'type_href'
+    TYPE_IMAGE = 'type_image'
+    TYPE_VIDEO = 'type_video'
+    TYPE_AUDIO = 'type_audio'
+    TYPE_IFRAME = 'type_iframe'
+
+    TYPES = ((TYPE_PROPERTY, _("Property-Label"),),
+             (TYPE_HREF, _("HREF-Link"),),
+             (TYPE_IMAGE, _("Image",),),
+             (TYPE_VIDEO, _("Video",),),
+             (TYPE_AUDIO, _("Audio",),),
+             (TYPE_IFRAME, _("iFrame",),),
+             )
+    featureinfo_type = models.CharField(
+        _('featureinfo type'),
+        help_text=_('specifies if the attribute should be rendered with an HTML widget on GetFeatureInfo template.'),
+        max_length=255,
+        unique=False,
+        blank=False,
+        null=False,
+        default=TYPE_PROPERTY,
+        choices=TYPES)
 
     # statistical derivations
     count = models.IntegerField(
