@@ -209,9 +209,12 @@ def proxy(request, url=None, response_callback=None,
         'gml'
     ]
     for _ct in PLAIN_CONTENT_TYPES:
-        if _ct in content_type and not isinstance(content, six.string_types):
-            content = content.decode()
-            break
+        if content_type and _ct in content_type and not isinstance(content, six.string_types):
+            try:
+                content = content.decode()
+                break
+            except Exception:
+                pass
 
     if response and response_callback:
         kwargs = {} if not kwargs else kwargs
