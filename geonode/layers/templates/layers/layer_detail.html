@@ -897,7 +897,7 @@
               let checkArr = ["=", "<>", ">", "<", ">=", "<="];
               if (checkArr.includes(operator_list)) {
                 if (isNaN(single_value_input)){
-                  single_value_input = "'" + single_value_input + "'";
+                  single_value_input = "'" + single_value_input.replace(/'/g, "''") + "'";
                 }
               } else if (operator_list == " LIKE ") {
                 if(single_value_input.indexOf('%') >= 0) {
