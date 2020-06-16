@@ -240,6 +240,19 @@ def map_metadata(
 
         tkeywords_form = TKeywordForm(instance=map_obj)
 
+    if request.method == "GET":
+        print("TESTE NO LAYERS!!!")
+        project = request.GET.get("list_projects")
+        management_actions = request.GET.get("list_management_actions")
+        if project:
+            print("CLIQUEI EM PROJETO!!")
+            settings.PROJETO_API = True
+            settings.ACAO_GERENCIAL_API = False
+        elif management_actions:
+            print("CLIQUEI EM AÇÃO GERENCIAL")
+            settings.ACAO_GERENCIAL_API = True
+            settings.PROJETO_API = False
+
     if request.method == "POST" and map_form.is_valid(
     ) and category_form.is_valid():
         new_poc = map_form.cleaned_data['poc']
@@ -248,6 +261,10 @@ def map_metadata(
         new_regions = map_form.cleaned_data['regions']
         new_title = strip_tags(map_form.cleaned_data['title'])
         new_abstract = strip_tags(map_form.cleaned_data['abstract'])
+
+        new_embrapa_keywords = map_form.cleaned_data['embrapa_keywords']
+        new_embrapa_data_quality_statement = map_form.cleaned_data['embrapa_data_quality_statement']
+        new_embrapa_authors = map_form.cleaned_data['embrapa_autores']
 
         new_category = None
         if category_form and 'category_choice_field' in category_form.cleaned_data and\
@@ -278,8 +295,15 @@ def map_metadata(
         if new_poc is not None and new_author is not None:
             map_obj.poc = new_poc
             map_obj.metadata_author = new_author
+
         map_obj.title = new_title
         map_obj.abstract = new_abstract
+        map_obj.embrapa_autores.clear()
+        map_obj.embrapa_autores.add(*new_embrapa_authors)
+        map_obj.embrapa_data_quality_statement.clear()
+        map_obj.embrapa_data_quality_statement.add(*new_embrapa_data_quality_statement)
+        map_obj.embrapa_keywords.clear()
+        map_obj.embrapa_keywords.add(*new_embrapa_keywords)
         map_obj.keywords.clear()
         map_obj.keywords.add(*new_keywords)
         map_obj.regions.clear()

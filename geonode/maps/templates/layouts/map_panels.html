@@ -17,6 +17,37 @@
 <script type="text/javascript" src="{% static "autocomplete_light/select2.js" %}"></script>
 <script type="text/javascript" src="{% static "autocomplete_light/jquery.post-setup.js" %}"></script>
 
+<script>
+
+function submitBtn(id){
+  var action = "{{ map.get_absolute_url }}/metadata";
+  var form = document.createElement('FORM');
+  form.setAttribute('action', action);
+  form.setAttribute('method', 'GET');
+  var btn_projeto_embrapa = document.createElement('INPUT');
+  btn_projeto_embrapa.setAttribute('type','submit');
+  btn_projeto_embrapa.setAttribute('id', 'btn_projeto_embrapa');
+  btn_projeto_embrapa.setAttribute('name', 'list_projects');
+  var btn_acao_gerencial_embrapa = document.createElement('INPUT');
+  btn_acao_gerencial_embrapa.setAttribute('type','submit');
+  btn_acao_gerencial_embrapa.setAttribute('id', 'btn_acao_gerencial_embrapa');
+  btn_acao_gerencial_embrapa.setAttribute('name', 'list_management_actions');
+  form.appendChild(btn_projeto_embrapa);
+  form.appendChild(btn_acao_gerencial_embrapa);
+  console.log(id);
+  console.log(action);
+  document.body.appendChild(form);
+  if (id === 'btn_projeto_embrapa'){
+    const btnAction = document.getElementById('btn_projeto_embrapa');
+    btnAction.click();
+  }else if(id === 'btn_acao_gerencial_embrapa'){
+    const btnAction = document.getElementById('btn_acao_gerencial_embrapa');
+    btnAction.click();
+  }
+}
+
+</script>
+
 <style>
 /* general panel styles */
 #mdeditor_form .panel-group .panel{
@@ -301,6 +332,10 @@ span.grippy::after {
                                 </div>
                                 <div class="col-lg-5">
                                     <div class="col-lg-12">
+                                        <span><label for="{{ map_form.date_type|id }}">{{ map_form.embrapa_keywords.label }}</label></span>
+                                        {{ map_form.embrapa_keywords }}
+                                    </div>
+                                    <div class="col-lg-12">
                                         <span><label for="{{ map_form.date_type|id }}">{{ map_form.keywords.label }}</label></span>
                                         {{ map_form.keywords }}
                                     </div>
@@ -318,6 +353,17 @@ span.grippy::after {
                                         <span><label for="{{ map_form.date|id }}">{{ map_form.date.label }}</label></span>
                                         <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
                                         {{ map_form.date }}
+                                    </div>
+                                    <!-- Embrapa -->
+                                    <div class="col-lg-6 col-xs-12">
+                                        <span><label for="{{ map_form.scale|id }}">{{ map_form.scale.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
+                                        {{ map_form.scale }}
+                                    </div>
+                                    <div class="col-lg-6 col-xs-12">
+                                        <span><label for="{{ map_form.data_criacao|id }}">{{ map_form.data_criacao.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
+                                        {{ map_form.data_criacao }}
                                     </div>
                                     <div id="basicCategoryInfo" class="col-lg-12">
                                         <span><label for="{{ category_form.category_choice_field|id }}" class="control-label required-field">{% trans "Category" %}</label></span>
@@ -402,9 +448,9 @@ span.grippy::after {
                                         {{ map_form.regions }}
                                       </div>
                                       <div>
-                                        <span><label for="{{ map_form.data_quality_statement|id }}">{{ map_form.data_quality_statement.label }}</label></span>
+                                        <span><label for="{{ map_form.embrapa_data_quality_statement|id }}">{{ map_form.embrapa_data_quality_statement.label }}</label></span>
                                         <!--<p class="xxs-font-size">(General explanation of the data producer's knowledge about the lineage)</p>-->
-                                        {{ map_form.data_quality_statement }}
+                                        {{ map_form.embrapa_data_quality_statement }}
                                       </div>
                                 </div>
                                 <div class="col-lg-4">
@@ -444,6 +490,13 @@ span.grippy::after {
                     <!--<p class="xxs-font-size">(Brief narrative summary of the intentions with which the resource/s ...)</p>-->
                     {{ map_form.purpose }}
                 </div>
+                <button type="button" onclick="submitBtn('btn_projeto_embrapa')" class="btn btn-primary">Listar Projetos</button>
+                <button type="button" onclick="submitBtn('btn_acao_gerencial_embrapa')" class="btn btn-primary">Listar Ações Gerenciais</button>
+                <div>
+                    <span><label for="{{ map_form.embrapa_unity|id }}">{{ map_form.embrapa_unity.label }}</label></span>
+                    <!--<p class="xxs-font-size">(Brief narrative summary of the intentions with which the resource/s ...)</p>-->
+                    {{ map_form.embrapa_unity }}
+                </div>
                 <div>
                     <span><label for="{{ map_form.supplemental_information|id }}">{{ map_form.supplemental_information.label }}</label></span>
                     <!--<p class="xxs-font-size">(Any other descriptive information about the dataset)</p>-->
@@ -476,6 +529,11 @@ span.grippy::after {
                         <!--<p class="xxs-font-size">(Method used to represent geographic information in the dataset)</p>-->
                         {{ map_form.spatial_representation_type }}
                     </div>
+                    <div style="margin-top: 5px">
+                        <span><label for="{{ map_form.link_vinde|id }}">{{ map_form.link_vinde.label }}</label></span>
+                        <!--<p class="xxs-font-size">(Method used to represent geographic information in the dataset)</p>-->
+                        {{ map_form.link_vinde }}
+                    </div>
                 </div>
             </div>
             <div class="col-xs-12 col-lg-3">
@@ -498,6 +556,11 @@ span.grippy::after {
                           <span><label for="{{ map_form.metadata_author|id }}">{{ map_form.metadata_author.label }}</label></span>
                           <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
                           {{ map_form.metadata_author }}
+                      </div>
+                      <div>
+                          <span><label for="{{ map_form.embrapa_autores|id }}">{{ map_form.embrapa_autores.label }}</label></span>
+                          <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
+                          {{ map_form.embrapa_autores }}
                       </div>
                       {% if GEONODE_SECURITY_ENABLED %}
                       <!--<hr />

@@ -409,18 +409,37 @@ def document_metadata(
 
             tkeywords_form = TKeywordForm(instance=document)
 
+
+        if request.method == "GET":
+            print("TESTE NO LAYERS!!!")
+            project = request.GET.get("list_projects")
+            management_actions = request.GET.get("list_management_actions")
+            if project:
+                print("CLIQUEI EM PROJETO!!")
+                settings.PROJETO_API = True
+                settings.ACAO_GERENCIAL_API = False
+            elif management_actions:
+                print("CLIQUEI EM AÇÃO GERENCIAL")
+                settings.ACAO_GERENCIAL_API = True
+                settings.PROJETO_API = False
+
         if request.method == "POST" and document_form.is_valid(
         ) and category_form.is_valid():
             new_poc = document_form.cleaned_data['poc']
             new_author = document_form.cleaned_data['metadata_author']
             new_keywords = document_form.cleaned_data['keywords']
             new_regions = document_form.cleaned_data['regions']
+            new_embrapa_keywords = document_form.cleaned_data['embrapa_keywords']
+            new_embrapa_data_quality_statement = document_form.cleaned_data['embrapa_data_quality_statement']
+            new_embrapa_authors = document_form.cleaned_data['embrapa_autores']
 
             new_category = None
             if category_form and 'category_choice_field' in category_form.cleaned_data and\
             category_form.cleaned_data['category_choice_field']:
                 new_category = TopicCategory.objects.get(
                     id=int(category_form.cleaned_data['category_choice_field']))
+
+            print("VIEWS DO DOCUMENTS!!")
 
             if new_poc is None:
                 if poc is None:
@@ -462,6 +481,13 @@ def document_metadata(
             if new_poc is not None and new_author is not None:
                 document.poc = new_poc
                 document.metadata_author = new_author
+
+            document.embrapa_autores.clear()
+            document.embrapa_autores.add(*new_embrapa_authors)
+            document.embrapa_data_quality_statement.clear()
+            document.embrapa_data_quality_statement.add(*new_embrapa_data_quality_statement)
+            document.embrapa_keywords.clear()
+            document.embrapa_keywords.add(*new_embrapa_keywords)
             document.keywords.clear()
             document.keywords.add(*new_keywords)
             document.regions.clear()
