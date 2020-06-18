@@ -310,8 +310,6 @@ install:
       wget --no-check-certificate https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz -O geckodriver.tar.gz;
       mkdir bin;
       tar zxf geckodriver.tar.gz -C bin;
-      git clone -b search-by-extent-postgis https://github.com/mtnorthcott/postgis-docker.git;
-      docker build -t geonode/postgis:11 ./postgis-docker/.;
       export PATH=$PATH:$PWD/bin;
     else
       sudo apt-get -qq -y update;
