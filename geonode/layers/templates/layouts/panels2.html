@@ -582,7 +582,6 @@ span.grippy::after {
                                           <div class="modal-body">
 
                                               <div class="pure-control-group">
-                                                <label>Referência</label>
                                                 <input id="id_name_reference" type="text">
                                               </div>
 
@@ -637,8 +636,7 @@ span.grippy::after {
 					<input type="submit" id="btn_acao_gerencial_embrapa" name="list_management_actions" class="btn btn-primary" value="{% trans "Listar Ações Gerenciais" %}"/>
 				</form>-->
 				<button type="button" onclick="submitBtn('btn_projeto_embrapa')" class="btn btn-primary">Listar Projetos</button>
-        <button type="button" onclick="submitBtn('btn_acao_gerencial_embrapa')" class="btn btn-primary">Listar Ações Gerenciais</button>
-                
+				<button type="button" onclick="submitBtn('btn_acao_gerencial_embrapa')" class="btn btn-primary">Listar Ações Gerenciais</button>
                 <div>
                     <span><label for="{{ layer_form.embrapa_unity|id }}">{{ layer_form.embrapa_unity.label }}</label></span>
                     <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
@@ -711,7 +709,7 @@ span.grippy::after {
                           <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
                           {{ layer_form.embrapa_autores }}
                       </div>
-                      <a href="#adicionar-autores" data-toggle="modal" style="margin-top: 10px;" data-target="#addingEmbrapaAuthorsModal" class="btn btn-primary author">{% trans "Adicionar Autores" %}</a>
+                      <a href="#adicionar-autores" data-toggle="modal" data-target="#addingEmbrapaAuthorsModal" class="btn btn-primary">{% trans "Adicionar Autores" %}</a>
                         <body>
                           <div class="modal" tabindex="-1" role="dialog" id="addingEmbrapaAuthorsModal">
                             <div class="modal-dialog">
@@ -723,14 +721,13 @@ span.grippy::after {
                                   </button>
                                 </div>
                                 <div class="modal-body">
+
                                     <div class="pure-control-group">
-                                      <label>Nome</label>
                                       <input id="id_name" type="text">
-                                      <label>Auditoria</label>
-                                      <input id="id_autoria" type="text">
-                                      <label>Afiliação</label>
+									                    <input id="id_autoria" type="text">
 									                    <input id="id_afiliacao" type="text">
                                     </div>
+
                                     <div class="modal-footer">
                                       <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
 									                    <button type="button" onclick="save_autor()" class="btn btn-primary">Salvar</button>
