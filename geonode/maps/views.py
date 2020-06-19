@@ -445,7 +445,9 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
             except Exception:
                 logger.error("Could not build slack message for delete map.")
 
-            delete_map.delay(object_id=map_obj.id)
+            result = delete_map.delay(object_id=map_obj.id)
+            # Attempt to run task synchronously
+            result.get()
 
             try:
                 from geonode.contrib.slack.utils import send_slack_messages
@@ -453,7 +455,9 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
             except Exception:
                 logger.error("Could not send slack message for delete map.")
         else:
-            delete_map.delay(object_id=map_obj.id)
+            result = delete_map.delay(object_id=map_obj.id)
+            # Attempt to run task synchronously
+            result.get()
 
         register_event(request, EventType.EVENT_REMOVE, map_obj)
 

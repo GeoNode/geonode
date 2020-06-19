@@ -149,7 +149,8 @@ for d in range(0, n_docs):
 for layer in Layer.objects.all():
     try:
         result = delete_layer.delay(layer_id=layer.id)
-        result.wait(10)
+        # Attempt to run task synchronously
+        result.get()
     except TimeoutError:
         continue
 

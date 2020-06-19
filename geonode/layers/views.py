@@ -1315,17 +1315,9 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
     if (request.method == 'POST'):
         try:
             with transaction.atomic():
-                # Using Tastypie
-                # from geonode.api.resourcebase_api import LayerResource
-                # res = LayerResource()
-                # request_bundle = res.build_bundle(request=request)
-                # layer_bundle = res.build_bundle(request=request, obj=layer)
-                # layer_json = res.serialize(None,
-                #                            res.full_dehydrate(layer_bundle),
-                #                            "application/json")
-                # delete_layer.delay(instance=layer_json)
                 result = delete_layer.delay(layer_id=layer.id)
-                result.wait(10)
+                # Attempt to run task synchronously
+                result.get()
         except TimeoutError:
             # traceback.print_exc()
             pass
