@@ -104,6 +104,39 @@ function save_autor() {
 	
 }
 
+function save_referencia() {
+  if ($('#id_name_reference').val().length == 0)
+  {
+    alert('Informe a Referência');
+    return;
+  }
+
+  if ($('#id_name_reference').val().length > 0) {
+    //
+    $.ajax({
+      type: 'GET',
+      url: '/layers/add_declaracao',
+      contentType: 'application/json; charset=utf-8',
+      data: {'name': $('#id_name_reference').val()},
+      success: function(data) {
+        //
+        $('#addingEmbrapaReferenceModal').modal('hide');
+        if (JSON.parse(data).success) {
+          alert('Referência salva com sucesso!')
+        }
+        else {
+          alert('Ocorreu um erro ao tentar salvar!')
+        }
+      },
+      error: function(rs, e) { 
+         $('#addingEmbrapaReferenceModal').modal('hide');
+         alert(rs.responseText);                
+      }
+    });
+  }
+
+}
+
 </script>
 
 <style>
@@ -534,8 +567,33 @@ span.grippy::after {
                                         <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
                                       {{ layer_form.embrapa_data_quality_statement }}
                                       </div>
-                                      <a href="{% url 'embrapa_data_quality_statement_create' %}" target="_blank" class="btn btn-primary">{% trans "Adicionar Referência" %}</a>
+                                      <a href="#adicionar-referencia" data-toggle="modal" data-target="#addingEmbrapaReferenceModal" class="btn btn-primary">{% trans "Adicionar Referência" %}</a>
                                 </div>
+                                  <body>
+                                    <div class="modal" tabindex="-1" role="dialog" id="addingEmbrapaReferenceModal">
+                                      <div class="modal-dialog">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <h5 class="modal-title">Adicionar Referência</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                              <span aria-hidden="true">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class="modal-body">
+
+                                              <div class="pure-control-group">
+                                                <input id="id_name_reference" type="text">
+                                              </div>
+
+                                              <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                                <button type="button" onclick="save_referencia()" class="btn btn-primary">Salvar</button>
+                                              </div>
+                                            </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                </body>
                                 <div class="col-lg-4">
                                     <div>
                                         <span><label for="{{ layer_form.restriction_code_type|id }}">{{ layer_form.restriction_code_type.label }}</label></span>
@@ -666,13 +724,13 @@ span.grippy::after {
 
                                     <div class="pure-control-group">
                                       <input id="id_name" type="text">
-									  <input id="id_autoria" type="text">
-									  <input id="id_afiliacao" type="text">
+									                    <input id="id_autoria" type="text">
+									                    <input id="id_afiliacao" type="text">
                                     </div>
 
                                     <div class="modal-footer">
                                       <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-									  <button type="button" onclick="save_autor()" class="btn btn-primary">Salvar</button>
+									                    <button type="button" onclick="save_autor()" class="btn btn-primary">Salvar</button>
                                     </div>
                                   </div>
                               </div>

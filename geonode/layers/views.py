@@ -841,6 +841,19 @@ def layer_feature_catalogue(
         context=context_dict,
         content_type='application/xml')
 
+def add_declaracao(request):
+    try:
+        if request.method == 'GET':
+            print(request.GET['name'])
+            name = request.GET['name']
+            name_slug = slugify(name)
+
+            embrapa_data_quality_statement_creates, created = Embrapa_Data_Quality_Statement.objects.get_or_create(name=name, 
+                slug=name_slug, depth=1, numchild=0)
+
+        return HttpResponse(json.dumps({'success': True}))
+    except Exception:
+        return HttpResponse(json.dumps({'success': False}))
 
 def add_autor(request):
 	try:
