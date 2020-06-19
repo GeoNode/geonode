@@ -632,13 +632,12 @@ span.grippy::after {
                     <!--<p class="xxs-font-size">(Brief narrative summary of the intentions with which the resource/s ...)</p>-->
                     {{ layer_form.purpose }}
                 </div>
-				<!--<form id='call_apis' class="form-horizontal" action="{% url "layer_metadata" layer.service_typename %}" method="GET">
-					<input type="submit" id="btn_projeto_embrapa" name="list_projects" class="btn btn-primary" value="{% trans "Listar Projetos" %}"/>
-					<input type="submit" id="btn_acao_gerencial_embrapa" name="list_management_actions" class="btn btn-primary" value="{% trans "Listar Ações Gerenciais" %}"/>
-				</form>-->
-				<button type="button" onclick="submitBtn('btn_projeto_embrapa')" class="btn btn-primary">Listar Projetos</button>
-        <button type="button" onclick="submitBtn('btn_acao_gerencial_embrapa')" class="btn btn-primary">Listar Ações Gerenciais</button>
-                
+                <!--<form id='call_apis' class="form-horizontal" action="{% url "layer_metadata" layer.service_typename %}" method="GET">
+                  <input type="submit" id="btn_projeto_embrapa" name="list_projects" class="btn btn-primary" value="{% trans "Listar Projetos" %}"/>
+                  <input type="submit" id="btn_acao_gerencial_embrapa" name="list_management_actions" class="btn btn-primary" value="{% trans "Listar Ações Gerenciais" %}"/>
+                </form>-->
+                <button type="button" onclick="submitBtn('btn_projeto_embrapa')" class="btn btn-primary">Listar Projetos</button>
+                <button type="button" onclick="submitBtn('btn_acao_gerencial_embrapa')" class="btn btn-primary">Listar Ações Gerenciais</button>
                 <div>
                     <span><label for="{{ layer_form.embrapa_unity|id }}">{{ layer_form.embrapa_unity.label }}</label></span>
                     <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
