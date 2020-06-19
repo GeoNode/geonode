@@ -162,8 +162,7 @@ def log_snippet(log_file):
         fsize = f.tell()  # Get Size
         f.seek(max(fsize - 10024, 0), 0)  # Set pos @ last n chars
         return f.read()
-
-
+	
 def _resolve_layer(request, alternate, permission='base.view_resourcebase',
                    msg=_PERMISSION_MSG_GENERIC, **kwargs):
     """
@@ -842,6 +841,25 @@ def layer_feature_catalogue(
         context=context_dict,
         content_type='application/xml')
 
+
+def add_autor(request):
+	try:
+		if request.method == 'GET':
+			print(request.GET['name'])
+			print(request.GET['autoria'])
+			print(request.GET['afiliacao'])
+			name = request.GET['name']
+			autoria = request.GET['autoria']
+			afiliacao = request.GET['afiliacao']
+			name_slug = slugify(name)
+			
+			embrapa_autores_creates, created = Embrapa_Authors.objects.get_or_create(name=name, 
+				slug=name_slug, depth=1, numchild=0, afiliacao=afiliacao, autoria=autoria)
+
+		return HttpResponse(json.dumps({'success': True}))
+	except Exception:
+		return HttpResponse(json.dumps({'success': False}))
+	
 @login_required
 def add_embrapa_autores(request):
     template_name = 'layouts/add_embrapa_autores.html'
@@ -1032,8 +1050,10 @@ def layer_metadata(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
             request.POST["category_choice_field"] else None)
         tkeywords_form = TKeywordForm(request.POST)
+        authors_form = EmbrapaAuthorsForm(request.POST, instance=request.user)
     else:
         # embrapa #
+        authors_form = EmbrapaAuthorsForm(instance=request.user)
         layer_form = LayerForm(instance=layer, prefix="resource")
         attribute_form = layer_attribute_set(
             instance=layer,
@@ -1072,121 +1092,9 @@ def layer_metadata(
     print(request.method)
     print(request.GET.__dict__)
     
-    '''
-    if request.method == "GET":
-        # Rota da api que retorna as unidades
-        unity_endpoint = 'https://sistemas.sede.embrapa.br/corporativows/rest/corporativoservice/unidades/lista/todas'
-
-        # Fazer a chamada na api
-        response = requests.get(unity_endpoint)
-        
-        # Transformar em JSON
-        data = response.json()
-
-        # Pegar o índice "unidadesEmbrapa"
-        data_ids = data["unidadesEmbrapa"]
-
-        # Construir uma lista de ids com o tamanho informado
-        embrapa_only_ids = [i for i in range(len(data_ids))]
-
-        # Colocando apenas os ids na lista
-        for i in range(len(data_ids)):
-            embrapa_only_ids[i] = data_ids[i]["id"]
-
-        try:
-            for i in range(len(data_ids)):
-                embrapa_unity_creates, created = Embrapa_Unity.objects.get_or_create(unity= embrapa_only_ids[i])
-                if created:
-                    embrapa_unity_creates.save()
-                else:
-                    pass
-        except Exception as error:
-            print(error)
-
-        for unity_id in embrapa_only_ids:
-            try:
-                current_year = get_only_year()
-
-                # Chamada para ação gerencial
-                acao_gerencial_endpoint = 'https://sistemas.sede.embrapa.br/corporativows/rest/corporativoservice/lista/acoesgerenciais/poridunidadeembrapaano/{0}/{1}'.format(unity_id, current_year)
-
-                response = requests.get(acao_gerencial_endpoint)
-
-                data = response.json()
-
-                data_acao_gerencial = data["acaoGerencial"]
-
-                embrapa_acao_gerencial = [i for i in range(len(data_acao_gerencial))]
-
-                embrapa_acao_gerencial_ids = [i for i in range(len(data_acao_gerencial))]
-
-                for i in range(len(data_acao_gerencial)):
-                    embrapa_acao_gerencial[i] = data_acao_gerencial[i]["titulo"]
-
-                for i in range(len(data_acao_gerencial)):
-                    embrapa_acao_gerencial_ids[i] = data_acao_gerencial[i]["acaoGerencialId"]
-
-                for i in range(len(data_acao_gerencial)):
-                    embrapa_acao_gerencial_creates, created = Embrapa_Purpose.objects.get_or_create(
-                        identifier= 'Ação Gerencial', project_code= embrapa_acao_gerencial_ids[i], title= embrapa_acao_gerencial[i])
-                    if created:
-                        embrapa_acao_gerencial_creates.save()
-                    else:
-                        pass
-            except Exception as error2:
-                print(error2)
-                pass
-
-        for unity_id in embrapa_only_ids:        
-            try:
-                # Chamada para projeto
-                projeto_endpoint = 'https://sistemas.sede.embrapa.br/corporativows/rest/corporativoservice/projeto/lista/poridunidadeembrapa?id_unidadeembrapa={0}'.format(unity_id)
-
-                response = requests.get(projeto_endpoint)
-
-                data = response.json()
-
-                data_projeto_id_titulo = data["projeto"]
-
-                embrapa_id_projeto = [i for i in range(len(data_projeto_id_titulo))]
-
-                embrapa_titulo_projeto = [i for i in range(len(data_projeto_id_titulo))]
-
-                for i in range(len(data_projeto_id_titulo)):
-                    embrapa_id_projeto[i] = data_projeto_id_titulo[i]["id"]
-
-                for i in range(len(data_projeto_id_titulo)):
-                    embrapa_titulo_projeto[i] = data_projeto_id_titulo[i]["titulo"]
-
-                for i in range(len(data_projeto_id_titulo)):
-                    embrapa_projeto_creates, created = Embrapa_Purpose.objects.get_or_create(
-                        identifier= 'Projeto', project_code= embrapa_id_projeto[i], title= embrapa_titulo_projeto[i])
-                    if created:
-                        embrapa_projeto_creates.save()
-                    else:
-                        pass
-            except Exception as error3:
-                print(error3)
-                pass
-    '''
-    
-
-    # USAR O CREATE PRA CRIAR OS DADOS PRO BANCO
-    # Try catch (Se já existem os dados no banco, verificar as constraints únicas)
-    # Ao clicar no botão ação gerencial traria um embrapapurpose.objects.filter com ação gerencial
-    # E ao clicar em projeto traria com o filter em projeto
-
     #print teste 03:
     print("Teste 03")
-    ''' print(request.method)
-    print(layer_form.is_valid())
-    print(attribute_form.is_valid())
-    print(category_form.is_valid())
-    print("Vars do attribute:")
-    pprint(vars(attribute_form))
-    print("Vars do category_form:")
-    pprint(vars(category_form))'''
-    #pprint(layer_form.__dict__)
+
     if request.method == "GET":
         print("TESTE NO LAYERS!!!")
         project = request.GET.get("list_projects")
@@ -1199,6 +1107,47 @@ def layer_metadata(
             print("CLIQUEI EM AÇÃO GERENCIAL")
             settings.ACAO_GERENCIAL_API = True
             settings.PROJETO_API = False
+
+    saved_author = False
+    # Detectar se clicou no Atualizar da camada, se não clicou nele quer dizer que clicou no de salvar o autor
+    # if request.modal
+
+    # TENTAR CRIAR UMA FUNÇÃO NA VIEW ONDE É CARREGADO O TEMPLATE DA CAMADA PORÉM SOMENTE O FORM DO AUTOR
+    # COM ISSO OS MÉTODOS DE SAVE, DELETE E ETC VÃO FICAR APENAS LÁ.
+
+    try:
+        if request.method == "POST":
+            btn_save_modal_author = request.POST.get("saveAuthorModal")            
+            if authors_form.is_valid():
+                print("Cliquei no botão de save")
+                print("Nome views do layers:")
+                name = authors_form.cleaned_data['name']
+                name_slug = slugify(name)
+                print(name)
+                print("Nome como slug:")
+                print(name_slug)
+
+                autoria = authors_form.cleaned_data['autoria']
+                print("Autoria views do layers:")
+                print(autoria)
+
+                afiliacao = authors_form.cleaned_data['afiliacao']
+                print("Afiliação views do layers:")
+                print(afiliacao)
+
+                embrapa_autores_creates, created = Embrapa_Authors.objects.get_or_create(name=name, 
+                                            slug=name_slug, depth=1, numchild=0, afiliacao=afiliacao, autoria=autoria)
+                if created:
+                    embrapa_autores_creates.save()
+
+                saved_author = True
+
+                authors_form.save()
+                authors_form = EmbrapaAuthorsForm(instance=request.user)
+
+    except Exception:
+        pass
+
 
     if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid(
     ) and category_form.is_valid():
@@ -1439,6 +1388,7 @@ def layer_metadata(
         "resource": layer,
         "layer": layer,
         "layer_form": layer_form,
+        "authors_form": authors_form,
         "poc_form": poc_form,
         "author_form": author_form,
         "attribute_form": attribute_form,

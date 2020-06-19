@@ -32,12 +32,14 @@ js_info_dict = {
 
 layers_list = register_url_event()(TemplateView.as_view(template_name='layers/layer_list.html'))
 
+
 urlpatterns = [
     # 'geonode.layers.views',
     # Embrapa
     #url(r'^embrapa_projeto_api$', views.projeto_api_click, name='embrapa_projeto_api'),
     #url(r'^embrapa_acao_gerencial_api$', views.acao_gerencial_api_click, name='embrapa_acao_gerencial_api'),
-    url(r'^add_embrapa_autores$', views.add_embrapa_autores, name='embrapa_autores_create'),
+    url(r'^add_autor$', views.add_autor, name='embrapa_add_teste'),
+	url(r'^add_embrapa_autores$', views.add_embrapa_autores, name='embrapa_autores_create'),
     url(r'^add_embrapa_data_quality_statement$', views.add_embrapa_data_quality_statement, name='embrapa_data_quality_statement_create'),
     url(r'^$',
         layers_list,
