@@ -217,7 +217,9 @@ def post_save_document(instance, *args, **kwargs):
 def create_thumbnail(sender, instance, created, **kwargs):
     from .tasks import create_document_thumbnail
 
-    create_document_thumbnail.delay(object_id=instance.id)
+    result = create_document_thumbnail.delay(object_id=instance.id)
+    # Attempt to run task synchronously
+    result.get()
 
 
 def update_documents_extent(sender, **kwargs):

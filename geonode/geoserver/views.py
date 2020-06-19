@@ -90,9 +90,11 @@ def updatelayers(request):
     workspace = params.get('workspace', None)
     store = params.get('store', None)
     filter = params.get('filter', None)
-    geoserver_update_layers.delay(
+    result = geoserver_update_layers.delay(
         ignore_errors=False, owner=owner, workspace=workspace,
         store=store, filter=filter)
+    # Attempt to run task synchronously
+    result.get()
 
     return HttpResponseRedirect(reverse('layer_browse'))
 
