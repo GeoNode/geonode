@@ -855,6 +855,21 @@ def add_declaracao(request):
     except Exception:
         return HttpResponse(json.dumps({'success': False}))
 
+def save_finalidade(request):
+    try:
+        if request.GET['tipo'] == 'lp':
+            print(request.GET['tipo'])
+            settings.PROJETO_API = True
+            settings.ACAO_GERENCIAL_API = False
+        elif request.GET['tipo'] == 'lag':
+            settings.PROJETO_API = False
+            settings.ACAO_GERENCIAL_API = True
+
+        return HttpResponse(json.dumps({'success': True}))
+
+    except Exception:
+        return HttpResponse(json.dumps({'success': False}))
+
 def add_autor(request):
 	try:
 		if request.method == 'GET':

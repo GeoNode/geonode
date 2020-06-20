@@ -59,6 +59,35 @@ function submitBtnAuthor(){
   btnAction.click();
 }
 
+function save_finalidade() {
+  //
+  var radios = document.getElementsByName('finalidade');
+  for (var i = 0, length = radios.length; i < length; i++) {
+    if (radios[i].checked) {
+      $.ajax({
+        type: 'GET',
+        url: '/layers/save_finalidade',
+        contentType: 'application/json; charset=utf-8',
+        data: {'tipo': radios[i].value},
+        success: function(data) {
+          //
+          if (JSON.parse(data).success) {
+            alert('Opção salva com sucesso!')
+          }
+          else {
+            alert('Ocorreu um erro ao tentar salvar!')
+          }
+        },
+        error: function(rs, e) { 
+          $('#addingEmbrapaAuthorsModal').modal('hide');
+          alert(rs.responseText);                
+        }
+      });
+      break;
+    }
+  }
+}
+
 function save_autor() {
 
 	if ($('#id_name').val().length == 0)
@@ -395,7 +424,7 @@ span.grippy::after {
     <div id="mandatory" class="tab-pane fade in active">
         <!--<br />-->
         <div class="panel-group">
-            <div class="panel panel-default">
+            <div class="panel panel-default" style="margin-top: 15px !important;">
                 <!-- div class="panel-heading">Data info</div -->
                 <div class="panel-body">
                     <div class="row">
@@ -627,26 +656,24 @@ span.grippy::after {
                     <!--<p class="xxs-font-size">(Version of the cited resource)</p>-->
                     {{ layer_form.edition }}
                 </div>
-                <div>
+                <div style="margin-top: 10px;">
                     <span><label for="{{ layer_form.purpose|id }}">{{ layer_form.purpose.label }}</label></span>
                     <!--<p class="xxs-font-size">(Brief narrative summary of the intentions with which the resource/s ...)</p>-->
                     {{ layer_form.purpose }}
                 </div>
-                <!--<form id='call_apis' class="form-horizontal" action="{% url "layer_metadata" layer.service_typename %}" method="GET">
-                  <input type="submit" id="btn_projeto_embrapa" name="list_projects" class="btn btn-primary" value="{% trans "Listar Projetos" %}"/>
-                  <input type="submit" id="btn_acao_gerencial_embrapa" name="list_management_actions" class="btn btn-primary" value="{% trans "Listar Ações Gerenciais" %}"/>
-                </form>-->
-                <button type="button" onclick="submitBtn('btn_projeto_embrapa')" class="btn btn-primary">Listar Projetos</button>
-                <button type="button" onclick="submitBtn('btn_acao_gerencial_embrapa')" class="btn btn-primary">Listar Ações Gerenciais</button>
+                <div style="margin-top: 10px; padding-left: 5px; margin-bottom: 19px;">
+                  <input type="radio" name="finalidade" value="lp" id="rdbListaProjetos" onclick="save_finalidade()" style="margin-right: 6px;">Listar Projetos</input>
+                  <input type="radio" name="finalidade" value="lag" id="rdbListaAcoesGerenciais" onclick="save_finalidade()" style="margin-left: 15px; margin-right: 6px;">Listar Ações Gerenciais</input>
+                </div>
                 <div>
                     <span><label for="{{ layer_form.embrapa_unity|id }}">{{ layer_form.embrapa_unity.label }}</label></span>
                     <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
                     {{ layer_form.embrapa_unity }}
                 </div>
-                <div>
+                <div style="margin-top: 10px;;">
                     <span><label for="{{ layer_form.supplemental_information|id }}">{{ layer_form.supplemental_information.label }}</label></span>
                     <!--<p class="xxs-font-size">(Any other descriptive information about the dataset)</p>-->
-                    {{ layer_form.supplemental_information }}
+                    {{ layer_form.supplemental_information }} 
                 </div>
             </div>
             <div class="col-xs-12 col-lg-5">
@@ -665,18 +692,18 @@ span.grippy::after {
                         </div>
                     </div>
                 <div class="col-xs-12">
-                    <div style="margin-top: 5px">
+                    <div style="margin-top: 20px">
                         <span><label for="{{ layer_form.maintenance_frequency|id }}">{{ layer_form.maintenance_frequency.label }}</label></span>
                         <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
                         {{ layer_form.maintenance_frequency }}
                     </div>
-                    <div style="margin-top: 5px">
+                    <div style="margin-top: 20px">
                         <span><label for="{{ layer_form.spatial_representation_type|id }}">{{ layer_form.spatial_representation_type.label }}</label></span>
                         <!--<p class="xxs-font-size">(Method used to represent geographic information in the dataset)</p>-->
                         {{ layer_form.spatial_representation_type }}
                     </div>
                     <!-- LINK VINDE ! - EMBRAPA -->
-                    <div style="margin-top: 5px">
+                    <div style="margin-top: 20px">
                         <span><label for="{{ layer_form.link_vinde|id }}">{{ layer_form.link_vinde.label }}</label></span>
                         <!--<p class="xxs-font-size">(Method used to represent geographic information in the dataset)</p>-->
                         {{ layer_form.link_vinde }}
