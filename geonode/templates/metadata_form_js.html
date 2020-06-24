@@ -69,6 +69,61 @@
       $('#profileCompleteness .not-completed').toggle(completeness !== 1);
       var mandatoryMissing =  $('#mandatory').find('.input-empty:not([id^=autocomlete])').length > 0;
       var advancedMissing = $('#advanced').find('.input-empty').length > 0;
+      var mandatoryTotals = $('#mandatory').find('.input-empty:not([id^=autocomlete])').length;
+      var advancedTotals = $('#advanced').find('.input-empty').length;
+      console.log('advancedTotals: ', advancedTotals)
+      //
+      for (let index = 0; index < $('#mandatory').find('.input-empty:not([id^=autocomlete])').length; index++) {
+          if ($('#mandatory').find('.input-empty:not([id^=autocomlete])')[index].type === 'search') {
+            //
+            const element = $('#mandatory').find('.input-empty:not([id^=autocomlete])')[0].parentElement.parentElement
+            //
+            var liCount = 0
+            for (let x = 0; x < element.childNodes.length; x++) {
+                //
+                if (element.childNodes[x].localName === 'li') {
+                    liCount++;
+                }
+            }
+            //
+            if (liCount > 1) {
+                mandatoryTotals--;
+            }
+          }   
+      }
+      //
+      if (mandatoryTotals === 0) {
+        mandatoryMissing = false
+      }
+      //
+      for (let index = 0; index < $('#advanced').find('.input-empty').length; index++) {
+          if ($('#advanced').find('.input-empty')[index].type === 'search') {
+            //
+            const element = $('#advanced').find('.input-empty')[0].parentElement.parentElement
+            //
+            var liCount = 0
+            //
+            for (let x = 0; x < element.childNodes.length; x++) {
+                //
+                if (element.childNodes[x].localName === 'li') {
+                    liCount++;
+                }
+            }
+            //
+            if (liCount > 1) {
+                advancedTotals--;
+            }
+          }
+          else if ($('#advanced').find('.input-empty')[index].id === 'id_name_reference') {
+            //
+            advancedTotals--;
+          }
+      }
+      //
+      if (advancedTotals === 0) {
+        advancedMissing = false
+      }
+      //
       $('#completeness-hints .mandatory-hint')
         .toggleClass('progress-bar-danger', mandatoryMissing)
         .toggleClass('progress-bar-success', !mandatoryMissing)
@@ -268,7 +323,7 @@
                         !$(el).hasClass('value-select') &&
                         el.type !== 'radio' &&
                         el.type !== 'button');
-            return is_mandatory;
+          return is_mandatory;
         }
 
         var onInputChange = function(e){
