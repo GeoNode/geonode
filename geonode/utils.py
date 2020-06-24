@@ -1516,6 +1516,8 @@ def copy_tree(src, dst, symlinks=False, ignore=None):
                     pass
             else:
                 try:
+                    if ignore and s in ignore(dst, [s]):
+                        return
                     shutil.copy2(s, d)
                 except Exception:
                     pass
