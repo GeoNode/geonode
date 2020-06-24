@@ -65,12 +65,7 @@ def authors_objects_api():
 
         response = requests.get(autores_endpoint)
     except Exception as error:
-        out = {
-                'success': False,
-                'errors': 'A api AINFO não está disponível',
-                'ErroApi': True
-            }
-        return HttpResponse(json.dumps(out), content_type='application/json', status=400)
+        return []
 
     data = response.json()
 

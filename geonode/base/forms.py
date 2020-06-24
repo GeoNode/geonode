@@ -548,13 +548,14 @@ class ResourceBaseForm(TranslationModelForm):
 
         objects_author = authors_objects_api()
 
-        for obj in objects_author:
-            for i in range(len(embrapa_autores)):
-                if obj.nome == embrapa_autores[i]:
-                    embrapa_autores_creates, created = Embrapa_Authors.objects.get_or_create(name=obj.nome, 
-                        slug=name_slug[i], depth=1, numchild=0, afiliacao=obj.afiliacao, autoria=obj.autoria)
-                    if created:
-                        embrapa_autores_creates.save()
+        if (objects_author.length > 0):
+            for obj in objects_author:
+                for i in range(len(embrapa_autores)):
+                    if obj.nome == embrapa_autores[i]:
+                        embrapa_autores_creates, created = Embrapa_Authors.objects.get_or_create(name=obj.nome, 
+                            slug=name_slug[i], depth=1, numchild=0, afiliacao=obj.afiliacao, autoria=obj.autoria)
+                        if created:
+                            embrapa_autores_creates.save()
 
         return embrapa_autores
 

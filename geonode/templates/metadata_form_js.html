@@ -97,9 +97,9 @@
       }
       //
       for (let index = 0; index < $('#advanced').find('.input-empty').length; index++) {
-          if ($('#advanced').find('.input-empty')[index].type === 'search') {
+          if ($('#advanced').find('.input-empty')[index].type === 'select-multiple') {
             //
-            const element = $('#advanced').find('.input-empty')[0].parentElement.parentElement
+            const element = $('#advanced').find('.input-empty')[0].parentElement.childNodes[6].childNodes[0].childNodes[0].childNodes[0]
             //
             var liCount = 0
             //
@@ -110,7 +110,7 @@
                 }
             }
             //
-            if (liCount > 1) {
+            if (liCount > 0) {
                 advancedTotals--;
             }
           }
