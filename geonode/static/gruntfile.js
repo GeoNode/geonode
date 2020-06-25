@@ -290,10 +290,10 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['jshint']);
 
   // build development
-  grunt.registerTask('development', ['jshint', 'clean:lib', 'less:development', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:development', 'babel']);
+  grunt.registerTask('development', ['jshint', /*'clean:lib',*/ 'less:development', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:development', 'babel']);
   grunt.registerTask('build-less-dev', ['less:development']);
   // build production
-  grunt.registerTask('production', ['jshint', 'clean:lib', 'less:production', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:production', 'babel']);
+  grunt.registerTask('production', ['jshint', /*'clean:lib',*/ 'less:production', 'concat:bootstrap', 'copy', 'replace', 'cssmin', 'uglify:production', 'babel']);
   grunt.registerTask('build-less-prod', ['less:production']);
 
 };
