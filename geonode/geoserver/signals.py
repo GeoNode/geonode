@@ -278,7 +278,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
             # are bypassed by custom create/updates we need to ensure the
             # bbox is calculated properly.
             bbox = gs_resource.native_bbox
-            instance.set_bbox_polygon((bbox[0], bbox[2], bbox[1], bbox[3]), instance.srid)
+            instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], gs_resource.projection)
         except Exception as e:
             logger.exception(e)
 

@@ -955,10 +955,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def bbox(self):
         """BBOX is in the format: [x0, x1, y0, y1, srid]."""
+        if str(self.bbox_polygon.srid) not in self.srid:
+            self.bbox_polygon.transform(self.srid)
+
         bbox = self.bbox_helper
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, self.srid]
 
-    @cached_property
+    @property
     def ll_bbox(self):
         """BBOX is in the format [x0, x1, y0, y1, "EPSG:srid"]. Provides backwards
         compatibility after transition to polygons."""
@@ -967,35 +970,34 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             bbox = bbox.transform(4326, clone=True)
 
         bbox = BBOXHelper(bbox.extent)
-        # TODO: This should be 4326, why was `self.srid` used here previously?
-        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(self.srid)]
+        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
-    @cached_property
+    @property
     def bbox_string(self):
         """BBOX is in the format: [x0, y0, x1, y1]. Provides backwards compatibility
         after transition to polygons."""
         # TODO: This carries no information about SRS, and should probably be WKT string
-        return ",".join(map(str, self.bbox_polygon.extent))
+        return ",".join(map(str, self.bbox[:4]))
 
-    @cached_property
+    @property
     def bbox_helper(self):
         return BBOXHelper(self.bbox_polygon.extent)
 
-    @property
+    @cached_property
     def bbox_x0(self):
-        return Decimal(self.bbox_helper.xmin)
+        return self.bbox[0]
 
-    @property
+    @cached_property
     def bbox_x1(self):
-        return Decimal(self.bbox_helper.xmax)
+        return self.bbox[1]
 
-    @property
+    @cached_property
     def bbox_y0(self):
-        return Decimal(self.bbox_helper.ymin)
+        return self.bbox[2]
 
-    @property
+    @cached_property
     def bbox_y1(self):
-        return Decimal(self.bbox_helper.ymax)
+        return self.bbox[3]
 
     @property
     def geographic_bounding_box(self):
@@ -1116,7 +1118,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         try:
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,5})$', str(srid))
-            bbox_polygon.srid = int(match.group('srid'))
+            srid = match.group('srid')
+            bbox_polygon.srid = int(srid)
+            self.srid = srid
         except AttributeError:
             logger.warning("No srid found for layer %s bounding box", self)
 
@@ -1179,8 +1183,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         :type bbox: list
         """
         if isinstance(bbox, Polygon):
-            self.srid = bbox.srid
-            self.set_bbox_polygon(bbox.extent, bbox.srid)
+            self.set_bbox_polygon(bbox.extent, srid)
             self.set_center_zoom()
             return
 
