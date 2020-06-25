@@ -34,7 +34,6 @@ from six import (
     reraise as raise_
 )
 from itertools import cycle
-from decimal import Decimal
 from collections import namedtuple, defaultdict
 from os.path import basename, splitext, isfile
 from threading import local

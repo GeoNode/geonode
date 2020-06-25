@@ -82,7 +82,6 @@ from pyproj import transform, Proj
 
 from urllib.parse import urlparse, urlsplit, urljoin
 from imagekit.cachefiles.backends import Simple
-from decimal import Decimal
 
 logger = logging.getLogger(__name__)
 
