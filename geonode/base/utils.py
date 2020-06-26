@@ -61,7 +61,7 @@ def authors_objects_api():
 
     try:
 
-        autores_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/ws/rest/listaAutoresGGGG'
+        autores_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/ws/rest/listaAutores'
 
         response = requests.get(autores_endpoint)
     except Exception as error:
@@ -88,18 +88,13 @@ def authors_objects_api():
 def choice_authors():
 
     try:
-        autores_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/ws/rest/listaAutoresGGGG'
+        autores_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/ws/rest/listaAutores'
 
         #autores_endpoint = 'http://www.ainfo-h.cnptia.embrapa.br/ws/rest/listaAutoriaByAutoria?autoria={0}'.format(settings.FILTRO_AUTOR)
 
         response = requests.get(autores_endpoint)
     except Exception as error:
-        out = {
-                'success': False,
-                'errors': 'A api AINFO não está disponível',
-                'ErroApi': True
-            }
-        return HttpResponse(json.dumps(out), content_type='application/json', status=400)
+        return []
 
     data = response.json()
 
@@ -139,12 +134,7 @@ def choice_data_quality_statement():
 
         response = requests.get(data_quality_statement_endpoint)
     except Exception as error:
-        out = {
-                'success': False,
-                'errors': 'A api AINFO não está disponível',
-                'ErroApi': True
-            }
-        return HttpResponse(json.dumps(out), content_type='application/json', status=400)
+        return []
 
     data = response.json()
 
@@ -189,18 +179,15 @@ def choice_purpose():
 
     unity_id = settings.EMBRAPA_UNITY_DEFAULT
 
+    print('settings.EMBRAPA_UNITY_DEFAULT')
+    print(settings.EMBRAPA_UNITY_DEFAULT)
     # Chamada para ação gerencial
     try:
         acao_gerencial_endpoint = 'https://sistemas.sede.embrapa.br/corporativows/rest/corporativoservice/lista/acoesgerenciais/poridunidadeembrapaano/{0}/{1}'.format(unity_id, current_year)
 
         response = requests.get(acao_gerencial_endpoint)
     except Exception as error:
-        out = {
-                'success': False,
-                'errors': 'A api IDEARE não está disponível',
-                'ErroApi': True
-            }
-        return HttpResponse(json.dumps(out), content_type='application/json', status=400)
+        return []
 
     data = response.json()
 
@@ -212,12 +199,7 @@ def choice_purpose():
         
         response = requests.get(projeto_endpoint)
     except Exception as error:
-        out = {
-                'success': False,
-                'errors': 'A api INTEGRO não está disponível',
-                'ErroApi': True
-            }
-        return HttpResponse(json.dumps(out), content_type='application/json', status=400)
+        return []
 
     data = response.json()
 
@@ -252,7 +234,9 @@ def choice_purpose():
     j = len(tamanho_acao_gerencial)
 
     for i in range(len(tamanho_projeto)):
-        embrapa_acao_gerencial_projeto_ids[j] = data_projeto_id_titulo[i]["id"] + ' - ' + data_projeto_id_titulo[i]["titulo"]
+        #embrapa_acao_gerencial_projeto_ids[j] = data_projeto_id_titulo[i]["id"] + ' - ' + data_projeto_id_titulo[i]["titulo"]
+        print(data_projeto_id_titulo[i]["id"])
+        print(data_projeto_id_titulo[i]["titulo"])
         j = j + 1
 
     return embrapa_acao_gerencial_projeto_ids
@@ -263,12 +247,8 @@ def choice_unity():
         response = requests.get('https://sistemas.sede.embrapa.br/corporativows/rest/corporativoservice/unidades/lista/todas')
         data = response.json()
     except Exception as error:
-        out = {
-                'success': False,
-                'errors': 'A api INTEGRO não está disponível',
-                'ErroApi': True
-            }
-        return HttpResponse(json.dumps(out), content_type='application/json', status=400)
+        return []
+        
     data_ids = data["unidadesEmbrapa"]
     embrapa_only_ids = [i for i in range(len(data_ids))]
 

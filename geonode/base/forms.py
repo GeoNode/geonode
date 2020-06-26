@@ -547,8 +547,8 @@ class ResourceBaseForm(TranslationModelForm):
             name_slug[i] = slugify(embrapa_autores[i])
 
         objects_author = authors_objects_api()
-
-        if (objects_author.length > 0):
+        
+        if (len(objects_author) > 0):
             for obj in objects_author:
                 for i in range(len(embrapa_autores)):
                     if obj.nome == embrapa_autores[i]:
