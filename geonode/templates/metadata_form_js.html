@@ -827,16 +827,26 @@
 
 <script>
     document.addEventListener('click', function (event) {        
-        if (event.target.id === 'select2-id_resource-embrapa_unity-container'){
-            var item = $('#select2-id_resource-embrapa_unity-results')
-            item[0].addEventListener("onblur", send_embrapa_unity_code())
+        if ((event.target.id === 'select2-id_resource-embrapa_unity-container') || 
+            (event.target.id === 'select2-id_resource-purpose-container') ||
+            ((event.target.hasAttribute("aria-owns") && (event.target.getAttribute("aria-owns") == "select2-id_resource-purpose-results")))){
+            //
+            if (item) {
+                item[0].addEventListener("onblur", send_embrapa_unity_code())
+            }
+            else {
+                var item = $('#select2-id_resource-embrapa_unity-container')
+                if (item) {
+                    item[0].addEventListener("onblur", send_embrapa_unity_code())
+                }
+            }            
         }
     })
-    //
+    // 
     function send_embrapa_unity_code() {
         setTimeout(function(){            
             var code = $('#select2-id_resource-embrapa_unity-container').text()
-            code  = code.substring(1, code.length - 1)
+            code  = code.substring(1, code.length)
             console.log('send_embrapa_unity_code: ', code), 
             //
             $.ajax({
