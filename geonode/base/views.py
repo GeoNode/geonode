@@ -252,6 +252,7 @@ class EmbrapaAuthorsAutocomplete(autocomplete.Select2GroupListView):
         print("Views autores:")
 
         return embrapa_autores
+        #return [item[0][1] for item in embrapa_autores if item[0][1] == item[0][1]]
 
 
 class EmbrapaDataQualityStatementAutocomplete(autocomplete.Select2GroupListView):
@@ -280,6 +281,9 @@ class EmbrapaUnityAutocomplete(autocomplete.Select2GroupListView):
 
         # Derrubar a tabela de embrapa_unities e embrapa_purpose, transforma-los em charfields na camada.
         # E vai ser tupla mesmo, gerada pela lista retornada da api
+
+        print("self.q:")
+        print(self.q)
 
         if self.q:
             settings.EMBRAPA_UNITY_DEFAULT = self.q

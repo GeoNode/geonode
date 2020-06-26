@@ -826,25 +826,22 @@
 </script>
 
 <script>
-    document.addEventListener('click', function (event) {        
-        if ((event.target.id === 'select2-id_resource-embrapa_unity-container') || 
-            (event.target.id === 'select2-id_resource-purpose-container') ||
-            ((event.target.hasAttribute("aria-owns") && (event.target.getAttribute("aria-owns") == "select2-id_resource-purpose-results")))){
-            //
+    document.addEventListener('click', function (event) {
+        if (event.target.id === 'select2-id_resource-embrapa_unity-container') {
+            var item = $('#select2-id_resource-purpose-container')
             if (item) {
-                item[0].addEventListener("onblur", send_embrapa_unity_code())
+                item[0].addEventListener("onblur", send_embrapa_unity_code(5000))
             }
-            else {
-                var item = $('#select2-id_resource-embrapa_unity-container')
-                if (item) {
-                    item[0].addEventListener("onblur", send_embrapa_unity_code())
-                }
-            }            
+        } 
+        else if ((event.target.id === 'select2-id_resource-purpose-container') ||
+                ((event.target.hasAttribute("aria-owns") && (event.target.getAttribute("aria-owns") == "select2-id_resource-purpose-results")))){
+            //
+            send_embrapa_unity_code(0)
         }
     })
     // 
-    function send_embrapa_unity_code() {
-        setTimeout(function(){            
+    function send_embrapa_unity_code(time) {
+        setTimeout(function(){
             var code = $('#select2-id_resource-embrapa_unity-container').text()
             code  = code.substring(1, code.length)
             console.log('send_embrapa_unity_code: ', code), 
@@ -853,14 +850,14 @@
                 type: 'GET',
                 url: '/base/autocomplete_embrapa_unity',
                 contentType: 'application/json; charset=utf-8',
-                data: {'d': code},
+                data: {'q': code},
                 success: function(data) {
                     //
                 },
                 error: function(rs, e) { 
                     alert(rs.responseText);
                 }
-            });            
-        }, 2000)
+            });
+        }, time)
     }
 </script>

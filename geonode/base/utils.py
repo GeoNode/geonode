@@ -64,10 +64,10 @@ def authors_objects_api():
         autores_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/ws/rest/listaAutores'
 
         response = requests.get(autores_endpoint)
+
+        data = response.json()
     except Exception as error:
         return []
-
-    data = response.json()
 
     autores_afiliacao = [i for i in range(len(data))]
     autores_autoria = [i for i in range(len(data))]
@@ -93,10 +93,10 @@ def choice_authors():
         #autores_endpoint = 'http://www.ainfo-h.cnptia.embrapa.br/ws/rest/listaAutoriaByAutoria?autoria={0}'.format(settings.FILTRO_AUTOR)
 
         response = requests.get(autores_endpoint)
+
+        data = response.json()
     except Exception as error:
         return []
-
-    data = response.json()
 
     autores_database = Embrapa_Authors.objects.values_list('name', flat=True).order_by('name')
 
@@ -133,10 +133,10 @@ def choice_data_quality_statement():
         data_quality_statement_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/data-quality-statement'
 
         response = requests.get(data_quality_statement_endpoint)
+
+        data = response.json()
     except Exception as error:
         return []
-
-    data = response.json()
 
     data_quality_statement_content_database = Embrapa_Data_Quality_Statement.objects.values_list('name', flat=True).order_by('name')
 
@@ -186,10 +186,10 @@ def choice_purpose():
         acao_gerencial_endpoint = 'https://sistemas.sede.embrapa.br/corporativows/rest/corporativoservice/lista/acoesgerenciais/poridunidadeembrapaano/{0}/{1}'.format(unity_id, current_year)
 
         response = requests.get(acao_gerencial_endpoint)
+
+        data = response.json()
     except Exception as error:
         return []
-
-    data = response.json()
 
     data_acao_gerencial = data["acaoGerencial"]
 
@@ -198,10 +198,10 @@ def choice_purpose():
         projeto_endpoint = 'https://sistemas.sede.embrapa.br/corporativows/rest/corporativoservice/projeto/lista/poridunidadeembrapa?id_unidadeembrapa={0}'.format(unity_id)
         
         response = requests.get(projeto_endpoint)
+
+        data = response.json()
     except Exception as error:
         return []
-
-    data = response.json()
 
     data_projeto_id_titulo = data["projeto"]
 
@@ -209,7 +209,7 @@ def choice_purpose():
 
     tamanho_projeto = [i for i in range(len(data_projeto_id_titulo))]
 
-    embrapa_acao_gerencial_projeto_ids = [i for i in range(len(tamanho_acao_gerencial + tamanho_projeto))]
+    embrapa_acao_gerencial_projeto_ids = [i for i in range(len(data_acao_gerencial) + len(data_projeto_id_titulo))]
 
     embrapa_acao_gerencial = [i for i in range(len(data_acao_gerencial))]
 
@@ -222,24 +222,32 @@ def choice_purpose():
         return embrapa_acao_gerencial
 
     elif settings.PROJETO_API:
-        for i in range(len(data_projeto_id_titulo)):
-            embrapa_projeto[i] = data_projeto_id_titulo[i]["id"] + ' - ' + data_projeto_id_titulo[i]["titulo"]
+        if type(data_projeto_id_titulo) is dict:
+            embrapa_projeto = ['1']
+            embrapa_projeto[0] = data_projeto_id_titulo["id"] + ' - ' + data_projeto_id_titulo["titulo"]
+        elif type(data_projeto_id_titulo) is list:
+            for i in range(len(data_projeto_id_titulo)):
+                print("data_projeto_id_titulo:")
+                print(len(data_projeto_id_titulo))
+                embrapa_projeto[i] = data_projeto_id_titulo[i]["id"] + ' - ' + data_projeto_id_titulo[i]["titulo"]
 
         return embrapa_projeto
 
+    return []
 
-    for i in range(len(tamanho_acao_gerencial)):
-        embrapa_acao_gerencial_projeto_ids[i] = data_acao_gerencial[i]["acaoGerencialId"] + ' - ' + data_acao_gerencial[i]["titulo"]
+    #for i in range(len(data_acao_gerencial)):
+    #    embrapa_acao_gerencial_projeto_ids[i] = data_acao_gerencial[i]["acaoGerencialId"] + ' - ' + data_acao_gerencial[i]["titulo"]
 
-    j = len(tamanho_acao_gerencial)
+    #j = len(data_acao_gerencial)
 
-    for i in range(len(tamanho_projeto)):
+    #for i in range(len(data_projeto_id_titulo)):
         #embrapa_acao_gerencial_projeto_ids[j] = data_projeto_id_titulo[i]["id"] + ' - ' + data_projeto_id_titulo[i]["titulo"]
-        print(data_projeto_id_titulo[i]["id"])
-        print(data_projeto_id_titulo[i]["titulo"])
-        j = j + 1
+    #    print(len(data_projeto_id_titulo))
+    #    print(data_projeto_id_titulo[0]["id"])
+    #    print(data_projeto_id_titulo[0]["titulo"])
+    #    j = j + 1
 
-    return embrapa_acao_gerencial_projeto_ids
+    #return embrapa_acao_gerencial_projeto_ids
 
 
 def choice_unity():

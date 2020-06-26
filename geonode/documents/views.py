@@ -61,6 +61,10 @@ from geonode.security.utils import get_visible_resources
 
 from dal import autocomplete
 
+# embrapa #
+from geonode.base.models import Embrapa_Data_Quality_Statement, Embrapa_Authors
+from django.utils.text import slugify
+
 logger = logging.getLogger("geonode.documents.views")
 
 ALLOWED_DOC_TYPES = settings.ALLOWED_DOCUMENT_TYPES
@@ -328,7 +332,55 @@ class DocumentUpdateView(UpdateView):
                 args=(
                     self.object.id,
                 )))
+        
+def save_finalidade_document(request):
+    try:
+        if request.GET['tipo'] == 'lp':
+            print(request.GET['tipo'])
+            settings.PROJETO_API = True
+            settings.ACAO_GERENCIAL_API = False
+        elif request.GET['tipo'] == 'lag':
+            settings.PROJETO_API = False
+            settings.ACAO_GERENCIAL_API = True
 
+        return HttpResponse(json.dumps({'success': True}))
+
+    except Exception:
+        return HttpResponse(json.dumps({'success': False}))
+
+def add_declaracao_document(request):
+    try:
+        if request.method == 'GET':
+            print(request.GET['name'])
+            name = request.GET['name']
+            name_slug = slugify(name)
+
+            embrapa_data_quality_statement_creates, created = Embrapa_Data_Quality_Statement.objects.get_or_create(name=name, 
+                slug=name_slug, depth=1, numchild=0)
+
+            print("Salvou?")
+
+        return HttpResponse(json.dumps({'success': True}))
+    except Exception:
+        return HttpResponse(json.dumps({'success': False}))
+
+def add_autor_document(request):
+    try:
+        if request.method == 'GET':
+            print(request.GET['name'])
+            print(request.GET['autoria'])
+            print(request.GET['afiliacao'])
+            name = request.GET['name']
+            autoria = request.GET['autoria']
+            afiliacao = request.GET['afiliacao']
+            name_slug = slugify(name)
+            
+            embrapa_autores_creates, created = Embrapa_Authors.objects.get_or_create(name=name, 
+                slug=name_slug, depth=1, numchild=0, afiliacao=afiliacao, autoria=autoria)
+
+        return HttpResponse(json.dumps({'success': True}))
+    except Exception:
+        return HttpResponse(json.dumps({'success': False}))
 
 @login_required
 def document_metadata(
