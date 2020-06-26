@@ -1172,8 +1172,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 'Projection cannot be empty %s for a given resource' %
                 self.name)
         self.bbox_x0 = bbox[0]
-        self.bbox_x1 = bbox[1]
-        self.bbox_y0 = bbox[2]
+        self.bbox_x1 = bbox[2]
+        self.bbox_y0 = bbox[1]
         self.bbox_y1 = bbox[3]
         self.srid = srid
 
