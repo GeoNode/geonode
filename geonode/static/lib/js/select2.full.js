@@ -5779,14 +5779,6 @@ S2.define('select2/core',[
     }
 
     actualTrigger.call(this, name, args);
-    //
-    if (this.id === 'select2-id_resource-embrapa_data_quality_statement' && name === 'clear') {
-      $('#completeness-hints .advanced-hint')
-        .toggleClass('progress-bar-danger', true)
-        .toggleClass('progress-bar-success', false)
-        .attr('title', true ? gettext("some schema mandatory fields are missing") : gettext("Metadata Schema mandatory fields completed") )
-        .tooltip('fixTitle');
-    }
   };
 
   Select2.prototype.toggleDropdown = function () {

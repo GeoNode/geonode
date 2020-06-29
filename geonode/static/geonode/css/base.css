@@ -3199,6 +3199,10 @@ fieldset[disabled] .btn-default.focus {
   color: #fff;
   background-color: #2c689c;
   border-color: #265a88;
+
+ .author {
+   margin-top: 10px;
+ }
 }
 .btn-primary:focus,
 .btn-primary.focus {

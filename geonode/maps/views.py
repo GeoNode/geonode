@@ -78,6 +78,10 @@ from deprecated import deprecated
 
 from dal import autocomplete
 
+# embrapa #
+from django.utils.text import slugify
+from geonode.base.models import Embrapa_Data_Quality_Statement, Embrapa_Authors
+
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
@@ -183,6 +187,53 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
     register_event(request, EventType.EVENT_VIEW, request.path)
 
     return render(request, template, context=context_dict)
+
+def add_declaracao_maps(request):
+    try:
+        if request.method == 'GET':
+            print(request.GET['name'])
+            name = request.GET['name']
+            name_slug = slugify(name)
+
+            embrapa_data_quality_statement_creates, created = Embrapa_Data_Quality_Statement.objects.get_or_create(name=name, 
+                slug=name_slug, depth=1, numchild=0)
+
+        return HttpResponse(json.dumps({'success': True}))
+    except Exception:
+        return HttpResponse(json.dumps({'success': False}))
+
+def add_autor_maps(request):
+    try:
+        if request.method == 'GET':
+            print(request.GET['name'])
+            print(request.GET['autoria'])
+            print(request.GET['afiliacao'])
+            name = request.GET['name']
+            autoria = request.GET['autoria']
+            afiliacao = request.GET['afiliacao']
+            name_slug = slugify(name)
+            
+            embrapa_autores_creates, created = Embrapa_Authors.objects.get_or_create(name=name, 
+                slug=name_slug, depth=1, numchild=0, afiliacao=afiliacao, autoria=autoria)
+
+        return HttpResponse(json.dumps({'success': True}))
+    except Exception:
+        return HttpResponse(json.dumps({'success': False}))
+
+def save_finalidade_maps(request):
+    try:
+        if request.GET['tipo'] == 'lp':
+            print(request.GET['tipo'])
+            settings.PROJETO_API = True
+            settings.ACAO_GERENCIAL_API = False
+        elif request.GET['tipo'] == 'lag':
+            settings.PROJETO_API = False
+            settings.ACAO_GERENCIAL_API = True
+
+        return HttpResponse(json.dumps({'success': True}))
+
+    except Exception:
+        return HttpResponse(json.dumps({'success': False}))
 
 
 @login_required

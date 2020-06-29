@@ -72,7 +72,6 @@ function save_finalidade() {
         success: function(data) {
           //
           if (JSON.parse(data).success) {
-            alert('Opção salva com sucesso!')
           }
           else {
             alert('Ocorreu um erro ao tentar salvar!')
@@ -656,11 +655,6 @@ span.grippy::after {
                     <!--<p class="xxs-font-size">(Version of the cited resource)</p>-->
                     {{ layer_form.edition }}
                 </div>
-                <div style="margin-top: 10px;">
-                    <span><label for="{{ layer_form.purpose|id }}">{{ layer_form.purpose.label }}</label></span>
-                    <!--<p class="xxs-font-size">(Brief narrative summary of the intentions with which the resource/s ...)</p>-->
-                    {{ layer_form.purpose }}
-                </div>
                 <div style="margin-top: 10px; padding-left: 5px; margin-bottom: 19px;">
                   <input type="radio" name="finalidade" value="lp" id="rdbListaProjetos" onclick="save_finalidade()" style="margin-right: 6px;">Listar Projetos</input>
                   <input type="radio" name="finalidade" value="lag" id="rdbListaAcoesGerenciais" onclick="save_finalidade()" style="margin-left: 15px; margin-right: 6px;">Listar Ações Gerenciais</input>
@@ -669,6 +663,11 @@ span.grippy::after {
                     <span><label for="{{ layer_form.embrapa_unity|id }}">{{ layer_form.embrapa_unity.label }}</label></span>
                     <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
                     {{ layer_form.embrapa_unity }}
+                </div>
+                <div style="margin-top: 10px;">
+                    <span><label for="{{ layer_form.purpose|id }}">{{ layer_form.purpose.label }}</label></span>
+                    <!--<p class="xxs-font-size">(Brief narrative summary of the intentions with which the resource/s ...)</p>-->
+                    {{ layer_form.purpose }}
                 </div>
                 <div style="margin-top: 10px;;">
                     <span><label for="{{ layer_form.supplemental_information|id }}">{{ layer_form.supplemental_information.label }}</label></span>
@@ -910,5 +909,4 @@ span.grippy::after {
 </div>
 </div>
 {% endblock %}
-
 

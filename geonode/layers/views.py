@@ -1058,6 +1058,8 @@ def layer_metadata(
         layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
         print("Teste 02.2.1")
         print(layer_form.is_valid())
+        print("Layer_form:")
+        print(layer_form)
         if not layer_form.is_valid():
             print("Teste 02.3")
             print(layer_form.errors)
