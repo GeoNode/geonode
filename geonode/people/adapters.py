@@ -70,6 +70,8 @@ def update_profile(sociallogin):
     extractor = get_data_extractor(sociallogin.account.provider)
     if extractor is not None:
         profile_fields = (
+            "username",
+            "email",
             "area",
             "city",
             "country",
@@ -81,7 +83,7 @@ def update_profile(sociallogin):
             "position",
             "profile",
             "voice",
-            "zipcode",
+            "zipcode"
         )
         for field in profile_fields:
             try:
@@ -185,6 +187,13 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
     def save_user(self, request, sociallogin, form=None):
         user = super(SocialAccountAdapter, self).save_user(
             request, sociallogin, form=form)
+        extractor = get_data_extractor(sociallogin.account.provider)
+        try:
+            keywords = extractor.extract_keywords(sociallogin.account.extra_data)
+            for _kw in keywords:
+                user.keywords.add(_kw)
+        except (AttributeError, NotImplementedError):
+            pass  # extractor doesn't define a method for extracting field
         if settings.ACCOUNT_APPROVAL_REQUIRED:
             user.is_active = False
             user.save()

@@ -130,6 +130,69 @@ class LinkedInExtractor(BaseExtractor):
         return result
 
 
+class OpenIDExtractor(BaseExtractor):
+
+    def extract_email(self, data):
+        return data.get("email", "")
+
+    def extract_first_name(self, data):
+        return data.get("first_name", "")
+
+    def extract_last_name(self, data):
+        return data.get("last_name", "")
+
+    def extract_country(self, data):
+        country = data.get("country", "")
+        if country:
+            from geonode.base.enumerations import COUNTRIES
+            for _cnt in COUNTRIES:
+                if country == _cnt[1]:
+                    country = _cnt[0]
+                    break
+        return country
+
+    def extract_language(self, data):
+        language = data.get("language", "")
+        if language:
+            from .languages import LANGUAGES
+            for _cnt in LANGUAGES:
+                if language == _cnt[1]:
+                    language = _cnt[0]
+                    break
+        return language
+
+    def extract_timezone(self, data):
+        timezone = data.get("timezone", "")
+        if timezone:
+            from .timezones import TIMEZONES
+            for _cnt in TIMEZONES:
+                if timezone == _cnt[1]:
+                    timezone = _cnt[0]
+                    break
+        return timezone
+
+    def extract_city(self, data):
+        return data.get("city", "")
+
+    def extract_zipcode(self, data):
+        return data.get("postal_code", "")
+
+    def extract_organization(self, data):
+        return data.get("organization", "")
+
+    def extract_voice(self, data):
+        return data.get("phone", "")
+
+    def extract_groups(self, data):
+        return data.get("groups", "")
+
+    def extract_roles(self, data):
+        return data.get("roles", "")
+
+    def extract_keywords(self, data):
+        return data.get("keywords", "")
+
+
 def _get_latest_position(data):
     all_positions = data.get(
         "positions",
