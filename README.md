@@ -49,7 +49,7 @@ Workshop](http://docs.geonode.org/en/2.10/usage/index.html).
 Install
 -------
 
-    The latest official release is 2.10!
+    The latest official release is 2.10.4 and 3.0!
 
 GeoNode can be setup in different ways, flavors and plattforms. If
 you´re planning to do development or install for production please visit
