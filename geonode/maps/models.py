@@ -196,7 +196,7 @@ class Map(ResourceBase, GXPMapBase):
         else:
             self.center_x, self.center_y = center
 
-        projection = _map.get("projection", None)
+        projection = _map.get("projection", settings.DEFAULT_MAP_CRS)
         bbox = _map.get("bbox", None)
 
         if bbox:
