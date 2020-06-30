@@ -25,7 +25,15 @@ import requests
 import traceback
 
 from uuid import uuid4
-from urllib.parse import urlparse, urlsplit, urljoin
+from urllib.parse import (
+    urljoin,
+    unquote,
+    urlparse,
+    urlsplit,
+    urlencode,
+    parse_qsl,
+    ParseResult,
+)
 
 from django.conf import settings
 from django.urls import reverse
@@ -110,11 +118,41 @@ class WmsServiceHandler(base.ServiceHandlerBase,
     def __init__(self, url):
         self.proxy_base = urljoin(
             settings.SITEURL, reverse('proxy'))
-        _url, _service = WebMapService(url, proxy_base=None)
         self.url = url
+        self._parsed_service = None
         self.indexing_method = (
             INDEXED if self._offers_geonode_projection() else CASCADED)
         self.name = slugify(self.url)[:255]
+
+    @staticmethod
+    def get_cleaned_url_params(url):
+        # Unquoting URL first so we don't loose existing args
+        url = unquote(url)
+        # Extracting url info
+        parsed_url = urlparse(url)
+        # Extracting URL arguments from parsed URL
+        get_args = parsed_url.query
+        # Converting URL arguments to dict
+        parsed_get_args = dict(parse_qsl(get_args))
+        # Strip out redoundant args
+        _version = parsed_get_args.pop('version', '1.3.0') if 'version' in parsed_get_args else '1.3.0'
+        _service = parsed_get_args.pop('service') if 'service' in parsed_get_args else None
+        _request = parsed_get_args.pop('request') if 'request' in parsed_get_args else None
+        # Converting URL argument to proper query string
+        encoded_get_args = urlencode(parsed_get_args, doseq=True)
+        # Creating new parsed result object based on provided with new
+        # URL arguments. Same thing happens inside of urlparse.
+        new_url = ParseResult(
+            parsed_url.scheme, parsed_url.netloc, parsed_url.path,
+            parsed_url.params, encoded_get_args, parsed_url.fragment
+        ).geturl()
+        return (new_url, _service, _version, _request)
+
+    @property
+    def parsed_service(self):
+        cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
+        _url, _parsed_service = WebMapService(cleaned_url, version=version, proxy_base=None)
+        return _parsed_service
 
     def create_cascaded_store(self):
         store = self._get_store(create=True)
@@ -129,7 +167,6 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         :type owner: geonode.people.models.Profile
 
         """
-        _url, parsed_service = WebMapService(self.url, proxy_base=None)
         instance = models.Service(
             uuid=str(uuid4()),
             base_url=self.url,
@@ -138,22 +175,20 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             method=self.indexing_method,
             owner=owner,
             parent=parent,
-            version=parsed_service.identification.version,
+            version=self.parsed_service.identification.version,
             name=self.name,
-            title=parsed_service.identification.title or self.name,
-            abstract=parsed_service.identification.abstract or _(
+            title=self.parsed_service.identification.title or self.name,
+            abstract=self.parsed_service.identification.abstract or _(
                 "Not provided"),
-            online_resource=parsed_service.provider.url,
+            online_resource=self.parsed_service.provider.url,
         )
         return instance
 
     def get_keywords(self):
-        _url, parsed_service = WebMapService(self.url, proxy_base=None)
-        return parsed_service.identification.keywords
+        return self.parsed_service.identification.keywords
 
     def get_resource(self, resource_id):
-        _url, parsed_service = WebMapService(self.url, proxy_base=None)
-        return parsed_service.contents[resource_id]
+        return self.parsed_service.contents[resource_id]
 
     def get_resources(self):
         """Return an iterable with the service's resources.
@@ -162,12 +197,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         of metadata and do not return those.
 
         """
-        try:
-            _url, parsed_service = WebMapService(self.url, proxy_base=None)
-            contents_gen = parsed_service.contents.values()
-            return (r for r in contents_gen if not any(r.children))
-        except Exception:
-            return None
+        contents_gen = self.parsed_service.contents.values()
+        return (r for r in contents_gen if not any(r.children))
 
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
@@ -215,8 +246,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             logger.error(e)
 
     def has_resources(self):
-        _url, parsed_service = WebMapService(self.url, proxy_base=None)
-        return True if len(parsed_service.contents) > 0 else False
+        return True if len(self.parsed_service.contents) > 0 else False
 
     def _create_layer(self, geonode_service, **resource_fields):
         # bear in mind that in ``geonode.layers.models`` there is a
@@ -242,12 +272,11 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 
     def _create_layer_thumbnail(self, geonode_layer):
         """Create a thumbnail with a WMS request."""
-        _url, parsed_service = WebMapService(self.url, proxy_base=None)
         _p_url = urlparse(self.url)
         _q_separator = "&" if _p_url.query else "?"
         params = {
             "service": "WMS",
-            "version": parsed_service.version,
+            "version": self.parsed_service.version,
             "request": "GetMap",
             "layers": geonode_layer.alternate,
             "bbox": geonode_layer.bbox_string,
@@ -277,12 +306,11 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         creating the legend by making a request directly to the original
         service.
         """
-        _url, parsed_service = WebMapService(self.url, proxy_base=None)
         _p_url = urlparse(self.url)
         _q_separator = "&" if _p_url.query else "?"
         params = {
             "service": "WMS",
-            "version": parsed_service.version,
+            "version": self.parsed_service.version,
             "request": "GetLegendGraphic",
             "format": "image/png",
             "width": 20,
@@ -326,14 +354,14 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 
     def _get_cascaded_layer_fields(self, geoserver_resource):
         name = geoserver_resource.name
-        workspace = geoserver_resource.workspace.name
-        store = geoserver_resource.store
-
-        bbox = utils.decimal_encode(geoserver_resource.native_bbox)
+        workspace = geoserver_resource.workspace.name if hasattr(geoserver_resource, 'workspace') else None
+        store = geoserver_resource.store if hasattr(geoserver_resource, 'store') else None
+        bbox = utils.decimal_encode(geoserver_resource.native_bbox) if hasattr(geoserver_resource, 'native_bbox') else \
+        utils.decimal_encode(geoserver_resource.boundingBox)
         return {
             "name": name,
-            "workspace": workspace,
-            "store": store.name,
+            "workspace": workspace or "remoteWorkspace",
+            "store": store.name if store and hasattr(store, 'name') else self.name,
             "typename": "{}:{}".format(workspace, name) if workspace not in name else name,
             "alternate": "{}:{}".format(workspace, name) if workspace not in name else name,
             "storeType": "remoteStore",
@@ -373,7 +401,6 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         and belongs to the default geonode workspace for cascaded layers.
 
         """
-
         workspace = base.get_geoserver_cascading_workspace(create=create)
         cat = workspace.catalog
         store = cat.get_store(self.name, workspace=workspace)
@@ -410,9 +437,11 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             if layer_resource is None:
                 raise RuntimeError("Could not cascade resource {!r} through "
                                    "geoserver".format(layer_meta))
+            layer_resource = layer_resource.resource
         else:
             logger.debug("Layer {} is already present. Skipping...".format(
                 layer_meta.id))
+        layer_resource.refresh()
         return layer_resource
 
     def _offers_geonode_projection(self):
