@@ -44,6 +44,7 @@ from django.utils.translation import ugettext as _
 from geonode.base.models import Link, TopicCategory
 from geonode.layers.models import Layer
 from geonode.layers.utils import create_thumbnail, resolve_regions
+from geonode.geoserver.helpers import set_attributes_from_geoserver
 from geonode.utils import http_client
 
 from owslib.map import wms111, wms130
@@ -268,6 +269,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             logger.error(e)
         geonode_layer.keywords.add(*keywords)
         geonode_layer.set_default_permissions()
+        set_attributes_from_geoserver(geonode_layer)
         return geonode_layer
 
     def _create_layer_thumbnail(self, geonode_layer):
