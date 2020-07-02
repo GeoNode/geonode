@@ -237,7 +237,9 @@ def proxy(request, url=None, response_callback=None,
             return _response
         else:
             def _get_message(text):
-                _s = text.decode("utf-8", "replace")
+                _s = text
+                if isinstance(text, bytes):
+                    _s = text.decode("utf-8", "replace")
                 try:
                     found = re.search('<b>Message</b>(.+?)</p>', _s).group(1).strip()
                 except Exception:

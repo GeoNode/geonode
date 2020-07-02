@@ -251,7 +251,7 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
             else:
                 access_token = get_or_create_token(request.user)
 
-    if 'Authorization' not in headers and access_token:
+    if access_token:
         headers['Authorization'] = 'Bearer %s' % access_token
 
     pragma = "no-cache"
