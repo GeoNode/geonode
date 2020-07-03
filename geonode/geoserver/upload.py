@@ -78,12 +78,9 @@ def geoserver_upload(
         pass
     else:
         # If we get a store, we do the following:
-        resources = store.get_resources()
+        resources = cat.get_resources(names=[name], stores=[store], workspaces=[workspace])
 
-        # If the store is empty, we just delete it.
-        if len(resources) == 0:
-            cat.delete(store)
-        else:
+        if len(resources) > 0:
             # If our resource is already configured in the store it needs
             # to have the right resource type
             for resource in resources:

@@ -128,7 +128,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     if not instance.store or getattr(instance, 'overwrite', False):
         base_file, info = instance.get_base_file()
 
-        # There is no need to process it if there is not file.
+        # There is no need to process it if there is no file.
         if base_file is None:
             return
         gs_name, workspace, values, gs_resource = geoserver_upload(instance,
