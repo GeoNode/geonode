@@ -176,12 +176,6 @@ class SpatialRepresentationType(models.Model):
         verbose_name_plural = 'Metadata Spatial Representation Types'
 
 # embrapa #
-class Embrapa_Last_Updated(models.Model):
-    last_updated = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ("last_updated",)
-
 #class Embrapa_Purpose(models.Model):
 
     # identifier serve para saber se é ação gerencial ou projeto

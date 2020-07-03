@@ -32,7 +32,7 @@ from dal import views, autocomplete
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.base.models import ResourceBase, Region, HierarchicalKeyword, ThesaurusKeywordLabel, Embrapa_Keywords, Embrapa_Last_Updated
+from geonode.base.models import ResourceBase, Region, HierarchicalKeyword, ThesaurusKeywordLabel, Embrapa_Keywords
 from geonode.utils import resolve_object
 from geonode.security.utils import get_visible_resources
 from .forms import BatchEditForm

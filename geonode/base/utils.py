@@ -44,18 +44,29 @@ _names = ['Zipped Shapefile', 'Zipped', 'Shapefile', 'GML 2.0', 'GML 3.1.1', 'CS
 
 # embrapa #
 from datetime import datetime
-from geonode.base.models import Embrapa_Last_Updated, Embrapa_Data_Quality_Statement, Embrapa_Authors
+from geonode.base.models import Embrapa_Data_Quality_Statement, Embrapa_Authors
 from django.db.models.functions import (ExtractDay, ExtractMonth, ExtractYear, ExtractHour, ExtractMinute, 
 ExtractSecond)
 import requests
 
 from django.http import HttpResponse
+from django.db import connection
 
 class AuthorObjects:
     def __init__(self, nome, afiliacao, autoria):
         self.nome = nome
         self.afiliacao = afiliacao
         self.autoria = autoria
+
+
+def db_table_exists(table_name):
+
+    print("Nome da tabela:")
+    print(table_name)
+    if table_name in connection.introspection.table_names():
+        return table_name in connection.introspection.table_names()
+    else:
+        return None
 
 def authors_objects_api():
 
@@ -98,7 +109,11 @@ def choice_authors():
     except Exception as error:
         return []
 
-    autores_database = Embrapa_Authors.objects.values_list('name', flat=True).order_by('name')
+    base_embrapa_authors_exists = db_table_exists("base_embrapa_authors")
+    if base_embrapa_authors_exists:
+        autores_database = Embrapa_Authors.objects.values_list('name', flat=True).order_by('name')
+    else:
+        autores_database = ['']
 
     autores_range_database = [i for i in range(len(autores_database))]
 
@@ -138,7 +153,11 @@ def choice_data_quality_statement():
     except Exception as error:
         return []
 
-    data_quality_statement_content_database = Embrapa_Data_Quality_Statement.objects.values_list('name', flat=True).order_by('name')
+    base_embrapa_data_quality_statement_exists = db_table_exists("base_embrapa_data_quality_statement")
+    if base_embrapa_data_quality_statement_exists:
+        data_quality_statement_content_database = Embrapa_Data_Quality_Statement.objects.values_list('name', flat=True).order_by('name')
+    else:
+        data_quality_statement_content_database = ['']
 
     data_quality_statement_range_api = [i for i in range(len(data))]
 
