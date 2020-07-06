@@ -155,9 +155,9 @@ def get_files(filename):
     from geonode.utils import unzip_file
     if zipfile.is_zipfile(filename):
         tempdir = tempfile.mkdtemp()
-        filename = unzip_file(filename,
-                              '.shp', tempdir=tempdir)
-        if not filename:
+        _filename = unzip_file(filename,
+                               '.shp', tempdir=tempdir)
+        if not _filename:
             # We need to iterate files as filename could be the zipfile
             import ntpath
             from geonode.upload.utils import _SUPPORTED_EXT
@@ -168,6 +168,8 @@ def get_files(filename):
                         item_ext.lower() in _SUPPORTED_EXT):
                     filename = os.path.join(tempdir, item)
                     break
+        else:
+            filename = _filename
 
     # Make sure the file exists.
     if not os.path.exists(filename):
@@ -211,13 +213,17 @@ def get_files(filename):
 
     # Only for GeoServer
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        matches = glob.glob(glob_name + ".[sS][lL][dD]")
+        matches = glob.glob(os.path.dirname(glob_name) + "/*.[sS][lL][dD]")
         if len(matches) == 1:
             files['sld'] = matches[0]
         elif len(matches) > 1:
-            msg = ('Multiple style files (sld) for %s exist; they need to be '
-                   'distinct by spelling and not just case.') % filename
-            raise GeoNodeException(msg)
+            matches = glob.glob(glob_name + ".[sS][lL][dD]")
+            if len(matches) == 1:
+                files['sld'] = matches[0]
+            elif len(matches) > 1:
+                msg = ('Multiple style files (sld) for %s exist; they need to be '
+                       'distinct by spelling and not just case.') % filename
+                raise GeoNodeException(msg)
 
     matches = glob.glob(glob_name + ".[xX][mM][lL]")
 
