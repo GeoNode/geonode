@@ -72,7 +72,6 @@ def geoserver_upload(
     # Check if the store exists in geoserver
     try:
         store = get_store(cat, name, workspace=workspace)
-
     except geoserver.catalog.FailedRequestError:
         # There is no store, ergo the road is clear
         pass
@@ -161,8 +160,6 @@ def geoserver_upload(
         gs_resource = gs_catalog.get_resource(
             name=name,
             workspace=workspace)
-        if not gs_resource:
-            gs_resource = gs_catalog.get_resource(name=name)
 
     if not gs_resource:
         msg = ('GeoNode encountered problems when creating layer %s.'
@@ -188,25 +185,19 @@ def geoserver_upload(
         -90 <= round(miny, 5) <= 90 and -90 <= round(maxy, 5) <= 90:
             gs_resource.latlon_bbox = _native_bbox
             gs_resource.projection = "EPSG:4326"
-            cat.save(gs_resource)
         else:
             logger.warning('BBOX coordinates outside normal EPSG:4326 values for layer '
                            '[%s].', name)
             _native_bbox = [-180, -90, 180, 90, "EPSG:4326"]
             gs_resource.latlon_bbox = _native_bbox
             gs_resource.projection = "EPSG:4326"
-            try:
-                cat.save(gs_resource)
-                logger.debug('BBOX coordinates forced to [-180, -90, 180, 90] for layer '
-                             '[%s].', name)
-            except Exception as e:
-                logger.exception('Error occurred while trying to force BBOX on resource', e)
+            logger.debug('BBOX coordinates forced to [-180, -90, 180, 90] for layer [%s].', name)
 
     # Step 7. Create the style and assign it to the created resource
     logger.debug('>>> Step 7. Creating style for [%s]' % name)
     cat.save(gs_resource)
     publishing = cat.get_layer(name) or gs_resource
-
+    sld = None
     if 'sld' in files:
         f = open(files['sld'], 'r')
         sld = f.read()
@@ -215,15 +206,15 @@ def geoserver_upload(
         sld = get_sld_for(cat, publishing)
 
     style = None
-    if sld is not None:
+    if sld:
         try:
-            style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE)
+            style = cat.get_style(name, workspace=workspace)
         except geoserver.catalog.FailedRequestError:
             style = cat.get_style(name)
 
         try:
             overwrite = style or False
-            cat.create_style(name, sld, overwrite=overwrite, raw=True, workspace=settings.DEFAULT_WORKSPACE)
+            cat.create_style(name, sld, overwrite=overwrite, raw=True, workspace=workspace)
         except geoserver.catalog.ConflictingDataError as e:
             msg = ('There was already a style named %s in GeoServer, '
                    'try to use: "%s"' % (name + "_layer", str(e)))
@@ -237,15 +228,15 @@ def geoserver_upload(
 
         if style is None:
             try:
-                style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
+                style = cat.get_style(name, workspace=workspace) or cat.get_style(name)
             except Exception:
                 try:
-                    style = cat.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
+                    style = cat.get_style(name + '_layer', workspace=workspace) or \
                         cat.get_style(name + '_layer')
                     overwrite = style or False
                     cat.create_style(name + '_layer', sld, overwrite=overwrite, raw=True,
-                                     workspace=settings.DEFAULT_WORKSPACE)
-                    style = cat.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
+                                     workspace=workspace)
+                    style = cat.get_style(name + '_layer', workspace=workspace) or \
                         cat.get_style(name + '_layer')
                 except geoserver.catalog.ConflictingDataError as e:
                     msg = ('There was already a style named %s in GeoServer, '
@@ -253,7 +244,7 @@ def geoserver_upload(
                     logger.warn(msg)
                     e.args = (msg,)
 
-                style = cat.get_style(name + "_layer", workspace=settings.DEFAULT_WORKSPACE) or \
+                style = cat.get_style(name + "_layer", workspace=workspace) or \
                     cat.get_style(name + "_layer")
                 if style is None:
                     style = cat.get_style('point')
