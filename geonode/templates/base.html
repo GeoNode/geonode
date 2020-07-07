@@ -259,7 +259,7 @@
         }
       }
     </script>
-
+    
     <!-- RTL styles -->
     {% get_current_language_bidi as LANGUAGE_BIDI %}
     {% if LANGUAGE_BIDI %}
@@ -364,13 +364,13 @@
                   <div id="search-container" class="autocomplete-input">
                     {% if HAYSTACK_SEARCH %}
                     <input autocomplete="off" id="search_input" type="text" placeholder="{% trans 'Search' %}" name="q">
-                    <input type="hidden" name="abstract__icontains" id="search_abstract_input" placeholder="Search" >
-                    <input type="hidden" name="purpose__icontains" id="search_purpose_input" placeholder="Search" >
+                    <input type="hidden" name="abstract__icontains" id="search_abstract_input" placeholder="{% trans 'Search' %}" >
+                    <input type="hidden" name="purpose__icontains" id="search_purpose_input" placeholder="{% trans 'Search' %}" >
                     <input type="hidden" name="f_method" id="filtering_type" value="or" >
                     {% else %}
-                    <input autocomplete="off" type="text" name="title__icontains" id="search_input" placeholder="Search" >
-                    <input type="hidden" name="abstract__icontains" id="search_abstract_input" placeholder="Search" >
-                    <input type="hidden" name="purpose__icontains" id="search_purpose_input" placeholder="Search" >
+                    <input autocomplete="off" type="text" name="title__icontains" id="search_input" placeholder="{% trans 'Search' %}" >
+                    <input type="hidden" name="abstract__icontains" id="search_abstract_input" placeholder="{% trans 'Search' %}" >
+                    <input type="hidden" name="purpose__icontains" id="search_purpose_input" placeholder="{% trans 'Search' %}" >
                     <input type="hidden" name="f_method" id="filtering_type" value="or" >
                     {% endif %}
                   </div>
@@ -721,7 +721,7 @@
     </div>
 
     <div id="confirmMsgBoxModalOK" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <!-- How to use it:
+      <!-- How to use it: 
         $("#confirmMsgBoxModalOK").find('.modal-title').text('{% trans "Title" %}');
         $("#confirmMsgBoxModalOK").find('.modal-body').text('{% trans "Message. Do you want to proceed?" %}');
         $("#confirmMsgBoxModalOK_control_field").val('your_control_value');

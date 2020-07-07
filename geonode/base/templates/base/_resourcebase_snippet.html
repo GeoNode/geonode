@@ -37,14 +37,14 @@
               </h4>
             </div>
             <div class="col-xs-2">
-              <h4>
+              <h4>{% endverbatim %}
                 <button
                   class="btn btn-default btn-xs pull-right"
                   ng-if="cart"
                   ng-click="cart.toggleItem(item)"
                   data-toggle="tooltip"
                   data-placement="bottom"
-                  title="Select"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
+                  title="{% trans "Select" %}"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>{% verbatim %}
               </h4>
             </div>
           </div>

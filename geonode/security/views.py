@@ -28,7 +28,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_POST
-
+from django.utils.translation import ugettext as _
 from geonode.utils import resolve_object
 from geonode.base.models import (
     ResourceBase,
@@ -62,13 +62,13 @@ def resource_permissions(request, resource_id):
         # traceback.print_exc()
         # we are handling this in a non-standard way
         return HttpResponse(
-            'You are not allowed to change permissions for this resource',
+            _('You are not allowed to change permissions for this resource'),
             status=401,
             content_type='text/plain')
 
     if request.method == 'POST':
         success = True
-        message = "Permissions successfully updated!"
+        message = _("Permissions successfully updated!")
         try:
             permission_spec = json.loads(request.body.decode('UTF-8'))
             resource.set_permissions(permission_spec)
@@ -100,7 +100,7 @@ def resource_permissions(request, resource_id):
         except Exception:
             # traceback.print_exc()
             success = False
-            message = "Error updating permissions :("
+            message = _("Error updating permissions :(")
             return HttpResponse(
                 json.dumps({'success': success, 'message': message}),
                 status=500,
@@ -256,7 +256,7 @@ def resource_geolimits(request, resource_id):
                     content_type='text/plain')
             except Exception:
                 return HttpResponse(
-                    'Could not fetch geometries from backend.',
+                    _('Could not fetch geometries from backend.'),
                     status=400,
                     content_type='text/plain')
         elif group_id:
@@ -271,7 +271,7 @@ def resource_geolimits(request, resource_id):
                     content_type='text/plain')
             except Exception:
                 return HttpResponse(
-                    'Could not fetch geometries from backend.',
+                    _('Could not fetch geometries from backend.'),
                     status=400,
                     content_type='text/plain')
 
@@ -288,14 +288,14 @@ def invalidate_permissions_cache(request):
         # Push Security Rules
         sync_resources_with_guardian(resource)
         return HttpResponse(
-            json.dumps({'success': 'ok', 'message': 'Security Rules Cache Refreshed!'}),
+            json.dumps({'success': 'ok', 'message': _('Security Rules Cache Refreshed!')}),
             status=200,
             content_type='text/plain'
         )
     else:
         # traceback.print_exc()
         return HttpResponse(
-            json.dumps({'success': 'false', 'message': 'You cannot modify this resource!'}),
+            json.dumps({'success': 'false', 'message': _('You cannot modify this resource!')}),
             status=200,
             content_type='text/plain'
         )
@@ -352,13 +352,13 @@ def attributes_sats_refresh(request):
                 status=302,
                 content_type='text/plain')
         return HttpResponse(
-            json.dumps({'success': 'ok', 'message': 'Attributes/Stats Refreshed Successfully!'}),
+            json.dumps({'success': 'ok', 'message': _('Attributes/Stats Refreshed Successfully!')}),
             status=200,
             content_type='text/plain'
         )
     else:
         return HttpResponse(
-            json.dumps({'success': 'false', 'message': 'You cannot modify this resource!'}),
+            json.dumps({'success': 'false', 'message': _('You cannot modify this resource!')}),
             status=200,
             content_type='text/plain'
         )
@@ -376,13 +376,13 @@ def invalidate_tiledlayer_cache(request):
     if layer and can_change_data:
         set_geowebcache_invalidate_cache(layer.alternate)
         return HttpResponse(
-            json.dumps({'success': 'ok', 'message': 'GeoWebCache Tiled Layer Emptied!'}),
+            json.dumps({'success': 'ok', 'message': _('GeoWebCache Tiled Layer Emptied!')}),
             status=200,
             content_type='text/plain'
         )
     else:
         return HttpResponse(
-            json.dumps({'success': 'false', 'message': 'You cannot modify this resource!'}),
+            json.dumps({'success': 'false', 'message': _('You cannot modify this resource!')}),
             status=200,
             content_type='text/plain'
         )
@@ -412,7 +412,7 @@ def set_bulk_permissions(request):
         )
     else:
         return HttpResponse(
-            json.dumps({'error': 'Wrong permissions specification'}),
+            json.dumps({'error': _('Wrong permissions specification')}),
             status=400,
             content_type='text/plain')
 
@@ -436,7 +436,7 @@ def request_permissions(request):
     except Exception:
         # traceback.print_exc()
         return HttpResponse(
-            json.dumps({'error': 'error delivering notification'}),
+            json.dumps({'error': _('error delivering notification')}),
             status=400,
             content_type='text/plain')
 
