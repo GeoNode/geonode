@@ -71,8 +71,9 @@ def db_table_exists(table_name):
 def authors_objects_api():
 
     try:
+        autores_endpoint = 'https://www.ainfo-h.cnptia.embrapa.br/ws/rest/listaAutores'
 
-        autores_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/ws/rest/listaAutores'
+        #autores_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/ws/rest/listaAutores'
 
         response = requests.get(autores_endpoint)
 
@@ -99,7 +100,10 @@ def authors_objects_api():
 def choice_authors():
 
     try:
-        autores_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/ws/rest/listaAutores'
+
+        autores_endpoint = 'https://www.ainfo-h.cnptia.embrapa.br/ws/rest/listaAutores'
+
+        #autores_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/ws/rest/listaAutores'
 
         #autores_endpoint = 'http://www.ainfo-h.cnptia.embrapa.br/ws/rest/listaAutoriaByAutoria?autoria={0}'.format(settings.FILTRO_AUTOR)
 
@@ -144,8 +148,9 @@ def choice_authors():
 def choice_data_quality_statement():
 
     try:
+        data_quality_statement_endpoint = 'https://www.ainfo-h.cnptia.embrapa.br/ws/rest/tituloByTitulo?titulo={0}'.format(settings.FILTRO_DATA)
 
-        data_quality_statement_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/data-quality-statement'
+        #data_quality_statement_endpoint = 'https://embrapa-geoinfo-api-mock.herokuapp.com/data-quality-statement'
 
         response = requests.get(data_quality_statement_endpoint)
 

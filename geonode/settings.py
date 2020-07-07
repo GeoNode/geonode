@@ -49,6 +49,7 @@ EMBRAPA_UNITY_DEFAULT = '96'
 ACAO_GERENCIAL_API = False
 PROJETO_API = False
 FILTRO_AUTOR = 'Andre'
+FILTRO_DATA = 'abobrinha'
 
 # GeoNode Version
 VERSION = get_version()
