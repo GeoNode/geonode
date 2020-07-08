@@ -59,34 +59,6 @@ function submitBtnAuthor(){
   btnAction.click();
 }
 
-function save_finalidade() {
-  //
-  var radios = document.getElementsByName('finalidade');
-  for (var i = 0, length = radios.length; i < length; i++) {
-    if (radios[i].checked) {
-      $.ajax({
-        type: 'GET',
-        url: '/layers/save_finalidade',
-        contentType: 'application/json; charset=utf-8',
-        data: {'tipo': radios[i].value},
-        success: function(data) {
-          //
-          if (JSON.parse(data).success) {
-          }
-          else {
-            alert('Ocorreu um erro ao tentar salvar!')
-          }
-        },
-        error: function(rs, e) { 
-          $('#addingEmbrapaAuthorsModal').modal('hide');
-          alert(rs.responseText);                
-        }
-      });
-      break;
-    }
-  }
-}
-
 function save_autor() {
 
 	if ($('#id_name').val().length == 0)

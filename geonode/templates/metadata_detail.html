@@ -378,8 +378,12 @@
             {% endfor %}</dd>
         {% endif %}
 
+        {% if embrapa_autores_list %}
         <dt>{% trans "Autores" %}</dt>
-        <dd>{{ poc.fax }}</dd>
+        <dd>{% for item in embrapa_autores_list %}
+            {{ item.name }}
+            {% endfor %}</dd>
+        {% endif %}
 
         {% endwith %}
 

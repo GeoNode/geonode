@@ -838,7 +838,48 @@
             //
             send_embrapa_unity_code(0)
         }
+        else if (location.href.indexOf('advanced') > -1) {
+            if (event.target.id == 'id_resource-choice_projeto_acao_gerencial_1') 
+            {
+                save_finalidade('lp')
+            }
+            else if (event.target.id == 'id_resource-choice_projeto_acao_gerencial_2') 
+            {
+                save_finalidade('lag')
+            }
+        }
+        else {
+            if (event.target.id == 'id_resource-choice_projeto_acao_gerencial_0') 
+            {
+                save_finalidade('lp')
+            }
+            else if (event.target.id == 'id_resource-choice_projeto_acao_gerencial_1') 
+            {
+                save_finalidade('lag')
+            }
+        }
     })
+    //
+    function save_finalidade(tipo) {
+    //
+        $.ajax({
+            type: 'GET',
+            url: '/layers/save_finalidade',
+            contentType: 'application/json; charset=utf-8',
+            data: {'tipo': tipo},
+            success: function(data) {
+            //
+            if (JSON.parse(data).success) {
+            }
+            else {
+                alert('Ocorreu um erro ao tentar salvar!')
+                }
+            },
+            error: function(rs, e) { 
+                alert(rs.responseText);                
+            }
+        })
+    }
     // 
     function send_embrapa_unity_code(time) {
         setTimeout(function(){
