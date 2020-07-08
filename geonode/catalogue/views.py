@@ -335,8 +335,6 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
     """content += 'description de la distribution' + s + fst(
                 resource.distribution_description) + sc"""
     # embrapa #
-    content += 'data quality statement' + s + fst(
-        resource.data_quality_statement) + sc
     content += 'extent ' + s + fst(resource.bbox_x0) + ',' + fst(
         resource.bbox_x1) + ',' + fst(
         resource.bbox_y0) + ',' + fst(resource.bbox_y1) + sc

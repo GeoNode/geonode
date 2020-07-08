@@ -177,11 +177,6 @@
     <dd>{{ resource.temporal_extent_start }} - {{ resource.temporal_extent_end }}</dd>
     {% endif %}
 
-    {% if resource.data_quality_statement %}
-    <dt>{% trans "Data Quality" %}</dt>
-    <dd>{{ resource.data_quality_statement }}</dd>
-    {% endif %}
-
     {% if resource.supplemental_information %}
     <dt>{% trans "Supplemental Information" %}</dt>
     <dd>{{ resource.supplemental_information|truncatechars:160|escape|urlize|linebreaks|safe }}</dd>

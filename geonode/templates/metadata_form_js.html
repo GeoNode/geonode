@@ -844,7 +844,8 @@
         setTimeout(function(){
             var code = $('#select2-id_resource-embrapa_unity-container').text()
             code  = code.substring(1, code.length)
-            console.log('send_embrapa_unity_code: ', code), 
+            code = code.split('-')[0].trim()
+            //console.log('send_embrapa_unity_code: ', code), 
             //
             $.ajax({
                 type: 'GET',

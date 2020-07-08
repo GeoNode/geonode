@@ -483,7 +483,7 @@ class ResourceBaseForm(TranslationModelForm):
     )
 
     embrapa_data_quality_statement = forms.MultipleChoiceField(
-        label=_("Declaração da Qualidade do Dado"),
+        label=_("Declaração da Qualidade do Dado - Fontes"),
         required=False,
         choices=choice_data_quality_statement(),
         widget = autocomplete.Select2Multiple(url='autocomplete_embrapa_data_quality_statement')

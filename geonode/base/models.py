@@ -175,10 +175,7 @@ class SpatialRepresentationType(models.Model):
         ordering = ("identifier",)
         verbose_name_plural = 'Metadata Spatial Representation Types'
 
-<<<<<<< HEAD
 # embrapa #
-=======
->>>>>>> a0e10fbe3724bca29868ebc9f739619e273495ce
 #class Embrapa_Purpose(models.Model):
 
     # identifier serve para saber se é ação gerencial ou projeto
@@ -1106,7 +1103,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     #    on_delete=models.CASCADE)
     embrapa_unity = models.CharField(
         _('embrapa unity'),
-        max_length=20,
+        max_length=500,
         editable=True,
         default=settings.EMBRAPA_UNITY_DEFAULT,
         help_text=embrapa_unity_help_text)
@@ -1117,11 +1114,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     #    null=True,
     #    help_text=data_quality_statement_help_text)
     embrapa_data_quality_statement = TaggableManager(
-        _('embrapa data quality statement'), 
+        _('Declaração da Qualidade do Dado - Fontes'), 
         through=Embrapa_Data_Quality_Statement_ResourceBase,
         blank=True,
         help_text=data_quality_statement_help_text, 
         manager= _EmbrapaDataTagManager)
+    data_quality_statement = models.TextField(
+        _('Declaração da Qualidade do Dado - Descrição'),
+        max_length=2000,
+        blank=True,
+        null=True)
     embrapa_autores = TaggableManager(
         _('embrapa authors'),
         through=Embrapa_Authors_ResourceBase,
@@ -1212,12 +1214,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         help_text=_('any other descriptive information about the dataset'))
 
     # Section 8
-    data_quality_statement = models.TextField(
-        _('data quality statement'),
-        max_length=2000,
-        blank=True,
-        null=True,
-        help_text=data_quality_statement_help_text)
     group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
 
     # Section 9
@@ -1438,7 +1434,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         required_fields = [
             'abstract',
             'category',
-            'data_quality_statement',
+            #'data_quality_statement',
             'date',
             'date_type',
             'language',
@@ -1484,8 +1480,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     #    return self.embrapa_purpose.title
 
     def embrapa_authors_list(self):
-        #return [author.name for author in self.embrapa_autores.all()]
-        return self.embrapa_autores.name
+        return [author.name for author in self.embrapa_autores.all()]
+        #return self.embrapa_autores.name
 
     def embrapa_data_quality_statement_list(self):
         return [data.name for data in self.embrapa_data_quality_statement.all()]
