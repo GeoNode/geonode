@@ -658,9 +658,14 @@ span.grippy::after {
                     <!--<p class="xxs-font-size">(Version of the cited resource)</p>-->
                     {{ layer_form.edition }}
                 </div>
-                <div style="margin-top: 10px; padding-left: 5px; margin-bottom: 19px;">
+                <!--<div style="margin-top: 10px; padding-left: 5px; margin-bottom: 19px;">
                   <input type="radio" name="finalidade" value="lp" id="rdbListaProjetos" onclick="save_finalidade()" style="margin-right: 6px;">Listar Projetos</input>
                   <input type="radio" name="finalidade" value="lag" id="rdbListaAcoesGerenciais" onclick="save_finalidade()" style="margin-left: 15px; margin-right: 6px;">Listar Ações Gerenciais</input>
+                </div>-->
+                <div>
+                    <span><label for="{{ layer_form.choice_projeto_acao_gerencial|id }}">{{ layer_form.choice_projeto_acao_gerencial.label }}</label></span>
+                    <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
+                    {{ layer_form.choice_projeto_acao_gerencial }}
                 </div>
                 <div>
                     <span><label for="{{ layer_form.embrapa_unity|id }}">{{ layer_form.embrapa_unity.label }}</label></span>

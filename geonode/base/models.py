@@ -1047,12 +1047,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         max_length=2000,
         blank=True,
         help_text=abstract_help_text)
-    purpose = models.TextField(
-        _('purpose'),
-        max_length=500,
-        null=True,
-        blank=True,
-        help_text=purpose_help_text)
     #embrapa_purpose = models.ForeignKey(
     #    Embrapa_Purpose,
     #    null=True,
@@ -1101,6 +1095,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     #    blank=True,
     #    help_text = embrapa_unity_help_text,
     #    on_delete=models.CASCADE)
+    choice_projeto_acao_gerencial = models.CharField(
+        _('Escolha uma das opções:'),
+        choices=(('Projeto','Listar Projeto'),('Ação Gerencial','Listar Ação Gerencial')), 
+        max_length=100, 
+        default='Listar Projeto')
     embrapa_unity = models.CharField(
         _('embrapa unity'),
         max_length=500,
@@ -1113,6 +1112,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     #    blank=True,
     #    null=True,
     #    help_text=data_quality_statement_help_text)
+    purpose = models.TextField(
+        _('purpose'),
+        max_length=500,
+        null=True,
+        blank=True,
+        help_text=purpose_help_text)
     embrapa_data_quality_statement = TaggableManager(
         _('Declaração da Qualidade do Dado - Fontes'), 
         through=Embrapa_Data_Quality_Statement_ResourceBase,

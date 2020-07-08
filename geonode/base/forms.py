@@ -362,14 +362,14 @@ class ResourceBaseForm(TranslationModelForm):
         widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
     )
     temporal_extent_start = forms.DateTimeField(
-        label=_("Extensão Temporal - Inicio"),
+        label=_("Ext. Temporal - Inicio"),
         required=False,
         localize=True,
         input_formats=['%Y-%m-%d %H:%M %p'],
         widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
     )
     temporal_extent_end = forms.DateTimeField(
-        label=_("Extensão Temporal - Fim"),
+        label=_("Ext. Temporal - Fim"),
         required=False,
         localize=True,
         input_formats=['%Y-%m-%d %H:%M %p'],
@@ -461,6 +461,10 @@ class ResourceBaseForm(TranslationModelForm):
     #    queryset= Embrapa_Unity.objects.all(),
     #    widget= autocomplete.ModelSelect2(url='autocomplete_embrapa_unity')
     #)
+    choice_projeto_acao_gerencial = forms.ChoiceField(
+        label=_("Escolha uma das opções:"),
+        choices=(('Projeto','Listar Projeto'),('Ação Gerencial','Listar Ação Gerencial')), 
+        widget=forms.RadioSelect())
     embrapa_unity = autocomplete.Select2ListChoiceField(
         label=_("Unidade Embrapa"),
         required=False,
