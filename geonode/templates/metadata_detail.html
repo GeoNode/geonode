@@ -245,9 +245,16 @@
         <dt>{% trans "Temporal Extent" %}</dt>
         <dd>{{ resource.temporal_extent_start }} - {{ resource.temporal_extent_end }}</dd>
         {% endif %}
+        
 
+        {% if resource.embrapa_data_quality_statement %}
+        <dt>{% trans "Declaração da Qualidade do Dado - Fonte" %}</dt>
+        <dd>{{ resource.embrapa_data_quality_statement_list }}</dd>
+        {% endif %}
+
+        
         {% if resource.data_quality_statement %}
-        <dt>{% trans "Data Quality" %}</dt>
+        <dt>{% trans "Declaração da Qualidade do Dado - Descrição" %}</dt>
         <dd>{{ resource.data_quality_statement }}</dd>
         {% endif %}
 
@@ -378,19 +385,26 @@
             {% endfor %}</dd>
         {% endif %}
 
-        {% if embrapa_autores_list %}
-        <dt>{% trans "Autores" %}</dt>
-        <dd>{% for item in embrapa_autores_list %}
-            {{ item.name }}
-            {% endfor %}</dd>
-        {% endif %}
-
         {% endwith %}
 
     </dl>
     {% endif %}
 
+    <span class="subtitle">{% trans "Autores" %}</span>
+    <div class="sep_title"><hr></div>
+    <dl class="dl-horizontal">
 
+        {% with resource.embrapa_autores as autores %}
+
+        {% if resource.embrapa_autores %}
+        <dt>{% trans "Nomes" %}</dt>
+        <dd>{% for item in resource.embrapa_authors_list %}
+            {{ item }},
+            {% endfor %}</dd>
+        {% endif %}
+        {% endwith %}
+    </dl>
+    
 </article>
 
 
