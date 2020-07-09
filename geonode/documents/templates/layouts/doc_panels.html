@@ -46,6 +46,84 @@ function submitBtn(id){
   }
 }
 
+function save_autor() {
+
+  if ($('#id_name').val().length == 0)
+  {
+    alert('Informe o Nome');
+    return;
+  }
+  if ($('#id_autoria').val().length == 0)
+  {
+    alert('Informe a Autoria');
+    return;
+  }
+  if ($('#id_afiliacao').val().length == 0)
+  {
+    alert('Informe a Afiliação');
+    return;
+  }
+  if ($('#id_name').val().length > 0 &&
+    $('#id_autoria').val().length > 0 &&
+    $('#id_afiliacao').val().length > 0) {
+    //
+    $.ajax({
+      type: 'GET',
+      url: '/documents/add_autor_document',
+      contentType: 'application/json; charset=utf-8',
+      data: {'name': $('#id_name').val(), 'autoria' : $('#id_autoria').val(), 'afiliacao' : $('#id_afiliacao').val()},
+      success: function(data) {
+        //
+        $('#addingEmbrapaAuthorsModal').modal('hide');
+        if (JSON.parse(data).success) {
+          alert('Autor salvo com sucesso!')
+        }
+        else {
+          alert('Ocorreu um erro ao tentar salvar!')
+        }
+      },
+      error: function(rs, e) { 
+         $('#addingEmbrapaAuthorsModal').modal('hide');
+         alert(rs.responseText);                
+      }
+    });
+  }
+  
+}
+
+function save_referencia() {
+  if ($('#id_name_reference').val().length == 0)
+  {
+    alert('Informe a Referência');
+    return;
+  }
+
+  if ($('#id_name_reference').val().length > 0) {
+    //
+    $.ajax({
+      type: 'GET',
+      url: '/documents/add_declaracao_document',
+      contentType: 'application/json; charset=utf-8',
+      data: {'name': $('#id_name_reference').val()},
+      success: function(data) {
+        //
+        $('#addingEmbrapaReferenceModal').modal('hide');
+        if (JSON.parse(data).success) {
+          alert('Referência salva com sucesso!')
+        }
+        else {
+          alert('Ocorreu um erro ao tentar salvar!')
+        }
+      },
+      error: function(rs, e) { 
+         $('#addingEmbrapaReferenceModal').modal('hide');
+         alert(rs.responseText);                
+      }
+    });
+  }
+
+}
+
 </script>
 
 <style>
@@ -434,7 +512,37 @@ span.grippy::after {
                                           <!--<p class="xxs-font-size">(General explanation of the data producer's knowledge about the lineage)</p>-->
                                           {{ document_form.embrapa_data_quality_statement }}
                                       </div>
+                                          <a href="#adicionar-referencia" style="margin-top: 10px;" data-toggle="modal" data-target="#addingEmbrapaReferenceModal" class="btn btn-primary">{% trans "Adicionar Referência" %}</a>
+                                          <span><label style="margin-top: 20px;" for="{{ document_form.data_quality_statement|id }}">{{ document_form.data_quality_statement.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
+                                          {{ document_form.data_quality_statement }}
                                 </div>
+                                  <body>
+                                    <div class="modal" tabindex="-1" role="dialog" id="addingEmbrapaReferenceModal">
+                                      <div class="modal-dialog">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <h5 class="modal-title">Adicionar Referência</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                              <span aria-hidden="true">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class="modal-body">
+
+                                              <div class="pure-control-group">
+                                                <label>Referência</label>
+                                                <input id="id_name_reference" type="text">
+                                              </div>
+
+                                              <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                                <button type="button" onclick="save_referencia()" class="btn btn-primary">Salvar</button>
+                                              </div>
+                                            </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                </body>
                                 <div class="col-lg-4">
                                     <div>
                                         <span><label for="{{ document_form.restriction_code_type|id }}">{{ document_form.restriction_code_type.label }}</label></span>
@@ -467,17 +575,22 @@ span.grippy::after {
                     <!--<p class="xxs-font-size">(Version of the cited resource)</p>-->
                     {{ document_form.edition }}
                 </div>
+                <!--<button type="button" onclick="submitBtn('btn_projeto_embrapa')" class="btn btn-primary">Listar Projetos</button>
+                <button type="button" onclick="submitBtn('btn_acao_gerencial_embrapa')" class="btn btn-primary">Listar Ações Gerenciais</button>-->
                 <div>
-                    <span><label for="{{ document_form.purpose|id }}">{{ document_form.purpose.label }}</label></span>
-                    <!--<p class="xxs-font-size">(Brief narrative summary of the intentions with which the resource/s ...)</p>-->
-                    {{ document_form.purpose }}
+                    <span><label for="{{ document_form.choice_projeto_acao_gerencial|id }}">{{ document_form.choice_projeto_acao_gerencial.label }}</label></span>
+                    <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
+                    {{ document_form.choice_projeto_acao_gerencial }}
                 </div>
-                <button type="button" onclick="submitBtn('btn_projeto_embrapa')" class="btn btn-primary">Listar Projetos</button>
-                <button type="button" onclick="submitBtn('btn_acao_gerencial_embrapa')" class="btn btn-primary">Listar Ações Gerenciais</button>
                 <div>
                     <span><label for="{{ document_form.embrapa_unity|id }}">{{ document_form.embrapa_unity.label }}</label></span>
                     <!--<p class="xxs-font-size">(Brief narrative summary of the intentions with which the resource/s ...)</p>-->
                     {{ document_form.embrapa_unity }}
+                </div>
+                <div>
+                    <span><label for="{{ document_form.purpose|id }}">{{ document_form.purpose.label }}</label></span>
+                    <!--<p class="xxs-font-size">(Brief narrative summary of the intentions with which the resource/s ...)</p>-->
+                    {{ document_form.purpose }}
                 </div>
                 <div>
                     <span><label for="{{ document_form.supplemental_information|id }}">{{ document_form.supplemental_information.label }}</label></span>
@@ -544,6 +657,35 @@ span.grippy::after {
                         <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
                         {{ document_form.embrapa_autores }}
                     </div>
+                      <a href="#adicionar-autores" data-toggle="modal" style="margin-top: 10px;" data-target="#addingEmbrapaAuthorsModal" class="btn btn-primary author">{% trans "Adicionar Autores" %}</a>
+                        <body>
+                          <div class="modal" tabindex="-1" role="dialog" id="addingEmbrapaAuthorsModal">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Adicionar Autores</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="pure-control-group">
+                                      <label>Nome</label>
+                                      <input id="id_name" type="text">
+                                      <label>Auditoria</label>
+                                      <input id="id_autoria" type="text">
+                                      <label>Afiliação</label>
+                                      <input id="id_afiliacao" type="text">
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                      <button type="button" onclick="save_autor()" class="btn btn-primary">Salvar</button>
+                                    </div>
+                                  </div>
+                              </div>
+                            </div>
+                          </div>
+                      </body>
 
                     {% if GEONODE_SECURITY_ENABLED %}
                     <!--<hr />
