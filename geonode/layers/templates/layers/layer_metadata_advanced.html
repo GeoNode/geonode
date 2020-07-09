@@ -89,7 +89,30 @@
              Unfortunately this needs to appear at the bottom of the form since tkeywords_form is a complete other django form. 
              There might be a better way to solve this. -->
         <div class="col-md-6 form-controls">
-          {{ layer_form|as_bootstrap }}
+          <label>{{ layer_form.doi.label }}</label>
+          {{ layer_form.doi }}
+          <label>{{ layer_form.owner.label }}</label>
+          {{ layer_form.owner }}
+          <label>{{ layer_form.title.label }}</label>
+          {{ layer_form.title }}
+          <label>{{ layer_form.date.label }}</label>
+          {{ layer_form.date }}
+          <label>{{ layer_form.date_type.label }}</label>
+          {{ layer_form.date_type }}
+          <label>{{ layer_form.edition.label }}</label>
+          {{ layer_form.edition }}
+          <label>{{ layer_form.abstract.label }}</label>
+          {{ layer_form.abstract }}
+          <label>{{ layer_form.maintenance_frequency.label }}</label>
+          {{ layer_form.maintenance_frequency }}
+          <label>{{ layer_form.data_criacao.label }}</label>
+          {{ layer_form.data_criacao }}
+          <label>{{ layer_form.scale.label }}</label>
+          {{ layer_form.scale }}
+          <label>{{ layer_form.link_vinde.label }}</label>
+          {{ layer_form.link_vinde }}
+          <label>{{ layer_form.embrapa_autores.label }}</label>
+          {{ layer_form.embrapa_autores }}
           {% if THESAURI_FILTERS %}
             {{ tkeywords_form }}
           {% endif %}

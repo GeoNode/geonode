@@ -187,6 +187,60 @@
     </div>
   </div>
 </div>
+                        <body>
+                          <div class="modal" tabindex="-1" role="dialog" id="addingEmbrapaAuthorsModal">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Adicionar Autores</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="pure-control-group">
+                                      <label>Nome</label>
+                                      <input id="id_name" type="text">
+                                      <label>Auditoria</label>
+                                      <input id="id_autoria" type="text">
+                                      <label>Afiliação</label>
+                                      <input id="id_afiliacao" type="text">
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="hidepopup()">Fechar</button>
+                                      <button type="button" onclick="save_autor()" class="btn btn-primary">Salvar</button>
+                                    </div>
+                                  </div>
+                              </div>
+                            </div>
+                          </div>
+                      </body>
+                                <body>
+                                    <div class="modal" tabindex="-1" role="dialog" id="addingEmbrapaReferenceModal">
+                                      <div class="modal-dialog">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <h5 class="modal-title">Adicionar Referência</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                              <span aria-hidden="true">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class="modal-body">
+
+                                              <div class="pure-control-group">
+                                                <label>Referência</label>
+                                                <input id="id_name_reference" type="text">
+                                              </div>
+
+                                              <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="hidepopupreference()">Fechar</button>
+                                                <button type="button" onclick="save_referencia()" class="btn btn-primary">Salvar</button>
+                                              </div>
+                                            </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                </body>
   {% block body %}{% endblock body %}
   {% block sidebar %}{% endblock sidebar %}
 {% endblock body_outer %}
@@ -229,7 +283,104 @@
         $(document).ready(function() {
             $('#id_resource-regions').fastselect({
             });
+            //
+            $('#div_id_resource-embrapa_autores').append( '<input style="margin-top: 20px; background-color: #2C689C;" class="btn btn-primary" type="button" value="Adicionar Autores" onclick="showpopup()">' );
+            $('#div_id_resource-embrapa_data_quality_statement').append( '<input style="margin-top: 20px; background-color: #2C689C;" class="btn btn-primary" type="button" value="Adicionar Referência" onclick="showpopupreference()">' );             
         });
+  function showpopupreference() {
+    $('#addingEmbrapaReferenceModal').show()
+  }
+	function showpopup() {
+		$('#addingEmbrapaAuthorsModal').show()
+	}
+
+  function hidepopupreference() {
+    $('#addingEmbrapaReferenceModal').hide()
+  }
+
+  function hidepopup() {
+    $('#addingEmbrapaAuthorsModal').hide()
+  }
+
+    function save_autor() {
+
+      if ($('#id_name').val().length == 0)
+      {
+        alert('Informe o Nome');
+        return;
+      }
+      if ($('#id_autoria').val().length == 0)
+      {
+        alert('Informe a Autoria');
+        return;
+      }
+      if ($('#id_afiliacao').val().length == 0)
+      {
+        alert('Informe a Afiliação');
+        return;
+      }
+      if ($('#id_name').val().length > 0 &&
+        $('#id_autoria').val().length > 0 &&
+        $('#id_afiliacao').val().length > 0) {
+        //
+        $.ajax({
+          type: 'GET',
+          url: '/layers/add_autor',
+          contentType: 'application/json; charset=utf-8',
+          data: {'name': $('#id_name').val(), 'autoria' : $('#id_autoria').val(), 'afiliacao' : $('#id_afiliacao').val()},
+          success: function(data) {
+            //
+            $('#addingEmbrapaAuthorsModal').modal('hide');
+            if (JSON.parse(data).success) {
+              alert('Autor salvo com sucesso!')
+              $('#addingEmbrapaAuthorsModal').hide()
+            }
+            else {
+              alert('Ocorreu um erro ao tentar salvar!')
+            }
+          },
+          error: function(rs, e) { 
+             $('#addingEmbrapaAuthorsModal').modal('hide');
+             alert(rs.responseText);                
+          }
+        });
+      }
+      
+    }
+
+  function save_referencia() {
+    if ($('#id_name_reference').val().length == 0)
+    {
+      alert('Informe a Referência');
+      return;
+    }
+
+    if ($('#id_name_reference').val().length > 0) {
+      //
+      $.ajax({
+        type: 'GET',
+        url: '/layers/add_declaracao',
+        contentType: 'application/json; charset=utf-8',
+        data: {'name': $('#id_name_reference').val()},
+        success: function(data) {
+          //
+          $('#addingEmbrapaReferenceModal').modal('hide');
+          if (JSON.parse(data).success) {
+            alert('Referência salva com sucesso!')
+            $('#addingEmbrapaReferenceModal').hide()
+          }
+          else {
+            alert('Ocorreu um erro ao tentar salvar!')
+          }
+        },
+        error: function(rs, e) { 
+           $('#addingEmbrapaReferenceModal').modal('hide');
+           alert(rs.responseText);                
+        }
+      });
+    }
+
+  }
     </script>
 
 {% endblock extra_script %}
