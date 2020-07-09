@@ -44,7 +44,7 @@ http://master.demo.geonode.org. After your registration you will be able
 to test all basic functionalities like uploading layers, creation of
 maps, editing metadata, styles and much more. To get an overview what
 GeoNode can do we recommend to have a look at the [Users
-Workshop](http://docs.geonode.org/en/2.10/usage/index.html).
+Workshop](https://docs.geonode.org/en/3.0/usage/index.html).
 
 Install
 -------
@@ -55,17 +55,17 @@ GeoNode can be setup in different ways, flavors and plattforms. If
 you´re planning to do development or install for production please visit
 the offical GeoNode installation documentation:
 
-- [Docker](http://docs.geonode.org/en/2.10/install/core/index.html#docker)
-- [Ubuntu 18.04](http://docs.geonode.org/en/2.10/install/core/index.html#ubuntu-18-04)
+- [Docker](https://docs.geonode.org/en/3.0/install/advanced/core/index.html#docker)
+- [Ubuntu 18.04](https://docs.geonode.org/en/3.0/install/advanced/core/index.html#ubuntu-18-04)
 
 Learn GeoNode
 -------------
 
 After you´ve finished the setup process make yourself familiar with the
 general usage and settings of your GeoNodes instance. - the [User
-Training](http://docs.geonode.org/en/2.10/usage/index.html)
+Training](https://docs.geonode.org/en/3.0/usage/index.html)
 is going in depth into what we can do. - the [Administrators
-Workshop](http://docs.geonode.org/en/2.10/admin/index.html)
+Workshop](https://docs.geonode.org/en/3.0/admin/index.html)
 will guide you to the most important parts regarding management commands
 and configuration settings.
 
@@ -84,7 +84,7 @@ lightweight components to speed up things.
 To get you started have a look at the [Install
 instructions](#install) which cover all what is needed to run GeoNode
 for development. Further visit the the [Developer
-workshop](http://docs.geonode.org/en/2.10/devel/index.html)
+workshop](https://docs.geonode.org/en/3.0/devel/index.html)
 for a basic overview.
 
 If you're planning of customizing your GeoNode instance, or to extend
@@ -117,7 +117,7 @@ Showcase
 A handful of other Open Source projects extend GeoNode’s functionality
 by tapping into the re-usability of Django applications. Visit our
 gallery to see how the community uses GeoNode: [GeoNode
-Showcase](http://geonode.org/gallery/).
+Showcase](https://geonode.org/gallery/).
 
 The development community is very supportive of new projects and
 contributes ideas and guidance for newcomers.
