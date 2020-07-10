@@ -1,7 +1,7 @@
 FROM openjdk:8-jre-alpine
 
-ARG version=2.16.2
-ARG branch=2.16.2
+ARG version=2.17.1
+ARG branch=2.17.1
 ARG plugins=
 
 # Install dependencies
