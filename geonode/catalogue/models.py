@@ -108,7 +108,7 @@ def catalogue_post_save(instance, sender, **kwargs):
             print(md_doc)
             resources.update(metadata_xml=md_doc)
         else:
-            md_doc = ''
+            md_doc = '<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>'
             resources.update(metadata_xml=md_doc)
 
 
