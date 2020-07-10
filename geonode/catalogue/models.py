@@ -97,18 +97,27 @@ def catalogue_post_save(instance, sender, **kwargs):
                                     link_type='metadata').update(**_d)
 
         # generate an XML document (GeoNode's default is ISO)
+
         if instance.metadata_uploaded and instance.metadata_uploaded_preserve:
             md_doc = etree.tostring(dlxml.fromstring(instance.metadata_xml))
-        else:
+        elif instance.is_published:
+            print("Is_published do catalogue:")
+            print(instance.is_published)
             md_doc = catalogue.catalogue.csw_gen_xml(instance, 'catalogue/full_metadata.xml')
+            print("md_doc dentro do else do catalogue:")
+            print(md_doc)
+            resources.update(metadata_xml=md_doc)
+        else:
+            md_doc = ''
+            resources.update(metadata_xml=md_doc)
+
 
         csw_anytext = catalogue.catalogue.csw_gen_anytext(md_doc)
 
         csw_wkt_geometry = instance.geographic_bounding_box.split(';')[-1]
 
         resources = ResourceBase.objects.filter(id=instance.resourcebase_ptr.id)
-
-        resources.update(metadata_xml=md_doc)
+            
         resources.update(csw_wkt_geometry=csw_wkt_geometry)
         resources.update(csw_anytext=csw_anytext)
     except Exception as e:

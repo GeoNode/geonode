@@ -55,10 +55,19 @@ def prefix_xsl_line(req, id):
 
     try:
         # generate an XML document (GeoNode's default is ISO)
+        print("metadata_uploaded do views do catalogue:")
+        print(resource.metadata_uploaded)
+        print("metadata_uploaded_preserve do views do catalogue:")
+        print(resource.metadata_uploaded_preserve)
         if resource.metadata_uploaded and resource.metadata_uploaded_preserve:
             md_doc = etree.tostring(dlxml.fromstring(resource.metadata_xml))
-        else:
+        elif resource.is_published:
+            print("is_published do views do catalogue:")
+            print(resource.is_published)
             md_doc = catalogue.catalogue.csw_gen_xml(resource, 'catalogue/full_metadata.xml')
+            print("md_doc dentro do views do catalogue:")
+            print(md_doc)
+
         xml = md_doc
     except Exception:
         logger.error(traceback.format_exc())
