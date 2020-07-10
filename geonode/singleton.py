@@ -43,6 +43,7 @@ class SingletonModel(models.Model):
 
     def save(self, *args, **kwargs):
         self.pk = 1
+        kwargs.update({'force_insert': False})
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
