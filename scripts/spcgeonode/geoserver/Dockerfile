@@ -18,7 +18,7 @@ WORKDIR /
 RUN echo "Download geoserver for geonode" && \
     wget https://downloads.sourceforge.net/project/geoserver/GeoServer/$version/geoserver-$version-bin.zip && \
     wget https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-$branch.war --no-check-certificate && \
-    unzip geoserver-$version-bin.zip && \
+    unzip geoserver-$version-bin.zip -d geoserver-$version && \
     mv geoserver-$version geoserver && \
     rm /geoserver-$version-bin.zip && \
     rm /geoserver-$version/webapps/geoserver/* -rf && \
