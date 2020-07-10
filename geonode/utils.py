@@ -1438,7 +1438,7 @@ class HttpClient(object):
         action = getattr(session, method.lower(), None)
         if action:
             response = action(
-                url=unquote(url),
+                url=url,
                 data=data,
                 headers=headers,
                 timeout=timeout or self.timeout,
