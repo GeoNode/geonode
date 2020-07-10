@@ -114,7 +114,7 @@ sed -i -r "s|<accessTokenUri>.*</accessTokenUri>|<accessTokenUri>$INTERNAL_OAUTH
 sed -i -r "s|<checkTokenEndpointUrl>.*</checkTokenEndpointUrl>|<checkTokenEndpointUrl>$INTERNAL_OAUTH2_BASEURL/api/o/v4/tokeninfo/</checkTokenEndpointUrl>|" "/spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml"
 
 # Edit /security/role/geonode REST role service/config.xml
-sed -i -r "s|<baseUrl>.*</baseUrl>|<baseUrl>$BASEURL</baseUrl>|" "/spcgeonode-geodatadir/security/role/geonode REST role service/config.xml"
+sed -i -r "s|<baseUrl>.*</baseUrl>|<baseUrl>$GEONODE_URL</baseUrl>|" "/spcgeonode-geodatadir/security/role/geonode REST role service/config.xml"
 
 CLIENT_ID=""
 CLIENT_SECRET=""
