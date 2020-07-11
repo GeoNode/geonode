@@ -3,7 +3,7 @@ Pillow==7.1.2
 lxml==4.5.1
 defusedxml==0.6.0
 psycopg2==2.8.5
-Django==2.2.13
+Django==2.2.14
 
 # Other
 amqp==2.6.0
