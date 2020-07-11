@@ -73,7 +73,7 @@ django-recaptcha==2.0.6
 geonode-oauth-toolkit==1.1.5.1
 
 # GeoNode org maintained apps.
-django_mapstore_adapter==2.0.4.5
+django_mapstore_adapter==2.0.4.6
 django-geonode-mapstore-client==2.0.6
 django-geonode-client==1.0.9
 geonode-user-messages==2.0.1
