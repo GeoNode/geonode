@@ -81,7 +81,7 @@ geonode-avatar==5.0.3
 geonode-announcements==2.0.2
 gn-arcrest==10.5
 geonode-dialogos==3.0.1
-geoserver-restconfig==2.0.4.4
+geoserver-restconfig==2.0.4.5
 gn-gsimporter==2.0.1
 gisdata==0.5.4
 
