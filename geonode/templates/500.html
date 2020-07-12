@@ -78,7 +78,7 @@
                     {% if HAYSTACK_SEARCH %}
                     <input autocomplete="off" id="search_input" type="text" placeholder="{% trans 'Search' %}" name="q">
                     {% else %}
-                    <input autocomplete="off" type="text" name="title__icontains" id="search_input" placeholder="Search" >
+                    <input autocomplete="off" type="text" name="title__icontains" id="search_input" placeholder="{% trans 'Search' %}" >
                     {% endif %}
                 </div>
                 <span class="input-group-btn">

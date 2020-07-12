@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="row" ng-controller="CartList">
   <div class="col-md-3">
-    <resource-cart data-facet-type="{{ facet_type }}"></resource-cart>
+    <resource-cart data-facet-type="{{ facet_type }}" selectedString='{% trans "Selection" %}' emptyString="{% trans "No list items selected. Use the selection fields to add." %}" ></resource-cart>
     <div class="row">
       <div class="col-xs-12">
         {% block bulk_perms_button %}

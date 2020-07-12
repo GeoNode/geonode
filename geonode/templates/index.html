@@ -47,8 +47,8 @@
       				<span class="fa fa-search fa-3x"></span>
       				{% if HAYSTACK_SEARCH %}
       				<input id="main_search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" name="q" autocomplete="off">
-                    <input type="hidden" name="abstract__icontains" id="main_search_abstract_input" placeholder="Search" >
-                    <input type="hidden" name="purpose__icontains" id="main_search_purpose_input" placeholder="Search" >
+                    <input type="hidden" name="abstract__icontains" id="main_search_abstract_input" placeholder="{% trans 'Search' %}" >
+                    <input type="hidden" name="purpose__icontains" id="main_search_purpose_input" placeholder="{% trans 'Search' %}" >
                     <input type="hidden" name="f_method" id="main_filtering_type" value="or" >
       				{% else %}
       				<input id="main_search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" autocomplete="off" name="title__icontains">

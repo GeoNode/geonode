@@ -666,7 +666,7 @@
               error: function(xhr, status, error) {
                 $("#_thumbnail_feedbacks").find('.modal-title').text('{% trans "Delete Geo Limit" %}');
                 $("#_thumbnail_feedbacks").find('.modal-body').html(
-                  '{% trans "<p><strong>Error</strong> occurred while trying to delete Geo Limits:</p>" %}' + '<q>' + xhr.responseText + '</q>');
+                  "{% trans '<p><strong>Error</strong> occurred while trying to delete Geo Limits:</p>' %}" + '<q>' + xhr.responseText + '</q>');
                 $("#_thumbnail_feedbacks").modal("show");
               }
             });
