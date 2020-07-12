@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load staticfiles %}
 <script type="text/javascript">
 {% autoescape off %}
@@ -261,7 +262,7 @@
               if(otherRestrictionsSelected() && ee.value !== undefined && ee.value.trim() === '') {
                 if(!$(ee).hasClass("input-empty")) {
                     setInputEmpty(ee, true);
-                    $(ee).parent().append(gettext("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field declared Mandatory by the Metadata Schema</strong></p>"));
+                    $(ee).parent().append(gettext("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>{% trans "* Field declared Mandatory by the Metadata Schema" %}</strong></p>"));
                     empty++;
                 } else {
                     setInputEmpty(ee, false);
@@ -302,7 +303,7 @@
                     if(isMandatoryField(this)) {
                         setInputEmpty(e.target, true);
                         if(!!$(this).closest('#mdinfo').length) {
-                            $(e.target).parent().append(gettext("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field declared Mandatory by the Metadata Schema</strong></p>"));
+                            $(e.target).parent().append(gettext("<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>{% trans "* Field declared Mandatory by the Metadata Schema" %}</strong></p>"));
                         }
                         empty++;
                     }
