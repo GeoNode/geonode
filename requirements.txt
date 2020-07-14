@@ -74,7 +74,7 @@ geonode-oauth-toolkit==1.1.5.1
 
 # GeoNode org maintained apps.
 django_mapstore_adapter==2.0.4.6
-django-geonode-mapstore-client==2.0.6
+django-geonode-mapstore-client==2.0.7
 django-geonode-client==1.0.9
 geonode-user-messages==2.0.1
 geonode-avatar==5.0.6
