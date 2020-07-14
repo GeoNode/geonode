@@ -111,7 +111,7 @@ python_resize_image==1.1.19
 
 # required by monitoring
 psutil==5.7.0
-django-cors-headers==3.3.0
+django-cors-headers==3.4.0
 user-agents
 xmljson
 django-ipware<3.1
