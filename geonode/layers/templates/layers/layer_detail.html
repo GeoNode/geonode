@@ -613,11 +613,11 @@
     {% endif %}
     <li class="list-group-item">
       <h4>{% trans "Maps using this layer" %}</h4>
-      {% if resource.maps %}
+      {% if map_layers %}
         <p>{% trans "List of maps using this layer:" %}</p>
         {% endif %}
         <ul class="list-unstyled">
-          {% for maplayer in resource.maps %}
+          {% for maplayer in map_layers %}
             <li><a href="{{ maplayer.map.get_absolute_url }}">{{ maplayer.map.title }}</a></li>
           {% empty %}
             <li>{% trans "This layer is not currently used in any maps." %}</li>

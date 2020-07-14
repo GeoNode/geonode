@@ -750,6 +750,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             context_dict['groups'] = [group for group in request.user.group_list_all()]
 
     register_event(request, 'view', layer)
+    context_dict['map_layers'] = [map_layer for map_layer in layer.maps() if
+                                  request.user.has_perm('view_resourcebase', map_layer.map.get_self_resource())]
     return TemplateResponse(
         request, template, context=context_dict)
 
