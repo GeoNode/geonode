@@ -77,6 +77,8 @@
         link: function($scope, $element){
           // Don't use isolateScope, but add to parent scope
           $scope.facetType = $element.attr("data-facet-type");
+          $scope.selectedString = $element.attr("selectedString");
+          $scope.emptyString = $element.attr("emptyString");
         }
       };
     }])

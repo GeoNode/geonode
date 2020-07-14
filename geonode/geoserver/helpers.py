@@ -1385,20 +1385,14 @@ def create_geoserver_db_featurestore(
 def _create_featurestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
 
     cat = gs_catalog
-    try:
-        cat.create_featurestore(name, data, overwrite=overwrite, charset=charset)
-    except Exception as e:
-        logger.exception(e)
+    cat.create_featurestore(name, data, workspace=workspace, overwrite=overwrite, charset=charset)
     store = get_store(cat, name, workspace=workspace)
     return store, cat.get_resource(name=name, store=store, workspace=workspace)
 
 
 def _create_coveragestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
     cat = gs_catalog
-    try:
-        cat.create_coveragestore(name, path=data, overwrite=overwrite, upload_data=True)
-    except Exception as e:
-        logger.exception(e)
+    cat.create_coveragestore(name, path=data, workspace=workspace, overwrite=overwrite, upload_data=True)
     store = get_store(cat, name, workspace=workspace)
     return store, cat.get_resource(name=name, store=store, workspace=workspace)
 
