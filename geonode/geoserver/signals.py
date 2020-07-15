@@ -29,7 +29,6 @@ from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 
 # use different name to avoid module clash
-from . import BACKEND_PACKAGE
 from geonode import GeoNodeException
 from geonode.utils import (
     set_resource_default_links,
@@ -37,7 +36,6 @@ from geonode.utils import (
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.upload import geoserver_upload
 from geonode.geoserver.helpers import (
-    cascading_delete,
     set_attributes_from_geoserver,
     set_styles,
     gs_catalog,
@@ -50,6 +48,9 @@ from geonode.base.models import ResourceBase
 from geonode.layers.models import Layer
 from geonode.services.enumerations import CASCADED
 
+from . import BACKEND_PACKAGE
+from .tasks import geoserver_cascading_delete
+
 logger = logging.getLogger("geonode.geoserver.signals")
 
 
@@ -57,7 +58,7 @@ def geoserver_delete(typename):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        cascading_delete(gs_catalog, typename)
+        geoserver_cascading_delete.delay(layer_name=typename)
 
 
 @on_ogc_backend(BACKEND_PACKAGE)
@@ -69,7 +70,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
         if instance.remote_service is None or instance.remote_service.method == CASCADED:
             if instance.alternate:
-                cascading_delete(gs_catalog, instance.alternate)
+                geoserver_cascading_delete.delay(layer_name=instance.alternate)
 
 
 @on_ogc_backend(BACKEND_PACKAGE)

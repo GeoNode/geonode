@@ -108,7 +108,7 @@ from geonode.utils import (
 from .tasks import delete_layer
 
 from geonode.geoserver.helpers import (ogc_server_settings,
-                                       set_layer_style)  # cascading_delete
+                                       set_layer_style)
 from geonode.base.utils import ManageResourceOwnerPermissions
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -1241,8 +1241,6 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                         "You are attempting to replace a raster layer with a vector.")
                 else:
                     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                        # delete geoserver's store before upload
-                        # cascading_delete(gs_catalog, layer.alternate)
                         out['ogc_backend'] = geoserver.BACKEND_PACKAGE
                     elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
                         try:
