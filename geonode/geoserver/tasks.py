@@ -21,7 +21,7 @@
 from geonode.celery_app import app
 from celery.utils.log import get_task_logger
 
-from .helpers import gs_slurp
+from .helpers import gs_slurp, cascading_delete
 
 logger = get_task_logger(__name__)
 
@@ -32,3 +32,11 @@ def geoserver_update_layers(self, *args, **kwargs):
     Runs update layers.
     """
     return gs_slurp(*args, **kwargs)
+
+
+@app.task(bind=True, queue='cleanup')
+def geoserver_cascading_delete(self, *args, **kwargs):
+    """
+    Runs cascading_delete.
+    """
+    return cascading_delete(*args, **kwargs)

@@ -868,7 +868,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             styles = layer.styles + [layer.default_style]
 
             # Delete the Layer using cascading_delete()
-            cascading_delete(gs_cat, shp_layer.alternate)
+            cascading_delete(layer_name=shp_layer.alternate, catalog=gs_cat)
 
             # Verify that the styles were deleted
             for style in styles:

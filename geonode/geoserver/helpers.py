@@ -395,8 +395,12 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
             logger.exception(e)
 
 
-def cascading_delete(cat, layer_name):
+def cascading_delete(layer_name=None, catalog=None):
+    if not layer_name:
+        return
+    cat = catalog or gs_catalog
     resource = None
+    workspace = None
     try:
         if layer_name.find(':') != -1 and len(layer_name.split(':')) == 2:
             workspace, name = layer_name.split(':')
@@ -456,29 +460,18 @@ def cascading_delete(cat, layer_name):
             styles = styles + [lyr.default_style]
         except Exception:
             pass
-        gs_styles = [x for x in cat.get_styles()]
-        if settings.DEFAULT_WORKSPACE:
-            gs_styles = gs_styles + [x for x in cat.get_styles(workspaces=settings.DEFAULT_WORKSPACE)]
-            ws_styles = []
-            for s in styles:
-                if s is not None and s.name not in _default_style_names:
-                    m = re.search(r'\d+$', s.name)
-                    _name = s.name[:-len(m.group())] if m else s.name
-                    _s = "%s_%s" % (settings.DEFAULT_WORKSPACE, _name)
-                    for _gs in gs_styles:
-                        if ((_gs.name and _gs.name.startswith("%s_" % settings.DEFAULT_WORKSPACE)) or
-                            (_s in _gs.name)) and\
-                        _gs not in styles:
-                            ws_styles.append(_gs)
-            styles = styles + ws_styles
+        if workspace:
+            gs_styles = [x for x in cat.get_styles(names=[f"{workspace}_{resource_name}"])]
+            styles = styles + gs_styles
+        if settings.DEFAULT_WORKSPACE and settings.DEFAULT_WORKSPACE != workspace:
+            gs_styles = [x for x in cat.get_styles(names=[f"{settings.DEFAULT_WORKSPACE}_{resource_name}"])]
+            styles = styles + gs_styles
         cat.delete(lyr)
         for s in styles:
             if s is not None and s.name not in _default_style_names:
                 try:
                     logger.debug("Trying to delete Style [%s]" % s.name)
                     cat.delete(s, purge='true')
-                    workspace, name = layer_name.split(':') if ':' in layer_name else \
-                        (settings.DEFAULT_WORKSPACE, layer_name)
                 except Exception as e:
                     # Trying to delete a shared style will fail
                     # We'll catch the exception and log it.
