@@ -65,8 +65,6 @@ def prefix_xsl_line(req, id):
             print("is_published do views do catalogue:")
             print(resource.is_published)
             md_doc = catalogue.catalogue.csw_gen_xml(resource, 'catalogue/full_metadata.xml')
-            print("md_doc dentro do views do catalogue:")
-            print(md_doc)
 
         xml = md_doc
     except Exception:

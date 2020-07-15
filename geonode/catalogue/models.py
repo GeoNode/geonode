@@ -104,8 +104,6 @@ def catalogue_post_save(instance, sender, **kwargs):
             print("Is_published do catalogue:")
             print(instance.is_published)
             md_doc = catalogue.catalogue.csw_gen_xml(instance, 'catalogue/full_metadata.xml')
-            print("md_doc dentro do else do catalogue:")
-            print(md_doc)
             resources.update(metadata_xml=md_doc)
         else:
             md_doc = '<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>'
