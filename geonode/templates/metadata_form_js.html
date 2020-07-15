@@ -471,25 +471,36 @@
         });
 
         $('#btn_upd_md_dwn').click(function(){
+
+          if($('#id_resource-title').val().length == 0){
+
+            alert("Informe o título do metadado");
+            return;
+
+          } else {
+
+            console.log("Preencheu todos!");
+
             if
-            ( is_category_mandatory &&
-                (
-                    (!is_advanced && $('#category_form').hasClass("input-empty")) ||
-                    (is_advanced && !$('#category_form input:checked').val())
-                )
-            ) {
-                $('#category_mandatoryDialog').modal();
-            } else if
-              ( is_group_mandatory &&
-                (
-                  (!is_advanced && $('#id_resource-group').hasClass("input-empty")) ||
-                  (is_advanced && !$('#id_resource-group').val())
-                )
+              ( is_category_mandatory &&
+                  (
+                      (!is_advanced && $('#category_form').hasClass("input-empty")) ||
+                      (is_advanced && !$('#category_form input:checked').val())
+                  )
               ) {
-                $('#group_mandatoryDialog').modal();
-            } else {
-                $('#preview_pleaseWaitDialog').modal();
-            }
+                  $('#category_mandatoryDialog').modal();
+              } else if
+                ( is_group_mandatory &&
+                  (
+                    (!is_advanced && $('#id_resource-group').hasClass("input-empty")) ||
+                    (is_advanced && !$('#id_resource-group').val())
+                  )
+                ) {
+                  $('#group_mandatoryDialog').modal();
+              } else {
+                  $('#preview_pleaseWaitDialog').modal();
+              }
+          }
         });
 
         $('#btn_upd_md_done').click(function(){

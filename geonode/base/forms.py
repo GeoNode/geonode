@@ -463,6 +463,7 @@ class ResourceBaseForm(TranslationModelForm):
     #)
     choice_projeto_acao_gerencial = forms.ChoiceField(
         label=_("Escolha uma das opções:"),
+        required=False,
         choices=(('Projeto','Listar Projeto'),('Ação Gerencial','Listar Ação Gerencial')), 
         widget=forms.RadioSelect())
     embrapa_unity = autocomplete.Select2ListChoiceField(
