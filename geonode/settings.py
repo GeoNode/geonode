@@ -84,6 +84,22 @@ else:
 _DEFAULT_SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
 SECRET_KEY = os.getenv('SECRET_KEY', _DEFAULT_SECRET_KEY)
 
+SITE_HOST_SCHEMA = os.getenv('SITE_HOST_SCHEMA', 'http')
+SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'localhost')
+SITE_HOST_PORT = os.getenv('SITE_HOST_PORT', 8000)
+_default_siteurl = "%s://%s:%s/" % (SITE_HOST_SCHEMA,
+                                    SITE_HOST_NAME,
+                                    SITE_HOST_PORT) if SITE_HOST_PORT else "%s://%s/" % (SITE_HOST_SCHEMA, SITE_HOST_NAME)
+SITEURL = os.getenv('SITEURL', _default_siteurl)
+
+# we need hostname for deployed
+_surl = urlparse(SITEURL)
+HOSTNAME = _surl.hostname
+
+# add trailing slash to site url. geoserver url will be relative to this
+if not SITEURL.endswith('/'):
+    SITEURL = '{}/'.format(SITEURL)
+
 DATABASE_URL = os.getenv(
     'DATABASE_URL',
     'sqlite:///{path}'.format(
@@ -218,7 +234,6 @@ EXTRA_LANG_INFO = {
         'name_local': 'sinhala',
     },
 }
-
 
 AUTH_USER_MODEL = os.getenv('AUTH_USER_MODEL', 'people.Profile')
 
@@ -692,12 +707,13 @@ OAUTH2_PROVIDER = {
     },
 
     'CLIENT_ID_GENERATOR_CLASS': 'oauth2_provider.generators.ClientIdGenerator',
-    # 'OAUTH2_VALIDATOR_CLASS': 'geonode.security.oauth2_validators.OIDCValidator',
+    'OAUTH2_SERVER_CLASS': 'geonode.security.oauth2_servers.OIDCServer',
+    'OAUTH2_VALIDATOR_CLASS': 'geonode.security.oauth2_validators.OIDCValidator',
 
     # OpenID Connect
-    # "OIDC_ISS_ENDPOINT": "http://localhost:8000",
-    # "OIDC_USERINFO_ENDPOINT": "http://localhost:8000/api/o/v4/tokeninfo/",
-    "OIDC_RSA_PRIVATE_KEY": b"""-----BEGIN RSA PRIVATE KEY-----
+    "OIDC_ISS_ENDPOINT": SITEURL,
+    "OIDC_USERINFO_ENDPOINT": f"{SITEURL}api/o/v4/tokeninfo/",
+    "OIDC_RSA_PRIVATE_KEY": """-----BEGIN RSA PRIVATE KEY-----
 MIICXQIBAAKBgQCIThjbTwpYu4Lwqp8oA7PqD6Ij/GwpLFJuPbWVaeCDaX6T7mh8
 mJMIEgl/VIZasLH8SwU5mZ4sPeiqk7NgJq1XDo97q5mlFoNVHMCH38KQzSIBWtbq
 WnEEnQdiqBbCmmIebLd4OcfpbIVUI89cnCq7U0M1ie0KOopWSHWOP6/35QIDAQAB
@@ -805,21 +821,6 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 # GeoNode specific settings
 #
 # per-deployment settings should go here
-SITE_HOST_SCHEMA = os.getenv('SITE_HOST_SCHEMA', 'http')
-SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'localhost')
-SITE_HOST_PORT = os.getenv('SITE_HOST_PORT', 8000)
-_default_siteurl = "%s://%s:%s/" % (SITE_HOST_SCHEMA,
-                                    SITE_HOST_NAME,
-                                    SITE_HOST_PORT) if SITE_HOST_PORT else "%s://%s/" % (SITE_HOST_SCHEMA, SITE_HOST_NAME)
-SITEURL = os.getenv('SITEURL', _default_siteurl)
-
-# we need hostname for deployed
-_surl = urlparse(SITEURL)
-HOSTNAME = _surl.hostname
-
-# add trailing slash to site url. geoserver url will be relative to this
-if not SITEURL.endswith('/'):
-    SITEURL = '{}/'.format(SITEURL)
 
 # Login and logout urls override
 LOGIN_URL = os.getenv('LOGIN_URL', '{}account/login/'.format(SITEURL))
