@@ -91,7 +91,7 @@ class Upload(models.Model):
     def get_session(self):
         if self.session:
             return pickle.loads(
-                base64.decodestring(self.session.encode('UTF-8')))
+                base64.decodebytes(self.session.encode('UTF-8')))
 
     def update_from_session(self, upload_session):
         self.state = upload_session.import_session.state
@@ -102,7 +102,7 @@ class Upload(models.Model):
         else:
             upload_session.user.first_name = upload_session.user.first_name
             upload_session.user.last_name = upload_session.user.last_name
-            self.session = base64.encodestring(pickle.dumps(upload_session)).decode('UTF-8')
+            self.session = base64.encodebytes(pickle.dumps(upload_session)).decode('UTF-8')
         if self.upload_dir is None:
             self.upload_dir = path.dirname(upload_session.base_file)
             self.name = upload_session.layer_title or upload_session.name
