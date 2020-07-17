@@ -79,6 +79,7 @@ from geonode.people.enumerations import ROLE_VALUES
 from pyproj import transform, Proj
 
 from urllib.parse import urlparse, urlsplit, urljoin
+from imagekit.cachefiles.backends import Simple
 
 logger = logging.getLogger(__name__)
 
@@ -1668,6 +1669,8 @@ class CuratedThumbnail(models.Model):
     @property
     def thumbnail_url(self):
         try:
+            if not Simple()._exists(self.img_thumbnail):
+                Simple().generate(self.img_thumbnail, force=True)
             upload_path = storage.path(self.img_thumbnail.name)
             actual_name = os.path.basename(storage.url(upload_path))
             _upload_path = os.path.join(os.path.dirname(upload_path), actual_name)
