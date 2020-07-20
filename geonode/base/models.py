@@ -320,13 +320,18 @@ class _EmbrapaTagManager(_TaggableManager):
         #print(existing)
         tag_objs.update(existing)
         for new_tag in str_tags - set(t.name for t in existing):
+            print("Tag nova?")
+            print(new_tag)
             if new_tag:
-                new_tag = escape(new_tag)
-                tag_objs.add(Embrapa_Keywords.add_root(name=new_tag))
+                print("Tag nova 2")
+                print(new_tag)
+                #new_tag = escape(new_tag)
+                #tag_objs.add(Embrapa_Keywords.add_root(name=new_tag))
 
         #print("_EmbrapaTagManager 4")
         for tag in tag_objs:
             try:
+                print("Não vai criar tag nova")
                 self.through.objects.get_or_create(
                     tag=tag, **self._lookup_kwargs())
             except Exception as e:
