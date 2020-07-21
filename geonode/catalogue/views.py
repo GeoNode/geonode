@@ -43,57 +43,74 @@ from django.core.exceptions import ObjectDoesNotExist
 @csrf_exempt
 def csw_global_dispatch(request):
     """pycsw wrapper"""
+    try: 
+        # this view should only operate if pycsw_local is the backend
+        # else, redirect to the URL of the non-pycsw_local backend
+        if settings.CATALOGUE['default']['ENGINE'] != 'geonode.catalogue.backends.pycsw_local':
+            return HttpResponseRedirect(settings.CATALOGUE['default']['URL'])
 
-    # this view should only operate if pycsw_local is the backend
-    # else, redirect to the URL of the non-pycsw_local backend
-    if settings.CATALOGUE['default']['ENGINE'] != 'geonode.catalogue.backends.pycsw_local':
-        return HttpResponseRedirect(settings.CATALOGUE['default']['URL'])
+        #print('1')
+        mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
 
-    mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
+        access_token = None
+        if request and request.user:
+            access_token = get_or_create_token(request.user)
+            if access_token and access_token.is_expired():
+                access_token = None
+        #print('2')
+        absolute_uri = ('%s' % request.build_absolute_uri())
+        query_string = ('%s' % request.META['QUERY_STRING'])
+        #print('3')
+        env = request.META.copy()
+        #print('4')
+        if access_token and not access_token.is_expired():
+            env.update({'access_token': access_token.token})
+            if 'access_token' not in query_string:
+                absolute_uri = ('%s&access_token=%s' % (absolute_uri, access_token.token))
+                query_string = ('%s&access_token=%s' % (query_string, access_token.token))
+        #print('5')
 
-    access_token = None
-    if request and request.user:
-        access_token = get_or_create_token(request.user)
-        if access_token and access_token.is_expired():
-            access_token = None
-
-    absolute_uri = ('%s' % request.build_absolute_uri())
-    query_string = ('%s' % request.META['QUERY_STRING'])
-    env = request.META.copy()
-
-    if access_token and not access_token.is_expired():
-        env.update({'access_token': access_token.token})
-        if 'access_token' not in query_string:
-            absolute_uri = ('%s&access_token=%s' % (absolute_uri, access_token.token))
-            query_string = ('%s&access_token=%s' % (query_string, access_token.token))
-
-    env.update({'local.app_root': os.path.dirname(__file__),
-                'REQUEST_URI': absolute_uri,
-                'QUERY_STRING': query_string})
-
-    # Save original filter before doing anything
-    mdict_filter = mdict['repository']['filter']
-
+        env.update({'local.app_root': os.path.dirname(__file__),
+                    'REQUEST_URI': absolute_uri,
+                    'QUERY_STRING': query_string})
+        #print('6')
+        # Save original filter before doing anything
+        mdict_filter = mdict['repository']['filter']
+        #print('7')
+    finally:
+        print('FINALY 1')
+        
     try:
-        # Filter out Layers not accessible to the User
         authorized_ids = []
         if request.user:
             profiles = get_user_model().objects.filter(username=str(request.user))
         else:
             profiles = get_user_model().objects.filter(username="AnonymousUser")
         if profiles:
-            authorized = list(
-                get_objects_for_user(
-                    profiles[0],
-                    'base.view_resourcebase').values('id'))
-            layers = ResourceBase.objects.filter(
-                id__in=[d['id'] for d in authorized])
+            authorized = list(get_objects_for_user(profiles[0], 'base.view_resourcebase').values('id'))                 
+            layers = ResourceBase.objects.filter(id__in=[d['id'] for d in authorized])
+            layers_published = ResourceBase.objects.values_list('id', 'is_published', 'title')
+           
             if layers:
                 authorized_ids = [d['id'] for d in authorized]
 
+            authorized_test = []
+            for layer_tmp in layers_published:
+                for authorized in authorized_ids:
+                    if layer_tmp[0] == authorized and layer_tmp[1] == True :
+                        authorized_test.append(layer_tmp[0])#
+                    elif layer_tmp[0] == authorized and layer_tmp[1] == False :
+                        print('ID: ', layer_tmp[0], ' - STATUS: ', layer_tmp[1], ' - TITULO: ', layer_tmp[2])
+
+
+        i = 0
+        authorized_test.sort()
+        for index_layer in authorized_test:
+            i = i + 1
+            print('Indice: ', i, ' - ID Camada: ', index_layer)
+                
         if len(authorized_ids) > 0:
-            authorized_layers = "(" + (", ".join(str(e)
-                                                 for e in authorized_ids)) + ")"
+            authorized_layers = "(" + (", ".join(str(e) for e in authorized_ids)) + ")"
             authorized_layers_filter = "id IN " + authorized_layers
             mdict['repository']['filter'] += " AND " + authorized_layers_filter
             if request.user and request.user.is_authenticated:
@@ -146,10 +163,17 @@ def csw_global_dispatch(request):
                 groups_filter = "group_id IS NULL"
                 mdict['repository']['filter'] += " AND " + groups_filter
 
+        #csw = server.Csw(mdict, env, version='2.0.2')
         csw = server.Csw(mdict, env, version='2.0.2')
-
+        
+        #print('TESTE: ', mdict)
+        
         content = csw.dispatch_wsgi()
 
+        #for con in content:
+            
+        #print('CONTENT 1')
+        #print(content)
         # pycsw 2.0 has an API break:
         # pycsw < 2.0: content = xml_response
         # pycsw >= 2.0: content = [http_status_code, content]
@@ -175,8 +199,7 @@ def csw_global_dispatch(request):
 
         if access_token and not access_token.is_expired():
             tree = dlxml.fromstring(content)
-            for online_resource in tree.findall(
-                    '*//gmd:CI_OnlineResource', spaces):
+            for online_resource in tree.findall('*//gmd:CI_OnlineResource', spaces):
                 try:
                     linkage = online_resource.find('gmd:linkage', spaces)
                     for url in linkage.findall('gmd:URL', spaces):
@@ -189,10 +212,16 @@ def csw_global_dispatch(request):
                             url.set('updated', 'yes')
                 except Exception:
                     pass
-            content = ET.tostring(tree, encoding='utf8', method='xml')
+            #print('TREE')
+            #print(tree)
+            #content = ET.tostring(tree, encoding='utf8', method='xml')
+            #print('CONTENT 2')
+            #print(content)  
     finally:
         # Restore original filter before doing anything
         mdict['repository']['filter'] = mdict_filter
+
+    
 
     return HttpResponse(content, content_type=csw.contenttype)
 
