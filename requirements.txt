@@ -60,7 +60,7 @@ numpy==1.19.*
 dj-database-url==0.5.0
 dj-pagination==2.5.0
 pinax-notifications==6.0.0
-pinax-ratings==3.0.3
+pinax-ratings==4.0.0
 django-celery-monitor<=1.1.2
 django-celery-beat==2.0.0
 django-floppyforms<1.10.0
