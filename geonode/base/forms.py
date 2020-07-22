@@ -472,21 +472,21 @@ class ResourceBaseForm(TranslationModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ResourceBaseForm, self).__init__(*args, **kwargs)
-        print("purpose no forms do base")
+        #print("purpose no forms do base")
         self.fields['purpose'] = autocomplete.Select2ListChoiceField(
             label=_("Finalidade"),
             required=False,
             choice_list=choice_purpose(),
             widget= autocomplete.ListSelect2(url='autocomplete_embrapa_purpose')
         )
-        print("data_quality_statement no forms do base")
+        #print("data_quality_statement no forms do base")
         self.fields['embrapa_data_quality_statement'] = forms.MultipleChoiceField(
             label=_("Declaração da Qualidade do Dado - Fontes"),
             required=False,
             choices=choice_data_quality_statement(),
             widget= autocomplete.Select2Multiple(url='autocomplete_embrapa_data_quality_statement')
         )
-        print("authors no forms do base")
+        #print("authors no forms do base")
         self.fields['embrapa_autores'] = forms.MultipleChoiceField(
             label=_("Autores"),
             required=False,
@@ -509,8 +509,8 @@ class ResourceBaseForm(TranslationModelForm):
 
     def clean_embrapa_autores(self):
         embrapa_autores = self.cleaned_data['embrapa_autores']
-        print("Clean autores:")
-        print(embrapa_autores)
+        #print("Clean autores:")
+        #print(embrapa_autores)
 
         name_slug = [i for i in range(len(embrapa_autores))]
 

@@ -61,8 +61,6 @@ class AuthorObjects:
 
 def db_table_exists(table_name):
 
-    print("Nome da tabela:")
-    print(table_name)
     if table_name in connection.introspection.table_names():
         return table_name in connection.introspection.table_names()
     else:
@@ -203,8 +201,6 @@ def choice_purpose():
 
     unity_id = settings.EMBRAPA_UNITY_DEFAULT
 
-    print('settings.EMBRAPA_UNITY_DEFAULT')
-    print(settings.EMBRAPA_UNITY_DEFAULT)
     # Chamada para ação gerencial
     try:
         acao_gerencial_endpoint = 'https://sistemas.sede.embrapa.br/corporativows/rest/corporativoservice/lista/acoesgerenciais/poridunidadeembrapaano/{0}/{1}'.format(unity_id, current_year)

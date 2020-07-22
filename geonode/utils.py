@@ -870,8 +870,8 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     permission_required - if False, allow get methods to proceed
     permission_msg - optional message to use in 403
     """
-    print(model)
-    pprint(vars(model))
+    #print(model)
+    #pprint(vars(model))
     obj = get_object_or_404 (model, **query)
     obj_to_check = obj.get_self_resource()
 

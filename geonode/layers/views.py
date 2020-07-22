@@ -1125,24 +1125,6 @@ def layer_metadata(
     #print teste 03:
     #print("Teste 03")
 
-    if request.method == "GET":
-        #print("TESTE NO LAYERS!!!")
-        project = request.GET.get("list_projects")
-        management_actions = request.GET.get("list_management_actions")
-        if project:
-            #print("CLIQUEI EM PROJETO!!")
-            settings.PROJETO_API = True
-            settings.ACAO_GERENCIAL_API = False
-        elif management_actions:
-            #print("CLIQUEI EM AÇÃO GERENCIAL")
-            settings.ACAO_GERENCIAL_API = True
-            settings.PROJETO_API = False
-
-    saved_author = False
-    # Detectar se clicou no Atualizar da camada, se não clicou nele quer dizer que clicou no de salvar o autor
-    # if request.modal
-
-
     if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid(
     ) and category_form.is_valid():
         new_poc = layer_form.cleaned_data['poc']

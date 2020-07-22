@@ -331,7 +331,6 @@ class _EmbrapaTagManager(_TaggableManager):
         #print("_EmbrapaTagManager 4")
         for tag in tag_objs:
             try:
-                print("Não vai criar tag nova")
                 self.through.objects.get_or_create(
                     tag=tag, **self._lookup_kwargs())
             except Exception as e:
