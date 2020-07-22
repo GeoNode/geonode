@@ -333,17 +333,6 @@ class ResourceBaseDateTimePicker(DateTimePicker):
         base_attrs.update(kwargs)
         return super(ResourceBaseDateTimePicker, self).build_attrs(base_attrs)
         # return base_attrs
-'''
-class EmbrapaUnityForm(forms.Form):
-    CHOICES = (('1', '1'),
-                ('2', '2'),
-                ('3', '3'),)
-    embrapa_unity = forms.ModelMultipleChoiceField(
-        choices=CHOICES,
-        queryset=CHOICES,
-        widget=forms.CheckboxSelectMultiple()
-    )
-'''
 
 class ResourceBaseForm(TranslationModelForm):
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
@@ -439,28 +428,13 @@ class ResourceBaseForm(TranslationModelForm):
         help_text="Insira as palavras-chave, para indexacao do documento, de acordo com o vocabulario controlado elaborado pela equipe de geoinformacao da IDE-Embrapa",
         widget=TaggitSelect2Custom(url='autocomplete_embrapa_keywords')
     )
-
-    #ARRUMAR O EMBRAPA_KEYWORDS_AUTOCOMPLETE
-    
-    '''regions = TreeNodeMultipleChoiceField(
-        label=_("Regiões"),
-        required=False,
-        queryset=Region.objects.all(),
-        level_indicator=u'___')
-    '''
     
     regions = RegionsMultipleChoiceField(
         label=_("Regiões"),
         required=False,
         choices=get_tree_data(),
         widget=RegionsSelect)
-    #embrapa_unity = forms.ModelChoiceField(
-    #    empty_label=_("Unidade Embrapa"),
-    #    label=_("Unidade Embrapa"),
-    #    required=False,
-    #    queryset= Embrapa_Unity.objects.all(),
-    #    widget= autocomplete.ModelSelect2(url='autocomplete_embrapa_unity')
-    #)
+
     choice_projeto_acao_gerencial = forms.ChoiceField(
         label=_("Escolha uma das opções:"),
         required=False,
@@ -472,13 +446,6 @@ class ResourceBaseForm(TranslationModelForm):
         choice_list=choice_unity(),
         widget= autocomplete.ListSelect2(url='autocomplete_embrapa_unity')
     )
-    #embrapa_purpose = forms.ModelChoiceField(
-    #    empty_label=_("Finalidade Embrapa"),
-    #    label=_("Finalidade Embrapa"),
-    #    required=False,
-    #    queryset= Embrapa_Purpose.objects.all(),
-    #    widget=autocomplete.ModelSelect2(url='autocomplete_embrapa_purpose')
-    #)
 
     purpose = autocomplete.Select2ListChoiceField(
         label=_("Finalidade"),
@@ -492,7 +459,6 @@ class ResourceBaseForm(TranslationModelForm):
         required=False,
         choices=choice_data_quality_statement(),
         widget = autocomplete.Select2Multiple(url='autocomplete_embrapa_data_quality_statement')
-        #widget= autocomplete.ListSelect2(url='autocomplete_embrapa_data_quality_statement')
     )
 
     embrapa_autores = forms.MultipleChoiceField(
@@ -566,28 +532,6 @@ class ResourceBaseForm(TranslationModelForm):
 
     def clean_embrapa_data_quality_statement(self):
         embrapa_data_quality_statement = self.cleaned_data['embrapa_data_quality_statement']
-        #_unsescaped_embrapa_data_quality_statement = []
-        #print("CLEAN DO FORMS")
-        #print(embrapa_data_quality_statement)
-        #print("Tamanho da lista:")
-        #print(range(len(embrapa_data_quality_statement)))
-
-        # Aqui pode criar os data_quality_statements no banco pra referenciar
-
-        #if len(embrapa_data_quality_statement) > 1:
-        #    embrapa_data_quality_statement_str = str(embrapa_data_quality_statement)
-        #    embrapa_data_quality_statement_str = embrapa_data_quality_statement_str.replace("['","")
-        #    embrapa_data_quality_statement_str = embrapa_data_quality_statement_str.replace("']","")
-        #    embrapa_data_quality_statement_str = embrapa_data_quality_statement_str.replace("',","")
-        #    embrapa_data_quality_statement_str = embrapa_data_quality_statement_str.replace(" '"," ")
-
-        #else:
-        #    embrapa_data_quality_statement_str = str(embrapa_data_quality_statement)
-        #    embrapa_data_quality_statement_str = embrapa_data_quality_statement_str.replace("['","")
-        #    embrapa_data_quality_statement_str = embrapa_data_quality_statement_str.replace("']","")
-
-        #print("CLEAN DO FORMS: DEPOIS DO REPLACE")
-        #print(embrapa_data_quality_statement_str)
 
         return embrapa_data_quality_statement
 
@@ -610,7 +554,22 @@ class ResourceBaseForm(TranslationModelForm):
                 else:
                     escaped += char
             return escaped
+            
         embrapa_keywords = self.cleaned_data['embrapa_keywords']
+        embrapa_keywords_tmp = []
+        chars = ['À','Á','Â','Ã','Å','Ç','È','É','Ê','Ì','Í','Î','Ò','Ó','Ô','Õ','Ö','Ù','Ú','Û','Ý','à','á','â','ã','ç','è','é','ê','ì','í','î','ò','ó','ô','õ','ù','ú','û', ' ']
+        utf = ['%C0','%C1','%C2','%C3','%C5','%C7','%C8','%C9','%CA','%CC','%CD','%CE','%D2','%D3','%D4','%D5','%D6','%D9','%DA','%DB','%DD','%E0','%E1','%E2','%E3','%E7','%E8','%E9','%EA','%EC','%ED','%EE','%F2','%F3','%F4','%F5','%F9','%FA','%FB', '%20']
+        i = 0
+        for key in embrapa_keywords:
+            i = 0
+            for ut in utf:
+                if key.find(ut) > -1:
+                    key = key.replace(ut, chars[i])
+                i += 1
+            embrapa_keywords_tmp.append(key)
+
+        embrapa_keywords = embrapa_keywords_tmp
+
         _unsescaped_embrapa_kwds = []
         for k in embrapa_keywords:
             _k = unquote(('%s' % k)).split(",")
@@ -621,6 +580,7 @@ class ResourceBaseForm(TranslationModelForm):
                         encode('unicode-escape').replace(b'\\\\u',
                                                          b'\\u').decode('unicode-escape') if '%u' in _kk else _kk
                     _ek = Embrapa_Keywords.objects.filter(name__iexact='%s' % _kk.strip())
+                    
                     if _ek and len(_ek) > 0:
                         _unsescaped_embrapa_kwds.append(str(_ek[0]))
                     else:
@@ -632,6 +592,7 @@ class ResourceBaseForm(TranslationModelForm):
                 else:
                     _unsescaped_embrapa_kwds.append(str(_k))
         return _unsescaped_embrapa_kwds
+
 
     #É AQUI QUE TÁ SEPARANDO POR VIRGULAS AS PALAVRAS CHAVE
     def clean_keywords(self):
@@ -653,6 +614,7 @@ class ResourceBaseForm(TranslationModelForm):
                     escaped += char
             return escaped
         keywords = self.cleaned_data['keywords']
+
         _unsescaped_kwds = []
         for k in keywords:
             _k = unquote(('%s' % k)).split(",")

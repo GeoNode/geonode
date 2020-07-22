@@ -1040,11 +1040,11 @@ def layer_metadata(
         la for la in default_map_config(request)[1] if la.ows_url is None]
 
     #print teste 02:
-    print("Teste 02")
+    #print("Teste 02")
     if request.method == "POST":
-        print("Teste 02.1")
+        #print("Teste 02.1")
         if layer.metadata_uploaded_preserve:  # layer metadata cannot be edited
-            print("Teste 02.2")
+            #print("Teste 02.2")
             out = {
                 'success': False,
                 'errors': METADATA_UPLOADED_PRESERVE_ERROR
@@ -1056,13 +1056,13 @@ def layer_metadata(
         # embrapa #
         # montar a lógica do embrapa_keywords em algum lugar para poder printar o cleaned_data dele # 
         layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
-        print("Teste 02.2.1")
-        print(layer_form.is_valid())
-        print("Layer_form:")
-        print(layer_form)
+        #print("Teste 02.2.1")
+        #print(layer_form.is_valid())
+        #print("Layer_form:")
+        #print(layer_form)
         if not layer_form.is_valid():
-            print("Teste 02.3")
-            print(layer_form.errors)
+            #print("Teste 02.3")
+            #print(layer_form.errors)
             out = {
                 'success': False,
                 'errors': layer_form.errors
@@ -1118,23 +1118,23 @@ def layer_metadata(
 
         tkeywords_form = TKeywordForm(instance=layer)
 
-    print("request.method:")
-    print(request.method)
-    print(request.GET.__dict__)
+    #print("request.method:")
+    #print(request.method)
+    #print(request.GET.__dict__)
     
     #print teste 03:
-    print("Teste 03")
+    #print("Teste 03")
 
     if request.method == "GET":
-        print("TESTE NO LAYERS!!!")
+        #print("TESTE NO LAYERS!!!")
         project = request.GET.get("list_projects")
         management_actions = request.GET.get("list_management_actions")
         if project:
-            print("CLIQUEI EM PROJETO!!")
+            #print("CLIQUEI EM PROJETO!!")
             settings.PROJETO_API = True
             settings.ACAO_GERENCIAL_API = False
         elif management_actions:
-            print("CLIQUEI EM AÇÃO GERENCIAL")
+            #print("CLIQUEI EM AÇÃO GERENCIAL")
             settings.ACAO_GERENCIAL_API = True
             settings.PROJETO_API = False
 
@@ -1142,53 +1142,11 @@ def layer_metadata(
     # Detectar se clicou no Atualizar da camada, se não clicou nele quer dizer que clicou no de salvar o autor
     # if request.modal
 
-    # TENTAR CRIAR UMA FUNÇÃO NA VIEW ONDE É CARREGADO O TEMPLATE DA CAMADA PORÉM SOMENTE O FORM DO AUTOR
-    # COM ISSO OS MÉTODOS DE SAVE, DELETE E ETC VÃO FICAR APENAS LÁ.
-
-    try:
-        if request.method == "POST":
-            btn_save_modal_author = request.POST.get("saveAuthorModal")            
-            if authors_form.is_valid():
-                print("Cliquei no botão de save")
-                print("Nome views do layers:")
-                name = authors_form.cleaned_data['name']
-                name_slug = slugify(name)
-                print(name)
-                print("Nome como slug:")
-                print(name_slug)
-
-                autoria = authors_form.cleaned_data['autoria']
-                print("Autoria views do layers:")
-                print(autoria)
-
-                afiliacao = authors_form.cleaned_data['afiliacao']
-                print("Afiliação views do layers:")
-                print(afiliacao)
-
-                embrapa_autores_creates, created = Embrapa_Authors.objects.get_or_create(name=name, 
-                                            slug=name_slug, depth=1, numchild=0, afiliacao=afiliacao, autoria=autoria)
-                if created:
-                    embrapa_autores_creates.save()
-
-                saved_author = True
-
-                authors_form.save()
-                authors_form = EmbrapaAuthorsForm(instance=request.user)
-
-    except Exception:
-        pass
-
 
     if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid(
     ) and category_form.is_valid():
         new_poc = layer_form.cleaned_data['poc']
         new_author = layer_form.cleaned_data['metadata_author']
-
-        #print(layer_form.cleaned_data['embrapa_keywords'])
-
-        #print teste 03:
-        print("Teste 03.1")
-        #pprint(vars(layer))
 
         if new_poc is None:
             if poc is None:
@@ -1252,8 +1210,6 @@ def layer_metadata(
         new_embrapa_autores = layer_form.cleaned_data['embrapa_autores']
         new_regions = [x.strip() for x in layer_form.cleaned_data['regions']]
 
-
-        print("Teste 04")
         layer.keywords.clear()
         if new_keywords:
             layer.keywords.add(*new_keywords)
@@ -1275,56 +1231,15 @@ def layer_metadata(
         if new_embrapa_autores:
             layer.embrapa_autores.add(*new_embrapa_autores)
 
-        # embrapa #
-        print("Teste 04.1")
-        ### guarda o valor de keyword_csv na keywords_plain para habilitar a busca dentro das palavras chave
-        # layer.keywords_plain = ' '.join([word for word in new_keywords])
-        ### concatena também a lista de palavras-chave reservadas da embrapa
-        # embrapa_keywords = layer_form.cleaned_data['embrapa_keywords']
-        #layer_form.cleaned_data['embrapa_keywords'] = model_to_dict(embrapa_keywords)
-        #print("Atributos do embrapa_keywords")
-        #print(embrapa_keywords)
-        # keys = embrapa_keywords
-        #layer.keywords_plain = layer.keywords_plain + ' '.join([word for word in embrapa_keywords])
-        # layer.keywords_plain = layer.keywords_plain + ' '.join([word for word in keys]) #mudança para testes
-
-        # print("Atributos do HierarchicalKeywords")
-        # print(new_keywords)
-        print("Atributos da unidade:")
         unity = layer_form.cleaned_data['embrapa_unity']
-        print(unity)
-
-        print("Atributos da finalidade:")
         purpose = layer_form.cleaned_data['purpose']
-        print(purpose)
-
-        print("Atributos da declaração da qualidade do dado:")
         data_quality_statement = layer_form.cleaned_data['embrapa_data_quality_statement']
-        print(data_quality_statement)
-
-        print("Atributos de embrapa_autores:")
         autores = layer_form.cleaned_data['embrapa_autores']
-        print(autores)
 
-        #for i in range(len(data_quality_statement)):
-        #    if i != 0:
-        #        format_data_quality_statement += ' ; ' + data_quality_statement[i]
-        #    else:
-        #        format_data_quality_statement = data_quality_statement[i]
-        #print("Formtado antes de salvar:")
-        #print(format_data_quality_statement)
-        #layer_form.cleaned_data['embrapa_data_quality_statement'] = format_data_quality_statement
-
-        #print("Layer_form com o dado editado:")
-        #print(layer_form.cleaned_data['embrapa_data_quality_statement'])
-        #print teste 04:
-        print("Teste 05")
-        #pprint(vars(layer))
         try:
             layer.save()
         except Exception as e:
             print(e)
-        print("Teste 06")
 
         up_sessions = UploadSession.objects.filter(layer=layer)
         if up_sessions.count() > 0 and up_sessions[0].user != layer.owner:
@@ -1376,11 +1291,7 @@ def layer_metadata(
                     {'disabled': 'true'})
 
     if poc is not None:
-        # embrapa #
         layer_form.fields['poc'].initial = poc.id
-        
-        #layer_form.fields['poc'].initial = poc
-
         poc_form = ProfileForm(prefix="poc")
         poc_form.hidden = True
     else:

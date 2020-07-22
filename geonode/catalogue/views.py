@@ -108,9 +108,12 @@ def csw_global_dispatch(request):
         for index_layer in authorized_test:
             i = i + 1
             print('Indice: ', i, ' - ID Camada: ', index_layer)
-                
-        if len(authorized_ids) > 0:
-            authorized_layers = "(" + (", ".join(str(e) for e in authorized_ids)) + ")"
+
+        #
+        #authorized_test = [2375]
+        #if len(authorized_ids) > 0:
+        if len(authorized_test) > 0:
+            authorized_layers = "(" + (", ".join(str(e) for e in authorized_test)) + ")"
             authorized_layers_filter = "id IN " + authorized_layers
             mdict['repository']['filter'] += " AND " + authorized_layers_filter
             if request.user and request.user.is_authenticated:
@@ -164,10 +167,12 @@ def csw_global_dispatch(request):
                 mdict['repository']['filter'] += " AND " + groups_filter
 
         #csw = server.Csw(mdict, env, version='2.0.2')
+        #mdict['repository']['filter'] = "id IN (2, 3)"
         csw = server.Csw(mdict, env, version='2.0.2')
         
         #print('TESTE: ', mdict)
-        
+        print('mdict ::::::::::::::::::::')
+        print(mdict)
         content = csw.dispatch_wsgi()
 
         #for con in content:

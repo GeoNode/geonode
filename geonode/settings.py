@@ -417,10 +417,6 @@ INSTALLED_APPS = (
     # Boostrap admin theme
     # 'django_admin_bootstrapped.bootstrap3',
     # 'django_admin_bootstrapped',
-
-    # Bootstrap modal forms
-    'bootstrap_modal_forms',
-
     # Apps bundled with Django
     'modeltranslation',
     'dal',
@@ -1012,7 +1008,7 @@ PYCSW = {
             'url': CATALOGUE['default']['URL'],
             'encoding': 'UTF-8',
             'language': LANGUAGE_CODE,
-            'maxrecords': '20',
+            'maxrecords': '100000',
             'pretty_print': 'true',
             # 'domainquerytype': 'range',
             'domaincounts': 'true',
