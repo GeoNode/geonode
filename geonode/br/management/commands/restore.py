@@ -63,6 +63,14 @@ class Command(BaseCommand):
         utils.geoserver_option_list(parser)
 
         parser.add_argument(
+            '-i',
+            '--ignore-errors',
+            action='store_true',
+            dest='ignore_errors',
+            default=False,
+            help='Stop after any errors are encountered.')
+
+        parser.add_argument(
             '-f',
             '--force',
             action='store_true',
@@ -161,7 +169,7 @@ class Command(BaseCommand):
 
     def execute_restore(self, **options):
         self.validate_backup_file_options(**options)
-
+        ignore_errors = options.get('ignore_errors')
         force_exec = options.get('force_exec')
         skip_geoserver = options.get('skip_geoserver')
         skip_geoserver_info = options.get('skip_geoserver_info')
@@ -274,7 +282,7 @@ class Command(BaseCommand):
                         print(("[Sanity Check] Full Write Access to '{}' ...".format(target_folder)))
                         chmod_tree(target_folder)
                         self.restore_geoserver_backup(config, settings, target_folder,
-                                                      skip_geoserver_info, skip_geoserver_security)
+                                                      skip_geoserver_info, skip_geoserver_security, ignore_errors)
                         self.prepare_geoserver_gwc_config(config, settings)
                         self.restore_geoserver_raster_data(config, settings, target_folder)
                         self.restore_geoserver_vector_data(config, settings, target_folder)
@@ -285,7 +293,7 @@ class Command(BaseCommand):
                             with tempfile.TemporaryDirectory(dir=temp_dir_path) as restore_folder:
                                 recovery_folder = extract_archive(recovery_file, restore_folder)
                                 self.restore_geoserver_backup(config, settings, recovery_folder,
-                                                              skip_geoserver_info, skip_geoserver_security)
+                                                              skip_geoserver_info, skip_geoserver_security, ignore_errors)
                                 self.restore_geoserver_raster_data(config, settings, recovery_folder)
                                 self.restore_geoserver_vector_data(config, settings, recovery_folder)
                                 self.restore_geoserver_externals(config, settings, recovery_folder)
@@ -587,7 +595,7 @@ class Command(BaseCommand):
 
         return None
 
-    def restore_geoserver_backup(self, config, settings, target_folder, skip_geoserver_info, skip_geoserver_security):
+    def restore_geoserver_backup(self, config, settings, target_folder, skip_geoserver_info, skip_geoserver_security, ignore_errors):
         """Restore GeoServer Catalog"""
         url = settings.OGC_SERVER['default']['LOCATION']
         user = settings.OGC_SERVER['default']['USER']
@@ -605,6 +613,7 @@ class Command(BaseCommand):
             'BK_CLEANUP_TEMP=true',
             'BK_SKIP_SETTINGS={}'.format('true' if skip_geoserver_info else 'false'),
             'BK_SKIP_SECURITY={}'.format('true' if skip_geoserver_security else 'false'),
+            'BK_BEST_EFFORT={}'.format('true' if ignore_errors else 'false'),
             'exclude.file.path={}'.format(config.gs_exclude_file_path)
         ]
         data = {'restore': {'archiveFile': geoserver_bk_file,
