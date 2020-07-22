@@ -613,7 +613,22 @@ class ResourceBaseForm(TranslationModelForm):
                 else:
                     escaped += char
             return escaped
+
         keywords = self.cleaned_data['keywords']
+
+        keywords_tmp = []
+        chars = ['À','Á','Â','Ã','Å','Ç','È','É','Ê','Ì','Í','Î','Ò','Ó','Ô','Õ','Ö','Ù','Ú','Û','Ý','à','á','â','ã','ç','è','é','ê','ì','í','î','ò','ó','ô','õ','ù','ú','û', ' ']
+        utf = ['%C0','%C1','%C2','%C3','%C5','%C7','%C8','%C9','%CA','%CC','%CD','%CE','%D2','%D3','%D4','%D5','%D6','%D9','%DA','%DB','%DD','%E0','%E1','%E2','%E3','%E7','%E8','%E9','%EA','%EC','%ED','%EE','%F2','%F3','%F4','%F5','%F9','%FA','%FB', '%20']
+        i = 0
+        for key in keywords:
+            i = 0
+            for ut in utf:
+                if key.find(ut) > -1:
+                    key = key.replace(ut, chars[i])
+                i += 1
+            keywords_tmp.append(key)
+
+        keywords = keywords_tmp
 
         _unsescaped_kwds = []
         for k in keywords:
