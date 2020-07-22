@@ -113,7 +113,7 @@ class Command(BaseCommand):
                 config.save()
 
     def execute_backup(self, **options):
-        # ignore_errors = options.get('ignore_errors')
+        ignore_errors = options.get('ignore_errors')
         config = utils.Config(options)
         force_exec = options.get('force_exec')
         backup_dir = options.get('backup_dir')
@@ -138,7 +138,7 @@ class Command(BaseCommand):
             os.chmod(target_folder, 0o777)
 
             if not skip_geoserver:
-                self.create_geoserver_backup(config, settings, target_folder)
+                self.create_geoserver_backup(config, settings, target_folder, ignore_errors)
                 self.dump_geoserver_raster_data(config, settings, target_folder)
                 self.dump_geoserver_vector_data(config, settings, target_folder)
                 print("Dumping geoserver external resources")
@@ -282,7 +282,7 @@ class Command(BaseCommand):
 
                 return str(os.path.join(backup_dir, dir_time_suffix+'.zip'))
 
-    def create_geoserver_backup(self, config, settings, target_folder):
+    def create_geoserver_backup(self, config, settings, target_folder, ignore_errors):
         # Create GeoServer Backup
         url = settings.OGC_SERVER['default']['LOCATION']
         user = settings.OGC_SERVER['default']['USER']
@@ -308,6 +308,7 @@ class Command(BaseCommand):
             'BK_CLEANUP_TEMP=true',
             'BK_SKIP_SETTINGS=false',
             'BK_SKIP_SECURITY=false',
+            'BK_BEST_EFFORT={}'.format('true' if ignore_errors else 'false'),
             'exclude.file.path={}'.format(config.gs_exclude_file_path)
         ]
         data = {'backup': {'archiveFile': geoserver_bk_file, 'overwrite': 'true',
