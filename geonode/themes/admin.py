@@ -21,7 +21,7 @@
 from django import forms
 from django.contrib import admin
 
-from .models import Partner, GeoNodeThemeCustomization
+from .models import Partner, GeoNodeThemeCustomization, JumbotronThemeSlide
 
 
 @admin.register(Partner)
@@ -79,3 +79,8 @@ class GeoNodeThemeCustomizationAdmin(admin.ModelAdmin):
     form = GeonodeThemCustomizationForm
     list_display = ('id', 'is_enabled', 'name', 'date', 'description')
     list_display_links = ('id', 'name',)
+
+
+@admin.register(JumbotronThemeSlide)
+class JumbotronThemeSlideAdmin(admin.ModelAdmin):
+    pass
