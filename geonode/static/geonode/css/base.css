@@ -8176,3 +8176,46 @@ form-inline {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+.geonode-slide-show .jumbotron {
+  background: #333 !important;
+  padding: 6em 0px 2em 0px !important;
+}
+.geonode-slide-show .jumbotron:after {
+  background-image: none !important;
+}
+.geonode-slide-show .jumbotron .container {
+  max-width: 100%;
+  width: 100% !important;
+  padding: 0px;
+  margin: 0px;
+}
+.geonode-slide-show .jumbotron .container .carousel-header {
+  padding-left: 20px;
+}
+.geonode-slide-show .jumbotron .container .carousel-caption h1,
+.geonode-slide-show .jumbotron .container h2,
+.geonode-slide-show .jumbotron .container h3,
+.geonode-slide-show .jumbotron .container h4,
+.geonode-slide-show .jumbotron .container h5,
+.geonode-slide-show .jumbotron .container h6 {
+  font-weight: 700;
+}
+.geonode-slide-show .jumbotron .container .carousel-caption p {
+  font-size: 21px !important;
+  font-weight: 200 !important;
+}
+.geonode-slide-show .jumbotron .container .carousel-caption {
+  background: rgba(0, 0, 0, 0.4);
+  text-align: left;
+  left: 0px;
+  right: 0px;
+  padding-left: 30px;
+}
+@media screen and (min-width: 768px) {
+  .geonode-slide-show .jumbotron .container .carousel-header {
+    position: absolute;
+    top: 0px;
+    left: 10px;
+    z-index: 1;
+  }
+}

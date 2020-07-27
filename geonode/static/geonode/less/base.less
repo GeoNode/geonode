@@ -1704,3 +1704,47 @@ form-inline {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
+.geonode-slide-show .jumbotron {
+	background: #333 !important;
+	padding: 6em 0px 2em 0px !important;
+	&:after {
+		background-image: none !important;
+	}
+	.container {
+		max-width: 100%;
+		width: 100% !important;
+		padding: 0px;
+		margin: 0px;
+		.carousel-header {
+			padding-left: 20px;
+		}
+		.carousel-caption h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6 {
+			font-weight: 700;
+		}
+		.carousel-caption p {
+			font-size: 21px !important;
+			font-weight: 200 !important;
+		}
+		.carousel-caption {
+			background: rgba(0, 0, 0, 0.4);
+			text-align: left;
+			left: 0px;
+			right: 0px;
+			padding-left: 30px;
+		}
+		@media screen and (min-width: 768px) {
+			.carousel-header {
+				position: absolute;
+				top: 0px;
+				left: 10px;
+				z-index: 1;
+			}
+		}
+	}
+}
