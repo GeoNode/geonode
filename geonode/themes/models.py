@@ -59,9 +59,7 @@ class JumbotronThemeSlide(models.Model):
     slide_name = models.CharField(max_length=255, unique=True)
     jumbotron_slide_image = models.ImageField(
         upload_to='img/%Y/%m', verbose_name="Jumbotron slide background")
-    jumbotron_slide_image_thumbnail = ImageSpecField(source='jumbotron_slide_image',
-                                                     processors=[ResizeToFill(2080, 450)],
-                                                     options={'quality': 60})
+    jumbotron_slide_image_thumbnail = ImageSpecField(source='jumbotron_slide_image', options={'quality': 90})
     jumbotron_slide_content = models.TextField(
         null=True, blank=True, verbose_name="Jumbotron slide content",
         help_text=_("Fill in this section with markdown"))
