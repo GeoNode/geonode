@@ -25,7 +25,6 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.utils.translation import ugettext_noop as _
 from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill
 
 
 THEME_CACHE_KEY = 'enabled_theme'
@@ -59,7 +58,7 @@ class JumbotronThemeSlide(models.Model):
     slide_name = models.CharField(max_length=255, unique=True)
     jumbotron_slide_image = models.ImageField(
         upload_to='img/%Y/%m', verbose_name="Jumbotron slide background")
-    jumbotron_slide_image_thumbnail = ImageSpecField(source='jumbotron_slide_image', options={'quality': 90})
+    jumbotron_slide_image_thumbnail = ImageSpecField(source='jumbotron_slide_image', options={'quality': 60})
     jumbotron_slide_content = models.TextField(
         null=True, blank=True, verbose_name="Jumbotron slide content",
         help_text=_("Fill in this section with markdown"))
