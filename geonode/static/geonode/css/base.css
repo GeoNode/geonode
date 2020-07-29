@@ -8191,6 +8191,7 @@ form-inline {
 .home .geonode-slide-show .jumbotron .container img {
   width: 100%;
   height: 30em;
+  object-fit: cover;
 }
 .home .geonode-slide-show .jumbotron .container .carousel-control span {
   color: #000;
