@@ -54,7 +54,7 @@
 				{% for slide in slides %}
 				<div class="item {% if forloop.counter == 1 %}active{%endif%}">
 					{% if slide.jumbotron_slide_image %}
-				   <img src="{{ slide.jumbotron_slide_image.url }}" alt="{{ slide.slide_name }}">
+				   <img src="{{ slide.jumbotron_slide_image_thumbnail.url }}" alt="{{ slide.slide_name }}">
 				   {% endif %}
 				   {% if not slide.hide_jumbotron_slide_content %}
 				   <div class="carousel-caption">
