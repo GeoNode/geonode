@@ -37,6 +37,7 @@ from . import version
 from geonode.api.urls import api
 from geonode.api.views import verify_token, user_info, roles, users, admin_role
 from geonode.base.views import thumbnail_upload
+from geonode.base.utils import get_resource_category_context
 
 from geonode import geoserver, qgis_server  # noqa
 from geonode.utils import check_ogc_backend
@@ -56,7 +57,7 @@ sitemaps = {
     "map": MapSitemap
 }
 
-homepage = register_url_event()(TemplateView.as_view(template_name='index.html'))
+homepage = register_url_event()(TemplateView.as_view(template_name='index.html', get_context_data=get_resource_category_context))
 
 urlpatterns = [
     url(r'^$',

@@ -32,6 +32,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.storage import FileSystemStorage
 from django.core.files.storage import default_storage as storage
+from django.db.models import Count
 
 # Geonode functionality
 from guardian.shortcuts import get_perms, remove_perm, assign_perm
@@ -49,6 +50,14 @@ _names = ['Zipped Shapefile', 'Zipped', 'Shapefile', 'GML 2.0', 'GML 3.1.1', 'CS
           'GeoJSON', 'Excel', 'Legend', 'GeoTIFF', 'GZIP', 'Original Dataset',
           'ESRI Shapefile', 'View in Google Earth', 'KML', 'KMZ', 'Atom', 'DIF',
           'Dublin Core', 'ebRIM', 'FGDC', 'ISO', 'ISO with XSL']
+
+
+def get_resource_category_context():
+    available_resource_categories = ResourceBase.objects.filter(category__isnull=False)\
+        .values('category__identifier', 'category__fa_class', 'category__description').annotate(count=Count('category__identifier'))
+    return {
+        'iso_formats': available_resource_categories
+    }
 
 
 def delete_orphaned_thumbs():

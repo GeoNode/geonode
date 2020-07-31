@@ -8176,3 +8176,16 @@ form-inline {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+.iso-categories .row {
+  justify-content: center;
+}
+.iso-categories .row span {
+  font-size: 0.7em !important;
+  position: absolute;
+  margin-top: 31%;
+  margin-left: 29%;
+  background-color: #2d689c;
+}
+.iso-categories .row a:hover span {
+  background-color: black;
+}
