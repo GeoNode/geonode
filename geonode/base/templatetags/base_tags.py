@@ -30,6 +30,7 @@ from django.conf import settings
 
 from guardian.shortcuts import get_objects_for_user
 
+from geonode.base.models import ResourceBase
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
@@ -347,6 +348,18 @@ def render_nav_menu(placeholder_name):
         pass
 
     return {'menus': OrderedDict(menus.items())}
+
+
+@register.inclusion_tag(filename='base/iso_categories.html')
+def get_visibile_resources(user):
+    categories = get_objects_for_user(user, 'view_resourcebase', klass=ResourceBase, any_perm=False)\
+        .filter(category__isnull=False).values('category__gn_description',
+                                               'category__fa_class', 'category__description', 'category__identifier')\
+        .annotate(count=Count('category'))
+
+    return {
+        'iso_formats': categories
+    }
 
 
 @register.simple_tag
