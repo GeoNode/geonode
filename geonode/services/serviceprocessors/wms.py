@@ -448,7 +448,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 
     def _offers_geonode_projection(self):
         geonode_projection = getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857")
-        if len(list(self.get_resources())) >= 0:
+        if len(list(self.get_resources())) > 0:
             first_layer = list(self.get_resources())[0]
             return geonode_projection in first_layer.crsOptions
         else:
