@@ -54,7 +54,7 @@ _names = ['Zipped Shapefile', 'Zipped', 'Shapefile', 'GML 2.0', 'GML 3.1.1', 'CS
 
 def get_resource_category_context():
     available_resource_categories = ResourceBase.objects.filter(category__isnull=False)\
-        .values('category__identifier', 'category__fa_class', 'category__description').annotate(count=Count('category__identifier'))
+        .values('category__gn_description', 'category__fa_class', 'category__description').annotate(count=Count('category__identifier'))
     return {
         'iso_formats': available_resource_categories
     }
