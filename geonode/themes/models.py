@@ -23,6 +23,8 @@ from django.template.defaultfilters import slugify
 from django.core.cache import cache
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from django.utils.translation import ugettext_noop as _
+from imagekit.models import ImageSpecField
 
 
 THEME_CACHE_KEY = 'enabled_theme'
@@ -52,6 +54,28 @@ class Partner(models.Model):
         verbose_name_plural = 'Partners'
 
 
+class JumbotronThemeSlide(models.Model):
+    slide_name = models.CharField(max_length=255, unique=True)
+    jumbotron_slide_image = models.ImageField(
+        upload_to='img/%Y/%m', verbose_name="Jumbotron slide background")
+    jumbotron_slide_image_thumbnail = ImageSpecField(source='jumbotron_slide_image', options={'quality': 60})
+    jumbotron_slide_content = models.TextField(
+        null=True, blank=True, verbose_name="Jumbotron slide content",
+        help_text=_("Fill in this section with markdown"))
+    hide_jumbotron_slide_content = models.BooleanField(
+        default=False,
+        verbose_name="Hide text in the jumbotron slide",
+        help_text=_("Check this if the jumbotron background image already contains text"))
+    is_enabled = models.BooleanField(
+        default=True,
+        help_text=_("Disabling this slide will hide it from the slide show"))
+
+    def __str__(self):
+        get_icon = (lambda arg: '[✓]' if arg else '[✗]')
+        return '{} | <Enabled: {} -- Hide Text: {}>'.format(
+            self.slide_name, get_icon(self.is_enabled), get_icon(self.hide_jumbotron_slide_content))
+
+
 class GeoNodeThemeCustomization(models.Model):
     name = models.CharField(max_length=100, help_text="This will not appear anywhere.")
     date = models.DateTimeField(auto_now_add=True, blank=True, help_text="This will not appear anywhere.")
@@ -66,6 +90,10 @@ class GeoNodeThemeCustomization(models.Model):
         default=False,
         verbose_name="Hide text in the jumbotron",
         help_text="Check this if the jumbotron backgroud image already contains text")
+    welcome_theme = models.CharField(max_length=255, default="JUMBOTRON_BG",
+                                     choices=(("JUMBOTRON_BG", "jumbotron background"), ("SLIDE_SHOW", "slide show"),),
+                                     help_text=_("Choose between using jumbotron background and slide show"))
+    jumbotron_slide_show = models.ManyToManyField(JumbotronThemeSlide, blank=True)
     jumbotron_welcome_title = models.CharField(max_length=255, null=True, blank=True, verbose_name="Jumbotron title")
     jumbotron_welcome_content = models.TextField(null=True, blank=True, verbose_name="Jumbotron content")
     jumbotron_cta_hide = models.BooleanField(default=False, blank=True, verbose_name="Hide call to action")

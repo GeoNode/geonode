@@ -483,6 +483,13 @@ INSTALLED_APPS = (
 if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
     INSTALLED_APPS += ('django_celery_beat',)
 
+INSTALLED_APPS += ('markdownify',)
+MARKDOWNIFY_STRIP = os.getenv('MARKDOWNIFY_STRIP', False)
+markdown_white_listed_tags = {
+    'a', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'ul', 'li', 'span', 'blockquote', 'strong', 'code'
+}
+MARKDOWNIFY_WHITELIST_TAGS = os.getenv('MARKDOWNIFY_WHITELIST_TAGS', markdown_white_listed_tags)
+
 INSTALLED_APPS += GEONODE_APPS
 
 REST_FRAMEWORK = {
