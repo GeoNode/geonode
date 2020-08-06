@@ -9,7 +9,9 @@ def custom_theme(request):
     if theme is None:
         try:
             theme = GeoNodeThemeCustomization.objects.prefetch_related('partners').get(is_enabled=True)
+            slides = theme.jumbotron_slide_show.filter(is_enabled=True)
         except Exception:
             theme = {}
+            slides = []
         cache.set(THEME_CACHE_KEY, theme)
-    return {'custom_theme': theme}
+    return {'custom_theme': theme, 'slides': slides}
