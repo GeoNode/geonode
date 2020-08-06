@@ -42,11 +42,11 @@ echo "BASEURL is $BASEURL"
 echo "-----------------------------------------------------"
 echo "1. Initializing Geodatadir"
 
-if [ "$(ls -A /spcgeonode-geodatadir)" ]; then
+if [ "$(ls -A "${GEOSERVER_DATA_DIR}")" ]; then
     echo 'Geodatadir not empty, skipping initialization...'
 else
     echo 'Geodatadir empty, we run initialization...'
-    cp -rf /data/* /spcgeonode-geodatadir/
+    cp -rf /data/* "${GEOSERVER_DATA_DIR}"/
 fi
 
 
@@ -59,11 +59,15 @@ fi
 echo "-----------------------------------------------------"
 echo "2. (Re)setting admin account"
 
-ADMIN_ENCRYPTED_PASSWORD=$(/usr/lib/jvm/java-1.8-openjdk/jre/bin/java -classpath /geoserver/webapps/geoserver/WEB-INF/lib/jasypt-1.9.2.jar org.jasypt.intf.cli.JasyptStringDigestCLI digest.sh algorithm=SHA-256 saltSizeBytes=16 iterations=100000 input="$ADMIN_PASSWORD" verbose=0 | tr -d '\n')
-sed -i -r "s|<user enabled=\".*\" name=\".*\" password=\".*\"/>|<user enabled=\"true\" name=\"$ADMIN_USERNAME\" password=\"digest1:$ADMIN_ENCRYPTED_PASSWORD\"/>|" "/spcgeonode-geodatadir/security/usergroup/default/users.xml"
-# TODO : more selective regexp for this one as there may be several users...
-sed -i -r "s|<userRoles username=\".*\">|<userRoles username=\"$ADMIN_USERNAME\">|" "/spcgeonode-geodatadir/security/role/default/roles.xml"
-ADMIN_ENCRYPTED_PASSWORD=""
+if [[ -z "${EXISTING_DATA_DIR}" ]]; then \
+  ADMIN_ENCRYPTED_PASSWORD=$(/usr/lib/jvm/java-1.8-openjdk/jre/bin/java -classpath /geoserver/webapps/geoserver/WEB-INF/lib/jasypt-1.9.2.jar org.jasypt.intf.cli.JasyptStringDigestCLI digest.sh algorithm=SHA-256 saltSizeBytes=16 iterations=100000 input="$ADMIN_PASSWORD" verbose=0 | tr -d '\n')
+  sed -i -r "s|<user enabled=\".*\" name=\".*\" password=\".*\"/>|<user enabled=\"true\" name=\"$ADMIN_USERNAME\" password=\"digest1:$ADMIN_ENCRYPTED_PASSWORD\"/>|" "${GEOSERVER_DATA_DIR}/security/usergroup/default/users.xml"
+  # TODO : more selective regexp for this one as there may be several users...
+  sed -i -r "s|<userRoles username=\".*\">|<userRoles username=\"$ADMIN_USERNAME\">|" "${GEOSERVER_DATA_DIR}/security/role/default/roles.xml"
+  ADMIN_ENCRYPTED_PASSWORD=""
+fi;
+
+
 
 ############################
 # 3. WAIT FOR POSTGRESQL
@@ -91,7 +95,7 @@ set -e
 echo "-----------------------------------------------------"
 echo "4. (Re)setting OAuth2 Configuration"
 
-# Edit /spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml
+# Edit ${GEOSERVER_DATA_DIR}/security/filter/geonode-oauth2/config.xml
 
 # Getting oauth keys and secrets from the database
 CLIENT_ID=$(psql "$DATABASE_URL" -c "SELECT client_id FROM oauth2_provider_application WHERE name='GeoServer'" -t | tr -d '[:space:]')
@@ -101,20 +105,20 @@ if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ]; then
     exit 1
 fi
 
-sed -i -r "s|<cliendId>.*</cliendId>|<cliendId>$CLIENT_ID</cliendId>|" "/spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml"
-sed -i -r "s|<clientSecret>.*</clientSecret>|<clientSecret>$CLIENT_SECRET</clientSecret>|" "/spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml"
+sed -i -r "s|<cliendId>.*</cliendId>|<cliendId>$CLIENT_ID</cliendId>|" "${GEOSERVER_DATA_DIR}/security/filter/geonode-oauth2/config.xml"
+sed -i -r "s|<clientSecret>.*</clientSecret>|<clientSecret>$CLIENT_SECRET</clientSecret>|" "${GEOSERVER_DATA_DIR}/security/filter/geonode-oauth2/config.xml"
 # OAuth endpoints (client)
 # These must be reachable by user
-sed -i -r "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>$GEONODE_URL/o/authorize/</userAuthorizationUri>|" "/spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml"
-sed -i -r "s|<redirectUri>.*</redirectUri>|<redirectUri>$BASEURL/index.html</redirectUri>|" "/spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml"
-sed -i -r "s|<logoutUri>.*</logoutUri>|<logoutUri>$GEONODE_URL/account/logout/</logoutUri>|" "/spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml"
+sed -i -r "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>$GEONODE_URL/o/authorize/</userAuthorizationUri>|" "${GEOSERVER_DATA_DIR}/security/filter/geonode-oauth2/config.xml"
+sed -i -r "s|<redirectUri>.*</redirectUri>|<redirectUri>$BASEURL/index.html</redirectUri>|" "${GEOSERVER_DATA_DIR}/security/filter/geonode-oauth2/config.xml"
+sed -i -r "s|<logoutUri>.*</logoutUri>|<logoutUri>$GEONODE_URL/account/logout/</logoutUri>|" "${GEOSERVER_DATA_DIR}/security/filter/geonode-oauth2/config.xml"
 # OAuth endpoints (server)
 # These must be reachable by server (GeoServer must be able to reach GeoNode)
-sed -i -r "s|<accessTokenUri>.*</accessTokenUri>|<accessTokenUri>$INTERNAL_OAUTH2_BASEURL/o/token/</accessTokenUri>|" "/spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml"
-sed -i -r "s|<checkTokenEndpointUrl>.*</checkTokenEndpointUrl>|<checkTokenEndpointUrl>$INTERNAL_OAUTH2_BASEURL/api/o/v4/tokeninfo/</checkTokenEndpointUrl>|" "/spcgeonode-geodatadir/security/filter/geonode-oauth2/config.xml"
+sed -i -r "s|<accessTokenUri>.*</accessTokenUri>|<accessTokenUri>$INTERNAL_OAUTH2_BASEURL/o/token/</accessTokenUri>|" "${GEOSERVER_DATA_DIR}/security/filter/geonode-oauth2/config.xml"
+sed -i -r "s|<checkTokenEndpointUrl>.*</checkTokenEndpointUrl>|<checkTokenEndpointUrl>$INTERNAL_OAUTH2_BASEURL/api/o/v4/tokeninfo/</checkTokenEndpointUrl>|" "${GEOSERVER_DATA_DIR}/security/filter/geonode-oauth2/config.xml"
 
 # Edit /security/role/geonode REST role service/config.xml
-sed -i -r "s|<baseUrl>.*</baseUrl>|<baseUrl>$GEONODE_URL</baseUrl>|" "/spcgeonode-geodatadir/security/role/geonode REST role service/config.xml"
+sed -i -r "s|<baseUrl>.*</baseUrl>|<baseUrl>$GEONODE_URL</baseUrl>|" "${GEOSERVER_DATA_DIR}/security/role/geonode REST role service/config.xml"
 
 CLIENT_ID=""
 CLIENT_SECRET=""
@@ -127,7 +131,7 @@ CLIENT_SECRET=""
 echo "-----------------------------------------------------"
 echo "5. (Re)setting Baseurl"
 
-sed -i -r "s|<proxyBaseUrl>.*</proxyBaseUrl>|<proxyBaseUrl>$BASEURL</proxyBaseUrl>|" "/spcgeonode-geodatadir/global.xml"
+sed -i -r "s|<proxyBaseUrl>.*</proxyBaseUrl>|<proxyBaseUrl>$BASEURL</proxyBaseUrl>|" "${GEOSERVER_DATA_DIR}/global.xml"
 
 ############################
 # 6. IMPORTING SSL CERTIFICATE
