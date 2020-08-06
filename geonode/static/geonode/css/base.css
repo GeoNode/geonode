@@ -8177,7 +8177,7 @@ form-inline {
   border-radius: 4px;
 }
 .home .geonode-slide-show .jumbotron {
-  padding: 6em 0 0 0;
+  padding: 4.5em 0 0 0;
 }
 .home .geonode-slide-show .jumbotron:after {
   background-image: none;
@@ -8214,6 +8214,7 @@ form-inline {
 .home .geonode-slide-show .jumbotron .container .carousel-caption {
   background: rgba(0, 0, 0, 0.4);
   text-align: left;
+  padding-bottom: 3em;
   left: 0;
   right: 0;
   padding-left: 1.875em;

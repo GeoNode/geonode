@@ -46,9 +46,9 @@
 				{% endfor %}
 			 </ol>
 			 {% endif %}
-			 {% if custom_theme.jumbotron_welcome_title %}
-			 <h1 class="carousel-header">{{ custom_theme.jumbotron_welcome_title }}</h1>
-			 {% endif %}
+       {% with jumbotron_welcome_title=custom_theme.jumbotron_welcome_title|default:"Welcome"|template_trans %}
+       <h1 class="carousel-header">{% trans jumbotron_welcome_title %}</h1>
+       {% endwith %}
 			 <!-- Wrapper for slides -->
 			 <div class="carousel-inner" role="listbox">
 				{% for slide in slides %}
@@ -58,7 +58,9 @@
 				   {% endif %}
 				   {% if not slide.hide_jumbotron_slide_content %}
 				   <div class="carousel-caption">
-					  {{ slide.jumbotron_slide_content | markdownify }}
+            {% with jumbotron_slide_content=slide.jumbotron_slide_content|markdownify %}
+            {% trans jumbotron_slide_content %}
+            {% endwith %}
 				   </div>
 				   {% endif %}
 				</div>
