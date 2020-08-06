@@ -21,7 +21,7 @@
 import os
 from unittest.mock import patch
 
-from guardian.shortcuts import get_perms
+from guardian.shortcuts import assign_perm, get_perms
 from imagekit.cachefiles.backends import Simple
 from io import BytesIO
 from PIL import Image
@@ -33,7 +33,7 @@ from geonode.maps.models import Map
 from geonode.services.models import Service
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.models import (
-    ResourceBase, MenuPlaceholder, Menu, MenuItem, Configuration
+    ResourceBase, MenuPlaceholder, Menu, MenuItem, Configuration, TopicCategory
 )
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
@@ -42,6 +42,7 @@ from django.shortcuts import reverse
 
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.models import CuratedThumbnail
+from geonode.base.templatetags.base_tags import get_visibile_resources
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 
@@ -780,3 +781,27 @@ class TestOwnerRightsRequestUtils(TestCase):
     def test_msg_recipients_workflow_off(self):
         users_count = 0
         self.assertEqual(users_count, OwnerRightsRequestViewUtils.get_message_recipients().count())
+
+
+class TestGetVisibleResource(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create(username='mikel_arteta')
+        self.category = TopicCategory.objects.create(identifier='biota')
+        self.rb = ResourceBase.objects.create(category=self.category)
+
+    def test_category_data_not_shown_for_missing_resourcebase_permissions(self):
+        """
+        Test that a user without view permissions of a resource base does not see
+        ISO category format data of the ISO category
+        """
+        categories = get_visibile_resources(self.user)
+        self.assertEqual(categories['iso_formats'].count(), 0)
+
+    def test_category_data_shown_for_with_resourcebase_permissions(self):
+        """
+        Test that a user with view permissions of a resource base can see
+        ISO format data of the ISO category
+        """
+        assign_perm('view_resourcebase', self.user, self.rb)
+        categories = get_visibile_resources(self.user)
+        self.assertEqual(categories['iso_formats'].count(), 1)
