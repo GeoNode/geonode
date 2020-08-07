@@ -68,7 +68,7 @@ django-floppyforms<1.10.0
 django-forms-bootstrap<=3.1.0
 geonode-django-activity-stream==0.9.0
 django-autocomplete-light==3.5.1
-django-leaflet==0.27.0
+django-leaflet==0.27.1
 django-invitations<1.9.4
 django-recaptcha==2.0.6
 geonode-oauth-toolkit==2.0.0
