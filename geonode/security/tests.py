@@ -698,7 +698,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
         from geonode.geoserver.views import get_layer_capabilities
         capab = get_layer_capabilities(saved_layer, tolerant=True)
-        self.assertIsNotNone(capab)
+
         wms_capabilities_url = reverse('capabilities_layer', args=[saved_layer.id])
         wms_capabilities_resp = self.client.get(wms_capabilities_url)
         self.assertTrue(wms_capabilities_resp.status_code, 200)
