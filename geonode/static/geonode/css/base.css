@@ -8227,11 +8227,16 @@ form-inline {
     left: 0.625em;
     z-index: 1;
   }
+}
 .iso-categories .row {
   justify-content: center;
 }
 .iso-categories .row .col-lg-1 {
   margin-right: 1%;
+}
+.iso-categories .row .col-lg-1 .category h4 {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .iso-categories .row span {
   font-size: 0.7em !important;
