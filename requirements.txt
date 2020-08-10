@@ -131,7 +131,7 @@ coverage==5.2.1
 parse-type==0.5.2
 requests-toolbelt==0.9.1
 flake8==3.8.3
-pytest==5.4.3
+pytest==6.0.1
 pytest-bdd==3.4.0
 splinter==0.13.0
 pytest-splinter==2.1.0
