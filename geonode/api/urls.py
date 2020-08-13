@@ -17,8 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 from tastypie.api import Api
+from dynamic_rest import routers
 
 from . import api as resources
 from . import resourcebase_api as resourcebase_resources
@@ -40,3 +40,5 @@ api.register(resourcebase_resources.FeaturedResourceBaseResource())
 api.register(resourcebase_resources.LayerResource())
 api.register(resourcebase_resources.MapResource())
 api.register(resourcebase_resources.ResourceBaseResource())
+
+router = routers.DynamicRouter()

@@ -34,7 +34,7 @@ import geonode.proxy.urls
 from . import views
 from . import version
 
-from geonode.api.urls import api
+from geonode.api.urls import api, router
 from geonode.api.views import verify_token, user_info, roles, users, admin_role
 from geonode.base.views import thumbnail_upload
 
@@ -162,6 +162,8 @@ urlpatterns += [
     url(r'^api/roles', roles, name='roles'),
     url(r'^api/adminRole', admin_role, name='adminRole'),
     url(r'^api/users', users, name='users'),
+    url(r'^api/v2/', include(router.urls)),
+    url(r'^api/v2/api-auth/', include('rest_framework.urls', namespace='geonode_rest_framework')),
     url(r'', include(api.urls)),
 
     # Curated Thumbnail
