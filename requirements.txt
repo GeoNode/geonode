@@ -23,6 +23,7 @@ six==1.15.0
 tqdm==4.48.2
 Deprecated==1.2.10
 wrapt==1.12.1
+jsonfield==3.1.0
 
 # Django Apps
 django-allauth==0.42.0
@@ -60,26 +61,34 @@ numpy==1.19.*
 # Django Apps
 dj-database-url==0.5.0
 dj-pagination==2.5.0
-pinax-notifications==6.0.0
-pinax-ratings==4.0.0
 django-celery-monitor<=1.1.2
 django-celery-beat==2.0.0
 django-floppyforms<1.10.0
 django-forms-bootstrap<=3.1.0
-geonode-django-activity-stream==0.9.0
 django-autocomplete-light==3.5.1
 django-leaflet==0.27.1
 django-invitations<1.9.4
 django-recaptcha==2.0.6
-geonode-oauth-toolkit==2.0.0
+
+# REST
+djangorestframework==3.11.1
+djangorestframework_guardian==0.3.0
+drf_writable_nested==0.6.1
+dynamic-rest==1.9.6
+Markdown==3.2.2
+
+pinax-notifications==6.0.0
+pinax-ratings==4.0.0
 
 # GeoNode org maintained apps.
 django_mapstore_adapter==2.0.4.6
 django-geonode-mapstore-client==2.0.8.1
-django-geonode-client==1.0.9
-geonode-user-messages==2.0.1
 geonode-avatar==5.0.7
+django-geonode-client==1.0.9
+geonode-oauth-toolkit==2.0.0
+geonode-user-messages==2.0.1
 geonode-announcements==2.0.2
+geonode-django-activity-stream==0.9.0
 gn-arcrest==10.5.1
 geonode-dialogos==3.0.1
 geoserver-restconfig==2.0.4.6
