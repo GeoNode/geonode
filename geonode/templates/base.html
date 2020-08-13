@@ -236,7 +236,7 @@
         }
       </style>
     <![endif]-->
-    <link rel="search" type="application/opensearchdescription+xml" href="{{SITEURL}}catalogue/opensearch" title="{% trans "GeoNode Search" %}"/>
+    <link rel="search" type="application/opensearchdescription+xml" href="{% if SITEURL|default:""|slice:"-1:" == "/" %}{{SITEURL}}{% else %}{{SITEURL}}/{% endif %}catalogue/opensearch" title="{% trans "GeoNode Search" %}"/>
 
     <script>
         var siteUrl = '{{ SITEURL }}'.replace(/\/?$/, '/');
@@ -336,7 +336,7 @@
                 <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
                 {% endif %}
                 {% if user.is_superuser and not READ_ONLY_MODE %}
-                <li><a href="{{SITEURL}}admin/people/profile/add/">{% trans "Add User" %}</a></li>
+                <li><a href="{% if SITEURL|default:""|slice:"-1:" == "/" %}{{SITEURL}}{% else %}{{SITEURL}}/{% endif %}admin/people/profile/add/">{% trans "Add User" %}</a></li>
                 <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
                 {% endif %}
               </ul>
@@ -414,7 +414,7 @@
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "help" %}">{% trans "Help" %}</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="{{SITEURL}}account/logout/">{% trans "Log out" %}</a></li>
+                <li><a href="{% if SITEURL|default:""|slice:"-1:" == "/" %}{{SITEURL}}{% else %}{{SITEURL}}/{% endif %}account/logout/">{% trans "Log out" %}</a></li>
                 </ul>
               </li>
           {% else %}
@@ -506,7 +506,7 @@
             <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
             {% endif %}
             {% if user.is_superuser and not READ_ONLY_MODE %}
-            <li><a href="{{SITEURL}}admin/people/profile/add/">{% trans "Add User" %}</a></li>
+            <li><a href="{% if SITEURL|default:""|slice:"-1:" == "/" %}{{SITEURL}}{% else %}{{SITEURL}}/{% endif %}admin/people/profile/add/">{% trans "Add User" %}</a></li>
             <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
             {% endif %}
           </ul>
