@@ -68,6 +68,7 @@ from geonode.base.models import (
     Thesaurus,
     TopicCategory)
 from geonode.base.enumerations import CHARSETS
+from geonode.decorators import check_keyword_write_perms
 
 from geonode.layers.forms import (
     LayerForm,
@@ -853,6 +854,7 @@ def layer_feature_catalogue(
 
 
 @login_required
+@check_keyword_write_perms
 def layer_metadata(
         request,
         layername,
@@ -869,7 +871,7 @@ def layer_metadata(
         extra=0,
         form=LayerAttributeForm,
     )
-
+    current_keywords = [keyword.name for keyword in layer.keywords.all()]
     topic_category = layer.category
 
     # Add metadata_author or poc if missing
@@ -965,6 +967,7 @@ def layer_metadata(
         tkeywords_form = TKeywordForm(request.POST)
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
+        layer_form.disable_keywords_widget_for_non_superuser(request.user)
         attribute_form = layer_attribute_set(
             instance=layer,
             prefix="layer_attribute_set",
@@ -1058,7 +1061,7 @@ def layer_metadata(
             if new_author is not None:
                 layer.metadata_author = new_author
 
-        new_keywords = layer_form.cleaned_data['keywords']
+        new_keywords = current_keywords if request.keyword_readonly else layer_form.cleaned_data['keywords']
         new_regions = [x.strip() for x in layer_form.cleaned_data['regions']]
 
         layer.keywords.clear()
