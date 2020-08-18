@@ -184,7 +184,7 @@ services:
   # PostGIS database.
   postgres:
     # use geonode official postgis 11 image
-    image: geonode/postgis:11
+    image: geonode/postgis:latest
     build: ./postgis/
     environment:
       # database info, ${variables} are read from .env
