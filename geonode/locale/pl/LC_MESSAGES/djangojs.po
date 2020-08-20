@@ -25,7 +25,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-04-14 14:04+0000\n"
-"PO-Revision-Date: 2016-08-23 11:58+0000\n"
+"PO-Revision-Date: 2020-08-20 14:38+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Polish (http://www.transifex.com/geonode/geonode/language/"
 "pl/)\n"
@@ -35,16 +35,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
+"X-Generator: Poedit 2.3.1\n"
 
 #: geonode/monitoring/static/monitoring/bundle.js:170
 msgid "STORE_UPDATED"
-msgstr ""
+msgstr "STORE_UPDATED"
 
 #: geonode/people/templates/people/profile_detail.html:77
 #: geonode/people/templates/people/profile_detail.html:86
 #: geonode/people/templates/people/profile_detail.html:98
 msgid "Not provided."
-msgstr ""
+msgstr "Nie podano."
 
 #: geonode/static/geonode/js/upload/FileType.js:50
 #, javascript-format
@@ -57,32 +58,28 @@ msgstr "ESRI Shapefile"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:13
 msgid "ASCII Text File"
-msgstr ""
+msgstr "Plik tekstowy ASCII"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:18
 #: geonode/static/geonode/js/upload/FileTypes.js:23
 msgid "GeoTIFF"
-msgstr ""
+msgstr "GeoTIFF"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:29
 msgid "Comma Separated Value"
-msgstr ""
+msgstr "CSV"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:34
 msgid "Google Earth KML"
-msgstr "Google Earth KML"
+msgstr "KML"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:39
-#, fuzzy
-#| msgid "Google Earth KML"
 msgid "Google Earth KML with a GroundOverlay"
-msgstr "Google Earth KML"
+msgstr "KML z GroundOverlay"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:45
-#, fuzzy
-#| msgid "Google Earth KML"
 msgid "Google Earth KMZ"
-msgstr "Google Earth KML"
+msgstr "Earth KMZ"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:50
 msgid "GeoJSON"
@@ -90,16 +87,16 @@ msgstr "GeoJSON"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:55
 msgid "Zip Archive"
-msgstr ""
+msgstr "Archiwum ZIP"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:61
 msgid "ERDAS Imagine"
-msgstr ""
+msgstr "ERDAS Imagine"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:66
 #: geonode/static/geonode/js/upload/FileTypes.js:71
 msgid "National Imagery Transmission Format"
-msgstr ""
+msgstr "National Imagery Transmission Format"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:77
 msgid "Controlled Image Base-1 Meter"
@@ -150,26 +147,24 @@ msgid "MrSID-Multi-resolution Seamless Image Database"
 msgstr ""
 
 #: geonode/static/geonode/js/upload/FileTypes.js:157
-#, fuzzy
-#| msgid "Metadata Links:"
 msgid "XML Metadata File"
-msgstr "Metadanych Linki:"
+msgstr "Plik metadanych XML"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:163
 msgid "Style Layer Descriptor"
-msgstr ""
+msgstr "SLD"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:169
 msgid "JPEG"
-msgstr ""
+msgstr "JPEG"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:174
 msgid "PNG"
-msgstr ""
+msgstr "PNG"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:179
 msgid "GIF"
-msgstr ""
+msgstr "GIF"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:332
 #: geonode/static/geonode/js/upload/LayerInfo.js:503
@@ -177,24 +172,20 @@ msgid "Unexpected Error"
 msgstr "Nieoczekiwany błąd"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:370
-#, fuzzy
-#| msgid "Layer Info"
 msgid " Info"
-msgstr "Warstwa Info"
+msgstr " Info"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:371
 msgid "Edit Metadata"
 msgstr "Edytuj metadane"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:372
-#, fuzzy
-#| msgid "Edit Metadata"
 msgid "Upload Metadata"
-msgstr "Edytuj metadane"
+msgstr "Prześlij metadane"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:373
 msgid "Upload SLD"
-msgstr ""
+msgstr "Prześlij plik SLD"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:374
 msgid "Manage Styles"
@@ -202,68 +193,68 @@ msgstr "Zarządzanie stylami"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:387
 msgid "The column %1 was renamed to %2 <br/>"
-msgstr ""
+msgstr "Nazwa kolumny %1 została zmieniona na %2 <br/>"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:393
 msgid "Your "
-msgstr ""
+msgstr "Twój "
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:422
 msgid "Performing Final GeoServer Config Step"
-msgstr "Wykonywanie GeoServer Config Krok końcowy"
+msgstr "Wykonywanie końcowego kroku konfiguracji GeoServera"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:439
 #: geonode/static/geonode/js/upload/LayerInfo.js:483
 msgid "You need to specify more information in order to complete your upload"
-msgstr "Musisz podać więcej informacji w celu zakończenia przesyłania"
+msgstr "Musisz podać więcej informacji, aby zakończyć przesyłanie"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:463
 msgid "Files are ready to be ingested!"
-msgstr ""
+msgstr "Pliki są gotowe do przesłania do systemu!"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:466
 msgid "A temporal dimension may be added to this Layer."
-msgstr ""
+msgstr "Do tej warstwy można dodać wymiar czasowy."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:521
 msgid "Performing GeoServer Config Step"
-msgstr "Konfiguracja Krok Wykonywanie GeoServer"
+msgstr "Wykonywanie kroku konfiguracji GeoServera"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:609
 msgid ""
 "<br>Please check your network connection. In case of Layer Upload make sure "
 "GeoServer is running and accepting connections."
 msgstr ""
+"<br> Sprawdź połączenie sieciowe. W przypadku przesyłania warstw upewnij "
+"się, że GeoServer jest uruchomiony i akceptuje połączenia."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:613
 #: geonode/static/geonode/js/upload/LayerInfo.js:616
 #: geonode/static/geonode/js/upload/LayerInfo.js:623
 #: geonode/static/geonode/js/upload/LayerInfo.js:626
 msgid "<br>"
-msgstr ""
+msgstr "<br>"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:618
 msgid "<br>Bad request or URL not found."
-msgstr ""
+msgstr "<br> Złe żądanie lub nie znaleziono adresu URL."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:628
-#, fuzzy
-#| msgid "Unknown Map"
 msgid "<br>Unknown."
-msgstr "Nieznane Mapa"
+msgstr "<br> Nieznane."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:636
 msgid "Layer files uploaded, configuring in GeoServer"
-msgstr "Pliki warstwy dodane, konfigurowanie w GeoServer"
+msgstr "Pliki warstwy zostały przesłane i są konfigurowane w GeoServerze"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:787
 msgid "Remove"
-msgstr "Usunąć"
+msgstr "Usuń"
 
 #: geonode/static/geonode/js/upload/upload.js:126
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
-msgstr "Plik %s jest nieobsługiwany typ pliku, wybierz inny plik."
+msgstr "Plik %s jest nieobsługiwanym typ pliku, wybierz inny plik."
 
 #: geonode/static/geonode/js/upload/upload.js:296
 msgid ""
@@ -272,43 +263,47 @@ msgid ""
 "\n"
 "Please check for errors in the form!"
 msgstr ""
+"Próbujesz przesłać niekompletny zestaw plików lub nie wszystkie obowiązkowe "
+"pola zostały sprawdzone.\n"
+"\n"
+"Sprawdź, czy w formularzu nie ma błędów!"
 
 #: geonode/templates/admin/base_site.html:4
 msgid "GeoNode site admin"
-msgstr ""
+msgstr "Administrator serwisu GeoNode"
 
 #: geonode/templates/admin/base_site.html:7
 msgid "GeoNode administration"
-msgstr ""
+msgstr "Administracja GeoNode"
 
 #: geonode/templates/index.html:19
 msgid "Welcome"
-msgstr ""
+msgstr "Witamy"
 
 #: geonode/templates/index.html:21
 msgid ""
 "GeoNode is an open source platform for sharing geospatial data and maps."
 msgstr ""
+"GeoNode to platforma open source do udostępniania map i danych "
+"geoprzestrzennych."
 
 #: geonode/templates/index.html:25
 msgid "Get Started &raquo;"
-msgstr ""
+msgstr "Zaczynajmy &raquo;"
 
 #: geonode/templates/index.html:82 geonode/templates/index.html:102
-#, fuzzy
-#| msgid "Now"
 msgid "No"
-msgstr "Now"
+msgstr "Nie"
 
 #: geonode/templates/metadata_form_js.html:75
 #: geonode/templates/metadata_form_js.html:80
 msgid "some schema mandatory fields are missing"
-msgstr ""
+msgstr "brakuje niektórych obowiązkowych pól schematu"
 
 #: geonode/templates/metadata_form_js.html:75
 #: geonode/templates/metadata_form_js.html:80
 msgid "Metadata Schema mandatory fields completed"
-msgstr ""
+msgstr "Wypełniono obowiązkowe pola schematu metadanych"
 
 #: geonode/templates/metadata_form_js.html:244
 #: geonode/templates/metadata_form_js.html:283
@@ -316,6 +311,8 @@ msgid ""
 "<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field "
 "declared Mandatory by the Metadata Schema</strong></p>"
 msgstr ""
+"<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Pole "
+"zadeklarowane jako obowiązkowe w schemacie metadanych</strong></p>"
 
 #~ msgid "Your layer was successfully uploaded"
 #~ msgstr "Twoja warstwa została pomyślnie przesłany"
