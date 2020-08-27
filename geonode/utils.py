@@ -1153,7 +1153,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     list_col_original = []
     list_col = {}
 
-    for i in range(0, inLayerDefn.GetFieldCount()):
+    for i in range(inLayerDefn.GetFieldCount()):
         try:
             field_name = inLayerDefn.GetFieldDefn(i).GetName()
             if a.match(field_name):
@@ -1162,21 +1162,12 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
             logger.exception(e)
             return True, None, None
 
-    for i in range(0, inLayerDefn.GetFieldCount()):
+    for i in range(inLayerDefn.GetFieldCount()):
         try:
             field_name = inLayerDefn.GetFieldDefn(i).GetName()
             if not a.match(field_name):
                 # once the field_name contains Chinese, to use slugify_zh
-                has_ch = False
-                for ch in field_name:
-                    try:
-                        if '\u4e00' <= ch.decode("utf-8", "surrogateescape") <= '\u9fff':
-                            has_ch = True
-                            break
-                    except Exception:
-                        has_ch = True
-                        break
-                if has_ch:
+                if any('\u4e00' <= ch <= '\u9fff' for ch in field_name):
                     new_field_name = slugify_zh(field_name, separator='_')
                 else:
                     new_field_name = slugify(field_name)
@@ -1189,7 +1180,8 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
                     if new_field_name.endswith('_' + str(j)):
                         j += 1
                         new_field_name = new_field_name[:-2] + '_' + str(j)
-                list_col.update({field_name: new_field_name})
+                if field_name != new_field_name:
+                    list_col[field_name] = new_field_name
         except Exception as e:
             logger.exception(e)
             return True, None, None
@@ -1201,7 +1193,10 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
             for key in list_col.keys():
                 qry = "ALTER TABLE \"{}\" RENAME COLUMN \"{}\" TO \"{}\"".format(inLayer.GetName(), key, list_col[key])
                 inDataSource.ExecuteSQL(qry)
-        except Exception as e:
+        except TypeError as e:
+            logger.exception(e)
+            return True, None, None
+        except UnicodeEncodeError as e:
             logger.exception(e)
             raise GeoNodeException(
                 "Could not decode SHAPEFILE attributes by using the specified charset '{}'.".format(charset))
