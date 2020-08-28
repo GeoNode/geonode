@@ -1,7 +1,7 @@
 FROM openjdk:8-jre-alpine
 
-ARG version=2.17.1
-ARG branch=2.17.1
+ARG version=2.17.2
+ARG branch=2.17.2
 ARG plugins=
 
 # Install dependencies
@@ -18,7 +18,8 @@ WORKDIR /
 RUN echo "Download geoserver for geonode" && \
     wget https://downloads.sourceforge.net/project/geoserver/GeoServer/$version/geoserver-$version-bin.zip && \
     wget https://build.geo-solutions.it/geonode/geoserver/latest/geoserver-$branch.war --no-check-certificate && \
-    unzip geoserver-$version-bin.zip && \
+    mkdir -p geoserver-$version && \
+    unzip geoserver-$version-bin.zip -d geoserver-$version && \
     mv geoserver-$version geoserver && \
     rm /geoserver-$version-bin.zip && \
     rm /geoserver-$version/webapps/geoserver/* -rf && \

@@ -101,16 +101,22 @@ app, created = Application.objects.get_or_create(
 )
 app.skip_authorization = True
 _host = os.getenv('HTTPS_HOST', "") if os.getenv('HTTPS_HOST', "") != "" else os.getenv('HTTP_HOST')
-_port = os.getenv('HTTPS_PORT') if os.getenv('HTTPS_HOST', "") != "" else os.getenv('HTTP_PORT')
-if _port and _port not in ("80", "443"):
+_port = os.getenv('HTTPS_PORT') if os.getenv('HTTPS_HOST', "") != "" else os.getenv('HTTP_PORT', '80')
+# default port is 80
+_protocols = {
+    "80": "http://",
+    "443": "https://"
+}
+if _port not in _protocols:
     redirect_uris = [
         'http://{}:{}/geoserver'.format(_host, _port),
         'http://{}:{}/geoserver/index.html'.format(_host, _port),
     ]
 else:
+    # Make sure protocol string match with GeoServer Redirect URL's protocol string
     redirect_uris = [
-        'http://{}/geoserver'.format(_host),
-        'http://{}/geoserver/index.html'.format(_host),
+        '{}{}/geoserver'.format(_protocols[_port], _host),
+        '{}{}/geoserver/index.html'.format(_protocols[_port], _host),
     ]
 
 app.redirect_uris = "\n".join(redirect_uris)
@@ -155,14 +161,15 @@ call_command('collectstatic', '--noinput', verbosity=0)
 
 print("-----------------------------------------------------")
 print("8. Waiting for GeoServer")
+_geoserver_host = os.getenv('GEOSERVER_LOCATION', 'http://geoserver:8080/geoserver')
 for _ in range(60*5):
     try:
-        requests.head("http://geoserver:8080/geoserver")
+        requests.head("{}".format(_geoserver_host))
         break
     except ConnectionError:
         time.sleep(1)
 else:
-    requests.head("http://geoserver:8080/geoserver")
+    requests.head("{}".format(_geoserver_host))
 
 #########################################################
 # 9. Securing GeoServer
@@ -171,10 +178,14 @@ else:
 print("-----------------------------------------------------")
 print("9. Securing GeoServer")
 
+# Default value are taken from geonode.settings
+geoserver_admin_username = os.getenv('GEOSERVER_ADMIN_USER', 'admin')
+geoserver_admin_password = os.getenv('GEOSERVER_ADMIN_PASSWORD', 'geoserver')
+
 # Getting the old password
 try:
-    r1 = requests.get('http://geoserver:8080/geoserver/rest/security/masterpw.json',
-                      auth=(admin_username, admin_password))
+    r1 = requests.get('{}/rest/security/masterpw.json'.format(_geoserver_host),
+                      auth=(geoserver_admin_username, geoserver_admin_password))
 except requests.exceptions.ConnectionError:
     print("Unable to connect to GeoServer. Make sure GeoServer is started and accessible.")
     exit(1)
@@ -185,8 +196,8 @@ if old_password == 'M(cqp{V1':
     print("Randomizing master password")
     new_password = uuid.uuid4().hex
     data = json.dumps({"oldMasterPassword": old_password, "newMasterPassword": new_password})
-    r2 = requests.put('http://geoserver:8080/geoserver/rest/security/masterpw.json', data=data,
-                      headers={'Content-Type': 'application/json'}, auth=(admin_username, admin_password))
+    r2 = requests.put('{}/rest/security/masterpw.json'.format(_geoserver_host), data=data,
+                      headers={'Content-Type': 'application/json'}, auth=(geoserver_admin_username, geoserver_admin_password))
     r2.raise_for_status()
 else:
     print("Master password was already changed. No changes made.")

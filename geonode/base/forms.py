@@ -411,6 +411,10 @@ class ResourceBaseForm(TranslationModelForm):
                         'data-container': 'body',
                         'data-html': 'true'})
 
+    def disable_keywords_widget_for_non_superuser(self, user):
+        if settings.FREETEXT_KEYWORDS_READONLY and not user.is_superuser:
+            self['keywords'].field.disabled = True
+
     def clean_keywords(self):
         from urllib.parse import unquote
         from html.entities import codepoint2name

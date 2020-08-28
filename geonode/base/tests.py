@@ -19,8 +19,12 @@
 #########################################################################
 
 import os
+from unittest.mock import patch
 
-from guardian.shortcuts import get_perms
+from guardian.shortcuts import assign_perm, get_perms
+from imagekit.cachefiles.backends import Simple
+from io import BytesIO
+from PIL import Image
 
 from geonode.base.utils import OwnerRightsRequestViewUtils, ManageResourceOwnerPermissions
 from geonode.documents.models import Document
@@ -29,7 +33,7 @@ from geonode.maps.models import Map
 from geonode.services.models import Service
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.models import (
-    ResourceBase, MenuPlaceholder, Menu, MenuItem, Configuration
+    ResourceBase, MenuPlaceholder, Menu, MenuItem, Configuration, TopicCategory
 )
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
@@ -37,11 +41,17 @@ from django.test import Client, TestCase, override_settings
 from django.shortcuts import reverse
 
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
+from geonode.base.models import CuratedThumbnail
+from geonode.base.templatetags.base_tags import get_visibile_resources
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 
+from django.core.files import File
 from django.core.management import call_command
 from django.core.management.base import CommandError
+
+
+test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
 
 
 class ThumbnailTests(GeoNodeBaseTestSupport):
@@ -54,6 +64,30 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         self.assertFalse(self.rb.has_thumbnail())
         missing = self.rb.get_thumbnail_url()
         self.assertTrue('missing_thumb' in os.path.splitext(missing)[0])
+
+
+class TestThumbnailUrl(GeoNodeBaseTestSupport):
+    def setUp(self):
+        super(TestThumbnailUrl, self).setUp()
+        rb = ResourceBase.objects.create()
+        f = BytesIO(test_image.tobytes())
+        f.name = 'test_image.jpeg'
+        self.curated_thumbnail = CuratedThumbnail.objects.create(resource=rb, img=File(f))
+
+    @patch('PIL.Image.open', return_value=test_image)
+    def test_cached_image_generation(self, img):
+        """
+        Test that the 'thumbnail_url' property method generates a new cached image
+        """
+        self.curated_thumbnail.thumbnail_url
+        self.assertTrue(Simple()._exists(self.curated_thumbnail.img_thumbnail))
+
+    @patch('PIL.Image.open', return_value=test_image)
+    def test_non_existent_cached_image(self, img):
+        """
+        Test that the cached image does not exist before 'thumbnail_url' property method is called
+        """
+        self.assertFalse(Simple()._exists(self.curated_thumbnail.img_thumbnail))
 
 
 class TestCreationOfMissingMetadataAuthorsOrPOC(ThumbnailTests):
@@ -747,3 +781,27 @@ class TestOwnerRightsRequestUtils(TestCase):
     def test_msg_recipients_workflow_off(self):
         users_count = 0
         self.assertEqual(users_count, OwnerRightsRequestViewUtils.get_message_recipients().count())
+
+
+class TestGetVisibleResource(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create(username='mikel_arteta')
+        self.category = TopicCategory.objects.create(identifier='biota')
+        self.rb = ResourceBase.objects.create(category=self.category)
+
+    def test_category_data_not_shown_for_missing_resourcebase_permissions(self):
+        """
+        Test that a user without view permissions of a resource base does not see
+        ISO category format data of the ISO category
+        """
+        categories = get_visibile_resources(self.user)
+        self.assertEqual(categories['iso_formats'].count(), 0)
+
+    def test_category_data_shown_for_with_resourcebase_permissions(self):
+        """
+        Test that a user with view permissions of a resource base can see
+        ISO format data of the ISO category
+        """
+        assign_perm('view_resourcebase', self.user, self.rb)
+        categories = get_visibile_resources(self.user)
+        self.assertEqual(categories['iso_formats'].count(), 1)

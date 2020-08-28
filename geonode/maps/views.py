@@ -44,6 +44,7 @@ from django.utils.html import strip_tags
 from django.db.models import F
 from django.views.decorators.clickjacking import (xframe_options_exempt,
                                                   xframe_options_sameorigin)
+from geonode.decorators import check_keyword_write_perms
 from geonode.layers.models import Layer
 from geonode.maps.models import Map, MapLayer, MapSnapshot
 from geonode.layers.views import _resolve_layer
@@ -96,13 +97,13 @@ DEFAULT_MAPS_SEARCH_BATCH_SIZE = 10
 MAX_MAPS_SEARCH_BATCH_SIZE = 25
 
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this map.")
-_PERMISSION_MSG_GENERIC = _('You do not have permissions for this map.')
+_PERMISSION_MSG_GENERIC = _("You do not have permissions for this map.")
 _PERMISSION_MSG_LOGIN = _("You must be logged in to save this map")
 _PERMISSION_MSG_SAVE = _("You are not permitted to save or edit this map.")
 _PERMISSION_MSG_METADATA = _(
     "You are not allowed to modify this map's metadata.")
 _PERMISSION_MSG_VIEW = _("You are not allowed to view this map.")
-_PERMISSION_MSG_UNKNOWN = _('An unknown error has occured.')
+_PERMISSION_MSG_UNKNOWN = _("An unknown error has occured.")
 
 
 def _resolve_map(request, id, permission='base.change_resourcebase',
@@ -210,6 +211,7 @@ def map_detail(request, mapid, snapshot=None, template='maps/map_detail.html'):
 
 
 @login_required
+@check_keyword_write_perms
 def map_metadata(
         request,
         mapid,
@@ -223,6 +225,7 @@ def map_metadata(
 
     # Add metadata_author or poc if missing
     map_obj.add_missing_metadata_author_or_poc()
+    current_keywords = [keyword.name for keyword in map_obj.keywords.all()]
     poc = map_obj.poc
 
     metadata_author = map_obj.metadata_author
@@ -237,6 +240,7 @@ def map_metadata(
         tkeywords_form = TKeywordForm(request.POST)
     else:
         map_form = MapForm(instance=map_obj, prefix="resource")
+        map_form.disable_keywords_widget_for_non_superuser(request.user)
         category_form = CategoryForm(
             prefix="category_choice_field",
             initial=topic_category.id if topic_category else None)
@@ -270,7 +274,7 @@ def map_metadata(
     ) and category_form.is_valid():
         new_poc = map_form.cleaned_data['poc']
         new_author = map_form.cleaned_data['metadata_author']
-        new_keywords = map_form.cleaned_data['keywords']
+        new_keywords = current_keywords if request.keyword_readonly else map_form.cleaned_data['keywords']
         new_regions = map_form.cleaned_data['regions']
         new_title = strip_tags(map_form.cleaned_data['title'])
         new_abstract = strip_tags(map_form.cleaned_data['abstract'])

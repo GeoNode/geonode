@@ -8,9 +8,9 @@
     {% if user.is_authenticated %}
       {% if not READ_ONLY_MODE %}
         <div class="clearfix">
-            <button id="favoriteLink" class="btn btn-primary">Add to Favorites</button>
+            <button id="favoriteLink" class="btn btn-primary">{% trans 'Add to Favorites' %}</button>
             <br/><br/>
-            <div><a href="{% url "favorite_list" %}">Go to Favorites</a></div>
+            <div><a href="{% url "favorite_list" %}">{% trans 'Go to Favorites' %}</a></div>
         </div>
       {% endif %}
     {% else %}

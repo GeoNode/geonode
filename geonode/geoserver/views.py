@@ -563,6 +563,8 @@ def _response_callback(**kwargs):
                 content = _content\
                     .replace(ogc_server_settings.LOCATION, _gn_proxy_url)\
                     .replace(ogc_server_settings.PUBLIC_LOCATION, _gn_proxy_url)
+                for _ows_endpoint in list(dict.fromkeys(re.findall(rf'{_gn_proxy_url}w\ws', content, re.IGNORECASE))):
+                    content = content.replace(_ows_endpoint, f'{_gn_proxy_url}ows')
         except Exception as e:
             logger.exception(e)
 

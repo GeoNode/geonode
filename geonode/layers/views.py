@@ -68,6 +68,7 @@ from geonode.base.models import (
     Thesaurus,
     TopicCategory)
 from geonode.base.enumerations import CHARSETS
+from geonode.decorators import check_keyword_write_perms
 
 from geonode.layers.forms import (
     LayerForm,
@@ -108,7 +109,7 @@ from geonode.utils import (
 from .tasks import delete_layer
 
 from geonode.geoserver.helpers import (ogc_server_settings,
-                                       set_layer_style)  # cascading_delete
+                                       set_layer_style)
 from geonode.base.utils import ManageResourceOwnerPermissions
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -750,6 +751,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             context_dict['groups'] = [group for group in request.user.group_list_all()]
 
     register_event(request, 'view', layer)
+    context_dict['map_layers'] = [map_layer for map_layer in layer.maps() if
+                                  request.user.has_perm('view_resourcebase', map_layer.map.get_self_resource())]
     return TemplateResponse(
         request, template, context=context_dict)
 
@@ -793,7 +796,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
 
         # loop the dictionary based on the values on the list and add the properties
         # in the dictionary (if doesn't exist) together with the value
-        from collections import Iterable
+        from collections.abc import Iterable
         for i in range(len(decoded_features)):
             for key, value in decoded_features[i]['properties'].items():
                 if value != '' and isinstance(value, (string_types, int, float)) and (
@@ -851,6 +854,7 @@ def layer_feature_catalogue(
 
 
 @login_required
+@check_keyword_write_perms
 def layer_metadata(
         request,
         layername,
@@ -867,7 +871,7 @@ def layer_metadata(
         extra=0,
         form=LayerAttributeForm,
     )
-
+    current_keywords = [keyword.name for keyword in layer.keywords.all()]
     topic_category = layer.category
 
     # Add metadata_author or poc if missing
@@ -963,6 +967,7 @@ def layer_metadata(
         tkeywords_form = TKeywordForm(request.POST)
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
+        layer_form.disable_keywords_widget_for_non_superuser(request.user)
         attribute_form = layer_attribute_set(
             instance=layer,
             prefix="layer_attribute_set",
@@ -1056,7 +1061,7 @@ def layer_metadata(
             if new_author is not None:
                 layer.metadata_author = new_author
 
-        new_keywords = layer_form.cleaned_data['keywords']
+        new_keywords = current_keywords if request.keyword_readonly else layer_form.cleaned_data['keywords']
         new_regions = [x.strip() for x in layer_form.cleaned_data['regions']]
 
         layer.keywords.clear()
@@ -1239,8 +1244,6 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                         "You are attempting to replace a raster layer with a vector.")
                 else:
                     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                        # delete geoserver's store before upload
-                        # cascading_delete(gs_catalog, layer.alternate)
                         out['ogc_backend'] = geoserver.BACKEND_PACKAGE
                     elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
                         try:

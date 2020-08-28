@@ -166,35 +166,6 @@ jobs:
           - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
           - CELERY_ALWAYS_EAGER: 'True'
 
-    - stage: frontend-tests
-      name: "BDD Tests"
-      virtualenv:
-          system_site_packages: false
-      env:
-          - BACKEND: 'geonode.geoserver'
-          - DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is GeoServer server address
-          - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
-          - GEOSERVER_SERVER_PORT: 8080
-          - ON_TRAVIS: 'True'
-          - TEST_RUN_INTEGRATION: 'False'
-          - TEST_RUN_INTEGRATION_CSW: 'False'
-          - TEST_RUN_INTEGRATION_BDD: 'True'
-          - MONITORING_ENABLED: 'False'
-          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
-          - CELERY_ALWAYS_EAGER: 'True'
-
-    - stage: frontend-tests
-      name: "Selenium Tests Core"
-      env:
-          - TEST_RUN_SELENIUM: 'True'
-
-    - stage: frontend-tests
-      name: "Selenium Tests SPCGeoNode"
-      env:
-          - TEST_RUN_SELENIUM: 'True'
-          - SPCGEONODE: 'True'
-
     - stage: integration-tests
       name: "Backend Integration Tests"
       virtualenv:
@@ -268,10 +239,40 @@ jobs:
           - DATABASE_URL: 'postgresql://geonode:geonode@localhost:5432/upload_test'
           - GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY: 'leaflet'
 
+    - stage: frontend-tests
+      name: "BDD Tests"
+      virtualenv:
+          system_site_packages: false
+      env:
+          - BACKEND: 'geonode.geoserver'
+          - DOCKER_COMPOSE_VERSION: 1.19.0
+            # This is GeoServer server address
+          - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+          - GEOSERVER_SERVER_PORT: 8080
+          - ON_TRAVIS: 'True'
+          - TEST_RUN_INTEGRATION: 'False'
+          - TEST_RUN_INTEGRATION_CSW: 'False'
+          - TEST_RUN_INTEGRATION_BDD: 'True'
+          - MONITORING_ENABLED: 'False'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+          - CELERY_ALWAYS_EAGER: 'True'
+
+    - stage: frontend-tests
+      name: "Selenium Tests Core"
+      env:
+          - TEST_RUN_SELENIUM: 'True'
+
+    - stage: frontend-tests
+      name: "Selenium Tests SPCGeoNode"
+      env:
+          - TEST_RUN_SELENIUM: 'True'
+          - SPCGEONODE: 'True'
+
   fast_finish: true
 
   allow_failures:
-    - name: "GeoServer-backend Upload Tests"
+    - name: "Selenium Tests Core"
+    - name: "Selenium Tests SPCGeoNode"
 
 before_install:
   - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
