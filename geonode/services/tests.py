@@ -596,14 +596,16 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(len(Service.objects.all()), 0)
 
     def test_add_duplicate_remote_service_url(self):
-        form_data = {
-            'url': 'https://master.demo.geonode.org/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities',
-            'type': enumerations.WMS
-        }
-
         self.client.login(username='serviceowner', password='somepassword')
 
         # Add the first resource
+        url = 'https://master.demo.geonode.org/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
+        # url = "http://fake"
+        service_type = enumerations.WMS
+        form_data = {
+            'url': url,
+            'type': service_type
+        }
         form = forms.CreateServiceForm(form_data)
         self.assertTrue(form.is_valid())
         self.assertEqual(Service.objects.count(), 0)
