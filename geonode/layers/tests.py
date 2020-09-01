@@ -1365,6 +1365,9 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.user.set_password('very-secret')
         admin = get_user_model().objects.get(username='admin')
         self.map = Map.objects.create(owner=admin, title='test', is_approved=True, zoom=0, center_x=0.0, center_y=0.0)
+        self.not_admin = get_user_model().objects.create(username='r-lukaku', is_active=True)
+        self.not_admin.set_password('very-secret')
+        self.not_admin.save()
 
         self.layer = Layer.objects.all().first()
         with DisableDjangoSignals():
@@ -1390,6 +1393,59 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.client.login(username='dybala', password='very-secret')
         response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
         self.assertEqual(response.context['map_layers'], [])
+
+    def test_that_keyword_multiselect_is_disabled_for_non_admin_users(self):
+        """
+        Test that keyword multiselect widget is disabled when the user is not an admin
+        """
+        self.test_layer = Layer.objects.create(owner=self.not_admin, title='test', is_approved=True)
+        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
+
+        self.client.login(username=self.not_admin.username, password='very-secret')
+        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
+            response = self.client.get(url)
+            self.assertTrue(response.context['form']['keywords'].field.disabled)
+
+    def test_that_keyword_multiselect_is_not_disabled_for_admin_users(self):
+        """
+        Test that only admin users can create/edit keywords  when FREETEXT_KEYWORDS_READONLY=True
+        """
+        admin = self.not_admin
+        admin.is_superuser = True
+        admin.save()
+        self.test_layer = Layer.objects.create(owner=admin, title='test', is_approved=True)
+        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
+
+        self.client.login(username=admin.username, password='very-secret')
+        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
+            response = self.client.get(url)
+            self.assertFalse(response.context['form']['keywords'].field.disabled)
+
+    def test_that_non_admin_user_cannot_create_edit_keyword(self):
+        """
+        Test that non admin users cannot edit/create keywords when FREETEXT_KEYWORDS_READONLY=True
+        """
+        self.test_layer = Layer.objects.create(owner=self.not_admin, title='test', is_approved=True)
+        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
+
+        self.client.login(username=self.not_admin.username, password='very-secret')
+        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
+            response = self.client.post(url, data={'resource-keywords': 'wonderful-keyword'})
+            self.assertEqual(response.status_code, 401)
+            self.assertEqual(response.content, b'Unauthorized: Cannot edit/create Free-text Keywords')
+
+    def test_that_keyword_multiselect_is_enabled_for_non_admin_users_when_freetext_keywords_readonly_istrue(self):
+        """
+        Test that keyword multiselect widget is not disabled when the user is not an admin
+        and FREETEXT_KEYWORDS_READONLY=False
+        """
+        self.test_layer = Layer.objects.create(owner=self.not_admin, title='test', is_approved=True)
+        url = reverse('layer_metadata', args=(self.test_layer.alternate,))
+
+        self.client.login(username=self.not_admin.username, password='very-secret')
+        with self.settings(FREETEXT_KEYWORDS_READONLY=False):
+            response = self.client.get(url)
+            self.assertFalse(response.context['form']['keywords'].field.disabled)
 
     def test_that_anonymous_user_can_view_map_available_to_anyone(self):
         """
