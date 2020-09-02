@@ -46,7 +46,7 @@ body {
   background: @gray-dark;
   font-family: @font-family-sans-serif;
   font-size: @font-size-base;
-  padding-top: 60px;
+  padding-top: 0;
 }
 
 a {
@@ -102,6 +102,7 @@ form {
   padding-bottom: 40px;
   padding-top: 10px;
   width: 100%;
+  margin-top: 60px;
 }
 
 article.tab-pane {
@@ -131,6 +132,10 @@ article.tab-pane {
 .navbar-inverse {
   background-color: @gray-dark;
   border: 0;
+
+  .nav-container {
+    margin: 0 2% 0 2%;
+  }
 
   .navbar-nav > li > a {
     color: white;
@@ -1031,6 +1036,10 @@ nav.filter {
 }
 
 @media (max-width: 991px) {
+  body {
+    padding-top: 70px;
+  }
+
   #upload_form {
     input[type="text"] {
       width: 360px;
@@ -1706,7 +1715,7 @@ form-inline {
 }
 
 .home .geonode-slide-show .jumbotron {
-	padding: 4.5em 0 0 0;
+	padding: 0;
 	&:after {
 		background-image: none;
 	}
@@ -1775,4 +1784,7 @@ form-inline {
     a:hover span{
       background-color: black;
     }
+}
+.jumbotron .gn-container {
+    margin-top: -2px;
 }

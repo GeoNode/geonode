@@ -6853,7 +6853,7 @@ body {
   background: #333333;
   font-family: 'Lato', sans-serif;
   font-size: 16px;
-  padding-top: 60px;
+  padding-top: 0;
 }
 a {
   color: #2c689c;
@@ -6900,6 +6900,7 @@ form input {
   padding-bottom: 40px;
   padding-top: 10px;
   width: 100%;
+  margin-top: 60px;
 }
 article.tab-pane {
   padding: 20px 0;
@@ -6924,6 +6925,9 @@ article.tab-pane {
 .navbar-inverse {
   background-color: #333333;
   border: 0;
+}
+.navbar-inverse .nav-container {
+  margin: 0 2% 0 2%;
 }
 .navbar-inverse .navbar-nav > li > a {
   color: white;
@@ -7626,6 +7630,9 @@ nav.filter li a {
   width: 480px;
 }
 @media (max-width: 991px) {
+  body {
+    padding-top: 70px;
+  }
   #upload_form input[type="text"] {
     width: 360px;
   }
@@ -8177,7 +8184,7 @@ form-inline {
   border-radius: 4px;
 }
 .home .geonode-slide-show .jumbotron {
-  padding: 4.5em 0 0 0;
+  padding: 0;
 }
 .home .geonode-slide-show .jumbotron:after {
   background-image: none;
@@ -8247,4 +8254,7 @@ form-inline {
 }
 .iso-categories .row a:hover span {
   background-color: black;
+}
+.jumbotron .gn-container {
+  margin-top: -2px;
 }
