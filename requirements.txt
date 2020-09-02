@@ -73,7 +73,9 @@ django-recaptcha==2.0.6
 # REST
 djangorestframework==3.11.1
 djangorestframework_guardian==0.3.0
-drf_writable_nested==0.6.1
+drf-extensions==0.6.0
+drf-writable-nested==0.6.1
+drf-yasg==1.17.1
 dynamic-rest==1.9.6
 Markdown==3.2.2
 

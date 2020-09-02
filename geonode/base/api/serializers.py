@@ -24,6 +24,8 @@ from rest_framework import serializers
 from dynamic_rest.serializers import DynamicModelSerializer
 from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
 
+from avatar.templatetags.avatar_tags import avatar_url
+
 from geonode.base.models import (
     ResourceBase,
     HierarchicalKeyword,
@@ -33,6 +35,8 @@ from geonode.base.models import (
     TopicCategory,
     SpatialRepresentationType
 )
+
+from geonode.groups.models import GroupCategory, GroupProfile
 
 import logging
 
@@ -47,13 +51,37 @@ class GroupSerializer(DynamicModelSerializer):
         fields = ('pk', 'name')
 
 
+class GroupProfileSerializer(DynamicModelSerializer):
+
+    class Meta:
+        model = GroupProfile
+        name = 'group_profile'
+        fields = ('pk', 'title', 'group', 'slug', 'logo', 'description',
+                  'email', 'keywords', 'access', 'categories')
+
+    group = DynamicRelationField(GroupSerializer, embed=True, many=False)
+    keywords = serializers.SlugRelatedField(many=True, slug_field='slug', read_only=True)
+    categories = serializers.SlugRelatedField(
+        many=True, slug_field='slug', queryset=GroupCategory.objects.all())
+
+
+class AvatarUrlField(DynamicComputedField):
+
+    def __init__(self, avatar_size, **kwargs):
+        self.avatar_size = avatar_size
+        super(AvatarUrlField, self).__init__(**kwargs)
+
+    def get_attribute(self, instance):
+        return avatar_url(instance, self.avatar_size)
+
+
 class UserSerializer(DynamicModelSerializer):
 
     class Meta:
+        ref_name = 'UserProfile'
         model = get_user_model()
         name = 'user'
-        # fields = ('pk', 'username', 'email', 'is_superuser', 'is_staff', 'groups')
-        fields = ('pk', 'username', 'first_name', 'last_name', 'groups')
+        fields = ('pk', 'username', 'first_name', 'last_name', 'avatar')
 
     @classmethod
     def setup_eager_loading(cls, queryset):
@@ -61,7 +89,7 @@ class UserSerializer(DynamicModelSerializer):
         queryset = queryset.prefetch_related()
         return queryset
 
-    groups = DynamicRelationField(GroupSerializer, embed=True, many=True)
+    avatar = AvatarUrlField(240, read_only=True)
 
 
 class ContactRoleField(DynamicComputedField):
@@ -85,6 +113,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
 
         self.fields['pk'] = serializers.CharField(read_only=True)
         self.fields['uuid'] = serializers.CharField(read_only=True)
+        self.fields['polymorphic_ctype'] = serializers.CharField(read_only=True)
         self.fields['owner'] = DynamicRelationField(UserSerializer, embed=True, many=False, read_only=True)
         self.fields['poc'] = ContactRoleField('poc', read_only=True)
         self.fields['metadata_author'] = ContactRoleField('metadata_author', read_only=True)
@@ -127,7 +156,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         model = ResourceBase
         name = 'resource'
         fields = (
-            'pk', 'uuid', 'owner', 'poc', 'metadata_author',
+            'pk', 'uuid', 'polymorphic_ctype', 'owner', 'poc', 'metadata_author',
             'title', 'abstract', 'doi', 'alternate',
             'keywords', 'regions', 'category',
             'date', 'date_type', 'edition', 'purpose', 'maintenance_frequency',

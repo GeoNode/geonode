@@ -457,6 +457,7 @@ INSTALLED_APPS = (
     # REST APIs
     'rest_framework',
     'dynamic_rest',
+    'drf_yasg',
 
     # Theme
     'django_forms_bootstrap',
