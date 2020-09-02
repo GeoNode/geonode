@@ -142,7 +142,7 @@ requests-toolbelt==0.9.1
 flake8==3.8.3
 pytest==6.0.1
 pytest-bdd==3.4.0
-splinter==0.13.0
+splinter==0.14.0
 pytest-splinter==2.1.0
 pytest-django==3.9.0
 setuptools==49.2.0
