@@ -21,7 +21,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
-from dynamic_rest.serializers import DynamicModelSerializer
+from dynamic_rest.serializers import DynamicEphemeralSerializer, DynamicModelSerializer
 from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
 
 from avatar.templatetags.avatar_tags import avatar_url
@@ -41,6 +41,18 @@ from geonode.groups.models import GroupCategory, GroupProfile
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+class PermSpecSerialiazer(DynamicEphemeralSerializer):
+
+    class Meta:
+        name = 'perm-spec'
+
+    class PermSpecFieldSerialiazer(DynamicEphemeralSerializer):
+        perm_spec = serializers.ListField()
+
+    users = PermSpecFieldSerialiazer(many=True)
+    groups = PermSpecFieldSerialiazer(many=True)
 
 
 class GroupSerializer(DynamicModelSerializer):

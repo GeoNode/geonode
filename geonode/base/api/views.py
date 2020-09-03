@@ -35,6 +35,7 @@ from guardian.shortcuts import get_objects_for_user
 
 from .serializers import (
     UserSerializer,
+    PermSpecSerialiazer,
     GroupProfileSerializer,
     ResourceBaseSerializer
 )
@@ -132,6 +133,27 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination
 
+    @swagger_auto_schema(methods=['get'], responses={200: PermSpecSerialiazer()},
+                         operation_description="""
+        Gets an object's the permission levels based on the perm_spec JSON.
+
+        the mapping looks like:
+        ```
+        {
+            'users': [
+                'AnonymousUser': ['view'],
+                <username>: ['perm1','perm2','perm3'],
+                <username2>: ['perm1','perm2','perm3']
+                ...
+            ],
+            'groups': [
+                <groupname>: ['perm1','perm2','perm3'],
+                <groupname2>: ['perm1','perm2','perm3'],
+                ...
+            ]
+        }
+        ```
+        """)
     @action(detail=True, methods=['get'])
     def get_perms(self, request, pk=None):
         resource = self.get_object()
@@ -144,6 +166,29 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             perms_spec["groups"][str(group)] = perms
         return Response(perms_spec)
 
+    @swagger_auto_schema(methods=['put'],
+                         request_body=PermSpecSerialiazer(),
+                         responses={200: None},
+                         operation_description="""
+        Sets an object's the permission levels based on the perm_spec JSON.
+
+        the mapping looks like:
+        ```
+        {
+            'users': [
+                'AnonymousUser': ['view'],
+                <username>: ['perm1','perm2','perm3'],
+                <username2>: ['perm1','perm2','perm3']
+                ...
+            ],
+            'groups': [
+                <groupname>: ['perm1','perm2','perm3'],
+                <groupname2>: ['perm1','perm2','perm3'],
+                ...
+            ]
+        }
+        ```
+        """)
     @action(detail=True, methods=['put'])
     def set_perms(self, request, pk=None):
         resource = self.get_object()

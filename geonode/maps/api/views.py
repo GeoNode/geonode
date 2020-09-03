@@ -1,0 +1,65 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2020 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+from dynamic_rest.viewsets import DynamicModelViewSet
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly, DjangoModelPermissionsOrAnonReadOnly  # noqa
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+
+from geonode.base.api.permissions import IsOwnerOrReadOnly
+from geonode.base.api.pagination import GeoNodeApiPagination
+from geonode.layers.api.serializers import LayerSerializer
+from geonode.maps.models import Map
+
+from .serializers import MapSerializer, MapLayerSerializer
+from .permissions import MapPermissionsFilter
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class MapViewSet(DynamicModelViewSet):
+    """
+    API endpoint that allows maps to be viewed or edited.
+    """
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    filter_backends = [MapPermissionsFilter]
+    queryset = Map.objects.all()
+    serializer_class = MapSerializer
+    pagination_class = GeoNodeApiPagination
+
+    @swagger_auto_schema(methods=['get'], responses={200: MapLayerSerializer(many=True)},
+                         operation_description="API endpoint allowing to retrieve the MapLayers list.")
+    @action(detail=True, methods=['get'])
+    def layers(self, request, pk=None):
+        map = self.get_object()
+        resources = map.layers
+        return Response(MapLayerSerializer(embed=True, many=True).to_representation(resources))
+
+    @swagger_auto_schema(methods=['get'], responses={200: LayerSerializer(many=True)},
+                         operation_description="API endpoint allowing to retrieve the local MapLayers.")
+    @action(detail=True, methods=['get'])
+    def local_layers(self, request, pk=None):
+        map = self.get_object()
+        resources = map.local_layers
+        return Response(LayerSerializer(embed=True, many=True).to_representation(resources))
