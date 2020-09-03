@@ -17,9 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from distutils.core import setup
-
-from setuptools import find_packages
+from setuptools import setup
 
 import os
 import sys
@@ -27,24 +25,15 @@ import sys
 current_directory = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_directory)
 
+
 setup(
-    name="GeoNode",
     version=__import__("geonode").get_version(),
-    description="Application for serving and sharing geospatial data",
     long_description=open("README.md").read(),
-    classifiers=["Development Status :: 5 - Production/Stable"],
-    keywords="",
-    author="GeoNode Developers",
-    author_email="dev@geonode.org",
-    url="http://geonode.org",
-    license="GPL",
-    packages=find_packages(),
     package_data={
         "": ["*.*"],  # noqa
         "": ["static/*.*"],  # noqa
         "static": ["*.*"],
         "": ["templates/*.*"],  # noqa
         "templates": ["*.*"],
-    },
-    include_package_data=True,
+    }
 )
