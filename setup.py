@@ -25,6 +25,7 @@ import sys
 current_directory = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_directory)
 
+
 setup(
     version=__import__("geonode").get_version(),
     long_description=open("README.md").read(),
@@ -34,5 +35,5 @@ setup(
         "static": ["*.*"],
         "": ["templates/*.*"],  # noqa
         "templates": ["*.*"],
-    },
+    }
 )
