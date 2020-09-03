@@ -150,6 +150,11 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         self.fields['bbox_y1'] = serializers.DecimalField(max_digits=30, decimal_places=15)
         self.fields['srid'] = serializers.CharField()
         self.fields['group'] = DynamicRelationField(GroupSerializer, embed=True, many=False)
+        self.fields['popular_count'] = serializers.CharField()
+        self.fields['share_count'] = serializers.CharField()
+        self.fields['featured'] = serializers.BooleanField()
+        self.fields['is_published'] = serializers.BooleanField()
+        self.fields['is_approved'] = serializers.BooleanField()
 
         self.fields['keywords'] = serializers.SlugRelatedField(
             many=True, slug_field='slug', queryset=HierarchicalKeyword.objects.all())
@@ -176,10 +181,10 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             'spatial_representation_type', 'temporal_extent_start', 'temporal_extent_end',
             'supplemental_information', 'data_quality_statement', 'group',
             'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid',
+            'popular_count', 'share_count', 'featured', 'is_published', 'is_approved',
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
-            # popular_count, share_count, featured, is_published, is_approved,
             # thumbnail_url, detail_url, rating, created, last_updated, dirty_state,
             # users_geolimits, groups_geolimits
         )
