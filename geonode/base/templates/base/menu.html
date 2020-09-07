@@ -46,5 +46,15 @@
     {% endif %}
 
 {% endfor %}
-
-
+<script type="text/javascript">
+window.addEventListener("load", function(){
+    var reposition = function() {
+        const nav_bar_height = $("#navbar").height();
+        $("#wrap").css("margin-top", (nav_bar_height - 20));
+        $("#ms-container").css("top", nav_bar_height);
+    };
+    reposition();
+    // attach the function to the window resize event
+    $(window).resize(reposition);
+});
+</script>
