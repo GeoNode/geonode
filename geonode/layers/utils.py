@@ -955,15 +955,8 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
         thumbnail_name = 'layer-%s-thumb.png' % instance.uuid
     elif isinstance(instance, Map):
         thumbnail_name = 'map-%s-thumb.png' % instance.uuid
-    _thumb_exists = False
-    try:
-        _thumbnail_dir = os.path.join(settings.MEDIA_ROOT, 'thumbs')
-        _thumbnail_path = os.path.join(_thumbnail_dir, thumbnail_name)
-        _thumb_exists = storage.exists(_thumbnail_path)
-    except Exception:
-        _thumbnail_dir = os.path.join(settings.STATIC_ROOT, 'thumbs')
-        _thumbnail_path = os.path.join(_thumbnail_dir, thumbnail_name)
-        _thumb_exists = storage.exists(_thumbnail_path)
+
+    _thumb_exists = storage.exists(os.path.join("thumbs", thumbnail_name))
     if overwrite or not _thumb_exists:
         BBOX_DIFFERENCE_THRESHOLD = 1e-5
 
@@ -1233,15 +1226,20 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
 
 def delete_orphaned_layers():
     """Delete orphaned layer files."""
-    layer_path = os.path.join(settings.MEDIA_ROOT, 'layers')
-    for filename in os.listdir(layer_path):
-        fn = os.path.join(layer_path, filename)
+    deleted = []
+    _, files = storage.listdir("layers")
+
+    for filename in files:
         if LayerFile.objects.filter(file__icontains=filename).count() == 0:
-            logger.debug('Removing orphan layer file %s' % fn)
+            logger.debug("Deleting orphaned layer file " + filename)
             try:
-                os.remove(fn)
-            except OSError:
-                logger.warn('Could not delete file %s' % fn)
+                storage.delete(os.path.join("layers", filename))
+                deleted.append(filename)
+            except NotImplementedError as e:
+                logger.error(
+                    "Failed to delete orphaned layer file '{}': {}".format(filename, e))
+
+    return deleted
 
 
 def set_layers_permissions(permissions_name, resources_names=None,

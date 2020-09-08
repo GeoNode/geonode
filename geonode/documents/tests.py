@@ -31,7 +31,6 @@ import json
 
 import gisdata
 from datetime import datetime
-from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
@@ -493,18 +492,25 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             _d.delete()
 
             from geonode.documents.utils import delete_orphaned_document_files
-            delete_orphaned_document_files()
+            _, document_files_before = storage.listdir("documents")
+            deleted = delete_orphaned_document_files()
+            _, document_files_after = storage.listdir("documents")
+            self.assertTrue(len(deleted) > 0)
+            self.assertEqual(set(deleted), set(document_files_before) - set(document_files_after))
 
             from geonode.base.utils import delete_orphaned_thumbs
-            delete_orphaned_thumbs()
+            _, thumb_files_before = storage.listdir("thumbs")
+            deleted = delete_orphaned_thumbs()
+            _, thumb_files_after = storage.listdir("thumbs")
+            self.assertTrue(len(deleted) > 0)
+            self.assertEqual(set(deleted), set(thumb_files_before) - set(thumb_files_after))
 
-            documents_path = os.path.join(settings.MEDIA_ROOT, 'documents')
-            fn = os.path.join(documents_path, os.path.basename(input_path))
-            self.assertFalse(os.path.isfile(fn))
+            fn = os.path.join("documents", os.path.basename(input_path))
+            self.assertFalse(storage.exists(fn))
 
             _, files = storage.listdir("thumbs")
             _cnt = sum(1 for fn in files if uuid in fn)
-            self.assertTrue(_cnt == 0)
+            self.assertEqual(_cnt, 0)
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             self.client.login(username=self.user, password=self.passwd)
