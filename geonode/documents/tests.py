@@ -31,11 +31,13 @@ import json
 
 import gisdata
 from datetime import datetime
+from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.files.storage import default_storage as storage
 
 from guardian.shortcuts import get_perms, get_anonymous_user
 
@@ -447,6 +449,9 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(DocumentModerationTestCase, self).setUp()
+        thumbs_dir = os.path.join(settings.MEDIA_ROOT, "thumbs")
+        if not os.path.exists(thumbs_dir):
+            os.mkdir(thumbs_dir)
         self.user = 'admin'
         self.passwd = 'admin'
         create_models(type=b'document')
@@ -493,17 +498,12 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             from geonode.base.utils import delete_orphaned_thumbs
             delete_orphaned_thumbs()
 
-            from django.conf import settings
             documents_path = os.path.join(settings.MEDIA_ROOT, 'documents')
             fn = os.path.join(documents_path, os.path.basename(input_path))
             self.assertFalse(os.path.isfile(fn))
 
-            thumbs_path = os.path.join(settings.MEDIA_ROOT, 'thumbs')
-            _cnt = 0
-            for filename in os.listdir(thumbs_path):
-                fn = os.path.join(thumbs_path, filename)
-                if uuid in filename:
-                    _cnt += 1
+            _, files = storage.listdir("thumbs")
+            _cnt = sum(1 for fn in files if uuid in fn)
             self.assertTrue(_cnt == 0)
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
