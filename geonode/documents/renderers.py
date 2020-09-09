@@ -19,15 +19,15 @@
 #########################################################################
 
 import io
+import os
 import subprocess
 import traceback
+import tempfile
 
 from django.conf import settings
 from threading import Timer
 from mimetypes import guess_type
 from urllib.request import pathname2url
-
-from tempfile import NamedTemporaryFile
 
 
 class ConversionError(Exception):
@@ -58,28 +58,23 @@ def render_document(document_path, extension="png"):
 
     # workaround: https://github.com/dagwieers/unoconv/issues/167
     # first convert a document to PDF and continue
-    if extension == "pdf":
-        temp_path = document_path
-    elif guess_mimetype(document_path) == 'application/pdf':
-        temp_path = document_path
-    else:
-        temp = render_document(document_path, extension="pdf")
-        temp_path = temp.name
+    dispose_input = False
+    if extension != "pdf" and guess_mimetype(document_path) != 'application/pdf':
+        document_path = render_document(document_path, extension="pdf")
+        dispose_input = True
 
     # spawn subprocess and render the document
-    output = NamedTemporaryFile(suffix='.{}'.format(extension))
+    output_path = None
     if settings.UNOCONV_ENABLE:
         timeout = None
+        _, output_path = tempfile.mkstemp(suffix=".{}".format(extension))
         try:
-            def kill(process):
-                return process.kill()
-
             unoconv = subprocess.Popen(
                 [settings.UNOCONV_EXECUTABLE, "-v", "-e", "PageRange=1-2",
-                    "-f", extension, "-o", output.name, temp_path],
+                    "-f", extension, "-o", output_path, document_path],
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
-            timeout = Timer(settings.UNOCONV_TIMEOUT, kill, [unoconv])
+            timeout = Timer(settings.UNOCONV_TIMEOUT, lambda p: p.kill(), [unoconv])
             timeout.start()
             stdout, stderr = unoconv.communicate()
         except Exception as e:
@@ -88,8 +83,12 @@ def render_document(document_path, extension="png"):
         finally:
             if timeout:
                 timeout.cancel()
+            if dispose_input and document_path is not None:
+                os.remove(document_path)
+    else:
+        raise NotImplementedError("unoconv is disabled. Set 'UNOCONV_ENABLE' to enable.")
 
-    return output
+    return output_path
 
 
 def generate_thumbnail_content(image_path, size=(200, 150)):
