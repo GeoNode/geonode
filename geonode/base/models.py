@@ -1307,6 +1307,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
         upload_path = os.path.join('thumbs/', filename)
+        local_thumbs = os.path.join(settings.MEDIA_ROOT, "thumbs")
+        if not os.path.exists(local_thumbs):
+            os.makedirs(local_thumbs)
+
         try:
             # Check that the image is valid
             from PIL import Image

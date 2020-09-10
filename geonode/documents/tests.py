@@ -448,9 +448,6 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(DocumentModerationTestCase, self).setUp()
-        thumbs_dir = os.path.join(settings.MEDIA_ROOT, "thumbs")
-        if not os.path.exists(thumbs_dir):
-            os.mkdir(thumbs_dir)
         self.user = 'admin'
         self.passwd = 'admin'
         create_models(type=b'document')
