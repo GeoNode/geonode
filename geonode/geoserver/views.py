@@ -529,7 +529,7 @@ def geoserver_proxy(request,
 
     kwargs = {'affected_layers': affected_layers}
     raw_url = unquote(raw_url)
-    timeout = getattr(ogc_server_settings, 'TIMEOUT') or 30
+    timeout = getattr(ogc_server_settings, 'TIMEOUT') or 60
     allowed_hosts = [urlsplit(ogc_server_settings.public_url).hostname, ]
     return proxy(request, url=raw_url, response_callback=_response_callback,
                  timeout=timeout, allowed_hosts=allowed_hosts, **kwargs)

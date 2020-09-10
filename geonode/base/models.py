@@ -20,7 +20,6 @@
 
 import os
 import re
-import glob
 import math
 import uuid
 import logging
@@ -1314,11 +1313,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             im = Image.open(content_data)
             im.verify()  # verify that it is, in fact an image
 
-            for _thumb in glob.glob(storage.path('thumbs/%s*' % os.path.splitext(filename)[0])):
-                try:
-                    os.remove(_thumb)
-                except Exception:
-                    pass
+            thumbnail_name, ext = os.path.splitext(filename)
+            _, _thumbs = storage.listdir("thumbs")
+            for _thumb in _thumbs:
+                if _thumb.startswith(thumbnail_name):
+                    storage.delete(os.path.join("thumbs", _thumb))
+                    logger.debug("Deleted existing thumbnail: " + _thumb)
 
             if upload_path and image:
                 actual_name = storage.save(upload_path, ContentFile(image))
