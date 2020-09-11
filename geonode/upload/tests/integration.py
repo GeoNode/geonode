@@ -108,15 +108,17 @@ def get_wms(version='1.1.1', type_name=None, username=None, password=None):
     else:
         url = GEOSERVER_URL + \
             'wms?request=getcapabilities'
+    ogc_server_settings = settings.OGC_SERVER['default']
     if username and password:
         return WebMapService(
             url,
             version=version,
             username=username,
-            password=password
+            password=password,
+            timeout=ogc_server_settings.get('TIMEOUT', 60)
         )
     else:
-        return WebMapService(url)
+        return WebMapService(url, timeout=ogc_server_settings.get('TIMEOUT', 60))
 
 
 class UploaderBase(GeoNodeLiveTestSupport):

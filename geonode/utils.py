@@ -1388,7 +1388,7 @@ class HttpClient(object):
         self.password = 'admin'
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             ogc_server_settings = settings.OGC_SERVER['default']
-            self.timeout = ogc_server_settings['TIMEOUT'] if 'TIMEOUT' in ogc_server_settings else 5
+            self.timeout = ogc_server_settings['TIMEOUT'] if 'TIMEOUT' in ogc_server_settings else 60
             self.retries = ogc_server_settings['MAX_RETRIES'] if 'MAX_RETRIES' in ogc_server_settings else 5
             self.backoff_factor = ogc_server_settings['BACKOFF_FACTOR'] if \
             'BACKOFF_FACTOR' in ogc_server_settings else 0.3

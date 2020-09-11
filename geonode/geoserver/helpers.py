@@ -1970,6 +1970,8 @@ def _render_thumbnail(req_body, width=240, height=200):
             data=spec,
             headers=headers,
             user=_user)
+        if not content:
+            return content
         if not isinstance(content, bytes):
             raise Exception(content)
 
