@@ -20,10 +20,13 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from dynamic_rest.viewsets import DynamicModelViewSet
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework.decorators import action
+from dynamic_rest.viewsets import DynamicModelViewSet
+from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
+
 from rest_framework.response import Response
+from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly  # noqa
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
@@ -133,7 +136,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-    filter_backends = [ResourceBasePermissionsFilter]
+    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, SearchFilter, ResourceBasePermissionsFilter]
+    search_fields = ['title', 'abstract', 'purpose']
     queryset = ResourceBase.objects.all()
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination
