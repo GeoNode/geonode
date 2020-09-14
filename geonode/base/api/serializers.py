@@ -126,6 +126,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         self.fields['pk'] = serializers.CharField(read_only=True)
         self.fields['uuid'] = serializers.CharField(read_only=True)
         self.fields['polymorphic_ctype'] = serializers.CharField(read_only=True)
+        self.fields['polymorphic_ctype_id'] = serializers.CharField(read_only=True)
         self.fields['owner'] = DynamicRelationField(UserSerializer, embed=True, many=False, read_only=True)
         self.fields['poc'] = ContactRoleField('poc', read_only=True)
         self.fields['metadata_author'] = ContactRoleField('metadata_author', read_only=True)
@@ -178,7 +179,8 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         model = ResourceBase
         name = 'resource'
         fields = (
-            'pk', 'uuid', 'polymorphic_ctype', 'owner', 'poc', 'metadata_author',
+            'pk', 'uuid', 'polymorphic_ctype', 'polymorphic_ctype_id',
+            'owner', 'poc', 'metadata_author',
             'title', 'abstract', 'doi', 'alternate',
             'keywords', 'regions', 'category',
             'date', 'date_type', 'edition', 'purpose', 'maintenance_frequency',
