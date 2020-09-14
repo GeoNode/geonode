@@ -24,7 +24,7 @@ from dynamic_rest.viewsets import DynamicModelViewSet
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser, IsAuthenticated  # noqa
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly  # noqa
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 from geonode.base.models import ResourceBase
@@ -33,6 +33,10 @@ from geonode.security.utils import get_visible_resources
 
 from guardian.shortcuts import get_objects_for_user
 
+from .permissions import (
+    IsOwnerOrReadOnly,
+    ResourceBasePermissionsFilter
+)
 from .serializers import (
     UserSerializer,
     PermSpecSerialiazer,
@@ -127,8 +131,9 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     """
     API endpoint that allows base resources to be viewed or edited.
     """
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
-    permission_classes = (IsAdminUser,)
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    filter_backends = [ResourceBasePermissionsFilter]
     queryset = ResourceBase.objects.all()
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination
