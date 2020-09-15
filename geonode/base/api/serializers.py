@@ -77,6 +77,57 @@ class GroupProfileSerializer(DynamicModelSerializer):
         many=True, slug_field='slug', queryset=GroupCategory.objects.all())
 
 
+class HierarchicalKeywordSerializer(DynamicModelSerializer):
+
+    class Meta:
+        model = HierarchicalKeyword
+        name = 'HierarchicalKeyword'
+        fields = ('name', 'slug')
+
+    def to_representation(self, value):
+        return {'name': value.name, 'slug': value.slug}
+
+
+class RegionSerializer(DynamicModelSerializer):
+
+    class Meta:
+        model = Region
+        name = 'Region'
+        fields = ('code', 'name')
+
+
+class TopicCategorySerializer(DynamicModelSerializer):
+
+    class Meta:
+        model = TopicCategory
+        name = 'TopicCategory'
+        fields = ('identifier',)
+
+
+class RestrictionCodeTypeSerializer(DynamicModelSerializer):
+
+    class Meta:
+        model = RestrictionCodeType
+        name = 'RestrictionCodeType'
+        fields = ('identifier',)
+
+
+class LicenseSerializer(DynamicModelSerializer):
+
+    class Meta:
+        model = License
+        name = 'License'
+        fields = ('identifier',)
+
+
+class SpatialRepresentationTypeSerializer(DynamicModelSerializer):
+
+    class Meta:
+        model = SpatialRepresentationType
+        name = 'SpatialRepresentationType'
+        fields = ('identifier',)
+
+
 class AvatarUrlField(DynamicComputedField):
 
     def __init__(self, avatar_size, **kwargs):
@@ -162,18 +213,18 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         self.fields['created'] = serializers.DateTimeField(read_only=True)
         self.fields['last_updated'] = serializers.DateTimeField(read_only=True)
 
-        self.fields['keywords'] = serializers.SlugRelatedField(
-            many=True, slug_field='slug', queryset=HierarchicalKeyword.objects.all())
-        self.fields['regions'] = serializers.SlugRelatedField(
-            many=True, slug_field='name', queryset=Region.objects.all())
-        self.fields['category'] = serializers.SlugRelatedField(
-            many=False, slug_field='identifier', queryset=TopicCategory.objects.all())
-        self.fields['restriction_code_type'] = serializers.SlugRelatedField(
-            many=False, slug_field='identifier', queryset=RestrictionCodeType.objects.all())
-        self.fields['license'] = serializers.SlugRelatedField(
-            many=False, slug_field='identifier', queryset=License.objects.all())
-        self.fields['spatial_representation_type'] = serializers.SlugRelatedField(
-            many=False, slug_field='identifier', queryset=SpatialRepresentationType.objects.all())
+        self.fields['keywords'] = DynamicRelationField(
+            HierarchicalKeywordSerializer, embed=False, many=True)
+        self.fields['regions'] = DynamicRelationField(
+            RegionSerializer, embed=True, many=True, read_only=True)
+        self.fields['category'] = DynamicRelationField(
+            TopicCategorySerializer, embed=True, many=False)
+        self.fields['restriction_code_type'] = DynamicRelationField(
+            RestrictionCodeTypeSerializer, embed=True, many=False)
+        self.fields['license'] = DynamicRelationField(
+            LicenseSerializer, embed=True, many=False)
+        self.fields['spatial_representation_type'] = DynamicRelationField(
+            SpatialRepresentationTypeSerializer, embed=True, many=False)
 
     class Meta:
         model = ResourceBase
@@ -181,8 +232,8 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         fields = (
             'pk', 'uuid', 'polymorphic_ctype', 'polymorphic_ctype_id',
             'owner', 'poc', 'metadata_author',
-            'title', 'abstract', 'doi', 'alternate',
             'keywords', 'regions', 'category',
+            'title', 'abstract', 'doi', 'alternate',
             'date', 'date_type', 'edition', 'purpose', 'maintenance_frequency',
             'restriction_code_type', 'constraints_other', 'license', 'language',
             'spatial_representation_type', 'temporal_extent_start', 'temporal_extent_end',
