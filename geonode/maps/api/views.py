@@ -22,12 +22,12 @@ from drf_yasg.utils import swagger_auto_schema
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
-from rest_framework.filters import SearchFilter
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly, DjangoModelPermissionsOrAnonReadOnly  # noqa
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
+from geonode.base.api.filters import DynamicSearchFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.layers.api.serializers import LayerSerializer
@@ -47,8 +47,7 @@ class MapViewSet(DynamicModelViewSet):
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, SearchFilter, MapPermissionsFilter]
-    search_fields = ['title', 'abstract', 'purpose']
+    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter, MapPermissionsFilter]
     queryset = Map.objects.all()
     serializer_class = MapSerializer
     pagination_class = GeoNodeApiPagination

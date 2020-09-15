@@ -20,10 +20,10 @@
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
-from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly, DjangoModelPermissionsOrAnonReadOnly  # noqa
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
+from geonode.base.api.filters import DynamicSearchFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.layers.models import Layer
@@ -42,8 +42,7 @@ class LayerViewSet(DynamicModelViewSet):
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, SearchFilter, LayerPermissionsFilter]
-    search_fields = ['title', 'abstract', 'purpose']
+    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter, LayerPermissionsFilter]
     queryset = Layer.objects.all()
     serializer_class = LayerSerializer
     pagination_class = GeoNodeApiPagination
