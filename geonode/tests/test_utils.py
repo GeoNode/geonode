@@ -1,9 +1,15 @@
+import os
+import shutil
+import zipfile
+import tempfile
+
+from osgeo import ogr
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
 from geonode.br.management.commands.utils.utils import ignore_time
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.utils import copy_tree
+from geonode.utils import copy_tree, fixup_shp_columnnames, unzip_file
 
 
 class TestCopyTree(GeoNodeBaseTestSupport):
@@ -71,3 +77,35 @@ class TestCopyTree(GeoNodeBaseTestSupport):
         """
         copy_tree('/src', '/dst', ignore=ignore_time('>=', datetime.now().isoformat()))
         self.assertTrue(patch_shutil_copytree.called)
+
+
+class TestFixupShp(GeoNodeBaseTestSupport):
+    def test_fixup_shp_columnnames(self):
+        project_root = os.path.abspath(os.path.dirname(__file__))
+        layer_zip = os.path.join(project_root, "data", "ming_female_1.zip")
+
+        self.failUnless(zipfile.is_zipfile(layer_zip))
+
+        layer_shp = unzip_file(layer_zip)
+
+        expected_fieldnames = [
+            "ID", "_f", "__1", "__2", "m", "_", "_M2", "_M2_1", "l", "x", "y", "_WU", "_1",
+        ]
+        _, _, fieldnames = fixup_shp_columnnames(layer_shp, "windows-1258")
+
+        inDriver = ogr.GetDriverByName("ESRI Shapefile")
+        inDataSource = inDriver.Open(layer_shp, 0)
+        inLayer = inDataSource.GetLayer()
+        inLayerDefn = inLayer.GetLayerDefn()
+
+        self.assertEqual(inLayerDefn.GetFieldCount(), len(expected_fieldnames))
+
+        for i, fn in enumerate(expected_fieldnames):
+            self.assertEqual(inLayerDefn.GetFieldDefn(i).GetName(), fn)
+
+        inDataSource.Destroy()
+
+        # Cleanup temp dir
+        shp_parent = os.path.dirname(layer_shp)
+        if shp_parent.startswith(tempfile.gettempdir()):
+            shutil.rmtree(shp_parent)
