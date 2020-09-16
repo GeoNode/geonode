@@ -1118,6 +1118,32 @@ def check_shp_columnnames(layer):
         return fixup_shp_columnnames(inShapefile, layer.charset)
 
 
+def clone_shp_field_defn(srcFieldDefn, name):
+    """
+    Clone an existing ogr.FieldDefn with a new name
+    """
+    dstFieldDefn = ogr.FieldDefn(name, srcFieldDefn.GetType())
+    dstFieldDefn.SetWidth(srcFieldDefn.GetWidth())
+    dstFieldDefn.SetPrecision(srcFieldDefn.GetPrecision())
+
+    return dstFieldDefn
+
+
+def rename_shp_columnnames(inLayer, fieldnames):
+    """
+    Rename columns in a layer to those specified in the given mapping
+    """
+    inLayerDefn = inLayer.GetLayerDefn()
+
+    for i in range(inLayerDefn.GetFieldCount()):
+        srcFieldDefn = inLayerDefn.GetFieldDefn(i)
+        dstFieldName = fieldnames.get(srcFieldDefn.GetName())
+
+        if dstFieldName is not None:
+            dstFieldDefn = clone_shp_field_defn(srcFieldDefn, dstFieldName)
+            inLayer.AlterFieldDefn(i, dstFieldDefn, ogr.ALTER_NAME_FLAG)
+
+
 def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     """ Try to fix column names and warn the user
     """
@@ -1125,6 +1151,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
 
     if not tempdir:
         tempdir = tempfile.mkdtemp()
+
     if is_zipfile(inShapefile):
         inShapefile = unzip_file(inShapefile, '.shp', tempdir=tempdir)
 
@@ -1135,8 +1162,9 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
         tb = traceback.format_exc()
         logger.debug(tb)
         inDataSource = None
+
     if inDataSource is None:
-        logger.debug('Could not open %s' % (inShapefile))
+        logger.debug("Could not open {}".format(inShapefile))
         return False, None, None
     else:
         inLayer = inDataSource.GetLayer()
@@ -1190,13 +1218,10 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
         return True, None, None
     else:
         try:
-            for key in list_col.keys():
-                qry = "ALTER TABLE \"{}\" RENAME COLUMN \"{}\" TO \"{}\"".format(inLayer.GetName(), key, list_col[key])
-                inDataSource.ExecuteSQL(qry)
-        except TypeError as e:
-            logger.exception(e)
-            return True, None, None
-        except UnicodeEncodeError as e:
+            rename_shp_columnnames(inLayer, list_col)
+            inDataSource.SyncToDisk()
+            inDataSource.Destroy()
+        except Exception as e:
             logger.exception(e)
             raise GeoNodeException(
                 "Could not decode SHAPEFILE attributes by using the specified charset '{}'.".format(charset))
@@ -1383,7 +1408,7 @@ class HttpClient(object):
         self.password = 'admin'
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             ogc_server_settings = settings.OGC_SERVER['default']
-            self.timeout = ogc_server_settings['TIMEOUT'] if 'TIMEOUT' in ogc_server_settings else 5
+            self.timeout = ogc_server_settings['TIMEOUT'] if 'TIMEOUT' in ogc_server_settings else 60
             self.retries = ogc_server_settings['MAX_RETRIES'] if 'MAX_RETRIES' in ogc_server_settings else 5
             self.backoff_factor = ogc_server_settings['BACKOFF_FACTOR'] if \
             'BACKOFF_FACTOR' in ogc_server_settings else 0.3

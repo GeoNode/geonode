@@ -18,7 +18,7 @@
 
 {% if custom_theme.welcome_theme == 'JUMBOTRON_BG' or not slides %}
 <div class="jumbotron">
-  <div class="container">
+  <div class="container gn-container">
       {% with jumbotron_welcome_title=custom_theme.jumbotron_welcome_title|default:"Welcome"|template_trans %}
       <h1>{% trans jumbotron_welcome_title %}</h1>
       {% endwith %}
@@ -36,7 +36,7 @@
 {% else %}
 <div class="geonode-slide-show">
 	<div class="jumbotron jumbotron--no_bg">
-	   <div class="container">
+	   <div class="container gn-container">
 		  <div id="myCarousel" class="carousel slide" data-ride="carousel">
 			 <!-- Indicators -->
 			 {% if slides.count > 1%}

@@ -152,7 +152,12 @@ class WmsServiceHandler(base.ServiceHandlerBase,
     @property
     def parsed_service(self):
         cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
-        _url, _parsed_service = WebMapService(cleaned_url, version=version, proxy_base=None)
+        ogc_server_settings = settings.OGC_SERVER['default']
+        _url, _parsed_service = WebMapService(
+            cleaned_url,
+            version=version,
+            proxy_base=None,
+            timeout=ogc_server_settings.get('TIMEOUT', 60))
         return _parsed_service
 
     def create_cascaded_store(self):
@@ -489,9 +494,12 @@ class GeoNodeServiceHandler(WmsServiceHandler):
     def __init__(self, url):
         self.proxy_base = urljoin(
             settings.SITEURL, reverse('proxy'))
+        ogc_server_settings = settings.OGC_SERVER['default']
         url = self._probe_geonode_wms(url)
         self.url, _ = WebMapService(
-            url, proxy_base=self.proxy_base)
+            url,
+            proxy_base=self.proxy_base,
+            timeout=ogc_server_settings.get('TIMEOUT', 60))
         self.indexing_method = (
             INDEXED if self._offers_geonode_projection() else CASCADED)
         self.name = slugify(self.url)[:255]
