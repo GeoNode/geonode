@@ -573,10 +573,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         'it is first produced')
     keywords_help_text = _(
         'commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject '
-        '(space or comma-separated')
+        '(space or comma-separated)')
     tkeywords_help_text = _(
         'formalised word(s) or phrase(s) from a fixed thesaurus used to describe the subject '
-        '(space or comma-separated')
+        '(space or comma-separated)')
     regions_help_text = _('keyword identifies a location')
     restriction_code_type_help_text = _(
         'limitation(s) placed upon the access or use of the data.')
@@ -847,8 +847,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         null=True,
         blank=True)
 
-    __is_approved = None
-    __is_published = None
+    __is_approved = False
+    __is_published = False
 
     objects = ResourceBaseManager()
 
@@ -865,8 +865,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     def __init__(self, *args, **kwargs):
         super(ResourceBase, self).__init__(*args, **kwargs)
-        self.__is_approved = self.is_approved
-        self.__is_published = self.is_published
 
     def __str__(self):
         return "{0}".format(self.title)
