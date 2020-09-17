@@ -48,6 +48,7 @@ from geonode.groups.models import (
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.compat import ensure_string
+from geonode.base.thumb_utils import get_thumbs
 from geonode.base.models import License, Region
 from geonode.documents import DocumentsAppConfig
 from geonode.documents.forms import DocumentFormMixin
@@ -496,18 +497,17 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             self.assertEqual(set(deleted), set(document_files_before) - set(document_files_after))
 
             from geonode.base.utils import delete_orphaned_thumbs
-            _, thumb_files_before = storage.listdir("thumbs")
+            thumb_files_before = get_thumbs()
             deleted = delete_orphaned_thumbs()
-            _, thumb_files_after = storage.listdir("thumbs")
+            thumb_files_after = get_thumbs()
             self.assertTrue(len(deleted) > 0)
             self.assertEqual(set(deleted), set(thumb_files_before) - set(thumb_files_after))
 
             fn = os.path.join("documents", os.path.basename(input_path))
             self.assertFalse(storage.exists(fn))
 
-            _, files = storage.listdir("thumbs")
-            _cnt = sum(1 for fn in files if uuid in fn)
-            self.assertEqual(_cnt, 0)
+            files = [thumb for thumb in get_thumbs() if uuid in thumb]
+            self.assertEqual(len(files), 0)
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             self.client.login(username=self.user, password=self.passwd)

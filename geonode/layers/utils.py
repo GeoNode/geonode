@@ -57,6 +57,7 @@ from geonode.base.auth import get_or_create_token
 from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import UploadSession, LayerFile
+from geonode.base.thumb_utils import thumb_exists
 from geonode.base.models import Link, SpatialRepresentationType,  \
     TopicCategory, Region, License, ResourceBase
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Layer
@@ -956,7 +957,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
     elif isinstance(instance, Map):
         thumbnail_name = 'map-%s-thumb.png' % instance.uuid
 
-    _thumb_exists = storage.exists(os.path.join("thumbs", thumbnail_name))
+    _thumb_exists = thumb_exists(thumbnail_name)
     if overwrite or not _thumb_exists:
         BBOX_DIFFERENCE_THRESHOLD = 1e-5
 

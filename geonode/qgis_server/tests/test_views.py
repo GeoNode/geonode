@@ -38,6 +38,7 @@ from django.urls import reverse
 
 from geonode import qgis_server
 from geonode.compat import ensure_string
+from geonode.base.thumb_utils import thumb_path
 from geonode.decorators import on_ogc_backend
 from geonode.layers.utils import file_upload
 from geonode.maps.models import Map
@@ -573,7 +574,7 @@ class ThumbnailGenerationTest(GeoNodeBaseTestSupport):
 
         response = self.client.get(remote_thumbnail_url)
 
-        thumbnail_path = os.path.join("thumbs", "layer-thumb.png")
+        thumbnail_path = thumb_path("layer-thumb.png")
 
         layer.save_thumbnail(thumbnail_path, ensure_string(response.content))
 
@@ -646,7 +647,7 @@ class ThumbnailGenerationTest(GeoNodeBaseTestSupport):
 
         response = self.client.get(remote_thumbnail_url)
 
-        thumbnail_path = os.path.join("thumbs", "map-thumb.png")
+        thumbnail_path = thumb_path("map-thumb.png")
 
         map.save_thumbnail(thumbnail_path, ensure_string(response.content))
 

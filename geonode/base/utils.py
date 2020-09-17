@@ -22,7 +22,6 @@
 """
 
 # Standard Modules
-import os
 import logging
 from dateutil.parser import isoparse
 from datetime import datetime, timedelta
@@ -30,7 +29,6 @@ from datetime import datetime, timedelta
 # Django functionality
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.files.storage import default_storage as storage
 
 # Geonode functionality
 from guardian.shortcuts import get_perms, remove_perm, assign_perm
@@ -41,6 +39,9 @@ from geonode.base.models import ResourceBase, Link, Configuration
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.maps.models import Map
 from geonode.services.models import Service
+from geonode.base.thumb_utils import (
+    get_thumbs,
+    remove_thumb)
 
 logger = logging.getLogger('geonode.base.utils')
 
@@ -55,7 +56,7 @@ def delete_orphaned_thumbs():
     Deletes orphaned thumbnails.
     """
     deleted = []
-    _, files = storage.listdir("thumbs")
+    files = get_thumbs()
 
     for filename in files:
         model = filename.split('-')[0]
@@ -63,7 +64,7 @@ def delete_orphaned_thumbs():
         if ResourceBase.objects.filter(uuid=uuid).count() == 0:
             logger.debug("Deleting orphaned thumbnail " + filename)
             try:
-                storage.delete(os.path.join("thumbs", filename))
+                remove_thumb(filename)
                 deleted.append(filename)
             except NotImplementedError as e:
                 logger.error(
