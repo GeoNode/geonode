@@ -9,7 +9,7 @@
         {% if announcement.dismissal_type > 1 %}
         <a type="button" class="close" data-dismiss="alert" data-dismiss-url="{% url "announcements_dismiss" announcement.pk %}" href="#">×</a>
         {% endif %}
-        <h4><a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a></h4>
+        <h4><a href="{{ announcement.get_absolute_url }}">{{ announcement.title }}</a></h4>
         <p><small><em>{{ announcement.creation_date }}</em></small></p>
         <div>{{ announcement.content }}</div>
     </div>
