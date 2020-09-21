@@ -33,4 +33,6 @@ def remove_thumb(filename):
 def remove_thumbs(name):
     """Removes all stored thumbnails that start with the same name as the
     file specified"""
-    map(remove_thumb, (thumb for thumb in get_thumbs() if thumb.startswith(name)))
+    for thumb in get_thumbs():
+        if thumb.startswith(name):
+            remove_thumb(thumb)

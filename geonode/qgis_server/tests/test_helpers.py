@@ -253,16 +253,18 @@ class HelperTest(GeoNodeBaseTestSupport):
         layer_path = settings.QGIS_SERVER_CONFIG['layer_directory']
         tiles_path = settings.QGIS_SERVER_CONFIG['tiles_directory']
 
+        # Use sets to perform difference operation later
         qgis_layers = set(os.listdir(layer_path))
         tile_caches = set(os.listdir(tiles_path))
-        _, geonode_layers = map(set, storage.listdir("layers"))
+        # storage.listdir returns a (directories, files) tuple
+        geonode_layers = set(storage.listdir("layers")[1])
 
         # run management command. should not change anything
         call_command('delete_orphaned_qgis_server_layers')
 
         actual_qgis_layers = set(os.listdir(layer_path))
         actual_tile_caches = set(os.listdir(tiles_path))
-        _, actual_geonode_layers = map(set, storage.listdir("layers"))
+        actual_geonode_layers = set(storage.listdir("layers")[1])
 
         self.assertEqual(qgis_layers, actual_qgis_layers)
         self.assertEqual(tile_caches, actual_tile_caches)
@@ -280,7 +282,7 @@ class HelperTest(GeoNodeBaseTestSupport):
 
         actual_qgis_layers = set(os.listdir(layer_path))
         actual_tile_caches = set(os.listdir(tiles_path))
-        _, actual_geonode_layers = map(set, storage.listdir("layers"))
+        actual_geonode_layers = set(storage.listdir("layers")[1])
 
         # run management command. This should clear the files. But preserve
         # registered files (the one that is saved in database)

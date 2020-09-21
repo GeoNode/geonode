@@ -74,7 +74,7 @@ def render_document(document_path, extension="png"):
                     "-f", extension, "-o", output_path, document_path],
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
-            timeout = Timer(settings.UNOCONV_TIMEOUT, lambda p: p.kill(), [unoconv])
+            timeout = Timer(settings.UNOCONV_TIMEOUT, unoconv.kill)
             timeout.start()
             stdout, stderr = unoconv.communicate()
         except Exception as e:
