@@ -22,7 +22,7 @@
 """
 
 # Standard Modules
-import os
+import re
 import logging
 from dateutil.parser import isoparse
 from datetime import datetime, timedelta
@@ -30,8 +30,6 @@ from datetime import datetime, timedelta
 # Django functionality
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.files.storage import FileSystemStorage
-from django.core.files.storage import default_storage as storage
 
 # Geonode functionality
 from guardian.shortcuts import get_perms, remove_perm, assign_perm
@@ -42,6 +40,9 @@ from geonode.base.models import ResourceBase, Link, Configuration
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.maps.models import Map
 from geonode.services.models import Service
+from geonode.base.thumb_utils import (
+    get_thumbs,
+    remove_thumb)
 
 logger = logging.getLogger('geonode.base.utils')
 
@@ -50,28 +51,36 @@ _names = ['Zipped Shapefile', 'Zipped', 'Shapefile', 'GML 2.0', 'GML 3.1.1', 'CS
           'ESRI Shapefile', 'View in Google Earth', 'KML', 'KMZ', 'Atom', 'DIF',
           'Dublin Core', 'ebRIM', 'FGDC', 'ISO', 'ISO with XSL']
 
+thumb_filename_regex = re.compile(
+    r"^(document|map|layer)-([a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12})-thumb\.png$")
+
+
+def get_thumb_uuid(filename):
+    """Fetches the UUID associated with the given thumbnail file"""
+    result = thumb_filename_regex.search(filename)
+    uuid = result.group(2) if result else None
+
+    return uuid
+
 
 def delete_orphaned_thumbs():
     """
     Deletes orphaned thumbnails.
     """
-    if isinstance(storage, FileSystemStorage):
-        documents_path = os.path.join(settings.MEDIA_ROOT, 'thumbs')
-    else:
-        documents_path = os.path.join(settings.STATIC_ROOT, 'thumbs')
-    if os.path.exists(documents_path):
-        for filename in os.listdir(documents_path):
-            fn = os.path.join(documents_path, filename)
-            model = filename.split('-')[0]
-            uuid = filename.replace(model, '').replace('-thumb.png', '')[1:]
-            if ResourceBase.objects.filter(uuid=uuid).count() == 0:
-                print('Removing orphan thumb %s' % fn)
-                logger.debug('Removing orphan thumb %s' % fn)
-                try:
-                    os.remove(fn)
-                except OSError:
-                    print('Could not delete file %s' % fn)
-                    logger.error('Could not delete file %s' % fn)
+    deleted = []
+    thumb_uuids = {get_thumb_uuid(filename): filename for filename in get_thumbs()}
+    db_uuids = ResourceBase.objects.filter(uuid__in=thumb_uuids.keys()).values_list("uuid", flat=True)
+    orphaned_uuids = set(thumb_uuids.keys()) - set(db_uuids)
+    orphaned_thumbs = (thumb_uuids[uuid] for uuid in orphaned_uuids if uuid is not None)
+
+    for filename in orphaned_thumbs:
+        try:
+            remove_thumb(filename)
+            deleted.append(filename)
+        except NotImplementedError as e:
+            logger.error("Failed to delete orphaned thumbnail '{}': {}".format(filename, e))
+
+    return deleted
 
 
 def remove_duplicate_links(resource):
