@@ -91,7 +91,7 @@ urlpatterns = [
         map_json,
         name='map_json'),
     url(r'^embed/$', views.map_embed, name='map_embed'),
-    url(r'^metadata/batch/(?P<ids>[^/]*)/$', views.map_batch_metadata, name='map_batch_metadata'),
+    url(r'^metadata/batch/$', views.map_batch_metadata, name='map_batch_metadata'),
     url(r'^(?P<mapid>[^/]*)/metadata_detail$',
         views.map_metadata_detail,
         name='map_metadata_detail'),

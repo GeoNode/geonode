@@ -1543,11 +1543,11 @@ def layer_sld_edit(
 
 
 @login_required
-def layer_batch_metadata(request, ids):
-    return batch_modify(request, ids, 'Layer')
+def layer_batch_metadata(request):
+    return batch_modify(request, 'Layer')
 
 
-def batch_permissions(request, ids, model):
+def batch_permissions(request, model):
     Resource = None
     if model == 'Layer':
         Resource = Layer
@@ -1555,8 +1555,9 @@ def batch_permissions(request, ids, model):
         raise PermissionDenied
 
     template = 'base/batch_permissions.html'
+    ids = request.POST.get("ids")
 
-    if "cancel" in request.POST:
+    if "cancel" in request.POST or not ids:
         return HttpResponseRedirect(
             '/admin/{model}s/{model}/'.format(model=model.lower())
         )
@@ -1617,8 +1618,8 @@ def batch_permissions(request, ids, model):
 
 
 @login_required
-def layer_batch_permissions(request, ids):
-    return batch_permissions(request, ids, 'Layer')
+def layer_batch_permissions(request):
+    return batch_permissions(request, 'Layer')
 
 
 def layer_view_counter(layer_id, viewer):

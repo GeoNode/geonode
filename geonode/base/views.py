@@ -45,7 +45,7 @@ from geonode.base.forms import CuratedThumbnailForm
 from geonode.notifications_helper import send_notification
 
 
-def batch_modify(request, ids, model):
+def batch_modify(request, model):
     if not request.user.is_superuser:
         raise PermissionDenied
     if model == 'Document':
@@ -55,8 +55,9 @@ def batch_modify(request, ids, model):
     if model == 'Map':
         Resource = Map
     template = 'base/batch_edit.html'
+    ids = request.POST.get("ids")
 
-    if "cancel" in request.POST:
+    if "cancel" in request.POST or not ids:
         return HttpResponseRedirect(
             '/admin/{model}s/{model}/'.format(model=model.lower())
         )
@@ -64,22 +65,20 @@ def batch_modify(request, ids, model):
     if request.method == 'POST':
         form = BatchEditForm(request.POST)
         if form.is_valid():
-            for resource in Resource.objects.filter(id__in=ids.split(',')):
-                resource.group = form.cleaned_data['group'] or resource.group
-                resource.owner = form.cleaned_data['owner'] or resource.owner
-                resource.category = form.cleaned_data['category'] or resource.category
-                resource.license = form.cleaned_data['license'] or resource.license
-                resource.date = form.cleaned_data['date'] or resource.date
-                resource.language = form.cleaned_data['language'] or resource.language
-                new_region = form.cleaned_data['regions']
-                if new_region:
-                    resource.regions.add(new_region)
-                keywords = form.cleaned_data['keywords']
-                if keywords:
-                    resource.keywords.clear()
-                    for word in keywords.split(','):
-                        resource.keywords.add(word.strip())
-                resource.save(notify=True)
+            keywords = [keyword.strip() for keyword in form.cleaned_data.pop("keywords").split(',')]
+            regions = form.cleaned_data.pop("regions")
+            ids = form.cleaned_data.pop("ids")
+            if not form.cleaned_data.get("date"):
+                form.cleaned_data.pop("date")
+
+            resources = Resource.objects.filter(id__in=ids.split(','))
+            resources.update(**form.cleaned_data)
+            for resource in resources:
+                resource.regions.add(regions)
+                resource.keywords.clear()
+                for keyword in keywords:
+                    resource.keywords.add(keyword)
+
             return HttpResponseRedirect(
                 '/admin/{model}s/{model}/'.format(model=model.lower())
             )

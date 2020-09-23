@@ -46,6 +46,8 @@ from geonode.base.models import (
     Configuration,
 )
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from geonode.base.forms import BatchEditForm, BatchPermissionsForm
 
 from geonode.base.widgets import TaggitSelect2Custom
 
@@ -53,8 +55,18 @@ from geonode.base.widgets import TaggitSelect2Custom
 def metadata_batch_edit(modeladmin, request, queryset):
     ids = ','.join([str(element.pk) for element in queryset])
     resource = queryset[0].class_name.lower()
-    return HttpResponseRedirect(
-        '/{}s/metadata/batch/{}/'.format(resource, ids))
+    form = BatchEditForm({
+        'ids': ids
+    })
+    return render(
+        request,
+        "base/batch_edit.html",
+        context={
+            'form': form,
+            'ids': ids,
+            'model': resource,
+        }
+    )
 
 
 metadata_batch_edit.short_description = 'Metadata batch edit'
@@ -63,8 +75,21 @@ metadata_batch_edit.short_description = 'Metadata batch edit'
 def set_batch_permissions(modeladmin, request, queryset):
     ids = ','.join([str(element.pk) for element in queryset])
     resource = queryset[0].class_name.lower()
-    return HttpResponseRedirect(
-        '/{}s/permissions/batch/{}/'.format(resource, ids))
+    form = BatchPermissionsForm(
+        {
+            'permission_type': ('r', ),
+            'mode': 'set',
+            'ids': ids
+        })
+
+    return render(
+        request,
+        "base/batch_permissions.html",
+        context={
+            'form': form,
+            'model': resource,
+        }
+    )
 
 
 set_batch_permissions.short_description = 'Set permissions'
