@@ -35,6 +35,7 @@ import shutil
 import requests
 from django.conf import settings
 from django.core.management import call_command
+from django.core.files.storage import default_storage as storage
 from django.urls import reverse
 
 from geonode import qgis_server
@@ -251,22 +252,23 @@ class HelperTest(GeoNodeBaseTestSupport):
         # register file list
         layer_path = settings.QGIS_SERVER_CONFIG['layer_directory']
         tiles_path = settings.QGIS_SERVER_CONFIG['tiles_directory']
-        geonode_layer_path = os.path.join(settings.MEDIA_ROOT, 'layers')
 
-        qgis_layer_list = set(os.listdir(layer_path))
-        tile_cache_list = set(os.listdir(tiles_path))
-        geonode_layer_list = set(os.listdir(geonode_layer_path))
+        # Use sets to perform difference operation later
+        qgis_layers = set(os.listdir(layer_path))
+        tile_caches = set(os.listdir(tiles_path))
+        # storage.listdir returns a (directories, files) tuple
+        geonode_layers = set(storage.listdir("layers")[1])
 
         # run management command. should not change anything
         call_command('delete_orphaned_qgis_server_layers')
 
-        actual_qgis_layer_list = set(os.listdir(layer_path))
-        actual_tile_cache_list = set(os.listdir(tiles_path))
-        actual_geonode_layer_list = set(os.listdir(geonode_layer_path))
+        actual_qgis_layers = set(os.listdir(layer_path))
+        actual_tile_caches = set(os.listdir(tiles_path))
+        actual_geonode_layers = set(storage.listdir("layers")[1])
 
-        self.assertEqual(qgis_layer_list, actual_qgis_layer_list)
-        self.assertEqual(tile_cache_list, actual_tile_cache_list)
-        self.assertEqual(geonode_layer_list, actual_geonode_layer_list)
+        self.assertEqual(qgis_layers, actual_qgis_layers)
+        self.assertEqual(tile_caches, actual_tile_caches)
+        self.assertEqual(geonode_layers, actual_geonode_layers)
 
         # now create random file without reference
         shutil.copy(
@@ -275,13 +277,12 @@ class HelperTest(GeoNodeBaseTestSupport):
         shutil.copytree(
             os.path.join(tiles_path, 'test_grid'),
             os.path.join(tiles_path, 'test_grid_copy'))
-        shutil.copy(
-            os.path.join(geonode_layer_path, 'test_grid.tif'),
-            os.path.join(geonode_layer_path, 'test_grid_copy.tif'))
+        with storage.open(os.path.join("layers", "test_grid.tif"), 'rb') as f:
+            storage.save(os.path.join("layers", "test_grid_copy.tif"), f)
 
-        actual_qgis_layer_list = set(os.listdir(layer_path))
-        actual_tile_cache_list = set(os.listdir(tiles_path))
-        actual_geonode_layer_list = set(os.listdir(geonode_layer_path))
+        actual_qgis_layers = set(os.listdir(layer_path))
+        actual_tile_caches = set(os.listdir(tiles_path))
+        actual_geonode_layers = set(storage.listdir("layers")[1])
 
         # run management command. This should clear the files. But preserve
         # registered files (the one that is saved in database)
@@ -289,13 +290,13 @@ class HelperTest(GeoNodeBaseTestSupport):
 
         self.assertEqual(
             {'test_grid_copy.tif'},
-            actual_qgis_layer_list - qgis_layer_list)
+            actual_qgis_layers - qgis_layers)
         self.assertEqual(
             {'test_grid_copy'},
-            actual_tile_cache_list - tile_cache_list)
+            actual_tile_caches - tile_caches)
         self.assertEqual(
             {'test_grid_copy.tif'},
-            actual_geonode_layer_list - geonode_layer_list)
+            actual_geonode_layers - geonode_layers)
 
         # cleanup
         uploaded.delete()
