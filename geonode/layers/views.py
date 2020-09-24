@@ -111,6 +111,7 @@ from .tasks import delete_layer
 from geonode.geoserver.helpers import (ogc_server_settings,
                                        set_layer_style)
 from geonode.base.utils import ManageResourceOwnerPermissions
+from geonode.tasks.tasks import set_permissions
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import (_render_thumbnail,
@@ -1584,10 +1585,7 @@ def batch_permissions(request, model):
             delete_flag = _data['mode'] == 'unset'
             permissions_names = _data['permission_type']
             if permissions_names:
-                for permissions_name in permissions_names:
-                    set_layers_permissions(
-                        permissions_name, resources_names, users_usernames, groups_names, delete_flag
-                    )
+                set_permissions.delay(permissions_names, resources_names, users_usernames, groups_names, delete_flag)
             return HttpResponseRedirect(
                 '/admin/{model}s/{model}/'.format(model=model.lower())
             )
