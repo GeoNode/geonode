@@ -363,14 +363,14 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         ids = ','.join([str(element.pk) for element in resources])
         # test non-admin access
         self.client.login(username="bobby", password="bob")
-        response = self.client.get(reverse(view, args=(ids,)))
+        response = self.client.get(reverse(view))
         self.assertTrue(response.status_code in (401, 403))
         # test group change
         group = Group.objects.first()
         self.client.login(username='admin', password='admin')
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'group': group.pk},
+            reverse(view),
+            data={'group': group.pk, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -379,8 +379,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # test owner change
         owner = get_user_model().objects.first()
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'owner': owner.pk},
+            reverse(view),
+            data={'owner': owner.pk, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -389,8 +389,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # test license change
         license = License.objects.first()
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'license': license.pk},
+            reverse(view),
+            data={'license': license.pk, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -399,8 +399,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # test regions change
         region = Region.objects.first()
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'region': region.pk},
+            reverse(view),
+            data={'region': region.pk, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -411,8 +411,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         from django.utils import timezone
         date = datetime.now(timezone.get_current_timezone())
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'date': date},
+            reverse(view),
+            data={'date': date, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 200)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -423,8 +423,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # test language change
         language = 'eng'
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'language': language},
+            reverse(view),
+            data={'language': language, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -433,8 +433,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # test keywords change
         keywords = 'some,thing,new'
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'keywords': keywords},
+            reverse(view),
+            data={'keywords': keywords, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
