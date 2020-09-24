@@ -45,7 +45,6 @@ from geonode.base.models import (
     CuratedThumbnail,
     Configuration,
 )
-from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from geonode.base.forms import BatchEditForm, BatchPermissionsForm
 
