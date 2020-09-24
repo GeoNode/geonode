@@ -82,8 +82,7 @@ from geonode.layers.models import (
 from geonode.layers.utils import (
     file_upload,
     is_raster,
-    is_vector,
-    set_layers_permissions)
+    is_vector)
 
 from geonode.maps.models import Map
 from geonode.services.models import Service
