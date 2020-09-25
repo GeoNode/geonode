@@ -80,7 +80,6 @@ def batch_modify(request, model):
                 new_regions = [regions_through(region=regions, resourcebase=resource) for resource in resources]
                 regions_through.objects.bulk_create(new_regions, ignore_conflicts=True)
 
-
             keywords_through = Resource.keywords.through
             keywords_through.objects.filter(content_object__in=resources).delete()
 
