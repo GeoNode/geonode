@@ -209,7 +209,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
         the uploader is done"""
         # using gsconfig to test the geoserver rest api.
         layer = self.catalog.get_layer(layer_name)
-        self.assertIsNotNone(layer is not None)
+        self.assertIsNotNone(layer)
 
     def check_and_pass_through_timestep(self, redirect_to):
         time_step = upload_step('time')
