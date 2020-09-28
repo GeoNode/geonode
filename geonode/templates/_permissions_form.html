@@ -341,7 +341,7 @@
 
     /* OpenLayers */
     {% if resource.ll_bbox %}
-      var bbox = [{{ resource.bbox_string }}];
+      var bbox = [{{ resource.ll_bbox_string }}];
     {% else %}
       var bbox = null;
     {% endif %}

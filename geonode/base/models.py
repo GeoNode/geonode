@@ -971,6 +971,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
     @property
+    def ll_bbox_string(self):
+        """WGS84 BBOX is in the format: [x0,y0,x1,y1]."""
+        *ll_bbox, srid = self.ll_bbox
+        ll_bbox[1], ll_bbox[2] = ll_bbox[2], ll_bbox[1]
+        return ",".join(map(str, ll_bbox))
+
+    @property
     def bbox_string(self):
         """BBOX is in the format: [x0, y0, x1, y1]. Provides backwards compatibility
         after transition to polygons."""

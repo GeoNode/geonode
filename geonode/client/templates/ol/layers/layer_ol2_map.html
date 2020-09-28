@@ -13,7 +13,7 @@
 <script type="text/javascript">
   document.addEventListener("DOMContentLoaded", function (event) {
     {% if resource.ll_bbox %}
-      var bbox = [{{ resource.bbox_string }}];
+      var bbox = [{{ resource.ll_bbox_string }}];
     {% else %}
       var bbox = null;
     {% endif %}
