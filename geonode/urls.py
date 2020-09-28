@@ -97,11 +97,6 @@ urlpatterns += [
     # Catalogue views
     url(r'^catalogue/', include('geonode.catalogue.urls')),
 
-    # data.json
-    url(r'^data.json$',
-        geonode.catalogue.views.data_json,
-        name='data_json'),
-
     # ident
     url(r'^ident.json$',
         views.ident_json,
@@ -220,7 +215,7 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             get_capabilities, name='capabilities_category'),
         url(r'^gs/', include('geonode.geoserver.urls')),
     ]
-if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
+elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     # QGIS Server's urls
     urlpatterns += [  # '',
         url(r'^qgis-server/',
