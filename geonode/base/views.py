@@ -67,7 +67,8 @@ def batch_modify(request, model):
     if request.method == 'POST':
         form = BatchEditForm(request.POST)
         if form.is_valid():
-            keywords = [keyword.strip() for keyword in form.cleaned_data.pop("keywords").split(',')]
+            keywords = [keyword.strip() for keyword in
+                        form.cleaned_data.pop("keywords").split(',') if keyword]
             regions = form.cleaned_data.pop("regions")
             ids = form.cleaned_data.pop("ids")
             if not form.cleaned_data.get("date"):
