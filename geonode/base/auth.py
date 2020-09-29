@@ -88,7 +88,7 @@ def extend_token(token):
 
 
 def get_auth_token(user, client="GeoServer"):
-    if not user or user.is_anonymous:
+    if not user or user.is_anonymous or not user.is_authenticated:
         return None
     try:
         Application = get_application_model()

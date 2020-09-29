@@ -17,8 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-import json
 import os
 import logging
 import xml.etree.ElementTree as ET
@@ -213,36 +211,6 @@ def opensearch_dispatch(request):
 
     return render(request, 'catalogue/opensearch_description.xml', context=ctx,
                   content_type='application/opensearchdescription+xml')
-
-
-@csrf_exempt
-def data_json(request):
-    """Return data.json representation of catalogue"""
-    json_data = []
-    for resource in ResourceBase.objects.all():
-        record = {}
-        record['title'] = resource.title
-        record['description'] = resource.abstract
-        record['keyword'] = resource.keyword_csv.split(',')
-        record['modified'] = resource.csw_insert_date.isoformat()
-        record['publisher'] = resource.poc.organization if resource.poc else None
-        record['contactPoint'] = resource.poc.name_long if resource.poc else None
-        record['mbox'] = resource.poc.email if resource.poc else None
-        record['identifier'] = resource.uuid
-        if resource.is_published:
-            record['accessLevel'] = 'public'
-        else:
-            record['accessLevel'] = 'non-public'
-
-        record['distribution'] = []
-        for link in resource.link_set.all():
-            record['distribution'].append({
-                'accessURL': link.url,
-                'format': link.mime
-            })
-        json_data.append(record)
-
-    return HttpResponse(json.dumps(json_data), 'application/json')
 
 
 # transforms a row sql query into a two dimension array

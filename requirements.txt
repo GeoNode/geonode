@@ -73,7 +73,9 @@ django-recaptcha==2.0.6
 # REST
 djangorestframework>=3.1.0,<3.11
 djangorestframework_guardian==0.3.0
-drf_writable_nested==0.6.1
+drf-extensions==0.6.0
+drf-writable-nested==0.6.1
+drf-yasg==1.17.1
 dynamic-rest==1.9.6
 Markdown==3.2.2
 
@@ -81,11 +83,11 @@ pinax-notifications==6.0.0
 pinax-ratings==4.0.0
 
 # GeoNode org maintained apps.
-django_mapstore_adapter==2.0.4.6
+django_mapstore_adapter==2.0.4.7
 django-geonode-mapstore-client==2.0.8.1
 geonode-avatar==5.0.7
 django-geonode-client==1.0.9
-geonode-oauth-toolkit==2.0.0
+geonode-oauth-toolkit==2.1.0
 geonode-user-messages==2.0.1
 geonode-announcements==2.0.2
 geonode-django-activity-stream==0.9.0

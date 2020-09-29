@@ -275,6 +275,7 @@ ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'geonode.urls')
 
 STATICFILES_LOCATION = 'static'
 MEDIAFILES_LOCATION = 'uploaded'
+THUMBNAIL_LOCATION = 'thumbs'
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"

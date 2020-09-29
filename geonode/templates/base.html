@@ -311,15 +311,15 @@
             </li>
           <li id="nav_maps">
               {% if user.is_authenticated %}
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Maps" %}<i class="fa fa-angle-down fa-lg"></i></a>
-              <ul class="dropdown-menu">
-                <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
-                {% if not READ_ONLY_MODE %}
-                  <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
-                {% endif %}
-              </ul>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Maps" %}<i class="fa fa-angle-down fa-lg"></i></a>
+                <ul class="dropdown-menu">
+                  <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
+                  {% if not READ_ONLY_MODE %}
+                    <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
+                  {% endif %}
+                </ul>
               {% else %}
-              <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Maps" %}</a>
+                <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Maps" %}</a>
               {% endif %}
           </li>
           <li>
@@ -329,15 +329,15 @@
                 <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
                 <li><a href="{% url "group_category_list" %}">{% trans "Group Categories" %}</a></li>
                 {% if perms.announcements.can_manage %}
-                <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
+                  <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
                 {% endif %}
                 {% if user.is_authenticated and not READ_ONLY_MODE %}
-                <li role="separator" class="divider"></li>
-                <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
                 {% endif %}
                 {% if user.is_superuser and not READ_ONLY_MODE %}
-                <li><a href="{% if SITEURL|default:""|slice:"-1:" == "/" %}{{SITEURL}}{% else %}{{SITEURL}}/{% endif %}admin/people/profile/add/">{% trans "Add User" %}</a></li>
-                <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
+                  <li><a href="{% if SITEURL|default:""|slice:"-1:" == "/" %}{{SITEURL}}{% else %}{{SITEURL}}/{% endif %}admin/people/profile/add/">{% trans "Add User" %}</a></li>
+                  <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
                 {% endif %}
               </ul>
           </li>
@@ -494,7 +494,7 @@
             {% endif %}
           </ul>
         </div>
-    <div class="col-md-2">
+        <div class="col-md-2">
           <ul class="list-unstyled">
             <li>{% trans "About" %}</li>
             <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
