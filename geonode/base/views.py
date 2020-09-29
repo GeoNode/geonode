@@ -47,7 +47,6 @@ from geonode.base.forms import UserAndGroupPermissionsForm
 from django.contrib.auth import get_user_model
 from geonode.layers.utils import set_layers_permissions
 from django.contrib.auth.models import Group
-from django.urls import reverse
 
 
 def user_and_group_permission(request, model):
