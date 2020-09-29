@@ -293,9 +293,9 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             self.assertAlmostEqual(bbox_y0, uploaded_bbox_y0)
             self.assertAlmostEqual(bbox_y1, uploaded_bbox_y1)
 
-            # bbox format: [xmin,xmax,ymin,ymax]
-            uploaded_bbox_string_x0, uploaded_bbox_string_x1, \
-                uploaded_bbox_string_y0, uploaded_bbox_string_y1 = \
+            # bbox format: [xmin,ymin,xmax,ymax]
+            uploaded_bbox_string_x0, uploaded_bbox_string_y0, \
+                uploaded_bbox_string_x1, uploaded_bbox_string_y1 = \
                 map(Decimal, uploaded.bbox_string.split(','))
             self.assertAlmostEqual(bbox_x0, uploaded_bbox_string_x0)
             self.assertAlmostEqual(bbox_x1, uploaded_bbox_string_x1)

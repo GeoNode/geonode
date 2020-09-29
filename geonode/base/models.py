@@ -979,7 +979,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """WGS84 BBOX is in the format: [x0,y0,x1,y1]."""
         bbox = BBOXHelper.from_xy(self.ll_bbox[:4])
 
-        return "{x0:.6f},{y0:.6f},{x1:.6f},{y1:.6f}".format(
+        return "{x0:.7f},{y0:.7f},{x1:.7f},{y1:.7f}".format(
             x0=bbox.xmin,
             y0=bbox.ymin,
             x1=bbox.xmax,
@@ -991,7 +991,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         after transition to polygons."""
         bbox = BBOXHelper.from_xy(self.bbox[:4])
 
-        return "{x0:.6f},{y0:.6f},{x1:.6f},{y1:.6f}".format(
+        return "{x0:.7f},{y0:.7f},{x1:.7f},{y1:.7f}".format(
             x0=bbox.xmin,
             y0=bbox.ymin,
             x1=bbox.xmax,
