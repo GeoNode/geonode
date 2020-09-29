@@ -851,6 +851,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         )
 
     def __init__(self, *args, **kwargs):
+        # Provide legacy support for bbox fields
+        bbox = [kwargs.pop(key, None) for key in ('bbox_x0', 'bbox_y0', 'bbox_x1', 'bbox_y1')]
+        if all(bbox):
+            kwargs['bbox_polygon'] = Polygon.from_bbox(bbox)
         super(ResourceBase, self).__init__(*args, **kwargs)
 
     def __str__(self):
