@@ -28,6 +28,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly  # noqa
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
 from geonode.base.models import ResourceBase
 from geonode.base.api.filters import DynamicSearchFilter
@@ -57,7 +58,7 @@ class UserViewSet(DynamicModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    authentication_classes = (SessionAuthentication, BasicAuthentication, OAuth2Authentication)
     permission_classes = (IsAdminUser,)
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
@@ -99,7 +100,7 @@ class GroupViewSet(DynamicModelViewSet):
     """
     API endpoint that allows gropus to be viewed or edited.
     """
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    authentication_classes = (SessionAuthentication, BasicAuthentication, OAuth2Authentication)
     permission_classes = (IsAdminUser,)
     queryset = GroupProfile.objects.all()
     serializer_class = GroupProfileSerializer
@@ -134,7 +135,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     """
     API endpoint that allows base resources to be viewed or edited.
     """
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter, ResourceBasePermissionsFilter]
     queryset = ResourceBase.objects.all()

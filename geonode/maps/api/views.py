@@ -26,6 +26,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly, DjangoModelPermissionsOrAnonReadOnly  # noqa
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
 from geonode.base.api.filters import DynamicSearchFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly
@@ -45,7 +46,7 @@ class MapViewSet(DynamicModelViewSet):
     """
     API endpoint that allows maps to be viewed or edited.
     """
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter, MapPermissionsFilter]
     queryset = Map.objects.all()
