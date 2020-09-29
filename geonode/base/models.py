@@ -35,7 +35,7 @@ from django.db.models import Q, signals
 from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import GEOSGeometry, Polygon
+from django.contrib.gis.geos import GEOSGeometry, Polygon, Point
 from django.contrib.gis.db.models import PolygonField
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
@@ -953,18 +953,21 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def bbox(self):
         """BBOX is in the format: [x0, x1, y0, y1, srid]."""
-        if str(self.bbox_polygon.srid) not in self.srid:
-            self.bbox_polygon.transform(self.srid)
+        bbox = self.bbox_polygon
+        match = re.match(r'^(EPSG:)?(?P<srid>\d{4,5})$', self.srid)
+        srid = int(match.group('srid'))
+        if bbox.srid is not None and bbox.srid != srid:
+            bbox = bbox.transform(srid, clone=True)
 
-        bbox = self.bbox_helper
-        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, self.srid]
+        bbox = BBOXHelper(bbox.extent)
+        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(srid)]
 
     @property
     def ll_bbox(self):
         """BBOX is in the format [x0, x1, y0, y1, "EPSG:srid"]. Provides backwards
         compatibility after transition to polygons."""
         bbox = self.bbox_polygon
-        if bbox.srid != 4326:
+        if bbox.srid is not None and bbox.srid != 4326:
             bbox = bbox.transform(4326, clone=True)
 
         bbox = BBOXHelper(bbox.extent)
@@ -973,16 +976,25 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def ll_bbox_string(self):
         """WGS84 BBOX is in the format: [x0,y0,x1,y1]."""
-        *ll_bbox, srid = self.ll_bbox
-        ll_bbox[1], ll_bbox[2] = ll_bbox[2], ll_bbox[1]
-        return ",".join(map(str, ll_bbox))
+        bbox = BBOXHelper.from_xy(self.ll_bbox[:4])
+
+        return "{x0:.6f},{y0:.6f},{x1:.6f},{y1:.6f}".format(
+            x0=bbox.xmin,
+            y0=bbox.ymin,
+            x1=bbox.xmax,
+            y1=bbox.ymax)
 
     @property
     def bbox_string(self):
         """BBOX is in the format: [x0, y0, x1, y1]. Provides backwards compatibility
         after transition to polygons."""
-        # TODO: This carries no information about SRS, and should probably be WKT string
-        return ",".join(map(str, self.bbox[:4]))
+        bbox = BBOXHelper.from_xy(self.bbox[:4])
+
+        return "{x0:.6f},{y0:.6f},{x1:.6f},{y1:.6f}".format(
+            x0=bbox.xmin,
+            y0=bbox.ymin,
+            x1=bbox.xmax,
+            y1=bbox.ymax)
 
     @property
     def bbox_helper(self):
@@ -1123,9 +1135,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         try:
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,5})$', str(srid))
-            srid = match.group('srid')
-            bbox_polygon.srid = int(srid)
-            self.srid = srid
+            bbox_polygon.srid = int(match.group('srid'))
         except AttributeError:
             logger.warning("No srid found for layer %s bounding box", self)
 
@@ -1171,11 +1181,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         bbox_x1 = lon + distance_x_degrees
         bbox_y0 = lat - distance_y_degrees
         bbox_y1 = lat + distance_y_degrees
-        srid = 'EPSG:4326'
-        self.set_bbox_polygon(
-            (bbox_x0, bbox_y0, bbox_x1, bbox_y1),
-            srid
-        )
+        self.srid = 'EPSG:4326'
+        self.set_bbox_polygon((bbox_x0, bbox_y0, bbox_x1, bbox_y1), self.srid)
 
     def set_bounds_from_bbox(self, bbox, srid):
         """
@@ -1211,9 +1218,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         Sets the center coordinates and zoom level in EPSG4326
         """
         bbox = self.bbox_polygon
+        center_x, center_y = self.bbox_polygon.centroid.coords
+        center = Point(center_x, center_y, srid=self.bbox_polygon.srid)
+        center.transform(self.srid)
+
         if bbox.srid != 4326:
             bbox = bbox.transform(4326, clone=True)
-        self.center_x, self.center_y = bbox.centroid.coords
+
+        self.center_x, self.center_y = center.coords
 
         try:
             ext = bbox.extent
