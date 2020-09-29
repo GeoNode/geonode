@@ -60,9 +60,15 @@ def user_and_group_permission(request, model):
     except KeyError:
         raise PermissionDenied
 
+    ids = request.POST.get("ids")
+    if "cancel" in request.POST or not ids:
+        return HttpResponseRedirect(
+            '/admin/{}/{}/'.format(model_class._meta.app_label, model)
+        )
+
     if request.method == 'POST':
         form = UserAndGroupPermissionsForm(request.POST)
-        ids = request.POST.get("ids").split(",")
+        ids = ids.split(",")
         if form.is_valid():
             resources_names = [layer.name for layer in form.cleaned_data.get('layers')]
             users_usernames = [user.username for user in model_class.objects.filter(id__in=ids)] if model == 'profile' else None
