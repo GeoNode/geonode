@@ -20,6 +20,9 @@
 
 from django.contrib import admin
 from modeltranslation.admin import TranslationAdmin
+from geonode.base.admin import set_user_and_group_layer_permission
+from django.contrib.auth.admin import GroupAdmin as GA
+from django.contrib.auth.models import Group
 
 from . import models
 
@@ -40,5 +43,12 @@ class GroupAdmin(admin.ModelAdmin):
     ]
     exclude = ['group', ]
 
+
+class GroupsAdminHaha(GA):
+    actions = [set_user_and_group_layer_permission]
+
+
+admin.site.unregister(Group)
+admin.site.register(Group, GroupsAdminHaha)
 
 admin.site.register(models.GroupProfile, GroupAdmin)

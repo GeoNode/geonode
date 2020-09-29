@@ -52,6 +52,20 @@ from .models import GroupMember
 logger = logging.getLogger(__name__)
 
 
+from geonode.base.views import user_and_group_permission
+from django.views import View
+
+from dal import autocomplete
+
+
+class SetGroupLayerPermission(View):
+    def get(self, request):
+        return user_and_group_permission(request, 'group')
+
+    def post(self, request):
+        return user_and_group_permission(request, 'group')
+
+
 @view_decorator(superuser_only, subclass=True)
 class GroupCategoryCreateView(CreateView):
     model = models.GroupCategory

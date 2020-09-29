@@ -46,6 +46,8 @@ from geonode.base.models import (
     Configuration,
 )
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from geonode.base.forms import UserAndGroupPermissionsForm
 
 from geonode.base.widgets import TaggitSelect2Custom
 
@@ -68,6 +70,34 @@ def set_batch_permissions(modeladmin, request, queryset):
 
 
 set_batch_permissions.short_description = 'Set permissions'
+
+
+def set_user_and_group_layer_permission(modeladmin, request, queryset):
+    ids = ','.join([str(element.pk) for element in queryset])
+    resource = queryset[0].__class__.__name__.lower()
+
+    model_mapper = {
+        "profile": "people",
+        "group": "groups"
+    }
+
+    form = UserAndGroupPermissionsForm({
+        'permission_type': ('r', ),
+        'mode': 'set',
+        'ids': ids,
+    })
+
+    return render(
+        request,
+        "base/user_and_group_permissions.html",
+        context={
+            "form": form,
+            "model": model_mapper[resource]
+        }
+    )
+
+
+set_user_and_group_layer_permission.short_description = 'Set layer permissions'
 
 
 class LicenseAdmin(TabbedTranslationAdmin):
