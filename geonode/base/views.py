@@ -80,20 +80,21 @@ def batch_modify(request, model):
                 new_regions = [regions_through(region=regions, resourcebase=resource) for resource in resources]
                 regions_through.objects.bulk_create(new_regions, ignore_conflicts=True)
 
-            keywords_through = Resource.keywords.through
-            keywords_through.objects.filter(content_object__in=resources).delete()
+            if keywords:
+                keywords_through = Resource.keywords.through
+                keywords_through.objects.filter(content_object__in=resources).delete()
 
-            def get_or_create(keyword):
-                try:
-                    return HierarchicalKeyword.objects.get(name=keyword)
-                except HierarchicalKeyword.DoesNotExist:
-                    return HierarchicalKeyword.add_root(name=keyword)
-            hierarchical_keyword = [get_or_create(keyword) for keyword in keywords]
+                def get_or_create(keyword):
+                    try:
+                        return HierarchicalKeyword.objects.get(name=keyword)
+                    except HierarchicalKeyword.DoesNotExist:
+                        return HierarchicalKeyword.add_root(name=keyword)
+                hierarchical_keyword = [get_or_create(keyword) for keyword in keywords]
 
-            new_keywords = []
-            for keyword in hierarchical_keyword:
-                new_keywords += [keywords_through(content_object=resource, tag_id=keyword.pk) for resource in resources]
-            keywords_through.objects.bulk_create(new_keywords, ignore_conflicts=True)
+                new_keywords = []
+                for keyword in hierarchical_keyword:
+                    new_keywords += [keywords_through(content_object=resource, tag_id=keyword.pk) for resource in resources]
+                keywords_through.objects.bulk_create(new_keywords, ignore_conflicts=True)
 
             return HttpResponseRedirect(
                 '/admin/{model}s/{model}/'.format(model=model.lower())
