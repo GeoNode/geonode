@@ -4,7 +4,7 @@ LABEL GeoNode development team
 COPY requirements.txt /usr/src/app/
 RUN pip install pip --upgrade
 RUN pip install -r requirements.txt --upgrade
-RUN pip install -e . --upgrade
+
 RUN python manage.py makemigrations --settings=geonode.settings
 RUN python manage.py migrate --settings=geonode.settings
 
