@@ -37,18 +37,18 @@ class GroupMemberInline(admin.TabularInline):
     model = models.GroupMember
 
 
-class GroupAdmin(admin.ModelAdmin):
+class GroupProfileAdmin(admin.ModelAdmin):
     inlines = [
         GroupMemberInline
     ]
     exclude = ['group', ]
 
 
-class GeonodeGroupsAdmin(GA):
+class GroupAdmin(GA):
     actions = [set_user_and_group_layer_permission]
 
 
 admin.site.unregister(Group)
-admin.site.register(Group, GeonodeGroupsAdmin)
+admin.site.register(Group, GroupAdmin)
 
-admin.site.register(models.GroupProfile, GroupAdmin)
+admin.site.register(models.GroupProfile, GroupProfileAdmin)

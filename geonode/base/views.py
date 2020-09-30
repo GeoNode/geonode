@@ -50,14 +50,15 @@ from django.contrib.auth.models import Group
 
 
 def user_and_group_permission(request, model):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     model_mapper = {
         "profile": get_user_model(),
         "group": Group
     }
-    try:
-        model_class = model_mapper[model]
-    except KeyError:
-        raise PermissionDenied
+
+    model_class = model_mapper[model]
 
     ids = request.POST.get("ids")
     if "cancel" in request.POST or not ids:
