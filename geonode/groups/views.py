@@ -18,6 +18,8 @@
 #
 #########################################################################
 
+from django.views import View
+from geonode.base.views import user_and_group_permission
 import logging
 
 from actstream.models import Action
@@ -50,12 +52,6 @@ from . import models
 from .models import GroupMember
 
 logger = logging.getLogger(__name__)
-
-
-from geonode.base.views import user_and_group_permission
-from django.views import View
-
-from dal import autocomplete
 
 
 class SetGroupLayerPermission(View):
@@ -311,29 +307,29 @@ class GroupActivityView(ListView):
             public=True,
             action_object_content_type__model='layer')
         context['action_list_layers'] = [
-                                            action
-                                            for action in actions
-                                            if action.action_object and action.action_object.group == self.group.group][
-                                        :15]
+            action
+            for action in actions
+            if action.action_object and action.action_object.group == self.group.group][
+            :15]
         action_list.extend(context['action_list_layers'])
         actions = Action.objects.filter(
             public=True,
             action_object_content_type__model='map')[:15]
         context['action_list_maps'] = [
-                                          action
-                                          for action in actions
-                                          if action.action_object and action.action_object.group == self.group.group][
-                                      :15]
+            action
+            for action in actions
+            if action.action_object and action.action_object.group == self.group.group][
+            :15]
         action_list.extend(context['action_list_maps'])
         actions = Action.objects.filter(
             public=True,
             action_object_content_type__model='document')[:15]
         context['action_list_documents'] = [
-                                               action
-                                               for action in actions
-                                               if
-                                               action.action_object and action.action_object.group == self.group.group][
-                                           :15]
+            action
+            for action in actions
+            if
+            action.action_object and action.action_object.group == self.group.group][
+            :15]
         action_list.extend(context['action_list_documents'])
         context['action_list_comments'] = Action.objects.filter(
             public=True,

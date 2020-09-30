@@ -71,16 +71,18 @@ def user_and_group_permission(request, model):
         ids = ids.split(",")
         if form.is_valid():
             resources_names = [layer.name for layer in form.cleaned_data.get('layers')]
-            users_usernames = [user.username for user in model_class.objects.filter(id__in=ids)] if model == 'profile' else None
-            groups_names = [group.name for group in model_class.objects.filter(id__in=ids)] if model == 'group' else None
+            users_usernames = [user.username for user in model_class.objects.filter(
+                id__in=ids)] if model == 'profile' else None
+            groups_names = [group.name for group in model_class.objects.filter(
+                id__in=ids)] if model == 'group' else None
 
             if users_usernames and 'AnonymousUser' in users_usernames and \
-            (not groups_names or 'anonymous' not in groups_names):
+                    (not groups_names or 'anonymous' not in groups_names):
                 if not groups_names:
                     groups_names = []
                 groups_names.append('anonymous')
             if groups_names and 'anonymous' in groups_names and \
-            (not users_usernames or 'AnonymousUser' not in users_usernames):
+                    (not users_usernames or 'AnonymousUser' not in users_usernames):
                 if not users_usernames:
                     users_usernames = []
                 users_usernames.append('AnonymousUser')
