@@ -1,0 +1,16 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: "11:00"
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+  - backport 3.x
+  ignore:
+  - dependency-name: django
+    versions:
+    - ">= 3.0.a"
+    - "< 3.1"
