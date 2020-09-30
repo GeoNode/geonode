@@ -44,11 +44,11 @@ class GroupAdmin(admin.ModelAdmin):
     exclude = ['group', ]
 
 
-class GroupsAdminHaha(GA):
+class GeonodeGroupsAdmin(GA):
     actions = [set_user_and_group_layer_permission]
 
 
 admin.site.unregister(Group)
-admin.site.register(Group, GroupsAdminHaha)
+admin.site.register(Group, GeonodeGroupsAdmin)
 
 admin.site.register(models.GroupProfile, GroupAdmin)
