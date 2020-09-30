@@ -92,7 +92,8 @@ class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
         user = get_user_model().objects.all()[0]
         for layer in self.layers:
             layer.set_permissions({'users': {user.username: [
-                                  'change_layer_data', 'view_resourcebase', 'download_resourcebase', 'change_resourcebase_metadata']}})
+                                  'change_layer_data', 'view_resourcebase',
+                                  'download_resourcebase', 'change_resourcebase_metadata']}})
 
         self.client.login(username="admin", password="admin")
         response = self.client.post(reverse('set_user_layer_permissions'), data={
