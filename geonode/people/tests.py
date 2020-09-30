@@ -59,7 +59,7 @@ class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
 
     def test_set_unset_user_layer_permissions(self):
         """
-        Test that user permissions are set/unset for layers
+        Test that user permissions are set for layers
         """
         self.client.login(username="admin", password="admin")
         response = self.client.post(reverse('set_user_layer_permissions'), data={
@@ -71,9 +71,9 @@ class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
             perm_spec = layer.get_all_level_info()
             self.assertTrue(get_user_model().objects.all()[0] in perm_spec["users"])
 
-    def test_set_unset_user_group_permissions(self):
+    def test_set_unset_group_layer_permissions(self):
         """
-        Test that group permissions are set/unset for layers
+        Test that group permissions are set for layers
         """
         self.client.login(username="admin", password="admin")
         response = self.client.post(reverse('set_group_layer_permissions'), data={
@@ -84,6 +84,26 @@ class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
         for layer in self.layers:
             perm_spec = layer.get_all_level_info()
             self.assertTrue(self.groups[0] in perm_spec["groups"])
+
+    def test_unset_group_layer_perms(self):
+        """
+        Test that group permissions are unset for layers
+        """
+        user = get_user_model().objects.all()[0]
+        for layer in self.layers:
+            layer.set_permissions({'users': {user.username: [
+                                  'change_layer_data', 'view_resourcebase', 'download_resourcebase', 'change_resourcebase_metadata']}})
+
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(reverse('set_user_layer_permissions'), data={
+            'ids': self.user_ids, 'layers': self.layer_ids,
+            'permission_type': self.permission_type, 'mode': 'unset'
+        })
+
+        self.assertEqual(response.status_code, 302)
+        for layer in self.layers:
+            perm_spec = layer.get_all_level_info()
+            self.assertTrue(user not in perm_spec["users"])
 
 
 class PeopleTest(GeoNodeBaseTestSupport):
