@@ -481,9 +481,6 @@ INSTALLED_APPS = (
     'geonode',
 )
 
-if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
-    INSTALLED_APPS += ('django_celery_beat',)
-
 INSTALLED_APPS += ('markdownify',)
 MARKDOWNIFY_STRIP = os.getenv('MARKDOWNIFY_STRIP', False)
 markdown_white_listed_tags = {
