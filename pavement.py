@@ -630,6 +630,7 @@ def start_django(options):
         sh("{} celery -A geonode.celery_app:app worker -Q {} -B -E -l INFO {}".format(
             settings,
             ",".join(celery_queues),
+            "-s celerybeat-schedule.db",
             foreground
         ))
     else:
