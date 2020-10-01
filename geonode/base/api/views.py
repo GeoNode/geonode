@@ -167,15 +167,18 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     def get_perms(self, request, pk=None):
         resource = self.get_object()
         perms_spec = resource.get_all_level_info()
+        perms_spec_obj = {}
         if "users" in perms_spec:
+            perms_spec_obj["users"] = {}
             for user in perms_spec["users"]:
-                perms = perms_spec["users"].pop(user)
-                perms_spec["users"][str(user)] = perms
+                perms = perms_spec["users"].get(user)
+                perms_spec_obj["users"][str(user)] = perms
         if "groups" in perms_spec:
+            perms_spec_obj["groups"] = {}
             for group in perms_spec["groups"]:
-                perms = perms_spec["groups"].pop(group)
-                perms_spec["groups"][str(group)] = perms
-        return Response(perms_spec)
+                perms = perms_spec["groups"].get(group)
+                perms_spec_obj["groups"][str(group)] = perms
+        return Response(perms_spec_obj)
 
     @swagger_auto_schema(methods=['put'],
                          request_body=PermSpecSerialiazer(),
