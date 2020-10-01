@@ -45,7 +45,7 @@ from geonode.base.forms import CuratedThumbnailForm
 from geonode.notifications_helper import send_notification
 from geonode.base.forms import UserAndGroupPermissionsForm
 from django.contrib.auth import get_user_model
-from geonode.layers.utils import set_layers_permissions
+from geonode.tasks.tasks import set_permissions
 from django.contrib.auth.models import Group
 
 
@@ -91,10 +91,8 @@ def user_and_group_permission(request, model):
             permissions_names = form.cleaned_data.get('permission_type')
 
             if permissions_names:
-                for permissions_name in permissions_names:
-                    set_layers_permissions(
-                        permissions_name, resources_names, users_usernames, groups_names, delete_flag
-                    )
+                set_permissions.delay(permissions_names, resources_names, users_usernames, groups_names, delete_flag)
+
         return HttpResponseRedirect(
             '/admin/{}/{}/'.format(model_class._meta.app_label, model)
         )
