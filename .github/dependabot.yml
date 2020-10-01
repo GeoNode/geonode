@@ -5,11 +5,10 @@ updates:
   schedule:
     interval: weekly
     time: "11:00"
-  open-pull-requests-limit: 10
+  open-pull-requests-limit: 100
   labels:
   - dependencies
   - backport 3.x
-  milestone: 3.1
   ignore:
   - dependency-name: django
     versions:
