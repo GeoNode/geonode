@@ -78,7 +78,7 @@ services:
   celerybeat:
     << : *default-common-django
     entrypoint: []
-    command: 'celery beat --app=geonode.celery_app:app --pidfile="/celerybeat.pid" -l info'
+    command: 'celery -A geonode.celery_app:app beat --pidfile="/celerybeat.pid" -l info'
 
   # Celery camera that monitors celery tasks and populate the djcelery django admin interface
   celerycam:
