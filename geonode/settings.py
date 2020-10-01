@@ -486,9 +486,6 @@ INSTALLED_APPS = (
     'geonode',
 )
 
-if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
-    INSTALLED_APPS += ('django_celery_beat',)
-
 INSTALLED_APPS += ('markdownify',)
 MARKDOWNIFY_STRIP = os.getenv('MARKDOWNIFY_STRIP', False)
 markdown_white_listed_tags = {
@@ -1721,7 +1718,7 @@ LOCAL_SIGNALS_BROKER_URL = 'memory://'
 
 if ASYNC_SIGNALS:
     _BROKER_URL = RABBITMQ_SIGNALS_BROKER_URL
-    CELERY_RESULT_BACKEND = _BROKER_URL
+    CELERY_RESULT_BACKEND = 'rpc://'
 else:
     _BROKER_URL = LOCAL_SIGNALS_BROKER_URL
     CELERY_RESULT_BACKEND_PATH = os.getenv(

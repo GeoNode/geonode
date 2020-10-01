@@ -341,7 +341,7 @@ def map_metadata(
                 tkeywords_data = tkeywords_data.filter(
                     thesaurus__identifier=thesaurus_setting['name']
                 )
-                map_obj.tkeywords = tkeywords_data
+                map_obj.tkeywords.set(tkeywords_data)
         except Exception:
             tb = traceback.format_exc()
             logger.error(tb)
