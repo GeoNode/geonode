@@ -74,6 +74,9 @@ from geonode.notifications_helper import (
     send_notification,
     get_notification_recipients)
 from geonode.people.enumerations import ROLE_VALUES
+from geonode.base.thumb_utils import (
+    thumb_path,
+    remove_thumbs)
 
 from pyproj import transform, Proj
 
@@ -573,10 +576,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         'it is first produced')
     keywords_help_text = _(
         'commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject '
-        '(space or comma-separated')
+        '(space or comma-separated)')
     tkeywords_help_text = _(
         'formalised word(s) or phrase(s) from a fixed thesaurus used to describe the subject '
-        '(space or comma-separated')
+        '(space or comma-separated)')
     regions_help_text = _('keyword identifies a location')
     restriction_code_type_help_text = _(
         'limitation(s) placed upon the access or use of the data.')
@@ -847,8 +850,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         null=True,
         blank=True)
 
-    __is_approved = None
-    __is_published = None
+    __is_approved = False
+    __is_published = False
 
     objects = ResourceBaseManager()
 
@@ -865,8 +868,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     def __init__(self, *args, **kwargs):
         super(ResourceBase, self).__init__(*args, **kwargs)
-        self.__is_approved = self.is_approved
-        self.__is_published = self.is_published
 
     def __str__(self):
         return "{0}".format(self.title)
@@ -1306,7 +1307,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Note - you should probably broadcast layer#post_save() events to ensure
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
-        upload_path = os.path.join('thumbs/', filename)
+        upload_path = thumb_path(filename)
+
         try:
             # Check that the image is valid
             from PIL import Image
@@ -1315,18 +1317,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             im = Image.open(content_data)
             im.verify()  # verify that it is, in fact an image
 
-            thumbnail_name, ext = os.path.splitext(filename)
-            _, _thumbs = storage.listdir("thumbs")
-            for _thumb in _thumbs:
-                if _thumb.startswith(thumbnail_name):
-                    storage.delete(os.path.join("thumbs", _thumb))
-                    logger.debug("Deleted existing thumbnail: " + _thumb)
+            name, ext = os.path.splitext(filename)
+            remove_thumbs(name)
 
             if upload_path and image:
                 actual_name = storage.save(upload_path, ContentFile(image))
                 url = storage.url(actual_name)
                 _url = urlparse(url)
-                _upload_path = os.path.join('thumbs/', os.path.basename(_url.path))
+                _upload_path = thumb_path(os.path.basename(_url.path))
                 if upload_path != _upload_path:
                     if storage.exists(_upload_path):
                         storage.delete(_upload_path)

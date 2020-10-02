@@ -22,6 +22,7 @@ import logging
 import geoserver
 
 from time import sleep
+from requests.exceptions import ConnectionError
 from geoserver.layer import Layer as GsLayer
 
 from django.conf import settings
@@ -58,7 +59,10 @@ def geoserver_delete(typename):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        geoserver_cascading_delete.delay(layer_name=typename)
+        try:
+            geoserver_cascading_delete.delay(layer_name=typename)
+        except ConnectionError as e:
+            logger.error(e)
 
 
 @on_ogc_backend(BACKEND_PACKAGE)
@@ -70,7 +74,10 @@ def geoserver_pre_delete(instance, sender, **kwargs):
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
         if instance.remote_service is None or instance.remote_service.method == CASCADED:
             if instance.alternate:
-                geoserver_cascading_delete.delay(layer_name=instance.alternate)
+                try:
+                    geoserver_cascading_delete.delay(layer_name=instance.alternate)
+                except ConnectionError as e:
+                    logger.error(e)
 
 
 @on_ogc_backend(BACKEND_PACKAGE)

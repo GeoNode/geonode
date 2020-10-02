@@ -26,7 +26,7 @@ import os
 import logging
 
 # Django functionality
-from django.conf import settings
+from django.core.files.storage import default_storage as storage
 
 # Geonode functionality
 from geonode.documents.models import Document
@@ -38,14 +38,17 @@ def delete_orphaned_document_files():
     """
     Deletes orphaned files of deleted documents.
     """
-    documents_path = os.path.join(settings.MEDIA_ROOT, 'documents')
-    for filename in os.listdir(documents_path):
-        fn = os.path.join(documents_path, filename)
+    deleted = []
+    _, files = storage.listdir("documents")
+
+    for filename in files:
         if Document.objects.filter(doc_file__contains=filename).count() == 0:
-            message = 'Removing orphan document {}'.format(fn)
-            logger.debug(message)
+            logger.debug("Deleting orphaned document " + filename)
             try:
-                os.remove(fn)
-            except OSError:
-                message = 'Could not delete file {}'.format(fn)
-                logger.error(message)
+                storage.delete(os.path.join("documents", filename))
+                deleted.append(filename)
+            except NotImplementedError as e:
+                logger.error(
+                    "Failed to delete orphaned document '{}': {}".format(filename, e))
+
+    return deleted
