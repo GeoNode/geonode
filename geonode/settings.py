@@ -818,6 +818,7 @@ ACTSTREAM_SETTINGS = {
     'GFK_FETCH_DEPTH': 1,
 }
 
+ACCOUNT_FORMS = {'signup': 'geonode.people.forms.CustomUserCreationForm'}
 
 # Email for users to contact admins.
 THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(

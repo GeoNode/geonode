@@ -8,7 +8,7 @@
 
 {% block body_outer %}
     <div class="page-header">
-        <h2>{% trans "Sign up" %}</h2>
+        <h2>{% trans "Sign up" %} (Beta)</h2>
     </div>
     <div class="row">
       {% get_providers as socialaccount_providers %}
@@ -30,6 +30,9 @@
                   {% if redirect_field_value %}
                       <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                   {% endif %}
+                  <div style="padding-bottom: 10px;">
+                      <a href="#" onclick="alert('popup conditions')">show condititions</a>
+                  </div>
                   <div class="form-actions">
                       <button type="submit" class="btn btn-primary">{% trans "Sign up" %}</button>
                   </div>

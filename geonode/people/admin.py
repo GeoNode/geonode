@@ -66,7 +66,8 @@ class ProfileAdmin(admin.ModelAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'password1', 'password2')}
+            'fields': ('username', 'first_name', 'last_name', 'organization', 
+                        'city','country', 'agree_conditions', 'password1', 'password2')}
          ),
     )
     form = ProfileChangeForm

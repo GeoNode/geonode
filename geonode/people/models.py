@@ -130,6 +130,10 @@ class Profile(AbstractUser):
         choices=TIMEZONES,
         blank=True,
     )
+    agree_conditions = models.BooleanField(
+        _('Agree Conditions'),
+        default=False,
+    )
 
     def __init__(self, *args, **kwargs):
         super(Profile, self).__init__(*args, **kwargs)
