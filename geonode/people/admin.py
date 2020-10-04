@@ -57,7 +57,8 @@ class ProfileAdmin(admin.ModelAdmin):
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
                                        'groups')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
-        (_('Extended profile'), {'fields': ('organization', 'profile',
+        (_('Extended profile'), {'fields': ('professional_role',
+                                            'organization', 'profile',
                                             'position', 'voice', 'fax',
                                             'delivery', 'city', 'area',
                                             'zipcode', 'country',
@@ -66,7 +67,7 @@ class ProfileAdmin(admin.ModelAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'first_name', 'last_name', 'organization', 
+            'fields': ('username', 'first_name', 'last_name', 'organization', 'professional_role',
                         'city','country', 'agree_conditions', 'password1', 'password2')}
          ),
     )
