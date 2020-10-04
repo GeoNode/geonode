@@ -470,3 +470,11 @@ CHARSETS = (('', 'None/Unknown'),
             ('windows-1256', 'Windows CP1256'),
             ('windows-1257', 'Windows CP1257'),
             ('windows-1258', 'Windows CP1258'))
+
+PROFESSIONAL_ROLES = (('COPART','Corporate partner'),
+                    ('ACDMC','Academic'),
+                    ('SCADM','Service company administrator'),
+                    ('MCOMC','Manager that carries out monitoring and control'),
+                    ('CITIZN','Citizen'),
+                    ('REPECS','Representative of an economic sector'),
+                    ('OTHER', 'Other'))

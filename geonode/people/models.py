@@ -36,6 +36,7 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from taggit.managers import TaggableManager
 
 from geonode.base.enumerations import COUNTRIES
+from geonode.base.enumerations import PROFESSIONAL_ROLES
 from geonode.groups.models import GroupProfile
 
 from allauth.account.signals import user_signed_up
@@ -134,6 +135,13 @@ class Profile(AbstractUser):
         _('Agree Conditions'),
         default=False,
     )
+    professional_role = models.CharField(
+        _('ProfessionalRole'),
+        choices=PROFESSIONAL_ROLES,
+        max_length=6,
+        blank=True,
+        null=True,
+        help_text=_('Professional or Academic user role'))
 
     def __init__(self, *args, **kwargs):
         super(Profile, self).__init__(*args, **kwargs)

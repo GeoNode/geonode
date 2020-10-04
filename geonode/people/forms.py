@@ -26,6 +26,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import ugettext as _
 
 from geonode.base.enumerations import COUNTRIES
+from geonode.base.enumerations import PROFESSIONAL_ROLES
 from geonode.base.models import ContactRole
 
 from allauth.account.forms import SignupForm
@@ -127,6 +128,9 @@ class CustomUserCreationForm(SignupForm):
                                widget=forms.TextInput(
                                    attrs={'placeholder':
                                           _('Lastname')}))
+
+    professional_role = forms.ChoiceField(label=_("ProfessionalRole"), choices=PROFESSIONAL_ROLES)
+
     
     organization = forms.CharField(label=_("Organization"),
                                widget=forms.TextInput(
@@ -138,14 +142,9 @@ class CustomUserCreationForm(SignupForm):
                                    attrs={'placeholder':
                                           _('City')}))
     
-    country = forms.CharField(label=_("Country"),                               
-                               widget=forms.TextInput(
-                                   attrs={'placeholder':
-                                          _('Country')}))
+    country = forms.ChoiceField(label=_('Country'), choices=COUNTRIES)
 
     agree_conditions = forms.BooleanField(label=_("AgreeConditions"))
-
-    
 
     email = forms.EmailField(widget=forms.TextInput(
         attrs={'type': 'email',

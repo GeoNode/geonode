@@ -43,7 +43,8 @@ class Migration(migrations.Migration):
                 ('groups', models.ManyToManyField(related_query_name='user', related_name='user_set', to='auth.Group', blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', verbose_name='groups')),
                 ('keywords', taggit.managers.TaggableManager(to='taggit.Tag', through='taggit.TaggedItem', blank=True, help_text='commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject             (space or comma-separated', verbose_name='keywords')),
                 ('user_permissions', models.ManyToManyField(related_query_name='user', related_name='user_set', to='auth.Permission', blank=True, help_text='Specific permissions for this user.', verbose_name='user permissions')),
-                ('agree_conditions', models.BooleanField(default=False, help_text='Agree conditions', verbose_name='Agree conditions'))
+                ('agree_conditions', models.BooleanField(default=False, help_text='Agree conditions', verbose_name='Agree conditions')),
+                ('professional_role', models.CharField(blank=True, max_length=6, null=True, help_text='Professional or Academic user role', choices=[('COPART','Corporate partner'),('ACDMC','Academic'),('SCADM','Service company administrator'),('MCOMC','Manager that carries out monitoring and control'),('CITIZN','Citizen'),('REPECS','Representative of an economic sector'),('OTHER', 'Other')]))
             ],
             options={
                 'abstract': False,
