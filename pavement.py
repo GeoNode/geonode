@@ -627,17 +627,15 @@ def start_django(options):
         # "geonode.layer.viewer"
     ]
     if 'django_celery_beat' not in INSTALLED_APPS:
-        sh("{} celery -A geonode.celery_app:app worker -Q {} -B -E -l INFO {}".format(
+        sh("{} celery -A geonode.celery_app:app beat -l INFO {} {}".format(
             settings,
-            ",".join(celery_queues),
             "-s celerybeat-schedule.db",
             foreground
         ))
     else:
-        sh("{} celery -A geonode.celery_app:app worker -Q {} -B -E -l INFO {} {}".format(
+        sh("{} celery -A geonode.celery_app:app beat -l INFO {} {} {}".format(
             settings,
-            ",".join(celery_queues),
-            "--scheduler django_celery_beat.schedulers:DatabaseScheduler",
+            "-s django_celery_beat.schedulers:DatabaseScheduler",
             foreground
         ))
 

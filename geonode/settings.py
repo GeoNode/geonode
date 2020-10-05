@@ -1699,12 +1699,16 @@ if NOTIFICATION_ENABLED:
 
     sudo rabbitmqctl list_queues
 """
-# Disabling the heartbeat because workers seems often disabled in flower,
-# thanks to http://stackoverflow.com/a/14831904/654755
-BROKER_HEARTBEAT = 0
+broker_pool_limit = 1  # Will decrease connection usage
+broker_heartbeat = None  # We're using TCP keep-alive instead
+broker_connection_timeout = 30  # May require a long timeout due to Linux DNS timeouts etc
+# result_backend = None  # AMQP is not recommended as result backend as it creates thousands of queues
+event_queue_expires = 60  # Will delete all celeryev. queues without consumers after 1 minute.
+worker_prefetch_multiplier = 1  # Disable prefetching, it's causes problems and doesn't help performance
+worker_concurrency = 50  # If you tasks are CPU bound, then limit to the number of cores, otherwise increase substainally
 
 # Avoid long running and retried tasks to be run over-and-over again.
-BROKER_TRANSPORT_OPTIONS = {
+broker_transport_options = {
     'fanout_prefix': True,
     'fanout_patterns': True,
     'socket_timeout': 60,
@@ -1718,21 +1722,21 @@ LOCAL_SIGNALS_BROKER_URL = 'memory://'
 
 if ASYNC_SIGNALS:
     _BROKER_URL = RABBITMQ_SIGNALS_BROKER_URL
-    CELERY_RESULT_BACKEND = 'rpc://'
+    result_backend = 'rpc://'
 else:
     _BROKER_URL = LOCAL_SIGNALS_BROKER_URL
     CELERY_RESULT_BACKEND_PATH = os.getenv(
         'CELERY_RESULT_BACKEND_PATH', os.path.join(PROJECT_ROOT, '.celery_results'))
     if not os.path.exists(CELERY_RESULT_BACKEND_PATH):
         os.makedirs(CELERY_RESULT_BACKEND_PATH)
-    CELERY_RESULT_BACKEND = 'file:///%s' % CELERY_RESULT_BACKEND_PATH
+    result_backend = 'file:///%s' % CELERY_RESULT_BACKEND_PATH
 
 CELERY_BROKER_URL = os.environ.get('BROKER_URL', _BROKER_URL)
-CELERY_RESULT_PERSISTENT = ast.literal_eval(os.environ.get('CELERY_RESULT_PERSISTENT', 'False'))
-CELERY_IGNORE_RESULT = ast.literal_eval(os.environ.get('CELERY_IGNORE_RESULT', 'False'))
+result_persistent = ast.literal_eval(os.environ.get('CELERY_RESULT_PERSISTENT', 'False'))
+task_ignore_result = ast.literal_eval(os.environ.get('CELERY_IGNORE_RESULT', 'False'))
 
 # Allow to recover from any unknown crash.
-CELERY_ACKS_LATE = ast.literal_eval(os.environ.get('CELERY_ACKS_LATE', 'True'))
+task_acks_late = ast.literal_eval(os.environ.get('CELERY_ACKS_LATE', 'True'))
 
 # Set this to False in order to run async
 CELERY_TASK_ALWAYS_EAGER = ast.literal_eval(os.environ.get('CELERY_TASK_ALWAYS_EAGER', 'True'))
@@ -1740,9 +1744,9 @@ CELERY_TASK_EAGER_PROPAGATES = ast.literal_eval(os.environ.get('CELERY_TASK_EAGE
 CELERY_TASK_IGNORE_RESULT = ast.literal_eval(os.environ.get('CELERY_TASK_IGNORE_RESULT', 'True'))
 
 # I use these to debug kombu crashes; we get a more informative message.
-CELERY_TASK_SERIALIZER = os.environ.get('CELERY_TASK_SERIALIZER', 'json')
-CELERY_RESULT_SERIALIZER = os.environ.get('CELERY_RESULT_SERIALIZER', 'json')
-CELERY_ACCEPT_CONTENT = [CELERY_RESULT_SERIALIZER, ]
+task_serializer = os.environ.get('CELERY_TASK_SERIALIZER', 'json')
+result_serializer = os.environ.get('CELERY_RESULT_SERIALIZER', 'json')
+accept_content = [result_serializer, ]
 
 # Set Tasks Queues
 # CELERY_TASK_DEFAULT_QUEUE = "default"
@@ -1796,29 +1800,27 @@ CELERY_BEAT_SCHEDULE = {}
 
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
 CELERY_ENABLE_UTC = ast.literal_eval(os.environ.get('CELERY_ENABLE_UTC', 'True'))
-CELERY_TIMEZONE = TIME_ZONE
+timezone = TIME_ZONE
 
 # Half a day is enough
-CELERY_TASK_RESULT_EXPIRES = os.environ.get('CELERY_TASK_RESULT_EXPIRES', 43200)
+result_expires = os.environ.get('CELERY_TASK_RESULT_EXPIRES', 43200)
 
 # Sometimes, Ask asks us to enable this to debug issues.
 # BTW, it will save some CPU cycles.
-CELERY_DISABLE_RATE_LIMITS = ast.literal_eval(os.environ.get('CELERY_DISABLE_RATE_LIMITS', 'False'))
+worker_disable_rate_limits = ast.literal_eval(os.environ.get('CELERY_DISABLE_RATE_LIMITS', 'False'))
 CELERY_SEND_TASK_EVENTS = ast.literal_eval(os.environ.get('CELERY_SEND_TASK_EVENTS', 'True'))
 CELERY_WORKER_DISABLE_RATE_LIMITS = ast.literal_eval(os.environ.get('CELERY_WORKER_DISABLE_RATE_LIMITS', 'False'))
 CELERY_WORKER_SEND_TASK_EVENTS = ast.literal_eval(os.environ.get('CELERY_WORKER_SEND_TASK_EVENTS', 'True'))
 
 # Allow our remote workers to get tasks faster if they have a
 # slow internet connection (yes Gurney, I'm thinking of you).
-CELERY_MESSAGE_COMPRESSION = os.environ.get('CELERY_MESSAGE_COMPRESSION', 'gzip')
+task_compression = os.environ.get('CELERY_MESSAGE_COMPRESSION', 'gzip')
 
 # The default beiing 5000, we need more than this.
-CELERY_MAX_CACHED_RESULTS = os.environ.get('CELERY_MAX_CACHED_RESULTS', 32768)
-
-# NOTE: I don't know if this is compatible with upstart.
-CELERYD_POOL_RESTARTS = ast.literal_eval(os.environ.get('CELERYD_POOL_RESTARTS', 'True'))
-CELERY_TRACK_STARTED = ast.literal_eval(os.environ.get('CELERY_TRACK_STARTED', 'True'))
-CELERY_SEND_TASK_SENT_EVENT = ast.literal_eval(os.environ.get('CELERY_SEND_TASK_SENT_EVENT', 'True'))
+result_cache_max = os.environ.get('CELERY_MAX_CACHED_RESULTS', 32768)
+worker_pool_restarts = ast.literal_eval(os.environ.get('CELERYD_POOL_RESTARTS', 'True'))
+task_track_started = ast.literal_eval(os.environ.get('CELERY_TRACK_STARTED', 'True'))
+task_send_sent_event = ast.literal_eval(os.environ.get('CELERY_SEND_TASK_SENT_EVENT', 'True'))
 
 # Disabled by default and I like it, because we use Sentry for this.
 CELERY_SEND_TASK_ERROR_EMAILS = ast.literal_eval(os.environ.get('CELERY_SEND_TASK_ERROR_EMAILS', 'False'))
