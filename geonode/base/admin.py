@@ -57,6 +57,17 @@ def metadata_batch_edit(modeladmin, request, queryset):
     form = BatchEditForm({
         'ids': ids
     })
+    name_space_mapper = {
+        'layer': 'layer_batch_metadata',
+        'map': 'map_batch_metadata',
+        'document': 'document_batch_metadata'
+    }
+
+    try:
+        name_space = name_space_mapper[resource]
+    except KeyError:
+        name_space = None
+
     return render(
         request,
         "base/batch_edit.html",
@@ -64,6 +75,7 @@ def metadata_batch_edit(modeladmin, request, queryset):
             'form': form,
             'ids': ids,
             'model': resource,
+            'name_space': name_space
         }
     )
 

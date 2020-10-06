@@ -112,6 +112,8 @@ from geonode.geoserver.helpers import (ogc_server_settings,
 from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.tasks.tasks import set_permissions
 
+from celery.utils.log import get_logger
+
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import (_render_thumbnail,
                                            _prepare_thumbnail_body_from_opts,
@@ -122,6 +124,7 @@ if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
 logger = logging.getLogger("geonode.layers.views")
+celery_logger = get_logger(__name__)
 
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
@@ -1584,7 +1587,10 @@ def batch_permissions(request, model):
             delete_flag = _data['mode'] == 'unset'
             permissions_names = _data['permission_type']
             if permissions_names:
-                set_permissions.delay(permissions_names, resources_names, users_usernames, groups_names, delete_flag)
+                try:
+                    set_permissions.delay(permissions_names, resources_names, users_usernames, groups_names, delete_flag)
+                except set_permissions.OperationalError as exc:
+                    celery_logger.exception('Sending task raised: %r', exc)
             return HttpResponseRedirect(
                 '/admin/{model}s/{model}/'.format(model=model.lower())
             )
