@@ -8,7 +8,7 @@ Django==2.2.15
 # Other
 amqp==5.0.1
 pyyaml>=4.2b1
-beautifulsoup4==4.9.2
+beautifulsoup4==4.9.3
 httplib2<0.18.2
 hyperlink==20.0.1
 idna>=2.5,<2.11
@@ -19,7 +19,7 @@ decorator==4.4.2
 celery==5.0.0
 kombu==5.0.2
 vine==5.0.0
-boto3==1.15.8
+boto3==1.15.12
 six==1.15.0
 tqdm==4.50.0
 Deprecated==1.2.10
@@ -42,7 +42,7 @@ django-guardian<2.3.1
 django-downloadview==2.1.1
 django-polymorphic==3.0.0
 django-tastypie<0.15.0
-django-tinymce==3.0.2
+django-tinymce==3.1.0
 django-grappelli==2.14.2
 oauthlib==3.1.0
 pyopenssl==19.1.0
@@ -140,8 +140,8 @@ invoke==1.4.1
 coverage==5.3
 parse-type==0.5.2
 requests-toolbelt==0.9.1
-flake8==3.8.3
-pytest==6.1.0
+flake8==3.8.4
+pytest==6.1.1
 pytest-bdd==4.0.1
 splinter==0.14.0
 pytest-splinter==3.2.0
@@ -149,4 +149,4 @@ pytest-django==3.10.0
 setuptools==50.3.0
 pip==20.2.3
 Twisted==20.3.0
-factory-boy==3.0.1
+factory-boy==3.1.0
