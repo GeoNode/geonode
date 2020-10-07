@@ -70,7 +70,7 @@ django-invitations<1.9.4
 django-recaptcha==2.0.6
 
 # REST
-djangorestframework>=3.1.0,<3.11
+djangorestframework>=3.1.0,<3.13
 djangorestframework_guardian==0.3.0
 drf-extensions==0.6.0
 drf-writable-nested==0.6.1
