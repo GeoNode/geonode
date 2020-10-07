@@ -19,6 +19,7 @@
 #########################################################################
 
 from django.contrib import admin
+from django.contrib.auth.models import Group
 from modeltranslation.admin import TranslationAdmin
 
 from . import models
@@ -42,3 +43,4 @@ class GroupAdmin(admin.ModelAdmin):
 
 
 admin.site.register(models.GroupProfile, GroupAdmin)
+admin.site.unregister(Group)
