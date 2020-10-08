@@ -111,11 +111,6 @@ def err403(request, exception):
 
 
 def ident_json(request):
-    if not request.user.is_authenticated:
-        return HttpResponseRedirect(
-            reverse('account_login') +
-            '?next=' +
-            request.get_full_path())
     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     json_data = {}
     json_data['siteurl'] = site_url

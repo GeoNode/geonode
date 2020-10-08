@@ -7,6 +7,7 @@ exemptLabels:
   - blocker
   - regression
   - security
+  - major
   - gnip
 # Label to use when marking an issue as stale
 staleLabel: wontfix
@@ -16,4 +17,4 @@ markComment: >
   recent activity. It will be closed if no further activity occurs. Thank you
   for your contributions.
 # Comment to post when closing a stale issue. Set to `false` to disable
-closeComment: false
+closeComment: true

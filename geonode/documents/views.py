@@ -513,7 +513,7 @@ def document_metadata(
                     tkeywords_data = tkeywords_data.filter(
                         thesaurus__identifier=thesaurus_setting['name']
                     )
-                    document.tkeywords = tkeywords_data
+                    document.tkeywords.set(tkeywords_data)
             except Exception:
                 tb = traceback.format_exc()
                 logger.error(tb)

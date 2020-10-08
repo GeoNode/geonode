@@ -209,7 +209,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
         the uploader is done"""
         # using gsconfig to test the geoserver rest api.
         layer = self.catalog.get_layer(layer_name)
-        self.assertIsNotNone(layer is not None)
+        self.assertIsNotNone(layer)
 
     def check_and_pass_through_timestep(self, redirect_to):
         time_step = upload_step('time')
@@ -337,6 +337,7 @@ class UploaderBase(GeoNodeLiveTestSupport):
             time.sleep(.5)
             try:
                 self.check_layer_geoserver_caps(type_name)
+                self.check_layer_geoserver_rest(layer_name)
                 caps_found = True
             except Exception:
                 pass
@@ -344,7 +345,6 @@ class UploaderBase(GeoNodeLiveTestSupport):
             logger.warning(
                 "Could not recognize Layer %s on GeoServer WMS Capa" %
                 original_name)
-        self.check_layer_geoserver_rest(layer_name)
         self.check_upload_model(layer_name)
 
     def check_invalid_projection(self, layer_name, resp, data):
