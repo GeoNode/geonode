@@ -355,7 +355,7 @@
                                           {% endfor %}
                                         {% elif resource.attributes %}
                                           {% for attribute in resource.attributes %}
-                                            <li><a href="#" id={{ attribute }} data-type='string' data-schema='no'>{{ attribute }}</a></li>
+                                            <li><a href="#" id={{ attribute.attribute }} data-type='string' data-schema='no'>{{ attribute }}</a></li>
                                           {% endfor %}
                                         {% endif %}
                                       </ul>
@@ -987,7 +987,7 @@
                   $("#modal-button-attributes:first-child").text($(this).text()).val($(this).text());
 
                   // functionality added for the autocomplete
-                  property_name = $("#modal-button-attributes:first-child").text();
+                  property_name = $(this).attr("id");
                   attribute_values = data['feature_properties'];
                   selected_data = attribute_values[$.trim(property_name)];
                   selected_data_prepare = [];
