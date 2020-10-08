@@ -65,7 +65,11 @@ def create_document_thumbnail(self, object_id):
         try:
             image_path = render_document(document_location)
             if image_path is not None:
-                image_file = open(image_path, 'rb')
+                try:
+                    image_file = open(image_path, 'rb')
+                except Exception as e:
+                    logger.debug(e)
+                    logger.debug("Failed to render document #{}".format(object_id))
             else:
                 logger.debug("Failed to render document #{}".format(object_id))
         except ConversionError as e:
