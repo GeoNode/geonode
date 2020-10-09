@@ -43,7 +43,12 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
         # Instance must have an attribute named `owner`.
-        return obj.owner == request.user
+        if hasattr(obj, 'owner'):
+            return obj.owner == request.user
+        if hasattr(obj, 'user'):
+            return obj.user == request.user
+        else:
+            return False
 
 
 class ResourceBasePermissionsFilter(BaseFilterBackend):
