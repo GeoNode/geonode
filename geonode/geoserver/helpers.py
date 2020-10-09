@@ -344,10 +344,10 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
     try:
         if sld:
             if isfile(sld):
-                sld = open(sld, "r").read()
+                sld = open(sld, "rb").read()
             etree.XML(sld)
         elif base_file and isfile(base_file):
-            sld = open(base_file, "r").read()
+            sld = open(base_file, "rb").read()
             dlxml.parse(base_file)
     except Exception:
         logger.exception("The uploaded SLD file is not valid XML")
