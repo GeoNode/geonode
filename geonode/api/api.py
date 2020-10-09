@@ -374,7 +374,10 @@ class GroupProfileResource(ModelResource):
 
     def dehydrate_detail_url(self, bundle):
         """Return relative URL to the geonode UI's page on the group"""
-        return reverse('group_detail', args=[bundle.obj.slug])
+        if bundle.obj.slug:
+            return reverse('group_detail', args=[bundle.obj.slug])
+        else:
+            return None
 
     def dehydrate_logo_url(self, bundle):
         return bundle.obj.logo_url
