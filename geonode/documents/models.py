@@ -74,6 +74,13 @@ class Document(ResourceBase):
         return reverse('document_detail', args=(self.id,))
 
     @property
+    def name(self):
+        if not self.title:
+            return str(self.id)
+        else:
+            return self.title
+
+    @property
     def name_long(self):
         if not self.title:
             return str(self.id)

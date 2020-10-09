@@ -38,6 +38,9 @@ class RecentActivity(ListView):
         context['action_list_maps'] = Action.objects.filter(
             public=True,
             action_object_content_type__model='map')[:15]
+        context['action_list_documents'] = Action.objects.filter(
+            public=True,
+            action_object_content_type__model='document')[:15]
         context['action_list_comments'] = Action.objects.filter(
             public=True,
             action_object_content_type__model='comment')[:15]
