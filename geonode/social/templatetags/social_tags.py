@@ -43,11 +43,10 @@ def activity_item(action, **kwargs):
     """
     Provides a location to manipulate an action in preparation for display.
     """
-
     actor = action.actor
     activity_class = 'activity'
     verb = action.verb
-    username = actor.username
+    username = actor.username if actor else "someone"
     target = action.target
     object_type = None
     object = action.action_object
@@ -61,9 +60,6 @@ def activity_item(action, **kwargs):
 
     if target:
         target_type = target.__class__._meta.object_name.lower()  # noqa
-
-    if actor is None:
-        return str()
 
     # Set the item's class based on the object.
     if object:
@@ -79,10 +75,14 @@ def activity_item(action, **kwargs):
         if object_type == 'layer':
             activity_class = 'layer'
 
+        if object_type == 'document':
+            activity_class = 'document'
+
     if raw_action == 'deleted':
         activity_class = 'delete'
 
-    if raw_action == 'created' and object_type == 'layer':
+    if raw_action == 'created' and \
+    object_type in ('layer', 'document'):
         activity_class = 'upload'
 
     ctx = dict(

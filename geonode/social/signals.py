@@ -60,7 +60,7 @@ if "ratings" in settings.INSTALLED_APPS:
 
 def activity_post_modify_object(sender, instance, created=None, **kwargs):
     """
-    Creates new activities after a Map, Layer, or Comment is  created/updated/deleted.
+    Creates new activities after a Map, Layer, Document, or Comment is  created/updated/deleted.
 
     action_settings:
     actor: the user who performed the activity
@@ -80,6 +80,7 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
                                                action_object=instance,
                                                created_verb=_('created'),
                                                deleted_verb=_('deleted'),
+                                               obj_type=obj_type,
                                                object_name=getattr(instance, 'name', None),
                                                target=None,
                                                updated_verb=_('updated'),
@@ -115,11 +116,12 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
             # object was created
             verb = action.get('created_verb')
             raw_action = 'created'
-
         else:
             if created is False:
                 # object was saved.
-                if not isinstance(instance, Layer) and not isinstance(instance, Map):
+                if not isinstance(instance, Layer) and \
+                not isinstance(instance, Document) and \
+                not isinstance(instance, Map):
                     verb = action.get('updated_verb')
                     raw_action = 'updated'
 
@@ -143,7 +145,7 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
                           )
         # except ModelNotActionable:
         except Exception:
-            logger.debug('The activity received a non-actionable Model or None as the actor/action.')
+            logger.warning('The activity received a non-actionable Model or None as the actor/action.')
 
 
 def relationship_post_save_actstream(instance, sender, created, **kwargs):
@@ -160,6 +162,7 @@ def relationship_post_save(instance, sender, created, **kwargs):
 
 if activity:
     signals.post_save.connect(activity_post_modify_object, sender=Comment)
+
     signals.post_save.connect(activity_post_modify_object, sender=Layer)
     signals.post_delete.connect(activity_post_modify_object, sender=Layer)
 
