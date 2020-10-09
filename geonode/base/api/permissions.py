@@ -28,14 +28,17 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     Assumes the model instance has an `owner` attribute.
     """
     def has_object_permission(self, request, view, obj):
-        if request.user is None or not request.user.is_active:
+        if request.user is None or \
+        (not request.user.is_anonymous and not request.user.is_active):
             return False
         if request.user.is_superuser:
             return True
+
         # Read permissions are allowed to any request,
         # so we'll always allow GET, HEAD or OPTIONS requests.
         if request.method in permissions.SAFE_METHODS:
             return True
+
         # Instance must have an attribute named `owner`.
         if hasattr(obj, 'owner'):
             return obj.owner == request.user
