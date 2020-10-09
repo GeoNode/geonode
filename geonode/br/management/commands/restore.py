@@ -49,6 +49,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
+from django.db.utils import IntegrityError
 
 
 class Command(BaseCommand):
@@ -344,12 +345,21 @@ class Command(BaseCommand):
                             print("Deserializing "+fixture_file)
                             try:
                                 call_command('loaddata', fixture_file, app_label=app_name)
+                            except IntegrityError as e:
+                                traceback.print_exc()
+                                print("WARNING: The fixture '"+dump_name+"' fails on integrity check and import is aborted after all fixtures have been checked.")
+                                abortlater = True
                             except Exception:
                                 traceback.print_exc()
                                 print("WARNING: No valid fixture data found for '"+dump_name+"'.")
                                 # helpers.load_fixture(app_name, fixture_file)
                                 raise
-
+                        try: 
+                            if abortlater==True: 
+                                raise e
+                        except UnboundLocalError: 
+                            pass
+                        
                         # Restore Media Root
                         if config.gs_data_dt_filter[0] is None:
                             shutil.rmtree(media_root, ignore_errors=True)
