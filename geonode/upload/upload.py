@@ -903,7 +903,7 @@ def final_step(upload_session, user, charset="UTF-8"):
             zf.extract(sld_file[0], os.path.dirname(archive))
             # Assign the absolute path to this file
             sld_file[0] = os.path.dirname(archive) + '/' + sld_file[0]
-        sld = open(sld_file[0]).read()
+        sld = open(sld_file[0], "rb").read()
         set_layer_style(
             saved_layer,
             saved_layer.alternate,
