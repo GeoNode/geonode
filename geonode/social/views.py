@@ -58,7 +58,7 @@ class UserActivity(ListView):
         # There's no generic foreign key for 'actor', so can't filter directly
         # Hence the code below is essentially applying the filter afterwards
         return [x for x in Action.objects.filter(public=True)[:15]
-                if x.actor.username == self.kwargs['actor']]
+                if x and x.actor and x.actor.username == self.kwargs['actor']]
 
     def get_context_data(self, *args, **kwargs):
         context = super(ListView, self).get_context_data(*args, **kwargs)
