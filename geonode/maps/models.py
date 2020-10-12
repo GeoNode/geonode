@@ -41,8 +41,7 @@ from geonode.client.hooks import hookset
 from geonode.utils import (GXPMapBase,
                            GXPLayerBase,
                            layer_from_viewer_config,
-                           default_map_config,
-                           num_encode)
+                           default_map_config)
 
 from geonode import geoserver, qgis_server  # noqa
 from geonode.utils import check_ogc_backend
@@ -339,13 +338,6 @@ class Map(ResourceBase, GXPMapBase):
         return self.__class__.__name__
 
     @property
-    def snapshots(self):
-        snapshots = MapSnapshot.objects.exclude(
-            user=None).filter(
-            map__id=self.map.id)
-        return [snapshot for snapshot in snapshots]
-
-    @property
     def is_public(self):
         """
         Returns True if anonymous (public) user can view map.
@@ -598,36 +590,6 @@ def pre_delete_map(instance, sender, **kwrargs):
         content_type=ct,
         object_id=instance.id).delete()
     remove_object_permissions(instance.get_self_resource())
-
-
-class MapSnapshot(models.Model):
-    map = models.ForeignKey(Map, related_name="snapshot_set", on_delete=models.CASCADE)
-    """
-    The ID of the map this snapshot was generated from.
-    """
-
-    config = models.TextField(_('JSON Configuration'))
-    """
-    Map configuration in JSON format
-    """
-
-    created_dttm = models.DateTimeField(auto_now_add=True)
-    """
-    The date/time the snapshot was created.
-    """
-
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.CASCADE)
-    """
-    The user who created the snapshot.
-    """
-
-    def json(self):
-        return {
-            "map": self.map.id,
-            "created": self.created_dttm.isoformat(),
-            "user": self.user.username if self.user else None,
-            "url": num_encode(self.id)
-        }
 
 
 signals.pre_delete.connect(pre_delete_map, sender=Map)
