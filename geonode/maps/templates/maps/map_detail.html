@@ -266,8 +266,6 @@
                   <ul class="dropdown-menu btn-block" id="embed-map-list">
                       <li id="embed-iframe-link">
                           <a href="#">{% trans "Embed Iframe Link" %}</a></li>
-                      <li id="embed-widget-link">
-                          <a href="#">{% trans "Embed Widget Link" %}</a></li>
                       <li>
                           <a href="{% url 'map_download_leaflet' resource.id %}">{% trans "Download Leaflet page" %}</a></li>
                   </ul>
@@ -304,27 +302,6 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="embed-widget" tabindex="-1" role="dialog" aria-labelledby="Embed Widget"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel">{% trans "Embed Widget" %}</h4>
-                </div>
-                <div class="modal-body">
-                    <p>{% trans "To embed this map, copy the following code snippet into your own page" %}:</p>
-                    <pre id="embed-widget-body" style="font-size: 0.5em"></pre>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-clipboard-target="#embed-widget-body">{% trans "Copy to Clipboard" %}</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
   {% endblock %}
 
 {% block extra_script %}
@@ -339,25 +316,6 @@
     {% endif %}
     {% include 'rating.html' %}
     <script type="text/javascript">
-        $(document).ready(function () {
-            post_url = '{% url 'map_embed_widget' resource.id %}';
-            var formatted_data = "";
-            $.post(post_url, function (data) {
-                data = data.split("\n");
-                data_row = data.length;
-                for (var i=0; i < data_row;i++) {
-                    formatted_data += data[i] + "\n";
-                }
-                $('#embed-widget-body').text(formatted_data);
-            });
-        });
-        var clipboard = new ClipboardJS('.btn');
-        clipboard.on('success', function(e) {
-            alert("Code copied");
-        });
-        clipboard.on('error', function(e) {
-            alert("Oops.. something went wrong");
-        });
      $(function() {
       {% verbatim %}
       // Publish layer group
