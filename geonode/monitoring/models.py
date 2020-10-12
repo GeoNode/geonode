@@ -800,14 +800,15 @@ class RequestEvent(models.Model):
                                 'error'][
                     'class']
                 edata = '\n'.join(rd['error']['stackTrace']['trace'])
-                emessage = rd['error']['detailMessage']
+                emessage = rd['error']['detailMessage'] if 'detailMessage' in rd['error'] else str(rd['error'])
                 ExceptionEvent.add_error(
                     service, etype, edata, message=emessage, request=inst)
             except Exception:
+                emessage = rd['error']['detailMessage'] if 'detailMessage' in rd['error'] else str(rd['error'])
                 ExceptionEvent.add_error(service, 'undefined',
                                          '\n'.join(
                                              rd['error']['stackTrace']['trace']),
-                                         message=rd['error']['detailMessage'], request=inst)
+                                         message=emessage, request=inst)
         if resources:
             inst.resources.add(*resources)
             inst.save()
