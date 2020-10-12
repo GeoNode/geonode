@@ -23,7 +23,7 @@ from django.contrib import admin
 
 from modeltranslation.admin import TabbedTranslationAdmin
 
-from geonode.maps.models import Map, MapLayer, MapSnapshot
+from geonode.maps.models import Map, MapLayer
 from geonode.base.admin import ResourceBaseAdminForm
 from geonode.base.admin import metadata_batch_edit
 
@@ -59,10 +59,5 @@ class MapLayerAdmin(admin.ModelAdmin):
     form = forms.modelform_factory(MapLayer, fields='__all__')
 
 
-class MapSnapshotAdmin(admin.ModelAdmin):
-    list_display = ('map', 'user', 'created_dttm', )
-
-
 admin.site.register(Map, MapAdmin)
 admin.site.register(MapLayer, MapLayerAdmin)
-admin.site.register(MapSnapshot, MapSnapshotAdmin)

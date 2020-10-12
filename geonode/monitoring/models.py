@@ -800,14 +800,15 @@ class RequestEvent(models.Model):
                                 'error'][
                     'class']
                 edata = '\n'.join(rd['error']['stackTrace']['trace'])
-                emessage = rd['error']['detailMessage']
+                emessage = rd['error']['detailMessage'] if 'detailMessage' in rd['error'] else str(rd['error'])
                 ExceptionEvent.add_error(
                     service, etype, edata, message=emessage, request=inst)
             except Exception:
+                emessage = rd['error']['detailMessage'] if 'detailMessage' in rd['error'] else str(rd['error'])
                 ExceptionEvent.add_error(service, 'undefined',
                                          '\n'.join(
                                              rd['error']['stackTrace']['trace']),
-                                         message=rd['error']['detailMessage'], request=inst)
+                                         message=emessage, request=inst)
         if resources:
             inst.resources.add(*resources)
             inst.save()
@@ -819,7 +820,7 @@ class ExceptionEvent(models.Model):
     received = models.DateTimeField(db_index=True, null=False)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     error_type = models.CharField(max_length=255, null=False, db_index=True)
-    error_message = models.CharField(max_length=255, null=False, default='')
+    error_message = models.TextField(null=False, default='')
     error_data = models.TextField(null=False, default='')
     request = models.ForeignKey(RequestEvent, related_name='exceptions', on_delete=models.CASCADE)
 
