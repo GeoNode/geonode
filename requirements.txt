@@ -76,7 +76,7 @@ drf-extensions==0.6.0
 drf-writable-nested==0.6.1
 drf-yasg==1.17.1
 dynamic-rest==2.0.0
-Markdown==3.2.2
+Markdown==3.3.1
 
 pinax-notifications==6.0.0
 pinax-ratings==4.0.0
