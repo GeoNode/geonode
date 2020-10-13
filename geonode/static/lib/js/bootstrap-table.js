@@ -2,9 +2,9 @@
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('jquery')) :
 	typeof define === 'function' && define.amd ? define(['jquery'], factory) :
 	(global = global || self, global.BootstrapTable = factory(global.jQuery));
-}(this, (function ($) { 'use strict';
+}(this, function ($) { 'use strict';
 
-	$ = $ && Object.prototype.hasOwnProperty.call($, 'default') ? $['default'] : $;
+	$ = $ && $.hasOwnProperty('default') ? $['default'] : $;
 
 	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -12,6 +12,7 @@
 		return module = { exports: {} }, fn(module, module.exports), module.exports;
 	}
 
+	var O = 'object';
 	var check = function (it) {
 	  return it && it.Math == Math && it;
 	};
@@ -19,10 +20,10 @@
 	// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
 	var global_1 =
 	  // eslint-disable-next-line no-undef
-	  check(typeof globalThis == 'object' && globalThis) ||
-	  check(typeof window == 'object' && window) ||
-	  check(typeof self == 'object' && self) ||
-	  check(typeof commonjsGlobal == 'object' && commonjsGlobal) ||
+	  check(typeof globalThis == O && globalThis) ||
+	  check(typeof window == O && window) ||
+	  check(typeof self == O && self) ||
+	  check(typeof commonjsGlobal == O && commonjsGlobal) ||
 	  // eslint-disable-next-line no-new-func
 	  Function('return this')();
 
@@ -178,7 +179,7 @@
 		f: f$2
 	};
 
-	var createNonEnumerableProperty = descriptors ? function (object, key, value) {
+	var hide = descriptors ? function (object, key, value) {
 	  return objectDefineProperty.f(object, key, createPropertyDescriptor(1, value));
 	} : function (object, key, value) {
 	  object[key] = value;
@@ -187,41 +188,30 @@
 
 	var setGlobal = function (key, value) {
 	  try {
-	    createNonEnumerableProperty(global_1, key, value);
+	    hide(global_1, key, value);
 	  } catch (error) {
 	    global_1[key] = value;
 	  } return value;
 	};
 
+	var shared = createCommonjsModule(function (module) {
 	var SHARED = '__core-js_shared__';
 	var store = global_1[SHARED] || setGlobal(SHARED, {});
 
-	var sharedStore = store;
-
-	var functionToString = Function.toString;
-
-	// this helper broken in `3.4.1-3.4.4`, so we can't use `shared` helper
-	if (typeof sharedStore.inspectSource != 'function') {
-	  sharedStore.inspectSource = function (it) {
-	    return functionToString.call(it);
-	  };
-	}
-
-	var inspectSource = sharedStore.inspectSource;
-
-	var WeakMap = global_1.WeakMap;
-
-	var nativeWeakMap = typeof WeakMap === 'function' && /native code/.test(inspectSource(WeakMap));
-
-	var shared = createCommonjsModule(function (module) {
 	(module.exports = function (key, value) {
-	  return sharedStore[key] || (sharedStore[key] = value !== undefined ? value : {});
+	  return store[key] || (store[key] = value !== undefined ? value : {});
 	})('versions', []).push({
-	  version: '3.6.0',
+	  version: '3.1.3',
 	  mode:  'global',
 	  copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
 	});
 	});
+
+	var functionToString = shared('native-function-to-string', Function.toString);
+
+	var WeakMap = global_1.WeakMap;
+
+	var nativeWeakMap = typeof WeakMap === 'function' && /native code/.test(functionToString.call(WeakMap));
 
 	var id = 0;
 	var postfix = Math.random();
@@ -255,25 +245,25 @@
 	};
 
 	if (nativeWeakMap) {
-	  var store$1 = new WeakMap$1();
-	  var wmget = store$1.get;
-	  var wmhas = store$1.has;
-	  var wmset = store$1.set;
+	  var store = new WeakMap$1();
+	  var wmget = store.get;
+	  var wmhas = store.has;
+	  var wmset = store.set;
 	  set = function (it, metadata) {
-	    wmset.call(store$1, it, metadata);
+	    wmset.call(store, it, metadata);
 	    return metadata;
 	  };
 	  get = function (it) {
-	    return wmget.call(store$1, it) || {};
+	    return wmget.call(store, it) || {};
 	  };
 	  has$1 = function (it) {
-	    return wmhas.call(store$1, it);
+	    return wmhas.call(store, it);
 	  };
 	} else {
 	  var STATE = sharedKey('state');
 	  hiddenKeys[STATE] = true;
 	  set = function (it, metadata) {
-	    createNonEnumerableProperty(it, STATE, metadata);
+	    hide(it, STATE, metadata);
 	    return metadata;
 	  };
 	  get = function (it) {
@@ -295,14 +285,18 @@
 	var redefine = createCommonjsModule(function (module) {
 	var getInternalState = internalState.get;
 	var enforceInternalState = internalState.enforce;
-	var TEMPLATE = String(String).split('String');
+	var TEMPLATE = String(functionToString).split('toString');
+
+	shared('inspectSource', function (it) {
+	  return functionToString.call(it);
+	});
 
 	(module.exports = function (O, key, value, options) {
 	  var unsafe = options ? !!options.unsafe : false;
 	  var simple = options ? !!options.enumerable : false;
 	  var noTargetGet = options ? !!options.noTargetGet : false;
 	  if (typeof value == 'function') {
-	    if (typeof key == 'string' && !has(value, 'name')) createNonEnumerableProperty(value, 'name', key);
+	    if (typeof key == 'string' && !has(value, 'name')) hide(value, 'name', key);
 	    enforceInternalState(value).source = TEMPLATE.join(typeof key == 'string' ? key : '');
 	  }
 	  if (O === global_1) {
@@ -315,10 +309,10 @@
 	    simple = true;
 	  }
 	  if (simple) O[key] = value;
-	  else createNonEnumerableProperty(O, key, value);
+	  else hide(O, key, value);
 	// add fake Function#toString for correct work wrapped methods / constructors with methods like LoDash isNative
 	})(Function.prototype, 'toString', function toString() {
-	  return typeof this == 'function' && getInternalState(this).source || inspectSource(this);
+	  return typeof this == 'function' && getInternalState(this).source || functionToString.call(this);
 	});
 	});
 
@@ -355,7 +349,7 @@
 
 	// Helper for a popular repeating case of the spec:
 	// Let integer be ? ToInteger(index).
-	// If integer < 0, let result be max((length + integer), 0); else let result be min(integer, length).
+	// If integer < 0, let result be max((length + integer), 0); else let result be min(length, length).
 	var toAbsoluteIndex = function (index, length) {
 	  var integer = toInteger(index);
 	  return integer < 0 ? max(integer + length, 0) : min$1(integer, length);
@@ -519,7 +513,7 @@
 	    }
 	    // add a flag to not completely full polyfills
 	    if (options.sham || (targetProperty && targetProperty.sham)) {
-	      createNonEnumerableProperty(sourceProperty, 'sham', true);
+	      hide(sourceProperty, 'sham', true);
 	    }
 	    // extend global
 	    redefine(target, key, sourceProperty, options);
@@ -531,12 +525,6 @@
 	  // eslint-disable-next-line no-undef
 	  return !String(Symbol());
 	});
-
-	var useSymbolAsUid = nativeSymbol
-	  // eslint-disable-next-line no-undef
-	  && !Symbol.sham
-	  // eslint-disable-next-line no-undef
-	  && typeof Symbol() == 'symbol';
 
 	// `IsArray` abstract operation
 	// https://tc39.github.io/ecma262/#sec-isarray
@@ -570,76 +558,48 @@
 
 	var html = getBuiltIn('document', 'documentElement');
 
-	var GT = '>';
-	var LT = '<';
-	var PROTOTYPE = 'prototype';
-	var SCRIPT = 'script';
 	var IE_PROTO = sharedKey('IE_PROTO');
 
-	var EmptyConstructor = function () { /* empty */ };
-
-	var scriptTag = function (content) {
-	  return LT + SCRIPT + GT + content + LT + '/' + SCRIPT + GT;
-	};
-
-	// Create object with fake `null` prototype: use ActiveX Object with cleared prototype
-	var NullProtoObjectViaActiveX = function (activeXDocument) {
-	  activeXDocument.write(scriptTag(''));
-	  activeXDocument.close();
-	  var temp = activeXDocument.parentWindow.Object;
-	  activeXDocument = null; // avoid memory leak
-	  return temp;
-	};
+	var PROTOTYPE = 'prototype';
+	var Empty = function () { /* empty */ };
 
 	// Create object with fake `null` prototype: use iframe Object with cleared prototype
-	var NullProtoObjectViaIFrame = function () {
+	var createDict = function () {
 	  // Thrash, waste and sodomy: IE GC bug
 	  var iframe = documentCreateElement('iframe');
-	  var JS = 'java' + SCRIPT + ':';
+	  var length = enumBugKeys.length;
+	  var lt = '<';
+	  var script = 'script';
+	  var gt = '>';
+	  var js = 'java' + script + ':';
 	  var iframeDocument;
 	  iframe.style.display = 'none';
 	  html.appendChild(iframe);
-	  // https://github.com/zloirock/core-js/issues/475
-	  iframe.src = String(JS);
+	  iframe.src = String(js);
 	  iframeDocument = iframe.contentWindow.document;
 	  iframeDocument.open();
-	  iframeDocument.write(scriptTag('document.F=Object'));
+	  iframeDocument.write(lt + script + gt + 'document.F=Object' + lt + '/' + script + gt);
 	  iframeDocument.close();
-	  return iframeDocument.F;
+	  createDict = iframeDocument.F;
+	  while (length--) delete createDict[PROTOTYPE][enumBugKeys[length]];
+	  return createDict();
 	};
-
-	// Check for document.domain and active x support
-	// No need to use active x approach when document.domain is not set
-	// see https://github.com/es-shims/es5-shim/issues/150
-	// variation of https://github.com/kitcambridge/es5-shim/commit/4f738ac066346
-	// avoid IE GC bug
-	var activeXDocument;
-	var NullProtoObject = function () {
-	  try {
-	    /* global ActiveXObject */
-	    activeXDocument = document.domain && new ActiveXObject('htmlfile');
-	  } catch (error) { /* ignore */ }
-	  NullProtoObject = activeXDocument ? NullProtoObjectViaActiveX(activeXDocument) : NullProtoObjectViaIFrame();
-	  var length = enumBugKeys.length;
-	  while (length--) delete NullProtoObject[PROTOTYPE][enumBugKeys[length]];
-	  return NullProtoObject();
-	};
-
-	hiddenKeys[IE_PROTO] = true;
 
 	// `Object.create` method
 	// https://tc39.github.io/ecma262/#sec-object.create
 	var objectCreate = Object.create || function create(O, Properties) {
 	  var result;
 	  if (O !== null) {
-	    EmptyConstructor[PROTOTYPE] = anObject(O);
-	    result = new EmptyConstructor();
-	    EmptyConstructor[PROTOTYPE] = null;
+	    Empty[PROTOTYPE] = anObject(O);
+	    result = new Empty();
+	    Empty[PROTOTYPE] = null;
 	    // add "__proto__" for Object.getPrototypeOf polyfill
 	    result[IE_PROTO] = O;
-	  } else result = NullProtoObject();
+	  } else result = createDict();
 	  return Properties === undefined ? result : objectDefineProperties(result, Properties);
 	};
+
+	hiddenKeys[IE_PROTO] = true;
 
 	var nativeGetOwnPropertyNames = objectGetOwnPropertyNames.f;
 
@@ -667,15 +627,12 @@
 		f: f$5
 	};
 
-	var WellKnownSymbolsStore = shared('wks');
 	var Symbol$1 = global_1.Symbol;
-	var createWellKnownSymbol = useSymbolAsUid ? Symbol$1 : uid;
+	var store$1 = shared('wks');
 
 	var wellKnownSymbol = function (name) {
-	  if (!has(WellKnownSymbolsStore, name)) {
-	    if (nativeSymbol && has(Symbol$1, name)) WellKnownSymbolsStore[name] = Symbol$1[name];
-	    else WellKnownSymbolsStore[name] = createWellKnownSymbol('Symbol.' + name);
-	  } return WellKnownSymbolsStore[name];
+	  return store$1[name] || (store$1[name] = nativeSymbol && Symbol$1[name]
+	    || (nativeSymbol ? Symbol$1 : uid)('Symbol.' + name));
 	};
 
 	var f$6 = wellKnownSymbol;
@@ -821,7 +778,8 @@
 	var getInternalState = internalState.getterFor(SYMBOL);
 	var ObjectPrototype = Object[PROTOTYPE$1];
 	var $Symbol = global_1.Symbol;
-	var $stringify = getBuiltIn('JSON', 'stringify');
+	var JSON$1 = global_1.JSON;
+	var nativeJSONStringify = JSON$1 && JSON$1.stringify;
 	var nativeGetOwnPropertyDescriptor$1 = objectGetOwnPropertyDescriptor.f;
 	var nativeDefineProperty$1 = objectDefineProperty.f;
 	var nativeGetOwnPropertyNames$1 = objectGetOwnPropertyNamesExternal.f;
@@ -830,7 +788,7 @@
 	var ObjectPrototypeSymbols = shared('op-symbols');
 	var StringToSymbolRegistry = shared('string-to-symbol-registry');
 	var SymbolToStringRegistry = shared('symbol-to-string-registry');
-	var WellKnownSymbolsStore$1 = shared('wks');
+	var WellKnownSymbolsStore = shared('wks');
 	var QObject = global_1.QObject;
 	// Don't use setters in Qt Script, https://github.com/zloirock/core-js/issues/173
 	var USE_SETTER = !QObject || !QObject[PROTOTYPE$1] || !QObject[PROTOTYPE$1].findChild;
@@ -973,9 +931,7 @@
 	      redefine(ObjectPrototype, 'propertyIsEnumerable', $propertyIsEnumerable, { unsafe: true });
 	    }
 	  }
-	}
 
-	if (!useSymbolAsUid) {
 	  wrappedWellKnownSymbol.f = function (name) {
 	    return wrap(wellKnownSymbol(name), name);
 	  };
@@ -985,7 +941,7 @@
 	  Symbol: $Symbol
 	});
 
-	$forEach(objectKeys(WellKnownSymbolsStore$1), function (name) {
+	$forEach(objectKeys(WellKnownSymbolsStore), function (name) {
 	  defineWellKnownSymbol(name);
 	});
 
@@ -1044,41 +1000,34 @@
 
 	// `JSON.stringify` method behavior with symbols
 	// https://tc39.github.io/ecma262/#sec-json.stringify
-	if ($stringify) {
-	  var FORCED_JSON_STRINGIFY = !nativeSymbol || fails(function () {
-	    var symbol = $Symbol();
-	    // MS Edge converts symbol values to JSON as {}
-	    return $stringify([symbol]) != '[null]'
-	      // WebKit converts symbol values to JSON as null
-	      || $stringify({ a: symbol }) != '{}'
-	      // V8 throws on boxed symbols
-	      || $stringify(Object(symbol)) != '{}';
-	  });
-
-	  _export({ target: 'JSON', stat: true, forced: FORCED_JSON_STRINGIFY }, {
-	    // eslint-disable-next-line no-unused-vars
-	    stringify: function stringify(it, replacer, space) {
-	      var args = [it];
-	      var index = 1;
-	      var $replacer;
-	      while (arguments.length > index) args.push(arguments[index++]);
-	      $replacer = replacer;
-	      if (!isObject(replacer) && it === undefined || isSymbol(it)) return; // IE8 returns string on undefined
-	      if (!isArray(replacer)) replacer = function (key, value) {
-	        if (typeof $replacer == 'function') value = $replacer.call(this, key, value);
-	        if (!isSymbol(value)) return value;
-	      };
-	      args[1] = replacer;
-	      return $stringify.apply(null, args);
-	    }
-	  });
-	}
+	JSON$1 && _export({ target: 'JSON', stat: true, forced: !nativeSymbol || fails(function () {
+	  var symbol = $Symbol();
+	  // MS Edge converts symbol values to JSON as {}
+	  return nativeJSONStringify([symbol]) != '[null]'
+	    // WebKit converts symbol values to JSON as null
+	    || nativeJSONStringify({ a: symbol }) != '{}'
+	    // V8 throws on boxed symbols
+	    || nativeJSONStringify(Object(symbol)) != '{}';
+	}) }, {
+	  stringify: function stringify(it) {
+	    var args = [it];
+	    var index = 1;
+	    var replacer, $replacer;
+	    while (arguments.length > index) args.push(arguments[index++]);
+	    $replacer = replacer = args[1];
+	    if (!isObject(replacer) && it === undefined || isSymbol(it)) return; // IE8 returns string on undefined
+	    if (!isArray(replacer)) replacer = function (key, value) {
+	      if (typeof $replacer == 'function') value = $replacer.call(this, key, value);
+	      if (!isSymbol(value)) return value;
+	    };
+	    args[1] = replacer;
+	    return nativeJSONStringify.apply(JSON$1, args);
+	  }
+	});
 
 	// `Symbol.prototype[@@toPrimitive]` method
 	// https://tc39.github.io/ecma262/#sec-symbol.prototype-@@toprimitive
-	if (!$Symbol[PROTOTYPE$1][TO_PRIMITIVE]) {
-	  createNonEnumerableProperty($Symbol[PROTOTYPE$1], TO_PRIMITIVE, $Symbol[PROTOTYPE$1].valueOf);
-	}
+	if (!$Symbol[PROTOTYPE$1][TO_PRIMITIVE]) hide($Symbol[PROTOTYPE$1], TO_PRIMITIVE, $Symbol[PROTOTYPE$1].valueOf);
 	// `Symbol.prototype[@@toStringTag]` property
 	// https://tc39.github.io/ecma262/#sec-symbol.prototype-@@tostringtag
 	setToStringTag($Symbol, SYMBOL);
@@ -1138,33 +1087,10 @@
 	  else object[propertyKey] = value;
 	};
 
-	var userAgent = getBuiltIn('navigator', 'userAgent') || '';
-
-	var process = global_1.process;
-	var versions = process && process.versions;
-	var v8 = versions && versions.v8;
-	var match, version;
-
-	if (v8) {
-	  match = v8.split('.');
-	  version = match[0] + match[1];
-	} else if (userAgent) {
-	  match = userAgent.match(/Edge\/(\d+)/);
-	  if (!match || match[1] >= 74) {
-	    match = userAgent.match(/Chrome\/(\d+)/);
-	    if (match) version = match[1];
-	  }
-	}
-
-	var v8Version = version && +version;
-
 	var SPECIES$1 = wellKnownSymbol('species');
 
 	var arrayMethodHasSpeciesSupport = function (METHOD_NAME) {
-	  // We can't use this feature detection in V8 since it causes
-	  // deoptimization and serious performance degradation
-	  // https://github.com/zloirock/core-js/issues/677
-	  return v8Version >= 51 || !fails(function () {
+	  return !fails(function () {
 	    var array = [];
 	    var constructor = array.constructor = {};
 	    constructor[SPECIES$1] = function () {
@@ -1178,10 +1104,7 @@
 	var MAX_SAFE_INTEGER = 0x1FFFFFFFFFFFFF;
 	var MAXIMUM_ALLOWED_INDEX_EXCEEDED = 'Maximum allowed index exceeded';
 
-	// We can't use this feature detection in V8 since it causes
-	// deoptimization and serious performance degradation
-	// https://github.com/zloirock/core-js/issues/679
-	var IS_CONCAT_SPREADABLE_SUPPORT = v8Version >= 51 || !fails(function () {
+	var IS_CONCAT_SPREADABLE_SUPPORT = !fails(function () {
 	  var array = [];
 	  array[IS_CONCAT_SPREADABLE] = false;
 	  return array.concat()[0] !== array;
@@ -1225,17 +1148,10 @@
 	var $filter = arrayIteration.filter;
 
 
-
-	var HAS_SPECIES_SUPPORT = arrayMethodHasSpeciesSupport('filter');
-	// Edge 14- issue
-	var USES_TO_LENGTH = HAS_SPECIES_SUPPORT && !fails(function () {
-	  [].filter.call({ length: -1, 0: 1 }, function (it) { throw it; });
-	});
-
 	// `Array.prototype.filter` method
 	// https://tc39.github.io/ecma262/#sec-array.prototype.filter
 	// with adding support of @@species
-	_export({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT || !USES_TO_LENGTH }, {
+	_export({ target: 'Array', proto: true, forced: !arrayMethodHasSpeciesSupport('filter') }, {
 	  filter: function filter(callbackfn /* , thisArg */) {
 	    return $filter(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
 	  }
@@ -1247,10 +1163,7 @@
 	// Array.prototype[@@unscopables]
 	// https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
 	if (ArrayPrototype[UNSCOPABLES] == undefined) {
-	  objectDefineProperty.f(ArrayPrototype, UNSCOPABLES, {
-	    configurable: true,
-	    value: objectCreate(null)
-	  });
+	  hide(ArrayPrototype, UNSCOPABLES, objectCreate(null));
 	}
 
 	// add a key to Array.prototype[@@unscopables]
@@ -1380,9 +1293,7 @@
 	if (IteratorPrototype == undefined) IteratorPrototype = {};
 
 	// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-	if ( !has(IteratorPrototype, ITERATOR)) {
-	  createNonEnumerableProperty(IteratorPrototype, ITERATOR, returnThis);
-	}
+	if ( !has(IteratorPrototype, ITERATOR)) hide(IteratorPrototype, ITERATOR, returnThis);
 
 	var iteratorsCore = {
 	  IteratorPrototype: IteratorPrototype,
@@ -1466,7 +1377,7 @@
 	        if (objectSetPrototypeOf) {
 	          objectSetPrototypeOf(CurrentIteratorPrototype, IteratorPrototype$2);
 	        } else if (typeof CurrentIteratorPrototype[ITERATOR$1] != 'function') {
-	          createNonEnumerableProperty(CurrentIteratorPrototype, ITERATOR$1, returnThis$1);
+	          hide(CurrentIteratorPrototype, ITERATOR$1, returnThis$1);
 	        }
 	      }
 	      // Set @@toStringTag to native iterators
@@ -1482,7 +1393,7 @@
 
 	  // define iterator
 	  if ( IterablePrototype[ITERATOR$1] !== defaultIterator) {
-	    createNonEnumerableProperty(IterablePrototype, ITERATOR$1, defaultIterator);
+	    hide(IterablePrototype, ITERATOR$1, defaultIterator);
 	  }
 
 	  // export additional methods
@@ -1557,40 +1468,6 @@
 	  }
 	});
 
-	var $map = arrayIteration.map;
-
-
-
-	var HAS_SPECIES_SUPPORT$1 = arrayMethodHasSpeciesSupport('map');
-	// FF49- issue
-	var USES_TO_LENGTH$1 = HAS_SPECIES_SUPPORT$1 && !fails(function () {
-	  [].map.call({ length: -1, 0: 1 }, function (it) { throw it; });
-	});
-
-	// `Array.prototype.map` method
-	// https://tc39.github.io/ecma262/#sec-array.prototype.map
-	// with adding support of @@species
-	_export({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT$1 || !USES_TO_LENGTH$1 }, {
-	  map: function map(callbackfn /* , thisArg */) {
-	    return $map(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
-	  }
-	});
-
-	var nativeReverse = [].reverse;
-	var test = [1, 2];
-
-	// `Array.prototype.reverse` method
-	// https://tc39.github.io/ecma262/#sec-array.prototype.reverse
-	// fix for Safari 12.0 bug
-	// https://bugs.webkit.org/show_bug.cgi?id=188794
-	_export({ target: 'Array', proto: true, forced: String(test) === String(test.reverse()) }, {
-	  reverse: function reverse() {
-	    // eslint-disable-next-line no-self-assign
-	    if (isArray(this)) this.length = this.length;
-	    return nativeReverse.call(this);
-	  }
-	});
-
 	var SPECIES$2 = wellKnownSymbol('species');
 	var nativeSlice = [].slice;
 	var max$1 = Math.max;
@@ -1626,16 +1503,16 @@
 	  }
 	});
 
-	var test$1 = [];
-	var nativeSort = test$1.sort;
+	var nativeSort = [].sort;
+	var test = [1, 2, 3];
 
 	// IE8-
 	var FAILS_ON_UNDEFINED = fails(function () {
-	  test$1.sort(undefined);
+	  test.sort(undefined);
 	});
 	// V8 bug
 	var FAILS_ON_NULL = fails(function () {
-	  test$1.sort(null);
+	  test.sort(null);
 	});
 	// Old WebKit
 	var SLOPPY_METHOD$2 = sloppyArrayMethod('sort');
@@ -1823,22 +1700,11 @@
 	}
 
 	var nativeAssign = Object.assign;
-	var defineProperty$4 = Object.defineProperty;
 
 	// `Object.assign` method
 	// https://tc39.github.io/ecma262/#sec-object.assign
+	// should work with symbols and should have deterministic property order (V8 bug)
 	var objectAssign = !nativeAssign || fails(function () {
-	  // should have correct order of operations (Edge bug)
-	  if (descriptors && nativeAssign({ b: 1 }, nativeAssign(defineProperty$4({}, 'a', {
-	    enumerable: true,
-	    get: function () {
-	      defineProperty$4(this, 'b', {
-	        value: 3,
-	        enumerable: false
-	      });
-	    }
-	  }), { b: 2 })).b !== 1) return true;
-	  // should work with symbols and should have deterministic property order (V8 bug)
 	  var A = {};
 	  var B = {};
 	  // eslint-disable-next-line no-undef
@@ -1913,13 +1779,6 @@
 	});
 
 	var TO_STRING_TAG$1 = wellKnownSymbol('toStringTag');
-	var test$2 = {};
-
-	test$2[TO_STRING_TAG$1] = 'z';
-
-	var toStringTagSupport = String(test$2) === '[object z]';
-
-	var TO_STRING_TAG$2 = wellKnownSymbol('toStringTag');
 	// ES3 wrong here
 	var CORRECT_ARGUMENTS = classofRaw(function () { return arguments; }()) == 'Arguments';
 
@@ -1931,27 +1790,34 @@
 	};
 
 	// getting tag from ES6+ `Object.prototype.toString`
-	var classof = toStringTagSupport ? classofRaw : function (it) {
+	var classof = function (it) {
 	  var O, tag, result;
 	  return it === undefined ? 'Undefined' : it === null ? 'Null'
 	    // @@toStringTag case
-	    : typeof (tag = tryGet(O = Object(it), TO_STRING_TAG$2)) == 'string' ? tag
+	    : typeof (tag = tryGet(O = Object(it), TO_STRING_TAG$1)) == 'string' ? tag
 	    // builtinTag case
 	    : CORRECT_ARGUMENTS ? classofRaw(O)
 	    // ES3 arguments fallback
 	    : (result = classofRaw(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : result;
 	};
 
+	var TO_STRING_TAG$2 = wellKnownSymbol('toStringTag');
+	var test$1 = {};
+
+	test$1[TO_STRING_TAG$2] = 'z';
+
 	// `Object.prototype.toString` method implementation
 	// https://tc39.github.io/ecma262/#sec-object.prototype.tostring
-	var objectToString = toStringTagSupport ? {}.toString : function toString() {
+	var objectToString = String(test$1) !== '[object z]' ? function toString() {
 	  return '[object ' + classof(this) + ']';
-	};
+	} : test$1.toString;
+
+	var ObjectPrototype$2 = Object.prototype;
 
 	// `Object.prototype.toString` method
 	// https://tc39.github.io/ecma262/#sec-object.prototype.tostring
-	if (!toStringTagSupport) {
-	  redefine(Object.prototype, 'toString', objectToString, { unsafe: true });
+	if (objectToString !== ObjectPrototype$2.toString) {
+	  redefine(ObjectPrototype$2, 'toString', objectToString, { unsafe: true });
 	}
 
 	var trim$1 = stringTrim.trim;
@@ -1994,15 +1860,6 @@
 	  parseInt: _parseInt
 	});
 
-	var MATCH = wellKnownSymbol('match');
-
-	// `IsRegExp` abstract operation
-	// https://tc39.github.io/ecma262/#sec-isregexp
-	var isRegexp = function (it) {
-	  var isRegExp;
-	  return isObject(it) && ((isRegExp = it[MATCH]) !== undefined ? !!isRegExp : classofRaw(it) == 'RegExp');
-	};
-
 	// `RegExp.prototype.flags` getter implementation
 	// https://tc39.github.io/ecma262/#sec-get-regexp.prototype.flags
 	var regexpFlags = function () {
@@ -2017,217 +1874,9 @@
 	  return result;
 	};
 
-	// babel-minify transpiles RegExp('a', 'y') -> /a/y and it causes SyntaxError,
-	// so we use an intermediate function.
-	function RE(s, f) {
-	  return RegExp(s, f);
-	}
-
-	var UNSUPPORTED_Y = fails(function () {
-	  // babel-minify transpiles RegExp('a', 'y') -> /a/y and it causes SyntaxError
-	  var re = RE('a', 'y');
-	  re.lastIndex = 2;
-	  return re.exec('abcd') != null;
-	});
-
-	var BROKEN_CARET = fails(function () {
-	  // https://bugzilla.mozilla.org/show_bug.cgi?id=773687
-	  var re = RE('^r', 'gy');
-	  re.lastIndex = 2;
-	  return re.exec('str') != null;
-	});
-
-	var regexpStickyHelpers = {
-		UNSUPPORTED_Y: UNSUPPORTED_Y,
-		BROKEN_CARET: BROKEN_CARET
-	};
-
-	var SPECIES$3 = wellKnownSymbol('species');
-
-	var setSpecies = function (CONSTRUCTOR_NAME) {
-	  var Constructor = getBuiltIn(CONSTRUCTOR_NAME);
-	  var defineProperty = objectDefineProperty.f;
-
-	  if (descriptors && Constructor && !Constructor[SPECIES$3]) {
-	    defineProperty(Constructor, SPECIES$3, {
-	      configurable: true,
-	      get: function () { return this; }
-	    });
-	  }
-	};
-
-	var defineProperty$5 = objectDefineProperty.f;
-	var getOwnPropertyNames$1 = objectGetOwnPropertyNames.f;
-
-
-
-
-
-	var setInternalState$2 = internalState.set;
-
-
-
-	var MATCH$1 = wellKnownSymbol('match');
-	var NativeRegExp = global_1.RegExp;
-	var RegExpPrototype = NativeRegExp.prototype;
-	var re1 = /a/g;
-	var re2 = /a/g;
-
-	// "new" should create a new object, old webkit bug
-	var CORRECT_NEW = new NativeRegExp(re1) !== re1;
-
-	var UNSUPPORTED_Y$1 = regexpStickyHelpers.UNSUPPORTED_Y;
-
-	var FORCED$4 = descriptors && isForced_1('RegExp', (!CORRECT_NEW || UNSUPPORTED_Y$1 || fails(function () {
-	  re2[MATCH$1] = false;
-	  // RegExp constructor can alter flags and IsRegExp works correct with @@match
-	  return NativeRegExp(re1) != re1 || NativeRegExp(re2) == re2 || NativeRegExp(re1, 'i') != '/a/i';
-	})));
-
-	// `RegExp` constructor
-	// https://tc39.github.io/ecma262/#sec-regexp-constructor
-	if (FORCED$4) {
-	  var RegExpWrapper = function RegExp(pattern, flags) {
-	    var thisIsRegExp = this instanceof RegExpWrapper;
-	    var patternIsRegExp = isRegexp(pattern);
-	    var flagsAreUndefined = flags === undefined;
-	    var sticky;
-
-	    if (!thisIsRegExp && patternIsRegExp && pattern.constructor === RegExpWrapper && flagsAreUndefined) {
-	      return pattern;
-	    }
-
-	    if (CORRECT_NEW) {
-	      if (patternIsRegExp && !flagsAreUndefined) pattern = pattern.source;
-	    } else if (pattern instanceof RegExpWrapper) {
-	      if (flagsAreUndefined) flags = regexpFlags.call(pattern);
-	      pattern = pattern.source;
-	    }
-
-	    if (UNSUPPORTED_Y$1) {
-	      sticky = !!flags && flags.indexOf('y') > -1;
-	      if (sticky) flags = flags.replace(/y/g, '');
-	    }
-
-	    var result = inheritIfRequired(
-	      CORRECT_NEW ? new NativeRegExp(pattern, flags) : NativeRegExp(pattern, flags),
-	      thisIsRegExp ? this : RegExpPrototype,
-	      RegExpWrapper
-	    );
-
-	    if (UNSUPPORTED_Y$1 && sticky) setInternalState$2(result, { sticky: sticky });
-
-	    return result;
-	  };
-	  var proxy = function (key) {
-	    key in RegExpWrapper || defineProperty$5(RegExpWrapper, key, {
-	      configurable: true,
-	      get: function () { return NativeRegExp[key]; },
-	      set: function (it) { NativeRegExp[key] = it; }
-	    });
-	  };
-	  var keys$2 = getOwnPropertyNames$1(NativeRegExp);
-	  var index = 0;
-	  while (keys$2.length > index) proxy(keys$2[index++]);
-	  RegExpPrototype.constructor = RegExpWrapper;
-	  RegExpWrapper.prototype = RegExpPrototype;
-	  redefine(global_1, 'RegExp', RegExpWrapper);
-	}
-
-	// https://tc39.github.io/ecma262/#sec-get-regexp-@@species
-	setSpecies('RegExp');
-
-	var nativeExec = RegExp.prototype.exec;
-	// This always refers to the native implementation, because the
-	// String#replace polyfill uses ./fix-regexp-well-known-symbol-logic.js,
-	// which loads this file before patching the method.
-	var nativeReplace = String.prototype.replace;
-
-	var patchedExec = nativeExec;
-
-	var UPDATES_LAST_INDEX_WRONG = (function () {
-	  var re1 = /a/;
-	  var re2 = /b*/g;
-	  nativeExec.call(re1, 'a');
-	  nativeExec.call(re2, 'a');
-	  return re1.lastIndex !== 0 || re2.lastIndex !== 0;
-	})();
-
-	var UNSUPPORTED_Y$2 = regexpStickyHelpers.UNSUPPORTED_Y || regexpStickyHelpers.BROKEN_CARET;
-
-	// nonparticipating capturing group, copied from es5-shim's String#split patch.
-	var NPCG_INCLUDED = /()??/.exec('')[1] !== undefined;
-
-	var PATCH = UPDATES_LAST_INDEX_WRONG || NPCG_INCLUDED || UNSUPPORTED_Y$2;
-
-	if (PATCH) {
-	  patchedExec = function exec(str) {
-	    var re = this;
-	    var lastIndex, reCopy, match, i;
-	    var sticky = UNSUPPORTED_Y$2 && re.sticky;
-	    var flags = regexpFlags.call(re);
-	    var source = re.source;
-	    var charsAdded = 0;
-	    var strCopy = str;
-
-	    if (sticky) {
-	      flags = flags.replace('y', '');
-	      if (flags.indexOf('g') === -1) {
-	        flags += 'g';
-	      }
-
-	      strCopy = String(str).slice(re.lastIndex);
-	      // Support anchored sticky behavior.
-	      if (re.lastIndex > 0 && (!re.multiline || re.multiline && str[re.lastIndex - 1] !== '\n')) {
-	        source = '(?: ' + source + ')';
-	        strCopy = ' ' + strCopy;
-	        charsAdded++;
-	      }
-	      // ^(? + rx + ) is needed, in combination with some str slicing, to
-	      // simulate the 'y' flag.
-	      reCopy = new RegExp('^(?:' + source + ')', flags);
-	    }
-
-	    if (NPCG_INCLUDED) {
-	      reCopy = new RegExp('^' + source + '$(?!\\s)', flags);
-	    }
-	    if (UPDATES_LAST_INDEX_WRONG) lastIndex = re.lastIndex;
-
-	    match = nativeExec.call(sticky ? reCopy : re, strCopy);
-
-	    if (sticky) {
-	      if (match) {
-	        match.input = match.input.slice(charsAdded);
-	        match[0] = match[0].slice(charsAdded);
-	        match.index = re.lastIndex;
-	        re.lastIndex += match[0].length;
-	      } else re.lastIndex = 0;
-	    } else if (UPDATES_LAST_INDEX_WRONG && match) {
-	      re.lastIndex = re.global ? match.index + match[0].length : lastIndex;
-	    }
-	    if (NPCG_INCLUDED && match && match.length > 1) {
-	      // Fix browsers whose `exec` methods don't consistently return `undefined`
-	      // for NPCG, like IE8. NOTE: This doesn' work for /(.?)?/
-	      nativeReplace.call(match[0], reCopy, function () {
-	        for (i = 1; i < arguments.length - 2; i++) {
-	          if (arguments[i] === undefined) match[i] = undefined;
-	        }
-	      });
-	    }
-
-	    return match;
-	  };
-	}
-
-	var regexpExec = patchedExec;
-
-	_export({ target: 'RegExp', proto: true, forced: /./.exec !== regexpExec }, {
-	  exec: regexpExec
-	});
-
 	var TO_STRING = 'toString';
-	var RegExpPrototype$1 = RegExp.prototype;
-	var nativeToString = RegExpPrototype$1[TO_STRING];
+	var RegExpPrototype = RegExp.prototype;
+	var nativeToString = RegExpPrototype[TO_STRING];
 
 	var NOT_GENERIC = fails(function () { return nativeToString.call({ source: 'a', flags: 'b' }) != '/a/b'; });
 	// FF44- RegExp#toString has a wrong name
@@ -2240,10 +1889,19 @@
 	    var R = anObject(this);
 	    var p = String(R.source);
 	    var rf = R.flags;
-	    var f = String(rf === undefined && R instanceof RegExp && !('flags' in RegExpPrototype$1) ? regexpFlags.call(R) : rf);
+	    var f = String(rf === undefined && R instanceof RegExp && !('flags' in RegExpPrototype) ? regexpFlags.call(R) : rf);
 	    return '/' + p + '/' + f;
 	  }, { unsafe: true });
 	}
+
+	var MATCH = wellKnownSymbol('match');
+
+	// `IsRegExp` abstract operation
+	// https://tc39.github.io/ecma262/#sec-isregexp
+	var isRegexp = function (it) {
+	  var isRegExp;
+	  return isObject(it) && ((isRegExp = it[MATCH]) !== undefined ? !!isRegExp : classofRaw(it) == 'RegExp');
+	};
 
 	var notARegexp = function (it) {
 	  if (isRegexp(it)) {
@@ -2251,7 +1909,7 @@
 	  } return it;
 	};
 
-	var MATCH$2 = wellKnownSymbol('match');
+	var MATCH$1 = wellKnownSymbol('match');
 
 	var correctIsRegexpLogic = function (METHOD_NAME) {
 	  var regexp = /./;
@@ -2259,7 +1917,7 @@
 	    '/./'[METHOD_NAME](regexp);
 	  } catch (e) {
 	    try {
-	      regexp[MATCH$2] = false;
+	      regexp[MATCH$1] = false;
 	      return '/./'[METHOD_NAME](regexp);
 	    } catch (f) { /* empty */ }
 	  } return false;
@@ -2304,13 +1962,13 @@
 
 
 	var STRING_ITERATOR = 'String Iterator';
-	var setInternalState$3 = internalState.set;
+	var setInternalState$2 = internalState.set;
 	var getInternalState$2 = internalState.getterFor(STRING_ITERATOR);
 
 	// `String.prototype[@@iterator]` method
 	// https://tc39.github.io/ecma262/#sec-string.prototype-@@iterator
 	defineIterator(String, 'String', function (iterated) {
-	  setInternalState$3(this, {
+	  setInternalState$2(this, {
 	    type: STRING_ITERATOR,
 	    string: String(iterated),
 	    index: 0
@@ -2328,7 +1986,59 @@
 	  return { value: point, done: false };
 	});
 
-	var SPECIES$4 = wellKnownSymbol('species');
+	var nativeExec = RegExp.prototype.exec;
+	// This always refers to the native implementation, because the
+	// String#replace polyfill uses ./fix-regexp-well-known-symbol-logic.js,
+	// which loads this file before patching the method.
+	var nativeReplace = String.prototype.replace;
+
+	var patchedExec = nativeExec;
+
+	var UPDATES_LAST_INDEX_WRONG = (function () {
+	  var re1 = /a/;
+	  var re2 = /b*/g;
+	  nativeExec.call(re1, 'a');
+	  nativeExec.call(re2, 'a');
+	  return re1.lastIndex !== 0 || re2.lastIndex !== 0;
+	})();
+
+	// nonparticipating capturing group, copied from es5-shim's String#split patch.
+	var NPCG_INCLUDED = /()??/.exec('')[1] !== undefined;
+
+	var PATCH = UPDATES_LAST_INDEX_WRONG || NPCG_INCLUDED;
+
+	if (PATCH) {
+	  patchedExec = function exec(str) {
+	    var re = this;
+	    var lastIndex, reCopy, match, i;
+
+	    if (NPCG_INCLUDED) {
+	      reCopy = new RegExp('^' + re.source + '$(?!\\s)', regexpFlags.call(re));
+	    }
+	    if (UPDATES_LAST_INDEX_WRONG) lastIndex = re.lastIndex;
+
+	    match = nativeExec.call(re, str);
+
+	    if (UPDATES_LAST_INDEX_WRONG && match) {
+	      re.lastIndex = re.global ? match.index + match[0].length : lastIndex;
+	    }
+	    if (NPCG_INCLUDED && match && match.length > 1) {
+	      // Fix browsers whose `exec` methods don't consistently return `undefined`
+	      // for NPCG, like IE8. NOTE: This doesn' work for /(.?)?/
+	      nativeReplace.call(match[0], reCopy, function () {
+	        for (i = 1; i < arguments.length - 2; i++) {
+	          if (arguments[i] === undefined) match[i] = undefined;
+	        }
+	      });
+	    }
+
+	    return match;
+	  };
+	}
+
+	var regexpExec = patchedExec;
+
+	var SPECIES$3 = wellKnownSymbol('species');
 
 	var REPLACE_SUPPORTS_NAMED_GROUPS = !fails(function () {
 	  // #replace needs built-in support for named groups.
@@ -2342,12 +2052,6 @@
 	  };
 	  return ''.replace(re, '$<a>') !== '7';
 	});
-
-	// IE <= 11 replaces $0 with the whole match, as if it was $&
-	// https://stackoverflow.com/questions/6024666/getting-ie-to-replace-a-regex-with-the-literal-string-0
-	var REPLACE_KEEPS_$0 = (function () {
-	  return 'a'.replace(/./, '$0') === '$0';
-	})();
 
 	// Chrome 51 has a buggy "split" implementation when RegExp#exec !== nativeExec
 	// Weex JS has frozen built-in prototypes, so use try / catch wrapper
@@ -2373,21 +2077,14 @@
 	    // Symbol-named RegExp methods call .exec
 	    var execCalled = false;
 	    var re = /a/;
+	    re.exec = function () { execCalled = true; return null; };
 
 	    if (KEY === 'split') {
-	      // We can't use real regex here since it causes deoptimization
-	      // and serious performance degradation in V8
-	      // https://github.com/zloirock/core-js/issues/306
-	      re = {};
 	      // RegExp[@@split] doesn't call the regex's exec method, but first creates
 	      // a new one. We need to return the patched regex when creating the new one.
 	      re.constructor = {};
-	      re.constructor[SPECIES$4] = function () { return re; };
-	      re.flags = '';
-	      re[SYMBOL] = /./[SYMBOL];
+	      re.constructor[SPECIES$3] = function () { return re; };
 	    }
-
-	    re.exec = function () { execCalled = true; return null; };
 
 	    re[SYMBOL]('');
 	    return !execCalled;
@@ -2396,7 +2093,7 @@
 	  if (
 	    !DELEGATES_TO_SYMBOL ||
 	    !DELEGATES_TO_EXEC ||
-	    (KEY === 'replace' && !(REPLACE_SUPPORTS_NAMED_GROUPS && REPLACE_KEEPS_$0)) ||
+	    (KEY === 'replace' && !REPLACE_SUPPORTS_NAMED_GROUPS) ||
 	    (KEY === 'split' && !SPLIT_WORKS_WITH_OVERWRITTEN_EXEC)
 	  ) {
 	    var nativeRegExpMethod = /./[SYMBOL];
@@ -2411,7 +2108,7 @@
 	        return { done: true, value: nativeMethod.call(str, regexp, arg2) };
 	      }
 	      return { done: false };
-	    }, { REPLACE_KEEPS_$0: REPLACE_KEEPS_$0 });
+	    });
 	    var stringMethod = methods[0];
 	    var regexMethod = methods[1];
 
@@ -2424,9 +2121,8 @@
 	      // 21.2.5.9 RegExp.prototype[@@search](string)
 	      : function (string) { return regexMethod.call(string, this); }
 	    );
+	    if (sham) hide(RegExp.prototype[SYMBOL], 'sham', true);
 	  }
-
-	  if (sham) createNonEnumerableProperty(RegExp.prototype[SYMBOL], 'sham', true);
 	};
 
 	var charAt$1 = stringMultibyte.charAt;
@@ -2467,7 +2163,7 @@
 	};
 
 	// @@replace logic
-	fixRegexpWellKnownSymbolLogic('replace', 2, function (REPLACE, nativeReplace, maybeCallNative, reason) {
+	fixRegexpWellKnownSymbolLogic('replace', 2, function (REPLACE, nativeReplace, maybeCallNative) {
 	  return [
 	    // `String.prototype.replace` method
 	    // https://tc39.github.io/ecma262/#sec-string.prototype.replace
@@ -2481,10 +2177,8 @@
 	    // `RegExp.prototype[@@replace]` method
 	    // https://tc39.github.io/ecma262/#sec-regexp.prototype-@@replace
 	    function (regexp, replaceValue) {
-	      if (reason.REPLACE_KEEPS_$0 || (typeof replaceValue === 'string' && replaceValue.indexOf('$0') === -1)) {
-	        var res = maybeCallNative(nativeReplace, regexp, this, replaceValue);
-	        if (res.done) return res.value;
-	      }
+	      var res = maybeCallNative(nativeReplace, regexp, this, replaceValue);
+	      if (res.done) return res.value;
 
 	      var rx = anObject(regexp);
 	      var S = String(this);
@@ -2610,14 +2304,14 @@
 	  ];
 	});
 
-	var SPECIES$5 = wellKnownSymbol('species');
+	var SPECIES$4 = wellKnownSymbol('species');
 
 	// `SpeciesConstructor` abstract operation
 	// https://tc39.github.io/ecma262/#sec-speciesconstructor
 	var speciesConstructor = function (O, defaultConstructor) {
 	  var C = anObject(O).constructor;
 	  var S;
-	  return C === undefined || (S = anObject(C)[SPECIES$5]) == undefined ? defaultConstructor : aFunction$1(S);
+	  return C === undefined || (S = anObject(C)[SPECIES$4]) == undefined ? defaultConstructor : aFunction$1(S);
 	};
 
 	var arrayPush = [].push;
@@ -2814,7 +2508,7 @@
 	  var CollectionPrototype = Collection && Collection.prototype;
 	  // some Chrome versions have non-configurable methods on DOMTokenList
 	  if (CollectionPrototype && CollectionPrototype.forEach !== arrayForEach) try {
-	    createNonEnumerableProperty(CollectionPrototype, 'forEach', arrayForEach);
+	    hide(CollectionPrototype, 'forEach', arrayForEach);
 	  } catch (error) {
 	    CollectionPrototype.forEach = arrayForEach;
 	  }
@@ -2830,17 +2524,15 @@
 	  if (CollectionPrototype$1) {
 	    // some Chrome versions have non-configurable methods on DOMTokenList
 	    if (CollectionPrototype$1[ITERATOR$2] !== ArrayValues) try {
-	      createNonEnumerableProperty(CollectionPrototype$1, ITERATOR$2, ArrayValues);
+	      hide(CollectionPrototype$1, ITERATOR$2, ArrayValues);
 	    } catch (error) {
 	      CollectionPrototype$1[ITERATOR$2] = ArrayValues;
 	    }
-	    if (!CollectionPrototype$1[TO_STRING_TAG$3]) {
-	      createNonEnumerableProperty(CollectionPrototype$1, TO_STRING_TAG$3, COLLECTION_NAME$1);
-	    }
+	    if (!CollectionPrototype$1[TO_STRING_TAG$3]) hide(CollectionPrototype$1, TO_STRING_TAG$3, COLLECTION_NAME$1);
 	    if (domIterables[COLLECTION_NAME$1]) for (var METHOD_NAME in es_array_iterator) {
 	      // some Chrome versions have non-configurable methods on DOMTokenList
 	      if (CollectionPrototype$1[METHOD_NAME] !== es_array_iterator[METHOD_NAME]) try {
-	        createNonEnumerableProperty(CollectionPrototype$1, METHOD_NAME, es_array_iterator[METHOD_NAME]);
+	        hide(CollectionPrototype$1, METHOD_NAME, es_array_iterator[METHOD_NAME]);
 	      } catch (error) {
 	        CollectionPrototype$1[METHOD_NAME] = es_array_iterator[METHOD_NAME];
 	      }
@@ -2909,10 +2601,6 @@
 	}
 
 	function _iterableToArrayLimit(arr, i) {
-	  if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
-	    return;
-	  }
-
 	  var _arr = [];
 	  var _n = true;
 	  var _d = false;
@@ -2946,7 +2634,7 @@
 	  throw new TypeError("Invalid attempt to destructure non-iterable instance");
 	}
 
-	var VERSION = '1.18.0';
+	var VERSION = '1.15.4';
 	var bootstrapVersion = 4;
 
 	try {
@@ -2955,16 +2643,6 @@
 
 	  if (rawVersion !== undefined) {
 	    bootstrapVersion = parseInt(rawVersion, 10);
-	  }
-	} catch (e) {// ignore
-	}
-
-	try {
-	  // eslint-disable-next-line no-undef
-	  var _rawVersion = bootstrap.Tooltip.VERSION;
-
-	  if (_rawVersion !== undefined) {
-	    bootstrapVersion = parseInt(_rawVersion, 10);
 	  }
 	} catch (e) {// ignore
 	}
@@ -2992,7 +2670,6 @@
 	      buttonsDropdown: 'btn-group',
 	      pull: 'pull',
 	      inputGroup: 'input-group',
-	      inputPrefix: 'input-',
 	      input: 'form-control',
 	      paginationDropdown: 'btn-group dropdown',
 	      dropup: 'dropup',
@@ -3002,8 +2679,8 @@
 	    },
 	    html: {
 	      toolbarDropdown: ['<ul class="dropdown-menu" role="menu">', '</ul>'],
-	      toolbarDropdownItem: '<li class="dropdown-item-marker" role="menuitem"><label>%s</label></li>',
-	      toolbarDropdownSeparator: '<li class="divider"></li>',
+	      toolbarDropdownItem: '<li role="menuitem"><label>%s</label></li>',
+	      toolbarDropdownSeperator: '<li class="divider"></li>',
 	      pageDropdown: ['<ul class="dropdown-menu" role="menu">', '</ul>'],
 	      pageDropdownItem: '<li role="menuitem" class="%s"><a href="#">%s</a></li>',
 	      dropdownCaret: '<span class="caret"></span>',
@@ -3038,7 +2715,6 @@
 	      buttonsDropdown: 'btn-group',
 	      pull: 'float',
 	      inputGroup: 'btn-group',
-	      inputPrefix: 'form-control-',
 	      input: 'form-control',
 	      paginationDropdown: 'btn-group dropdown',
 	      dropup: 'dropup',
@@ -3048,56 +2724,10 @@
 	    },
 	    html: {
 	      toolbarDropdown: ['<div class="dropdown-menu dropdown-menu-right">', '</div>'],
-	      toolbarDropdownItem: '<label class="dropdown-item dropdown-item-marker">%s</label>',
+	      toolbarDropdownItem: '<label class="dropdown-item">%s</label>',
 	      pageDropdown: ['<div class="dropdown-menu">', '</div>'],
 	      pageDropdownItem: '<a class="dropdown-item %s" href="#">%s</a>',
-	      toolbarDropdownSeparator: '<div class="dropdown-divider"></div>',
-	      dropdownCaret: '<span class="caret"></span>',
-	      pagination: ['<ul class="pagination%s">', '</ul>'],
-	      paginationItem: '<li class="page-item%s"><a class="page-link" aria-label="%s" href="javascript:void(0)">%s</a></li>',
-	      icon: '<i class="%s %s"></i>',
-	      inputGroup: '<div class="input-group">%s<div class="input-group-append">%s</div></div>',
-	      searchInput: '<input class="%s%s" type="text" placeholder="%s">',
-	      searchButton: '<button class="%s" type="button" name="search" title="%s">%s %s</button>',
-	      searchClearButton: '<button class="%s" type="button" name="clearSearch" title="%s">%s %s</button>'
-	    }
-	  },
-	  5: {
-	    iconsPrefix: 'fa',
-	    icons: {
-	      paginationSwitchDown: 'fa-caret-square-down',
-	      paginationSwitchUp: 'fa-caret-square-up',
-	      refresh: 'fa-sync',
-	      toggleOff: 'fa-toggle-off',
-	      toggleOn: 'fa-toggle-on',
-	      columns: 'fa-th-list',
-	      detailOpen: 'fa-plus',
-	      detailClose: 'fa-minus',
-	      fullscreen: 'fa-arrows-alt',
-	      search: 'fa-search',
-	      clearSearch: 'fa-trash'
-	    },
-	    classes: {
-	      buttonsPrefix: 'btn',
-	      buttons: 'secondary',
-	      buttonsGroup: 'btn-group',
-	      buttonsDropdown: 'btn-group',
-	      pull: 'float',
-	      inputGroup: 'btn-group',
-	      inputPrefix: 'form-control-',
-	      input: 'form-control',
-	      paginationDropdown: 'btn-group dropdown',
-	      dropup: 'dropup',
-	      dropdownActive: 'active',
-	      paginationActive: 'active',
-	      buttonActive: 'active'
-	    },
-	    html: {
-	      toolbarDropdown: ['<div class="dropdown-menu dropdown-menu-right">', '</div>'],
-	      toolbarDropdownItem: '<label class="dropdown-item dropdown-item-marker">%s</label>',
-	      pageDropdown: ['<div class="dropdown-menu">', '</div>'],
-	      pageDropdownItem: '<a class="dropdown-item %s" href="#">%s</a>',
-	      toolbarDropdownSeparator: '<div class="dropdown-divider"></div>',
+	      toolbarDropdownSeperator: '<div class="dropdown-divider"></div>',
 	      dropdownCaret: '<span class="caret"></span>',
 	      pagination: ['<ul class="pagination%s">', '</ul>'],
 	      paginationItem: '<li class="page-item%s"><a class="page-link" aria-label="%s" href="javascript:void(0)">%s</a></li>',
@@ -3112,11 +2742,7 @@
 	var DEFAULTS = {
 	  height: undefined,
 	  classes: 'table table-bordered table-hover',
-	  buttons: {},
 	  theadClasses: '',
-	  headerStyle: function headerStyle(column) {
-	    return {};
-	  },
 	  rowStyle: function rowStyle(row, index) {
 	    return {};
 	  },
@@ -3131,11 +2757,9 @@
 	  sortClass: undefined,
 	  silentSort: true,
 	  sortName: undefined,
-	  sortOrder: undefined,
-	  sortReset: false,
+	  sortOrder: 'asc',
 	  sortStable: false,
 	  rememberOrder: false,
-	  serverSort: true,
 	  customSort: undefined,
 	  columns: [[]],
 	  data: [],
@@ -3157,9 +2781,8 @@
 	  totalField: 'total',
 	  totalNotFilteredField: 'totalNotFiltered',
 	  dataField: 'rows',
-	  footerField: 'footer',
 	  pagination: false,
-	  paginationParts: ['pageInfo', 'pageSize', 'pageList'],
+	  onlyInfoPagination: false,
 	  showExtendedPagination: false,
 	  paginationLoop: true,
 	  sidePagination: 'client',
@@ -3184,10 +2807,8 @@
 	  paginationUseIntermediate: false,
 	  // Calculate intermediate pages for quick access
 	  search: false,
-	  searchHighlight: false,
 	  searchOnEnterKey: false,
 	  strictSearch: false,
-	  searchSelector: false,
 	  visibleSearch: false,
 	  showButtonIcons: true,
 	  showButtonText: false,
@@ -3200,13 +2821,11 @@
 	  customSearch: undefined,
 	  showHeader: true,
 	  showFooter: false,
-	  footerStyle: function footerStyle(column) {
+	  footerStyle: function footerStyle(row, index) {
 	    return {};
 	  },
-	  searchAccentNeutralise: false,
 	  showColumns: false,
 	  showColumnsToggleAll: false,
-	  showColumnsSearch: false,
 	  minimumCountColumns: 1,
 	  showPaginationSwitch: false,
 	  showRefresh: false,
@@ -3233,7 +2852,6 @@
 	  detailView: false,
 	  detailViewIcon: true,
 	  detailViewByClick: false,
-	  detailViewAlign: 'left',
 	  detailFormatter: function detailFormatter(index, row) {
 	    return '';
 	  },
@@ -3244,17 +2862,13 @@
 	  toolbarAlign: 'left',
 	  buttonsToolbar: undefined,
 	  buttonsAlign: 'right',
-	  buttonsOrder: ['paginationSwitch', 'refresh', 'toggle', 'fullscreen', 'columns'],
 	  buttonsPrefix: CONSTANTS.classes.buttonsPrefix,
 	  buttonsClass: CONSTANTS.classes.buttons,
 	  icons: CONSTANTS.icons,
+	  html: CONSTANTS.html,
 	  iconSize: undefined,
 	  iconsPrefix: CONSTANTS.iconsPrefix,
 	  // glyphicon or fa(font-awesome)
-	  loadingFontSize: 'auto',
-	  loadingTemplate: function loadingTemplate(loadingMessage) {
-	    return "<span class=\"loading-wrap\">\n      <span class=\"loading-text\">".concat(loadingMessage, "</span>\n      <span class=\"animation-wrap\"><span class=\"animation-dot\"></span></span>\n      </span>\n    ");
-	  },
 	  onAll: function onAll(name, args) {
 	    return false;
 	  },
@@ -3445,11 +3059,10 @@
 	  footerFormatter: undefined,
 	  detailFormatter: undefined,
 	  searchFormatter: true,
-	  searchHighlightFormatter: false,
 	  escape: false,
 	  events: undefined
 	};
-	var METHODS = ['getOptions', 'refreshOptions', 'getData', 'getSelections', 'load', 'append', 'prepend', 'remove', 'removeAll', 'insertRow', 'updateRow', 'getRowByUniqueId', 'updateByUniqueId', 'removeByUniqueId', 'updateCell', 'updateCellByUniqueId', 'showRow', 'hideRow', 'getHiddenRows', 'showColumn', 'hideColumn', 'getVisibleColumns', 'getHiddenColumns', 'showAllColumns', 'hideAllColumns', 'mergeCells', 'checkAll', 'uncheckAll', 'checkInvert', 'check', 'uncheck', 'checkBy', 'uncheckBy', 'refresh', 'destroy', 'resetView', 'showLoading', 'hideLoading', 'togglePagination', 'toggleFullscreen', 'toggleView', 'resetSearch', 'filterBy', 'scrollTo', 'getScrollPosition', 'selectPage', 'prevPage', 'nextPage', 'toggleDetailView', 'expandRow', 'collapseRow', 'expandRowByUniqueId', 'collapseRowByUniqueId', 'expandAllRows', 'collapseAllRows', 'updateColumnTitle', 'updateFormatText'];
+	var METHODS = ['getOptions', 'refreshOptions', 'getData', 'getSelections', 'getAllSelections', 'load', 'append', 'prepend', 'remove', 'removeAll', 'insertRow', 'updateRow', 'getRowByUniqueId', 'updateByUniqueId', 'removeByUniqueId', 'updateCell', 'updateCellByUniqueId', 'showRow', 'hideRow', 'getHiddenRows', 'showColumn', 'hideColumn', 'getVisibleColumns', 'getHiddenColumns', 'showAllColumns', 'hideAllColumns', 'mergeCells', 'checkAll', 'uncheckAll', 'checkInvert', 'check', 'uncheck', 'checkBy', 'uncheckBy', 'refresh', 'destroy', 'resetView', 'resetWidth', 'showLoading', 'hideLoading', 'togglePagination', 'toggleFullscreen', 'toggleView', 'resetSearch', 'filterBy', 'scrollTo', 'getScrollPosition', 'selectPage', 'prevPage', 'nextPage', 'toggleDetailView', 'expandRow', 'collapseRow', 'expandAllRows', 'collapseAllRows', 'updateColumnTitle', 'updateFormatText'];
 	var EVENTS = {
 	  'all.bs.table': 'onAll',
 	  'click-row.bs.table': 'onClickRow',
@@ -3495,6 +3108,53 @@
 	  }
 	};
 
+	// `FlattenIntoArray` abstract operation
+	// https://tc39.github.io/proposal-flatMap/#sec-FlattenIntoArray
+	var flattenIntoArray = function (target, original, source, sourceLen, start, depth, mapper, thisArg) {
+	  var targetIndex = start;
+	  var sourceIndex = 0;
+	  var mapFn = mapper ? bindContext(mapper, thisArg, 3) : false;
+	  var element;
+
+	  while (sourceIndex < sourceLen) {
+	    if (sourceIndex in source) {
+	      element = mapFn ? mapFn(source[sourceIndex], sourceIndex, original) : source[sourceIndex];
+
+	      if (depth > 0 && isArray(element)) {
+	        targetIndex = flattenIntoArray(target, original, element, toLength(element.length), targetIndex, depth - 1) - 1;
+	      } else {
+	        if (targetIndex >= 0x1FFFFFFFFFFFFF) throw TypeError('Exceed the acceptable array length');
+	        target[targetIndex] = element;
+	      }
+
+	      targetIndex++;
+	    }
+	    sourceIndex++;
+	  }
+	  return targetIndex;
+	};
+
+	var flattenIntoArray_1 = flattenIntoArray;
+
+	// `Array.prototype.flat` method
+	// https://github.com/tc39/proposal-flatMap
+	_export({ target: 'Array', proto: true }, {
+	  flat: function flat(/* depthArg = 1 */) {
+	    var depthArg = arguments.length ? arguments[0] : undefined;
+	    var O = toObject(this);
+	    var sourceLen = toLength(O.length);
+	    var A = arraySpeciesCreate(O, 0);
+	    A.length = flattenIntoArray_1(A, O, O, sourceLen, 0, depthArg === undefined ? 1 : toInteger(depthArg));
+	    return A;
+	  }
+	});
+
+	// this method was added to unscopables after implementation
+	// in popular engines, so it's moved to a separate module
+
+
+	addToUnscopables('flat');
+
 	var FAILS_ON_PRIMITIVES = fails(function () { objectKeys(1); });
 
 	// `Object.keys` method
@@ -3505,78 +3165,7 @@
 	  }
 	});
 
-	var getOwnPropertyDescriptor$3 = objectGetOwnPropertyDescriptor.f;
-
-
-
-
-
-
-	var nativeEndsWith = ''.endsWith;
-	var min$5 = Math.min;
-
-	var CORRECT_IS_REGEXP_LOGIC = correctIsRegexpLogic('endsWith');
-	// https://github.com/zloirock/core-js/pull/702
-	var MDN_POLYFILL_BUG =  !CORRECT_IS_REGEXP_LOGIC && !!function () {
-	  var descriptor = getOwnPropertyDescriptor$3(String.prototype, 'endsWith');
-	  return descriptor && !descriptor.writable;
-	}();
-
-	// `String.prototype.endsWith` method
-	// https://tc39.github.io/ecma262/#sec-string.prototype.endswith
-	_export({ target: 'String', proto: true, forced: !MDN_POLYFILL_BUG && !CORRECT_IS_REGEXP_LOGIC }, {
-	  endsWith: function endsWith(searchString /* , endPosition = @length */) {
-	    var that = String(requireObjectCoercible(this));
-	    notARegexp(searchString);
-	    var endPosition = arguments.length > 1 ? arguments[1] : undefined;
-	    var len = toLength(that.length);
-	    var end = endPosition === undefined ? len : min$5(toLength(endPosition), len);
-	    var search = String(searchString);
-	    return nativeEndsWith
-	      ? nativeEndsWith.call(that, search, end)
-	      : that.slice(end - search.length, end) === search;
-	  }
-	});
-
-	var getOwnPropertyDescriptor$4 = objectGetOwnPropertyDescriptor.f;
-
-
-
-
-
-
-	var nativeStartsWith = ''.startsWith;
-	var min$6 = Math.min;
-
-	var CORRECT_IS_REGEXP_LOGIC$1 = correctIsRegexpLogic('startsWith');
-	// https://github.com/zloirock/core-js/pull/702
-	var MDN_POLYFILL_BUG$1 =  !CORRECT_IS_REGEXP_LOGIC$1 && !!function () {
-	  var descriptor = getOwnPropertyDescriptor$4(String.prototype, 'startsWith');
-	  return descriptor && !descriptor.writable;
-	}();
-
-	// `String.prototype.startsWith` method
-	// https://tc39.github.io/ecma262/#sec-string.prototype.startswith
-	_export({ target: 'String', proto: true, forced: !MDN_POLYFILL_BUG$1 && !CORRECT_IS_REGEXP_LOGIC$1 }, {
-	  startsWith: function startsWith(searchString /* , position = 0 */) {
-	    var that = String(requireObjectCoercible(this));
-	    notARegexp(searchString);
-	    var index = toLength(min$6(arguments.length > 1 ? arguments[1] : undefined, that.length));
-	    var search = String(searchString);
-	    return nativeStartsWith
-	      ? nativeStartsWith.call(that, search, index)
-	      : that.slice(index, index + search.length) === search;
-	  }
-	});
-
 	var Utils = {
-	  getSearchInput: function getSearchInput(that) {
-	    if (typeof that.options.searchSelector === 'string') {
-	      return $(that.options.searchSelector);
-	    }
-
-	    return that.$toolbar.find('.search input');
-	  },
 	  // it only does '%s', and return '' when arguments are undefined
 	  sprintf: function sprintf(_str) {
 	    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -3598,9 +3187,6 @@
 	    });
 
 	    return flag ? str : '';
-	  },
-	  isObject: function isObject(val) {
-	    return val instanceof Object && !Array.isArray(val);
 	  },
 	  isEmptyObject: function isEmptyObject() {
 	    var obj = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -3699,10 +3285,12 @@
 	            r.colspanGroup = r.colspan;
 	          }
 
-	          for (var _j = 0; _j < rowspan; _j++) {
-	            for (var k = 0; k < colspan; k++) {
-	              flag[_i + _j][index + k] = true;
-	            }
+	          for (var k = 0; k < rowspan; k++) {
+	            flag[_i + k][index] = true;
+	          }
+
+	          for (var _k = 0; _k < colspan; _k++) {
+	            flag[_i][index + _k] = true;
 	          }
 	        }
 	      } catch (err) {
@@ -3721,18 +3309,8 @@
 	      }
 	    }
 	  },
-	  normalizeAccent: function normalizeAccent(value) {
-	    if (typeof value !== 'string') {
-	      return value;
-	    }
-
-	    return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-	  },
 	  updateFieldGroup: function updateFieldGroup(columns) {
-	    var _ref;
-
-	    var allColumns = (_ref = []).concat.apply(_ref, _toConsumableArray(columns));
-
+	    var allColumns = columns.flat();
 	    var _iteratorNormalCompletion4 = true;
 	    var _didIteratorError4 = false;
 	    var _iteratorError4 = undefined;
@@ -3819,9 +3397,7 @@
 
 	    return this.cachedWidth;
 	  },
-	  calculateObjectValue: function calculateObjectValue(self, name) {
-	    var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-	    var defaultValue = arguments.length > 3 ? arguments[3] : undefined;
+	  calculateObjectValue: function calculateObjectValue(self, name, args, defaultValue) {
 	    var func = name;
 
 	    if (typeof name === 'string') {
@@ -3893,13 +3469,6 @@
 	  escapeHTML: function escapeHTML(text) {
 	    if (typeof text === 'string') {
 	      return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;').replace(/`/g, '&#x60;');
-	    }
-
-	    return text;
-	  },
-	  unescapeHTML: function unescapeHTML(text) {
-	    if (typeof text === 'string') {
-	      return text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#039;/g, '\'').replace(/&#x60;/g, '`');
 	    }
 
 	    return text;
@@ -3993,17 +3562,14 @@
 	    var data = [];
 	    var m = [];
 	    $els.each(function (y, el) {
-	      var $el = $(el);
 	      var row = {}; // save tr's id, class and data-* attributes
 
-	      row._id = $el.attr('id');
-	      row._class = $el.attr('class');
-	      row._data = _this.getRealDataAttr($el.data());
-	      row._style = $el.attr('style');
-	      $el.find('>td,>th').each(function (_x, el) {
-	        var $el = $(el);
-	        var cspan = +$el.attr('colspan') || 1;
-	        var rspan = +$el.attr('rowspan') || 1;
+	      row._id = $(el).attr('id');
+	      row._class = $(el).attr('class');
+	      row._data = _this.getRealDataAttr($(el).data());
+	      $(el).find('>td,>th').each(function (_x, el) {
+	        var cspan = +$(el).attr('colspan') || 1;
+	        var rspan = +$(el).attr('rowspan') || 1;
 	        var x = _x; // skip already occupied cells in current row
 
 	        for (; m[y] && m[y][x]; x++) {} // ignore
@@ -4022,21 +3588,20 @@
 	        }
 
 	        var field = columns[x].field;
-	        row[field] = $el.html().trim(); // save td's id, class and data-* attributes
+	        row[field] = $(el).html().trim(); // save td's id, class and data-* attributes
 
-	        row["_".concat(field, "_id")] = $el.attr('id');
-	        row["_".concat(field, "_class")] = $el.attr('class');
-	        row["_".concat(field, "_rowspan")] = $el.attr('rowspan');
-	        row["_".concat(field, "_colspan")] = $el.attr('colspan');
-	        row["_".concat(field, "_title")] = $el.attr('title');
-	        row["_".concat(field, "_data")] = _this.getRealDataAttr($el.data());
-	        row["_".concat(field, "_style")] = $el.attr('style');
+	        row["_".concat(field, "_id")] = $(el).attr('id');
+	        row["_".concat(field, "_class")] = $(el).attr('class');
+	        row["_".concat(field, "_rowspan")] = $(el).attr('rowspan');
+	        row["_".concat(field, "_colspan")] = $(el).attr('colspan');
+	        row["_".concat(field, "_title")] = $(el).attr('title');
+	        row["_".concat(field, "_data")] = _this.getRealDataAttr($(el).data());
 	      });
 	      data.push(row);
 	    });
 	    return data;
 	  },
-	  sort: function sort(a, b, order, sortStable, aPosition, bPosition) {
+	  sort: function sort(a, b, order, sortStable) {
 	    if (a === undefined || a === null) {
 	      a = '';
 	    }
@@ -4046,8 +3611,8 @@
 	    }
 
 	    if (sortStable && a === b) {
-	      a = aPosition;
-	      b = bPosition;
+	      a = a._position;
+	      b = b._position;
 	    } // If both values are numeric, do a numeric comparison
 
 
@@ -4081,58 +3646,6 @@
 	    }
 
 	    return order;
-	  },
-	  getEventName: function getEventName(eventPrefix) {
-	    var id = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-	    id = id || "".concat(+new Date()).concat(~~(Math.random() * 1000000));
-	    return "".concat(eventPrefix, "-").concat(id);
-	  },
-	  hasDetailViewIcon: function hasDetailViewIcon(options) {
-	    return options.detailView && options.detailViewIcon && !options.cardView;
-	  },
-	  getDetailViewIndexOffset: function getDetailViewIndexOffset(options) {
-	    return this.hasDetailViewIcon(options) && options.detailViewAlign !== 'right' ? 1 : 0;
-	  },
-	  checkAutoMergeCells: function checkAutoMergeCells(data) {
-	    var _iteratorNormalCompletion9 = true;
-	    var _didIteratorError9 = false;
-	    var _iteratorError9 = undefined;
-
-	    try {
-	      for (var _iterator9 = data[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-	        var row = _step9.value;
-
-	        for (var _i4 = 0, _Object$keys = Object.keys(row); _i4 < _Object$keys.length; _i4++) {
-	          var key = _Object$keys[_i4];
-
-	          if (key.startsWith('_') && (key.endsWith('_rowspan') || key.endsWith('_colspan'))) {
-	            return true;
-	          }
-	        }
-	      }
-	    } catch (err) {
-	      _didIteratorError9 = true;
-	      _iteratorError9 = err;
-	    } finally {
-	      try {
-	        if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
-	          _iterator9.return();
-	        }
-	      } finally {
-	        if (_didIteratorError9) {
-	          throw _iteratorError9;
-	        }
-	      }
-	    }
-
-	    return false;
-	  },
-	  deepCopy: function deepCopy(arg) {
-	    if (arg === undefined) {
-	      return arg;
-	    }
-
-	    return $.extend(true, Array.isArray(arg) ? [] : {}, arg);
 	  }
 	};
 
@@ -4154,7 +3667,7 @@
 	    this.itemHeight = options.itemHeight;
 	    this.cache = {};
 	    this.scrollTop = this.scrollEl.scrollTop;
-	    this.initDOM(this.rows, options.fixedScroll);
+	    this.initDOM(this.rows);
 	    this.scrollEl.scrollTop = this.scrollTop;
 	    this.lastCluster = 0;
 
@@ -4177,14 +3690,13 @@
 
 	  _createClass(VirtualScroll, [{
 	    key: "initDOM",
-	    value: function initDOM(rows, fixedScroll) {
+	    value: function initDOM(rows) {
 	      if (typeof this.clusterHeight === 'undefined') {
-	        this.cache.scrollTop = this.scrollEl.scrollTop;
 	        this.cache.data = this.contentEl.innerHTML = rows[0] + rows[0] + rows[0];
 	        this.getRowsHeight(rows);
 	      }
 
-	      var data = this.initData(rows, this.getNum(fixedScroll));
+	      var data = this.initData(rows, this.getNum());
 	      var thisRows = data.rows.join('');
 	      var dataChanged = this.checkChanges('data', thisRows);
 	      var topOffsetChanged = this.checkChanges('top', data.topOffset);
@@ -4203,10 +3715,6 @@
 	        }
 
 	        this.contentEl.innerHTML = html.join('');
-
-	        if (fixedScroll) {
-	          this.contentEl.scrollTop = this.cache.scrollTop;
-	        }
 	      } else if (bottomOffsetChanged) {
 	        this.contentEl.lastChild.style.height = "".concat(data.bottomOffset, "px");
 	      }
@@ -4226,8 +3734,8 @@
 	    }
 	  }, {
 	    key: "getNum",
-	    value: function getNum(fixedScroll) {
-	      this.scrollTop = fixedScroll ? this.cache.scrollTop : this.scrollEl.scrollTop;
+	    value: function getNum() {
+	      this.scrollTop = this.scrollEl.scrollTop;
 	      return Math.floor(this.scrollTop / (this.clusterHeight - this.blockHeight)) || 0;
 	    }
 	  }, {
@@ -4299,6 +3807,7 @@
 	    this.$el_ = this.$el.clone();
 	    this.timeoutId_ = 0;
 	    this.timeoutFooter_ = 0;
+	    this.init();
 	  }
 
 	  _createClass(BootstrapTable, [{
@@ -4320,12 +3829,11 @@
 	  }, {
 	    key: "initConstants",
 	    value: function initConstants() {
-	      var opts = this.options;
+	      var o = this.options;
 	      this.constants = Constants.CONSTANTS;
 	      this.constants.theme = $.fn.bootstrapTable.theme;
-	      var buttonsPrefix = opts.buttonsPrefix ? "".concat(opts.buttonsPrefix, "-") : '';
-	      this.constants.buttonsClass = [opts.buttonsPrefix, buttonsPrefix + opts.buttonsClass, Utils.sprintf("".concat(buttonsPrefix, "%s"), opts.iconSize)].join(' ').trim();
-	      this.buttons = Utils.calculateObjectValue(this, opts.buttons, [], []);
+	      var buttonsPrefix = o.buttonsPrefix ? "".concat(o.buttonsPrefix, "-") : '';
+	      this.constants.buttonsClass = [o.buttonsPrefix, buttonsPrefix + o.buttonsClass, Utils.sprintf("".concat(buttonsPrefix, "%s"), o.iconSize)].join(' ').trim();
 	    }
 	  }, {
 	    key: "initLocale",
@@ -4353,8 +3861,7 @@
 	    value: function initContainer() {
 	      var topPagination = ['top', 'both'].includes(this.options.paginationVAlign) ? '<div class="fixed-table-pagination clearfix"></div>' : '';
 	      var bottomPagination = ['bottom', 'both'].includes(this.options.paginationVAlign) ? '<div class="fixed-table-pagination"></div>' : '';
-	      var loadingTemplate = Utils.calculateObjectValue(this.options, this.options.loadingTemplate, [this.options.formatLoadingMessage()]);
-	      this.$container = $("\n      <div class=\"bootstrap-table ".concat(this.constants.theme, "\">\n      <div class=\"fixed-table-toolbar\"></div>\n      ").concat(topPagination, "\n      <div class=\"fixed-table-container\">\n      <div class=\"fixed-table-header\"><table></table></div>\n      <div class=\"fixed-table-body\">\n      <div class=\"fixed-table-loading\">\n      ").concat(loadingTemplate, "\n      </div>\n      </div>\n      <div class=\"fixed-table-footer\"><table><thead><tr></tr></thead></table></div>\n      </div>\n      ").concat(bottomPagination, "\n      </div>\n    "));
+	      this.$container = $("\n      <div class=\"bootstrap-table ".concat(this.constants.theme, "\">\n      <div class=\"fixed-table-toolbar\"></div>\n      ").concat(topPagination, "\n      <div class=\"fixed-table-container\">\n      <div class=\"fixed-table-header\"><table></table></div>\n      <div class=\"fixed-table-body\">\n      <div class=\"fixed-table-loading\">\n      <span class=\"loading-wrap\">\n      <span class=\"loading-text\">").concat(this.options.formatLoadingMessage(), "</span>\n      <span class=\"animation-wrap\"><span class=\"animation-dot\"></span></span>\n      </span>\n      </div>\n      </div>\n      <div class=\"fixed-table-footer\"><table><thead><tr></tr></thead></table></div>\n      </div>\n      ").concat(bottomPagination, "\n      </div>\n    "));
 	      this.$container.insertAfter(this.$el);
 	      this.$tableContainer = this.$container.find('.fixed-table-container');
 	      this.$tableHeader = this.$container.find('.fixed-table-header');
@@ -4388,6 +3895,11 @@
 	        }
 
 	        this.$tableFooter = this.$container.find('.fixed-table-footer');
+	      } else {
+	        if (!this.$tableFooter.length) {
+	          this.$el.append('<tfoot><tr></tr></tfoot>');
+	          this.$tableFooter = this.$el.find('tfoot');
+	        }
 	      }
 	    }
 	  }, {
@@ -4396,6 +3908,7 @@
 	      var _this = this;
 
 	      var columns = [];
+	      var data = [];
 	      this.$header = this.$el.find('>thead');
 
 	      if (!this.$header.length) {
@@ -4404,35 +3917,23 @@
 	        this.$header.addClass(this.options.theadClasses);
 	      }
 
-	      this._headerTrClasses = [];
-	      this._headerTrStyles = [];
 	      this.$header.find('tr').each(function (i, el) {
-	        var $tr = $(el);
 	        var column = [];
-	        $tr.find('th').each(function (i, el) {
-	          var $th = $(el); // #2014: getFieldIndex and elsewhere assume this is string, causes issues if not
-
-	          if (typeof $th.data('field') !== 'undefined') {
-	            $th.data('field', "".concat($th.data('field')));
+	        $(el).find('th').each(function (i, el) {
+	          // #2014: getFieldIndex and elsewhere assume this is string, causes issues if not
+	          if (typeof $(el).data('field') !== 'undefined') {
+	            $(el).data('field', "".concat($(el).data('field')));
 	          }
 
 	          column.push($.extend({}, {
-	            title: $th.html(),
-	            'class': $th.attr('class'),
-	            titleTooltip: $th.attr('title'),
-	            rowspan: $th.attr('rowspan') ? +$th.attr('rowspan') : undefined,
-	            colspan: $th.attr('colspan') ? +$th.attr('colspan') : undefined
-	          }, $th.data()));
+	            title: $(el).html(),
+	            'class': $(el).attr('class'),
+	            titleTooltip: $(el).attr('title'),
+	            rowspan: $(el).attr('rowspan') ? +$(el).attr('rowspan') : undefined,
+	            colspan: $(el).attr('colspan') ? +$(el).attr('colspan') : undefined
+	          }, $(el).data()));
 	        });
 	        columns.push(column);
-
-	        if ($tr.attr('class')) {
-	          _this._headerTrClasses.push($tr.attr('class'));
-	        }
-
-	        if ($tr.attr('style')) {
-	          _this._headerTrStyles.push($tr.attr('style'));
-	        }
 	      });
 
 	      if (!Array.isArray(this.options.columns[0])) {
@@ -4457,17 +3958,14 @@
 	      }); // if options.data is setting, do not process tbody and tfoot data
 
 	      if (!this.options.data.length) {
-	        var htmlData = Utils.trToData(this.columns, this.$el.find('>tbody>tr'));
+	        this.options.data = Utils.trToData(this.columns, this.$el.find('>tbody>tr'));
 
-	        if (htmlData.length) {
-	          this.options.data = htmlData;
+	        if (data.length) {
 	          this.fromHtml = true;
 	        }
 	      }
 
-	      if (!(this.options.pagination && this.options.sidePagination !== 'server')) {
-	        this.footerData = Utils.trToData(this.columns, this.$el.find('>tfoot>tr'));
-	      }
+	      this.footerData = Utils.trToData(this.columns, this.$el.find('>tfoot>tr'));
 
 	      if (this.footerData) {
 	        this.$el.find('tfoot').html('<tr></tr>');
@@ -4500,15 +3998,10 @@
 	      };
 	      Utils.updateFieldGroup(this.options.columns);
 	      this.options.columns.forEach(function (columns, i) {
-	        html.push("<tr".concat(Utils.sprintf(' class="%s"', _this2._headerTrClasses[i]), " ").concat(Utils.sprintf(' style="%s"', _this2._headerTrStyles[i]), ">"));
-	        var detailViewTemplate = '';
+	        html.push('<tr>');
 
-	        if (i === 0 && Utils.hasDetailViewIcon(_this2.options)) {
-	          detailViewTemplate = "<th class=\"detail\" rowspan=\"".concat(_this2.options.columns.length, "\">\n          <div class=\"fht-cell\"></div>\n          </th>");
-	        }
-
-	        if (detailViewTemplate && _this2.options.detailViewAlign !== 'right') {
-	          html.push(detailViewTemplate);
+	        if (i === 0 && !_this2.options.cardView && _this2.options.detailView && _this2.options.detailViewIcon) {
+	          html.push("<th class=\"detail\" rowspan=\"".concat(_this2.options.columns.length, "\">\n          <div class=\"fht-cell\"></div>\n          </th>\n        "));
 	        }
 
 	        columns.forEach(function (column, j) {
@@ -4522,24 +4015,6 @@
 
 	          if (typeof column.fieldIndex === 'undefined' && !column.visible) {
 	            return;
-	          }
-
-	          var headerStyle = Utils.calculateObjectValue(null, _this2.options.headerStyle, [column]);
-	          var csses = [];
-	          var classes = '';
-
-	          if (headerStyle && headerStyle.css) {
-	            for (var _i = 0, _Object$entries = Object.entries(headerStyle.css); _i < _Object$entries.length; _i++) {
-	              var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
-	                  key = _Object$entries$_i[0],
-	                  value = _Object$entries$_i[1];
-
-	              csses.push("".concat(key, ": ").concat(value));
-	            }
-	          }
-
-	          if (headerStyle && headerStyle.classes) {
-	            classes = Utils.sprintf(' class="%s"', column['class'] ? [column['class'], headerStyle.classes].join(' ') : headerStyle.classes);
 	          }
 
 	          if (typeof column.fieldIndex !== 'undefined') {
@@ -4565,7 +4040,7 @@
 	            visibleColumns[column.field] = column;
 	          }
 
-	          html.push("<th".concat(Utils.sprintf(' title="%s"', column.titleTooltip)), column.checkbox || column.radio ? Utils.sprintf(' class="bs-checkbox %s"', column['class'] || '') : classes || class_, Utils.sprintf(' style="%s"', halign + style + csses.join('; ')), Utils.sprintf(' rowspan="%s"', column.rowspan), Utils.sprintf(' colspan="%s"', column.colspan), Utils.sprintf(' data-field="%s"', column.field), // If `column` is not the first element of `this.options.columns[0]`, then className 'data-not-first-th' should be added.
+	          html.push("<th".concat(Utils.sprintf(' title="%s"', column.titleTooltip)), column.checkbox || column.radio ? Utils.sprintf(' class="bs-checkbox %s"', column['class'] || '') : class_, Utils.sprintf(' style="%s"', halign + style), Utils.sprintf(' rowspan="%s"', column.rowspan), Utils.sprintf(' colspan="%s"', column.colspan), Utils.sprintf(' data-field="%s"', column.field), // If `column` is not the first element of `this.options.columns[0]`, then className 'data-not-first-th' should be added.
 	          j === 0 && i > 0 ? ' data-not-first-th' : '', '>');
 	          html.push(Utils.sprintf('<div class="th-inner %s">', _this2.options.sortable && column.sortable ? 'sortable both' : ''));
 	          var text = _this2.options.escape ? Utils.escapeHTML(column.title) : column.title;
@@ -4584,6 +4059,7 @@
 	          if (column.radio) {
 	            text = '';
 	            _this2.header.stateField = column.field;
+	            _this2.options.singleSelect = true;
 	          }
 
 	          if (!text && column.showSelectTitle) {
@@ -4596,11 +4072,6 @@
 	          html.push('</div>');
 	          html.push('</th>');
 	        });
-
-	        if (detailViewTemplate && _this2.options.detailViewAlign === 'right') {
-	          html.push(detailViewTemplate);
-	        }
-
 	        html.push('</tr>');
 	      });
 	      this.$header.html(html.join(''));
@@ -4630,7 +4101,7 @@
 	          }
 	        }
 	      });
-	      var resizeEvent = Utils.getEventName('resize.bootstrap-table', this.$el.attr('id'));
+	      var resizeEvent = "resize.bootstrap-table".concat(this.$el.attr('id') || '');
 	      $(window).off(resizeEvent);
 
 	      if (!this.options.showHeader || this.options.cardView) {
@@ -4643,15 +4114,15 @@
 	        this.$tableLoading.css('top', this.$header.outerHeight() + 1); // Assign the correct sortable arrow
 
 	        this.getCaret();
-	        $(window).on(resizeEvent, function () {
-	          return _this2.resetView();
+	        $(window).on(resizeEvent, function (e) {
+	          return _this2.resetWidth(e);
 	        });
 	      }
 
 	      this.$selectAll = this.$header.find('[name="btSelectAll"]');
-	      this.$selectAll.off('click').on('click', function (e) {
-	        e.stopPropagation();
-	        var checked = $(e.currentTarget).prop('checked');
+	      this.$selectAll.off('click').on('click', function (_ref) {
+	        var currentTarget = _ref.currentTarget;
+	        var checked = $(currentTarget).prop('checked');
 
 	        _this2[checked ? 'checkAll' : 'uncheckAll']();
 
@@ -4666,15 +4137,10 @@
 	      } else if (type === 'prepend') {
 	        this.options.data = [].concat(data).concat(this.options.data);
 	      } else {
-	        data = data || Utils.deepCopy(this.options.data);
-	        this.options.data = Array.isArray(data) ? data : data[this.options.dataField];
+	        this.options.data = data || this.options.data;
 	      }
 
-	      this.data = _toConsumableArray(this.options.data);
-
-	      if (this.options.sortReset) {
-	        this.unsortedData = _toConsumableArray(this.data);
-	      }
+	      this.data = this.options.data;
 
 	      if (this.options.sidePagination === 'server') {
 	        return;
@@ -4721,7 +4187,7 @@
 	              return order * value;
 	            }
 
-	            return Utils.sort(aa, bb, order, _this3.options.sortStable, a._position, b._position);
+	            return Utils.sort(aa, bb, order, _this3.options.sortStable);
 	          });
 	        }
 
@@ -4735,33 +4201,19 @@
 	            _this3.$el.find("tr td:nth-child(".concat(index + 1, ")")).addClass(_this3.options.sortClass);
 	          }, 250);
 	        }
-	      } else if (this.options.sortReset) {
-	        this.data = _toConsumableArray(this.unsortedData);
 	      }
 	    }
 	  }, {
 	    key: "onSort",
-	    value: function onSort(_ref) {
-	      var type = _ref.type,
-	          currentTarget = _ref.currentTarget;
+	    value: function onSort(_ref2) {
+	      var type = _ref2.type,
+	          currentTarget = _ref2.currentTarget;
 	      var $this = type === 'keypress' ? $(currentTarget) : $(currentTarget).parent();
 	      var $this_ = this.$header.find('th').eq($this.index());
 	      this.$header.add(this.$header_).find('span.order').remove();
 
 	      if (this.options.sortName === $this.data('field')) {
-	        var currentSortOrder = this.options.sortOrder;
-
-	        if (currentSortOrder === undefined) {
-	          this.options.sortOrder = 'asc';
-	        } else if (currentSortOrder === 'asc') {
-	          this.options.sortOrder = 'desc';
-	        } else if (this.options.sortOrder === 'desc') {
-	          this.options.sortOrder = this.options.sortReset ? undefined : 'asc';
-	        }
-
-	        if (this.options.sortOrder === undefined) {
-	          this.options.sortName = undefined;
-	        }
+	        this.options.sortOrder = this.options.sortOrder === 'asc' ? 'desc' : 'asc';
 	      } else {
 	        this.options.sortName = $this.data('field');
 
@@ -4777,7 +4229,7 @@
 
 	      this.getCaret();
 
-	      if (this.options.sidePagination === 'server' && this.options.serverSort) {
+	      if (this.options.sidePagination === 'server') {
 	        this.options.pageNumber = 1;
 	        this.initServer(this.options.silentSort);
 	        return;
@@ -4791,203 +4243,72 @@
 	    value: function initToolbar() {
 	      var _this4 = this;
 
-	      var opts = this.options;
+	      var o = this.options;
 	      var html = [];
 	      var timeoutId = 0;
 	      var $keepOpen;
+	      var $search;
 	      var switchableCount = 0;
 
 	      if (this.$toolbar.find('.bs-bars').children().length) {
-	        $('body').append($(opts.toolbar));
+	        $('body').append($(o.toolbar));
 	      }
 
 	      this.$toolbar.html('');
 
-	      if (typeof opts.toolbar === 'string' || _typeof(opts.toolbar) === 'object') {
-	        $(Utils.sprintf('<div class="bs-bars %s-%s"></div>', this.constants.classes.pull, opts.toolbarAlign)).appendTo(this.$toolbar).append($(opts.toolbar));
+	      if (typeof o.toolbar === 'string' || _typeof(o.toolbar) === 'object') {
+	        $(Utils.sprintf('<div class="bs-bars %s-%s"></div>', this.constants.classes.pull, o.toolbarAlign)).appendTo(this.$toolbar).append($(o.toolbar));
 	      } // showColumns, showToggle, showRefresh
 
 
-	      html = ["<div class=\"".concat(['columns', "columns-".concat(opts.buttonsAlign), this.constants.classes.buttonsGroup, "".concat(this.constants.classes.pull, "-").concat(opts.buttonsAlign)].join(' '), "\">")];
+	      html = ["<div class=\"".concat(['columns', "columns-".concat(o.buttonsAlign), this.constants.classes.buttonsGroup, "".concat(this.constants.classes.pull, "-").concat(o.buttonsAlign)].join(' '), "\">")];
 
-	      if (typeof opts.icons === 'string') {
-	        opts.icons = Utils.calculateObjectValue(null, opts.icons);
+	      if (typeof o.icons === 'string') {
+	        o.icons = Utils.calculateObjectValue(null, o.icons);
 	      }
 
-	      if (typeof opts.buttonsOrder === 'string') {
-	        opts.buttonsOrder = opts.buttonsOrder.replace(/\[|\]| |'/g, '').toLowerCase().split(',');
+	      if (o.showPaginationSwitch) {
+	        html.push("<button class=\"".concat(this.constants.buttonsClass, "\" type=\"button\" name=\"paginationSwitch\"\n        aria-label=\"Pagination Switch\" title=\"").concat(o.formatPaginationSwitch(), "\">\n        ").concat(o.showButtonIcons ? Utils.sprintf(this.constants.html.icon, o.iconsPrefix, o.icons.paginationSwitchDown) : '', "\n        ").concat(o.showButtonText ? o.formatPaginationSwitchUp() : '', "\n        </button>"));
 	      }
 
-	      this.buttons = Object.assign(this.buttons, {
-	        paginationSwitch: {
-	          text: opts.pagination ? opts.formatPaginationSwitchUp() : opts.formatPaginationSwitchDown(),
-	          icon: opts.pagination ? opts.icons.paginationSwitchDown : opts.icons.paginationSwitchUp,
-	          render: false,
-	          event: this.togglePagination,
-	          attributes: {
-	            'aria-label': opts.formatPaginationSwitch(),
-	            title: opts.formatPaginationSwitch()
-	          }
-	        },
-	        refresh: {
-	          text: opts.formatRefresh(),
-	          icon: opts.icons.refresh,
-	          render: false,
-	          event: this.refresh,
-	          attributes: {
-	            'aria-label': opts.formatRefresh(),
-	            title: opts.formatRefresh()
-	          }
-	        },
-	        toggle: {
-	          text: opts.formatToggle(),
-	          icon: opts.icons.toggleOff,
-	          render: false,
-	          event: this.toggleView,
-	          attributes: {
-	            'aria-label': opts.formatToggleOn(),
-	            title: opts.formatToggleOn()
-	          }
-	        },
-	        fullscreen: {
-	          text: opts.formatFullscreen(),
-	          icon: opts.icons.fullscreen,
-	          render: false,
-	          event: this.toggleFullscreen,
-	          attributes: {
-	            'aria-label': opts.formatFullscreen(),
-	            title: opts.formatFullscreen()
-	          }
-	        },
-	        columns: {
-	          render: false,
-	          html: function html() {
-	            var html = [];
-	            html.push("<div class=\"keep-open ".concat(_this4.constants.classes.buttonsDropdown, "\" title=\"").concat(opts.formatColumns(), "\">\n            <button class=\"").concat(_this4.constants.buttonsClass, " dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\"\n            aria-label=\"Columns\" title=\"").concat(opts.formatColumns(), "\">\n            ").concat(opts.showButtonIcons ? Utils.sprintf(_this4.constants.html.icon, opts.iconsPrefix, opts.icons.columns) : '', "\n            ").concat(opts.showButtonText ? opts.formatColumns() : '', "\n            ").concat(_this4.constants.html.dropdownCaret, "\n            </button>\n            ").concat(_this4.constants.html.toolbarDropdown[0]));
+	      if (o.showRefresh) {
+	        html.push("<button class=\"".concat(this.constants.buttonsClass, "\" type=\"button\" name=\"refresh\"\n        aria-label=\"Refresh\" title=\"").concat(o.formatRefresh(), "\">\n        ").concat(o.showButtonIcons ? Utils.sprintf(this.constants.html.icon, o.iconsPrefix, o.icons.refresh) : '', "\n        ").concat(o.showButtonText ? o.formatRefresh() : '', "\n        </button>"));
+	      }
 
-	            if (opts.showColumnsSearch) {
-	              html.push(Utils.sprintf(_this4.constants.html.toolbarDropdownItem, Utils.sprintf('<input type="text" class="%s" name="columnsSearch" placeholder="%s" autocomplete="off">', _this4.constants.classes.input, opts.formatSearch())));
-	              html.push(_this4.constants.html.toolbarDropdownSeparator);
-	            }
+	      if (o.showToggle) {
+	        html.push("<button class=\"".concat(this.constants.buttonsClass, "\" type=\"button\" name=\"toggle\"\n        aria-label=\"Toggle\" title=\"").concat(o.formatToggle(), "\">\n        ").concat(o.showButtonIcons ? Utils.sprintf(this.constants.html.icon, o.iconsPrefix, o.icons.toggleOff) : '', "\n        ").concat(o.showButtonText ? o.formatToggleOn() : '', "\n        </button>"));
+	      }
 
-	            if (opts.showColumnsToggleAll) {
-	              var allFieldsVisible = _this4.getVisibleColumns().length === _this4.columns.filter(function (column) {
-	                return !_this4.isSelectionColumn(column);
-	              }).length;
+	      if (o.showFullscreen) {
+	        html.push("<button class=\"".concat(this.constants.buttonsClass, "\" type=\"button\" name=\"fullscreen\"\n        aria-label=\"Fullscreen\" title=\"").concat(o.formatFullscreen(), "\">\n        ").concat(o.showButtonIcons ? Utils.sprintf(this.constants.html.icon, o.iconsPrefix, o.icons.fullscreen) : '', "\n        ").concat(o.showButtonText ? o.formatFullscreen() : '', "\n        </button>"));
+	      }
 
-	              html.push(Utils.sprintf(_this4.constants.html.toolbarDropdownItem, Utils.sprintf('<input type="checkbox" class="toggle-all" %s> <span>%s</span>', allFieldsVisible ? 'checked="checked"' : '', opts.formatColumnsToggleAll())));
-	              html.push(_this4.constants.html.toolbarDropdownSeparator);
-	            }
+	      if (o.showColumns) {
+	        html.push("<div class=\"keep-open ".concat(this.constants.classes.buttonsDropdown, "\" title=\"").concat(o.formatColumns(), "\">\n        <button class=\"").concat(this.constants.buttonsClass, " dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\"\n        aria-label=\"Columns\" title=\"").concat(o.formatColumns(), "\">\n        ").concat(o.showButtonIcons ? Utils.sprintf(this.constants.html.icon, o.iconsPrefix, o.icons.columns) : '', "\n        ").concat(o.showButtonText ? o.formatColumns() : '', "\n        ").concat(this.constants.html.dropdownCaret, "\n        </button>\n        ").concat(this.constants.html.toolbarDropdown[0]));
 
-	            var visibleColumns = 0;
-
-	            _this4.columns.forEach(function (column, i) {
-	              if (column.visible) {
-	                visibleColumns++;
-	              }
-	            });
-
-	            _this4.columns.forEach(function (column, i) {
-	              if (_this4.isSelectionColumn(column)) {
-	                return;
-	              }
-
-	              if (opts.cardView && !column.cardVisible) {
-	                return;
-	              }
-
-	              var checked = column.visible ? ' checked="checked"' : '';
-	              var disabled = visibleColumns <= opts.minimumCountColumns && checked ? ' disabled="disabled"' : '';
-
-	              if (column.switchable) {
-	                html.push(Utils.sprintf(_this4.constants.html.toolbarDropdownItem, Utils.sprintf('<input type="checkbox" data-field="%s" value="%s"%s%s> <span>%s</span>', column.field, i, checked, disabled, column.title)));
-	                switchableCount++;
-	              }
-	            });
-
-	            html.push(_this4.constants.html.toolbarDropdown[1], '</div>');
-	            return html.join('');
-	          }
-	        }
-	      });
-	      var buttonsHtml = {};
-
-	      for (var _i2 = 0, _Object$entries2 = Object.entries(this.buttons); _i2 < _Object$entries2.length; _i2++) {
-	        var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
-	            buttonName = _Object$entries2$_i[0],
-	            buttonConfig = _Object$entries2$_i[1];
-
-	        var buttonHtml = void 0;
-
-	        if (buttonConfig.hasOwnProperty('html')) {
-	          buttonHtml = Utils.calculateObjectValue(opts, buttonConfig.html);
-	        } else {
-	          buttonHtml = "<button class=\"".concat(this.constants.buttonsClass, "\" type=\"button\" name=\"").concat(buttonName, "\"");
-
-	          if (buttonConfig.hasOwnProperty('attributes')) {
-	            for (var _i4 = 0, _Object$entries4 = Object.entries(buttonConfig.attributes); _i4 < _Object$entries4.length; _i4++) {
-	              var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i4], 2),
-	                  attributeName = _Object$entries4$_i[0],
-	                  value = _Object$entries4$_i[1];
-
-	              buttonHtml += " ".concat(attributeName, "=\"").concat(Utils.calculateObjectValue(opts, value), "\"");
-	            }
-	          }
-
-	          buttonHtml += '>';
-
-	          if (opts.showButtonIcons && buttonConfig.hasOwnProperty('icon')) {
-	            var icon = Utils.calculateObjectValue(opts, buttonConfig.icon);
-	            buttonHtml += Utils.sprintf(this.constants.html.icon, opts.iconsPrefix, icon) + ' ';
-	          }
-
-	          if (opts.showButtonText && buttonConfig.hasOwnProperty('text')) {
-	            buttonHtml += Utils.calculateObjectValue(opts, buttonConfig.text);
-	          }
-
-	          buttonHtml += '</button>';
+	        if (o.showColumnsToggleAll) {
+	          var allFieldsVisible = this.getVisibleColumns().length === this.columns.length;
+	          html.push(Utils.sprintf(this.constants.html.toolbarDropdownItem, Utils.sprintf('<input type="checkbox" class="toggle-all" %s> <span>%s</span>', allFieldsVisible ? 'checked="checked"' : '', o.formatColumnsToggleAll())));
+	          html.push(this.constants.html.toolbarDropdownSeperator);
 	        }
 
-	        buttonsHtml[buttonName] = buttonHtml;
-	        var optionName = "show".concat(buttonName.charAt(0).toUpperCase()).concat(buttonName.substring(1));
-	        var showOption = opts[optionName];
-
-	        if ((!buttonConfig.hasOwnProperty('render') || buttonConfig.hasOwnProperty('render') && buttonConfig.render) && (showOption === undefined || showOption === true)) {
-	          opts[optionName] = true;
-	        }
-
-	        if (!opts.buttonsOrder.includes(buttonName)) {
-	          opts.buttonsOrder.push(buttonName);
-	        }
-	      } // Adding the button html to the final toolbar html when the showOption is true
-
-
-	      var _iteratorNormalCompletion = true;
-	      var _didIteratorError = false;
-	      var _iteratorError = undefined;
-
-	      try {
-	        for (var _iterator = opts.buttonsOrder[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	          var button = _step.value;
-	          var _showOption = opts["show".concat(button.charAt(0).toUpperCase()).concat(button.substring(1))];
-
-	          if (_showOption) {
-	            html.push(buttonsHtml[button]);
+	        this.columns.forEach(function (column, i) {
+	          if (column.radio || column.checkbox) {
+	            return;
 	          }
-	        }
-	      } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
-	      } finally {
-	        try {
-	          if (!_iteratorNormalCompletion && _iterator.return != null) {
-	            _iterator.return();
+
+	          if (o.cardView && !column.cardVisible) {
+	            return;
 	          }
-	        } finally {
-	          if (_didIteratorError) {
-	            throw _iteratorError;
+
+	          var checked = column.visible ? ' checked="checked"' : '';
+
+	          if (column.switchable) {
+	            html.push(Utils.sprintf(_this4.constants.html.toolbarDropdownItem, Utils.sprintf('<input type="checkbox" data-field="%s" value="%s"%s> <span>%s</span>', column.field, i, checked, column.title)));
+	            switchableCount++;
 	          }
-	        }
+	        });
+	        html.push(this.constants.html.toolbarDropdown[1], '</div>');
 	      }
 
 	      html.push('</div>'); // Fix #188: this.showToolbar is for extensions
@@ -4996,99 +4317,79 @@
 	        this.$toolbar.append(html.join(''));
 	      }
 
-	      for (var _i3 = 0, _Object$entries3 = Object.entries(this.buttons); _i3 < _Object$entries3.length; _i3++) {
-	        var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i3], 2),
-	            _buttonName = _Object$entries3$_i[0],
-	            _buttonConfig = _Object$entries3$_i[1];
-
-	        if (_buttonConfig.hasOwnProperty('event')) {
-	          if (typeof _buttonConfig.event === 'function' || typeof _buttonConfig.event === 'string') {
-	            var _ret = function () {
-	              var event = typeof _buttonConfig.event === 'string' ? window[_buttonConfig.event] : _buttonConfig.event;
-
-	              _this4.$toolbar.find("button[name=\"".concat(_buttonName, "\"]")).off('click').on('click', function () {
-	                return event.call(_this4);
-	              });
-
-	              return "continue";
-	            }();
-
-	            if (_ret === "continue") continue;
-	          }
-
-	          var _loop = function _loop() {
-	            var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i5], 2),
-	                eventType = _Object$entries5$_i[0],
-	                eventFunction = _Object$entries5$_i[1];
-
-	            var event = typeof eventFunction === 'string' ? window[eventFunction] : eventFunction;
-
-	            _this4.$toolbar.find("button[name=\"".concat(_buttonName, "\"]")).off(eventType).on(eventType, function () {
-	              return event.call(_this4);
-	            });
-	          };
-
-	          for (var _i5 = 0, _Object$entries5 = Object.entries(_buttonConfig.event); _i5 < _Object$entries5.length; _i5++) {
-	            _loop();
-	          }
-	        }
+	      if (o.showPaginationSwitch) {
+	        this.$toolbar.find('button[name="paginationSwitch"]').off('click').on('click', function () {
+	          return _this4.togglePagination();
+	        });
 	      }
 
-	      if (opts.showColumns) {
-	        $keepOpen = this.$toolbar.find('.keep-open');
-	        var $checkboxes = $keepOpen.find('input[type="checkbox"]:not(".toggle-all")');
-	        var $toggleAll = $keepOpen.find('input[type="checkbox"].toggle-all');
+	      if (o.showFullscreen) {
+	        this.$toolbar.find('button[name="fullscreen"]').off('click').on('click', function () {
+	          return _this4.toggleFullscreen();
+	        });
+	      }
 
-	        if (switchableCount <= opts.minimumCountColumns) {
+	      if (o.showRefresh) {
+	        this.$toolbar.find('button[name="refresh"]').off('click').on('click', function () {
+	          return _this4.refresh();
+	        });
+	      }
+
+	      if (o.showToggle) {
+	        this.$toolbar.find('button[name="toggle"]').off('click').on('click', function () {
+	          _this4.toggleView();
+	        });
+	      }
+
+	      if (o.showColumns) {
+	        $keepOpen = this.$toolbar.find('.keep-open');
+	        var $checkboxes = $keepOpen.find('input:not(".toggle-all")');
+	        var $toggleAll = $keepOpen.find('input.toggle-all');
+
+	        if (switchableCount <= o.minimumCountColumns) {
 	          $keepOpen.find('input').prop('disabled', true);
 	        }
 
 	        $keepOpen.find('li, label').off('click').on('click', function (e) {
 	          e.stopImmediatePropagation();
 	        });
-	        $checkboxes.off('click').on('click', function (_ref2) {
-	          var currentTarget = _ref2.currentTarget;
+	        $checkboxes.off('click').on('click', function (_ref3) {
+	          var currentTarget = _ref3.currentTarget;
 	          var $this = $(currentTarget);
 
 	          _this4._toggleColumn($this.val(), $this.prop('checked'), false);
 
 	          _this4.trigger('column-switch', $this.data('field'), $this.prop('checked'));
 
-	          $toggleAll.prop('checked', $checkboxes.filter(':checked').length === _this4.columns.filter(function (column) {
-	            return !_this4.isSelectionColumn(column);
-	          }).length);
+	          $toggleAll.prop('checked', $checkboxes.filter(':checked').length === _this4.columns.length);
 	        });
-	        $toggleAll.off('click').on('click', function (_ref3) {
-	          var currentTarget = _ref3.currentTarget;
+	        $toggleAll.off('click').on('click', function (_ref4) {
+	          var currentTarget = _ref4.currentTarget;
 
 	          _this4._toggleAllColumns($(currentTarget).prop('checked'));
 	        });
+	      } // Fix #4516: this.showSearchClearButton is for extensions
 
-	        if (opts.showColumnsSearch) {
-	          var $columnsSearch = $keepOpen.find('[name="columnsSearch"]');
-	          var $listItems = $keepOpen.find('.dropdown-item-marker');
-	          $columnsSearch.on('keyup paste change', function (_ref4) {
-	            var currentTarget = _ref4.currentTarget;
-	            var $this = $(currentTarget);
-	            var searchValue = $this.val().toLowerCase();
-	            $listItems.show();
-	            $checkboxes.each(function (i, el) {
-	              var $checkbox = $(el);
-	              var $listItem = $checkbox.parents('.dropdown-item-marker');
-	              var text = $listItem.text().toLowerCase();
 
-	              if (!text.includes(searchValue)) {
-	                $listItem.hide();
-	              }
-	            });
-	          });
+	      if (o.search || this.showSearchClearButton) {
+	        html = [];
+	        var showSearchButton = Utils.sprintf(this.constants.html.searchButton, this.constants.buttonsClass, o.formatSearch(), o.showButtonIcons ? Utils.sprintf(this.constants.html.icon, o.iconsPrefix, o.icons.search) : '', o.showButtonText ? o.formatSearch() : '');
+	        var showSearchClearButton = Utils.sprintf(this.constants.html.searchClearButton, this.constants.buttonsClass, o.formatClearSearch(), o.showButtonIcons ? Utils.sprintf(this.constants.html.icon, o.iconsPrefix, o.icons.clearSearch) : '', o.showButtonText ? o.formatClearSearch() : '');
+	        var searchInputHtml = "<input class=\"".concat(this.constants.classes.input).concat(Utils.sprintf(' input-%s', o.iconSize), " search-input\" type=\"text\" placeholder=\"").concat(o.formatSearch(), "\">");
+	        var searchInputFinalHtml = searchInputHtml;
+
+	        if (o.showSearchButton || o.showSearchClearButton) {
+	          var buttonsHtml = (o.showSearchButton ? showSearchButton : '') + (o.showSearchClearButton ? showSearchClearButton : '');
+	          searchInputFinalHtml = o.search ? Utils.sprintf(this.constants.html.inputGroup, searchInputHtml, buttonsHtml) : buttonsHtml;
 	        }
-	      }
 
-	      var handleInputEvent = function handleInputEvent($searchInput) {
-	        var eventTriggers = 'keyup drop blur mouseup';
-	        $searchInput.off(eventTriggers).on(eventTriggers, function (event) {
-	          if (opts.searchOnEnterKey && event.keyCode !== 13) {
+	        html.push(Utils.sprintf("\n        <div class=\"".concat(this.constants.classes.pull, "-").concat(o.searchAlign, " search ").concat(this.constants.classes.inputGroup, "\">\n          %s\n        </div>\n      "), searchInputFinalHtml));
+	        this.$toolbar.append(html.join(''));
+	        var $searchInput = this.$toolbar.find('.search input');
+	        $search = o.showSearchButton ? this.$toolbar.find('.search button[name=search]') : $searchInput;
+	        var eventTriggers = o.showSearchButton ? 'click' : Utils.isIEBrowser() ? 'mouseup' : 'keyup drop blur';
+	        $search.off(eventTriggers).on(eventTriggers, function (event) {
+	          if (o.searchOnEnterKey && event.keyCode !== 13) {
 	            return;
 	          }
 
@@ -5099,58 +4400,17 @@
 	          clearTimeout(timeoutId); // doesn't matter if it's 0
 
 	          timeoutId = setTimeout(function () {
-	            _this4.onSearch({
-	              currentTarget: event.currentTarget
-	            });
-	          }, opts.searchTimeOut);
+	            _this4.onSearch(o.showSearchButton ? {
+	              currentTarget: $searchInput
+	            } : event);
+	          }, o.searchTimeOut);
 	        });
-	      }; // Fix #4516: this.showSearchClearButton is for extensions
 
-
-	      if ((opts.search || this.showSearchClearButton) && typeof opts.searchSelector !== 'string') {
-	        html = [];
-	        var showSearchButton = Utils.sprintf(this.constants.html.searchButton, this.constants.buttonsClass, opts.formatSearch(), opts.showButtonIcons ? Utils.sprintf(this.constants.html.icon, opts.iconsPrefix, opts.icons.search) : '', opts.showButtonText ? opts.formatSearch() : '');
-	        var showSearchClearButton = Utils.sprintf(this.constants.html.searchClearButton, this.constants.buttonsClass, opts.formatClearSearch(), opts.showButtonIcons ? Utils.sprintf(this.constants.html.icon, opts.iconsPrefix, opts.icons.clearSearch) : '', opts.showButtonText ? opts.formatClearSearch() : '');
-	        var searchInputHtml = "<input class=\"".concat(this.constants.classes.input, "\n        ").concat(Utils.sprintf(' %s%s', this.constants.classes.inputPrefix, opts.iconSize), "\n        search-input\" type=\"search\" placeholder=\"").concat(opts.formatSearch(), "\" autocomplete=\"off\">");
-	        var searchInputFinalHtml = searchInputHtml;
-
-	        if (opts.showSearchButton || opts.showSearchClearButton) {
-	          var _buttonsHtml = (opts.showSearchButton ? showSearchButton : '') + (opts.showSearchClearButton ? showSearchClearButton : '');
-
-	          searchInputFinalHtml = opts.search ? Utils.sprintf(this.constants.html.inputGroup, searchInputHtml, _buttonsHtml) : _buttonsHtml;
-	        }
-
-	        html.push(Utils.sprintf("\n        <div class=\"".concat(this.constants.classes.pull, "-").concat(opts.searchAlign, " search ").concat(this.constants.classes.inputGroup, "\">\n          %s\n        </div>\n      "), searchInputFinalHtml));
-	        this.$toolbar.append(html.join(''));
-	        var $searchInput = Utils.getSearchInput(this);
-
-	        if (opts.showSearchButton) {
-	          this.$toolbar.find('.search button[name=search]').off('click').on('click', function (event) {
-	            clearTimeout(timeoutId); // doesn't matter if it's 0
-
-	            timeoutId = setTimeout(function () {
-	              _this4.onSearch({
-	                currentTarget: $searchInput
-	              });
-	            }, opts.searchTimeOut);
-	          });
-
-	          if (opts.searchOnEnterKey) {
-	            handleInputEvent($searchInput);
-	          }
-	        } else {
-	          handleInputEvent($searchInput);
-	        }
-
-	        if (opts.showSearchClearButton) {
+	        if (o.showSearchClearButton) {
 	          this.$toolbar.find('.search button[name=clearSearch]').click(function () {
 	            _this4.resetSearch();
 	          });
 	        }
-	      } else if (typeof opts.searchSelector === 'string') {
-	        var _$searchInput = Utils.getSearchInput(this);
-
-	        handleInputEvent(_$searchInput);
 	      }
 	    }
 	  }, {
@@ -5173,7 +4433,7 @@
 	          return;
 	        }
 
-	        if (currentTarget === Utils.getSearchInput(this)[0] || $(currentTarget).hasClass('search-input')) {
+	        if ($(currentTarget).hasClass('search-input')) {
 	          this.searchText = text;
 	          this.options.searchText = text;
 	        }
@@ -5205,15 +4465,10 @@
 	      if (this.options.sidePagination !== 'server') {
 	        if (this.options.customSearch) {
 	          this.data = Utils.calculateObjectValue(this.options, this.options.customSearch, [this.options.data, this.searchText, this.filterColumns]);
-
-	          if (this.options.sortReset) {
-	            this.unsortedData = _toConsumableArray(this.data);
-	          }
-
 	          return;
 	        }
 
-	        var s = this.searchText && (this.fromHtml ? Utils.escapeHTML(this.searchText) : this.searchText).toLowerCase();
+	        var s = this.searchText && (this.options.escape ? Utils.escapeHTML(this.searchText) : this.searchText).toLowerCase();
 	        var f = Utils.isEmptyObject(this.filterColumns) ? null : this.filterColumns; // Check filter
 
 	        if (typeof this.filterOptions.filterAlgorithm === 'function') {
@@ -5243,7 +4498,7 @@
 	            }
 
 	            return true;
-	          }) : _toConsumableArray(this.options.data);
+	          }) : this.options.data;
 	        }
 
 	        var visibleFields = this.getVisibleFields();
@@ -5261,17 +4516,13 @@
 	              value = item;
 	              var props = key.split('.');
 
-	              for (var _i6 = 0; _i6 < props.length; _i6++) {
-	                if (value[props[_i6]] !== null) {
-	                  value = value[props[_i6]];
+	              for (var _i = 0; _i < props.length; _i++) {
+	                if (value[props[_i]] !== null) {
+	                  value = value[props[_i]];
 	                }
 	              }
 	            } else {
 	              value = item[key];
-	            }
-
-	            if (_this5.options.searchAccentNeutralise) {
-	              value = Utils.normalizeAccent(value);
 	            } // Fix #142: respect searchFormatter boolean
 
 
@@ -5319,6 +4570,9 @@
 	                    case '=<l':
 	                      comparisonCheck = int >= comparisonInt;
 	                      break;
+
+	                    default:
+	                      break;
 	                  }
 	                }
 
@@ -5331,12 +4585,6 @@
 
 	          return false;
 	        }) : this.data;
-
-	        if (this.options.sortReset) {
-	          this.unsortedData = _toConsumableArray(this.data);
-	        }
-
-	        this.initSort();
 	      }
 	    }
 	  }, {
@@ -5344,16 +4592,16 @@
 	    value: function initPagination() {
 	      var _this6 = this;
 
-	      var opts = this.options;
+	      var o = this.options;
 
-	      if (!opts.pagination) {
+	      if (!o.pagination) {
 	        this.$pagination.hide();
 	        return;
 	      }
 
 	      this.$pagination.show();
 	      var html = [];
-	      var allSelected = false;
+	      var $allSelected = false;
 	      var i;
 	      var from;
 	      var to;
@@ -5364,50 +4612,41 @@
 	      var data = this.getData({
 	        includeHiddenRows: false
 	      });
-	      var pageList = opts.pageList;
+	      var pageList = o.pageList;
 
-	      if (typeof pageList === 'string') {
-	        pageList = pageList.replace(/\[|\]| /g, '').toLowerCase().split(',');
-	      }
-
-	      pageList = pageList.map(function (value) {
-	        if (typeof value === 'string') {
-	          return value.toLowerCase() === opts.formatAllRows().toLowerCase() || ['all', 'unlimited'].includes(value.toLowerCase()) ? opts.formatAllRows() : +value;
-	        }
-
-	        return value;
-	      });
-	      this.paginationParts = opts.paginationParts;
-
-	      if (typeof this.paginationParts === 'string') {
-	        this.paginationParts = this.paginationParts.replace(/\[|\]| |'/g, '').split(',');
-	      }
-
-	      if (opts.sidePagination !== 'server') {
-	        opts.totalRows = data.length;
+	      if (o.sidePagination !== 'server') {
+	        o.totalRows = data.length;
 	      }
 
 	      this.totalPages = 0;
 
-	      if (opts.totalRows) {
-	        if (opts.pageSize === opts.formatAllRows()) {
-	          opts.pageSize = opts.totalRows;
-	          allSelected = true;
+	      if (o.totalRows) {
+	        if (o.pageSize === o.formatAllRows()) {
+	          o.pageSize = o.totalRows;
+	          $allSelected = true;
+	        } else if (o.pageSize === o.totalRows) {
+	          // Fix #667 Table with pagination,
+	          // multiple pages and a search this matches to one page throws exception
+	          var pageLst = typeof o.pageList === 'string' ? o.pageList.replace('[', '').replace(']', '').replace(/ /g, '').toLowerCase().split(',') : o.pageList;
+
+	          if (pageLst.includes(o.formatAllRows().toLowerCase())) {
+	            $allSelected = true;
+	          }
 	        }
 
-	        this.totalPages = ~~((opts.totalRows - 1) / opts.pageSize) + 1;
-	        opts.totalPages = this.totalPages;
+	        this.totalPages = ~~((o.totalRows - 1) / o.pageSize) + 1;
+	        o.totalPages = this.totalPages;
 	      }
 
-	      if (this.totalPages > 0 && opts.pageNumber > this.totalPages) {
-	        opts.pageNumber = this.totalPages;
+	      if (this.totalPages > 0 && o.pageNumber > this.totalPages) {
+	        o.pageNumber = this.totalPages;
 	      }
 
-	      this.pageFrom = (opts.pageNumber - 1) * opts.pageSize + 1;
-	      this.pageTo = opts.pageNumber * opts.pageSize;
+	      this.pageFrom = (o.pageNumber - 1) * o.pageSize + 1;
+	      this.pageTo = o.pageNumber * o.pageSize;
 
-	      if (this.pageTo > opts.totalRows) {
-	        this.pageTo = opts.totalRows;
+	      if (this.pageTo > o.totalRows) {
+	        this.pageTo = o.totalRows;
 	      }
 
 	      if (this.options.pagination && this.options.sidePagination !== 'server') {
@@ -5418,56 +4657,73 @@
 	        this.options.totalNotFiltered = undefined;
 	      }
 
-	      if (this.paginationParts.includes('pageInfo') || this.paginationParts.includes('pageInfoShort') || this.paginationParts.includes('pageSize')) {
-	        html.push("<div class=\"".concat(this.constants.classes.pull, "-").concat(opts.paginationDetailHAlign, " pagination-detail\">"));
-	      }
+	      var paginationInfo = o.onlyInfoPagination ? o.formatDetailPagination(o.totalRows) : o.formatShowingRows(this.pageFrom, this.pageTo, o.totalRows, o.totalNotFiltered);
+	      html.push("<div class=\"".concat(this.constants.classes.pull, "-").concat(o.paginationDetailHAlign, " pagination-detail\">\n      <span class=\"pagination-info\">\n      ").concat(paginationInfo, "\n      </span>"));
 
-	      if (this.paginationParts.includes('pageInfo') || this.paginationParts.includes('pageInfoShort')) {
-	        var paginationInfo = this.paginationParts.includes('pageInfoShort') ? opts.formatDetailPagination(opts.totalRows) : opts.formatShowingRows(this.pageFrom, this.pageTo, opts.totalRows, opts.totalNotFiltered);
-	        html.push("<span class=\"pagination-info\">\n      ".concat(paginationInfo, "\n      </span>"));
-	      }
-
-	      if (this.paginationParts.includes('pageSize')) {
+	      if (!o.onlyInfoPagination) {
 	        html.push('<span class="page-list">');
-	        var pageNumber = ["<span class=\"".concat(this.constants.classes.paginationDropdown, "\">\n        <button class=\"").concat(this.constants.buttonsClass, " dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\">\n        <span class=\"page-size\">\n        ").concat(allSelected ? opts.formatAllRows() : opts.pageSize, "\n        </span>\n        ").concat(this.constants.html.dropdownCaret, "\n        </button>\n        ").concat(this.constants.html.pageDropdown[0])];
+	        var pageNumber = ["<span class=\"".concat(this.constants.classes.paginationDropdown, "\">\n        <button class=\"").concat(this.constants.buttonsClass, " dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\">\n        <span class=\"page-size\">\n        ").concat($allSelected ? o.formatAllRows() : o.pageSize, "\n        </span>\n        ").concat(this.constants.html.dropdownCaret, "\n        </button>\n        ").concat(this.constants.html.pageDropdown[0])];
+
+	        if (typeof o.pageList === 'string') {
+	          var list = o.pageList.replace('[', '').replace(']', '').replace(/ /g, '').split(',');
+	          pageList = [];
+	          var _iteratorNormalCompletion = true;
+	          var _didIteratorError = false;
+	          var _iteratorError = undefined;
+
+	          try {
+	            for (var _iterator = list[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	              var value = _step.value;
+	              pageList.push(value.toLowerCase() === o.formatAllRows().toLowerCase() || ['all', 'unlimited'].includes(value.toLowerCase()) ? o.formatAllRows() : +value);
+	            }
+	          } catch (err) {
+	            _didIteratorError = true;
+	            _iteratorError = err;
+	          } finally {
+	            try {
+	              if (!_iteratorNormalCompletion && _iterator.return != null) {
+	                _iterator.return();
+	              }
+	            } finally {
+	              if (_didIteratorError) {
+	                throw _iteratorError;
+	              }
+	            }
+	          }
+	        }
+
 	        pageList.forEach(function (page, i) {
-	          if (!opts.smartDisplay || i === 0 || pageList[i - 1] < opts.totalRows) {
+	          if (!o.smartDisplay || i === 0 || pageList[i - 1] < o.totalRows) {
 	            var active;
 
-	            if (allSelected) {
-	              active = page === opts.formatAllRows() ? _this6.constants.classes.dropdownActive : '';
+	            if ($allSelected) {
+	              active = page === o.formatAllRows() ? _this6.constants.classes.dropdownActive : '';
 	            } else {
-	              active = page === opts.pageSize ? _this6.constants.classes.dropdownActive : '';
+	              active = page === o.pageSize ? _this6.constants.classes.dropdownActive : '';
 	            }
 
 	            pageNumber.push(Utils.sprintf(_this6.constants.html.pageDropdownItem, active, page));
 	          }
 	        });
 	        pageNumber.push("".concat(this.constants.html.pageDropdown[1], "</span>"));
-	        html.push(opts.formatRecordsPerPage(pageNumber.join('')));
-	      }
-
-	      if (this.paginationParts.includes('pageInfo') || this.paginationParts.includes('pageInfoShort') || this.paginationParts.includes('pageSize')) {
+	        html.push(o.formatRecordsPerPage(pageNumber.join('')));
 	        html.push('</span></div>');
-	      }
+	        html.push("<div class=\"".concat(this.constants.classes.pull, "-").concat(o.paginationHAlign, " pagination\">"), Utils.sprintf(this.constants.html.pagination[0], Utils.sprintf(' pagination-%s', o.iconSize)), Utils.sprintf(this.constants.html.paginationItem, ' page-pre', o.formatSRPaginationPreText(), o.paginationPreText));
 
-	      if (this.paginationParts.includes('pageList')) {
-	        html.push("<div class=\"".concat(this.constants.classes.pull, "-").concat(opts.paginationHAlign, " pagination\">"), Utils.sprintf(this.constants.html.pagination[0], Utils.sprintf(' pagination-%s', opts.iconSize)), Utils.sprintf(this.constants.html.paginationItem, ' page-pre', opts.formatSRPaginationPreText(), opts.paginationPreText));
-
-	        if (this.totalPages < opts.paginationSuccessivelySize) {
+	        if (this.totalPages < o.paginationSuccessivelySize) {
 	          from = 1;
 	          to = this.totalPages;
 	        } else {
-	          from = opts.pageNumber - opts.paginationPagesBySide;
-	          to = from + opts.paginationPagesBySide * 2;
+	          from = o.pageNumber - o.paginationPagesBySide;
+	          to = from + o.paginationPagesBySide * 2;
 	        }
 
-	        if (opts.pageNumber < opts.paginationSuccessivelySize - 1) {
-	          to = opts.paginationSuccessivelySize;
+	        if (o.pageNumber < o.paginationSuccessivelySize - 1) {
+	          to = o.paginationSuccessivelySize;
 	        }
 
-	        if (opts.paginationSuccessivelySize > this.totalPages - from) {
-	          from = from - (opts.paginationSuccessivelySize - (this.totalPages - from)) + 1;
+	        if (o.paginationSuccessivelySize > this.totalPages - from) {
+	          from = from - (o.paginationSuccessivelySize - (this.totalPages - from)) + 1;
 	        }
 
 	        if (from < 1) {
@@ -5478,15 +4734,15 @@
 	          to = this.totalPages;
 	        }
 
-	        var middleSize = Math.round(opts.paginationPagesBySide / 2);
+	        var middleSize = Math.round(o.paginationPagesBySide / 2);
 
 	        var pageItem = function pageItem(i) {
 	          var classes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-	          return Utils.sprintf(_this6.constants.html.paginationItem, classes + (i === opts.pageNumber ? " ".concat(_this6.constants.classes.paginationActive) : ''), opts.formatSRPaginationPageText(i), i);
+	          return Utils.sprintf(_this6.constants.html.paginationItem, classes + (i === o.pageNumber ? " ".concat(_this6.constants.classes.paginationActive) : ''), o.formatSRPaginationPageText(i), i);
 	        };
 
 	        if (from > 1) {
-	          var max = opts.paginationPagesBySide;
+	          var max = o.paginationPagesBySide;
 	          if (max >= from) max = from - 1;
 
 	          for (i = 1; i <= max; i++) {
@@ -5498,7 +4754,7 @@
 	            html.push(pageItem(i));
 	          } else {
 	            if (from - 1 > max) {
-	              if (from - opts.paginationPagesBySide * 2 > opts.paginationPagesBySide && opts.paginationUseIntermediate) {
+	              if (from - o.paginationPagesBySide * 2 > o.paginationPagesBySide && o.paginationUseIntermediate) {
 	                i = Math.round((from - middleSize) / 2 + middleSize);
 	                html.push(pageItem(i, ' page-intermediate'));
 	              } else {
@@ -5513,7 +4769,7 @@
 	        }
 
 	        if (this.totalPages > to) {
-	          var min = this.totalPages - (opts.paginationPagesBySide - 1);
+	          var min = this.totalPages - (o.paginationPagesBySide - 1);
 	          if (to >= min) min = to + 1;
 
 	          if (to + 1 === min - 1) {
@@ -5521,7 +4777,7 @@
 	            html.push(pageItem(i));
 	          } else {
 	            if (min > to + 1) {
-	              if (this.totalPages - to > opts.paginationPagesBySide * 2 && opts.paginationUseIntermediate) {
+	              if (this.totalPages - to > o.paginationPagesBySide * 2 && o.paginationUseIntermediate) {
 	                i = Math.round((this.totalPages - middleSize - to) / 2 + to);
 	                html.push(pageItem(i, ' page-intermediate'));
 	              } else {
@@ -5535,15 +4791,15 @@
 	          }
 	        }
 
-	        html.push(Utils.sprintf(this.constants.html.paginationItem, ' page-next', opts.formatSRPaginationNextText(), opts.paginationNextText));
+	        html.push(Utils.sprintf(this.constants.html.paginationItem, ' page-next', o.formatSRPaginationNextText(), o.paginationNextText));
 	        html.push(this.constants.html.pagination[1], '</div>');
 	      }
 
 	      this.$pagination.html(html.join(''));
-	      var dropupClass = ['bottom', 'both'].includes(opts.paginationVAlign) ? " ".concat(this.constants.classes.dropup) : '';
+	      var dropupClass = ['bottom', 'both'].includes(o.paginationVAlign) ? " ".concat(this.constants.classes.dropup) : '';
 	      this.$pagination.last().find('.page-list > span').addClass(dropupClass);
 
-	      if (!opts.onlyInfoPagination) {
+	      if (!o.onlyInfoPagination) {
 	        $pageList = this.$pagination.find('.page-list a');
 	        $pre = this.$pagination.find('.page-pre');
 	        $next = this.$pagination.find('.page-next');
@@ -5553,8 +4809,8 @@
 	          this.$pagination.find('div.pagination').hide();
 	        }
 
-	        if (opts.smartDisplay) {
-	          if (pageList.length < 2 || opts.totalRows <= pageList[0]) {
+	        if (o.smartDisplay) {
+	          if (pageList.length < 2 || o.totalRows <= pageList[0]) {
 	            this.$pagination.find('span.page-list').hide();
 	          }
 	        } // when data is empty, hide the pagination
@@ -5562,18 +4818,18 @@
 
 	        this.$pagination[this.getData().length ? 'show' : 'hide']();
 
-	        if (!opts.paginationLoop) {
-	          if (opts.pageNumber === 1) {
+	        if (!o.paginationLoop) {
+	          if (o.pageNumber === 1) {
 	            $pre.addClass('disabled');
 	          }
 
-	          if (opts.pageNumber === this.totalPages) {
+	          if (o.pageNumber === this.totalPages) {
 	            $next.addClass('disabled');
 	          }
 	        }
 
-	        if (allSelected) {
-	          opts.pageSize = opts.formatAllRows();
+	        if ($allSelected) {
+	          o.pageSize = o.formatAllRows();
 	        } // removed the events for last and first, onPageNumber executeds the same logic
 
 
@@ -5604,13 +4860,14 @@
 	      }
 
 	      this.initPagination();
-	      this.trigger('page-change', this.options.pageNumber, this.options.pageSize);
 
 	      if (this.options.sidePagination === 'server') {
 	        this.initServer();
 	      } else {
 	        this.initBody();
 	      }
+
+	      this.trigger('page-change', this.options.pageNumber, this.options.pageSize);
 	    }
 	  }, {
 	    key: "onPageListChange",
@@ -5683,10 +4940,10 @@
 	      style = Utils.calculateObjectValue(this.options, this.options.rowStyle, [item, i], style);
 
 	      if (style && style.css) {
-	        for (var _i7 = 0, _Object$entries6 = Object.entries(style.css); _i7 < _Object$entries6.length; _i7++) {
-	          var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i7], 2),
-	              key = _Object$entries6$_i[0],
-	              value = _Object$entries6$_i[1];
+	        for (var _i2 = 0, _Object$entries = Object.entries(style.css); _i2 < _Object$entries.length; _i2++) {
+	          var _Object$entries$_i = _slicedToArray(_Object$entries[_i2], 2),
+	              key = _Object$entries$_i[0],
+	              value = _Object$entries$_i[1];
 
 	          csses.push("".concat(key, ": ").concat(value));
 	        }
@@ -5695,20 +4952,20 @@
 	      attributes = Utils.calculateObjectValue(this.options, this.options.rowAttributes, [item, i], attributes);
 
 	      if (attributes) {
-	        for (var _i8 = 0, _Object$entries7 = Object.entries(attributes); _i8 < _Object$entries7.length; _i8++) {
-	          var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i8], 2),
-	              _key2 = _Object$entries7$_i[0],
-	              _value = _Object$entries7$_i[1];
+	        for (var _i3 = 0, _Object$entries2 = Object.entries(attributes); _i3 < _Object$entries2.length; _i3++) {
+	          var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i3], 2),
+	              key = _Object$entries2$_i[0],
+	              value = _Object$entries2$_i[1];
 
-	          htmlAttributes.push("".concat(_key2, "=\"").concat(Utils.escapeHTML(_value), "\""));
+	          htmlAttributes.push("".concat(key, "=\"").concat(Utils.escapeHTML(value), "\""));
 	        }
 	      }
 
 	      if (item._data && !Utils.isEmptyObject(item._data)) {
-	        for (var _i9 = 0, _Object$entries8 = Object.entries(item._data); _i9 < _Object$entries8.length; _i9++) {
-	          var _Object$entries8$_i = _slicedToArray(_Object$entries8[_i9], 2),
-	              k = _Object$entries8$_i[0],
-	              v = _Object$entries8$_i[1];
+	        for (var _i4 = 0, _Object$entries3 = Object.entries(item._data); _i4 < _Object$entries3.length; _i4++) {
+	          var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i4], 2),
+	              k = _Object$entries3$_i[0],
+	              v = _Object$entries3$_i[1];
 
 	          // ignore data-index
 	          if (k === 'index') {
@@ -5719,26 +4976,20 @@
 	        }
 	      }
 
-	      html.push('<tr', Utils.sprintf(' %s', htmlAttributes.length ? htmlAttributes.join(' ') : undefined), Utils.sprintf(' id="%s"', Array.isArray(item) ? undefined : item._id), Utils.sprintf(' class="%s"', style.classes || (Array.isArray(item) ? undefined : item._class)), Utils.sprintf(' style="%s"', Array.isArray(item) ? undefined : item._style), " data-index=\"".concat(i, "\""), Utils.sprintf(' data-uniqueid="%s"', Utils.getItemField(item, this.options.uniqueId, false)), Utils.sprintf(' data-has-detail-view="%s"', this.options.detailView && Utils.calculateObjectValue(null, this.options.detailFilter, [i, item]) ? 'true' : undefined), Utils.sprintf('%s', data_), '>');
+	      html.push('<tr', Utils.sprintf(' %s', htmlAttributes.length ? htmlAttributes.join(' ') : undefined), Utils.sprintf(' id="%s"', Array.isArray(item) ? undefined : item._id), Utils.sprintf(' class="%s"', style.classes || (Array.isArray(item) ? undefined : item._class)), " data-index=\"".concat(i, "\""), Utils.sprintf(' data-uniqueid="%s"', Utils.getItemField(item, this.options.uniqueId, false)), Utils.sprintf(' data-has-detail-view="%s"', !this.options.cardView && this.options.detailView && Utils.calculateObjectValue(null, this.options.detailFilter, [i, item]) ? 'true' : undefined), Utils.sprintf('%s', data_), '>');
 
 	      if (this.options.cardView) {
 	        html.push("<td colspan=\"".concat(this.header.fields.length, "\"><div class=\"card-views\">"));
 	      }
 
-	      var detailViewTemplate = '';
-
-	      if (Utils.hasDetailViewIcon(this.options)) {
-	        detailViewTemplate = '<td>';
+	      if (!this.options.cardView && this.options.detailView && this.options.detailViewIcon) {
+	        html.push('<td>');
 
 	        if (Utils.calculateObjectValue(null, this.options.detailFilter, [i, item])) {
-	          detailViewTemplate += "\n          <a class=\"detail-icon\" href=\"#\">\n          ".concat(Utils.sprintf(this.constants.html.icon, this.options.iconsPrefix, this.options.icons.detailOpen), "\n          </a>\n        ");
+	          html.push("\n          <a class=\"detail-icon\" href=\"#\">\n          ".concat(Utils.sprintf(this.constants.html.icon, this.options.iconsPrefix, this.options.icons.detailOpen), "\n          </a>\n        "));
 	        }
 
-	        detailViewTemplate += '</td>';
-	      }
-
-	      if (detailViewTemplate && this.options.detailViewAlign !== 'right') {
-	        html.push(detailViewTemplate);
+	        html.push('</td>');
 	      }
 
 	      this.header.fields.forEach(function (field, j) {
@@ -5750,14 +5001,13 @@
 	        var id_ = '';
 	        var class_ = _this7.header.classes[j];
 	        var style_ = '';
-	        var styleToAdd_ = '';
 	        var data_ = '';
 	        var rowspan_ = '';
 	        var colspan_ = '';
 	        var title_ = '';
 	        var column = _this7.columns[j];
 
-	        if ((_this7.fromHtml || _this7.autoMergeCells) && typeof value_ === 'undefined') {
+	        if (_this7.fromHtml && typeof value_ === 'undefined') {
 	          if (!column.checkbox && !column.radio) {
 	            return;
 	          }
@@ -5773,21 +5023,11 @@
 
 	        if (column.escape) {
 	          value_ = Utils.escapeHTML(value_);
-	        } // Style concat
-
+	        }
 
 	        if (csses.concat([_this7.header.styles[j]]).length) {
-	          styleToAdd_ += "".concat(csses.concat([_this7.header.styles[j]]).join('; '));
-	        }
-
-	        if (item["_".concat(field, "_style")]) {
-	          styleToAdd_ += "".concat(item["_".concat(field, "_style")]);
-	        }
-
-	        if (styleToAdd_) {
-	          style_ = " style=\"".concat(styleToAdd_, "\"");
-	        } // Style concat
-	        // handle id and class of td
+	          style_ = " style=\"".concat(csses.concat([_this7.header.styles[j]]).join('; '), "\"");
+	        } // handle td's id and class
 
 
 	        if (item["_".concat(field, "_id")]) {
@@ -5819,12 +5059,12 @@
 	        if (cellStyle.css) {
 	          var csses_ = [];
 
-	          for (var _i10 = 0, _Object$entries9 = Object.entries(cellStyle.css); _i10 < _Object$entries9.length; _i10++) {
-	            var _Object$entries9$_i = _slicedToArray(_Object$entries9[_i10], 2),
-	                _key3 = _Object$entries9$_i[0],
-	                _value2 = _Object$entries9$_i[1];
+	          for (var _i5 = 0, _Object$entries4 = Object.entries(cellStyle.css); _i5 < _Object$entries4.length; _i5++) {
+	            var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i5], 2),
+	                key = _Object$entries4$_i[0],
+	                _value = _Object$entries4$_i[1];
 
-	            csses_.push("".concat(_key3, ": ").concat(_value2));
+	            csses_.push("".concat(key, ": ").concat(_value));
 	          }
 
 	          style_ = " style=\"".concat(csses_.concat(_this7.header.styles[j]).join('; '), "\"");
@@ -5832,22 +5072,18 @@
 
 	        value = Utils.calculateObjectValue(column, _this7.header.formatters[j], [value_, item, i, field], value_);
 
-	        if (_this7.searchText !== '' && _this7.options.searchHighlight) {
-	          value = Utils.calculateObjectValue(column, column.searchHighlightFormatter, [value, _this7.searchText], value.replace(new RegExp('(' + _this7.searchText + ')', 'gim'), '<mark>$1</mark>'));
-	        }
-
 	        if (item["_".concat(field, "_data")] && !Utils.isEmptyObject(item["_".concat(field, "_data")])) {
-	          for (var _i11 = 0, _Object$entries10 = Object.entries(item["_".concat(field, "_data")]); _i11 < _Object$entries10.length; _i11++) {
-	            var _Object$entries10$_i = _slicedToArray(_Object$entries10[_i11], 2),
-	                _k = _Object$entries10$_i[0],
-	                _v = _Object$entries10$_i[1];
+	          for (var _i6 = 0, _Object$entries5 = Object.entries(item["_".concat(field, "_data")]); _i6 < _Object$entries5.length; _i6++) {
+	            var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i6], 2),
+	                k = _Object$entries5$_i[0],
+	                v = _Object$entries5$_i[1];
 
 	            // ignore data-index
-	            if (_k === 'index') {
+	            if (k === 'index') {
 	              return;
 	            }
 
-	            data_ += " data-".concat(_k, "=\"").concat(_v, "\"");
+	            data_ += " data-".concat(k, "=\"").concat(v, "\"");
 	          }
 	        }
 
@@ -5855,7 +5091,7 @@
 	          type = column.checkbox ? 'checkbox' : type;
 	          type = column.radio ? 'radio' : type;
 	          var c = column['class'] || '';
-	          var isChecked = Utils.isObject(value) && value.hasOwnProperty('checked') ? value.checked : (value === true || value_) && value !== false;
+	          var isChecked = (value === true || value_ || value && value.checked) && value !== false;
 	          var isDisabled = !column.checkboxEnabled || value && value.disabled;
 	          text = [_this7.options.cardView ? "<div class=\"card-view ".concat(c, "\">") : "<td class=\"bs-checkbox ".concat(c, "\"").concat(class_).concat(style_, ">"), "<label>\n            <input\n            data-index=\"".concat(i, "\"\n            name=\"").concat(_this7.options.selectItemName, "\"\n            type=\"").concat(type, "\"\n            ").concat(Utils.sprintf('value="%s"', item[_this7.options.idField]), "\n            ").concat(Utils.sprintf('checked="%s"', isChecked ? 'checked' : undefined), "\n            ").concat(Utils.sprintf('disabled="%s"', isDisabled ? 'disabled' : undefined), " />\n            <span></span>\n            </label>"), _this7.header.formatters[j] && typeof value === 'string' ? value : '', _this7.options.cardView ? '</div>' : '</td>'].join('');
 	          item[_this7.header.stateField] = value === true || !!value_ || value && value.checked;
@@ -5876,10 +5112,6 @@
 
 	        html.push(text);
 	      });
-
-	      if (detailViewTemplate && this.options.detailViewAlign === 'right') {
-	        html.push(detailViewTemplate);
-	      }
 
 	      if (this.options.cardView) {
 	        html.push('</div></td>');
@@ -5910,7 +5142,6 @@
 	      var rows = [];
 	      var trFragments = $(document.createDocumentFragment());
 	      var hasTr = false;
-	      this.autoMergeCells = Utils.checkAutoMergeCells(data.slice(this.pageFrom - 1, this.pageTo));
 
 	      for (var i = this.pageFrom - 1; i < this.pageTo; i++) {
 	        var item = data[i];
@@ -5928,7 +5159,7 @@
 
 
 	      if (!hasTr) {
-	        this.$body.html("<tr class=\"no-records-found\">".concat(Utils.sprintf('<td colspan="%s">%s</td>', this.getVisibleFields().length + Utils.getDetailViewIndexOffset(this.options), this.options.formatNoMatches()), "</tr>"));
+	        this.$body.html("<tr class=\"no-records-found\">".concat(Utils.sprintf('<td colspan="%s">%s</td>', this.$header.find('th').length, this.options.formatNoMatches()), "</tr>"));
 	      } else {
 	        if (!this.options.virtualScroll) {
 	          this.$body.html(trFragments);
@@ -5939,14 +5170,11 @@
 
 	          this.virtualScroll = new VirtualScroll({
 	            rows: rows,
-	            fixedScroll: fixedScroll,
 	            scrollEl: this.$tableBody[0],
 	            contentEl: this.$body[0],
 	            itemHeight: this.options.virtualScrollItemHeight,
 	            callback: function callback() {
 	              _this8.fitHeader();
-
-	              _this8.initBodyEvent();
 	            }
 	          });
 	        }
@@ -5954,69 +5182,53 @@
 
 	      if (!fixedScroll) {
 	        this.scrollTo(0);
-	      }
+	      } // click to select by column
 
-	      this.initBodyEvent();
-	      this.updateSelected();
-	      this.initFooter();
-	      this.resetView();
 
-	      if (this.options.sidePagination !== 'server') {
-	        this.options.totalRows = data.length;
-	      }
-
-	      this.trigger('post-body', data);
-	    }
-	  }, {
-	    key: "initBodyEvent",
-	    value: function initBodyEvent() {
-	      var _this9 = this;
-
-	      // click to select by column
 	      this.$body.find('> tr[data-index] > td').off('click dblclick').on('click dblclick', function (e) {
 	        var $td = $(e.currentTarget);
 	        var $tr = $td.parent();
 	        var $cardViewArr = $(e.target).parents('.card-views').children();
 	        var $cardViewTarget = $(e.target).parents('.card-view');
 	        var rowIndex = $tr.data('index');
-	        var item = _this9.data[rowIndex];
-	        var index = _this9.options.cardView ? $cardViewArr.index($cardViewTarget) : $td[0].cellIndex;
+	        var item = _this8.data[rowIndex];
+	        var index = _this8.options.cardView ? $cardViewArr.index($cardViewTarget) : $td[0].cellIndex;
 
-	        var fields = _this9.getVisibleFields();
+	        var fields = _this8.getVisibleFields();
 
-	        var field = fields[index - Utils.getDetailViewIndexOffset(_this9.options)];
-	        var column = _this9.columns[_this9.fieldsColumnsIndex[field]];
-	        var value = Utils.getItemField(item, field, _this9.options.escape);
+	        var field = fields[_this8.options.detailView && _this8.detailViewIcon && !_this8.options.cardView ? index - 1 : index];
+	        var column = _this8.columns[_this8.fieldsColumnsIndex[field]];
+	        var value = Utils.getItemField(item, field, _this8.options.escape);
 
 	        if ($td.find('.detail-icon').length) {
 	          return;
 	        }
 
-	        _this9.trigger(e.type === 'click' ? 'click-cell' : 'dbl-click-cell', field, value, item, $td);
+	        _this8.trigger(e.type === 'click' ? 'click-cell' : 'dbl-click-cell', field, value, item, $td);
 
-	        _this9.trigger(e.type === 'click' ? 'click-row' : 'dbl-click-row', item, $tr, field); // if click to select - then trigger the checkbox/radio click
+	        _this8.trigger(e.type === 'click' ? 'click-row' : 'dbl-click-row', item, $tr, field); // if click to select - then trigger the checkbox/radio click
 
 
-	        if (e.type === 'click' && _this9.options.clickToSelect && column.clickToSelect && !Utils.calculateObjectValue(_this9.options, _this9.options.ignoreClickToSelectOn, [e.target])) {
-	          var $selectItem = $tr.find(Utils.sprintf('[name="%s"]', _this9.options.selectItemName));
+	        if (e.type === 'click' && _this8.options.clickToSelect && column.clickToSelect && !Utils.calculateObjectValue(_this8.options, _this8.options.ignoreClickToSelectOn, [e.target])) {
+	          var $selectItem = $tr.find(Utils.sprintf('[name="%s"]', _this8.options.selectItemName));
 
 	          if ($selectItem.length) {
 	            $selectItem[0].click();
 	          }
 	        }
 
-	        if (e.type === 'click' && _this9.options.detailViewByClick) {
-	          _this9.toggleDetailView(rowIndex, _this9.header.detailFormatters[_this9.fieldsColumnsIndex[field]]);
+	        if (e.type === 'click' && _this8.options.detailViewByClick) {
+	          _this8.toggleDetailView(rowIndex, _this8.header.detailFormatters[_this8.fieldsColumnsIndex[field]]);
 	        }
 	      }).off('mousedown').on('mousedown', function (e) {
 	        // https://github.com/jquery/jquery/issues/1741
-	        _this9.multipleSelectRowCtrlKey = e.ctrlKey || e.metaKey;
-	        _this9.multipleSelectRowShiftKey = e.shiftKey;
+	        _this8.multipleSelectRowCtrlKey = e.ctrlKey || e.metaKey;
+	        _this8.multipleSelectRowShiftKey = e.shiftKey;
 	      });
 	      this.$body.find('> tr[data-index] > td > .detail-icon').off('click').on('click', function (e) {
 	        e.preventDefault();
 
-	        _this9.toggleDetailView($(e.currentTarget).parent().parent().data('index'));
+	        _this8.toggleDetailView($(e.currentTarget).parent().parent().data('index'));
 
 	        return false;
 	      });
@@ -6025,7 +5237,7 @@
 	        e.stopImmediatePropagation();
 	        var $this = $(e.currentTarget);
 
-	        _this9._toggleCheck($this.prop('checked'), $this.data('index'));
+	        _this8._toggleCheck($this.prop('checked'), $this.data('index'));
 	      });
 	      this.header.events.forEach(function (_events, i) {
 	        var events = _events;
@@ -6039,49 +5251,60 @@
 	          events = Utils.calculateObjectValue(null, events);
 	        }
 
-	        var field = _this9.header.fields[i];
+	        var field = _this8.header.fields[i];
 
-	        var fieldIndex = _this9.getVisibleFields().indexOf(field);
+	        var fieldIndex = _this8.getVisibleFields().indexOf(field);
 
 	        if (fieldIndex === -1) {
 	          return;
 	        }
 
-	        fieldIndex += Utils.getDetailViewIndexOffset(_this9.options);
+	        if (_this8.options.detailView && !_this8.options.cardView) {
+	          fieldIndex += 1;
+	        }
 
-	        var _loop2 = function _loop2(key) {
+	        var _loop = function _loop(key) {
 	          if (!events.hasOwnProperty(key)) {
 	            return "continue";
 	          }
 
 	          var event = events[key];
 
-	          _this9.$body.find('>tr:not(.no-records-found)').each(function (i, tr) {
+	          _this8.$body.find('>tr:not(.no-records-found)').each(function (i, tr) {
 	            var $tr = $(tr);
-	            var $td = $tr.find(_this9.options.cardView ? '.card-views>.card-view' : '>td').eq(fieldIndex);
+	            var $td = $tr.find(_this8.options.cardView ? '.card-views>.card-view' : '>td').eq(fieldIndex);
 	            var index = key.indexOf(' ');
 	            var name = key.substring(0, index);
 	            var el = key.substring(index + 1);
 	            $td.find(el).off(name).on(name, function (e) {
 	              var index = $tr.data('index');
-	              var row = _this9.data[index];
+	              var row = _this8.data[index];
 	              var value = row[field];
-	              event.apply(_this9, [e, value, row, index]);
+	              event.apply(_this8, [e, value, row, index]);
 	            });
 	          });
 	        };
 
 	        for (var key in events) {
-	          var _ret2 = _loop2(key);
+	          var _ret = _loop(key);
 
-	          if (_ret2 === "continue") continue;
+	          if (_ret === "continue") continue;
 	        }
 	      });
+	      this.updateSelected();
+	      this.initFooter();
+	      this.resetView();
+
+	      if (this.options.sidePagination !== 'server') {
+	        this.options.totalRows = data.length;
+	      }
+
+	      this.trigger('post-body', data);
 	    }
 	  }, {
 	    key: "initServer",
 	    value: function initServer(silent, query, url) {
-	      var _this10 = this;
+	      var _this9 = this;
 
 	      var data = {};
 	      var index = this.header.fields.indexOf(this.options.sortName);
@@ -6121,38 +5344,6 @@
 	        }
 	      }
 
-	      if (this.options.search && this.options.sidePagination === 'server' && this.columns.filter(function (column) {
-	        return !column.searchable;
-	      }).length) {
-	        params.searchable = [];
-	        var _iteratorNormalCompletion2 = true;
-	        var _didIteratorError2 = false;
-	        var _iteratorError2 = undefined;
-
-	        try {
-	          for (var _iterator2 = this.columns[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	            var column = _step2.value;
-
-	            if (!column.checkbox && column.searchable && (this.options.visibleSearch && column.visible || !this.options.visibleSearch)) {
-	              params.searchable.push(column.field);
-	            }
-	          }
-	        } catch (err) {
-	          _didIteratorError2 = true;
-	          _iteratorError2 = err;
-	        } finally {
-	          try {
-	            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-	              _iterator2.return();
-	            }
-	          } finally {
-	            if (_didIteratorError2) {
-	              throw _iteratorError2;
-	            }
-	          }
-	        }
-	      }
-
 	      if (!Utils.isEmptyObject(this.filterColumnsPartial)) {
 	        params.filter = JSON.stringify(this.filterColumnsPartial, null);
 	      }
@@ -6175,35 +5366,31 @@
 	        cache: this.options.cache,
 	        contentType: this.options.contentType,
 	        dataType: this.options.dataType,
-	        success: function success(_res, textStatus, jqXHR) {
-	          var res = Utils.calculateObjectValue(_this10.options, _this10.options.responseHandler, [_res, jqXHR], _res);
+	        success: function success(_res) {
+	          var res = Utils.calculateObjectValue(_this9.options, _this9.options.responseHandler, [_res], _res);
 
-	          _this10.load(res);
+	          _this9.load(res);
 
-	          _this10.trigger('load-success', res, jqXHR && jqXHR.status, jqXHR);
+	          _this9.trigger('load-success', res);
 
 	          if (!silent) {
-	            _this10.hideLoading();
-	          }
-
-	          if (_this10.options.sidePagination === 'server' && res[_this10.options.totalField] > 0 && !res[_this10.options.dataField].length) {
-	            _this10.updatePagination();
+	            _this9.hideLoading();
 	          }
 	        },
 	        error: function error(jqXHR) {
 	          var data = [];
 
-	          if (_this10.options.sidePagination === 'server') {
+	          if (_this9.options.sidePagination === 'server') {
 	            data = {};
-	            data[_this10.options.totalField] = 0;
-	            data[_this10.options.dataField] = [];
+	            data[_this9.options.totalField] = 0;
+	            data[_this9.options.dataField] = [];
 	          }
 
-	          _this10.load(data);
+	          _this9.load(data);
 
-	          _this10.trigger('load-error', jqXHR && jqXHR.status, jqXHR);
+	          _this9.trigger('load-error', jqXHR.status, jqXHR);
 
-	          if (!silent) _this10.$tableLoading.hide();
+	          if (!silent) _this9.$tableLoading.hide();
 	        }
 	      });
 
@@ -6226,7 +5413,7 @@
 	        this.searchText = '';
 
 	        if (this.options.searchText !== '') {
-	          var $search = Utils.getSearchInput(this);
+	          var $search = this.$toolbar.find('.search input');
 	          $search.val(this.options.searchText);
 	          this.onSearch({
 	            currentTarget: $search,
@@ -6238,10 +5425,10 @@
 	  }, {
 	    key: "getCaret",
 	    value: function getCaret() {
-	      var _this11 = this;
+	      var _this10 = this;
 
 	      this.$header.find('th').each(function (i, th) {
-	        $(th).find('.sortable').removeClass('desc asc').addClass($(th).data('field') === _this11.options.sortName ? _this11.options.sortOrder : 'both');
+	        $(th).find('.sortable').removeClass('desc asc').addClass($(th).data('field') === _this10.options.sortName ? _this10.options.sortOrder : 'both');
 	      });
 	    }
 	  }, {
@@ -6256,22 +5443,22 @@
 	  }, {
 	    key: "updateRows",
 	    value: function updateRows() {
-	      var _this12 = this;
+	      var _this11 = this;
 
 	      this.$selectItem.each(function (i, el) {
-	        _this12.data[$(el).data('index')][_this12.header.stateField] = $(el).prop('checked');
+	        _this11.data[$(el).data('index')][_this11.header.stateField] = $(el).prop('checked');
 	      });
 	    }
 	  }, {
 	    key: "resetRows",
 	    value: function resetRows() {
-	      var _iteratorNormalCompletion3 = true;
-	      var _didIteratorError3 = false;
-	      var _iteratorError3 = undefined;
+	      var _iteratorNormalCompletion2 = true;
+	      var _didIteratorError2 = false;
+	      var _iteratorError2 = undefined;
 
 	      try {
-	        for (var _iterator3 = this.data[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-	          var row = _step3.value;
+	        for (var _iterator2 = this.data[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	          var row = _step2.value;
 	          this.$selectAll.prop('checked', false);
 	          this.$selectItem.prop('checked', false);
 
@@ -6280,16 +5467,16 @@
 	          }
 	        }
 	      } catch (err) {
-	        _didIteratorError3 = true;
-	        _iteratorError3 = err;
+	        _didIteratorError2 = true;
+	        _iteratorError2 = err;
 	      } finally {
 	        try {
-	          if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-	            _iterator3.return();
+	          if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+	            _iterator2.return();
 	          }
 	        } finally {
-	          if (_didIteratorError3) {
-	            throw _iteratorError3;
+	          if (_didIteratorError2) {
+	            throw _iteratorError2;
 	          }
 	        }
 	      }
@@ -6299,46 +5486,40 @@
 	  }, {
 	    key: "trigger",
 	    value: function trigger(_name) {
-	      var _this$options, _this$options2;
+	      var _this$options;
 
 	      var name = "".concat(_name, ".bs.table");
 
-	      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key4 = 1; _key4 < _len; _key4++) {
-	        args[_key4 - 1] = arguments[_key4];
+	      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key2 = 1; _key2 < _len; _key2++) {
+	        args[_key2 - 1] = arguments[_key2];
 	      }
 
-	      (_this$options = this.options)[BootstrapTable.EVENTS[name]].apply(_this$options, [].concat(args, [this]));
+	      (_this$options = this.options)[BootstrapTable.EVENTS[name]].apply(_this$options, args);
 
-	      this.$el.trigger($.Event(name, {
-	        sender: this
-	      }), args);
-
-	      (_this$options2 = this.options).onAll.apply(_this$options2, [name].concat([].concat(args, [this])));
-
-	      this.$el.trigger($.Event('all.bs.table', {
-	        sender: this
-	      }), [name, args]);
+	      this.$el.trigger($.Event(name), args);
+	      this.options.onAll(name, args);
+	      this.$el.trigger($.Event('all.bs.table'), [name, args]);
 	    }
 	  }, {
 	    key: "resetHeader",
 	    value: function resetHeader() {
-	      var _this13 = this;
+	      var _this12 = this;
 
 	      // fix #61: the hidden table reset header bug.
 	      // fix bug: get $el.css('width') error sometime (height = 500)
 	      clearTimeout(this.timeoutId_);
 	      this.timeoutId_ = setTimeout(function () {
-	        return _this13.fitHeader();
+	        return _this12.fitHeader();
 	      }, this.$el.is(':hidden') ? 100 : 0);
 	    }
 	  }, {
 	    key: "fitHeader",
 	    value: function fitHeader() {
-	      var _this14 = this;
+	      var _this13 = this;
 
 	      if (this.$el.is(':hidden')) {
 	        this.timeoutId_ = setTimeout(function () {
-	          return _this14.fitHeader();
+	          return _this13.fitHeader();
 	        }, 100);
 	        return;
 	      }
@@ -6377,7 +5558,7 @@
 
 
 	      this.$header.find('th[data-field]').each(function (i, el) {
-	        _this14.$header_.find(Utils.sprintf('th[data-field="%s"]', $(el).data('field'))).data($(el).data());
+	        _this13.$header_.find(Utils.sprintf('th[data-field="%s"]', $(el).data('field'))).data($(el).data());
 	      });
 	      var visibleFields = this.getVisibleFields();
 	      var $ths = this.$header_.find('th');
@@ -6387,24 +5568,27 @@
 	        $tr = $tr.next();
 	      }
 
-	      var trLength = $tr.find('> *').length;
 	      $tr.find('> *').each(function (i, el) {
 	        var $this = $(el);
+	        var index = i;
 
-	        if (Utils.hasDetailViewIcon(_this14.options)) {
-	          if (i === 0 && _this14.options.detailViewAlign !== 'right' || i === trLength - 1 && _this14.options.detailViewAlign === 'right') {
+	        if (_this13.options.detailView && _this13.options.detailViewIcon && !_this13.options.cardView) {
+	          if (i === 0) {
 	            var $thDetail = $ths.filter('.detail');
 
 	            var _zoomWidth = $thDetail.innerWidth() - $thDetail.find('.fht-cell').width();
 
 	            $thDetail.find('.fht-cell').width($this.innerWidth() - _zoomWidth);
-	            return;
 	          }
+
+	          index = i - 1;
 	        }
 
-	        var index = i - Utils.getDetailViewIndexOffset(_this14.options);
+	        if (index === -1) {
+	          return;
+	        }
 
-	        var $th = _this14.$header_.find(Utils.sprintf('th[data-field="%s"]', visibleFields[index]));
+	        var $th = _this13.$header_.find(Utils.sprintf('th[data-field="%s"]', visibleFields[index]));
 
 	        if ($th.length > 1) {
 	          $th = $($ths[$this[0].cellIndex]);
@@ -6426,30 +5610,25 @@
 
 	      var data = this.getData();
 	      var html = [];
-	      var detailTemplate = '';
 
-	      if (Utils.hasDetailViewIcon(this.options)) {
-	        detailTemplate = '<th class="detail"><div class="th-inner"></div><div class="fht-cell"></div></th>';
+	      if (!this.options.cardView && this.options.detailView && this.options.detailViewIcon) {
+	        html.push('<th class="detail"><div class="th-inner"></div><div class="fht-cell"></div></th>');
 	      }
 
-	      if (detailTemplate && this.options.detailViewAlign !== 'right') {
-	        html.push(detailTemplate);
-	      }
-
-	      var _iteratorNormalCompletion4 = true;
-	      var _didIteratorError4 = false;
-	      var _iteratorError4 = undefined;
+	      var _iteratorNormalCompletion3 = true;
+	      var _didIteratorError3 = false;
+	      var _iteratorError3 = undefined;
 
 	      try {
-	        for (var _iterator4 = this.columns[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-	          var column = _step4.value;
+	        for (var _iterator3 = this.columns[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	          var column = _step3.value;
 	          var falign = '';
 	          var valign = '';
 	          var csses = [];
 	          var style = {};
 	          var class_ = Utils.sprintf(' class="%s"', column['class']);
 
-	          if (!column.visible || this.footerData && this.footerData.length > 0 && !(column.field in this.footerData[0])) {
+	          if (!column.visible) {
 	            continue;
 	          }
 
@@ -6462,12 +5641,12 @@
 	          style = Utils.calculateObjectValue(null, this.options.footerStyle, [column]);
 
 	          if (style && style.css) {
-	            for (var _i12 = 0, _Object$entries11 = Object.entries(style.css); _i12 < _Object$entries11.length; _i12++) {
-	              var _Object$entries11$_i = _slicedToArray(_Object$entries11[_i12], 2),
-	                  key = _Object$entries11$_i[0],
-	                  _value3 = _Object$entries11$_i[1];
+	            for (var _i7 = 0, _Object$entries6 = Object.entries(style.css); _i7 < _Object$entries6.length; _i7++) {
+	              var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i7], 2),
+	                  key = _Object$entries6$_i[0],
+	                  value = _Object$entries6$_i[1];
 
-	              csses.push("".concat(key, ": ").concat(_value3));
+	              csses.push("".concat(key, ": ").concat(value));
 	            }
 	          }
 
@@ -6475,30 +5654,119 @@
 	            class_ = Utils.sprintf(' class="%s"', column['class'] ? [column['class'], style.classes].join(' ') : style.classes);
 	          }
 
-	          html.push('<th', class_, Utils.sprintf(' style="%s"', falign + valign + csses.concat().join('; ')));
-	          var colspan = 0;
-
-	          if (this.footerData && this.footerData.length > 0) {
-	            colspan = this.footerData[0]['_' + column.field + '_colspan'] || 0;
-	          }
-
-	          if (colspan) {
-	            html.push(" colspan=\"".concat(colspan, "\" "));
-	          }
-
-	          html.push('>');
+	          html.push('<th', class_, Utils.sprintf(' style="%s"', falign + valign + csses.concat().join('; ')), '>');
 	          html.push('<div class="th-inner">');
-	          var value = '';
-
-	          if (this.footerData && this.footerData.length > 0) {
-	            value = this.footerData[0][column.field] || '';
-	          }
-
-	          html.push(Utils.calculateObjectValue(column, column.footerFormatter, [data, value], value));
+	          html.push(Utils.calculateObjectValue(column, column.footerFormatter, [data], this.footerData[0] && this.footerData[0][column.field] || ''));
 	          html.push('</div>');
 	          html.push('<div class="fht-cell"></div>');
 	          html.push('</div>');
 	          html.push('</th>');
+	        }
+	      } catch (err) {
+	        _didIteratorError3 = true;
+	        _iteratorError3 = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
+	            _iterator3.return();
+	          }
+	        } finally {
+	          if (_didIteratorError3) {
+	            throw _iteratorError3;
+	          }
+	        }
+	      }
+
+	      this.$tableFooter.find('tr').html(html.join(''));
+	      this.trigger('post-footer', this.$tableFooter);
+	    }
+	  }, {
+	    key: "fitFooter",
+	    value: function fitFooter() {
+	      var _this14 = this;
+
+	      if (this.$el.is(':hidden')) {
+	        setTimeout(function () {
+	          return _this14.fitFooter();
+	        }, 100);
+	        return;
+	      }
+
+	      var fixedBody = this.$tableBody.get(0);
+	      var scrollWidth = fixedBody.scrollWidth > fixedBody.clientWidth && fixedBody.scrollHeight > fixedBody.clientHeight + this.$header.outerHeight() ? Utils.getScrollBarWidth() : 0;
+	      this.$tableFooter.css('margin-right', scrollWidth).find('table').css('width', this.$el.outerWidth()).attr('class', this.$el.attr('class'));
+	      var visibleFields = this.getVisibleFields();
+	      var $ths = this.$tableFooter.find('th');
+	      var $tr = this.$body.find('>tr:first-child:not(.no-records-found)');
+
+	      while ($tr.length && $tr.find('>td[colspan]:not([colspan="1"])').length) {
+	        $tr = $tr.next();
+	      }
+
+	      $tr.find('> *').each(function (i, el) {
+	        var $this = $(el);
+	        var index = i;
+
+	        if (_this14.options.detailView && !_this14.options.cardView) {
+	          if (i === 0) {
+	            var $thDetail = $ths.filter('.detail');
+
+	            var _zoomWidth2 = $thDetail.innerWidth() - $thDetail.find('.fht-cell').width();
+
+	            $thDetail.find('.fht-cell').width($this.innerWidth() - _zoomWidth2);
+	          }
+
+	          index = i - 1;
+	        }
+
+	        if (index === -1) {
+	          return;
+	        }
+
+	        var $th = $ths.eq(i);
+	        var zoomWidth = $th.innerWidth() - $th.find('.fht-cell').width();
+	        $th.find('.fht-cell').width($this.innerWidth() - zoomWidth);
+	      });
+	      this.horizontalScroll();
+	    }
+	  }, {
+	    key: "horizontalScroll",
+	    value: function horizontalScroll() {
+	      var _this15 = this;
+
+	      // horizontal scroll event
+	      // TODO: it's probably better improving the layout than binding to scroll event
+	      this.trigger('scroll-body');
+	      this.$tableBody.off('scroll').on('scroll', function (_ref6) {
+	        var currentTarget = _ref6.currentTarget;
+
+	        if (_this15.options.showHeader && _this15.options.height) {
+	          _this15.$tableHeader.scrollLeft($(currentTarget).scrollLeft());
+	        }
+
+	        if (_this15.options.showFooter && !_this15.options.cardView) {
+	          _this15.$tableFooter.scrollLeft($(currentTarget).scrollLeft());
+	        }
+	      });
+	    }
+	  }, {
+	    key: "getVisibleFields",
+	    value: function getVisibleFields() {
+	      var visibleFields = [];
+	      var _iteratorNormalCompletion4 = true;
+	      var _didIteratorError4 = false;
+	      var _iteratorError4 = undefined;
+
+	      try {
+	        for (var _iterator4 = this.header.fields[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+	          var field = _step4.value;
+	          var column = this.columns[this.fieldsColumnsIndex[field]];
+
+	          if (!column || !column.visible) {
+	            continue;
+	          }
+
+	          visibleFields.push(field);
 	        }
 	      } catch (err) {
 	        _didIteratorError4 = true;
@@ -6511,118 +5779,6 @@
 	        } finally {
 	          if (_didIteratorError4) {
 	            throw _iteratorError4;
-	          }
-	        }
-	      }
-
-	      if (detailTemplate && this.options.detailViewAlign === 'right') {
-	        html.push(detailTemplate);
-	      }
-
-	      if (!this.options.height && !this.$tableFooter.length) {
-	        this.$el.append('<tfoot><tr></tr></tfoot>');
-	        this.$tableFooter = this.$el.find('tfoot');
-	      }
-
-	      this.$tableFooter.find('tr').html(html.join(''));
-	      this.trigger('post-footer', this.$tableFooter);
-	    }
-	  }, {
-	    key: "fitFooter",
-	    value: function fitFooter() {
-	      var _this15 = this;
-
-	      if (this.$el.is(':hidden')) {
-	        setTimeout(function () {
-	          return _this15.fitFooter();
-	        }, 100);
-	        return;
-	      }
-
-	      var fixedBody = this.$tableBody.get(0);
-	      var scrollWidth = fixedBody.scrollWidth > fixedBody.clientWidth && fixedBody.scrollHeight > fixedBody.clientHeight + this.$header.outerHeight() ? Utils.getScrollBarWidth() : 0;
-	      this.$tableFooter.css('margin-right', scrollWidth).find('table').css('width', this.$el.outerWidth()).attr('class', this.$el.attr('class'));
-	      var visibleFields = this.getVisibleFields();
-	      var $ths = this.$tableFooter.find('th');
-	      var $tr = this.$body.find('>tr:first-child:not(.no-records-found)');
-	      $ths.find('.fht-cell').width('auto');
-
-	      while ($tr.length && $tr.find('>td[colspan]:not([colspan="1"])').length) {
-	        $tr = $tr.next();
-	      }
-
-	      var trLength = $tr.find('> *').length;
-	      $tr.find('> *').each(function (i, el) {
-	        var $this = $(el);
-
-	        if (Utils.hasDetailViewIcon(_this15.options)) {
-	          if (i === 0 && _this15.options.detailViewAlign === 'left' || i === trLength - 1 && _this15.options.detailViewAlign === 'right') {
-	            var $thDetail = $ths.filter('.detail');
-
-	            var _zoomWidth2 = $thDetail.innerWidth() - $thDetail.find('.fht-cell').width();
-
-	            $thDetail.find('.fht-cell').width($this.innerWidth() - _zoomWidth2);
-	            return;
-	          }
-	        }
-
-	        var $th = $ths.eq(i);
-	        var zoomWidth = $th.innerWidth() - $th.find('.fht-cell').width();
-	        $th.find('.fht-cell').width($this.innerWidth() - zoomWidth);
-	      });
-	      this.horizontalScroll();
-	    }
-	  }, {
-	    key: "horizontalScroll",
-	    value: function horizontalScroll() {
-	      var _this16 = this;
-
-	      // horizontal scroll event
-	      // TODO: it's probably better improving the layout than binding to scroll event
-	      this.$tableBody.off('scroll').on('scroll', function () {
-	        var scrollLeft = _this16.$tableBody.scrollLeft();
-
-	        if (_this16.options.showHeader && _this16.options.height) {
-	          _this16.$tableHeader.scrollLeft(scrollLeft);
-	        }
-
-	        if (_this16.options.showFooter && !_this16.options.cardView) {
-	          _this16.$tableFooter.scrollLeft(scrollLeft);
-	        }
-
-	        _this16.trigger('scroll-body', _this16.$tableBody);
-	      });
-	    }
-	  }, {
-	    key: "getVisibleFields",
-	    value: function getVisibleFields() {
-	      var visibleFields = [];
-	      var _iteratorNormalCompletion5 = true;
-	      var _didIteratorError5 = false;
-	      var _iteratorError5 = undefined;
-
-	      try {
-	        for (var _iterator5 = this.header.fields[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-	          var field = _step5.value;
-	          var column = this.columns[this.fieldsColumnsIndex[field]];
-
-	          if (!column || !column.visible) {
-	            continue;
-	          }
-
-	          visibleFields.push(field);
-	        }
-	      } catch (err) {
-	        _didIteratorError5 = true;
-	        _iteratorError5 = err;
-	      } finally {
-	        try {
-	          if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-	            _iterator5.return();
-	          }
-	        } finally {
-	          if (_didIteratorError5) {
-	            throw _iteratorError5;
 	          }
 	        }
 	      }
@@ -6660,11 +5816,9 @@
 	  }, {
 	    key: "getData",
 	    value: function getData(params) {
-	      var _this17 = this;
-
 	      var data = this.options.data;
 
-	      if ((this.searchText || this.options.customSearch || this.options.sortName !== undefined || !Utils.isEmptyObject(this.filterColumns) || !Utils.isEmptyObject(this.filterColumnsPartial)) && (!params || !params.unfiltered)) {
+	      if (this.searchText || this.options.sortName || !Utils.isEmptyObject(this.filterColumns) || !Utils.isEmptyObject(this.filterColumnsPartial)) {
 	        data = this.data;
 	      }
 
@@ -6679,33 +5833,25 @@
 	        });
 	      }
 
-	      if (params && params.formatted) {
-	        data.forEach(function (row) {
-	          for (var _i13 = 0, _Object$entries12 = Object.entries(row); _i13 < _Object$entries12.length; _i13++) {
-	            var _Object$entries12$_i = _slicedToArray(_Object$entries12[_i13], 2),
-	                key = _Object$entries12$_i[0],
-	                value = _Object$entries12$_i[1];
-
-	            var column = _this17.columns[_this17.fieldsColumnsIndex[key]];
-
-	            if (!column) {
-	              return;
-	            }
-
-	            row[key] = Utils.calculateObjectValue(column, _this17.header.formatters[column.fieldIndex], [value, row, row.index, column.field], value);
-	          }
-	        });
-	      }
-
 	      return data;
 	    }
 	  }, {
 	    key: "getSelections",
 	    value: function getSelections() {
-	      var _this18 = this;
+	      var _this16 = this;
+
+	      // fix #2424: from html with checkbox
+	      return this.data.filter(function (row) {
+	        return row[_this16.header.stateField] === true;
+	      });
+	    }
+	  }, {
+	    key: "getAllSelections",
+	    value: function getAllSelections() {
+	      var _this17 = this;
 
 	      return this.options.data.filter(function (row) {
-	        return row[_this18.header.stateField] === true;
+	        return row[_this17.header.stateField] === true;
 	      });
 	    }
 	  }, {
@@ -6716,8 +5862,10 @@
 
 	      if (this.options.pagination && this.options.sidePagination === 'server') {
 	        this.options.totalRows = data[this.options.totalField];
+	      }
+
+	      if (this.options.pagination && this.options.sidePagination === 'server') {
 	        this.options.totalNotFiltered = data[this.options.totalNotFilteredField];
-	        this.footerData = data[this.options.footerField] ? [data[this.options.footerField]] : undefined;
 	      }
 
 	      fixedScroll = data.fixedScroll;
@@ -6757,18 +5905,13 @@
 	      }
 
 	      for (i = len - 1; i >= 0; i--) {
-	        var exists = false;
 	        row = this.options.data[i];
 
-	        if (!row.hasOwnProperty(params.field) && params.field !== '$index') {
+	        if (!row.hasOwnProperty(params.field)) {
 	          continue;
-	        } else if (!row.hasOwnProperty(params.field) && params.field === '$index') {
-	          exists = params.values.includes(i);
-	        } else {
-	          exists = params.values.includes(row[params.field]);
 	        }
 
-	        if (exists) {
+	        if (params.values.includes(row[params.field])) {
 	          this.options.data.splice(i, 1);
 
 	          if (this.options.sidePagination === 'server') {
@@ -6813,17 +5956,19 @@
 	    key: "updateRow",
 	    value: function updateRow(params) {
 	      var allParams = Array.isArray(params) ? params : [params];
-	      var _iteratorNormalCompletion6 = true;
-	      var _didIteratorError6 = false;
-	      var _iteratorError6 = undefined;
+	      var _iteratorNormalCompletion5 = true;
+	      var _didIteratorError5 = false;
+	      var _iteratorError5 = undefined;
 
 	      try {
-	        for (var _iterator6 = allParams[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-	          var _params = _step6.value;
+	        for (var _iterator5 = allParams[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+	          var _params = _step5.value;
 
 	          if (!_params.hasOwnProperty('index') || !_params.hasOwnProperty('row')) {
 	            continue;
 	          }
+
+	          $.extend(this.options.data[_params.index], _params.row);
 
 	          if (_params.hasOwnProperty('replace') && _params.replace) {
 	            this.options.data[_params.index] = _params.row;
@@ -6832,16 +5977,16 @@
 	          }
 	        }
 	      } catch (err) {
-	        _didIteratorError6 = true;
-	        _iteratorError6 = err;
+	        _didIteratorError5 = true;
+	        _iteratorError5 = err;
 	      } finally {
 	        try {
-	          if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
-	            _iterator6.return();
+	          if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
+	            _iterator5.return();
 	          }
 	        } finally {
-	          if (_didIteratorError6) {
-	            throw _iteratorError6;
+	          if (_didIteratorError5) {
+	            throw _iteratorError5;
 	          }
 	        }
 	      }
@@ -6897,13 +6042,13 @@
 	    key: "updateByUniqueId",
 	    value: function updateByUniqueId(params) {
 	      var allParams = Array.isArray(params) ? params : [params];
-	      var _iteratorNormalCompletion7 = true;
-	      var _didIteratorError7 = false;
-	      var _iteratorError7 = undefined;
+	      var _iteratorNormalCompletion6 = true;
+	      var _didIteratorError6 = false;
+	      var _iteratorError6 = undefined;
 
 	      try {
-	        for (var _iterator7 = allParams[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-	          var _params2 = _step7.value;
+	        for (var _iterator6 = allParams[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+	          var _params2 = _step6.value;
 
 	          if (!_params2.hasOwnProperty('id') || !_params2.hasOwnProperty('row')) {
 	            continue;
@@ -6922,16 +6067,16 @@
 	          }
 	        }
 	      } catch (err) {
-	        _didIteratorError7 = true;
-	        _iteratorError7 = err;
+	        _didIteratorError6 = true;
+	        _iteratorError6 = err;
 	      } finally {
 	        try {
-	          if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
-	            _iterator7.return();
+	          if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
+	            _iterator6.return();
 	          }
 	        } finally {
-	          if (_didIteratorError7) {
-	            throw _iteratorError7;
+	          if (_didIteratorError6) {
+	            throw _iteratorError6;
 	          }
 	        }
 	      }
@@ -6978,21 +6123,25 @@
 	  }, {
 	    key: "updateCellByUniqueId",
 	    value: function updateCellByUniqueId(params) {
-	      var _this19 = this;
+	      var _this18 = this;
+
+	      if (!params.hasOwnProperty('id') || !params.hasOwnProperty('field') || !params.hasOwnProperty('value')) {
+	        return;
+	      }
 
 	      var allParams = Array.isArray(params) ? params : [params];
-	      allParams.forEach(function (_ref6) {
-	        var id = _ref6.id,
-	            field = _ref6.field,
-	            value = _ref6.value;
+	      allParams.forEach(function (_ref7) {
+	        var id = _ref7.id,
+	            field = _ref7.field,
+	            value = _ref7.value;
 
-	        var rowId = _this19.options.data.indexOf(_this19.getRowByUniqueId(id));
+	        var rowId = _this18.options.data.indexOf(_this18.getRowByUniqueId(id));
 
 	        if (rowId === -1) {
 	          return;
 	        }
 
-	        _this19.options.data[rowId][field] = value;
+	        _this18.options.data[rowId][field] = value;
 	      });
 
 	      if (params.reinit === false) {
@@ -7035,8 +6184,12 @@
 	        this.hiddenRows.splice(index, 1);
 	      }
 
-	      this.initBody(true);
-	      this.initPagination();
+	      if (visible) {
+	        this.updatePagination();
+	      } else {
+	        this.initBody(true);
+	        this.initPagination();
+	      }
 	    }
 	  }, {
 	    key: "getHiddenRows",
@@ -7044,22 +6197,131 @@
 	      if (show) {
 	        this.initHiddenRows();
 	        this.initBody(true);
-	        this.initPagination();
 	        return;
 	      }
 
 	      var data = this.getData();
 	      var rows = [];
+	      var _iteratorNormalCompletion7 = true;
+	      var _didIteratorError7 = false;
+	      var _iteratorError7 = undefined;
+
+	      try {
+	        for (var _iterator7 = data[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+	          var row = _step7.value;
+
+	          if (this.hiddenRows.includes(row)) {
+	            rows.push(row);
+	          }
+	        }
+	      } catch (err) {
+	        _didIteratorError7 = true;
+	        _iteratorError7 = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
+	            _iterator7.return();
+	          }
+	        } finally {
+	          if (_didIteratorError7) {
+	            throw _iteratorError7;
+	          }
+	        }
+	      }
+
+	      this.hiddenRows = rows;
+	      return rows;
+	    }
+	  }, {
+	    key: "showColumn",
+	    value: function showColumn(field) {
+	      var _this19 = this;
+
+	      var fields = Array.isArray(field) ? field : [field];
+	      fields.forEach(function (field) {
+	        _this19._toggleColumn(_this19.fieldsColumnsIndex[field], true, true);
+	      });
+	    }
+	  }, {
+	    key: "hideColumn",
+	    value: function hideColumn(field) {
+	      var _this20 = this;
+
+	      var fields = Array.isArray(field) ? field : [field];
+	      fields.forEach(function (field) {
+	        _this20._toggleColumn(_this20.fieldsColumnsIndex[field], false, true);
+	      });
+	    }
+	  }, {
+	    key: "_toggleColumn",
+	    value: function _toggleColumn(index, checked, needUpdate) {
+	      if (index === -1 || this.columns[index].visible === checked) {
+	        return;
+	      }
+
+	      this.columns[index].visible = checked;
+	      this.initHeader();
+	      this.initSearch();
+	      this.initPagination();
+	      this.initBody();
+
+	      if (this.options.showColumns) {
+	        var $items = this.$toolbar.find('.keep-open input').prop('disabled', false);
+
+	        if (needUpdate) {
+	          $items.filter(Utils.sprintf('[value="%s"]', index)).prop('checked', checked);
+	        }
+
+	        if ($items.filter(':checked').length <= this.options.minimumCountColumns) {
+	          $items.filter(':checked').prop('disabled', true);
+	        }
+	      }
+	    }
+	  }, {
+	    key: "getVisibleColumns",
+	    value: function getVisibleColumns() {
+	      return this.columns.filter(function (_ref8) {
+	        var visible = _ref8.visible;
+	        return visible;
+	      });
+	    }
+	  }, {
+	    key: "getHiddenColumns",
+	    value: function getHiddenColumns() {
+	      return this.columns.filter(function (_ref9) {
+	        var visible = _ref9.visible;
+	        return !visible;
+	      });
+	    }
+	  }, {
+	    key: "showAllColumns",
+	    value: function showAllColumns() {
+	      this._toggleAllColumns(true);
+	    }
+	  }, {
+	    key: "hideAllColumns",
+	    value: function hideAllColumns() {
+	      this._toggleAllColumns(false);
+	    }
+	  }, {
+	    key: "_toggleAllColumns",
+	    value: function _toggleAllColumns(visible) {
+	      var _this21 = this;
+
 	      var _iteratorNormalCompletion8 = true;
 	      var _didIteratorError8 = false;
 	      var _iteratorError8 = undefined;
 
 	      try {
-	        for (var _iterator8 = data[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-	          var row = _step8.value;
+	        for (var _iterator8 = this.columns.slice().reverse()[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+	          var column = _step8.value;
 
-	          if (this.hiddenRows.includes(row)) {
-	            rows.push(row);
+	          if (column.switchable) {
+	            if (!visible && this.options.showColumns && this.getVisibleColumns().length === this.options.minimumCountColumns) {
+	              continue;
+	            }
+
+	            column.visible = visible;
 	          }
 	        }
 	      } catch (err) {
@@ -7077,37 +6339,6 @@
 	        }
 	      }
 
-	      this.hiddenRows = rows;
-	      return rows;
-	    }
-	  }, {
-	    key: "showColumn",
-	    value: function showColumn(field) {
-	      var _this20 = this;
-
-	      var fields = Array.isArray(field) ? field : [field];
-	      fields.forEach(function (field) {
-	        _this20._toggleColumn(_this20.fieldsColumnsIndex[field], true, true);
-	      });
-	    }
-	  }, {
-	    key: "hideColumn",
-	    value: function hideColumn(field) {
-	      var _this21 = this;
-
-	      var fields = Array.isArray(field) ? field : [field];
-	      fields.forEach(function (field) {
-	        _this21._toggleColumn(_this21.fieldsColumnsIndex[field], false, true);
-	      });
-	    }
-	  }, {
-	    key: "_toggleColumn",
-	    value: function _toggleColumn(index, checked, needUpdate) {
-	      if (index === -1 || this.columns[index].visible === checked) {
-	        return;
-	      }
-
-	      this.columns[index].visible = checked;
 	      this.initHeader();
 	      this.initSearch();
 	      this.initPagination();
@@ -7116,96 +6347,11 @@
 	      if (this.options.showColumns) {
 	        var $items = this.$toolbar.find('.keep-open input:not(".toggle-all")').prop('disabled', false);
 
-	        if (needUpdate) {
-	          $items.filter(Utils.sprintf('[value="%s"]', index)).prop('checked', checked);
-	        }
-
-	        if ($items.filter(':checked').length <= this.options.minimumCountColumns) {
-	          $items.filter(':checked').prop('disabled', true);
-	        }
-	      }
-	    }
-	  }, {
-	    key: "getVisibleColumns",
-	    value: function getVisibleColumns() {
-	      var _this22 = this;
-
-	      return this.columns.filter(function (column) {
-	        return column.visible && !_this22.isSelectionColumn(column);
-	      });
-	    }
-	  }, {
-	    key: "getHiddenColumns",
-	    value: function getHiddenColumns() {
-	      return this.columns.filter(function (_ref7) {
-	        var visible = _ref7.visible;
-	        return !visible;
-	      });
-	    }
-	  }, {
-	    key: "isSelectionColumn",
-	    value: function isSelectionColumn(column) {
-	      return column.radio || column.checkbox;
-	    }
-	  }, {
-	    key: "showAllColumns",
-	    value: function showAllColumns() {
-	      this._toggleAllColumns(true);
-	    }
-	  }, {
-	    key: "hideAllColumns",
-	    value: function hideAllColumns() {
-	      this._toggleAllColumns(false);
-	    }
-	  }, {
-	    key: "_toggleAllColumns",
-	    value: function _toggleAllColumns(visible) {
-	      var _this23 = this;
-
-	      var _iteratorNormalCompletion9 = true;
-	      var _didIteratorError9 = false;
-	      var _iteratorError9 = undefined;
-
-	      try {
-	        for (var _iterator9 = this.columns.slice().reverse()[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-	          var column = _step9.value;
-
-	          if (column.switchable) {
-	            if (!visible && this.options.showColumns && this.getVisibleColumns().length === this.options.minimumCountColumns) {
-	              continue;
-	            }
-
-	            column.visible = visible;
-	          }
-	        }
-	      } catch (err) {
-	        _didIteratorError9 = true;
-	        _iteratorError9 = err;
-	      } finally {
-	        try {
-	          if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
-	            _iterator9.return();
-	          }
-	        } finally {
-	          if (_didIteratorError9) {
-	            throw _iteratorError9;
-	          }
-	        }
-	      }
-
-	      this.initHeader();
-	      this.initSearch();
-	      this.initPagination();
-	      this.initBody();
-
-	      if (this.options.showColumns) {
-	        var $items = this.$toolbar.find('.keep-open input[type="checkbox"]:not(".toggle-all")').prop('disabled', false);
-
 	        if (visible) {
 	          $items.prop('checked', visible);
 	        } else {
 	          $items.get().reverse().forEach(function (item) {
-	            if ($items.filter(':checked').length > _this23.options.minimumCountColumns) {
+	            if ($items.filter(':checked').length > _this21.options.minimumCountColumns) {
 	              $(item).prop('checked', visible);
 	            }
 	          });
@@ -7226,7 +6372,11 @@
 	      var i;
 	      var j;
 	      var $tr = this.$body.find('>tr');
-	      col += Utils.getDetailViewIndexOffset(this.options);
+
+	      if (this.options.detailView && !this.options.cardView) {
+	        col += 1;
+	      }
+
 	      var $td = $tr.eq(row).find('>td').eq(col);
 
 	      if (row < 0 || col < 0 || row >= this.data.length) {
@@ -7258,7 +6408,6 @@
 	      this.$selectAll.add(this.$selectAll_).prop('checked', checked);
 	      this.$selectItem.filter(':enabled').prop('checked', checked);
 	      this.updateRows();
-	      this.updateSelected();
 	      var rowsAfter = this.getSelections();
 
 	      if (checked) {
@@ -7296,29 +6445,29 @@
 	    key: "_toggleCheck",
 	    value: function _toggleCheck(checked, index) {
 	      var $el = this.$selectItem.filter("[data-index=\"".concat(index, "\"]"));
-	      var row = this.options.data[index];
+	      var row = this.data[index];
 
 	      if ($el.is(':radio') || this.options.singleSelect || this.options.multipleSelectRow && !this.multipleSelectRowCtrlKey && !this.multipleSelectRowShiftKey) {
-	        var _iteratorNormalCompletion10 = true;
-	        var _didIteratorError10 = false;
-	        var _iteratorError10 = undefined;
+	        var _iteratorNormalCompletion9 = true;
+	        var _didIteratorError9 = false;
+	        var _iteratorError9 = undefined;
 
 	        try {
-	          for (var _iterator10 = this.options.data[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-	            var r = _step10.value;
+	          for (var _iterator9 = this.options.data[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+	            var r = _step9.value;
 	            r[this.header.stateField] = false;
 	          }
 	        } catch (err) {
-	          _didIteratorError10 = true;
-	          _iteratorError10 = err;
+	          _didIteratorError9 = true;
+	          _iteratorError9 = err;
 	        } finally {
 	          try {
-	            if (!_iteratorNormalCompletion10 && _iterator10.return != null) {
-	              _iterator10.return();
+	            if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
+	              _iterator9.return();
 	            }
 	          } finally {
-	            if (_didIteratorError10) {
-	              throw _iteratorError10;
+	            if (_didIteratorError9) {
+	              throw _iteratorError9;
 	            }
 	          }
 	        }
@@ -7360,7 +6509,7 @@
 	  }, {
 	    key: "_toggleCheckBy",
 	    value: function _toggleCheckBy(checked, obj) {
-	      var _this24 = this;
+	      var _this22 = this;
 
 	      if (!obj.hasOwnProperty('field') || !obj.hasOwnProperty('values')) {
 	        return;
@@ -7373,7 +6522,7 @@
 	        }
 
 	        if (obj.values.includes(row[obj.field])) {
-	          var $el = _this24.$selectItem.filter(':enabled').filter(Utils.sprintf('[data-index="%s"]', i));
+	          var $el = _this22.$selectItem.filter(':enabled').filter(Utils.sprintf('[data-index="%s"]', i));
 
 	          $el = checked ? $el.not(':checked') : $el.filter(':checked');
 
@@ -7382,10 +6531,10 @@
 	          }
 
 	          $el.prop('checked', checked);
-	          row[_this24.header.stateField] = checked;
+	          row[_this22.header.stateField] = checked;
 	          rows.push(row);
 
-	          _this24.trigger(checked ? 'check' : 'uncheck', row, $el);
+	          _this22.trigger(checked ? 'check' : 'uncheck', row, $el);
 	        }
 	      });
 	      this.updateSelected();
@@ -7432,7 +6581,7 @@
 	      if (!this.options.cardView && this.options.showHeader && this.options.height) {
 	        this.$tableHeader.show();
 	        this.resetHeader();
-	        padding += this.$header.outerHeight(true) + 1;
+	        padding += this.$header.outerHeight(true);
 	      } else {
 	        this.$tableHeader.hide();
 	        this.trigger('post-header');
@@ -7447,32 +6596,13 @@
 	        }
 	      }
 
-	      if (this.$container.hasClass('fullscreen')) {
-	        this.$tableContainer.css('height', '');
-	        this.$tableContainer.css('width', '');
-	      } else if (this.options.height) {
-	        if (this.$tableBorder) {
-	          this.$tableBorder.css('width', '');
-	          this.$tableBorder.css('height', '');
-	        }
-
+	      if (this.options.height) {
 	        var toolbarHeight = this.$toolbar.outerHeight(true);
 	        var paginationHeight = this.$pagination.outerHeight(true);
 	        var height = this.options.height - toolbarHeight - paginationHeight;
-	        var $bodyTable = this.$tableBody.find('>table');
-	        var tableHeight = $bodyTable.outerHeight();
+	        var tableHeight = this.$tableBody.find('table').outerHeight(true);
 	        this.$tableContainer.css('height', "".concat(height, "px"));
-
-	        if (this.$tableBorder && $bodyTable.is(':visible')) {
-	          var tableBorderHeight = height - tableHeight - 2;
-
-	          if (this.$tableBody[0].scrollWidth - this.$tableBody.innerWidth()) {
-	            tableBorderHeight -= Utils.getScrollBarWidth();
-	          }
-
-	          this.$tableBorder.css('width', "".concat($bodyTable.outerWidth(), "px"));
-	          this.$tableBorder.css('height', "".concat(tableBorderHeight, "px"));
-	        }
+	        this.$tableBorder && this.$tableBorder.css('height', "".concat(height - tableHeight - padding - 1, "px"));
 	      }
 
 	      if (this.options.cardView) {
@@ -7489,24 +6619,25 @@
 	      this.trigger('reset-view');
 	    }
 	  }, {
-	    key: "showLoading",
-	    value: function showLoading() {
-	      this.$tableLoading.toggleClass('open', true);
-	      var fontSize = this.options.loadingFontSize;
-
-	      if (this.options.loadingFontSize === 'auto') {
-	        fontSize = this.$tableLoading.width() * 0.04;
-	        fontSize = Math.max(12, fontSize);
-	        fontSize = Math.min(32, fontSize);
-	        fontSize = "".concat(fontSize, "px");
+	    key: "resetWidth",
+	    value: function resetWidth() {
+	      if (this.options.showHeader && this.options.height) {
+	        this.fitHeader();
 	      }
 
-	      this.$tableLoading.find('.loading-text').css('font-size', fontSize);
+	      if (this.options.showFooter && !this.options.cardView) {
+	        this.fitFooter();
+	      }
+	    }
+	  }, {
+	    key: "showLoading",
+	    value: function showLoading() {
+	      this.$tableLoading.css('display', 'flex');
 	    }
 	  }, {
 	    key: "hideLoading",
 	    value: function hideLoading() {
-	      this.$tableLoading.toggleClass('open', false);
+	      this.$tableLoading.css('display', 'none');
 	    }
 	  }, {
 	    key: "togglePagination",
@@ -7537,7 +6668,7 @@
 	  }, {
 	    key: "resetSearch",
 	    value: function resetSearch(text) {
-	      var $search = Utils.getSearchInput(this);
+	      var $search = this.$toolbar.find('.search input');
 	      $search.val(text || '');
 	      this.onSearch({
 	        currentTarget: $search
@@ -7555,6 +6686,10 @@
 	  }, {
 	    key: "scrollTo",
 	    value: function scrollTo(params) {
+	      if (typeof params === 'undefined') {
+	        return this.$tableBody.scrollTop();
+	      }
+
 	      var options = {
 	        unit: 'px',
 	        value: 0
@@ -7564,7 +6699,7 @@
 	        options = Object.assign(options, params);
 	      } else if (typeof params === 'string' && params === 'bottom') {
 	        options.value = this.$tableBody[0].scrollHeight;
-	      } else if (typeof params === 'string' || typeof params === 'number') {
+	      } else if (typeof params === 'string') {
 	        options.value = params;
 	      }
 
@@ -7582,7 +6717,7 @@
 	  }, {
 	    key: "getScrollPosition",
 	    value: function getScrollPosition() {
-	      return this.$tableBody.scrollTop();
+	      return this.scrollTo();
 	    }
 	  }, {
 	    key: "selectPage",
@@ -7647,17 +6782,6 @@
 	      this.trigger('expand-row', index, row, $element);
 	    }
 	  }, {
-	    key: "expandRowByUniqueId",
-	    value: function expandRowByUniqueId(uniqueId) {
-	      var row = this.getRowByUniqueId(uniqueId);
-
-	      if (!row) {
-	        return;
-	      }
-
-	      this.expandRow(this.data.indexOf(row));
-	    }
-	  }, {
 	    key: "collapseRow",
 	    value: function collapseRow(index) {
 	      var row = this.data[index];
@@ -7673,17 +6797,6 @@
 
 	      this.trigger('collapse-row', index, row, $tr.next());
 	      $tr.next().remove();
-	    }
-	  }, {
-	    key: "collapseRowByUniqueId",
-	    value: function collapseRowByUniqueId(uniqueId) {
-	      var row = this.getRowByUniqueId(uniqueId);
-
-	      if (!row) {
-	        return;
-	      }
-
-	      this.collapseRow(this.data.indexOf(row));
 	    }
 	  }, {
 	    key: "expandAllRows",
@@ -7757,8 +6870,8 @@
 	$.BootstrapTable = BootstrapTable;
 
 	$.fn.bootstrapTable = function (option) {
-	  for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key5 = 1; _key5 < _len2; _key5++) {
-	    args[_key5 - 1] = arguments[_key5];
+	  for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key3 = 1; _key3 < _len2; _key3++) {
+	    args[_key3 - 1] = arguments[_key3];
 	  }
 
 	  var value;
@@ -7785,9 +6898,7 @@
 	    }
 
 	    if (!data) {
-	      data = new $.BootstrapTable(el, options);
-	      $(el).data('bootstrap.table', data);
-	      data.init();
+	      $(el).data('bootstrap.table', data = new $.BootstrapTable(el, options));
 	    }
 	  });
 	  return typeof value === 'undefined' ? this : value;
@@ -7810,4 +6921,4 @@
 
 	return BootstrapTable;
 
-})));
+}));
