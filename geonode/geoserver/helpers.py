@@ -332,6 +332,7 @@ def fixup_style(cat, resource, style):
                 sld = style.read()
             logger.debug("Creating style [%s]", name)
             style = cat.create_style(name, sld, overwrite=True, raw=True, workspace=settings.DEFAULT_WORKSPACE)
+            cat.reset()
             style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
             lyr.default_style = style
             logger.debug("Saving changes to %s", lyr)
@@ -368,6 +369,7 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
         try:
             cat.create_style(
                 saved_layer.name, sld, overwrite=False, raw=True, workspace=saved_layer.workspace)
+            cat.reset()
             style = cat.get_style(saved_layer.name, workspace=saved_layer.workspace) or \
                 cat.get_style(saved_layer.name)
         except Exception as e:
@@ -379,6 +381,7 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
         try:
             cat.create_style(saved_layer.name, sld, overwrite=True, raw=True,
                              workspace=saved_layer.workspace)
+            cat.reset()
             style = cat.get_style(saved_layer.name, workspace=saved_layer.workspace)
         except Exception as e:
             logger.exception(e)
@@ -1097,6 +1100,7 @@ def set_styles(layer, gs_catalog):
                 sld_body = default_style.sld_body
                 try:
                     gs_catalog.create_style(layer.name, sld_body, raw=True, workspace=layer.workspace)
+                    gs_catalog.reset()
                 except Exception:
                     tb = traceback.format_exc()
                     logger.debug(tb)
@@ -1152,6 +1156,7 @@ def save_style(gs_style, layer):
         sld_body = gs_style.sld_body
         try:
             gs_catalog.create_style(gs_style.name, sld_body, raw=True, workspace=layer.workspace)
+            gs_catalog.reset()
             gs_style = gs_catalog.get_style(gs_style.name, workspace=layer.workspace)
         except Exception:
             tb = traceback.format_exc()
