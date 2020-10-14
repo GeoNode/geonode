@@ -1036,12 +1036,6 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                             # request_body['thumbnail_create_url'] = thumbnail_create_url
                             if 'bbox' in request_body and isinstance(request_body['bbox'], string_types):
                                 request_body['bbox'] = [str(coord) for coord in request_body['bbox'].split(",")]
-                                request_body['bbox'] = [
-                                    request_body['bbox'][0],
-                                    request_body['bbox'][2],
-                                    request_body['bbox'][1],
-                                    request_body['bbox'][3]
-                                ]
                             if 'crs' in request_body and 'srid' not in request_body:
                                 request_body['srid'] = request_body['crs']
                         elif instance.alternate:
@@ -1175,8 +1169,8 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
                     bbox[3] = float(_bbox[3])
 
     wms_endpoint = getattr(ogc_server_settings, 'WMS_ENDPOINT') or 'ows'
-    wms_version = getattr(ogc_server_settings, 'WMS_VERSION') or '1.1.1'
-    wms_format = getattr(ogc_server_settings, 'WMS_FORMAT') or 'image/png8'
+    wms_version = getattr(ogc_server_settings, 'WMS_VERSION') or '1.3.0'
+    wms_format = getattr(ogc_server_settings, 'WMS_FORMAT') or 'image/png'
 
     params = {
         'service': 'WMS',
