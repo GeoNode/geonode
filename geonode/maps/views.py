@@ -78,8 +78,6 @@ from deprecated import deprecated
 
 from dal import autocomplete
 
-from geonode.base.utils import ManageResourceOwnerPermissions
-
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
@@ -128,9 +126,6 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
         mapid,
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
-
-    permission_manager = ManageResourceOwnerPermissions(map_obj)
-    permission_manager.set_owner_permissions_according_to_workflow()
 
     # Add metadata_author or poc if missing
     map_obj.add_missing_metadata_author_or_poc()
@@ -231,7 +226,7 @@ def map_metadata(
         map_form = MapForm(request.POST, instance=map_obj, prefix="resource")
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
-            request.POST["category_choice_field"] else None)
+                                                      request.POST["category_choice_field"] else None)
         tkeywords_form = TKeywordForm(request.POST)
     else:
         map_form = MapForm(instance=map_obj, prefix="resource")
@@ -257,8 +252,8 @@ def map_metadata(
                             tkl_ids = ",".join(
                                 map(str, tkl.values_list('id', flat=True)))
                             tkeywords_list += "," + \
-                                tkl_ids if len(
-                                    tkeywords_list) > 0 else tkl_ids
+                                              tkl_ids if len(
+                                tkeywords_list) > 0 else tkl_ids
                 except Exception:
                     tb = traceback.format_exc()
                     logger.error(tb)
@@ -275,7 +270,7 @@ def map_metadata(
         new_abstract = strip_tags(map_form.cleaned_data['abstract'])
 
         new_category = None
-        if category_form and 'category_choice_field' in category_form.cleaned_data and\
+        if category_form and 'category_choice_field' in category_form.cleaned_data and \
                 category_form.cleaned_data['category_choice_field']:
             new_category = TopicCategory.objects.get(
                 id=int(category_form.cleaned_data['category_choice_field']))
@@ -376,7 +371,7 @@ def map_metadata(
             all_metadata_author_groups = GroupProfile.objects.exclude(
                 access="private").exclude(access="public-invite")
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
-            if item not in metadata_author_groups]
+         if item not in metadata_author_groups]
 
     if settings.ADMIN_MODERATE_UPLOADS:
         if not request.user.is_superuser:
@@ -521,7 +516,7 @@ def map_view(request, mapid, layer_name=None,
     config = map_obj.viewer_json(request)
     if layer_name:
         config = add_layers_to_map_config(
-            request, map_obj, (layer_name, ), False)
+            request, map_obj, (layer_name,), False)
 
     register_event(request, EventType.EVENT_VIEW, request.path)
     return render(request, template, context={
@@ -568,7 +563,7 @@ def map_json(request, mapid):
 
         map_obj = Map.objects.get(id=mapid)
         if not request.user.has_perm(
-            'change_resourcebase',
+                'change_resourcebase',
                 map_obj.get_self_resource()):
             return HttpResponse(
                 _PERMISSION_MSG_SAVE,
@@ -772,6 +767,7 @@ def add_layers_to_map_config(
         bbox[1] = layer_bbox[2]
         bbox[2] = layer_bbox[1]
         bbox[3] = layer_bbox[3]
+
         # assert False, str(layer_bbox)
 
         def decimal_encode(bbox):
@@ -791,9 +787,8 @@ def add_layers_to_map_config(
                     "height": "40",
                     "width": "22",
                     "href": layer.ows_url +
-                    "?service=wms&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=" +
-                    quote(layer.service_typename, safe=''),
-                    "format": "image/png"
+                             "?service=wms&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=" +
+                             quote(layer.service_typename, safe=''), "format": "image/png"
                 },
                 "name": style.name
             }
@@ -964,8 +959,8 @@ def add_layers_to_map_config(
         y = (miny + maxy) / 2
 
         if getattr(
-            settings,
-            'DEFAULT_MAP_CRS',
+                settings,
+                'DEFAULT_MAP_CRS',
                 'EPSG:3857') == "EPSG:4326":
             center = list((x, y))
         else:
