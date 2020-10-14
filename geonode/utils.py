@@ -374,15 +374,17 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             # poly = GEOSGeometry(wkt, srid=source_srid)
             # poly.transform(target_srid)
             # projected_bbox = [str(x) for x in poly.extent]
+            import osgeo.gdal
             from osgeo import ogr
             from osgeo.osr import SpatialReference, CoordinateTransformation
             g = ogr.Geometry(wkt=wkt)
             source = SpatialReference()
             source.ImportFromEPSG(source_srid)
-            source.SetAxisMappingStrategy(0)
             dest = SpatialReference()
             dest.ImportFromEPSG(target_srid)
-            dest.SetAxisMappingStrategy(0)
+            if osgeo.gdal.__version__ == '3.0.4':
+                source.SetAxisMappingStrategy(0)
+                dest.SetAxisMappingStrategy(0)
             g.Transform(CoordinateTransformation(source, dest))
             projected_bbox = [str(x) for x in g.GetEnvelope()]
             # Must be in the form : [x0, x1, y0, y1, EPSG:<target_srid>)
