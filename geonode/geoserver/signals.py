@@ -28,6 +28,7 @@ from geoserver.layer import Layer as GsLayer
 from django.conf import settings
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
+from django.contrib.staticfiles.templatetags import staticfiles
 
 # use different name to avoid module clash
 from geonode import GeoNodeException
@@ -412,5 +413,7 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
 def geoserver_post_save_map(instance, sender, created, **kwargs):
     instance.set_missing_info()
     if not created:
-        logger.debug("... Creating Thumbnail for Map [%s]" % (instance.title))
-        create_gs_thumbnail(instance, overwrite=False, check_bbox=True)
+        if not instance.thumbnail_url or \
+        instance.thumbnail_url == staticfiles.static(settings.MISSING_THUMBNAIL):
+            logger.debug("... Creating Thumbnail for Map [%s]" % (instance.title))
+            create_gs_thumbnail(instance, overwrite=False, check_bbox=True)
