@@ -57,7 +57,6 @@ from django.http import Http404, HttpResponse
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models, connection, transaction
@@ -314,19 +313,22 @@ def _split_query(query):
     return [kw.strip() for kw in keywords if kw.strip()]
 
 
-def bbox_to_wkt(x0, x1, y0, y1, srid="4326"):
+def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
     if srid and str(srid).startswith('EPSG:'):
         srid = srid[5:]
     if None not in [x0, x1, y0, y1]:
-        wkt = 'SRID=%s;POLYGON((%f %f,%f %f,%f %f,%f %f,%f %f))' % (
-            srid,
+        wkt = 'POLYGON((%f %f,%f %f,%f %f,%f %f,%f %f))' % (
             float(x0), float(y0),
             float(x0), float(y1),
             float(x1), float(y1),
             float(x1), float(y0),
             float(x0), float(y0))
+        if include_srid:
+            wkt = 'SRID=%s;%s' % (srid, wkt)
     else:
-        wkt = 'SRID=4326;POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))'
+        wkt = 'POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))'
+        if include_srid:
+            wkt = 'SRID=4326;%s' % wkt
     return wkt
 
 
@@ -365,10 +367,24 @@ def bbox_to_projection(native_bbox, target_srid=4326):
                               _v(maxx, x=True, source_srid=source_srid, target_srid=target_srid),
                               _v(miny, x=False, source_srid=source_srid, target_srid=target_srid),
                               _v(maxy, x=False, source_srid=source_srid, target_srid=target_srid),
-                              srid=source_srid)
-            poly = GEOSGeometry(wkt, srid=source_srid)
-            poly.transform(target_srid)
-            projected_bbox = [str(x) for x in poly.extent]
+                              srid=source_srid, include_srid=False)
+            # AF: This causses error with GDAL 3.0.4 due to a breaking change on GDAL
+            #     https://code.djangoproject.com/ticket/30645
+            # from django.contrib.gis.geos import GEOSGeometry
+            # poly = GEOSGeometry(wkt, srid=source_srid)
+            # poly.transform(target_srid)
+            # projected_bbox = [str(x) for x in poly.extent]
+            from osgeo import ogr
+            from osgeo.osr import SpatialReference, CoordinateTransformation
+            g = ogr.Geometry(wkt=wkt)
+            source = SpatialReference()
+            source.ImportFromEPSG(source_srid)
+            source.SetAxisMappingStrategy(0)
+            dest = SpatialReference()
+            dest.ImportFromEPSG(target_srid)
+            dest.SetAxisMappingStrategy(0)
+            g.Transform(CoordinateTransformation(source, dest))
+            projected_bbox = [str(x) for x in g.GetEnvelope()]
             # Must be in the form : [x0, x1, y0, y1, EPSG:<target_srid>)
             return tuple([projected_bbox[0], projected_bbox[2], projected_bbox[1], projected_bbox[3]]) + \
                 ("EPSG:%s" % target_srid,)

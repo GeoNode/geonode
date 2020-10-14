@@ -1998,6 +1998,7 @@ def _render_thumbnail(req_body, width=240, height=200):
 
 
 def _prepare_thumbnail_body_from_opts(request_body, request=None):
+
     if isinstance(request_body, bytes):
         request_body = request_body.decode("UTF-8")
     try:
@@ -2039,8 +2040,8 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
                 if isinstance(o, decimal.Decimal):
                     o = (str(o) for o in [o])
                 _bbox.append(o)
-            # Must be in the form : [x0, x1, y0, y1
-            return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
+            # Must be in the form : [x0, x1, y0, y1]
+            return [_bbox[0], _bbox[1], _bbox[2], _bbox[3]]
 
         # Sanity Checks
         if 'bbox' not in request_body:
