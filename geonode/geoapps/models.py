@@ -93,17 +93,6 @@ class GeoApp(ResourceBase):
         return None
 
     @property
-    def app_type(self):
-        if hasattr(self, '_app_type'):
-            return self._app_type
-        return None
-
-    @app_type.setter
-    def app_type(self, value):
-        if hasattr(self, 'app_type'):
-            self._app_type = value
-
-    @property
     def center(self):
         """
         A handy shortcut for the center_x and center_y properties as a tuple

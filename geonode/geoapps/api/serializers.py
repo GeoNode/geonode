@@ -48,7 +48,7 @@ class AppTypePolymorphicSerializer(DynamicModelSerializer):
         _instance = GeoApp.objects.get(id=value)
         _ct = _instance.polymorphic_ctype
         _child = _ct.model_class().objects.filter(pk=value).first()
-        if _child:
+        if _child and hasattr(_child, 'app_type'):
             return _child.app_type
 
 
