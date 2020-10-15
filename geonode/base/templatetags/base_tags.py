@@ -89,7 +89,17 @@ def facets(context):
         except Exception:
             pass
 
-    if facet_type == 'documents':
+    if facet_type == 'geoapps':
+        facets = {}
+
+        from django.apps import apps
+        for label, app in apps.app_configs.items():
+            if hasattr(app, 'type') and app.type == 'GEONODE_APP':
+                if hasattr(app, 'default_model'):
+                    _cnt = apps.get_model(label, app.default_model).objects.all().count()
+                    facets[app.default_model] = _cnt
+        return facets
+    elif facet_type == 'documents':
         documents = Document.objects.filter(title__icontains=title_filter)
         if category_filter:
             documents = documents.filter(category__identifier__in=category_filter)

@@ -61,6 +61,11 @@
             <li id="nav_documents">
               <a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a>
             </li>
+            {% if GEONODE_APPS_ENABLE and GEONODE_APPS_NAV_MENU_ENABLE %}
+            <li id="nav_maps">
+              <a href="{% url "apps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a>
+            </li>
+            {% endif %}
            {% block extra_tab %}
            {% endblock %}
             <li id="nav_people">

@@ -88,14 +88,29 @@ urlpatterns = [
 
 urlpatterns += [
 
+    # ResourceBase views
+    url(r'^base/', include('geonode.base.urls')),
+
     # Layer views
     url(r'^layers/', include('geonode.layers.urls')),
+
+    # Remote Services views
+    url(r'^services/', include('geonode.services.urls')),
 
     # Map views
     url(r'^maps/', include('geonode.maps.urls')),
 
+    # Documents views
+    url(r'^documents/', include('geonode.documents.urls')),
+
+    # Apps views
+    url(r'^apps/', include('geonode.geoapps.urls')),
+
     # Catalogue views
     url(r'^catalogue/', include('geonode.catalogue.urls')),
+
+    # Group Profiles views
+    url(r'^groups/', include('geonode.groups.urls')),
 
     # ident
     url(r'^ident.json$',
@@ -138,11 +153,6 @@ urlpatterns += [
         r'^account/moderation_sent/(?P<inactive_user>[^/]*)$',
         geonode.views.moderator_contacted,
         name='moderator_contacted'),
-
-    url(r'^groups/', include('geonode.groups.urls')),
-    url(r'^documents/', include('geonode.documents.urls')),
-    url(r'^services/', include('geonode.services.urls')),
-    url(r'^base/', include('geonode.base.urls')),
 
     # OAuth Provider
     url(r'^o/',

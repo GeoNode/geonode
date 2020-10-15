@@ -52,6 +52,7 @@ from geonode.base.models import HierarchicalKeyword
 from geonode.base.models import ThesaurusKeywordLabel
 from geonode.layers.models import Layer, Style
 from geonode.maps.models import Map
+from geonode.geoapps.models import GeoApp
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile, GroupCategory
 from django.core.serializers.json import DjangoJSONEncoder
@@ -67,7 +68,8 @@ from geonode.security.utils import get_visible_resources
 FILTER_TYPES = {
     'layer': Layer,
     'map': Map,
-    'document': Document
+    'document': Document,
+    'geoapp': GeoApp
 }
 
 
@@ -93,9 +95,9 @@ class CountJSONSerializer(Serializer):
         if resources and resources.count() > 0:
             if options['title_filter']:
                 resources = resources.filter(title__icontains=options['title_filter'])
-
             if options['type_filter']:
                 _type_filter = options['type_filter']
+
                 if not isinstance(_type_filter, str):
                     _type_filter = _type_filter.__name__.lower()
                 resources = resources.filter(polymorphic_ctype__model=_type_filter)

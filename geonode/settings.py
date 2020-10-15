@@ -390,6 +390,14 @@ GEONODE_CORE_APPS = (
     'geonode.catalogue.metadataxsl',
 )
 
+# GeoNode Apps
+GEONODE_APPS_ENABLE = ast.literal_eval(os.getenv("GEONODE_APPS_ENABLE", "True"))
+GEONODE_APPS_NAME = os.getenv("GEONODE_APPS_NAME", "Apps")
+GEONODE_APPS_NAV_MENU_ENABLE = ast.literal_eval(os.getenv("GEONODE_APPS_NAV_MENU_ENABLE", "True"))
+
+if GEONODE_APPS_ENABLE and not 'geonode.geoapps' in GEONODE_CORE_APPS:
+    GEONODE_CORE_APPS += ('geonode.geoapps', )
+
 GEONODE_INTERNAL_APPS = (
     # GeoNode internal apps
     'geonode.people',
@@ -1468,6 +1476,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     if 'geonode_mapstore_client' not in INSTALLED_APPS:
         INSTALLED_APPS += (
             'mapstore2_adapter',
+            'mapstore2_adapter.geoapps.geostories',
             'geonode_mapstore_client',)
 
     def get_geonode_catalogue_service():

@@ -48,6 +48,7 @@ from tastypie.utils.mime import build_content_type
 from geonode import get_version, qgis_server, geoserver
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.geoapps.models import GeoApp
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 from geonode.base.models import HierarchicalKeyword
@@ -1019,6 +1020,65 @@ class MapResource(CommonModelApi):
         paginator_class = CrossSiteXHRPaginator
         queryset = Map.objects.distinct().order_by('-date')
         resource_name = 'maps'
+        authentication = MultiAuthentication(SessionAuthentication(),
+                                             OAuthAuthentication(),
+                                             GeonodeApiKeyAuthentication())
+
+
+class GeoAppResource(CommonModelApi):
+
+    """GeoApps API"""
+
+    def format_objects(self, objects):
+        """
+        Formats the objects and provides reference to list of layers in GeoApp
+        resources.
+
+        :param objects: GeoApp objects
+        """
+        formatted_objects = []
+        for obj in objects:
+            # convert the object to a dict using the standard values.
+            formatted_obj = model_to_dict(obj, fields=self.VALUES)
+            username = obj.owner.get_username() if hasattr(obj, 'owner') and obj.owner else str(obj.owner)
+            full_name = obj.owner.get_full_name() if hasattr(obj, 'owner') and obj.owner else str(obj.owner)
+            formatted_obj['owner__username'] = username
+            formatted_obj['owner_name'] = full_name
+            if obj.category:
+                formatted_obj['category__gn_description'] = obj.category.gn_description
+            if obj.group:
+                formatted_obj['group'] = obj.group
+                try:
+                    formatted_obj['group_name'] = GroupProfile.objects.get(slug=obj.group.name)
+                except GroupProfile.DoesNotExist:
+                    formatted_obj['group_name'] = obj.group
+
+            formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
+            formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
+
+            if 'site_url' not in formatted_obj or len(formatted_obj['site_url']) == 0:
+                formatted_obj['site_url'] = settings.SITEURL
+
+            # Probe Remote Services
+            formatted_obj['store_type'] = 'geoapp'
+            formatted_obj['online'] = True
+
+            # replace thumbnail_url with curated_thumbs
+            if hasattr(obj, 'curatedthumbnail'):
+                if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
+                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
+                else:
+                    formatted_obj['thumbnail_url'] = ''
+
+            formatted_objects.append(formatted_obj)
+        return formatted_objects
+
+    class Meta(CommonMetaApi):
+        paginator_class = CrossSiteXHRPaginator
+        filtering = CommonMetaApi.filtering
+        filtering.update({'app_type': ALL})
+        queryset = GeoApp.objects.distinct().order_by('-date')
+        resource_name = 'geoapps'
         authentication = MultiAuthentication(SessionAuthentication(),
                                              OAuthAuthentication(),
                                              GeonodeApiKeyAuthentication())
