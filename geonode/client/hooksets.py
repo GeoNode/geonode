@@ -79,7 +79,7 @@ class BaseHookSet(object):
 
     # GeoApps
     def geoapp_list_template(self, context=None):
-        return 'geoapps/app_list.html'
+        return 'apps/app_list_default.html'
 
     def geoapp_detail_template(self, context=None):
         return NotImplemented
