@@ -118,6 +118,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
             except Exception as e:
                 raise ValidationError(e)
 
+        _instance.save()
         return _instance
 
     def update(self, instance, validated_data):
@@ -154,6 +155,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
             except Exception as e:
                 raise ValidationError(e)
 
+        instance.save()
         return instance
 
     """

@@ -126,9 +126,8 @@ class GeoApp(ResourceBase):
         else:
             return []
 
-    @property
     def get_absolute_url(self):
-        return reverse('app_detail', None, [str(self.id)])
+        return reverse('geoapp_detail', None, [str(self.id)])
 
     class Meta(ResourceBase.Meta):
         pass
