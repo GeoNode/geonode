@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
 import logging
 
 from django.conf import settings
@@ -28,7 +27,7 @@ from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 
-from geonode.geoapps.models import GeoApp
+from geonode.geoapps.models import GeoApp, GeoAppData
 from geonode.utils import (
     resolve_object
 )
@@ -95,10 +94,12 @@ def geoapp_edit(request, geoappid, template='apps/app_edit.html'):
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
 
-    _config = geoapp_obj.data.blob if geoapp_obj.data else {}
+    _data = GeoAppData.objects.filter(resource__id=geoappid).first()
+    _config = _data.blob if _data else {}
     _ctx = {
         'appId': geoappid,
-        'config': json.dumps(_config),
+        'appType': geoapp_obj.type,
+        'config': _config,
         'app': geoapp_obj,
         'preview': getattr(
             settings,
