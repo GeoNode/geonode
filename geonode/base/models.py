@@ -961,17 +961,17 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if self.bbox_polygon:
             bbox = self.bbox_polygon
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', self.srid)
-            if match:
-                srid = int(match.group('srid'))
-                if bbox.srid is not None and bbox.srid != srid:
-                    try:
-                        bbox = bbox.transform(srid, clone=True)
-                    except Exception:
-                        bbox.srid = srid
+            srid = int(match.group('srid'))
+            if bbox.srid is not None and bbox.srid != srid:
+                try:
+                    bbox = bbox.transform(srid, clone=True)
+                except Exception:
+                    bbox.srid = srid
 
-                bbox = BBOXHelper(bbox.extent)
-                return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(srid)]
-        return GEOSGeometry("""POLYGON EMPTY""")
+            bbox = BBOXHelper(bbox.extent)
+            return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(srid)]
+        bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
+        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
     @property
     def ll_bbox(self):
@@ -984,7 +984,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
             bbox = BBOXHelper(bbox.extent)
             return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
-        return GEOSGeometry("""POLYGON EMPTY""")
+        bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
+        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
     @property
     def ll_bbox_string(self):
@@ -997,7 +998,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 y0=bbox.ymin,
                 x1=bbox.xmax,
                 y1=bbox.ymax)
-        return GEOSGeometry("""POLYGON EMPTY""")
+        bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
+        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
     @property
     def bbox_string(self):
@@ -1011,13 +1013,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 y0=bbox.ymin,
                 x1=bbox.xmax,
                 y1=bbox.ymax)
-        return GEOSGeometry("""POLYGON EMPTY""")
+        bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
+        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
     @property
     def bbox_helper(self):
         if self.bbox_polygon:
             return BBOXHelper(self.bbox_polygon.extent)
-        return GEOSGeometry("""POLYGON EMPTY""")
+        bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
+        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
     @cached_property
     def bbox_x0(self):
@@ -1053,7 +1057,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if bbox.srid != 4326:
                 bbox = bbox.transform(4326, clone=True)
             return str(bbox)
-        return GEOSGeometry("""POLYGON EMPTY""")
+        bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
+        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
     @property
     def license_light(self):
