@@ -960,13 +960,17 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """BBOX is in the format: [x0, x1, y0, y1, srid]."""
         if self.bbox_polygon:
             bbox = self.bbox_polygon
-            match = re.match(r'^(EPSG:)?(?P<srid>\d{4,5})$', self.srid)
-            srid = int(match.group('srid'))
-            if bbox.srid is not None and bbox.srid != srid:
-                bbox = bbox.transform(srid, clone=True)
+            match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', self.srid)
+            if match:
+                srid = int(match.group('srid'))
+                if bbox.srid is not None and bbox.srid != srid:
+                    try:
+                        bbox = bbox.transform(srid, clone=True)
+                    except Exception:
+                        bbox.srid = srid
 
-            bbox = BBOXHelper(bbox.extent)
-            return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(srid)]
+                bbox = BBOXHelper(bbox.extent)
+                return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(srid)]
         return GEOSGeometry("""POLYGON EMPTY""")
 
     @property
@@ -1243,8 +1247,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         bbox = self.bbox_polygon
         center_x, center_y = self.bbox_polygon.centroid.coords
-        center = Point(center_x, center_y, srid=self.bbox_polygon.srid)
-        center.transform(self.srid)
+        try:
+            center = Point(center_x, center_y, srid=self.bbox_polygon.srid)
+            center.transform(self.srid)
+        except Exception:
+            center = Point(center_x, center_y, srid=self.srid)
 
         if bbox.srid != 4326:
             bbox = bbox.transform(4326, clone=True)
