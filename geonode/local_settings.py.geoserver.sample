@@ -55,7 +55,7 @@ AVATAR_GRAVATAR_SSL = ast.literal_eval(os.getenv('AVATAR_GRAVATAR_SSL', 'True'))
 # Backend
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'geonode',
         'USER': 'geonode',
         'PASSWORD': 'geonode',

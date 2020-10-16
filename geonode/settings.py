@@ -474,6 +474,7 @@ INSTALLED_APPS = (
 
     # REST APIs
     'rest_framework',
+    'rest_framework_gis',
     'dynamic_rest',
     'drf_yasg',
 

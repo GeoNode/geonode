@@ -21,6 +21,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
+from rest_framework_gis import fields
 from dynamic_rest.serializers import DynamicEphemeralSerializer, DynamicModelSerializer
 from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
 
@@ -196,10 +197,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         self.fields['language'] = serializers.CharField()
         self.fields['supplemental_information'] = serializers.CharField()
         self.fields['data_quality_statement'] = serializers.CharField()
-        self.fields['bbox_x0'] = serializers.DecimalField(max_digits=30, decimal_places=15)
-        self.fields['bbox_x1'] = serializers.DecimalField(max_digits=30, decimal_places=15)
-        self.fields['bbox_y0'] = serializers.DecimalField(max_digits=30, decimal_places=15)
-        self.fields['bbox_y1'] = serializers.DecimalField(max_digits=30, decimal_places=15)
+        self.fields['bbox_polygon'] = fields.GeometryField()
         self.fields['srid'] = serializers.CharField()
         self.fields['group'] = DynamicRelationField(GroupSerializer, embed=True, many=False)
         self.fields['popular_count'] = serializers.CharField()
@@ -233,12 +231,11 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             'pk', 'uuid', 'polymorphic_ctype', 'polymorphic_ctype_id',
             'owner', 'poc', 'metadata_author',
             'keywords', 'regions', 'category',
-            'title', 'abstract', 'doi', 'alternate',
+            'title', 'abstract', 'doi', 'alternate', 'bbox_polygon', 'srid',
             'date', 'date_type', 'edition', 'purpose', 'maintenance_frequency',
             'restriction_code_type', 'constraints_other', 'license', 'language',
             'spatial_representation_type', 'temporal_extent_start', 'temporal_extent_end',
             'supplemental_information', 'data_quality_statement', 'group',
-            'bbox_x0', 'bbox_x1', 'bbox_y0', 'bbox_y1', 'srid',
             'popular_count', 'share_count', 'rating', 'featured', 'is_published', 'is_approved',
             'thumbnail_url', 'detail_url', 'created', 'last_updated'
             # TODO
