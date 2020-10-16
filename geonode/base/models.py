@@ -751,7 +751,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Save bbox values in the database.
     # This is useful for spatial searches and for generating thumbnail images
     # and metadata records.
-    bbox_polygon = PolygonField(null=True, blank=True)
+    bbox_polygon = PolygonField(default='POLYGON EMPTY')
 
     srid = models.CharField(
         max_length=30,
@@ -958,79 +958,98 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def bbox(self):
         """BBOX is in the format: [x0, x1, y0, y1, srid]."""
-        bbox = self.bbox_polygon
-        match = re.match(r'^(EPSG:)?(?P<srid>\d{4,5})$', self.srid)
-        srid = int(match.group('srid'))
-        if bbox.srid is not None and bbox.srid != srid:
-            bbox = bbox.transform(srid, clone=True)
+        if self.bbox_polygon:
+            bbox = self.bbox_polygon
+            match = re.match(r'^(EPSG:)?(?P<srid>\d{4,5})$', self.srid)
+            srid = int(match.group('srid'))
+            if bbox.srid is not None and bbox.srid != srid:
+                bbox = bbox.transform(srid, clone=True)
 
-        bbox = BBOXHelper(bbox.extent)
-        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(srid)]
+            bbox = BBOXHelper(bbox.extent)
+            return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(srid)]
+        return GEOSGeometry("""POLYGON EMPTY""")
 
     @property
     def ll_bbox(self):
         """BBOX is in the format [x0, x1, y0, y1, "EPSG:srid"]. Provides backwards
         compatibility after transition to polygons."""
-        bbox = self.bbox_polygon
-        if bbox.srid is not None and bbox.srid != 4326:
-            bbox = bbox.transform(4326, clone=True)
+        if self.bbox_polygon:
+            bbox = self.bbox_polygon
+            if bbox.srid is not None and bbox.srid != 4326:
+                bbox = bbox.transform(4326, clone=True)
 
-        bbox = BBOXHelper(bbox.extent)
-        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
+            bbox = BBOXHelper(bbox.extent)
+            return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
+        return GEOSGeometry("""POLYGON EMPTY""")
 
     @property
     def ll_bbox_string(self):
         """WGS84 BBOX is in the format: [x0,y0,x1,y1]."""
-        bbox = BBOXHelper.from_xy(self.ll_bbox[:4])
+        if self.bbox_polygon:
+            bbox = BBOXHelper.from_xy(self.ll_bbox[:4])
 
-        return "{x0:.7f},{y0:.7f},{x1:.7f},{y1:.7f}".format(
-            x0=bbox.xmin,
-            y0=bbox.ymin,
-            x1=bbox.xmax,
-            y1=bbox.ymax)
+            return "{x0:.7f},{y0:.7f},{x1:.7f},{y1:.7f}".format(
+                x0=bbox.xmin,
+                y0=bbox.ymin,
+                x1=bbox.xmax,
+                y1=bbox.ymax)
+        return GEOSGeometry("""POLYGON EMPTY""")
 
     @property
     def bbox_string(self):
         """BBOX is in the format: [x0, y0, x1, y1]. Provides backwards compatibility
         after transition to polygons."""
-        bbox = BBOXHelper.from_xy(self.bbox[:4])
+        if self.bbox_polygon:
+            bbox = BBOXHelper.from_xy(self.bbox[:4])
 
-        return "{x0:.7f},{y0:.7f},{x1:.7f},{y1:.7f}".format(
-            x0=bbox.xmin,
-            y0=bbox.ymin,
-            x1=bbox.xmax,
-            y1=bbox.ymax)
+            return "{x0:.7f},{y0:.7f},{x1:.7f},{y1:.7f}".format(
+                x0=bbox.xmin,
+                y0=bbox.ymin,
+                x1=bbox.xmax,
+                y1=bbox.ymax)
+        return GEOSGeometry("""POLYGON EMPTY""")
 
     @property
     def bbox_helper(self):
-        return BBOXHelper(self.bbox_polygon.extent)
+        if self.bbox_polygon:
+            return BBOXHelper(self.bbox_polygon.extent)
+        return GEOSGeometry("""POLYGON EMPTY""")
 
     @cached_property
     def bbox_x0(self):
-        return self.bbox[0]
+        if self.bbox_polygon:
+            return self.bbox[0]
+        return None
 
     @cached_property
     def bbox_x1(self):
-        return self.bbox[1]
+        if self.bbox_polygon:
+            return self.bbox[1]
+        return None
 
     @cached_property
     def bbox_y0(self):
-        return self.bbox[2]
+        if self.bbox_polygon:
+            return self.bbox[2]
+        return None
 
     @cached_property
     def bbox_y1(self):
-        return self.bbox[3]
+        if self.bbox_polygon:
+            return self.bbox[3]
+        return None
 
     @property
     def geographic_bounding_box(self):
         """
         Returns an EWKT representation of the bounding box in EPSG:4326
         """
-        bbox = self.bbox_polygon
-        if bbox.srid != 4326:
-            bbox = bbox.transform(4326, clone=True)
-
-        return str(bbox)
+        if self.bbox_polygon:
+            bbox = self.bbox_polygon
+            if bbox.srid != 4326:
+                bbox = bbox.transform(4326, clone=True)
+            return str(bbox)
+        return GEOSGeometry("""POLYGON EMPTY""")
 
     @property
     def license_light(self):
