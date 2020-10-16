@@ -34,24 +34,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class AppTypePolymorphicSerializer(DynamicModelSerializer):
-
-    class Meta:
-        ref_name = 'GeoApp'
-        model = GeoApp
-        name = 'GeoApp'
-
-    def to_internal_value(self, data):
-        return data
-
-    def to_representation(self, value):
-        _instance = GeoApp.objects.get(id=value)
-        _ct = _instance.polymorphic_ctype
-        _child = _ct.model_class().objects.filter(pk=value).first()
-        if _child and hasattr(_child, 'app_type'):
-            return _child.app_type
-
-
 class GeoAppDataField(DynamicRelationField):
 
     def value_to_string(self, obj):
@@ -85,7 +67,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
         model = GeoApp
         name = 'geoapp'
         fields = (
-            'pk', 'uuid', 'app_type',
+            'pk', 'uuid',
             'zoom', 'projection', 'center_x', 'center_y',
             'urlsuffix', 'data'
         )
@@ -173,11 +155,6 @@ class GeoAppSerializer(ResourceBaseSerializer):
                 raise ValidationError(e)
 
         return instance
-
-    app_type = DynamicRelationField(
-        AppTypePolymorphicSerializer,
-        source='id',
-        read_only=True)
 
     """
      - Deferred / not Embedded --> ?include[]=data

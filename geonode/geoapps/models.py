@@ -101,6 +101,14 @@ class GeoApp(ResourceBase):
         return (self.center_x, self.center_y)
 
     @property
+    def type(self):
+        _ct = self.polymorphic_ctype
+        _child = _ct.model_class().objects.filter(pk=self.id).first()
+        if _child and hasattr(_child, 'app_type'):
+            return _child.app_type
+        return None
+
+    @property
     def is_public(self):
         """
         Returns True if anonymous (public) user can view geoapp.
