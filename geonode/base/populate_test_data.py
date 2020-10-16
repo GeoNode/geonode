@@ -23,6 +23,7 @@ from datetime import datetime
 from datetime import timedelta
 from django.core.serializers import serialize
 from django.contrib.auth import get_user_model
+from django.contrib.gis.geos import Polygon
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 from geonode.layers.models import Layer
@@ -173,10 +174,7 @@ def create_models(type=None, integration=False):
                         center_x=42,
                         center_y=-73,
                         owner=user,
-                        bbox_x0=bbox_x0,
-                        bbox_x1=bbox_x1,
-                        bbox_y0=bbox_y0,
-                        bbox_y1=bbox_y1,
+                        bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                         srid='EPSG:4326',
                         category=category,
                         )
@@ -192,10 +190,7 @@ def create_models(type=None, integration=False):
                 m = Document(title=title,
                              abstract=abstract,
                              owner=user,
-                             bbox_x0=bbox_x0,
-                             bbox_x1=bbox_x1,
-                             bbox_y0=bbox_y0,
-                             bbox_y1=bbox_y1,
+                             bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                              srid='EPSG:4326',
                              category=category,
                              doc_file=f)
@@ -213,10 +208,7 @@ def create_models(type=None, integration=False):
                               abstract=abstract,
                               name=name,
                               alternate=alternate,
-                              bbox_x0=bbox_x0,
-                              bbox_x1=bbox_x1,
-                              bbox_y0=bbox_y0,
-                              bbox_y1=bbox_y1,
+                              bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                               srid='EPSG:4326',
                               uuid=str(uuid4()),
                               owner=owner,

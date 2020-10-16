@@ -150,3 +150,4 @@ setuptools==50.3.0
 pip==20.2.3
 Twisted==20.3.0
 factory-boy==3.1.0
+flaky==3.7.0

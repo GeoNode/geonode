@@ -128,7 +128,7 @@ def _update_db_connstring():
     user = os.getenv('GEONODE_DATABASE', 'geonode')
     pwd = os.getenv('GEONODE_DATABASE_PASSWORD', 'geonode')
     dbname = os.getenv('GEONODE_DATABASE', 'geonode')
-    connstr = 'postgres://{0}:{1}@db:5432/{2}'.format(
+    connstr = 'postgis://{0}:{1}@db:5432/{2}'.format(
         user,
         pwd,
         dbname

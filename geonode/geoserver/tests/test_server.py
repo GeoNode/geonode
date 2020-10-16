@@ -652,7 +652,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         """
 
         # Setup some layer names to work with
-        layer = Layer.objects.all()[0]
+        layer = Layer.objects.first()
         valid_layer_typename = layer.alternate
         layer.set_default_permissions()
         invalid_layer_typename = "n0ch@nc3"

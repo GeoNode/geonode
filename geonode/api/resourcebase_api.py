@@ -52,6 +52,7 @@ from geonode.geoapps.models import GeoApp
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 from geonode.base.models import HierarchicalKeyword
+from geonode.base.bbox_utils import filter_bbox
 from geonode.groups.models import GroupProfile
 from geonode.utils import check_ogc_backend
 from geonode.security.utils import get_visible_resources
@@ -138,10 +139,7 @@ class CommonModelApi(ModelResource):
         'share_count',
         'popular_count',
         'srid',
-        'bbox_x0',
-        'bbox_x1',
-        'bbox_y0',
-        'bbox_y1',
+        'bbox_polygon',
         'category__gn_description',
         'supplemental_information',
         'site_url',
@@ -230,7 +228,7 @@ class CommonModelApi(ModelResource):
             filtered = self.filter_group(filtered, request)
 
         if extent:
-            filtered = self.filter_bbox(filtered, extent)
+            filtered = filter_bbox(filtered, extent)
 
         if keywords:
             filtered = self.filter_h_keywords(filtered, keywords)
@@ -277,25 +275,6 @@ class CommonModelApi(ModelResource):
 
         filtered = queryset.filter(Q(keywords__in=treeqs))
         return filtered
-
-    def filter_bbox(self, queryset, extent_filter):
-        from geonode.utils import bbox_to_projection
-        bbox = extent_filter.split(',')
-        bbox = list(map(str, bbox))
-
-        intersects = (Q(bbox_x0__gte=bbox[0]) & Q(bbox_x1__lte=bbox[2]) &
-                      Q(bbox_y0__gte=bbox[1]) & Q(bbox_y1__lte=bbox[3]))
-
-        for proj in Layer.objects.order_by('srid').values('srid').distinct():
-            if proj['srid'] != 'EPSG:4326':
-                proj_bbox = bbox_to_projection(bbox + ['4326', ],
-                                               target_srid=int(proj['srid'][5:]))
-
-                if proj_bbox[-1] != 4326:
-                    intersects = intersects | (Q(bbox_x0__gte=proj_bbox[0]) & Q(bbox_x1__lte=proj_bbox[2]) & Q(
-                        bbox_y0__gte=proj_bbox[1]) & Q(bbox_y1__lte=proj_bbox[3]))
-
-        return queryset.filter(intersects)
 
     def build_haystack_filters(self, parameters):
         from haystack.inputs import Raw
