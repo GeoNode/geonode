@@ -334,13 +334,14 @@ def attributes_sats_refresh(request):
                         }),
                     status=302,
                     content_type='text/plain')
-            from decimal import Decimal
-            layer.bbox_x0 = Decimal(gs_resource.native_bbox[0])
-            layer.bbox_x1 = Decimal(gs_resource.native_bbox[1])
-            layer.bbox_y0 = Decimal(gs_resource.native_bbox[2])
-            layer.bbox_y1 = Decimal(gs_resource.native_bbox[3])
-            layer.srid = gs_resource.projection
+
+            bbox = gs_resource.native_bbox
+            layer.set_bbox_polygon(
+                [bbox[0], bbox[2], bbox[1], bbox[3]],
+                gs_resource.projection
+            )
             layer.save()
+
         except Exception as e:
             # traceback.print_exc()
             return HttpResponse(

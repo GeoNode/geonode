@@ -23,6 +23,7 @@ import os
 import re
 import ast
 import sys
+import subprocess
 from datetime import timedelta
 from distutils.util import strtobool  # noqa
 from urllib.parse import urlparse, urlunparse, urljoin
@@ -102,10 +103,20 @@ if not SITEURL.endswith('/'):
 
 DATABASE_URL = os.getenv(
     'DATABASE_URL',
-    'sqlite:///{path}'.format(
+    'spatialite:///{path}'.format(
         path=os.path.join(PROJECT_ROOT, 'development.db')
     )
 )
+
+if DATABASE_URL.startswith("spatialite"):
+    try:
+        spatialite_proc = subprocess.run(["spatialite", "-version"], stdout=subprocess.PIPE)
+        spatialite_version = int(spatialite_proc.stdout.decode()[0])
+        if spatialite_version < 5:
+            # To workaround Shapely/Spatialite interaction bug for Spatialite < 5
+            from shapely import speedups
+    except FileNotFoundError as ex:
+        print(ex)
 
 # DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
 
@@ -116,8 +127,6 @@ DATABASE_URL = os.getenv(
 # see https://docs.djangoproject.com/en/1.8/ref/contrib/gis/db-api/#module-django.contrib.gis.db.backends for
 # detailed list of supported backends and notes.
 _db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=5)
-if 'spatialite' in DATABASE_URL:
-    SPATIALITE_LIBRARY_PATH = 'mod_spatialite.so'
 
 if 'CONN_TOUT' in _db_conf:
     _db_conf['CONN_TOUT'] = 5
@@ -1679,9 +1688,14 @@ CELERY_TASK_ALWAYS_EAGER = ast.literal_eval(os.environ.get('CELERY_TASK_ALWAYS_E
 CELERY_TASK_EAGER_PROPAGATES = ast.literal_eval(os.environ.get('CELERY_TASK_EAGER_PROPAGATES', 'True'))
 CELERY_TASK_IGNORE_RESULT = ast.literal_eval(os.environ.get('CELERY_TASK_IGNORE_RESULT', 'True'))
 
+
+from . import serializer
+from kombu.serialization import register
+register('geonode_json', serializer.dumps, serializer.loads, content_type='application/json', content_encoding='utf-8')
+
 # I use these to debug kombu crashes; we get a more informative message.
-CELERY_TASK_SERIALIZER = os.environ.get('CELERY_TASK_SERIALIZER', 'json')
-CELERY_RESULT_SERIALIZER = os.environ.get('CELERY_RESULT_SERIALIZER', 'json')
+CELERY_TASK_SERIALIZER = os.environ.get('CELERY_TASK_SERIALIZER', 'geonode_json')
+CELERY_RESULT_SERIALIZER = os.environ.get('CELERY_RESULT_SERIALIZER', 'geonode_json')
 CELERY_ACCEPT_CONTENT = [CELERY_RESULT_SERIALIZER, ]
 
 # Set Tasks Queues

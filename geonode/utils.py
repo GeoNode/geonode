@@ -1651,9 +1651,9 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Parse Layer BBOX and SRID
         bbox = None
         srid = instance.srid if instance.srid else getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:4326')
-        if instance.srid and instance.bbox_x0:
-            bbox = ','.join(str(x) for x in [instance.bbox_x0, instance.bbox_y0,
-                                             instance.bbox_x1, instance.bbox_y1])
+        if instance.srid and instance.bbox_polygon:
+            bbox = instance.bbox_string
+
         else:
             try:
                 gs_resource = gs_catalog.get_resource(

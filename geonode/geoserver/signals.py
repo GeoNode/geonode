@@ -282,21 +282,18 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         instance.store = gs_resource.store.name
 
         try:
+            # This is usually done in Layer.pre_save, however if the hooks
+            # are bypassed by custom create/updates we need to ensure the
+            # bbox is calculated properly.
             bbox = gs_resource.native_bbox
-
-            # Set bounding box values
-            instance.bbox_x0 = bbox[0]
-            instance.bbox_x1 = bbox[1]
-            instance.bbox_y0 = bbox[2]
-            instance.bbox_y1 = bbox[3]
-            instance.srid = bbox[4]
+            instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], gs_resource.projection)
         except Exception as e:
             logger.exception(e)
 
     if instance.srid:
         instance.srid_url = "http://www.spatialreference.org/ref/" + \
             instance.srid.replace(':', '/').lower() + "/"
-    elif instance.bbox_x0 and instance.bbox_x1 and instance.bbox_y0 and instance.bbox_y1:
+    elif instance.bbox_polygon is not None:
         # Guessing 'EPSG:4326' by default
         instance.srid = 'EPSG:4326'
     else:
@@ -342,10 +339,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         'title': instance.title or instance.name,
         'abstract': instance.abstract or "",
         'alternate': instance.alternate,
-        'bbox_x0': instance.bbox_x0,
-        'bbox_x1': instance.bbox_x1,
-        'bbox_y0': instance.bbox_y0,
-        'bbox_y1': instance.bbox_y1,
+        'bbox_polygon': instance.bbox_polygon,
         'srid': instance.srid
     }
 

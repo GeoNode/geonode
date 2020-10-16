@@ -23,8 +23,8 @@
 
             /* zoom to bbox */
             firstProjection = proj4('{{ resource.srid }}');
-            var corner0 = [{{ resource.bbox_x0 }}, {{ resource.bbox_y0 }}];
-            var corner1 = [{{ resource.bbox_x1 }}, {{ resource.bbox_y1 }}];
+            var corner0 = [{{ resource.bbox_helper.xmin }}, {{ resource.bbox_helper.ymin }}];
+            var corner1 = [{{ resource.bbox_helper.xmax }}, {{ resource.bbox_helper.ymax }}];
 
             corner0 = proj4(firstProjection, secondProjection, corner0);
             corner1 = proj4(firstProjection, secondProjection, corner1);

@@ -9,6 +9,7 @@ dist
 .idea/
 .vscode/
 .pytest_cache/
+pip-wheel-metadata/
 # supporting stuff pulled in by paver script
 geonode/development.db
 /geoserver/

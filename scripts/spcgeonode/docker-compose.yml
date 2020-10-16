@@ -32,7 +32,7 @@ x-common-django:
     - GEONODE_DATABASE_PASSWORD=${GEONODE_DATABASE_PASSWORD}
     - GEONODE_GEODATABASE=${GEONODE_GEODATABASE}
     - GEONODE_GEODATABASE_PASSWORD=${GEONODE_GEODATABASE_PASSWORD}
-    - DATABASE_URL=postgres://${GEONODE_DATABASE_USER}:${GEONODE_DATABASE_PASSWORD}@postgres:5432/${GEONODE_DATABASE}
+    - DATABASE_URL=postgis://${GEONODE_DATABASE_USER}:${GEONODE_DATABASE_PASSWORD}@postgres:5432/${GEONODE_DATABASE}
     - GEODATABASE_URL=postgis://${GEONODE_GEODATABASE_USER}:${GEONODE_GEODATABASE_PASSWORD}@postgres:5432/${GEONODE_GEODATABASE}
     # hardcoded
     - DEBUG=False
@@ -84,7 +84,7 @@ services:
   celerycam:
     << : *default-common-django
     entrypoint: []
-    command: 'celery events --app=geonode.celery_app:app --pidfile="/celeryev.pid" --camera=django_celery_monitor.camera.Camera --frequency=2.0 -l info'
+    # command: 'celery events --app=geonode.celery_app:app --pidfile="/celeryev.pid" --camera=django_celery_monitor.camera.Camera --frequency=2.0 -l info'
 
   # Nginx is serving django static and media files and proxies to django and geonode
   nginx:
@@ -152,7 +152,7 @@ services:
     restart: on-failure
     environment:
       - DATABASE=${GEONODE_DATABASE}
-      - DATABASE_URL=postgres://${GEONODE_DATABASE_USER}:${GEONODE_DATABASE_PASSWORD}@postgres:5432/${GEONODE_DATABASE}
+      - DATABASE_URL=postgis://${GEONODE_DATABASE_USER}:${GEONODE_DATABASE_PASSWORD}@postgres:5432/${GEONODE_DATABASE}
   
   # dumps the geodata db
   pgdumper_geo:
@@ -183,8 +183,8 @@ services:
 
   # PostGIS database.
   postgres:
-    # use geonode official postgis 10 image
-    image: geonode/postgis:10
+    # use geonode official postgis 11 image
+    image: geonode/postgis:latest
     build: ./postgis/
     environment:
       # database info, ${variables} are read from .env
@@ -193,7 +193,7 @@ services:
       - GEONODE_DATABASE_PASSWORD=${GEONODE_DATABASE_PASSWORD}
       - GEONODE_GEODATABASE=${GEONODE_GEODATABASE}
       - GEONODE_GEODATABASE_PASSWORD=${GEONODE_GEODATABASE_PASSWORD}
-      - DATABASE_URL=postgres://${GEONODE_DATABASE_USER}:${GEONODE_DATABASE_PASSWORD}@postgres:5432/${GEONODE_DATABASE}
+      - DATABASE_URL=postgis://${GEONODE_DATABASE_USER}:${GEONODE_DATABASE_PASSWORD}@postgres:5432/${GEONODE_DATABASE}
       - GEODATABASE_URL=postgis://${GEONODE_GEODATABASE_USER}:${GEONODE_GEODATABASE_PASSWORD}@postgres:5432/${GEONODE_GEODATABASE}
     volumes:
       - database:/var/lib/postgresql/data/

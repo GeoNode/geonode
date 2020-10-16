@@ -54,6 +54,7 @@ from django.utils.translation import ugettext as _
 # Geonode functionality
 from geonode.maps.models import Map
 from geonode.base.auth import get_or_create_token
+from geonode.base.bbox_utils import BBOXHelper
 from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import UploadSession, LayerFile
@@ -599,9 +600,12 @@ def file_upload(filename,
                 assigned_name = os.path.splitext(os.path.basename(the_file))[0]
 
     # Get a bounding box
-    bbox_x0, bbox_x1, bbox_y0, bbox_y1, srid = get_bbox(filename)
+    *bbox, srid = get_bbox(filename)
+    bbox_polygon = BBOXHelper.from_xy(bbox).as_polygon()
+
     if srid:
         srid_url = "http://www.spatialreference.org/ref/" + srid.replace(':', '/').lower() + "/"  # noqa
+        bbox_polygon.srid = int(srid.split(':')[1])
 
     # by default, if RESOURCE_PUBLISHING=True then layer.is_published
     # must be set to False
@@ -617,10 +621,7 @@ def file_upload(filename,
         'abstract': abstract,
         'owner': user,
         'charset': charset,
-        'bbox_x0': bbox_x0,
-        'bbox_x1': bbox_x1,
-        'bbox_y0': bbox_y0,
-        'bbox_y1': bbox_y1,
+        'bbox_polygon': bbox_polygon,
         'srid': srid,
         'is_approved': is_approved,
         'is_published': is_published,
@@ -701,10 +702,7 @@ def file_upload(filename,
         defaults['upload_session'] = upload_session
         defaults['title'] = defaults.get('title', None) or layer.title
         defaults['abstract'] = defaults.get('abstract', None) or layer.abstract
-        defaults['bbox_x0'] = defaults.get('bbox_x0', None) or layer.bbox_x0
-        defaults['bbox_x1'] = defaults.get('bbox_x1', None) or layer.bbox_x1
-        defaults['bbox_y0'] = defaults.get('bbox_y0', None) or layer.bbox_y0
-        defaults['bbox_y1'] = defaults.get('bbox_y1', None) or layer.bbox_y1
+        defaults['bbox_polygon'] = defaults.get('bbox_polygon', None) or layer.bbox_polygon
         defaults['is_approved'] = defaults.get(
             'is_approved', is_approved) or layer.is_approved
         defaults['is_published'] = defaults.get(
@@ -959,32 +957,19 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
     _thumb_exists = thumb_exists(thumbnail_name)
     if overwrite or not _thumb_exists:
-        BBOX_DIFFERENCE_THRESHOLD = 1e-5
-
         is_remote = False
         if not thumbnail_create_url:
             thumbnail_create_url = thumbnail_remote_url
             is_remote = True
 
         if check_bbox:
-            # Check if the bbox is invalid
-            valid_x = (
-                float(
-                    instance.bbox_x0) -
-                float(
-                    instance.bbox_x1)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
-            valid_y = (
-                float(
-                    instance.bbox_y1) -
-                float(
-                    instance.bbox_y0)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+            valid = instance.bbox_polygon.valid
         else:
-            valid_x = True
-            valid_y = True
+            valid = True
 
         image = None
 
-        if valid_x and valid_y:
+        if valid:
             Link.objects.get_or_create(resource=instance.get_self_resource(),
                                        url=thumbnail_remote_url,
                                        defaults=dict(
@@ -1033,7 +1018,6 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                             params = urlparse(thumbnail_create_url).query.split('&')
                             request_body = {key: value for (key, value) in
                                             [(lambda p: (p.split("=")[0], p.split("=")[1]))(p) for p in params]}
-                            # request_body['thumbnail_create_url'] = thumbnail_create_url
                             if 'bbox' in request_body and isinstance(request_body['bbox'], string_types):
                                 request_body['bbox'] = [str(coord) for coord in request_body['bbox'].split(",")]
                             if 'crs' in request_body and 'srid' not in request_body:
