@@ -751,7 +751,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Save bbox values in the database.
     # This is useful for spatial searches and for generating thumbnail images
     # and metadata records.
-    bbox_polygon = PolygonField(default='POLYGON EMPTY')
+    bbox_polygon = PolygonField(null=True, blank=True)
 
     srid = models.CharField(
         max_length=30,
