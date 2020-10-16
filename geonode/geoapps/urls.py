@@ -37,5 +37,7 @@ urlpatterns = [
         {'facet_type': 'geoapps'},
         name='apps_browse'),
     url(r'^new$', views.new_geoapp, name="new_geoapp"),
+    url(r'^preview/(?P<geoappid>[^/]*)$', views.geoapp_detail, name="geoapp_detail"),
+    url(r'^(?P<geoappid>[^/]+)/edit$', views.geoapp_edit, name='geoapp_edit'),
     url(r'^', include('geonode.geoapps.api.urls')),
 ]
