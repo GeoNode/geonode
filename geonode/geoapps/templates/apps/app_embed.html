@@ -4,7 +4,7 @@
 {% load base_tags %}
 {% load client_lib_tags %}
 
-{% block title %} {% trans "Edit" %} {% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Embed" %} {% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %} - {{ block.super }} {% endblock %}
 {% block head %}
 
     <style>
@@ -13,7 +13,7 @@
         }
     </style>
 
-    {% get_geoapp_edit %}
+    {% get_geoapp_embed %}
 	{{ block.super }}
 {% endblock %}
 

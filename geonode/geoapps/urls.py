@@ -38,6 +38,13 @@ urlpatterns = [
         name='apps_browse'),
     url(r'^new$', views.new_geoapp, name="new_geoapp"),
     url(r'^preview/(?P<geoappid>[^/]*)$', views.geoapp_detail, name="geoapp_detail"),
+    url(r'^(?P<geoappid>[^/]+)/view$', views.geoapp_edit, name='geoapp_view'),
     url(r'^(?P<geoappid>[^/]+)/edit$', views.geoapp_edit, name='geoapp_edit'),
+    url(r'^(?P<geoappid>[^/]+)/update$', views.geoapp_edit,
+        {'template': 'apps/app_update.html'}, name='geoapp_update'),
+    url(r'^(?P<geoappid>[^/]+)/embed$', views.geoapp_edit,
+        {'template': 'apps/app_embed.html'}, name='geoapp_embed'),
+    url(r'^(?P<geoappid>[^/]+)/download$', views.geoapp_edit,
+        {'template': 'apps/app_download.html'}, name='geoapp_download'),
     url(r'^', include('geonode.geoapps.api.urls')),
 ]
