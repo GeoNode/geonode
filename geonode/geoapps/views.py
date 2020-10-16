@@ -27,6 +27,11 @@ from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 
+from guardian.shortcuts import get_perms
+
+from geonode.groups.models import GroupProfile
+from geonode.base.auth import get_or_create_token
+from geonode.security.views import _perms_info_json
 from geonode.geoapps.models import GeoApp, GeoAppData
 from geonode.utils import (
     resolve_object
@@ -60,28 +65,42 @@ def _resolve_geoapp(request, id, permission='base.change_resourcebase',
 
 @login_required
 def new_geoapp(request, template='apps/app_new.html'):
+
+    access_token = None
+    if request and request.user:
+        access_token = get_or_create_token(request.user)
+        if access_token and not access_token.is_expired():
+            access_token = access_token.token
+        else:
+            access_token = None
+
     if request.method == 'GET':
-        ctx = {}
-        return render(request, template, context=ctx)
+        _ctx = {
+            'user': request.user,
+            'access_token': access_token,
+        }
+        return render(request, template, context=_ctx)
 
     return HttpResponseRedirect(reverse("apps_browse"))
 
 
-def geoapp_detail(request, layername, template='layers/layer_detail.html'):
-    # layer = _resolve_layer(
-    #     request,
-    #     layername,
-    #     'base.view_resourcebase',
-    #     _PERMISSION_MSG_VIEW)
+def geoapp_detail(request, geoappid, template='layers/layer_detail.html'):
+    """
+    The view that returns the app composer opened to
+    the app with the given app ID.
+    """
+    geoapp_obj = _resolve_geoapp(
+        request,
+        geoappid,
+        'base.view_resourcebase',
+        _PERMISSION_MSG_VIEW)
 
-    # permission_manager = ManageResourceOwnerPermissions(layer)
-    # permission_manager.set_owner_permissions_according_to_workflow()
-
-    # # Add metadata_author or poc if missing
-    # layer.add_missing_metadata_author_or_poc()
+    # Add metadata_author or poc if missing
+    geoapp_obj.add_missing_metadata_author_or_poc()
     pass
 
 
+@login_required
 @xframe_options_sameorigin
 def geoapp_edit(request, geoappid, template='apps/app_edit.html'):
     """
@@ -94,13 +113,40 @@ def geoapp_edit(request, geoappid, template='apps/app_edit.html'):
         'base.view_resourcebase',
         _PERMISSION_MSG_VIEW)
 
+    # Call this first in order to be sure "perms_list" is correct
+    permissions_json = _perms_info_json(geoapp_obj)
+
+    perms_list = get_perms(
+        request.user,
+        geoapp_obj.get_self_resource()) + get_perms(request.user, geoapp_obj)
+
+    group = None
+    if geoapp_obj.group:
+        try:
+            group = GroupProfile.objects.get(slug=geoapp_obj.group.name)
+        except GroupProfile.DoesNotExist:
+            group = None
+
+    access_token = None
+    if request and request.user:
+        access_token = get_or_create_token(request.user)
+        if access_token and not access_token.is_expired():
+            access_token = access_token.token
+        else:
+            access_token = None
+
     _data = GeoAppData.objects.filter(resource__id=geoappid).first()
     _config = _data.blob if _data else {}
     _ctx = {
         'appId': geoappid,
         'appType': geoapp_obj.type,
         'config': _config,
-        'app': geoapp_obj,
+        'user': request.user,
+        'access_token': access_token,
+        'resource': geoapp_obj,
+        'group': group,
+        'perms_list': perms_list,
+        "permissions_json": permissions_json,
         'preview': getattr(
             settings,
             'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY',
