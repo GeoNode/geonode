@@ -112,8 +112,7 @@ def get_visible_resources(queryset,
         if not is_admin:
             if user:
                 filter_set = filter_set.exclude(
-                    Q(is_published=False) & ~(
-                        Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all)))
+                    ~(Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all)))
             else:
                 filter_set = filter_set.exclude(Q(is_published=False))
 

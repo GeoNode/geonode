@@ -963,7 +963,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
             is_remote = True
 
         if check_bbox:
-            valid = instance.bbox_polygon.valid
+            valid = instance.bbox_polygon and instance.bbox_polygon.valid
         else:
             valid = True
 

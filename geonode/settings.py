@@ -393,6 +393,7 @@ GEONODE_CORE_APPS = (
     'geonode.br',
     'geonode.layers',
     'geonode.maps',
+    'geonode.geoapps',
     'geonode.documents',
     'geonode.security',
     'geonode.catalogue',
@@ -403,9 +404,6 @@ GEONODE_CORE_APPS = (
 GEONODE_APPS_ENABLE = ast.literal_eval(os.getenv("GEONODE_APPS_ENABLE", "True"))
 GEONODE_APPS_NAME = os.getenv("GEONODE_APPS_NAME", "Apps")
 GEONODE_APPS_NAV_MENU_ENABLE = ast.literal_eval(os.getenv("GEONODE_APPS_NAV_MENU_ENABLE", "True"))
-
-if GEONODE_APPS_ENABLE and not 'geonode.geoapps' in GEONODE_CORE_APPS:
-    GEONODE_CORE_APPS += ('geonode.geoapps', )
 
 GEONODE_INTERNAL_APPS = (
     # GeoNode internal apps
@@ -1905,7 +1903,7 @@ RESOURCE_PUBLISHING = ast.literal_eval(os.getenv('RESOURCE_PUBLISHING', 'False')
 # Each uploaded Layer must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get('ADMIN_MODERATE_UPLOADS', 'False'))
 
-# If this option is enabled, Resources belonging to a Group won't be
+# If this option is enabled, Resources belonging to a Group (with access private) won't be
 # visible by others
 GROUP_PRIVATE_RESOURCES = ast.literal_eval(os.environ.get('GROUP_PRIVATE_RESOURCES', 'False'))
 

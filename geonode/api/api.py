@@ -21,6 +21,7 @@
 import json
 import time
 
+from django.apps import apps
 from django.db.models import Q
 from django.conf.urls import url
 from django.contrib.auth import get_user_model
@@ -92,17 +93,34 @@ class CountJSONSerializer(Serializer):
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
+        subtypes = []
         if resources and resources.count() > 0:
             if options['title_filter']:
                 resources = resources.filter(title__icontains=options['title_filter'])
             if options['type_filter']:
                 _type_filter = options['type_filter']
 
+                for label, app in apps.app_configs.items():
+                    if hasattr(app, 'type') and app.type == 'GEONODE_APP':
+                        if hasattr(app, 'default_model'):
+                            _model = apps.get_model(label, app.default_model)
+                            if issubclass(_model, _type_filter):
+                                subtypes.append(
+                                    resources.filter(
+                                        polymorphic_ctype__model=_model.__name__.lower()))
+
                 if not isinstance(_type_filter, str):
                     _type_filter = _type_filter.__name__.lower()
                 resources = resources.filter(polymorphic_ctype__model=_type_filter)
 
-        counts = list(resources.values(options['count_type']).annotate(count=Count(options['count_type'])))
+        counts = list()
+        if subtypes:
+            for subtype in subtypes:
+                counts.append(
+                    subtype.values(options['count_type']).annotate(count=Count(options['count_type'])).first()
+                )
+        else:
+            counts = list(resources.values(options['count_type']).annotate(count=Count(options['count_type'])))
 
         return dict([(c[options['count_type']], c['count']) for c in counts])
 
@@ -415,6 +433,7 @@ class GroupResource(ModelResource):
             _user,
             resourcebase_filter_kwargs={'group': bundle.obj}
         )
+
         bundle.data.update(resource_counts=counts)
         return bundle
 
@@ -871,8 +890,18 @@ def _get_resource_counts(user, resourcebase_filter_kwargs):
         'layer',
         'document',
         'map',
+        'geoapp',
         'all'
     ]
+
+    subtypes = []
+    for label, app in apps.app_configs.items():
+        if hasattr(app, 'type') and app.type == 'GEONODE_APP':
+            if hasattr(app, 'default_model'):
+                _model = apps.get_model(label, app.default_model)
+                if issubclass(_model, GeoApp):
+                    types.append(_model.__name__.lower())
+                    subtypes.append(_model.__name__.lower())
     counts = {}
     for type_ in types:
         counts[type_] = {
@@ -883,6 +912,8 @@ def _get_resource_counts(user, resourcebase_filter_kwargs):
         }
     for record in qs:
         resource_type = record['polymorphic_ctype__model']
+        if resource_type in subtypes:
+            resource_type = 'geoapp'
         is_visible = all((record['is_approved'], record['is_published']))
         counts['all']['total'] += record['counts']
         counts['all']['visible'] += record['counts'] if is_visible else 0

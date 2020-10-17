@@ -1021,8 +1021,8 @@ class GeoAppResource(CommonModelApi):
         for obj in objects:
             # convert the object to a dict using the standard values.
             formatted_obj = model_to_dict(obj, fields=self.VALUES)
-            username = obj.owner.get_username() if hasattr(obj, 'owner') and obj.owner else str(obj.owner)
-            full_name = obj.owner.get_full_name() if hasattr(obj, 'owner') and obj.owner else str(obj.owner)
+            username = obj.owner.get_username()
+            full_name = (obj.owner.get_full_name() or username)
             formatted_obj['owner__username'] = username
             formatted_obj['owner_name'] = full_name
             if obj.category:
