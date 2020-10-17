@@ -18,7 +18,6 @@
 #
 #########################################################################
 
-
 from geonode.tests.base import GeoNodeLiveTestSupport
 
 from datetime import datetime, timedelta

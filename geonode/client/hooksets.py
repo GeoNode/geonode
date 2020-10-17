@@ -25,6 +25,9 @@ from six import string_types
 class BaseHookSet(object):
 
     # Layers
+    def layer_list_template(self, context=None):
+        return 'layers/layer_list_default.html'
+
     def layer_detail_template(self, context=None):
         return NotImplemented
 
@@ -50,6 +53,9 @@ class BaseHookSet(object):
         return NotImplemented
 
     # Maps
+    def map_list_template(self, context=None):
+        return 'maps/map_list_default.html'
+
     def map_detail_template(self, context=None):
         return NotImplemented
 

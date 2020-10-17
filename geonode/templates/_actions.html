@@ -19,7 +19,7 @@
   {% if EXIF_ENABLED and resource.polymorphic_ctype.name == 'document' and exif_data %}
   <li><a href="#exif" data-toggle="tab"><i class="fa fa-photo"></i> {% trans "Exif" %}</a></li>
   {% endif %}
-  {% if FAVORITE_ENABLED %}
+  {% if FAVORITE_ENABLED and favorite_info %}
   <li><a href="#favorite" data-toggle="tab"><i class="fa fa-star"></i>{% trans "Favorite" %}</a></li>
   {% endif %}
 </ul>
