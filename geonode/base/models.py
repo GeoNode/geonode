@@ -1231,6 +1231,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.set_bbox_polygon(bbox.extent, srid)
             self.set_center_zoom()
             return
+        elif isinstance(bbox, list):
+            self.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
+            self.set_center_zoom()
+            return
 
         if not bbox or len(bbox) < 4:
             raise ValidationError(
