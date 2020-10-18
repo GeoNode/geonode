@@ -1105,9 +1105,12 @@ class DocumentResource(CommonModelApi):
 
             # replace thumbnail_url with curated_thumbs
             if hasattr(obj, 'curatedthumbnail'):
-                if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
-                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
-                else:
+                try:
+                    if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
+                        formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
+                    else:
+                        formatted_obj['thumbnail_url'] = ''
+                except Exception:
                     formatted_obj['thumbnail_url'] = ''
 
             formatted_objects.append(formatted_obj)
