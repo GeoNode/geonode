@@ -371,7 +371,7 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             # AF: This causses error with GDAL 3.0.4 due to a breaking change on GDAL
             #     https://code.djangoproject.com/ticket/30645
             import osgeo.gdal
-            _gdal_version = osgeo.gdal.__version__.split(".", 2)
+            _gdal_ver = osgeo.gdal.__version__.split(".", 2)
             from osgeo import ogr
             from osgeo.osr import SpatialReference, CoordinateTransformation
             g = ogr.Geometry(wkt=wkt)
@@ -379,7 +379,8 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             source.ImportFromEPSG(source_srid)
             dest = SpatialReference()
             dest.ImportFromEPSG(target_srid)
-            if int(_gdal_version[0]) >= 3 and int(_gdal_version[2]) >= 4:
+            if int(_gdal_ver[0]) >= 3 and \
+            ((int(_gdal_ver[1]) == 0 and int(_gdal_ver[2]) >= 4) or int(_gdal_ver[1]) > 0):
                 source.SetAxisMappingStrategy(0)
                 dest.SetAxisMappingStrategy(0)
             g.Transform(CoordinateTransformation(source, dest))
