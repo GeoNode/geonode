@@ -123,7 +123,7 @@ services:
       - HTTP_PORT=${HTTP_PORT}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - DATABASE_URL=postgres://${GEONODE_DATABASE_USER}:${GEONODE_DATABASE_PASSWORD}@postgres:5432/${GEONODE_DATABASE}
+      - DATABASE_URL=postgis://${GEONODE_DATABASE_USER}:${GEONODE_DATABASE_PASSWORD}@postgres:5432/${GEONODE_DATABASE}
       - GEODATABASE_URL=postgis://${GEONODE_GEODATABASE_USER}:${GEONODE_GEODATABASE_PASSWORD}@postgres:5432/${GEONODE_GEODATABASE}
     volumes:
       - geodatadir:/spcgeonode-geodatadir/
@@ -164,8 +164,8 @@ services:
     restart: on-failure
     environment:
       - DATABASE=${GEONODE_GEODATABASE}
-      # pgdumper needs postgres:// as connection string for the geodatabase
-      - DATABASE_URL=postgres://${GEONODE_GEODATABASE_USER}:${GEONODE_GEODATABASE_PASSWORD}@postgres:5432/${GEONODE_GEODATABASE}
+      # pgdumper needs postgis:// as connection string for the geodatabase
+      - DATABASE_URL=postgis://${GEONODE_GEODATABASE_USER}:${GEONODE_GEODATABASE_PASSWORD}@postgres:5432/${GEONODE_GEODATABASE}
 
   rclone:
     image: geonode/spcgeonode:rclone-3.0
