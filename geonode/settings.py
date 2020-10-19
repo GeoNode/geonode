@@ -1484,6 +1484,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     if 'geonode_mapstore_client' not in INSTALLED_APPS:
         INSTALLED_APPS += (
             'mapstore2_adapter',
+            'mapstore2_adapter.geoapps',
             'mapstore2_adapter.geoapps.geostories',
             'geonode_mapstore_client',)
 
