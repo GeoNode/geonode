@@ -256,7 +256,7 @@ def resource_geolimits(request, resource_id):
                     content_type='text/plain')
             except Exception:
                 return HttpResponse(
-                    _('Could not fetch geometries from backend.'),
+                    'Could not fetch geometries from backend.',
                     status=400,
                     content_type='text/plain')
         elif group_id:
@@ -271,7 +271,7 @@ def resource_geolimits(request, resource_id):
                     content_type='text/plain')
             except Exception:
                 return HttpResponse(
-                    _('Could not fetch geometries from backend.'),
+                    'Could not fetch geometries from backend.',
                     status=400,
                     content_type='text/plain')
 
@@ -341,6 +341,7 @@ def attributes_sats_refresh(request):
             layer.bbox_y1 = Decimal(gs_resource.native_bbox[3])
             layer.srid = gs_resource.projection
             layer.save()
+
         except Exception as e:
             # traceback.print_exc()
             return HttpResponse(

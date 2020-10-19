@@ -78,7 +78,6 @@
 
         function successCallback(data) {
             //success code
-            debugger;
             if ($location.search().hasOwnProperty('keywords__slug__in')) {
                 data.data.objects = module.set_initial_filters_from_query(data.data.objects,
                     $location.search()['keywords__slug__in'], 'slug');
@@ -130,6 +129,7 @@
 
         function errorCallback(error) {
             //error code
+            console.log(error);
         };
     };
 
@@ -156,6 +156,7 @@
 
         function errorCallback(error) {
             //error code
+            console.log(error);
         };
     }
 

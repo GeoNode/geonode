@@ -17,15 +17,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import re
+import six
+import html
 import logging
 
 from .fields import MultiThesauriField
 
 from dal import autocomplete
 from taggit.forms import TagField
-
-import six
 
 from django import forms
 from django.conf import settings
@@ -416,7 +416,6 @@ class ResourceBaseForm(TranslationModelForm):
             self['keywords'].field.disabled = True
 
     def clean_keywords(self):
-        from urllib.parse import unquote
         from html.entities import codepoint2name
 
         def unicode_escape(unistr):
@@ -437,9 +436,9 @@ class ResourceBaseForm(TranslationModelForm):
         keywords = self.cleaned_data['keywords']
         _unsescaped_kwds = []
         for k in keywords:
-            _k = unquote(('%s' % k)).split(",")
+            _k = ('%s' % re.sub(r'%([A-Z0-9]{2})', r'&#x\g<1>;', k.strip())).split(",")
             if not isinstance(_k, six.string_types):
-                for _kk in [x.strip() for x in _k]:
+                for _kk in [html.unescape(x.strip()) for x in _k]:
                     # Simulate JS Unescape
                     _kk = _kk.replace('%u', r'\u').encode('unicode-escape').replace(
                         b'\\\\u',

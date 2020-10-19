@@ -1033,7 +1033,6 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                             params = urlparse(thumbnail_create_url).query.split('&')
                             request_body = {key: value for (key, value) in
                                             [(lambda p: (p.split("=")[0], p.split("=")[1]))(p) for p in params]}
-                            # request_body['thumbnail_create_url'] = thumbnail_create_url
                             if 'bbox' in request_body and isinstance(request_body['bbox'], string_types):
                                 request_body['bbox'] = [str(coord) for coord in request_body['bbox'].split(",")]
                             if 'crs' in request_body and 'srid' not in request_body:

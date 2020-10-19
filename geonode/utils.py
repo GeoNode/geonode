@@ -370,11 +370,8 @@ def bbox_to_projection(native_bbox, target_srid=4326):
                               srid=source_srid, include_srid=False)
             # AF: This causses error with GDAL 3.0.4 due to a breaking change on GDAL
             #     https://code.djangoproject.com/ticket/30645
-            # from django.contrib.gis.geos import GEOSGeometry
-            # poly = GEOSGeometry(wkt, srid=source_srid)
-            # poly.transform(target_srid)
-            # projected_bbox = [str(x) for x in poly.extent]
             import osgeo.gdal
+            _gdal_ver = osgeo.gdal.__version__.split(".", 2)
             from osgeo import ogr
             from osgeo.osr import SpatialReference, CoordinateTransformation
             g = ogr.Geometry(wkt=wkt)
@@ -382,17 +379,18 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             source.ImportFromEPSG(source_srid)
             dest = SpatialReference()
             dest.ImportFromEPSG(target_srid)
-            if osgeo.gdal.__version__ == '3.0.4':
+            if int(_gdal_ver[0]) >= 3 and \
+            ((int(_gdal_ver[1]) == 0 and int(_gdal_ver[2]) >= 4) or int(_gdal_ver[1]) > 0):
                 source.SetAxisMappingStrategy(0)
                 dest.SetAxisMappingStrategy(0)
             g.Transform(CoordinateTransformation(source, dest))
             projected_bbox = [str(x) for x in g.GetEnvelope()]
             # Must be in the form : [x0, x1, y0, y1, EPSG:<target_srid>)
-            return tuple([projected_bbox[0], projected_bbox[2], projected_bbox[1], projected_bbox[3]]) + \
+            return tuple([projected_bbox[0], projected_bbox[1], projected_bbox[2], projected_bbox[3]]) + \
                 ("EPSG:%s" % target_srid,)
         except Exception:
             tb = traceback.format_exc()
-            logger.debug(tb)
+            logger.error(tb)
 
     return native_bbox
 

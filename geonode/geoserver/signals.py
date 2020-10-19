@@ -282,6 +282,9 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         instance.store = gs_resource.store.name
 
         try:
+            # This is usually done in Layer.pre_save, however if the hooks
+            # are bypassed by custom create/updates we need to ensure the
+            # bbox is calculated properly.
             bbox = gs_resource.native_bbox
 
             # Set bounding box values

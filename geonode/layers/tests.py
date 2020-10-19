@@ -216,10 +216,11 @@ class LayersTest(GeoNodeBaseTestSupport):
         projected_bbox = decimal_encode(
             bbox_to_projection([float(coord) for coord in layer_bbox] + [lyr.srid, ],
                                target_srid=3857)[:4])
+        solution = [-20037397.023298454, -74299743.40065672,
+                    20037397.02329845, 74299743.40061197]
         logger.debug(projected_bbox)
-        self.assertEqual(projected_bbox,
-                         [-20037397.023298454, 20037397.02329845,
-                          -74299743.40065672, 74299743.40061197])
+        for coord, check in zip(projected_bbox, solution):
+            self.assertAlmostEqual(coord, check)
 
     def test_layer_attributes_feature_catalogue(self):
         """ Test layer feature catalogue functionality
@@ -287,16 +288,16 @@ class LayersTest(GeoNodeBaseTestSupport):
         lyr.keywords.add(*["saving", "keywords"])
         lyr.save()
         self.assertEqual(
-            lyr.keyword_list(), [
-                'here', 'keywords', 'populartag', 'saving'])
+            set(lyr.keyword_list()), {
+                'here', 'keywords', 'populartag', 'saving'})
 
         # Test exotic encoding Keywords
         lyr.keywords.add(*['論語', 'ä', 'ö', 'ü', 'ß'])
         lyr.save()
         self.assertEqual(
-            lyr.keyword_list(), [
+            set(lyr.keyword_list()), {
                 'here', 'keywords', 'populartag', 'saving',
-                'ß', 'ä', 'ö', 'ü', '論語'])
+                'ß', 'ä', 'ö', 'ü', '論語'})
 
         # Test input escape
         lyr.keywords.add(*["Europe<script>true;</script>",
@@ -304,10 +305,10 @@ class LayersTest(GeoNodeBaseTestSupport):
                            "<IMG SRC='javascript:true;'>Science"])
 
         self.assertEqual(
-            lyr.keyword_list(), [
+            set(lyr.keyword_list()), {
                 '&lt;IMG SRC=&#39;javascript:true;&#39;&gt;Science', 'Europe&lt;script&gt;true;&lt;/script&gt;',
                 'here', 'keywords', 'land_&lt;script&gt;true;&lt;/script&gt;covering', 'populartag', 'saving',
-                'ß', 'ä', 'ö', 'ü', '論語'])
+                'ß', 'ä', 'ö', 'ü', '論語'})
 
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('layer_detail', args=(lyr.alternate,)))
