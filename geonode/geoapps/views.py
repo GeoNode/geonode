@@ -487,10 +487,6 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
 
         if settings.ADMIN_MODERATE_UPLOADS:
             if not request.user.is_superuser:
-                if settings.RESOURCE_PUBLISHING:
-                    geoapp_form.fields['is_published'].widget.attrs.update(
-                        {'disabled': 'true'})
-
                 can_change_metadata = request.user.has_perm(
                     'change_resourcebase_metadata',
                     geoapp_obj.get_self_resource())
@@ -499,6 +495,9 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
                 except Exception:
                     is_manager = False
                 if not is_manager or not can_change_metadata:
+                    if settings.RESOURCE_PUBLISHING:
+                        geoapp_form.fields['is_published'].widget.attrs.update(
+                            {'disabled': 'true'})
                     geoapp_form.fields['is_approved'].widget.attrs.update(
                         {'disabled': 'true'})
 
