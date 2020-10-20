@@ -147,22 +147,45 @@ class PermissionLevelMixin(object):
 
         # default permissions for anonymous users
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
+        user_groups = Group.objects.filter(
+            name__in=self.owner.groupmember_set.all().values_list("group__slug", flat=True))
+        obj_group_managers = []
+        if user_groups:
+            for _user_group in user_groups:
+                try:
+                    _group_profile = GroupProfile.objects.get(slug=_user_group.name)
+                    managers = _group_profile.get_managers()
+                    if managers:
+                        for manager in managers:
+                            if manager not in obj_group_managers and not manager.is_superuser:
+                                obj_group_managers.append(manager)
+                except GroupProfile.DoesNotExist:
+                    pass
 
         if not anonymous_group:
             raise Exception("Could not acquire 'anonymous' Group.")
 
         # default permissions for resource owner
-        set_owner_permissions(self)
+        set_owner_permissions(self, members=obj_group_managers)
 
+        # Anonymous
         anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
         if anonymous_can_view:
             assign_perm('view_resourcebase',
                         anonymous_group, self.get_self_resource())
+        else:
+            for user_group in user_groups:
+                assign_perm('view_resourcebase',
+                            user_group, self.get_self_resource())
 
         anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
         if anonymous_can_download:
             assign_perm('download_resourcebase',
                         anonymous_group, self.get_self_resource())
+        else:
+            for user_group in user_groups:
+                assign_perm('download_resourcebase',
+                            user_group, self.get_self_resource())
 
         if self.__class__.__name__ == 'Layer':
             # only for layer owner
@@ -171,7 +194,7 @@ class PermissionLevelMixin(object):
             if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                 purge_geofence_layer_rules(self.get_self_resource())
 
-                # Owner
+                # Owner & Managers
                 perms = [
                     "view_resourcebase",
                     "change_layer_data",
@@ -180,16 +203,21 @@ class PermissionLevelMixin(object):
                     "change_resourcebase_permissions",
                     "download_resourcebase"]
                 sync_geofence_with_guardian(self.layer, perms, user=self.owner)
+                for _group_manager in obj_group_managers:
+                    sync_geofence_with_guardian(self.layer, perms, user=_group_manager)
+                for user_group in user_groups:
+                    sync_geofence_with_guardian(self.layer, perms, group=user_group)
 
                 # Anonymous
                 if anonymous_can_view:
                     perms = ["view_resourcebase"]
                     sync_geofence_with_guardian(self.layer, perms, user=None, group=None)
+
                 if anonymous_can_download:
                     perms = ["download_resourcebase"]
                     sync_geofence_with_guardian(self.layer, perms, user=None, group=None)
 
-    def set_permissions(self, perm_spec):
+    def set_permissions(self, perm_spec, created=False):
         """
         Sets an object's the permission levels based on the perm_spec JSON.
 
@@ -208,10 +236,11 @@ class PermissionLevelMixin(object):
                 ]
         }
         """
-        remove_object_permissions(self)
+        if not created:
+            remove_object_permissions(self)
 
-        # default permissions for resource owner
-        set_owner_permissions(self)
+            # default permissions for resource owner
+            set_owner_permissions(self)
 
         # Anonymous User group
         if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:
@@ -226,7 +255,8 @@ class PermissionLevelMixin(object):
         # Owner
         if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
             if self.polymorphic_ctype.name == 'layer':
-                purge_geofence_layer_rules(self.get_self_resource())
+                if not created:
+                    purge_geofence_layer_rules(self.get_self_resource())
                 perms = [
                     "view_resourcebase",
                     "change_layer_data",
@@ -267,11 +297,10 @@ class PermissionLevelMixin(object):
                         assign_perm(perm, _group, self.get_self_resource())
 
                 # Set the GeoFence Rules
-                if _group and _group.name and _group.name == 'anonymous':
-                    _group = None
-
                 if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                     if self.polymorphic_ctype.name == 'layer':
+                        if _group and _group.name and _group.name == 'anonymous':
+                            _group = None
                         sync_geofence_with_guardian(self.layer, perms, group=_group)
 
         # AnonymousUser

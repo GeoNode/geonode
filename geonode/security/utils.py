@@ -85,56 +85,59 @@ def get_visible_resources(queryset,
 
     filter_set = queryset
 
-    if admin_approval_required:
-        if not is_admin:
+    if not is_admin:
+        if admin_approval_required:
             if is_manager:
                 filter_set = filter_set.filter(
                     Q(is_published=True) |
+                    Q(is_published=False) |
                     Q(group__in=groups) |
                     Q(group__in=manager_groups) |
                     Q(group__in=group_list_all) |
                     Q(group__in=public_groups) |
-                    Q(owner__username__iexact=str(user)))
-            elif user:
+                    Q(owner__username__iexact=str(user))
+                )
+            elif user and user.is_authenticated:
                 filter_set = filter_set.filter(
                     Q(is_published=True) |
+                    Q(is_published=False) |
                     Q(group__in=groups) |
                     Q(group__in=group_list_all) |
                     Q(group__in=public_groups) |
-                    Q(owner__username__iexact=str(user)))
+                    Q(owner__username__iexact=str(user))
+                ).exclude(Q(is_approved=False))
             else:
                 filter_set = filter_set.filter(
                     Q(is_published=True) |
                     Q(group__in=public_groups) |
-                    Q(group__in=groups))
+                    Q(group__in=groups)
+                ).exclude(Q(is_approved=False))
 
-    if unpublished_not_visible:
-        if not is_admin:
-            if user:
-                filter_set = filter_set.exclude(
-                    Q(is_published=False) & ~(
-                        Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all)))
-            else:
+        # Hide Unpublished Resources to Anonymous Users
+        if unpublished_not_visible:
+            if not user or user.is_anonymous:
                 filter_set = filter_set.exclude(Q(is_published=False))
 
-    if private_groups_not_visibile:
-        if not is_admin:
+        # Hide Resources Belonging to Private Groups
+        if private_groups_not_visibile:
             private_groups = GroupProfile.objects.filter(access="private").values('group')
-            if user:
+            if user and user.is_authenticated:
                 filter_set = filter_set.exclude(
                     Q(group__in=private_groups) & ~(
-                        Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all)))
+                        Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all))
+                )
             else:
                 filter_set = filter_set.exclude(group__in=private_groups)
 
-    # Hide Dirty State Resources
-    if not is_admin:
-        if user:
+        # Hide Dirty State Resources
+        if user and user.is_authenticated:
             filter_set = filter_set.exclude(
                 Q(dirty_state=True) & ~(
-                    Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all)))
-        else:
+                    Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all))
+            )
+        elif not user or user.is_anonymous:
             filter_set = filter_set.exclude(Q(dirty_state=True))
+
     return filter_set
 
 
@@ -635,7 +638,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
         layer.set_dirty_state()
 
 
-def set_owner_permissions(resource):
+def set_owner_permissions(resource, members=None):
     """assign all admin permissions to the owner"""
     if resource.polymorphic_ctype:
         # Set the GeoFence Owner Rule
@@ -643,8 +646,14 @@ def set_owner_permissions(resource):
         if resource.polymorphic_ctype.name == 'layer':
             for perm in models.LAYER_ADMIN_PERMISSIONS:
                 assign_perm(perm, resource.owner, resource.layer)
+                if members:
+                    for user in members:
+                        assign_perm(perm, user, resource.layer)
         for perm in admin_perms:
             assign_perm(perm, resource.owner, resource.get_self_resource())
+            if members:
+                for user in members:
+                    assign_perm(perm, user, resource.get_self_resource())
 
 
 def remove_object_permissions(instance):
