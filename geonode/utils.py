@@ -919,13 +919,13 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
         is_admin = False
         is_manager = False
         is_owner = True if request.user == obj_to_check.owner else False
-        if request.user:
+        if request.user and request.user.is_authenticated:
             is_admin = request.user.is_superuser if request.user else False
             try:
                 is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
             except Exception:
                 is_manager = False
-        if (not obj_to_check.is_published):
+        if (not obj_to_check.is_approved):
             if not is_admin:
                 if is_owner or (
                         is_manager and request.user in obj_group_managers):
