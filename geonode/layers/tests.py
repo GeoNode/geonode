@@ -1136,7 +1136,7 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
             data = json.loads(content)
-            if 'success' in data and data['success'] == True:
+            if 'success' in data and data['success']:
                 lname = data['url'].split(':')[-1]
                 _l = Layer.objects.get(name=lname)
                 self.assertTrue(_l.is_approved)
@@ -1163,15 +1163,18 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
                 files['charset'] = 'utf-8'
                 files['layer_title'] = 'test layer'
                 resp = self.client.post(layer_upload_url, data=files)
-                self.assertEqual(resp.status_code, 200)
+                self.assertEqual(resp.status_code, 400)
             content = resp.content
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
             data = json.loads(content)
-            lname = data['url'].split(':')[-1]
-            _l = Layer.objects.get(name=lname)
-            self.assertFalse(_l.is_approved)
-            self.assertTrue(_l.is_published)
+            if 'success' in data and data['success']:
+                lname = data['url'].split(':')[-1]
+                _l = Layer.objects.get(name=lname)
+                self.assertFalse(_l.is_approved)
+                self.assertTrue(_l.is_published)
+            else:
+                logger.warning(data)
 
 
 class LayerNotificationsTestCase(NotificationsTestsHelper):
