@@ -83,7 +83,7 @@ pinax-notifications==6.0.0
 pinax-ratings==4.0.0
 
 # GeoNode org maintained apps.
-django_mapstore_adapter==2.0.4.7
+django_mapstore_adapter==2.0.5
 django-geonode-mapstore-client==2.0.8.1
 geonode-avatar==5.0.7
 django-geonode-client==1.0.9
