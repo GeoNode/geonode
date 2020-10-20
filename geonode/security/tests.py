@@ -1169,7 +1169,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log("1. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertEqual(geofence_rules_count, 9)
+            self.assertEqual(geofence_rules_count, 14)
 
         self.assertTrue(self.client.login(username='bobby', password='bob'))
 
@@ -1244,7 +1244,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log("3. geofence_rules_count: %s " % geofence_rules_count)
-            self.assertEqual(geofence_rules_count, 9)
+            self.assertEqual(geofence_rules_count, 14)
 
         # 5. change_resourcebase_permissions
         # should be impossible for the user without change_resourcebase_permissions
