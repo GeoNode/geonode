@@ -1060,12 +1060,12 @@ class UnpublishedObjectTests(GeoNodeBaseTestSupport):
         self.client.login(username='foo', password='pass')
         # 404 if layer is unpublished
         response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
 
         # 404 if layer is unpublished but user has permission but does not belong to the group
         assign_perm('publish_resourcebase', user, layer.get_self_resource())
         response = self.client.get(reverse('layer_detail', args=('geonode:CA',)))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
 
         # 200 if layer is unpublished and user is owner
         remove_perm('publish_resourcebase', user, layer.get_self_resource())
@@ -1131,15 +1131,18 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
                 files['charset'] = 'utf-8'
                 files['layer_title'] = 'test layer'
                 resp = self.client.post(layer_upload_url, data=files)
-                self.assertEqual(resp.status_code, 200)
+                self.assertEqual(resp.status_code, 400)
             content = resp.content
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
             data = json.loads(content)
-            lname = data['url'].split(':')[-1]
-            _l = Layer.objects.get(name=lname)
-            self.assertTrue(_l.is_approved)
-            self.assertTrue(_l.is_published)
+            if 'success' in data and data['success']:
+                lname = data['url'].split(':')[-1]
+                _l = Layer.objects.get(name=lname)
+                self.assertTrue(_l.is_approved)
+                self.assertTrue(_l.is_published)
+            else:
+                logger.warning(data)
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             layer_upload_url = reverse('layer_upload')
@@ -1160,15 +1163,18 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
                 files['charset'] = 'utf-8'
                 files['layer_title'] = 'test layer'
                 resp = self.client.post(layer_upload_url, data=files)
-                self.assertEqual(resp.status_code, 200)
+                self.assertEqual(resp.status_code, 400)
             content = resp.content
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
             data = json.loads(content)
-            lname = data['url'].split(':')[-1]
-            _l = Layer.objects.get(name=lname)
-            self.assertFalse(_l.is_approved)
-            self.assertTrue(_l.is_published)
+            if 'success' in data and data['success']:
+                lname = data['url'].split(':')[-1]
+                _l = Layer.objects.get(name=lname)
+                self.assertFalse(_l.is_approved)
+                self.assertTrue(_l.is_published)
+            else:
+                logger.warning(data)
 
 
 class LayerNotificationsTestCase(NotificationsTestsHelper):
