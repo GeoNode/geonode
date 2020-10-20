@@ -30,11 +30,13 @@ RUN echo "Updating apt-get" && \
 
 # Install python dependencies
 RUN echo "Geonode python dependencies"
-RUN pip install celery==4.4.0
 
 # Install geonode dependencies
 ADD requirements.txt /requirements.txt
 RUN pip install -r requirements.txt
+RUN pip install -e . --upgrade
+RUN python manage.py makemigrations --settings=geonode.settings
+RUN python manage.py migrate --settings=geonode.settings
 RUN rm requirements.txt
 
 # Install pygdal (after requirements https://github.com/GeoNode/geonode/pull/4599)
@@ -44,7 +46,6 @@ RUN pip install pygdal==$(gdal-config --version).*
 RUN mkdir /spcgeonode
 WORKDIR /spcgeonode/
 ADD . /spcgeonode/
-RUN pip install -e . --upgrade
 RUN chmod +x scripts/spcgeonode/django/docker-entrypoint.sh
 
 # Export ports
