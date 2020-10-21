@@ -929,8 +929,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
             if not request.user or request.user.is_anonymous:
                 raise Http404
             elif not is_admin:
-                if is_owner or (
-                        is_manager and request.user in obj_group_managers):
+                if is_manager and request.user in obj_group_managers:
                     if (not request.user.has_perm('publish_resourcebase', obj_to_check)) and (
                         not request.user.has_perm('view_resourcebase', obj_to_check)) and (
                             not request.user.has_perm('change_resourcebase_metadata', obj_to_check)) and (
@@ -957,10 +956,6 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
                                 'change_resourcebase', request.user, obj_to_check)
                             assign_perm(
                                 'delete_resourcebase', request.user, obj_to_check)
-                            assign_perm(
-                                'change_resourcebase_permissions',
-                                request.user,
-                                obj_to_check)
 
     allowed = True
     if permission.split('.')[-1] in ['change_layer_data',

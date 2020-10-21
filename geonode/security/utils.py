@@ -618,7 +618,9 @@ def set_owner_permissions(resource, members=None):
                     for user in members:
                         assign_perm(perm, user, resource.layer)
         for perm in admin_perms:
-            assign_perm(perm, resource.owner, resource.get_self_resource())
+            if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
+            perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
+                assign_perm(perm, resource.owner, resource.get_self_resource())
             if members:
                 for user in members:
                     assign_perm(perm, user, resource.get_self_resource())
@@ -682,18 +684,6 @@ def _get_geofence_payload(layer, layer_name, workspace, access, user=None, group
         service_el = etree.SubElement(root_el, "service")
         service_el.text = service
     if service and service == "*" and geo_limit is not None and geo_limit != "":
-        # if getattr(layer, 'storeType', None) == 'coverageStore' and getattr(layer, 'srid', None):
-        #     native_crs = layer.srid
-        #     if native_crs != 'EPSG:4326':
-        #         try:
-        #             _native_srid = int(native_crs[5:])
-        #             _wkt_wgs84 = geo_limit.split(';')[1]
-        #             _poly = GEOSGeometry(_wkt_wgs84, srid=4326)
-        #             _poly.transform(_native_srid)
-        #             geo_limit = _poly.ewkt
-        #         except Exception as e:
-        #             traceback.print_exc()
-        #             logger.exception(e)
         access_el = etree.SubElement(root_el, "access")
         access_el.text = "LIMIT"
         limits = etree.SubElement(root_el, "limits")
