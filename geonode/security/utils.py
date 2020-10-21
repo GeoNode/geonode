@@ -52,30 +52,17 @@ def get_visible_resources(queryset,
                           admin_approval_required=False,
                           unpublished_not_visible=False,
                           private_groups_not_visibile=False):
-    is_admin = False
-    is_manager = False
-    if user:
-        is_admin = user.is_superuser if user else False
-        try:
-            is_manager = user.groupmember_set.all().filter(role='manager').exists()
-        except Exception:
-            is_manager = False
-
     # Get the list of objects the user has access to
+    is_admin = False
     anonymous_group = None
     public_groups = GroupProfile.objects.exclude(access="private").values('group')
     groups = []
     group_list_all = []
-    manager_groups = []
     try:
         group_list_all = user.group_list_all().values('group')
     except Exception:
         pass
-    try:
-        manager_groups = Group.objects.filter(
-            name__in=user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
-    except Exception:
-        pass
+
     try:
         anonymous_group = Group.objects.get(name='anonymous')
         if anonymous_group and anonymous_group not in groups:
@@ -87,26 +74,7 @@ def get_visible_resources(queryset,
 
     if not is_admin:
         if admin_approval_required:
-            if is_manager:
-                filter_set = filter_set.filter(
-                    Q(is_published=True) |
-                    Q(is_published=False) |
-                    Q(group__in=groups) |
-                    Q(group__in=manager_groups) |
-                    Q(group__in=group_list_all) |
-                    Q(group__in=public_groups) |
-                    Q(owner__username__iexact=str(user))
-                )
-            elif user and user.is_authenticated:
-                filter_set = filter_set.filter(
-                    Q(is_published=True) |
-                    Q(is_published=False) |
-                    Q(group__in=groups) |
-                    Q(group__in=group_list_all) |
-                    Q(group__in=public_groups) |
-                    Q(owner__username__iexact=str(user))
-                ).exclude(Q(is_approved=False))
-            else:
+            if not user or user.is_anonymous:
                 filter_set = filter_set.filter(
                     Q(is_published=True) |
                     Q(group__in=public_groups) |
