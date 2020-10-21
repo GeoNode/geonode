@@ -64,7 +64,7 @@ dj-database-url==0.5.0
 dj-pagination==2.5.0
 django-floppyforms<1.10.0
 django-forms-bootstrap<=3.1.0
-django-autocomplete-light==3.5.1
+django-autocomplete-light==3.8.1
 django-leaflet==0.27.1
 django-invitations<1.9.4
 django-recaptcha==2.0.6
