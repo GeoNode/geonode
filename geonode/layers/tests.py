@@ -1136,10 +1136,14 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
             data = json.loads(content)
-            lname = data['url'].split(':')[-1]
-            _l = Layer.objects.get(name=lname)
-            self.assertTrue(_l.is_approved)
-            self.assertTrue(_l.is_published)
+            if 'url' in data:
+                lname = data['url'].split(':')[-1]
+                _l = Layer.objects.get(name=lname)
+                self.assertTrue(_l.is_approved)
+                self.assertTrue(_l.is_published)
+            else:
+                logger.info(data)
+                raise Exception(data)
 
         with self.settings(ADMIN_MODERATE_UPLOADS=True):
             layer_upload_url = reverse('layer_upload')
