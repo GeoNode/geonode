@@ -180,14 +180,20 @@ class ManageResourceOwnerPermissions:
             remove_perm(perm, self.resource.owner, self.resource)
 
         for perm in self.resource.BASE_PERMISSIONS.get('read') + self.resource.BASE_PERMISSIONS.get('download'):
-            assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
+            if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
+            perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
+                assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
 
     def _restore_owner_permissions(self):
 
         for perm_list in self.resource.BASE_PERMISSIONS.values():
             for perm in perm_list:
-                assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
+                if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
+                perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
+                    assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
 
         for perm_list in self.resource.PERMISSIONS.values():
             for perm in perm_list:
-                assign_perm(perm, self.resource.owner, self.resource)
+                if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
+                perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
+                    assign_perm(perm, self.resource.owner, self.resource)
