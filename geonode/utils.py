@@ -926,14 +926,16 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
             except Exception:
                 is_manager = False
         if (not obj_to_check.is_approved):
-            if not is_admin:
+            if not request.user or request.user.is_anonymous:
+                raise Http404
+            elif not is_admin:
                 if is_owner or (
                         is_manager and request.user in obj_group_managers):
                     if (not request.user.has_perm('publish_resourcebase', obj_to_check)) and (
                         not request.user.has_perm('view_resourcebase', obj_to_check)) and (
                             not request.user.has_perm('change_resourcebase_metadata', obj_to_check)) and (
                                 not is_owner and not settings.ADMIN_MODERATE_UPLOADS):
-                        raise Http404
+                        pass
                     else:
                         assign_perm(
                             'view_resourcebase', request.user, obj_to_check)
@@ -959,14 +961,6 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
                                 'change_resourcebase_permissions',
                                 request.user,
                                 obj_to_check)
-                else:
-                    if request.user in obj_group_members:
-                        if (not request.user.has_perm('publish_resourcebase', obj_to_check)) and (
-                            not request.user.has_perm('view_resourcebase', obj_to_check)) and (
-                                not request.user.has_perm('change_resourcebase_metadata', obj_to_check)):
-                            raise Http404
-                    else:
-                        raise Http404
 
     allowed = True
     if permission.split('.')[-1] in ['change_layer_data',
