@@ -538,7 +538,7 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             resp = self.client.get(
                 reverse('document_detail', args=(_d.id,)))
             # Forbidden
-            self.assertEqual(resp.status_code, 404)
+            self.assertEqual(resp.status_code, 403)
             _d.group = group.group
             _d.save()
             resp = self.client.get(
