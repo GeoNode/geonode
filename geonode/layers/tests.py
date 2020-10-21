@@ -322,23 +322,20 @@ class LayersTest(GeoNodeBaseTestSupport):
 
         from geonode.base.models import HierarchicalKeyword as hk
         keywords = hk.dump_bulk_tree(get_user_model().objects.get(username='admin'), type='layer')
+
         self.assertEqual(len(keywords), len([
-            {"text": "here", "href": "here", "id": 2},
-            {"text": "keywords", "href": "keywords", "id": 4},
-            {"text": "layertagunique", "href": "layertagunique", "id": 3},
-            {"text": "populartag", "href": "populartag", "id": 1},
-            {"text": "saving", "href": "saving", "id": 5},
-            {"text": "ß", "href": "ss", "id": 9},
-            {"text": "ä", "href": "a", "id": 10},
-            {"text": "ö", "href": "o", "id": 7},
-            {"text": "ü", "href": "u", "id": 8},
-            {"text": "論語", "href": "lun-yu", "id": 6},
-            {"text": "Europe&lt;script&gt;true;&lt;/script&gt;",
-                "href": "u'europeltscriptgttrueltscriptgt", "id": 12},
-            {"text": "land_&lt;script&gt;true;&lt;/script&gt;covering",
-                "href": "u'land_ltscriptgttrueltscriptgtcovering", "id": 13},
-            {"text": "&lt;IMGSRC=&#39;javascript:true;&#39;&gt;Science",
-                "href": "u'ltimgsrc39javascripttrue39gtscience", "id": 11},
+            {
+                'text': 'layertagunique',
+                'href': 'layertagunique',
+                'tags': [1],
+                'id': 3
+            },
+            {
+                'text': 'populartag',
+                'href': 'populartag',
+                'tags': [7],
+                'id': 1
+            }
         ]))
 
     def test_layer_links(self):
