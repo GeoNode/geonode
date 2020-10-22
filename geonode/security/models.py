@@ -149,26 +149,31 @@ class PermissionLevelMixin(object):
         remove_object_permissions(self)
 
         # default permissions for anonymous users
+
+        def skip_registered_members_common_group(user_group):
+            if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
+                _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
+                if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
+                _members_group_name == user_group.name:
+                    return True
+            return False
+
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
         user_groups = Group.objects.filter(
             name__in=self.owner.groupmember_set.all().values_list("group__slug", flat=True))
         obj_group_managers = []
         if user_groups:
             for _user_group in user_groups:
-                if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
-                    _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-                    if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
-                    _members_group_name == _user_group.name:
-                        continue
-                try:
-                    _group_profile = GroupProfile.objects.get(slug=_user_group.name)
-                    managers = _group_profile.get_managers()
-                    if managers:
-                        for manager in managers:
-                            if manager not in obj_group_managers and not manager.is_superuser:
-                                obj_group_managers.append(manager)
-                except GroupProfile.DoesNotExist:
-                    pass
+                if not skip_registered_members_common_group(_user_group):
+                    try:
+                        _group_profile = GroupProfile.objects.get(slug=_user_group.name)
+                        managers = _group_profile.get_managers()
+                        if managers:
+                            for manager in managers:
+                                if manager not in obj_group_managers and not manager.is_superuser:
+                                    obj_group_managers.append(manager)
+                    except GroupProfile.DoesNotExist:
+                        pass
 
         if not anonymous_group:
             raise Exception("Could not acquire 'anonymous' Group.")
@@ -183,8 +188,9 @@ class PermissionLevelMixin(object):
                         anonymous_group, self.get_self_resource())
         else:
             for user_group in user_groups:
-                assign_perm('view_resourcebase',
-                            user_group, self.get_self_resource())
+                if not skip_registered_members_common_group(user_group):
+                    assign_perm('view_resourcebase',
+                                user_group, self.get_self_resource())
 
         anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
         if anonymous_can_download:
@@ -192,8 +198,9 @@ class PermissionLevelMixin(object):
                         anonymous_group, self.get_self_resource())
         else:
             for user_group in user_groups:
-                assign_perm('download_resourcebase',
-                            user_group, self.get_self_resource())
+                if not skip_registered_members_common_group(user_group):
+                    assign_perm('download_resourcebase',
+                                user_group, self.get_self_resource())
 
         if self.__class__.__name__ == 'Layer':
             # only for layer owner
@@ -214,7 +221,8 @@ class PermissionLevelMixin(object):
                 for _group_manager in obj_group_managers:
                     sync_geofence_with_guardian(self.layer, perms, user=_group_manager)
                 for user_group in user_groups:
-                    sync_geofence_with_guardian(self.layer, perms, group=user_group)
+                    if not skip_registered_members_common_group(user_group):
+                        sync_geofence_with_guardian(self.layer, perms, group=user_group)
 
                 # Anonymous
                 perms = ["view_resourcebase"]
