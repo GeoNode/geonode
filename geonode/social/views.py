@@ -60,7 +60,6 @@ class RecentActivity(ListView):
                     _filtered_actions.append(_action.id)
                 except (PermissionDenied, Exception) as e:
                     logging.debug(e)
-                    pass
             return _filtered_actions
 
         context['action_list'] = Action.objects.filter(
