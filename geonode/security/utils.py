@@ -609,21 +609,24 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
 def set_owner_permissions(resource, members=None):
     """assign all admin permissions to the owner"""
     if resource.polymorphic_ctype:
-        # Set the GeoFence Owner Rule
+        # Owner & Manager Admin Perms
         admin_perms = models.VIEW_PERMISSIONS + models.ADMIN_PERMISSIONS
+        for perm in admin_perms:
+            if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
+                assign_perm(perm, resource.owner, resource.get_self_resource())
+            elif perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
+                assign_perm(perm, resource.owner, resource.get_self_resource())
+            if members:
+                for user in members:
+                    assign_perm(perm, user, resource.get_self_resource())
+
+        # Set the GeoFence Owner Rule
         if resource.polymorphic_ctype.name == 'layer':
             for perm in models.LAYER_ADMIN_PERMISSIONS:
                 assign_perm(perm, resource.owner, resource.layer)
                 if members:
                     for user in members:
                         assign_perm(perm, user, resource.layer)
-        for perm in admin_perms:
-            if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
-            perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
-                assign_perm(perm, resource.owner, resource.get_self_resource())
-            if members:
-                for user in members:
-                    assign_perm(perm, user, resource.get_self_resource())
 
 
 def remove_object_permissions(instance):
