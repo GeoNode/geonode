@@ -180,20 +180,23 @@ class ManageResourceOwnerPermissions:
             remove_perm(perm, self.resource.owner, self.resource)
 
         for perm in self.resource.BASE_PERMISSIONS.get('read') + self.resource.BASE_PERMISSIONS.get('download'):
-            if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
-            perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
+            if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
+                assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
+            elif perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
                 assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
 
     def _restore_owner_permissions(self):
 
         for perm_list in self.resource.BASE_PERMISSIONS.values():
             for perm in perm_list:
-                if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
-                perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
+                if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
+                    assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
+                elif perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
                     assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
 
         for perm_list in self.resource.PERMISSIONS.values():
             for perm in perm_list:
-                if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
-                perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
+                if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
+                    assign_perm(perm, self.resource.owner, self.resource)
+                elif perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
                     assign_perm(perm, self.resource.owner, self.resource)
