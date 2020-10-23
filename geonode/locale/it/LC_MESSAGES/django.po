@@ -37,8 +37,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-23 09:19+0000\n"
-"PO-Revision-Date: 2020-10-23 11:42+0200\n"
+"POT-Creation-Date: 2020-10-23 10:24+0000\n"
+"PO-Revision-Date: 2020-10-23 12:32+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Italian (http://www.transifex.com/geonode/geonode/language/"
 "it/)\n"
@@ -182,8 +182,8 @@ msgstr "i dati vengono aggiornati ogni tre mesi"
 msgid "No information provided"
 msgstr "Nessuna informazione fornita"
 
-#: geonode/base/forms.py:283
-#: geonode/base/templates/base/_resourcebase_info_panel.html:77
+#: geonode/base/forms.py:283 geonode/base/forms.py:513
+#: geonode/base/templates/base/_resourcebase_info_panel.html:85
 #: geonode/catalogue/templates/geonode_metadata_full.html:145
 #: geonode/documents/templates/documents/document_metadata_advanced.html:76
 #: geonode/documents/templates/layouts/doc_panels.html:321
@@ -209,12 +209,13 @@ msgstr "Parole chiave dai Thesauri"
 msgid "List of keywords from Thesaurus"
 msgstr "Elenco di parole chiave dai Thesauri"
 
-#: geonode/base/forms.py:337 geonode/base/models.py:620
+#: geonode/base/forms.py:337 geonode/base/forms.py:509
+#: geonode/base/models.py:620
 msgid "Owner"
 msgstr "Proprietario"
 
-#: geonode/base/forms.py:343
-#: geonode/base/templates/base/_resourcebase_info_panel.html:34
+#: geonode/base/forms.py:343 geonode/base/forms.py:525
+#: geonode/base/templates/base/_resourcebase_info_panel.html:41
 #: geonode/catalogue/templates/geonode_metadata_full.html:58
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
 #: geonode/templates/metadata_detail.html:73
@@ -236,7 +237,7 @@ msgstr "Persona esterna a GeoNode (modulo di riempimento)"
 
 #: geonode/base/forms.py:365
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
-#: geonode/base/templates/base/_resourcebase_info_panel.html:104
+#: geonode/base/templates/base/_resourcebase_info_panel.html:112
 #: geonode/catalogue/templates/geonode_metadata_full.html:75
 #: geonode/documents/templates/documents/document_metadata.html:42
 #: geonode/documents/templates/documents/document_metadata.html:66
@@ -275,15 +276,65 @@ msgstr ""
 "Uno spazio o un elenco delimitato da virgole di parole chiave. Utilizzare il "
 "widget per selezionare dalla struttura ad albero gerarchica."
 
-#: geonode/base/forms.py:394
-#: geonode/base/templates/base/_resourcebase_info_panel.html:87
+#: geonode/base/forms.py:394 geonode/base/forms.py:521
+#: geonode/base/templates/base/_resourcebase_info_panel.html:95
 #: geonode/catalogue/templates/geonode_metadata_full.html:149
 #: geonode/templates/metadata_detail.html:100
 #: geonode/templates/search/_region_filter.html:5
 msgid "Regions"
 msgstr "Regioni"
 
-#: geonode/base/forms.py:562
+#: geonode/base/forms.py:505 geonode/base/forms.py:537
+#: geonode/base/templates/base/_resourcebase_info_panel.html:117
+#: geonode/documents/templates/layouts/doc_panels.html:340
+#: geonode/geoapps/templates/layouts/app_panels.html:337
+#: geonode/layers/templates/layouts/panels.html:346
+#: geonode/maps/templates/layouts/map_panels.html:340
+#: geonode/templates/metadata_detail.html:114
+msgid "Group"
+msgstr "Gruppo"
+
+#: geonode/base/forms.py:517 geonode/base/models.py:697
+#: geonode/base/templates/base/_resourcebase_info_panel.html:16
+#: geonode/base/templates/base/_resourcebase_info_panel.html:142
+#: geonode/catalogue/templates/geonode_metadata_full.html:98
+#: geonode/templates/metadata_detail.html:59
+#: geonode/templates/metadata_detail.html:205
+msgid "License"
+msgstr "Licenza"
+
+#: geonode/base/forms.py:528
+#: geonode/base/templates/base/_resourcebase_info_panel.html:179
+#: geonode/catalogue/templates/geonode_metadata_full.html:101
+#: geonode/templates/500.html:211 geonode/templates/base.html:548
+#: geonode/templates/metadata_detail.html:242
+msgid "Language"
+msgstr "Lingua"
+
+#: geonode/base/forms.py:541 geonode/templates/index.html:158
+#: geonode/templates/pinax/notifications/account_approve/full.txt:1
+msgid "User"
+msgid_plural "Users"
+msgstr[0] "Utente"
+msgstr[1] "Utenti"
+
+#: geonode/base/forms.py:545
+msgid "Permission Type"
+msgstr "Tipo di autorizzazione"
+
+#: geonode/base/forms.py:555
+msgid "Mode"
+msgstr "Modalità"
+
+#: geonode/base/forms.py:573
+msgid "Resource"
+msgstr "Risorsa"
+
+#: geonode/base/forms.py:577
+msgid "Reason"
+msgstr "Motivo"
+
+#: geonode/base/forms.py:579
 msgid "Short reasoning behind the request"
 msgstr "Breve ragionamento alla base della richiesta"
 
@@ -395,7 +446,7 @@ msgid "a DOI will be added by Admin before publication."
 msgstr "un DOI verrà aggiunto dall'amministratore prima della pubblicazione."
 
 #: geonode/base/models.py:608
-#: geonode/base/templates/base/_resourcebase_info_panel.html:114
+#: geonode/base/templates/base/_resourcebase_info_panel.html:122
 #: geonode/templates/metadata_detail.html:118
 msgid "DOI"
 msgstr "DOI"
@@ -448,15 +499,6 @@ msgstr "restrizioni"
 #: geonode/base/models.py:689
 msgid "restrictions other"
 msgstr "altre restrizioni"
-
-#: geonode/base/models.py:697
-#: geonode/base/templates/base/_resourcebase_info_panel.html:16
-#: geonode/base/templates/base/_resourcebase_info_panel.html:134
-#: geonode/catalogue/templates/geonode_metadata_full.html:98
-#: geonode/templates/metadata_detail.html:59
-#: geonode/templates/metadata_detail.html:205
-msgid "License"
-msgstr "Licenza"
 
 #: geonode/base/models.py:701 geonode/people/models.py:121
 msgid "language"
@@ -570,7 +612,7 @@ msgid "Responsible, Point of Contact, Metadata Author"
 msgstr "Responsabile, Punto di contatto, Autore di metadati"
 
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:10
-#: geonode/base/templates/base/_resourcebase_info_panel.html:99
+#: geonode/base/templates/base/_resourcebase_info_panel.html:107
 #: geonode/catalogue/templates/geonode_metadata_full.html:72
 #: geonode/templates/metadata_detail.html:124
 msgid "Responsible"
@@ -590,12 +632,12 @@ msgid "Title"
 msgstr "Titolo"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:11
-#: geonode/base/templates/base/_resourcebase_info_panel.html:129
+#: geonode/base/templates/base/_resourcebase_info_panel.html:137
 msgid "SRID"
 msgstr "SRID"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:24
-#: geonode/base/templates/base/_resourcebase_info_panel.html:141
+#: geonode/base/templates/base/_resourcebase_info_panel.html:149
 #: geonode/templates/metadata_detail.html:67
 #: geonode/templates/metadata_detail.html:212
 msgid "For more info see"
@@ -610,7 +652,19 @@ msgstr "Per ulteriori informazioni, vedi"
 msgid "Abstract"
 msgstr "Abstract"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:45
+#: geonode/base/templates/base/_resourcebase_info_panel.html:35
+msgid "Creation Date"
+msgstr "Data di creazione"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:37
+msgid "Pubblication Date"
+msgstr "Data di pubblicazione"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:39
+msgid "Revision Date"
+msgstr "Data Revisione"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:53
 #: geonode/catalogue/templates/geonode_metadata_full.html:91
 #: geonode/favorite/templates/favorite/favorite_list.html:17
 #: geonode/layers/templates/layers/layer_detail.html:706
@@ -620,7 +674,7 @@ msgstr "Abstract"
 msgid "Type"
 msgstr "Tipo"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:50
+#: geonode/base/templates/base/_resourcebase_info_panel.html:58
 #: geonode/catalogue/templates/geonode_metadata_full.html:142
 #: geonode/groups/models.py:96 geonode/people/forms.py:92
 #: geonode/people/templates/people/profile_detail.html:106
@@ -633,69 +687,53 @@ msgstr "Tipo"
 msgid "Keywords"
 msgstr "Parole chiave"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:109
-#: geonode/documents/templates/layouts/doc_panels.html:340
-#: geonode/geoapps/templates/layouts/app_panels.html:337
-#: geonode/layers/templates/layouts/panels.html:346
-#: geonode/maps/templates/layouts/map_panels.html:340
-#: geonode/templates/metadata_detail.html:114
-msgid "Group"
-msgstr "Gruppo"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:121
+#: geonode/base/templates/base/_resourcebase_info_panel.html:129
 msgid "More info"
 msgstr "Maggiori informazioni"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:147
+#: geonode/base/templates/base/_resourcebase_info_panel.html:155
 #: geonode/catalogue/templates/geonode_metadata_full.html:88
 #: geonode/templates/metadata_detail.html:218
 msgid "Maintenance Frequency"
 msgstr "Frequenza di revisione"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:152
+#: geonode/base/templates/base/_resourcebase_info_panel.html:160
 #: geonode/catalogue/templates/geonode_metadata_full.html:94
 #: geonode/templates/metadata_detail.html:223
 msgid "Restrictions"
 msgstr "Restrizioni"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:161
+#: geonode/base/templates/base/_resourcebase_info_panel.html:169
 #: geonode/catalogue/templates/geonode_metadata_full.html:64
 #: geonode/templates/metadata_detail.html:232
 msgid "Edition"
 msgstr "Edizione"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:166
+#: geonode/base/templates/base/_resourcebase_info_panel.html:174
 #: geonode/catalogue/templates/geonode_metadata_full.html:80
 #: geonode/templates/metadata_detail.html:237
 msgid "Purpose"
 msgstr "Finalità"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:171
-#: geonode/catalogue/templates/geonode_metadata_full.html:101
-#: geonode/templates/500.html:211 geonode/templates/base.html:548
-#: geonode/templates/metadata_detail.html:242
-msgid "Language"
-msgstr "Lingua"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:176
+#: geonode/base/templates/base/_resourcebase_info_panel.html:184
 #: geonode/catalogue/templates/geonode_metadata_full.html:104
 #: geonode/templates/metadata_detail.html:247
 msgid "Temporal Extent"
 msgstr "Estensione temporale"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:181
+#: geonode/base/templates/base/_resourcebase_info_panel.html:189
 #: geonode/catalogue/templates/geonode_metadata_full.html:122
 #: geonode/templates/metadata_detail.html:252
 msgid "Data Quality"
 msgstr "Qualità del dato"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:186
+#: geonode/base/templates/base/_resourcebase_info_panel.html:194
 #: geonode/catalogue/templates/geonode_metadata_full.html:119
 #: geonode/templates/metadata_detail.html:257
 msgid "Supplemental Information"
 msgstr "Informazioni aggiuntive"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:191
+#: geonode/base/templates/base/_resourcebase_info_panel.html:199
 #: geonode/templates/metadata_detail.html:262
 msgid "Spatial Representation Type"
 msgstr "Tipo di rappresentazione spaziale"
@@ -7452,13 +7490,6 @@ msgstr "Aggiungi documenti"
 msgid "Explore documents"
 msgstr "Esplora documenti"
 
-#: geonode/templates/index.html:158
-#: geonode/templates/pinax/notifications/account_approve/full.txt:1
-msgid "User"
-msgid_plural "Users"
-msgstr[0] "Utente"
-msgstr[1] "Utenti"
-
 #: geonode/templates/index.html:159
 msgid ""
 "Geonode allows registered users to easily upload geospatial data and various "
@@ -7667,7 +7698,7 @@ msgstr "Richiedi permessi"
 
 #: geonode/templates/owner_rights_request.html:8
 msgid "Request editing for resource: "
-msgstr "Richiesta di modificare una risorsa:"
+msgstr "Richiesta di modifica della risorsa"
 
 #: geonode/templates/owner_rights_request.html:9
 msgid "Back to resource"
@@ -8920,9 +8951,6 @@ msgstr "Permesso negato"
 
 #~ msgid "Julian Date Start"
 #~ msgstr "Data Inizio"
-
-#~ msgid "Julian Date End"
-#~ msgstr "Data Fine"
 
 #~ msgid "Geometry"
 #~ msgstr "Geometria"
