@@ -349,7 +349,8 @@ def display_edit_request_button(resource, user, perms):
                          resource.BASE_PERMISSIONS.get('write') +
                          resource.BASE_PERMISSIONS.get('download')) - \
             set(perms)
-        return (_owner_set) == set(['change_resourcebase_permissions', 'publish_resourcebase'])
+        return _owner_set == set() or \
+            _owner_set == set(['change_resourcebase_permissions', 'publish_resourcebase'])
 
     if not _has_owner_his_permissions() and resource.owner.pk == user.pk:
         return True

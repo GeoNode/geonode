@@ -138,11 +138,28 @@ def configuration_session_cache(session):
 class OwnerRightsRequestViewUtils:
 
     @staticmethod
-    def get_message_recipients():
+    def get_message_recipients(owner):
         User = get_user_model()
         allowed_users = User.objects.none()
         if OwnerRightsRequestViewUtils.is_admin_publish_mode():
-            allowed_users |= User.objects.filter(is_superuser=True)
+            allowed_users |= User.objects.filter(is_superuser=True).exclude(pk=owner.pk)
+            try:
+                from geonode.groups.models import GroupProfile
+                groups = owner.groups.all()
+                obj_group_managers = []
+                for group in groups:
+                    try:
+                        group_profile = GroupProfile.objects.get(slug=group.name)
+                        managers = group_profile.get_managers()
+                        for manager in managers:
+                            if manager not in obj_group_managers and not manager.is_superuser:
+                                obj_group_managers.append(manager)
+                    except GroupProfile.DoesNotExist:
+                        pass
+                allowed_users |= User.objects.filter(id__in=[_u.id for _u in obj_group_managers])
+            except Exception:
+                pass
+
         return allowed_users
 
     @staticmethod
