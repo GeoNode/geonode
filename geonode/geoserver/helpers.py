@@ -888,8 +888,7 @@ def set_attributes(
                 # store description and attribute_label in attribute_map
                 attribute[attribute_map_dict['description']] = la.description
                 attribute[attribute_map_dict['label']] = la.attribute_label
-                attribute[attribute_map_dict['display_order']
-                          ] = la.display_order
+                attribute[attribute_map_dict['display_order']] = la.display_order
         if overwrite or not lafound:
             logger.debug(
                 "Going to delete [%s] for [%s]",
@@ -897,50 +896,37 @@ def set_attributes(
                 layer.name)
             la.delete()
 
-    # Add new layer attributes if they don't already exist
-    if attribute_map is not None:
+    # Add new layer attributes if they doesn't exist already
+    if attribute_map:
         iter = len(Attribute.objects.filter(layer=layer)) + 1
         for attribute in attribute_map:
             field, ftype, description, label, display_order = attribute
-            if field is not None:
-                _attrs = Attribute.objects.filter(layer=layer,
-                                                  attribute=field,
-                                                  attribute_type=ftype,
-                                                  description=description,
-                                                  attribute_label=label,
-                                                  display_order=display_order)
-                if _attrs.count() > 1:
-                    _attrs.delete()
-                la, created = Attribute.objects.get_or_create(
-                    layer=layer, attribute=field, attribute_type=ftype,
-                    description=description, attribute_label=label,
-                    display_order=display_order)
+            if field:
+                la, created = Attribute.objects.get_or_create(layer=layer, attribute=field)
                 if created:
-                    if (not attribute_stats or layer.name not in attribute_stats or
-                            field not in attribute_stats[layer.name]):
-                        result = None
-                    else:
-                        result = attribute_stats[layer.name][field]
-
-                    if result is not None:
-                        logger.debug("Generating layer attribute statistics")
-                        la.count = result['Count']
-                        la.min = result['Min']
-                        la.max = result['Max']
-                        la.average = result['Average']
-                        la.median = result['Median']
-                        la.stddev = result['StandardDeviation']
-                        la.sum = result['Sum']
-                        la.unique_values = result['unique_values']
-                        la.last_stats_updated = datetime.datetime.now(timezone.get_current_timezone())
                     la.visible = ftype.find("gml:") != 0
+                    la.attribute_type = ftype,
+                    la.description = description
+                    la.attribute_label = label
                     la.display_order = iter
-                    la.save()
                     iter += 1
-                    logger.debug(
-                        "Created [%s] attribute for [%s]",
-                        field,
-                        layer.name)
+                if (not attribute_stats or layer.name not in attribute_stats or
+                        field not in attribute_stats[layer.name]):
+                    result = None
+                else:
+                    result = attribute_stats[layer.name][field]
+                if result:
+                    logger.debug("Generating layer attribute statistics")
+                    la.count = result['Count']
+                    la.min = result['Min']
+                    la.max = result['Max']
+                    la.average = result['Average']
+                    la.median = result['Median']
+                    la.stddev = result['StandardDeviation']
+                    la.sum = result['Sum']
+                    la.unique_values = result['unique_values']
+                    la.last_stats_updated = datetime.datetime.now(timezone.get_current_timezone())
+                la.save()
     else:
         logger.debug("No attributes found")
 
@@ -1040,16 +1026,15 @@ def set_attributes_from_geoserver(layer, overwrite=False):
         if field is not None:
             if Attribute.objects.filter(layer=layer, attribute=field).exists():
                 continue
+            elif is_layer_attribute_aggregable(
+                    layer.storeType,
+                    field,
+                    ftype):
+                logger.debug("Generating layer attribute statistics")
+                result = get_attribute_statistics(layer.alternate or layer.typename, field)
             else:
-                if is_layer_attribute_aggregable(
-                        layer.storeType,
-                        field,
-                        ftype):
-                    logger.debug("Generating layer attribute statistics")
-                    result = get_attribute_statistics(layer.alternate or layer.typename, field)
-                else:
-                    result = None
-                attribute_stats[layer.name][field] = result
+                result = None
+            attribute_stats[layer.name][field] = result
     set_attributes(
         layer, attribute_map, overwrite=overwrite, attribute_stats=attribute_stats
     )
