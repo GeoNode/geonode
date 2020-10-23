@@ -313,7 +313,7 @@ def attributes_sats_refresh(request):
     if layer and can_change_data:
         try:
             # recalculate the layer statistics
-            set_attributes_from_geoserver(layer, overwrite=True)
+            set_attributes_from_geoserver(layer, overwrite=False)
             gs_resource = gs_catalog.get_resource(
                 name=layer.name,
                 store=layer.store,
