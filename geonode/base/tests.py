@@ -775,12 +775,12 @@ class TestOwnerRightsRequestUtils(TestCase):
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
     def test_msg_recipients_admin_mode(self):
         users_count = 1
-        self.assertEqual(users_count, OwnerRightsRequestViewUtils.get_message_recipients().count())
+        self.assertEqual(users_count, OwnerRightsRequestViewUtils.get_message_recipients(self.user).count())
 
     @override_settings(ADMIN_MODERATE_UPLOADS=False)
     def test_msg_recipients_workflow_off(self):
         users_count = 0
-        self.assertEqual(users_count, OwnerRightsRequestViewUtils.get_message_recipients().count())
+        self.assertEqual(users_count, OwnerRightsRequestViewUtils.get_message_recipients(self.user).count())
 
 
 class TestGetVisibleResource(TestCase):
