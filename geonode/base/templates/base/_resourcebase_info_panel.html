@@ -31,7 +31,15 @@
     {% endif %}
 
     {% if resource.date %}
+    {% if resource.date_type == 'creation' %}
+    <dt>{% trans "Creation Date" %}</dt>
+    {% elif resource.date_type == 'publication' %}
+    <dt>{% trans "Pubblication Date" %}</dt>
+    {% elif resource.date_type == 'revision' %}
+    <dt>{% trans "Revision Date" %}</dt>
+    {% else %}
     <dt>{% trans resource.date_type|title %} {% trans "Date" %}</dt>
+    {% endif %}
       {% if resource.date_type == 'creation' %}
         <dd itemprop="dateCreated" datetime="{{ resource.date|date:"c"}}">{{ resource.date }}</dd>
       {% elif resource.date_type == 'publication' %}
