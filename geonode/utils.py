@@ -877,7 +877,7 @@ def _get_viewer_projection_info(srid):
 
 
 def resolve_object(request, model, query, permission='base.view_resourcebase',
-                   permission_required=True, permission_msg=None):
+                   user=None, permission_required=True, permission_msg=None):
     """Resolve an object using the provided query and check the optional
     permission. Model views should wrap this function as a shortcut.
 
@@ -886,6 +886,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     permission_required - if False, allow get methods to proceed
     permission_msg - optional message to use in 403
     """
+    user = request.user if request and request.user else user
     obj = get_object_or_404(model, **query)
     obj_to_check = obj.get_self_resource()
 
@@ -910,52 +911,52 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
                         if manager not in obj_group_managers and not manager.is_superuser:
                             obj_group_managers.append(manager)
                 if group_profile.user_is_member(
-                        request.user) and request.user not in obj_group_members:
-                    obj_group_members.append(request.user)
+                        user) and user not in obj_group_members:
+                    obj_group_members.append(user)
             except GroupProfile.DoesNotExist:
                 pass
 
     if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
         is_admin = False
         is_manager = False
-        is_owner = True if request.user == obj_to_check.owner else False
-        if request.user and request.user.is_authenticated:
-            is_admin = request.user.is_superuser if request.user else False
+        is_owner = True if user == obj_to_check.owner else False
+        if user and user.is_authenticated:
+            is_admin = user.is_superuser if user else False
             try:
-                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+                is_manager = user.groupmember_set.all().filter(role='manager').exists()
             except Exception:
                 is_manager = False
         if (not obj_to_check.is_approved):
-            if not request.user or request.user.is_anonymous:
+            if not user or user.is_anonymous:
                 raise Http404
             elif not is_admin:
-                if is_manager and request.user in obj_group_managers:
-                    if (not request.user.has_perm('publish_resourcebase', obj_to_check)) and (
-                        not request.user.has_perm('view_resourcebase', obj_to_check)) and (
-                            not request.user.has_perm('change_resourcebase_metadata', obj_to_check)) and (
+                if is_manager and user in obj_group_managers:
+                    if (not user.has_perm('publish_resourcebase', obj_to_check)) and (
+                        not user.has_perm('view_resourcebase', obj_to_check)) and (
+                            not user.has_perm('change_resourcebase_metadata', obj_to_check)) and (
                                 not is_owner and not settings.ADMIN_MODERATE_UPLOADS):
                         pass
                     else:
                         assign_perm(
-                            'view_resourcebase', request.user, obj_to_check)
+                            'view_resourcebase', user, obj_to_check)
                         assign_perm(
                             'publish_resourcebase',
-                            request.user,
+                            user,
                             obj_to_check)
                         assign_perm(
                             'change_resourcebase_metadata',
-                            request.user,
+                            user,
                             obj_to_check)
                         assign_perm(
                             'download_resourcebase',
-                            request.user,
+                            user,
                             obj_to_check)
 
                         if is_owner:
                             assign_perm(
-                                'change_resourcebase', request.user, obj_to_check)
+                                'change_resourcebase', user, obj_to_check)
                             assign_perm(
-                                'delete_resourcebase', request.user, obj_to_check)
+                                'delete_resourcebase', user, obj_to_check)
 
     allowed = True
     if permission.split('.')[-1] in ['change_layer_data',
@@ -964,10 +965,10 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
             obj_to_check = obj
     if permission:
         if permission_required or request.method != 'GET':
-            if request.user in obj_group_managers:
+            if user in obj_group_managers:
                 allowed = True
             else:
-                allowed = request.user.has_perm(
+                allowed = user.has_perm(
                     permission,
                     obj_to_check)
     if not allowed:

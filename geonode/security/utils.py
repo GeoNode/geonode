@@ -34,21 +34,23 @@ from requests.auth import HTTPBasicAuth
 from django.conf import settings
 from django.db.models import Q
 from django.contrib.auth import get_user_model
-# from django.contrib.gis.geos import GEOSGeometry
+from django.core.exceptions import PermissionDenied
 from django.contrib.contenttypes.models import ContentType
-# from django.contrib.auth import login
 from django.contrib.auth.models import Group, Permission
 from django.core.exceptions import ObjectDoesNotExist
 from guardian.utils import get_user_obj_perms_model
 from guardian.shortcuts import assign_perm, get_anonymous_user
-from geonode.groups.models import GroupProfile
+
+from geonode.utils import resolve_object
 from geonode.utils import get_layer_workspace
+from geonode.groups.models import GroupProfile
 
 logger = logging.getLogger("geonode.security.utils")
 
 
 def get_visible_resources(queryset,
                           user,
+                          request=None,
                           admin_approval_required=False,
                           unpublished_not_visible=False,
                           private_groups_not_visibile=False):
@@ -106,7 +108,22 @@ def get_visible_resources(queryset,
         elif not user or user.is_anonymous:
             filter_set = filter_set.exclude(Q(dirty_state=True))
 
-    return filter_set
+    _allowed_resources = []
+    for _resource in filter_set.all():
+        try:
+            resolve_object(
+                request,
+                _resource.__class__,
+                {
+                    'id': _resource.id
+                },
+                'base.view_resourcebase',
+                user=user)
+            _allowed_resources.append(_resource.id)
+        except (PermissionDenied, Exception) as e:
+            logger.debug(e)
+
+    return filter_set.filter(id__in=_allowed_resources)
 
 
 def get_users_with_perms(obj):

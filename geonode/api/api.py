@@ -350,9 +350,8 @@ class GroupCategoryResource(TypeFilteredResource):
     def dehydrate(self, bundle):
         """Provide additional resource counts"""
         request = bundle.request
-        _user = request.user
         counts = _get_resource_counts(
-            _user,
+            request,
             resourcebase_filter_kwargs={
                 'group__groupprofile__categories': bundle.obj
             }
@@ -428,9 +427,8 @@ class GroupResource(ModelResource):
     def dehydrate(self, bundle):
         """Provide additional resource counts"""
         request = bundle.request
-        _user = request.user
         counts = _get_resource_counts(
-            _user,
+            request,
             resourcebase_filter_kwargs={'group': bundle.obj}
         )
 
@@ -856,7 +854,7 @@ elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
         pass
 
 
-def _get_resource_counts(user, resourcebase_filter_kwargs):
+def _get_resource_counts(request, resourcebase_filter_kwargs):
     """Return a dict with counts of resources of various types
 
     The ``resourcebase_filter_kwargs`` argument should be a dict with a suitable
@@ -864,7 +862,7 @@ def _get_resource_counts(user, resourcebase_filter_kwargs):
     ``ResourceBase`` objects to use when retrieving counts. For example::
 
         _get_resource_counts(
-            user,
+            request,
             {
                 'group__slug': 'my-group',
             }
@@ -876,10 +874,12 @@ def _get_resource_counts(user, resourcebase_filter_kwargs):
     """
     resources = get_visible_resources(
         ResourceBase.objects.filter(**resourcebase_filter_kwargs),
-        user,
+        request.user,
+        request=request,
         admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
         unpublished_not_visible=settings.RESOURCE_PUBLISHING,
         private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
+
     values = resources.values(
         'polymorphic_ctype__model',
         'is_approved',

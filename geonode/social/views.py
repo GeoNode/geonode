@@ -59,7 +59,7 @@ class RecentActivity(ListView):
                 except ResourceBase.DoesNotExist:
                     _filtered_actions.append(_action.id)
                 except (PermissionDenied, Exception) as e:
-                    logging.debug(e)
+                    logger.debug(e)
             return _filtered_actions
 
         context['action_list'] = Action.objects.filter(
