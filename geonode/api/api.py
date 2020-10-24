@@ -411,6 +411,7 @@ class GroupResource(ModelResource):
             request,
             resourcebase_filter_kwargs={'group': bundle.obj}
         )
+
         bundle.data.update(resource_counts=counts)
         return bundle
 
