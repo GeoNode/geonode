@@ -1,4 +1,4 @@
-FROM geonode/geonode:latest
+FROM geonode/geonode:3.1
 LABEL GeoNode development team
 
 COPY requirements.txt /usr/src/app/
