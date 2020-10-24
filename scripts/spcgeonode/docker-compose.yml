@@ -84,7 +84,7 @@ services:
   celerycam:
     << : *default-common-django
     entrypoint: []
-    command: 'celery events --app=geonode.celery_app:app --pidfile="/celeryev.pid" --camera=django_celery_monitor.camera.Camera --frequency=2.0 -l info'
+    # command: 'celery events --app=geonode.celery_app:app --pidfile="/celeryev.pid" --camera=django_celery_monitor.camera.Camera --frequency=2.0 -l info'
 
   # Nginx is serving django static and media files and proxies to django and geonode
   nginx:
