@@ -550,10 +550,6 @@ def document_metadata(
 
         if settings.ADMIN_MODERATE_UPLOADS:
             if not request.user.is_superuser:
-                if settings.RESOURCE_PUBLISHING:
-                    document_form.fields['is_published'].widget.attrs.update(
-                        {'disabled': 'true'})
-
                 can_change_metadata = request.user.has_perm(
                     'change_resourcebase_metadata',
                     document.get_self_resource())
@@ -562,6 +558,9 @@ def document_metadata(
                 except Exception:
                     is_manager = False
                 if not is_manager or not can_change_metadata:
+                    if settings.RESOURCE_PUBLISHING:
+                        document_form.fields['is_published'].widget.attrs.update(
+                            {'disabled': 'true'})
                     document_form.fields['is_approved'].widget.attrs.update(
                         {'disabled': 'true'})
 

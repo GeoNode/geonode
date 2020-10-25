@@ -757,6 +757,8 @@ def final_step(upload_session, user, charset="UTF-8"):
 
     # Should we throw a clearer error here?
     assert saved_layer is not None
+
+    saved_layer.handle_moderated_uploads()
     saved_layer.save()
 
     # Create a new upload session
@@ -916,7 +918,7 @@ def final_step(upload_session, user, charset="UTF-8"):
     permissions = upload_session.permissions
     if created and permissions is not None:
         _log('Setting default permissions for [%s]', name)
-        saved_layer.set_permissions(permissions)
+        saved_layer.set_permissions(permissions, created=True)
 
     if upload_session.tempdir and os.path.exists(upload_session.tempdir):
         shutil.rmtree(upload_session.tempdir)
@@ -937,4 +939,5 @@ def final_step(upload_session, user, charset="UTF-8"):
     geonode_upload_session.save()
     saved_layer.save(notify=not created)
     cat._cache.clear()
+    saved_layer.refresh_from_db()
     return saved_layer

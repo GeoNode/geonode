@@ -248,17 +248,17 @@ class OwnerRightsRequestView(LoginRequiredMixin, FormView):
         if form.is_valid():
             reason = form.cleaned_data['reason']
             notice_type_label = 'request_resource_edit'
-            recipients = OwnerRightsRequestViewUtils.get_message_recipients()
+            recipients = OwnerRightsRequestViewUtils.get_message_recipients(self.resource.owner)
 
             Message.objects.new_message(
                 from_user=request.user,
                 to_users=recipients,
                 subject=_('System message: A request to modify resource'),
-                content=_('The resource owner has requested to modify the resource') + '.'
+                content=_('The resource owner has requested to modify the resource') + '.\n'
                 ' ' +
-                _('Resource title') + ': ' + self.resource.title + '.'
+                _('Resource title') + ': ' + self.resource.title + '.\n'
                 ' ' +
-                _('Reason for the request') + ': "' + reason + '".' +
+                _('Reason for the request') + ': "' + reason + '".\n' +
                 ' ' +
                 _('To allow the change, set the resource to not "Approved" under the metadata settings' +
                   'and write message to the owner to notify him') + '.'
