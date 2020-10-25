@@ -1810,6 +1810,9 @@ if os.name == 'nt':
 # ######################################################## #
 """
     - if [ RESOURCE_PUBLISHING == True ]
+      1. "unpublished" won't be visibile to Anonymous users
+      2. "unpublished" will be visible to registered users **IF** they have view permissions
+      3. "unpublished" will be always visible to the owner and Group Managers
       By default the uploaded resources will be "unpublished".
       The owner will be able to change them to "published" **UNLESS** the ADMIN_MODERATE_UPLOADS is activated.
       If the owner assigns unpublished resources to a Group, both from Metadata and Permissions, in any case
@@ -1829,13 +1832,13 @@ if os.name == 'nt':
       Editor will be **FORCED** to select a Group when editing the resource metadata.
 """
 
-# option to enable/disable resource unpublishing for administrators
+# option to enable/disable resource unpublishing for administrators and members
 RESOURCE_PUBLISHING = ast.literal_eval(os.getenv('RESOURCE_PUBLISHING', 'False'))
 
 # Each uploaded Layer must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get('ADMIN_MODERATE_UPLOADS', 'False'))
 
-# If this option is enabled, Resources belonging to a Group won't be
+# If this option is enabled, Resources belonging to a Group (with access private) won't be
 # visible by others
 GROUP_PRIVATE_RESOURCES = ast.literal_eval(os.environ.get('GROUP_PRIVATE_RESOURCES', 'False'))
 

@@ -138,11 +138,28 @@ def configuration_session_cache(session):
 class OwnerRightsRequestViewUtils:
 
     @staticmethod
-    def get_message_recipients():
+    def get_message_recipients(owner):
         User = get_user_model()
         allowed_users = User.objects.none()
         if OwnerRightsRequestViewUtils.is_admin_publish_mode():
-            allowed_users |= User.objects.filter(is_superuser=True)
+            allowed_users |= User.objects.filter(is_superuser=True).exclude(pk=owner.pk)
+            try:
+                from geonode.groups.models import GroupProfile
+                groups = owner.groups.all()
+                obj_group_managers = []
+                for group in groups:
+                    try:
+                        group_profile = GroupProfile.objects.get(slug=group.name)
+                        managers = group_profile.get_managers()
+                        for manager in managers:
+                            if manager not in obj_group_managers and not manager.is_superuser:
+                                obj_group_managers.append(manager)
+                    except GroupProfile.DoesNotExist:
+                        pass
+                allowed_users |= User.objects.filter(id__in=[_u.id for _u in obj_group_managers])
+            except Exception:
+                pass
+
         return allowed_users
 
     @staticmethod
@@ -180,14 +197,23 @@ class ManageResourceOwnerPermissions:
             remove_perm(perm, self.resource.owner, self.resource)
 
         for perm in self.resource.BASE_PERMISSIONS.get('read') + self.resource.BASE_PERMISSIONS.get('download'):
-            assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
+            if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
+                assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
+            elif perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
+                assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
 
     def _restore_owner_permissions(self):
 
         for perm_list in self.resource.BASE_PERMISSIONS.values():
             for perm in perm_list:
-                assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
+                if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
+                    assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
+                elif perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
+                    assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
 
         for perm_list in self.resource.PERMISSIONS.values():
             for perm in perm_list:
-                assign_perm(perm, self.resource.owner, self.resource)
+                if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
+                    assign_perm(perm, self.resource.owner, self.resource)
+                elif perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
+                    assign_perm(perm, self.resource.owner, self.resource)
