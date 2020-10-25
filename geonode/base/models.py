@@ -891,6 +891,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 if settings.ADMIN_MODERATE_UPLOADS:
                     if self.is_approved and not self.is_published and \
                     self.__is_approved != self.is_approved:
+                        # Set "approved" workflow permissions
+                        self.set_workflow_perms(approved=True)
+
+                        # Send "approved" notification
                         notice_type_label = '%s_approved' % self.class_name.lower()
                         recipients = get_notification_recipients(notice_type_label)
                         send_notification(recipients, notice_type_label, {'resource': self})
@@ -900,6 +904,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 if not _notification_sent and settings.RESOURCE_PUBLISHING:
                     if self.is_approved and self.is_published and \
                     self.__is_published != self.is_published:
+                        # Set "published" workflow permissions
+                        self.set_workflow_perms(published=True)
+
+                        # Send "published" notification
                         notice_type_label = '%s_published' % self.class_name.lower()
                         recipients = get_notification_recipients(notice_type_label)
                         send_notification(recipients, notice_type_label, {'resource': self})
