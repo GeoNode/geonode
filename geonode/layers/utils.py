@@ -42,6 +42,7 @@ from six import string_types, reraise as raise_
 # Django functionality
 from django.conf import settings
 from django.db.models import Q
+from django.db import IntegrityError, transaction
 from django.core.files import File
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
@@ -459,6 +460,7 @@ def get_bbox(filename):
     return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, "EPSG:%s" % str(srid)]
 
 
+@transaction.atomic
 def file_upload(filename,
                 layer=None,
                 gtype=None,
@@ -679,22 +681,23 @@ def file_upload(filename,
     created = False
     layer = None
     try:
-        if overwrite:
-            try:
-                layer = Layer.objects.get(name=valid_name)
-            except Layer.DoesNotExist:
-                layer = None
-        if not layer:
-            if not metadata_upload_form:
-                layer, created = Layer.objects.get_or_create(
-                    name=valid_name,
-                    workspace=settings.DEFAULT_WORKSPACE
-                )
-            elif identifier:
-                layer, created = Layer.objects.get_or_create(
-                    uuid=identifier
-                )
-    except Exception:
+        with transaction.atomic():
+            if overwrite:
+                try:
+                    layer = Layer.objects.get(name=valid_name)
+                except Layer.DoesNotExist:
+                    layer = None
+            if not layer:
+                if not metadata_upload_form:
+                    layer, created = Layer.objects.get_or_create(
+                        name=valid_name,
+                        workspace=settings.DEFAULT_WORKSPACE
+                    )
+                elif identifier:
+                    layer, created = Layer.objects.get_or_create(
+                        uuid=identifier
+                    )
+    except IntegrityError:
         raise
 
     # Delete the old layers if overwrite is true
@@ -769,26 +772,29 @@ def file_upload(filename,
         pass
     else:
         try:
-            ResourceBase.objects.filter(
-                id=layer.resourcebase_ptr.id).update(
-                **defaults)
-            Layer.objects.filter(id=layer.id).update(**to_update)
+            with transaction.atomic():
+                ResourceBase.objects.filter(
+                    id=layer.resourcebase_ptr.id).update(
+                    **defaults)
+                Layer.objects.filter(id=layer.id).update(**to_update)
 
-            # Refresh from DB
-            layer.refresh_from_db()
+                # Refresh from DB
+                layer.refresh_from_db()
 
-            # Pass the parameter overwrite to tell whether the
-            # geoserver_post_save_signal should upload the new file or not
-            layer.overwrite = overwrite
+                # Pass the parameter overwrite to tell whether the
+                # geoserver_post_save_signal should upload the new file or not
+                layer.overwrite = overwrite
 
-            # Blank out the store if overwrite is true.
-            # geoserver_post_save_signal should upload the new file if needed
-            layer.store = '' if overwrite else layer.store
-        except Exception:
-            import traceback
-            tb = traceback.format_exc()
-            logger.error(tb)
-    layer.save(notify=True)
+                # Blank out the store if overwrite is true.
+                # geoserver_post_save_signal should upload the new file if needed
+                layer.store = '' if overwrite else layer.store
+        except IntegrityError:
+            raise
+    try:
+        with transaction.atomic():
+            layer.save(notify=True)
+    except IntegrityError:
+        raise
     return layer
 
 
