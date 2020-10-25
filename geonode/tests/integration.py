@@ -439,7 +439,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
                 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                     self.assertEqual(
-                        len(uploaded.keyword_list()), 7,
+                        len(uploaded.keyword_list()), 5,
                         'Expected specific number of keywords from uploaded layer XML metadata')
                 elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
                     # QGIS Server backend doesn't have GeoServer assigned keywords.
@@ -1124,13 +1124,9 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 'test',
             ]
             if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                geoserver_keywords = [
-                    'features',
-                    'test_san_andres_y_providencia_administrative'
-                ]
                 self.assertEqual(
                     set(lyr.keyword_list()),
-                    set(default_keywords + geoserver_keywords))
+                    set(default_keywords))
             elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
                 self.assertEqual(
                     set(lyr.keyword_list()),
