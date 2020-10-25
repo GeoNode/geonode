@@ -661,7 +661,6 @@ def file_upload(filename,
                     identifier=value.lower(),
                     defaults={'description': '', 'gn_description': value})
                 key = 'category'
-
                 defaults[key] = value
             else:
                 defaults[key] = value
@@ -706,7 +705,6 @@ def file_upload(filename,
     # doing a layer.save()
     if not created and overwrite:
         # update with new information
-        defaults['upload_session'] = upload_session
         defaults['title'] = defaults.get('title', None) or layer.title
         defaults['abstract'] = defaults.get('abstract', None) or layer.abstract
         defaults['bbox_polygon'] = defaults.get('bbox_polygon', None) or layer.bbox_polygon
@@ -718,15 +716,20 @@ def file_upload(filename,
         defaults['category'] = defaults.get('category', None) or layer.category
 
         if upload_session:
-            layer.upload_session.date = upload_session.date
-            layer.upload_session.user = upload_session.user
-            layer.upload_session.error = upload_session.error
-            layer.upload_session.traceback = upload_session.traceback
-            layer.upload_session.context = upload_session.context
-        upload_session = layer.upload_session
-    upload_session.resource = layer
-    upload_session.processed = False
-    upload_session.save()
+            if layer.upload_session:
+                layer.upload_session.date = upload_session.date
+                layer.upload_session.user = upload_session.user
+                layer.upload_session.error = upload_session.error
+                layer.upload_session.traceback = upload_session.traceback
+                layer.upload_session.context = upload_session.context
+                upload_session = layer.upload_session
+            else:
+                layer.upload_session = upload_session
+    if upload_session:
+        defaults['upload_session'] = upload_session
+        upload_session.resource = layer
+        upload_session.processed = False
+        upload_session.save()
 
     # Assign the keywords (needs to be done after saving)
     keywords = list(set(keywords))
@@ -757,16 +760,13 @@ def file_upload(filename,
         defaults['abstract'] = layer.abstract or ''
 
     to_update = {}
-    to_update['upload_session'] = defaults.pop('upload_session', None)
-    to_update['storeType'] = defaults.pop('storeType', None)
-    to_update['charset'] = defaults.pop('charset', None)
+    to_update['upload_session'] = defaults.pop('upload_session', layer.upload_session)
+    to_update['storeType'] = defaults.pop('storeType', layer.storeType)
+    to_update['charset'] = defaults.pop('charset', layer.charset)
+    to_update.update(defaults)
     if defaults.get('date', date) is not None:
         to_update['date'] = defaults.get('date',
                                          datetime.strptime(date, '%Y-%m-%d %H:%M:%S') if date else None)
-    if defaults.get('license', license) is not None:
-        to_update['license'] = defaults.get('license', license)
-    if defaults.get('category', category) is not None:
-        to_update['category'] = defaults.get('category', category)
 
     # Update ResourceBase
     if not to_update:
