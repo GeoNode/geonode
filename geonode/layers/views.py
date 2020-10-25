@@ -357,6 +357,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 'type': 'name',
                 'properties': saved_layer.srid
             }
+            out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
             upload_session = saved_layer.upload_session
             if upload_session:
                 upload_session.processed = True
