@@ -316,31 +316,31 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     out['traceback'] = upload_session.traceback
                     out['context'] = upload_session.context
                     out['upload_session'] = upload_session.id
-            else:
-                # Prevent calls to None
-                if saved_layer:
-                    out['success'] = True
-                    if hasattr(saved_layer, 'info'):
-                        out['info'] = saved_layer.info
-                    out['url'] = reverse(
-                        'layer_detail', args=[
-                            saved_layer.service_typename])
-                    if hasattr(saved_layer, 'bbox_string'):
-                        out['bbox'] = saved_layer.bbox_string
-                    if hasattr(saved_layer, 'srid'):
-                        out['crs'] = {
-                            'type': 'name',
-                            'properties': saved_layer.srid
-                        }
-                    out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
-                    upload_session = saved_layer.upload_session
-                    if upload_session:
-                        upload_session.processed = True
-                        upload_session.save()
-                    permissions = form.cleaned_data["permissions"]
-                    if permissions is not None and len(permissions.keys()) > 0:
-                        saved_layer.set_permissions(permissions)
-                    saved_layer.handle_moderated_uploads()
+                else:
+                    # Prevent calls to None
+                    if saved_layer:
+                        out['success'] = True
+                        if hasattr(saved_layer, 'info'):
+                            out['info'] = saved_layer.info
+                        out['url'] = reverse(
+                            'layer_detail', args=[
+                                saved_layer.service_typename])
+                        if hasattr(saved_layer, 'bbox_string'):
+                            out['bbox'] = saved_layer.bbox_string
+                        if hasattr(saved_layer, 'srid'):
+                            out['crs'] = {
+                                'type': 'name',
+                                'properties': saved_layer.srid
+                            }
+                        out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
+                        upload_session = saved_layer.upload_session
+                        if upload_session:
+                            upload_session.processed = True
+                            upload_session.save()
+                        permissions = form.cleaned_data["permissions"]
+                        if permissions is not None and len(permissions.keys()) > 0:
+                            saved_layer.set_permissions(permissions)
+                        saved_layer.handle_moderated_uploads()
             finally:
                 if tempdir is not None:
                     shutil.rmtree(tempdir)
@@ -1108,10 +1108,6 @@ def layer_metadata(
 
     if settings.ADMIN_MODERATE_UPLOADS:
         if not request.user.is_superuser:
-            if settings.RESOURCE_PUBLISHING:
-                layer_form.fields['is_published'].widget.attrs.update(
-                    {'disabled': 'true'})
-
             can_change_metadata = request.user.has_perm(
                 'change_resourcebase_metadata',
                 layer.get_self_resource())
@@ -1119,7 +1115,11 @@ def layer_metadata(
                 is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
             except Exception:
                 is_manager = False
+
             if not is_manager or not can_change_metadata:
+                if settings.RESOURCE_PUBLISHING:
+                    layer_form.fields['is_published'].widget.attrs.update(
+                        {'disabled': 'true'})
                 layer_form.fields['is_approved'].widget.attrs.update(
                     {'disabled': 'true'})
 

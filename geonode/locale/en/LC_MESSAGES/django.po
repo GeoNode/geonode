@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-23 10:24+0000\n"
-"PO-Revision-Date: 2020-10-23 12:34+0200\n"
+"POT-Creation-Date: 2020-10-23 13:55+0000\n"
+"PO-Revision-Date: 2020-10-23 15:58+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
 "en/)\n"
@@ -835,6 +835,26 @@ msgstr "Upload"
 #: geonode/base/templates/base/thumbnail_upload.html:41
 msgid "Auto generated thumbnail"
 msgstr "Auto generated  thumbnail"
+
+#: geonode/base/templatetags/base_tags.py:48
+msgid "Raster Layer"
+msgstr "Raster Layer"
+
+#: geonode/base/templatetags/base_tags.py:49
+msgid "Vector Layer"
+msgstr "Vector Layer"
+
+#: geonode/base/templatetags/base_tags.py:50
+msgid "Vector Temporal Serie"
+msgstr "Vector Temporal Serie"
+
+#: geonode/base/templatetags/base_tags.py:51
+msgid "Remote Layer"
+msgstr "Remote Layer"
+
+#: geonode/base/templatetags/base_tags.py:52
+msgid "WMS Cascade Layer"
+msgstr "WMS Cascade Layer"
 
 #: geonode/base/templatetags/user_messages.py:32
 #: geonode/base/templatetags/user_messages.py:40
@@ -8089,6 +8109,11 @@ msgstr "Maps found"
 #: geonode/templates/search/_search_content.html:53
 msgid "Documents found"
 msgstr "Documents found"
+
+#: geonode/templates/search/_search_content.html:55
+#: geonode/templates/search/_search_content.html:57
+msgid "found"
+msgstr "found"
 
 #: geonode/templates/search/_search_user_content.html:10
 msgid "search"

@@ -17,33 +17,61 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
 
 from actstream.models import Action
 from django.views.generic import ListView
+from django.core.exceptions import PermissionDenied
+
+from geonode.utils import resolve_object
+from geonode.base.models import ResourceBase
+
+logger = logging.getLogger(__name__)
 
 
 class RecentActivity(ListView):
     """
     Returns recent public activity.
     """
-    context_object_name = 'action_list'
-    queryset = Action.objects.filter(public=True)[:15]
+    model = Action
     template_name = 'social/activity_list.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super(ListView, self).get_context_data(*args, **kwargs)
+
+        def _filter_actions(action, request):
+            if action == 'all':
+                _actions = Action.objects.filter(public=True)[:1000]
+            else:
+                _actions = Action.objects.filter(
+                    public=True, action_object_content_type__model=action)[:1000]
+            _filtered_actions = []
+            for _action in _actions:
+                try:
+                    resolve_object(
+                        request,
+                        ResourceBase,
+                        {
+                            'id': _action.action_object_object_id
+                        },
+                        'base.view_resourcebase')
+                    _filtered_actions.append(_action.id)
+                except ResourceBase.DoesNotExist:
+                    _filtered_actions.append(_action.id)
+                except (PermissionDenied, Exception) as e:
+                    logger.debug(e)
+            return _filtered_actions
+
+        context['action_list'] = Action.objects.filter(
+            id__in=_filter_actions('all', self.request))[:15]
         context['action_list_layers'] = Action.objects.filter(
-            public=True,
-            action_object_content_type__model='layer')[:15]
+            id__in=_filter_actions('layer', self.request))[:15]
         context['action_list_maps'] = Action.objects.filter(
-            public=True,
-            action_object_content_type__model='map')[:15]
+            id__in=_filter_actions('map', self.request))[:15]
         context['action_list_documents'] = Action.objects.filter(
-            public=True,
-            action_object_content_type__model='document')[:15]
+            id__in=_filter_actions('document', self.request))[:15]
         context['action_list_comments'] = Action.objects.filter(
-            public=True,
-            action_object_content_type__model='comment')[:15]
+            id__in=_filter_actions('comment', self.request))[:15]
         return context
 
 
