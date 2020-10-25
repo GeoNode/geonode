@@ -751,14 +751,15 @@ def file_upload(filename,
     if charset != 'UTF-8':
         layer.charset = charset
 
+    if not defaults.get('title', title):
+        defaults['title'] = layer.title or layer.name
+    if not defaults.get('abstract', abstract):
+        defaults['abstract'] = layer.abstract or ''
+
     to_update = {}
     to_update['upload_session'] = defaults.pop('upload_session', None)
     to_update['storeType'] = defaults.pop('storeType', None)
     to_update['charset'] = defaults.pop('charset', None)
-    if defaults.get('title', title) is not None:
-        to_update['title'] = defaults.get('title', title)
-    if defaults.get('abstract', abstract) is not None:
-        to_update['abstract'] = defaults.get('abstract', abstract)
     if defaults.get('date', date) is not None:
         to_update['date'] = defaults.get('date',
                                          datetime.strptime(date, '%Y-%m-%d %H:%M:%S') if date else None)
