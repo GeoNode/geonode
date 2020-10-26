@@ -1601,7 +1601,12 @@ def batch_permissions(request, model):
             permissions_names = _data['permission_type']
             if permissions_names:
                 try:
-                    set_permissions.delay(permissions_names, resources_names, users_usernames, groups_names, delete_flag)
+                    set_permissions.delay(
+                        permissions_names,
+                        resources_names,
+                        users_usernames,
+                        groups_names,
+                        delete_flag)
                 except set_permissions.OperationalError as exc:
                     celery_logger.exception('Sending task raised: %r', exc)
             return HttpResponseRedirect(

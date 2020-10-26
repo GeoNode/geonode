@@ -43,8 +43,6 @@ from geonode.security.utils import get_visible_resources
 from geonode.base.forms import BatchEditForm, OwnerRightsRequestForm
 from geonode.base.forms import CuratedThumbnailForm
 from geonode.notifications_helper import send_notification
-from geonode.base.models import HierarchicalKeyword
-import uuid
 
 
 def batch_modify(request, model):
@@ -94,7 +92,8 @@ def batch_modify(request, model):
 
                 new_keywords = []
                 for keyword in hierarchical_keyword:
-                    new_keywords += [keywords_through(content_object=resource, tag_id=keyword.pk) for resource in resources]
+                    new_keywords += [keywords_through(
+                        content_object=resource, tag_id=keyword.pk) for resource in resources]
                 keywords_through.objects.bulk_create(new_keywords, ignore_conflicts=True)
 
             return HttpResponseRedirect(
