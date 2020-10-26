@@ -173,7 +173,6 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             from geonode.geoserver.helpers import (get_sld_for,
                                                    fixup_style,
                                                    set_layer_style,
-                                                   get_store,
                                                    set_attributes_from_geoserver,
                                                    set_styles,
                                                    create_gs_thumbnail)
@@ -185,9 +184,8 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             self.assertIsNotNone(name)
             ws = gs_catalog.get_workspace(workspace)
             self.assertIsNotNone(ws)
-            store = get_store(gs_catalog, saved_layer.store, workspace=ws)
-            _log("1. ------------ %s " % store)
-            self.assertIsNotNone(store)
+            _log("1. ------------ %s " % saved_layer.store)
+            self.assertIsNotNone(saved_layer.store)
 
             # Save layer attributes
             set_attributes_from_geoserver(saved_layer)
@@ -536,7 +534,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
                     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                         self.assertEqual(
-                            len(uploaded.keyword_list()), 7,
+                            len(uploaded.keyword_list()), 5,
                             'Expected specific number of keywords from uploaded layer XML metadata')
                     elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
                         # QGIS Server backend doesn't have GeoServer assigned keywords.
