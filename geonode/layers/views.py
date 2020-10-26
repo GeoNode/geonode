@@ -82,8 +82,7 @@ from geonode.layers.models import (
 from geonode.layers.utils import (
     file_upload,
     is_raster,
-    is_vector,
-    set_layers_permissions)
+    is_vector)
 
 from geonode.maps.models import Map
 from geonode.services.models import Service
@@ -111,6 +110,9 @@ from .tasks import delete_layer
 from geonode.geoserver.helpers import (ogc_server_settings,
                                        set_layer_style)
 from geonode.base.utils import ManageResourceOwnerPermissions
+from geonode.tasks.tasks import set_permissions
+
+from celery.utils.log import get_logger
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import (_render_thumbnail,
@@ -122,6 +124,7 @@ if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
 logger = logging.getLogger("geonode.layers.views")
+celery_logger = get_logger(__name__)
 
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
@@ -1556,11 +1559,11 @@ def layer_sld_edit(
 
 
 @login_required
-def layer_batch_metadata(request, ids):
-    return batch_modify(request, ids, 'Layer')
+def layer_batch_metadata(request):
+    return batch_modify(request, 'Layer')
 
 
-def batch_permissions(request, ids, model):
+def batch_permissions(request, model):
     Resource = None
     if model == 'Layer':
         Resource = Layer
@@ -1568,8 +1571,9 @@ def batch_permissions(request, ids, model):
         raise PermissionDenied
 
     template = 'base/batch_permissions.html'
+    ids = request.POST.get("ids")
 
-    if "cancel" in request.POST:
+    if "cancel" in request.POST or not ids:
         return HttpResponseRedirect(
             '/admin/{model}s/{model}/'.format(model=model.lower())
         )
@@ -1596,10 +1600,10 @@ def batch_permissions(request, ids, model):
             delete_flag = _data['mode'] == 'unset'
             permissions_names = _data['permission_type']
             if permissions_names:
-                for permissions_name in permissions_names:
-                    set_layers_permissions(
-                        permissions_name, resources_names, users_usernames, groups_names, delete_flag
-                    )
+                try:
+                    set_permissions.delay(permissions_names, resources_names, users_usernames, groups_names, delete_flag)
+                except set_permissions.OperationalError as exc:
+                    celery_logger.exception('Sending task raised: %r', exc)
             return HttpResponseRedirect(
                 '/admin/{model}s/{model}/'.format(model=model.lower())
             )
@@ -1630,8 +1634,8 @@ def batch_permissions(request, ids, model):
 
 
 @login_required
-def layer_batch_permissions(request, ids):
-    return batch_permissions(request, ids, 'Layer')
+def layer_batch_permissions(request):
+    return batch_permissions(request, 'Layer')
 
 
 def layer_view_counter(layer_id, viewer):

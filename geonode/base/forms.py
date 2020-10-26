@@ -530,6 +530,7 @@ class BatchEditForm(forms.Form):
         choices=LANGUAGES,
     )
     keywords = forms.CharField(required=False)
+    ids = forms.CharField(required=False, widget=forms.HiddenInput())
 
 
 class BatchPermissionsForm(forms.Form):
@@ -560,6 +561,7 @@ class BatchPermissionsForm(forms.Form):
             ('unset', 'Unset'),
         ),
     )
+    ids = forms.CharField(required=False, widget=forms.HiddenInput())
 
 
 class CuratedThumbnailForm(ModelForm):

@@ -43,9 +43,11 @@ from geonode.security.utils import get_visible_resources
 from geonode.base.forms import BatchEditForm, OwnerRightsRequestForm
 from geonode.base.forms import CuratedThumbnailForm
 from geonode.notifications_helper import send_notification
+from geonode.base.models import HierarchicalKeyword
+import uuid
 
 
-def batch_modify(request, ids, model):
+def batch_modify(request, model):
     if not request.user.is_superuser:
         raise PermissionDenied
     if model == 'Document':
@@ -55,8 +57,9 @@ def batch_modify(request, ids, model):
     if model == 'Map':
         Resource = Map
     template = 'base/batch_edit.html'
+    ids = request.POST.get("ids")
 
-    if "cancel" in request.POST:
+    if "cancel" in request.POST or not ids:
         return HttpResponseRedirect(
             '/admin/{model}s/{model}/'.format(model=model.lower())
         )
@@ -64,22 +67,36 @@ def batch_modify(request, ids, model):
     if request.method == 'POST':
         form = BatchEditForm(request.POST)
         if form.is_valid():
-            for resource in Resource.objects.filter(id__in=ids.split(',')):
-                resource.group = form.cleaned_data['group'] or resource.group
-                resource.owner = form.cleaned_data['owner'] or resource.owner
-                resource.category = form.cleaned_data['category'] or resource.category
-                resource.license = form.cleaned_data['license'] or resource.license
-                resource.date = form.cleaned_data['date'] or resource.date
-                resource.language = form.cleaned_data['language'] or resource.language
-                new_region = form.cleaned_data['regions']
-                if new_region:
-                    resource.regions.add(new_region)
-                keywords = form.cleaned_data['keywords']
-                if keywords:
-                    resource.keywords.clear()
-                    for word in keywords.split(','):
-                        resource.keywords.add(word.strip())
-                resource.save(notify=True)
+            keywords = [keyword.strip() for keyword in
+                        form.cleaned_data.pop("keywords").split(',') if keyword]
+            regions = form.cleaned_data.pop("regions")
+            ids = form.cleaned_data.pop("ids")
+            if not form.cleaned_data.get("date"):
+                form.cleaned_data.pop("date")
+
+            resources = Resource.objects.filter(id__in=ids.split(','))
+            resources.update(**form.cleaned_data)
+            if regions:
+                regions_through = Resource.regions.through
+                new_regions = [regions_through(region=regions, resourcebase=resource) for resource in resources]
+                regions_through.objects.bulk_create(new_regions, ignore_conflicts=True)
+
+            if keywords:
+                keywords_through = Resource.keywords.through
+                keywords_through.objects.filter(content_object__in=resources).delete()
+
+                def get_or_create(keyword):
+                    try:
+                        return HierarchicalKeyword.objects.get(name=keyword)
+                    except HierarchicalKeyword.DoesNotExist:
+                        return HierarchicalKeyword.add_root(name=keyword)
+                hierarchical_keyword = [get_or_create(keyword) for keyword in keywords]
+
+                new_keywords = []
+                for keyword in hierarchical_keyword:
+                    new_keywords += [keywords_through(content_object=resource, tag_id=keyword.pk) for resource in resources]
+                keywords_through.objects.bulk_create(new_keywords, ignore_conflicts=True)
+
             return HttpResponseRedirect(
                 '/admin/{model}s/{model}/'.format(model=model.lower())
             )
