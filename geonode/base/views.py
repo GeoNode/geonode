@@ -72,8 +72,12 @@ def batch_modify(request, model):
             if not form.cleaned_data.get("date"):
                 form.cleaned_data.pop("date")
 
+            to_update = {}
+            for _key, _value in form.cleaned_data.items():
+                if _value:
+                    to_update[_key] = _value
             resources = Resource.objects.filter(id__in=ids.split(','))
-            resources.update(**form.cleaned_data)
+            resources.update(**to_update)
             if regions:
                 regions_through = Resource.regions.through
                 new_regions = [regions_through(region=regions, resourcebase=resource) for resource in resources]
