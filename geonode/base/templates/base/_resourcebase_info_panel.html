@@ -75,10 +75,10 @@
 
     {% if resource.category %}
     <dt>{% trans "Category" %}</dt>
-    <dd><a href="{% url "search" %}?category__identifier__in={{ resource.category.identifier }}">{{ resource.category }}</a> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
+    <dd><a href="{% url "search" %}?category__identifier__in={{ resource.category.identifier }}">{% trans resource.category.gn_description %}</a> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
       {% if resource.category.description %}
       <dd class="category-more collapse">
-        {{ resource.category.description }}
+        {% trans resource.category.description %}
       </dd>
       {% endif %}
     {% endif %}
