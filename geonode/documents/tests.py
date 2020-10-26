@@ -30,7 +30,6 @@ import io
 import json
 
 import gisdata
-from datetime import datetime
 from django.urls import reverse
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
@@ -409,19 +408,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         for resource in resources:
             if resource.regions.all():
                 self.assertTrue(region in resource.regions.all())
-        # test date change
-        from django.utils import timezone
-        date = datetime.now(timezone.get_current_timezone())
-        response = self.client.post(
-            reverse(view),
-            data={'date': date, 'ids': ids, 'regions': 1},
-        )
-        self.assertEqual(response.status_code, 200)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            today = date.today()
-            todoc = resource.date.today()
-            self.assertEqual((today.day, today.month, today.year), (todoc.day, todoc.month, todoc.year))
         # test language change
         language = 'eng'
         response = self.client.post(

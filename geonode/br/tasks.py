@@ -25,7 +25,7 @@ from django.core.mail import EmailMessage
 from geonode.celery_app import app
 
 
-@app.task(queue='email')
+@app.task(bind=True, queue='email')
 def restore_notification(recipients: List, backup_file: str, backup_md5: str, exception: str = None):
     """
     Function sending a CC email report of the restore procedure to a provided emails.
