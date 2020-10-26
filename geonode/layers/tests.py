@@ -1128,7 +1128,7 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
                 files['charset'] = 'utf-8'
                 files['layer_title'] = 'test layer'
                 resp = self.client.post(layer_upload_url, data=files)
-                self.assertEqual(resp.status_code, 400)
+                self.assertEqual(resp.status_code, 200)
             content = resp.content
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
@@ -1160,7 +1160,7 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
                 files['charset'] = 'utf-8'
                 files['layer_title'] = 'test layer'
                 resp = self.client.post(layer_upload_url, data=files)
-                self.assertEqual(resp.status_code, 400)
+                self.assertEqual(resp.status_code, 200)
             content = resp.content
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
