@@ -72,7 +72,7 @@ services:
   celery:
     << : *default-common-django
     entrypoint: []
-    command: 'celery worker --app=geonode.celery_app:app -l info -E'
+    command: 'celery -A geonode.celery_app:app worker -l info -E'
 
   # Celery beat that triggers scheduled tasks
   celerybeat:
