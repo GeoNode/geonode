@@ -21,7 +21,6 @@
 import json
 import logging
 
-from datetime import datetime
 from defusedxml import lxml as dlxml
 
 from pinax.ratings.models import OverallRating
@@ -956,22 +955,6 @@ community."
         for resource in resources:
             if resource.regions.all():
                 self.assertTrue(region in resource.regions.all())
-        # test date change
-        from django.utils import timezone
-        date = datetime.now(timezone.get_current_timezone())
-        response = self.client.post(
-            reverse(view),
-            data={'date': date, 'ids': ids, 'regions': 1},
-        )
-        self.assertEqual(response.status_code, 200)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            today = date.today()
-            todoc = resource.date.today()
-            self.assertEqual(today.day, todoc.day)
-            self.assertEqual(today.month, todoc.month)
-            self.assertEqual(today.year, todoc.year)
-
         # test language change
         language = 'eng'
         response = self.client.post(
