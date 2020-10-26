@@ -56,10 +56,10 @@ logger = logging.getLogger(__name__)
 
 class SetGroupLayerPermission(View):
     def get(self, request):
-        return user_and_group_permission(request, 'group')
+        return user_and_group_permission(request, 'groupprofile')
 
     def post(self, request):
-        return user_and_group_permission(request, 'group')
+        return user_and_group_permission(request, 'groupprofile')
 
 
 @view_decorator(superuser_only, subclass=True)

@@ -20,33 +20,42 @@
 
 
 # Geonode functionality
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-from django.core.exceptions import PermissionDenied
 from django.conf import settings
-from django.utils.translation import ugettext as _
+from django.http import HttpResponse
 from django.views.generic import FormView
+from django.http import HttpResponseRedirect
+from django.contrib.auth import get_user_model
+from django.utils.translation import ugettext as _
+from django.core.exceptions import PermissionDenied
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-from guardian.shortcuts import get_objects_for_user
 from dal import views, autocomplete
 from user_messages.models import Message
+from guardian.shortcuts import get_objects_for_user
 
-from geonode.base.utils import OwnerRightsRequestViewUtils
-from geonode.documents.models import Document
-from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.base.models import ResourceBase, Region, HierarchicalKeyword, ThesaurusKeywordLabel
+from geonode.layers.models import Layer
 from geonode.utils import resolve_object
-from geonode.security.utils import get_visible_resources
-from geonode.base.forms import BatchEditForm, OwnerRightsRequestForm
-from geonode.base.forms import CuratedThumbnailForm
-from geonode.notifications_helper import send_notification
-from geonode.base.forms import UserAndGroupPermissionsForm
-from django.contrib.auth import get_user_model
+from geonode.documents.models import Document
+from geonode.groups.models import GroupProfile
 from geonode.tasks.tasks import set_permissions
-from django.contrib.auth.models import Group
+from geonode.base.forms import CuratedThumbnailForm
+from geonode.security.utils import get_visible_resources
+from geonode.notifications_helper import send_notification
+from geonode.base.utils import OwnerRightsRequestViewUtils
+from geonode.base.forms import UserAndGroupPermissionsForm
+
+from geonode.base.forms import (
+    BatchEditForm,
+    OwnerRightsRequestForm
+)
+from geonode.base.models import (
+    Region,
+    ResourceBase,
+    HierarchicalKeyword,
+    ThesaurusKeywordLabel
+)
 
 
 def user_and_group_permission(request, model):
@@ -55,7 +64,7 @@ def user_and_group_permission(request, model):
 
     model_mapper = {
         "profile": get_user_model(),
-        "group": Group
+        "groupprofile": GroupProfile
     }
 
     model_class = model_mapper[model]
@@ -73,8 +82,8 @@ def user_and_group_permission(request, model):
             resources_names = [layer.name for layer in form.cleaned_data.get('layers')]
             users_usernames = [user.username for user in model_class.objects.filter(
                 id__in=ids)] if model == 'profile' else None
-            groups_names = [group.name for group in model_class.objects.filter(
-                id__in=ids)] if model == 'group' else None
+            groups_names = [group_profile.group.name for group_profile in model_class.objects.filter(
+                id__in=ids)] if model in ('group', 'groupprofile') else None
 
             if users_usernames and 'AnonymousUser' in users_usernames and \
                     (not groups_names or 'anonymous' not in groups_names):
