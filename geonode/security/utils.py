@@ -41,7 +41,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from guardian.utils import get_user_obj_perms_model
 from guardian.shortcuts import assign_perm, get_anonymous_user
 
-from geonode.utils import resolve_object
 from geonode.utils import get_layer_workspace
 from geonode.groups.models import GroupProfile
 
@@ -55,7 +54,7 @@ def get_visible_resources(queryset,
                           unpublished_not_visible=False,
                           private_groups_not_visibile=False):
     # Get the list of objects the user has access to
-    is_admin = False
+    is_admin = user.is_superuser if user and user.is_authenticated else False
     anonymous_group = None
     public_groups = GroupProfile.objects.exclude(access="private").values('group')
     groups = []
@@ -108,22 +107,17 @@ def get_visible_resources(queryset,
         elif not user or user.is_anonymous:
             filter_set = filter_set.exclude(Q(dirty_state=True))
 
-    _allowed_resources = []
-    for _resource in filter_set.all():
-        try:
-            resolve_object(
-                request,
-                _resource.__class__,
-                {
-                    'id': _resource.id
-                },
-                'base.view_resourcebase',
-                user=user)
-            _allowed_resources.append(_resource.id)
-        except (PermissionDenied, Exception) as e:
-            logger.debug(e)
+        if admin_approval_required or unpublished_not_visible or private_groups_not_visibile:
+            _allowed_resources = []
+            for _resource in filter_set.all():
+                try:
+                    if user.has_perm('base.view_resourcebase', _resource):
+                        _allowed_resources.append(_resource.id)
+                except (PermissionDenied, Exception) as e:
+                    logger.debug(e)
+            return filter_set.filter(id__in=_allowed_resources)
 
-    return filter_set.filter(id__in=_allowed_resources)
+    return filter_set
 
 
 def get_users_with_perms(obj):
