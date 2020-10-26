@@ -33,8 +33,18 @@ from geonode.tasks.tasks import send_email
 from geonode.people.forms import ProfileForm
 from geonode.base.auth import get_or_create_token
 from geonode.people.forms import ForgotUsernameForm
+from geonode.base.views import user_and_group_permission
+from django.views import View
 
 from dal import autocomplete
+
+
+class SetUserLayerPermission(View):
+    def get(self, request):
+        return user_and_group_permission(request, 'profile')
+
+    def post(self, request):
+        return user_and_group_permission(request, 'profile')
 
 
 class CustomSignupView(SignupView):

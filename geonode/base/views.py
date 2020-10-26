@@ -43,6 +43,72 @@ from geonode.security.utils import get_visible_resources
 from geonode.base.forms import BatchEditForm, OwnerRightsRequestForm
 from geonode.base.forms import CuratedThumbnailForm
 from geonode.notifications_helper import send_notification
+from geonode.base.forms import UserAndGroupPermissionsForm
+from django.contrib.auth import get_user_model
+from geonode.tasks.tasks import set_permissions
+from django.contrib.auth.models import Group
+
+
+def user_and_group_permission(request, model):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
+    model_mapper = {
+        "profile": get_user_model(),
+        "group": Group
+    }
+
+    model_class = model_mapper[model]
+
+    ids = request.POST.get("ids")
+    if "cancel" in request.POST or not ids:
+        return HttpResponseRedirect(
+            '/admin/{}/{}/'.format(model_class._meta.app_label, model)
+        )
+
+    if request.method == 'POST':
+        form = UserAndGroupPermissionsForm(request.POST)
+        ids = ids.split(",")
+        if form.is_valid():
+            resources_names = [layer.name for layer in form.cleaned_data.get('layers')]
+            users_usernames = [user.username for user in model_class.objects.filter(
+                id__in=ids)] if model == 'profile' else None
+            groups_names = [group.name for group in model_class.objects.filter(
+                id__in=ids)] if model == 'group' else None
+
+            if users_usernames and 'AnonymousUser' in users_usernames and \
+                    (not groups_names or 'anonymous' not in groups_names):
+                if not groups_names:
+                    groups_names = []
+                groups_names.append('anonymous')
+            if groups_names and 'anonymous' in groups_names and \
+                    (not users_usernames or 'AnonymousUser' not in users_usernames):
+                if not users_usernames:
+                    users_usernames = []
+                users_usernames.append('AnonymousUser')
+
+            delete_flag = form.cleaned_data.get('mode') == 'unset'
+            permissions_names = form.cleaned_data.get('permission_type')
+
+            if permissions_names:
+                set_permissions.delay(permissions_names, resources_names, users_usernames, groups_names, delete_flag)
+
+        return HttpResponseRedirect(
+            '/admin/{}/{}/'.format(model_class._meta.app_label, model)
+        )
+
+    form = UserAndGroupPermissionsForm({
+        'permission_type': ('r', ),
+        'mode': 'set',
+    })
+    return render(
+        request,
+        "base/user_and_group_permissions.html",
+        context={
+            "form": form,
+            "model": model
+        }
+    )
 
 
 def batch_modify(request, model):
