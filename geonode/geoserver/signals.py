@@ -28,6 +28,7 @@ from geoserver.layer import Layer as GsLayer
 from django.conf import settings
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
+from django.db import IntegrityError, transaction
 from django.contrib.staticfiles.templatetags import staticfiles
 
 # use different name to avoid module clash
@@ -116,8 +117,6 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
-    instance.refresh_from_db()
-
     # Don't run this signal if is a Layer from a remote service
     if getattr(instance, "remote_service", None) is not None:
         return
@@ -140,15 +139,17 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         # There is no need to process it if there is no file.
         if base_file is None:
             return
-        gs_name, workspace, values, gs_resource = geoserver_upload(instance,
-                                                                   base_file.file.path,
-                                                                   instance.owner,
-                                                                   instance.name,
-                                                                   overwrite=True,
-                                                                   title=instance.title,
-                                                                   abstract=instance.abstract,
-                                                                   # keywords=instance.keywords,
-                                                                   charset=instance.charset)
+        gs_name, workspace, values, gs_resource = geoserver_upload(
+            instance,
+            base_file.file.path,
+            instance.owner,
+            instance.name,
+            overwrite=True,
+            title=instance.title,
+            abstract=instance.abstract,
+            # keywords=instance.keywords,
+            charset=instance.charset
+        )
 
     def fetch_gs_resource(values, tries):
         try:
@@ -170,17 +171,19 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                     gs_resource = None
 
         if gs_resource:
-            gs_resource.title = instance.title or ""
-            gs_resource.abstract = instance.abstract or ""
-            gs_resource.name = instance.name or ""
 
-            if not values:
-                values = dict(store=gs_resource.store.name,
-                              storeType=gs_resource.store.resource_type,
-                              alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
-                              title=gs_resource.title or gs_resource.store.name,
-                              abstract=gs_resource.abstract or '',
-                              owner=instance.owner)
+            if values:
+                gs_resource.title = values.get('title', '')
+                gs_resource.abstract = values.get('abstract', '')
+            else:
+                values = {}
+
+            values.update(dict(store=gs_resource.store.name,
+                               storeType=gs_resource.store.resource_type,
+                               alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
+                               title=gs_resource.title or gs_resource.store.name,
+                               abstract=gs_resource.abstract or '',
+                               owner=instance.owner))
         else:
             msg = "There isn't a geoserver resource for this layer: %s" % instance.name
             logger.exception(msg)
@@ -192,6 +195,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
 
         return (values, gs_resource)
 
+    values, gs_resource = fetch_gs_resource(values, _tries)
     while not gs_resource and _tries < _max_tries:
         values, gs_resource = fetch_gs_resource(values, _tries)
         _tries += 1
@@ -340,24 +344,28 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         'abstract': instance.abstract or "",
         'alternate': instance.alternate,
         'bbox_polygon': instance.bbox_polygon,
-        'srid': instance.srid
+        'srid': 'EPSG:4326'
     }
 
-    # Update ResourceBase
-    resources = ResourceBase.objects.filter(id=instance.resourcebase_ptr.id)
-    resources.update(**to_update)
-
-    # to_update['name'] = instance.name,
-    to_update['workspace'] = instance.workspace
-    to_update['store'] = instance.store
-    to_update['storeType'] = instance.storeType
-    to_update['typename'] = instance.alternate
-
     # Save all the modified information in the instance without triggering signals.
-    Layer.objects.filter(id=instance.id).update(**to_update)
+    try:
+        with transaction.atomic():
+            ResourceBase.objects.filter(
+                id=instance.resourcebase_ptr.id).update(
+                **to_update)
 
-    # Refresh from DB
-    instance.refresh_from_db()
+            # to_update['name'] = instance.name,
+            to_update['workspace'] = instance.workspace
+            to_update['store'] = instance.store
+            to_update['storeType'] = instance.storeType
+            to_update['typename'] = instance.alternate
+
+            Layer.objects.filter(id=instance.id).update(**to_update)
+
+            # Refresh from DB
+            instance.refresh_from_db()
+    except IntegrityError:
+        raise
 
     # Updating the Catalogue
     catalogue_post_save(instance=instance, sender=instance.__class__)
