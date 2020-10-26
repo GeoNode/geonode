@@ -42,7 +42,7 @@ from six import string_types, reraise as raise_
 # Django functionality
 from django.conf import settings
 from django.db.models import Q
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.core.files import File
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
@@ -459,6 +459,7 @@ def get_bbox(filename):
     return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, "EPSG:%s" % str(srid)]
 
 
+@transaction.atomic
 def file_upload(filename,
                 layer=None,
                 gtype=None,
@@ -493,7 +494,12 @@ def file_upload(filename,
     theuser = get_valid_user(user)
 
     # Create a new upload session
-    upload_session = UploadSession.objects.create(user=theuser)
+    if layer:
+        upload_session, _created = UploadSession.objects.get_or_create(resource=layer)
+        upload_session.user = theuser
+        upload_session.layerfile_set.all().delete()
+    else:
+        upload_session = UploadSession.objects.create(user=theuser)
 
     # Get all the files uploaded with the layer
     if os.path.exists(filename):
@@ -535,12 +541,15 @@ def file_upload(filename,
                             _("Please ensure the name is consistent with the file you are trying to replace."))
                     schema_is_compliant = False
                     _ff = json.loads(lyr.GetFeature(0).ExportToJson())
-                    if not gtype:
-                        raise Exception(
+                    if gtype:
+                        logger.warning(
                             _("Local GeoNode layer has no geometry type."))
-                    if _ff["geometry"]["type"] in gtype or gtype in _ff["geometry"]["type"]:
+                        if _ff["geometry"]["type"] in gtype or gtype in _ff["geometry"]["type"]:
+                            schema_is_compliant = True
+                    elif "geometry" in _ff and _ff["geometry"]["type"]:
                         schema_is_compliant = True
-                    elif not schema_is_compliant:
+
+                    if not schema_is_compliant:
                         raise Exception(
                             _("Please ensure there is at least one geometry type \
                                 that is consistent with the file you are trying to replace."))
@@ -651,7 +660,6 @@ def file_upload(filename,
                     identifier=value.lower(),
                     defaults={'description': '', 'gn_description': value})
                 key = 'category'
-
                 defaults[key] = value
             else:
                 defaults[key] = value
@@ -670,8 +678,8 @@ def file_upload(filename,
     # Create a Django object.
     created = False
     layer = None
-    with transaction.atomic():
-        try:
+    try:
+        with transaction.atomic():
             if overwrite:
                 try:
                     layer = Layer.objects.get(name=valid_name)
@@ -681,16 +689,14 @@ def file_upload(filename,
                 if not metadata_upload_form:
                     layer, created = Layer.objects.get_or_create(
                         name=valid_name,
-                        workspace=settings.DEFAULT_WORKSPACE,
-                        defaults=defaults
+                        workspace=settings.DEFAULT_WORKSPACE
                     )
                 elif identifier:
                     layer, created = Layer.objects.get_or_create(
-                        uuid=identifier,
-                        defaults=defaults
+                        uuid=identifier
                     )
-        except Exception:
-            raise
+    except IntegrityError:
+        raise
 
     # Delete the old layers if overwrite is true
     # and the layer was not just created
@@ -698,7 +704,6 @@ def file_upload(filename,
     # doing a layer.save()
     if not created and overwrite:
         # update with new information
-        defaults['upload_session'] = upload_session
         defaults['title'] = defaults.get('title', None) or layer.title
         defaults['abstract'] = defaults.get('abstract', None) or layer.abstract
         defaults['bbox_x0'] = defaults.get('bbox_x0', None) or layer.bbox_x0
@@ -712,35 +717,21 @@ def file_upload(filename,
         defaults['license'] = defaults.get('license', None) or layer.license
         defaults['category'] = defaults.get('category', None) or layer.category
 
-        try:
-            Layer.objects.filter(id=layer.id).update(**defaults)
-            layer.refresh_from_db()
-        except Layer.DoesNotExist:
-            import traceback
-            tb = traceback.format_exc()
-            logger.error(tb)
-            raise
-
-        # Pass the parameter overwrite to tell whether the
-        # geoserver_post_save_signal should upload the new file or not
-        layer.overwrite = overwrite
-
-        # Blank out the store if overwrite is true.
-        # geoserver_post_save_signal should upload the new file if needed
-        layer.store = '' if overwrite else layer.store
-
         if upload_session:
-            upload_session.resource = layer
-            upload_session.processed = True
-            upload_session.save()
-
-        # set SLD
-        # if 'sld' in files:
-        #     sld = None
-        #     with open(files['sld']) as f:
-        #         sld = f.read()
-        #     if sld:
-        #         set_layer_style(layer, layer.alternate, sld, base_file=files['sld'])
+            if layer.upload_session:
+                layer.upload_session.date = upload_session.date
+                layer.upload_session.user = upload_session.user
+                layer.upload_session.error = upload_session.error
+                layer.upload_session.traceback = upload_session.traceback
+                layer.upload_session.context = upload_session.context
+                upload_session = layer.upload_session
+            else:
+                layer.upload_session = upload_session
+    if upload_session:
+        defaults['upload_session'] = upload_session
+        upload_session.resource = layer
+        upload_session.processed = False
+        upload_session.save()
 
     # Assign the keywords (needs to be done after saving)
     keywords = list(set(keywords))
@@ -765,36 +756,48 @@ def file_upload(filename,
     if charset != 'UTF-8':
         layer.charset = charset
 
+    if not defaults.get('title', title):
+        defaults['title'] = layer.title or layer.name
+    if not defaults.get('abstract', abstract):
+        defaults['abstract'] = layer.abstract or ''
+
     to_update = {}
-    if defaults.get('title', title) is not None:
-        to_update['title'] = defaults.get('title', title)
-    if defaults.get('abstract', abstract) is not None:
-        to_update['abstract'] = defaults.get('abstract', abstract)
+    to_update['upload_session'] = defaults.pop('upload_session', layer.upload_session)
+    to_update['storeType'] = defaults.pop('storeType', layer.storeType)
+    to_update['charset'] = defaults.pop('charset', layer.charset)
+    to_update.update(defaults)
     if defaults.get('date', date) is not None:
         to_update['date'] = defaults.get('date',
                                          datetime.strptime(date, '%Y-%m-%d %H:%M:%S') if date else None)
-    if defaults.get('license', license) is not None:
-        to_update['license'] = defaults.get('license', license)
-    if defaults.get('category', category) is not None:
-        to_update['category'] = defaults.get('category', category)
 
     # Update ResourceBase
     if not to_update:
         pass
     else:
         try:
-            ResourceBase.objects.filter(
-                id=layer.resourcebase_ptr.id).update(
-                **to_update)
-            Layer.objects.filter(id=layer.id).update(**to_update)
+            with transaction.atomic():
+                ResourceBase.objects.filter(
+                    id=layer.resourcebase_ptr.id).update(
+                    **defaults)
+                Layer.objects.filter(id=layer.id).update(**to_update)
 
-            # Refresh from DB
-            layer.refresh_from_db()
-        except Exception:
-            import traceback
-            tb = traceback.format_exc()
-            logger.error(tb)
-    layer.save(notify=True)
+                # Refresh from DB
+                layer.refresh_from_db()
+
+                # Pass the parameter overwrite to tell whether the
+                # geoserver_post_save_signal should upload the new file or not
+                layer.overwrite = overwrite
+
+                # Blank out the store if overwrite is true.
+                # geoserver_post_save_signal should upload the new file if needed
+                layer.store = '' if overwrite else layer.store
+        except IntegrityError:
+            raise
+    try:
+        with transaction.atomic():
+            layer.save(notify=True)
+    except IntegrityError:
+        raise
     return layer
 
 
@@ -860,7 +863,6 @@ def upload(incoming, user=None, overwrite=False,
     output = []
     for i, file_pair in enumerate(potential_files):
         basename, filename = file_pair
-
         existing_layers = Layer.objects.filter(name=basename)
 
         if existing_layers.count() > 0:

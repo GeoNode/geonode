@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import re
 import uuid
 import logging
 
@@ -256,14 +256,24 @@ class Layer(ResourceBase):
 
     @property
     def attributes(self):
-        return self.attribute_set.exclude(attribute='the_geom').order_by('display_order')
+        if self.attribute_set and self.attribute_set.count():
+            _attrs = self.attribute_set
+        else:
+            _attrs = Attribute.objects.filter(layer=self)
+        return _attrs.exclude(attribute='the_geom').order_by('display_order')
 
     # layer geometry type.
     @property
     def gtype(self):
         # return attribute type without 'gml:' and 'PropertyType'
-        if self.attribute_set.filter(attribute='the_geom').exists():
-            return self.attribute_set.get(attribute='the_geom').attribute_type[4:-12]
+        if self.attribute_set and self.attribute_set.count():
+            _attrs = self.attribute_set
+        else:
+            _attrs = Attribute.objects.filter(layer=self)
+        if _attrs.filter(attribute='the_geom').exists():
+            _att_type = _attrs.get(attribute='the_geom').attribute_type
+            _gtype = re.match(r'\(\'gml:(.*?)\',', _att_type)
+            return _gtype.group(1) if _gtype else None
         return None
 
     def get_base_file(self):
