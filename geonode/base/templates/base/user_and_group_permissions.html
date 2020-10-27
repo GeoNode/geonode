@@ -11,7 +11,7 @@
 <div class="page-header">
   <h2 class="page-title">{% trans "Batch Edit" %}</h2>
 </div>
-<form action={% url name_space %} method="post">
+<form action="/{{ model|lower }}/layer/permission/" method="post">
   {% csrf_token %}
   {{ form|as_bootstrap }}
   <div>

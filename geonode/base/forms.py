@@ -54,6 +54,7 @@ from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.documents.models import Document
 from geonode.base.enumerations import ALL_LANGUAGES
 from geonode.base.widgets import TaggitSelect2Custom
+from geonode.layers.models import Layer
 
 logger = logging.getLogger(__name__)
 
@@ -530,6 +531,7 @@ class BatchEditForm(forms.Form):
         choices=LANGUAGES,
     )
     keywords = forms.CharField(required=False)
+    ids = forms.CharField(required=False, widget=forms.HiddenInput())
 
 
 class BatchPermissionsForm(forms.Form):
@@ -560,6 +562,39 @@ class BatchPermissionsForm(forms.Form):
             ('unset', 'Unset'),
         ),
     )
+    ids = forms.CharField(required=False, widget=forms.HiddenInput())
+
+
+class UserAndGroupPermissionsForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(UserAndGroupPermissionsForm, self).__init__(*args, **kwargs)
+        self.fields['layers'].label_from_instance = self.label_from_instance
+
+    layers = forms.ModelMultipleChoiceField(
+        queryset=Layer.objects.all(),
+        required=False)
+    permission_type = forms.MultipleChoiceField(
+        required=True,
+        widget=forms.CheckboxSelectMultiple,
+        choices=(
+            ('r', 'Read'),
+            ('w', 'Write'),
+            ('d', 'Download'),
+        ),
+    )
+    mode = forms.ChoiceField(
+        required=True,
+        widget=forms.RadioSelect,
+        choices=(
+            ('set', 'Set'),
+            ('unset', 'Unset'),
+        ),
+    )
+    ids = forms.CharField(required=False, widget=forms.HiddenInput())
+
+    @staticmethod
+    def label_from_instance(obj):
+        return obj.title
 
 
 class CuratedThumbnailForm(ModelForm):
