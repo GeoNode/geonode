@@ -26,6 +26,85 @@ from django.core import mail
 from django.contrib.sites.models import Site
 
 from geonode.people import profileextractors
+from geonode.layers.models import Layer
+from django.contrib.auth.models import Group
+
+
+class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
+    def setUp(self):
+        super(TestSetUnsetUserLayerPermissions, self).setUp()
+        self.layers = Layer.objects.all()[:3]
+        self.layer_ids = [layer.pk for layer in self.layers]
+        self.user_ids = ','.join([str(element.pk) for element in get_user_model().objects.all()[:3]])
+        self.permission_type = ('r', 'w', 'd')
+        self.groups = Group.objects.all()[:3]
+        self.group_ids = ','.join([str(element.pk) for element in self.groups])
+
+    def test_redirect_on_get_request(self):
+        """
+        Test that an immediate redirect occurs back to the admin
+        page of origin when no IDS are supplied
+        """
+        self.client.login(username="admin", password="admin")
+        response = self.client.get(reverse('set_user_layer_permissions'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_admin_only_access(self):
+        """
+        Test that only admin users can access the routes
+        """
+        self.client.login(username="bobby", password="bob")
+        response = self.client.get(reverse('set_user_layer_permissions'))
+        self.assertEqual(response.status_code, 401)
+
+    def test_set_unset_user_layer_permissions(self):
+        """
+        Test that user permissions are set for layers
+        """
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(reverse('set_user_layer_permissions'), data={
+            'ids': self.user_ids, 'layers': self.layer_ids,
+            'permission_type': self.permission_type, 'mode': 'set'
+        })
+        self.assertEqual(response.status_code, 302)
+        for layer in self.layers:
+            perm_spec = layer.get_all_level_info()
+            self.assertTrue(get_user_model().objects.all()[0] in perm_spec["users"])
+
+    def test_set_unset_group_layer_permissions(self):
+        """
+        Test that group permissions are set for layers
+        """
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(reverse('set_group_layer_permissions'), data={
+            'ids': self.group_ids, 'layers': self.layer_ids,
+            'permission_type': self.permission_type, 'mode': 'set'
+        })
+        self.assertEqual(response.status_code, 302)
+        for layer in self.layers:
+            perm_spec = layer.get_all_level_info()
+            self.assertTrue(self.groups[0] in perm_spec["groups"])
+
+    def test_unset_group_layer_perms(self):
+        """
+        Test that group permissions are unset for layers
+        """
+        user = get_user_model().objects.all()[0]
+        for layer in self.layers:
+            layer.set_permissions({'users': {user.username: [
+                                  'change_layer_data', 'view_resourcebase',
+                                  'download_resourcebase', 'change_resourcebase_metadata']}})
+
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(reverse('set_user_layer_permissions'), data={
+            'ids': self.user_ids, 'layers': self.layer_ids,
+            'permission_type': self.permission_type, 'mode': 'unset'
+        })
+
+        self.assertEqual(response.status_code, 302)
+        for layer in self.layers:
+            perm_spec = layer.get_all_level_info()
+            self.assertTrue(user not in perm_spec["users"])
 
 
 class PeopleTest(GeoNodeBaseTestSupport):

@@ -20,29 +20,104 @@
 
 
 # Geonode functionality
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-from django.core.exceptions import PermissionDenied
 from django.conf import settings
-from django.utils.translation import ugettext as _
+from django.http import HttpResponse
 from django.views.generic import FormView
+from django.http import HttpResponseRedirect
+from django.contrib.auth import get_user_model
+from django.utils.translation import ugettext as _
+from django.core.exceptions import PermissionDenied
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-from guardian.shortcuts import get_objects_for_user
 from dal import views, autocomplete
 from user_messages.models import Message
+from guardian.shortcuts import get_objects_for_user
 
-from geonode.base.utils import OwnerRightsRequestViewUtils
-from geonode.documents.models import Document
-from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.base.models import ResourceBase, Region, HierarchicalKeyword, ThesaurusKeywordLabel
+from geonode.layers.models import Layer
 from geonode.utils import resolve_object
-from geonode.security.utils import get_visible_resources
-from geonode.base.forms import BatchEditForm, OwnerRightsRequestForm
+from geonode.documents.models import Document
+from geonode.groups.models import GroupProfile
+from geonode.tasks.tasks import set_permissions
 from geonode.base.forms import CuratedThumbnailForm
+from geonode.security.utils import get_visible_resources
 from geonode.notifications_helper import send_notification
+from geonode.base.utils import OwnerRightsRequestViewUtils
+from geonode.base.forms import UserAndGroupPermissionsForm
+
+from geonode.base.forms import (
+    BatchEditForm,
+    OwnerRightsRequestForm
+)
+from geonode.base.models import (
+    Region,
+    ResourceBase,
+    HierarchicalKeyword,
+    ThesaurusKeywordLabel
+)
+
+
+def user_and_group_permission(request, model):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
+    model_mapper = {
+        "profile": get_user_model(),
+        "groupprofile": GroupProfile
+    }
+
+    model_class = model_mapper[model]
+
+    ids = request.POST.get("ids")
+    if "cancel" in request.POST or not ids:
+        return HttpResponseRedirect(
+            '/admin/{}/{}/'.format(model_class._meta.app_label, model)
+        )
+
+    if request.method == 'POST':
+        form = UserAndGroupPermissionsForm(request.POST)
+        ids = ids.split(",")
+        if form.is_valid():
+            resources_names = [layer.name for layer in form.cleaned_data.get('layers')]
+            users_usernames = [user.username for user in model_class.objects.filter(
+                id__in=ids)] if model == 'profile' else None
+            groups_names = [group_profile.group.name for group_profile in model_class.objects.filter(
+                id__in=ids)] if model in ('group', 'groupprofile') else None
+
+            if users_usernames and 'AnonymousUser' in users_usernames and \
+                    (not groups_names or 'anonymous' not in groups_names):
+                if not groups_names:
+                    groups_names = []
+                groups_names.append('anonymous')
+            if groups_names and 'anonymous' in groups_names and \
+                    (not users_usernames or 'AnonymousUser' not in users_usernames):
+                if not users_usernames:
+                    users_usernames = []
+                users_usernames.append('AnonymousUser')
+
+            delete_flag = form.cleaned_data.get('mode') == 'unset'
+            permissions_names = form.cleaned_data.get('permission_type')
+
+            if permissions_names:
+                set_permissions.delay(permissions_names, resources_names, users_usernames, groups_names, delete_flag)
+
+        return HttpResponseRedirect(
+            '/admin/{}/{}/'.format(model_class._meta.app_label, model)
+        )
+
+    form = UserAndGroupPermissionsForm({
+        'permission_type': ('r', ),
+        'mode': 'set',
+    })
+    return render(
+        request,
+        "base/user_and_group_permissions.html",
+        context={
+            "form": form,
+            "model": model
+        }
+    )
 
 
 def batch_modify(request, model):
