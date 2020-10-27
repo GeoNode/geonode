@@ -48,11 +48,17 @@ def setup_periodic_tasks(sender, **kwargs):
     # Calls test('world') every 30 seconds
     sender.add_periodic_task(30.0, test.s('world'), expires=10)
 
-@app.task
+@app.task(
+    bind=True,
+    name='{{project_name}}.test',
+    queue='default')
 def test(arg):
     _log(arg)
 
-@app.task(bind=True)
+@app.task(
+    bind=True,
+    name='{{project_name}}.debug_task',
+    queue='default')
 def debug_task(self):
     _log("Request: {!r}".format(self.request))
 """
