@@ -1277,8 +1277,8 @@ def map_metadata_detail(
 
 
 @login_required
-def map_batch_metadata(request, ids):
-    return batch_modify(request, ids, 'Map')
+def map_batch_metadata(request):
+    return batch_modify(request, 'Map')
 
 
 class MapAutocomplete(autocomplete.Select2QuerySetView):
