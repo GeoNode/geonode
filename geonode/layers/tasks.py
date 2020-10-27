@@ -19,16 +19,19 @@
 #########################################################################
 
 """celery tasks for geonode.layers."""
-
 from geonode.celery_app import app
 from celery.utils.log import get_task_logger
+from django.db import IntegrityError, transaction
 
 from geonode.layers.models import Layer
 
 logger = get_task_logger(__name__)
 
 
-@app.task(bind=True, queue='cleanup', expires=300)
+@app.task(
+    bind=True,
+    queue='cleanup',
+    expires=300)
 def delete_layer(self, layer_id):
     """
     Deletes a layer.
@@ -38,4 +41,8 @@ def delete_layer(self, layer_id):
     except Layer.DoesNotExist:
         return
     logger.debug('Deleting Layer {0}'.format(layer))
-    layer.delete()
+    try:
+        with transaction.atomic():
+            layer.delete()
+    except IntegrityError:
+        raise

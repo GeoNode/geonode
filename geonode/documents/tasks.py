@@ -33,7 +33,10 @@ from django.core.files.storage import default_storage as storage
 logger = get_task_logger(__name__)
 
 
-@app.task(bind=True, queue='update')
+@app.task(
+    bind=True,
+    name='geonode.documents.tasks.create_document_thumbnail',
+    queue='update')
 def create_document_thumbnail(self, object_id):
     """
     Create thumbnail for a document.
