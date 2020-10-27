@@ -22,6 +22,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 
 from django.core.cache import cache
+from django.db import transaction
 from contextlib import contextmanager
 
 from celery.utils.log import get_task_logger
@@ -49,9 +50,20 @@ def memcache_lock(lock_id, oid):
             cache.delete(lock_id)
 
 
-@app.task(bind=True,
-          name='geonode.tasks.email.send_mail',
-          queue='email',)
+@app.task(
+    bind=True,
+    name='geonode.tasks.email.send_mail',
+    queue='email',
+    countdown=60,
+    expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 10,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
 def send_email(self, *args, **kwargs):
     """
     Sends an email using django's send_mail functionality.
@@ -60,9 +72,20 @@ def send_email(self, *args, **kwargs):
     send_mail(*args, **kwargs)
 
 
-@app.task(bind=True,
-          name='geonode.tasks.notifications.send_queued_notifications',
-          queue='email',)
+@app.task(
+    bind=True,
+    name='geonode.tasks.notifications.send_queued_notifications',
+    queue='email',
+    countdown=60,
+    expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 10,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
 def send_queued_notifications(self, *args):
     """Sends queued notifications.
 
@@ -81,3 +104,16 @@ def send_queued_notifications(self, *args):
         send_all(settings.NOTIFICATION_LOCK_LOCATION)
     else:
         send_all(*args)
+
+
+@app.task(bind=True,
+          name='geonode.tasks.layers.set_permissions',
+          queue='default')
+def set_permissions(self, permissions_names, resources_names,
+                    users_usernames, groups_names, delete_flag):
+    from geonode.layers.utils import set_layers_permissions
+    with transaction.atomic():
+        for permissions_name in permissions_names:
+            set_layers_permissions(
+                permissions_name, resources_names, users_usernames, groups_names, delete_flag
+            )
