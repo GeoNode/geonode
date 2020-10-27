@@ -46,6 +46,7 @@ from geonode.base.models import (
     CuratedThumbnail,
     Configuration,
 )
+
 from geonode.base.forms import (
     BatchEditForm,
     BatchPermissionsForm,
