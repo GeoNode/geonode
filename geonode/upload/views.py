@@ -140,7 +140,6 @@ def _select_relevant_files(allowed_extensions, files):
 
     :param allowed_extensions: list of strings with the extensions to keep
     :param files: list of django files with the files to be filtered
-
     """
     result = []
     for django_file in files:
@@ -268,13 +267,13 @@ def srs_step_view(request, upload_session):
         #     request, upload_session, import_session)
 
         if not _crs_already_configured:
-            context = dict(form=form,
-                           supported_crs=_SUPPORTED_CRS,
-                           async_upload=False,
-                           native_crs=native_crs or None,
-                           layer_name=name,
-                           error=error
-                           )
+            context = dict(
+                form=form,
+                supported_crs=_SUPPORTED_CRS,
+                async_upload=False,
+                native_crs=native_crs or None,
+                layer_name=name,
+                error=error)
             return render(request, 'upload/layer_upload_crs.html', context=context)
         else:
             upload_session.completed_step = 'srs'
