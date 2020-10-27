@@ -323,20 +323,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         from geonode.base.models import HierarchicalKeyword as hk
         keywords = hk.dump_bulk_tree(get_user_model().objects.get(username='admin'), type='layer')
 
-        self.assertEqual(len(keywords), len([
-            {
-                'text': 'layertagunique',
-                'href': 'layertagunique',
-                'tags': [1],
-                'id': 3
-            },
-            {
-                'text': 'populartag',
-                'href': 'populartag',
-                'tags': [7],
-                'id': 1
-            }
-        ]))
+        self.assertEqual(len(keywords), 13)
 
     def test_layer_links(self):
         lyr = Layer.objects.filter(storeType="dataStore").first()
