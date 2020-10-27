@@ -848,7 +848,6 @@ def final_step(upload_session, user, charset="UTF-8"):
             open(xml_file[0]).read())
 
         if publishing:
-
             try:
                 gs_resource = cat.get_resource(
                     name=saved_layer.name,

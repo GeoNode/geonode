@@ -214,7 +214,7 @@ def get_files(filename):
 
     # Only for GeoServer
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        matches = glob.glob(os.path.dirname(glob_name) + "/*.[sS][lL][dD]")
+        matches = glob.glob(os.path.dirname(glob_name) + ".[sS][lL][dD]")
         if len(matches) == 1:
             files['sld'] = matches[0]
         elif len(matches) > 1:
@@ -266,7 +266,6 @@ def get_files(filename):
             msg = ('Multiple json files (json) for %s exist; they need to be '
                    'distinct by spelling and not just case.') % filename
             raise GeoNodeException(msg)
-
     return files
 
 

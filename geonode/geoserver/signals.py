@@ -19,7 +19,6 @@
 #########################################################################
 import errno
 import logging
-import geoserver
 
 from time import sleep
 from requests.exceptions import ConnectionError
@@ -147,7 +146,6 @@ def geoserver_post_save_local(instance, *args, **kwargs):
             overwrite=True,
             title=instance.title,
             abstract=instance.abstract,
-            # keywords=instance.keywords,
             charset=instance.charset
         )
 
@@ -169,15 +167,12 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                         name=instance.alternate or instance.typename)
                 except Exception:
                     gs_resource = None
-
         if gs_resource:
-
             if values:
                 gs_resource.title = values.get('title', '')
                 gs_resource.abstract = values.get('abstract', '')
             else:
                 values = {}
-
             values.update(dict(store=gs_resource.store.name,
                                storeType=gs_resource.store.resource_type,
                                alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
@@ -192,7 +187,6 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                 return (values, None)
             gs_resource = None
             sleep(3.00)
-
         return (values, gs_resource)
 
     values, gs_resource = fetch_gs_resource(values, _tries)
@@ -208,16 +202,6 @@ def geoserver_post_save_local(instance, *args, **kwargs):
     if gs_resource:
         logger.debug("Found geoserver resource for this layer: %s" % instance.name)
         gs_resource.metadata_links = metadata_links
-        # gs_resource should only be called if
-        # ogc_server_settings.BACKEND_WRITE_ENABLED == True
-        if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-            try:
-                gs_catalog.save(gs_resource)
-            except geoserver.catalog.FailedRequestError as e:
-                msg = ('Error while trying to save resource named %s in GeoServer, '
-                       'try to use: "%s"' % (gs_resource, str(e)))
-                e.args = (msg,)
-                logger.exception(e)
 
         # Update Attribution link
         if instance.poc:
@@ -231,16 +215,6 @@ def geoserver_post_save_local(instance, *args, **kwargs):
             profile = get_user_model().objects.get(username=instance.poc.username)
             site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
             gs_resource.attribution_link = site_url + profile.get_absolute_url()
-            # gs_resource should only be called if
-            # ogc_server_settings.BACKEND_WRITE_ENABLED == True
-            if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-                try:
-                    gs_catalog.save(gs_resource)
-                except geoserver.catalog.FailedRequestError as e:
-                    msg = ('Error while trying to save layer named %s in GeoServer, '
-                           'try to use: "%s"' % (gs_resource, str(e)))
-                    e.args = (msg,)
-                    logger.exception(e)
     else:
         msg = "There isn't a geoserver resource for this layer: %s" % instance.name
         logger.warn(msg)
@@ -320,9 +294,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         try:
             if settings.RESOURCE_PUBLISHING:
                 if instance.is_published != gs_resource.advertised:
-                    if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-                        gs_resource.advertised = 'true'
-                        gs_catalog.save(gs_resource)
+                    gs_resource.advertised = 'true'
 
             if not settings.FREETEXT_KEYWORDS_READONLY:
                 # AF: Warning - this won't allow people to have empty keywords on GeoNode
@@ -335,10 +307,10 @@ def geoserver_post_save_local(instance, *args, **kwargs):
                 keywords = instance.keyword_list()
                 gs_resource.keywords = [kw for kw in list(set(keywords))]
 
-                # gs_resource should only be called if
-                # ogc_server_settings.BACKEND_WRITE_ENABLED == True
-                if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-                    gs_catalog.save(gs_resource)
+            # gs_resource should only be called if
+            # ogc_server_settings.BACKEND_WRITE_ENABLED == True
+            if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
+                gs_catalog.save(gs_resource)
         except Exception as e:
             msg = ('Error while trying to save resource named %s in GeoServer, '
                    'try to use: "%s"' % (gs_resource, str(e)))
