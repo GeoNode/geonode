@@ -126,11 +126,12 @@ def geoserver_upload(
     if 'shp' not in files:
         data = base_file
     try:
-        store, gs_resource = create_store_and_resource(name,
-                                                       data,
-                                                       charset=charset,
-                                                       overwrite=overwrite,
-                                                       workspace=workspace)
+        store, gs_resource = create_store_and_resource(
+            name,
+            data,
+            charset=charset,
+            overwrite=overwrite,
+            workspace=workspace)
     except UploadError as e:
         msg = ('Could not save the layer %s, there was an upload '
                'error: %s' % (name, str(e)))
@@ -199,7 +200,7 @@ def geoserver_upload(
     publishing = cat.get_layer(name) or gs_resource
     sld = None
     if 'sld' in files:
-        f = open(files['sld'], 'r')
+        f = open(files['sld'], 'rb')
         sld = f.read()
         f.close()
     else:

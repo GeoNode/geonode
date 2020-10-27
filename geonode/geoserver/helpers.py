@@ -62,7 +62,6 @@ from owslib.wms import WebMapService
 from geonode import GeoNodeException
 from geonode.base.auth import get_or_create_token
 from geonode.utils import http_client
-from geonode.catalogue.models import catalogue_post_save
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.security.views import _perms_info_json
@@ -247,10 +246,22 @@ def get_sld_for(gs_catalog, layer):
     name = None
     gs_layer = None
     gs_style = None
-    _default_style = layer.default_style if layer else None
 
-    if _default_style is None:
-        _max_retries, _tries = getattr(ogc_server_settings, "MAX_RETRIES", 2), 0
+    _default_style = None
+    _max_retries, _tries = getattr(ogc_server_settings, "MAX_RETRIES", 2), 0
+    try:
+        gs_layer = gs_catalog.get_layer(layer.name)
+        if gs_layer.default_style:
+            gs_style = gs_layer.default_style.sld_body
+            set_layer_style(layer,
+                            layer.alternate,
+                            gs_style)
+        name = gs_layer.default_style.name
+        _default_style = gs_layer.default_style
+    except Exception:
+        name = None
+
+    while not name and _tries < _max_retries:
         try:
             gs_layer = gs_catalog.get_layer(layer.name)
             if gs_layer.default_style:
@@ -259,26 +270,17 @@ def get_sld_for(gs_catalog, layer):
                                 layer.alternate,
                                 gs_style)
             name = gs_layer.default_style.name
+            if name:
+                break
         except Exception:
             name = None
-        while not name and _tries < _max_retries:
-            try:
-                gs_layer = gs_catalog.get_layer(layer.name)
-                if gs_layer.default_style:
-                    gs_style = gs_layer.default_style.sld_body
-                    set_layer_style(layer,
-                                    layer.alternate,
-                                    gs_style)
-                name = gs_layer.default_style.name
-                if name:
-                    break
-            except Exception:
-                name = None
-            _tries += 1
-            time.sleep(3)
-    else:
-        name = _default_style.name
-        gs_style = _default_style.sld_body
+        _tries += 1
+        time.sleep(3)
+
+    if not _default_style:
+        _default_style = layer.default_style if layer else None
+        name = _default_style.name if _default_style else None
+        gs_style = _default_style.sld_body if _default_style else None
 
     if not name:
         msg = """
@@ -1042,10 +1044,10 @@ def set_attributes_from_geoserver(layer, overwrite=False):
 
 def set_styles(layer, gs_catalog):
     style_set = []
-
     gs_layer = None
     try:
         gs_layer = gs_catalog.get_layer(layer.name)
+        gs_layer.fetch()
     except Exception:
         tb = traceback.format_exc()
         logger.debug(tb)
@@ -1059,8 +1061,10 @@ def set_styles(layer, gs_catalog):
     if gs_layer:
         default_style = None
         try:
-            default_style = gs_layer.default_style or None
-        except Exception:
+            default_style = gs_catalog.get_style(
+                gs_layer.default_style.name, workspace=layer.workspace)
+        except Exception as e:
+            raise e
             tb = traceback.format_exc()
             logger.debug(tb)
 
@@ -1081,21 +1085,20 @@ def set_styles(layer, gs_catalog):
                 sld_body = default_style.sld_body
                 try:
                     gs_catalog.create_style(layer.name, sld_body, raw=True, workspace=layer.workspace)
-                    gs_catalog.reset()
+                    style = gs_catalog.get_style(layer.name, workspace=layer.workspace)
                 except Exception:
                     tb = traceback.format_exc()
                     logger.debug(tb)
-
-                style = gs_catalog.get_style(layer.name, workspace=layer.workspace)
             else:
                 style = default_style
+
             if style:
                 try:
+                    gs_layer.default_style = style
+                    gs_catalog.save(gs_layer)
                     layer.default_style = save_style(style, layer)
                     if layer.default_style not in style_set:
                         style_set.append(layer.default_style)
-                    gs_layer.default_style = style
-                    gs_catalog.save(gs_layer)
                 except Exception:
                     tb = traceback.format_exc()
                     logger.debug(tb)
@@ -1121,9 +1124,6 @@ def set_styles(layer, gs_catalog):
 
     Layer.objects.filter(id=layer.id).update(**to_update)
     layer.refresh_from_db()
-
-    # refresh catalogue metadata records
-    catalogue_post_save(instance=layer, sender=layer.__class__)
 
     try:
         set_geowebcache_invalidate_cache(layer.alternate or layer.typename)

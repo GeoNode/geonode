@@ -464,6 +464,9 @@ def collect_metric(**options):
             log.info('[{}] Collecting Metrics - finished @ {}'.format(
                 lock_id,
                 _end_time))
+        log.info('[{}] Collecting Metrics - finished [lock not acquired] @ {}'.format(
+            lock_id,
+            _end_time))
     return (_start_time, _end_time)
 
 
