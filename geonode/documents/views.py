@@ -658,8 +658,8 @@ def document_metadata_detail(
 
 
 @login_required
-def document_batch_metadata(request, ids):
-    return batch_modify(request, ids, 'Document')
+def document_batch_metadata(request):
+    return batch_modify(request, 'Document')
 
 
 class DocumentAutocomplete(autocomplete.Select2QuerySetView):

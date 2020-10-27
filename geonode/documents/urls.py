@@ -57,7 +57,7 @@ urlpatterns = [  # 'geonode.documents.views',
     url(r'^(?P<docid>\d+)/metadata$',
         views.document_metadata, name='document_metadata'),
     url(
-        r'^metadata/batch/(?P<ids>[^/]*)/$',
+        r'^metadata/batch/$',
         views.document_batch_metadata,
         name='document_batch_metadata'),
     url(r'^(?P<docid>\d+)/metadata_advanced$', views.document_metadata_advanced,
