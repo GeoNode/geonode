@@ -479,6 +479,10 @@ INSTALLED_APPS = (
 
     # GeoNode
     'geonode',
+    
+    # FAQ
+    'ckeditor',
+    'frequently',
 )
 
 INSTALLED_APPS += ('markdownify',)
@@ -1133,6 +1137,7 @@ except ValueError:
     ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('ALLOWED_HOSTS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
+ALLOWED_HOSTS = ['127.0.0.1','localhost','apps.skaphe.com','190.146.133.76']
 # AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
 # to only whitelisted IP addresses.
 #
@@ -1991,3 +1996,6 @@ GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat
 #This controls if tastypie search on resourches is performed only with titles
 SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'True'))
 # -- END Settings for MONITORING plugin
+
+FREQUENTLY_READY_FOR_V1 = True
+FREQUENTLY_ALLOW_ANONYMOUS = True

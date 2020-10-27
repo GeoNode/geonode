@@ -72,6 +72,15 @@ urlpatterns = [
     url(r'^about/$',
         TemplateView.as_view(template_name='about.html'),
         name='about'),
+     url(r'^about_models/$',
+        TemplateView.as_view(template_name='about_models.html'),
+        name='models'),
+	url(r'^terms_of_use/$',
+        TemplateView.as_view(template_name='terms_of_use.html'),
+        name='terms_of_use'),	
+	url(r'^privacy_policy/$',
+        TemplateView.as_view(template_name='Private_policy.html'),
+        name='privacy-policy'),
     url(r'^privacy_cookies/$',
         TemplateView.as_view(template_name='privacy-cookies.html'),
         name='privacy-cookies'),
@@ -247,6 +256,10 @@ urlpatterns += [  # '',
         geonode.maps.views.featured_map_info),
 ]
 
+# FAQ
+urlpatterns += [
+    url(r'^faq/', include('frequently.urls')),
+]
 
 if settings.MONITORING_ENABLED:
     urlpatterns += [url(r'^monitoring/',

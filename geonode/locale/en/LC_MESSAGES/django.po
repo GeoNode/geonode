@@ -5902,22 +5902,20 @@ msgid "Placeholder for status-message-body"
 msgstr "Placeholder for status-message-body"
 
 #: geonode/templates/about.html:4 geonode/templates/about.html:8
-msgid "About GeoNode"
-msgstr "About GeoNode"
+msgid "About Us"
+msgstr "About Us"
 
 #: geonode/templates/about.html:11
 msgid ""
-"GeoNode is a geospatial content management system, a platform for the "
-"management and publication of geospatial data. It brings together mature and "
-"stable open-source software projects under a consistent and easy-to-use "
-"interface allowing non-specialized users to share data and create "
-"interactive maps."
+"The Nature Conservancy (TNC) is a global environmental organization dedicated "
+"to conserving the lands and waters on which life depends. Guided by science, "
+"we create innovative and practical solutions to our world's most pressing "
+"challenges so that nature and people can thrive together."
 msgstr ""
-"GeoNode is a geospatial content management system, a platform for the "
-"management and publication of geospatial data. It brings together mature and "
-"stable open-source software projects under a consistent and easy-to-use "
-"interface allowing non-specialized users to share data and create "
-"interactive maps."
+"The Nature Conservancy (TNC) is a global environmental organization dedicated "
+"to conserving the lands and waters on which life depends. Guided by science, "
+"we create innovative and practical solutions to our world's most pressing "
+"challenges so that nature and people can thrive together."
 
 #: geonode/templates/about.html:14
 msgid ""
