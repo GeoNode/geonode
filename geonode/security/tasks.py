@@ -17,13 +17,18 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from celery import shared_task
 from django.conf import settings
+from celery import shared_task
+
 from .utils import sync_resources_with_guardian
 
 
-@shared_task
+@shared_task(
+    bind=True,
+    name='geonode.security.tasks.synch_guardian',
+    queue='update',
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 5, 'countdown': 180})
 def synch_guardian():
     """
     Sync resources with Guardian and clear their dirty state
