@@ -50,9 +50,20 @@ def memcache_lock(lock_id, oid):
             cache.delete(lock_id)
 
 
-@app.task(bind=True,
-          name='geonode.tasks.email.send_mail',
-          queue='email',)
+@app.task(
+    bind=True,
+    name='geonode.tasks.email.send_mail',
+    queue='email',
+    countdown=60,
+    expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 10,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
 def send_email(self, *args, **kwargs):
     """
     Sends an email using django's send_mail functionality.
@@ -61,9 +72,20 @@ def send_email(self, *args, **kwargs):
     send_mail(*args, **kwargs)
 
 
-@app.task(bind=True,
-          name='geonode.tasks.notifications.send_queued_notifications',
-          queue='email',)
+@app.task(
+    bind=True,
+    name='geonode.tasks.notifications.send_queued_notifications',
+    queue='email',
+    countdown=60,
+    expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 10,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
 def send_queued_notifications(self, *args):
     """Sends queued notifications.
 
