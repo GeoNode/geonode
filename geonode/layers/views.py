@@ -294,7 +294,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 latest_uploads = UploadSession.objects.filter(
                     user=request.user).order_by('-date')
                 if latest_uploads.count() > 0:
-                    upload_session = latest_uploads[0]
+                    upload_session = latest_uploads.first()
                     # Ref issue #4232
                     if not isinstance(error, TracebackType):
                         try:
