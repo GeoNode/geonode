@@ -17,12 +17,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from celery import shared_task
 from django.core.management import call_command
 
-from geonode.celery_app import app
 
-
-@app.task(
+@shared_task(
     bind=True,
     name='geonode.monitoring.tasks.collect_metrics',
     queue='update',

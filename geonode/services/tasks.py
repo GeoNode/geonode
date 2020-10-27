@@ -21,7 +21,7 @@
 
 import logging
 
-from django.db import transaction
+from django.db import IntegrityError, transaction
 
 from . import enumerations
 from . import models
@@ -63,6 +63,8 @@ def harvest_resource(self, harvest_job_id):
             catalogue_post_save(instance=layer, sender=layer.__class__)
         except Exception:
             logger.error("Remote Layer [%s] couldn't be updated" % (harvest_job.resource_id))
+    except IntegrityError:
+        raise
     except Exception as err:
         logger.exception(msg="An error has occurred while harvesting "
                              "resource {!r}".format(harvest_job.resource_id))

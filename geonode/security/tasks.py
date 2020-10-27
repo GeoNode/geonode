@@ -18,12 +18,12 @@
 #
 #########################################################################
 from django.conf import settings
+from celery import shared_task
+
 from .utils import sync_resources_with_guardian
 
-from geonode.celery_app import app
 
-
-@app.task(
+@shared_task(
     bind=True,
     name='geonode.security.tasks.synch_guardian',
     queue='update',
