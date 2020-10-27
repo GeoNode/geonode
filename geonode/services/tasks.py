@@ -34,9 +34,10 @@ from geonode.catalogue.models import catalogue_post_save
 logger = logging.getLogger(__name__)
 
 
-@app.task(bind=True,
-          name='geonode.services.tasks.update.harvest_resource',
-          queue='update',)
+@app.task(
+    bind=True,
+    name='geonode.services.tasks.update.harvest_resource',
+    queue='update')
 def harvest_resource(self, harvest_job_id):
     harvest_job = models.HarvestJob.objects.get(pk=harvest_job_id)
     harvest_job.update_status(

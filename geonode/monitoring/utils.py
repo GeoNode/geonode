@@ -26,7 +26,6 @@ import xmljson
 import requests
 import threading
 import traceback
-import timeout_decorator
 
 from hashlib import md5
 from math import floor, ceil
@@ -468,10 +467,6 @@ def collect_metric(**options):
     return (_start_time, _end_time)
 
 
-LOCAL_TIMEOUT = 8600
-
-
-@timeout_decorator.timeout(LOCAL_TIMEOUT)
 def run_check(service, collector, since=None, until=None, force_check=None, format=None):
     from geonode.monitoring.service_handlers import get_for_service
 
