@@ -3,7 +3,7 @@ services:
 
   celery:
     build: .
-    command: celery worker --app=geonode.celery_app:app --broker=amqp://guest:guest@rabbitmq:5672/ -B -l DEBUG
+    command: celery -A geonode.celery_app:app worker --broker=amqp://guest:guest@rabbitmq:5672/ -B -l DEBUG
     depends_on:
       - db
       - elasticsearch

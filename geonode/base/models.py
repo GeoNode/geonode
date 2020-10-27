@@ -975,7 +975,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     bbox = bbox.transform(srid, clone=True)
                 except Exception:
                     bbox.srid = srid
-
             bbox = BBOXHelper(bbox.extent)
             return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(srid)]
         bbox = BBOXHelper.from_xy([-180, 180, -90, 90])

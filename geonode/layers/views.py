@@ -271,7 +271,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                         raise Exception(msg)
                     sld = open(base_file).read()
                     set_layer_style(saved_layer, title, base_file, sld)
-
+                out['success'] = True
             except Exception as e:
                 exception_type, error, tb = sys.exc_info()
                 logger.exception(e)
@@ -294,7 +294,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 latest_uploads = UploadSession.objects.filter(
                     user=request.user).order_by('-date')
                 if latest_uploads.count() > 0:
-                    upload_session = latest_uploads[0]
+                    upload_session = latest_uploads.first()
                     # Ref issue #4232
                     if not isinstance(error, TracebackType):
                         try:
@@ -350,6 +350,18 @@ def layer_upload(request, template='upload/layer_upload.html'):
             out['errors'] = form.errors
             out['errormsgs'] = errormsgs
         if out['success']:
+            out['status'] = 'finished'
+            out['url'] = saved_layer.get_absolute_url()
+            out['bbox'] = saved_layer.bbox_string
+            out['crs'] = {
+                'type': 'name',
+                'properties': saved_layer.srid
+            }
+            out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
+            upload_session = saved_layer.upload_session
+            if upload_session:
+                upload_session.processed = True
+                upload_session.save()
             status_code = 200
             register_event(request, 'upload', saved_layer)
         else:
@@ -1263,16 +1275,18 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                         is_published=layer.is_published,
                         name=layer.name,
                         user=layer.owner,
-                        # user=request.user,
                         license=layer.license.name if layer.license else None,
                         category=layer.category,
                         keywords=list(layer.keywords.all()),
                         regions=list(layer.regions.values_list('name', flat=True)),
-                        # date=layer.date,
                         overwrite=True,
                         charset=form.cleaned_data["charset"],
                     )
 
+                    upload_session = saved_layer.upload_session
+                    if upload_session:
+                        upload_session.processed = True
+                        upload_session.save()
                     out['success'] = True
                     out['url'] = reverse(
                         'layer_detail', args=[
@@ -1288,7 +1302,6 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
             errormsgs = []
             for e in form.errors.values():
                 errormsgs.append([escape(v) for v in e])
-
             out['errors'] = form.errors
             out['errormsgs'] = errormsgs
 

@@ -323,20 +323,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         from geonode.base.models import HierarchicalKeyword as hk
         keywords = hk.dump_bulk_tree(get_user_model().objects.get(username='admin'), type='layer')
 
-        self.assertEqual(len(keywords), len([
-            {
-                'text': 'layertagunique',
-                'href': 'layertagunique',
-                'tags': [1],
-                'id': 3
-            },
-            {
-                'text': 'populartag',
-                'href': 'populartag',
-                'tags': [7],
-                'id': 1
-            }
-        ]))
+        self.assertEqual(len(keywords), 13)
 
     def test_layer_links(self):
         lyr = Layer.objects.filter(storeType="dataStore").first()
@@ -1128,7 +1115,7 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
                 files['charset'] = 'utf-8'
                 files['layer_title'] = 'test layer'
                 resp = self.client.post(layer_upload_url, data=files)
-                self.assertEqual(resp.status_code, 400)
+                self.assertEqual(resp.status_code, 200)
             content = resp.content
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
@@ -1160,7 +1147,7 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
                 files['charset'] = 'utf-8'
                 files['layer_title'] = 'test layer'
                 resp = self.client.post(layer_upload_url, data=files)
-                self.assertEqual(resp.status_code, 400)
+                self.assertEqual(resp.status_code, 200)
             content = resp.content
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
