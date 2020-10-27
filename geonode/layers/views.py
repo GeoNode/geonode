@@ -29,7 +29,6 @@ import decimal
 import pickle
 import six
 from django.db.models import Q
-from celery.exceptions import TimeoutError
 from urllib.parse import quote
 
 from django.contrib.gis.geos import GEOSGeometry
@@ -57,7 +56,7 @@ import json
 from django.utils.html import escape
 from django.template.defaultfilters import slugify
 from django.forms.models import inlineformset_factory
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import F
 from django.forms.utils import ErrorList
 
@@ -105,8 +104,6 @@ from geonode.utils import (
     build_social_links,
     GXPLayer,
     GXPMap)
-
-from .tasks import delete_layer
 
 from geonode.geoserver.helpers import (ogc_server_settings,
                                        set_layer_style)
@@ -1330,13 +1327,11 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
         })
     if (request.method == 'POST'):
         try:
+            logger.debug('Deleting Layer {0}'.format(layer))
             with transaction.atomic():
-                result = delete_layer.delay(layer_id=layer.id)
-                # Attempt to run task synchronously
-                result.get()
-        except TimeoutError:
-            # traceback.print_exc()
-            pass
+                layer.delete()
+        except IntegrityError:
+            raise
         except Exception as e:
             traceback.print_exc()
             message = '{0}: {1}.'.format(

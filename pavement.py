@@ -629,7 +629,6 @@ def start_django(options):
     if 'django_celery_beat' not in INSTALLED_APPS:
         sh("{} celery -A geonode.celery_app:app beat -l INFO {} {}".format(
             settings,
-            "-s celerybeat-schedule.db",
             foreground
         ))
     else:
