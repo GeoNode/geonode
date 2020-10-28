@@ -218,7 +218,7 @@ def get_files(filename):
         matches = glob.glob(os.path.dirname(glob_name) + ".[sS][lL][dD]")
         if len(matches) == 1:
             files['sld'] = matches[0]
-        elif len(matches) > 1:
+        else:
             matches = glob.glob(glob_name + ".[sS][lL][dD]")
             if len(matches) == 1:
                 files['sld'] = matches[0]

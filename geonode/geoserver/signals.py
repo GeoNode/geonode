@@ -61,7 +61,9 @@ def geoserver_delete(typename):
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
         try:
-            geoserver_cascading_delete.delay(layer_name=typename)
+            result = geoserver_cascading_delete.delay(layer_name=typename)
+            # Attempt to run task synchronously
+            result.get()
         except ConnectionError as e:
             logger.error(e)
 
@@ -76,7 +78,9 @@ def geoserver_pre_delete(instance, sender, **kwargs):
         if instance.remote_service is None or instance.remote_service.method == CASCADED:
             if instance.alternate:
                 try:
-                    geoserver_cascading_delete.delay(layer_name=instance.alternate)
+                    result = geoserver_cascading_delete.delay(layer_name=instance.alternate)
+                    # Attempt to run task synchronously
+                    result.get()
                 except ConnectionError as e:
                     logger.error(e)
 
