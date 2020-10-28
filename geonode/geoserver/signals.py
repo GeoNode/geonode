@@ -255,11 +255,6 @@ def geoserver_post_save_local(instance, *args, **kwargs):
            * Download links (WMS, WCS or WFS and KML)
            * Styles (SLD)
         """
-        try:
-            instance.abstract = gs_resource.abstract or ''
-        except Exception as e:
-            logger.exception(e)
-            instance.abstract = ''
         instance.workspace = gs_resource.store.workspace.name
         instance.store = gs_resource.store.name
 
