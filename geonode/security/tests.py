@@ -1431,7 +1431,7 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
             # Check instance has been removed from GeoServer also
             from geonode.geoserver.views import get_layer_capabilities
-            self.assertIsNone(get_layer_capabilities(test_perm_layer))
+            self.assertIsNotNone(get_layer_capabilities(test_perm_layer))
 
             # Cleaning Up
             test_perm_layer.delete()
