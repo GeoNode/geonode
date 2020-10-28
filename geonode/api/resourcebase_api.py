@@ -238,13 +238,13 @@ class CommonModelApi(ModelResource):
                     Q(owner__username__iexact=str(user))))
             else:
                 filtered = filtered.exclude(Q(dirty_state=True))
-
         return filtered
 
     def filter_published(self, queryset, request):
         filter_set = get_visible_resources(
             queryset,
             request.user if request else None,
+            request=request,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
             unpublished_not_visible=settings.RESOURCE_PUBLISHING)
 
@@ -254,6 +254,7 @@ class CommonModelApi(ModelResource):
         filter_set = get_visible_resources(
             queryset,
             request.user if request else None,
+            request=request,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
         return filter_set
