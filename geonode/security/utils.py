@@ -109,9 +109,13 @@ def get_visible_resources(queryset,
 
         if admin_approval_required or unpublished_not_visible or private_groups_not_visibile:
             _allowed_resources = []
-            for _resource in filter_set.all():
+            for _obj in filter_set.all():
                 try:
-                    if user.has_perm('base.view_resourcebase', _resource):
+                    _resource = _obj.get_self_resource()
+                    if user.has_perm('base.view_resourcebase', _resource) or \
+                    user.has_perm('view_resourcebase', _resource) or \
+                    user.has_perm('publish_resourcebase', _resource) or \
+                    user.has_perm('change_resourcebase_metadata', _resource):
                         _allowed_resources.append(_resource.id)
                 except (PermissionDenied, Exception) as e:
                     logger.debug(e)
