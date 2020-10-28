@@ -92,6 +92,7 @@ with open("dev_config.yml", 'r') as f:
 
 def grab(src, dest, name):
     src, dest, name = map(str, (src, dest, name))
+    print(f" src, dest, name --> {src} {dest} {name}")
 
     if not os.path.exists(dest):
         print("Downloading {}".format(name))
@@ -157,9 +158,9 @@ def setup_geoserver(options):
             download_dir.makedirs()
         geoserver_dir = path('geoserver')
         geoserver_bin = download_dir / \
-            os.path.basename(dev_config['GEOSERVER_URL'])
+            os.path.basename(urlparse(dev_config['GEOSERVER_URL']).path)
         jetty_runner = download_dir / \
-            os.path.basename(dev_config['JETTY_RUNNER_URL'])
+            os.path.basename(urlparse(dev_config['JETTY_RUNNER_URL']).path)
         grab(
             options.get(
                 'geoserver',
