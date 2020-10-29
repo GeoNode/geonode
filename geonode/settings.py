@@ -126,7 +126,7 @@ if DATABASE_URL.startswith("spatialite"):
 # 'ENGINE': 'django.contrib.gis.db.backends.postgis'
 # see https://docs.djangoproject.com/en/1.8/ref/contrib/gis/db-api/#module-django.contrib.gis.db.backends for
 # detailed list of supported backends and notes.
-_db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=5)
+_db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=0)
 
 if 'CONN_TOUT' in _db_conf:
     _db_conf['CONN_TOUT'] = 5
@@ -146,11 +146,11 @@ if os.getenv('DEFAULT_BACKEND_DATASTORE'):
                                 'postgis://\
 geonode_data:geonode_data@localhost:5432/geonode_data')
     DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = dj_database_url.parse(
-        GEODATABASE_URL, conn_max_age=5
+        GEODATABASE_URL, conn_max_age=0
     )
     _geo_db = DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')]
     if 'CONN_TOUT' in DATABASES['default']:
-        _geo_db['CONN_TOUT'] = 5
+        _geo_db['CONN_TOUT'] = DATABASES['default']['CONN_TOUT']
     if 'postgresql' in GEODATABASE_URL or 'postgis' in GEODATABASE_URL:
         _geo_db['OPTIONS'] = DATABASES['default']['OPTIONS'] if 'OPTIONS' in DATABASES['default'] else {}
         _geo_db['OPTIONS'].update({
