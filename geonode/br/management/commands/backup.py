@@ -293,13 +293,11 @@ class Command(BaseCommand):
         r = requests.put(url + 'rest/reset/',
                          auth=HTTPBasicAuth(user, passwd))
         if r.status_code != 200:
-            if (r.status_code != 200):
-                raise ValueError('Could not reset GeoServer catalog!')
+            raise ValueError('Could not reset GeoServer catalog!')
         r = requests.put(url + 'rest/reload/',
                          auth=HTTPBasicAuth(user, passwd))
         if r.status_code != 200:
-            if (r.status_code != 200):
-                raise ValueError('Could not reload GeoServer catalog!')
+            raise ValueError('Could not reload GeoServer catalog!')
 
         error_backup = 'Could not successfully backup GeoServer ' + \
                        'catalog [{}rest/br/backup/]: {} - {}'
