@@ -75,7 +75,7 @@ djangorestframework-gis>=0.16
 djangorestframework_guardian==0.3.0
 drf-extensions==0.6.0
 drf-writable-nested==0.6.1
-drf-yasg==1.17.1
+drf-yasg==1.20.0
 dynamic-rest==2.0.0
 Markdown==3.3.1
 
