@@ -122,7 +122,7 @@ timeout-decorator==0.4.1
 python_resize_image==1.1.19
 
 # required by monitoring
-psutil==5.7.2
+psutil==5.7.3
 django-cors-headers==3.5.0
 user-agents
 xmljson
