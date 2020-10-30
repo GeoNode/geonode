@@ -628,7 +628,7 @@ def start_django(options):
         # "geonode.layer.viewer"
     ]
     if 'django_celery_beat' not in INSTALLED_APPS:
-        sh("{} celery -A geonode.celery_app:app worker -B -E --loglevel=INFO --concurrency=10 -n worker1@%h {}".format(
+        sh("{} celery -A geonode.celery_app:app worker -B -E --statedb=worker.state --loglevel=INFO --concurrency=10 -n worker1@%h {}".format(
             settings,
             foreground
         ))
