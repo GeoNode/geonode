@@ -1787,9 +1787,11 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Legend link
         logger.debug(" -- Resource Links[Legend link]...")
         for style in instance.styles.all():
+            style_name = os.path.basename(
+                urlparse(style.sld_url).path).split('.')[0]
             legend_url = ogc_server_settings.PUBLIC_LOCATION + \
                 'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
-                instance.alternate + '&STYLE=' + style.name + \
+                instance.alternate + '&STYLE=' + style_name + \
                 '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
 
             if Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).count() < 2:
