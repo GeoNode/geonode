@@ -38,7 +38,7 @@ logger = get_task_logger(__name__)
     name='geonode.documents.tasks.create_document_thumbnail',
     queue='update',
     countdown=60,
-    expires=120,
+    # expires=120,
     acks_late=True,
     retry=True,
     retry_policy={
@@ -118,7 +118,7 @@ def create_document_thumbnail(self, object_id):
     name='geonode.documents.tasks.delete_orphaned_document_files',
     queue='cleanup',
     countdown=60,
-    expires=120,
+    # expires=120,
     acks_late=True,
     retry=True,
     retry_policy={
@@ -137,7 +137,7 @@ def delete_orphaned_document_files(self):
     name='geonode.documents.tasks.delete_orphaned_thumbnails',
     queue='cleanup',
     countdown=60,
-    expires=120,
+    # expires=120,
     acks_late=True,
     retry=True,
     retry_policy={

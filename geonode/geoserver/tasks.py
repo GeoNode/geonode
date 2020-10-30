@@ -31,7 +31,7 @@ logger = get_task_logger(__name__)
     name='geonode.geoserver.tasks.geoserver_update_layers',
     queue='update',
     countdown=60,
-    expires=120,
+    # expires=120,
     acks_late=True,
     retry=True,
     retry_policy={
@@ -52,7 +52,7 @@ def geoserver_update_layers(self, *args, **kwargs):
     name='geonode.geoserver.tasks.geoserver_cascading_delete',
     queue='cleanup',
     countdown=60,
-    expires=120,
+    # expires=120,
     acks_late=True,
     retry=True,
     retry_policy={
