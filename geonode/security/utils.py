@@ -27,7 +27,6 @@ import json
 import logging
 import traceback
 import requests
-from . import models
 
 from six import string_types
 from requests.auth import HTTPBasicAuth
@@ -128,9 +127,10 @@ def get_users_with_perms(obj):
     """
     Override of the Guardian get_users_with_perms
     """
+    from .models import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
-    PERMISSIONS_TO_FETCH = models.VIEW_PERMISSIONS + models.ADMIN_PERMISSIONS + models.LAYER_ADMIN_PERMISSIONS
+    PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
 
     for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
         permissions[perm.id] = perm.codename
@@ -623,9 +623,10 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
 
 def set_owner_permissions(resource, members=None):
     """assign all admin permissions to the owner"""
+    from .models import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
     if resource.polymorphic_ctype:
         # Owner & Manager Admin Perms
-        admin_perms = models.VIEW_PERMISSIONS + models.ADMIN_PERMISSIONS
+        admin_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
         for perm in admin_perms:
             if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
                 assign_perm(perm, resource.owner, resource.get_self_resource())
@@ -637,7 +638,7 @@ def set_owner_permissions(resource, members=None):
 
         # Set the GeoFence Owner Rule
         if resource.polymorphic_ctype.name == 'layer':
-            for perm in models.LAYER_ADMIN_PERMISSIONS:
+            for perm in LAYER_ADMIN_PERMISSIONS:
                 assign_perm(perm, resource.owner, resource.layer)
                 if members:
                     for user in members:

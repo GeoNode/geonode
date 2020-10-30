@@ -76,10 +76,19 @@ jobs:
           - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
           - GEOSERVER_SERVER_PORT: 8080
           - ON_TRAVIS: 'True'
+          - TEST_RUNNER_KEEPDB: 'True'
+          - TEST_RUN_INTEGRATION: 'True'
+          - TEST_RUN_INTEGRATION_SERVER: 'True'
+          - TEST_RUN_INTEGRATION_UPLOAD: 'False'
+          - TEST_RUN_INTEGRATION_MONITORING: 'False'
           - TEST_RUN_INTEGRATION_CSW: 'True'
+          - TEST_RUN_INTEGRATION_BDD: 'False'
           - MONITORING_ENABLED: 'False'
           - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
           - CELERY_ALWAYS_EAGER: 'True'
+          - DATABASE_URL: 'postgis://geonode:geonode@localhost:5432/upload_test'
+          - GEODATABASE_URL: 'postgis://geonode:geonode@localhost:5432/upload_test'
+          - DEFAULT_BACKEND_DATASTORE: 'datastore'
 
     - stage: unit-tests
       name: "QGis Server-backend Core Modules Smoke Tests"
@@ -375,7 +384,6 @@ after_script:
 
 after_success:
   - codecov
-  - bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8
 
 notifications:
   email:

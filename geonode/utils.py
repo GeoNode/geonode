@@ -229,9 +229,8 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
 
     access_token = None
     site_url = urlsplit(settings.SITEURL)
-    allowed_hosts += [url.hostname]
     # We want to convert HTTP_AUTH into a Beraer Token only when hitting the local GeoServer
-    if site_url.hostname in allowed_hosts:
+    if site_url.hostname in (allowed_hosts + [url.hostname]):
         # we give precedence to obtained from Aithorization headers
         if 'HTTP_AUTHORIZATION' in request.META:
             auth_header = request.META.get(
@@ -1787,9 +1786,11 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Legend link
         logger.debug(" -- Resource Links[Legend link]...")
         for style in instance.styles.all():
+            style_name = os.path.basename(
+                urlparse(style.sld_url).path).split('.')[0]
             legend_url = ogc_server_settings.PUBLIC_LOCATION + \
                 'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
-                instance.alternate + '&STYLE=' + style.name + \
+                instance.alternate + '&STYLE=' + style_name + \
                 '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
 
             if Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).count() < 2:

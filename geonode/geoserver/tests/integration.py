@@ -62,7 +62,7 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
     """
     Tests GeoNode/GeoServer syncronization
     """
-    port = 8001
+    port = 8881
 
     def setUp(self):
         super(GeoNodeLiveTestSupport, self).setUp()
@@ -120,7 +120,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
     """
     Tests GeoNode/GeoServer GetCapabilities per layer, user, category and map
     """
-    port = 8002
+    port = 8882
 
     def setUp(self):
         super(GeoNodeLiveTestSupport, self).setUp()
@@ -235,7 +235,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
     """
     Tests GeoNode permissions and its integration with GeoServer
     """
-    port = 8003
+    port = 8883
 
     def setUp(self):
         super(GeoNodeLiveTestSupport, self).setUp()

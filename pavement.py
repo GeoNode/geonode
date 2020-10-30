@@ -633,7 +633,7 @@ def start_django(options):
             foreground
         ))
     else:
-        sh("{} celery -A geonode.celery_app:app worker -l DEBUG {} {} {}".format(
+        sh("{} celery -A geonode.celery_app:app worker -l DEBUG {} {}".format(
             settings,
             "-s django_celery_beat.schedulers:DatabaseScheduler",
             foreground
@@ -909,7 +909,7 @@ def test_integration(options):
             call_task('start', options={'settings': settings})
             if integration_server_tests:
                 call_task('setup_data', options={'settings': settings})
-        elif not integration_csw_tests and _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
+        if _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
             sh("cp geonode/upload/tests/test_settings.py geonode/")
             settings = 'geonode.test_settings'
             sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
