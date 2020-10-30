@@ -72,7 +72,7 @@ services:
   celery:
     << : *default-common-django
     entrypoint: []
-    command: 'celery -A geonode.celery_app:app worker -B -E -Q broadcast,default,geonode,update,cleanup,email,email.events,notifications.events,all.geoserver,geoserver.catalog,geoserver.data,geoserver.events,geonode.layer.viewer -l DEBUG -c 4 -P threads'
+    command: 'celery -A geonode.celery_app:app worker -B -E --statedb=worker.state --loglevel=INFO --concurrency=10 -n worker1@%h'
 
   # Celery beat that triggers scheduled tasks
   celerybeat:
