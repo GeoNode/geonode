@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#
+#########################################################################
 #
 # Copyright (C) 2016 OSGeo
 #
@@ -16,9 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-#
-
-from django.conf.urls import url
+#########################################################################
+from django.conf.urls import url, include
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 
@@ -64,4 +63,5 @@ urlpatterns = [  # 'geonode.documents.views',
         name='document_metadata_advanced'),
     url(r'^autocomplete/$',
         DocumentAutocomplete.as_view(), name='autocomplete_document'),
+    url(r'^', include('geonode.documents.api.urls')),
 ]
