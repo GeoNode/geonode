@@ -1777,11 +1777,11 @@ CELERY_TASK_CREATE_MISSING_QUEUES = ast.literal_eval(os.environ.get('CELERY_TASK
 GEONODE_EXCHANGE = Exchange("default", type="direct", durable=True)
 GEOSERVER_EXCHANGE = Exchange("geonode", type="topic", durable=False)
 CELERY_TASK_QUEUES = (
-    Queue('default', GEONODE_EXCHANGE, routing_key='default'),
-    Queue('geonode', GEONODE_EXCHANGE, routing_key='geonode'),
-    Queue('update', GEONODE_EXCHANGE, routing_key='update'),
-    Queue('cleanup', GEONODE_EXCHANGE, routing_key='cleanup'),
-    Queue('email', GEONODE_EXCHANGE, routing_key='email'),
+    Queue('default', GEONODE_EXCHANGE, routing_key='default', priority=0),
+    Queue('geonode', GEONODE_EXCHANGE, routing_key='geonode', priority=0),
+    Queue('update', GEONODE_EXCHANGE, routing_key='update', priority=0),
+    Queue('cleanup', GEONODE_EXCHANGE, routing_key='cleanup', priority=0),
+    Queue('email', GEONODE_EXCHANGE, routing_key='email', priority=0),
 )
 
 if USE_GEOSERVER:
