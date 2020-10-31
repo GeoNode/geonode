@@ -17,22 +17,23 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
 import json
 import base64
-from urllib.request import urlopen, Request
 import logging
 import gisdata
 import contextlib
 
+from urllib.request import urlopen, Request
+from tastypie.test import ResourceTestCaseMixin
+
 from django.conf import settings
 from django.http import HttpRequest
 from django.urls import reverse
-from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth import get_user_model
+
 from guardian.shortcuts import (
     get_anonymous_user,
     assign_perm,
@@ -1416,6 +1417,8 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # set SLD
             sld = test_perm_layer.default_style.sld_body if test_perm_layer.default_style else None
             if sld:
+                if isinstance(sld, bytes):
+                    sld = sld.decode().strip('\n')
                 _log("sld. ------------ %s " % sld)
                 set_layer_style(test_perm_layer, test_perm_layer.alternate, sld)
 
@@ -1431,7 +1434,7 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
             # Check instance has been removed from GeoServer also
             from geonode.geoserver.views import get_layer_capabilities
-            self.assertIsNotNone(get_layer_capabilities(test_perm_layer))
+            self.assertIsNone(get_layer_capabilities(test_perm_layer))
 
             # Cleaning Up
             test_perm_layer.delete()

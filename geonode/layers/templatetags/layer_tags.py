@@ -51,10 +51,16 @@ def crs_labels(value):  # Only one argument.
 
 @register.simple_tag
 def get_all_resource_styles(resource):
-    return set(list(resource.styles.all()) + [resource.default_style, ])
+    if resource and resource.default_style:
+        return set(list(resource.styles.all()) + [resource.default_style, ])
+    else:
+        return set()
 
 
 @register.simple_tag
 def get_sld_name_from_url(sld_url):
-    return os.path.basename(
-        urlparse(sld_url).path).split('.')[0]
+    if sld_url:
+        return os.path.basename(
+            urlparse(sld_url).path).split('.')[0]
+    else:
+        return sld_url
