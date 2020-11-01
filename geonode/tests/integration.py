@@ -131,7 +131,7 @@ class NormalUserTest(GeoNodeLiveTestSupport):
     """
     Tests GeoNode functionality for non-administrative users
     """
-    port = 8881
+    port = 8001
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_layer_upload(self):
@@ -153,16 +153,7 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             overwrite=True,
         )
 
-        # Test that layer owner can wipe GWC Cache
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            from geonode.security.utils import set_geowebcache_invalidate_cache
-            try:
-                set_geowebcache_invalidate_cache(saved_layer.alternate or saved_layer.typename)
-            except Exception:
-                import traceback
-                tb = traceback.format_exc()
-                logger.debug(tb)
-
             url = settings.OGC_SERVER['default']['LOCATION']
             user = settings.OGC_SERVER['default']['USER']
             passwd = settings.OGC_SERVER['default']['PASSWORD']
@@ -230,7 +221,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
     """
     Tests geonode.maps app/module
     """
-    port = 8882
+    port = 8002
 
     # geonode.maps.utils
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
@@ -281,29 +272,29 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             bbox_y1 = Decimal('-5.303545551999900')
             srid = 'EPSG:4326'
 
-            self.assertAlmostEqual(bbox_x0, Decimal(uploaded.bbox_x0))
-            self.assertAlmostEqual(bbox_x1, Decimal(uploaded.bbox_x1))
-            self.assertAlmostEqual(bbox_y0, Decimal(uploaded.bbox_y0))
-            self.assertAlmostEqual(bbox_y1, Decimal(uploaded.bbox_y1))
+            self.assertAlmostEqual(bbox_x0, Decimal(uploaded.bbox_x0), places=3)
+            self.assertAlmostEqual(bbox_x1, Decimal(uploaded.bbox_x1), places=3)
+            self.assertAlmostEqual(bbox_y0, Decimal(uploaded.bbox_y0), places=3)
+            self.assertAlmostEqual(bbox_y1, Decimal(uploaded.bbox_y1), places=3)
             self.assertTrue(uploaded.srid in srid)
 
             # bbox format: [xmin,xmax,ymin,ymax]
             uploaded_bbox_x0, uploaded_bbox_x1, \
                 uploaded_bbox_y0, uploaded_bbox_y1 = \
                 map(Decimal, uploaded.bbox[:4])
-            self.assertAlmostEqual(bbox_x0, uploaded_bbox_x0)
-            self.assertAlmostEqual(bbox_x1, uploaded_bbox_x1)
-            self.assertAlmostEqual(bbox_y0, uploaded_bbox_y0)
-            self.assertAlmostEqual(bbox_y1, uploaded_bbox_y1)
+            self.assertAlmostEqual(bbox_x0, uploaded_bbox_x0, places=3)
+            self.assertAlmostEqual(bbox_x1, uploaded_bbox_x1, places=3)
+            self.assertAlmostEqual(bbox_y0, uploaded_bbox_y0, places=3)
+            self.assertAlmostEqual(bbox_y1, uploaded_bbox_y1, places=3)
 
             # bbox format: [xmin,ymin,xmax,ymax]
             uploaded_bbox_string_x0, uploaded_bbox_string_y0, \
                 uploaded_bbox_string_x1, uploaded_bbox_string_y1 = \
                 map(Decimal, uploaded.bbox_string.split(','))
-            self.assertAlmostEqual(bbox_x0, uploaded_bbox_string_x0)
-            self.assertAlmostEqual(bbox_x1, uploaded_bbox_string_x1)
-            self.assertAlmostEqual(bbox_y0, uploaded_bbox_string_y0)
-            self.assertAlmostEqual(bbox_y1, uploaded_bbox_string_y1)
+            self.assertAlmostEqual(bbox_x0, uploaded_bbox_string_x0, places=3)
+            self.assertAlmostEqual(bbox_x1, uploaded_bbox_string_x1, places=3)
+            self.assertAlmostEqual(bbox_y0, uploaded_bbox_string_y0, places=3)
+            self.assertAlmostEqual(bbox_y1, uploaded_bbox_string_y1, places=3)
         finally:
             # Clean up and completely delete the layer
             uploaded.delete()
@@ -1070,10 +1061,14 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     self.assertEqual(vector_layer.alternate, new_vector_layer.alternate)
 
                     # Test the replaced layer bbox is indeed different from the original layer
-                    self.assertEqual(vector_layer.bbox_x0, new_vector_layer.bbox_x0)
-                    self.assertEqual(vector_layer.bbox_x1, new_vector_layer.bbox_x1)
-                    self.assertEqual(vector_layer.bbox_y0, new_vector_layer.bbox_y0)
-                    self.assertEqual(vector_layer.bbox_y1, new_vector_layer.bbox_y1)
+                    self.assertAlmostEqual(
+                        vector_layer.bbox_x0, new_vector_layer.bbox_x0, places=3)
+                    self.assertAlmostEqual(
+                        vector_layer.bbox_x1, new_vector_layer.bbox_x1, places=3)
+                    self.assertAlmostEqual(
+                        vector_layer.bbox_y0, new_vector_layer.bbox_y0, places=3)
+                    self.assertAlmostEqual(
+                        vector_layer.bbox_y1, new_vector_layer.bbox_y1, places=3)
 
                     # test an invalid user without layer replace permission
                     self.client.logout()
@@ -1145,7 +1140,7 @@ class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
     """
     Tests thumbnails behavior for layers and maps.
     """
-    port = 8883
+    port = 8003
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_layer_thumbnail(self):
@@ -1204,7 +1199,7 @@ class LayersStylesApiInteractionTests(
         ResourceTestCaseMixin, GeoNodeLiveTestSupport):
 
     """Test Layers"""
-    port = 8885
+    port = 8005
 
     def setUp(self):
         super(LayersStylesApiInteractionTests, self).setUp()

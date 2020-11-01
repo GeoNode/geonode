@@ -56,15 +56,16 @@ from geonode.geoserver.helpers import gs_slurp
 from geonode.geoserver.upload import geoserver_upload
 from geonode.layers.populate_layers_data import create_layer_data
 
-from .utils import (purge_geofence_all,
-                    get_users_with_perms,
-                    get_geofence_rules,
-                    get_geofence_rules_count,
-                    get_highest_priority,
-                    set_geofence_all,
-                    set_geowebcache_invalidate_cache,
-                    sync_geofence_with_guardian,
-                    sync_resources_with_guardian)
+from .utils import (
+    purge_geofence_all,
+    get_users_with_perms,
+    get_geofence_rules,
+    get_geofence_rules_count,
+    get_highest_priority,
+    set_geofence_all,
+    sync_geofence_with_guardian,
+    sync_resources_with_guardian
+)
 
 
 logger = logging.getLogger(__name__)
@@ -334,14 +335,6 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             _log("5. geofence_rules_highest_priority: %s " % geofence_rules_highest_priority)
             self.assertTrue(geofence_rules_highest_priority > 0)
 
-            # Try GWC Invalidation
-            # - it should not work here since the layer has not been uploaded to GeoServer
-            try:
-                set_geowebcache_invalidate_cache(test_perm_layer.alternate or test_perm_layer.typename)
-            except Exception:
-                import traceback
-                tb = traceback.format_exc()
-                logger.debug(tb)
             url = settings.OGC_SERVER['default']['LOCATION']
             user = settings.OGC_SERVER['default']['USER']
             passwd = settings.OGC_SERVER['default']['PASSWORD']

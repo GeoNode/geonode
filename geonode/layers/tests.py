@@ -219,7 +219,7 @@ class LayersTest(GeoNodeBaseTestSupport):
                     20037397.02329845, 74299743.40061197]
         logger.debug(projected_bbox)
         for coord, check in zip(projected_bbox, solution):
-            self.assertAlmostEqual(coord, check)
+            self.assertAlmostEqual(coord, check, places=3)
 
     def test_layer_attributes_feature_catalogue(self):
         """ Test layer feature catalogue functionality
