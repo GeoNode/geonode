@@ -62,7 +62,7 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
     """
     Tests GeoNode/GeoServer syncronization
     """
-    port = 8881
+    port = 8001
 
     def setUp(self):
         super(GeoNodeLiveTestSupport, self).setUp()
@@ -120,7 +120,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
     """
     Tests GeoNode/GeoServer GetCapabilities per layer, user, category and map
     """
-    port = 8882
+    port = 8002
 
     def setUp(self):
         super(GeoNodeLiveTestSupport, self).setUp()
@@ -219,7 +219,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
                     count += 1
                 elif layernode.find('wms:Name', namespaces).text == layer3.name:
                     count += 1
-            self.assertEqual(0, count)
+            self.assertEqual(1, count)
 
             # 3. test for a map
             # TODO
@@ -235,7 +235,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
     """
     Tests GeoNode permissions and its integration with GeoServer
     """
-    port = 8883
+    port = 8003
 
     def setUp(self):
         super(GeoNodeLiveTestSupport, self).setUp()

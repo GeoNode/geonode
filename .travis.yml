@@ -1,32 +1,39 @@
 language: python
 python:
-  - 3.7
+  - 3.8
+
+git:
+  depth: 3
 
 cache:
+  bundler: true
+  yarn: true
   pip: true
   directories:
+    - node_modules
     - $HOME/buildout-cache
 
 before_cache:
   - rm -f $HOME/.cache/pip/log/debug.log
 
-dist: bionic
+dist: focal
 
 services:
   - docker
-  - postgresql
 
 addons:
   hosts:
     - geonode
-  postgresql: 9.6
+  chrome: stable
+  firefox: "latest-esr"
+  postgresql: "12"
   apt:
     packages:
-      - postgresql-9.6-postgis-2.4
+      - postgresql-12
+      - postgresql-client-12
+      - postgresql-server-dev-12
+      - postgresql-12-postgis-3
       - nginx
-    sources:
-      - sourceline: 'ppa:ubuntugis/ppa'
-  firefox: "latest-esr"
 
 branches:
   only:
@@ -148,8 +155,7 @@ jobs:
           - TEST_RUN_INTEGRATION_MONITORING: 'False'
           - TEST_RUN_INTEGRATION_CSW: 'False'
           - TEST_RUN_INTEGRATION_BDD: 'False'
-          - MONITORING_ENABLED: 'True'
-          - USER_ANALYTICS_ENABLED: 'True'
+          - MONITORING_ENABLED: 'False'
           - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
           - CELERY_ALWAYS_EAGER: 'True'
 
@@ -194,8 +200,7 @@ jobs:
           - TEST_RUN_INTEGRATION_MONITORING: 'False'
           - TEST_RUN_INTEGRATION_CSW: 'False'
           - TEST_RUN_INTEGRATION_BDD: 'False'
-          - MONITORING_ENABLED: 'True'
-          - USER_ANALYTICS_ENABLED: 'True'
+          - MONITORING_ENABLED: 'False'
           - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
           - CELERY_ALWAYS_EAGER: 'True'
 
@@ -217,8 +222,7 @@ jobs:
           - TEST_RUN_INTEGRATION_MONITORING: 'False'
           - TEST_RUN_INTEGRATION_CSW: 'False'
           - TEST_RUN_INTEGRATION_BDD: 'False'
-          - MONITORING_ENABLED: 'True'
-          - USER_ANALYTICS_ENABLED: 'True'
+          - MONITORING_ENABLED: 'False'
           - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
           - CELERY_ALWAYS_EAGER: 'True'
           - DATABASE_URL: 'postgis://geonode:geonode@localhost:5432/upload_test'
@@ -290,13 +294,14 @@ before_install:
       export GEONODE_REPOSITORY=$(pwd);
       GECKODRIVER_VERSION="v0.24.0";
     else
-      sudo apt-get update
-      sudo /etc/init.d/postgresql stop
-      sudo /etc/init.d/postgresql start 9.6
+      sudo apt-get update;
       mkdir -p $HOME/buildout-cache/{eggs,downloads};
       scripts/misc/geoserver_server_setup.sh before_install;
       scripts/misc/qgis_server_setup.sh before_install;
       sudo apt-get autoremove sqlite3;
+      sudo sed -i 's/port = 5433/port = 5432/' /etc/postgresql/12/main/postgresql.conf;
+      sudo sed -i 's/peer/trust/' /etc/postgresql/12/main/pg_hba.conf;
+      sudo pg_ctlcluster 12 main restart;
     fi
   - python --version;
 
@@ -323,8 +328,7 @@ install:
       export PATH=$PATH:$PWD/bin;
     else
       sudo apt -qq -y update;
-      sudo apt install -y libgdal20 gdal-bin gettext libxml2 libxml2-dev libxslt1-dev zlib1g-dev libjpeg-dev libpq-dev libgdal-dev;
-      sudo apt install -y sqlite3 spatialite-bin libsqlite3-mod-spatialite;
+      sudo apt install -y build-essential gdal-bin python3.8-dev python3.8-venv virtualenvwrapper libxml2 libxml2-dev gettext libxslt1-dev libjpeg-dev libpng-dev libpq-dev libgdal-dev software-properties-common build-essential git unzip gcc zlib1g-dev libgeos-dev libproj-dev sqlite3 spatialite-bin libsqlite3-mod-spatialite libsqlite3-dev;
       sudo apt install -y openjdk-8-jre openjdk-8-jdk;
       sudo update-java-alternatives --set java-1.8.0-openjdk-amd64;
       export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::");

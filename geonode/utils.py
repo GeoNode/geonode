@@ -1785,27 +1785,31 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
         # Legend link
         logger.debug(" -- Resource Links[Legend link]...")
-        for style in instance.styles.all():
-            style_name = os.path.basename(
-                urlparse(style.sld_url).path).split('.')[0]
-            legend_url = ogc_server_settings.PUBLIC_LOCATION + \
-                'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
-                instance.alternate + '&STYLE=' + style_name + \
-                '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
+        try:
+            for style in set(list(instance.styles.all()) + [instance.default_style, ]):
+                if style:
+                    style_name = os.path.basename(
+                        urlparse(style.sld_url).path).split('.')[0]
+                    legend_url = ogc_server_settings.PUBLIC_LOCATION + \
+                        'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
+                        instance.alternate + '&STYLE=' + style_name + \
+                        '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
 
-            if Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).count() < 2:
-                Link.objects.update_or_create(
-                    resource=instance.resourcebase_ptr,
-                    name='Legend',
-                    url=legend_url,
-                    defaults=dict(
-                        extension='png',
-                        url=legend_url,
-                        mime='image/png',
-                        link_type='image',
-                    )
-                )
-        logger.debug(" -- Resource Links[Legend link]...done!")
+                    if Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).count() < 2:
+                        Link.objects.update_or_create(
+                            resource=instance.resourcebase_ptr,
+                            name='Legend',
+                            url=legend_url,
+                            defaults=dict(
+                                extension='png',
+                                url=legend_url,
+                                mime='image/png',
+                                link_type='image',
+                            )
+                        )
+            logger.debug(" -- Resource Links[Legend link]...done!")
+        except Exception as e:
+            logger.debug(f" -- Resource Links[Legend link]...error: {e}")
 
         # Thumbnail link
         logger.debug(" -- Resource Links[Thumbnail link]...")
