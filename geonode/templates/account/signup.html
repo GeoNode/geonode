@@ -47,6 +47,15 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('#id_username').focus();
+
+            $(".form-group").each(function(k,l){
+                if(l.children[0].classList.contains("required-field")){
+                let spn = document.createElement("span");
+                spn.style.color = "#F00";
+                spn.innerHTML = "(*)";
+                l.insertBefore(spn,l.children[1]);
+                }
+            })
         });
     </script>
 {% endblock %}

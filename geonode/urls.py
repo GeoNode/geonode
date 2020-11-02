@@ -248,6 +248,11 @@ urlpatterns += [  # '',
 ]
 
 
+# FAQ
+urlpatterns += [
+    url(r'^faq/', include('geonode.frequently.urls')),
+]
+
 if settings.MONITORING_ENABLED:
     urlpatterns += [url(r'^monitoring/',
                         include(('geonode.monitoring.urls', 'geonode.monitoring'),

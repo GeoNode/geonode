@@ -90,12 +90,6 @@ class Profile(AbstractUser):
         blank=True,
         null=True,
         help_text=_('physical and email address at which the organization or individual may be contacted'))
-    city = models.CharField(
-        _('City'),
-        max_length=255,
-        blank=True,
-        null=True,
-        help_text=_('city of the location'))
     area = models.CharField(
         _('Administrative Area'),
         max_length=255,
@@ -115,6 +109,12 @@ class Profile(AbstractUser):
         blank=True,
         null=True,
         help_text=_('country of the physical address'))
+    city = models.CharField(
+        _('City'),
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text=_('city of the location'))
     keywords = TaggableManager(_('keywords'), blank=True, help_text=_(
         'commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject \
             (space or comma-separated'))

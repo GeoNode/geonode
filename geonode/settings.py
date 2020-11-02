@@ -64,18 +64,18 @@ DEBUG_STATIC = ast.literal_eval(os.getenv('DEBUG_STATIC', 'False'))
 FORCE_SCRIPT_NAME = os.getenv('FORCE_SCRIPT_NAME', '')
 
 # Define email service on GeoNode
-EMAIL_ENABLE = ast.literal_eval(os.getenv('EMAIL_ENABLE', 'False'))
+EMAIL_ENABLE = ast.literal_eval(os.getenv('EMAIL_ENABLE', 'True'))
 
 if EMAIL_ENABLE:
     EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
                               default='django.core.mail.backends.smtp.EmailBackend')
-    EMAIL_HOST = os.getenv('DJANGO_EMAIL_HOST', 'localhost')
-    EMAIL_PORT = os.getenv('DJANGO_EMAIL_PORT', 25)
-    EMAIL_HOST_USER = os.getenv('DJANGO_EMAIL_HOST_USER', '')
-    EMAIL_HOST_PASSWORD = os.getenv('DJANGO_EMAIL_HOST_PASSWORD', '')
+    EMAIL_HOST = os.getenv('DJANGO_EMAIL_HOST', 'smtp.gmail.com')
+    EMAIL_PORT = os.getenv('DJANGO_EMAIL_PORT', 465)
+    EMAIL_HOST_USER = os.getenv('DJANGO_EMAIL_HOST_USER', 'srst@skaphe.com')
+    EMAIL_HOST_PASSWORD = os.getenv('DJANGO_EMAIL_HOST_PASSWORD', '***********')
     EMAIL_USE_TLS = ast.literal_eval(os.getenv('DJANGO_EMAIL_USE_TLS', 'False'))
-    EMAIL_USE_SSL = ast.literal_eval(os.getenv('DJANGO_EMAIL_USE_SSL', 'False'))
-    DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'GeoNode <no-reply@geonode.org>')
+    EMAIL_USE_SSL = ast.literal_eval(os.getenv('DJANGO_EMAIL_USE_SSL', 'True'))
+    DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Skaphe <srst@skaphe.com>')
 else:
     EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
                               default='django.core.mail.backends.console.EmailBackend')
@@ -412,6 +412,8 @@ GEONODE_INTERNAL_APPS = (
     'geonode.tasks',
     'geonode.messaging',
     'geonode.monitoring',
+    'geonode.frequently',
+
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -479,6 +481,10 @@ INSTALLED_APPS = (
 
     # GeoNode
     'geonode',
+    
+    # FAQ
+    'ckeditor',
+    # 'frequently',
 )
 
 INSTALLED_APPS += ('markdownify',)
@@ -816,11 +822,11 @@ ACTSTREAM_SETTINGS = {
     'GFK_FETCH_DEPTH': 1,
 }
 
-ACCOUNT_FORMS = {'signup': 'geonode.people.forms.CustomUserCreationForm'}
+# ACCOUNT_FORMS = {'signup': 'geonode.people.forms.CustomUserCreationForm'}
 
 # Email for users to contact admins.
 THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
-    'THEME_ACCOUNT_CONTACT_EMAIL', 'admin@example.com'
+    'THEME_ACCOUNT_CONTACT_EMAIL', 'srst@skaphe.com'
 )
 
 #
@@ -1133,6 +1139,7 @@ except ValueError:
     ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('ALLOWED_HOSTS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
+# ALLOWED_HOSTS = ['127.0.0.1','localhost','apps.skaphe.com','190.146.133.76']
 # AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
 # to only whitelisted IP addresses.
 #
@@ -1847,10 +1854,14 @@ ACCOUNT_APPROVAL_REQUIRED = ast.literal_eval(
     os.getenv('ACCOUNT_APPROVAL_REQUIRED', 'False')
 )
 ACCOUNT_ADAPTER = 'geonode.people.adapters.LocalAccountAdapter'
-ACCOUNT_AUTHENTICATION_METHOD = os.environ.get('ACCOUNT_AUTHENTICATION_METHOD', 'username_email')
+ACCOUNT_AUTHENTICATION_METHOD = os.environ.get('ACCOUNT_AUTHENTICATION_METHOD', 'email')
 ACCOUNT_CONFIRM_EMAIL_ON_GET = ast.literal_eval(os.environ.get('ACCOUNT_CONFIRM_EMAIL_ON_GET', 'True'))
 ACCOUNT_EMAIL_REQUIRED = ast.literal_eval(os.environ.get('ACCOUNT_EMAIL_REQUIRED', 'True'))
-ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION', 'none')
+ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION', 'mandatory')
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = os.environ.get('ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS', 'False')
+ACCOUNT_UNIQUE_EMAIL = os.environ.get('ACCOUNT_UNIQUE_EMAIL', 'True')
+ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = os.environ.get('ACCOUNT_EMAIL_CONFIRMATION_REQUIRED', 'True')
+ACCOUNT_USERNAME_REQUIRED = os.environ.get('ACCOUNT_USERNAME_REQUIRED', 'False')
 
 SOCIALACCOUNT_ADAPTER = 'geonode.people.adapters.SocialAccountAdapter'
 SOCIALACCOUNT_AUTO_SIGNUP = ast.literal_eval(os.environ.get('SOCIALACCOUNT_AUTO_SIGNUP', 'True'))
@@ -1991,3 +2002,6 @@ GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat
 #This controls if tastypie search on resourches is performed only with titles
 SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'True'))
 # -- END Settings for MONITORING plugin
+
+FREQUENTLY_READY_FOR_V1 = True
+FREQUENTLY_ALLOW_ANONYMOUS = True
