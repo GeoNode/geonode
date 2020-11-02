@@ -1,0 +1,10 @@
+<h2>{{ category.name }}</h2>
+{% for entry in category.get_entries %}
+  {% if entry == object %}
+    <a name="answer"></a>
+  {% endif %}
+  {% include "frequently/partials/entry.html" %}
+  {% if entry == object %}
+    {% include "frequently/partials/answer.html" %}
+  {% endif %}
+{% endfor %}

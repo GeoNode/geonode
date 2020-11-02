@@ -1,0 +1,126 @@
+[
+    {
+        "pk": 1,
+        "model": "auth.user",
+        "fields": {
+            "username": "admin",
+            "first_name": "",
+            "last_name": "",
+            "is_active": true,
+            "is_superuser": true,
+            "is_staff": true,
+            "last_login": "2012-10-04T13:46:24.349Z",
+            "groups": [],
+            "user_permissions": [],
+            "password": "md5$lYSPo6olvDci$940e9654a775af45212e9b02dc71c4d9",
+            "email": "info@example.com",
+            "date_joined": "2012-10-03T22:15:29Z"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "frequently.entrycategory",
+        "fields": {
+            "name": "Life questions",
+            "slug": "life-questions"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "frequently.entrycategory",
+        "fields": {
+            "name": "Helpers",
+            "slug": "helpers"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "frequently.entrycategory",
+        "fields": {
+            "name": "Wild guide",
+            "slug": "wild-guide"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "frequently.entry",
+        "fields": {
+            "owner": ["admin"],
+            "question": "Can you help me to live in harmony?",
+            "slug": "can-you-help-me-to-live-in-harmony",
+            "answer": "The bedding was hardly able to cover it and seemed ready to slide off any moment. His many legs, pitifully thin compared with the size of the rest of him, waved about helplessly as he looked. 'What's happened to me?' he thought. It wasn't a dream.",
+            "creation_date": "2012-10-04T14:26:21Z",
+            "last_view_date": "2012-10-04T14:26:21Z",
+            "upvotes": 2,
+            "amount_of_views": 500,
+            "fixed_position": 2,
+            "category": [1],
+            "published": true
+        }
+    },
+    {
+        "pk": 2,
+        "model": "frequently.entry",
+        "fields": {
+            "owner": ["admin"],
+            "question": "What's the beer called in 2133?",
+            "slug": "whats-the-beer-called-in-2133",
+            "answer": "His room, a proper human room although a little too small, lay peacefully between its four familiar walls. A collection of textile samples lay spread out on the table - Samsa was a travelling salesman - and above it there hung a picture that he had recently cut out of an illustrated magazine and housed in a nice, gilded frame. It showed a lady fitted out with a fur hat and fur boa who sat upright, raising a heavy fur muff that covered the whole of her lower arm towards the viewer. Gregor then turned to look out the window at the dull weather.",
+            "creation_date": "2012-10-04T14:26:21Z",
+            "last_view_date": "2012-10-04T14:26:21Z",
+            "downvotes": 4,
+            "amount_of_views": 200,
+            "category": [1],
+            "published": true
+        }
+    },
+    {
+        "pk": 3,
+        "model": "frequently.entry",
+        "fields": {
+            "owner": ["admin"],
+            "question": "How can I stop using your awesome app?",
+            "slug": "how-can-i-stop-using-your-awesome-app",
+            "answer": "The quick, brown fox jumps over a lazy dog. DJs flock by when MTV ax quiz prog. Junk MTV quiz graced by fox whelps. Bawds jog, flick quartz, vex nymphs. Waltz, bad nymph, for quick jigs vex! Fox nymphs grab quick-jived waltz. Brick quiz whangs jumpy veldt fox. Bright vixens jump; dozy fowl quack.",
+            "creation_date": "2012-10-04T14:26:21Z",
+            "last_view_date": "2012-10-04T14:26:21Z",
+            "upvotes": 3,
+            "amount_of_views": 100,
+            "fixed_position": 1,
+            "category": [1],
+            "published": true
+        }
+    },
+    {
+        "pk": 4,
+        "model": "frequently.entry",
+        "fields": {
+            "owner": ["admin"],
+            "question": "How can balls be quarter-shaped?",
+            "slug": "how-can-balls-be-quarter-shaped",
+            "answer": "Five quacking zephyrs jolt my wax bed. Flummoxed by job, kvetching W. zaps Iraq. Cozy sphinx waves quart jug of bad milk. A very bad quack might jinx zippy fowls. Few quips galvanized the mock jury box. Quick brown dogs jump over the lazy fox. The jay, pig, fox, zebra, and my wolves quack! Blowzy red vixens fight for a quick jump. Joaquin Phoenix was gazed by MTV for luck. A wizard's job is to vex chumps quickly in fog. Watch 'Jeopardy!', Alex Trebek's fun TV quiz game. Woven silk pyjamas exchanged for blue quartz.",
+            "creation_date": "2012-10-04T14:26:21Z",
+            "last_view_date": "2012-10-04T14:26:21Z",
+            "upvotes": 7,
+            "amount_of_views": 200,
+            "category": [2],
+            "published": true
+        }
+    },
+    {
+        "pk": 5,
+        "model": "frequently.entry",
+        "fields": {
+            "owner": ["admin"],
+            "question": "How to become a ranger?",
+            "slug": "how-to-become-a-ranger",
+            "answer": "One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches into stiff sections.",
+            "creation_date": "2012-10-04T14:26:21Z",
+            "last_view_date": "2012-10-04T14:26:21Z",
+            "upvotes": 2,
+            "amount_of_views": 50,
+            "category": [2],
+            "published": true
+        }
+    }
+]

@@ -1,0 +1,11 @@
+{% load i18n %}
+{% trans "Hello" %},
+{% trans "please take a look at the following recently submitted question:" %}
+
+{% trans "eMail" %}: {{ submitted_by }}
+{% trans "Question" %}: {{ question }}
+
+{% trans "Please check and publish/remove the question ASAP. Be aware to send a notification to the sender of the question." %}
+
+{% trans "Regards!" %}
+--

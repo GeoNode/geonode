@@ -1,0 +1,6 @@
+{% load i18n %}
+<p data-frequently-entry="{{ entry.pk }}">
+  <strong>
+    <a onclick="openAnswer('{{ entry.pk }}', '{% url "frequently_list" %}'); return false;" href="{% url "frequently_entry_detail" slug=entry.slug %}#answer">{{ entry.question }}</a>
+  </strong>
+</p>
