@@ -451,7 +451,7 @@ if EMAIL_ENABLE:
     EMAIL_HOST_PASSWORD = ''
     EMAIL_USE_TLS = False
     EMAIL_USE_SSL = False
-    DEFAULT_FROM_EMAIL = 'Example.com <no-reply@localhost>'
+    DEFAULT_FROM_EMAIL = 'geonode.com <no-reply@localhost>'
 
 # Documents Thumbnails
 UNOCONV_ENABLE = True

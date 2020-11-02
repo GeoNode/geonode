@@ -137,12 +137,11 @@ class CustomUserCreationForm(SignupForm):
                                    attrs={'placeholder':
                                           _('Organization')}))
     
+    country = forms.ChoiceField(label=_('Country'), choices=COUNTRIES)
     city = forms.CharField(label=_("City"),
                                widget=forms.TextInput(
                                    attrs={'placeholder':
-                                          _('City')}))
-    
-    country = forms.ChoiceField(label=_('Country'), choices=COUNTRIES)
+                                          _('City')}))    
 
     agree_conditions = forms.BooleanField(label=_("AgreeConditions"))
 
