@@ -47,19 +47,26 @@ class RecentActivity(ListView):
                     public=True, action_object_content_type__model=action)[:1000]
             _filtered_actions = []
             for _action in _actions:
+                if _action.target_object_id:
+                    action_object_filter = {
+                        'id': _action.target_object_id
+                    }
+                elif _action.action_object_object_id:
+                    action_object_filter = {
+                        'id': _action.action_object_object_id
+                    }
                 try:
                     resolve_object(
                         request,
                         ResourceBase,
-                        {
-                            'id': _action.action_object_object_id
-                        },
+                        action_object_filter,
                         'base.view_resourcebase')
                     _filtered_actions.append(_action.id)
                 except ResourceBase.DoesNotExist:
                     _filtered_actions.append(_action.id)
                 except (PermissionDenied, Exception) as e:
                     logger.debug(e)
+
             return _filtered_actions
 
         context['action_list'] = Action.objects.filter(
