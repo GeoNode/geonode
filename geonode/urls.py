@@ -168,7 +168,6 @@ urlpatterns += [
 ]
 
 urlpatterns += i18n_patterns(
-    url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', admin.site.urls, name="admin"),
 )
 

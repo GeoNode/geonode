@@ -440,7 +440,7 @@ INSTALLED_APPS = (
     'modeltranslation',
     'dal',
     'dal_select2',
-    'grappelli',
+
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -479,6 +479,7 @@ INSTALLED_APPS = (
     'guardian',
     'oauth2_provider',
     'corsheaders',
+
     'invitations',
 
     # login with external providers
@@ -506,8 +507,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }
-
-GRAPPELLI_ADMIN_TITLE = os.getenv('GRAPPELLI_ADMIN_TITLE', 'GeoNode')
 
 # Documents application
 try:
