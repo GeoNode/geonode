@@ -258,11 +258,6 @@ urlpatterns += [  # '',
 
 # FAQ
 urlpatterns += [
-    url(r'^faq/', include('frequently.urls')),
-]
-
-# FAQ
-urlpatterns += [
     url(r'^faq/', include('geonode.frequently.urls')),
 ]
 
