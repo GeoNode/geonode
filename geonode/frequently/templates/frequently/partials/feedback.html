@@ -1,0 +1,13 @@
+{% load i18n %}
+<form data-class="frequently-form" data-id="rating-id{{ entry.pk }}" method="post" action="{% url "frequently_list" %}">
+  {% csrf_token %}
+  {% if request.user.is_authenticated %}
+    <input type="hidden" name="user_id" value="{{ request.user.id }}" />
+  {% endif %}
+  {% if feedback_entry == entry.pk %}
+    {% include "frequently/partials/feedback_form.html" %}
+  {% else %}
+    <input type="submit" name="up{{ entry.pk }}" value="{% trans "Appreciate" %}" />
+    <input type="submit" name="down{{ entry.pk }}" value="{% trans "Depreciate" %}" />
+  {% endif %}
+</form>
