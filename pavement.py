@@ -633,7 +633,7 @@ def start_django(options):
             foreground
         ))
     else:
-        sh("{} celery -A geonode.celery_app:app worker -l DEBUG {} {} {}".format(
+        sh("{} celery -A geonode.celery_app:app worker -l DEBUG {} {}".format(
             settings,
             "-s django_celery_beat.schedulers:DatabaseScheduler",
             foreground
@@ -899,7 +899,9 @@ def test_integration(options):
     try:
         call_task('setup', options={'settings': settings, 'force_exec': True})
 
+        _integration_server_startup = True
         if name and name in ('geonode.tests.csw', 'geonode.tests.integration', 'geonode.geoserver.tests.integration'):
+            _integration_server_startup = False
             if not settings:
                 settings = 'geonode.local_settings' if _backend == 'geonode.qgis_server' else 'geonode.settings'
                 settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
@@ -909,7 +911,7 @@ def test_integration(options):
             call_task('start', options={'settings': settings})
             if integration_server_tests:
                 call_task('setup_data', options={'settings': settings})
-        elif not integration_csw_tests and _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
+        elif _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
             sh("cp geonode/upload/tests/test_settings.py geonode/")
             settings = 'geonode.test_settings'
             sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
@@ -923,16 +925,17 @@ def test_integration(options):
             sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
                "loaddata geonode/base/fixtures/initial_data.json".format(settings))
 
-            call_task('start_geoserver')
+            if _integration_server_startup:
+                call_task('start_geoserver')
 
-            bind = options.get('bind', '0.0.0.0:8000')
-            foreground = '' if options.get('foreground', False) else '&'
-            sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runmessaging %s' %
-               (settings, foreground))
-            sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runserver %s %s' %
-               (settings, bind, foreground))
-            sh('sleep 30')
-            settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
+                bind = options.get('bind', '0.0.0.0:8000')
+                foreground = '' if options.get('foreground', False) else '&'
+                sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runmessaging %s' %
+                (settings, foreground))
+                sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runserver %s %s' %
+                (settings, bind, foreground))
+                sh('sleep 30')
+                settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
 
         live_server_option = ''
         info("Running the tests now...")

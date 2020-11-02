@@ -19,7 +19,6 @@
 #########################################################################
 import os
 import re
-import six
 import sys
 import time
 import uuid
@@ -348,7 +347,7 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
         if sld:
             if isfile(sld):
                 sld = open(sld, "rb").read()
-            elif isinstance(sld, six.string_types):
+            elif isinstance(sld, string_types):
                 sld = sld.strip('b\'\n')
                 sld = re.sub(r'(\\r)|(\\n)', '', sld).encode("UTF-8")
             etree.XML(sld)
@@ -1096,6 +1095,7 @@ def set_styles(layer, gs_catalog):
             gs_layer.default_style = style
             gs_catalog.save(gs_layer)
             layer.default_style = save_style(style, layer)
+            style_set.append(layer.default_style)
         try:
             if gs_layer.styles:
                 alt_styles = gs_layer.styles
@@ -1124,32 +1124,36 @@ def set_styles(layer, gs_catalog):
 
     # Legend links
     logger.debug(" -- Resource Links[Legend link]...")
-    from geonode.base.models import Link
-    layer_legends = Link.objects.filter(resource=layer.resourcebase_ptr, name='Legend')
-    for style in set(list(layer.styles.all()) + [layer.default_style, ]):
-        style_name = os.path.basename(
-                urlparse(style.sld_url).path).split('.')[0]
-        legend_url = ogc_server_settings.PUBLIC_LOCATION + \
-            'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
-            layer.alternate + '&STYLE=' + style_name + \
-            '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
+    try:
+        from geonode.base.models import Link
+        layer_legends = Link.objects.filter(resource=layer.resourcebase_ptr, name='Legend')
+        for style in set(list(layer.styles.all()) + [layer.default_style, ]):
+            if style:
+                style_name = os.path.basename(
+                    urlparse(style.sld_url).path).split('.')[0]
+                legend_url = ogc_server_settings.PUBLIC_LOCATION + \
+                    'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
+                    layer.alternate + '&STYLE=' + style_name + \
+                    '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
 
-        if layer_legends.filter(url=legend_url).count() == 0:
-            Link.objects.update_or_create(
-                resource=layer.resourcebase_ptr,
-                name='Legend',
-                url=legend_url,
-                defaults=dict(
-                    extension='png',
+            if layer_legends.filter(url=legend_url).count() == 0:
+                Link.objects.update_or_create(
+                    resource=layer.resourcebase_ptr,
+                    name='Legend',
                     url=legend_url,
-                    mime='image/png',
-                    link_type='image',
+                    defaults=dict(
+                        extension='png',
+                        url=legend_url,
+                        mime='image/png',
+                        link_type='image',
+                    )
                 )
-            )
-    logger.debug(" -- Resource Links[Legend link]...done!")
+        logger.debug(" -- Resource Links[Legend link]...done!")
+    except Exception as e:
+        logger.debug(f" -- Resource Links[Legend link]...error: {e}")
 
     try:
-        set_geowebcache_invalidate_cache(layer.alternate or layer.typename)
+        set_geowebcache_invalidate_cache(layer.alternate or layer.typename, cat=gs_catalog)
     except Exception:
         tb = traceback.format_exc()
         logger.debug(tb)

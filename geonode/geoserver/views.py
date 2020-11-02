@@ -239,7 +239,6 @@ def layer_style_manage(request, layername):
                     tb = traceback.format_exc()
                     logger.debug(tb)
                 default_style = (def_sld_name, def_sld_title)
-                layer_styles.append(default_style)
 
             return render(
                 request,

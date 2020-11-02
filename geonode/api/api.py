@@ -200,18 +200,17 @@ class ThesaurusKeywordResource(TypeFilteredResource):
 
     def build_filters(self, filters={}, ignore_bad_filters=False):
         """adds filtering by current language"""
-
-        id = filters.pop('id', None)
-
-        orm_filters = super(ThesaurusKeywordResource, self).build_filters(filters)
+        _filters = filters.copy()
+        id = _filters.pop('id', None)
+        orm_filters = super(ThesaurusKeywordResource, self).build_filters(_filters)
 
         if id is not None:
             orm_filters['keyword__id'] = id
 
-        orm_filters['lang'] = filters['lang'] if 'lang' in filters else get_language()
+        orm_filters['lang'] = _filters['lang'] if 'lang' in _filters else get_language()
 
-        if 'thesaurus' in filters:
-            orm_filters['keyword__thesaurus__identifier'] = filters['thesaurus']
+        if 'thesaurus' in _filters:
+            orm_filters['keyword__thesaurus__identifier'] = _filters['thesaurus']
 
         return orm_filters
 
