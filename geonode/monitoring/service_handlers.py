@@ -31,6 +31,7 @@ log = logging.getLogger(__name__)
 
 
 class BaseServiceExpose(object):
+
     NAME = None
 
     def __init__(self, *args, **kwargs):
@@ -97,7 +98,6 @@ class BaseServiceHandler(object):
         self.now = datetime.utcnow().replace(tzinfo=utc)
         self.check_since = service.last_check.astimezone(utc) if service.last_check else self.now
         self.force_check = force_check
-        self.setup()
 
     def setup(self):
         pass
@@ -147,6 +147,9 @@ class BaseServiceHandler(object):
 
 class GeoNodeService(BaseServiceHandler):
 
+    def __init__(self, service, force_check=False):
+        BaseServiceHandler.__init__(self, service, force_check)
+
     def _get_collected_set(self, since=None, until=None):
         filter_kwargs = {'service': self.service}
         if since:
@@ -161,6 +164,10 @@ class GeoNodeService(BaseServiceHandler):
 
 
 class GeoServerService(BaseServiceHandler):
+
+    def __init__(self, service, force_check=False):
+        BaseServiceHandler.__init__(self, service, force_check)
+        self.setup()
 
     def setup(self):
         if not self.service.url:
@@ -184,6 +191,9 @@ class HostGeoServerService(BaseServiceHandler):
 
     PATH = '/rest/about/system-status.json'
 
+    def __init__(self, service, force_check=False):
+        BaseServiceHandler.__init__(self, service, force_check)
+
     def _collect(self, *args, **kwargs):
         base_url = self.service.url
         if not base_url:
@@ -200,6 +210,9 @@ class HostGeoServerService(BaseServiceHandler):
 
 
 class HostGeoNodeService(BaseServiceHandler):
+
+    def __init__(self, service, force_check=False):
+        BaseServiceHandler.__init__(self, service, force_check)
 
     def _collect(self, since, until, *args, **kwargs):
         base_url = self.service.url

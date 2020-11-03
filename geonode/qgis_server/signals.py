@@ -210,7 +210,6 @@ def qgis_server_post_save(instance, sender, **kwargs):
         }
     except (TypeError, AttributeError):
         new_values = {}
-        pass
 
     # Get the path of the metadata file
     basename, _ = os.path.splitext(qgis_layer.base_layer_path)

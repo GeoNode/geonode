@@ -718,7 +718,7 @@ def import_imagemosaic_granules(
     # We use the GeoServer REST APIs in order to create the ImageMosaic
     #  and later add the granule through the GeoServer Importer.
     head = head.replace('{mosaic_time_value}', '')
-    head = re.sub('^[^a-zA-z]*|[^a-zA-Z]*$', '', head)
+    head = re.sub('^[^a-zA-Z]*|[^a-zA-Z]*$', '', head)
 
     # 1. Create a zip file containing the ImageMosaic .properties files
     # 1a. Let's check and prepare the DB based DataStore
@@ -779,6 +779,10 @@ def import_imagemosaic_granules(
         "db_conn_validate": db['CONN_VALIDATE'] if 'CONN_VALIDATE' in db else "true",
     }
 
+    indexer_template = """AbsolutePath={abs_path_flag}
+Schema= the_geom:Polygon,location:String,{time_attr}
+CheckAuxiliaryMetadata={aux_metadata_flag}
+SuggestedSPI=it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi"""
     if mosaic_time_regex:
         indexer_template = """AbsolutePath={abs_path_flag}
 TimeAttribute={time_attr}
@@ -792,11 +796,6 @@ SuggestedSPI=it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi"""
         if not os.path.exists(dirname + '/timeregex.properties'):
             with open(dirname + '/timeregex.properties', 'w') as timeregex_prop_file:
                 timeregex_prop_file.write(timeregex_template.format(**context))
-    else:
-        indexer_template = """AbsolutePath={abs_path_flag}
-Schema= the_geom:Polygon,location:String,{time_attr}
-CheckAuxiliaryMetadata={aux_metadata_flag}
-SuggestedSPI=it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi"""
 
     datastore_template = r"""SPI=org.geotools.data.postgis.PostgisNGDataStoreFactory
 host={db_host}

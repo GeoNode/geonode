@@ -267,14 +267,16 @@ class CommonModelApi(ModelResource):
     def filter_h_keywords(self, queryset, keywords):
         filtered = queryset
         treeqs = HierarchicalKeyword.objects.none()
-        for keyword in keywords:
-            try:
-                kws = HierarchicalKeyword.objects.filter(Q(name__iexact=keyword) | Q(slug__iexact=keyword))
-                for kw in kws:
-                    treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
-            except ObjectDoesNotExist:
-                # Ignore keywords not actually used?
-                pass
+        if keywords and len(keywords) > 0:
+            for keyword in keywords:
+                try:
+                    kws = HierarchicalKeyword.objects.filter(
+                        Q(name__iexact=keyword) | Q(slug__iexact=keyword))
+                    for kw in kws:
+                        treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
+                except ObjectDoesNotExist:
+                    # Ignore keywords not actually used?
+                    pass
 
         filtered = queryset.filter(Q(keywords__in=treeqs))
         return filtered
@@ -506,7 +508,7 @@ class CommonModelApi(ModelResource):
             try:
                 page = paginator.page(
                     int(request.GET.get('offset') or 0) /
-                    int(request.GET.get('limit'), 0) + 1)
+                    int(request.GET.get('limit') or 0 + 1))
             except InvalidPage:
                 raise Http404("Sorry, no results on that page.")
 
@@ -971,7 +973,7 @@ class MapResource(CommonModelApi):
             map_layers = obj.layers
             formatted_layers = []
             map_layer_fields = [
-                'id'
+                'id',
                 'stack_order',
                 'format',
                 'name',

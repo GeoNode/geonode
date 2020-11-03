@@ -384,7 +384,6 @@ class CollectorAPI(object):
     def set_metric_values(self, metric_name, column_name,
                           requests, service, **metric_values):
         metric = Metric.get_for(metric_name, service=service)
-        q = requests
 
         def _key(v):
             return v['value']
@@ -398,7 +397,6 @@ class CollectorAPI(object):
             row['samples'] = requests.count()
             row['label'] = Metric.TYPE_RATE
             q = [row]
-
         elif metric.is_count:
             q = []
             values = requests.distinct(
@@ -413,7 +411,6 @@ class CollectorAPI(object):
                 q.append(row)
             q.sort(key=_key)
             q.reverse()
-
         elif metric.is_value:
             q = []
             is_user_metric = column_name == "user_identifier"
@@ -437,14 +434,12 @@ class CollectorAPI(object):
                     q.append(row)
             q.sort(key=_key)
             q.reverse()
-
         elif metric.is_value_numeric:
             q = []
             row = requests.aggregate(value=models.Max(column_name),
                                      samples=models.Count(column_name))
             row['label'] = Metric.TYPE_VALUE_NUMERIC
             q.append(row)
-
         else:
             raise ValueError("Unsupported metric type: {}".format(metric.type))
         rows = q[:100]
@@ -793,7 +788,7 @@ class CollectorAPI(object):
                                  'grouper': [],
                                  },
                         # number of labels for each user
-                        'user_on_label': {'select_only': ['ml.user as user, count(distinct(ml.name)) as val, '
+                        'user_on_label': {'select_only': ['ml.user as user, count(distinct(ml.name)) as val, ',
                                                           'count(1) as metric_count',
                                                           'sum(samples_count) as samples_count',
                                                           'sum(mv.value_num), min(mv.value_num)',

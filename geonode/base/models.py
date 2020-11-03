@@ -1190,7 +1190,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         self.center_y = center_y
         self.zoom = zoom
 
-        deg_len_equator = 40075160 / 360
+        deg_len_equator = 40075160.0 / 360.0
 
         # covert center in lat lon
         def get_lon_lat():
@@ -1215,8 +1215,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         # normal degree length on the y axis assumin that it does not change
 
         # Assuming a map of 1000 px of width and 700 px of height
-        distance_x_degrees = distance_per_pixel * 500 / deg_len()
-        distance_y_degrees = distance_per_pixel * 350 / deg_len_equator
+        distance_x_degrees = distance_per_pixel * 500.0 / deg_len()
+        distance_y_degrees = distance_per_pixel * 350.0 / deg_len_equator
 
         bbox_x0 = lon - distance_x_degrees
         bbox_x1 = lon + distance_x_degrees
@@ -1839,22 +1839,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
         instance.set_missing_info()
 
     try:
-        if instance.regions and instance.regions.all():
-            """
-            try:
-                queryset = instance.regions.all().order_by('name')
-                for region in queryset:
-                    print ("%s : %s" % (region.name, region.geographic_bounding_box))
-            except Exception:
-                tb = traceback.format_exc()
-            else:
-                tb = None
-            finally:
-                if tb:
-                    logger.debug(tb)
-            """
-            pass
-        else:
+        if not instance.regions or instance.regions.count() == 0:
             srid1, wkt1 = instance.geographic_bounding_box.split(";")
             srid1 = re.findall(r'\d+', srid1)
 
