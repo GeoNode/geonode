@@ -630,9 +630,7 @@ def final_step(upload_session, user, charset="UTF-8"):
                 raw=True,
                 workspace=settings.DEFAULT_WORKSPACE)
             cat.reset()
-        except geoserver.catalog.ConflictingDataError as e:
-            msg = 'There was already a style named %s in GeoServer, try using another name: "%s"' % (
-                name, str(e))
+        except geoserver.catalog.ConflictingDataError:
             try:
                 cat.create_style(
                     name + '_layer',

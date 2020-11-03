@@ -275,7 +275,6 @@ def cleanup_temp():
 def copy_keys():
     sudo('rm -f ~/.ssh/*%s.pem' % KEY_BASE)
     put(('%s*%s*' % (KEY_PATH, KEY_BASE)), '/home/ubuntu/.ssh/', mode=0o400)
-    pass
 
 
 def install_ec2_tools():

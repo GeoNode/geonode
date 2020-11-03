@@ -156,7 +156,6 @@ class CheckTypeForm(_ValidFromToLastForm):
 
 class MetricsFilters(CheckTypeForm):
     GROUP_BY_RESOURCE = 'resource'
-    GROUP_BY_CHOICES = ((GROUP_BY_RESOURCE, "By resource",),)
     GROUP_BY_RESOURCE_ON_LABEL = 'resource_on_label'
     GROUP_BY_RESOURCE_ON_USER = 'resource_on_user'
     GROUP_BY_COUNT_ON_RESOURCE = 'count_on_resource'
@@ -603,7 +602,6 @@ class UserNotificationConfigView(View):
 
     def get(self, request, *args, **kwargs):
         out = {'success': False, 'status': 'error', 'data': [], 'errors': {}}
-        status = 500
         fields = ('field_name',
                   'steps',
                   'current_value',
@@ -628,7 +626,6 @@ class UserNotificationConfigView(View):
 
     def post(self, request, *args, **kwargs):
         out = {'success': False, 'status': 'error', 'data': [], 'errors': {}}
-        status = 500
         if auth.get_user(request).is_authenticated:
             obj = self.get_object()
             try:

@@ -321,10 +321,7 @@ def download(request, resourceid, sender=Layer):
                     sld_file = open(sld_file_path, "w")
                     sld_file.write(s.sld_body.strip())
                     sld_file.close()
-
                     try:
-                        sld_file = open(sld_file_path, "r")
-
                         # Collecting headers and cookies
                         headers, access_token = get_headers(request, urlsplit(s.sld_url), s.sld_url)
 
