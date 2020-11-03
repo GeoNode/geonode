@@ -34,11 +34,13 @@ from guardian.shortcuts import (
 
 from geonode.groups.models import GroupProfile
 
-from .utils import (get_users_with_perms,
-                    set_owner_permissions,
-                    remove_object_permissions,
-                    purge_geofence_layer_rules,
-                    sync_geofence_with_guardian)
+from .utils import (
+    get_users_with_perms,
+    set_owner_permissions,
+    remove_object_permissions,
+    purge_geofence_layer_rules,
+    sync_geofence_with_guardian
+)
 
 logger = logging.getLogger("geonode.security.models")
 

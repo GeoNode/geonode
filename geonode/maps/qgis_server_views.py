@@ -417,7 +417,7 @@ class MapUpdateView(UpdateView):
 
             try:
                 # Call the base implementation first to get a context
-                context = super(UpdateView, self).get_context_data(**kwargs)
+                context = super(MapUpdateView, self).get_context_data(**kwargs)
                 map_obj.update_from_viewer(body, context=context)
             except ValueError as e:
                 return self.render_to_response(str(e), status=400)

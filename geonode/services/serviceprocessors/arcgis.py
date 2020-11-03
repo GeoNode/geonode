@@ -65,6 +65,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
     service_type = enumerations.REST_MAP
 
     def __init__(self, url):
+        base.ServiceHandlerBase.__init__(self, url)
         self.proxy_base = None
         self.url = url
         self.parsed_service = ArcMapService(self.url)
@@ -315,6 +316,7 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
     service_type = enumerations.REST_IMG
 
     def __init__(self, url):
+        ArcMapServiceHandler.__init__(self, url)
         self.proxy_base = None
         self.url = url
         self.parsed_service = ArcImageService(self.url)

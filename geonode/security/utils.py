@@ -27,7 +27,6 @@ import json
 import logging
 import traceback
 import requests
-from . import models
 
 from six import string_types
 from requests.auth import HTTPBasicAuth
@@ -128,9 +127,10 @@ def get_users_with_perms(obj):
     """
     Override of the Guardian get_users_with_perms
     """
+    from .models import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
-    PERMISSIONS_TO_FETCH = models.VIEW_PERMISSIONS + models.ADMIN_PERMISSIONS + models.LAYER_ADMIN_PERMISSIONS
+    PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
 
     for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
         permissions[perm.id] = perm.codename
@@ -449,30 +449,32 @@ def delete_layer_cache(layer_name):
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def set_geowebcache_invalidate_cache(layer_alternate):
+def set_geowebcache_invalidate_cache(layer_alternate, cat=None):
     """invalidate GeoWebCache Cache Rules"""
-    try:
-        url = settings.OGC_SERVER['default']['LOCATION']
-        user = settings.OGC_SERVER['default']['USER']
-        passwd = settings.OGC_SERVER['default']['PASSWORD']
-        # Check first that the rules does not exist already
-        """
-        curl -v -u admin:geoserver \
-            -H "Content-type: text/xml" \
-            -d "<truncateLayer><layerName>{layer_alternate}</layerName></truncateLayer>" \
-            http://localhost:8080/geoserver/gwc/rest/masstruncate
-        """
-        headers = {'Content-type': 'text/xml'}
-        payload = "<truncateLayer><layerName>%s</layerName></truncateLayer>" % layer_alternate
-        r = requests.post(url + 'gwc/rest/masstruncate',
-                          headers=headers,
-                          data=payload,
-                          auth=HTTPBasicAuth(user, passwd))
-        if (r.status_code < 200 or r.status_code > 201):
-            logger.debug("Could not Truncate GWC Cache for Layer '%s'." % layer_alternate)
-    except Exception:
-        tb = traceback.format_exc()
-        logger.debug(tb)
+    if layer_alternate:
+        try:
+            if cat is None or (cat and cat.get_layer(layer_alternate)):
+                url = settings.OGC_SERVER['default']['LOCATION']
+                user = settings.OGC_SERVER['default']['USER']
+                passwd = settings.OGC_SERVER['default']['PASSWORD']
+                """
+                curl -v -u admin:geoserver \
+                -H "Content-type: text/xml" \
+                -d "<truncateLayer><layerName>{layer_alternate}</layerName></truncateLayer>" \
+                http://localhost:8080/geoserver/gwc/rest/masstruncate
+                """
+                headers = {'Content-type': 'text/xml'}
+                payload = "<truncateLayer><layerName>%s</layerName></truncateLayer>" % layer_alternate
+                r = requests.post(
+                    url + 'gwc/rest/masstruncate',
+                    headers=headers,
+                    data=payload,
+                    auth=HTTPBasicAuth(user, passwd))
+                if (r.status_code < 200 or r.status_code > 201):
+                    logger.debug("Could not Truncate GWC Cache for Layer '%s'." % layer_alternate)
+        except Exception:
+            tb = traceback.format_exc()
+            logger.debug(tb)
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -623,9 +625,10 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
 
 def set_owner_permissions(resource, members=None):
     """assign all admin permissions to the owner"""
+    from .models import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
     if resource.polymorphic_ctype:
         # Owner & Manager Admin Perms
-        admin_perms = models.VIEW_PERMISSIONS + models.ADMIN_PERMISSIONS
+        admin_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
         for perm in admin_perms:
             if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
                 assign_perm(perm, resource.owner, resource.get_self_resource())
@@ -637,7 +640,7 @@ def set_owner_permissions(resource, members=None):
 
         # Set the GeoFence Owner Rule
         if resource.polymorphic_ctype.name == 'layer':
-            for perm in models.LAYER_ADMIN_PERMISSIONS:
+            for perm in LAYER_ADMIN_PERMISSIONS:
                 assign_perm(perm, resource.owner, resource.layer)
                 if members:
                     for user in members:

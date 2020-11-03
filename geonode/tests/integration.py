@@ -24,7 +24,6 @@ import timeout_decorator
 
 import os
 import json
-import math
 import time
 import gisdata
 import logging
@@ -154,11 +153,7 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             overwrite=True,
         )
 
-        # Test that layer owner can wipe GWC Cache
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            from geonode.security.utils import set_geowebcache_invalidate_cache
-            set_geowebcache_invalidate_cache(saved_layer.alternate)
-
             url = settings.OGC_SERVER['default']['LOCATION']
             user = settings.OGC_SERVER['default']['USER']
             passwd = settings.OGC_SERVER['default']['PASSWORD']
@@ -277,51 +272,29 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             bbox_y1 = Decimal('-5.303545551999900')
             srid = 'EPSG:4326'
 
-            self.assertTrue(math.isclose(bbox_x0, uploaded.bbox_x0))
-            self.assertTrue(math.isclose(bbox_x1, uploaded.bbox_x1))
-            self.assertTrue(math.isclose(bbox_y0, uploaded.bbox_y0))
-            self.assertTrue(math.isclose(bbox_y1, uploaded.bbox_y1))
+            self.assertAlmostEqual(bbox_x0, Decimal(uploaded.bbox_x0), places=3)
+            self.assertAlmostEqual(bbox_x1, Decimal(uploaded.bbox_x1), places=3)
+            self.assertAlmostEqual(bbox_y0, Decimal(uploaded.bbox_y0), places=3)
+            self.assertAlmostEqual(bbox_y1, Decimal(uploaded.bbox_y1), places=3)
             self.assertTrue(uploaded.srid in srid)
 
             # bbox format: [xmin,xmax,ymin,ymax]
-            expected_bbox = [
-                Decimal('96.956000000000000'),
-                Decimal('97.109705320000000'),
-                Decimal('-5.518732999999900'),
-                Decimal('-5.303545551999900'),
-                'EPSG:4326'
-            ]
-            self.assertTrue(math.isclose(expected_bbox[0], uploaded.bbox[0]))
-            self.assertTrue(math.isclose(expected_bbox[1], uploaded.bbox[1]))
-            self.assertTrue(math.isclose(expected_bbox[2], uploaded.bbox[2]))
-            self.assertTrue(math.isclose(expected_bbox[3], uploaded.bbox[3]))
+            uploaded_bbox_x0, uploaded_bbox_x1, \
+                uploaded_bbox_y0, uploaded_bbox_y1 = \
+                map(Decimal, uploaded.bbox[:4])
+            self.assertAlmostEqual(bbox_x0, uploaded_bbox_x0, places=3)
+            self.assertAlmostEqual(bbox_x1, uploaded_bbox_x1, places=3)
+            self.assertAlmostEqual(bbox_y0, uploaded_bbox_y0, places=3)
+            self.assertAlmostEqual(bbox_y1, uploaded_bbox_y1, places=3)
 
             # bbox format: [xmin,ymin,xmax,ymax]
-            expected_bbox_string = '96.956000000000000,-5.518732999999900,97.109705320000000,-5.303545551999900'
-            self.assertTrue(
-                math.isclose(
-                    Decimal(expected_bbox_string.split(',')[0]),
-                    Decimal(uploaded.bbox_string.split(',')[0])
-                )
-            )
-            self.assertTrue(
-                math.isclose(
-                    Decimal(expected_bbox_string.split(',')[1]),
-                    Decimal(uploaded.bbox_string.split(',')[1])
-                )
-            )
-            self.assertTrue(
-                math.isclose(
-                    Decimal(expected_bbox_string.split(',')[2]),
-                    Decimal(uploaded.bbox_string.split(',')[2])
-                )
-            )
-            self.assertTrue(
-                math.isclose(
-                    Decimal(expected_bbox_string.split(',')[3]),
-                    Decimal(uploaded.bbox_string.split(',')[3])
-                )
-            )
+            uploaded_bbox_string_x0, uploaded_bbox_string_y0, \
+                uploaded_bbox_string_x1, uploaded_bbox_string_y1 = \
+                map(Decimal, uploaded.bbox_string.split(','))
+            self.assertAlmostEqual(bbox_x0, uploaded_bbox_string_x0, places=3)
+            self.assertAlmostEqual(bbox_x1, uploaded_bbox_string_x1, places=3)
+            self.assertAlmostEqual(bbox_y0, uploaded_bbox_string_y0, places=3)
+            self.assertAlmostEqual(bbox_y1, uploaded_bbox_string_y1, places=3)
         finally:
             # Clean up and completely delete the layer
             uploaded.delete()
@@ -1088,10 +1061,14 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     self.assertEqual(vector_layer.alternate, new_vector_layer.alternate)
 
                     # Test the replaced layer bbox is indeed different from the original layer
-                    self.assertEqual(vector_layer.bbox_x0, new_vector_layer.bbox_x0)
-                    self.assertEqual(vector_layer.bbox_x1, new_vector_layer.bbox_x1)
-                    self.assertEqual(vector_layer.bbox_y0, new_vector_layer.bbox_y0)
-                    self.assertEqual(vector_layer.bbox_y1, new_vector_layer.bbox_y1)
+                    self.assertAlmostEqual(
+                        vector_layer.bbox_x0, new_vector_layer.bbox_x0, places=3)
+                    self.assertAlmostEqual(
+                        vector_layer.bbox_x1, new_vector_layer.bbox_x1, places=3)
+                    self.assertAlmostEqual(
+                        vector_layer.bbox_y0, new_vector_layer.bbox_y0, places=3)
+                    self.assertAlmostEqual(
+                        vector_layer.bbox_y1, new_vector_layer.bbox_y1, places=3)
 
                     # test an invalid user without layer replace permission
                     self.client.logout()
@@ -1289,21 +1266,18 @@ class LayersStylesApiInteractionTests(
         objects = self.deserialize(resp)['objects']
         self.assertEqual(len(objects), 1)
         obj = objects[0]
-
         self.assertEqual(obj, prev_obj)
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_style_interaction(self):
         """Style API interaction check."""
-
         # filter styles by layer id
         filter_url = self.style_list_url + '?layer__id=' + str(self.layer.id)
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         # This is a list url
         objects = self.deserialize(resp)['objects']
-
         self.assertEqual(len(objects), 1)
 
         # filter styles by layer name
@@ -1312,7 +1286,6 @@ class LayersStylesApiInteractionTests(
         self.assertValidJSONResponse(resp)
         # This is a list url
         objects = self.deserialize(resp)['objects']
-
         self.assertEqual(len(objects), 1)
 
         # Check necessary list fields

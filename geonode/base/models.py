@@ -68,8 +68,9 @@ from geonode.utils import (
     bbox_to_wkt,
     forward_mercator)
 from geonode.groups.models import GroupProfile
-from geonode.security.models import PermissionLevelMixin
 from geonode.security.utils import get_visible_resources
+from geonode.security.models import PermissionLevelMixin
+
 from geonode.notifications_helper import (
     send_notification,
     get_notification_recipients)
@@ -1816,15 +1817,10 @@ def resourcebase_post_save(instance, *args, **kwargs):
         tb = traceback.format_exc()
         if tb:
             logger.debug(tb)
-
-    try:
+    finally:
         # refresh catalogue metadata records
         from geonode.catalogue.models import catalogue_post_save
         catalogue_post_save(instance=instance, sender=instance.__class__)
-    except Exception:
-        tb = traceback.format_exc()
-        if tb:
-            logger.debug(tb)
 
 
 def rating_post_save(instance, *args, **kwargs):

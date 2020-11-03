@@ -17,9 +17,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import os
 from django import template
 from django.conf import settings
+from urllib.parse import urlparse
 from inflection import camelize as do_camelize
 
 register = template.Library()
@@ -46,3 +47,20 @@ def crs_labels(value):  # Only one argument.
     if value in settings.EPSG_CODE_MATCHES.keys():
         return settings.EPSG_CODE_MATCHES[value]
     return value
+
+
+@register.simple_tag
+def get_all_resource_styles(resource):
+    if resource and resource.default_style:
+        return set(list(resource.styles.all()) + [resource.default_style, ])
+    else:
+        return set()
+
+
+@register.simple_tag
+def get_sld_name_from_url(sld_url):
+    if sld_url:
+        return os.path.basename(
+            urlparse(sld_url).path).split('.')[0]
+    else:
+        return sld_url
