@@ -1239,6 +1239,8 @@ class LayersStylesApiInteractionTests(
         self.assertTrue('links' in obj and obj['links'])
         # Should have default style
         self.assertTrue('default_style' in obj and obj['default_style'])
+        # Should have styles
+        self.assertTrue('styles' in obj and obj['styles'])
 
         # Test filter layers by id
         filter_url = self.layer_list_url + '?id=' + str(layer_id)
