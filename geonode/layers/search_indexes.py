@@ -36,12 +36,6 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     owner__username = indexes.CharField(model_attr="owner", faceted=True, null=True)
     is_published = indexes.BooleanField(model_attr="is_published")
     featured = indexes.BooleanField(model_attr="featured")
-    popular_count = indexes.IntegerField(
-        model_attr="popular_count",
-        default=0,
-        boost=20)
-    share_count = indexes.IntegerField(model_attr="share_count", default=0)
-    rating = indexes.IntegerField(null=True)
     srid = indexes.CharField(model_attr="srid")
     supplemental_information = indexes.CharField(model_attr="supplemental_information", null=True)
     thumbnail_url = indexes.CharField(model_attr="thumbnail_url", null=True)

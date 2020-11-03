@@ -119,7 +119,6 @@ class GeoNodeThemeCustomization(models.Model):
     contact_name = models.CharField(max_length=255, null=True, blank=True)
     contact_position = models.CharField(max_length=255, null=True, blank=True)
     contact_administrative_area = models.CharField(max_length=255, null=True, blank=True)
-    contact_city = models.CharField(max_length=255, null=True, blank=True)
     contact_street = models.CharField(max_length=255, null=True, blank=True)
     contact_postal_code = models.CharField(max_length=255, null=True, blank=True)
     contact_city = models.CharField(max_length=255, null=True, blank=True)

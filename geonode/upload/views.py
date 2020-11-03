@@ -288,19 +288,20 @@ def srs_step_view(request, upload_session):
     elif not re.search(r'\:', source) and re.search(r'EPSG', source):
         source = re.sub(r'(EPSG)', r'EPSG:', source)
 
-    if not source.startswith("EPSG:"):
-        error = 'Source SRS is not valid. Please insert a valid EPSG code (e.g.: EPSG:4326).'
-    else:
-        if not target:
-            target = source
-        elif not re.search(r'\:', target) and re.search(r'EPSG', target):
-            target = re.sub(r'(EPSG)', r'EPSG:', target)
-
-        if not target.startswith("EPSG:"):
-            error = 'Target SRS is not valid. Please insert a valid EPSG code (e.g.: EPSG:4326).'
+    if not error:
+        if not source.startswith("EPSG:"):
+            error = 'Source SRS is not valid. Please insert a valid EPSG code (e.g.: EPSG:4326).'
         else:
-            srs_step(upload_session, source, target)
-            return next_step_response(request, upload_session)
+            if not target:
+                target = source
+            elif not re.search(r'\:', target) and re.search(r'EPSG', target):
+                target = re.sub(r'(EPSG)', r'EPSG:', target)
+
+            if not target.startswith("EPSG:"):
+                error = 'Target SRS is not valid. Please insert a valid EPSG code (e.g.: EPSG:4326).'
+            else:
+                srs_step(upload_session, source, target)
+                return next_step_response(request, upload_session)
 
     if error:
         return json_response(

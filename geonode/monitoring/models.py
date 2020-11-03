@@ -1772,7 +1772,6 @@ class BuiltIns(object):
                     'request.path': 'Request URL',
                     'network.in.rate': 'Network incoming traffic rate',
                     'network.out.rate': 'Network outgoing traffic rate',
-                    'network.out.rate': 'Network outgoing traffic rate',
                     'network.out': 'Network outgoing traffic bytes',
                     'network.in': 'Network incoming traffic bytes',
                     }

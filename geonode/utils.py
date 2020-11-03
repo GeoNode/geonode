@@ -1177,7 +1177,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     # TODO we may need to improve this regexp
     # first character must be any letter or "_"
     # following characters can be any letter, number, "#", ":"
-    regex = r'^[a-zA-Z,_][a-zA-Z,_,#,:\d]*$'
+    regex = r'^[a-zA-Z,_][a-zA-Z,_#:\d]*$'
     a = re.compile(regex)
     regex_first_char = r'[a-zA-Z,_]{1}'
     b = re.compile(regex_first_char)
@@ -1437,7 +1437,6 @@ class HttpClient(object):
                 except Exception:
                     tb = traceback.format_exc()
                     logger.debug(tb)
-                    pass
             elif user == self.username:
                 valid_uname_pw = base64.b64encode(
                     "{}:{}".format(self.username, self.password).encode()).decode()

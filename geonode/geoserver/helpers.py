@@ -334,8 +334,9 @@ def fixup_style(cat, resource, style):
                 sld = style.read()
             logger.debug("Creating style [%s]", name)
             style = cat.create_style(name, sld, overwrite=True, raw=True, workspace=settings.DEFAULT_WORKSPACE)
-            cat.reset()
-            style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
+            if not style:
+                cat.reset()
+                style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
             lyr.default_style = style
             logger.debug("Saving changes to %s", lyr)
             cat.save(lyr)

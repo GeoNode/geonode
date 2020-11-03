@@ -149,8 +149,6 @@ def get_related_resources(document):
 
 
 def pre_save_document(instance, sender, **kwargs):
-    base_name, extension, doc_type = None, None, None
-
     if instance.doc_file:
         base_name, extension = os.path.splitext(instance.doc_file.name)
         instance.extension = extension[1:]

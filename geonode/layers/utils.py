@@ -319,8 +319,6 @@ def get_valid_name(layer_name):
         proposed_name = '%s_%s' % (name, suffix)
         logger.debug('Requested name already used; adjusting name '
                      '[%s] => [%s]', layer_name, proposed_name)
-    else:
-        logger.debug("Using name as requested")
 
     return proposed_name
 
