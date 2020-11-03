@@ -485,7 +485,6 @@ class GeoNodeServiceHandler(WmsServiceHandler):
     ]
 
     def __init__(self, url):
-        WmsServiceHandler.__init__(self, url)
         self.proxy_base = urljoin(
             settings.SITEURL, reverse('proxy'))
         ogc_server_settings = settings.OGC_SERVER['default']
