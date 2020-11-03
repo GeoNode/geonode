@@ -633,7 +633,7 @@ def start_django(options):
             foreground
         ))
     else:
-        sh("{} celery -A geonode.celery_app:app worker -l DEBUG {} {} {}".format(
+        sh("{} celery -A geonode.celery_app:app worker -l DEBUG {} {}".format(
             settings,
             "-s django_celery_beat.schedulers:DatabaseScheduler",
             foreground
@@ -909,7 +909,7 @@ def test_integration(options):
             call_task('start', options={'settings': settings})
             if integration_server_tests:
                 call_task('setup_data', options={'settings': settings})
-        elif not integration_csw_tests and _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
+        elif _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
             sh("cp geonode/upload/tests/test_settings.py geonode/")
             settings = 'geonode.test_settings'
             sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
@@ -922,15 +922,13 @@ def test_integration(options):
                "loaddata geonode/base/fixtures/default_oauth_apps.json".format(settings))
             sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
                "loaddata geonode/base/fixtures/initial_data.json".format(settings))
-
             call_task('start_geoserver')
-
             bind = options.get('bind', '0.0.0.0:8000')
             foreground = '' if options.get('foreground', False) else '&'
             sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runmessaging %s' %
-               (settings, foreground))
+            (settings, foreground))
             sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runserver %s %s' %
-               (settings, bind, foreground))
+            (settings, bind, foreground))
             sh('sleep 30')
             settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
 

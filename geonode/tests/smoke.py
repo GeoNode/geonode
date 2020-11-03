@@ -236,37 +236,42 @@ class GeoNodeUtilsTests(GeoNodeBaseTestSupport):
         self.assertAlmostEqual(
             arctic[0],
             0.0,
+            places=3,
             msg="Arctic longitude is correct")
         self.assertAlmostEqual(
             arctic[1],
             85.0,
+            places=3,
             msg="Arctic latitude is correct")
 
         self.assertAlmostEqual(
             antarctic[0],
             0.0,
+            places=3,
             msg="Antarctic longitude is correct")
         self.assertAlmostEqual(
-            antarctic[1], -85.0, msg="Antarctic latitude is correct")
+            antarctic[1], -85.0, places=3, msg="Antarctic latitude is correct")
 
         self.assertAlmostEqual(
             hawaii[0], -180.0, msg="Hawaiian lon is correct")
-        self.assertAlmostEqual(hawaii[1], 0.0, msg="Hawaiian lat is correct")
+        self.assertAlmostEqual(hawaii[1], 0.0, places=3, msg="Hawaiian lat is correct")
 
         self.assertAlmostEqual(
             phillipines[0],
             180.0,
+            places=3,
             msg="Phillipines lon is correct")
         self.assertAlmostEqual(
             phillipines[1],
             0.0,
+            places=3,
             msg="Phillipines lat is correct")
 
-        self.assertAlmostEqual(ne[0], 180.0, msg="NE lon is correct")
-        self.assertAlmostEqual(ne[1], 90.0, msg="NE lat is correct")
+        self.assertAlmostEqual(ne[0], 180.0, places=3, msg="NE lon is correct")
+        self.assertAlmostEqual(ne[1], 90.0, places=3, msg="NE lat is correct")
 
-        self.assertAlmostEqual(sw[0], -180.0, msg="SW lon is correct")
-        self.assertAlmostEqual(sw[1], -90.0, msg="SW lat is correct")
+        self.assertAlmostEqual(sw[0], -180.0, places=3, msg="SW lon is correct")
+        self.assertAlmostEqual(sw[1], -90.0, places=3, msg="SW lat is correct")
 
     def test_split_query(self):
         query = 'alpha "beta gamma"   delta  '

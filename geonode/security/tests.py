@@ -17,22 +17,23 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
 import json
 import base64
-from urllib.request import urlopen, Request
 import logging
 import gisdata
 import contextlib
 
+from urllib.request import urlopen, Request
+from tastypie.test import ResourceTestCaseMixin
+
 from django.conf import settings
 from django.http import HttpRequest
 from django.urls import reverse
-from tastypie.test import ResourceTestCaseMixin
 from django.contrib.auth import get_user_model
+
 from guardian.shortcuts import (
     get_anonymous_user,
     assign_perm,
@@ -55,15 +56,16 @@ from geonode.geoserver.helpers import gs_slurp
 from geonode.geoserver.upload import geoserver_upload
 from geonode.layers.populate_layers_data import create_layer_data
 
-from .utils import (purge_geofence_all,
-                    get_users_with_perms,
-                    get_geofence_rules,
-                    get_geofence_rules_count,
-                    get_highest_priority,
-                    set_geofence_all,
-                    set_geowebcache_invalidate_cache,
-                    sync_geofence_with_guardian,
-                    sync_resources_with_guardian)
+from .utils import (
+    purge_geofence_all,
+    get_users_with_perms,
+    get_geofence_rules,
+    get_geofence_rules_count,
+    get_highest_priority,
+    set_geofence_all,
+    sync_geofence_with_guardian,
+    sync_resources_with_guardian
+)
 
 
 logger = logging.getLogger(__name__)
@@ -333,9 +335,6 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             _log("5. geofence_rules_highest_priority: %s " % geofence_rules_highest_priority)
             self.assertTrue(geofence_rules_highest_priority > 0)
 
-            # Try GWC Invalidation
-            # - it should not work here since the layer has not been uploaded to GeoServer
-            set_geowebcache_invalidate_cache(test_perm_layer.alternate)
             url = settings.OGC_SERVER['default']['LOCATION']
             user = settings.OGC_SERVER['default']['USER']
             passwd = settings.OGC_SERVER['default']['PASSWORD']
@@ -1416,6 +1415,8 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # set SLD
             sld = test_perm_layer.default_style.sld_body if test_perm_layer.default_style else None
             if sld:
+                if isinstance(sld, bytes):
+                    sld = sld.decode().strip('\n')
                 _log("sld. ------------ %s " % sld)
                 set_layer_style(test_perm_layer, test_perm_layer.alternate, sld)
 
@@ -1431,7 +1432,7 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
             # Check instance has been removed from GeoServer also
             from geonode.geoserver.views import get_layer_capabilities
-            self.assertIsNotNone(get_layer_capabilities(test_perm_layer))
+            self.assertIsNone(get_layer_capabilities(test_perm_layer))
 
             # Cleaning Up
             test_perm_layer.delete()

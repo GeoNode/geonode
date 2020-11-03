@@ -37,7 +37,7 @@ from itertools import cycle
 from collections import namedtuple, defaultdict
 from os.path import basename, splitext, isfile
 from threading import local
-from urllib.parse import urlencode, urlsplit, urljoin
+from urllib.parse import urlparse, urlencode, urlsplit, urljoin
 from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
 from dialogos.models import Comment
@@ -347,13 +347,16 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
         if sld:
             if isfile(sld):
                 sld = open(sld, "rb").read()
+            elif isinstance(sld, string_types):
+                sld = sld.strip('b\'\n')
+                sld = re.sub(r'(\\r)|(\\n)', '', sld).encode("UTF-8")
             etree.XML(sld)
         elif base_file and isfile(base_file):
             sld = open(base_file, "rb").read()
             dlxml.parse(base_file)
     except Exception:
         logger.exception("The uploaded SLD file is not valid XML")
-        # raise Exception("The uploaded SLD file is not valid XML")
+        raise Exception("The uploaded SLD file is not valid XML")
 
     # Check Layer's available styles
     match = None
@@ -363,37 +366,38 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
         if style and style.name == saved_layer.name:
             match = style
             break
-    cat = gs_catalog
-    layer = cat.get_layer(title)
+    layer = gs_catalog.get_layer(title)
     style = None
     if match is None:
         try:
-            cat.create_style(
-                saved_layer.name, sld, overwrite=False, raw=True, workspace=saved_layer.workspace)
-            cat.reset()
-            style = cat.get_style(saved_layer.name, workspace=saved_layer.workspace) or \
-                cat.get_style(saved_layer.name)
+            style = gs_catalog.get_style(saved_layer.name, workspace=saved_layer.workspace) or \
+                gs_catalog.get_style(saved_layer.name)
+            if not style:
+                style = gs_catalog.create_style(
+                    saved_layer.name, sld, overwrite=False, raw=True, workspace=saved_layer.workspace)
         except Exception as e:
             logger.exception(e)
     else:
-        style = cat.get_style(saved_layer.name, workspace=saved_layer.workspace) or \
-            cat.get_style(saved_layer.name)
-        # style.update_body(sld)
+        style = gs_catalog.get_style(saved_layer.name, workspace=saved_layer.workspace) or \
+            gs_catalog.get_style(saved_layer.name)
         try:
-            cat.create_style(saved_layer.name, sld, overwrite=True, raw=True,
-                             workspace=saved_layer.workspace)
-            cat.reset()
-            style = cat.get_style(saved_layer.name, workspace=saved_layer.workspace)
+            if style:
+                style = gs_catalog.create_style(
+                    style.sld_name, sld,
+                    overwrite=True, raw=True,
+                    workspace=saved_layer.workspace)
+            else:
+                style = gs_catalog.create_style(
+                    saved_layer.name, sld,
+                    overwrite=True, raw=True,
+                    workspace=saved_layer.workspace)
         except Exception as e:
             logger.exception(e)
 
     if layer and style:
-        try:
-            layer.default_style = style
-            cat.save(layer)
-            set_styles(saved_layer, cat)
-        except Exception as e:
-            logger.exception(e)
+        layer.default_style = style
+        gs_catalog.save(layer)
+        set_styles(saved_layer, gs_catalog)
 
 
 def cascading_delete(layer_name=None, catalog=None):
@@ -567,7 +571,7 @@ def gs_slurp(
     if verbosity > 0:
         print("Inspecting the available layers in GeoServer ...", file=console)
     cat = gs_catalog
-    if workspace is not None:
+    if workspace is not None and workspace:
         workspace = cat.get_workspace(workspace)
         if workspace is None:
             resources = []
@@ -1047,27 +1051,20 @@ def set_styles(layer, gs_catalog):
     gs_layer = None
     try:
         gs_layer = gs_catalog.get_layer(layer.name)
-        gs_layer.fetch()
     except Exception:
         tb = traceback.format_exc()
-        logger.debug(tb)
+        logger.exception(tb)
+
     if not gs_layer:
         try:
             gs_layer = gs_catalog.get_layer(layer.alternate or layer.typename)
         except Exception:
             tb = traceback.format_exc()
-            logger.debug(tb)
+            logger.error(tb)
+            logger.exception("No GeoServer Layer found!")
 
     if gs_layer:
-        default_style = None
-        try:
-            default_style = gs_catalog.get_style(
-                gs_layer.default_style.name, workspace=layer.workspace)
-        except Exception as e:
-            raise e
-            tb = traceback.format_exc()
-            logger.debug(tb)
-
+        default_style = gs_layer.default_style
         if not default_style:
             try:
                 default_style = gs_catalog.get_style(layer.name, workspace=layer.workspace) \
@@ -1076,46 +1073,46 @@ def set_styles(layer, gs_catalog):
                 gs_catalog.save(gs_layer)
             except Exception:
                 tb = traceback.format_exc()
-                logger.debug(tb)
+                logger.error(tb)
                 logger.exception("GeoServer Layer Default Style issues!")
 
         if default_style:
             # make sure we are not using a default SLD (which won't be editable)
-            if not default_style.workspace or default_style.workspace != layer.workspace:
+            if not default_style.workspace:
+                sld_name = default_style.sld_name
                 sld_body = default_style.sld_body
                 try:
-                    gs_catalog.create_style(layer.name, sld_body, raw=True, workspace=layer.workspace)
-                    style = gs_catalog.get_style(layer.name, workspace=layer.workspace)
+                    style = gs_catalog.get_style(sld_name, workspace=layer.workspace)
+                    if not style:
+                        style = gs_catalog.create_style(sld_name, sld_body, raw=True, workspace=layer.workspace)
                 except Exception:
                     tb = traceback.format_exc()
-                    logger.debug(tb)
+                    logger.error(tb)
+                    logger.exception("GeoServer Layer Default Style issues!")
             else:
                 style = default_style
 
-            if style:
-                try:
-                    gs_layer.default_style = style
-                    gs_catalog.save(gs_layer)
-                    layer.default_style = save_style(style, layer)
-                    if layer.default_style not in style_set:
-                        style_set.append(layer.default_style)
-                except Exception:
-                    tb = traceback.format_exc()
-                    logger.debug(tb)
-
+            gs_layer.default_style = style
+            gs_catalog.save(gs_layer)
+            layer.default_style = save_style(style, layer)
+            style_set.append(layer.default_style)
         try:
             if gs_layer.styles:
                 alt_styles = gs_layer.styles
                 for alt_style in alt_styles:
-                    if alt_style:
-                        style_set.append(save_style(alt_style, layer))
+                    if alt_style and alt_style:
+                        _s = save_style(alt_style, layer)
+                        if _s != layer.default_style:
+                            style_set.append(_s)
         except Exception:
             tb = traceback.format_exc()
-            logger.debug(tb)
+            logger.error(tb)
+            logger.exception("GeoServer Layer Default Style issues!")
 
-    # Remove duplicates
-    style_set = list(dict.fromkeys(style_set))
-    layer.styles.set(style_set)
+    if style_set:
+        # Remove duplicates
+        style_set = list(dict.fromkeys(style_set))
+        layer.styles.set(style_set)
 
     # Update default style to database
     to_update = {
@@ -1125,41 +1122,70 @@ def set_styles(layer, gs_catalog):
     Layer.objects.filter(id=layer.id).update(**to_update)
     layer.refresh_from_db()
 
+    # Legend links
+    logger.debug(" -- Resource Links[Legend link]...")
     try:
-        set_geowebcache_invalidate_cache(layer.alternate or layer.typename)
+        from geonode.base.models import Link
+        layer_legends = Link.objects.filter(resource=layer.resourcebase_ptr, name='Legend')
+        for style in set(list(layer.styles.all()) + [layer.default_style, ]):
+            if style:
+                style_name = os.path.basename(
+                    urlparse(style.sld_url).path).split('.')[0]
+                legend_url = ogc_server_settings.PUBLIC_LOCATION + \
+                    'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
+                    layer.alternate + '&STYLE=' + style_name + \
+                    '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
+
+            if layer_legends.filter(url=legend_url).count() == 0:
+                Link.objects.update_or_create(
+                    resource=layer.resourcebase_ptr,
+                    name='Legend',
+                    url=legend_url,
+                    defaults=dict(
+                        extension='png',
+                        url=legend_url,
+                        mime='image/png',
+                        link_type='image',
+                    )
+                )
+        logger.debug(" -- Resource Links[Legend link]...done!")
     except Exception as e:
-        logger.exception(e)
+        logger.debug(f" -- Resource Links[Legend link]...error: {e}")
 
-
-def save_style(gs_style, layer):
-
-    if not gs_style.workspace or gs_style.workspace != layer.workspace:
-        sld_body = gs_style.sld_body
-        try:
-            gs_catalog.create_style(gs_style.name, sld_body, raw=True, workspace=layer.workspace)
-            gs_catalog.reset()
-            gs_style = gs_catalog.get_style(gs_style.name, workspace=layer.workspace)
-        except Exception:
-            tb = traceback.format_exc()
-            logger.debug(tb)
-
-    style = None
     try:
-        style, created = Style.objects.get_or_create(name=gs_style.name)
-        if style:
-            if not style.workspace and gs_style.workspace:
-                style.workspace = layer.workspace
-            style.sld_title = gs_style.sld_title or gs_style.sld_name
+        set_geowebcache_invalidate_cache(layer.alternate or layer.typename, cat=gs_catalog)
     except Exception:
         tb = traceback.format_exc()
         logger.debug(tb)
-        if style:
-            style.sld_title = gs_style.name
-    finally:
-        if style:
-            style.sld_body = gs_style.sld_body
-            style.sld_url = gs_style.body_href
-            style.save()
+
+
+def save_style(gs_style, layer):
+    style_name = os.path.basename(
+        urlparse(gs_style.body_href).path).split('.')[0]
+    sld_name = gs_style.sld_name
+    sld_body = gs_style.sld_body
+    if not gs_style.workspace:
+        try:
+            gs_style = gs_catalog.get_style(style_name, workspace=layer.workspace)
+            if not gs_style:
+                gs_style = gs_catalog.create_style(style_name, sld_body, raw=True, workspace=layer.workspace)
+        except Exception as e:
+            tb = traceback.format_exc()
+            logger.debug(tb)
+            raise e
+    style = None
+    try:
+        style, created = Style.objects.get_or_create(name=style_name)
+        if not style.workspace and gs_style.workspace:
+            style.workspace = layer.workspace
+        style.sld_title = gs_style.sld_title or sld_name
+        style.sld_body = gs_style.sld_body
+        style.sld_url = gs_style.body_href
+        style.save()
+    except Exception as e:
+        tb = traceback.format_exc()
+        logger.debug(tb)
+        raise e
     return style
 
 

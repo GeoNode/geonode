@@ -58,13 +58,14 @@ from geonode.security.utils import get_visible_resources
 from .authentication import OAuthAuthentication
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
 
-from .api import (TagResource,
-                  RegionResource,
-                  OwnersResource,
-                  ThesaurusKeywordResource,
-                  TopicCategoryResource,
-                  GroupResource,
-                  FILTER_TYPES)
+from .api import (
+    TagResource,
+    RegionResource,
+    OwnersResource,
+    ThesaurusKeywordResource,
+    TopicCategoryResource,
+    GroupResource,
+    FILTER_TYPES)
 from .paginator import CrossSiteXHRPaginator
 
 if settings.HAYSTACK_SEARCH:
@@ -82,17 +83,18 @@ FILTER_TYPES.update(LAYER_SUBTYPES)
 class CommonMetaApi:
     authorization = GeoNodeAuthorization()
     allowed_methods = ['get']
-    filtering = {'title': ALL,
-                 'keywords': ALL_WITH_RELATIONS,
-                 'tkeywords': ALL_WITH_RELATIONS,
-                 'regions': ALL_WITH_RELATIONS,
-                 'category': ALL_WITH_RELATIONS,
-                 'group': ALL_WITH_RELATIONS,
-                 'owner': ALL_WITH_RELATIONS,
-                 'date': ALL,
-                 'purpose': ALL,
-                 'abstract': ALL
-                 }
+    filtering = {
+        'title': ALL,
+        'keywords': ALL_WITH_RELATIONS,
+        'tkeywords': ALL_WITH_RELATIONS,
+        'regions': ALL_WITH_RELATIONS,
+        'category': ALL_WITH_RELATIONS,
+        'group': ALL_WITH_RELATIONS,
+        'owner': ALL_WITH_RELATIONS,
+        'date': ALL,
+        'purpose': ALL,
+        'abstract': ALL
+    }
     ordering = ['date', 'title', 'popular_count']
     max_limit = None
 
