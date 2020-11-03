@@ -899,9 +899,7 @@ def test_integration(options):
     try:
         call_task('setup', options={'settings': settings, 'force_exec': True})
 
-        _integration_server_startup = True
         if name and name in ('geonode.tests.csw', 'geonode.tests.integration', 'geonode.geoserver.tests.integration'):
-            _integration_server_startup = False
             if not settings:
                 settings = 'geonode.local_settings' if _backend == 'geonode.qgis_server' else 'geonode.settings'
                 settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
@@ -924,18 +922,15 @@ def test_integration(options):
                "loaddata geonode/base/fixtures/default_oauth_apps.json".format(settings))
             sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
                "loaddata geonode/base/fixtures/initial_data.json".format(settings))
-
-            if _integration_server_startup:
-                call_task('start_geoserver')
-
-                bind = options.get('bind', '0.0.0.0:8000')
-                foreground = '' if options.get('foreground', False) else '&'
-                sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runmessaging %s' %
-                (settings, foreground))
-                sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runserver %s %s' %
-                (settings, bind, foreground))
-                sh('sleep 30')
-                settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
+            call_task('start_geoserver')
+            bind = options.get('bind', '0.0.0.0:8000')
+            foreground = '' if options.get('foreground', False) else '&'
+            sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runmessaging %s' %
+            (settings, foreground))
+            sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runserver %s %s' %
+            (settings, bind, foreground))
+            sh('sleep 30')
+            settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
 
         live_server_option = ''
         info("Running the tests now...")

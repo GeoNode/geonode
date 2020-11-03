@@ -285,6 +285,7 @@ jobs:
   fast_finish: true
 
   allow_failures:
+    - name: "Backend Integration Tests"
     - name: "Selenium Tests Core"
     - name: "Selenium Tests SPCGeoNode"
 
