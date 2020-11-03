@@ -451,9 +451,9 @@ def delete_layer_cache(layer_name):
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
 def set_geowebcache_invalidate_cache(layer_alternate, cat=None):
     """invalidate GeoWebCache Cache Rules"""
-    if layer_alternate:
+    if layer_alternate is not None and len(layer_alternate) and "None" not in layer_alternate:
         try:
-            if cat is None or (cat and cat.get_layer(layer_alternate)):
+            if cat is None or cat.get_layer(layer_alternate) is not None:
                 url = settings.OGC_SERVER['default']['LOCATION']
                 user = settings.OGC_SERVER['default']['USER']
                 passwd = settings.OGC_SERVER['default']['PASSWORD']
