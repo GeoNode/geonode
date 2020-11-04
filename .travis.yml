@@ -49,7 +49,6 @@ jobs:
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is GeoServer server address
           - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
           - GEOSERVER_SERVER_PORT: 8080
           - ON_TRAVIS: 'True'
@@ -65,7 +64,6 @@ jobs:
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is GeoServer server address
           - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
           - GEOSERVER_SERVER_PORT: 8080
           - ON_TRAVIS: 'True'
@@ -80,7 +78,6 @@ jobs:
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is GeoServer server address
           - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
           - GEOSERVER_SERVER_PORT: 8080
           - ON_TRAVIS: 'True'
@@ -106,10 +103,7 @@ jobs:
           - BACKEND: 'geonode.qgis_server'
           - DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
           - DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is qgis server address
           - QGIS_SERVER_URL: http://localhost:9000/
-            # This is the location of docker network bridge
-            # So QGIS server can access this address
           - SITEURL: http://localhost:8000/
           - QGIS_SERVER_PORT: 9000
           - ON_TRAVIS: 'True'
@@ -126,10 +120,7 @@ jobs:
           - BACKEND: 'geonode.qgis_server'
           - DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
           - DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is qgis server address
           - QGIS_SERVER_URL: http://localhost:9000/
-            # This is the location of docker network bridge
-            # So QGIS server can access this address
           - SITEURL: http://localhost:8000/
           - QGIS_SERVER_PORT: 9000
           - ON_TRAVIS: 'True'
@@ -145,7 +136,6 @@ jobs:
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is GeoServer server address
           - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
           - GEOSERVER_SERVER_PORT: 8080
           - ON_TRAVIS: 'True'
@@ -167,7 +157,6 @@ jobs:
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is GeoServer server address
           - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
           - GEOSERVER_SERVER_PORT: 8080
           - ON_TRAVIS: 'True'
@@ -190,7 +179,6 @@ jobs:
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is GeoServer server address
           - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
           - GEOSERVER_SERVER_PORT: 8080
           - ON_TRAVIS: 'True'
@@ -212,7 +200,6 @@ jobs:
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is GeoServer server address
           - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
           - GEOSERVER_SERVER_PORT: 8080
           - ON_TRAVIS: 'True'
@@ -238,10 +225,7 @@ jobs:
           - BACKEND: 'geonode.qgis_server'
           - DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
           - DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is qgis server address
           - QGIS_SERVER_URL: http://localhost:9000/
-            # This is the location of docker network bridge
-            # So QGIS server can access this address
           - SITEURL: http://localhost:8000/
           - QGIS_SERVER_PORT: 9000
           - ON_TRAVIS: 'True'
@@ -261,7 +245,6 @@ jobs:
       env:
           - BACKEND: 'geonode.geoserver'
           - DOCKER_COMPOSE_VERSION: 1.19.0
-            # This is GeoServer server address
           - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
           - GEOSERVER_SERVER_PORT: 8080
           - ON_TRAVIS: 'True'

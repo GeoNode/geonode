@@ -18,15 +18,15 @@
 #
 #########################################################################
 
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 import unittest
 from geonode.services.tests import ServicesTests
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = """
     """
 
-    def handle_noargs(self, **options):
+    def handle(self, *args, **options):
         suite = unittest.TestLoader().loadTestsFromTestCase(ServicesTests)
         unittest.TextTestRunner().run(suite)
