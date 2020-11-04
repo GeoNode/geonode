@@ -396,9 +396,15 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
             logger.exception(e)
 
     if layer and style:
-        layer.default_style = style
-        gs_catalog.save(layer)
-        set_styles(saved_layer, gs_catalog)
+        _default_style = layer.default_style
+        try:
+            layer.default_style = style
+            gs_catalog.save(layer)
+            set_styles(saved_layer, gs_catalog)
+        except Exception:
+            layer.default_style = _default_style
+            gs_catalog.save(layer)
+            set_styles(saved_layer, gs_catalog)
 
 
 def cascading_delete(layer_name=None, catalog=None):

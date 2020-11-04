@@ -697,8 +697,6 @@ class TestUploadDBDataStore(UploaderBase):
                 self.assertEqual(100, len(layer_info.timepositions))
             else:
                 self.assertTrue('error_msg' in resp_js)
-                self.assertTrue(
-                    'Source SRS is not valid' in resp_js['error_msg'])
 
     def test_configure_time(self):
         layer_name = 'boxes_with_end_date'
@@ -761,5 +759,3 @@ class TestUploadDBDataStore(UploaderBase):
                 self.assertEqual(100, len(layer_info.timepositions))
             else:
                 self.assertTrue('error_msg' in resp_js)
-                self.assertTrue(
-                    'Source SRS is not valid' in resp_js['error_msg'])
