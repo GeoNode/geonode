@@ -110,12 +110,10 @@ def get_visible_resources(queryset,
             _allowed_resources = []
             for _obj in filter_set.all():
                 try:
-                    _resource = _obj.get_self_resource()
-                    if user.has_perm('base.view_resourcebase', _resource) or \
-                    user.has_perm('view_resourcebase', _resource) or \
-                    user.has_perm('publish_resourcebase', _resource) or \
-                    user.has_perm('change_resourcebase_metadata', _resource):
-                        _allowed_resources.append(_resource.id)
+                    resource = _obj.get_self_resource()
+                    if user.has_perm('base.view_resourcebase', resource) or \
+                    user.has_perm('view_resourcebase', resource):
+                        _allowed_resources.append(resource.id)
                 except (PermissionDenied, Exception) as e:
                     logger.debug(e)
             return filter_set.filter(id__in=_allowed_resources)
