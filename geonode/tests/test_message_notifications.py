@@ -18,7 +18,7 @@
 #########################################################################
 
 from user_messages.models import Thread, Message, GroupMemberThread
-from geonode.messaging.notifications import message_sent_notification
+from geonode.messaging.notifications import message_received_notification
 from geonode.people.models import Profile
 from geonode.tests.base import GeoNodeBaseTestSupport
 from unittest.mock import patch
@@ -48,24 +48,24 @@ class TestSendEmail(GeoNodeBaseTestSupport):
 
     @patch('geonode.notifications_backend.EmailBackend.deliver')
     def test_email_sent(self, email_message):
-        message_sent_notification(message=self.m)
+        message_received_notification(message=self.m)
         email_message.assert_called_once()
 
     @patch('geonode.notifications_backend.EmailBackend.deliver')
     def test_email_sent_many(self, email_message):
         self.p1.email = 'test@test.test'
         self.p1.save()
-        message_sent_notification(message=self.m)
+        message_received_notification(message=self.m)
         self.assertEqual(email_message.call_count, 2)
 
     @patch('geonode.notifications_backend.EmailBackend.deliver')
     def test_email_sent_to_group(self, email_message):
         self.p1.email = 'test@test.test'
         self.p1.save()
-        message_sent_notification(message=self.m2)
+        message_received_notification(message=self.m2)
         self.assertEqual(email_message.call_count, 2)
 
     @patch('geonode.notifications_backend.EmailBackend.deliver')
     def test_email_sent_to_group_single(self, email_message):
-        message_sent_notification(message=self.m2)
+        message_received_notification(message=self.m2)
         self.assertEqual(email_message.call_count, 1)

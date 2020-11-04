@@ -1191,14 +1191,9 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
         params['width'] = _default_thumb_size['width']
         params['height'] = _default_thumb_size['height']
 
-    user = None
-    try:
-        username = ogc_server_settings.credentials.username
-        user = get_user_model().objects.get(username=username)
-    except Exception as e:
-        logger.exception(e)
-
     access_token = None
+    username = ogc_server_settings.credentials.username
+    user = get_user_model().objects.filter(username=username).first()
     if user:
         access_token = get_or_create_token(user)
         if access_token and not access_token.is_expired():
