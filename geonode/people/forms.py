@@ -26,10 +26,17 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import ugettext as _
 
 from geonode.base.enumerations import COUNTRIES
+from geonode.base.enumerations import CITIES
 from geonode.base.enumerations import PROFESSIONAL_ROLES
 from geonode.base.models import ContactRole
 
 from allauth.account.forms import SignupForm
+from allauth.account.forms import PasswordField
+
+from allauth.account.adapter import get_adapter
+from allauth.account.utils import (
+    setup_user_email
+)
 
 from captcha.fields import ReCaptchaField
 
@@ -112,14 +119,11 @@ class ProfileForm(forms.ModelForm):
             'date_joined'
         )
 
-class CustomUserCreationForm(SignupForm):
-    username = forms.CharField(label=_("Username"),
-                               widget=forms.TextInput(
-                                   attrs={'placeholder':
-                                          _('Username'),
-                                          'autofocus': 'autofocus'}))
-    
-    first_name = forms.CharField(label=_("FirstName"),
+class CustomUserCreationForm2(SignupForm):
+    def __init__(self, *args, **kwargs):
+        super(CustomUserCreationForm2, self).__init__(*args, **kwargs)
+
+    first_name = forms.CharField(label="Primer Nombre",
                                widget=forms.TextInput(
                                    attrs={'placeholder':
                                           _('Firstname')}))
@@ -138,55 +142,20 @@ class CustomUserCreationForm(SignupForm):
                                           _('Organization')}))
     
     country = forms.ChoiceField(label=_('Country'), choices=COUNTRIES)
-    city = forms.CharField(label=_("City"),
+
+    city = forms.CharField(label=_("city"),
                                widget=forms.TextInput(
-                                   attrs={'placeholder':
-                                          _('City')}))    
+                                   attrs={'placeholder':_('City'),
+                                   'autocomplete':'off'}))
 
-    agree_conditions = forms.BooleanField(label=_("AgreeConditions"))
-
-    email = forms.EmailField(widget=forms.TextInput(
-        attrs={'type': 'email',
-               'placeholder': _('E-mail address')}))
-    password1 = forms.CharField(label='Enter password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
-
-    def clean_username(self):
-        username = self.cleaned_data['username'].lower()
-#        r = User.objects.filter(username=username)
-#        if r.count():
-#            raise  ValidationError("Username already exists")
-        return username
-
-    def clean_email(self):
-        email = self.cleaned_data['email'].lower()
-#        r = User.objects.filter(email=email)
-#        if r.count():
-#            raise  ValidationError("Email already exists")
-        return email
-
-    def clean_password2(self):
-        password1 = self.cleaned_data.get('password1')
-        password2 = self.cleaned_data.get('password2')
-
-        if password1 and password2 and password1 != password2:
-            raise ValidationError("Password don't match")
-
-        return password2
-
-    def save(self, request):
-        user = super(CustomUserCreationForm, self).save(request)
-        return user
+    # city = forms.ChoiceField(label=_('City'), choices=CITIES)
     
-class MyCustomSignupForm(SignupForm):
-
     def save(self, request):
-
-        # Ensure you call the parent class's save.
-        # .save() returns a User object.
-        user = super(MyCustomSignupForm, self).save(request)
-
-        # Add your own processing here.
-
-        # You must return the original result.
+        adapter = get_adapter(request)
+        user = adapter.new_user(request)
+        adapter.save_user(request, user, self)
+        self.custom_signup(request, user)
+        # TODO: Move into adapter `save_user` ?
+        setup_user_email(request, user, [])
         return user
+

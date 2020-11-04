@@ -8380,6 +8380,14 @@ msgstr "Nivel de permiso inválido."
 msgid "Permission Denied"
 msgstr "Permiso Denegado"
 
+#: geonode.people.forms.py:125
+msgid "FirstName"
+msgstr "Nombres"
+
+#: geonode.people.forms.py:130
+msgid "LastName"
+msgstr "Apellidos
+
 #~ msgid ""
 #~ "GeoNode is an open source platform for sharing geospatial data and maps."
 #~ msgstr ""

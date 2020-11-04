@@ -153,11 +153,47 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
         })
         return enhanced_context
 
-    def save_user(self, request, user, form, commit=True):
+    def save_user_simple(self, request, user, form, commit=True):
         user = super(LocalAccountAdapter, self).save_user(
             request, user, form, commit=commit)
         if settings.ACCOUNT_APPROVAL_REQUIRED:
             user.is_active = False
+            user.save()
+        return user
+    
+    def save_user(self, request, user, form, commit=True):
+        data = form.cleaned_data
+        first_name = data.get("first_name")
+        last_name = data.get("last_name")
+        email = data.get("email")
+        username = data.get("username")
+        professional_role = data.get("professional_role")
+        organization = data.get("organization")
+        country = data.get("country")
+        city = data.get("city")
+
+        user_email(user, email)
+        user_username(user, username)
+        if first_name:
+            user_field(user, "first_name", first_name)
+        if last_name:
+            user_field(user, "last_name", last_name)
+        if professional_role:
+            user_field(user, "professional_role", professional_role)
+        if organization:
+            user_field(user, "organization", organization)
+        if country:
+            user_field(user, "country", country)
+        if city:
+            user_field(user, "city", city)
+        if "password1" in data:
+            user.set_password(data["password1"])
+        else:
+            user.set_unusable_password()
+        self.populate_username(request, user)
+        if commit:
+            # Ability not to commit makes it easier to derive from
+            # this adapter by adding
             user.save()
         return user
 

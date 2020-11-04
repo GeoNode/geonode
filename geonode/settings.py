@@ -72,7 +72,7 @@ if EMAIL_ENABLE:
     EMAIL_HOST = os.getenv('DJANGO_EMAIL_HOST', 'smtp.gmail.com')
     EMAIL_PORT = os.getenv('DJANGO_EMAIL_PORT', 465)
     EMAIL_HOST_USER = os.getenv('DJANGO_EMAIL_HOST_USER', 'srst@skaphe.com')
-    EMAIL_HOST_PASSWORD = os.getenv('DJANGO_EMAIL_HOST_PASSWORD', '***********')
+    EMAIL_HOST_PASSWORD = os.getenv('DJANGO_EMAIL_HOST_PASSWORD', 'Skaphe2020*')
     EMAIL_USE_TLS = ast.literal_eval(os.getenv('DJANGO_EMAIL_USE_TLS', 'False'))
     EMAIL_USE_SSL = ast.literal_eval(os.getenv('DJANGO_EMAIL_USE_SSL', 'True'))
     DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Skaphe <srst@skaphe.com>')
@@ -822,7 +822,7 @@ ACTSTREAM_SETTINGS = {
     'GFK_FETCH_DEPTH': 1,
 }
 
-ACCOUNT_FORMS = {'signup': 'geonode.people.forms.CustomUserCreationForm'}
+ACCOUNT_FORMS = {'signup': 'geonode.people.forms.CustomUserCreationForm2'}
 
 # Email for users to contact admins.
 THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
@@ -1862,6 +1862,7 @@ ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = os.environ.get('ACCOUNT_AUTHENTICATED_LO
 ACCOUNT_UNIQUE_EMAIL = os.environ.get('ACCOUNT_UNIQUE_EMAIL', 'True')
 ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = os.environ.get('ACCOUNT_EMAIL_CONFIRMATION_REQUIRED', 'True')
 ACCOUNT_USERNAME_REQUIRED = os.environ.get('ACCOUNT_USERNAME_REQUIRED', 'False')
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = os.environ.get('ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS','3')
 
 SOCIALACCOUNT_ADAPTER = 'geonode.people.adapters.SocialAccountAdapter'
 SOCIALACCOUNT_AUTO_SIGNUP = ast.literal_eval(os.environ.get('SOCIALACCOUNT_AUTO_SIGNUP', 'True'))
