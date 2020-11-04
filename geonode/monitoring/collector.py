@@ -788,11 +788,11 @@ class CollectorAPI(object):
                                  'grouper': [],
                                  },
                         # number of labels for each user
-                        'user_on_label': {'select_only': ['ml.user as user, count(distinct(ml.name)) as val, ',
-                                                          'count(1) as metric_count',
-                                                          'sum(samples_count) as samples_count',
-                                                          'sum(mv.value_num), min(mv.value_num)',
-                                                          'max(mv.value_num)', ],
+                        'user_on_label': {'select_only': [('ml.user as user, count(distinct(ml.name)) as val, '
+                                                           'count(1) as metric_count',
+                                                           'sum(samples_count) as samples_count',
+                                                           'sum(mv.value_num), min(mv.value_num)',
+                                                           'max(mv.value_num)')],
                                           'from': [('join monitoring_monitoredresource mr '
                                                     'on (mv.resource_id = mr.id)')],
                                           'where': ['and ml.user is not NULL'],

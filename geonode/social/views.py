@@ -21,9 +21,9 @@ import logging
 
 from actstream.models import Action
 from django.views.generic import ListView
+from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 
-from geonode.utils import resolve_object
 from geonode.base.models import ResourceBase
 
 logger = logging.getLogger(__name__)
@@ -41,10 +41,10 @@ class RecentActivity(ListView):
 
         def _filter_actions(action, request):
             if action == 'all':
-                _actions = Action.objects.filter(public=True)[:1000]
+                _actions = Action.objects.filter(public=True)[:100]
             else:
                 _actions = Action.objects.filter(
-                    public=True, action_object_content_type__model=action)[:1000]
+                    public=True, action_object_content_type__model=action)[:100]
             _filtered_actions = []
             for _action in _actions:
                 if _action.target_object_id:
@@ -56,17 +56,16 @@ class RecentActivity(ListView):
                         'id': _action.action_object_object_id
                     }
                 try:
-                    resolve_object(
-                        request,
-                        ResourceBase,
-                        action_object_filter,
-                        'base.view_resourcebase')
-                    _filtered_actions.append(_action.id)
+                    obj = get_object_or_404(ResourceBase, **action_object_filter)
+                    resource = obj.get_self_resource()
+                    user = request.user
+                    if user.has_perm('base.view_resourcebase', resource) or \
+                    user.has_perm('view_resourcebase', resource):
+                        _filtered_actions.append(_action.id)
                 except ResourceBase.DoesNotExist:
                     _filtered_actions.append(_action.id)
                 except (PermissionDenied, Exception) as e:
                     logger.debug(e)
-
             return _filtered_actions
 
         context['action_list'] = Action.objects.filter(
