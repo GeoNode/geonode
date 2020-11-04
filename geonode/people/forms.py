@@ -26,7 +26,6 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import ugettext as _
 
 from geonode.base.enumerations import COUNTRIES
-from geonode.base.enumerations import CITIES
 from geonode.base.enumerations import PROFESSIONAL_ROLES
 from geonode.base.models import ContactRole
 
