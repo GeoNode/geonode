@@ -88,8 +88,15 @@ class Document(ResourceBase):
 
     def find_placeholder(self):
         placeholder = 'documents/{0}-placeholder.png'
-        return finders.find(placeholder.format(self.extension), False) or \
-            finders.find(placeholder.format('generic'), False)
+        if finders.find(placeholder.format(self.extension), False):
+            return finders.find(placeholder.format(self.extension), False)
+        elif self.is_audio:
+            return finders.find(placeholder.format('audio'), False)
+        elif self.is_image:
+            return finders.find(placeholder.format('image'), False)
+        elif self.is_video:
+            return finders.find(placeholder.format('video'), False)
+        return finders.find(placeholder.format('generic'), False)
 
     @property
     def is_file(self):
@@ -203,6 +210,7 @@ def pre_save_document(instance, sender, **kwargs):
 
 
 def post_save_document(instance, *args, **kwargs):
+    from .tasks import create_document_thumbnail
 
     name = None
     ext = instance.extension
@@ -217,6 +225,7 @@ def post_save_document(instance, *args, **kwargs):
         url = '%s%s' % (
             site_url,
             reverse('document_download', args=(instance.id,)))
+        create_document_thumbnail.apply_async((instance.id,))
     elif instance.doc_url:
         name = "External Document"
         url = instance.doc_url
@@ -233,14 +242,6 @@ def post_save_document(instance, *args, **kwargs):
                 link_type='data',))
 
 
-def create_thumbnail(sender, instance, created, **kwargs):
-    from .tasks import create_document_thumbnail
-
-    result = create_document_thumbnail.delay(object_id=instance.id)
-    # Attempt to run task synchronously
-    result.get()
-
-
 def update_documents_extent(sender, **kwargs):
     documents = get_related_documents(sender)
     if documents:
@@ -253,7 +254,6 @@ def pre_delete_document(instance, sender, **kwargs):
 
 
 signals.pre_save.connect(pre_save_document, sender=Document)
-signals.post_save.connect(create_thumbnail, sender=Document)
 signals.post_save.connect(post_save_document, sender=Document)
 signals.post_save.connect(resourcebase_post_save, sender=Document)
 signals.pre_delete.connect(pre_delete_document, sender=Document)
