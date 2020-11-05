@@ -147,6 +147,8 @@ class CustomUserCreationForm2(SignupForm):
                                    attrs={'placeholder':_('City'),
                                    'autocomplete':'off'}))
 
+    agree_conditions = forms.BooleanField(label=_('AgreeConditions'))
+
     # city = forms.ChoiceField(label=_('City'), choices=CITIES)
     
     def save(self, request):

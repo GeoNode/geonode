@@ -171,7 +171,7 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
         organization = data.get("organization")
         country = data.get("country")
         city = data.get("city")
-
+        agree_conditions = data.get('agree_conditions')
         user_email(user, email)
         user_username(user, username)
         if first_name:
@@ -186,6 +186,8 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
             user_field(user, "country", country)
         if city:
             user_field(user, "city", city)
+        if agree_conditions:
+            user_field(user, "agree_conditions", agree_conditions)        
         if "password1" in data:
             user.set_password(data["password1"])
         else:

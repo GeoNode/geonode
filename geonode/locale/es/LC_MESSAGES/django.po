@@ -8773,3 +8773,9 @@ msgstr "Apellidos
 
 #~ msgid "you"
 #~ msgstr "you"
+
+msgid "show condititions"
+msgstr "Terminos y condiciones"
+
+msgid "AgreeConditions"
+msgstr "Estoy de acuerdo con los términos y condiciones."
