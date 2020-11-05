@@ -17,24 +17,3 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.documents.models import Document
-from geonode.base.api.serializers import ResourceBaseSerializer
-
-import logging
-
-logger = logging.getLogger(__name__)
-
-
-class DocumentSerializer(ResourceBaseSerializer):
-
-    def __init__(self, *args, **kwargs):
-        # Instantiate the superclass normally
-        super(DocumentSerializer, self).__init__(*args, **kwargs)
-
-    class Meta:
-        model = Document
-        name = 'document'
-        fields = (
-            'pk', 'uuid', 'name',
-            'doc_file', 'doc_type', 'doc_url', 'extension', 'mime_type'
-        )

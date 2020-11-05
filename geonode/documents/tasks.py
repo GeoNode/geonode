@@ -66,9 +66,9 @@ def create_document_thumbnail(self, object_id):
     image_path = None
     image_file = None
 
-    if document.is_image():
+    if document.is_image:
         image_file = storage.open(document.doc_file.name, 'rb')
-    elif document.is_file():
+    elif document.is_file:
         try:
             document_location = storage.path(document.doc_file.name)
         except NotImplementedError as e:

@@ -184,6 +184,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         self.fields['metadata_author'] = ContactRoleField('metadata_author', read_only=True)
         self.fields['title'] = serializers.CharField()
         self.fields['abstract'] = serializers.CharField()
+        self.fields['attribution'] = serializers.CharField()
         self.fields['doi'] = serializers.CharField()
         self.fields['alternate'] = serializers.CharField(read_only=True)
         self.fields['date'] = serializers.DateTimeField()
@@ -231,7 +232,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             'pk', 'uuid', 'polymorphic_ctype', 'polymorphic_ctype_id',
             'owner', 'poc', 'metadata_author',
             'keywords', 'regions', 'category',
-            'title', 'abstract', 'doi', 'alternate', 'bbox_polygon', 'srid',
+            'title', 'abstract', 'attribution', 'doi', 'alternate', 'bbox_polygon', 'srid',
             'date', 'date_type', 'edition', 'purpose', 'maintenance_frequency',
             'restriction_code_type', 'constraints_other', 'license', 'language',
             'spatial_representation_type', 'temporal_extent_start', 'temporal_extent_end',
