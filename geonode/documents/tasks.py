@@ -59,7 +59,7 @@ def create_document_thumbnail(self, object_id):
         logger.error("Document #{} does not exist.".format(object_id))
         return
 
-    if not storage.exists(document.doc_file.name):
+    if document.is_image and not storage.exists(document.doc_file.name):
         logger.error("Document #{} exists but its location could not be resolved.".format(object_id))
         return
 
