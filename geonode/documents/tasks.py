@@ -68,6 +68,8 @@ def create_document_thumbnail(self, object_id):
 
     if document.is_image:
         image_file = storage.open(document.doc_file.name, 'rb')
+    elif document.is_video or document.is_audio:
+        image_file = open(document.find_placeholder(), 'rb')
     elif document.is_file:
         try:
             document_location = storage.path(document.doc_file.name)
