@@ -1475,7 +1475,6 @@ def get_store(cat, name, workspace=None):
                 store = coveragestore_from_index(cat, workspace, store)
             elif store.tag == 'wmsStore':
                 store = wmsstore_from_index(cat, workspace, store)
-
             return store
         else:
             raise FailedRequestError("No store found named: " + name)
@@ -2112,10 +2111,11 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             elif not request:
                 from django.contrib.auth import get_user_model
                 _user, _password = ogc_server_settings.credentials
-                _u = get_user_model().objects.get(username=_user)
-                access_token = get_or_create_token(_u)
-                if access_token and not access_token.is_expired():
-                    params['access_token'] = access_token.token
+                _u = get_user_model().objects.filter(username=_user).first()
+                if _u:
+                    access_token = get_or_create_token(_u)
+                    if access_token and not access_token.is_expired():
+                        params['access_token'] = access_token.token
 
             _p = "&".join("%s=%s" % item for item in params.items())
 

@@ -344,21 +344,25 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     },
+
     # MEMCACHED EXAMPLE
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
     #     'LOCATION': '127.0.0.1:11211',
-    #     },
+    # },
+
     # FILECACHE EXAMPLE
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
     #     'LOCATION': '/tmp/django_cache',
-    #     }
+    # },
+
     # DATABASE EXAMPLE -> python manage.py createcachetable
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
     #     'LOCATION': 'my_cache_table',
-    # }
+    # },
+
     # LOCAL-MEMORY CACHING
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -368,6 +372,7 @@ CACHES = {
     #         'MAX_ENTRIES': 10000
     #     }
     # },
+
     'resources': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'TIMEOUT': 600,
@@ -376,6 +381,18 @@ CACHES = {
         }
     }
 }
+
+MEMCACHED_ENABLED = ast.literal_eval(os.getenv('MEMCACHED_ENABLED', 'False'))
+MEMCACHED_BACKEND = os.getenv('MEMCACHED_BACKEND', 'django.core.cache.backends.memcached.MemcachedCache')
+MEMCACHED_LOCATION = os.getenv('MEMCACHED_LOCATION', '127.0.0.1:11211')
+MEMCACHED_LOCK_EXPIRE = int(os.getenv('MEMCACHED_LOCK_EXPIRE', 3600))
+MEMCACHED_LOCK_TIMEOUT = int(os.getenv('MEMCACHED_LOCK_TIMEOUT', 10))
+
+if MEMCACHED_ENABLED:
+    CACHES['default'] = {
+        'BACKEND': MEMCACHED_BACKEND,
+        'LOCATION': MEMCACHED_LOCATION,
+    }
 
 GEONODE_CORE_APPS = (
     # GeoNode internal apps
@@ -1989,7 +2006,7 @@ if MONITORING_ENABLED:
 
     CELERY_BEAT_SCHEDULE['collect_metrics'] = {
         'task': 'geonode.monitoring.tasks.collect_metrics',
-        'schedule': 60.0,
+        'schedule': 300.0,
     }
 
 USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'False'))

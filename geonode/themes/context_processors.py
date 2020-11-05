@@ -14,4 +14,9 @@ def custom_theme(request):
             theme = {}
             slides = []
         cache.set(THEME_CACHE_KEY, theme)
+    else:
+        try:
+            slides = theme.jumbotron_slide_show.filter(is_enabled=True)
+        except Exception:
+            slides = []
     return {'custom_theme': theme, 'slides': slides}
