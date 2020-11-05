@@ -38,9 +38,10 @@ try:
         binary=True)
     lock_type = "MEMCACHED"
 except Exception:
-    lock_type = "MEMCACHED-LOCAL-CONTEXT"
     from django.core.cache import cache
     from contextlib import contextmanager
+    lock_type = "MEMCACHED-LOCAL-CONTEXT"
+    memcache_client = None
 
     """
     ref.

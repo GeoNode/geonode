@@ -611,6 +611,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         null=True,
         help_text=doi_help_text)
+    attribution_help_text = _(
+        'authority or function assigned, as to a ruler, legislative assembly, delegate, or the like.')
+    attribution = models.CharField(
+        _('Attribution'),
+        max_length=2048,
+        blank=True,
+        null=True,
+        help_text=attribution_help_text)
     # internal fields
     uuid = models.CharField(max_length=36)
     owner = models.ForeignKey(
