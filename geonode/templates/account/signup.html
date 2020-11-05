@@ -31,7 +31,7 @@
                       <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                   {% endif %}
                   <div style="padding-bottom: 10px;">
-                      <a href="#" onclick="alert('popup conditions')">{% trans "show condititions" %}</a>
+                    <button type="button" id="btnTerms" class="btn btn-info" data-toggle="modal" data-target="#myModal">{% trans "show condititions" %}</button>                     
                   </div>
                   <div class="form-actions">
                       <button type="submit" class="btn btn-primary">{% trans "Sign up" %}</button>
@@ -40,6 +40,28 @@
           </form>
         </div>
     {% endif %}
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Conditions</h4>
+            </div>
+            <div class="modal-body">
+                <div id="content_terms"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+            </div>
+            
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block extra_script %}
@@ -56,6 +78,16 @@
                 l.insertBefore(spn,l.children[1]);
                 }
             })
+
+            $('#id_country').select2();
+            
+            $("#btnTerms").on("click",function(e){
+                let url = "/terms_of_use_flat/";
+                $.get(url, function(data){
+                    $("#content_terms").html(data);    
+                });
+            })
+
         });
     </script>
 {% endblock %}
