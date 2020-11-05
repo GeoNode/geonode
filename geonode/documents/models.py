@@ -39,8 +39,6 @@ from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
 from geonode.security.utils import remove_object_permissions
 
-IMGTYPES = ['jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif']
-
 logger = logging.getLogger(__name__)
 
 
@@ -92,11 +90,30 @@ class Document(ResourceBase):
         return finders.find(placeholder.format(self.extension), False) or \
             finders.find(placeholder.format('generic'), False)
 
+    @property
     def is_file(self):
         return self.doc_file and self.extension
 
+    @property
+    def mime_type(self):
+        if self.is_file and self.extension.lower() in DOCUMENT_MIMETYPE_MAP:
+            return DOCUMENT_MIMETYPE_MAP[self.extension.lower()]
+        return None
+
+    @property
+    def is_audio(self):
+        AUDIOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'audio']
+        return self.is_file and self.extension.lower() in AUDIOTYPES
+
+    @property
     def is_image(self):
-        return self.is_file() and self.extension.lower() in IMGTYPES
+        IMGTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'image']
+        return self.is_file and self.extension.lower() in IMGTYPES
+
+    @property
+    def is_video(self):
+        VIDEOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'video']
+        return self.is_file and self.extension.lower() in VIDEOTYPES
 
     @property
     def class_name(self):
@@ -157,7 +174,8 @@ def pre_save_document(instance, sender, **kwargs):
         if doc_type_map is None:
             doc_type = 'other'
         else:
-            doc_type = doc_type_map.get(instance.extension, 'other')
+            doc_type = doc_type_map.get(
+                instance.extension.lower(), 'other')
         instance.doc_type = doc_type
 
     elif instance.doc_url:

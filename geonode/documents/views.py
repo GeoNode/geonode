@@ -48,9 +48,9 @@ from geonode.base.forms import CategoryForm, TKeywordForm
 from geonode.base.models import (
     Thesaurus,
     TopicCategory)
+from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
 from geonode.documents.models import Document, get_related_resources
 from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
-from geonode.documents.models import IMGTYPES
 from geonode.utils import build_social_links
 from geonode.groups.models import GroupProfile
 from geonode.base.views import batch_modify
@@ -151,6 +151,10 @@ def document_detail(request, docid):
             else:
                 access_token = None
 
+        AUDIOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'audio']
+        IMGTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'image']
+        VIDEOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'video']
+
         context_dict = {
             'access_token': access_token,
             'resource': document,
@@ -158,7 +162,10 @@ def document_detail(request, docid):
             'permissions_json': permissions_json,
             'group': group,
             'metadata': metadata,
+            'audiotypes': AUDIOTYPES,
             'imgtypes': IMGTYPES,
+            'videotypes': VIDEOTYPES,
+            'mimetypemap': DOCUMENT_MIMETYPE_MAP,
             'related': related}
 
         if settings.SOCIAL_ORIGINS:

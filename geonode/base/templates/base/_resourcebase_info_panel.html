@@ -123,6 +123,11 @@
     <dd>{{ resource.doi }}</dd>
     {% endif %}
 
+    {% if resource.attribution %}
+    <dt>{% trans "Attribution" %}</dt>
+    <dd>{{ resource.attribution }}</dd>
+    {% endif %}
+
   </dl>
 
   <dl class="dl-horizontal">
