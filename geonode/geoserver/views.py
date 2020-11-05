@@ -229,6 +229,7 @@ def layer_style_manage(request, layername):
             # Render the form
             def_sld_name = None  # noqa
             def_sld_title = None  # noqa
+            default_style = None
             if layer.default_style:
                 def_sld_name = layer.default_style.name  # noqa
                 def_sld_title = layer.default_style.name  # noqa

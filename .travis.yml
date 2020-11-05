@@ -55,6 +55,7 @@ jobs:
           - TEST_RUN_CORE: 'True'
           - MONITORING_ENABLED: 'False'
           - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+          - GEOFENCE_SECURITY_ENABLED: 'False'
 
     - stage: unit-tests
       name: "GeoServer-backend Contrib Apps Smoke Tests"
@@ -372,6 +373,7 @@ after_script:
 
 after_success:
   - codecov
+  - bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8
 
 notifications:
   email:

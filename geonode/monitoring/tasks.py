@@ -26,7 +26,7 @@ from django.core.management import call_command
     name='geonode.monitoring.tasks.collect_metrics',
     queue='geoserver.events',
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5, 'countdown': 180})
+    retry_kwargs={'max_retries': 1, 'countdown': 10})
 def collect_metrics(self):
     """
     Collect metrics events data

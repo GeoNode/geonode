@@ -17,37 +17,64 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 from django.conf import settings
-from django.core.mail import send_mail
-
-from django.core.cache import cache
 from django.db import transaction
-from contextlib import contextmanager
+from django.core.mail import send_mail
 
 from celery.utils.log import get_task_logger
 
 from geonode.celery_app import app
 
+try:
+    import pylibmc
+    import sherlock
+    from sherlock import MCLock as Lock
+
+    sherlock.configure(
+        expire=settings.MEMCACHED_LOCK_EXPIRE,
+        timeout=settings.MEMCACHED_LOCK_TIMEOUT)
+    memcache_client = pylibmc.Client(
+        [settings.MEMCACHED_LOCATION],
+        binary=True)
+    lock_type = "MEMCACHED"
+except Exception:
+    lock_type = "MEMCACHED-LOCAL-CONTEXT"
+    from django.core.cache import cache
+    from contextlib import contextmanager
+
+    """
+    ref.
+    http://docs.celeryproject.org/en/latest/tutorials/task-cookbook.html#ensuring-a-task-is-only-executed-one-at-a-time
+    """
+    class Lock(object):
+
+        def __init__(self, lock_id, *args, **kwargs):
+            self.lock_id = lock_id
+            self.client = kwargs.get('client', None)
+
+        @contextmanager
+        def acquire(self, blocking=True):
+            if not blocking:
+                logger.warning("Non-blocking lock not currently available!")
+            # cache.add fails if the key already exists
+            from geonode.celery_app import app
+            status = cache.add(self.lock_id, app.oid, None)
+            try:
+                yield status
+            finally:
+                # memcache delete is very slow, but we have to use it to take
+                # advantage of using add() for atomic locking
+                if status:
+                    # don't release the lock if we didn't acquire it
+                    cache.delete(self.lock_id)
+
 logger = get_task_logger(__name__)
 
 
-@contextmanager
-def memcache_lock(lock_id, oid):
-    """
-    ref.
-     http://docs.celeryproject.org/en/latest/tutorials/task-cookbook.html#ensuring-a-task-is-only-executed-one-at-a-time
-    """
-    # cache.add fails if the key already exists
-    status = cache.add(lock_id, oid, None)
-    try:
-        yield status
-    finally:
-        # memcache delete is very slow, but we have to use it to take
-        # advantage of using add() for atomic locking
-        if status:
-            # don't release the lock if we didn't acquire it
-            cache.delete(lock_id)
+def memcache_lock(lock_id):
+    logger.info(f"Using '{lock_type}' lock type.")
+    lock = Lock(lock_id, client=memcache_client)
+    return lock
 
 
 @app.task(
@@ -68,7 +95,6 @@ def send_email(self, *args, **kwargs):
     """
     Sends an email using django's send_mail functionality.
     """
-
     send_mail(*args, **kwargs)
 
 
@@ -93,7 +119,6 @@ def send_queued_notifications(self, *args):
     advantage of this.
 
     """
-
     try:
         from notification.engine import send_all
     except ImportError:
