@@ -19,9 +19,7 @@ def get_thumbs():
     """Fetches a list of all stored thumbnails"""
     if not storage.exists(settings.THUMBNAIL_LOCATION):
         return []
-
     subdirs, thumbs = storage.listdir(settings.THUMBNAIL_LOCATION)
-
     return thumbs
 
 
