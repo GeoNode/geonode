@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-14 14:04+0000\n"
+"POT-Creation-Date: 2020-11-06 09:20+0000\n"
 "PO-Revision-Date: 2016-08-23 11:58+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Chinese (http://www.transifex.com/geonode/geonode/language/"
@@ -40,12 +40,6 @@ msgstr ""
 
 #: geonode/monitoring/static/monitoring/bundle.js:170
 msgid "STORE_UPDATED"
-msgstr ""
-
-#: geonode/people/templates/people/profile_detail.html:77
-#: geonode/people/templates/people/profile_detail.html:86
-#: geonode/people/templates/people/profile_detail.html:98
-msgid "Not provided."
 msgstr ""
 
 #: geonode/static/geonode/js/upload/FileType.js:50
@@ -278,51 +272,23 @@ msgstr ""
 "\n"
 "请检查表格中的错误。"
 
-#: geonode/templates/admin/base_site.html:4
-msgid "GeoNode site admin"
-msgstr ""
-
-#: geonode/templates/admin/base_site.html:7
-msgid "GeoNode administration"
-msgstr ""
-
-#: geonode/templates/index.html:19
-msgid "Welcome"
-msgstr ""
-
-#: geonode/templates/index.html:21
-msgid ""
-"GeoNode is an open source platform for sharing geospatial data and maps."
-msgstr ""
-
-#: geonode/templates/index.html:25
-msgid "Get Started &raquo;"
-msgstr ""
-
-#: geonode/templates/index.html:82 geonode/templates/index.html:102
 #, fuzzy
-#| msgid "Now"
-msgid "No"
-msgstr "现在"
+#~| msgid "Now"
+#~ msgid "No"
+#~ msgstr "现在"
 
-#: geonode/templates/metadata_form_js.html:75
-#: geonode/templates/metadata_form_js.html:80
-msgid "some schema mandatory fields are missing"
-msgstr "缺少一些元数据模式强制性字段"
+#~ msgid "some schema mandatory fields are missing"
+#~ msgstr "缺少一些元数据模式强制性字段"
 
-#: geonode/templates/metadata_form_js.html:75
-#: geonode/templates/metadata_form_js.html:80
-msgid "Metadata Schema mandatory fields completed"
-msgstr "元数据模式强制性字段已完成"
+#~ msgid "Metadata Schema mandatory fields completed"
+#~ msgstr "元数据模式强制性字段已完成"
 
-#: geonode/templates/metadata_form_js.html:244
-#: geonode/templates/metadata_form_js.html:283
-msgid ""
-"<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field "
-"declared Mandatory by the Metadata Schema</strong></p>"
-msgstr ""
-"<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* 元数据"
-"模式声明的强制性字段</strong></p>"
+#~ msgid ""
+#~ "<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* "
+#~ "Field declared Mandatory by the Metadata Schema</strong></p>"
+#~ msgstr ""
+#~ "<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* 元"
+#~ "数据模式声明的强制性字段</strong></p>"
 
 #~ msgid "Enter your text here ..."
 #~ msgstr "在这里输入你的文本"
