@@ -20,7 +20,6 @@
 
 import os
 
-from django.conf import settings
 from django.core.files.storage import default_storage as storage
 
 from geonode.celery_app import app
@@ -64,24 +63,13 @@ def create_document_thumbnail(self, object_id):
     image_file = None
 
     if document.is_image:
-        if not storage.exists(document.doc_file.name):
-            static_root = settings.STATIC_ROOT
-            image_locaction = os.path.join(
-                static_root,
-                document.doc_file.name)
-            if os.path.exists(image_locaction):
-                try:
-                    from shutil import copyfile
-                    copyfile(
-                        image_locaction,
-                        storage.path(document.doc_file.name)
-                    )
-                except Exception as e:
-                    logger.debug(e)
-                    logger.error("Document #{} exists but its location could not be resolved.".format(object_id))
-                    return
-        else:
-            image_file = storage.open(document.doc_file.name, 'rb')
+        if not os.path.exists(storage.path(document.doc_file.name)):
+            from shutil import copyfile
+            copyfile(
+                document.doc_file.path,
+                storage.path(document.doc_file.name)
+            )
+        image_file = storage.open(document.doc_file.name, 'rb')
     elif document.is_video or document.is_audio:
         image_file = open(document.find_placeholder(), 'rb')
     elif document.is_file:
@@ -110,7 +98,8 @@ def create_document_thumbnail(self, object_id):
     try:
         try:
             thumbnail_content = generate_thumbnail_content(image_file)
-        except Exception:
+        except Exception as e:
+            logger.error("Could not generate thumbnail, falling back to 'placeholder': {}".format(e))
             thumbnail_content = generate_thumbnail_content(document.find_placeholder())
     except Exception as e:
         logger.error("Could not generate thumbnail: {}".format(e))
