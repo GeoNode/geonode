@@ -27,11 +27,13 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.db.models import signals
+from django.contrib.staticfiles import finders
+from django.contrib.gis.geos import MultiPolygon
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.gis.geos import MultiPolygon
-from django.contrib.staticfiles import finders
-from django.utils.translation import ugettext_lazy as _
+
+from uuid_upload_path import upload_to
 
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, resourcebase_post_save, Link
@@ -49,11 +51,12 @@ class Document(ResourceBase):
     A document is any kind of information that can be attached to a map such as pdf, images, videos, xls...
     """
 
-    doc_file = models.FileField(upload_to='documents',
-                                null=True,
-                                blank=True,
-                                max_length=255,
-                                verbose_name=_('File'))
+    doc_file = models.FileField(
+        upload_to=upload_to,
+        null=True,
+        blank=True,
+        max_length=255,
+        verbose_name=_('File'))
 
     extension = models.CharField(max_length=128, blank=True, null=True)
 
@@ -105,7 +108,7 @@ class Document(ResourceBase):
         elif self.doc_file:
             return urljoin(
                 settings.SITEURL,
-                urljoin(settings.STATIC_URL, self.doc_file.name)
+                reverse('document_download', args=(self.id,))
             )
 
     @property
