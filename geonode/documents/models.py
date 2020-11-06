@@ -21,15 +21,15 @@
 import os
 import uuid
 import logging
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 
-from django.db import models
-from django.db.models import signals
 from django.conf import settings
+from django.db import models
+from django.urls import reverse
+from django.db.models import signals
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.gis.geos import MultiPolygon
-from django.urls import reverse
 from django.contrib.staticfiles import finders
 from django.utils.translation import ugettext_lazy as _
 
@@ -97,6 +97,16 @@ class Document(ResourceBase):
         elif self.is_video:
             return finders.find(placeholder.format('video'), False)
         return finders.find(placeholder.format('generic'), False)
+
+    @property
+    def href(self):
+        if self.doc_url:
+            return self.doc_url
+        elif self.doc_file:
+            return urljoin(
+                settings.SITEURL,
+                urljoin(settings.STATIC_URL, self.doc_file.name)
+            )
 
     @property
     def is_file(self):

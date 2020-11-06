@@ -35,6 +35,6 @@ class DocumentSerializer(ResourceBaseSerializer):
         model = Document
         name = 'document'
         fields = (
-            'pk', 'uuid', 'name',
-            'doc_file', 'doc_type', 'doc_url', 'extension', 'mime_type'
+            'pk', 'uuid', 'name', 'href',
+            'doc_type', 'extension', 'mime_type'
         )
