@@ -20,6 +20,9 @@
 
 import os
 
+from django.conf import settings
+from django.core.files.storage import default_storage as storage
+
 from geonode.celery_app import app
 from celery.utils.log import get_task_logger
 
@@ -27,8 +30,6 @@ from geonode.documents.models import Document
 from geonode.documents.renderers import render_document
 from geonode.documents.renderers import generate_thumbnail_content
 from geonode.documents.renderers import ConversionError
-
-from django.core.files.storage import default_storage as storage
 
 logger = get_task_logger(__name__)
 
@@ -59,15 +60,28 @@ def create_document_thumbnail(self, object_id):
         logger.error("Document #{} does not exist.".format(object_id))
         return
 
-    if document.is_image and not storage.exists(document.doc_file.name):
-        logger.error("Document #{} exists but its location could not be resolved.".format(object_id))
-        return
-
     image_path = None
     image_file = None
 
     if document.is_image:
-        image_file = storage.open(document.doc_file.name, 'rb')
+        if not storage.exists(document.doc_file.name):
+            static_root = settings.STATIC_ROOT
+            image_locaction = os.path.join(
+                static_root,
+                document.doc_file.name)
+            if os.path.exists(image_locaction):
+                try:
+                    from shutil import copyfile
+                    copyfile(
+                        image_locaction,
+                        storage.path(document.doc_file.name)
+                    )
+                except Exception as e:
+                    logger.debug(e)
+                    logger.error("Document #{} exists but its location could not be resolved.".format(object_id))
+                    return
+        else:
+            image_file = storage.open(document.doc_file.name, 'rb')
     elif document.is_video or document.is_audio:
         image_file = open(document.find_placeholder(), 'rb')
     elif document.is_file:
