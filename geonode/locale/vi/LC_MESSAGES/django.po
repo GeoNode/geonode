@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-14 14:05+0000\n"
+"POT-Creation-Date: 2020-11-06 09:28+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/geonode/geonode/language/"
@@ -185,90 +185,95 @@ msgstr "dữ liệu được cập nhật mỗi ba tháng"
 msgid "No information provided"
 msgstr "Không có thông tin cung cấp"
 
-#: geonode/base/forms.py:283
-#: geonode/base/templates/base/_resourcebase_info_panel.html:77
+#: geonode/base/forms.py:284 geonode/base/forms.py:514
+#: geonode/base/templates/base/_resourcebase_info_panel.html:85
 #: geonode/catalogue/templates/geonode_metadata_full.html:145
 #: geonode/documents/templates/documents/document_metadata_advanced.html:76
-#: geonode/documents/templates/layouts/doc_panels.html:324
+#: geonode/documents/templates/layouts/doc_panels.html:321
+#: geonode/geoapps/templates/apps/app_metadata_advanced.html:76
+#: geonode/geoapps/templates/layouts/app_panels.html:318
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:99
 #: geonode/layers/templates/layouts/panels.html:326
 #: geonode/maps/templates/layouts/map_panels.html:321
 #: geonode/maps/templates/maps/map_metadata_advanced.html:77
-#: geonode/templates/metadata_detail.html:88
+#: geonode/templates/metadata_detail.html:90
 msgid "Category"
 msgstr "Danh mục"
 
-#: geonode/base/forms.py:294
+#: geonode/base/forms.py:295
 msgid "Category is required."
 msgstr "Danh mục được yêu cầu."
 
-#: geonode/base/forms.py:315
+#: geonode/base/forms.py:316
 msgid "Keywords from Thesaurus"
 msgstr ""
 
-#: geonode/base/forms.py:317
+#: geonode/base/forms.py:318
 msgid "List of keywords from Thesaurus"
 msgstr ""
 
-#: geonode/base/forms.py:337 geonode/base/models.py:612
+#: geonode/base/forms.py:338 geonode/base/forms.py:510
+#: geonode/base/models.py:629
 msgid "Owner"
 msgstr "Chủ nhân"
 
-#: geonode/base/forms.py:343
-#: geonode/base/templates/base/_resourcebase_info_panel.html:34
+#: geonode/base/forms.py:344 geonode/base/forms.py:526
+#: geonode/base/templates/base/_resourcebase_info_panel.html:41
 #: geonode/catalogue/templates/geonode_metadata_full.html:58
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
-#: geonode/templates/metadata_detail.html:71
-#: geonode/templates/search/_general_filters.html:108
+#: geonode/templates/metadata_detail.html:73
+#: geonode/templates/search/_general_filters.html:124
 msgid "Date"
 msgstr "Ngày"
 
-#: geonode/base/forms.py:349 geonode/base/models.py:716
+#: geonode/base/forms.py:350 geonode/base/models.py:733
 msgid "temporal extent start"
 msgstr "thời gian bắt đầu mức độ"
 
-#: geonode/base/forms.py:356 geonode/base/models.py:721
+#: geonode/base/forms.py:357 geonode/base/models.py:738
 msgid "temporal extent end"
 msgstr "thời gian mức độ cuối"
 
-#: geonode/base/forms.py:364 geonode/base/forms.py:372
+#: geonode/base/forms.py:365 geonode/base/forms.py:373
 msgid "Person outside GeoNode (fill form)"
 msgstr ""
 
-#: geonode/base/forms.py:365
+#: geonode/base/forms.py:366
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
-#: geonode/base/templates/base/_resourcebase_info_panel.html:104
+#: geonode/base/templates/base/_resourcebase_info_panel.html:112
 #: geonode/catalogue/templates/geonode_metadata_full.html:75
 #: geonode/documents/templates/documents/document_metadata.html:42
 #: geonode/documents/templates/documents/document_metadata.html:66
 #: geonode/documents/templates/documents/document_metadata_advanced.html:47
 #: geonode/documents/templates/documents/document_metadata_advanced.html:100
+#: geonode/geoapps/templates/apps/app_metadata.html:62
+#: geonode/geoapps/templates/apps/app_metadata_advanced.html:100
 #: geonode/layers/templates/layers/layer_metadata.html:53
 #: geonode/layers/templates/layers/layer_metadata.html:84
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:58
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:144
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:148
 #: geonode/maps/templates/maps/map_metadata.html:67
 #: geonode/maps/templates/maps/map_metadata_advanced.html:101
 msgid "Point of Contact"
 msgstr "Mối liên lạc"
 
-#: geonode/base/forms.py:373
+#: geonode/base/forms.py:374
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
 #: geonode/documents/templates/documents/document_metadata.html:38
 #: geonode/documents/templates/documents/document_metadata_advanced.html:43
 #: geonode/layers/templates/layers/layer_metadata.html:49
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:54
-#: geonode/templates/metadata_detail.html:346
+#: geonode/templates/metadata_detail.html:351
 msgid "Metadata Author"
 msgstr "Metadata Tác giả"
 
-#: geonode/base/forms.py:380
+#: geonode/base/forms.py:381
 #, fuzzy
 #| msgid "Keywords"
 msgid "Free-text Keywords"
 msgstr "Từ khóa"
 
-#: geonode/base/forms.py:382
+#: geonode/base/forms.py:383
 #, fuzzy
 #| msgid "A space or comma-separated list of keywords"
 msgid ""
@@ -276,57 +281,98 @@ msgid ""
 "Hierarchical tree."
 msgstr "Một không gian hoặc danh sách bằng dấu phẩy của các từ khóa"
 
-#: geonode/base/forms.py:394
-#: geonode/base/templates/base/_resourcebase_info_panel.html:87
+#: geonode/base/forms.py:395 geonode/base/forms.py:522
+#: geonode/base/templates/base/_resourcebase_info_panel.html:95
 #: geonode/catalogue/templates/geonode_metadata_full.html:149
-#: geonode/templates/metadata_detail.html:98
+#: geonode/templates/metadata_detail.html:100
 #: geonode/templates/search/_region_filter.html:5
 msgid "Regions"
 msgstr "Khu vực"
 
-#: geonode/base/forms.py:563
+#: geonode/base/forms.py:506 geonode/base/forms.py:539
+#: geonode/base/templates/base/_resourcebase_info_panel.html:117
+#: geonode/documents/templates/layouts/doc_panels.html:340
+#: geonode/geoapps/templates/layouts/app_panels.html:337
+#: geonode/layers/templates/layouts/panels.html:346
+#: geonode/maps/templates/layouts/map_panels.html:340
+#: geonode/templates/metadata_detail.html:114
+#, fuzzy
+#| msgid "Groups"
+msgid "Group"
+msgstr "Nhóm"
+
+#: geonode/base/forms.py:518 geonode/base/models.py:706
+#: geonode/base/templates/base/_resourcebase_info_panel.html:16
+#: geonode/base/templates/base/_resourcebase_info_panel.html:147
+#: geonode/catalogue/templates/geonode_metadata_full.html:98
+#: geonode/templates/metadata_detail.html:59
+#: geonode/templates/metadata_detail.html:208
+msgid "License"
+msgstr "Giấy phép"
+
+#: geonode/base/forms.py:529
+#: geonode/base/templates/base/_resourcebase_info_panel.html:184
+#: geonode/catalogue/templates/geonode_metadata_full.html:101
+#: geonode/templates/500.html:211 geonode/templates/base.html:548
+#: geonode/templates/metadata_detail.html:245
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+#: geonode/base/forms.py:543 geonode/templates/index.html:158
+#: geonode/templates/pinax/notifications/account_approve/full.txt:1
+msgid "User"
+msgid_plural "Users"
+msgstr[0] ""
+
+#: geonode/base/forms.py:547
+#, fuzzy
+#| msgid "Permissions"
+msgid "Permission Type"
+msgstr "Quyền"
+
+#: geonode/base/forms.py:557
+msgid "Mode"
+msgstr ""
+
+#: geonode/base/forms.py:608
+#, fuzzy
+#| msgid "Resources"
+msgid "Resource"
+msgstr "Tài nguyên"
+
+#: geonode/base/forms.py:612
+msgid "Reason"
+msgstr ""
+
+#: geonode/base/forms.py:614
 msgid "Short reasoning behind the request"
 msgstr ""
 
-#: geonode/base/management/commands/updategeoip.py:44
-msgid "Write result to file, default GEOIP_PATH: {}"
-msgstr ""
-
-#: geonode/base/management/commands/updategeoip.py:46
-msgid ""
-"Fetch database from specific url. If nothing provided, default {} will be "
-"used"
-msgstr ""
-
-#: geonode/base/management/commands/updategeoip.py:48
-msgid "Overwrite file if exists"
-msgstr ""
-
-#: geonode/base/models.py:94 geonode/services/models.py:194
+#: geonode/base/models.py:102 geonode/services/models.py:194
 msgid "function performed by the responsible party"
 msgstr "chức năng thực hiện bởi các bên chịu trách nhiệm"
 
-#: geonode/base/models.py:562
+#: geonode/base/models.py:570
 msgid "reference date for the cited resource"
 msgstr "ngày tham chiếu cho các tài nguyên trích dẫn"
 
-#: geonode/base/models.py:563
+#: geonode/base/models.py:571
 msgid "identification of when a given event occurred"
 msgstr "xác định khi một sự kiện được xảy ra"
 
-#: geonode/base/models.py:564
+#: geonode/base/models.py:572
 msgid "version of the cited resource"
 msgstr "phiên bản của tài nguyên trích dẫn"
 
-#: geonode/base/models.py:566
+#: geonode/base/models.py:574
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "ngắn gọn tóm tắt diễn giải nội dung của tài nguyên (s)"
 
-#: geonode/base/models.py:568
+#: geonode/base/models.py:576
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "tóm tắt những ý định mà các nguồn tài nguyên (s) đã được phát triển"
 
-#: geonode/base/models.py:570
+#: geonode/base/models.py:578
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
@@ -334,35 +380,39 @@ msgstr ""
 "tần số mà thay đổi và xóa bỏ được thực hiện cho các dữ liệu sau khi nó được "
 "sản xuất đầu tiên"
 
-#: geonode/base/models.py:573
+#: geonode/base/models.py:581
+#, fuzzy
+#| msgid ""
+#| "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
+#| "the subject (space or comma-separated"
 msgid ""
 "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
-"the subject (space or comma-separated"
+"the subject (space or comma-separated)"
 msgstr ""
 "từ thường được sử dụng (s) hoặc từ chính thức (s) hoặc cụm từ (s) được sử "
 "dụng để mô tả các đối tượng (không gian hoặc bằng dấu phẩy"
 
-#: geonode/base/models.py:576
+#: geonode/base/models.py:584
 #, fuzzy
 #| msgid ""
 #| "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
 #| "the subject (space or comma-separated"
 msgid ""
 "formalised word(s) or phrase(s) from a fixed thesaurus used to describe the "
-"subject (space or comma-separated"
+"subject (space or comma-separated)"
 msgstr ""
 "từ thường được sử dụng (s) hoặc từ chính thức (s) hoặc cụm từ (s) được sử "
 "dụng để mô tả các đối tượng (không gian hoặc bằng dấu phẩy"
 
-#: geonode/base/models.py:578
+#: geonode/base/models.py:586
 msgid "keyword identifies a location"
 msgstr "từ khóa xác định một vị trí"
 
-#: geonode/base/models.py:580
+#: geonode/base/models.py:588
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr "hạn chế (s) được đặt trên các truy cập hoặc sử dụng các dữ liệu."
 
-#: geonode/base/models.py:582
+#: geonode/base/models.py:590
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
@@ -370,15 +420,15 @@ msgstr ""
 "hạn chế khác và điều kiện tiên quyết pháp lý cho việc truy cập và sử dụng "
 "tài nguyên hoặc siêu dữ liệu"
 
-#: geonode/base/models.py:584
+#: geonode/base/models.py:592
 msgid "license of the dataset"
 msgstr "giấy phép của bộ dữ liệu"
 
-#: geonode/base/models.py:585
+#: geonode/base/models.py:593
 msgid "language used within the dataset"
 msgstr "ngôn ngữ được sử dụng trong các tập dữ liệu"
 
-#: geonode/base/models.py:587
+#: geonode/base/models.py:595
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
@@ -386,20 +436,20 @@ msgstr ""
 "cao cấp dữ liệu địa lý phân loại theo chủ đề để hỗ trợ các nhóm và tìm kiếm "
 "có sẵn của bộ dữ liệu địa lý."
 
-#: geonode/base/models.py:590
+#: geonode/base/models.py:598
 msgid "method used to represent geographic information in the dataset."
 msgstr ""
 "phương pháp được sử dụng để đại diện cho thông tin địa lý trong tập dữ liệu."
 
-#: geonode/base/models.py:592
+#: geonode/base/models.py:600
 msgid "time period covered by the content of the dataset (start)"
 msgstr "khoảng thời gian bao phủ bởi các nội dung của dữ liệu (bắt đầu)"
 
-#: geonode/base/models.py:594
+#: geonode/base/models.py:602
 msgid "time period covered by the content of the dataset (end)"
 msgstr "khoảng thời gian bao phủ bởi các nội dung của dữ liệu (kết thúc)"
 
-#: geonode/base/models.py:596
+#: geonode/base/models.py:604
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
@@ -407,188 +457,193 @@ msgstr ""
 "giải thích chung về kiến ​​thức sản xuất dữ liệu về dòng dõi của một tập dữ "
 "liệu"
 
-#: geonode/base/models.py:599
+#: geonode/base/models.py:607
 msgid "a DOI will be added by Admin before publication."
 msgstr ""
 
-#: geonode/base/models.py:601
-#: geonode/base/templates/base/_resourcebase_info_panel.html:114
-#: geonode/templates/metadata_detail.html:116
+#: geonode/base/models.py:609
+#: geonode/base/templates/base/_resourcebase_info_panel.html:122
+#: geonode/templates/metadata_detail.html:118
 msgid "DOI"
 msgstr ""
 
+#: geonode/base/models.py:615
+msgid ""
+"authority or function assigned, as to a ruler, legislative assembly, "
+"delegate, or the like."
+msgstr ""
+
 #: geonode/base/models.py:617
+#: geonode/base/templates/base/_resourcebase_info_panel.html:127
+#: geonode/templates/metadata_detail.html:121
+#, fuzzy
+#| msgid "Attribute"
+msgid "Attribution"
+msgstr "Đặc tính"
+
+#: geonode/base/models.py:634
 msgid "title"
 msgstr "tiêu đề"
 
-#: geonode/base/models.py:618
+#: geonode/base/models.py:635
 msgid "name by which the cited resource is known"
 msgstr "tên mà nguồn trích dẫn là được biết đến"
 
-#: geonode/base/models.py:621
+#: geonode/base/models.py:638
 msgid "date"
 msgstr "ngày"
 
-#: geonode/base/models.py:625
+#: geonode/base/models.py:642
 msgid "date type"
 msgstr "loại ngày"
 
-#: geonode/base/models.py:631
+#: geonode/base/models.py:648
 msgid "edition"
 msgstr "phiên bản"
 
-#: geonode/base/models.py:637
+#: geonode/base/models.py:654
 msgid "abstract"
 msgstr "trừu tượng"
 
-#: geonode/base/models.py:642
+#: geonode/base/models.py:659
 msgid "purpose"
 msgstr "mục đích"
 
-#: geonode/base/models.py:648
+#: geonode/base/models.py:665
 msgid "maintenance frequency"
 msgstr "tần số bảo trì"
 
-#: geonode/base/models.py:655 geonode/base/models.py:662
+#: geonode/base/models.py:672 geonode/base/models.py:679
 #: geonode/people/models.py:117
 msgid "keywords"
 msgstr "từ khóa"
 
-#: geonode/base/models.py:668
+#: geonode/base/models.py:685
 msgid "keywords region"
 msgstr "khu vực từ khóa"
 
-#: geonode/base/models.py:674
+#: geonode/base/models.py:691
 msgid "restrictions"
 msgstr "hạn chế"
 
-#: geonode/base/models.py:681
+#: geonode/base/models.py:698
 msgid "restrictions other"
 msgstr "hạn chế khác"
 
-#: geonode/base/models.py:689
-#: geonode/base/templates/base/_resourcebase_info_panel.html:16
-#: geonode/base/templates/base/_resourcebase_info_panel.html:134
-#: geonode/catalogue/templates/geonode_metadata_full.html:98
-#: geonode/templates/metadata_detail.html:57
-#: geonode/templates/metadata_detail.html:203
-msgid "License"
-msgstr "Giấy phép"
-
-#: geonode/base/models.py:693 geonode/people/models.py:121
+#: geonode/base/models.py:710 geonode/people/models.py:121
 msgid "language"
 msgstr "ngôn ngữ"
 
-#: geonode/base/models.py:711
+#: geonode/base/models.py:728
 #, fuzzy
 #| msgid "Spatial Representation Type"
 msgid "spatial representation type"
 msgstr "Loại không gian đại diện"
 
-#: geonode/base/models.py:726
+#: geonode/base/models.py:743
 msgid "supplemental information"
 msgstr "thông tin bổ sung"
 
-#: geonode/base/models.py:729
+#: geonode/base/models.py:746
 msgid "any other descriptive information about the dataset"
 msgstr "bất kỳ thông tin mô tả khác về dữ liệu"
 
-#: geonode/base/models.py:733
+#: geonode/base/models.py:750
 msgid "data quality statement"
 msgstr "tuyên bố chất lượng dữ liệu"
 
-#: geonode/base/models.py:774
+#: geonode/base/models.py:773
 msgid "CSW typename"
 msgstr "CSW typename"
 
-#: geonode/base/models.py:779
+#: geonode/base/models.py:778
 msgid "CSW schema"
 msgstr "Schema CSW"
 
-#: geonode/base/models.py:784
+#: geonode/base/models.py:783
 msgid "CSW source"
 msgstr "CSW nguồn"
 
-#: geonode/base/models.py:789
+#: geonode/base/models.py:788
 msgid "CSW insert date"
 msgstr "CSW ngày chèn"
 
-#: geonode/base/models.py:791
+#: geonode/base/models.py:790
 msgid "CSW type"
 msgstr "CSW loại"
 
-#: geonode/base/models.py:796
+#: geonode/base/models.py:795
 msgid "CSW anytext"
 msgstr "CSW anytext"
 
-#: geonode/base/models.py:798
+#: geonode/base/models.py:797
 msgid "CSW WKT geometry"
 msgstr "CSW WKT hình học"
 
-#: geonode/base/models.py:804
+#: geonode/base/models.py:803
 #, fuzzy
 #| msgid "Metadata Provider"
 msgid "Metadata uploaded preserve"
 msgstr "Nhà cung cấp siêu dữ liệu"
 
-#: geonode/base/models.py:811 geonode/templates/metadata_detail.html:108
+#: geonode/base/models.py:810 geonode/templates/metadata_detail.html:110
 msgid "Featured"
 msgstr ""
 
-#: geonode/base/models.py:812
+#: geonode/base/models.py:811
 msgid "Should this resource be advertised in home page?"
 msgstr "Nguồn tài nguyên này nên được quảng cáo trên trang chủ?"
 
-#: geonode/base/models.py:814
+#: geonode/base/models.py:813
 #, fuzzy
 #| msgid "Published From"
 msgid "Is Published"
 msgstr "Xuất bản Từ"
 
-#: geonode/base/models.py:816
+#: geonode/base/models.py:815
 msgid "Should this resource be published and searchable?"
 msgstr "Nguồn tài nguyên này phải được công bố và có thể tìm kiếm?"
 
-#: geonode/base/models.py:818 geonode/templates/metadata_detail.html:102
+#: geonode/base/models.py:817 geonode/templates/metadata_detail.html:104
 #, fuzzy
 #| msgid "Not provided"
 msgid "Approved"
 msgstr "Không được cung cấp"
 
-#: geonode/base/models.py:820
+#: geonode/base/models.py:819
 msgid "Is this resource validated from a publisher or editor?"
 msgstr ""
 
-#: geonode/base/models.py:823
+#: geonode/base/models.py:822
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Thumbnail url"
 msgstr "Thumbnail"
 
-#: geonode/base/models.py:831
+#: geonode/base/models.py:830
 msgid "Dirty State"
 msgstr ""
 
-#: geonode/base/models.py:833
+#: geonode/base/models.py:832
 msgid "Security Rules Are Not Synched with GeoServer!"
 msgstr ""
 
-#: geonode/base/models.py:1487
+#: geonode/base/models.py:1641
 msgid "For example \"kml\""
 msgstr "Ví dụ \"kml\""
 
-#: geonode/base/models.py:1492
+#: geonode/base/models.py:1646
 msgid "For example \"View in Google Earth\""
 msgstr "Ví dụ \"Xem trong Google Earth\""
 
-#: geonode/base/models.py:1494
+#: geonode/base/models.py:1648
 msgid "For example \"text/xml\""
 msgstr "Ví dụ \"text / xml\""
 
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:3
-#: geonode/templates/500.html:183 geonode/templates/500.html:204
-#: geonode/templates/base.html:316 geonode/templates/base.html:489
-#: geonode/templates/base.html:526
+#: geonode/templates/500.html:188 geonode/templates/500.html:209
+#: geonode/templates/base.html:338 geonode/templates/base.html:509
+#: geonode/templates/base.html:546
 msgid "About"
 msgstr "Về"
 
@@ -599,9 +654,9 @@ msgid "Responsible, Point of Contact, Metadata Author"
 msgstr "Chủ sở hữu, đầu mối liên lạc, Metadata Tác giả"
 
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:10
-#: geonode/base/templates/base/_resourcebase_info_panel.html:99
+#: geonode/base/templates/base/_resourcebase_info_panel.html:107
 #: geonode/catalogue/templates/geonode_metadata_full.html:72
-#: geonode/templates/metadata_detail.html:122
+#: geonode/templates/metadata_detail.html:127
 msgid "Responsible"
 msgstr ""
 
@@ -610,122 +665,124 @@ msgstr ""
 #: geonode/client/templates/leaflet/maps/map_view.html:101
 #: geonode/groups/models.py:86
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:20
-#: geonode/services/forms.py:113
+#: geonode/services/forms.py:112
 #: geonode/services/templates/services/service_detail.html:22
 #: geonode/services/templates/services/service_list.html:17
 #: geonode/templates/announcements/announcement_list.html:21
-#: geonode/templates/base.html:711 geonode/templates/metadata_detail.html:43
+#: geonode/templates/base.html:735 geonode/templates/metadata_detail.html:45
 msgid "Title"
 msgstr "Tiêu đề"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:11
-#: geonode/base/templates/base/_resourcebase_info_panel.html:129
+#: geonode/base/templates/base/_resourcebase_info_panel.html:142
 msgid "SRID"
 msgstr ""
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:24
-#: geonode/base/templates/base/_resourcebase_info_panel.html:141
-#: geonode/templates/metadata_detail.html:65
-#: geonode/templates/metadata_detail.html:210
+#: geonode/base/templates/base/_resourcebase_info_panel.html:154
+#: geonode/templates/metadata_detail.html:67
+#: geonode/templates/metadata_detail.html:215
 msgid "For more info see"
 msgstr ""
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:29
 #: geonode/catalogue/templates/geonode_metadata_full.html:61
 #: geonode/client/templates/leaflet/maps/map_view.html:106
-#: geonode/services/forms.py:131
+#: geonode/services/forms.py:130
 #: geonode/services/templates/services/service_detail.html:10
-#: geonode/templates/metadata_detail.html:48
+#: geonode/templates/metadata_detail.html:50
 msgid "Abstract"
 msgstr "Trừu tượng"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:45
+#: geonode/base/templates/base/_resourcebase_info_panel.html:35
+#, fuzzy
+#| msgid "Creating a Map"
+msgid "Creation Date"
+msgstr "Tạo một bản đồ"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:37
+#, fuzzy
+#| msgid "Position Name"
+msgid "Pubblication Date"
+msgstr "Vị trí Name"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:39
+#, fuzzy
+#| msgid "Permission Denied"
+msgid "Revision Date"
+msgstr "Permission Denied"
+
+#: geonode/base/templates/base/_resourcebase_info_panel.html:53
 #: geonode/catalogue/templates/geonode_metadata_full.html:91
-#: geonode/layers/templates/layers/layer_detail.html:708
+#: geonode/favorite/templates/favorite/favorite_list.html:17
+#: geonode/layers/templates/layers/layer_detail.html:710
 #: geonode/services/templates/services/service_detail.html:8
 #: geonode/services/templates/services/service_list.html:19
-#: geonode/templates/metadata_detail.html:76
+#: geonode/templates/metadata_detail.html:78
 msgid "Type"
 msgstr "Kiểu"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:50
+#: geonode/base/templates/base/_resourcebase_info_panel.html:58
 #: geonode/catalogue/templates/geonode_metadata_full.html:142
 #: geonode/groups/models.py:96 geonode/people/forms.py:92
 #: geonode/people/templates/people/profile_detail.html:106
 #: geonode/services/templates/services/service_detail.html:11
-#: geonode/templates/metadata_detail.html:81
-#: geonode/templates/metadata_detail.html:152
-#: geonode/templates/metadata_detail.html:294
-#: geonode/templates/metadata_detail.html:375
+#: geonode/templates/metadata_detail.html:83
+#: geonode/templates/metadata_detail.html:157
+#: geonode/templates/metadata_detail.html:299
+#: geonode/templates/metadata_detail.html:380
 #: geonode/templates/search/_h_keywords_filter.html:3
 msgid "Keywords"
 msgstr "Từ khóa"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:109
-#: geonode/documents/templates/layouts/doc_panels.html:343
-#: geonode/layers/templates/layouts/panels.html:346
-#: geonode/maps/templates/layouts/map_panels.html:340
-#: geonode/templates/metadata_detail.html:112
-#, fuzzy
-#| msgid "Groups"
-msgid "Group"
-msgstr "Nhóm"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:121
+#: geonode/base/templates/base/_resourcebase_info_panel.html:134
 msgid "More info"
 msgstr ""
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:147
+#: geonode/base/templates/base/_resourcebase_info_panel.html:160
 #: geonode/catalogue/templates/geonode_metadata_full.html:88
-#: geonode/templates/metadata_detail.html:216
+#: geonode/templates/metadata_detail.html:221
 msgid "Maintenance Frequency"
 msgstr "Bảo trì tần số"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:152
+#: geonode/base/templates/base/_resourcebase_info_panel.html:165
 #: geonode/catalogue/templates/geonode_metadata_full.html:94
-#: geonode/templates/metadata_detail.html:221
+#: geonode/templates/metadata_detail.html:226
 msgid "Restrictions"
 msgstr "Hạn chế"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:161
+#: geonode/base/templates/base/_resourcebase_info_panel.html:174
 #: geonode/catalogue/templates/geonode_metadata_full.html:64
-#: geonode/templates/metadata_detail.html:230
+#: geonode/templates/metadata_detail.html:235
 msgid "Edition"
 msgstr "Phiên bản"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:166
+#: geonode/base/templates/base/_resourcebase_info_panel.html:179
 #: geonode/catalogue/templates/geonode_metadata_full.html:80
-#: geonode/templates/metadata_detail.html:235
+#: geonode/templates/metadata_detail.html:240
 msgid "Purpose"
 msgstr "Mục đích"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:171
-#: geonode/catalogue/templates/geonode_metadata_full.html:101
-#: geonode/templates/500.html:206 geonode/templates/base.html:528
-#: geonode/templates/metadata_detail.html:240
-msgid "Language"
-msgstr "Ngôn ngữ"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:176
+#: geonode/base/templates/base/_resourcebase_info_panel.html:189
 #: geonode/catalogue/templates/geonode_metadata_full.html:104
-#: geonode/templates/metadata_detail.html:245
+#: geonode/templates/metadata_detail.html:250
 msgid "Temporal Extent"
 msgstr "Mức độ thời gian"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:181
+#: geonode/base/templates/base/_resourcebase_info_panel.html:194
 #: geonode/catalogue/templates/geonode_metadata_full.html:122
-#: geonode/templates/metadata_detail.html:250
+#: geonode/templates/metadata_detail.html:255
 msgid "Data Quality"
 msgstr "Chất lượng dữ liệu"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:186
+#: geonode/base/templates/base/_resourcebase_info_panel.html:199
 #: geonode/catalogue/templates/geonode_metadata_full.html:119
-#: geonode/templates/metadata_detail.html:255
+#: geonode/templates/metadata_detail.html:260
 msgid "Supplemental Information"
 msgstr "Thông tin bổ sung"
 
-#: geonode/base/templates/base/_resourcebase_info_panel.html:191
-#: geonode/templates/metadata_detail.html:260
+#: geonode/base/templates/base/_resourcebase_info_panel.html:204
+#: geonode/templates/metadata_detail.html:265
 msgid "Spatial Representation Type"
 msgstr "Loại không gian đại diện"
 
@@ -739,50 +796,54 @@ msgstr ""
 msgid "Temporal Serie"
 msgstr "Mức độ thời gian"
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:53
+#: geonode/base/templates/base/_resourcebase_snippet.html:48
+msgid "Select"
+msgstr ""
+
 #: geonode/base/templates/base/_resourcebase_snippet.html:54
-#: geonode/layers/templates/layers/layer_detail.html:43
+#: geonode/base/templates/base/_resourcebase_snippet.html:55
+#: geonode/layers/templates/layers/layer_detail.html:44
 #, fuzzy
 #| msgid "Services"
 msgid "Service is"
 msgstr "Dịch vụ"
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:53
-#: geonode/layers/templates/layers/layer_detail.html:43
+#: geonode/base/templates/base/_resourcebase_snippet.html:54
+#: geonode/layers/templates/layers/layer_detail.html:44
 msgid "online"
 msgstr ""
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:54
-#: geonode/layers/templates/layers/layer_detail.html:43
+#: geonode/base/templates/base/_resourcebase_snippet.html:55
+#: geonode/layers/templates/layers/layer_detail.html:44
 msgid "offline"
 msgstr ""
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:58
+#: geonode/base/templates/base/_resourcebase_snippet.html:59
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:59
-#: geonode/layers/templates/layers/layer_detail.html:737
+#: geonode/base/templates/base/_resourcebase_snippet.html:60
+#: geonode/layers/templates/layers/layer_detail.html:739
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Sync permissions immediately"
 msgstr "Thiết lập quyền"
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:61
+#: geonode/base/templates/base/_resourcebase_snippet.html:62
 msgid "PENDING APPROVAL"
 msgstr ""
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:62
+#: geonode/base/templates/base/_resourcebase_snippet.html:63
 msgid "UNPUBLISHED"
 msgstr ""
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:79
-#: geonode/layers/templates/layers/layer_detail.html:633
+#: geonode/base/templates/base/_resourcebase_snippet.html:80
+#: geonode/layers/templates/layers/layer_detail.html:634
 #: geonode/templates/search/_search_content.html:11
 msgid "Create a Map"
 msgstr "Tạo một bản đồ"
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:85
+#: geonode/base/templates/base/_resourcebase_snippet.html:86
 #: geonode/client/templates/leaflet/maps/map_view.html:8
 #: geonode/maps/templates/maps/map_detail.html:198
 #: geonode/maps/templates/maps/map_detail.html:200
@@ -791,15 +852,19 @@ msgstr "Xem bản đồ"
 
 #: geonode/base/templates/base/batch_edit.html:6
 #: geonode/base/templates/base/batch_edit.html:12
+#: geonode/base/templates/base/user_and_group_permissions.html:6
+#: geonode/base/templates/base/user_and_group_permissions.html:12
 msgid "Batch Edit"
 msgstr ""
 
 #: geonode/base/templates/base/batch_edit.html:8
+#: geonode/base/templates/base/user_and_group_permissions.html:8
 msgid "batch edit"
 msgstr ""
 
 #: geonode/base/templates/base/batch_edit.html:18
 #: geonode/base/templates/base/batch_permissions.html:18
+#: geonode/base/templates/base/user_and_group_permissions.html:18
 #: geonode/layers/templates/layers/layer_metadata_upload.html:48
 #: geonode/layers/templates/layers/layer_replace.html:46
 #: geonode/layers/templates/layers/layer_style_upload.html:48
@@ -814,12 +879,13 @@ msgstr ""
 #: geonode/templates/admin/backups/confirm_cancel.html:21
 #: geonode/templates/announcements/announcement_confirm_delete.html:20
 #: geonode/templates/announcements/announcement_form.html:22
-#: geonode/templates/base.html:733
+#: geonode/templates/base.html:757
 msgid "Cancel"
 msgstr "Hủy bỏ"
 
 #: geonode/base/templates/base/batch_edit.html:19
 #: geonode/base/templates/base/batch_permissions.html:19
+#: geonode/base/templates/base/user_and_group_permissions.html:19
 #: geonode/layers/templates/layers/layer_change_poc.html:17
 #: geonode/people/templates/people/forgot_username_form.html:15
 #: geonode/templates/invitations/forms/_invite.html:29
@@ -839,6 +905,10 @@ msgstr "Thiết lập quyền"
 msgid "set permissions"
 msgstr "Thiết lập quyền"
 
+#: geonode/base/templates/base/iso_categories.html:6
+msgid "Discover the available datasets."
+msgstr ""
+
 #: geonode/base/templates/base/thumbnail_upload.html:5
 #: geonode/base/templates/base/thumbnail_upload.html:13
 #, fuzzy
@@ -851,10 +921,10 @@ msgid "Remove (and use auto generated thumbnail)"
 msgstr ""
 
 #: geonode/base/templates/base/thumbnail_upload.html:35
-#: geonode/documents/templates/documents/document_detail.html:160
+#: geonode/documents/templates/documents/document_detail.html:181
 #: geonode/documents/templates/documents/document_upload.html:15
-#: geonode/layers/templates/layers/layer_detail.html:486
-#: geonode/layers/templates/layers/layer_detail.html:507
+#: geonode/layers/templates/layers/layer_detail.html:485
+#: geonode/layers/templates/layers/layer_detail.html:506
 #: geonode/maps/templates/maps/map_detail.html:167
 #: geonode/monitoring/models.py:355
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:58
@@ -864,33 +934,69 @@ msgstr ""
 msgid "Upload"
 msgstr "tải lên"
 
-#: geonode/base/templatetags/user_messages.py:31
-#: geonode/base/templatetags/user_messages.py:39
+#: geonode/base/templates/base/thumbnail_upload.html:41
+#, fuzzy
+#| msgid "Remote Thumbnail"
+msgid "Auto generated thumbnail"
+msgstr "Remote Thumbnail"
+
+#: geonode/base/templatetags/base_tags.py:48
+#, fuzzy
+#| msgid "Create a Map"
+msgid "Raster Layer"
+msgstr "Tạo một bản đồ"
+
+#: geonode/base/templatetags/base_tags.py:49
+#, fuzzy
+#| msgid "Edit Layer"
+msgid "Vector Layer"
+msgstr "Chỉnh sửa lớp"
+
+#: geonode/base/templatetags/base_tags.py:50
+#, fuzzy
+#| msgid "Temporal Extent"
+msgid "Vector Temporal Serie"
+msgstr "Mức độ thời gian"
+
+#: geonode/base/templatetags/base_tags.py:51
+#, fuzzy
+#| msgid "Remove this Layer"
+msgid "Remote Layer"
+msgstr "Remove this Layer"
+
+#: geonode/base/templatetags/base_tags.py:52
+#, fuzzy
+#| msgid "Create a Map"
+msgid "WMS Cascade Layer"
+msgstr "Tạo một bản đồ"
+
+#: geonode/base/templatetags/user_messages.py:32
+#: geonode/base/templatetags/user_messages.py:40
 #: geonode/templates/user_messages/thread_detail.html:30
 msgid "me"
 msgstr ""
 
-#: geonode/base/views.py:257
+#: geonode/base/views.py:351
 msgid "System message: A request to modify resource"
 msgstr ""
 
-#: geonode/base/views.py:258
+#: geonode/base/views.py:352
 #, fuzzy
 #| msgid "Set permissions for this resource"
 msgid "The resource owner has requested to modify the resource"
 msgstr "Thiết lập quyền cho tài nguyên này"
 
-#: geonode/base/views.py:260
+#: geonode/base/views.py:354
 #, fuzzy
 #| msgid "Resources"
 msgid "Resource title"
 msgstr "Tài nguyên"
 
-#: geonode/base/views.py:262
+#: geonode/base/views.py:356
 msgid "Reason for the request"
 msgstr ""
 
-#: geonode/base/views.py:264
+#: geonode/base/views.py:358
 msgid ""
 "To allow the change, set the resource to not \"Approved\" under the metadata "
 "settingsand write message to the owner to notify him"
@@ -903,8 +1009,9 @@ msgid "Resource Metadata"
 msgstr "Edit Service Metadata"
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:49
-#: geonode/documents/templates/documents/document_detail.html:159
-#: geonode/layers/templates/layers/layer_detail.html:503
+#: geonode/documents/templates/documents/document_detail.html:180
+#: geonode/geoapps/templates/apps/app_detail.html:120
+#: geonode/layers/templates/layers/layer_detail.html:502
 #: geonode/layers/templates/layouts/panels.html:275
 #: geonode/maps/templates/layouts/map_panels.html:271
 #: geonode/maps/templates/maps/map_detail.html:165
@@ -952,11 +1059,11 @@ msgstr "tên thuộc tính"
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:167
 #: geonode/groups/models.py:51 geonode/groups/models.py:89
-#: geonode/layers/templates/layers/layer_detail.html:178
+#: geonode/layers/templates/layers/layer_detail.html:179
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:128
-#: geonode/layers/templates/layouts/panels.html:546
+#: geonode/layers/templates/layouts/panels.html:553
 #: geonode/people/templates/people/profile_detail.html:101
-#: geonode/services/forms.py:123
+#: geonode/services/forms.py:122
 #: geonode/services/templates/services/service_detail.html:23
 #: geonode/services/templates/services/service_resources_harvest.html:32
 msgid "Description"
@@ -976,10 +1083,10 @@ msgstr "Tải lên lớp"
 
 #: geonode/client/templates/leaflet/maps/map_base.html:4
 #: geonode/client/templates/leaflet/maps/map_list.html:12
-#: geonode/maps/templates/maps/map_list.html:12
+#: geonode/maps/templates/maps/map_list_default.html:12
 #: geonode/maps/templates/maps/map_metadata_advanced.html:29
-#: geonode/templates/500.html:175 geonode/templates/base.html:306
-#: geonode/templates/base.html:481
+#: geonode/templates/500.html:180 geonode/templates/base.html:316
+#: geonode/templates/base.html:501
 msgid "Explore Maps"
 msgstr "Khám phá Maps"
 
@@ -992,10 +1099,14 @@ msgstr "Chỉnh sửa Bản đồ"
 #: geonode/documents/templates/documents/document_metadata.html:78
 #: geonode/documents/templates/documents/document_metadata_advanced.html:62
 #: geonode/documents/templates/documents/document_metadata_advanced.html:110
+#: geonode/geoapps/templates/apps/app_metadata.html:74
+#: geonode/geoapps/templates/apps/app_metadata_advanced.html:62
+#: geonode/geoapps/templates/apps/app_metadata_advanced.html:111
+#: geonode/geoapps/templates/apps/app_update.html:7
 #: geonode/groups/templates/groups/group_update.html:26
 #: geonode/layers/templates/layers/layer_metadata.html:98
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:83
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:157
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:161
 #: geonode/maps/templates/maps/map_metadata.html:79
 #: geonode/maps/templates/maps/map_metadata_advanced.html:63
 #: geonode/maps/templates/maps/map_metadata_advanced.html:112
@@ -1004,7 +1115,7 @@ msgstr "Cập nhật"
 
 #: geonode/client/templates/leaflet/maps/map_list.html:10
 #: geonode/maps/templates/maps/map_detail.html:255
-#: geonode/maps/templates/maps/map_list.html:10
+#: geonode/maps/templates/maps/map_list_default.html:10
 msgid "Create a New Map"
 msgstr "Tạo một bản đồ mới"
 
@@ -1031,20 +1142,21 @@ msgid "Save Map"
 msgstr "Tạo một bản đồ"
 
 #: geonode/client/templates/leaflet/maps/map_view.html:115
-#: geonode/documents/templates/documents/document_detail.html:178
-#: geonode/documents/templates/documents/document_detail.html:214
-#: geonode/layers/templates/layers/layer_detail.html:425
-#: geonode/layers/templates/layers/layer_detail.html:530
-#: geonode/layers/templates/layers/layer_detail.html:581
+#: geonode/documents/templates/documents/document_detail.html:199
+#: geonode/documents/templates/documents/document_detail.html:235
+#: geonode/geoapps/templates/apps/app_detail.html:135
+#: geonode/geoapps/templates/apps/app_detail.html:195
+#: geonode/layers/templates/layers/layer_detail.html:424
+#: geonode/layers/templates/layers/layer_detail.html:529
+#: geonode/layers/templates/layers/layer_detail.html:580
 #: geonode/layers/templates/upload/layer_upload_time.html:282
 #: geonode/layers/templates/upload/layer_upload_time.html:302
 #: geonode/maps/templates/maps/map_detail.html:134
 #: geonode/maps/templates/maps/map_detail.html:181
-#: geonode/maps/templates/maps/map_detail.html:303
-#: geonode/maps/templates/maps/map_detail.html:323
-#: geonode/templates/500.html:233
+#: geonode/maps/templates/maps/map_detail.html:301
+#: geonode/templates/500.html:238
 #: geonode/templates/_bulk_permissions_form.html:19
-#: geonode/templates/base.html:570 geonode/templates/metadata_base.html:134
+#: geonode/templates/base.html:590 geonode/templates/metadata_base.html:134
 #: geonode/templates/metadata_base.html:168
 #: geonode/templates/metadata_base.html:185
 msgid "Close"
@@ -1170,14 +1282,14 @@ msgid "Flash"
 msgstr ""
 
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:20
-#: geonode/layers/templates/layers/layer_detail.html:161
-#: geonode/layers/templates/layers/layer_detail.html:166
+#: geonode/layers/templates/layers/layer_detail.html:162
+#: geonode/layers/templates/layers/layer_detail.html:167
 msgid "True"
 msgstr ""
 
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:20
-#: geonode/layers/templates/layers/layer_detail.html:161
-#: geonode/layers/templates/layers/layer_detail.html:166
+#: geonode/layers/templates/layers/layer_detail.html:162
+#: geonode/layers/templates/layers/layer_detail.html:167
 msgid "False"
 msgstr ""
 
@@ -1205,180 +1317,199 @@ msgstr "Loại tập tin này không được phép"
 msgid "Permissions must be valid JSON."
 msgstr "Quyền phải JSON hợp lệ."
 
-#: geonode/documents/models.py:57
+#: geonode/documents/models.py:56
 msgid "File"
 msgstr "Hồ sơ"
 
-#: geonode/documents/models.py:67
+#: geonode/documents/models.py:66
 msgid "The URL of the document if it is external."
 msgstr "URL của tài liệu nếu nó là bên ngoài."
 
-#: geonode/documents/models.py:68 geonode/monitoring/models.py:179
+#: geonode/documents/models.py:67 geonode/layers/models.py:478
+#: geonode/monitoring/models.py:179
 #: geonode/services/templates/services/service_detail.html:9
 #: geonode/services/templates/services/service_list.html:18
 msgid "URL"
 msgstr "URL"
 
-#: geonode/documents/templates/documents/document_detail.html:23
+#: geonode/documents/templates/documents/document_detail.html:24
 #, fuzzy
 #| msgid "Documents"
 msgid "documents"
 msgstr "Tài liệu"
 
 #: geonode/documents/templates/documents/document_detail.html:41
-#: geonode/documents/templates/documents/document_detail.html:43
+msgid "Your browser does not support the audio element."
+msgstr ""
+
+#: geonode/documents/templates/documents/document_detail.html:57
+msgid "Your browser does not support the video tag."
+msgstr ""
+
+#: geonode/documents/templates/documents/document_detail.html:62
+#: geonode/documents/templates/documents/document_detail.html:64
 #, fuzzy
 #| msgid "Download"
 msgid "Download the"
 msgstr "Tải về"
 
-#: geonode/documents/templates/documents/document_detail.html:41
-#: geonode/documents/templates/documents/document_detail.html:43
+#: geonode/documents/templates/documents/document_detail.html:62
+#: geonode/documents/templates/documents/document_detail.html:64
 #, fuzzy
 #| msgid "Documents"
 msgid "document"
 msgstr "Tài liệu"
 
-#: geonode/documents/templates/documents/document_detail.html:43
+#: geonode/documents/templates/documents/document_detail.html:64
 msgid "External Resource"
 msgstr "Tài nguyên bên ngoài"
 
-#: geonode/documents/templates/documents/document_detail.html:72
+#: geonode/documents/templates/documents/document_detail.html:93
 msgid "Rate this document"
 msgstr "Đánh giá tài liệu này"
 
-#: geonode/documents/templates/documents/document_detail.html:76
-#: geonode/layers/templates/layers/layer_detail.html:238
+#: geonode/documents/templates/documents/document_detail.html:97
+#: geonode/geoapps/templates/apps/app_detail.html:75
+#: geonode/layers/templates/layers/layer_detail.html:239
 #: geonode/maps/templates/maps/map_detail.html:86
 msgid "Average Rating"
 msgstr "Đánh giá trung bình"
 
-#: geonode/documents/templates/documents/document_detail.html:103
-#: geonode/layers/templates/layers/layer_detail.html:441
+#: geonode/documents/templates/documents/document_detail.html:124
+#: geonode/geoapps/templates/apps/app_detail.html:91
+#: geonode/layers/templates/layers/layer_detail.html:440
 #: geonode/maps/templates/maps/map_detail.html:113
 msgid "Metadata Detail"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:111
-#: geonode/documents/templates/documents/document_detail.html:113
-#: geonode/documents/templates/documents/document_detail.html:115
+#: geonode/documents/templates/documents/document_detail.html:132
+#: geonode/documents/templates/documents/document_detail.html:134
+#: geonode/documents/templates/documents/document_detail.html:136
 msgid "Download Document"
 msgstr "Tải về tài liệu"
 
-#: geonode/documents/templates/documents/document_detail.html:119
-#: geonode/layers/templates/layers/layer_detail.html:267
+#: geonode/documents/templates/documents/document_detail.html:140
+#: geonode/layers/templates/layers/layer_detail.html:268
 msgid "Request Download"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:126
-#: geonode/documents/templates/documents/document_detail.html:143
+#: geonode/documents/templates/documents/document_detail.html:147
+#: geonode/documents/templates/documents/document_detail.html:164
 msgid "Edit Document"
 msgstr "Chỉnh sửa tài liệu"
 
-#: geonode/documents/templates/documents/document_detail.html:134
-#: geonode/layers/templates/layers/layer_detail.html:448
+#: geonode/documents/templates/documents/document_detail.html:155
+#: geonode/geoapps/templates/apps/app_detail.html:146
+#: geonode/layers/templates/layers/layer_detail.html:447
 #: geonode/maps/templates/maps/map_detail.html:192
 msgid "Request change"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:151
+#: geonode/documents/templates/documents/document_detail.html:172
 #: geonode/documents/templates/documents/document_metadata.html:17
-#: geonode/layers/templates/layers/layer_detail.html:469
+#: geonode/geoapps/templates/apps/app_detail.html:112
+#: geonode/geoapps/templates/apps/app_metadata.html:15
+#: geonode/layers/templates/layers/layer_detail.html:468
 #: geonode/layers/templates/layers/layer_metadata.html:19
 #: geonode/maps/templates/maps/map_detail.html:157
 #: geonode/maps/templates/maps/map_metadata.html:20
-#: geonode/templates/metadata_detail.html:32
+#: geonode/templates/metadata_detail.html:34
 msgid "Metadata"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:152
-#: geonode/layers/templates/layers/layer_detail.html:470
+#: geonode/documents/templates/documents/document_detail.html:173
+#: geonode/geoapps/templates/apps/app_detail.html:113
+#: geonode/layers/templates/layers/layer_detail.html:469
 #: geonode/maps/templates/maps/map_detail.html:158
 msgid "Wizard"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:153
-#: geonode/layers/templates/layers/layer_detail.html:471
+#: geonode/documents/templates/documents/document_detail.html:174
+#: geonode/geoapps/templates/apps/app_detail.html:114
+#: geonode/layers/templates/layers/layer_detail.html:470
 #: geonode/maps/templates/maps/map_detail.html:159
 msgid "Advanced Edit"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:166
-#: geonode/monitoring/models.py:176 geonode/templates/index.html:92
+#: geonode/documents/templates/documents/document_detail.html:187
+#: geonode/monitoring/models.py:176 geonode/templates/index.html:148
 #: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:7
 msgid "Document"
 msgid_plural "Documents"
 msgstr[0] ""
 
-#: geonode/documents/templates/documents/document_detail.html:168
-#: geonode/layers/templates/layers/layer_detail.html:515
+#: geonode/documents/templates/documents/document_detail.html:189
+#: geonode/layers/templates/layers/layer_detail.html:514
 msgid "Replace"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:171
+#: geonode/documents/templates/documents/document_detail.html:192
+#: geonode/geoapps/templates/apps/app_detail.html:129
+#: geonode/geoapps/templates/apps/app_remove.html:8
 #: geonode/groups/templates/groups/group_members.html:42
 #: geonode/groups/templates/groups/group_members.html:82
 #: geonode/groups/templates/groups/group_members.html:114
-#: geonode/layers/templates/layers/layer_detail.html:523
+#: geonode/layers/templates/layers/layer_detail.html:522
 #: geonode/maps/templates/maps/map_detail.html:175
 #: geonode/monitoring/models.py:362 geonode/templates/account/email.html:36
 #: geonode/templates/socialaccount/connections.html:33
 msgid "Remove"
 msgstr "Tẩy"
 
-#: geonode/documents/templates/documents/document_detail.html:185
-#: geonode/documents/templates/documents/document_detail.html:192
-#: geonode/layers/templates/layers/layer_detail.html:543
-#: geonode/layers/templates/layers/layer_detail.html:551
+#: geonode/documents/templates/documents/document_detail.html:206
+#: geonode/documents/templates/documents/document_detail.html:213
+#: geonode/layers/templates/layers/layer_detail.html:542
+#: geonode/layers/templates/layers/layer_detail.html:550
 msgid "Download Metadata"
 msgstr "Tải về Metadata"
 
-#: geonode/documents/templates/documents/document_detail.html:197
-#: geonode/layers/templates/layers/layer_detail.html:556
+#: geonode/documents/templates/documents/document_detail.html:218
+#: geonode/layers/templates/layers/layer_detail.html:555
 #, fuzzy
 #| msgid "Download Metadata"
 msgid "Full metadata"
 msgstr "Tải về Metadata"
 
-#: geonode/documents/templates/documents/document_detail.html:200
-#: geonode/layers/templates/layers/layer_detail.html:559
+#: geonode/documents/templates/documents/document_detail.html:221
+#: geonode/layers/templates/layers/layer_detail.html:558
 #, fuzzy
 #| msgid "format"
 msgid "Text format"
 msgstr "định dạng"
 
-#: geonode/documents/templates/documents/document_detail.html:201
-#: geonode/layers/templates/layers/layer_detail.html:560
+#: geonode/documents/templates/documents/document_detail.html:222
+#: geonode/layers/templates/layers/layer_detail.html:559
 #, fuzzy
 #| msgid "format"
 msgid "HTML format"
 msgstr "định dạng"
 
-#: geonode/documents/templates/documents/document_detail.html:205
-#: geonode/layers/templates/layers/layer_detail.html:565
+#: geonode/documents/templates/documents/document_detail.html:226
+#: geonode/layers/templates/layers/layer_detail.html:564
 msgid "Standard Metadata - XML format"
 msgstr ""
 
-#: geonode/documents/templates/documents/document_detail.html:221
+#: geonode/documents/templates/documents/document_detail.html:242
 #, fuzzy
 #| msgid "Resource using this document"
 msgid "Resources using this document"
 msgstr "Tài nguyên sử dụng tài liệu này"
 
-#: geonode/documents/templates/documents/document_detail.html:223
+#: geonode/documents/templates/documents/document_detail.html:244
 msgid "List of resources using this document:"
 msgstr "Danh sách các nguồn lực sử dụng tài liệu này:"
 
-#: geonode/documents/templates/documents/document_detail.html:229
+#: geonode/documents/templates/documents/document_detail.html:250
 msgid "This document is not related to any maps or layers"
 msgstr "Tài liệu này không liên quan đến bất kỳ bản đồ hoặc các lớp"
 
-#: geonode/documents/templates/documents/document_detail.html:238
+#: geonode/documents/templates/documents/document_detail.html:259
 #: geonode/documents/templates/documents/document_thumb_upload.html:64
 #: geonode/documents/templates/documents/document_upload.html:24
+#: geonode/geoapps/templates/apps/app_detail.html:162
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:50
 #: geonode/groups/templates/groups/group_detail.html:73
-#: geonode/layers/templates/layers/layer_detail.html:733
+#: geonode/layers/templates/layers/layer_detail.html:735
 #: geonode/layers/templates/layers/layer_metadata_upload.html:101
 #: geonode/layers/templates/layers/layer_metadata_upload.html:111
 #: geonode/layers/templates/layers/layer_replace.html:111
@@ -1386,15 +1517,15 @@ msgstr "Tài liệu này không liên quan đến bất kỳ bản đồ hoặc 
 #: geonode/layers/templates/layers/layer_style_upload.html:102
 #: geonode/layers/templates/layers/layer_style_upload.html:112
 #: geonode/layers/templates/upload/layer_upload.html:114
-#: geonode/maps/templates/maps/map_detail.html:242 geonode/people/admin.py:57
+#: geonode/maps/templates/maps/map_detail.html:242 geonode/people/admin.py:56
 msgid "Permissions"
 msgstr "Quyền"
 
-#: geonode/documents/templates/documents/document_detail.html:239
+#: geonode/documents/templates/documents/document_detail.html:260
 msgid "Click the button below to change the permissions of this document."
 msgstr "Nhấn vào nút bên dưới để thay đổi quyền truy cập của tài liệu này."
 
-#: geonode/documents/templates/documents/document_detail.html:240
+#: geonode/documents/templates/documents/document_detail.html:261
 msgid "Change Document Permissions"
 msgstr "Thay đổi tài liệu Quyền"
 
@@ -1413,6 +1544,9 @@ msgstr "Tài liệu tải lên"
 
 #: geonode/documents/templates/documents/document_metadata.html:10
 #: geonode/documents/templates/documents/document_metadata_advanced.html:10
+#: geonode/geoapps/templates/apps/app_base.html:6
+#: geonode/geoapps/templates/apps/app_metadata.html:10
+#: geonode/geoapps/templates/apps/app_metadata_advanced.html:10
 #: geonode/layers/templates/layers/layer_base.html:6
 #: geonode/layers/templates/layers/layer_metadata.html:15
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:10
@@ -1435,18 +1569,21 @@ msgid "for %(document_title)s"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_metadata.html:19
+#: geonode/geoapps/templates/apps/app_metadata.html:17
 #: geonode/layers/templates/layers/layer_metadata.html:21
 #: geonode/maps/templates/maps/map_metadata.html:22
 msgid "Completeness"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_metadata.html:21
+#: geonode/geoapps/templates/apps/app_metadata.html:19
 #: geonode/layers/templates/layers/layer_metadata.html:23
 #: geonode/maps/templates/maps/map_metadata.html:24
 msgid "Metadata Schema mandatory fields completed"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_metadata.html:22
+#: geonode/geoapps/templates/apps/app_metadata.html:20
 #: geonode/layers/templates/layers/layer_metadata.html:24
 #: geonode/maps/templates/maps/map_metadata.html:25
 msgid "Check Schema mandatory fields"
@@ -1454,6 +1591,8 @@ msgstr ""
 
 #: geonode/documents/templates/documents/document_metadata.html:35
 #: geonode/documents/templates/documents/document_metadata_advanced.html:40
+#: geonode/geoapps/templates/apps/app_metadata.html:38
+#: geonode/geoapps/templates/apps/app_metadata_advanced.html:47
 #: geonode/layers/templates/layers/layer_metadata.html:46
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:51
 #: geonode/maps/templates/maps/map_metadata.html:43
@@ -1465,10 +1604,14 @@ msgstr "Lỗi cập nhật siêu dữ liệu. Vui lòng kiểm tra các lĩnh v�
 #: geonode/documents/templates/documents/document_metadata.html:73
 #: geonode/documents/templates/documents/document_metadata_advanced.html:102
 #: geonode/documents/templates/documents/document_metadata_advanced.html:107
+#: geonode/geoapps/templates/apps/app_metadata.html:64
+#: geonode/geoapps/templates/apps/app_metadata.html:69
+#: geonode/geoapps/templates/apps/app_metadata_advanced.html:102
+#: geonode/geoapps/templates/apps/app_metadata_advanced.html:107
 #: geonode/layers/templates/layers/layer_metadata.html:86
 #: geonode/layers/templates/layers/layer_metadata.html:91
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:146
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:151
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:150
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:155
 #: geonode/maps/templates/maps/map_metadata.html:69
 #: geonode/maps/templates/maps/map_metadata.html:74
 #: geonode/maps/templates/maps/map_metadata_advanced.html:103
@@ -1478,20 +1621,24 @@ msgstr ""
 
 #: geonode/documents/templates/documents/document_metadata.html:71
 #: geonode/documents/templates/documents/document_metadata_advanced.html:105
+#: geonode/geoapps/templates/apps/app_metadata.html:67
+#: geonode/geoapps/templates/apps/app_metadata_advanced.html:105
 #: geonode/layers/templates/layers/layer_metadata.html:89
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:149
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:153
 #: geonode/maps/templates/maps/map_metadata.html:72
 #: geonode/maps/templates/maps/map_metadata_advanced.html:106
 msgid "Metadata Provider"
 msgstr "Nhà cung cấp siêu dữ liệu"
 
 #: geonode/documents/templates/documents/document_metadata.html:77
+#: geonode/geoapps/templates/apps/app_metadata.html:73
 #: geonode/layers/templates/layers/layer_metadata.html:97
 #: geonode/maps/templates/maps/map_metadata.html:78
 msgid "<< Back"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_metadata.html:79
+#: geonode/geoapps/templates/apps/app_metadata.html:75
 #: geonode/layers/templates/layers/layer_metadata.html:99
 #: geonode/maps/templates/maps/map_metadata.html:80
 #, fuzzy
@@ -1507,6 +1654,7 @@ msgid "Select an option"
 msgstr "Chọn một thuộc tính"
 
 #: geonode/documents/templates/documents/document_metadata_advanced.html:30
+#: geonode/geoapps/templates/apps/app_metadata_advanced.html:29
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:30
 #: geonode/maps/templates/maps/map_metadata_advanced.html:30
 msgid "Edit Metadata"
@@ -1517,6 +1665,7 @@ msgid "Editing details for"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_remove.html:4
+#: geonode/geoapps/templates/apps/app_remove.html:4
 #: geonode/maps/templates/maps/map_remove.html:6
 msgid "Deleting"
 msgstr "Xóa"
@@ -1535,6 +1684,7 @@ msgid ""
 msgstr ""
 
 #: geonode/documents/templates/documents/document_remove.html:20
+#: geonode/geoapps/templates/apps/app_remove.html:20
 #: geonode/groups/templates/groups/group_remove.html:19
 #: geonode/layers/templates/layers/layer_granule_remove.html:22
 #: geonode/layers/templates/layers/layer_remove.html:22
@@ -1544,6 +1694,7 @@ msgid "Yes, I am sure"
 msgstr "Có, tôi chắc chắn"
 
 #: geonode/documents/templates/documents/document_remove.html:21
+#: geonode/geoapps/templates/apps/app_remove.html:21
 #: geonode/groups/templates/groups/group_remove.html:20
 #: geonode/layers/templates/layers/layer_granule_remove.html:23
 #: geonode/layers/templates/layers/layer_remove.html:23
@@ -1563,7 +1714,7 @@ msgstr "Thay thế"
 
 #: geonode/documents/templates/documents/document_replace.html:26
 #: geonode/documents/templates/documents/document_thumb_upload.html:55
-#: geonode/layers/templates/layers/layer_detail.html:396
+#: geonode/layers/templates/layers/layer_detail.html:395
 #: geonode/layers/templates/layers/layer_metadata_upload.html:88
 #: geonode/layers/templates/layers/layer_replace.html:98
 #: geonode/layers/templates/layers/layer_style_upload.html:89
@@ -1629,8 +1780,8 @@ msgid "Upload files"
 msgstr "Tải file"
 
 #: geonode/documents/templates/documents/document_upload.html:5
-#: geonode/templates/500.html:163 geonode/templates/base.html:293
-#: geonode/templates/base.html:469
+#: geonode/templates/500.html:168 geonode/templates/base.html:303
+#: geonode/templates/base.html:489
 msgid "Upload Document"
 msgstr "Upload tài liệu"
 
@@ -1640,16 +1791,20 @@ msgstr "Upload tài liệu"
 msgid "Allowed document types"
 msgstr "Tài liệu tải lên"
 
-#: geonode/documents/templates/layouts/doc_panels.html:219
+#: geonode/documents/templates/layouts/doc_panels.html:216
+#: geonode/geoapps/templates/layouts/app_panels.html:216
 #: geonode/layers/templates/layouts/panels.html:216
 #: geonode/maps/templates/layouts/map_panels.html:216
 msgid "Done!"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:223
-#: geonode/layers/templates/layers/layer_detail.html:482
-#: geonode/layers/templates/layers/layer_detail.html:484
-#: geonode/layers/templates/layers/layer_detail.html:496
+#: geonode/documents/templates/layouts/doc_panels.html:220
+#: geonode/geoapps/templates/apps/app_detail.html:128
+#: geonode/geoapps/templates/apps/app_edit.html:7
+#: geonode/geoapps/templates/layouts/app_panels.html:220
+#: geonode/layers/templates/layers/layer_detail.html:481
+#: geonode/layers/templates/layers/layer_detail.html:483
+#: geonode/layers/templates/layers/layer_detail.html:495
 #: geonode/layers/templates/layouts/panels.html:221
 #: geonode/layers/templates/layouts/panels.html:290
 #: geonode/maps/templates/layouts/map_panels.html:220
@@ -1658,7 +1813,8 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:229
+#: geonode/documents/templates/layouts/doc_panels.html:226
+#: geonode/geoapps/templates/layouts/app_panels.html:226
 #: geonode/layers/templates/layouts/panels.html:227
 #: geonode/maps/templates/layouts/map_panels.html:226
 #, fuzzy
@@ -1666,8 +1822,10 @@ msgstr ""
 msgid "Settings"
 msgstr "Xếp hạng"
 
+#: geonode/documents/templates/layouts/doc_panels.html:235
 #: geonode/documents/templates/layouts/doc_panels.html:238
-#: geonode/documents/templates/layouts/doc_panels.html:241
+#: geonode/geoapps/templates/layouts/app_panels.html:235
+#: geonode/geoapps/templates/layouts/app_panels.html:238
 #: geonode/layers/templates/layouts/panels.html:236
 #: geonode/layers/templates/layouts/panels.html:239
 #: geonode/maps/templates/layouts/map_panels.html:235
@@ -1675,7 +1833,8 @@ msgstr "Xếp hạng"
 msgid "Mandatory"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:244
+#: geonode/documents/templates/layouts/doc_panels.html:241
+#: geonode/geoapps/templates/layouts/app_panels.html:241
 #: geonode/layers/templates/layouts/panels.html:242
 #: geonode/maps/templates/layouts/map_panels.html:241
 #, fuzzy
@@ -1683,7 +1842,8 @@ msgstr ""
 msgid "Optional"
 msgstr "Tùy chọn thời gian"
 
-#: geonode/documents/templates/layouts/doc_panels.html:249
+#: geonode/documents/templates/layouts/doc_panels.html:246
+#: geonode/geoapps/templates/layouts/app_panels.html:246
 #: geonode/layers/templates/layouts/panels.html:247
 #: geonode/maps/templates/layouts/map_panels.html:246
 #, fuzzy
@@ -1691,13 +1851,15 @@ msgstr "Tùy chọn thời gian"
 msgid "Basic Metadata"
 msgstr "Chỉnh sửa Metadata"
 
-#: geonode/documents/templates/layouts/doc_panels.html:252
+#: geonode/documents/templates/layouts/doc_panels.html:249
+#: geonode/geoapps/templates/layouts/app_panels.html:249
 #: geonode/layers/templates/layouts/panels.html:250
 #: geonode/maps/templates/layouts/map_panels.html:249
 msgid "Location and Licenses"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:255
+#: geonode/documents/templates/layouts/doc_panels.html:252
+#: geonode/geoapps/templates/layouts/app_panels.html:252
 #: geonode/layers/templates/layouts/panels.html:253
 #: geonode/maps/templates/layouts/map_panels.html:252
 #, fuzzy
@@ -1705,7 +1867,8 @@ msgstr ""
 msgid "Optional Metadata"
 msgstr "Tải về Metadata"
 
-#: geonode/documents/templates/layouts/doc_panels.html:345
+#: geonode/documents/templates/layouts/doc_panels.html:342
+#: geonode/geoapps/templates/layouts/app_panels.html:339
 #: geonode/layers/templates/layouts/panels.html:328
 #: geonode/layers/templates/layouts/panels.html:348
 #: geonode/maps/templates/layouts/map_panels.html:342
@@ -1714,40 +1877,45 @@ msgstr "Tải về Metadata"
 msgid "Choose one of the following..."
 msgstr "Hành động này ảnh hưởng đến các bản đồ sau đây:"
 
-#: geonode/documents/templates/layouts/doc_panels.html:438
-#: geonode/layers/templates/layouts/panels.html:441
-#: geonode/maps/templates/layouts/map_panels.html:434
+#: geonode/documents/templates/layouts/doc_panels.html:433
+#: geonode/geoapps/templates/layouts/app_panels.html:430
+#: geonode/layers/templates/layouts/panels.html:439
+#: geonode/maps/templates/layouts/map_panels.html:433
 #, fuzzy
 #| msgid "Download Metadata"
 msgid "Other, Optional, Metadata"
 msgstr "Tải về Metadata"
 
-#: geonode/documents/templates/layouts/doc_panels.html:485
-#: geonode/layers/templates/layouts/panels.html:488
-#: geonode/maps/templates/layouts/map_panels.html:481
+#: geonode/documents/templates/layouts/doc_panels.html:480
+#: geonode/geoapps/templates/layouts/app_panels.html:477
+#: geonode/layers/templates/layouts/panels.html:486
+#: geonode/maps/templates/layouts/map_panels.html:480
 msgid "Responsible Parties"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:492
-#: geonode/layers/templates/layouts/panels.html:495
-#: geonode/maps/templates/layouts/map_panels.html:488
+#: geonode/documents/templates/layouts/doc_panels.html:487
+#: geonode/geoapps/templates/layouts/app_panels.html:484
+#: geonode/layers/templates/layouts/panels.html:493
+#: geonode/maps/templates/layouts/map_panels.html:487
 #, fuzzy
 #| msgid "Change Layer Permissions"
 msgid "Responsible and Permissions"
 msgstr "Thay đổi lớp Quyền"
 
-#: geonode/documents/templates/layouts/doc_panels.html:514
-#: geonode/layers/templates/layouts/panels.html:517
-#: geonode/maps/templates/layouts/map_panels.html:510
-#: geonode/templates/_permissions_form.html:236 geonode/templates/base.html:697
+#: geonode/documents/templates/layouts/doc_panels.html:509
+#: geonode/geoapps/templates/layouts/app_panels.html:506
+#: geonode/layers/templates/layouts/panels.html:515
+#: geonode/maps/templates/layouts/map_panels.html:509
+#: geonode/templates/_permissions_form.html:236 geonode/templates/base.html:721
 #, fuzzy
 #| msgid "Message Inbox"
 msgid "Message box"
 msgstr "Hộp thư tin nhắn"
 
-#: geonode/documents/templates/layouts/doc_panels.html:520
-#: geonode/layers/templates/layouts/panels.html:523
-#: geonode/maps/templates/layouts/map_panels.html:516
+#: geonode/documents/templates/layouts/doc_panels.html:515
+#: geonode/geoapps/templates/layouts/app_panels.html:512
+#: geonode/layers/templates/layouts/panels.html:521
+#: geonode/maps/templates/layouts/map_panels.html:515
 #: geonode/templates/_permissions_form.html:242
 #: geonode/templates/_permissions_form.html:481
 #: geonode/templates/_permissions_form.html:482
@@ -1756,54 +1924,57 @@ msgstr "Hộp thư tin nhắn"
 #: geonode/templates/_permissions_form.html:568
 #: geonode/templates/_permissions_form.html:569
 #: geonode/templates/_permissions_form.html:639
-#: geonode/templates/_permissions_form.html:640 geonode/templates/base.html:703
-#: geonode/templates/base.html:734
+#: geonode/templates/_permissions_form.html:640 geonode/templates/base.html:727
+#: geonode/templates/base.html:758
 msgid "OK"
 msgstr ""
 
-#: geonode/documents/templates/layouts/doc_panels.html:540
-#: geonode/layers/templates/layouts/panels.html:584
-#: geonode/maps/templates/layouts/map_panels.html:536
+#: geonode/documents/templates/layouts/doc_panels.html:535
+#: geonode/geoapps/templates/layouts/app_panels.html:532
+#: geonode/layers/templates/layouts/panels.html:600
+#: geonode/maps/templates/layouts/map_panels.html:535
 #, fuzzy
 #| msgid "Public"
 msgid "Publishing"
 msgstr "Công cộng"
 
-#: geonode/documents/views.py:66
+#: geonode/documents/views.py:68
 msgid "You are not permitted to delete this document"
 msgstr "Bạn không được phép để xóa tài liệu này"
 
-#: geonode/documents/views.py:67
+#: geonode/documents/views.py:69
 msgid "You do not have permissions for this document."
 msgstr "Bạn không có quyền cho tài liệu này."
 
-#: geonode/documents/views.py:68
+#: geonode/documents/views.py:70
 msgid "You are not permitted to modify this document"
 msgstr "Bạn không được phép chỉnh sửa tài liệu này"
 
-#: geonode/documents/views.py:70
+#: geonode/documents/views.py:72
 msgid "You are not permitted to modify this document's metadata"
 msgstr "Bạn không được phép chỉnh sửa siêu dữ liệu của tài liệu này"
 
-#: geonode/documents/views.py:71
+#: geonode/documents/views.py:73
 msgid "You are not permitted to view this document"
 msgstr "Bạn không được phép xem tài liệu này"
 
-#: geonode/documents/views.py:104 geonode/documents/views.py:198
+#: geonode/documents/views.py:106 geonode/documents/views.py:207
 msgid "You are not allowed to view this document."
 msgstr "Bạn không được phép xem tài liệu này."
 
-#: geonode/documents/views.py:371
+#: geonode/documents/views.py:379
 msgid "You are not allowed to edit this document."
 msgstr "Bạn không được phép chỉnh sửa tài liệu này."
 
-#: geonode/documents/views.py:454 geonode/layers/views.py:1018
+#: geonode/documents/views.py:464 geonode/geoapps/views.py:396
+#: geonode/layers/views.py:1033
 #, fuzzy
 #| msgid "Set permissions for this resource"
 msgid "You must set a point of contact for this resource"
 msgstr "Thiết lập quyền cho tài nguyên này"
 
-#: geonode/documents/views.py:471 geonode/layers/views.py:1035
+#: geonode/documents/views.py:481 geonode/geoapps/views.py:413
+#: geonode/layers/views.py:1050
 #, fuzzy
 #| msgid "Set permissions for this resource"
 msgid "You must set an author for this resource"
@@ -1814,21 +1985,363 @@ msgstr "Thiết lập quyền cho tài nguyên này"
 msgid "Favorite"
 msgstr ""
 
+#: geonode/favorite/templates/favorite/_favorite.html:11
+#: geonode/favorite/templates/favorite/_favorite_js.html:26
+msgid "Add to Favorites"
+msgstr "Add to Favorites"
+
+#: geonode/favorite/templates/favorite/_favorite.html:13
+#, fuzzy
+#| msgid "Add to Favorites"
+msgid "Go to Favorites"
+msgstr "Add to Favorites"
+
 #: geonode/favorite/templates/favorite/_favorite.html:18
 msgid "Log in to add/delete Favorites."
 msgstr ""
 
 #: geonode/favorite/templates/favorite/_favorite_js.html:23
+#: geonode/favorite/templates/favorite/favorite_list.html:24
 msgid "Delete from Favorites"
 msgstr ""
 
-#: geonode/favorite/templates/favorite/_favorite_js.html:26
-msgid "Add to Favorites"
-msgstr "Add to Favorites"
+#: geonode/favorite/templates/favorite/favorite_list.html:4
+#: geonode/people/templates/people/profile_detail.html:156
+#: geonode/templates/base.html:410
+msgid "Favorites"
+msgstr ""
 
 #: geonode/favorite/templates/favorite/favorite_list.html:8
 msgid "Favorites for"
 msgstr ""
+
+#: geonode/favorite/templates/favorite/favorite_list.html:16
+msgid "Item"
+msgstr ""
+
+#: geonode/geoapps/__init__.py:30
+#, fuzzy
+#| msgid "Map Created"
+msgid "App Created"
+msgstr "Bản đồ tạo"
+
+#: geonode/geoapps/__init__.py:30
+#, fuzzy
+#| msgid "A map was commented on"
+msgid "A App was created"
+msgstr "Một bản đồ được nhận xét về"
+
+#: geonode/geoapps/__init__.py:31
+#, fuzzy
+#| msgid "Map Created"
+msgid "App Updated"
+msgstr "Bản đồ tạo"
+
+#: geonode/geoapps/__init__.py:31
+#, fuzzy
+#| msgid "last updated on"
+msgid "A App was updated"
+msgstr "cập nhật lần cuối vào"
+
+#: geonode/geoapps/__init__.py:32
+#, fuzzy
+#| msgid "Not provided"
+msgid "App Approved"
+msgstr "Không được cung cấp"
+
+#: geonode/geoapps/__init__.py:32
+#, fuzzy
+#| msgid "A layer was commented on"
+msgid "A App was approved by a Manager"
+msgstr "Một lớp đã nhận xét về"
+
+#: geonode/geoapps/__init__.py:33
+#, fuzzy
+#| msgid "Published From"
+msgid "App Published"
+msgstr "Xuất bản Từ"
+
+#: geonode/geoapps/__init__.py:33
+#, fuzzy
+#| msgid "Published From"
+msgid "A App was published"
+msgstr "Xuất bản Từ"
+
+#: geonode/geoapps/__init__.py:34
+#, fuzzy
+#| msgid "Map Created"
+msgid "App Deleted"
+msgstr "Bản đồ tạo"
+
+#: geonode/geoapps/__init__.py:34
+#, fuzzy
+#| msgid "A map was commented on"
+msgid "A App was deleted"
+msgstr "Một bản đồ được nhận xét về"
+
+#: geonode/geoapps/__init__.py:35
+#, fuzzy
+#| msgid "Comment on Map"
+msgid "Comment on App"
+msgstr "Bình luận trên bản đồ"
+
+#: geonode/geoapps/__init__.py:35
+#, fuzzy
+#| msgid "A map was commented on"
+msgid "An App was commented on"
+msgstr "Một bản đồ được nhận xét về"
+
+#: geonode/geoapps/__init__.py:36
+#, fuzzy
+#| msgid "Rating for Map"
+msgid "Rating for App"
+msgstr "Đánh giá cho Bản đồ"
+
+#: geonode/geoapps/__init__.py:36
+#, fuzzy
+#| msgid "A rating was given to a map"
+msgid "A rating was given to an App"
+msgstr "Một đánh giá đã được trao cho một bản đồ"
+
+#: geonode/geoapps/models.py:50 geonode/groups/models.py:50
+#: geonode/layers/models.py:168
+#: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
+#: geonode/services/templates/services/service_resources_harvest.html:31
+#: geonode/templates/metadata_detail.html:135
+#: geonode/templates/metadata_detail.html:277
+#: geonode/templates/metadata_detail.html:358
+msgid "Name"
+msgstr "Tên"
+
+#: geonode/geoapps/models.py:53 geonode/maps/models.py:63
+msgid "zoom"
+msgstr "zoom"
+
+#: geonode/geoapps/models.py:57 geonode/maps/models.py:67
+#, fuzzy
+#| msgid "projection"
+msgid "projection"
+msgstr "chiếu"
+
+#: geonode/geoapps/models.py:61 geonode/maps/models.py:71
+msgid "center X"
+msgstr "trung tâm X"
+
+#: geonode/geoapps/models.py:65 geonode/maps/models.py:75
+msgid "center Y"
+msgstr "Trung tâm Y"
+
+#: geonode/geoapps/models.py:72 geonode/maps/models.py:82
+msgid "Site URL"
+msgstr "URL của trang web"
+
+#: geonode/geoapps/templates/apps/app_detail.html:25
+#, fuzzy, python-format
+#| msgid "Resources"
+msgid "%(resource.type)s"
+msgstr "Tài nguyên"
+
+#: geonode/geoapps/templates/apps/app_detail.html:71
+#, fuzzy
+#| msgid "Rate this Map"
+msgid "Rate this"
+msgstr "Đánh giá Bản đồ này"
+
+#: geonode/geoapps/templates/apps/app_detail.html:98
+#: geonode/geoapps/templates/apps/app_detail.html:105
+#: geonode/layers/templates/layers/layer_detail.html:454
+#: geonode/maps/templates/maps/map_detail.html:143
+#: geonode/maps/templates/maps/map_detail.html:150
+#, fuzzy
+#| msgid "Editing details for "
+msgid "Editing Tools"
+msgstr "Chi tiết chỉnh sửa cho"
+
+#: geonode/geoapps/templates/apps/app_detail.html:121
+#: geonode/layers/templates/layers/layer_detail.html:504
+#: geonode/maps/templates/maps/map_detail.html:166
+msgid "Set"
+msgstr ""
+
+#: geonode/geoapps/templates/apps/app_detail.html:152
+#: geonode/geoapps/templates/apps/app_detail.html:154
+#: geonode/monitoring/models.py:359
+msgid "View"
+msgstr "View"
+
+#: geonode/geoapps/templates/apps/app_detail.html:163
+#: geonode/maps/templates/maps/map_detail.html:243
+msgid "Specify which users can view or modify this map"
+msgstr "Chỉ định những người dùng có thể xem hoặc chỉnh sửa bản đồ này"
+
+#: geonode/geoapps/templates/apps/app_detail.html:164
+#, fuzzy
+#| msgid "Change Permissions of this Map"
+msgid "Change Permissions of this"
+msgstr "Change Permissions of Bản đồ này"
+
+#: geonode/geoapps/templates/apps/app_detail.html:185
+#: geonode/maps/templates/maps/map_detail.html:291
+msgid "Embed Iframe"
+msgstr ""
+
+#: geonode/geoapps/templates/apps/app_detail.html:188
+#: geonode/maps/templates/maps/map_detail.html:294
+msgid ""
+"To embed this map, add the following code snippet and customize its "
+"properties (scrolling, width, height) based on your needs to your site"
+msgstr ""
+
+#: geonode/geoapps/templates/apps/app_download.html:7
+#: geonode/maps/templates/maps/map_download.html:6
+#: geonode/monitoring/models.py:360
+msgid "Download"
+msgstr "Tải về"
+
+#: geonode/geoapps/templates/apps/app_download.html:7
+#: geonode/geoapps/templates/apps/app_edit.html:7
+#: geonode/geoapps/templates/apps/app_list_default.html:10
+#: geonode/geoapps/templates/apps/app_list_default.html:12
+#: geonode/geoapps/templates/apps/app_update.html:7
+#: geonode/templates/500.html:66 geonode/templates/base.html:328
+#: geonode/templates/base.html:330 geonode/templates/base.html:333
+#: geonode/templates/search/_search_content.html:55
+#, python-format
+msgid "%(GEONODE_APPS_NAME)s"
+msgstr ""
+
+#: geonode/geoapps/templates/apps/app_list_default.html:5
+#, fuzzy
+#| msgid "GeoExplorer"
+msgid "apps explore"
+msgstr "GeoExplorer"
+
+#: geonode/geoapps/templates/apps/app_list_default.html:10
+#, fuzzy
+#| msgid "Create a New Map"
+msgid "Create New"
+msgstr "Tạo một bản đồ mới"
+
+#: geonode/geoapps/templates/apps/app_list_default.html:12
+#: geonode/templates/base.html:330
+#, fuzzy
+#| msgid "GeoExplorer"
+msgid "Explore"
+msgstr "GeoExplorer"
+
+#: geonode/geoapps/templates/apps/app_metadata.html:15
+#: geonode/maps/templates/maps/map_metadata.html:20
+#, python-format
+msgid "for %(map_title)s"
+msgstr ""
+
+#: geonode/geoapps/templates/apps/app_metadata.html:32
+#: geonode/geoapps/templates/apps/app_metadata_advanced.html:41
+#, fuzzy
+#| msgid ""
+#| "Note: this map's orginal metadata was populated by importing a metadata "
+#| "XML file.\n"
+#| "        GeoNode's metadata import supports a subset of ISO, FGDC, and "
+#| "Dublin Core metadata elements.\n"
+#| "        Some of your original metadata may have been lost."
+msgid ""
+"Note: this geoapp's orginal metadata was populated by importing a metadata "
+"XML file.\n"
+"        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin "
+"Core metadata elements.\n"
+"        Some of your original metadata may have been lost."
+msgstr ""
+"Lưu ý: siêu dữ liệu ban đầu của bản đồ này đã được dân cư bằng cách nhập một "
+"tập tin siêu dữ liệu XML. Siêu dữ liệu nhập khẩu GeoNode hỗ trợ một tập hợp "
+"con của các nguyên tố siêu dữ liệu ISO, FGDC, và Dublin Core. Một số "
+"metadata ban đầu bạn có thể đã bị mất."
+
+#: geonode/geoapps/templates/apps/app_metadata_advanced.html:34
+#: geonode/maps/templates/maps/map_metadata_advanced.html:35
+#, python-format
+msgid ""
+"\n"
+"        Editing details for %(map_title)s\n"
+"      "
+msgstr ""
+"\n"
+"Chi tiết chỉnh sửa cho %(map_title)s"
+
+#: geonode/geoapps/templates/apps/app_new.html:7
+#: geonode/maps/templates/maps/map_new.html:7
+#, fuzzy
+#| msgid "View Map"
+msgid "New Map"
+msgstr "Xem bản đồ"
+
+#: geonode/geoapps/templates/apps/app_remove.html:13
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "          Are you sure you want to remove the group: %(group_title)s?\n"
+#| "        "
+msgid ""
+"\n"
+"          Are you sure you want to remove <a href="
+"\"%(resource.get_absolute_url)s\">%(resource_title)s</a>?\n"
+"        "
+msgstr ""
+"\n"
+"Bạn có chắc muốn xóa nhóm: %(group_title)s?"
+
+#: geonode/geoapps/templates/layouts/app_panels.html:561
+#: geonode/layers/templates/layouts/panels.html:629
+#: geonode/maps/templates/layouts/map_panels.html:564
+#, fuzzy
+#| msgid "Notice settings"
+msgid "Other Settings"
+msgstr "Notice settings"
+
+#: geonode/geoapps/views.py:65
+#, fuzzy
+#| msgid "You are not permitted to delete this map."
+msgid "You are not permitted to delete this app."
+msgstr "Bạn không được phép để xóa bản đồ này."
+
+#: geonode/geoapps/views.py:66
+#, fuzzy
+#| msgid "You do not have permissions for this map."
+msgid "You do not have permissions for this app."
+msgstr "Bạn không có quyền truy cập cho bản đồ này."
+
+#: geonode/geoapps/views.py:67
+#, fuzzy
+#| msgid "You must be logged in to save this map"
+msgid "You must be logged in to save this app"
+msgstr "Bạn phải đăng nhập để lưu bản đồ này"
+
+#: geonode/geoapps/views.py:68
+#, fuzzy
+#| msgid "You are not permitted to save or edit this map."
+msgid "You are not permitted to save or edit this app."
+msgstr "Bạn không được phép để lưu hoặc chỉnh sửa bản đồ này."
+
+#: geonode/geoapps/views.py:70
+#, fuzzy
+#| msgid "You are not allowed to modify this map's metadata."
+msgid "You are not allowed to modify this app's metadata."
+msgstr "Bạn không được phép chỉnh sửa siêu dữ liệu của bản đồ này."
+
+#: geonode/geoapps/views.py:71
+#, fuzzy
+#| msgid "You are not allowed to view this map."
+msgid "You are not allowed to view this app."
+msgstr "Bạn không được phép xem bản đồ này."
+
+#: geonode/geoapps/views.py:72 geonode/maps/views.py:104
+msgid "An unknown error has occured."
+msgstr "Đã xảy ra một lỗi không rõ."
+
+#: geonode/geoapps/views.py:311
+#, fuzzy
+#| msgid "You are not allowed to view this map."
+msgid "You are not allowed to edit this app."
+msgstr "Bạn không được phép xem bản đồ này."
 
 #: geonode/geoserver/__init__.py:75
 msgid "Layer Uploaded"
@@ -1875,7 +2388,7 @@ msgid "Geometry type"
 msgstr "loại tài sản"
 
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:6
-#: geonode/templates/base.html:291 geonode/templates/base.html:467
+#: geonode/templates/base.html:301 geonode/templates/base.html:487
 #, fuzzy
 #| msgid "Create a Map"
 msgid "Create Layer"
@@ -1883,8 +2396,8 @@ msgstr "Tạo một bản đồ"
 
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:19
 #: geonode/layers/templates/layers/layer_granule_remove.html:8
-#: geonode/layers/templates/layers/layer_list.html:5
-#: geonode/layers/templates/layers/layer_list.html:14
+#: geonode/layers/templates/layers/layer_list_default.html:5
+#: geonode/layers/templates/layers/layer_list_default.html:14
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:29
 #: geonode/layers/templates/layers/layer_metadata_upload.html:24
 #: geonode/layers/templates/layers/layer_remove.html:8
@@ -1915,17 +2428,17 @@ msgstr "Đặc tính"
 msgid "Create"
 msgstr "Sáng tạo"
 
-#: geonode/geoserver/helpers.py:679
+#: geonode/geoserver/helpers.py:687
 #, fuzzy
 #| msgid "Not provided"
 msgid "No abstract provided"
 msgstr "Không được cung cấp"
 
-#: geonode/geoserver/helpers.py:1431
+#: geonode/geoserver/helpers.py:1437
 msgid "An exception occurred loading data to PostGIS"
 msgstr ""
 
-#: geonode/geoserver/helpers.py:1436
+#: geonode/geoserver/helpers.py:1442
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
@@ -1973,15 +2486,15 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geonode/geoserver/views.py:509
+#: geonode/geoserver/views.py:517
 msgid "You don't have permissions to change style for this layer"
 msgstr "Bạn không có quyền để thay đổi phong cách cho lớp này"
 
-#: geonode/geoserver/views.py:588 geonode/geoserver/views.py:644
+#: geonode/geoserver/views.py:602 geonode/geoserver/views.py:658
 msgid "Bad HTTP Authorization Credentials."
 msgstr "Bad Giây chứng nhận ủy quyền HTTP."
 
-#: geonode/groups/forms.py:35
+#: geonode/groups/forms.py:34
 msgid ""
 "a short version of the name consisting only of letters, numbers, underscores "
 "and hyphens."
@@ -1989,41 +2502,32 @@ msgstr ""
 "một phiên bản ngắn của tên chỉ gồm các chữ cái, số, dấu gạch dưới và dấu "
 "gạch nối."
 
-#: geonode/groups/forms.py:43
+#: geonode/groups/forms.py:42
 msgid "A group already exists with that slug."
 msgstr "Một nhóm đã tồn tại với sên đó."
 
-#: geonode/groups/forms.py:50 geonode/groups/forms.py:77
+#: geonode/groups/forms.py:49 geonode/groups/forms.py:76
 msgid "A group already exists with that name."
 msgstr "Một nhóm đã tồn tại với tên đó."
 
-#: geonode/groups/forms.py:87
+#: geonode/groups/forms.py:86
 #, fuzzy
 #| msgid "User Activities"
 msgid "User Identifiers"
 msgstr "Hoạt động tài"
 
-#: geonode/groups/forms.py:97
+#: geonode/groups/forms.py:96
 msgid "Assign manager role"
 msgstr ""
 
-#: geonode/groups/forms.py:111
+#: geonode/groups/forms.py:110
 #, python-format
 msgid ""
 "The following are not valid usernames: %(errors)s; not added to the group"
 msgstr ""
 
-#: geonode/groups/models.py:50 geonode/layers/models.py:165
-#: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
-#: geonode/services/templates/services/service_resources_harvest.html:31
-#: geonode/templates/metadata_detail.html:130
-#: geonode/templates/metadata_detail.html:272
-#: geonode/templates/metadata_detail.html:353
-msgid "Name"
-msgstr "Tên"
-
-#: geonode/groups/models.py:54 geonode/templates/base.html:320
-#: geonode/templates/search/_general_filters.html:76
+#: geonode/groups/models.py:54 geonode/templates/base.html:342
+#: geonode/templates/search/_general_filters.html:84
 #: geonode/templates/search/_search_user_content.html:28
 #, fuzzy
 #| msgid "Categories"
@@ -2119,29 +2623,30 @@ msgstr "Tất cả"
 #: geonode/groups/templates/groups/activity.html:26
 #: geonode/people/templates/people/_profile_filters.html:5
 #: geonode/social/templates/social/activity_list.html:21
-#: geonode/templates/500.html:56 geonode/templates/500.html:154
-#: geonode/templates/base.html:284 geonode/templates/base.html:460
+#: geonode/templates/500.html:56 geonode/templates/500.html:159
+#: geonode/templates/base.html:294 geonode/templates/base.html:480
 msgid "Layers"
 msgstr "Layers"
 
 #: geonode/groups/templates/groups/activity.html:27
 #: geonode/people/templates/people/_profile_filters.html:6
 #: geonode/social/templates/social/activity_list.html:22
-#: geonode/templates/500.html:59 geonode/templates/500.html:174
-#: geonode/templates/base.html:304 geonode/templates/base.html:312
-#: geonode/templates/base.html:480
+#: geonode/templates/500.html:59 geonode/templates/500.html:179
+#: geonode/templates/base.html:314 geonode/templates/base.html:322
+#: geonode/templates/base.html:500
 msgid "Maps"
 msgstr "Maps"
 
 #: geonode/groups/templates/groups/activity.html:28
 #: geonode/people/templates/people/_profile_filters.html:7
-#: geonode/templates/500.html:62 geonode/templates/500.html:155
-#: geonode/templates/base.html:285 geonode/templates/base.html:461
+#: geonode/social/templates/social/activity_list.html:23
+#: geonode/templates/500.html:62 geonode/templates/500.html:160
+#: geonode/templates/base.html:295 geonode/templates/base.html:481
 msgid "Documents"
 msgstr "Tài liệu"
 
 #: geonode/groups/templates/groups/activity.html:29
-#: geonode/social/templates/social/activity_list.html:23
+#: geonode/social/templates/social/activity_list.html:24
 #: geonode/templates/_actions.html:17 geonode/templates/_comments.html:10
 msgid "Comments"
 msgstr "Comments"
@@ -2151,10 +2656,11 @@ msgstr "Comments"
 #: geonode/groups/templates/groups/activity.html:55
 #: geonode/groups/templates/groups/activity.html:64
 #: geonode/groups/templates/groups/activity.html:73
-#: geonode/social/templates/social/activity_list.html:31
-#: geonode/social/templates/social/activity_list.html:40
-#: geonode/social/templates/social/activity_list.html:49
-#: geonode/social/templates/social/activity_list.html:58
+#: geonode/social/templates/social/activity_list.html:32
+#: geonode/social/templates/social/activity_list.html:41
+#: geonode/social/templates/social/activity_list.html:50
+#: geonode/social/templates/social/activity_list.html:59
+#: geonode/social/templates/social/activity_list.html:68
 #: geonode/templates/actstream/actor.html:28
 msgid "No actions yet"
 msgstr "Không có hành động nào"
@@ -2202,8 +2708,8 @@ msgstr "Xóa Nhóm"
 
 #: geonode/groups/templates/groups/group_create.html:5
 #: geonode/groups/templates/groups/group_update.html:5
-#: geonode/templates/500.html:194 geonode/templates/base.html:330
-#: geonode/templates/base.html:500
+#: geonode/templates/500.html:199 geonode/templates/base.html:352
+#: geonode/templates/base.html:520
 msgid "Create Group"
 msgstr "Tạo Nhóm"
 
@@ -2358,9 +2864,9 @@ msgid "Edit Group Category Details"
 msgstr "Chỉnh sửa chi tiết Nhóm"
 
 #: geonode/groups/templates/groups/groupcategory_detail.html:31
-#: geonode/templates/500.html:70 geonode/templates/500.html:185
-#: geonode/templates/_permissions_form.html:99 geonode/templates/base.html:319
-#: geonode/templates/base.html:491
+#: geonode/templates/500.html:75 geonode/templates/500.html:190
+#: geonode/templates/_permissions_form.html:99 geonode/templates/base.html:341
+#: geonode/templates/base.html:511
 #: geonode/templates/search/_general_filters.html:44
 msgid "Groups"
 msgstr "Nhóm"
@@ -2399,7 +2905,7 @@ msgstr ""
 msgid "An active user is already using the e-mail address '%(email)s'"
 msgstr ""
 
-#: geonode/invitations/forms.py:75 geonode/templates/base.html:520
+#: geonode/invitations/forms.py:75 geonode/templates/base.html:540
 #, fuzzy
 #| msgid "email"
 msgid "E-mail"
@@ -2477,131 +2983,147 @@ msgstr "Lớp Default Style"
 msgid "A Layer was deleted"
 msgstr "Một lớp đã nhận xét về"
 
-#: geonode/layers/models.py:52
+#: geonode/layers/models.py:55
 msgid "YYYYMMDD"
 msgstr ""
 
-#: geonode/layers/models.py:53
+#: geonode/layers/models.py:56
 msgid "YYYYMMDD'T'hhmmss"
 msgstr ""
 
-#: geonode/layers/models.py:54
+#: geonode/layers/models.py:57
 msgid "YYYYMMDD'T'hhmmss'Z'"
 msgstr ""
 
-#: geonode/layers/models.py:72 geonode/qgis_server/models.py:198
+#: geonode/layers/models.py:75 geonode/qgis_server/models.py:198
 msgid "style name"
 msgstr "Tên phong cách"
 
-#: geonode/layers/models.py:74
+#: geonode/layers/models.py:77
 msgid "sld text"
 msgstr "văn bản SLD"
 
-#: geonode/layers/models.py:76
+#: geonode/layers/models.py:79
 msgid "sld version"
 msgstr "phiên bản SLD"
 
-#: geonode/layers/models.py:80
+#: geonode/layers/models.py:83
 msgid "sld url"
 msgstr "url SLD"
 
-#: geonode/layers/models.py:162
+#: geonode/layers/models.py:165
 msgid "Workspace"
 msgstr ""
 
-#: geonode/layers/models.py:163
+#: geonode/layers/models.py:166
 #, fuzzy
 #| msgid "date type"
 msgid "Store"
 msgstr "loại ngày"
 
-#: geonode/layers/models.py:164
+#: geonode/layers/models.py:167
 #, fuzzy
 #| msgid "date type"
 msgid "Storetype"
 msgstr "loại ngày"
 
-#: geonode/layers/models.py:166
+#: geonode/layers/models.py:169
 #, fuzzy
 #| msgid "CSW typename"
 msgid "Typename"
 msgstr "CSW typename"
 
-#: geonode/layers/models.py:168
+#: geonode/layers/models.py:171
 msgid "Is mosaic?"
 msgstr ""
 
-#: geonode/layers/models.py:169
+#: geonode/layers/models.py:172
 msgid "Has time?"
 msgstr ""
 
-#: geonode/layers/models.py:170
+#: geonode/layers/models.py:173
 msgid "Has elevation?"
 msgstr ""
 
-#: geonode/layers/models.py:172
+#: geonode/layers/models.py:175
 msgid "Time regex"
 msgstr ""
 
-#: geonode/layers/models.py:177
+#: geonode/layers/models.py:180
 msgid "Elevation regex"
 msgstr ""
 
-#: geonode/layers/models.py:282
+#: geonode/layers/models.py:196
+msgid "use featureinfo custom template?"
+msgstr ""
+
+#: geonode/layers/models.py:197
+msgid "specifies wether or not use a custom GetFeatureInfo template."
+msgstr ""
+
+#: geonode/layers/models.py:201
+msgid "featureinfo custom template"
+msgstr ""
+
+#: geonode/layers/models.py:202
+msgid "the custom GetFeatureInfo template HTML contents."
+msgstr ""
+
+#: geonode/layers/models.py:310
 msgid "File cannot be opened, maybe check the encoding"
 msgstr ""
 
-#: geonode/layers/models.py:393
+#: geonode/layers/models.py:426
 #, fuzzy
 #| msgid "attribute name"
 msgid "attribute name"
 msgstr "tên thuộc tính"
 
-#: geonode/layers/models.py:394
+#: geonode/layers/models.py:427
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr ""
 "tên của thuộc tính được lưu trữ trong shapefile / cơ sở dữ liệu không gian"
 
-#: geonode/layers/models.py:400
+#: geonode/layers/models.py:433
 #, fuzzy
 #| msgid "distribution description"
 msgid "attribute description"
 msgstr "distribution description"
 
-#: geonode/layers/models.py:401
+#: geonode/layers/models.py:434
 msgid "description of attribute to be used in metadata"
 msgstr "Mô tả của thuộc tính được sử dụng trong siêu dữ liệu"
 
-#: geonode/layers/models.py:406
+#: geonode/layers/models.py:439
 msgid "attribute label"
 msgstr "nhãn thuộc tính"
 
-#: geonode/layers/models.py:407
+#: geonode/layers/models.py:440
 msgid "title of attribute as displayed in GeoNode"
 msgstr "Tiêu đề của thuộc tính như hiển thị trong GeoNode"
 
-#: geonode/layers/models.py:413
+#: geonode/layers/models.py:446
 msgid "attribute type"
 msgstr "loại thuộc tính"
 
-#: geonode/layers/models.py:414
+#: geonode/layers/models.py:447
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "các kiểu dữ liệu của thuộc tính (số nguyên, chuỗi, hình học, vv)"
 
-#: geonode/layers/models.py:421
+#: geonode/layers/models.py:454
 msgid "visible?"
 msgstr "có thể nhìn thấy?"
 
-#: geonode/layers/models.py:422
+#: geonode/layers/models.py:455
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr ""
 "quy định cụ thể nếu các thuộc tính sẽ được hiển thị trong kết quả xác định"
 
-#: geonode/layers/models.py:424
+#: geonode/layers/models.py:458
 msgid "display order"
 msgstr "thứ tự hiển thị"
 
-#: geonode/layers/models.py:425
+#: geonode/layers/models.py:459
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
@@ -2609,75 +3131,133 @@ msgstr ""
 "xác định thứ tự mà trong đó thuộc tính sẽ được hiển thị trong kết quả xác "
 "định"
 
-#: geonode/layers/models.py:429
+#: geonode/layers/models.py:477
+#: geonode/layers/templates/layers/layer_detail.html:178
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:127
+#: geonode/layers/templates/layouts/panels.html:552
+msgid "Label"
+msgstr "Label"
+
+#: geonode/layers/models.py:479
+msgid "Image"
+msgstr ""
+
+#: geonode/layers/models.py:480
+msgid "Video (mp4)"
+msgstr ""
+
+#: geonode/layers/models.py:481
+msgid "Video (ogg)"
+msgstr ""
+
+#: geonode/layers/models.py:482
+msgid "Video (webm)"
+msgstr ""
+
+#: geonode/layers/models.py:483
+msgid "Video (3gp)"
+msgstr ""
+
+#: geonode/layers/models.py:484
+msgid "Video (flv)"
+msgstr ""
+
+#: geonode/layers/models.py:485
+msgid "Video (YouTube/VIMEO - embedded)"
+msgstr ""
+
+#: geonode/layers/models.py:486
+msgid "Audio"
+msgstr ""
+
+#: geonode/layers/models.py:487
+msgid "IFRAME"
+msgstr ""
+
+#: geonode/layers/models.py:490
+#, fuzzy
+#| msgid "date type"
+msgid "featureinfo type"
+msgstr "loại ngày"
+
+#: geonode/layers/models.py:491
+#, fuzzy
+#| msgid "specifies if the attribute should be displayed in identify results"
+msgid ""
+"specifies if the attribute should be rendered with an HTML widget on "
+"GetFeatureInfo template."
+msgstr ""
+"quy định cụ thể nếu các thuộc tính sẽ được hiển thị trong kết quả xác định"
+
+#: geonode/layers/models.py:501
 #, fuzzy
 #| msgid "count"
 msgid "count"
 msgstr "đếm"
 
-#: geonode/layers/models.py:430
+#: geonode/layers/models.py:502
 msgid "count value for this field"
 msgstr "tính giá trị cho trường này"
 
-#: geonode/layers/models.py:433
+#: geonode/layers/models.py:505
 msgid "min"
 msgstr "min"
 
-#: geonode/layers/models.py:434
+#: geonode/layers/models.py:506
 msgid "minimum value for this field"
 msgstr "giá trị tối thiểu cho lĩnh vực này"
 
-#: geonode/layers/models.py:441
+#: geonode/layers/models.py:513
 msgid "max"
 msgstr "max"
 
-#: geonode/layers/models.py:442
+#: geonode/layers/models.py:514
 msgid "maximum value for this field"
 msgstr "giá trị tối đa cho lĩnh vực này"
 
-#: geonode/layers/models.py:449
+#: geonode/layers/models.py:521
 msgid "average"
 msgstr "trung bình"
 
-#: geonode/layers/models.py:450
+#: geonode/layers/models.py:522
 msgid "average value for this field"
 msgstr "giá trị trung bình cho lĩnh vực này"
 
-#: geonode/layers/models.py:457
+#: geonode/layers/models.py:529
 msgid "median"
 msgstr "trung tuyến"
 
-#: geonode/layers/models.py:458
+#: geonode/layers/models.py:530
 msgid "median value for this field"
 msgstr "giá trị trung bình cho lĩnh vực này"
 
-#: geonode/layers/models.py:465
+#: geonode/layers/models.py:537
 msgid "standard deviation"
 msgstr "độ lệch chuẩn"
 
-#: geonode/layers/models.py:466
+#: geonode/layers/models.py:538
 msgid "standard deviation for this field"
 msgstr "độ lệch chuẩn cho lĩnh vực này"
 
-#: geonode/layers/models.py:473
+#: geonode/layers/models.py:545
 msgid "sum"
 msgstr "tổng số"
 
-#: geonode/layers/models.py:474
+#: geonode/layers/models.py:546
 msgid "sum value for this field"
 msgstr "giá trị tổng hợp cho lĩnh vực này"
 
-#: geonode/layers/models.py:481
+#: geonode/layers/models.py:553
 msgid "unique values for this field"
 msgstr "giá trị duy nhất cho lĩnh vực này"
 
-#: geonode/layers/models.py:485
+#: geonode/layers/models.py:557
 #, fuzzy
 #| msgid "last modified"
 msgid "last modified"
 msgstr "biến đổi cuối cùng"
 
-#: geonode/layers/models.py:486
+#: geonode/layers/models.py:558
 msgid "date when attribute statistics were last updated"
 msgstr "ngày khi thống kê thuộc tính được cập nhật lần cuối"
 
@@ -2694,7 +3274,7 @@ msgstr "Thay đổi điểm tiếp xúc"
 msgid "Assign a new point of contact to the layers below:"
 msgstr "Chỉ định một điểm mới của liên lạc để các lớp dưới đây:"
 
-#: geonode/layers/templates/layers/layer_detail.html:32
+#: geonode/layers/templates/layers/layer_detail.html:33
 #: geonode/layers/templates/layers/layer_style_edit.html:27
 #: geonode/layers/templates/layers/layer_style_manage.html:6
 #, fuzzy
@@ -2702,163 +3282,156 @@ msgstr "Chỉ định một điểm mới của liên lạc để các lớp dư
 msgid "layers"
 msgstr "Layers"
 
-#: geonode/layers/templates/layers/layer_detail.html:68
+#: geonode/layers/templates/layers/layer_detail.html:69
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:78
+#: geonode/layers/templates/layers/layer_detail.html:79
 msgid "Filter Granules"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:81
+#: geonode/layers/templates/layers/layer_detail.html:82
 msgid "Active Filter:"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:87
+#: geonode/layers/templates/layers/layer_detail.html:88
 msgid "Granule ID"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:88
+#: geonode/layers/templates/layers/layer_detail.html:89
 msgid "Bounding Box"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:89
+#: geonode/layers/templates/layers/layer_detail.html:90
 msgid "Time"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:90
-#: geonode/templates/index.html:161
+#: geonode/layers/templates/layers/layer_detail.html:91
 msgid "Elevation"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:91
+#: geonode/layers/templates/layers/layer_detail.html:92
 msgid "Actions"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:103
+#: geonode/layers/templates/layers/layer_detail.html:104
 #, fuzzy
 #| msgid "Preview"
 msgid "Granule Preview"
 msgstr "Xem trước"
 
-#: geonode/layers/templates/layers/layer_detail.html:104
+#: geonode/layers/templates/layers/layer_detail.html:105
 #, fuzzy
 #| msgid "Remove"
 msgid "Granule Remove"
 msgstr "Tẩy"
 
-#: geonode/layers/templates/layers/layer_detail.html:153
+#: geonode/layers/templates/layers/layer_detail.html:154
 msgid "Dimension"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:154
+#: geonode/layers/templates/layers/layer_detail.html:155
 msgid "Enabled"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:155
+#: geonode/layers/templates/layers/layer_detail.html:156
 msgid "Regex"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:160
+#: geonode/layers/templates/layers/layer_detail.html:161
 msgid "TIME"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:165
+#: geonode/layers/templates/layers/layer_detail.html:166
 msgid "ELEVATION"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:176
+#: geonode/layers/templates/layers/layer_detail.html:177
 msgid "Attribute Name"
 msgstr "Tên thuộc tính"
 
-#: geonode/layers/templates/layers/layer_detail.html:177
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:127
-#: geonode/layers/templates/layouts/panels.html:545
-msgid "Label"
-msgstr "Label"
-
-#: geonode/layers/templates/layers/layer_detail.html:180
+#: geonode/layers/templates/layers/layer_detail.html:181
 msgid "Range"
 msgstr "Khoảng cách"
 
-#: geonode/layers/templates/layers/layer_detail.html:181
+#: geonode/layers/templates/layers/layer_detail.html:182
 msgid "Average"
 msgstr "Trung bình"
 
-#: geonode/layers/templates/layers/layer_detail.html:182
+#: geonode/layers/templates/layers/layer_detail.html:183
 msgid "Median"
 msgstr "Trung tuyến"
 
-#: geonode/layers/templates/layers/layer_detail.html:183
+#: geonode/layers/templates/layers/layer_detail.html:184
 msgid "Standard Deviation"
 msgstr "Độ lệch chuẩn"
 
-#: geonode/layers/templates/layers/layer_detail.html:234
+#: geonode/layers/templates/layers/layer_detail.html:235
 msgid "Rate this layer"
 msgstr "Đánh giá lớp này"
 
-#: geonode/layers/templates/layers/layer_detail.html:259
+#: geonode/layers/templates/layers/layer_detail.html:260
 msgid "Analyze with"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:264
-#: geonode/layers/templates/layers/layer_detail.html:277
+#: geonode/layers/templates/layers/layer_detail.html:265
+#: geonode/layers/templates/layers/layer_detail.html:278
 msgid "Download Layer"
 msgstr "Tải về lớp"
 
-#: geonode/layers/templates/layers/layer_detail.html:283
+#: geonode/layers/templates/layers/layer_detail.html:284
 msgid "Images"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:286
-#: geonode/templates/500.html:153 geonode/templates/base.html:282
-#: geonode/templates/base.html:459
+#: geonode/layers/templates/layers/layer_detail.html:287
+#: geonode/templates/500.html:158 geonode/templates/base.html:292
+#: geonode/templates/base.html:479
 msgid "Data"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:313
+#: geonode/layers/templates/layers/layer_detail.html:314
 msgid "Click to filter the layer"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:314
+#: geonode/layers/templates/layers/layer_detail.html:315
 #, fuzzy
 #| msgid "Are you sure you want to log out?"
 msgid "Do you want to filter it?"
 msgstr "Bạn có chắc chắn bạn muốn thoát?"
 
-#: geonode/layers/templates/layers/layer_detail.html:317
+#: geonode/layers/templates/layers/layer_detail.html:318
 msgid "Loading..."
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:321
+#: geonode/layers/templates/layers/layer_detail.html:322
 #, fuzzy
 #| msgid "Select an attribute"
 msgid "Filter by attributes"
 msgstr "Chọn một thuộc tính"
 
-#: geonode/layers/templates/layers/layer_detail.html:328
+#: geonode/layers/templates/layers/layer_detail.html:329
 msgid "Match"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:336
+#: geonode/layers/templates/layers/layer_detail.html:337
 #, fuzzy
 #| msgid "All"
 msgid "all"
 msgstr "Tất cả"
 
-#: geonode/layers/templates/layers/layer_detail.html:337
+#: geonode/layers/templates/layers/layer_detail.html:338
 msgid "any"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:343
+#: geonode/layers/templates/layers/layer_detail.html:344
 #, fuzzy
 #| msgid "The following users:"
 msgid "of the following:"
 msgstr "Người sử dụng sau đây:"
 
-#: geonode/layers/templates/layers/layer_detail.html:350
+#: geonode/layers/templates/layers/layer_detail.html:351
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:126
-#: geonode/layers/templates/layouts/panels.html:544
+#: geonode/layers/templates/layouts/panels.html:551
 msgid "Attribute"
 msgstr "Đặc tính"
 
@@ -2866,138 +3439,125 @@ msgstr "Đặc tính"
 msgid "Operator"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:394
+#: geonode/layers/templates/layers/layer_detail.html:393
 #, fuzzy
 #| msgid "feature type"
 msgid "Feature limit"
 msgstr "loại tính năng"
 
-#: geonode/layers/templates/layers/layer_detail.html:403
+#: geonode/layers/templates/layers/layer_detail.html:402
 msgid "Pick your download format:"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:412
+#: geonode/layers/templates/layers/layer_detail.html:411
 msgid ""
 "No data available for this resource. Please contact a system administrator "
 "or a manager."
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:412
-#: geonode/monitoring/models.py:1082
+#: geonode/layers/templates/layers/layer_detail.html:411
+#: geonode/monitoring/models.py:1083
 msgid "Warning"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:455
-#: geonode/maps/templates/maps/map_detail.html:143
-#: geonode/maps/templates/maps/map_detail.html:150
-#, fuzzy
-#| msgid "Editing details for "
-msgid "Editing Tools"
-msgstr "Chi tiết chỉnh sửa cho"
-
-#: geonode/layers/templates/layers/layer_detail.html:462
+#: geonode/layers/templates/layers/layer_detail.html:461
 msgid "Edit Layer"
 msgstr "Chỉnh sửa lớp"
 
-#: geonode/layers/templates/layers/layer_detail.html:472
+#: geonode/layers/templates/layers/layer_detail.html:471
 #, fuzzy
 #| msgid "Download Metadata"
 msgid "Upload Metadata"
 msgstr "Tải về Metadata"
 
-#: geonode/layers/templates/layers/layer_detail.html:480
-#: geonode/layers/templates/layers/layer_detail.html:495
-#: geonode/layers/templates/layers/layer_detail.html:667
+#: geonode/layers/templates/layers/layer_detail.html:479
+#: geonode/layers/templates/layers/layer_detail.html:494
+#: geonode/layers/templates/layers/layer_detail.html:668
 msgid "Styles"
 msgstr "Styles"
 
-#: geonode/layers/templates/layers/layer_detail.html:487
+#: geonode/layers/templates/layers/layer_detail.html:486
 #: geonode/services/templates/services/service_detail.html:105
 #: geonode/services/templates/services/service_resources_harvest.html:153
 msgid "Manage"
 msgstr "Quản lý"
 
-#: geonode/layers/templates/layers/layer_detail.html:505
-#: geonode/maps/templates/maps/map_detail.html:166
-msgid "Set"
-msgstr ""
-
-#: geonode/layers/templates/layers/layer_detail.html:513
-#: geonode/monitoring/models.py:173 geonode/templates/index.html:72
+#: geonode/layers/templates/layers/layer_detail.html:512
+#: geonode/monitoring/models.py:173 geonode/templates/index.html:128
 #: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:5
 msgid "Layer"
 msgid_plural "Layers"
 msgstr[0] ""
 
-#: geonode/layers/templates/layers/layer_detail.html:519
+#: geonode/layers/templates/layers/layer_detail.html:518
 msgid "Edit data"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:539
+#: geonode/layers/templates/layers/layer_detail.html:538
 #, fuzzy
 #| msgid "Edit Layer"
 msgid "View Layer"
 msgstr "Chỉnh sửa lớp"
 
-#: geonode/layers/templates/layers/layer_detail.html:574
+#: geonode/layers/templates/layers/layer_detail.html:573
 #, fuzzy
 #| msgid "format"
 msgid "Attribute Information"
 msgstr "định dạng"
 
-#: geonode/layers/templates/layers/layer_detail.html:576
+#: geonode/layers/templates/layers/layer_detail.html:575
 msgid "ISO Feature Catalogue"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:589
+#: geonode/layers/templates/layers/layer_detail.html:588
 msgid "Legend"
 msgstr "Huyền thoại"
 
-#: geonode/layers/templates/layers/layer_detail.html:617
+#: geonode/layers/templates/layers/layer_detail.html:618
 msgid "Maps using this layer"
 msgstr "Maps sử dụng lớp này"
 
-#: geonode/layers/templates/layers/layer_detail.html:619
+#: geonode/layers/templates/layers/layer_detail.html:620
 msgid "List of maps using this layer:"
 msgstr "Danh sách các bản đồ sử dụng lớp này:"
 
-#: geonode/layers/templates/layers/layer_detail.html:625
+#: geonode/layers/templates/layers/layer_detail.html:626
 msgid "This layer is not currently used in any maps."
 msgstr "Lớp này hiện không được sử dụng trong bất kỳ bản đồ."
 
-#: geonode/layers/templates/layers/layer_detail.html:631
+#: geonode/layers/templates/layers/layer_detail.html:632
 msgid "Create a map using this layer"
 msgstr "Tạo một bản đồ bằng cách sử dụng lớp này"
 
-#: geonode/layers/templates/layers/layer_detail.html:632
+#: geonode/layers/templates/layers/layer_detail.html:633
 msgid "Click the button below to generate a new map based on this layer."
 msgstr "Click vào nút dưới đây để tạo ra một bản đồ mới dựa trên lớp này."
 
-#: geonode/layers/templates/layers/layer_detail.html:638
+#: geonode/layers/templates/layers/layer_detail.html:639
 msgid "Add the layer to an existing map"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:646
+#: geonode/layers/templates/layers/layer_detail.html:647
 #, fuzzy
 #| msgid "Click the button below to change the permissions of this layer."
 msgid "Click the button below to add the layer to the selected map."
 msgstr "Nhấn vào nút bên dưới để thay đổi quyền truy cập của lớp này."
 
-#: geonode/layers/templates/layers/layer_detail.html:648
+#: geonode/layers/templates/layers/layer_detail.html:649
 #, fuzzy
 #| msgid "Edit Map"
 msgid "Add to Map"
 msgstr "Chỉnh sửa Bản đồ"
 
-#: geonode/layers/templates/layers/layer_detail.html:655
+#: geonode/layers/templates/layers/layer_detail.html:656
 msgid "Documents related to this layer"
 msgstr "Các tài liệu liên quan đến lớp này"
 
-#: geonode/layers/templates/layers/layer_detail.html:656
+#: geonode/layers/templates/layers/layer_detail.html:657
 msgid "List of documents related to this layer:"
 msgstr "Danh sách các tài liệu liên quan đến lớp này:"
 
-#: geonode/layers/templates/layers/layer_detail.html:668
+#: geonode/layers/templates/layers/layer_detail.html:669
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
@@ -3005,78 +3565,78 @@ msgstr ""
 "Các phong cách sau đây có liên quan với lớp này. Chọn một phong cách để xem "
 "nó trong bản đồ xem trước."
 
-#: geonode/layers/templates/layers/layer_detail.html:675
-#: geonode/layers/templates/layers/layer_detail.html:689
+#: geonode/layers/templates/layers/layer_detail.html:677
+#: geonode/layers/templates/layers/layer_detail.html:691
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:30
 #, fuzzy
 #| msgid "Layer Default Style"
 msgid "(default style)"
 msgstr "Lớp Default Style"
 
-#: geonode/layers/templates/layers/layer_detail.html:682
-#: geonode/layers/templates/layers/layer_detail.html:696
+#: geonode/layers/templates/layers/layer_detail.html:684
+#: geonode/layers/templates/layers/layer_detail.html:698
 msgid "No styles associated with this layer"
 msgstr "Không có phong cách kết hợp với lớp này"
 
-#: geonode/layers/templates/layers/layer_detail.html:705
+#: geonode/layers/templates/layers/layer_detail.html:707
 msgid "External service layer"
 msgstr "Lớp dịch vụ bên ngoài"
 
-#: geonode/layers/templates/layers/layer_detail.html:706
+#: geonode/layers/templates/layers/layer_detail.html:708
 msgid "Source"
 msgstr "Nguồn"
 
-#: geonode/layers/templates/layers/layer_detail.html:716
+#: geonode/layers/templates/layers/layer_detail.html:718
 msgid "Refresh Attributes and Statistics of this layer"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:717
+#: geonode/layers/templates/layers/layer_detail.html:719
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
 "Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:718
+#: geonode/layers/templates/layers/layer_detail.html:720
 msgid "Refresh Attributes and Statistics"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:722
+#: geonode/layers/templates/layers/layer_detail.html:724
 #, fuzzy
 #| msgid "Create a map using this layer"
 msgid "Clear the Server Cache of this layer"
 msgstr "Tạo một bản đồ bằng cách sử dụng lớp này"
 
-#: geonode/layers/templates/layers/layer_detail.html:723
+#: geonode/layers/templates/layers/layer_detail.html:725
 #, fuzzy
 #| msgid "Click the button below to change the permissions of this layer."
 msgid "Click the button below to wipe the tile-cache of this layer."
 msgstr "Nhấn vào nút bên dưới để thay đổi quyền truy cập của lớp này."
 
-#: geonode/layers/templates/layers/layer_detail.html:724
+#: geonode/layers/templates/layers/layer_detail.html:726
 msgid "Empty Tiled-Layer Cache"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:734
+#: geonode/layers/templates/layers/layer_detail.html:736
 #: geonode/layers/templates/layers/layer_metadata_upload.html:102
 #: geonode/layers/templates/layers/layer_replace.html:112
 #: geonode/layers/templates/layers/layer_style_upload.html:103
 msgid "Click the button below to change the permissions of this layer."
 msgstr "Nhấn vào nút bên dưới để thay đổi quyền truy cập của lớp này."
 
-#: geonode/layers/templates/layers/layer_detail.html:735
+#: geonode/layers/templates/layers/layer_detail.html:737
 #: geonode/layers/templates/layers/layer_metadata_upload.html:103
 #: geonode/layers/templates/layers/layer_replace.html:113
 #: geonode/layers/templates/layers/layer_style_upload.html:104
 msgid "Change Layer Permissions"
 msgstr "Thay đổi lớp Quyền"
 
-#: geonode/layers/templates/layers/layer_detail.html:751
-#: geonode/templates/base.html:679 geonode/templates/metadata_base.html:144
+#: geonode/layers/templates/layers/layer_detail.html:753
+#: geonode/templates/base.html:703 geonode/templates/metadata_base.html:144
 msgid "Processing..."
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:756
+#: geonode/layers/templates/layers/layer_detail.html:758
 #, fuzzy
 #| msgid "Permissions"
 msgid "Updating Permissions..."
@@ -3105,16 +3665,16 @@ msgstr "Hành động này ảnh hưởng đến các bản đồ sau đây:"
 msgid "No maps are using this layer"
 msgstr "Không có bản đồ được sử dụng lớp này"
 
-#: geonode/layers/templates/layers/layer_list.html:7
+#: geonode/layers/templates/layers/layer_list_default.html:7
 #, fuzzy
 #| msgid "A layer was uploaded"
 msgid "layers explore"
 msgstr "Một lớp đã được tải lên"
 
-#: geonode/layers/templates/layers/layer_list.html:12
+#: geonode/layers/templates/layers/layer_list_default.html:12
 #: geonode/layers/templates/upload/layer_upload.html:18
 #: geonode/layers/templates/upload/layer_upload_base.html:162
-#: geonode/templates/500.html:268
+#: geonode/templates/500.html:273
 msgid "Upload Layers"
 msgstr "Layers tải lên"
 
@@ -3143,7 +3703,7 @@ msgstr ""
 
 #: geonode/layers/templates/layers/layer_metadata.html:96
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:82
-#: geonode/layers/templates/layers/layer_metadata_advanced.html:156
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:160
 #: geonode/layers/templates/layers/layer_metadata_upload.html:25
 #: geonode/layers/templates/layers/layer_replace.html:24
 #: geonode/layers/templates/layers/layer_style_upload.html:25
@@ -3162,9 +3722,23 @@ msgstr ""
 "Chi tiết chỉnh sửa cho %(layer_title)s"
 
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:129
-#: geonode/layers/templates/layouts/panels.html:547
+#: geonode/layers/templates/layouts/panels.html:554
 msgid "Display Order"
 msgstr "Hiển thị thứ tự"
+
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:130
+#: geonode/layers/templates/layouts/panels.html:555
+#, fuzzy
+#| msgid "Display Order"
+msgid "Display Type"
+msgstr "Hiển thị thứ tự"
+
+#: geonode/layers/templates/layers/layer_metadata_advanced.html:131
+#: geonode/layers/templates/layouts/panels.html:556
+#, fuzzy
+#| msgid "visible?"
+msgid "Visible"
+msgstr "có thể nhìn thấy?"
 
 #: geonode/layers/templates/layers/layer_metadata_upload.html:11
 #: geonode/layers/templates/layers/layer_metadata_upload.html:26
@@ -3227,7 +3801,7 @@ msgstr "Sơ yếu lý lịch"
 #: geonode/templates/_comments.html:37
 #: geonode/templates/announcements/announcement_confirm_delete.html:21
 #: geonode/templates/announcements/announcement_form.html:24
-#: geonode/templates/user_messages/_message_snippet.html:34
+#: geonode/templates/user_messages/_message_snippet.html:33
 msgid "Delete"
 msgstr "Xóa bỏ"
 
@@ -3340,16 +3914,13 @@ msgstr "Xem trước"
 msgid "Dataset Attributes"
 msgstr "Thuộc tính"
 
-#: geonode/layers/templates/layouts/panels.html:613
-#: geonode/maps/templates/layouts/map_panels.html:565
-#, fuzzy
-#| msgid "Notice settings"
-msgid "Other Settings"
-msgstr "Notice settings"
+#: geonode/layers/templates/layouts/panels.html:538
+msgid "Use a custom template?"
+msgstr ""
 
 #: geonode/layers/templates/upload/layer_upload.html:5
-#: geonode/templates/500.html:159 geonode/templates/base.html:289
-#: geonode/templates/base.html:465
+#: geonode/templates/500.html:164 geonode/templates/base.html:299
+#: geonode/templates/base.html:485
 msgid "Upload Layer"
 msgstr "Tải lên lớp"
 
@@ -3668,6 +4239,7 @@ msgid "Your upload is either complete or you haven't resumed an earlier one."
 msgstr "Tải lên của bạn là hoàn toàn hoặc bạn đã không tiếp tục một sớm một."
 
 #: geonode/layers/templates/upload/layer_upload_invalid.html:7
+#: geonode/templates/metadata_detail.html:32
 msgid "Return to"
 msgstr "Quay trở lại"
 
@@ -3704,11 +4276,11 @@ msgid ""
 msgstr ""
 
 #: geonode/layers/templates/upload/layer_upload_time.html:43
-#: geonode/templates/index.html:72 geonode/templates/index.html:82
-#: geonode/templates/index.html:92 geonode/templates/index.html:102
-#: geonode/templates/metadata_detail.html:103
-#: geonode/templates/metadata_detail.html:106
-#: geonode/templates/metadata_detail.html:109
+#: geonode/templates/index.html:128 geonode/templates/index.html:138
+#: geonode/templates/index.html:148 geonode/templates/index.html:158
+#: geonode/templates/metadata_detail.html:105
+#: geonode/templates/metadata_detail.html:108
+#: geonode/templates/metadata_detail.html:111
 msgid "No"
 msgstr "Không"
 
@@ -3904,7 +4476,7 @@ msgstr ""
 
 #: geonode/layers/templates/upload/layer_upload_time.html:279
 #: geonode/layers/templates/upload/layer_upload_time.html:299
-#: geonode/templates/base.html:730
+#: geonode/templates/base.html:754
 msgid "Some text in the modal"
 msgstr ""
 
@@ -3954,40 +4526,40 @@ msgstr "Hoặc chỉ cần đi"
 msgid "now"
 msgstr "hiện nay"
 
-#: geonode/layers/utils.py:496 geonode/layers/utils.py:520
+#: geonode/layers/utils.py:511 geonode/layers/utils.py:535
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr ""
 
-#: geonode/layers/utils.py:502 geonode/layers/views.py:1236
+#: geonode/layers/utils.py:517 geonode/layers/views.py:1252
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 
-#: geonode/layers/utils.py:505 geonode/layers/views.py:1240
+#: geonode/layers/utils.py:520 geonode/layers/views.py:1256
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
-#: geonode/layers/utils.py:528
+#: geonode/layers/utils.py:543
 msgid ""
 "Please ensure the name is consistent with the file you are trying to replace."
 msgstr ""
 
-#: geonode/layers/utils.py:533
+#: geonode/layers/utils.py:548
 msgid "Local GeoNode layer has no geometry type."
 msgstr ""
 
-#: geonode/layers/utils.py:538
+#: geonode/layers/utils.py:556
 msgid ""
 "Please ensure there is at least one geometry "
 "type                                 that is consistent with the file you "
 "are trying to replace."
 msgstr ""
 
-#: geonode/layers/utils.py:542
+#: geonode/layers/utils.py:560
 #, python-format
 msgid "Some error occurred while trying to access the uploaded schema: %s"
 msgstr ""
 
-#: geonode/layers/views.py:128
+#: geonode/layers/views.py:129
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
@@ -3995,51 +4567,51 @@ msgstr ""
 "Có một lỗi trong khi cố gắng để tải lên dữ liệu của bạn. Vui lòng thử lại, "
 "hoặc liên hệ với quản trị viên và nếu vấn đề vẫn tiếp tục."
 
-#: geonode/layers/views.py:131
+#: geonode/layers/views.py:132
 msgid ""
 "Note: this layer's orginal metadata was populated and preserved by importing "
 "a metadata XML file. This metadata cannot be edited."
 msgstr ""
 
-#: geonode/layers/views.py:135
+#: geonode/layers/views.py:136
 msgid "You are not permitted to delete this layer"
 msgstr "Bạn không được phép xóa layer này"
 
-#: geonode/layers/views.py:136
+#: geonode/layers/views.py:137
 msgid "You do not have permissions for this layer."
 msgstr "Bạn không có quyền cho layer này."
 
-#: geonode/layers/views.py:137
+#: geonode/layers/views.py:138
 msgid "You are not permitted to modify this layer"
 msgstr "Bạn không được phép chỉnh sửa lớp này"
 
-#: geonode/layers/views.py:139
+#: geonode/layers/views.py:140
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "Bạn không được phép chỉnh sửa siêu dữ liệu của lớp này"
 
-#: geonode/layers/views.py:140
+#: geonode/layers/views.py:141
 msgid "You are not permitted to view this layer"
 msgstr "Bạn không được phép để xem lớp này"
 
-#: geonode/layers/views.py:278
+#: geonode/layers/views.py:279
 #, fuzzy
 #| msgid "Files to be uploaded"
 msgid "Failed to upload the layer"
 msgstr "Các tập tin được tải lên"
 
-#: geonode/layers/views.py:1336 geonode/layers/views.py:1381
+#: geonode/layers/views.py:1341 geonode/layers/views.py:1386
 #, fuzzy
 #| msgid "Files to be uploaded"
 msgid "Unable to delete layer"
 msgstr "Các tập tin được tải lên"
 
-#: geonode/layers/views.py:1340 geonode/layers/views.py:1385
+#: geonode/layers/views.py:1345 geonode/layers/views.py:1390
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 
-#: geonode/layers/views.py:1433 geonode/maps/views.py:1434
+#: geonode/layers/views.py:1438 geonode/maps/views.py:1243
 msgid "couldn't generate thumbnail"
 msgstr ""
 
@@ -4115,91 +4687,65 @@ msgstr "Đánh giá cho Bản đồ"
 msgid "A rating was given to a map"
 msgstr "Một đánh giá đã được trao cho một bản đồ"
 
-#: geonode/maps/models.py:64
-msgid "zoom"
-msgstr "zoom"
-
-#: geonode/maps/models.py:68
-#, fuzzy
-#| msgid "projection"
-msgid "projection"
-msgstr "chiếu"
-
-#: geonode/maps/models.py:72
-msgid "center X"
-msgstr "trung tâm X"
-
-#: geonode/maps/models.py:76
-msgid "center Y"
-msgstr "Trung tâm Y"
-
-#: geonode/maps/models.py:83
-msgid "Site URL"
-msgstr "URL của trang web"
-
-#: geonode/maps/models.py:88
+#: geonode/maps/models.py:87
 msgid "Featured Map URL"
 msgstr "Các đồ URL"
 
-#: geonode/maps/models.py:443
+#: geonode/maps/models.py:435
 msgid "stack order"
 msgstr "ngăn xếp theo thứ tự"
 
-#: geonode/maps/models.py:448
+#: geonode/maps/models.py:440
 #, fuzzy
 #| msgid "format"
 msgid "format"
 msgstr "định dạng"
 
-#: geonode/maps/models.py:454
+#: geonode/maps/models.py:446
 msgid "name"
 msgstr "tên"
 
-#: geonode/maps/models.py:457
+#: geonode/maps/models.py:449
 msgid "store"
 msgstr ""
 
-#: geonode/maps/models.py:463
+#: geonode/maps/models.py:455
 msgid "opacity"
 msgstr "tính mờ"
 
-#: geonode/maps/models.py:467
+#: geonode/maps/models.py:459
 msgid "styles"
 msgstr "phong cách"
 
-#: geonode/maps/models.py:472
+#: geonode/maps/models.py:464
 msgid "transparent"
 msgstr "minh bạch"
 
-#: geonode/maps/models.py:476
+#: geonode/maps/models.py:468
 msgid "fixed"
 msgstr "nhất định"
 
-#: geonode/maps/models.py:480
+#: geonode/maps/models.py:472
 #, fuzzy
 #| msgid "group"
 msgid "group"
 msgstr "nhóm"
 
-#: geonode/maps/models.py:484
+#: geonode/maps/models.py:476
 msgid "visibility"
 msgstr "khả năng hiển thị"
 
-#: geonode/maps/models.py:487
+#: geonode/maps/models.py:479
 msgid "ows URL"
 msgstr "OWS URL"
 
-#: geonode/maps/models.py:490
+#: geonode/maps/models.py:482
 msgid "layer params"
 msgstr "lớp params"
 
-#: geonode/maps/models.py:497
+#: geonode/maps/models.py:489
 msgid "source params"
 msgstr "params nguồn"
-
-#: geonode/maps/models.py:607
-msgid "JSON Configuration"
-msgstr "JSON cấu hình"
 
 #: geonode/maps/templates/maps/map_detail.html:26
 msgid "maps"
@@ -4220,7 +4766,7 @@ msgstr "Tải về Bản đồ"
 
 #: geonode/maps/templates/maps/map_detail.html:173
 #: geonode/maps/templates/maps/map_view.html:7 geonode/monitoring/models.py:174
-#: geonode/templates/index.html:82
+#: geonode/templates/index.html:138
 msgid "Map"
 msgid_plural "Maps"
 msgstr[0] ""
@@ -4240,10 +4786,6 @@ msgstr "Các tài liệu liên quan đến bản đồ này"
 #: geonode/maps/templates/maps/map_detail.html:229
 msgid "List of documents related to this map:"
 msgstr "Danh sách các tài liệu liên quan đến bản đồ này:"
-
-#: geonode/maps/templates/maps/map_detail.html:243
-msgid "Specify which users can view or modify this map"
-msgstr "Chỉ định những người dùng có thể xem hoặc chỉnh sửa bản đồ này"
 
 #: geonode/maps/templates/maps/map_detail.html:244
 msgid "Change Permissions of this Map"
@@ -4280,41 +4822,10 @@ msgid "Embed Iframe Link"
 msgstr ""
 
 #: geonode/maps/templates/maps/map_detail.html:271
-msgid "Embed Widget Link"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:273
 #, fuzzy
 #| msgid "Download Layer"
 msgid "Download Leaflet page"
 msgstr "Tải về lớp"
-
-#: geonode/maps/templates/maps/map_detail.html:293
-msgid "Embed Iframe"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:296
-msgid ""
-"To embed this map, add the following code snippet and customize its "
-"properties (scrolling, width, height) based on your needs to your site"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:315
-msgid "Embed Widget"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:318
-msgid "To embed this map, copy the following code snippet into your own page"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_detail.html:322
-msgid "Copy to Clipboard"
-msgstr ""
-
-#: geonode/maps/templates/maps/map_download.html:6
-#: geonode/monitoring/models.py:360
-msgid "Download"
-msgstr "Tải về"
 
 #: geonode/maps/templates/maps/map_download.html:8
 msgid ""
@@ -4380,16 +4891,11 @@ msgstr "Tải xuống hoàn tất"
 msgid "Download Failed"
 msgstr "Tải về Không"
 
-#: geonode/maps/templates/maps/map_list.html:5
+#: geonode/maps/templates/maps/map_list_default.html:5
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
 msgstr "GeoExplorer"
-
-#: geonode/maps/templates/maps/map_metadata.html:20
-#, python-format
-msgid "for %(map_title)s"
-msgstr ""
 
 #: geonode/maps/templates/maps/map_metadata.html:37
 #: geonode/maps/templates/maps/map_metadata_advanced.html:42
@@ -4405,22 +4911,6 @@ msgstr ""
 "con của các nguyên tố siêu dữ liệu ISO, FGDC, và Dublin Core. Một số "
 "metadata ban đầu bạn có thể đã bị mất."
 
-#: geonode/maps/templates/maps/map_metadata_advanced.html:35
-#, python-format
-msgid ""
-"\n"
-"        Editing details for %(map_title)s\n"
-"      "
-msgstr ""
-"\n"
-"Chi tiết chỉnh sửa cho %(map_title)s"
-
-#: geonode/maps/templates/maps/map_new.html:7
-#, fuzzy
-#| msgid "View Map"
-msgid "New Map"
-msgstr "Xem bản đồ"
-
 #: geonode/maps/templates/maps/map_remove.html:10
 msgid "Remove Map"
 msgstr ""
@@ -4434,41 +4924,37 @@ msgid ""
 "        "
 msgstr ""
 
-#: geonode/maps/views.py:98
+#: geonode/maps/views.py:97
 msgid "You are not permitted to delete this map."
 msgstr "Bạn không được phép để xóa bản đồ này."
 
-#: geonode/maps/views.py:99
+#: geonode/maps/views.py:98
 msgid "You do not have permissions for this map."
 msgstr "Bạn không có quyền truy cập cho bản đồ này."
 
-#: geonode/maps/views.py:100
+#: geonode/maps/views.py:99
 msgid "You must be logged in to save this map"
 msgstr "Bạn phải đăng nhập để lưu bản đồ này"
 
-#: geonode/maps/views.py:101
+#: geonode/maps/views.py:100
 msgid "You are not permitted to save or edit this map."
 msgstr "Bạn không được phép để lưu hoặc chỉnh sửa bản đồ này."
 
-#: geonode/maps/views.py:103
+#: geonode/maps/views.py:102
 msgid "You are not allowed to modify this map's metadata."
 msgstr "Bạn không được phép chỉnh sửa siêu dữ liệu của bản đồ này."
 
-#: geonode/maps/views.py:104
+#: geonode/maps/views.py:103
 msgid "You are not allowed to view this map."
 msgstr "Bạn không được phép xem bản đồ này."
 
-#: geonode/maps/views.py:105
-msgid "An unknown error has occured."
-msgstr "Đã xảy ra một lỗi không rõ."
-
-#: geonode/maps/views.py:1441
+#: geonode/maps/views.py:1250
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Thumbnail saved"
 msgstr "Thumbnail"
 
-#: geonode/maps/views.py:1444
+#: geonode/maps/views.py:1253
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "error saving thumbnail"
@@ -4490,7 +4976,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-#: geonode/monitoring/collector.py:1008
+#: geonode/monitoring/collector.py:1003
 msgid "GeoNode Monitoring on {} reports errors: {}"
 msgstr ""
 
@@ -4500,47 +4986,47 @@ msgstr ""
 msgid "Enter valid email addresses."
 msgstr "Địa chỉ Email"
 
-#: geonode/monitoring/management/commands/collect_metrics.py:38
+#: geonode/monitoring/management/commands/collect_metrics.py:37
 msgid "Show list of services"
 msgstr ""
 
-#: geonode/monitoring/management/commands/collect_metrics.py:40
+#: geonode/monitoring/management/commands/collect_metrics.py:39
 #: geonode/monitoring/management/commands/render_metrics.py:57
 msgid ""
 "Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
 "provided, last sync will be used."
 msgstr ""
 
-#: geonode/monitoring/management/commands/collect_metrics.py:43
+#: geonode/monitoring/management/commands/collect_metrics.py:42
 #: geonode/monitoring/management/commands/render_metrics.py:59
 msgid ""
 "Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not "
 "provided, now will be used."
 msgstr ""
 
-#: geonode/monitoring/management/commands/collect_metrics.py:46
+#: geonode/monitoring/management/commands/collect_metrics.py:45
 msgid "Force check"
 msgstr ""
 
-#: geonode/monitoring/management/commands/collect_metrics.py:48
+#: geonode/monitoring/management/commands/collect_metrics.py:47
 msgid "Format of audit log (xml, json)"
 msgstr ""
 
-#: geonode/monitoring/management/commands/collect_metrics.py:50
+#: geonode/monitoring/management/commands/collect_metrics.py:49
 msgid ""
 "Should old data be preserved (default: no, data older than settings."
 "MONITORING_DATA_TTL will be removed)"
 msgstr ""
 
-#: geonode/monitoring/management/commands/collect_metrics.py:53
+#: geonode/monitoring/management/commands/collect_metrics.py:52
 msgid "Should stop on first error occured (default: no)"
 msgstr ""
 
-#: geonode/monitoring/management/commands/collect_metrics.py:55
+#: geonode/monitoring/management/commands/collect_metrics.py:54
 msgid "Should process and send notifications as well (default: no)"
 msgstr ""
 
-#: geonode/monitoring/management/commands/collect_metrics.py:57
+#: geonode/monitoring/management/commands/collect_metrics.py:56
 msgid "Collect data from this service only"
 msgstr ""
 
@@ -4586,14 +5072,28 @@ msgstr "ngày tham chiếu cho các tài nguyên trích dẫn"
 msgid "Show data for specific label"
 msgstr "ngày tham chiếu cho các tài nguyên trích dẫn"
 
-#: geonode/monitoring/models.py:100 geonode/templates/500.html:203
-#: geonode/templates/base.html:525
+#: geonode/monitoring/management/commands/updategeoip.py:44
+msgid "Write result to file, default GEOIP_PATH: {}"
+msgstr ""
+
+#: geonode/monitoring/management/commands/updategeoip.py:46
+msgid ""
+"Fetch database from specific url. If nothing provided, default {} will be "
+"used"
+msgstr ""
+
+#: geonode/monitoring/management/commands/updategeoip.py:48
+msgid "Overwrite file if exists"
+msgstr ""
+
+#: geonode/monitoring/models.py:100 geonode/templates/500.html:208
+#: geonode/templates/base.html:545
 msgid "GeoNode"
 msgstr "GeoNode"
 
 #: geonode/monitoring/models.py:101
 #: geonode/people/templates/people/profile_detail.html:172
-#: geonode/templates/500.html:284
+#: geonode/templates/500.html:289
 msgid "GeoServer"
 msgstr "GeoServer"
 
@@ -4629,7 +5129,7 @@ msgstr "Styles"
 
 #: geonode/monitoring/models.py:178
 #: geonode/people/templates/people/profile_detail.html:173
-#: geonode/templates/500.html:285 geonode/templates/base.html:395
+#: geonode/templates/500.html:290 geonode/templates/base.html:415
 msgid "Admin"
 msgstr "Quản trị viên"
 
@@ -4722,10 +5222,6 @@ msgstr "Chỉnh sửa Metadata"
 msgid "View Metadata"
 msgstr "Chỉnh sửa Metadata"
 
-#: geonode/monitoring/models.py:359
-msgid "View"
-msgstr "View"
-
 #: geonode/monitoring/models.py:361
 #, fuzzy
 #| msgid "Public"
@@ -4750,79 +5246,78 @@ msgstr "Danh sách các nguồn lực sử dụng tài liệu này:"
 msgid "Response processing time in ms"
 msgstr "Tài nguyên sử dụng tài liệu này"
 
-#: geonode/monitoring/models.py:1071
+#: geonode/monitoring/models.py:1072
 msgid "1 minute"
 msgstr ""
 
-#: geonode/monitoring/models.py:1072
+#: geonode/monitoring/models.py:1073
 msgid "5 minutes"
 msgstr ""
 
-#: geonode/monitoring/models.py:1073
+#: geonode/monitoring/models.py:1074
 msgid "10 minutes"
 msgstr ""
 
-#: geonode/monitoring/models.py:1074
+#: geonode/monitoring/models.py:1075
 msgid "30 minutes"
 msgstr ""
 
-#: geonode/monitoring/models.py:1075
+#: geonode/monitoring/models.py:1076
 msgid "1 hour"
 msgstr ""
 
-#: geonode/monitoring/models.py:1083 geonode/templates/metadata_base.html:128
+#: geonode/monitoring/models.py:1084 geonode/templates/metadata_base.html:128
 #: geonode/templates/metadata_base.html:131
-#: geonode/templates/socialaccount/authentication_error.html:11
 msgid "Error"
 msgstr ""
 
-#: geonode/monitoring/models.py:1084
+#: geonode/monitoring/models.py:1085
 msgid "Fatal"
 msgstr ""
 
-#: geonode/monitoring/models.py:1098
+#: geonode/monitoring/models.py:1099
 msgid "Expected min/max values for user configuration"
 msgstr ""
 
-#: geonode/monitoring/models.py:1106
+#: geonode/monitoring/models.py:1107
 msgid "Marker of last delivery"
 msgstr ""
 
-#: geonode/monitoring/models.py:1109
+#: geonode/monitoring/models.py:1110
 msgid "Minimum time between subsequent notifications"
 msgstr ""
 
-#: geonode/monitoring/models.py:1114
+#: geonode/monitoring/models.py:1115
 msgid "How severe would be error from this notification"
 msgstr ""
 
-#: geonode/monitoring/models.py:1119
+#: geonode/monitoring/models.py:1120
 msgid "Is it active"
 msgstr ""
 
-#: geonode/monitoring/models.py:1126
+#: geonode/monitoring/models.py:1127
 msgid "{}: {}"
 msgstr ""
 
-#: geonode/monitoring/models.py:1390
+#: geonode/monitoring/models.py:1391
 msgid "Value must be above"
 msgstr ""
 
-#: geonode/monitoring/models.py:1391
+#: geonode/monitoring/models.py:1392
 msgid "Value must be below"
 msgstr ""
 
-#: geonode/monitoring/models.py:1392
+#: geonode/monitoring/models.py:1393
 msgid "Last update must not be older than"
 msgstr ""
 
-#: geonode/monitoring/models.py:1542
+#: geonode/monitoring/models.py:1543
 msgid "Max timeout for given metric before error should be raised"
 msgstr ""
 
 #: geonode/monitoring/templates/monitoring/index.html:5
 #: geonode/monitoring/templates/monitoring/non_superuser.html:4
-#: geonode/templates/base.html:401
+#: geonode/templates/base.html:421
 msgid "Monitoring & Analytics"
 msgstr ""
 
@@ -4892,25 +5387,25 @@ msgstr "Hoạt động gần đây"
 msgid "This account is now active and can log in the site"
 msgstr ""
 
-#: geonode/people/admin.py:56
+#: geonode/people/admin.py:55
 msgid "Personal info"
 msgstr "Thông tin cá nhân"
 
-#: geonode/people/admin.py:59
+#: geonode/people/admin.py:58
 msgid "Important dates"
 msgstr "Các ngày quan trọng"
 
-#: geonode/people/admin.py:60
+#: geonode/people/admin.py:59
 #, fuzzy
 #| msgid "Edit profile"
 msgid "Extended profile"
 msgstr "Chỉnh sửa hồ sơ"
 
-#: geonode/people/admin.py:159
+#: geonode/people/admin.py:164
 msgid "Password changed successfully."
 msgstr "Mật khẩu thay đổi thành công."
 
-#: geonode/people/admin.py:169
+#: geonode/people/admin.py:174
 #, python-format
 msgid "Change password: %s"
 msgstr "Thay đổi mật khẩu: %s"
@@ -4986,8 +5481,8 @@ msgstr "Tên tổ chức"
 msgid "name of the responsible organization"
 msgstr "Tên của tổ chức chịu trách nhiệm"
 
-#: geonode/people/models.py:72 geonode/templates/500.html:270
-#: geonode/templates/base.html:387
+#: geonode/people/models.py:72 geonode/templates/500.html:275
+#: geonode/templates/base.html:407
 msgid "Profile"
 msgstr "Hồ sơ"
 
@@ -5005,9 +5500,9 @@ msgstr "vai trò, vị trí của người chịu trách nhiệm"
 
 #: geonode/people/models.py:82
 #: geonode/people/templates/people/profile_detail.html:89
-#: geonode/templates/metadata_detail.html:145
-#: geonode/templates/metadata_detail.html:287
-#: geonode/templates/metadata_detail.html:368
+#: geonode/templates/metadata_detail.html:150
+#: geonode/templates/metadata_detail.html:292
+#: geonode/templates/metadata_detail.html:373
 msgid "Voice"
 msgstr "Tiếng nói"
 
@@ -5136,37 +5631,37 @@ msgid "Not provided."
 msgstr ""
 
 #: geonode/people/templates/people/profile_detail.html:76
-#: geonode/templates/metadata_detail.html:136
-#: geonode/templates/metadata_detail.html:278
-#: geonode/templates/metadata_detail.html:359
+#: geonode/templates/metadata_detail.html:141
+#: geonode/templates/metadata_detail.html:283
+#: geonode/templates/metadata_detail.html:364
 msgid "Position"
 msgstr ""
 
 #: geonode/people/templates/people/profile_detail.html:80
-#: geonode/templates/metadata_detail.html:139
-#: geonode/templates/metadata_detail.html:281
-#: geonode/templates/metadata_detail.html:362
+#: geonode/templates/metadata_detail.html:144
+#: geonode/templates/metadata_detail.html:286
+#: geonode/templates/metadata_detail.html:367
 msgid "Organization"
 msgstr ""
 
 #: geonode/people/templates/people/profile_detail.html:85
-#: geonode/templates/index.html:233 geonode/templates/metadata_detail.html:142
-#: geonode/templates/metadata_detail.html:284
-#: geonode/templates/metadata_detail.html:365
+#: geonode/templates/metadata_detail.html:147
+#: geonode/templates/metadata_detail.html:289
+#: geonode/templates/metadata_detail.html:370
 msgid "Location"
 msgstr ""
 
 #: geonode/people/templates/people/profile_detail.html:93
 #: geonode/people/templates/people/profile_detail.html:113
-#: geonode/services/serviceprocessors/arcgis.py:115
-#: geonode/services/serviceprocessors/wms.py:144
+#: geonode/services/serviceprocessors/arcgis.py:117
+#: geonode/services/serviceprocessors/wms.py:190
 msgid "Not provided"
 msgstr "Không được cung cấp"
 
 #: geonode/people/templates/people/profile_detail.html:97
-#: geonode/templates/base.html:519 geonode/templates/metadata_detail.html:148
-#: geonode/templates/metadata_detail.html:290
-#: geonode/templates/metadata_detail.html:371
+#: geonode/templates/base.html:539 geonode/templates/metadata_detail.html:153
+#: geonode/templates/metadata_detail.html:295
+#: geonode/templates/metadata_detail.html:376
 msgid "Fax"
 msgstr ""
 
@@ -5202,7 +5697,7 @@ msgid "Upload new layers"
 msgstr "Tải lên lớp mới"
 
 #: geonode/people/templates/people/profile_detail.html:149
-#: geonode/templates/500.html:161
+#: geonode/templates/500.html:166
 #, fuzzy
 #| msgid "Create a new map"
 msgid "Create a new layer"
@@ -5222,27 +5717,22 @@ msgstr "Tạo một bản đồ mới"
 msgid "My Activities"
 msgstr "Hoạt động của tôi"
 
-#: geonode/people/templates/people/profile_detail.html:156
-#: geonode/templates/base.html:390
-msgid "Favorites"
-msgstr ""
-
 #: geonode/people/templates/people/profile_detail.html:161
-#: geonode/templates/500.html:274
+#: geonode/templates/500.html:279
 msgid "Notifications"
 msgstr ""
 
 #: geonode/people/templates/people/profile_detail.html:164
-#: geonode/templates/500.html:187 geonode/templates/500.html:277
+#: geonode/templates/500.html:192 geonode/templates/500.html:282
 #: geonode/templates/announcements/announcement_list.html:5
 #: geonode/templates/announcements/announcement_list.html:14
-#: geonode/templates/base.html:322 geonode/templates/base.html:493
+#: geonode/templates/base.html:344 geonode/templates/base.html:513
 msgid "Announcements"
 msgstr "Thông báo"
 
 #: geonode/people/templates/people/profile_detail.html:169
-#: geonode/templates/500.html:190 geonode/templates/500.html:280
-#: geonode/templates/base.html:326 geonode/templates/base.html:496
+#: geonode/templates/500.html:195 geonode/templates/500.html:285
+#: geonode/templates/base.html:348 geonode/templates/base.html:516
 #: geonode/templates/invitations/forms/_invite.html:7
 #, fuzzy
 #| msgid "Invite User"
@@ -5284,44 +5774,44 @@ msgstr "Cập nhật hồ sơ cá nhân"
 msgid "Explore People"
 msgstr "Khám phá"
 
-#: geonode/people/views.py:110
+#: geonode/people/views.py:120
 msgid "Your username for "
 msgstr "Tên người dùng của bạn cho"
 
-#: geonode/people/views.py:124
+#: geonode/people/views.py:134
 msgid "Your username has been emailed to you."
 msgstr "Tên người dùng của bạn đã được gửi qua email cho bạn."
 
-#: geonode/people/views.py:126
+#: geonode/people/views.py:136
 msgid "No user could be found with that email address."
 msgstr "Không có người dùng có thể được tìm thấy với địa chỉ email."
 
-#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:228
+#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:266
 #, fuzzy
 #| msgid "You are not permitted to save or edit this map."
 msgid "You are not permitted to save or edit this resource."
 msgstr "Bạn không được phép để lưu hoặc chỉnh sửa bản đồ này."
 
-#: geonode/proxy/views.py:227
+#: geonode/proxy/views.py:265
 #, fuzzy
 #| msgid "You are not allowed to view this document."
 msgid "You are not authorized to download this resource."
 msgstr "Bạn không được phép xem tài liệu này."
 
-#: geonode/proxy/views.py:229
+#: geonode/proxy/views.py:267
 msgid ""
 "No files have been found for this resource. Please, contact a system "
 "administrator."
 msgstr ""
 
-#: geonode/proxy/views.py:263 geonode/proxy/views.py:274
-#: geonode/proxy/views.py:380
+#: geonode/proxy/views.py:301 geonode/proxy/views.py:312
+#: geonode/proxy/views.py:415
 #, fuzzy
 #| msgid "Documents"
 msgid "No files found."
 msgstr "Tài liệu"
 
-#: geonode/proxy/views.py:388
+#: geonode/proxy/views.py:423
 #, fuzzy
 #| msgid "Not provided"
 msgid "Not Authorized"
@@ -5388,9 +5878,58 @@ msgid ""
 "this URL : {url}"
 msgstr ""
 
-#: geonode/security/middleware.py:128
+#: geonode/security/middleware.py:114
 msgid "Session is Expired. Please login again!"
 msgstr ""
+
+#: geonode/security/views.py:68
+#, fuzzy
+#| msgid "You do not have permissions for this layer."
+msgid "You are not allowed to change permissions for this resource"
+msgstr "Bạn không có quyền cho layer này."
+
+#: geonode/security/views.py:74
+msgid "Permissions successfully updated!"
+msgstr ""
+
+#: geonode/security/views.py:106
+#, fuzzy
+#| msgid "Permissions"
+msgid "Error updating permissions :("
+msgstr "Quyền"
+
+#: geonode/security/views.py:294
+msgid "Security Rules Cache Refreshed!"
+msgstr ""
+
+#: geonode/security/views.py:301 geonode/security/views.py:365
+#: geonode/security/views.py:393
+#, fuzzy
+#| msgid "You are not permitted to save or edit this map."
+msgid "You cannot modify this resource!"
+msgstr "Bạn không được phép để lưu hoặc chỉnh sửa bản đồ này."
+
+#: geonode/security/views.py:359
+#, fuzzy
+#| msgid "Password changed successfully."
+msgid "Attributes/Stats Refreshed Successfully!"
+msgstr "Mật khẩu thay đổi thành công."
+
+#: geonode/security/views.py:387
+msgid "GeoWebCache Tiled Layer Emptied!"
+msgstr ""
+
+#: geonode/security/views.py:423
+#, fuzzy
+#| msgid "Set permissions"
+msgid "Wrong permissions specification"
+msgstr "Thiết lập quyền"
+
+#: geonode/security/views.py:447
+#, fuzzy
+#| msgid "Change password: %s"
+msgid "error delivering notification"
+msgstr "Thay đổi mật khẩu: %s"
 
 #: geonode/services/enumerations.py:45
 msgid "Auto-detect"
@@ -5448,23 +5987,23 @@ msgstr "URL dịch vụ"
 msgid "Service Type"
 msgstr "Loại dịch vụ"
 
-#: geonode/services/forms.py:72
+#: geonode/services/forms.py:71
 #, fuzzy, python-format
 #| msgid "service interfaces"
 msgid "Service %(url)s is already registered"
 msgstr "giao diện dịch vụ"
 
-#: geonode/services/forms.py:88
+#: geonode/services/forms.py:87
 #, python-format
 msgid "Could not connect to the service at %(url)s"
 msgstr ""
 
-#: geonode/services/forms.py:93
+#: geonode/services/forms.py:92
 #, python-format
 msgid "Could not find importable resources for the service at %(url)s"
 msgstr ""
 
-#: geonode/services/forms.py:100
+#: geonode/services/forms.py:99
 #, python-format
 msgid "Found service of type %(found_type)s instead of %(service_type)s"
 msgstr ""
@@ -5581,8 +6120,8 @@ msgid "Register a new Service"
 msgstr "Đăng ký một dịch vụ mới"
 
 #: geonode/services/templates/services/service_list.html:11
-#: geonode/templates/500.html:156 geonode/templates/base.html:286
-#: geonode/templates/base.html:462
+#: geonode/templates/500.html:161 geonode/templates/base.html:296
+#: geonode/templates/base.html:482
 msgid "Remote Services"
 msgstr "Dịch vụ từ xa"
 
@@ -5728,29 +6267,29 @@ msgstr "Bạn không được phép để loại bỏ dịch vụ này."
 msgid "Service {} has been deleted"
 msgstr "Dịch vụ đã được tạo ra:"
 
-#: geonode/social/signals.py:80
+#: geonode/social/signals.py:81
 msgid "created"
 msgstr "tạo"
 
-#: geonode/social/signals.py:81 geonode/social/tests.py:104
+#: geonode/social/signals.py:82 geonode/social/tests.py:104
 msgid "deleted"
 msgstr "xóa"
 
-#: geonode/social/signals.py:84
+#: geonode/social/signals.py:86
 #, fuzzy
 #| msgid "Update"
 msgid "updated"
 msgstr "Cập nhật"
 
-#: geonode/social/signals.py:94 geonode/social/tests.py:124
+#: geonode/social/signals.py:96 geonode/social/tests.py:124
 msgid "added a comment"
 msgstr "thêm một bình luận"
 
-#: geonode/social/signals.py:96
+#: geonode/social/signals.py:98
 msgid "updated a comment"
 msgstr "cập nhật một nhận xét"
 
-#: geonode/social/signals.py:102 geonode/social/signals.py:107
+#: geonode/social/signals.py:104 geonode/social/signals.py:109
 #: geonode/social/tests.py:78
 msgid "uploaded"
 msgstr "tải lên"
@@ -5760,11 +6299,11 @@ msgstr "tải lên"
 msgid "Recent activity"
 msgstr "Hoạt động gần đây"
 
-#: geonode/social/templatetags/social_tags.py:56
+#: geonode/social/templatetags/social_tags.py:55
 msgid "to"
 msgstr "đến"
 
-#: geonode/social/templatetags/social_tags.py:72 geonode/social/tests.py:127
+#: geonode/social/templatetags/social_tags.py:68 geonode/social/tests.py:127
 #: geonode/templates/_comments.html:31
 msgid "on"
 msgstr "trên"
@@ -5820,44 +6359,50 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr ""
 
-#: geonode/templates/500.html:67 geonode/templates/500.html:184
-#: geonode/templates/base.html:318 geonode/templates/base.html:490
+#: geonode/templates/500.html:72 geonode/templates/500.html:189
+#: geonode/templates/base.html:340 geonode/templates/base.html:510
 msgid "People"
 msgstr "Người"
 
-#: geonode/templates/500.html:79 geonode/templates/_permissions_form.html:107
-#: geonode/templates/_permissions_form.html:165 geonode/templates/base.html:356
-#: geonode/templates/index.html:45 geonode/templates/index.html:50
+#: geonode/templates/500.html:84 geonode/templates/500.html:86
+#: geonode/templates/_permissions_form.html:107
+#: geonode/templates/_permissions_form.html:165 geonode/templates/base.html:376
+#: geonode/templates/base.html:377 geonode/templates/base.html:378
+#: geonode/templates/base.html:381 geonode/templates/base.html:382
+#: geonode/templates/base.html:383 geonode/templates/index.html:101
+#: geonode/templates/index.html:102 geonode/templates/index.html:103
+#: geonode/templates/index.html:106
+#: geonode/templates/search/_text_filter.html:11
 #: geonode/templates/search/search.html:5
 #: geonode/templates/search/search.html:11
 msgid "Search"
 msgstr "Tìm kiếm"
 
-#: geonode/templates/500.html:92 geonode/templates/base.html:371
+#: geonode/templates/500.html:97 geonode/templates/base.html:391
 msgid "Register"
 msgstr "Đăng ký"
 
-#: geonode/templates/500.html:103 geonode/templates/500.html:234
-#: geonode/templates/500.html:252 geonode/templates/base.html:411
-#: geonode/templates/base.html:571 geonode/templates/base.html:598
+#: geonode/templates/500.html:108 geonode/templates/500.html:239
+#: geonode/templates/500.html:257 geonode/templates/base.html:431
+#: geonode/templates/base.html:591 geonode/templates/base.html:618
 msgid "Sign in"
 msgstr "Đăng nhập"
 
-#: geonode/templates/500.html:115 geonode/templates/base.html:422
+#: geonode/templates/500.html:120 geonode/templates/base.html:442
 msgid "You are using an outdated browser that is not supported by GeoNode."
 msgstr ""
 
-#: geonode/templates/500.html:116 geonode/templates/base.html:423
+#: geonode/templates/500.html:121 geonode/templates/base.html:443
 msgid ""
 "Please use a <strong>modern browser</strong> like Mozilla Firefox, Google "
 "Chrome or Safari."
 msgstr ""
 
-#: geonode/templates/500.html:130
+#: geonode/templates/500.html:135
 msgid "There was a problem loading this page"
 msgstr "Có một vấn đề tải trang này"
 
-#: geonode/templates/500.html:132
+#: geonode/templates/500.html:137
 msgid ""
 "\n"
 "            Please contact your GeoNode administrator (they may have "
@@ -5868,73 +6413,73 @@ msgid ""
 "            "
 msgstr ""
 
-#: geonode/templates/500.html:167 geonode/templates/base.html:297
-#: geonode/templates/base.html:473
+#: geonode/templates/500.html:172 geonode/templates/base.html:307
+#: geonode/templates/base.html:493
 #, fuzzy
 #| msgid "Remote Services"
 msgid "Add Remote Service"
 msgstr "Dịch vụ từ xa"
 
-#: geonode/templates/500.html:177 geonode/templates/base.html:308
-#: geonode/templates/base.html:483
+#: geonode/templates/500.html:182 geonode/templates/base.html:318
+#: geonode/templates/base.html:503
 #, fuzzy
 #| msgid "Create a Map"
 msgid "Create Map"
 msgstr "Tạo một bản đồ"
 
-#: geonode/templates/500.html:193 geonode/templates/base.html:329
-#: geonode/templates/base.html:499
+#: geonode/templates/500.html:198 geonode/templates/base.html:351
+#: geonode/templates/base.html:519
 #, fuzzy
 #| msgid "Add Layers"
 msgid "Add User"
 msgstr "Thêm Layers"
 
-#: geonode/templates/500.html:203 geonode/templates/base.html:525
+#: geonode/templates/500.html:208 geonode/templates/base.html:545
 msgid "Powered by"
 msgstr "Powered by"
 
-#: geonode/templates/500.html:203 geonode/templates/base.html:525
+#: geonode/templates/500.html:208 geonode/templates/base.html:545
 msgid "version"
 msgstr "phiên bản"
 
-#: geonode/templates/500.html:204 geonode/templates/base.html:526
+#: geonode/templates/500.html:209 geonode/templates/base.html:546
 msgid "Developers"
 msgstr "Nhà phát triển"
 
-#: geonode/templates/500.html:240 geonode/templates/500.html:241
-#: geonode/templates/base.html:583 geonode/templates/base.html:584
+#: geonode/templates/500.html:245 geonode/templates/500.html:246
+#: geonode/templates/base.html:603 geonode/templates/base.html:604
 msgid "Username"
 msgstr "Tên đăng nhập"
 
-#: geonode/templates/500.html:244 geonode/templates/base.html:587
-#: geonode/templates/base.html:588
+#: geonode/templates/500.html:249 geonode/templates/base.html:607
+#: geonode/templates/base.html:608
 msgid "Password"
 msgstr "Mật khẩu"
 
-#: geonode/templates/500.html:248 geonode/templates/base.html:591
+#: geonode/templates/500.html:253 geonode/templates/base.html:611
 msgid "Remember Me"
 msgstr "Ghi nhớ"
 
-#: geonode/templates/500.html:264
+#: geonode/templates/500.html:269
 msgid "Menu"
 msgstr ""
 
-#: geonode/templates/500.html:271 geonode/templates/base.html:388
+#: geonode/templates/500.html:276 geonode/templates/base.html:408
 msgid "Recent Activity"
 msgstr "Hoạt động gần đây"
 
-#: geonode/templates/500.html:272 geonode/templates/base.html:392
+#: geonode/templates/500.html:277 geonode/templates/base.html:412
 #: geonode/templates/user_messages/inbox.html:16
 msgid "Inbox"
 msgstr "Hộp thư đến"
 
-#: geonode/templates/500.html:290 geonode/templates/base.html:405
+#: geonode/templates/500.html:295 geonode/templates/base.html:425
 msgid "Help"
 msgstr "Giúp"
 
-#: geonode/templates/500.html:296 geonode/templates/account/logout.html:5
+#: geonode/templates/500.html:301 geonode/templates/account/logout.html:5
 #: geonode/templates/account/logout.html:11
-#: geonode/templates/account/logout.html:16 geonode/templates/base.html:407
+#: geonode/templates/account/logout.html:16 geonode/templates/base.html:427
 msgid "Log out"
 msgstr "Thoát"
 
@@ -6137,7 +6682,9 @@ msgstr ""
 #: geonode/templates/_permissions_form.html:496
 msgid ""
 "<p>This will override the current stored Geo Limits on the DB.</p><p>To "
-"apply them you will need to click on <strong>\\"
+"apply them you will need to click on <strong>Apply Changes</strong> button "
+"anyway.</p><p><strong>WARNING:</strong> This operation cannot be reverted!</"
+"p><p>Do you want to proceed?</p>"
 msgstr ""
 
 #: geonode/templates/_permissions_form.html:541
@@ -6148,7 +6695,7 @@ msgstr ""
 #: geonode/templates/_permissions_form.html:542
 msgid ""
 "<p>Geometry <strong>successfully</strong> saved!</p><p>To apply them you "
-"will need to click on <strong>\\"
+"will need to click on <strong>Apply Changes</strong> button.</p>"
 msgstr ""
 
 #: geonode/templates/_permissions_form.html:547
@@ -6170,7 +6717,8 @@ msgstr ""
 #: geonode/templates/_permissions_form.html:633
 msgid ""
 "<p>This will <strong>permanently</strong> remove the Geo Limits from the DB."
-"</p><p>To apply them you will need to click on <strong>\\"
+"</p><p>To apply them you will need to click on <strong>Apply Changes</"
+"strong> button.</p><p>Do you want to proceed?</p>"
 msgstr ""
 
 #: geonode/templates/_permissions_form.html:659
@@ -6421,7 +6969,7 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/account/email_confirm.html:20
-#: geonode/templates/base.html:727
+#: geonode/templates/base.html:751
 #: geonode/templates/relationships/confirm.html:12
 msgid "Confirm"
 msgstr "Xác nhận"
@@ -6461,7 +7009,7 @@ msgid ""
 "      <a href=\"%(signup_url)s\">sign up</a> first."
 msgstr ""
 
-#: geonode/templates/account/login.html:44 geonode/templates/base.html:594
+#: geonode/templates/account/login.html:44 geonode/templates/base.html:614
 #, fuzzy
 #| msgid "Forgot your password?"
 msgid "Forgot Password?"
@@ -6791,35 +7339,35 @@ msgstr "Xóa Những"
 msgid "GeoNode Search"
 msgstr "GeoNode Trợ giúp"
 
-#: geonode/templates/base.html:509
+#: geonode/templates/base.html:529
 #, fuzzy
 #| msgid "Contact:"
 msgid "Contact Us"
 msgstr "Liên hệ:"
 
-#: geonode/templates/base.html:518
+#: geonode/templates/base.html:538
 msgid "Tel"
 msgstr ""
 
-#: geonode/templates/base.html:662
+#: geonode/templates/base.html:686
 #, fuzzy
 #| msgid "uploaded"
 msgid "Uploading..."
 msgstr "tải lên"
 
-#: geonode/templates/base.html:667
+#: geonode/templates/base.html:691
 #, fuzzy
 #| msgid "Upload files"
 msgid "Upload in progress..."
 msgstr "Tải file"
 
-#: geonode/templates/base.html:684
+#: geonode/templates/base.html:708
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Updating Thumbnail..."
 msgstr "Thumbnail"
 
-#: geonode/templates/base.html:712
+#: geonode/templates/base.html:736
 #, fuzzy
 #| msgid "Are you sure you want to remove"
 msgid "Message. Do you want to proceed?"
@@ -7109,42 +7657,27 @@ msgstr "Xuất khẩu một bản đồ"
 msgid "Remixing a Map"
 msgstr "Remixing Map"
 
-#: geonode/templates/index.html:6
+#: geonode/templates/index.html:7
 msgid "Welcome!"
 msgstr "Chào mừng bạn!"
 
-#: geonode/templates/index.html:19
-msgid "Welcome"
-msgstr "Chào mừng"
-
-#: geonode/templates/index.html:21
-msgid ""
-"GeoNode is an open source platform for sharing geospatial data and maps."
-msgstr ""
-"GeoNode là một nền tảng mã nguồn mở cho việc chia sẻ dữ liệu không gian địa "
-"lý và bản đồ."
-
-#: geonode/templates/index.html:24
-msgid "https://docs.geonode.org/en/master/usage/index.html"
-msgstr ""
-
-#: geonode/templates/index.html:25
+#: geonode/templates/index.html:32
 #, fuzzy
 #| msgid "Getting Started"
 msgid "Get Started &raquo;"
 msgstr "Bắt đầu"
 
-#: geonode/templates/index.html:40
+#: geonode/templates/index.html:96
 #, fuzzy
 #| msgid "Search"
 msgid "Search for Data."
 msgstr "Tìm kiếm"
 
-#: geonode/templates/index.html:57
+#: geonode/templates/index.html:113
 msgid "Advanced Search"
 msgstr ""
 
-#: geonode/templates/index.html:73
+#: geonode/templates/index.html:129
 msgid ""
 "Click to search for geospatial data published by other users, organizations "
 "and public sources. Download data in standard formats."
@@ -7153,15 +7686,15 @@ msgstr ""
 "người dùng khác, các tổ chức và các nguồn công cộng. Tải dữ liệu ở định dạng "
 "tiêu chuẩn."
 
-#: geonode/templates/index.html:75
+#: geonode/templates/index.html:131
 msgid "Add layers"
 msgstr ""
 
-#: geonode/templates/index.html:77
+#: geonode/templates/index.html:133
 msgid "Explore layers"
 msgstr ""
 
-#: geonode/templates/index.html:83
+#: geonode/templates/index.html:139
 #, fuzzy
 #| msgid ""
 #| "Data is available for browsing, aggregating and styling to generate maps "
@@ -7175,39 +7708,33 @@ msgstr ""
 "bản đồ có thể được chia sẻ công khai hoặc bị hạn chế để chỉ những người dùng "
 "cụ thể."
 
-#: geonode/templates/index.html:85
+#: geonode/templates/index.html:141
 msgid "Create maps"
 msgstr "Tạo bản đồ"
 
-#: geonode/templates/index.html:87
+#: geonode/templates/index.html:143
 msgid "Explore maps"
 msgstr ""
 
-#: geonode/templates/index.html:93
+#: geonode/templates/index.html:149
 msgid ""
 "As for the layers and maps GeoNode allows to publish tabular and text data, "
 "manage theirs metadata and associated documents."
 msgstr ""
 
-#: geonode/templates/index.html:95
+#: geonode/templates/index.html:151
 #, fuzzy
 #| msgid "Add Comment"
 msgid "Add documents"
 msgstr "Nhập bình luận"
 
-#: geonode/templates/index.html:97
+#: geonode/templates/index.html:153
 #, fuzzy
 #| msgid "Explore Documents"
 msgid "Explore documents"
 msgstr "Khám phá tài liệu"
 
-#: geonode/templates/index.html:102
-#: geonode/templates/pinax/notifications/account_approve/full.txt:1
-msgid "User"
-msgid_plural "Users"
-msgstr[0] ""
-
-#: geonode/templates/index.html:103
+#: geonode/templates/index.html:159
 #, fuzzy
 #| msgid ""
 #| "GeoNode allows registered users to easily upload geospatial data in "
@@ -7219,253 +7746,29 @@ msgstr ""
 "GeoNode cho phép người dùng đăng ký để dễ dàng tải lên dữ liệu không gian "
 "địa lý trong một số định dạng bao gồm shapefile và tệp GeoTiff."
 
-#: geonode/templates/index.html:104
+#: geonode/templates/index.html:160
 msgid "See users"
 msgstr ""
 
-#: geonode/templates/index.html:118
-msgid "Discover the available datasets."
-msgstr ""
-
-#: geonode/templates/index.html:123
-msgid ""
-"Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
-"biological sciences, ecology, wilderness, sealife, wetlands, habitat."
-msgstr ""
-
-#: geonode/templates/index.html:125
-msgid "Biota"
-msgstr ""
-
-#: geonode/templates/index.html:132
-msgid ""
-"Legal land descriptions. Examples: political and administrative boundaries."
-msgstr ""
-
-#: geonode/templates/index.html:134
-msgid "Boundaries"
-msgstr ""
-
-#: geonode/templates/index.html:141
-msgid ""
-"Processes and phenomena of the atmosphere. Examples: cloud cover, weather, "
-"climate, atmospheric conditions, climate change, precipitation."
-msgstr ""
-
-#: geonode/templates/index.html:143
-msgid "Climate"
-msgstr ""
-
-#: geonode/templates/index.html:150
-msgid ""
-"Economic activities, conditions and employment. Examples: production, "
-"labour, revenue, commerce, industry, tourism and ecotourism, forestry, "
-"fisheries, commercial or subsistence hunting, exploration and exploitation "
-"of resources such as minerals, oil and gas."
-msgstr ""
-
-#: geonode/templates/index.html:152
-msgid "Economy"
-msgstr ""
-
-#: geonode/templates/index.html:159
-msgid ""
-"Height above or below sea level. Examples: altitude, bathymetry, digital "
-"elevation models, slope, derived products."
-msgstr ""
-
-#: geonode/templates/index.html:168
-msgid ""
-"Environmental resources, protection and conservation. Examples: "
-"environmental pollution, waste storage and treatment, environmental impact "
-"assessment, monitoring environmental risk, nature reserves, landscape."
-msgstr ""
-
-#: geonode/templates/index.html:170
-#, fuzzy
-#| msgid "Announcement"
-msgid "Environment"
-msgstr "Thông cáo"
-
-#: geonode/templates/index.html:177
-msgid ""
-"Rearing of animals and/or cultivation of plants. Examples: agriculture, "
-"irrigation, aquaculture, plantations, herding, pests and diseases affecting "
-"crops and livestock."
-msgstr ""
-
-#: geonode/templates/index.html:179
-msgid "Farming"
-msgstr ""
-
-#: geonode/templates/index.html:186
-msgid ""
-"Information pertaining to earth sciences. Examples: geophysical features and "
-"processes, geology, minerals, sciences dealing with the composition, "
-"structure and origin of the earth s rocks, risks of earthquakes, volcanic "
-"activity, landslides, gravity information, soils, permafrost, hydrogeology, "
-"erosion."
-msgstr ""
-
-#: geonode/templates/index.html:188
-msgid "Geoscience"
-msgstr ""
-
-#: geonode/templates/index.html:195
-msgid ""
-"Health, health services, human ecology, and safety. Examples: disease and "
-"illness, factors affecting health, hygiene, substance abuse, mental and "
-"physical health, health services."
-msgstr ""
-
-#: geonode/templates/index.html:197
-msgid "Health"
-msgstr ""
-
-#: geonode/templates/index.html:204
-msgid ""
-"Base maps. Examples: land cover, topographic maps, imagery, unclassified "
-"images, annotations."
-msgstr ""
-
-#: geonode/templates/index.html:206
-#, fuzzy
-#| msgid "Browsing Maps"
-msgid "Base Maps"
-msgstr "Duyệt Maps"
-
-#: geonode/templates/index.html:213
-msgid ""
-"Inland water features, drainage systems and their characteristics. Examples: "
-"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
-"floods, water quality, hydrographic charts."
-msgstr ""
-
-#: geonode/templates/index.html:215
-msgid "Inland Waters"
-msgstr ""
-
-#: geonode/templates/index.html:222
-msgid ""
-"Military bases, structures, activities. Examples: barracks, training "
-"grounds, military transportation, information collection."
-msgstr ""
-
-#: geonode/templates/index.html:224
-msgid "Intelligence"
-msgstr ""
-
-#: geonode/templates/index.html:231
-msgid ""
-"Positional information and services. Examples: addresses, geodetic networks, "
-"control points, postal zones and services, place names."
-msgstr ""
-
-#: geonode/templates/index.html:240
-msgid ""
-"Features and characteristics of salt water bodies (excluding inland waters). "
-"Examples: tides, tidal waves, coastal information, reefs."
-msgstr ""
-
-#: geonode/templates/index.html:242
-msgid "Oceans"
-msgstr ""
-
-#: geonode/templates/index.html:249
-msgid ""
-"Information used for appropriate actions for future use of the land. "
-"Examples: land use maps, zoning maps, cadastral surveys, land ownership."
-msgstr ""
-
-#: geonode/templates/index.html:251
-msgid "Planning"
-msgstr ""
-
-#: geonode/templates/index.html:258
-msgid ""
-"Settlements, anthropology, archaeology, education, traditional beliefs, "
-"manners and customs, demographic data, recreational areas and activities, "
-"social impact assessments, crime and justice, census information. Economic "
-"activities, conditions and employment."
-msgstr ""
-
-#: geonode/templates/index.html:260
-msgid "Population"
-msgstr ""
-
-#: geonode/templates/index.html:267
-msgid ""
-"Characteristics of society and cultures. Examples: settlements, "
-"anthropology, archaeology, education, traditional beliefs, manners and "
-"customs, demographic data, recreational areas and activities, social impact "
-"assessments, crime and justice, census information."
-msgstr ""
-
-#: geonode/templates/index.html:269
-msgid "Society"
-msgstr ""
-
-#: geonode/templates/index.html:276
-msgid ""
-"Man-made construction. Examples: buildings, museums, churches, factories, "
-"housing, monuments, shops, towers."
-msgstr ""
-
-#: geonode/templates/index.html:278
-msgid "Structure"
-msgstr ""
-
-#: geonode/templates/index.html:285
-msgid ""
-"Means and aids for conveying persons and/or goods. Examples: roads, airports/"
-"airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel "
-"location, aeronautical charts, railways."
-msgstr ""
-
-#: geonode/templates/index.html:287
-#, fuzzy
-#| msgid "format"
-msgid "Transportation"
-msgstr "định dạng"
-
-#: geonode/templates/index.html:294
-msgid ""
-"Energy, water and waste systems and communications infrastructure and "
-"services. Examples: hydroelectricity, geothermal, solar and nuclear sources "
-"of energy, water purification and distribution, sewage collection and "
-"disposal, electricity and gas distribution, data communication, "
-"telecommunication, radio, communication networks."
-msgstr ""
-
-#: geonode/templates/index.html:296
-#, fuzzy
-#| msgid "User Activities"
-msgid "Utilities"
-msgstr "Hoạt động tài"
-
-#: geonode/templates/index.html:305
+#: geonode/templates/index.html:174
 #, fuzzy
 #| msgid "feature type"
 msgid "Featured Datasets"
 msgstr "loại tính năng"
 
-#: geonode/templates/index.html:324
-msgid "Our partners"
-msgstr ""
-
-#: geonode/templates/index.html:349
+#: geonode/templates/index.html:220
 #, fuzzy
 #| msgid "Accepted"
 msgid "Accept"
 msgstr "Chấp nhận"
 
-#: geonode/templates/index.html:350
+#: geonode/templates/index.html:221
 #, fuzzy
 #| msgid "Subject"
 msgid "Reject"
 msgstr "Vấn đề"
 
-#: geonode/templates/index.html:351
+#: geonode/templates/index.html:222
 msgid "Leave"
 msgstr ""
 
@@ -7566,86 +7869,91 @@ msgstr ""
 msgid "Return to Map"
 msgstr "Quay trở lại"
 
-#: geonode/templates/metadata_detail.html:38
+#: geonode/templates/metadata_detail.html:40
 msgid "Identification"
 msgstr ""
 
-#: geonode/templates/metadata_detail.html:103
-#: geonode/templates/metadata_detail.html:106
-#: geonode/templates/metadata_detail.html:109
+#: geonode/templates/metadata_detail.html:105
+#: geonode/templates/metadata_detail.html:108
+#: geonode/templates/metadata_detail.html:111
 msgid "Yes"
 msgstr ""
 
-#: geonode/templates/metadata_detail.html:105
+#: geonode/templates/metadata_detail.html:107
 msgid "Published"
 msgstr ""
 
-#: geonode/templates/metadata_detail.html:133
-#: geonode/templates/metadata_detail.html:275
-#: geonode/templates/metadata_detail.html:356
+#: geonode/templates/metadata_detail.html:138
+#: geonode/templates/metadata_detail.html:280
+#: geonode/templates/metadata_detail.html:361
 msgid "email"
 msgstr "email"
 
-#: geonode/templates/metadata_detail.html:163
+#: geonode/templates/metadata_detail.html:168
 #, fuzzy
 #| msgid "format"
 msgid "Information"
 msgstr "định dạng"
 
-#: geonode/templates/metadata_detail.html:168
+#: geonode/templates/metadata_detail.html:173
 msgid "Identification Image"
 msgstr ""
 
-#: geonode/templates/metadata_detail.html:177
+#: geonode/templates/metadata_detail.html:182
 #, fuzzy
 #| msgid "Temporal Extent"
 msgid "Spatial Extent"
 msgstr "Mức độ thời gian"
 
-#: geonode/templates/metadata_detail.html:180
+#: geonode/templates/metadata_detail.html:185
 #, fuzzy
 #| msgid "projection"
 msgid "Projection System"
 msgstr "chiếu"
 
-#: geonode/templates/metadata_detail.html:183
+#: geonode/templates/metadata_detail.html:188
 msgid "Extension x0"
 msgstr ""
 
-#: geonode/templates/metadata_detail.html:186
+#: geonode/templates/metadata_detail.html:191
 msgid "Extension x1"
 msgstr ""
 
-#: geonode/templates/metadata_detail.html:189
+#: geonode/templates/metadata_detail.html:194
 msgid "Extension y0"
 msgstr ""
 
-#: geonode/templates/metadata_detail.html:192
+#: geonode/templates/metadata_detail.html:197
 msgid "Extension y1"
 msgstr ""
 
-#: geonode/templates/metadata_detail.html:197
+#: geonode/templates/metadata_detail.html:202
 msgid "Features"
 msgstr ""
 
-#: geonode/templates/metadata_detail.html:267
+#: geonode/templates/metadata_detail.html:272
 msgid "Contact Points"
 msgstr ""
 
-#: geonode/templates/metadata_detail.html:308
+#: geonode/templates/metadata_detail.html:313
 msgid "References"
 msgstr ""
 
-#: geonode/templates/metadata_detail.html:313
+#: geonode/templates/metadata_detail.html:318
 msgid "Link Online"
 msgstr ""
 
-#: geonode/templates/metadata_detail.html:316
+#: geonode/templates/metadata_detail.html:321
 msgid "Metadata Page"
 msgstr ""
 
-#: geonode/templates/metadata_detail.html:320
+#: geonode/templates/metadata_detail.html:325
 msgid "Online Link"
+msgstr ""
+
+#: geonode/templates/metadata_form_js.html:265
+#: geonode/templates/metadata_form_js.html:306
+msgid "* Field declared Mandatory by the Metadata Schema"
 msgstr ""
 
 #: geonode/templates/owner_rights_request.html:6
@@ -7860,7 +8168,7 @@ msgid "You have received the following notice from"
 msgstr "Bạn có cập nhật không đầy đủ sau"
 
 #: geonode/templates/pinax/notifications/email_body.txt:8
-msgid "To change how you receive notifications, please go to"
+msgid "To change how you receive notifications, please go to "
 msgstr ""
 
 #: geonode/templates/pinax/notifications/email_subject.txt:1
@@ -8173,24 +8481,24 @@ msgstr "%(to_user_username)s profile"
 msgid "Responsibles"
 msgstr ""
 
-#: geonode/templates/search/_general_filters.html:110
+#: geonode/templates/search/_general_filters.html:126
 msgid "Date begins after:"
 msgstr "Ngày bắt đầu sau:"
 
-#: geonode/templates/search/_general_filters.html:111
-#: geonode/templates/search/_general_filters.html:115
+#: geonode/templates/search/_general_filters.html:127
+#: geonode/templates/search/_general_filters.html:131
 msgid "yyyy-mm-dd"
 msgstr "yyyy-mm-dd"
 
-#: geonode/templates/search/_general_filters.html:114
+#: geonode/templates/search/_general_filters.html:130
 msgid "Date ends before:"
 msgstr "Ngày kết thúc trước:"
 
-#: geonode/templates/search/_pagination.html:13
+#: geonode/templates/search/_pagination.html:15
 msgid "page"
 msgstr ""
 
-#: geonode/templates/search/_pagination.html:13
+#: geonode/templates/search/_pagination.html:15
 msgid "of"
 msgstr "của"
 
@@ -8199,6 +8507,16 @@ msgstr "của"
 #| msgid "Search"
 msgid "Search by region"
 msgstr "Tìm kiếm"
+
+#: geonode/templates/search/_search_content.html:4
+#, fuzzy
+#| msgid "Sections"
+msgid "Selection"
+msgstr "Phần"
+
+#: geonode/templates/search/_search_content.html:4
+msgid "No list items selected. Use the selection fields to add."
+msgstr ""
 
 #: geonode/templates/search/_search_content.html:18
 msgid "Filters"
@@ -8220,9 +8538,20 @@ msgstr ""
 msgid "Documents found"
 msgstr "Tài liệu"
 
+#: geonode/templates/search/_search_content.html:55
+#: geonode/templates/search/_search_content.html:57
+msgid "found"
+msgstr ""
+
 #: geonode/templates/search/_search_user_content.html:10
 msgid "search"
 msgstr ""
+
+#: geonode/templates/search/_search_user_content.html:17
+#, fuzzy
+#| msgid "Search"
+msgid "Search by name"
+msgstr "Tìm kiếm"
 
 #: geonode/templates/search/_search_user_content.html:50
 msgid "Total"
@@ -8278,9 +8607,15 @@ msgid ""
 "An error occurred while attempting to login via your social network account."
 msgstr ""
 
-#: geonode/templates/socialaccount/authentication_error.html:11
+#: geonode/templates/socialaccount/authentication_error.html:12
 msgid "Code"
 msgstr ""
+
+#: geonode/templates/socialaccount/authentication_error.html:13
+#, fuzzy
+#| msgid "Sections"
+msgid "Exception"
+msgstr "Phần"
 
 #: geonode/templates/socialaccount/connections.html:7
 #: geonode/templates/socialaccount/connections.html:10
@@ -8372,7 +8707,7 @@ msgstr "Đánh dấu chọn là đã đọc"
 msgid "Mark selected as unread"
 msgstr "Đánh dấu được chọn là chưa đọc"
 
-#: geonode/templates/user_messages/inbox.html:64
+#: geonode/templates/user_messages/inbox.html:67
 #: geonode/templates/user_messages/message_create.html:6
 #: geonode/templates/user_messages/message_create.html:9
 msgid "Create Message"
@@ -8433,7 +8768,23 @@ msgstr "Gửi trả lời"
 msgid "GeoNode Themes Library"
 msgstr "GeoNode Trợ giúp"
 
-#: geonode/upload/files.py:262
+#: geonode/themes/models.py:64
+msgid "Fill in this section with markdown"
+msgstr ""
+
+#: geonode/themes/models.py:68
+msgid "Check this if the jumbotron background image already contains text"
+msgstr ""
+
+#: geonode/themes/models.py:71
+msgid "Disabling this slide will hide it from the slide show"
+msgstr ""
+
+#: geonode/themes/models.py:95
+msgid "Choose between using jumbotron background and slide show"
+msgstr ""
+
+#: geonode/upload/files.py:261
 #, fuzzy
 #| msgid "Could not find any layers in a compatible projection."
 msgid "Could not access to uploaded data."
@@ -8540,16 +8891,45 @@ msgstr "Không thể tìm thấy bất kỳ lớp trong một chiếu tương th
 msgid "Unsupported DataBase for Mosaics!"
 msgstr ""
 
-#: geonode/utils.py:89
+#: geonode/utils.py:88
 msgid "Invalid permission level."
 msgstr "Mức cho phép không hợp lệ."
 
-#: geonode/utils.py:969
+#: geonode/utils.py:974
 msgid "Permission Denied"
 msgstr "Permission Denied"
 
-#~ msgid "GeoExplorer"
-#~ msgstr "GeoExplorer"
+#~ msgid "JSON Configuration"
+#~ msgstr "JSON cấu hình"
+
+#~ msgid "Welcome"
+#~ msgstr "Chào mừng"
+
+#~ msgid ""
+#~ "GeoNode is an open source platform for sharing geospatial data and maps."
+#~ msgstr ""
+#~ "GeoNode là một nền tảng mã nguồn mở cho việc chia sẻ dữ liệu không gian "
+#~ "địa lý và bản đồ."
+
+#, fuzzy
+#~| msgid "Announcement"
+#~ msgid "Environment"
+#~ msgstr "Thông cáo"
+
+#, fuzzy
+#~| msgid "Browsing Maps"
+#~ msgid "Base Maps"
+#~ msgstr "Duyệt Maps"
+
+#, fuzzy
+#~| msgid "format"
+#~ msgid "Transportation"
+#~ msgstr "định dạng"
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "Utilities"
+#~ msgstr "Hoạt động tài"
 
 #, fuzzy
 #~| msgid "Message Inbox"
@@ -8822,9 +9202,6 @@ msgstr "Permission Denied"
 #~ msgid "Replace this Layer"
 #~ msgstr "Replace this Layer"
 
-#~ msgid "Remove this Layer"
-#~ msgstr "Remove this Layer"
-
 #~ msgid "Edit Map Metadata"
 #~ msgstr "Edit Map Metadata"
 
@@ -8851,9 +9228,6 @@ msgstr "Permission Denied"
 
 #~ msgid "You do not have permission to view this document"
 #~ msgstr "You do not have permission to view this document"
-
-#~ msgid "Remote Thumbnail"
-#~ msgstr "Remote Thumbnail"
 
 #~ msgid "Group details"
 #~ msgstr "Group details"

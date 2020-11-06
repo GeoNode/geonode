@@ -38,7 +38,7 @@
             <a style="text-decoration:none;" href="{% url "document_download" resource.id %}" target="_blank">
                 <audio controls width="100%">
                     <source src="{% url "document_download" resource.id %}" type="{{ mimetype }}">
-                    Your browser does not support the audio element.
+                    {% trans "Your browser does not support the audio element." %}
                 </audio>
             </a>
         </div>
@@ -54,7 +54,7 @@
             <a style="text-decoration:none;" href="{% url "document_download" resource.id %}" target="_blank">
                 <video width="500" controls>
                     <source src="{% url "document_download" resource.id %}" type="{{ mimetype }}">
-                    Your browser does not support the video tag.
+                    {% trans "Your browser does not support the video tag." %}
                 </video>
             </a>
         </div>
