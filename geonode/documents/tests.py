@@ -476,9 +476,11 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             _d.delete()
 
             from geonode.documents.utils import delete_orphaned_document_files
-            _, document_files_before = storage.listdir("documents")
+            _, document_files_before = storage.listdir(
+                os.path.join("documents", "document"))
             deleted = delete_orphaned_document_files()
-            _, document_files_after = storage.listdir("documents")
+            _, document_files_after = storage.listdir(
+                os.path.join("documents", "document"))
             self.assertTrue(len(deleted) > 0)
             self.assertEqual(set(deleted), set(document_files_before) - set(document_files_after))
 
@@ -489,7 +491,8 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             self.assertTrue(len(deleted) > 0)
             self.assertEqual(set(deleted), set(thumb_files_before) - set(thumb_files_after))
 
-            fn = os.path.join("documents", os.path.basename(input_path))
+            fn = os.path.join(
+                os.path.join("documents", "document"), os.path.basename(input_path))
             self.assertFalse(storage.exists(fn))
 
             files = [thumb for thumb in get_thumbs() if uuid in thumb]
