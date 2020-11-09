@@ -156,7 +156,7 @@ class GroupProfile(models.Model):
                     if hasattr(item, resource_type):
                         _queryset.append(item)
                 except Exception as e:
-                    logger.exception(e)
+                    logger.debug(e)
         queryset = _queryset if _queryset else queryset
         for resource in queryset:
             yield resource
