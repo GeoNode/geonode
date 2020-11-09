@@ -80,7 +80,7 @@ def get_esri_service_name(url):
     For example: http://example.com/arcgis/rest/services/myservice/mylayer/MapServer/?f=json
     Will return: myservice/mylayer
     """
-    result = re.search('rest/services/(.*)/[MapServer|ImageServer]', url)
+    result = re.search('rest/services/(.*)/(?:MapServer|ImageServer)', url)
     if result is None:
         return url
     else:

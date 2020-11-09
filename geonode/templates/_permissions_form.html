@@ -493,7 +493,7 @@
 
       function serializeGeoLimit(ID) {
         $("#confirmMsgBoxModalOK").find('.modal-title').html('{% trans "Save Geo Limits" %}');
-        $("#confirmMsgBoxModalOK").find('.modal-body').html('{% trans "<p>This will override the current stored Geo Limits on the DB.</p><p>To apply them you will need to click on <strong>\"Apply Changes\"</strong> button anyway.</p><p><strong>WARNING:</strong> This operation cannot be reverted!</p><p>Do you want to proceed?</p>" %}');
+        $("#confirmMsgBoxModalOK").find('.modal-body').html('{% trans "<p>This will override the current stored Geo Limits on the DB.</p><p>To apply them you will need to click on <strong>Apply Changes</strong> button anyway.</p><p><strong>WARNING:</strong> This operation cannot be reverted!</p><p>Do you want to proceed?</p>" %}');
         $("#confirmMsgBoxModalOK_control_field").val('serializeGeoLimit');
         $('#confirmMsgBoxModalOK').find('.modal-footer .confirm').remove();
         var confirm_button = $('<button />').attr({ type: 'button', id:'confirm_serializeGeoLimit', class:'btn btn-danger confirm' });
@@ -539,7 +539,7 @@
               data: data,
               success: function(data, status, xhr) {
                 $("#_thumbnail_feedbacks").find('.modal-title').text('{% trans "Save Geo Limit" %}');
-                $("#_thumbnail_feedbacks").find('.modal-body').html('{% trans "<p>Geometry <strong>successfully</strong> saved!</p><p>To apply them you will need to click on <strong>\"Apply Changes\"</strong> button.</p>" %}');
+                $("#_thumbnail_feedbacks").find('.modal-body').html('{% trans "<p>Geometry <strong>successfully</strong> saved!</p><p>To apply them you will need to click on <strong>Apply Changes</strong> button.</p>" %}');
                 $("#_thumbnail_feedbacks").modal("show");
               },
               error: function(xhr, status, error) {
@@ -630,7 +630,7 @@
 
       function deleteGeoLimit(ID) {
         $("#confirmMsgBoxModalOK").find('.modal-title').html('{% trans "Delete Geo Limits" %}');
-        $("#confirmMsgBoxModalOK").find('.modal-body').html('{% trans "<p>This will <strong>permanently</strong> remove the Geo Limits from the DB.</p><p>To apply them you will need to click on <strong>\"Apply Changes\"</strong> button.</p><p>Do you want to proceed?</p>" %}');
+        $("#confirmMsgBoxModalOK").find('.modal-body').html('{% trans "<p>This will <strong>permanently</strong> remove the Geo Limits from the DB.</p><p>To apply them you will need to click on <strong>Apply Changes</strong> button.</p><p>Do you want to proceed?</p>" %}');
         $("#confirmMsgBoxModalOK_control_field").val('deleteGeoLimit');
         $('#confirmMsgBoxModalOK').find('.modal-footer .confirm').remove();
         var confirm_button = $('<button />').attr({ type: 'button', id:'confirm_deleteGeoLimit', class:'btn btn-danger confirm' });

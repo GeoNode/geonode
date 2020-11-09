@@ -19,6 +19,7 @@
 #########################################################################
 
 import json
+import logging
 import traceback
 
 from django.conf import settings
@@ -39,6 +40,8 @@ from geonode.groups.models import GroupProfile
 
 if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification
+
+logger = logging.getLogger(__name__)
 
 
 def _perms_info(obj):
@@ -313,7 +316,7 @@ def attributes_sats_refresh(request):
     if layer and can_change_data:
         try:
             # recalculate the layer statistics
-            set_attributes_from_geoserver(layer, overwrite=True)
+            set_attributes_from_geoserver(layer, overwrite=False)
             gs_resource = gs_catalog.get_resource(
                 name=layer.name,
                 store=layer.store,
@@ -375,7 +378,11 @@ def invalidate_tiledlayer_cache(request):
         resource)
     layer = Layer.objects.get(id=resource.id)
     if layer and can_change_data:
-        set_geowebcache_invalidate_cache(layer.alternate)
+        try:
+            set_geowebcache_invalidate_cache(layer.alternate or layer.typename)
+        except Exception:
+            tb = traceback.format_exc()
+            logger.debug(tb)
         return HttpResponse(
             json.dumps({'success': 'ok', 'message': _('GeoWebCache Tiled Layer Emptied!')}),
             status=200,

@@ -17,13 +17,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 from celery import shared_task
 from django.core.management import call_command
 
 
-@shared_task
-def collect_metrics():
+@shared_task(
+    bind=True,
+    name='geonode.monitoring.tasks.collect_metrics',
+    queue='geoserver.events',
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 1, 'countdown': 10})
+def collect_metrics(self):
     """
     Collect metrics events data
     """

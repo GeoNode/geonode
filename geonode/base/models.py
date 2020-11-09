@@ -70,8 +70,9 @@ from geonode.utils import (
     add_url_params,
     bbox_to_wkt)
 from geonode.groups.models import GroupProfile
-from geonode.security.models import PermissionLevelMixin
 from geonode.security.utils import get_visible_resources
+from geonode.security.models import PermissionLevelMixin
+
 from geonode.notifications_helper import (
     send_notification,
     get_notification_recipients)
@@ -610,6 +611,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         null=True,
         help_text=doi_help_text)
+    attribution_help_text = _(
+        'authority or function assigned, as to a ruler, legislative assembly, delegate, or the like.')
+    attribution = models.CharField(
+        _('Attribution'),
+        max_length=2048,
+        blank=True,
+        null=True,
+        help_text=attribution_help_text)
     # internal fields
     uuid = models.CharField(max_length=36)
     owner = models.ForeignKey(
@@ -879,6 +888,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 if settings.ADMIN_MODERATE_UPLOADS:
                     if self.is_approved and not self.is_published and \
                     self.__is_approved != self.is_approved:
+                        # Set "approved" workflow permissions
+                        self.set_workflow_perms(approved=True)
+
+                        # Send "approved" notification
                         notice_type_label = '%s_approved' % self.class_name.lower()
                         recipients = get_notification_recipients(notice_type_label)
                         send_notification(recipients, notice_type_label, {'resource': self})
@@ -888,6 +901,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 if not _notification_sent and settings.RESOURCE_PUBLISHING:
                     if self.is_approved and self.is_published and \
                     self.__is_published != self.is_published:
+                        # Set "published" workflow permissions
+                        self.set_workflow_perms(published=True)
+
+                        # Send "published" notification
                         notice_type_label = '%s_published' % self.class_name.lower()
                         recipients = get_notification_recipients(notice_type_label)
                         send_notification(recipients, notice_type_label, {'resource': self})
@@ -967,7 +984,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     bbox = bbox.transform(srid, clone=True)
                 except Exception:
                     bbox.srid = srid
-
             bbox = BBOXHelper(bbox.extent)
             return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(srid)]
         bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
@@ -1182,7 +1198,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         self.center_y = center_y
         self.zoom = zoom
 
-        deg_len_equator = 40075160 / 360
+        deg_len_equator = 40075160.0 / 360.0
 
         # covert center in lat lon
         def get_lon_lat():
@@ -1207,8 +1223,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         # normal degree length on the y axis assumin that it does not change
 
         # Assuming a map of 1000 px of width and 700 px of height
-        distance_x_degrees = distance_per_pixel * 500 / deg_len()
-        distance_y_degrees = distance_per_pixel * 350 / deg_len_equator
+        distance_x_degrees = distance_per_pixel * 500.0 / deg_len()
+        distance_y_degrees = distance_per_pixel * 350.0 / deg_len_equator
 
         bbox_x0 = lon - distance_x_degrees
         bbox_x1 = lon + distance_x_degrees
@@ -1831,22 +1847,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
         instance.set_missing_info()
 
     try:
-        if instance.regions and instance.regions.all():
-            """
-            try:
-                queryset = instance.regions.all().order_by('name')
-                for region in queryset:
-                    print ("%s : %s" % (region.name, region.geographic_bounding_box))
-            except Exception:
-                tb = traceback.format_exc()
-            else:
-                tb = None
-            finally:
-                if tb:
-                    logger.debug(tb)
-            """
-            pass
-        else:
+        if not instance.regions or instance.regions.count() == 0:
             srid1, wkt1 = instance.geographic_bounding_box.split(";")
             srid1 = re.findall(r'\d+', srid1)
 
@@ -1882,15 +1883,10 @@ def resourcebase_post_save(instance, *args, **kwargs):
         tb = traceback.format_exc()
         if tb:
             logger.debug(tb)
-
-    try:
+    finally:
         # refresh catalogue metadata records
         from geonode.catalogue.models import catalogue_post_save
         catalogue_post_save(instance=instance, sender=instance.__class__)
-    except Exception:
-        tb = traceback.format_exc()
-        if tb:
-            logger.debug(tb)
 
 
 def rating_post_save(instance, *args, **kwargs):

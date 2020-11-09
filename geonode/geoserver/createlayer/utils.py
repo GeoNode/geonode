@@ -17,12 +17,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-import requests
+import json
 import uuid
 import logging
-import json
+import requests
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Polygon
 from django.template.defaultfilters import slugify
@@ -77,6 +77,13 @@ def create_gn_layer(workspace, datastore, name, title, owner_name):
         bbox_polygon=Polygon.from_bbox(BBOX),
         data_quality_statement=DATA_QUALITY_MESSAGE,
     )
+
+    if settings.ADMIN_MODERATE_UPLOADS:
+        layer.is_approved = False
+    if settings.RESOURCE_PUBLISHING:
+        layer.is_published = False
+
+    layer.save()
     return layer
 
 

@@ -23,7 +23,7 @@ import json
 
 # import needed to resolve model filters:
 from django.db.models import Q
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.core.management.base import BaseCommand, CommandError
 
 from geonode.maps.models import Map
@@ -123,8 +123,11 @@ class Command(BaseCommand):
 
             for layer in layers_to_delete:
                 print(f'Deleting layer "{layer.name}" with ID: {layer.id}')
-                with transaction.atomic():
-                    layer.delete()
+                try:
+                    with transaction.atomic():
+                        layer.delete()
+                except IntegrityError:
+                    raise
 
         if map_filters:
 

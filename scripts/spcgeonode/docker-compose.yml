@@ -1,6 +1,6 @@
 version: '3.4'
 
-# Common Django template for Geonode, Celery and Celerycam services below
+# Common Django template for Geonode, Celery services below
 x-common-django:
   &default-common-django
   image: geonode/spcgeonode:django-3.1
@@ -72,19 +72,7 @@ services:
   celery:
     << : *default-common-django
     entrypoint: []
-    command: 'celery worker --app=geonode.celery_app:app -l info -E'
-
-  # Celery beat that triggers scheduled tasks
-  celerybeat:
-    << : *default-common-django
-    entrypoint: []
-    command: 'celery -A geonode.celery_app:app beat -s celerybeat-schedule.db --pidfile="/celerybeat.pid" -l info'
-
-  # Celery camera that monitors celery tasks and populate the djcelery django admin interface
-  celerycam:
-    << : *default-common-django
-    entrypoint: []
-    # command: 'celery events --app=geonode.celery_app:app --pidfile="/celeryev.pid" --camera=django_celery_monitor.camera.Camera --frequency=2.0 -l info'
+    command: 'celery -A geonode.celery_app:app worker -B -E --statedb=worker.state --loglevel=INFO --concurrency=10 -n worker1@%h'
 
   # Nginx is serving django static and media files and proxies to django and geonode
   nginx:

@@ -240,7 +240,6 @@ def get_scan_hint(valid_extensions):
 
     This function is useful mainly for those file types that can carry
     either vector or raster formats, like the KML type.
-
     """
     if "kml" in valid_extensions:
         if len(valid_extensions) == 2 and valid_extensions[1] == 'sld':
@@ -263,10 +262,11 @@ def scan_file(file_name, scan_hint=None, charset=None):
 
     dirname = os.path.dirname(file_name)
     if zipfile.is_zipfile(file_name):
-        paths, kept_zip = _process_zip(file_name,
-                                       dirname,
-                                       scan_hint=scan_hint,
-                                       charset=charset)
+        paths, kept_zip = _process_zip(
+            file_name,
+            dirname,
+            scan_hint=scan_hint,
+            charset=charset)
         archive = file_name if kept_zip else None
     else:
         paths = []

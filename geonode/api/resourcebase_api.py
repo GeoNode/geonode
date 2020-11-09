@@ -58,13 +58,14 @@ from geonode.security.utils import get_visible_resources
 from .authentication import OAuthAuthentication
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
 
-from .api import (TagResource,
-                  RegionResource,
-                  OwnersResource,
-                  ThesaurusKeywordResource,
-                  TopicCategoryResource,
-                  GroupResource,
-                  FILTER_TYPES)
+from .api import (
+    TagResource,
+    RegionResource,
+    OwnersResource,
+    ThesaurusKeywordResource,
+    TopicCategoryResource,
+    GroupResource,
+    FILTER_TYPES)
 from .paginator import CrossSiteXHRPaginator
 from django.utils.translation import gettext as _
 
@@ -83,17 +84,18 @@ FILTER_TYPES.update(LAYER_SUBTYPES)
 class CommonMetaApi:
     authorization = GeoNodeAuthorization()
     allowed_methods = ['get']
-    filtering = {'title': ALL,
-                 'keywords': ALL_WITH_RELATIONS,
-                 'tkeywords': ALL_WITH_RELATIONS,
-                 'regions': ALL_WITH_RELATIONS,
-                 'category': ALL_WITH_RELATIONS,
-                 'group': ALL_WITH_RELATIONS,
-                 'owner': ALL_WITH_RELATIONS,
-                 'date': ALL,
-                 'purpose': ALL,
-                 'abstract': ALL
-                 }
+    filtering = {
+        'title': ALL,
+        'keywords': ALL_WITH_RELATIONS,
+        'tkeywords': ALL_WITH_RELATIONS,
+        'regions': ALL_WITH_RELATIONS,
+        'category': ALL_WITH_RELATIONS,
+        'group': ALL_WITH_RELATIONS,
+        'owner': ALL_WITH_RELATIONS,
+        'date': ALL,
+        'purpose': ALL,
+        'abstract': ALL
+    }
     ordering = ['date', 'title', 'popular_count']
     max_limit = None
 
@@ -239,13 +241,13 @@ class CommonModelApi(ModelResource):
                     Q(owner__username__iexact=str(user))))
             else:
                 filtered = filtered.exclude(Q(dirty_state=True))
-
         return filtered
 
     def filter_published(self, queryset, request):
         filter_set = get_visible_resources(
             queryset,
             request.user if request else None,
+            request=request,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
             unpublished_not_visible=settings.RESOURCE_PUBLISHING)
 
@@ -255,6 +257,7 @@ class CommonModelApi(ModelResource):
         filter_set = get_visible_resources(
             queryset,
             request.user if request else None,
+            request=request,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
         return filter_set
@@ -262,14 +265,16 @@ class CommonModelApi(ModelResource):
     def filter_h_keywords(self, queryset, keywords):
         filtered = queryset
         treeqs = HierarchicalKeyword.objects.none()
-        for keyword in keywords:
-            try:
-                kws = HierarchicalKeyword.objects.filter(Q(name__iexact=keyword) | Q(slug__iexact=keyword))
-                for kw in kws:
-                    treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
-            except ObjectDoesNotExist:
-                # Ignore keywords not actually used?
-                pass
+        if keywords and len(keywords) > 0:
+            for keyword in keywords:
+                try:
+                    kws = HierarchicalKeyword.objects.filter(
+                        Q(name__iexact=keyword) | Q(slug__iexact=keyword))
+                    for kw in kws:
+                        treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
+                except ObjectDoesNotExist:
+                    # Ignore keywords not actually used?
+                    pass
 
         filtered = queryset.filter(Q(keywords__in=treeqs))
         return filtered
@@ -501,7 +506,7 @@ class CommonModelApi(ModelResource):
             try:
                 page = paginator.page(
                     int(request.GET.get('offset') or 0) /
-                    int(request.GET.get('limit'), 0) + 1)
+                    int(request.GET.get('limit') or 0 + 1))
             except InvalidPage:
                 raise Http404("Sorry, no results on that page.")
 
@@ -966,7 +971,7 @@ class MapResource(CommonModelApi):
             map_layers = obj.layers
             formatted_layers = []
             map_layer_fields = [
-                'id'
+                'id',
                 'stack_order',
                 'format',
                 'name',

@@ -229,6 +229,7 @@ def layer_style_manage(request, layername):
             # Render the form
             def_sld_name = None  # noqa
             def_sld_title = None  # noqa
+            default_style = None
             if layer.default_style:
                 def_sld_name = layer.default_style.name  # noqa
                 def_sld_title = layer.default_style.name  # noqa
@@ -238,8 +239,7 @@ def layer_style_manage(request, layername):
                 except Exception:
                     tb = traceback.format_exc()
                     logger.debug(tb)
-
-            default_style = (def_sld_name, def_sld_title)
+                default_style = (def_sld_name, def_sld_title)
 
             return render(
                 request,
@@ -272,7 +272,6 @@ def layer_style_manage(request, layername):
     elif request.method in ('POST', 'PUT', 'DELETE'):
         try:
             selected_styles = request.POST.getlist('style-select')
-
             default_style = request.POST['default_style']
 
             # Save to GeoServer

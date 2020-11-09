@@ -34,12 +34,6 @@ class DocumentIndex(indexes.SearchIndex, indexes.Indexable):
     csw_wkt_geometry = indexes.CharField(model_attr="csw_wkt_geometry")
     detail_url = indexes.CharField(model_attr="get_absolute_url")
     owner__username = indexes.CharField(model_attr="owner", faceted=True, null=True)
-    popular_count = indexes.IntegerField(
-        model_attr="popular_count",
-        default=0,
-        boost=20)
-    share_count = indexes.IntegerField(model_attr="share_count", default=0)
-    rating = indexes.IntegerField(null=True)
     srid = indexes.CharField(model_attr="srid")
     supplemental_information = indexes.CharField(model_attr="supplemental_information", null=True)
     thumbnail_url = indexes.CharField(model_attr="thumbnail_url", null=True)

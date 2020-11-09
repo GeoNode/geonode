@@ -229,9 +229,8 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
 
     access_token = None
     site_url = urlsplit(settings.SITEURL)
-    allowed_hosts += [url.hostname]
     # We want to convert HTTP_AUTH into a Beraer Token only when hitting the local GeoServer
-    if site_url.hostname in allowed_hosts:
+    if site_url.hostname in (allowed_hosts + [url.hostname]):
         # we give precedence to obtained from Aithorization headers
         if 'HTTP_AUTHORIZATION' in request.META:
             auth_header = request.META.get(
@@ -877,7 +876,7 @@ def _get_viewer_projection_info(srid):
 
 
 def resolve_object(request, model, query, permission='base.view_resourcebase',
-                   permission_required=True, permission_msg=None):
+                   user=None, permission_required=True, permission_msg=None):
     """Resolve an object using the provided query and check the optional
     permission. Model views should wrap this function as a shortcut.
 
@@ -886,6 +885,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     permission_required - if False, allow get methods to proceed
     permission_msg - optional message to use in 403
     """
+    user = request.user if request and request.user else user
     obj = get_object_or_404(model, **query)
     obj_to_check = obj.get_self_resource()
 
@@ -910,63 +910,52 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
                         if manager not in obj_group_managers and not manager.is_superuser:
                             obj_group_managers.append(manager)
                 if group_profile.user_is_member(
-                        request.user) and request.user not in obj_group_members:
-                    obj_group_members.append(request.user)
+                        user) and user not in obj_group_members:
+                    obj_group_members.append(user)
             except GroupProfile.DoesNotExist:
                 pass
 
     if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
         is_admin = False
         is_manager = False
-        is_owner = True if request.user == obj_to_check.owner else False
-        if request.user:
-            is_admin = request.user.is_superuser if request.user else False
+        is_owner = True if user == obj_to_check.owner else False
+        if user and user.is_authenticated:
+            is_admin = user.is_superuser if user else False
             try:
-                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
+                is_manager = user.groupmember_set.all().filter(role='manager').exists()
             except Exception:
                 is_manager = False
-        if (not obj_to_check.is_published):
-            if not is_admin:
-                if is_owner or (
-                        is_manager and request.user in obj_group_managers):
-                    if (not request.user.has_perm('publish_resourcebase', obj_to_check)) and (
-                        not request.user.has_perm('view_resourcebase', obj_to_check)) and (
-                            not request.user.has_perm('change_resourcebase_metadata', obj_to_check)) and (
+        if (not obj_to_check.is_approved):
+            if not user or user.is_anonymous:
+                raise Http404
+            elif not is_admin:
+                if is_manager and user in obj_group_managers:
+                    if (not user.has_perm('publish_resourcebase', obj_to_check)) and (
+                        not user.has_perm('view_resourcebase', obj_to_check)) and (
+                            not user.has_perm('change_resourcebase_metadata', obj_to_check)) and (
                                 not is_owner and not settings.ADMIN_MODERATE_UPLOADS):
-                        raise Http404
+                        pass
                     else:
                         assign_perm(
-                            'view_resourcebase', request.user, obj_to_check)
+                            'view_resourcebase', user, obj_to_check)
                         assign_perm(
                             'publish_resourcebase',
-                            request.user,
+                            user,
                             obj_to_check)
                         assign_perm(
                             'change_resourcebase_metadata',
-                            request.user,
+                            user,
                             obj_to_check)
                         assign_perm(
                             'download_resourcebase',
-                            request.user,
+                            user,
                             obj_to_check)
 
                         if is_owner:
                             assign_perm(
-                                'change_resourcebase', request.user, obj_to_check)
+                                'change_resourcebase', user, obj_to_check)
                             assign_perm(
-                                'delete_resourcebase', request.user, obj_to_check)
-                            assign_perm(
-                                'change_resourcebase_permissions',
-                                request.user,
-                                obj_to_check)
-                else:
-                    if request.user in obj_group_members:
-                        if (not request.user.has_perm('publish_resourcebase', obj_to_check)) and (
-                            not request.user.has_perm('view_resourcebase', obj_to_check)) and (
-                                not request.user.has_perm('change_resourcebase_metadata', obj_to_check)):
-                            raise Http404
-                    else:
-                        raise Http404
+                                'delete_resourcebase', user, obj_to_check)
 
     allowed = True
     if permission.split('.')[-1] in ['change_layer_data',
@@ -975,10 +964,10 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
             obj_to_check = obj
     if permission:
         if permission_required or request.method != 'GET':
-            if request.user in obj_group_managers:
+            if user in obj_group_managers:
                 allowed = True
             else:
-                allowed = request.user.has_perm(
+                allowed = user.has_perm(
                     permission,
                     obj_to_check)
     if not allowed:
@@ -1188,7 +1177,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     # TODO we may need to improve this regexp
     # first character must be any letter or "_"
     # following characters can be any letter, number, "#", ":"
-    regex = r'^[a-zA-Z,_][a-zA-Z,_,#,:\d]*$'
+    regex = r'^[a-zA-Z,_][a-zA-Z,_#:\d]*$'
     a = re.compile(regex)
     regex_first_char = r'[a-zA-Z,_]{1}'
     b = re.compile(regex_first_char)
@@ -1448,7 +1437,6 @@ class HttpClient(object):
                 except Exception:
                     tb = traceback.format_exc()
                     logger.debug(tb)
-                    pass
             elif user == self.username:
                 valid_uname_pw = base64.b64encode(
                     "{}:{}".format(self.username, self.password).encode()).decode()
@@ -1796,25 +1784,31 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
         # Legend link
         logger.debug(" -- Resource Links[Legend link]...")
-        for style in instance.styles.all():
-            legend_url = ogc_server_settings.PUBLIC_LOCATION + \
-                'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
-                instance.alternate + '&STYLE=' + style.name + \
-                '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
+        try:
+            for style in set(list(instance.styles.all()) + [instance.default_style, ]):
+                if style:
+                    style_name = os.path.basename(
+                        urlparse(style.sld_url).path).split('.')[0]
+                    legend_url = ogc_server_settings.PUBLIC_LOCATION + \
+                        'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
+                        instance.alternate + '&STYLE=' + style_name + \
+                        '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
 
-            if Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).count() < 2:
-                Link.objects.update_or_create(
-                    resource=instance.resourcebase_ptr,
-                    name='Legend',
-                    url=legend_url,
-                    defaults=dict(
-                        extension='png',
-                        url=legend_url,
-                        mime='image/png',
-                        link_type='image',
-                    )
-                )
-        logger.debug(" -- Resource Links[Legend link]...done!")
+                    if Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).count() < 2:
+                        Link.objects.update_or_create(
+                            resource=instance.resourcebase_ptr,
+                            name='Legend',
+                            url=legend_url,
+                            defaults=dict(
+                                extension='png',
+                                url=legend_url,
+                                mime='image/png',
+                                link_type='image',
+                            )
+                        )
+            logger.debug(" -- Resource Links[Legend link]...done!")
+        except Exception as e:
+            logger.debug(f" -- Resource Links[Legend link]...error: {e}")
 
         # Thumbnail link
         logger.debug(" -- Resource Links[Thumbnail link]...")

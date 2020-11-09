@@ -380,10 +380,6 @@ def map_metadata(
 
     if settings.ADMIN_MODERATE_UPLOADS:
         if not request.user.is_superuser:
-            if settings.RESOURCE_PUBLISHING:
-                map_form.fields['is_published'].widget.attrs.update(
-                    {'disabled': 'true'})
-
             can_change_metadata = request.user.has_perm(
                 'change_resourcebase_metadata',
                 map_obj.get_self_resource())
@@ -392,6 +388,9 @@ def map_metadata(
             except Exception:
                 is_manager = False
             if not is_manager or not can_change_metadata:
+                if settings.RESOURCE_PUBLISHING:
+                    map_form.fields['is_published'].widget.attrs.update(
+                        {'disabled': 'true'})
                 map_form.fields['is_approved'].widget.attrs.update(
                     {'disabled': 'true'})
 
@@ -1278,8 +1277,8 @@ def map_metadata_detail(
 
 
 @login_required
-def map_batch_metadata(request, ids):
-    return batch_modify(request, ids, 'Map')
+def map_batch_metadata(request):
+    return batch_modify(request, 'Map')
 
 
 class MapAutocomplete(autocomplete.Select2QuerySetView):
