@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-06 09:28+0000\n"
-"PO-Revision-Date: 2020-10-22 13:56+0000\n"
+"PO-Revision-Date: 2020-11-09 16:40+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/"
 "de/)\n"
@@ -309,26 +309,20 @@ msgstr[0] "Benutzer"
 msgstr[1] "Benutzer"
 
 #: geonode/base/forms.py:547
-#, fuzzy
-#| msgid "Permissions"
 msgid "Permission Type"
 msgstr "Berechtigungen"
 
 #: geonode/base/forms.py:557
-#, fuzzy
-#| msgid "Model"
 msgid "Mode"
-msgstr "Model"
+msgstr "Modus"
 
 #: geonode/base/forms.py:608
-#, fuzzy
-#| msgid "Resources"
 msgid "Resource"
-msgstr "Ressourcen"
+msgstr "Ressource"
 
 #: geonode/base/forms.py:612
 msgid "Reason"
-msgstr ""
+msgstr "Begründung"
 
 #: geonode/base/forms.py:614
 msgid "Short reasoning behind the request"
@@ -450,15 +444,13 @@ msgstr "DOI"
 msgid ""
 "authority or function assigned, as to a ruler, legislative assembly, "
 "delegate, or the like."
-msgstr ""
+msgstr "Zitationsweise, wie durch Gesetz, oder Urheber bestimmt."
 
 #: geonode/base/models.py:617
 #: geonode/base/templates/base/_resourcebase_info_panel.html:127
 #: geonode/templates/metadata_detail.html:121
-#, fuzzy
-#| msgid "Attribute"
 msgid "Attribution"
-msgstr "Attribute"
+msgstr "Zitation"
 
 #: geonode/base/models.py:634
 msgid "title"
@@ -662,22 +654,16 @@ msgid "Abstract"
 msgstr "Zusammenfassung"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:35
-#, fuzzy
-#| msgid "Creating a Map"
 msgid "Creation Date"
-msgstr "Karte erstellen"
+msgstr "Erstellungsdatum"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:37
-#, fuzzy
-#| msgid "Julian Date End"
 msgid "Pubblication Date"
-msgstr "Julianisches Enddatum"
+msgstr "Publikationsdatum"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:39
-#, fuzzy
-#| msgid "Permission Denied"
 msgid "Revision Date"
-msgstr "Zugriff verweigert"
+msgstr "Revisionsdatum"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:53
 #: geonode/catalogue/templates/geonode_metadata_full.html:91
@@ -892,34 +878,24 @@ msgid "Auto generated thumbnail"
 msgstr "Auto-generiertes Miniaturbild"
 
 #: geonode/base/templatetags/base_tags.py:48
-#, fuzzy
-#| msgid "Create Layer"
 msgid "Raster Layer"
-msgstr "Ebene erzeugen"
+msgstr "Raster Ebene"
 
 #: geonode/base/templatetags/base_tags.py:49
-#, fuzzy
-#| msgid "View Layer"
 msgid "Vector Layer"
-msgstr "Ebene ansehen"
+msgstr "Vektor Ebene"
 
 #: geonode/base/templatetags/base_tags.py:50
-#, fuzzy
-#| msgid "Temporal Serie"
 msgid "Vector Temporal Serie"
 msgstr "Zeitliche Reihe"
 
 #: geonode/base/templatetags/base_tags.py:51
-#, fuzzy
-#| msgid "Remove Layers"
 msgid "Remote Layer"
-msgstr "Ebenen entfernen"
+msgstr "Remote Ebene"
 
 #: geonode/base/templatetags/base_tags.py:52
-#, fuzzy
-#| msgid "Create Layer"
 msgid "WMS Cascade Layer"
-msgstr "Ebene erzeugen"
+msgstr "kaskadierte WMS Ebene"
 
 #: geonode/base/templatetags/user_messages.py:32
 #: geonode/base/templatetags/user_messages.py:40
@@ -1244,11 +1220,11 @@ msgstr "Dokumente"
 
 #: geonode/documents/templates/documents/document_detail.html:41
 msgid "Your browser does not support the audio element."
-msgstr ""
+msgstr "Dein Browser unterstüzt keine Audio Elemente."
 
 #: geonode/documents/templates/documents/document_detail.html:57
 msgid "Your browser does not support the video tag."
-msgstr ""
+msgstr "Dein Browser unterstüzt keine Video Elemente."
 
 #: geonode/documents/templates/documents/document_detail.html:62
 #: geonode/documents/templates/documents/document_detail.html:64
@@ -1883,88 +1859,60 @@ msgid "Item"
 msgstr "Objekt"
 
 #: geonode/geoapps/__init__.py:30
-#, fuzzy
-#| msgid "Map Created"
 msgid "App Created"
-msgstr "Karte erstellt"
+msgstr "Anwendung erstellt"
 
 #: geonode/geoapps/__init__.py:30
-#, fuzzy
-#| msgid "A Map was created"
 msgid "A App was created"
-msgstr "Eine Karte wurde erstellt"
+msgstr "Eine Anwendung wurde erstellt"
 
 #: geonode/geoapps/__init__.py:31
-#, fuzzy
-#| msgid "Map Updated"
 msgid "App Updated"
-msgstr "Karte aktualisiert"
+msgstr "Anwendung aktualisiert"
 
 #: geonode/geoapps/__init__.py:31
-#, fuzzy
-#| msgid "A Map was updated"
 msgid "A App was updated"
-msgstr "Eine Karte wurde aktualisiert"
+msgstr "Eine Anwendung wurde aktualisiert"
 
 #: geonode/geoapps/__init__.py:32
-#, fuzzy
-#| msgid "Map Approved"
 msgid "App Approved"
-msgstr "Karte genehmigt"
+msgstr "Anwendung genehmigt"
 
 #: geonode/geoapps/__init__.py:32
-#, fuzzy
-#| msgid "A Map was approved by a Manager"
 msgid "A App was approved by a Manager"
-msgstr "Eine Karte wurde von einem Manager genehmigt"
+msgstr "Eine Anwendung wurde von einem Manager genehmigt"
 
 #: geonode/geoapps/__init__.py:33
-#, fuzzy
-#| msgid "Map Published"
 msgid "App Published"
-msgstr "Karte veröffentlicht"
+msgstr "Anwendung veröffentlicht"
 
 #: geonode/geoapps/__init__.py:33
-#, fuzzy
-#| msgid "A Map was published"
 msgid "A App was published"
-msgstr "Eine Karte wurde veröffentlicht"
+msgstr "Eine Anwendung wurde veröffentlicht"
 
 #: geonode/geoapps/__init__.py:34
-#, fuzzy
-#| msgid "Map Deleted"
 msgid "App Deleted"
-msgstr "Karte gelöscht"
+msgstr "Anwendung gelöscht"
 
 #: geonode/geoapps/__init__.py:34
-#, fuzzy
-#| msgid "A Map was deleted"
 msgid "A App was deleted"
-msgstr "Eine Karte wurde gelöscht"
+msgstr "Eine Anwendung wurde gelöscht"
 
 #: geonode/geoapps/__init__.py:35
-#, fuzzy
-#| msgid "Comment on Map"
 msgid "Comment on App"
-msgstr "Kommentar zur Karte"
+msgstr "Kommentar zur Anwendung"
 
 #: geonode/geoapps/__init__.py:35
-#, fuzzy
-#| msgid "A map was commented on"
 msgid "An App was commented on"
-msgstr "Eine Karte wurde kommentiert"
+msgstr "Eine Anwendung wurde kommentiert"
 
 #: geonode/geoapps/__init__.py:36
-#, fuzzy
-#| msgid "Rating for Map"
 msgid "Rating for App"
-msgstr "Bewerten der Karte"
+msgstr "Bewertung der Anwendung"
 
 #: geonode/geoapps/__init__.py:36
-#, fuzzy
-#| msgid "A rating was given to a map"
 msgid "A rating was given to an App"
-msgstr "Eine Bewertung wurde für eine Karte abgegeben"
+msgstr "Eine Bewertung wurde für eine Anwendung abgegeben"
 
 #: geonode/geoapps/models.py:50 geonode/groups/models.py:50
 #: geonode/layers/models.py:168
@@ -1997,16 +1945,13 @@ msgid "Site URL"
 msgstr "URL der Website"
 
 #: geonode/geoapps/templates/apps/app_detail.html:25
-#, fuzzy, python-format
-#| msgid "Resources"
+#, python-format
 msgid "%(resource.type)s"
-msgstr "Ressourcen"
+msgstr "%(resource.type)s"
 
 #: geonode/geoapps/templates/apps/app_detail.html:71
-#, fuzzy
-#| msgid "Rate this Map"
 msgid "Rate this"
-msgstr "Bewerte diese Karte"
+msgstr "Bewerte dies"
 
 #: geonode/geoapps/templates/apps/app_detail.html:98
 #: geonode/geoapps/templates/apps/app_detail.html:105
@@ -2034,10 +1979,8 @@ msgid "Specify which users can view or modify this map"
 msgstr "Legen Sie fest, welche Nutzer die Karte sehen und/oder anpassen können"
 
 #: geonode/geoapps/templates/apps/app_detail.html:164
-#, fuzzy
-#| msgid "Change Permissions of this Map"
 msgid "Change Permissions of this"
-msgstr "Berechtigungen der Karte ändern"
+msgstr "Berechtigungen ändern"
 
 #: geonode/geoapps/templates/apps/app_detail.html:185
 #: geonode/maps/templates/maps/map_detail.html:291
@@ -2070,26 +2013,20 @@ msgstr "Herunterladen"
 #: geonode/templates/search/_search_content.html:55
 #, python-format
 msgid "%(GEONODE_APPS_NAME)s"
-msgstr ""
+msgstr "%(GEONODE_APPS_NAME)s"
 
 #: geonode/geoapps/templates/apps/app_list_default.html:5
-#, fuzzy
-#| msgid "maps explore"
 msgid "apps explore"
-msgstr "Karten erkunden"
+msgstr "Anwendungen erkunden"
 
 #: geonode/geoapps/templates/apps/app_list_default.html:10
-#, fuzzy
-#| msgid "Create a New Map"
 msgid "Create New"
-msgstr "Neue Karte anlegen"
+msgstr "Neue Erstellen"
 
 #: geonode/geoapps/templates/apps/app_list_default.html:12
 #: geonode/templates/base.html:330
-#, fuzzy
-#| msgid "GeoExplorer"
 msgid "Explore"
-msgstr "GeoExplorer"
+msgstr "Erkunden"
 
 #: geonode/geoapps/templates/apps/app_metadata.html:15
 #: geonode/maps/templates/maps/map_metadata.html:20
@@ -2099,13 +2036,6 @@ msgstr "for %(map_title)s"
 
 #: geonode/geoapps/templates/apps/app_metadata.html:32
 #: geonode/geoapps/templates/apps/app_metadata_advanced.html:41
-#, fuzzy
-#| msgid ""
-#| "Note: this map's orginal metadata was populated by importing a metadata "
-#| "XML file.\n"
-#| "        GeoNode's metadata import supports a subset of ISO, FGDC, and "
-#| "Dublin Core metadata elements.\n"
-#| "        Some of your original metadata may have been lost."
 msgid ""
 "Note: this geoapp's orginal metadata was populated by importing a metadata "
 "XML file.\n"
@@ -2136,12 +2066,7 @@ msgid "New Map"
 msgstr "Neue Karte"
 
 #: geonode/geoapps/templates/apps/app_remove.html:13
-#, fuzzy, python-format
-#| msgid ""
-#| "\n"
-#| "          Are you sure you want to remove <a href="
-#| "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
-#| "        "
+#, python-format
 msgid ""
 "\n"
 "          Are you sure you want to remove <a href="
@@ -2149,9 +2074,8 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"          Sind Sie sicher dass Sie diese Ebene löschen möchten <a href="
-"\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
-"        "
+"          Bist du sicher, dass du  <a href=\"%(resource.get_absolute_url)s\">"
+"%(resource_title)s</a> entfernen willst?"
 
 #: geonode/geoapps/templates/layouts/app_panels.html:561
 #: geonode/layers/templates/layouts/panels.html:629
@@ -2160,51 +2084,37 @@ msgid "Other Settings"
 msgstr "Andere Einstellungen"
 
 #: geonode/geoapps/views.py:65
-#, fuzzy
-#| msgid "You are not permitted to delete this map."
 msgid "You are not permitted to delete this app."
-msgstr "Sie dürfen diese Karte nicht löschen."
+msgstr "Sie dürfen diese Anwendung nicht löschen."
 
 #: geonode/geoapps/views.py:66
-#, fuzzy
-#| msgid "You do not have permissions for this map."
 msgid "You do not have permissions for this app."
-msgstr "Sie haben keine Berechtigungen für diese Karte."
+msgstr "Sie haben keine Berechtigungen für diese Anwendung."
 
 #: geonode/geoapps/views.py:67
-#, fuzzy
-#| msgid "You must be logged in to save this map"
 msgid "You must be logged in to save this app"
-msgstr "Sie müssen angemeldet sein, Um diese Karte zu speichern"
+msgstr "Sie müssen angemeldet sein, Um diese Anwendung zu speichern"
 
 #: geonode/geoapps/views.py:68
-#, fuzzy
-#| msgid "You are not permitted to save or edit this map."
 msgid "You are not permitted to save or edit this app."
 msgstr ""
-"Sie sind nicht berechtigt, diese Karte zu speichern oder zu bearbeiten."
+"Sie sind nicht berechtigt, diese Anwendung zu speichern oder zu bearbeiten."
 
 #: geonode/geoapps/views.py:70
-#, fuzzy
-#| msgid "You are not allowed to modify this map's metadata."
 msgid "You are not allowed to modify this app's metadata."
-msgstr "Sie dürfen die Metadaten dieser Karte nicht ändern."
+msgstr "Sie dürfen die Metadaten dieser Anwendung nicht ändern."
 
 #: geonode/geoapps/views.py:71
-#, fuzzy
-#| msgid "You are not allowed to view this map."
 msgid "You are not allowed to view this app."
-msgstr "Sie dürfen diese Karte nicht anschauen."
+msgstr "Sie dürfen diese Anwendung nicht anschauen."
 
 #: geonode/geoapps/views.py:72 geonode/maps/views.py:104
 msgid "An unknown error has occured."
 msgstr "Ein unbekannter Fehler ist aufgetreten."
 
 #: geonode/geoapps/views.py:311
-#, fuzzy
-#| msgid "You are not allowed to view this map."
 msgid "You are not allowed to edit this app."
-msgstr "Sie dürfen diese Karte nicht anschauen."
+msgstr "Sie dürfen diese Anwendung nicht bearbeiten."
 
 #: geonode/geoserver/__init__.py:75
 msgid "Layer Uploaded"
@@ -6345,10 +6255,6 @@ msgstr ""
 "<strong>speichern</strong>.</p><p> Möchten Sie fortfahren?</p>"
 
 #: geonode/templates/_permissions_form.html:496
-#, fuzzy
-#| msgid ""
-#| "<p>This will override the current stored Geo Limits on the DB.</p><p>To "
-#| "apply them you will need to click on <strong>\\"
 msgid ""
 "<p>This will override the current stored Geo Limits on the DB.</p><p>To "
 "apply them you will need to click on <strong>Apply Changes</strong> button "
@@ -6356,7 +6262,9 @@ msgid ""
 "p><p>Do you want to proceed?</p>"
 msgstr ""
 "<p>Dadurch werden die aktuellen Geo-Limits in der Datenbank überschrieben.</"
-"p><p>Um sie anzuwenden musst du zunächst auf <strong>"
+"p><p>Um sie anzuwenden musst du zunächst auf <strong>Änderungen annehmen</"
+"strong> klicken.</p><p><strong>WARNUNG:</strong> Dies kann nicht rückgängig "
+"gemacht werden!</p><p>Möchtest du fortfahren?</p>"
 
 #: geonode/templates/_permissions_form.html:541
 #: geonode/templates/_permissions_form.html:546
@@ -6364,16 +6272,13 @@ msgid "Save Geo Limit"
 msgstr "Geo-Limit speichern"
 
 #: geonode/templates/_permissions_form.html:542
-#, fuzzy
-#| msgid ""
-#| "<p>Geometry <strong>successfully</strong> saved!</p><p>To apply them you "
-#| "will need to click on <strong>\\"
 msgid ""
 "<p>Geometry <strong>successfully</strong> saved!</p><p>To apply them you "
 "will need to click on <strong>Apply Changes</strong> button.</p>"
 msgstr ""
 "<p>Geo-Limits <strong>erfolgreich</strong> gespeichert!</p><p>Um sie "
-"anzuwenden klickst du auf <strong>"
+"anzuwenden musst du zunächst auf <strong>Änderungen annehmen</strong> "
+"klicken.</p>"
 
 #: geonode/templates/_permissions_form.html:547
 msgid "<p><strong>Error</strong> while trying to save the Geometry!</p>"
@@ -6392,10 +6297,6 @@ msgid "<p><strong>No Geometry</strong> found!</p>"
 msgstr "<p><strong>keine Geo-Limits</strong> gefunden!</p>"
 
 #: geonode/templates/_permissions_form.html:633
-#, fuzzy
-#| msgid ""
-#| "<p>This will <strong>permanently</strong> remove the Geo Limits from the "
-#| "DB.</p><p>To apply them you will need to click on <strong>\\"
 msgid ""
 "<p>This will <strong>permanently</strong> remove the Geo Limits from the DB."
 "</p><p>To apply them you will need to click on <strong>Apply Changes</"
@@ -6403,7 +6304,8 @@ msgid ""
 msgstr ""
 "<p>Dadurch werden die aktuellen Geo-Limits in der Datenbank "
 "<strong>permanent</strong> entfernt.</p><p>Um sie anzuwenden musst du "
-"zunächst auf <strong>"
+"zunächst auf <strong>Änderungen annehmen</strong> klicken.</p><p>Möchtest du "
+"fortfahren?</p>"
 
 #: geonode/templates/_permissions_form.html:659
 #: geonode/templates/_permissions_form.html:667
@@ -8297,10 +8199,8 @@ msgstr "Dokumente gefunden"
 
 #: geonode/templates/search/_search_content.html:55
 #: geonode/templates/search/_search_content.html:57
-#, fuzzy
-#| msgid "Maps found"
 msgid "found"
-msgstr "Karten gefunden"
+msgstr "gefunden"
 
 #: geonode/templates/search/_search_user_content.html:10
 msgid "search"
@@ -8648,6 +8548,249 @@ msgstr "Ungültige Berechtigungsstufe."
 msgid "Permission Denied"
 msgstr "Zugriff verweigert"
 
+msgid "Welcome"
+msgstr "Willkommen"
+
+msgid ""
+"GeoNode is an open source platform for sharing geospatial data and maps."
+msgstr ""
+"GeoNode ist eine Open-Source-Plattform zur Veröffentlichung von Geodaten und "
+"Karten."
+
+msgid ""
+"Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
+"biological sciences, ecology, wilderness, sealife, wetlands, habitat."
+msgstr ""
+"Flora und / oder Fauna in natürlicher Umgebung. Beispiele: Tierwelt, "
+"Vegetation, Biowissenschaften, Ökologie, Wildnis, Sealife, Feuchtgebiete, "
+"Lebensraum."
+
+msgid "Biota"
+msgstr "Biota"
+
+msgid ""
+"Legal land descriptions. Examples: political and administrative boundaries."
+msgstr ""
+"Rechtliche Landbeschreibungen. Beispiele: politische und administrative "
+"Grenzen."
+
+msgid "Boundaries"
+msgstr "Grenzen"
+
+msgid ""
+"Processes and phenomena of the atmosphere. Examples: cloud cover, weather, "
+"climate, atmospheric conditions, climate change, precipitation."
+msgstr ""
+"Prozesse und Phänomene der Atmosphäre. Beispiele: Bewölkung, Wetter, Klima, "
+"atmosphärische Bedingungen, Klimawandel, Niederschlag."
+
+msgid "Climate"
+msgstr "Atmosphäre"
+
+msgid ""
+"Economic activities, conditions and employment. Examples: production, "
+"labour, revenue, commerce, industry, tourism and ecotourism, forestry, "
+"fisheries, commercial or subsistence hunting, exploration and exploitation "
+"of resources such as minerals, oil and gas."
+msgstr ""
+"Wirtschaftliche Aktivitäten, Bedingungen und Beschäftigung. Beispiele: "
+"Produktion, Arbeit, Einnahmen, Handel, Industrie, Tourismus und "
+"Ökotourismus, Forstwirtschaft, Fischerei, Handels-oder Subsistenzjagd, "
+"Erforschung und Ausbeutung von Ressourcen wie Mineralien, Öl und Gas."
+
+msgid "Economy"
+msgstr "Wirtschaft"
+
+msgid ""
+"Height above or below sea level. Examples: altitude, bathymetry, digital "
+"elevation models, slope, derived products."
+msgstr ""
+"Höhe über oder unter dem Meeresspiegel. Beispiele: Höhe, Bathymetrie, "
+"digitale Höhenmodelle, Steigung, abgeleitete Produkte."
+
+msgid ""
+"Environmental resources, protection and conservation. Examples: "
+"environmental pollution, waste storage and treatment, environmental impact "
+"assessment, monitoring environmental risk, nature reserves, landscape."
+msgstr ""
+"Umwelt, Schutz und Erhaltung. Beispiele: Umweltverschmutzung, Abfalllagerung "
+"und -behandlung, Umweltverträglichkeitsprüfung, Überwachung von "
+"Umweltrisiken, Naturschutzgebiete, Landschaft."
+
+msgid "Environment"
+msgstr "Umwelt"
+
+msgid ""
+"Rearing of animals and/or cultivation of plants. Examples: agriculture, "
+"irrigation, aquaculture, plantations, herding, pests and diseases affecting "
+"crops and livestock."
+msgstr ""
+"Tierzucht und Pflanzen. Beispiele: Landwirtschaft, Bewässerung, Aquakultur, "
+"Plantagen, Herden, Schädlinge und Krankheiten, die die Ernte und das Vieh "
+"betreffen."
+
+msgid "Farming"
+msgstr "Landwirtschaft"
+
+msgid ""
+"Information pertaining to earth sciences. Examples: geophysical features and "
+"processes, geology, minerals, sciences dealing with the composition, "
+"structure and origin of the earth s rocks, risks of earthquakes, volcanic "
+"activity, landslides, gravity information, soils, permafrost, hydrogeology, "
+"erosion."
+msgstr ""
+"Informationen zu den Erdwissenschaften. Beispiele: Geophysikalische Merkmale "
+"und Prozesse, Geologie, Mineralien, Wissenschaften, die sich mit der "
+"Zusammensetzung, Struktur und Herkunft der Gesteine der Erde befassen, "
+"Risiken von Erdbeben, vulkanische Aktivität, Erdrutsche, "
+"Gravitationsinformationen, Böden, Permafrost, Hydrogeologie, Erosion."
+
+msgid "Geoscience"
+msgstr "Geowissenschaften"
+
+msgid ""
+"Health, health services, human ecology, and safety. Examples: disease and "
+"illness, factors affecting health, hygiene, substance abuse, mental and "
+"physical health, health services."
+msgstr ""
+"Gesundheit, Gesundheitsdienste, menschliche Ökologie und Sicherheit. "
+"Beispiele: Krankheit und Krankheit, Faktoren, die Gesundheit, Hygiene, "
+"Drogen, psychische und körperliche Gesundheit, Gesundheitsdienste."
+
+msgid "Health"
+msgstr "Gesundheit"
+
+msgid ""
+"Base maps. Examples: land cover, topographic maps, imagery, unclassified "
+"images, annotations."
+msgstr ""
+"Basiskarten. Beispiele: Grundstücksdecke, topografische Karten, Bilder, "
+"nicht klassifizierte Bilder, Anmerkungen."
+
+msgid "Base Maps"
+msgstr "Basiskarten"
+
+msgid ""
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
+msgstr ""
+"Binnenwassermerkmale, Entwässerungssysteme und deren Eigenschaften. "
+"Beispiele: Flüsse und Gletscher, Salzseen, Wassernutzungspläne, Staudämme, "
+"Strömungen, Überschwemmungen, Wasserqualität, hydrographische Diagramme."
+
+msgid "Inland Waters"
+msgstr "Binnengewässer"
+
+msgid ""
+"Military bases, structures, activities. Examples: barracks, training "
+"grounds, military transportation, information collection."
+msgstr ""
+"Militärstützpunkte, Strukturen, Aktivitäten. Beispiele: Kasernen, "
+"Übungsgelände, Militärtransporte, Informationssammlung."
+
+msgid "Intelligence"
+msgstr "Militär und Aufklärung"
+
+msgid ""
+"Positional information and services. Examples: addresses, geodetic networks, "
+"control points, postal zones and services, place names."
+msgstr ""
+"Positionsinformationen und -dienste. Beispiele: Adressen, geodätische Netze, "
+"Kontrollpunkte, Postzonen und Dienstleistungen, Ortsnamen."
+
+msgid ""
+"Features and characteristics of salt water bodies (excluding inland waters). "
+"Examples: tides, tidal waves, coastal information, reefs."
+msgstr ""
+"Merkmale und Eigenschaften von Salzwasserkörpern (ohne Binnengewässer). "
+"Beispiele: Gezeiten, Flutwellen, Küsteninformationen, Riffe."
+
+msgid "Oceans"
+msgstr "Ozeane"
+
+msgid ""
+"Information used for appropriate actions for future use of the land. "
+"Examples: land use maps, zoning maps, cadastral surveys, land ownership."
+msgstr ""
+"Informationen, die für geeignete Maßnahmen zur künftigen Nutzung des "
+"Grundstücks verwendet werden. Beispiele: Landnutzungskarten, Zonenkarten, "
+"Katasterbefragungen, Grundbesitz."
+
+msgid "Planning"
+msgstr "Planung"
+
+msgid ""
+"Settlements, anthropology, archaeology, education, traditional beliefs, "
+"manners and customs, demographic data, recreational areas and activities, "
+"social impact assessments, crime and justice, census information. Economic "
+"activities, conditions and employment."
+msgstr ""
+"Siedlungen, Anthropologie, Archäologie, Bildung, traditionelle "
+"Überzeugungen, Sitten und Sitten, demographische Daten, Erholungsgebiete und "
+"Aktivitäten, soziale Folgenabschätzungen, Kriminalität und Justiz, "
+"Volkszählungsinformationen. Wirtschaftliche Aktivitäten, Bedingungen und "
+"Beschäftigung."
+
+msgid "Population"
+msgstr "Bevölkerung"
+
+msgid ""
+"Characteristics of society and cultures. Examples: settlements, "
+"anthropology, archaeology, education, traditional beliefs, manners and "
+"customs, demographic data, recreational areas and activities, social impact "
+"assessments, crime and justice, census information."
+msgstr ""
+"Merkmale der Gesellschaft und der Kulturen. Beispiele: Siedlungen, "
+"Anthropologie, Archäologie, Bildung, traditionelle Überzeugungen, Sitten und "
+"Bräuche, demographische Daten, Erholungsgebiete und Aktivitäten, soziale "
+"Folgenabschätzungen, Kriminalität und Justiz, Volkszählungsinformationen."
+
+msgid "Society"
+msgstr "Gesellschaft"
+
+msgid ""
+"Man-made construction. Examples: buildings, museums, churches, factories, "
+"housing, monuments, shops, towers."
+msgstr ""
+"Menschliche Bauwerke. Beispiele Gebäude, Museen, Kirchen, Fabriken, "
+"Wohnungen, Denkmäler, Geschäfte, Türme."
+
+msgid "Structure"
+msgstr "Bauwerke"
+
+msgid ""
+"Means and aids for conveying persons and/or goods. Examples: roads, airports/"
+"airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel "
+"location, aeronautical charts, railways."
+msgstr ""
+"Mittel und Hilfsmittel für die Beförderung von Personen und/oder Waren. "
+"Beispiele: Straßen, Flugplätze, Schifffahrtsrouten, Tunnel, Seekarten, "
+"Fahrzeug-oder Schiffsanlage, Luftfahrkarten, Eisenbahnen."
+
+msgid "Transportation"
+msgstr "Verkehrswesen"
+
+msgid ""
+"Energy, water and waste systems and communications infrastructure and "
+"services. Examples: hydroelectricity, geothermal, solar and nuclear sources "
+"of energy, water purification and distribution, sewage collection and "
+"disposal, electricity and gas distribution, data communication, "
+"telecommunication, radio, communication networks."
+msgstr ""
+"Energie-, Wasser-und Abfallsysteme sowie Kommunikationsinfrastruktur und -"
+"dienste. Beispiele: Wasserkraft, Geothermie, Solar-und Atomenergie, "
+"Wasseraufbereitung und -verteilung, Abwasserentsorgung, Strom und "
+"Gasverteilung, Datenkommunikation, Telekommunikation, Radio, "
+"Kommunikationsnetze."
+
+msgid "Utilities"
+msgstr ""
+"Ver\n"
+"-\n"
+"und Entsorgung, \n"
+"Kommunikation "
+
 #~ msgid "https://docs.geonode.org/en/master/usage/index.html"
 #~ msgstr "http://docs.geonode.org/en/2.10.x/usage/index.html"
 
@@ -8668,254 +8811,6 @@ msgstr "Zugriff verweigert"
 
 #~ msgid "Copy to Clipboard"
 #~ msgstr "In Zwischenablage kopieren"
-
-#~ msgid "Welcome"
-#~ msgstr "Willkommen"
-
-#~ msgid ""
-#~ "GeoNode is an open source platform for sharing geospatial data and maps."
-#~ msgstr ""
-#~ "GeoNode ist eine Open-Source-Plattform zur Veröffentlichung von Geodaten "
-#~ "und Karten."
-
-#~ msgid ""
-#~ "Flora and/or fauna in natural environment. Examples: wildlife, "
-#~ "vegetation, biological sciences, ecology, wilderness, sealife, wetlands, "
-#~ "habitat."
-#~ msgstr ""
-#~ "Flora und / oder Fauna in natürlicher Umgebung. Beispiele: Tierwelt, "
-#~ "Vegetation, Biowissenschaften, Ökologie, Wildnis, Sealife, Feuchtgebiete, "
-#~ "Lebensraum."
-
-#~ msgid "Biota"
-#~ msgstr "Biota"
-
-#~ msgid ""
-#~ "Legal land descriptions. Examples: political and administrative "
-#~ "boundaries."
-#~ msgstr ""
-#~ "Rechtliche Landbeschreibungen. Beispiele: politische und administrative "
-#~ "Grenzen."
-
-#~ msgid "Boundaries"
-#~ msgstr "Grenzen"
-
-#~ msgid ""
-#~ "Processes and phenomena of the atmosphere. Examples: cloud cover, "
-#~ "weather, climate, atmospheric conditions, climate change, precipitation."
-#~ msgstr ""
-#~ "Prozesse und Phänomene der Atmosphäre. Beispiele: Bewölkung, Wetter, "
-#~ "Klima, atmosphärische Bedingungen, Klimawandel, Niederschlag."
-
-#~ msgid "Climate"
-#~ msgstr "Atmosphäre"
-
-#~ msgid ""
-#~ "Economic activities, conditions and employment. Examples: production, "
-#~ "labour, revenue, commerce, industry, tourism and ecotourism, forestry, "
-#~ "fisheries, commercial or subsistence hunting, exploration and "
-#~ "exploitation of resources such as minerals, oil and gas."
-#~ msgstr ""
-#~ "Wirtschaftliche Aktivitäten, Bedingungen und Beschäftigung. Beispiele: "
-#~ "Produktion, Arbeit, Einnahmen, Handel, Industrie, Tourismus und "
-#~ "Ökotourismus, Forstwirtschaft, Fischerei, Handels-oder Subsistenzjagd, "
-#~ "Erforschung und Ausbeutung von Ressourcen wie Mineralien, Öl und Gas."
-
-#~ msgid "Economy"
-#~ msgstr "Wirtschaft"
-
-#~ msgid ""
-#~ "Height above or below sea level. Examples: altitude, bathymetry, digital "
-#~ "elevation models, slope, derived products."
-#~ msgstr ""
-#~ "Höhe über oder unter dem Meeresspiegel. Beispiele: Höhe, Bathymetrie, "
-#~ "digitale Höhenmodelle, Steigung, abgeleitete Produkte."
-
-#~ msgid ""
-#~ "Environmental resources, protection and conservation. Examples: "
-#~ "environmental pollution, waste storage and treatment, environmental "
-#~ "impact assessment, monitoring environmental risk, nature reserves, "
-#~ "landscape."
-#~ msgstr ""
-#~ "Umwelt, Schutz und Erhaltung. Beispiele: Umweltverschmutzung, "
-#~ "Abfalllagerung und -behandlung, Umweltverträglichkeitsprüfung, "
-#~ "Überwachung von Umweltrisiken, Naturschutzgebiete, Landschaft."
-
-#~ msgid "Environment"
-#~ msgstr "Umwelt"
-
-#~ msgid ""
-#~ "Rearing of animals and/or cultivation of plants. Examples: agriculture, "
-#~ "irrigation, aquaculture, plantations, herding, pests and diseases "
-#~ "affecting crops and livestock."
-#~ msgstr ""
-#~ "Tierzucht und Pflanzen. Beispiele: Landwirtschaft, Bewässerung, "
-#~ "Aquakultur, Plantagen, Herden, Schädlinge und Krankheiten, die die Ernte "
-#~ "und das Vieh betreffen."
-
-#~ msgid "Farming"
-#~ msgstr "Landwirtschaft"
-
-#~ msgid ""
-#~ "Information pertaining to earth sciences. Examples: geophysical features "
-#~ "and processes, geology, minerals, sciences dealing with the composition, "
-#~ "structure and origin of the earth s rocks, risks of earthquakes, volcanic "
-#~ "activity, landslides, gravity information, soils, permafrost, "
-#~ "hydrogeology, erosion."
-#~ msgstr ""
-#~ "Informationen zu den Erdwissenschaften. Beispiele: Geophysikalische "
-#~ "Merkmale und Prozesse, Geologie, Mineralien, Wissenschaften, die sich mit "
-#~ "der Zusammensetzung, Struktur und Herkunft der Gesteine der Erde "
-#~ "befassen, Risiken von Erdbeben, vulkanische Aktivität, Erdrutsche, "
-#~ "Gravitationsinformationen, Böden, Permafrost, Hydrogeologie, Erosion."
-
-#~ msgid "Geoscience"
-#~ msgstr "Geowissenschaften"
-
-#~ msgid ""
-#~ "Health, health services, human ecology, and safety. Examples: disease and "
-#~ "illness, factors affecting health, hygiene, substance abuse, mental and "
-#~ "physical health, health services."
-#~ msgstr ""
-#~ "Gesundheit, Gesundheitsdienste, menschliche Ökologie und Sicherheit. "
-#~ "Beispiele: Krankheit und Krankheit, Faktoren, die Gesundheit, Hygiene, "
-#~ "Drogen, psychische und körperliche Gesundheit, Gesundheitsdienste."
-
-#~ msgid "Health"
-#~ msgstr "Gesundheit"
-
-#~ msgid ""
-#~ "Base maps. Examples: land cover, topographic maps, imagery, unclassified "
-#~ "images, annotations."
-#~ msgstr ""
-#~ "Basiskarten. Beispiele: Grundstücksdecke, topografische Karten, Bilder, "
-#~ "nicht klassifizierte Bilder, Anmerkungen."
-
-#~ msgid "Base Maps"
-#~ msgstr "Basiskarten"
-
-#~ msgid ""
-#~ "Inland water features, drainage systems and their characteristics. "
-#~ "Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-#~ "currents, floods, water quality, hydrographic charts."
-#~ msgstr ""
-#~ "Binnenwassermerkmale, Entwässerungssysteme und deren Eigenschaften. "
-#~ "Beispiele: Flüsse und Gletscher, Salzseen, Wassernutzungspläne, "
-#~ "Staudämme, Strömungen, Überschwemmungen, Wasserqualität, hydrographische "
-#~ "Diagramme."
-
-#~ msgid "Inland Waters"
-#~ msgstr "Binnengewässer"
-
-#~ msgid ""
-#~ "Military bases, structures, activities. Examples: barracks, training "
-#~ "grounds, military transportation, information collection."
-#~ msgstr ""
-#~ "Militärstützpunkte, Strukturen, Aktivitäten. Beispiele: Kasernen, "
-#~ "Übungsgelände, Militärtransporte, Informationssammlung."
-
-#~ msgid "Intelligence"
-#~ msgstr "Militär und Aufklärung"
-
-#~ msgid ""
-#~ "Positional information and services. Examples: addresses, geodetic "
-#~ "networks, control points, postal zones and services, place names."
-#~ msgstr ""
-#~ "Positionsinformationen und -dienste. Beispiele: Adressen, geodätische "
-#~ "Netze, Kontrollpunkte, Postzonen und Dienstleistungen, Ortsnamen."
-
-#~ msgid ""
-#~ "Features and characteristics of salt water bodies (excluding inland "
-#~ "waters). Examples: tides, tidal waves, coastal information, reefs."
-#~ msgstr ""
-#~ "Merkmale und Eigenschaften von Salzwasserkörpern (ohne Binnengewässer). "
-#~ "Beispiele: Gezeiten, Flutwellen, Küsteninformationen, Riffe."
-
-#~ msgid "Oceans"
-#~ msgstr "Ozeane"
-
-#~ msgid ""
-#~ "Information used for appropriate actions for future use of the land. "
-#~ "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
-#~ msgstr ""
-#~ "Informationen, die für geeignete Maßnahmen zur künftigen Nutzung des "
-#~ "Grundstücks verwendet werden. Beispiele: Landnutzungskarten, Zonenkarten, "
-#~ "Katasterbefragungen, Grundbesitz."
-
-#~ msgid "Planning"
-#~ msgstr "Planung"
-
-#~ msgid ""
-#~ "Settlements, anthropology, archaeology, education, traditional beliefs, "
-#~ "manners and customs, demographic data, recreational areas and activities, "
-#~ "social impact assessments, crime and justice, census information. "
-#~ "Economic activities, conditions and employment."
-#~ msgstr ""
-#~ "Siedlungen, Anthropologie, Archäologie, Bildung, traditionelle "
-#~ "Überzeugungen, Sitten und Sitten, demographische Daten, Erholungsgebiete "
-#~ "und Aktivitäten, soziale Folgenabschätzungen, Kriminalität und Justiz, "
-#~ "Volkszählungsinformationen. Wirtschaftliche Aktivitäten, Bedingungen und "
-#~ "Beschäftigung."
-
-#~ msgid "Population"
-#~ msgstr "Bevölkerung"
-
-#~ msgid ""
-#~ "Characteristics of society and cultures. Examples: settlements, "
-#~ "anthropology, archaeology, education, traditional beliefs, manners and "
-#~ "customs, demographic data, recreational areas and activities, social "
-#~ "impact assessments, crime and justice, census information."
-#~ msgstr ""
-#~ "Merkmale der Gesellschaft und der Kulturen. Beispiele: Siedlungen, "
-#~ "Anthropologie, Archäologie, Bildung, traditionelle Überzeugungen, Sitten "
-#~ "und Bräuche, demographische Daten, Erholungsgebiete und Aktivitäten, "
-#~ "soziale Folgenabschätzungen, Kriminalität und Justiz, "
-#~ "Volkszählungsinformationen."
-
-#~ msgid "Society"
-#~ msgstr "Gesellschaft"
-
-#~ msgid ""
-#~ "Man-made construction. Examples: buildings, museums, churches, factories, "
-#~ "housing, monuments, shops, towers."
-#~ msgstr ""
-#~ "Menschliche Bauwerke. Beispiele Gebäude, Museen, Kirchen, Fabriken, "
-#~ "Wohnungen, Denkmäler, Geschäfte, Türme."
-
-#~ msgid "Structure"
-#~ msgstr "Bauwerke"
-
-#~ msgid ""
-#~ "Means and aids for conveying persons and/or goods. Examples: roads, "
-#~ "airports/airstrips, shipping routes, tunnels, nautical charts, vehicle or "
-#~ "vessel location, aeronautical charts, railways."
-#~ msgstr ""
-#~ "Mittel und Hilfsmittel für die Beförderung von Personen und/oder Waren. "
-#~ "Beispiele: Straßen, Flugplätze, Schifffahrtsrouten, Tunnel, Seekarten, "
-#~ "Fahrzeug-oder Schiffsanlage, Luftfahrkarten, Eisenbahnen."
-
-#~ msgid "Transportation"
-#~ msgstr "Verkehrswesen"
-
-#~ msgid ""
-#~ "Energy, water and waste systems and communications infrastructure and "
-#~ "services. Examples: hydroelectricity, geothermal, solar and nuclear "
-#~ "sources of energy, water purification and distribution, sewage collection "
-#~ "and disposal, electricity and gas distribution, data communication, "
-#~ "telecommunication, radio, communication networks."
-#~ msgstr ""
-#~ "Energie-, Wasser-und Abfallsysteme sowie Kommunikationsinfrastruktur und -"
-#~ "dienste. Beispiele: Wasserkraft, Geothermie, Solar-und Atomenergie, "
-#~ "Wasseraufbereitung und -verteilung, Abwasserentsorgung, Strom und "
-#~ "Gasverteilung, Datenkommunikation, Telekommunikation, Radio, "
-#~ "Kommunikationsnetze."
-
-#~ msgid "Utilities"
-#~ msgstr ""
-#~ "Ver\n"
-#~ "-\n"
-#~ "und Entsorgung, \n"
-#~ "Kommunikation "
 
 #~ msgid "Our partners"
 #~ msgstr "Unsere Partner"
