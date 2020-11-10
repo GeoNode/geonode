@@ -599,6 +599,11 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
 
     @flaky(max_runs=3)
     def test_add_duplicate_remote_service_url(self):
+        form_data = {
+            'url': 'https://demo.geo-solutions.it/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities',
+            'type': enumerations.WMS
+        }
+
         self.client.login(username='serviceowner', password='somepassword')
 
         # Add the first resource
