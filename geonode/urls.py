@@ -192,7 +192,7 @@ urlpatterns += [
 
 urlpatterns += [  # '',
     url(r'^showmetadata/',
-        include('geonode.catalogue.metadataxsl.urls')),
+        include('geonode.catalogue.metadataxsl.urls')), 
 ]
 
 if settings.FAVORITE_ENABLED:
@@ -261,7 +261,7 @@ urlpatterns += [  # '',
 
 # FAQ
 urlpatterns += [
-    url(r'^faq/', include('geonode.frequently.urls')),
+    url(r'^faq/', include('geonode.frequently.urls'), name='faq'),
 ]
 
 if settings.MONITORING_ENABLED:
