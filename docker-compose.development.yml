@@ -3,7 +3,7 @@ services:
 
   celery:
     build: .
-    command: celery -A geonode.celery_app:app worker -B -E --statedb=worker.state --loglevel=INFO --concurrency=10 -n worker1@%h
+    command: celery -A geonode.celery_app:app worker -B -E --statedb=worker.state -s celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h
     depends_on:
       - db
       - elasticsearch
