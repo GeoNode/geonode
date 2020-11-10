@@ -31,7 +31,15 @@
     {% endif %}
 
     {% if resource.date %}
+    {% if resource.date_type == 'creation' %}
+    <dt>{% trans "Creation Date" %}</dt>
+    {% elif resource.date_type == 'publication' %}
+    <dt>{% trans "Pubblication Date" %}</dt>
+    {% elif resource.date_type == 'revision' %}
+    <dt>{% trans "Revision Date" %}</dt>
+    {% else %}
     <dt>{% trans resource.date_type|title %} {% trans "Date" %}</dt>
+    {% endif %}
       {% if resource.date_type == 'creation' %}
         <dd itemprop="dateCreated" datetime="{{ resource.date|date:"c"}}">{{ resource.date }}</dd>
       {% elif resource.date_type == 'publication' %}
@@ -75,10 +83,10 @@
 
     {% if resource.category %}
     <dt>{% trans "Category" %}</dt>
-    <dd><a href="{% url "search" %}?category__identifier__in={{ resource.category.identifier }}">{{ resource.category }}</a> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
+    <dd><a href="{% url "search" %}?category__identifier__in={{ resource.category.identifier }}">{% trans resource.category.gn_description %}</a> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
       {% if resource.category.description %}
       <dd class="category-more collapse">
-        {{ resource.category.description }}
+        {% trans resource.category.description %}
       </dd>
       {% endif %}
     {% endif %}
@@ -113,6 +121,11 @@
     {% if resource.doi %}
     <dt>{% trans "DOI" %}</dt>
     <dd>{{ resource.doi }}</dd>
+    {% endif %}
+
+    {% if resource.attribution %}
+    <dt>{% trans "Attribution" %}</dt>
+    <dd>{{ resource.attribution }}</dd>
     {% endif %}
 
   </dl>

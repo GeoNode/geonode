@@ -19,12 +19,12 @@
 #########################################################################
 
 """Tools for performing validation of uploaded spatial files."""
-
-
-from collections import namedtuple
+import re
 import os.path
 import logging
 import zipfile
+
+from collections import namedtuple
 
 from django import forms
 from django.utils.translation import ugettext as _
@@ -143,7 +143,7 @@ def _validate_shapefile_components(possible_filenames):
     for additional_component in shapefile_additional:
         for path in possible_filenames:
             additional_name = os.path.splitext(os.path.basename(path))[0]
-            matches_main_name = additional_name == base_name
+            matches_main_name = bool(re.match(base_name, additional_name, re.I))
             extension = os.path.splitext(path)[1][1:].lower()
             found_component = extension == additional_component.extension
             if found_component and matches_main_name:

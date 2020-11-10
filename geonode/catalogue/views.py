@@ -302,9 +302,10 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
                 resource.distribution_description) + sc"""
     content += 'data quality statement' + s + fst(
         resource.data_quality_statement) + sc
-    content += 'extent ' + s + fst(resource.bbox_x0) + ',' + fst(
-        resource.bbox_x1) + ',' + fst(
-        resource.bbox_y0) + ',' + fst(resource.bbox_y1) + sc
+
+    ext = resource.bbox_polygon.extent
+    content += 'extent ' + s + fst(ext[0]) + ',' + fst(ext[2]) + \
+        ',' + fst(ext[1]) + ',' + fst(ext[3]) + sc
     content += 'SRID  ' + s + fst(resource.srid) + sc
     content += 'Thumbnail url' + s + fst(resource.thumbnail_url) + sc
 

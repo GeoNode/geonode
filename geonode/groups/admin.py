@@ -19,7 +19,9 @@
 #########################################################################
 
 from django.contrib import admin
+from django.contrib.auth.models import Group
 from modeltranslation.admin import TranslationAdmin
+from geonode.base.admin import set_user_and_group_layer_permission
 
 from . import models
 
@@ -34,11 +36,13 @@ class GroupMemberInline(admin.TabularInline):
     model = models.GroupMember
 
 
-class GroupAdmin(admin.ModelAdmin):
+class GroupProfileAdmin(admin.ModelAdmin):
     inlines = [
         GroupMemberInline
     ]
     exclude = ['group', ]
+    actions = [set_user_and_group_layer_permission]
 
 
-admin.site.register(models.GroupProfile, GroupAdmin)
+admin.site.unregister(Group)
+admin.site.register(models.GroupProfile, GroupProfileAdmin)

@@ -20,32 +20,107 @@
 
 
 # Geonode functionality
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-from django.core.exceptions import PermissionDenied
 from django.conf import settings
-from django.utils.translation import ugettext as _
+from django.http import HttpResponse
 from django.views.generic import FormView
+from django.http import HttpResponseRedirect
+from django.contrib.auth import get_user_model
+from django.utils.translation import ugettext as _
+from django.core.exceptions import PermissionDenied
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-from guardian.shortcuts import get_objects_for_user
 from dal import views, autocomplete
 from user_messages.models import Message
+from guardian.shortcuts import get_objects_for_user
 
-from geonode.base.utils import OwnerRightsRequestViewUtils
-from geonode.documents.models import Document
-from geonode.layers.models import Layer
 from geonode.maps.models import Map
-from geonode.base.models import ResourceBase, Region, HierarchicalKeyword, ThesaurusKeywordLabel
+from geonode.layers.models import Layer
 from geonode.utils import resolve_object
-from geonode.security.utils import get_visible_resources
-from geonode.base.forms import BatchEditForm, OwnerRightsRequestForm
+from geonode.documents.models import Document
+from geonode.groups.models import GroupProfile
+from geonode.tasks.tasks import set_permissions
 from geonode.base.forms import CuratedThumbnailForm
+from geonode.security.utils import get_visible_resources
 from geonode.notifications_helper import send_notification
+from geonode.base.utils import OwnerRightsRequestViewUtils
+from geonode.base.forms import UserAndGroupPermissionsForm
+
+from geonode.base.forms import (
+    BatchEditForm,
+    OwnerRightsRequestForm
+)
+from geonode.base.models import (
+    Region,
+    ResourceBase,
+    HierarchicalKeyword,
+    ThesaurusKeywordLabel
+)
 
 
-def batch_modify(request, ids, model):
+def user_and_group_permission(request, model):
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
+    model_mapper = {
+        "profile": get_user_model(),
+        "groupprofile": GroupProfile
+    }
+
+    model_class = model_mapper[model]
+
+    ids = request.POST.get("ids")
+    if "cancel" in request.POST or not ids:
+        return HttpResponseRedirect(
+            '/admin/{}/{}/'.format(model_class._meta.app_label, model)
+        )
+
+    if request.method == 'POST':
+        form = UserAndGroupPermissionsForm(request.POST)
+        ids = ids.split(",")
+        if form.is_valid():
+            resources_names = [layer.name for layer in form.cleaned_data.get('layers')]
+            users_usernames = [user.username for user in model_class.objects.filter(
+                id__in=ids)] if model == 'profile' else None
+            groups_names = [group_profile.group.name for group_profile in model_class.objects.filter(
+                id__in=ids)] if model in ('group', 'groupprofile') else None
+
+            if users_usernames and 'AnonymousUser' in users_usernames and \
+                    (not groups_names or 'anonymous' not in groups_names):
+                if not groups_names:
+                    groups_names = []
+                groups_names.append('anonymous')
+            if groups_names and 'anonymous' in groups_names and \
+                    (not users_usernames or 'AnonymousUser' not in users_usernames):
+                if not users_usernames:
+                    users_usernames = []
+                users_usernames.append('AnonymousUser')
+
+            delete_flag = form.cleaned_data.get('mode') == 'unset'
+            permissions_names = form.cleaned_data.get('permission_type')
+
+            if permissions_names:
+                set_permissions.delay(permissions_names, resources_names, users_usernames, groups_names, delete_flag)
+
+        return HttpResponseRedirect(
+            '/admin/{}/{}/'.format(model_class._meta.app_label, model)
+        )
+
+    form = UserAndGroupPermissionsForm({
+        'permission_type': ('r', ),
+        'mode': 'set',
+    })
+    return render(
+        request,
+        "base/user_and_group_permissions.html",
+        context={
+            "form": form,
+            "model": model
+        }
+    )
+
+
+def batch_modify(request, model):
     if not request.user.is_superuser:
         raise PermissionDenied
     if model == 'Document':
@@ -55,8 +130,9 @@ def batch_modify(request, ids, model):
     if model == 'Map':
         Resource = Map
     template = 'base/batch_edit.html'
+    ids = request.POST.get("ids")
 
-    if "cancel" in request.POST:
+    if "cancel" in request.POST or not ids:
         return HttpResponseRedirect(
             '/admin/{model}s/{model}/'.format(model=model.lower())
         )
@@ -64,22 +140,41 @@ def batch_modify(request, ids, model):
     if request.method == 'POST':
         form = BatchEditForm(request.POST)
         if form.is_valid():
-            for resource in Resource.objects.filter(id__in=ids.split(',')):
-                resource.group = form.cleaned_data['group'] or resource.group
-                resource.owner = form.cleaned_data['owner'] or resource.owner
-                resource.category = form.cleaned_data['category'] or resource.category
-                resource.license = form.cleaned_data['license'] or resource.license
-                resource.date = form.cleaned_data['date'] or resource.date
-                resource.language = form.cleaned_data['language'] or resource.language
-                new_region = form.cleaned_data['regions']
-                if new_region:
-                    resource.regions.add(new_region)
-                keywords = form.cleaned_data['keywords']
-                if keywords:
-                    resource.keywords.clear()
-                    for word in keywords.split(','):
-                        resource.keywords.add(word.strip())
-                resource.save(notify=True)
+            keywords = [keyword.strip() for keyword in
+                        form.cleaned_data.pop("keywords").split(',') if keyword]
+            regions = form.cleaned_data.pop("regions")
+            ids = form.cleaned_data.pop("ids")
+            if not form.cleaned_data.get("date"):
+                form.cleaned_data.pop("date")
+
+            to_update = {}
+            for _key, _value in form.cleaned_data.items():
+                if _value:
+                    to_update[_key] = _value
+            resources = Resource.objects.filter(id__in=ids.split(','))
+            resources.update(**to_update)
+            if regions:
+                regions_through = Resource.regions.through
+                new_regions = [regions_through(region=regions, resourcebase=resource) for resource in resources]
+                regions_through.objects.bulk_create(new_regions, ignore_conflicts=True)
+
+            if keywords:
+                keywords_through = Resource.keywords.through
+                keywords_through.objects.filter(content_object__in=resources).delete()
+
+                def get_or_create(keyword):
+                    try:
+                        return HierarchicalKeyword.objects.get(name=keyword)
+                    except HierarchicalKeyword.DoesNotExist:
+                        return HierarchicalKeyword.add_root(name=keyword)
+                hierarchical_keyword = [get_or_create(keyword) for keyword in keywords]
+
+                new_keywords = []
+                for keyword in hierarchical_keyword:
+                    new_keywords += [keywords_through(
+                        content_object=resource, tag_id=keyword.pk) for resource in resources]
+                keywords_through.objects.bulk_create(new_keywords, ignore_conflicts=True)
+
             return HttpResponseRedirect(
                 '/admin/{model}s/{model}/'.format(model=model.lower())
             )
@@ -248,17 +343,17 @@ class OwnerRightsRequestView(LoginRequiredMixin, FormView):
         if form.is_valid():
             reason = form.cleaned_data['reason']
             notice_type_label = 'request_resource_edit'
-            recipients = OwnerRightsRequestViewUtils.get_message_recipients()
+            recipients = OwnerRightsRequestViewUtils.get_message_recipients(self.resource.owner)
 
             Message.objects.new_message(
                 from_user=request.user,
                 to_users=recipients,
                 subject=_('System message: A request to modify resource'),
-                content=_('The resource owner has requested to modify the resource') + '.'
+                content=_('The resource owner has requested to modify the resource') + '.\n'
                 ' ' +
-                _('Resource title') + ': ' + self.resource.title + '.'
+                _('Resource title') + ': ' + self.resource.title + '.\n'
                 ' ' +
-                _('Reason for the request') + ': "' + reason + '".' +
+                _('Reason for the request') + ': "' + reason + '".\n' +
                 ' ' +
                 _('To allow the change, set the resource to not "Approved" under the metadata settings' +
                   'and write message to the owner to notify him') + '.'

@@ -180,18 +180,17 @@ class ThesaurusKeywordResource(TypeFilteredResource):
 
     def build_filters(self, filters={}, ignore_bad_filters=False):
         """adds filtering by current language"""
-
-        id = filters.pop('id', None)
-
-        orm_filters = super(ThesaurusKeywordResource, self).build_filters(filters)
+        _filters = filters.copy()
+        id = _filters.pop('id', None)
+        orm_filters = super(ThesaurusKeywordResource, self).build_filters(_filters)
 
         if id is not None:
             orm_filters['keyword__id'] = id
 
-        orm_filters['lang'] = filters['lang'] if 'lang' in filters else get_language()
+        orm_filters['lang'] = _filters['lang'] if 'lang' in _filters else get_language()
 
-        if 'thesaurus' in filters:
-            orm_filters['keyword__thesaurus__identifier'] = filters['thesaurus']
+        if 'thesaurus' in _filters:
+            orm_filters['keyword__thesaurus__identifier'] = _filters['thesaurus']
 
         return orm_filters
 
@@ -330,9 +329,8 @@ class GroupCategoryResource(TypeFilteredResource):
     def dehydrate(self, bundle):
         """Provide additional resource counts"""
         request = bundle.request
-        _user = request.user
         counts = _get_resource_counts(
-            _user,
+            request,
             resourcebase_filter_kwargs={
                 'group__groupprofile__categories': bundle.obj
             }
@@ -374,7 +372,10 @@ class GroupProfileResource(ModelResource):
 
     def dehydrate_detail_url(self, bundle):
         """Return relative URL to the geonode UI's page on the group"""
-        return reverse('group_detail', args=[bundle.obj.slug])
+        if bundle.obj.slug:
+            return reverse('group_detail', args=[bundle.obj.slug])
+        else:
+            return None
 
     def dehydrate_logo_url(self, bundle):
         return bundle.obj.logo_url
@@ -405,11 +406,11 @@ class GroupResource(ModelResource):
     def dehydrate(self, bundle):
         """Provide additional resource counts"""
         request = bundle.request
-        _user = request.user
         counts = _get_resource_counts(
-            _user,
+            request,
             resourcebase_filter_kwargs={'group': bundle.obj}
         )
+
         bundle.data.update(resource_counts=counts)
         return bundle
 
@@ -832,7 +833,7 @@ elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
         pass
 
 
-def _get_resource_counts(user, resourcebase_filter_kwargs):
+def _get_resource_counts(request, resourcebase_filter_kwargs):
     """Return a dict with counts of resources of various types
 
     The ``resourcebase_filter_kwargs`` argument should be a dict with a suitable
@@ -840,7 +841,7 @@ def _get_resource_counts(user, resourcebase_filter_kwargs):
     ``ResourceBase`` objects to use when retrieving counts. For example::
 
         _get_resource_counts(
-            user,
+            request,
             {
                 'group__slug': 'my-group',
             }
@@ -852,10 +853,12 @@ def _get_resource_counts(user, resourcebase_filter_kwargs):
     """
     resources = get_visible_resources(
         ResourceBase.objects.filter(**resourcebase_filter_kwargs),
-        user,
+        request.user,
+        request=request,
         admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
         unpublished_not_visible=settings.RESOURCE_PUBLISHING,
         private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
+
     values = resources.values(
         'polymorphic_ctype__model',
         'is_approved',

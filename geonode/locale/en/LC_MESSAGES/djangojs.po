@@ -23,8 +23,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-14 14:04+0000\n"
-"PO-Revision-Date: 2019-09-17 18:21+0200\n"
+"POT-Creation-Date: 2020-11-06 09:20+0000\n"
+"PO-Revision-Date: 2020-11-02 16:59+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
 "en/)\n"
@@ -33,17 +33,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Poedit 2.4.1\n"
 
 #: geonode/monitoring/static/monitoring/bundle.js:170
 msgid "STORE_UPDATED"
 msgstr "STORE_UPDATED"
-
-#: geonode/people/templates/people/profile_detail.html:77
-#: geonode/people/templates/people/profile_detail.html:86
-#: geonode/people/templates/people/profile_detail.html:98
-msgid "Not provided."
-msgstr ""
 
 #: geonode/static/geonode/js/upload/FileType.js:50
 #, javascript-format
@@ -231,17 +225,15 @@ msgstr ""
 #: geonode/static/geonode/js/upload/LayerInfo.js:623
 #: geonode/static/geonode/js/upload/LayerInfo.js:626
 msgid "<br>"
-msgstr ""
+msgstr "<br>"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:618
 msgid "<br>Bad request or URL not found."
 msgstr "<br>Bad request or URL not found."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:628
-#, fuzzy
-#| msgid "Unknown Map"
 msgid "<br>Unknown."
-msgstr "Unknown Map"
+msgstr "<br>Unknown."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:636
 msgid "Layer files uploaded, configuring in GeoServer"
@@ -268,49 +260,10 @@ msgstr ""
 "\n"
 "Please check for errors in the form!"
 
-#: geonode/templates/admin/base_site.html:4
-msgid "GeoNode site admin"
-msgstr ""
-
-#: geonode/templates/admin/base_site.html:7
-msgid "GeoNode administration"
-msgstr ""
-
-#: geonode/templates/index.html:19
-msgid "Welcome"
-msgstr ""
-
-#: geonode/templates/index.html:21
-msgid ""
-"GeoNode is an open source platform for sharing geospatial data and maps."
-msgstr ""
-
-#: geonode/templates/index.html:25
-msgid "Get Started &raquo;"
-msgstr ""
-
-#: geonode/templates/index.html:82 geonode/templates/index.html:102
 #, fuzzy
-#| msgid "Now"
-msgid "No"
-msgstr "Now"
-
-#: geonode/templates/metadata_form_js.html:75
-#: geonode/templates/metadata_form_js.html:80
-msgid "some schema mandatory fields are missing"
-msgstr ""
-
-#: geonode/templates/metadata_form_js.html:75
-#: geonode/templates/metadata_form_js.html:80
-msgid "Metadata Schema mandatory fields completed"
-msgstr ""
-
-#: geonode/templates/metadata_form_js.html:244
-#: geonode/templates/metadata_form_js.html:283
-msgid ""
-"<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>* Field "
-"declared Mandatory by the Metadata Schema</strong></p>"
-msgstr ""
+#~| msgid "Now"
+#~ msgid "No"
+#~ msgstr "Now"
 
 #~ msgid "Enter your text here ..."
 #~ msgstr "Enter your text here ..."

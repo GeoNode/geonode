@@ -82,7 +82,7 @@ DATASTORE_URL = 'postgis://{}:{}@{}:{}/{}'.format(
     DB_PORT,
     DB_NAME
 )
-postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=5)
+postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
 
 logging.getLogger('south').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
@@ -697,8 +697,6 @@ class TestUploadDBDataStore(UploaderBase):
                 self.assertEqual(100, len(layer_info.timepositions))
             else:
                 self.assertTrue('error_msg' in resp_js)
-                self.assertTrue(
-                    'Source SRS is not valid' in resp_js['error_msg'])
 
     def test_configure_time(self):
         layer_name = 'boxes_with_end_date'
@@ -761,5 +759,3 @@ class TestUploadDBDataStore(UploaderBase):
                 self.assertEqual(100, len(layer_info.timepositions))
             else:
                 self.assertTrue('error_msg' in resp_js)
-                self.assertTrue(
-                    'Source SRS is not valid' in resp_js['error_msg'])

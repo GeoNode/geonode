@@ -22,6 +22,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import Client
 from selenium import webdriver
 from unittest import TestCase as StandardTestCase
+from flaky import flaky
 
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -548,6 +549,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             password=mock_catalog.password
         )
 
+    @flaky(max_runs=3)
     def test_local_user_cant_delete_service(self):
         self.client.logout()
         response = self.client.get(reverse('register_service'))
@@ -595,7 +597,13 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         response = self.client.post(reverse('remove_service', args=(s.id,)))
         self.assertEqual(len(Service.objects.all()), 0)
 
+    @flaky(max_runs=3)
     def test_add_duplicate_remote_service_url(self):
+        form_data = {
+            'url': 'https://demo.geo-solutions.it/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities',
+            'type': enumerations.WMS
+        }
+
         self.client.login(username='serviceowner', password='somepassword')
 
         # Add the first resource

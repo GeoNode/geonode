@@ -26,7 +26,6 @@ import xmljson
 import requests
 import threading
 import traceback
-import timeout_decorator
 
 from hashlib import md5
 from math import floor, ceil
@@ -402,7 +401,6 @@ def extend_datetime_input_formats(formats):
 
 
 def collect_metric(**options):
-    from geonode.celery_app import app
     from geonode.tasks.tasks import memcache_lock
     from geonode.monitoring.models import Service
     from geonode.monitoring.collector import CollectorAPI
@@ -413,13 +411,17 @@ def collect_metric(**options):
     # of the name.
     name = b'collect_metric'
     hexdigest = md5(name).hexdigest()
-    lock_id = '{0}-lock-{1}'.format(name, hexdigest)
-    _start_time = datetime.utcnow().isoformat()
+    lock_id = f'{name.decode()}-lock-{hexdigest}'
+    _start_time = _end_time = datetime.utcnow().isoformat()
     log.info('[{}] Collecting Metrics - started @ {}'.format(
         lock_id,
         _start_time))
-    with memcache_lock(lock_id, app.oid) as acquired:
-        if acquired:
+    lock = memcache_lock(lock_id)
+    if lock.acquire(blocking=False) is True:
+        log.info('[{}] Collecting Metrics - [...acquired lock] @ {}'.format(
+            lock_id,
+            _start_time))
+        try:
             oservice = options['service']
             if not oservice:
                 services = Service.objects.all()
@@ -447,15 +449,13 @@ def collect_metric(**options):
                               until=options['until'],
                               force_check=options['force_check'],
                               format=options['format'])
-                except Exception as err:
-                    log.error("Cannot collect from %s: %s", s, err, exc_info=err)
-                    if options['halt_on_errors']:
-                        raise
+                except Exception as e:
+                    log.warning(e)
             if not options['do_not_clear']:
-                log.debug("Clearing old data")
+                log.info("Clearing old data")
                 c.clear_old_data()
             if options['emit_notifications']:
-                log.debug("Processing notifications for %s", options['until'])
+                log.info("Processing notifications for %s", options['until'])
                 # s = Service.objects.first()
                 # interval = s.check_interval
                 # now = datetime.utcnow().replace(tzinfo=pytz.utc)
@@ -465,13 +465,19 @@ def collect_metric(**options):
             log.info('[{}] Collecting Metrics - finished @ {}'.format(
                 lock_id,
                 _end_time))
+        except Exception as e:
+            log.info('[{}] Collecting Metrics - errored @ {}'.format(
+                lock_id,
+                _end_time))
+            log.exception(e)
+        finally:
+            lock.release()
+    log.info('[{}] Collecting Metrics - exit @ {}'.format(
+        lock_id,
+        _end_time))
     return (_start_time, _end_time)
 
 
-LOCAL_TIMEOUT = 8600
-
-
-@timeout_decorator.timeout(LOCAL_TIMEOUT)
 def run_check(service, collector, since=None, until=None, force_check=None, format=None):
     from geonode.monitoring.service_handlers import get_for_service
 

@@ -42,7 +42,7 @@ from six import string_types, reraise as raise_
 # Django functionality
 from django.conf import settings
 from django.db.models import Q
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.core.files import File
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
@@ -54,6 +54,7 @@ from django.utils.translation import ugettext as _
 # Geonode functionality
 from geonode.maps.models import Map
 from geonode.base.auth import get_or_create_token
+from geonode.base.bbox_utils import BBOXHelper
 from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import UploadSession, LayerFile
@@ -214,10 +215,10 @@ def get_files(filename):
 
     # Only for GeoServer
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        matches = glob.glob(os.path.dirname(glob_name) + "/*.[sS][lL][dD]")
+        matches = glob.glob(os.path.dirname(glob_name) + ".[sS][lL][dD]")
         if len(matches) == 1:
             files['sld'] = matches[0]
-        elif len(matches) > 1:
+        else:
             matches = glob.glob(glob_name + ".[sS][lL][dD]")
             if len(matches) == 1:
                 files['sld'] = matches[0]
@@ -266,7 +267,6 @@ def get_files(filename):
             msg = ('Multiple json files (json) for %s exist; they need to be '
                    'distinct by spelling and not just case.') % filename
             raise GeoNodeException(msg)
-
     return files
 
 
@@ -320,8 +320,6 @@ def get_valid_name(layer_name):
         proposed_name = '%s_%s' % (name, suffix)
         logger.debug('Requested name already used; adjusting name '
                      '[%s] => [%s]', layer_name, proposed_name)
-    else:
-        logger.debug("Using name as requested")
 
     return proposed_name
 
@@ -459,6 +457,7 @@ def get_bbox(filename):
     return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, "EPSG:%s" % str(srid)]
 
 
+@transaction.atomic
 def file_upload(filename,
                 layer=None,
                 gtype=None,
@@ -493,7 +492,16 @@ def file_upload(filename,
     theuser = get_valid_user(user)
 
     # Create a new upload session
-    upload_session = UploadSession.objects.create(user=theuser)
+    if layer:
+        latest_uploads = UploadSession.objects.filter(resource=layer).order_by('-date')
+        if latest_uploads.count() > 1:
+            upload_session = latest_uploads.first()
+        else:
+            upload_session, _created = UploadSession.objects.get_or_create(resource=layer)
+        upload_session.user = theuser
+        upload_session.layerfile_set.all().delete()
+    else:
+        upload_session = UploadSession.objects.create(user=theuser)
 
     # Get all the files uploaded with the layer
     if os.path.exists(filename):
@@ -535,12 +543,15 @@ def file_upload(filename,
                             _("Please ensure the name is consistent with the file you are trying to replace."))
                     schema_is_compliant = False
                     _ff = json.loads(lyr.GetFeature(0).ExportToJson())
-                    if not gtype:
-                        raise Exception(
+                    if gtype:
+                        logger.warning(
                             _("Local GeoNode layer has no geometry type."))
-                    if _ff["geometry"]["type"] in gtype or gtype in _ff["geometry"]["type"]:
+                        if _ff["geometry"]["type"] in gtype or gtype in _ff["geometry"]["type"]:
+                            schema_is_compliant = True
+                    elif "geometry" in _ff and _ff["geometry"]["type"]:
                         schema_is_compliant = True
-                    elif not schema_is_compliant:
+
+                    if not schema_is_compliant:
                         raise Exception(
                             _("Please ensure there is at least one geometry type \
                                 that is consistent with the file you are trying to replace."))
@@ -599,9 +610,12 @@ def file_upload(filename,
                 assigned_name = os.path.splitext(os.path.basename(the_file))[0]
 
     # Get a bounding box
-    bbox_x0, bbox_x1, bbox_y0, bbox_y1, srid = get_bbox(filename)
+    *bbox, srid = get_bbox(filename)
+    bbox_polygon = BBOXHelper.from_xy(bbox).as_polygon()
+
     if srid:
         srid_url = "http://www.spatialreference.org/ref/" + srid.replace(':', '/').lower() + "/"  # noqa
+        bbox_polygon.srid = int(srid.split(':')[1])
 
     # by default, if RESOURCE_PUBLISHING=True then layer.is_published
     # must be set to False
@@ -617,11 +631,8 @@ def file_upload(filename,
         'abstract': abstract,
         'owner': user,
         'charset': charset,
-        'bbox_x0': bbox_x0,
-        'bbox_x1': bbox_x1,
-        'bbox_y0': bbox_y0,
-        'bbox_y1': bbox_y1,
-        'srid': srid,
+        'bbox_polygon': bbox_polygon,
+        'srid': 'EPSG:4326',
         'is_approved': is_approved,
         'is_published': is_published,
         'license': license,
@@ -651,7 +662,6 @@ def file_upload(filename,
                     identifier=value.lower(),
                     defaults={'description': '', 'gn_description': value})
                 key = 'category'
-
                 defaults[key] = value
             else:
                 defaults[key] = value
@@ -670,8 +680,8 @@ def file_upload(filename,
     # Create a Django object.
     created = False
     layer = None
-    with transaction.atomic():
-        try:
+    try:
+        with transaction.atomic():
             if overwrite:
                 try:
                     layer = Layer.objects.get(name=valid_name)
@@ -681,16 +691,14 @@ def file_upload(filename,
                 if not metadata_upload_form:
                     layer, created = Layer.objects.get_or_create(
                         name=valid_name,
-                        workspace=settings.DEFAULT_WORKSPACE,
-                        defaults=defaults
+                        workspace=settings.DEFAULT_WORKSPACE
                     )
                 elif identifier:
                     layer, created = Layer.objects.get_or_create(
-                        uuid=identifier,
-                        defaults=defaults
+                        uuid=identifier
                     )
-        except Exception:
-            raise
+    except IntegrityError:
+        raise
 
     # Delete the old layers if overwrite is true
     # and the layer was not just created
@@ -698,13 +706,9 @@ def file_upload(filename,
     # doing a layer.save()
     if not created and overwrite:
         # update with new information
-        defaults['upload_session'] = upload_session
         defaults['title'] = defaults.get('title', None) or layer.title
         defaults['abstract'] = defaults.get('abstract', None) or layer.abstract
-        defaults['bbox_x0'] = defaults.get('bbox_x0', None) or layer.bbox_x0
-        defaults['bbox_x1'] = defaults.get('bbox_x1', None) or layer.bbox_x1
-        defaults['bbox_y0'] = defaults.get('bbox_y0', None) or layer.bbox_y0
-        defaults['bbox_y1'] = defaults.get('bbox_y1', None) or layer.bbox_y1
+        defaults['bbox_polygon'] = defaults.get('bbox_polygon', None) or layer.bbox_polygon
         defaults['is_approved'] = defaults.get(
             'is_approved', is_approved) or layer.is_approved
         defaults['is_published'] = defaults.get(
@@ -712,35 +716,21 @@ def file_upload(filename,
         defaults['license'] = defaults.get('license', None) or layer.license
         defaults['category'] = defaults.get('category', None) or layer.category
 
-        try:
-            Layer.objects.filter(id=layer.id).update(**defaults)
-            layer.refresh_from_db()
-        except Layer.DoesNotExist:
-            import traceback
-            tb = traceback.format_exc()
-            logger.error(tb)
-            raise
-
-        # Pass the parameter overwrite to tell whether the
-        # geoserver_post_save_signal should upload the new file or not
-        layer.overwrite = overwrite
-
-        # Blank out the store if overwrite is true.
-        # geoserver_post_save_signal should upload the new file if needed
-        layer.store = '' if overwrite else layer.store
-
         if upload_session:
-            upload_session.resource = layer
-            upload_session.processed = True
-            upload_session.save()
-
-        # set SLD
-        # if 'sld' in files:
-        #     sld = None
-        #     with open(files['sld']) as f:
-        #         sld = f.read()
-        #     if sld:
-        #         set_layer_style(layer, layer.alternate, sld, base_file=files['sld'])
+            if layer.upload_session:
+                layer.upload_session.date = upload_session.date
+                layer.upload_session.user = upload_session.user
+                layer.upload_session.error = upload_session.error
+                layer.upload_session.traceback = upload_session.traceback
+                layer.upload_session.context = upload_session.context
+                upload_session = layer.upload_session
+            else:
+                layer.upload_session = upload_session
+    if upload_session:
+        defaults['upload_session'] = upload_session
+        upload_session.resource = layer
+        upload_session.processed = False
+        upload_session.save()
 
     # Assign the keywords (needs to be done after saving)
     keywords = list(set(keywords))
@@ -765,36 +755,48 @@ def file_upload(filename,
     if charset != 'UTF-8':
         layer.charset = charset
 
+    if not defaults.get('title', title):
+        defaults['title'] = layer.title or layer.name
+    if not defaults.get('abstract', abstract):
+        defaults['abstract'] = layer.abstract or ''
+
     to_update = {}
-    if defaults.get('title', title) is not None:
-        to_update['title'] = defaults.get('title', title)
-    if defaults.get('abstract', abstract) is not None:
-        to_update['abstract'] = defaults.get('abstract', abstract)
+    to_update['upload_session'] = defaults.pop('upload_session', layer.upload_session)
+    to_update['storeType'] = defaults.pop('storeType', layer.storeType)
+    to_update['charset'] = defaults.pop('charset', layer.charset)
+    to_update.update(defaults)
     if defaults.get('date', date) is not None:
         to_update['date'] = defaults.get('date',
                                          datetime.strptime(date, '%Y-%m-%d %H:%M:%S') if date else None)
-    if defaults.get('license', license) is not None:
-        to_update['license'] = defaults.get('license', license)
-    if defaults.get('category', category) is not None:
-        to_update['category'] = defaults.get('category', category)
 
     # Update ResourceBase
     if not to_update:
         pass
     else:
         try:
-            ResourceBase.objects.filter(
-                id=layer.resourcebase_ptr.id).update(
-                **to_update)
-            Layer.objects.filter(id=layer.id).update(**to_update)
+            with transaction.atomic():
+                ResourceBase.objects.filter(
+                    id=layer.resourcebase_ptr.id).update(
+                    **defaults)
+                Layer.objects.filter(id=layer.id).update(**to_update)
 
-            # Refresh from DB
-            layer.refresh_from_db()
-        except Exception:
-            import traceback
-            tb = traceback.format_exc()
-            logger.error(tb)
-    layer.save(notify=True)
+                # Refresh from DB
+                layer.refresh_from_db()
+
+                # Pass the parameter overwrite to tell whether the
+                # geoserver_post_save_signal should upload the new file or not
+                layer.overwrite = overwrite
+
+                # Blank out the store if overwrite is true.
+                # geoserver_post_save_signal should upload the new file if needed
+                layer.store = '' if overwrite else layer.store
+        except IntegrityError:
+            raise
+    try:
+        with transaction.atomic():
+            layer.save(notify=True)
+    except IntegrityError:
+        raise
     return layer
 
 
@@ -860,7 +862,6 @@ def upload(incoming, user=None, overwrite=False,
     output = []
     for i, file_pair in enumerate(potential_files):
         basename, filename = file_pair
-
         existing_layers = Layer.objects.filter(name=basename)
 
         if existing_layers.count() > 0:
@@ -959,32 +960,19 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
     _thumb_exists = thumb_exists(thumbnail_name)
     if overwrite or not _thumb_exists:
-        BBOX_DIFFERENCE_THRESHOLD = 1e-5
-
         is_remote = False
         if not thumbnail_create_url:
             thumbnail_create_url = thumbnail_remote_url
             is_remote = True
 
         if check_bbox:
-            # Check if the bbox is invalid
-            valid_x = (
-                float(
-                    instance.bbox_x0) -
-                float(
-                    instance.bbox_x1)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
-            valid_y = (
-                float(
-                    instance.bbox_y1) -
-                float(
-                    instance.bbox_y0)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
+            valid = instance.bbox_polygon and instance.bbox_polygon.valid
         else:
-            valid_x = True
-            valid_y = True
+            valid = True
 
         image = None
 
-        if valid_x and valid_y:
+        if valid:
             Link.objects.get_or_create(resource=instance.get_self_resource(),
                                        url=thumbnail_remote_url,
                                        defaults=dict(
@@ -1033,15 +1021,8 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                             params = urlparse(thumbnail_create_url).query.split('&')
                             request_body = {key: value for (key, value) in
                                             [(lambda p: (p.split("=")[0], p.split("=")[1]))(p) for p in params]}
-                            # request_body['thumbnail_create_url'] = thumbnail_create_url
                             if 'bbox' in request_body and isinstance(request_body['bbox'], string_types):
                                 request_body['bbox'] = [str(coord) for coord in request_body['bbox'].split(",")]
-                                request_body['bbox'] = [
-                                    request_body['bbox'][0],
-                                    request_body['bbox'][2],
-                                    request_body['bbox'][1],
-                                    request_body['bbox'][3]
-                                ]
                             if 'crs' in request_body and 'srid' not in request_body:
                                 request_body['srid'] = request_body['crs']
                         elif instance.alternate:
@@ -1175,8 +1156,8 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
                     bbox[3] = float(_bbox[3])
 
     wms_endpoint = getattr(ogc_server_settings, 'WMS_ENDPOINT') or 'ows'
-    wms_version = getattr(ogc_server_settings, 'WMS_VERSION') or '1.1.1'
-    wms_format = getattr(ogc_server_settings, 'WMS_FORMAT') or 'image/png8'
+    wms_version = getattr(ogc_server_settings, 'WMS_VERSION') or '1.3.0'
+    wms_format = getattr(ogc_server_settings, 'WMS_FORMAT') or 'image/png'
 
     params = {
         'service': 'WMS',
@@ -1195,14 +1176,9 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
         params['width'] = _default_thumb_size['width']
         params['height'] = _default_thumb_size['height']
 
-    user = None
-    try:
-        username = ogc_server_settings.credentials.username
-        user = get_user_model().objects.get(username=username)
-    except Exception as e:
-        logger.exception(e)
-
     access_token = None
+    username = ogc_server_settings.credentials.username
+    user = get_user_model().objects.filter(username=username).first()
     if user:
         access_token = get_or_create_token(user)
         if access_token and not access_token.is_expired():

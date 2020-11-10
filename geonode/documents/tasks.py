@@ -20,6 +20,8 @@
 
 import os
 
+from django.core.files.storage import default_storage as storage
+
 from geonode.celery_app import app
 from celery.utils.log import get_task_logger
 
@@ -28,12 +30,23 @@ from geonode.documents.renderers import render_document
 from geonode.documents.renderers import generate_thumbnail_content
 from geonode.documents.renderers import ConversionError
 
-from django.core.files.storage import default_storage as storage
-
 logger = get_task_logger(__name__)
 
 
-@app.task(bind=True, queue='update')
+@app.task(
+    bind=True,
+    name='geonode.documents.tasks.create_document_thumbnail',
+    queue='update',
+    countdown=60,
+    # expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 10,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
 def create_document_thumbnail(self, object_id):
     """
     Create thumbnail for a document.
@@ -46,16 +59,20 @@ def create_document_thumbnail(self, object_id):
         logger.error("Document #{} does not exist.".format(object_id))
         return
 
-    if not storage.exists(document.doc_file.name):
-        logger.error("Document #{} exists but its location could not be resolved.".format(object_id))
-        return
-
     image_path = None
     image_file = None
 
-    if document.is_image():
+    if document.is_image:
+        if not os.path.exists(storage.path(document.doc_file.name)):
+            from shutil import copyfile
+            copyfile(
+                document.doc_file.path,
+                storage.path(document.doc_file.name)
+            )
         image_file = storage.open(document.doc_file.name, 'rb')
-    elif document.is_file():
+    elif document.is_video or document.is_audio:
+        image_file = open(document.find_placeholder(), 'rb')
+    elif document.is_file:
         try:
             document_location = storage.path(document.doc_file.name)
         except NotImplementedError as e:
@@ -65,7 +82,11 @@ def create_document_thumbnail(self, object_id):
         try:
             image_path = render_document(document_location)
             if image_path is not None:
-                image_file = open(image_path, 'rb')
+                try:
+                    image_file = open(image_path, 'rb')
+                except Exception as e:
+                    logger.debug(e)
+                    logger.debug("Failed to render document #{}".format(object_id))
             else:
                 logger.debug("Failed to render document #{}".format(object_id))
         except ConversionError as e:
@@ -77,7 +98,8 @@ def create_document_thumbnail(self, object_id):
     try:
         try:
             thumbnail_content = generate_thumbnail_content(image_file)
-        except Exception:
+        except Exception as e:
+            logger.error("Could not generate thumbnail, falling back to 'placeholder': {}".format(e))
             thumbnail_content = generate_thumbnail_content(document.find_placeholder())
     except Exception as e:
         logger.error("Could not generate thumbnail: {}".format(e))
@@ -96,13 +118,39 @@ def create_document_thumbnail(self, object_id):
     logger.debug("Thumbnail for document #{} created.".format(object_id))
 
 
-@app.task(bind=True, queue='cleanup')
+@app.task(
+    bind=True,
+    name='geonode.documents.tasks.delete_orphaned_document_files',
+    queue='cleanup',
+    countdown=60,
+    # expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 10,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
 def delete_orphaned_document_files(self):
     from geonode.documents.utils import delete_orphaned_document_files
     delete_orphaned_document_files()
 
 
-@app.task(bind=True, queue='cleanup')
+@app.task(
+    bind=True,
+    name='geonode.documents.tasks.delete_orphaned_thumbnails',
+    queue='cleanup',
+    countdown=60,
+    # expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 10,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
 def delete_orphaned_thumbnails(self):
     from geonode.base.utils import delete_orphaned_thumbs
     delete_orphaned_thumbs()

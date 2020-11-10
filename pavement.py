@@ -92,6 +92,7 @@ with open("dev_config.yml", 'r') as f:
 
 def grab(src, dest, name):
     src, dest, name = map(str, (src, dest, name))
+    print(f" src, dest, name --> {src} {dest} {name}")
 
     if not os.path.exists(dest):
         print("Downloading {}".format(name))
@@ -150,16 +151,16 @@ def setup_geoserver(options):
         return
     if on_travis and not options.get('force_exec', False):
         """Will make use of the docker container for the Integration Tests"""
-        pass
+        return
     else:
         download_dir = path('downloaded')
         if not download_dir.exists():
             download_dir.makedirs()
         geoserver_dir = path('geoserver')
         geoserver_bin = download_dir / \
-            os.path.basename(dev_config['GEOSERVER_URL'])
+            os.path.basename(urlparse(dev_config['GEOSERVER_URL']).path)
         jetty_runner = download_dir / \
-            os.path.basename(dev_config['JETTY_RUNNER_URL'])
+            os.path.basename(urlparse(dev_config['JETTY_RUNNER_URL']).path)
         grab(
             options.get(
                 'geoserver',
@@ -610,34 +611,15 @@ def start_django(options):
     foreground = '' if options.get('foreground', False) else '&'
     sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
 
-    celery_queues = [
-        "default",
-        "geonode",
-        "cleanup",
-        "update",
-        "email",
-        # Those queues are directly managed by messages.consumer
-        # "broadcast",
-        # "email.events",
-        # "all.geoserver",
-        # "geoserver.events",
-        # "geoserver.data",
-        # "geoserver.catalog",
-        # "notifications.events",
-        # "geonode.layer.viewer"
-    ]
     if 'django_celery_beat' not in INSTALLED_APPS:
-        sh("{} celery -A geonode.celery_app:app worker -Q {} -B -E -l INFO {}".format(
+        sh("{} celery -A geonode.celery_app:app worker -B -E --statedb=worker.state -s celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h {}".format(
             settings,
-            ",".join(celery_queues),
-            "-s celerybeat-schedule.db",
             foreground
         ))
     else:
-        sh("{} celery -A geonode.celery_app:app worker -Q {} -B -E -l INFO {} {}".format(
+        sh("{} celery -A geonode.celery_app:app worker -l DEBUG {} {}".format(
             settings,
-            ",".join(celery_queues),
-            "--scheduler django_celery_beat.schedulers:DatabaseScheduler",
+            "-s django_celery_beat.schedulers:DatabaseScheduler",
             foreground
         ))
 
@@ -911,7 +893,7 @@ def test_integration(options):
             call_task('start', options={'settings': settings})
             if integration_server_tests:
                 call_task('setup_data', options={'settings': settings})
-        elif not integration_csw_tests and _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
+        elif _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
             sh("cp geonode/upload/tests/test_settings.py geonode/")
             settings = 'geonode.test_settings'
             sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
@@ -924,15 +906,13 @@ def test_integration(options):
                "loaddata geonode/base/fixtures/default_oauth_apps.json".format(settings))
             sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
                "loaddata geonode/base/fixtures/initial_data.json".format(settings))
-
             call_task('start_geoserver')
-
             bind = options.get('bind', '0.0.0.0:8000')
             foreground = '' if options.get('foreground', False) else '&'
             sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runmessaging %s' %
-               (settings, foreground))
+            (settings, foreground))
             sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runserver %s %s' %
-               (settings, bind, foreground))
+            (settings, bind, foreground))
             sh('sleep 30')
             settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
 
@@ -1213,8 +1193,6 @@ def kill(arg1, arg2):
 
         # Give it a little more time
         time.sleep(1)
-    else:
-        pass
 
     if running:
         raise Exception('Could not stop %s: '

@@ -28,13 +28,15 @@ import traceback
 from django.db import models
 from django.conf import settings
 from django.core import serializers
+from django.utils.functional import cached_property
 from django.utils.html import escape
 from django.utils.timezone import now
 from django.db.models import Q, signals
 from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import GEOSGeometry, Polygon, Point
+from django.contrib.gis.db.models import PolygonField
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -63,13 +65,14 @@ from geonode.base.enumerations import (
     HIERARCHY_LEVELS,
     UPDATE_FREQUENCIES,
     DEFAULT_SUPPLEMENTAL_INFORMATION)
+from geonode.base.bbox_utils import BBOXHelper
 from geonode.utils import (
     add_url_params,
-    bbox_to_wkt,
-    forward_mercator)
+    bbox_to_wkt)
 from geonode.groups.models import GroupProfile
-from geonode.security.models import PermissionLevelMixin
 from geonode.security.utils import get_visible_resources
+from geonode.security.models import PermissionLevelMixin
+
 from geonode.notifications_helper import (
     send_notification,
     get_notification_recipients)
@@ -608,6 +611,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         null=True,
         help_text=doi_help_text)
+    attribution_help_text = _(
+        'authority or function assigned, as to a ruler, legislative assembly, delegate, or the like.')
+    attribution = models.CharField(
+        _('Attribution'),
+        max_length=2048,
+        blank=True,
+        null=True,
+        help_text=attribution_help_text)
     # internal fields
     uuid = models.CharField(max_length=36)
     owner = models.ForeignKey(
@@ -749,26 +760,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Save bbox values in the database.
     # This is useful for spatial searches and for generating thumbnail images
     # and metadata records.
-    bbox_x0 = models.DecimalField(
-        max_digits=30,
-        decimal_places=15,
-        blank=True,
-        null=True)
-    bbox_x1 = models.DecimalField(
-        max_digits=30,
-        decimal_places=15,
-        blank=True,
-        null=True)
-    bbox_y0 = models.DecimalField(
-        max_digits=30,
-        decimal_places=15,
-        blank=True,
-        null=True)
-    bbox_y1 = models.DecimalField(
-        max_digits=30,
-        decimal_places=15,
-        blank=True,
-        null=True)
+    bbox_polygon = PolygonField(null=True, blank=True)
+
     srid = models.CharField(
         max_length=30,
         blank=False,
@@ -867,6 +860,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         )
 
     def __init__(self, *args, **kwargs):
+        # Provide legacy support for bbox fields
+        bbox = [kwargs.pop(key, None) for key in ('bbox_x0', 'bbox_y0', 'bbox_x1', 'bbox_y1')]
+        if all(bbox):
+            kwargs['bbox_polygon'] = Polygon.from_bbox(bbox)
         super(ResourceBase, self).__init__(*args, **kwargs)
 
     def __str__(self):
@@ -891,6 +888,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 if settings.ADMIN_MODERATE_UPLOADS:
                     if self.is_approved and not self.is_published and \
                     self.__is_approved != self.is_approved:
+                        # Set "approved" workflow permissions
+                        self.set_workflow_perms(approved=True)
+
+                        # Send "approved" notification
                         notice_type_label = '%s_approved' % self.class_name.lower()
                         recipients = get_notification_recipients(notice_type_label)
                         send_notification(recipients, notice_type_label, {'resource': self})
@@ -900,6 +901,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 if not _notification_sent and settings.RESOURCE_PUBLISHING:
                     if self.is_approved and self.is_published and \
                     self.__is_published != self.is_published:
+                        # Set "published" workflow permissions
+                        self.set_workflow_perms(published=True)
+
+                        # Send "published" notification
                         notice_type_label = '%s_published' % self.class_name.lower()
                         recipients = get_notification_recipients(notice_type_label)
                         send_notification(recipients, notice_type_label, {'resource': self})
@@ -969,54 +974,107 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def bbox(self):
-        """BBOX is in the format: [x0,x1,y0,y1]."""
-        return [
-            self.bbox_x0,
-            self.bbox_x1,
-            self.bbox_y0,
-            self.bbox_y1,
-            self.srid]
+        """BBOX is in the format: [x0, x1, y0, y1, srid]."""
+        if self.bbox_polygon:
+            bbox = self.bbox_polygon
+            match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', self.srid)
+            srid = int(match.group('srid'))
+            if bbox.srid is not None and bbox.srid != srid:
+                try:
+                    bbox = bbox.transform(srid, clone=True)
+                except Exception:
+                    bbox.srid = srid
+            bbox = BBOXHelper(bbox.extent)
+            return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(srid)]
+        bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
+        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
     @property
     def ll_bbox(self):
-        """BBOX is in the format: [x0,x1,y0,y1]."""
-        from geonode.utils import bbox_to_projection
-        llbbox = self.bbox[0:4]
-        if self.srid and 'EPSG:' in self.srid:
-            try:
-                llbbox = bbox_to_projection([float(coord) for coord in llbbox] + [self.srid, ],
-                                            target_srid=4326)
-            except Exception:
-                pass
-        return [
-            llbbox[0],  # x0
-            llbbox[1],  # x1
-            llbbox[2],  # y0
-            llbbox[3],  # y1
-            self.srid]
+        """BBOX is in the format [x0, x1, y0, y1, "EPSG:srid"]. Provides backwards
+        compatibility after transition to polygons."""
+        if self.bbox_polygon:
+            bbox = self.bbox_polygon
+            if bbox.srid is not None and bbox.srid != 4326:
+                bbox = bbox.transform(4326, clone=True)
+
+            bbox = BBOXHelper(bbox.extent)
+            return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
+        bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
+        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
     @property
     def ll_bbox_string(self):
         """WGS84 BBOX is in the format: [x0,y0,x1,y1]."""
-        return ",".join([str(self.ll_bbox[0]), str(self.ll_bbox[2]),
-                         str(self.ll_bbox[1]), str(self.ll_bbox[3])])
+        if self.bbox_polygon:
+            bbox = BBOXHelper.from_xy(self.ll_bbox[:4])
+
+            return "{x0:.7f},{y0:.7f},{x1:.7f},{y1:.7f}".format(
+                x0=bbox.xmin,
+                y0=bbox.ymin,
+                x1=bbox.xmax,
+                y1=bbox.ymax)
+        bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
+        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
     @property
     def bbox_string(self):
-        """BBOX is in the format: [x0,y0,x1,y1]."""
-        return ",".join([str(self.bbox_x0), str(self.bbox_y0),
-                         str(self.bbox_x1), str(self.bbox_y1)])
+        """BBOX is in the format: [x0, y0, x1, y1]. Provides backwards compatibility
+        after transition to polygons."""
+        if self.bbox_polygon:
+            bbox = BBOXHelper.from_xy(self.bbox[:4])
+
+            return "{x0:.7f},{y0:.7f},{x1:.7f},{y1:.7f}".format(
+                x0=bbox.xmin,
+                y0=bbox.ymin,
+                x1=bbox.xmax,
+                y1=bbox.ymax)
+        bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
+        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
+
+    @property
+    def bbox_helper(self):
+        if self.bbox_polygon:
+            return BBOXHelper(self.bbox_polygon.extent)
+        bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
+        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
+
+    @cached_property
+    def bbox_x0(self):
+        if self.bbox_polygon:
+            return self.bbox[0]
+        return None
+
+    @cached_property
+    def bbox_x1(self):
+        if self.bbox_polygon:
+            return self.bbox[1]
+        return None
+
+    @cached_property
+    def bbox_y0(self):
+        if self.bbox_polygon:
+            return self.bbox[2]
+        return None
+
+    @cached_property
+    def bbox_y1(self):
+        if self.bbox_polygon:
+            return self.bbox[3]
+        return None
 
     @property
     def geographic_bounding_box(self):
-        """BBOX is in the format: [x0,x1,y0,y1]."""
-        llbbox = self.ll_bbox[0:4]
-        return bbox_to_wkt(
-            llbbox[0],  # x0
-            llbbox[1],  # x1
-            llbbox[2],  # y0
-            llbbox[3],  # y1
-            srid=self.srid)
+        """
+        Returns an EWKT representation of the bounding box in EPSG:4326
+        """
+        if self.bbox_polygon:
+            bbox = self.bbox_polygon
+            if bbox.srid != 4326:
+                bbox = bbox.transform(4326, clone=True)
+            return str(bbox)
+        bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
+        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
     @property
     def license_light(self):
@@ -1113,6 +1171,25 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         except Exception:
             return ''
 
+    def set_bbox_polygon(self, bbox, srid):
+        """
+        Set `bbox_polygon` from bbox values.
+
+        :param bbox: list or tuple formatted as
+            [xmin, ymin, xmax, ymax]
+        :param srid: srid as string (e.g. 'EPSG:4326' or '4326')
+        """
+
+        bbox_polygon = Polygon.from_bbox(bbox)
+
+        try:
+            match = re.match(r'^(EPSG:)?(?P<srid>\d{4,5})$', str(srid))
+            bbox_polygon.srid = int(match.group('srid'))
+        except AttributeError:
+            logger.warning("No srid found for layer %s bounding box", self)
+
+        self.bbox_polygon = bbox_polygon
+
     def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
         """
         Calculate zoom level and center coordinates in mercator.
@@ -1121,7 +1198,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         self.center_y = center_y
         self.zoom = zoom
 
-        deg_len_equator = 40075160 / 360
+        deg_len_equator = 40075160.0 / 360.0
 
         # covert center in lat lon
         def get_lon_lat():
@@ -1146,24 +1223,35 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         # normal degree length on the y axis assumin that it does not change
 
         # Assuming a map of 1000 px of width and 700 px of height
-        distance_x_degrees = distance_per_pixel * 500 / deg_len()
-        distance_y_degrees = distance_per_pixel * 350 / deg_len_equator
+        distance_x_degrees = distance_per_pixel * 500.0 / deg_len()
+        distance_y_degrees = distance_per_pixel * 350.0 / deg_len_equator
 
-        self.bbox_x0 = lon - distance_x_degrees
-        self.bbox_x1 = lon + distance_x_degrees
-        self.bbox_y0 = lat - distance_y_degrees
-        self.bbox_y1 = lat + distance_y_degrees
+        bbox_x0 = lon - distance_x_degrees
+        bbox_x1 = lon + distance_x_degrees
+        bbox_y0 = lat - distance_y_degrees
+        bbox_y1 = lat + distance_y_degrees
         self.srid = 'EPSG:4326'
+        self.set_bbox_polygon((bbox_x0, bbox_y0, bbox_x1, bbox_y1), self.srid)
 
     def set_bounds_from_bbox(self, bbox, srid):
         """
         Calculate zoom level and center coordinates in mercator.
 
-        :param bbox: BBOX is in the  format: [x0, x1, y0, y1], which is:
+        :param bbox: BBOX is either a `geos.Pologyon` or in the
+            format: [x0, x1, y0, y1], which is:
             [min lon, max lon, min lat, max lat] or
             [xmin, xmax, ymin, ymax]
         :type bbox: list
         """
+        if isinstance(bbox, Polygon):
+            self.set_bbox_polygon(bbox.extent, srid)
+            self.set_center_zoom()
+            return
+        elif isinstance(bbox, list):
+            self.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
+            self.set_center_zoom()
+            return
+
         if not bbox or len(bbox) < 4:
             raise ValidationError(
                 'Bounding Box cannot be empty %s for a given resource' %
@@ -1172,34 +1260,36 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             raise ValidationError(
                 'Projection cannot be empty %s for a given resource' %
                 self.name)
-        self.bbox_x0 = bbox[0]
-        self.bbox_x1 = bbox[1]
-        self.bbox_y0 = bbox[2]
-        self.bbox_y1 = bbox[3]
+
         self.srid = srid
+        self.set_bbox_polygon(
+            (bbox[0], bbox[2], bbox[1], bbox[3]), srid)
+        self.set_center_zoom()
 
-        if srid == "EPSG:4326":
-            minx, maxx, miny, maxy = [float(c) for c in bbox]
-            x = (minx + maxx) / 2
-            y = (miny + maxy) / 2
-            (center_x, center_y) = forward_mercator((x, y))
+    def set_center_zoom(self):
+        """
+        Sets the center coordinates and zoom level in EPSG4326
+        """
+        bbox = self.bbox_polygon
+        center_x, center_y = self.bbox_polygon.centroid.coords
+        try:
+            center = Point(center_x, center_y, srid=self.bbox_polygon.srid)
+            center.transform(self.srid)
+        except Exception:
+            center = Point(center_x, center_y, srid=self.srid)
 
-            xdiff = maxx - minx
-            ydiff = maxy - miny
+        if bbox.srid != 4326:
+            bbox = bbox.transform(4326, clone=True)
 
-            zoom = 0
+        self.center_x, self.center_y = center.coords
 
-            if xdiff > 0 and ydiff > 0:
-                width_zoom = math.log(360 / xdiff, 2)
-                height_zoom = math.log(360 / ydiff, 2)
-                zoom = math.ceil(min(width_zoom, height_zoom))
-
-            try:
-                self.zoom = zoom
-                self.center_x = center_x
-                self.center_y = center_y
-            except Exception:
-                pass
+        try:
+            ext = bbox.extent
+            width_zoom = math.log(360 / (ext[2] - ext[0]), 2)
+            height_zoom = math.log(360 / (ext[3] - ext[1]), 2)
+            self.zoom = math.ceil(min(width_zoom, height_zoom))
+        except ZeroDivisionError:
+            pass
 
     def download_links(self):
         """assemble download links for pycsw"""
@@ -1289,7 +1379,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
            It could be a local one if it exists, a remote one (WMS GetImage) for example
            or a 'Missing Thumbnail' one.
         """
-        _thumbnail_url = staticfiles.static(settings.MISSING_THUMBNAIL)
+        _thumbnail_url = self.thumbnail_url or staticfiles.static(settings.MISSING_THUMBNAIL)
         local_thumbnails = self.link_set.filter(name='Thumbnail')
         remote_thumbnails = self.link_set.filter(name='Remote Thumbnail')
         if local_thumbnails.count() > 0:
@@ -1757,22 +1847,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
         instance.set_missing_info()
 
     try:
-        if instance.regions and instance.regions.all():
-            """
-            try:
-                queryset = instance.regions.all().order_by('name')
-                for region in queryset:
-                    print ("%s : %s" % (region.name, region.geographic_bounding_box))
-            except Exception:
-                tb = traceback.format_exc()
-            else:
-                tb = None
-            finally:
-                if tb:
-                    logger.debug(tb)
-            """
-            pass
-        else:
+        if not instance.regions or instance.regions.count() == 0:
             srid1, wkt1 = instance.geographic_bounding_box.split(";")
             srid1 = re.findall(r'\d+', srid1)
 
@@ -1808,15 +1883,10 @@ def resourcebase_post_save(instance, *args, **kwargs):
         tb = traceback.format_exc()
         if tb:
             logger.debug(tb)
-
-    try:
+    finally:
         # refresh catalogue metadata records
         from geonode.catalogue.models import catalogue_post_save
         catalogue_post_save(instance=instance, sender=instance.__class__)
-    except Exception:
-        tb = traceback.format_exc()
-        if tb:
-            logger.debug(tb)
 
 
 def rating_post_save(instance, *args, **kwargs):

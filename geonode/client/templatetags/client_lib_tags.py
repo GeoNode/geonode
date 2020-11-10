@@ -87,7 +87,11 @@ class GeoNodeClientLibraryTag(template.Node):
         t = None
 
         # LAYERS
-        if self.tag_name == 'get_layer_detail':
+        if self.tag_name == 'get_layer_list':
+            t = context.template.engine.get_template(
+                hookset.layer_list_template(
+                    context=context))
+        elif self.tag_name == 'get_layer_detail':
             t = context.template.engine.get_template(
                 hookset.layer_detail_template(
                     context=context))
@@ -121,7 +125,11 @@ class GeoNodeClientLibraryTag(template.Node):
                     context=context))
 
         # MAPS
-        if self.tag_name == 'get_map_detail':
+        if self.tag_name == 'get_map_list':
+            t = context.template.engine.get_template(
+                hookset.map_list_template(
+                    context=context))
+        elif self.tag_name == 'get_map_detail':
             t = context.template.engine.get_template(
                 hookset.map_detail_template(
                     context=context))
@@ -161,6 +169,7 @@ def do_get_client_library_template(parser, token):
     return GeoNodeClientLibraryTag(tag_name, args, kwargs)
 
 
+register.tag('get_layer_list', do_get_client_library_template)
 register.tag('get_layer_detail', do_get_client_library_template)
 register.tag('get_layer_new', do_get_client_library_template)
 register.tag('get_layer_view', do_get_client_library_template)
@@ -170,6 +179,7 @@ register.tag('get_layer_embed', do_get_client_library_template)
 register.tag('get_layer_download', do_get_client_library_template)
 register.tag('get_layer_style_edit', do_get_client_library_template)
 
+register.tag('get_map_list', do_get_client_library_template)
 register.tag('get_map_detail', do_get_client_library_template)
 register.tag('get_map_new', do_get_client_library_template)
 register.tag('get_map_view', do_get_client_library_template)

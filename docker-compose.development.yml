@@ -3,7 +3,7 @@ services:
 
   celery:
     build: .
-    command: celery worker --app=geonode.celery_app:app --broker=amqp://guest:guest@rabbitmq:5672/ -B -l DEBUG
+    command: celery -A geonode.celery_app:app worker -B -E --statedb=worker.state -s celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h
     depends_on:
       - db
       - elasticsearch

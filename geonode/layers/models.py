@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import re
 import uuid
 import logging
 
@@ -256,14 +256,24 @@ class Layer(ResourceBase):
 
     @property
     def attributes(self):
-        return self.attribute_set.exclude(attribute='the_geom').order_by('display_order')
+        if self.attribute_set and self.attribute_set.count():
+            _attrs = self.attribute_set
+        else:
+            _attrs = Attribute.objects.filter(layer=self)
+        return _attrs.exclude(attribute='the_geom').order_by('display_order')
 
     # layer geometry type.
     @property
     def gtype(self):
         # return attribute type without 'gml:' and 'PropertyType'
-        if self.attribute_set.filter(attribute='the_geom').exists():
-            return self.attribute_set.get(attribute='the_geom').attribute_type[4:-12]
+        if self.attribute_set and self.attribute_set.count():
+            _attrs = self.attribute_set
+        else:
+            _attrs = Attribute.objects.filter(layer=self)
+        if _attrs.filter(attribute='the_geom').exists():
+            _att_type = _attrs.get(attribute='the_geom').attribute_type
+            _gtype = re.match(r'\(\'gml:(.*?)\',', _att_type)
+            return _gtype.group(1) if _gtype else None
         return None
 
     def get_base_file(self):
@@ -579,10 +589,7 @@ def pre_save_layer(instance, sender, **kwargs):
             _resourcebase_ptr = instance.resourcebase_ptr
             instance.owner = _resourcebase_ptr.owner
             instance.uuid = _resourcebase_ptr.uuid
-            instance.bbox_x0 = _resourcebase_ptr.bbox_x0
-            instance.bbox_x1 = _resourcebase_ptr.bbox_x1
-            instance.bbox_y0 = _resourcebase_ptr.bbox_y0
-            instance.bbox_y1 = _resourcebase_ptr.bbox_y1
+            instance.bbox_polygon = _resourcebase_ptr.bbox_polygon
             instance.srid = _resourcebase_ptr.srid
         except Exception as e:
             logger.exception(e)
@@ -616,26 +623,12 @@ def pre_save_layer(instance, sender, **kwargs):
         elif extension in cov_exts:
             instance.storeType = 'coverageStore'
 
-    # Set sane defaults for None in bbox fields.
-    if instance.bbox_x0 is None:
-        instance.bbox_x0 = -180
-
-    if instance.bbox_x1 is None:
-        instance.bbox_x1 = 180
-
-    if instance.bbox_y0 is None:
-        instance.bbox_y0 = -90
-
-    if instance.bbox_y1 is None:
-        instance.bbox_y1 = 90
-
-    bbox = [
-        instance.bbox_x0,
-        instance.bbox_x1,
-        instance.bbox_y0,
-        instance.bbox_y1]
-
-    instance.set_bounds_from_bbox(bbox, instance.srid)
+    if instance.bbox_polygon is None:
+        instance.set_bbox_polygon((-180, -90, 180, 90), 'EPSG:4326')
+    instance.set_bounds_from_bbox(
+        instance.bbox_polygon,
+        instance.bbox_polygon.srid
+    )
 
 
 def pre_delete_layer(instance, sender, **kwargs):

@@ -32,9 +32,7 @@ from django.urls import reverse
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from geonode.maps.views import _resolve_map, _PERMISSION_MSG_VIEW, \
-    snapshot_config, _resolve_layer
-
+from geonode.maps.views import _PERMISSION_MSG_VIEW, _resolve_map, _resolve_layer
 from geonode.maps.models import Map, MapLayer
 from geonode.layers.models import Layer
 
@@ -69,8 +67,6 @@ class MapCreateView(CreateView):
         else:
             access_token = None
 
-        snapshot = self.kwargs.get('snapshot')
-
         DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(request)
 
         layers = Layer.objects.all()
@@ -83,10 +79,8 @@ class MapCreateView(CreateView):
             map_obj = _resolve_map(
                 request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
-            if snapshot is None:
-                config = map_obj.viewer_json(request)
-            else:
-                config = snapshot_config(snapshot, map_obj, request)
+            config = map_obj.viewer_json(request)
+
             # list all required layers
             map_layers = MapLayer.objects.filter(
                 map_id=mapid).order_by('stack_order')
@@ -233,11 +227,7 @@ class MapCreateView(CreateView):
 
                 map_obj.handle_moderated_uploads()
 
-                if snapshot is None:
-                    config = map_obj.viewer_json(request)
-                else:
-                    config = snapshot_config(snapshot, map_obj, request)
-
+                config = map_obj.viewer_json(request)
                 config['fromLayer'] = True
                 context = {
                     'config': json.dumps(config),
@@ -277,16 +267,12 @@ class MapDetailView(DetailView):
         """Prepare context data."""
 
         mapid = self.kwargs.get('mapid')
-        snapshot = self.kwargs.get('snapshot')
         request = self.request
 
         map_obj = _resolve_map(
             request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
-        if snapshot is None:
-            config = map_obj.viewer_json(request)
-        else:
-            config = snapshot_config(snapshot, map_obj, request)
+        config = map_obj.viewer_json(request)
         # list all required layers
         layers = Layer.objects.all()
         map_layers = MapLayer.objects.filter(
@@ -317,16 +303,12 @@ class MapEmbedView(DetailView):
         """Prepare context data."""
 
         mapid = self.kwargs.get('mapid')
-        snapshot = self.kwargs.get('snapshot')
         request = self.request
 
         map_obj = _resolve_map(
             request, mapid, 'base.view_resourcebase', _PERMISSION_MSG_VIEW)
 
-        if snapshot is None:
-            config = map_obj.viewer_json(request)
-        else:
-            config = snapshot_config(snapshot, map_obj, request)
+        config = map_obj.viewer_json(request)
         # list all required layers
         map_layers = MapLayer.objects.filter(
             map_id=mapid).order_by('stack_order')
@@ -359,20 +341,13 @@ class MapEditView(UpdateView):
     def get_context_data(self, **kwargs):
         # list all required layers
         mapid = self.kwargs.get('mapid')
-        snapshot = self.kwargs.get('snapshot')
         request = self.request
         map_obj = _resolve_map(request,
                                mapid,
                                'base.view_resourcebase',
                                _PERMISSION_MSG_VIEW)
 
-        if snapshot is None:
-            config = map_obj.viewer_json(request)
-        else:
-            config = snapshot_config(snapshot,
-                                     map_obj,
-                                     request)
-
+        config = map_obj.viewer_json(request)
         layers = Layer.objects.all()
         map_layers = MapLayer.objects.filter(
             map_id=mapid).order_by('stack_order')
@@ -442,7 +417,7 @@ class MapUpdateView(UpdateView):
 
             try:
                 # Call the base implementation first to get a context
-                context = super(UpdateView, self).get_context_data(**kwargs)
+                context = super(MapUpdateView, self).get_context_data(**kwargs)
                 map_obj.update_from_viewer(body, context=context)
             except ValueError as e:
                 return self.render_to_response(str(e), status=400)

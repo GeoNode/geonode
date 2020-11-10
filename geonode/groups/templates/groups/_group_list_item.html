@@ -1,3 +1,4 @@
+{% load i18n %}
 {% verbatim %}
 <article ng-repeat="group in results" ng-cloak class="ng-cloak">
   <div class="col-xs-12 col-sm-6 col-lg-4 group-container">
@@ -17,13 +18,13 @@
           <li>
         <a href="{{ group.detail_url }}">
           <strong>{{ group.member_count }}</strong>
-          <ng-pluralize count="group.member_count" when="{'1': 'Member', 'other': 'Members'}"></ng-pluralize>
+          <ng-pluralize count="group.member_count" when="{'1': '{% trans "Member" %}', 'other': '{% trans "Members" %}'}"></ng-pluralize>
         </a>
       </li>
       <li>
         <a href="{{ group.detail_url }}">
           <strong>{{ group.manager_count }}</strong>
-          <ng-pluralize count="group.manager_count" when="{'1': 'Manager', 'other': 'Managers'}"></ng-pluralize>
+          <ng-pluralize count="group.manager_count" when="{'1': '{% trans "Manager" %}', 'other': '{% trans "Managers" %}'}"></ng-pluralize>
         </a>
       </li>
     </div>

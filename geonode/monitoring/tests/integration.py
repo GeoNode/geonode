@@ -18,7 +18,6 @@
 #
 #########################################################################
 
-
 from geonode.tests.base import GeoNodeLiveTestSupport
 
 from datetime import datetime, timedelta
@@ -86,7 +85,7 @@ DATASTORE_URL = 'postgis://{}:{}@{}:{}/{}'.format(
     DB_PORT,
     DB_NAME
 )
-postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=5)
+postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
 
 logging.getLogger('south').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)

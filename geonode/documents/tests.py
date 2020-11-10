@@ -30,7 +30,6 @@ import io
 import json
 
 import gisdata
-from datetime import datetime
 from django.urls import reverse
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
@@ -365,14 +364,14 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         ids = ','.join([str(element.pk) for element in resources])
         # test non-admin access
         self.client.login(username="bobby", password="bob")
-        response = self.client.get(reverse(view, args=(ids,)))
+        response = self.client.get(reverse(view))
         self.assertTrue(response.status_code in (401, 403))
         # test group change
         group = Group.objects.first()
         self.client.login(username='admin', password='admin')
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'group': group.pk},
+            reverse(view),
+            data={'group': group.pk, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -381,8 +380,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # test owner change
         owner = get_user_model().objects.first()
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'owner': owner.pk},
+            reverse(view),
+            data={'owner': owner.pk, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -391,8 +390,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # test license change
         license = License.objects.first()
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'license': license.pk},
+            reverse(view),
+            data={'license': license.pk, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -401,32 +400,19 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # test regions change
         region = Region.objects.first()
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'region': region.pk},
+            reverse(view),
+            data={'region': region.pk, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
             if resource.regions.all():
                 self.assertTrue(region in resource.regions.all())
-        # test date change
-        from django.utils import timezone
-        date = datetime.now(timezone.get_current_timezone())
-        response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'date': date},
-        )
-        self.assertEqual(response.status_code, 200)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            today = date.today()
-            todoc = resource.date.today()
-            self.assertEqual((today.day, today.month, today.year), (todoc.day, todoc.month, todoc.year))
         # test language change
         language = 'eng'
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'language': language},
+            reverse(view),
+            data={'language': language, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -435,8 +421,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # test keywords change
         keywords = 'some,thing,new'
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'keywords': keywords},
+            reverse(view),
+            data={'keywords': keywords, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -490,9 +476,11 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             _d.delete()
 
             from geonode.documents.utils import delete_orphaned_document_files
-            _, document_files_before = storage.listdir("documents")
+            _, document_files_before = storage.listdir(
+                os.path.join("documents", "document"))
             deleted = delete_orphaned_document_files()
-            _, document_files_after = storage.listdir("documents")
+            _, document_files_after = storage.listdir(
+                os.path.join("documents", "document"))
             self.assertTrue(len(deleted) > 0)
             self.assertEqual(set(deleted), set(document_files_before) - set(document_files_after))
 
@@ -503,7 +491,8 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             self.assertTrue(len(deleted) > 0)
             self.assertEqual(set(deleted), set(thumb_files_before) - set(thumb_files_after))
 
-            fn = os.path.join("documents", os.path.basename(input_path))
+            fn = os.path.join(
+                os.path.join("documents", "document"), os.path.basename(input_path))
             self.assertFalse(storage.exists(fn))
 
             files = [thumb for thumb in get_thumbs() if uuid in thumb]

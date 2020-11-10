@@ -44,13 +44,14 @@ from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm
 from geonode.base.auth import get_or_create_token
+from geonode.base.bbox_utils import BBOXHelper
 from geonode.base.forms import CategoryForm, TKeywordForm
 from geonode.base.models import (
     Thesaurus,
     TopicCategory)
+from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
 from geonode.documents.models import Document, get_related_resources
 from geonode.documents.forms import DocumentForm, DocumentCreateForm, DocumentReplaceForm
-from geonode.documents.models import IMGTYPES
 from geonode.utils import build_social_links
 from geonode.groups.models import GroupProfile
 from geonode.base.views import batch_modify
@@ -151,6 +152,10 @@ def document_detail(request, docid):
             else:
                 access_token = None
 
+        AUDIOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'audio']
+        IMGTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'image']
+        VIDEOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'video']
+
         context_dict = {
             'access_token': access_token,
             'resource': document,
@@ -158,7 +163,10 @@ def document_detail(request, docid):
             'permissions_json': permissions_json,
             'group': group,
             'metadata': metadata,
+            'audiotypes': AUDIOTYPES,
             'imgtypes': IMGTYPES,
+            'videotypes': VIDEOTYPES,
+            'mimetypemap': DOCUMENT_MIMETYPE_MAP,
             'related': related}
 
         if settings.SOCIAL_ORIGINS:
@@ -277,12 +285,10 @@ class DocumentUploadView(CreateView):
             self.object.keywords.add(*keywords)
 
         if bbox:
-            bbox_x0, bbox_x1, bbox_y0, bbox_y1 = bbox
+            bbox = BBOXHelper.from_xy(bbox)
             Document.objects.filter(id=self.object.pk).update(
-                bbox_x0=bbox_x0,
-                bbox_x1=bbox_x1,
-                bbox_y0=bbox_y0,
-                bbox_y1=bbox_y1)
+                bbox_polygon=bbox.as_polygon()
+            )
 
         if getattr(settings, 'SLACK_ENABLED', False):
             try:
@@ -550,10 +556,6 @@ def document_metadata(
 
         if settings.ADMIN_MODERATE_UPLOADS:
             if not request.user.is_superuser:
-                if settings.RESOURCE_PUBLISHING:
-                    document_form.fields['is_published'].widget.attrs.update(
-                        {'disabled': 'true'})
-
                 can_change_metadata = request.user.has_perm(
                     'change_resourcebase_metadata',
                     document.get_self_resource())
@@ -562,6 +564,9 @@ def document_metadata(
                 except Exception:
                     is_manager = False
                 if not is_manager or not can_change_metadata:
+                    if settings.RESOURCE_PUBLISHING:
+                        document_form.fields['is_published'].widget.attrs.update(
+                            {'disabled': 'true'})
                     document_form.fields['is_approved'].widget.attrs.update(
                         {'disabled': 'true'})
 
@@ -659,8 +664,8 @@ def document_metadata_detail(
 
 
 @login_required
-def document_batch_metadata(request, ids):
-    return batch_modify(request, ids, 'Document')
+def document_batch_metadata(request):
+    return batch_modify(request, 'Document')
 
 
 class DocumentAutocomplete(autocomplete.Select2QuerySetView):

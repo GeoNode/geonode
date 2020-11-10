@@ -48,6 +48,7 @@ from django.db.models import signals
 from django.urls import reverse
 from django.core.management import call_command
 from django.contrib.auth import get_user_model
+from django.contrib.gis.geos import Polygon
 from django.test.client import Client as DjangoTestClient
 
 from geonode.maps.models import Layer
@@ -296,10 +297,7 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
         # Create dummy layer to attach attributes to
         _l = Layer.objects.create(
             name='dummy_layer',
-            bbox_x0=-180,
-            bbox_x1=180,
-            bbox_y0=-90,
-            bbox_y1=90,
+            bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
             srid='EPSG:4326')
 
         # Reconnect the signal if it was disconnected

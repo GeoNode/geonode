@@ -17,15 +17,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import re
+import six
+import html
 import logging
 
 from .fields import MultiThesauriField
 
 from dal import autocomplete
 from taggit.forms import TagField
-
-import six
 
 from django import forms
 from django.conf import settings
@@ -54,6 +54,7 @@ from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.documents.models import Document
 from geonode.base.enumerations import ALL_LANGUAGES
 from geonode.base.widgets import TaggitSelect2Custom
+from geonode.layers.models import Layer
 
 logger = logging.getLogger(__name__)
 
@@ -416,7 +417,6 @@ class ResourceBaseForm(TranslationModelForm):
             self['keywords'].field.disabled = True
 
     def clean_keywords(self):
-        from urllib.parse import unquote
         from html.entities import codepoint2name
 
         def unicode_escape(unistr):
@@ -437,9 +437,9 @@ class ResourceBaseForm(TranslationModelForm):
         keywords = self.cleaned_data['keywords']
         _unsescaped_kwds = []
         for k in keywords:
-            _k = unquote(('%s' % k)).split(",")
+            _k = ('%s' % re.sub(r'%([A-Z0-9]{2})', r'&#x\g<1>;', k.strip())).split(",")
             if not isinstance(_k, six.string_types):
-                for _kk in [x.strip() for x in _k]:
+                for _kk in [html.unescape(x.strip()) for x in _k]:
                     # Simulate JS Unescape
                     _kk = _kk.replace('%u', r'\u').encode('unicode-escape').replace(
                         b'\\\\u',
@@ -462,10 +462,7 @@ class ResourceBaseForm(TranslationModelForm):
             'contacts',
             'name',
             'uuid',
-            'bbox_x0',
-            'bbox_x1',
-            'bbox_y0',
-            'bbox_y1',
+            'bbox_polygon',
             'srid',
             'category',
             'csw_typename',
@@ -506,34 +503,75 @@ class ValuesListField(forms.Field):
 class BatchEditForm(forms.Form):
     LANGUAGES = (('', '--------'),) + ALL_LANGUAGES
     group = forms.ModelChoiceField(
+        label=_('Group'),
         queryset=Group.objects.all(),
         required=False)
     owner = forms.ModelChoiceField(
+        label=_('Owner'),
         queryset=get_user_model().objects.all(),
         required=False)
     category = forms.ModelChoiceField(
+        label=_('Category'),
         queryset=TopicCategory.objects.all(),
         required=False)
     license = forms.ModelChoiceField(
+        label=_('License'),
         queryset=License.objects.all(),
         required=False)
     regions = forms.ModelChoiceField(
+        label=_('Regions'),
         queryset=Region.objects.all(),
         required=False)
-    date = forms.DateTimeField(required=False)
+    date = forms.DateTimeField(
+        label=_('Date'),
+        required=False)
     language = forms.ChoiceField(
+        label=_('Language'),
         required=False,
         choices=LANGUAGES,
     )
     keywords = forms.CharField(required=False)
+    ids = forms.CharField(required=False, widget=forms.HiddenInput())
 
 
 class BatchPermissionsForm(forms.Form):
     group = forms.ModelChoiceField(
+        label=_('Group'),
         queryset=Group.objects.all(),
         required=False)
     user = forms.ModelChoiceField(
+        label=_('User'),
         queryset=get_user_model().objects.all(),
+        required=False)
+    permission_type = forms.MultipleChoiceField(
+        label=_('Permission Type'),
+        required=True,
+        widget=forms.CheckboxSelectMultiple,
+        choices=(
+            ('r', 'Read'),
+            ('w', 'Write'),
+            ('d', 'Download'),
+        ),
+    )
+    mode = forms.ChoiceField(
+        label=_('Mode'),
+        required=True,
+        widget=forms.RadioSelect,
+        choices=(
+            ('set', 'Set'),
+            ('unset', 'Unset'),
+        ),
+    )
+    ids = forms.CharField(required=False, widget=forms.HiddenInput())
+
+
+class UserAndGroupPermissionsForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(UserAndGroupPermissionsForm, self).__init__(*args, **kwargs)
+        self.fields['layers'].label_from_instance = self.label_from_instance
+
+    layers = forms.ModelMultipleChoiceField(
+        queryset=Layer.objects.all(),
         required=False)
     permission_type = forms.MultipleChoiceField(
         required=True,
@@ -552,6 +590,11 @@ class BatchPermissionsForm(forms.Form):
             ('unset', 'Unset'),
         ),
     )
+    ids = forms.CharField(required=False, widget=forms.HiddenInput())
+
+    @staticmethod
+    def label_from_instance(obj):
+        return obj.title
 
 
 class CuratedThumbnailForm(ModelForm):
@@ -561,9 +604,15 @@ class CuratedThumbnailForm(ModelForm):
 
 
 class OwnerRightsRequestForm(forms.Form):
-    resource = forms.ModelChoiceField(queryset=ResourceBase.objects.all(),
-                                      widget=forms.HiddenInput())
-    reason = forms.CharField(widget=forms.Textarea, help_text=_('Short reasoning behind the request'), required=True)
+    resource = forms.ModelChoiceField(
+        label=_('Resource'),
+        queryset=ResourceBase.objects.all(),
+        widget=forms.HiddenInput())
+    reason = forms.CharField(
+        label=_('Reason'),
+        widget=forms.Textarea,
+        help_text=_('Short reasoning behind the request'),
+        required=True)
 
     class Meta:
         fields = ['reason', 'resource']

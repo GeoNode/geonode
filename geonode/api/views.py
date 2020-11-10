@@ -35,7 +35,8 @@ from ..utils import json_response
 from ..decorators import superuser_or_apiauth
 from ..base.auth import (
     get_token_object_from_session,
-    extract_headers)
+    extract_headers,
+    get_auth_token)
 
 
 def verify_access_token(request, key):
@@ -68,12 +69,18 @@ def user_info(request):
                }
         return json_response(out, status=401)
 
-    if 'Authorization' not in headers and 'Bearer' not in headers["Authorization"]:
-        out = {'success': False,
-               'status': 'error',
-               'errors': {'auth': ['No token provided.']}
-               }
-        return json_response(out, status=403)
+    access_token = None
+    if 'Authorization' not in headers or 'Bearer' not in headers["Authorization"]:
+        access_token = get_auth_token(user)
+        if not access_token:
+            out = {
+                'success': False,
+                'status': 'error',
+                'errors': {'auth': ['No token provided.']}
+            }
+            return json_response(out, status=403)
+    else:
+        access_token = headers["Authorization"].replace('Bearer ', '')
 
     groups = [group.name for group in user.groups.all()]
     if user.is_superuser:
@@ -86,7 +93,8 @@ def user_info(request):
         "family_name": user_field(user, 'last_name'),
         "email": user_email(user),
         "preferred_username": user_username(user),
-        "groups": groups
+        "groups": groups,
+        "access_token": str(access_token)
     })
 
     response = HttpResponse(

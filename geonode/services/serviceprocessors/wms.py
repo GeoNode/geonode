@@ -46,6 +46,7 @@ from geonode.layers.models import Layer
 from geonode.layers.utils import create_thumbnail, resolve_regions
 from geonode.geoserver.helpers import set_attributes_from_geoserver
 from geonode.utils import http_client
+from geonode.base.bbox_utils import BBOXHelper
 
 from owslib.map import wms111, wms130
 from owslib.util import clean_ows_url
@@ -117,6 +118,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
     service_type = enumerations.WMS
 
     def __init__(self, url):
+        base.ServiceHandlerBase.__init__(self, url)
         self.proxy_base = urljoin(
             settings.SITEURL, reverse('proxy'))
         self.url = url
@@ -374,10 +376,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             "storeType": "remoteStore",
             "title": geoserver_resource.title,
             "abstract": geoserver_resource.abstract,
-            "bbox_x0": bbox[0],
-            "bbox_x1": bbox[1],
-            "bbox_y0": bbox[2],
-            "bbox_y1": bbox[3],
+            "bbox_polygon": BBOXHelper.from_xy([bbox[0], bbox[2], bbox[1], bbox[3]]).as_polygon(),
             "srid": bbox[4] if len(bbox) > 4 else "EPSG:4326",
         }
 
@@ -392,10 +391,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             "alternate": layer_meta.name,
             "title": layer_meta.title,
             "abstract": layer_meta.abstract,
-            "bbox_x0": bbox[0],
-            "bbox_x1": bbox[2],
-            "bbox_y0": bbox[1],
-            "bbox_y1": bbox[3],
+            "bbox_polygon": BBOXHelper.from_xy([bbox[0], bbox[2], bbox[1], bbox[3]]).as_polygon(),
             "srid": bbox[4] if len(bbox) > 4 else "EPSG:4326",
             "keywords": [keyword[:100] for keyword in layer_meta.keywords],
         }
@@ -467,10 +463,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
 
     LAYER_FIELDS = [
         "abstract",
-        "bbox_x0",
-        "bbox_x1",
-        "bbox_y0",
-        "bbox_y1",
+        "bbox_polygon",
         "srid",
         "constraints_other",
         "data_quality_statement",

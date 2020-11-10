@@ -72,7 +72,7 @@ DATABASES = {
         'PASSWORD': 'geonode',
         'HOST': 'localhost',
         'PORT': '5432',
-        'CONN_MAX_AGE': 5,
+        'CONN_MAX_AGE': 0,
         'CONN_TOUT': 5,
         'OPTIONS': {
             'connect_timeout': 5
@@ -85,7 +85,7 @@ DATABASES = {
         'PASSWORD': 'geonode',
         'HOST': 'localhost',
         'PORT': '5432',
-        'CONN_MAX_AGE': 5,
+        'CONN_MAX_AGE': 0,
         'CONN_TOUT': 5,
         'OPTIONS': {
             'connect_timeout': 5
@@ -187,9 +187,11 @@ UPLOADER = {
 }
 
 # Settings for MONITORING plugin
-MONITORING_ENABLED = True
-USER_ANALYTICS_ENABLED = True
-USER_ANALYTICS_GZIP = True
+MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'False'))
+USER_ANALYTICS_ENABLED = ast.literal_eval(
+    os.getenv('USER_ANALYTICS_ENABLED', os.environ.get('MONITORING_ENABLED', 'False')))
+USER_ANALYTICS_GZIP = ast.literal_eval(os.getenv('USER_ANALYTICS_GZIP',
+    os.environ.get('MONITORING_ENABLED', 'False')))
 
 MONITORING_CONFIG = os.getenv("MONITORING_CONFIG", None)
 MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
@@ -208,3 +210,76 @@ if MONITORING_ENABLED:
     if 'geonode.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE:
         MIDDLEWARE += \
             ('geonode.monitoring.middleware.MonitoringMiddleware',)
+
+    # skip certain paths to not to mud stats too much
+    MONITORING_SKIP_PATHS = ('/api/o/',
+                             '/monitoring/',
+                             '/admin',
+                             '/jsi18n',
+                             STATIC_URL,
+                             MEDIA_URL,
+                             re.compile('^/[a-z]{2}/admin/'),
+                             )
+
+    # configure aggregation of past data to control data resolution
+    # list of data age, aggregation, in reverse order
+    # for current data, 1 minute resolution
+    # for data older than 1 day, 1-hour resolution
+    # for data older than 2 weeks, 1 day resolution
+    MONITORING_DATA_AGGREGATION = (
+        (timedelta(seconds=0), timedelta(minutes=1),),
+        (timedelta(days=1), timedelta(minutes=60),),
+        (timedelta(days=14), timedelta(days=1),),
+    )
+
+    CELERY_BEAT_SCHEDULE['collect_metrics'] = {
+        'task': 'geonode.monitoring.tasks.collect_metrics',
+        'schedule': 60.0,
+    }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d '
+                      '%(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(message)s',
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+        }
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"], "level": "ERROR", },
+        "geonode": {
+            "handlers": ["console"], "level": "ERROR", },
+        "geonode.qgis_server": {
+            "handlers": ["console"], "level": "ERROR", },
+        "geoserver-restconfig.catalog": {
+            "handlers": ["console"], "level": "ERROR", },
+        "owslib": {
+            "handlers": ["console"], "level": "ERROR", },
+        "pycsw": {
+            "handlers": ["console"], "level": "ERROR", },
+        "celery": {
+            'handlers': ["console"], 'level': 'ERROR', },
+    },
+}

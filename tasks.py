@@ -80,7 +80,10 @@ def update(ctx):
 @task
 def migrations(ctx):
     print("**************************migrations*******************************")
-    ctx.run("django-admin.py migrate --noinput --settings={0}".format(
+    ctx.run("python manage.py makemigrations --settings={0}".format(
+        _localsettings()
+    ), pty=True)
+    ctx.run("python manage.py migrate --noinput --settings={0}".format(
         _localsettings()
     ), pty=True)
 
@@ -104,11 +107,11 @@ def prepare(ctx):
 @task
 def fixtures(ctx):
     print("**************************fixtures********************************")
-    ctx.run("django-admin.py loaddata sample_admin \
+    ctx.run("python manage.py loaddata sample_admin \
 --settings={0}".format(_localsettings()), pty=True)
-    ctx.run("django-admin.py loaddata /tmp/default_oauth_apps_docker.json \
+    ctx.run("python manage.py loaddata /tmp/default_oauth_apps_docker.json \
 --settings={0}".format(_localsettings()), pty=True)
-    ctx.run("django-admin.py loaddata geonode/base/fixtures/initial_data.json \
+    ctx.run("python manage.py loaddata geonode/base/fixtures/initial_data.json \
 --settings={0}".format(_localsettings()), pty=True)
 
 
@@ -128,7 +131,7 @@ def _update_db_connstring():
     user = os.getenv('GEONODE_DATABASE', 'geonode')
     pwd = os.getenv('GEONODE_DATABASE_PASSWORD', 'geonode')
     dbname = os.getenv('GEONODE_DATABASE', 'geonode')
-    connstr = 'postgres://{0}:{1}@db:5432/{2}'.format(
+    connstr = 'postgis://{0}:{1}@db:5432/{2}'.format(
         user,
         pwd,
         dbname

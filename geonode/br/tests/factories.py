@@ -17,12 +17,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import factory
 import random
 import string
-import factory
 import hashlib
 from datetime import datetime
+from factory.django import DjangoModelFactory
 
 from geonode.br.models import RestoredBackup
 
@@ -40,7 +40,7 @@ def random_md5_hash() -> str:
     ).hexdigest()
 
 
-class RestoredBackupFactory(factory.DjangoModelFactory):
+class RestoredBackupFactory(DjangoModelFactory):
     class Meta:
         model = RestoredBackup
 

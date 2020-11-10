@@ -9,6 +9,7 @@
 {% load guardian_tags %}
 {% load client_lib_tags %}
 {% load proxy_lib_tags %}
+{% load layer_tags %}
 
 {% block title %}{{ resource.title|default:resource.alternate }} — {{ block.super }}{% endblock %}
 
@@ -355,7 +356,7 @@
                                           {% endfor %}
                                         {% elif resource.attributes %}
                                           {% for attribute in resource.attributes %}
-                                            <li><a href="#" id={{ attribute }} data-type='string' data-schema='no'>{{ attribute }}</a></li>
+                                            <li><a href="#" id={{ attribute.attribute }} data-type='string' data-schema='no'>{{ attribute }}</a></li>
                                           {% endfor %}
                                         {% endif %}
                                       </ul>
@@ -586,10 +587,12 @@
     <li class="list-group-item">
       <h4 class="list-group-item-heading">{%trans "Legend" %}</h4>
       {% if resource.default_style %}
-      {% for style in resource.styles.all %}
+      {% get_all_resource_styles resource as resource_styles_all%}
+      {% for style in resource_styles_all %}
           {% if resource.default_style == style or resource.default_style.name == style.name or resource.default_style.sld_title == style.sld_title %}
               {% for legend in resource.get_legend %}
-                  {% with "STYLE="|add:style.name as style_name %}
+                  {% get_sld_name_from_url style.sld_url as sld_name %}
+                  {% with "STYLE="|add:sld_name as style_name %}
                   {% if legend.link_type == 'image' and style_name in legend.url %}
                     <p id="legend_sld_title" style="font-size:10px">{{ style.sld_title|default:style.name }}</p>
                     {% if request.user.is_authenticated and access_token %}
@@ -666,7 +669,8 @@
        <p>{% trans "The following styles are associated with this layer. Choose a style to view it in the preview map." %}</p>
        <ul class="list-unstyled">
         {% if OGC_SERVER.default.BACKEND == 'geonode.geoserver' %}
-            {% for style in resource.styles.all %}
+            {% get_all_resource_styles resource as resource_styles_all%}
+            {% for style in resource_styles_all %}
             <li>
               {% if resource.default_style == style %}
               <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.sld_title|default_if_none:style.name }}"/>
@@ -987,7 +991,7 @@
                   $("#modal-button-attributes:first-child").text($(this).text()).val($(this).text());
 
                   // functionality added for the autocomplete
-                  property_name = $("#modal-button-attributes:first-child").text();
+                  property_name = $(this).attr("id");
                   attribute_values = data['feature_properties'];
                   selected_data = attribute_values[$.trim(property_name)];
                   selected_data_prepare = [];

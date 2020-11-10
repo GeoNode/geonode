@@ -69,7 +69,7 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
         # createlayer must use postgis as a datastore
         # set temporary settings to use a postgis datastore
         DATASTORE_URL = 'postgis://geonode:geonode@localhost:5432/datastore'
-        postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=600)
+        postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
         settings.DATABASES['datastore'] = postgis_db
         settings.OGC_SERVER['default']['DATASTORE'] = 'datastore'
 

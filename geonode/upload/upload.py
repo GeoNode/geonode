@@ -46,6 +46,7 @@ from django.conf import settings
 from django.db.models import Max
 from django.core.files import File
 from django.contrib.auth import get_user_model
+from django.db import IntegrityError, transaction
 
 import geoserver
 from geoserver.resource import Coverage
@@ -54,7 +55,7 @@ from gsimporter import BadRequest
 
 from geonode import GeoNodeException
 from geonode.upload import UploadException, LayerNotReady
-from geonode.base.models import SpatialRepresentationType, TopicCategory
+from geonode.base.models import ResourceBase, SpatialRepresentationType, TopicCategory
 from ..people.utils import get_default_user
 from ..layers.models import Layer, UploadSession
 from ..layers.metadata import set_metadata
@@ -213,9 +214,7 @@ def upload(
               end_time_attribute=end_time_attribute,
               end_time_transform_type=end_time_transform_type,
               time_format=None)
-
     utils.run_import(upload_session, async_upload=False)
-
     final_step(upload_session, user, charset=charset)
 
 
@@ -631,9 +630,7 @@ def final_step(upload_session, user, charset="UTF-8"):
                 raw=True,
                 workspace=settings.DEFAULT_WORKSPACE)
             cat.reset()
-        except geoserver.catalog.ConflictingDataError as e:
-            msg = 'There was already a style named %s in GeoServer, try using another name: "%s"' % (
-                name, str(e))
+        except geoserver.catalog.ConflictingDataError:
             try:
                 cat.create_style(
                     name + '_layer',
@@ -708,7 +705,7 @@ def final_step(upload_session, user, charset="UTF-8"):
                               title=title,
                               uuid=layer_uuid,
                               abstract=abstract or '',
-                              owner=user,),
+                              owner=user),
                 temporal_extent_start=start,
                 temporal_extent_end=end,
                 is_mosaic=True,
@@ -751,12 +748,14 @@ def final_step(upload_session, user, charset="UTF-8"):
                           title=title,
                           uuid=layer_uuid,
                           abstract=abstract or '',
-                          owner=user,),
+                          owner=user),
             has_time=_has_time
         )
 
     # Should we throw a clearer error here?
     assert saved_layer is not None
+
+    saved_layer.handle_moderated_uploads()
     saved_layer.save()
 
     # Create a new upload session
@@ -846,6 +845,48 @@ def final_step(upload_session, user, charset="UTF-8"):
         identifier, vals, regions, keywords = set_metadata(
             open(xml_file[0]).read())
 
+        if publishing:
+            try:
+                gs_resource = cat.get_resource(
+                    name=saved_layer.name,
+                    store=saved_layer.store,
+                    workspace=saved_layer.workspace)
+            except Exception:
+                try:
+                    gs_resource = cat.get_resource(
+                        name=saved_layer.alternate,
+                        store=saved_layer.store,
+                        workspace=saved_layer.workspace)
+                except Exception:
+                    try:
+                        gs_resource = cat.get_resource(
+                            name=saved_layer.alternate or saved_layer.typename)
+                    except Exception:
+                        gs_resource = None
+
+            if gs_resource:
+                if vals:
+                    title = vals.get('title', '')
+                    abstract = vals.get('abstract', '')
+
+                    # Updating GeoServer resource
+                    gs_resource.title = title
+                    gs_resource.abstract = abstract
+                    cat.save(gs_resource)
+
+                    # Updating Importer session
+                    upload_session.layer_title = title
+                    upload_session.layer_abstract = abstract
+                else:
+                    vals = {}
+
+                vals.update(dict(store=gs_resource.store.name,
+                                 storeType=gs_resource.store.resource_type,
+                                 alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
+                                 title=gs_resource.title or gs_resource.store.name,
+                                 abstract=gs_resource.abstract or '',
+                                 owner=saved_layer.owner))
+
         saved_layer.metadata_xml = xml_file[0]
         regions_resolved, regions_unresolved = resolve_regions(regions)
         keywords.extend(regions_unresolved)
@@ -878,20 +919,41 @@ def final_step(upload_session, user, charset="UTF-8"):
                     identifier=value.lower(),
                     defaults={'description': '', 'gn_description': value})
                 key = 'category'
-
                 defaults[key] = value
             else:
                 defaults[key] = value
 
-        # update with new information
-        db_layer = Layer.objects.filter(id=saved_layer.id)
-        db_layer.update(**defaults)
-        saved_layer.refresh_from_db()
+        # Save all the modified information in the instance without triggering signals.
+        try:
+            if not defaults.get('title', title):
+                defaults['title'] = saved_layer.title or saved_layer.name
+            if not defaults.get('abstract', abstract):
+                defaults['abstract'] = saved_layer.abstract or ''
 
-        # Pass the parameter overwrite to tell whether the
-        # geoserver_post_save_signal should upload the new file or not
-        saved_layer.overwrite = True
-        saved_layer.save()
+            to_update = {}
+            to_update['storeType'] = defaults.pop('storeType', saved_layer.storeType)
+            to_update['charset'] = defaults.pop('charset', saved_layer.charset)
+            for _key in ('workspace', 'store', 'storeType', 'typename'):
+                if _key in defaults:
+                    to_update[_key] = defaults.pop(_key)
+                else:
+                    to_update[_key] = getattr(saved_layer, _key)
+            to_update.update(defaults)
+
+            with transaction.atomic():
+                ResourceBase.objects.filter(
+                    id=saved_layer.resourcebase_ptr.id).update(
+                    **defaults)
+                Layer.objects.filter(id=saved_layer.id).update(**to_update)
+
+                # Refresh from DB
+                saved_layer.refresh_from_db()
+
+                # Pass the parameter overwrite to tell whether the
+                # geoserver_post_save_signal should upload the new file or not
+                saved_layer.overwrite = True
+        except IntegrityError:
+            raise
 
     # look for SLD
     sld_file = upload_session.base_file[0].sld_files
@@ -903,7 +965,7 @@ def final_step(upload_session, user, charset="UTF-8"):
             zf.extract(sld_file[0], os.path.dirname(archive))
             # Assign the absolute path to this file
             sld_file[0] = os.path.dirname(archive) + '/' + sld_file[0]
-        sld = open(sld_file[0]).read()
+        sld = open(sld_file[0], "rb").read()
         set_layer_style(
             saved_layer,
             saved_layer.alternate,
@@ -916,7 +978,7 @@ def final_step(upload_session, user, charset="UTF-8"):
     permissions = upload_session.permissions
     if created and permissions is not None:
         _log('Setting default permissions for [%s]', name)
-        saved_layer.set_permissions(permissions)
+        saved_layer.set_permissions(permissions, created=True)
 
     if upload_session.tempdir and os.path.exists(upload_session.tempdir):
         shutil.rmtree(upload_session.tempdir)

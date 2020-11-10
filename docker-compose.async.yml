@@ -2,7 +2,7 @@ version: '2.2'
 services:
 
   db:
-    image: geonode/postgis:10
+    image: geonode/postgis:latest
     restart: unless-stopped
     container_name: db4${COMPOSE_PROJECT_NAME}
     stdin_open: true
@@ -51,7 +51,7 @@ services:
       - db
       - elasticsearch
       - rabbitmq
-    # command: celery worker --app=geonode.celery_app:app -B -l INFO
+    # command: celery -A geonode.celery_app:app worker -B -l INFO
     volumes:
       - statics:/mnt/volumes/statics
       - geoserver-data-dir:/geoserver_data/data

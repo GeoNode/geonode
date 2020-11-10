@@ -24,6 +24,9 @@ from django.core.management.base import BaseCommand
 
 from geonode.maps.models import Map
 from geonode.base.utils import remove_duplicate_links
+from geonode.geoserver.helpers import (
+    create_gs_thumbnail
+)
 
 
 def sync_geonode_maps(ignore_errors,
@@ -45,7 +48,7 @@ def sync_geonode_maps(ignore_errors,
             print("Syncing map %s/%s: %s" % (count, maps_count, map.title))
             if updatethumbnails:
                 print("Regenerating thumbnails...")
-                map.save()
+                create_gs_thumbnail(map, overwrite=True, check_bbox=False)
             if removeduplicates:
                 # remove duplicates
                 print("Removing duplicate links...")

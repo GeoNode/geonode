@@ -26,7 +26,20 @@ from .helpers import gs_slurp, cascading_delete
 logger = get_task_logger(__name__)
 
 
-@app.task(bind=True, queue='update')
+@app.task(
+    bind=True,
+    name='geonode.geoserver.tasks.geoserver_update_layers',
+    queue='update',
+    countdown=60,
+    # expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 10,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
 def geoserver_update_layers(self, *args, **kwargs):
     """
     Runs update layers.
@@ -34,7 +47,20 @@ def geoserver_update_layers(self, *args, **kwargs):
     return gs_slurp(*args, **kwargs)
 
 
-@app.task(bind=True, queue='cleanup')
+@app.task(
+    bind=True,
+    name='geonode.geoserver.tasks.geoserver_cascading_delete',
+    queue='cleanup',
+    countdown=60,
+    # expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 10,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
 def geoserver_cascading_delete(self, *args, **kwargs):
     """
     Runs cascading_delete.

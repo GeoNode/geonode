@@ -800,14 +800,15 @@ class RequestEvent(models.Model):
                                 'error'][
                     'class']
                 edata = '\n'.join(rd['error']['stackTrace']['trace'])
-                emessage = rd['error']['detailMessage']
+                emessage = rd['error']['detailMessage'] if 'detailMessage' in rd['error'] else str(rd['error'])
                 ExceptionEvent.add_error(
                     service, etype, edata, message=emessage, request=inst)
             except Exception:
+                emessage = rd['error']['detailMessage'] if 'detailMessage' in rd['error'] else str(rd['error'])
                 ExceptionEvent.add_error(service, 'undefined',
                                          '\n'.join(
                                              rd['error']['stackTrace']['trace']),
-                                         message=rd['error']['detailMessage'], request=inst)
+                                         message=emessage, request=inst)
         if resources:
             inst.resources.add(*resources)
             inst.save()
@@ -819,7 +820,7 @@ class ExceptionEvent(models.Model):
     received = models.DateTimeField(db_index=True, null=False)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     error_type = models.CharField(max_length=255, null=False, db_index=True)
-    error_message = models.CharField(max_length=255, null=False, default='')
+    error_message = models.TextField(null=False, default='')
     error_data = models.TextField(null=False, default='')
     request = models.ForeignKey(RequestEvent, related_name='exceptions', on_delete=models.CASCADE)
 
@@ -984,37 +985,37 @@ class MetricValue(models.Model):
         if event_type:
             if not isinstance(event_type, EventType):
                 event_type = EventType.get(event_type)
-        # if not resource:
-        #     resource, _ = MonitoredResource.objects.get_or_create(
-        #         type=MonitoredResource.TYPE_EMPTY, name='')
         try:
-            inst = cls.objects.get(valid_from=valid_from,
-                                   valid_to=valid_to,
-                                   service=service,
-                                   label=label,
-                                   resource=resource,
-                                   event_type=event_type,
-                                   service_metric=service_metric)
-            inst.value = abs(value) if value else 0
-            inst.value_raw = abs(value_raw) if value_raw else 0
-            inst.value_num = abs(value_num) if value_num else 0
-            inst.samples_count = samples_count or 0
-            inst.save()
-            return inst
+            inst = cls.objects.filter(
+                valid_from=valid_from,
+                valid_to=valid_to,
+                service=service,
+                label=label,
+                resource=resource,
+                event_type=event_type,
+                service_metric=service_metric).last()
+            if inst:
+                inst.value = abs(value) if value else 0
+                inst.value_raw = abs(value_raw) if value_raw else 0
+                inst.value_num = abs(value_num) if value_num else 0
+                inst.samples_count = samples_count or 0
+                inst.save()
+                return inst
         except cls.DoesNotExist:
             pass
-        return cls.objects.create(valid_from=valid_from,
-                                  valid_to=valid_to,
-                                  service=service,
-                                  service_metric=service_metric,
-                                  label=label,
-                                  resource=resource,
-                                  event_type=event_type,
-                                  value=value_raw,
-                                  value_raw=value_raw,
-                                  value_num=value_num,
-                                  samples_count=samples_count or 0,
-                                  data=data or {})
+        return cls.objects.create(
+            valid_from=valid_from,
+            valid_to=valid_to,
+            service=service,
+            service_metric=service_metric,
+            label=label,
+            resource=resource,
+            event_type=event_type,
+            value=value_raw,
+            value_raw=value_raw,
+            value_num=value_num,
+            samples_count=samples_count or 0,
+            data=data or {})
 
     @classmethod
     def get_for(cls, metric, service=None, valid_on=None,
@@ -1770,7 +1771,6 @@ class BuiltIns(object):
                     'request.ua': 'User Agent of source of request',
                     'request.path': 'Request URL',
                     'network.in.rate': 'Network incoming traffic rate',
-                    'network.out.rate': 'Network outgoing traffic rate',
                     'network.out.rate': 'Network outgoing traffic rate',
                     'network.out': 'Network outgoing traffic bytes',
                     'network.in': 'Network incoming traffic bytes',

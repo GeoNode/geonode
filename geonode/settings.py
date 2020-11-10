@@ -23,6 +23,7 @@ import os
 import re
 import ast
 import sys
+import subprocess
 from datetime import timedelta
 from distutils.util import strtobool  # noqa
 from urllib.parse import urlparse, urlunparse, urljoin
@@ -102,10 +103,20 @@ if not SITEURL.endswith('/'):
 
 DATABASE_URL = os.getenv(
     'DATABASE_URL',
-    'sqlite:///{path}'.format(
+    'spatialite:///{path}'.format(
         path=os.path.join(PROJECT_ROOT, 'development.db')
     )
 )
+
+if DATABASE_URL.startswith("spatialite"):
+    try:
+        spatialite_proc = subprocess.run(["spatialite", "-version"], stdout=subprocess.PIPE)
+        spatialite_version = int(spatialite_proc.stdout.decode()[0])
+        if spatialite_version < 5:
+            # To workaround Shapely/Spatialite interaction bug for Spatialite < 5
+            from shapely import speedups
+    except FileNotFoundError as ex:
+        print(ex)
 
 # DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
 
@@ -115,9 +126,7 @@ DATABASE_URL = os.getenv(
 # 'ENGINE': 'django.contrib.gis.db.backends.postgis'
 # see https://docs.djangoproject.com/en/1.8/ref/contrib/gis/db-api/#module-django.contrib.gis.db.backends for
 # detailed list of supported backends and notes.
-_db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=5)
-if 'spatialite' in DATABASE_URL:
-    SPATIALITE_LIBRARY_PATH = 'mod_spatialite.so'
+_db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=0)
 
 if 'CONN_TOUT' in _db_conf:
     _db_conf['CONN_TOUT'] = 5
@@ -137,11 +146,11 @@ if os.getenv('DEFAULT_BACKEND_DATASTORE'):
                                 'postgis://\
 geonode_data:geonode_data@localhost:5432/geonode_data')
     DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = dj_database_url.parse(
-        GEODATABASE_URL, conn_max_age=5
+        GEODATABASE_URL, conn_max_age=0
     )
     _geo_db = DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')]
     if 'CONN_TOUT' in DATABASES['default']:
-        _geo_db['CONN_TOUT'] = 5
+        _geo_db['CONN_TOUT'] = DATABASES['default']['CONN_TOUT']
     if 'postgresql' in GEODATABASE_URL or 'postgis' in GEODATABASE_URL:
         _geo_db['OPTIONS'] = DATABASES['default']['OPTIONS'] if 'OPTIONS' in DATABASES['default'] else {}
         _geo_db['OPTIONS'].update({
@@ -344,21 +353,25 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     },
+
     # MEMCACHED EXAMPLE
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
     #     'LOCATION': '127.0.0.1:11211',
-    #     },
+    # },
+
     # FILECACHE EXAMPLE
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
     #     'LOCATION': '/tmp/django_cache',
-    #     }
+    # },
+
     # DATABASE EXAMPLE -> python manage.py createcachetable
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
     #     'LOCATION': 'my_cache_table',
-    # }
+    # },
+
     # LOCAL-MEMORY CACHING
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -368,6 +381,7 @@ CACHES = {
     #         'MAX_ENTRIES': 10000
     #     }
     # },
+
     'resources': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'TIMEOUT': 600,
@@ -376,6 +390,18 @@ CACHES = {
         }
     }
 }
+
+MEMCACHED_ENABLED = ast.literal_eval(os.getenv('MEMCACHED_ENABLED', 'False'))
+MEMCACHED_BACKEND = os.getenv('MEMCACHED_BACKEND', 'django.core.cache.backends.memcached.MemcachedCache')
+MEMCACHED_LOCATION = os.getenv('MEMCACHED_LOCATION', '127.0.0.1:11211')
+MEMCACHED_LOCK_EXPIRE = int(os.getenv('MEMCACHED_LOCK_EXPIRE', 3600))
+MEMCACHED_LOCK_TIMEOUT = int(os.getenv('MEMCACHED_LOCK_TIMEOUT', 10))
+
+if MEMCACHED_ENABLED:
+    CACHES['default'] = {
+        'BACKEND': MEMCACHED_BACKEND,
+        'LOCATION': MEMCACHED_LOCATION,
+    }
 
 GEONODE_CORE_APPS = (
     # GeoNode internal apps
@@ -513,9 +539,11 @@ try:
 except ValueError:
     # fallback to regular list of values separated with misc chars
     ALLOWED_DOCUMENT_TYPES = [
-        'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png',
-        'ppt', 'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml',
-        'zip', 'gz', 'qml'
+        'txt', 'log', 'doc', 'docx', 'ods', 'odt', 'sld', 'qml', 'xls', 'xlsx', 'xml',
+        'bm', 'bmp', 'dwg', 'dxf', 'fif', 'gif', 'jpg', 'jpe', 'jpeg', 'png', 'tif',
+        'tiff', 'pbm', 'odp', 'ppt', 'pptx', 'pdf', 'tar', 'tgz', 'rar', 'gz', '7z',
+        'zip', 'aif', 'aifc', 'aiff', 'au', 'mp3', 'mpga', 'wav', 'afl', 'avi', 'avs',
+        'fli', 'mp2', 'mp4', 'mpg', 'ogg', 'webm', '3gp', 'flv', 'vdo'
     ] if os.getenv('ALLOWED_DOCUMENT_TYPES') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_DOCUMENT_TYPES'))
 
@@ -1683,13 +1711,19 @@ CELERY_IGNORE_RESULT = ast.literal_eval(os.environ.get('CELERY_IGNORE_RESULT', '
 CELERY_ACKS_LATE = ast.literal_eval(os.environ.get('CELERY_ACKS_LATE', 'True'))
 
 # Set this to False in order to run async
-CELERY_TASK_ALWAYS_EAGER = ast.literal_eval(os.environ.get('CELERY_TASK_ALWAYS_EAGER', 'True'))
+_EAGER_FLAG = 'False' if ASYNC_SIGNALS else 'True'
+CELERY_TASK_ALWAYS_EAGER = ast.literal_eval(os.environ.get('CELERY_TASK_ALWAYS_EAGER', _EAGER_FLAG))
 CELERY_TASK_EAGER_PROPAGATES = ast.literal_eval(os.environ.get('CELERY_TASK_EAGER_PROPAGATES', 'True'))
 CELERY_TASK_IGNORE_RESULT = ast.literal_eval(os.environ.get('CELERY_TASK_IGNORE_RESULT', 'True'))
 
+
+from . import serializer
+from kombu.serialization import register
+register('geonode_json', serializer.dumps, serializer.loads, content_type='application/json', content_encoding='utf-8')
+
 # I use these to debug kombu crashes; we get a more informative message.
-CELERY_TASK_SERIALIZER = os.environ.get('CELERY_TASK_SERIALIZER', 'json')
-CELERY_RESULT_SERIALIZER = os.environ.get('CELERY_RESULT_SERIALIZER', 'json')
+CELERY_TASK_SERIALIZER = os.environ.get('CELERY_TASK_SERIALIZER', 'geonode_json')
+CELERY_RESULT_SERIALIZER = os.environ.get('CELERY_RESULT_SERIALIZER', 'geonode_json')
 CELERY_ACCEPT_CONTENT = [CELERY_RESULT_SERIALIZER, ]
 
 # Set Tasks Queues
@@ -1701,11 +1735,11 @@ CELERY_TASK_CREATE_MISSING_QUEUES = ast.literal_eval(os.environ.get('CELERY_TASK
 GEONODE_EXCHANGE = Exchange("default", type="direct", durable=True)
 GEOSERVER_EXCHANGE = Exchange("geonode", type="topic", durable=False)
 CELERY_TASK_QUEUES = (
-    Queue('default', GEONODE_EXCHANGE, routing_key='default'),
-    Queue('geonode', GEONODE_EXCHANGE, routing_key='geonode'),
-    Queue('update', GEONODE_EXCHANGE, routing_key='update'),
-    Queue('cleanup', GEONODE_EXCHANGE, routing_key='cleanup'),
-    Queue('email', GEONODE_EXCHANGE, routing_key='email'),
+    Queue('default', GEONODE_EXCHANGE, routing_key='default', priority=0),
+    Queue('geonode', GEONODE_EXCHANGE, routing_key='geonode', priority=0),
+    Queue('update', GEONODE_EXCHANGE, routing_key='update', priority=0),
+    Queue('cleanup', GEONODE_EXCHANGE, routing_key='cleanup', priority=0),
+    Queue('email', GEONODE_EXCHANGE, routing_key='email', priority=0),
 )
 
 if USE_GEOSERVER:
@@ -1804,6 +1838,9 @@ if os.name == 'nt':
 # ######################################################## #
 """
     - if [ RESOURCE_PUBLISHING == True ]
+      1. "unpublished" won't be visibile to Anonymous users
+      2. "unpublished" will be visible to registered users **IF** they have view permissions
+      3. "unpublished" will be always visible to the owner and Group Managers
       By default the uploaded resources will be "unpublished".
       The owner will be able to change them to "published" **UNLESS** the ADMIN_MODERATE_UPLOADS is activated.
       If the owner assigns unpublished resources to a Group, both from Metadata and Permissions, in any case
@@ -1823,13 +1860,13 @@ if os.name == 'nt':
       Editor will be **FORCED** to select a Group when editing the resource metadata.
 """
 
-# option to enable/disable resource unpublishing for administrators
+# option to enable/disable resource unpublishing for administrators and members
 RESOURCE_PUBLISHING = ast.literal_eval(os.getenv('RESOURCE_PUBLISHING', 'False'))
 
 # Each uploaded Layer must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get('ADMIN_MODERATE_UPLOADS', 'False'))
 
-# If this option is enabled, Resources belonging to a Group won't be
+# If this option is enabled, Resources belonging to a Group (with access private) won't be
 # visible by others
 GROUP_PRIVATE_RESOURCES = ast.literal_eval(os.environ.get('GROUP_PRIVATE_RESOURCES', 'False'))
 
@@ -1863,6 +1900,11 @@ ACCOUNT_UNIQUE_EMAIL = os.environ.get('ACCOUNT_UNIQUE_EMAIL', 'True')
 ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = os.environ.get('ACCOUNT_EMAIL_CONFIRMATION_REQUIRED', 'True')
 ACCOUNT_USERNAME_REQUIRED = os.environ.get('ACCOUNT_USERNAME_REQUIRED', 'False')
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = os.environ.get('ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS','3')
+
+# Since django-allauth 0.43.0.
+ACCOUNT_SIGNUP_REDIRECT_URL = os.environ.get('ACCOUNT_SIGNUP_REDIRECT_URL', os.getenv('SITEURL', _default_siteurl))
+ACCOUNT_LOGIN_ATTEMPTS_LIMIT = int(os.getenv('ACCOUNT_LOGIN_ATTEMPTS_LIMIT', '3'))
+ACCOUNT_MAX_EMAIL_ADDRESSES = int(os.getenv('ACCOUNT_MAX_EMAIL_ADDRESSES', '2'))
 
 SOCIALACCOUNT_ADAPTER = 'geonode.people.adapters.SocialAccountAdapter'
 SOCIALACCOUNT_AUTO_SIGNUP = ast.literal_eval(os.environ.get('SOCIALACCOUNT_AUTO_SIGNUP', 'True'))
@@ -1993,7 +2035,7 @@ if MONITORING_ENABLED:
 
     CELERY_BEAT_SCHEDULE['collect_metrics'] = {
         'task': 'geonode.monitoring.tasks.collect_metrics',
-        'schedule': 60.0,
+        'schedule': 300.0,
     }
 
 USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'False'))

@@ -19,6 +19,7 @@
 #########################################################################
 
 import json
+import logging
 import traceback
 
 from django.conf import settings
@@ -39,6 +40,8 @@ from geonode.groups.models import GroupProfile
 
 if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification
+
+logger = logging.getLogger(__name__)
 
 
 def _perms_info(obj):
@@ -256,7 +259,7 @@ def resource_geolimits(request, resource_id):
                     content_type='text/plain')
             except Exception:
                 return HttpResponse(
-                    _('Could not fetch geometries from backend.'),
+                    'Could not fetch geometries from backend.',
                     status=400,
                     content_type='text/plain')
         elif group_id:
@@ -271,7 +274,7 @@ def resource_geolimits(request, resource_id):
                     content_type='text/plain')
             except Exception:
                 return HttpResponse(
-                    _('Could not fetch geometries from backend.'),
+                    'Could not fetch geometries from backend.',
                     status=400,
                     content_type='text/plain')
 
@@ -313,7 +316,7 @@ def attributes_sats_refresh(request):
     if layer and can_change_data:
         try:
             # recalculate the layer statistics
-            set_attributes_from_geoserver(layer, overwrite=True)
+            set_attributes_from_geoserver(layer, overwrite=False)
             gs_resource = gs_catalog.get_resource(
                 name=layer.name,
                 store=layer.store,
@@ -334,13 +337,14 @@ def attributes_sats_refresh(request):
                         }),
                     status=302,
                     content_type='text/plain')
-            from decimal import Decimal
-            layer.bbox_x0 = Decimal(gs_resource.native_bbox[0])
-            layer.bbox_x1 = Decimal(gs_resource.native_bbox[1])
-            layer.bbox_y0 = Decimal(gs_resource.native_bbox[2])
-            layer.bbox_y1 = Decimal(gs_resource.native_bbox[3])
-            layer.srid = gs_resource.projection
+
+            bbox = gs_resource.native_bbox
+            layer.set_bbox_polygon(
+                [bbox[0], bbox[2], bbox[1], bbox[3]],
+                gs_resource.projection
+            )
             layer.save()
+
         except Exception as e:
             # traceback.print_exc()
             return HttpResponse(
@@ -374,7 +378,11 @@ def invalidate_tiledlayer_cache(request):
         resource)
     layer = Layer.objects.get(id=resource.id)
     if layer and can_change_data:
-        set_geowebcache_invalidate_cache(layer.alternate)
+        try:
+            set_geowebcache_invalidate_cache(layer.alternate or layer.typename)
+        except Exception:
+            tb = traceback.format_exc()
+            logger.debug(tb)
         return HttpResponse(
             json.dumps({'success': 'ok', 'message': _('GeoWebCache Tiled Layer Emptied!')}),
             status=200,

@@ -21,7 +21,6 @@
 import json
 import logging
 
-from datetime import datetime
 from defusedxml import lxml as dlxml
 
 from pinax.ratings.models import OverallRating
@@ -209,7 +208,7 @@ community."
         self.assertEqual(map_obj.abstract, "Abstract")
         self.assertEqual(map_obj.layer_set.all().count(), 1)
         self.assertEqual(map_obj.keyword_list(), ["keywords", "saving"])
-        self.assertNotEqual(map_obj.bbox_x0, None)
+        self.assertNotEqual(map_obj.bbox_polygon, None)
 
         # Test an invalid map creation request
         self.client.login(username=self.user, password=self.passwd)
@@ -912,14 +911,14 @@ community."
         ids = ','.join([str(element.pk) for element in resources])
         # test non-admin access
         self.client.login(username="bobby", password="bob")
-        response = self.client.get(reverse(view, args=(ids,)))
+        response = self.client.get(reverse(view))
         self.assertTrue(response.status_code in (401, 403))
         # test group change
         group = Group.objects.first()
         self.client.login(username='admin', password='admin')
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'group': group.pk},
+            reverse(view),
+            data={'group': group.pk, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -928,8 +927,8 @@ community."
         # test owner change
         owner = get_user_model().objects.first()
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'owner': owner.pk},
+            reverse(view),
+            data={'owner': owner.pk, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -938,8 +937,8 @@ community."
         # test license change
         license = License.objects.first()
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'license': license.pk},
+            reverse(view),
+            data={'license': license.pk, "ids": ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -948,35 +947,19 @@ community."
         # test regions change
         region = Region.objects.first()
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'region': region.pk},
+            reverse(view),
+            data={'region': region.pk, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
             if resource.regions.all():
                 self.assertTrue(region in resource.regions.all())
-        # test date change
-        from django.utils import timezone
-        date = datetime.now(timezone.get_current_timezone())
-        response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'date': date},
-        )
-        self.assertEqual(response.status_code, 200)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            today = date.today()
-            todoc = resource.date.today()
-            self.assertEqual(today.day, todoc.day)
-            self.assertEqual(today.month, todoc.month)
-            self.assertEqual(today.year, todoc.year)
-
         # test language change
         language = 'eng'
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'language': language},
+            reverse(view),
+            data={'language': language, 'ids': ids, 'regions': 1},
         )
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
@@ -984,8 +967,8 @@ community."
         # test keywords change
         keywords = 'some,thing,new'
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'keywords': keywords},
+            reverse(view),
+            data={'keywords': keywords, 'ids': ids, 'regions': 1},
         )
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
