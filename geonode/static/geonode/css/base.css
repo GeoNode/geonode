@@ -6,7 +6,7 @@
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
 @import "../css/font-awesome.min.css";
 html {
-  font-family: sans-serif;
+  font-family: 'Montserrat', sans-serif;
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
 }
@@ -1074,7 +1074,7 @@ html {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 body {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 16px;
   line-height: 1.42857143;
   color: #333333;
@@ -6851,7 +6851,7 @@ div#user_messages {
 }
 body {
   background: #333333;
-  font-family: 'Lato', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 16px;
   padding-top: 20px;
 }
@@ -8307,3 +8307,63 @@ form-inline {
   background-color: DodgerBlue !important;
   color: #ffffff;
 }
+
+.imgbackgroundModels{
+  background: url(/static/geonode/img/02-MAPA2.png);
+  min-height: 100%;
+  min-width: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.colorHeaderInstrucciones{
+  color: #0C89AA;
+ font-weight:normal !important;
+}
+.imgbackgroundwiki{
+  background: url(/static/geonode/img/04-FOTO.jpg);
+  height: 600px;
+  min-height: 100%;
+  min-width: 100%;
+  background-repeat: no-repeat;
+  background-size:cover;
+}
+.backgroundcolorwiki{
+  background-color: #0C89AAAD;
+}
+.ppwpwiki{
+  color: #FFFFFF;
+ font-size: 0.9em;
+  font-weight: 650;
+  padding-top:1%;
+ }
+ hr{
+   width:10%;
+ }
+.ppwpwiki2{
+  color: #FFFFFF;
+ font-size: 60px;
+  font-weight: 100;
+  margin-top:0px;
+  margin-bottom: 19px;
+ }
+ .ppwpwiki3{
+  color: #FFFFFF;
+ font-size: 20px;
+  font-weight: 100;
+  margin-top:0px;
+  margin-bottom: 0px;
+  line-height: normal;
+   }
+ .button-viki{
+  background-color: #0C89AAAD;
+  color: #FFFFFF;
+  padding: 15px 50px 15px 50px;
+  border:none;
+ }
+ .link-wp-syle{
+  text-decoration: none;
+ }
+ a:hoover{
+  text-decoration: none;
+ }
