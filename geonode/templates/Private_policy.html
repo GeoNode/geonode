@@ -1,14 +1,18 @@
 {% extends "geonode_base.html" %}
+{% load static from staticfiles %}
 
 {% load i18n %}
 {% block title %} {% trans "Privacy Policy" %} — {{ block.super }} {% endblock %}
 
 {% block body_outer %}
-<div class="page-header">
+<div class="imgheaderpag">          
+  <img src= "{% static 'geonode/img/2-IMAGEN.jpg' %}">
+</div>
+<div class="page-header colorHeaderInstrucciones">
   <h2>{% trans "Privacy Policy" %}</h2>
 </div>
-<p>
-　　<b> {% trans "The Water-proof's privacy policy." %} </b>
+<p style= "text-align: justify;">
+<b> {% trans "The Water-proof's privacy policy." %} </b>
 <br> <br>
 {% trans "The Nature Conservancy takes your privacy very seriously. This notice describes the policy of The Nature Conservancy's privacy in relation to the website water-proof.org (collectively, the website"). By visiting the Website, you automatically accept the policies described in this Privacy Policy. If you do not agree with this Privacy Policy, you are not allowed to use the Website. The Nature Conservancy may modify this privacy policy
 occasionally unilaterally and without prior notice. Any modification will be communicated by this medium, so you should make sure to check periodically for any changes. The fact that you continue to use this Website after it has been published any modification will imply your acceptance of such modifications." %}

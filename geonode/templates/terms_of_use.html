@@ -1,14 +1,18 @@
 {% extends "geonode_base.html" %}
+{% load static from staticfiles %}
 
 {% load i18n %}
 {% block title %} {% trans "Terms of use" %} — {{ block.super }} {% endblock %}
 
 {% block body_outer %}
-<div class="page-header">
+<div class="imgheaderpag">          
+  <img src= "{% static 'geonode/img/2-IMAGEN.jpg' %}">
+</div>
+<div class="page-header colorHeaderInstrucciones">
   <h2>{% trans "Terms of use" %}</h2>
 </div>
-<p>
-　　<b> {% trans "PLEASE READ THIS AGREEMENT CAREFULLY; THIS IS A BINDING CONTRACT." %} </b>
+<p style= "text-align: justify;">
+<b> {% trans "PLEASE READ THIS AGREEMENT CAREFULLY; THIS IS A BINDING CONTRACT." %} </b>
 <br> <br>
 {% trans "This website (this 'Website') is a service offered by The Nature Conservancy. This Terms of Use Agreement (the 'Terms of Use' or 'Agreement') describes the terms and conditions applicable to your access and use of this Website and The Nature Conservancy's services. The Nature Conservancy may revise this Agreement at any time by posting the amended Terms of Use on this Website, and you agree that you will be bound by any changes to the Terms of Use. For your convenience, the date of last revision is included at the top of this page. The Nature Conservancy may make changes in the services described on this Website at any time. You understand that The Nature Conservancy may discontinue or restrict your use of this Website for any reason." %}
 <br> <br>

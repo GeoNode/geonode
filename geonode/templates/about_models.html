@@ -10,60 +10,72 @@
 {% block body_outer %}
 
 
-<div class="geonode-slide-show">
-	<img src="http://apps.skaphe.com/1.jpg" alt="img" style="width:100%;height:50%;">
+<div class="imgheaderpag">      
+                     
+ <img src= "{% static 'geonode/img/2-IMAGEN.jpg' %}">
+              
 </div>
 	   
 
 
 
-<div class="page-header">
+<div class="page-header colorHeaderInstrucciones">
   <h2>{% trans "About Waterproof models" %}</h2>
 </div>
 
 
-<p>
-　　<b>{% trans "Integrated Valuation of Ecosystem Services and Tradeoffs (InVEST):" %}</b>
-<br> <br>
+<div class="colorsubtitle">
+  <span>{% trans "Integrated Valuation of Ecosystem Services and Tradeoffs (InVEST):" %}</span>
+</div>
+<br> 
+<p style= "text-align: justify;">
 {% trans "InVEST is a set of models, developed by Natural Capital, used to map and value nature's goods and services that sustain and satisfy human life. It uses maps (Raster) as sources of information and produces maps as outputs on biophysical conditions or in economic terms." %}
 <br> <br>
 {% trans "For the specific case of the Waterproof application, the InVEST models related to:" %}
 
 <ul>
-<li>Annual Water Yield</li>
-<li>Seasonal Water Yield</li>
-<li>Sediment Delivery Ratio</li>
-<li>Nutrient Delivery Ratio (Nitrógeno)</li>
-<li>Nutrient Delivery Ratio (Fósforo)</li>
-<li>Carbon Storage and Sequestration</li>
+<li>{% trans "Annual Water Yield" %}</li>
+<li>{% trans "Seasonal Water Yield" %}</li>
+<li>{% trans "Sediment Delivery Ratio" %}</li>
+<li>{% trans "Nutrient Delivery Ratio (Nitrógeno)" %}</li>
+<li>{% trans "Nutrient Delivery Ratio (Fósforo)" %}</li>
+<li>{% trans "Carbon Storage and Sequestration" %}</li>
 </ul>
-InVEST enables decision makers to assess the quantified trade-offs associated with alternative management options and identify areas where investment in natural capital can enhance human development and conservation. The toolkit includes different models of ecosystem services designed for terrestrial, freshwater, marine and coastal ecosystems, as well as a series of "helper tools" to help locate and process input data and understand and visualize the results.
-InVEST models are spatially explicit, using maps as sources of information, and producing maps as results. The spatial resolution of the analyzes is also flexible, allowing users to address questions on a local, regional or global scale.
+{% trans "InVEST enables decision makers to assess the quantified trade-offs associated with alternative management options and identify areas where investment in natural capital can enhance human development and conservation. The toolkit includes different models of ecosystem services designed for terrestrial, freshwater, marine and coastal ecosystems, as well as a series of "helper tools" to help locate and process input data and understand and visualize the results.
+InVEST models are spatially explicit, using maps as sources of information, and producing maps as results. The spatial resolution of the analyzes is also flexible, allowing users to address questions on a local, regional or global scale." %}
 <br> <br>
-InVEST models are based on production functions that define how changes in the structure and function of an ecosystem are likely to affect the flows and values ​​of ecosystem services in a landscape or seascape. The models take into account both the supply of services and the location and activities of the people who benefit from the services.
+{% trans "InVEST models are based on production functions that define how changes in the structure and function of an ecosystem are likely to affect the flows and values ​​of ecosystem services in a landscape or seascape. The models take into account both the supply of services and the location and activities of the people who benefit from the services." %}
 <br> <br>
 {% trans "Source:" %} <a href="https://naturalcapitalproject.stanford.edu/software/invest">Natural Capital</a>
 </p>
-<p>
-　　 <b>{% trans "Resource Investment Optimization System (RIOS):" %}</b> 
 <br> <br>
-It is a tool developed by Natural Capital that can be used to prioritize investments in ecosystem services that helps answer several critical questions faced by those who invest in ecosystem services with limited resources. RIOS facilitates the identification of sites where protection or restoration activities can produce, at the lowest cost, the greatest benefits for people and nature.
+
+<div class="colorsubtitle">
+  <span>{% trans "Resource Investment Optimization System (RIOS):" %}</span>
+</div>
+<p style= "text-align: justify;">
+<br> 
+{% trans "It is a tool developed by Natural Capital that can be used to prioritize investments in ecosystem services that helps answer several critical questions faced by those who invest in ecosystem services with limited resources. RIOS facilitates the identification of sites where protection or restoration activities can produce, at the lowest cost, the greatest benefits for people and nature." %}
 <br> <br>
-For the specific case of the Waterproof application, RIOS is used to create investment portfolios considering one or more of the following objectives that the software is able to analyze:
+{% trans "For the specific case of the Waterproof application, RIOS is used to create investment portfolios considering one or more of the following objectives that the software is able to analyze:" %}
 <ul>
-<li>Erosion control for drinking water quality</li>
-<li>Control de erosión para mantenimiento de embalses</li>
-<li>Erosion control for reservoir maintenance</li>
-<li>Retención de nutrientes (Nitrógeno)</li>
-<li>Nutrient retention (Nitrogen)</li>
-<li>Improved groundwater recharge</li>
-<li>Base flow</li>
+<li>{% trans "Erosion control for drinking water quality" %}</li>
+<li>{% trans "Control de erosión para mantenimiento de embalses" %}</li>
+<li>{% trans "Erosion control for reservoir maintenance" %}</li>
+<li>{% trans "Retención de nutrientes (Nitrógeno)" %}</li>
+<li>{% trans "Nutrient retention (Nitrogen)" %}</li>
+<li>{% trans "Improved groundwater recharge" %}</li>
+<li>{% trans "Base flow" %}</li>
 </ul>
 {% trans "Source:" %} <a href="https://naturalcapitalproject.stanford.edu/software/rios">Natural Capital</a>
 </p>
-<p>
-　<b>{% trans "Return on investment (ROI): " %}</b> 
+
 <br> <br>
+<div class="colorsubtitle">
+  <span>{% trans "Return on investment (ROI):" %}</span>
+</div>
+<p style= "text-align: justify;">
+　<br> 
 {% trans "It is a financial ratio that compares the profit or profit obtained in relation to the investment made. Having a Return on investment analysis facilitates decision-making and negotiations between interested parties in making investments, for which it is necessary to offer scenarios mainly associated with land use, which show the performance of investments in hydrographic basins, which which is done by using data and model runs." %} 
 </p>
 

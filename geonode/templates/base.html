@@ -537,7 +537,7 @@
 			<li><a href="{% url "frequently_list" %}">{% trans "FAQ" %}</a></li>
             <li><a href="{% url "terms_of_use" %}">{% trans "Terms and conditions" %}</a></li>
 			<li><a href="{% url "privacy-policy" %}">{% trans "Privacy policy" %}</a></li>
-			<li><a href="{% url "privacy-policy" %}">{% trans "Colaboradores" %}</a></li>
+			<li><a href="{% url "collaborators" %}">{% trans "Collaborators" %}</a></li>
             <!-- {% if perms.announcements.can_manage %} -->
             <!-- <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li> -->
             <!-- {% endif %} -->
@@ -573,7 +573,7 @@
             <!-- <li>{% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a>{% if user.is_staff %} <em>{% trans "version" %} {{ VERSION }}</em>{% endif %}</li> -->
             <!-- <li><a href="{% url "developer" %}">{% trans "Developers" %}</a> | <a href="{% url "about" %}">{% trans "About" %}</a><li> -->
           <!-- </ul> -->
-          <!-- <label class="hidden">{% trans "Language" %}</label>
+          <label class="hidden">{% trans "Language" %}</label>
           {% if csrf_token != "NOTPROVIDED" %}
           {% get_current_language as LANGUAGE %}
           <form class="form-inline" action="/i18n/setlang/" method="post">
@@ -586,7 +586,7 @@
               {% endfor %}
             </select>
           </form>
-          {% endif %} -->
+          {% endif %} 
         </div>
       </div>
     </div>

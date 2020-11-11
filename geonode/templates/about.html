@@ -1,20 +1,24 @@
 {% extends "geonode_base.html" %}
+{% load static from staticfiles %}
 
 {% load i18n %}
 {% block title %} {% trans "About Geonode" %} — {{ block.super }} {% endblock %}
 
 {% block body_outer %}
-<div class="page-header">
+<div class="imgheaderpag">          
+  <img src= "{% static 'geonode/img/2-IMAGEN.jpg' %}">
+</div>
+<div class="page-header colorHeaderInstrucciones">
   <h2>{% trans "About Us" %}</h2>
 </div>
-<p>
-　　{% trans "The Nature Conservancy (TNC) is a global environmental organization dedicated to conserving the lands and waters on which life depends. Guided by science, we create innovative and practical solutions to our world's most pressing challenges so that nature and people can thrive together." %}
+<p style= "text-align: justify;">
+{% trans "The Nature Conservancy (TNC) is a global environmental organization dedicated to conserving the lands and waters on which life depends. Guided by science, we create innovative and practical solutions to our world's most pressing challenges so that nature and people can thrive together." %}
 </p>
-<p>
-　　{% trans "The Waterproof web tool is focused on the macro-basins of the world and aims to support decision-making based on the calculation of environmental and financial indicators in a basin, presenting investment alternatives in Nature-Based Solutions projects. In this way, TNC, through the Waterproof app, promotes actions for the conservation of nature, sustainable development, the strengthening and well-being of communities (among others)." %}
+<p style= "text-align: justify;">
+{% trans "The Waterproof web tool is focused on the macro-basins of the world and aims to support decision-making based on the calculation of environmental and financial indicators in a basin, presenting investment alternatives in Nature-Based Solutions projects. In this way, TNC, through the Waterproof app, promotes actions for the conservation of nature, sustainable development, the strengthening and well-being of communities (among others)." %}
 </p>
-<p>
-　　{% trans "Scientific development matters, especially at this critical time for nature. Our work is based on science. We support innovation, leadership, and communication for conservation success. For this, Waterproof makes available mathematical, statistical and spatial analysis models such as the implementation of the InVEST, RIOS and ROI models, which require input data for physical variables such as precipitation, evapotranspiration, soil parameters, among others, with from which the user will be able to select a location anywhere in the world and receive recommendations from a portfolio of activities for certain water security challenges, and a high-level ROI based on implementation costs and savings in water treatment." %}
+<p style= "text-align: justify;">
+{% trans "Scientific development matters, especially at this critical time for nature. Our work is based on science. We support innovation, leadership, and communication for conservation success. For this, Waterproof makes available mathematical, statistical and spatial analysis models such as the implementation of the InVEST, RIOS and ROI models, which require input data for physical variables such as precipitation, evapotranspiration, soil parameters, among others, with from which the user will be able to select a location anywhere in the world and receive recommendations from a portfolio of activities for certain water security challenges, and a high-level ROI based on implementation costs and savings in water treatment." %}
 </p>
 
 {% endblock %}

@@ -1,0 +1,23 @@
+{% extends "geonode_base.html" %}
+{% load static from staticfiles %}
+
+{% load i18n %}
+{% block title %} {% trans "Colaborators" %} — {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+
+
+<div class="imgheaderpag">          
+  <img src= "{% static 'geonode/img/2-IMAGEN.jpg' %}">
+</div>
+<div class="page-header">
+  <h2>{% trans "Collaborators" %}</h2>
+</div>
+<p>
+  <b> {% trans "COLLABORATORS PAGE IN CONSTRUCTION" %} </b>
+  <br> <br>
+{% trans "On this page will be the information of collaborators: Google and Moore Foundation" %}
+
+</p>
+
+{% endblock %}
