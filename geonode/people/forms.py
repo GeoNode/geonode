@@ -119,10 +119,11 @@ class ProfileForm(forms.ModelForm):
         )
 
 class CustomUserCreationForm2(SignupForm):
+
     def __init__(self, *args, **kwargs):
         super(CustomUserCreationForm2, self).__init__(*args, **kwargs)
 
-    first_name = forms.CharField(label="Primer Nombre",
+    first_name = forms.CharField(label="FirstName",
                                widget=forms.TextInput(
                                    attrs={'placeholder':
                                           _('Firstname')}))
@@ -148,6 +149,21 @@ class CustomUserCreationForm2(SignupForm):
                                    'autocomplete':'off'}))
 
     agree_conditions = forms.BooleanField(label=_('AgreeConditions'))
+
+    field_order = [
+        "email",
+        "email2",  # ignored when not present
+        "username",             
+        "first_name",
+        "last_name",
+        "professional_role",
+        "organization",
+        "country",
+        "city",
+        "password1",
+        "password2",  # ignored when not present
+        "agree_conditions",
+    ]
 
     # city = forms.ChoiceField(label=_('City'), choices=CITIES)
     
