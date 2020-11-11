@@ -130,11 +130,7 @@ class Profile(AbstractUser):
         default="",
         choices=TIMEZONES,
         blank=True,
-    )
-    agree_conditions = models.BooleanField(
-        _('Agree Conditions'),
-        default=False,
-    )
+    )    
     professional_role = models.CharField(
         _('ProfessionalRole'),
         choices=PROFESSIONAL_ROLES,
@@ -142,6 +138,10 @@ class Profile(AbstractUser):
         blank=True,
         null=True,
         help_text=_('Professional or Academic user role'))
+    agree_conditions = models.BooleanField(
+        _('Agree Conditions'),
+        default=False,
+    )
 
     def __init__(self, *args, **kwargs):
         super(Profile, self).__init__(*args, **kwargs)

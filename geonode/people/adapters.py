@@ -187,7 +187,7 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
         if city:
             user_field(user, "city", city)
         if agree_conditions:
-            user_field(user, "agree_conditions", agree_conditions)        
+            setattr(user, "agree_conditions", agree_conditions)            
         if "password1" in data:
             user.set_password(data["password1"])
         else:
