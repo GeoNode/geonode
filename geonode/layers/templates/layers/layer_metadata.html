@@ -111,6 +111,7 @@
   <script type="text/javascript">
     {% autoescape off %}
     tinyMCE_default_config = {{ TINYMCE_DEFAULT_CONFIG }};
+    tinyMCE_default_config['selector'] = 'textarea#id_resource-featureinfo_custom_template'
     tinyMCE_default_config['file_picker_callback'] = function (callback, value, meta) {
         /* Provide file and text for the link dialog */
         if (meta.filetype === 'file') {

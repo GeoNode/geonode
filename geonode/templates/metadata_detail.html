@@ -46,7 +46,7 @@
 
         {% if resource.abstract %}
         <dt>{% trans "Abstract" %}</dt>
-        <dd>{{ resource.abstract|escape|urlize|linebreaks|safe|truncatechars:1000 }}</dd>
+        <dd>{{ resource.abstract|safe|escape|urlize|linebreaks|safe|truncatechars:1000 }}</dd>
         {% endif %}
 
     </dl>
@@ -223,7 +223,7 @@
         {% if resource.restriction_code_type or resource.constraints_other %}
         <dt>{% trans "Restrictions" %}</dt>
         <dd>{% if resource.constraints_other %}
-            {{ resource.constraints_other }}
+            {{ resource.constraints_other|safe }}
             {% else %}
             {{ resource.restriction_code_type }}
             {% endif %}</dd>
@@ -236,7 +236,7 @@
 
         {% if resource.purpose %}
         <dt>{% trans "Purpose" %}</dt>
-        <dd>{{ resource.purpose|escape|urlize|linebreaks|safe|truncatechars:160 }}</dd>
+        <dd>{{ resource.purpose|safe|escape|urlize|linebreaks|safe|truncatechars:160 }}</dd>
         {% endif %}
 
         {% if resource.language %}
@@ -251,12 +251,12 @@
 
         {% if resource.data_quality_statement %}
         <dt>{% trans "Data Quality" %}</dt>
-        <dd>{{ resource.data_quality_statement }}</dd>
+        <dd>{{ resource.data_quality_statement|safe }}</dd>
         {% endif %}
 
         {% if resource.supplemental_information %}
         <dt>{% trans "Supplemental Information" %}</dt>
-        <dd>{{ resource.supplemental_information|truncatechars:160|escape|urlize|linebreaks|safe }}</dd>
+        <dd>{{ resource.supplemental_information|safe|truncatechars:160|escape|urlize|linebreaks|safe }}</dd>
         {% endif %}
 
         {% if resource.spatial_representation_type %}
