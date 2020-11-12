@@ -23,7 +23,7 @@ import taggit
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from geonode.base.enumerations import COUNTRIES
 from geonode.base.enumerations import PROFESSIONAL_ROLES
@@ -123,7 +123,7 @@ class CustomUserCreationForm2(SignupForm):
     def __init__(self, *args, **kwargs):
         super(CustomUserCreationForm2, self).__init__(*args, **kwargs)
 
-    first_name = forms.CharField(label="FirstName",
+    first_name = forms.CharField(label=_("FirstName"),
                                widget=forms.TextInput(
                                    attrs={'placeholder':
                                           _('Firstname')}))
@@ -143,7 +143,7 @@ class CustomUserCreationForm2(SignupForm):
     
     country = forms.ChoiceField(label=_('Country'), choices=COUNTRIES)
 
-    city = forms.CharField(label=_("city"),
+    city = forms.CharField(label=_("City"),
                                widget=forms.TextInput(
                                    attrs={'placeholder':_('City'),
                                    'autocomplete':'off'}))
