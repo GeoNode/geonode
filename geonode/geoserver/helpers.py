@@ -430,15 +430,12 @@ def cascading_delete(layer_name=None, catalog=None):
                     except FailedRequestError:
                         logger.debug(
                             'the store was not found in geoserver')
-                        return
                 else:
                     logger.debug(
                         'the store was not found in geoserver')
-                    return
             if ws is None or store is None:
                 logger.debug(
                     'cascading delete was called on a layer where the workspace was not found')
-                return
             resource = cat.get_resource(name=name, store=store, workspace=workspace)
         else:
             resource = cat.get_resource(name=layer_name)
@@ -448,7 +445,7 @@ def cascading_delete(layer_name=None, catalog=None):
                    'to save information for layer "%s"' % (
                        ogc_server_settings.LOCATION, layer_name)
                    )
-            logger.debug(msg)
+            logger.error(msg)
             return None
         else:
             raise e
