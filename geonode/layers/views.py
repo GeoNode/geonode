@@ -31,6 +31,7 @@ import six
 from django.db.models import Q
 from urllib.parse import quote
 
+from django.http import Http404
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
 from django.template.response import TemplateResponse
@@ -402,11 +403,18 @@ def layer_upload(request, template='upload/layer_upload.html'):
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.view_resourcebase',
-        _PERMISSION_MSG_VIEW)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.view_resourcebase',
+            _PERMISSION_MSG_VIEW)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
 
     permission_manager = ManageResourceOwnerPermissions(layer)
     permission_manager.set_owner_permissions_according_to_workflow()
@@ -832,7 +840,15 @@ def layer_feature_catalogue(
         request,
         layername,
         template='../../catalogue/templates/catalogue/feature_catalogue.xml'):
-    layer = _resolve_layer(request, layername)
+    try:
+        layer = _resolve_layer(request, layername)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
+
     if layer.storeType != 'dataStore':
         out = {
             'success': False,
@@ -872,11 +888,19 @@ def layer_metadata(
         layername,
         template='layers/layer_metadata.html',
         ajax=True):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.change_resourcebase_metadata',
-        _PERMISSION_MSG_METADATA)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.change_resourcebase_metadata',
+            _PERMISSION_MSG_METADATA)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
+
     layer_attribute_set = inlineformset_factory(
         Layer,
         Attribute,
@@ -1224,11 +1248,18 @@ def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
 
 @login_required
 def layer_replace(request, layername, template='layers/layer_replace.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.change_resourcebase',
-        _PERMISSION_MSG_MODIFY)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.change_resourcebase',
+            _PERMISSION_MSG_MODIFY)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
 
     if request.method == 'GET':
         ctx = {
@@ -1318,11 +1349,18 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
 
 @login_required
 def layer_remove(request, layername, template='layers/layer_remove.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.delete_resourcebase',
-        _PERMISSION_MSG_DELETE)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.delete_resourcebase',
+            _PERMISSION_MSG_DELETE)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
 
     if (request.method == 'GET'):
         return render(request, template, context={
@@ -1361,11 +1399,18 @@ def layer_granule_remove(
         granule_id,
         layername,
         template='layers/layer_granule_remove.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.delete_resourcebase',
-        _PERMISSION_MSG_DELETE)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.delete_resourcebase',
+            _PERMISSION_MSG_DELETE)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
 
     if (request.method == 'GET'):
         return render(request, template, context={
@@ -1403,7 +1448,14 @@ def layer_granule_remove(
 
 @require_http_methods(["POST"])
 def layer_thumbnail(request, layername):
-    layer_obj = _resolve_layer(request, layername)
+    try:
+        layer_obj = _resolve_layer(request, layername)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer_obj:
+        raise Http404(_("Not found"))
 
     try:
         try:
@@ -1462,7 +1514,15 @@ def get_layer(request, layername):
         raise TypeError
     logger.debug('Call get layer')
     if request.method == 'GET':
-        layer_obj = _resolve_layer(request, layername)
+        try:
+            layer_obj = _resolve_layer(request, layername)
+        except PermissionDenied:
+            return HttpResponse(_("Not allowed"), status=403)
+        except Exception:
+            raise Http404(_("Not found"))
+        if not layer_obj:
+            raise Http404(_("Not found"))
+
         logger.debug(layername)
         response = {
             'typename': layername,
@@ -1487,11 +1547,19 @@ def layer_metadata_detail(
         request,
         layername,
         template='layers/layer_metadata_detail.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'view_resourcebase',
-        _PERMISSION_MSG_METADATA)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'view_resourcebase',
+            _PERMISSION_MSG_METADATA)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
+
     group = None
     if layer.group:
         try:
@@ -1516,11 +1584,19 @@ def layer_metadata_upload(
         request,
         layername,
         template='layers/layer_metadata_upload.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.change_resourcebase',
-        _PERMISSION_MSG_METADATA)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.change_resourcebase',
+            _PERMISSION_MSG_METADATA)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
+
     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     return render(request, template, context={
         "resource": layer,
@@ -1533,11 +1609,19 @@ def layer_sld_upload(
         request,
         layername,
         template='layers/layer_style_upload.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.change_resourcebase',
-        _PERMISSION_MSG_METADATA)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.change_resourcebase',
+            _PERMISSION_MSG_METADATA)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
+
     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     return render(request, template, context={
         "resource": layer,
