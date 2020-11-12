@@ -233,7 +233,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         layer = Layer.objects.all()[3]
         url = reverse('layer_feature_catalogue', args=(layer.alternate,))
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)
 
     def test_layer_attribute_config(self):
         lyr = Layer.objects.all().first()
