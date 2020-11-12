@@ -100,7 +100,8 @@ def user_and_group_permission(request, model):
             permissions_names = form.cleaned_data.get('permission_type')
 
             if permissions_names:
-                set_permissions.delay(permissions_names, resources_names, users_usernames, groups_names, delete_flag)
+                set_permissions.apply_async(
+                    (permissions_names, resources_names, users_usernames, groups_names, delete_flag))
 
         return HttpResponseRedirect(
             '/admin/{}/{}/'.format(model_class._meta.app_label, model)

@@ -227,13 +227,10 @@ def legend(request, layername, layertitle=False, style=None):
     legend_filename = legend_path % (qgis_layer.qgis_layer_name, style)
 
     if not os.path.exists(legend_filename):
-
         if not os.path.exists(os.path.dirname(legend_filename)):
             os.makedirs(os.path.dirname(legend_filename))
-
         url = legend_url(layer, layertitle, style=style, internal=True)
-
-        result = cache_request.delay(url, legend_filename)
+        result = cache_request.apply_async((url, legend_filename))
 
         # Attempt to run task synchronously
         if not result.get():
@@ -322,11 +319,9 @@ def tile(request, layername, z, x, y, style=None):
 
         if not os.path.exists(os.path.dirname(tile_filename)):
             os.makedirs(os.path.dirname(tile_filename))
-
         # Use internal url
         url = tile_url(layer, z, x, y, style=style, internal=True)
-
-        result = cache_request.delay(url, tile_filename)
+        result = cache_request.apply_async((url, tile_filename))
 
         # Attempt to run task synchronously
         if not result.get():
@@ -849,7 +844,8 @@ def set_thumbnail(request, layername):
     bbox = [float(s) for s in bbox]
 
     # Give thumbnail creation to celery tasks, and exit.
-    create_qgis_server_thumbnail.delay('layers.layer', layer.id, overwrite=True, bbox=bbox)
+    create_qgis_server_thumbnail.apply_async(
+        ('layers.layer', layer.id, True, bbox))
     retval = {
         'success': True
     }
