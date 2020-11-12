@@ -478,3 +478,8 @@ PROFESSIONAL_ROLES = (('COPART','Corporate partner'),
                     ('CITIZN','Citizen'),
                     ('REPECS','Representative of an economic sector'),
                     ('OTHER', 'Other'))
+
+USE_ANALYZES = (('UACDMC','Academic'),
+                    ('UGNRL','General'),
+                    ('UBSNSS','Business'),
+                    ('UOTHER', 'Other'))
