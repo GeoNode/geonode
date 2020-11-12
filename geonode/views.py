@@ -21,15 +21,16 @@ import json
 
 from django import forms
 from django.apps import apps
-from django.conf import settings
-from django.contrib.auth import authenticate, login, get_user_model
-from django.http import HttpResponse, HttpResponseRedirect
-from django.urls import reverse
 from django.db.models import Q
+from django.urls import reverse
+from django.conf import settings
+from django.shortcuts import render_to_response
 from django.template.response import TemplateResponse
+from geonode.base.templatetags.base_tags import facets
+from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth import authenticate, login, get_user_model
 
 from geonode import get_version
-from geonode.base.templatetags.base_tags import facets
 from geonode.groups.models import GroupProfile
 from geonode.geoapps.models import GeoApp
 
@@ -110,6 +111,18 @@ def err403(request, exception):
             request.get_full_path())
     else:
         return TemplateResponse(request, '401.html', {}, status=401).render()
+
+
+def handler404(request, exception, template_name="404.html"):
+    response = render_to_response(template_name)
+    response.status_code = 404
+    return response
+
+
+def handler500(request, template_name="500.html"):
+    response = render_to_response(template_name)
+    response.status_code = 500
+    return response
 
 
 def ident_json(request):
