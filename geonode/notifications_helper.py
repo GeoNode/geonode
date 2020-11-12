@@ -66,7 +66,7 @@ def call_celery(func):
     def wrap(*args, **kwargs):
         ret = func(*args, **kwargs)
         if settings.PINAX_NOTIFICATIONS_QUEUE_ALL:
-            send_queued_notifications.delay()
+            send_queued_notifications.apply_async()
         return ret
 
     return wrap

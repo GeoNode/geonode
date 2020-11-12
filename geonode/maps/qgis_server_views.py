@@ -585,7 +585,8 @@ def set_thumbnail_map(request, mapid):
     bbox = _get_bbox_from_layers(layers)
 
     # Give thumbnail creation to celery tasks, and exit.
-    create_qgis_server_thumbnail.delay('maps.map', mapid, overwrite=True, bbox=bbox)
+    create_qgis_server_thumbnail.apply_async(
+        ('maps.map', mapid, True, bbox))
     retval = {
         'success': True
     }
