@@ -6204,7 +6204,7 @@ msgstr "Usuario"
 #: geonode/templates/500.html:249 geonode/templates/base.html:607
 #: geonode/templates/base.html:608
 msgid "Password"
-msgstr "Clave"
+msgstr "Contraseña"
 
 #: geonode/templates/500.html:253 geonode/templates/base.html:611
 msgid "Remember Me"
@@ -8717,8 +8717,39 @@ msgstr "Nombres"
 
 #: geonode.people.forms.py:130
 msgid "LastName"
-msgstr "Apellidos
+msgstr "Apellidos"
 
+#: geonode/templates/account/signup.html:34
+msgid "show condititions"
+msgstr "Terminos y condiciones"
+
+#: geonode.people.forms.py:151
+msgid "AgreeConditions"
+msgstr "Estoy de acuerdo con los términos y condiciones."
+
+#: geonode.people.forms.py:136
+msgid "ProfessionalRole"
+msgstr "Rol"
+
+#: geonode/templates/base.html:536
+msgid "About Waterproof"
+msgstr "Acerca de Waterproof"
+
+#: geonode/templates/base.html:537
+msgid "FAQ"
+msgstr "Preguntas frecuentes"
+
+#: geonode/templates/base.html:538
+msgid "Terms and conditions"
+msgstr "Términos y condiciones"
+
+#: geonode/templates/base.html:539
+msgid "Privacy policy"
+msgstr "Políticas de privacidad"
+
+#: geonode/templates/base.html:540
+msgid "Collaborators"
+msgstr "Colaboradores"
 #~ msgid ""
 #~ "GeoNode is an open source platform for sharing geospatial data and maps."
 #~ msgstr ""
@@ -9105,8 +9136,3 @@ msgstr "Apellidos
 #~ msgid "you"
 #~ msgstr "you"
 
-msgid "show condititions"
-msgstr "Terminos y condiciones"
-
-msgid "AgreeConditions"
-msgstr "Estoy de acuerdo con los términos y condiciones."
