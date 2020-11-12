@@ -13,12 +13,19 @@ $(".announcement").find(".close").on("click", function (e) {
         })
     });
 
-    $("#id_country").on("change", function(e){
-        console.log("change country:", e);
-        getCode2Country(this.value);
-    });
+  $("#id_country").on("change", function(e){
+      console.log("change country:", e);
+      getCode2Country(this.value);
+  });
 
-
+  $("#id_professional_role").on("change", function(e){
+    console.log("change id_professional_role:", e);
+    if (this.value == "OTHER"){
+      $("#div_id_other_role").show();
+    }else{
+      $("#div_id_other_role").hide();
+    }
+});
 
 });
 
@@ -55,25 +62,10 @@ function filterCities(code2){
     }    
 }
 
-function updateCitiesSelect(data){
-    
+function updateCitiesSelect(data){    
     
     autocomplete(document.getElementById("id_city"), data);
-    
-    //$('#id_city').find('option').remove().end();
-    //var option = new Option("Seleccione una Ciudad...", -1);
-    //$(option).html("Seleccione una Ciudad...");
-    //$("#id_city").append(option);
 
-    /*
-    $.each(data, function(key, modelName){
-        var option = new Option(modelName.cty, modelName.cty);
-        $(option).html(modelName.nombre);
-        $("#id_city").append(option);
-    });
-    */
-
-    //$('#id_city').selectpicker('refresh');
 }
 
 function autocomplete(inp, arr) {

@@ -135,11 +135,16 @@ class CustomUserCreationForm2(SignupForm):
 
     professional_role = forms.ChoiceField(label=_("ProfessionalRole"), choices=PROFESSIONAL_ROLES)
 
+    other_role = forms.CharField(label=_("Other Role"),
+                               widget=forms.TextInput(
+                                   attrs={'placeholder':
+                                          _('Other Role')}))
+    
     
     organization = forms.CharField(label=_("Organization"),
                                widget=forms.TextInput(
                                    attrs={'placeholder':
-                                          _('Organization')}))
+                                          _('Organization')}))            
     
     country = forms.ChoiceField(label=_('Country'), choices=COUNTRIES)
 
@@ -153,11 +158,12 @@ class CustomUserCreationForm2(SignupForm):
     field_order = [
         "email",
         "email2",  # ignored when not present
-        "username",             
+        "username",    
         "first_name",
         "last_name",
-        "professional_role",
         "organization",
+        "professional_role",
+        "other_role",
         "country",
         "city",
         "password1",

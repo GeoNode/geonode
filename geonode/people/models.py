@@ -138,6 +138,12 @@ class Profile(AbstractUser):
         blank=True,
         null=True,
         help_text=_('Professional or Academic user role'))
+    other_role = models.CharField(
+        _('OtherRole'),        
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text=_('Other Role'))
     agree_conditions = models.BooleanField(
         _('Agree Conditions'),
         default=False,

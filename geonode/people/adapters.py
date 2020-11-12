@@ -168,6 +168,7 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
         email = data.get("email")
         username = data.get("username")
         professional_role = data.get("professional_role")
+        other_role = data.get("other_role")
         organization = data.get("organization")
         country = data.get("country")
         city = data.get("city")
@@ -180,6 +181,8 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
             user_field(user, "last_name", last_name)
         if professional_role:
             user_field(user, "professional_role", professional_role)
+        if other_role:
+            user_field(user, "other_role", other_role)
         if organization:
             user_field(user, "organization", organization)
         if country:
