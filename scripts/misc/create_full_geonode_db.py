@@ -147,12 +147,7 @@ for d in range(0, n_docs):
 # 3. create layers
 # first we delete layers
 for layer in Layer.objects.all():
-    try:
-        result = delete_layer.delay(layer_id=layer.id)
-        # Attempt to run task synchronously
-        result.get()
-    except TimeoutError:
-        continue
+    result = delete_layer.apply_async((layer.id, ))
 
 for l in range(0, n_layers):
     t = Timer(partial(create_layer, l))
