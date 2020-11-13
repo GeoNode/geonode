@@ -101,6 +101,7 @@ HOSTNAME = _surl.hostname
 if not SITEURL.endswith('/'):
     SITEURL = '{}/'.format(SITEURL)
 
+# spatialite or sqlite
 DATABASE_URL = os.getenv(
     'DATABASE_URL',
     'spatialite:///{path}'.format(
@@ -439,6 +440,7 @@ GEONODE_INTERNAL_APPS = (
     'geonode.messaging',
     'geonode.monitoring',
     'geonode.frequently',
+    'geonode.study_cases',
 
 )
 
@@ -2048,3 +2050,5 @@ SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'Tr
 
 FREQUENTLY_READY_FOR_V1 = True
 FREQUENTLY_ALLOW_ANONYMOUS = True
+
+STUDY_CASES_ALLOW_ANONYMOUS = True
