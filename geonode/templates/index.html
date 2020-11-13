@@ -183,6 +183,8 @@
                 </a>
             </div>           
            </div> 
+		   <div class="row" style="height:30px;">
+           </div>
         </div>
         
       </section>
@@ -284,18 +286,34 @@
     </section>
     {% endblock datasets %} -->
 
+  <!-- <section> -->
+    <!-- <div class="row justify-content-md-center" style="height:20%;"> -->
+		<!-- <div class= "col-md-4 text-center">            -->
+			<!-- <img src= "{% static 'geonode/img/LogoTNC2.png' %}" alt= "The nature Conservancy" style= "max-height: 100px;"> -->
+        <!-- </div> -->
+		<!-- <div class= "col-md-4 text-center"> -->
+			<!-- <img src= "{% static 'geonode/img/fundacionmoore.png' %}" alt="Moore fundation" style= "max-height: 100px;"> -->
+        <!-- </div> -->
+	<!-- </div>                  -->
+          
+  <!-- </section> -->
+  
   <section>
-            <div class="row" style="height:30%;">
- <div class= "col-md-3 col-md-offset-3">           
-           <img src= "{% static 'geonode/img/LogoTNC2.png' %}" alt="The nature Conservancy" style= "max-height: "50px;">
-           </div>
-            <div class= "col-md-6">
-            <img src= "{% static 'geonode/img/fundacionmoore.png' %}" alt="Moore fundation" style= "max-height: "100px;">
-            </div>
- </div>
-                   
-             
-      </section>
+	<div class="row justify-content-md-center"> 
+		 <div class="col-md-4 text-center">
+			<div class="row justify-content-md-center">
+				<div class="col-md-4 text-center">
+					<img src="{% static 'geonode/img/LogoTNC2.png' %}">
+				</div>
+			</div>
+			<div class="row justify-content-md-center">
+				<div class="col-md-4 text-center">
+					<img src="{% static 'geonode/img/fundacionmoore.png' %}">
+				</div>
+			</div>
+		</div>
+	</div>
+  </section>
       
       {% block partners %}
         {% if custom_theme.partners.all %}
