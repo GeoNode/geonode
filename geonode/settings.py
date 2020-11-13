@@ -441,6 +441,7 @@ GEONODE_INTERNAL_APPS = (
     'geonode.monitoring',
     'geonode.frequently',
     'geonode.study_cases',
+    'geonode.waterproof_nbs_ca',
 
 )
 
@@ -2052,3 +2053,5 @@ FREQUENTLY_READY_FOR_V1 = True
 FREQUENTLY_ALLOW_ANONYMOUS = True
 
 STUDY_CASES_ALLOW_ANONYMOUS = True
+
+WATERPROOF_NBS_CA_ALLOW_ANONYMOUS = True

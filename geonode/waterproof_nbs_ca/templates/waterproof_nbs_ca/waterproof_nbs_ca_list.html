@@ -1,0 +1,19 @@
+{% extends "geonode_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Waterproof NBS CA" %}{% endblock %}
+{% block main %}
+  <h1>{% trans "Waterproof NBS CA" %}</h1>
+  <a href="{% url "waterproof_nbs_ca_submit" %}">{% trans "Create new study case" %}</a>
+   
+{% endblock %}
+
+{% block body_outer %}
+{% block body %}{% endblock body %}
+{% block sidebar %}{% endblock sidebar %}
+
+{% endblock body_outer %}
+
+{% block extra_script %}
+  <script src="{% static waterproof_nbs_ca/js/waterproof_nbs_ca.js}"></script>
+{% endblock %}
