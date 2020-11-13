@@ -27,6 +27,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from geonode.base.enumerations import COUNTRIES
 from geonode.base.enumerations import PROFESSIONAL_ROLES
+from geonode.base.enumerations import USE_ANALYSIS
 from geonode.base.models import ContactRole
 
 from allauth.account.forms import SignupForm
@@ -140,7 +141,8 @@ class CustomUserCreationForm2(SignupForm):
                                    attrs={'placeholder':
                                           _('Other Role')}))
     
-    
+    use_analysis = forms.ChoiceField(label=_("Use Analysis"), choices=USE_ANALYSIS)
+
     organization = forms.CharField(label=_("Organization"),
                                widget=forms.TextInput(
                                    attrs={'placeholder':
@@ -164,6 +166,7 @@ class CustomUserCreationForm2(SignupForm):
         "organization",
         "professional_role",
         "other_role",
+        "use_analysis",
         "country",
         "city",
         "password1",

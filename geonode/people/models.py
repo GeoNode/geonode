@@ -37,6 +37,7 @@ from taggit.managers import TaggableManager
 
 from geonode.base.enumerations import COUNTRIES
 from geonode.base.enumerations import PROFESSIONAL_ROLES
+from geonode.base.enumerations import USE_ANALYSIS
 from geonode.groups.models import GroupProfile
 
 from allauth.account.signals import user_signed_up
@@ -144,6 +145,13 @@ class Profile(AbstractUser):
         blank=True,
         null=True,
         help_text=_('Other Role'))
+    use_analysis = models.CharField(
+        _('UseAnalysis'),
+        choices=USE_ANALYSIS,
+        max_length=8,
+        blank=True,
+        null=True,
+        help_text=_('Use Analysis'))
     agree_conditions = models.BooleanField(
         _('Agree Conditions'),
         default=False,
