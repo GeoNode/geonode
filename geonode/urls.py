@@ -267,6 +267,11 @@ urlpatterns += [
     url(r'^faq/', include('geonode.frequently.urls'), name='faq'),
 ]
 
+# Study Cases
+urlpatterns += [
+    url(r'^study_cases/', include('geonode.study_cases.urls'), name='study_cases'),
+]
+
 if settings.MONITORING_ENABLED:
     urlpatterns += [url(r'^monitoring/',
                         include(('geonode.monitoring.urls', 'geonode.monitoring'),
