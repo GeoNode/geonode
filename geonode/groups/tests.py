@@ -163,6 +163,18 @@ class SmokeTest(GeoNodeBaseTestSupport):
         logger.debug(f"Anonymous --> {content}")
         self.assertEqual(len(content["groups"]), 1)
         self.assertEqual(content["groups"][0]["name"], "public_group")
+        response = self.client.get(
+            reverse(
+                'group_detail',
+                args=['public_group', ])
+        )
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(
+            reverse(
+                'group_detail',
+                args=['private_group', ])
+        )
+        self.assertEqual(response.status_code, 404)
 
         # Admin
         """
@@ -186,6 +198,18 @@ class SmokeTest(GeoNodeBaseTestSupport):
         self.assertEqual(len(content["groups"]), 2)
         self.assertEqual(content["groups"][0]["name"], "public_group")
         self.assertEqual(content["groups"][1]["name"], "private_group")
+        response = self.client.get(
+            reverse(
+                'group_detail',
+                args=['public_group', ])
+        )
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(
+            reverse(
+                'group_detail',
+                args=['private_group', ])
+        )
+        self.assertEqual(response.status_code, 200)
 
         # Bobby
         """
@@ -209,6 +233,18 @@ class SmokeTest(GeoNodeBaseTestSupport):
         self.assertEqual(len(content["groups"]), 2)
         self.assertEqual(content["groups"][0]["name"], "public_group")
         self.assertEqual(content["groups"][1]["name"], "private_group")
+        response = self.client.get(
+            reverse(
+                'group_detail',
+                args=['public_group', ])
+        )
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(
+            reverse(
+                'group_detail',
+                args=['private_group', ])
+        )
+        self.assertEqual(response.status_code, 200)
 
         # Norman
         """
@@ -230,6 +266,18 @@ class SmokeTest(GeoNodeBaseTestSupport):
         logger.debug(f"norman --> {content}")
         self.assertEqual(len(content["groups"]), 1)
         self.assertEqual(content["groups"][0]["name"], "public_group")
+        response = self.client.get(
+            reverse(
+                'group_detail',
+                args=['public_group', ])
+        )
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(
+            reverse(
+                'group_detail',
+                args=['private_group', ])
+        )
+        self.assertEqual(response.status_code, 404)
 
         if _public_created:
             public_group.delete()
