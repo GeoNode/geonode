@@ -35,7 +35,7 @@ jobs:
       - run:
           name: Build the stack
           command: docker-compose -f docker-compose.yml build
-          working_directory: scripts/spcgeonode/
+          working_directory: ./
 
       - when:
           condition: <<parameters.save_docker_cache>>
@@ -55,7 +55,7 @@ jobs:
       - run:
           name: Start the stack
           command: docker-compose -f docker-compose.yml up -d --build
-          working_directory: scripts/spcgeonode/
+          working_directory: ./
 
       - run:
           name: Wait for everything to start...
@@ -65,18 +65,18 @@ jobs:
             until [ $n -gt $m ]
             do
               sleep 60
-              DJANGO_STATUS=$(docker inspect --format="{{json .State.Health.Status}}" spcgeonode_django_1)
-              GEOSERVER_STATUS=$(docker inspect --format="{{json .State.Health.Status}}" spcgeonode_geoserver_1)
+              DJANGO_STATUS=$(docker inspect --format="{{json .State.Status}}" django4geonode)
+              GEOSERVER_STATUS=$(docker inspect --format="{{json .State.Status}}" geoserver4geonode)
               echo ""
               echo "Waited $n min (out of $m min)"
-              if [[ $DJANGO_STATUS == '"healthy"' ]] && [[ $GEOSERVER_STATUS == '"healthy"' ]]; then
+              if [[ $DJANGO_STATUS == '"running"' ]] && [[ $GEOSERVER_STATUS == '"running"' ]]; then
                 break
               fi
-              echo "Not healthy yet..."
+              echo "Not running yet..."
               docker ps
               n=$[$n+1]
             done
-            [[ $DJANGO_STATUS == '"healthy"' ]] && [[ $GEOSERVER_STATUS == '"healthy"' ]];
+            [[ $DJANGO_STATUS == '"running"' ]] && [[ $GEOSERVER_STATUS == '"running"' ]];
 
       - run:
           name: Show state (debug)
@@ -85,12 +85,12 @@ jobs:
 
       - run:
           name: Geoserver logs (debug)
-          command: docker logs spcgeonode_geoserver_1 --tail 500
+          command: docker logs geoserver4geonode --tail 500
           when: on_fail
 
       - run:
           name: Django logs (debug)
-          command: docker logs spcgeonode_django_1 --tail 500
+          command: docker logs django4geonode --tail 500
           when: on_fail
 
       - when:
@@ -100,12 +100,9 @@ jobs:
                 name: Run test suite
                 command: |
                   docker-compose -f docker-compose.yml exec django bash -c 'echo "Running <<parameters.test_suite>>"'
-                  docker-compose -f docker-compose.yml exec postgres psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
-                  docker-compose -f docker-compose.yml exec postgres createdb -U postgres -T postgres test_postgres
-                  docker-compose -f docker-compose.yml exec postgres createdb -U postgres -T postgres test_geonode
-                  docker-compose -f docker-compose.yml exec postgres createdb -U postgres -T postgres test_geonode_data
-                  docker-compose -f docker-compose.yml run --rm django bash -c 'ASYNC_SIGNALS=False python manage.py test -v 3 --keepdb <<parameters.test_suite>>'
-                working_directory: scripts/spcgeonode/
+                  docker-compose -f docker-compose.yml run --rm django bash -c 'coverage run --branch --source=geonode manage.py test -v 3 --keepdb <<parameters.test_suite>>'
+                  docker-compose -f docker-compose.yml run --rm django bash -c 'flake8 geonode'
+                working_directory: ./
 
 workflows:
 
@@ -116,13 +113,6 @@ workflows:
           load_docker_cache: true
           save_docker_cache: true
           test_suite: 'geonode.tests.smoke'
-      - build:
-          name: tests_integration
-          load_docker_cache: true
-          save_docker_cache: false
-          test_suite: 'geonode.tests.integration'
-          requires:
-            - setup
       - build:
           name: tests_core
           load_docker_cache: true
@@ -144,6 +134,41 @@ workflows:
           test_suite: $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_CONTRIB_APPS]))")
           requires:
             - setup
+      - build:
+          name: tests_csw
+          load_docker_cache: true
+          save_docker_cache: false
+          test_suite: 'geonode.tests.csw'
+          requires:
+            - setup
+      - build:
+          name: tests_integration
+          load_docker_cache: true
+          save_docker_cache: false
+          test_suite: 'geonode.tests.integration'
+          requires:
+            - setup
+      - build:
+          name: tests_geoserver_integration
+          load_docker_cache: true
+          save_docker_cache: false
+          test_suite: 'geonode.geoserver.tests.integration'
+          requires:
+            - setup
+      - build:
+          name: tests_upload_integration
+          load_docker_cache: true
+          save_docker_cache: false
+          test_suite: 'geonode.upload.tests.integration'
+          requires:
+            - setup
+      - build:
+          name: tests_monitoring_integration
+          load_docker_cache: true
+          save_docker_cache: false
+          test_suite: 'geonode.monitoring.tests.integration'
+          requires:
+            - setup
 
   nightly:
     triggers:
@@ -152,8 +177,8 @@ workflows:
           filters:
             branches:
               only:
-                - spcgeonode-release
-                - spcgeonode
+                - master
+                - 3.x
     jobs:
       - build:
           load_docker_cache: false
