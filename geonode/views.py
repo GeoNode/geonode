@@ -17,9 +17,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
 
 from django import forms
-import json
 from django.db.models import Q
 from django.urls import reverse
 from django.conf import settings
@@ -84,15 +84,19 @@ def ajax_lookup(request):
             content='use a field named "query" to specify a prefix to filter usernames',
             content_type='text/plain')
     keyword = request.POST['query']
-    users = get_user_model().objects.filter(Q(username__icontains=keyword)).exclude(Q(username='AnonymousUser') |
-                                                                                    Q(is_active=False))
-    groups = GroupProfile.objects.filter(Q(title__icontains=keyword) |
-                                         Q(slug__icontains=keyword))
+    users = get_user_model().objects.filter(
+        Q(username__icontains=keyword)).exclude(Q(username='AnonymousUser') |
+                                                Q(is_active=False))
+    groups = GroupProfile.objects.filter(
+        Q(title__icontains=keyword) |
+        Q(slug__icontains=keyword)).exclude(
+            Q(access='private') & ~Q(
+                slug__in=request.user.groupmember_set.all().values_list("group__slug", flat=True))
+        )
     json_dict = {
         'users': [({'username': u.username}) for u in users],
         'count': users.count(),
     }
-
     json_dict['groups'] = [({'name': g.slug, 'title': g.title})
                            for g in groups]
     return HttpResponse(
