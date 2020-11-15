@@ -87,12 +87,21 @@ def ajax_lookup(request):
     users = get_user_model().objects.filter(
         Q(username__icontains=keyword)).exclude(Q(username='AnonymousUser') |
                                                 Q(is_active=False))
-    groups = GroupProfile.objects.filter(
-        Q(title__icontains=keyword) |
-        Q(slug__icontains=keyword)).exclude(
-            Q(access='private') & ~Q(
-                slug__in=request.user.groupmember_set.all().values_list("group__slug", flat=True))
-        )
+    if request.user and request.user.is_authenticated and request.user.is_superuser:
+        groups = GroupProfile.objects.filter(
+            Q(title__icontains=keyword) |
+            Q(slug__icontains=keyword))
+    elif request.user.is_anonymous:
+        groups = GroupProfile.objects.filter(
+            Q(title__icontains=keyword) |
+            Q(slug__icontains=keyword)).exclude(Q(access='private'))
+    else:
+        groups = GroupProfile.objects.filter(
+            Q(title__icontains=keyword) |
+            Q(slug__icontains=keyword)).exclude(
+                Q(access='private') & ~Q(
+                    slug__in=request.user.groupmember_set.all().values_list("group__slug", flat=True))
+            )
     json_dict = {
         'users': [({'username': u.username}) for u in users],
         'count': users.count(),
