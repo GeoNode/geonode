@@ -61,6 +61,7 @@ services:
       - ./scripts/docker/env/${SET_DOCKER_ENV}/geoserver.env
 
   django:
+    image: geonode/geonode:latest
     restart: unless-stopped
     build: .
     container_name: django4${COMPOSE_PROJECT_NAME}
@@ -80,9 +81,11 @@ services:
       - backup-restore:/backup_restore
       - data:/data
     env_file:
+      - .env
       - ./scripts/docker/env/${SET_DOCKER_ENV}/django.env
 
   celery:
+    image: geonode/geonode:latest
     restart: unless-stopped
     build: .
     container_name: celery4${COMPOSE_PROJECT_NAME}
@@ -101,6 +104,7 @@ services:
       - backup-restore:/backup_restore
       - data:/data
     env_file:
+      - .env
       - ./scripts/docker/env/${SET_DOCKER_ENV}/celery.env
 
   geonode:

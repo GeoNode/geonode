@@ -6,8 +6,13 @@ RUN pip install pip --upgrade
 RUN pip install -r requirements.txt --upgrade
 
 WORKDIR /usr/src/geonode/
-RUN git pull
+RUN git fetch --all --prune && \
+    git reset --hard origin/master && \
+    git pull
 RUN pip install -e . --upgrade
+
+COPY tasks.py /usr/src/app/
+COPY entrypoint.sh /usr/src/app/
 
 # Activate "memcached"
 RUN apt install -y cron memcached
