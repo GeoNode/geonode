@@ -692,7 +692,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         help_text=restriction_code_type_help_text,
         null=True,
         blank=True,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         limit_choices_to=Q(is_choice=True))
     constraints_other = models.TextField(
         _('restrictions other'),
@@ -705,7 +705,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         verbose_name=_("License"),
         help_text=license_help_text,
-        on_delete=models.CASCADE)
+        on_delete=models.SET_NULL)
     language = models.CharField(
         _('language'),
         max_length=3,
@@ -716,14 +716,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         TopicCategory,
         null=True,
         blank=True,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         limit_choices_to=Q(is_choice=True),
         help_text=category_help_text)
     spatial_representation_type = models.ForeignKey(
         SpatialRepresentationType,
         null=True,
         blank=True,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         limit_choices_to=Q(is_choice=True),
         verbose_name=_("spatial representation type"),
         help_text=spatial_representation_type_help_text)
@@ -752,7 +752,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         null=True,
         help_text=data_quality_statement_help_text)
-    group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
+    group = models.ForeignKey(
+        Group,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL)
 
     # Section 9
     # see metadata_author property definition below
