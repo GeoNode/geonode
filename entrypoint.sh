@@ -1,12 +1,18 @@
 #!/bin/bash
 set -e
 
+# Start cron && memcached services
+service cron restart
+service memcached restart
+
 /usr/local/bin/invoke update >> /usr/src/app/invoke.log
 
 source $HOME/.bashrc
 source $HOME/.override_env
 
 echo DOCKER_API_VERSION=$DOCKER_API_VERSION
+echo POSTGRES_USER=$POSTGRES_USER
+echo POSTGRES_PASSWORD=$POSTGRES_PASSWORD
 echo DATABASE_URL=$DATABASE_URL
 echo GEODATABASE_URL=$GEODATABASE_URL
 echo SITEURL=$SITEURL
