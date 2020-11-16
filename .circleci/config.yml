@@ -99,9 +99,9 @@ jobs:
             - run:
                 name: Run test suite
                 command: |
-                  docker-compose -f docker-compose.yml exec django bash -c 'echo "Running <<parameters.test_suite>>"'
-                  docker-compose -f docker-compose.yml run --rm django bash -c 'coverage run --branch --source=geonode manage.py test -v 3 --keepdb <<parameters.test_suite>>'
-                  docker-compose -f docker-compose.yml run --rm django bash -c 'flake8 geonode'
+                  docker exec -it django4geonode bash -c 'echo "Running <<parameters.test_suite>>"'
+                  docker exec -it django4geonode bash -c 'coverage run --branch --source=geonode manage.py test -v 3 --keepdb <<parameters.test_suite>>'
+                  docker exec -it django4geonode bash -c 'flake8 geonode'
                 working_directory: ./
 
 workflows:
