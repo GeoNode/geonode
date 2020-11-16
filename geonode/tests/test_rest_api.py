@@ -49,7 +49,7 @@ class TestGroupResAuthorization(GeoNodeBaseTestSupport):
     @patch('geonode.api.authorization.ApiLockdownAuthorization.read_list',
            return_value=Group.objects.exclude(name='anonymous'))
     @patch('geonode.people.models.Profile.group_list_all', return_value=[2])
-    def test_regular_user_hide_private(self, super_mock, mocke_profile):
+    def test_regular_user_hide_private(self, super_mock, mocked_profile):
         mock_bundle = MagicMock()
         request_mock = MagicMock()
         r_attr = {
@@ -67,7 +67,7 @@ class TestGroupResAuthorization(GeoNodeBaseTestSupport):
     @patch('geonode.api.authorization.ApiLockdownAuthorization.read_list',
            return_value=Group.objects.exclude(name='anonymous'))
     @patch('geonode.people.models.Profile.group_list_all', return_value=[1])
-    def test_regular_user(self, super_mock, mocke_profile):
+    def test_regular_user(self, super_mock, mocked_profile):
         mock_bundle = MagicMock()
         request_mock = MagicMock()
         r_attr = {
@@ -85,7 +85,7 @@ class TestGroupResAuthorization(GeoNodeBaseTestSupport):
     @patch('geonode.api.authorization.ApiLockdownAuthorization.read_list',
            return_value=Group.objects.exclude(name='anonymous'))
     @patch('geonode.people.models.Profile.group_list_all', return_value=[1])
-    def test_anonymous_user(self, super_mock, mocke_profile):
+    def test_anonymous_user(self, super_mock, mocked_profile):
         mock_bundle = MagicMock()
         request_mock = MagicMock()
         r_attr = {
@@ -122,7 +122,7 @@ class TestGroupProfileResAuthorization(GeoNodeBaseTestSupport):
 
     @patch('geonode.api.authorization.ApiLockdownAuthorization.read_list', return_value=GroupProfile.objects.all())
     @patch('geonode.people.models.Profile.group_list_all', return_value=[2])
-    def test_regular_user_hide_private(self, super_mock, mocke_profile):
+    def test_regular_user_hide_private(self, super_mock, mocked_profile):
         mock_bundle = MagicMock()
         request_mock = MagicMock()
         r_attr = {
@@ -139,7 +139,7 @@ class TestGroupProfileResAuthorization(GeoNodeBaseTestSupport):
 
     @patch('geonode.api.authorization.ApiLockdownAuthorization.read_list', return_value=GroupProfile.objects.all())
     @patch('geonode.people.models.Profile.group_list_all', return_value=[1])
-    def test_regular_user(self, super_mock, mocke_profile):
+    def test_regular_user(self, super_mock, mocked_profile):
         mock_bundle = MagicMock()
         request_mock = MagicMock()
         r_attr = {
@@ -156,7 +156,7 @@ class TestGroupProfileResAuthorization(GeoNodeBaseTestSupport):
 
     @patch('geonode.api.authorization.ApiLockdownAuthorization.read_list', return_value=GroupProfile.objects.all())
     @patch('geonode.people.models.Profile.group_list_all', return_value=[1])
-    def test_anonymous_user(self, super_mock, mocke_profile):
+    def test_anonymous_user(self, super_mock, mocked_profile):
         mock_bundle = MagicMock()
         request_mock = MagicMock()
         r_attr = {
