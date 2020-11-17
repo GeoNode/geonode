@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('base', '0045_merge_20201001_1617'),
+        ('base', '0045_auto_20200507_0445'),
     ]
 
     operations = [
