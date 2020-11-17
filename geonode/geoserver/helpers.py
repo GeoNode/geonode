@@ -1368,7 +1368,7 @@ def create_geoserver_db_featurestore(
              'Connection timeout': 10,
              'create database': 'false',
              'Batch insert size': 30,
-             'preparedStatements': 'false',
+             'preparedStatements': 'true',
              'min connections': 10,
              'max connections': 100,
              'Evictor tests per run': 3,
