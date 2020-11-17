@@ -105,9 +105,8 @@ jobs:
                   docker exec db4geonode createdb -U postgres -T postgres test_geonode_data
                   docker exec db4geonode psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
                   docker exec db4geonode psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-                  docker exec -it django4geonode bash -c 'echo "Running <<parameters.test_suite>>"'
-                  docker exec -it django4geonode bash -c 'coverage run --branch --source=geonode manage.py test -v 3 --keepdb <<parameters.test_suite>>'
-                  docker exec -it django4geonode bash -c 'flake8 geonode'
+                  docker-compose -f docker-compose.yml run --rm django bash -c 'coverage run --branch --source=geonode manage.py test -v 3 --keepdb <<parameters.test_suite>>'
+                  docker-compose -f docker-compose.yml run --rm django bash -c 'flake8 geonode'
                 working_directory: ./
 
 workflows:

@@ -9,8 +9,10 @@ x-common-django:
   build:
     context: ./
     dockerfile: Dockerfile
+  env_file:
+    - .env
   volumes:
-    - '.:/usr/src/app'
+    # - '.:/usr/src/geonode'
     - statics:/mnt/volumes/statics
     - geoserver-data-dir:/geoserver_data/data
     - backup-restore:/backup_restore
@@ -28,21 +30,19 @@ services:
       timeout: 10s
       retries: 1
       start_period: 60s
+    environment:
+      - IS_CELERY=False
     entrypoint: ["/usr/src/geonode/entrypoint.sh"]
-    command: "uwsgi --ini /usr/src/app/uwsgi.ini"
-    env_file:
-      - .env
-      - ./scripts/docker/env/${SET_DOCKER_ENV}/django.env
+    command: "uwsgi --ini /usr/src/geonode/uwsgi.ini"
 
   # Celery worker that executes celery tasks created by Django.
   celery:
     << : *default-common-django
     container_name: celery4${COMPOSE_PROJECT_NAME}
+    environment:
+      - IS_CELERY=True
     entrypoint: ["/usr/src/geonode/entrypoint.sh"]
     command: "celery -A geonode.celery_app:app worker -B -E --statedb=/mnt/volumes/statics/worker.state -s /mnt/volumes/statics/celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h -f /var/log/celery.log"
-    env_file:
-      - .env
-      - ./scripts/docker/env/${SET_DOCKER_ENV}/celery.env
 
   # Nginx is serving django static and media files and proxies to django and geonode
   geonode:
@@ -90,7 +90,7 @@ services:
       retries: 1
       start_period: 60s
     env_file:
-      - ./scripts/docker/env/${SET_DOCKER_ENV}/geoserver.env
+      - ./scripts/docker/env/${DOCKER_ENV}/geoserver.env
     volumes:
       - statics:/mnt/volumes/statics
       - geoserver-data-dir:/geoserver_data/data
@@ -112,7 +112,7 @@ services:
     image: geonode/postgis:latest
     container_name: db4${COMPOSE_PROJECT_NAME}
     env_file:
-      - ./scripts/docker/env/${SET_DOCKER_ENV}/db.env
+      - ./scripts/docker/env/${DOCKER_ENV}/db.env
     volumes:
       - dbdata:/var/lib/postgresql/data
       - dbbackups:/pg_backups
