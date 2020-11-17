@@ -26,7 +26,7 @@ jobs:
           steps:
             - restore_cache:
                 keys:
-                  - v1-docker-images-{{ .Branch }}
+                  - v2-docker-images-{{ .Branch }}
             - run:
                 name: Load Docker layers cache
                 command: |
@@ -47,36 +47,36 @@ jobs:
                   docker save -o ~/docker-layers-cache.tar $(docker images -a --format "{{.ID}}")
                 when: always
             - save_cache:
-                key: v1-docker-images-{{ .Branch }}-{{ epoch }}
+                key: v2-docker-images-{{ .Branch }}-{{ epoch }}
                 paths:
                   - ~/docker-layers-cache.tar
                 when: always
 
       - run:
           name: Start the stack
-          command: docker-compose -f docker-compose.yml up -d --build
+          command: docker-compose -f docker-compose.yml up -d
           working_directory: ./
 
       - run:
           name: Wait for everything to start...
           command: |
             n=1
-            m=60
+            m=10
             until [ $n -gt $m ]
             do
               sleep 60
-              DJANGO_STATUS=$(docker inspect --format="{{json .State.Status}}" django4geonode)
-              GEOSERVER_STATUS=$(docker inspect --format="{{json .State.Status}}" geoserver4geonode)
+              DJANGO_STATUS=$(docker inspect --format="{{json .State.Health.Status}}" django4geonode)
+              GEOSERVER_STATUS=$(docker inspect --format="{{json .State.Health.Status}}" geoserver4geonode)
               echo ""
               echo "Waited $n min (out of $m min)"
-              if [[ $DJANGO_STATUS == '"running"' ]] && [[ $GEOSERVER_STATUS == '"running"' ]]; then
+              if [[ $DJANGO_STATUS == '"healthy"' ]] && [[ $GEOSERVER_STATUS == '"healthy"' ]]; then
                 break
               fi
-              echo "Not running yet..."
+              echo "Not healthy yet..."
               docker ps
               n=$[$n+1]
             done
-            [[ $DJANGO_STATUS == '"running"' ]] && [[ $GEOSERVER_STATUS == '"running"' ]];
+            [[ $DJANGO_STATUS == '"healthy"' ]] && [[ $GEOSERVER_STATUS == '"healthy"' ]];
 
       - run:
           name: Show state (debug)
@@ -99,9 +99,15 @@ jobs:
             - run:
                 name: Run test suite
                 command: |
-                  docker-compose -f docker-compose.yml exec django bash -c 'echo "Running <<parameters.test_suite>>"'
-                  docker-compose -f docker-compose.yml run --rm django bash -c 'coverage run --branch --source=geonode manage.py test -v 3 --keepdb <<parameters.test_suite>>'
-                  docker-compose -f docker-compose.yml run --rm django bash -c 'flake8 geonode'
+                  docker exec db4geonode psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
+                  docker exec db4geonode createdb -U postgres -T postgres test_postgres
+                  docker exec db4geonode createdb -U postgres -T postgres test_geonode
+                  docker exec db4geonode createdb -U postgres -T postgres test_geonode_data
+                  docker exec db4geonode psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+                  docker exec db4geonode psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+                  docker exec -it django4geonode bash -c 'echo "Running <<parameters.test_suite>>"'
+                  docker exec -it django4geonode bash -c 'coverage run --branch --source=geonode manage.py test -v 3 --keepdb <<parameters.test_suite>>'
+                  docker exec -it django4geonode bash -c 'flake8 geonode'
                 working_directory: ./
 
 workflows:
