@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% block content %}
+<div class="text-center">
+    <form method="post">
+        {% csrf_token %}
+
+        <p class="delete-msg">Are you sure you want to delete the <b>"{{ object.name }}"</b> language?</p>
+
+        <a href="" class="btn btn-secondary">NO</a>
+        <button class="btn btn-primary" type="submit">Si</button>
+    </form>
+</div>
+{% endblock %}

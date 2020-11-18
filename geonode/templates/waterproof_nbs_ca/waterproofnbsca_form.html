@@ -7,9 +7,9 @@
   <form method="post" action=".">
     {% csrf_token %}
     <div id="waterproof_nbs_ca">
-      {{ form.as_p }}
+      {{ form|as_bootstrap }}
     </div>    
-    <input type="submit" value="{% trans "Submit" %}" />
+    <input type="submit" class="btn btn-primary" value="{% trans "Save" %}" />
   </form>  
 {% endblock %}
 

@@ -26,14 +26,32 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
+
 class WaterproofNbsCa(models.Model):
     """
     Model to Waterproof.
 
     :name: Waterproof Name.
-    
+
 
     """
+    RIOS_TRANSITION = (
+        ('nv', _('Keep native vegetation')),
+        ('rvU', _('Revegetation (unassisted)')),
+        ('rvA', _('Revegetation (assisted)')),
+        ('nv', _('Agricultural vegetation management')),
+        ('di', _('Ditching')),
+        ('rvA', _('Pasture management')),
+        ('rvA', _('Fertilizer management')),
+    )
+
+    LAND_COVERS = (
+        ('Forest', _('Forest')),
+        ('Grassland', _('Grassland')),
+        ('Shrubland', _('Shrubland')),
+        ('Sparse vegetation', _('Sparse vegetation')),
+    )
+
     name = models.CharField(
         max_length=100,
         verbose_name=_('Name'),
@@ -44,8 +62,52 @@ class WaterproofNbsCa(models.Model):
         verbose_name=_('Description'),
     )
 
-    def __str__(self):
-        return self.name
+    max_benefit_req_time = models.IntegerField(
+        default=0,
+        verbose_name=_('Time maximum benefit'),
+    )
+
+    profit_pct_time_inter_assoc = models.FloatField(
+        default=0,
+        verbose_name=_('Percentage of benefit associated with interventions at time t=0'),
+    )
+
+    total_profits_sbn_consec_time = models.IntegerField(
+        default=0,
+        verbose_name=_('Procurement time of total SBN benefits'),
+    )
+
+    unit_implementation_cost = models.FloatField(
+        default=0,
+        verbose_name=_('Unit implementation costs (US $/ha)'),
+    )
+
+    unit_maintenance_cost = models.FloatField(
+        default=0,
+        verbose_name=_('Unit maintenance costs (US $/ha)'),
+    )
+
+    periodicity_maitenance = models.IntegerField(
+        default=0,
+        verbose_name=_('Periodicity of maintenance (year)'),
+    )
+
+    unit_oportunity_cost = models.IntegerField(
+        default=0,
+        verbose_name=_('Unit oportunity costs (US $/ha)'),
+    )
+
+    rios_transition = models.CharField(
+        max_length=32,
+        choices=RIOS_TRANSITION,
+        default='1'
+    )
+
+    land_cover_def = models.CharField(
+        max_length=32,
+        choices=LAND_COVERS,
+        default=''
+    )
 
     class Meta:
         ordering = ['name', 'description']
@@ -54,6 +116,3 @@ class WaterproofNbsCa(models.Model):
         return self.entries.filter(published=True).annotate(
             null_position=models.Count('fixed_position')).order_by(
             '-null_position', 'fixed_position', '-amount_of_views')
-
-
-
