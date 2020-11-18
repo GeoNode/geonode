@@ -535,7 +535,7 @@ def _get_layer_values(layer, upload_session, expand=0):
 
         inDataSource = ogr.Open(absolute_base_file)
         lyr = inDataSource.GetLayer(str(layer.name))
-        limit = 100
+        limit = 10
         for feat in islice(lyr, 0, limit):
             try:
                 feat_values = json_loads_byteified(

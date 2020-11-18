@@ -72,6 +72,8 @@ from django.views.decorators.cache import cache_control
 
 logger = logging.getLogger(__name__)
 
+temp_style_name_regex = r'[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}_ms_.*'
+
 
 def stores(request, store_type=None):
     stores = get_stores(store_type)
@@ -521,7 +523,10 @@ def geoserver_proxy(request,
                 logger.debug(
                     "[geoserver_proxy] Updating Style ---> url %s" %
                     url.geturl())
-                affected_layers = style_update(request, raw_url)
+                _style_name = os.path.basename(urlsplit(url.geturl()).path)
+                if _style_name != 'style-check' and \
+                not re.match(temp_style_name_regex, _style_name):
+                    affected_layers = style_update(request, raw_url)
             elif downstream_path == 'rest/layers':
                 logger.debug(
                     "[geoserver_proxy] Updating Layer ---> url %s" %

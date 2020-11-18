@@ -1794,12 +1794,9 @@ def style_update(request, url):
         # add style in GN and associate it to layer
         if request.method == 'DELETE':
             if style_name:
-                try:
-                    style = Style.objects.get(name=style_name)
-                    style.delete()
-                except Exception:
-                    pass
+                style = Style.objects.filter(name=style_name).delete()
         if request.method == 'POST':
+            style = None
             if style_name:
                 style, created = Style.objects.get_or_create(name=style_name)
                 style.sld_body = sld_body
@@ -1814,7 +1811,7 @@ def style_update(request, url):
                         layer = Layer.objects.get(alternate=layer_name)
                     except Exception:
                         pass
-            if layer:
+            if layer and style:
                 style.layer_styles.add(layer)
                 style.save()
                 affected_layers.append(layer)
@@ -1835,12 +1832,6 @@ def style_update(request, url):
             _invalidate_geowebcache_layer(layer_name)
         except Exception:
             pass
-
-    elif request.method == 'DELETE':  # delete style from GN
-        style_name = os.path.basename(request.path)
-        style = Style.objects.get(name=style_name)
-        style.delete()
-
     return affected_layers
 
 
