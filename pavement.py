@@ -862,15 +862,17 @@ def test_javascript(options):
 @task
 @cmdopts([
     ('name=', 'n', 'Run specific tests.'),
-    ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
+    ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE'),
+    ('local=', 'l', 'Set to True if running bdd tests locally')
 ])
 def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
     """
     prefix = options.get('prefix')
+    local = str2bool(options.get('local', 'false'))
     _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
-    if _backend == 'geonode.geoserver' or 'geonode.qgis_server' not in INSTALLED_APPS:
+    if local and _backend == 'geonode.geoserver' or 'geonode.qgis_server' not in INSTALLED_APPS:
         call_task('stop_geoserver')
         _reset()
     else:
@@ -888,9 +890,10 @@ def test_integration(options):
                 settings = 'geonode.local_settings' if _backend == 'geonode.qgis_server' else 'geonode.settings'
                 settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
             call_task('sync', options={'settings': settings})
-            if _backend == 'geonode.geoserver':
-                call_task('start_geoserver', options={'settings': settings, 'force_exec': True})
-            call_task('start', options={'settings': settings})
+            if local:
+                if _backend == 'geonode.geoserver':
+                    call_task('start_geoserver', options={'settings': settings, 'force_exec': True})
+                call_task('start', options={'settings': settings})
             if integration_server_tests:
                 call_task('setup_data', options={'settings': settings})
         elif _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
@@ -919,11 +922,11 @@ def test_integration(options):
         live_server_option = ''
         info("Running the tests now...")
         sh(('%s %s manage.py test %s'
-            ' %s --noinput %s' % (settings,
-                                  prefix,
-                                  name,
-                                  _keepdb,
-                                  live_server_option)))
+            ' -v 3 %s --noinput %s' % (settings,
+                                       prefix,
+                                       name,
+                                       _keepdb,
+                                       live_server_option)))
 
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
@@ -942,7 +945,7 @@ def test_integration(options):
         'start_qgis_server'])
 @cmdopts([
     ('coverage', 'c', 'use this flag to generate coverage during test runs'),
-    ('local=', 'l', 'Set to True if running bdd tests locally')
+    ('local=', 'l', 'Set to True if running tests locally')
 ])
 def run_tests(options):
     """
@@ -966,7 +969,7 @@ def run_tests(options):
         elif integration_monitoring_tests:
             call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.monitoring.tests.integration'})
         elif integration_csw_tests:
-            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.csw'})
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.csw', 'local': local})
         elif integration_bdd_tests:
             call_task('test_bdd', options={'local': local})
         else:
