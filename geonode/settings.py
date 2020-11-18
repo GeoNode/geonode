@@ -473,6 +473,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.humanize',
     'django.contrib.gis',
+    'django.contrib.admindocs',
 
     # Utility
     'dj_pagination',
