@@ -27,7 +27,11 @@ from lxml import etree
 from defusedxml import lxml as dlxml
 from os.path import isfile
 
-from urllib.parse import urlsplit, urljoin, unquote
+from urllib.parse import (
+    urlsplit,
+    urljoin,
+    unquote,
+    parse_qsl)
 
 from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpResponseRedirect
@@ -524,7 +528,13 @@ def geoserver_proxy(request,
                     "[geoserver_proxy] Updating Style ---> url %s" %
                     url.geturl())
                 _style_name = os.path.basename(urlsplit(url.geturl()).path)
-                if _style_name != 'style-check' and \
+                if _style_name == 'styles.json' and request.method == "PUT":
+                    _parsed_get_args = dict(parse_qsl(urlsplit(url.geturl()).query))
+                    if 'name' in _parsed_get_args:
+                        _style_name, _style_ext = os.path.splitext(_parsed_get_args['name'])
+                else:
+                    _style_name, _style_ext = os.path.splitext(_style_name)
+                if _style_name != 'style-check' and _style_ext == '.json' and \
                 not re.match(temp_style_name_regex, _style_name):
                     affected_layers = style_update(request, raw_url)
             elif downstream_path == 'rest/layers':
@@ -542,8 +552,9 @@ def geoserver_proxy(request,
     raw_url = unquote(raw_url)
     timeout = getattr(ogc_server_settings, 'TIMEOUT') or 60
     allowed_hosts = [urlsplit(ogc_server_settings.public_url).hostname, ]
-    return proxy(request, url=raw_url, response_callback=_response_callback,
-                 timeout=timeout, allowed_hosts=allowed_hosts, **kwargs)
+    response = proxy(request, url=raw_url, response_callback=_response_callback,
+                     timeout=timeout, allowed_hosts=allowed_hosts, **kwargs)
+    return response
 
 
 def _response_callback(**kwargs):
