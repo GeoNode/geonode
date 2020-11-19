@@ -82,6 +82,7 @@ def geoserver_update_layers(self, *args, **kwargs):
         'interval_max': 0.2,
     })
 def geoserver_post_save_layers(
+        self,
         instance_id,
         *args, **kwargs):
     """
