@@ -5,7 +5,13 @@
 {% block title %} {% trans "Explore Layers" %} - {{ block.super }} {% endblock %}
 
 {% block body_class %}{% trans "layers explore" %}{% endblock %}
-
+{% block extra_head %}
+<style>
+    #paneltbar {
+        margin-top: 90px !important;
+    }
+</style>
+{% endblock %}
 {% block body %}
 <div class="page-header">
   {% if not READ_ONLY_MODE %}
