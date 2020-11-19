@@ -99,15 +99,18 @@ jobs:
             - run:
                 name: Run test suite
                 command: |
-                  docker exec db4geonode psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
-                  docker exec db4geonode createdb -U postgres -T postgres test_postgres
-                  docker exec db4geonode createdb -U postgres -T postgres test_geonode
-                  docker exec db4geonode createdb -U postgres -T postgres test_geonode_data
-                  docker exec db4geonode psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-                  docker exec db4geonode psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-                  docker exec -it django4geonode bash -c 'echo "Running <<parameters.test_suite>>"'
-                  docker exec -it django4geonode bash -c 'coverage run --branch --source=geonode manage.py test -v 3 --keepdb <<parameters.test_suite>>'
-                  docker exec -it django4geonode bash -c 'flake8 geonode'
+                  docker-compose -f docker-compose.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
+                  docker-compose -f docker-compose.yml exec db createdb -U postgres -T postgres test_postgres
+                  docker-compose -f docker-compose.yml exec db createdb -U postgres -T postgres test_geonode
+                  docker-compose -f docker-compose.yml exec db createdb -U postgres -T postgres test_geonode_data
+                  docker-compose -f docker-compose.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+                  docker-compose -f docker-compose.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+                  docker-compose -f docker-compose.yml exec django bash -c '<<parameters.test_suite>>'
+                working_directory: ./
+            - run:
+                name: Run pep8 checks
+                command: |
+                  docker-compose -f docker-compose.yml exec django bash -c 'flake8 geonode'
                 working_directory: ./
 
 workflows:
@@ -115,78 +118,57 @@ workflows:
   commit:
     jobs:
       - build:
-          name: setup
+          name: geonode_test_suite
           load_docker_cache: true
           save_docker_cache: true
-          test_suite: 'geonode.tests.smoke'
+          test_suite: coverage run --branch --source=geonode manage.py test -v 3 --keepdb geonode.tests.smoke $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS]))")
       - build:
-          name: tests_core
+          name: geonode_test_integration_csw
           load_docker_cache: true
           save_docker_cache: false
-          test_suite: $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_CORE_APPS]))")
+          test_suite: SITEURL=http://localhost:8001/ ./test_csw.sh
           requires:
-            - setup
+            - geonode_test_suite
       - build:
-          name: tests_internal
+          name: geonode_test_integration_monitoring
           load_docker_cache: true
           save_docker_cache: false
-          test_suite: $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_INTERNAL_APPS]))")
+          test_suite: coverage run --branch --source=geonode manage.py test -v 3 --keepdb geonode.tests.smoke geonode.monitoring.tests.integration
           requires:
-            - setup
-      - build:
-          name: tests_contrib
-          load_docker_cache: true
-          save_docker_cache: false
-          test_suite: $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_CONTRIB_APPS]))")
-          requires:
-            - setup
-      - build:
-          name: tests_csw
-          load_docker_cache: true
-          save_docker_cache: false
-          test_suite: 'geonode.tests.csw'
-          requires:
-            - setup
-      - build:
-          name: tests_integration
-          load_docker_cache: true
-          save_docker_cache: false
-          test_suite: 'geonode.tests.integration'
-          requires:
-            - setup
-      - build:
-          name: tests_geoserver_integration
-          load_docker_cache: true
-          save_docker_cache: false
-          test_suite: 'geonode.geoserver.tests.integration'
-          requires:
-            - setup
-      - build:
-          name: tests_upload_integration
-          load_docker_cache: true
-          save_docker_cache: false
-          test_suite: 'geonode.upload.tests.integration'
-          requires:
-            - setup
-      - build:
-          name: tests_monitoring_integration
-          load_docker_cache: true
-          save_docker_cache: false
-          test_suite: 'geonode.monitoring.tests.integration'
-          requires:
-            - setup
+            - geonode_test_suite
+      # - build:
+      #     name: tests_integration
+      #     load_docker_cache: true
+      #     save_docker_cache: false
+      #     test_suite: 'geonode.tests.integration'
+      #     requires:
+      #       - geonode_test_suite
+      # - build:
+      #     name: tests_geoserver_integration
+      #     load_docker_cache: true
+      #     save_docker_cache: false
+      #     test_suite: 'geonode.geoserver.tests.integration'
+      #     requires:
+      #       - geonode_test_suite
+      # - build:
+      #     name: tests_upload_integration
+      #     load_docker_cache: true
+      #     save_docker_cache: false
+      #     test_suite: 'geonode.upload.tests.integration'
+      #     requires:
+      #       - geonode_test_suite
 
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - master
-                - 3.x
-    jobs:
-      - build:
-          load_docker_cache: false
-          save_docker_cache: true
-          test_suite: geonode.tests.smoke geonode.tests.integration $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS]))")
+  # nightly:
+  #   triggers:
+  #     - schedule:
+  #         cron: "0 0 * * *"
+  #         filters:
+  #           branches:
+  #             only:
+  #               - master
+  #               - 3.x
+  #   jobs:
+  #     - build:
+  #         load_docker_cache: false
+  #         save_docker_cache: true
+  #         test_suite: geonode.tests.smoke geonode.tests.integration $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS]))")

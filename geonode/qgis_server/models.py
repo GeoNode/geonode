@@ -108,9 +108,9 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
     def qgis_layer_path_prefix(self):
         """Returned QGIS layer path prefix.
 
-        Example base path: /usr/src/app/geonode/qgis_layer/jakarta_flood.shp
+        Example base path: /usr/src/geonode/geonode/qgis_layer/jakarta_flood.shp
 
-        Path prefix: /usr/src/app/geonode/qgis_layer/jakarta_flood
+        Path prefix: /usr/src/geonode/geonode/qgis_layer/jakarta_flood
         """
         prefix, __ = os.path.splitext(self.base_layer_path)
         return prefix
@@ -119,7 +119,7 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
     def qgis_layer_name(self):
         """Returned QGIS Layer name associated with this layer.
 
-        Example base path: /usr/src/app/geonode/qgis_layer/jakarta_flood.shp
+        Example base path: /usr/src/geonode/geonode/qgis_layer/jakarta_flood.shp
 
         QGIS Layer name: jakarta_flood
         """
@@ -129,9 +129,9 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
     def qgis_project_path(self):
         """Returned QGIS Project path related with this layer.
 
-        Example base path: /usr/src/app/geonode/qgis_layer/jakarta_flood.shp
+        Example base path: /usr/src/geonode/geonode/qgis_layer/jakarta_flood.shp
 
-        QGIS Project path: /usr/src/app/geonode/qgis_layer/jakarta_flood.qgs
+        QGIS Project path: /usr/src/geonode/geonode/qgis_layer/jakarta_flood.qgs
         """
         return '{prefix}.qgs'.format(prefix=self.qgis_layer_path_prefix)
 
@@ -139,9 +139,9 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
     def cache_path(self):
         """Returned the location of tile cache for this layer.
 
-        Example base path: /usr/src/app/geonode/qgis_layer/jakarta_flood.shp
+        Example base path: /usr/src/geonode/geonode/qgis_layer/jakarta_flood.shp
 
-        QGIS cache path: /usr/src/app/geonode/qgis_tiles/jakarta_flood
+        QGIS cache path: /usr/src/geonode/geonode/qgis_tiles/jakarta_flood
 
         :return: Base path of layer cache
         :rtype: str
@@ -152,9 +152,9 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
     def qml_path(self):
         """Returned the location of QML path for this layer (if any).
 
-        Example base path: /usr/src/app/geonode/qgis_layer/jakarta_flood.shp
+        Example base path: /usr/src/geonode/geonode/qgis_layer/jakarta_flood.shp
 
-        QGIS QML path: /usr/src/app/geonode/qgis_tiles/jakarta_flood.qml
+        QGIS QML path: /usr/src/geonode/geonode/qgis_tiles/jakarta_flood.qml
 
         :return: Base path of qml style
         :rtype: str
@@ -301,9 +301,9 @@ class QGISServerStyle(models.Model, PermissionLevelMixin):
     def style_tile_cache_path(self):
         """Returned the location of tile cache for this layer style.
 
-        Example base path: /usr/src/app/geonode/qgis_layer/jakarta_flood.shp
+        Example base path: /usr/src/geonode/geonode/qgis_layer/jakarta_flood.shp
 
-        QGIS cache path: /usr/src/app/geonode/qgis_tiles/jakarta_flood/
+        QGIS cache path: /usr/src/geonode/geonode/qgis_tiles/jakarta_flood/
             default_style
 
         :return: Base path of layer cache
@@ -352,7 +352,7 @@ class QGISServerMap(models.Model, PermissionLevelMixin):
         """Returned QGIS map path prefix.
 
         based on map_name_format
-        Path prefix: /usr/src/app/geonode/qgis_layer/map_1
+        Path prefix: /usr/src/geonode/geonode/qgis_layer/map_1
         """
         return os.path.join(QGIS_LAYER_DIRECTORY, self.qgis_map_name)
 
@@ -361,7 +361,7 @@ class QGISServerMap(models.Model, PermissionLevelMixin):
         """Returned QGIS Project path related with this map.
 
         based on map_name_format
-        QGIS Project path: /usr/src/app/geonode/qgis_layer/map_1.qgs
+        QGIS Project path: /usr/src/geonode/geonode/qgis_layer/map_1.qgs
         """
         return '{prefix}.qgs'.format(prefix=self.qgis_map_path_prefix)
 
@@ -370,7 +370,7 @@ class QGISServerMap(models.Model, PermissionLevelMixin):
         """Returned the location of tile cache for this layer.
 
         based on map_name_format
-        QGIS cache path: /usr/src/app/geonode/qgis_tiles/map_1
+        QGIS cache path: /usr/src/geonode/geonode/qgis_tiles/map_1
 
         :return: Base path of layer cache
         :rtype: str
