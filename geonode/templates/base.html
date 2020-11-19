@@ -46,8 +46,8 @@
           <link href="{% static "lib/css/select2.css" %}" rel="stylesheet"/>
           <link href="{% static "lib/css/bootstrap.css" %}" rel="stylesheet"/>
           <link href="{% static "lib/css/bootstrap-treeview.css" %}" rel="stylesheet"/>
-          <link href="{% static "lib/css/jquery-ui.theme.css" %}" rel="stylesheet"/>
-          <link href="{% static "lib/css/jquery-ui.structure.css" %}" rel="stylesheet"/>
+          <link href="{% static "lib/css/jquery-ui.theme.min.css" %}" rel="stylesheet"/>
+          <link href="{% static "lib/css/jquery-ui.structure.min.css" %}" rel="stylesheet"/>
           <link href="{% static "lib/css/bootstrap-treeview.css" %}" rel="stylesheet"/>
       {% else %}
       <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet"/>
@@ -259,7 +259,7 @@
         }
       }
     </script>
-    
+
     <!-- RTL styles -->
     {% get_current_language_bidi as LANGUAGE_BIDI %}
     {% if LANGUAGE_BIDI %}
@@ -628,6 +628,7 @@
     <script src="{% static "lib/js/bootstrap-datetimepicker.js" %}"></script>
     <script src="{% static "lib/js/json2.js" %}"></script>
     <script src="{% static "lib/js/waypoints.js" %}"></script>
+    <script src="{% static "lib/js/underscore.js" %}"></script>
     {% else %}
     <script src="{% static "lib/js/assets.min.js" %}"></script>
     {% endif %}
@@ -719,7 +720,7 @@
     </div>
 
     <div id="confirmMsgBoxModalOK" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <!-- How to use it: 
+      <!-- How to use it:
         $("#confirmMsgBoxModalOK").find('.modal-title').text('{% trans "Title" %}');
         $("#confirmMsgBoxModalOK").find('.modal-body').text('{% trans "Message. Do you want to proceed?" %}');
         $("#confirmMsgBoxModalOK_control_field").val('your_control_value');
