@@ -103,7 +103,7 @@ def queue_notification(*args, **kwargs):
         return notifications.models.queue(*args, **kwargs)
 
 
-def get_notification_recipients(notice_type_label, exclude_user=None):
+def get_notification_recipients(notice_type_label, exclude_user=None, resource=None):
     """ Get notification recipients
     """
     if not has_notifications:
@@ -115,11 +115,15 @@ def get_notification_recipients(notice_type_label, exclude_user=None):
     profiles = get_user_model().objects.filter(id__in=recipients_ids)
     if exclude_user:
         profiles.exclude(username=exclude_user.username)
-
+    if resource and resource.title:
+        for user in profiles:
+            if not user.has_perm('base.view_resourcebase', resource.get_self_resource()) or \
+                    user.has_perm('view_resourcebase', resource):
+                profiles = profiles.exclude(username=user.username)
     return profiles
 
 
-def get_comment_notification_recipients(notice_type_label, instance_owner, exclude_user=None):
-    profiles = get_notification_recipients(notice_type_label, exclude_user)
+def get_comment_notification_recipients(notice_type_label, instance_owner, exclude_user=None, resource=None):
+    profiles = get_notification_recipients(notice_type_label, exclude_user, resource=resource)
     profiles = profiles.filter(Q(pk=instance_owner.pk) | Q(is_superuser=True))
     return profiles
