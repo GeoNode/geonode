@@ -116,7 +116,7 @@ def create_qgis_server_thumbnail(model_path, object_id, overwrite=False, bbox=No
     name='geonode.qgis_server.tasks.update.cache_request',
     queue='update')
 @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
-def cache_request(url, cache_file):
+def cache_request(self, url, cache_file):
     """Cache a given url request to a file.
 
     On some rare occasions, QGIS Server url request is taking too long to

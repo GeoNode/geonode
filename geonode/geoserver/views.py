@@ -60,23 +60,24 @@ from geonode.proxy.views import proxy
 from .tasks import geoserver_update_layers
 from geonode.utils import json_response, _get_basic_auth_info, http_client
 from geoserver.catalog import FailedRequestError
-from geonode.geoserver.signals import (gs_catalog,
-                                       geoserver_post_save_local)
-from .helpers import (get_stores,
-                      ogc_server_settings,
-                      extract_name_from_sld,
-                      set_styles,
-                      style_update,
-                      set_layer_style,
-                      _stylefilterparams_geowebcache_layer,
-                      _invalidate_geowebcache_layer)
+from geonode.geoserver.signals import (
+    gs_catalog,
+    geoserver_post_save_local)
+from .helpers import (
+    get_stores,
+    ogc_server_settings,
+    extract_name_from_sld,
+    set_styles,
+    style_update,
+    set_layer_style,
+    temp_style_name_regex,
+    _stylefilterparams_geowebcache_layer,
+    _invalidate_geowebcache_layer)
 
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_control
 
 logger = logging.getLogger(__name__)
-
-temp_style_name_regex = r'[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}_ms_.*'
 
 
 def stores(request, store_type=None):
@@ -405,6 +406,8 @@ def style_change_check(request, path):
             style_name = os.path.splitext(request.path)[0].split('/')[-1]
             if style_name == 'styles' and 'raw' in request.GET:
                 authorized = True
+            elif re.match(temp_style_name_regex, style_name):
+                authorized = True
             else:
                 try:
                     style = Style.objects.get(name=style_name)
@@ -527,7 +530,7 @@ def geoserver_proxy(request,
                 logger.debug(
                     "[geoserver_proxy] Updating Style ---> url %s" %
                     url.geturl())
-                _style_name = os.path.basename(urlsplit(url.geturl()).path)
+                _style_name, _style_ext = os.path.splitext(os.path.basename(urlsplit(url.geturl()).path))
                 if _style_name == 'styles.json' and request.method == "PUT":
                     _parsed_get_args = dict(parse_qsl(urlsplit(url.geturl()).query))
                     if 'name' in _parsed_get_args:

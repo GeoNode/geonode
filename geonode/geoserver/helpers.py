@@ -72,6 +72,8 @@ from django.utils.module_loading import import_string
 
 logger = logging.getLogger(__name__)
 
+temp_style_name_regex = r'[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}_ms_.*'
+
 if not hasattr(settings, 'OGC_SERVER'):
     msg = (
         'Please configure OGC_SERVER when enabling geonode.geoserver.'
@@ -1797,7 +1799,7 @@ def style_update(request, url):
                 style = Style.objects.filter(name=style_name).delete()
         if request.method == 'POST':
             style = None
-            if style_name:
+            if style_name and not re.match(temp_style_name_regex, style_name):
                 style, created = Style.objects.get_or_create(name=style_name)
                 style.sld_body = sld_body
                 style.sld_url = url
@@ -1811,12 +1813,13 @@ def style_update(request, url):
                         layer = Layer.objects.get(alternate=layer_name)
                     except Exception:
                         pass
-            if layer and style:
-                style.layer_styles.add(layer)
-                style.save()
+            if layer:
+                if style:
+                    style.layer_styles.add(layer)
+                    style.save()
                 affected_layers.append(layer)
         elif request.method == 'PUT':  # update style in GN
-            if style_name:
+            if style_name and not re.match(temp_style_name_regex, style_name):
                 style, created = Style.objects.get_or_create(name=style_name)
                 style.sld_body = sld_body
                 style.sld_url = url
