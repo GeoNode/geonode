@@ -113,14 +113,15 @@ def get_notification_recipients(notice_type_label, exclude_user=None, resource=N
         .values('user')
     from django.contrib.auth import get_user_model
     profiles = get_user_model().objects.filter(id__in=recipients_ids)
+    exclude_users_ids = []
     if exclude_user:
-        profiles.exclude(username=exclude_user.username)
+        exclude_users_ids.append[exclude_user.id]
     if resource and resource.title:
         for user in profiles:
-            if not user.has_perm('base.view_resourcebase', resource.get_self_resource()) or \
-                    user.has_perm('view_resourcebase', resource):
-                profiles = profiles.exclude(username=user.username)
-    return profiles
+            if not user.has_perm('base.view_resourcebase', resource.get_self_resource()) and \
+            not user.has_perm('view_resourcebase', resource.get_self_resource()):
+                exclude_users_ids.append[user.id]
+    return profiles.exclude(id__in=exclude_users_ids)
 
 
 def get_comment_notification_recipients(notice_type_label, instance_owner, exclude_user=None, resource=None):
