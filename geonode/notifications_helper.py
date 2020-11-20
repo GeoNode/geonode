@@ -118,9 +118,15 @@ def get_notification_recipients(notice_type_label, exclude_user=None, resource=N
         exclude_users_ids.append[exclude_user.id]
     if resource and resource.title:
         for user in profiles:
-            if not user.has_perm('base.view_resourcebase', resource.get_self_resource()) and \
-            not user.has_perm('view_resourcebase', resource.get_self_resource()):
-                exclude_users_ids.append[user.id]
+            try:
+                if not user.has_perm('base.view_resourcebase', resource.get_self_resource()) and \
+                not user.has_perm('view_resourcebase', resource.get_self_resource()):
+                    exclude_users_ids.append(user.id)
+            # Document upload error
+            # fallback which wont send mails
+            except BaseException as e:
+                print(e)
+                return []
     return profiles.exclude(id__in=exclude_users_ids)
 
 
