@@ -104,53 +104,15 @@
                             <div id="gis-limits-users">
                                 <div class="row">
                                   <div class="col-md-12">
-                                    <input class="search form-control" placeholder="{% trans "Search" %}" />
+                                    <!-- input class="search form-control" placeholder="{% trans "Search" %}" / -->
                                     <!-- button class="sort btn btn-primary" data-sort="gis-limits-user-name">Sort by name</button -->
                                     <!-- button class="sort btn btn-primary" data-sort="gis-limits-user-title">Sort by title</button -->
                                   </div>
                                 </div>
                                 <div class="row">
                                   <div class="col-md-12">
-                                    <div class="list-group list bt-scrollable">
-
-                                      {% for profile in users %}
-                                      <a href="javascript:void(0)" class="list-group-item">
-                                      <div class="col-md-8">
-                                        {% with 64 as avatar_size %}
-                                        <div class="pull-left photo">
-                                        {% autoescape off %}{% avatar profile avatar_size %}{% endautoescape %}
-                                        </div>
-                                        {% endwith %}
-                                        <h4 class="list-group-item-heading gis-limits-user-name">{% if profile.first_name != '' %}{{ profile.first_name }}{% else %}{{ profile.username }}{% endif %} {% if profile.last_name != '' %}{{ profile.last_name }}{% endif %}</h4>
-                                        <p class="list-group-item-text gis-limits-user-title">{% if profile.organization %}{{ profile.organization }}{% else %}{% trans "No Group" %}{% endif %}</p>
-                                      </div>
-                                      <div class="col-md-4">
-                                        <div class="expertise">
-                                          <div class="read-more pull-right">
-                                            <button id="user-load{{ profile.id }}" type="button" class="btn btn-default btn-sm deserialize-geo-limit"
-                                              data-toggle="tooltip" data-placement="top" title="{% trans "Show Geo Limits" %}" aria-pressed="true">
-                                              <span class="glyphicon glyphicon glyphicon glyphicon-eye-open" aria-hidden="true"></span>
-                                            </button>
-                                            <button id="user-upload{{ profile.id }}" type="button" class="btn btn-default btn-sm"
-                                              data-toggle="tooltip" data-placement="top" title="{% trans "Upload Geo Limits" %}" aria-pressed="true">
-                                              <span class="glyphicon glyphicon glyphicon glyphicon-open-file"
-                                                    data-toggle="modal" data-target="#_add_shp_zip" aria-hidden="true"></span>
-                                            </button>
-                                            <button id="user-save{{ profile.id }}" type="button" class="btn btn-default btn-sm serialize-geo-limit"
-                                              data-toggle="tooltip" data-placement="top" title="{% trans "Save Geo Limits" %}" aria-pressed="true">
-                                              <span class="glyphicon glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
-                                            </button>
-                                            <button id="user-remove{{ profile.id }}" type="button" class="btn btn-default btn-sm delete-geo-limit"
-                                              data-toggle="tooltip" data-placement="top" title="{% trans "Delete Geo Limits" %}" aria-pressed="true">
-                                              <span class="glyphicon glyphicon glyphicon-trash" aria-hidden="true"></span>
-                                            </button>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div class="clearfix"></div>
-                                      {% endfor %}
-
-                                      </a>
+                                    <div id="gis-limits-users-content" class="list-group list bt-scrollable" style="min-height: 200px; height: 500px; overflow-y: scroll">
+                                        <span id="gis-limits-users-list">
                                     </div>
                                   </div>
                                 </div>
@@ -202,9 +164,9 @@
                                         </div>
                                       </div>
                                       <div class="clearfix"></div>
+                                      </a>
                                       {% endfor %}
 
-                                      </a>
                                     </div>
                                   </div>
                                 </div>
@@ -305,6 +267,102 @@
 
     var userList = new List('gis-limits-users', {valueNames: ['gis-limits-user-name', 'gis-limits-user-title']});
     var groupList = new List('gis-limits-groups', {valueNames: ['gis-limits-group-name', 'gis-limits-group-title']});
+    var limit = 5;
+    var offset = 0;
+    var lastOffset = 0;
+    $(function() {
+      load_gis_limits_users();
+      $('#gis-limits-users-content').on("scroll", function(event) {
+        var scrollHeight = $('#gis-limits-users').height();
+        var scrollPosition = $('#gis-limits-users-content').scrollTop();
+        if (scrollPosition >= 50*(offset-3)){
+          if (offset == lastOffset) {
+            offset += limit;
+            load_gis_limits_users();
+          }
+          // event.stopPropagation();
+          event.preventDefault();
+       }
+      });
+
+      function load_gis_limits_users() {
+        $.ajax({
+          url: "/api/profiles/",
+          dataType: 'json',
+          data: {
+            limit: limit,
+            offset: offset,
+            order_by: 'username'
+          },
+          beforeSend: function() {
+            $('#loading_icon').show();
+          },
+          success: function(data) {
+            $('#loading_icon').hide();
+            users = $(data.objects);
+            if (users.length) {
+              var html = "";
+              users.each(function() {
+                userid = $(this)[0].id;
+                username = $(this)[0].username;
+                avatar = $(this)[0].avatar_100;
+                organization = $(this)[0].organization;
+                if (organization == null) {
+                  organization = "{% trans "No Group" %}";
+                }
+                html += `
+                   <a href="javascript:void(0)" class="list-group-item">
+                     <div class="col-md-8">
+                       <div class="pull-left photo">
+                         <img src="${avatar}" class="pull-left photo">
+                       </div>
+                       <h4 class="list-group-item-heading gis-limits-user-name">${username}</h4>
+                       <p class="list-group-item-text gis-limits-user-title">${organization}</p>
+                     </div>
+                     <div class="col-md-4">
+                       <div class="expertise">
+                         <div class="read-more pull-right">
+                           <button id="user-load${userid}" type="button" class="btn btn-default btn-sm deserialize-geo-limit"
+                             data-toggle="tooltip" data-placement="top" title="{% trans "Show Geo Limits" %}" aria-pressed="true">
+                             <span class="glyphicon glyphicon glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+                           </button>
+                           <button id="user-upload${userid}" type="button" class="btn btn-default btn-sm"
+                             data-toggle="tooltip" data-placement="top" title="{% trans "Upload Geo Limits" %}" aria-pressed="true">
+                             <span class="glyphicon glyphicon glyphicon glyphicon-open-file"
+                               data-toggle="modal" data-target="#_add_shp_zip" aria-hidden="true"></span>
+                           </button>
+                           <button id="user-save${userid}" type="button" class="btn btn-default btn-sm serialize-geo-limit"
+                             data-toggle="tooltip" data-placement="top" title="{% trans "Save Geo Limits" %}" aria-pressed="true">
+                             <span class="glyphicon glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                           </button>
+                           <button id="user-remove${userid}" type="button" class="btn btn-default btn-sm delete-geo-limit"
+                             data-toggle="tooltip" data-placement="top" title="{% trans "Delete Geo Limits" %}" aria-pressed="true">
+                             <span class="glyphicon glyphicon glyphicon-trash" aria-hidden="true"></span>
+                           </button>
+                         </div>
+                       </div>
+                     </div>
+                     <div class="clearfix"></div>
+                   </a>`
+              });
+
+              if (html) {
+                $('#gis-limits-users-list').append(html);
+                lastOffset = offset;
+                // offset += limit;
+              }
+            } else {
+              $('#warning_area').text("That's all folks!");
+            }
+          },
+          error: function() {
+            $('#loading_icon').hide();
+            $('#warning_area').text('Unable to load articles, please check your internet connection or try again later.');
+            console.log('Ajax Request Has Failed');
+          }
+        });
+      }
+    });
 
     $(".input-file").before(
       function() {
@@ -553,7 +611,7 @@
         });
       }
 
-      $('.serialize-geo-limit').click(function() {
+      $(document).on('click', '.serialize-geo-limit', function() {
         serializeGeoLimit($(this).attr('id'));
       });
 
@@ -624,7 +682,8 @@
         });
       }
 
-      $('.deserialize-geo-limit').click(function(event) {
+      $(document).on('click', '.deserialize-geo-limit', function(event) {
+        console.log($(this).attr('id'));
         deserializeGeoLimit($(this).attr('id'));
       });
 
@@ -675,7 +734,7 @@
         });
       }
 
-      $('.delete-geo-limit').click(function() {
+      $(document).on('click', '.delete-geo-limit', function() {
         deleteGeoLimit($(this).attr('id'));
       });
     }
