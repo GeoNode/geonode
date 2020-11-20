@@ -44,7 +44,7 @@ class GeoNodeSendInvite(SendInvite):
     form_class = GeoNodeInviteForm
 
     def __init__(self, *args, **kwargs):
-        super(GeoNodeSendInvite, self).__init__(*args, **kwargs)
+        super(SendInvite, self).__init__(*args, **kwargs)
 
     def form_valid(self, form):
         emails = form.cleaned_data["email"]
