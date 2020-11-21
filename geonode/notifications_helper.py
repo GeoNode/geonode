@@ -19,13 +19,17 @@
 #########################################################################
 
 import logging
+import traceback
 from importlib import import_module
 
 from django.apps import AppConfig
 from django.conf import settings
 from django.db.models import signals, Q
+from django.contrib.auth import get_user_model
 
 from geonode.tasks.tasks import send_queued_notifications
+
+logger = logging.getLogger(__name__)
 
 E = getattr(settings, 'NOTIFICATION_ENABLED', False)
 M = getattr(settings, 'NOTIFICATIONS_MODULE', None)
@@ -94,7 +98,7 @@ def send_notification(*args, **kwargs):
         try:
             return notifications.models.send(*args, **kwargs)
         except Exception:
-            logging.exception("Could not send notifications.")
+            logger.exception("Could not send notifications.")
             return False
 
 
@@ -111,7 +115,7 @@ def get_notification_recipients(notice_type_label, exclude_user=None, resource=N
     recipients_ids = notifications.models.NoticeSetting.objects \
         .filter(notice_type__label=notice_type_label) \
         .values('user')
-    from django.contrib.auth import get_user_model
+
     profiles = get_user_model().objects.filter(id__in=recipients_ids)
     exclude_users_ids = []
     if exclude_user:
@@ -122,10 +126,11 @@ def get_notification_recipients(notice_type_label, exclude_user=None, resource=N
                 if not user.has_perm('base.view_resourcebase', resource.get_self_resource()) and \
                 not user.has_perm('view_resourcebase', resource.get_self_resource()):
                     exclude_users_ids.append(user.id)
-            # Document upload error
-            # fallback which wont send mails
-            except BaseException as e:
-                print(e)
+            except Exception:
+                # fallback which wont send mails
+                tb = traceback.format_exc()
+                logger.error(tb)
+                logger.exception("Could not send notifications.")
                 return []
     return profiles.exclude(id__in=exclude_users_ids)
 

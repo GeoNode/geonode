@@ -878,12 +878,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         Send a notification when a resource is created or updated
         """
         if hasattr(self, 'class_name') and (self.pk is None or notify):
-            if self.pk is None:
+            if self.pk is None and self.title:
                 # Resource Created
                 notice_type_label = '%s_created' % self.class_name.lower()
                 recipients = get_notification_recipients(notice_type_label, resource=self)
                 send_notification(recipients, notice_type_label, {'resource': self})
-
             else:
                 # Resource Updated
                 _notification_sent = False
