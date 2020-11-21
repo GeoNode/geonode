@@ -764,7 +764,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     if request.user.is_authenticated and (request.user.is_superuser or "change_resourcebase_permissions" in perms_list):
         context_dict['users'] = [user for user in get_user_model().objects.all().exclude(
-            id=request.user.id).exclude(is_superuser=True)]
+            id=request.user.id).exclude(is_superuser=True).order_by('username')]
         if request.user.is_superuser:
             context_dict['groups'] = [group for group in GroupProfile.objects.all()]
         else:
