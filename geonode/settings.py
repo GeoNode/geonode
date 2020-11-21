@@ -1783,7 +1783,7 @@ PINAX_NOTIFICATIONS_HOOKSET = "pinax.notifications.hooks.DefaultHookSet"
 
 # Queue non-blocking notifications.
 # Set this to False in order to run async
-_QUEUE_ALL_FLAG = 'False' if ASYNC_SIGNALS else 'True'
+_QUEUE_ALL_FLAG = 'True' if ASYNC_SIGNALS else 'False'
 PINAX_NOTIFICATIONS_QUEUE_ALL = ast.literal_eval(os.environ.get('NOTIFICATIONS_QUEUE_ALL', _QUEUE_ALL_FLAG))
 PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT = os.environ.get('NOTIFICATIONS_LOCK_WAIT_TIMEOUT', 600)
 
