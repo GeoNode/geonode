@@ -881,7 +881,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if self.pk is None:
                 # Resource Created
                 notice_type_label = '%s_created' % self.class_name.lower()
-                recipients = get_notification_recipients(notice_type_label)
+                recipients = get_notification_recipients(notice_type_label, resource=self)
                 send_notification(recipients, notice_type_label, {'resource': self})
 
             else:
@@ -897,7 +897,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
                         # Send "approved" notification
                         notice_type_label = '%s_approved' % self.class_name.lower()
-                        recipients = get_notification_recipients(notice_type_label)
+                        recipients = get_notification_recipients(notice_type_label, resource=self)
                         send_notification(recipients, notice_type_label, {'resource': self})
                         _notification_sent = True
 
@@ -910,14 +910,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
                         # Send "published" notification
                         notice_type_label = '%s_published' % self.class_name.lower()
-                        recipients = get_notification_recipients(notice_type_label)
+                        recipients = get_notification_recipients(notice_type_label, resource=self)
                         send_notification(recipients, notice_type_label, {'resource': self})
                         _notification_sent = True
 
                 # Updated Notifications Here
                 if not _notification_sent:
                     notice_type_label = '%s_updated' % self.class_name.lower()
-                    recipients = get_notification_recipients(notice_type_label)
+                    recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
 
         super(ResourceBase, self).save(*args, **kwargs)
@@ -930,7 +930,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         if hasattr(self, 'class_name') and notify:
             notice_type_label = '%s_deleted' % self.class_name.lower()
-            recipients = get_notification_recipients(notice_type_label)
+            recipients = get_notification_recipients(notice_type_label, resource=self)
             send_notification(recipients, notice_type_label, {'resource': self})
 
         super(ResourceBase, self).delete(*args, **kwargs)
