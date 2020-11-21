@@ -1808,6 +1808,12 @@ if USE_GEOSERVER:
 #     },
 CELERY_BEAT_SCHEDULE = {}
 
+if 'geonode.services' in INSTALLED_APPS:
+    CELERY_BEAT_SCHEDULE['probe_services'] = {
+        'task': 'geonode.services.tasks.probe_services',
+        'schedule': 600.0,
+    }
+
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
 CELERY_ENABLE_UTC = ast.literal_eval(os.environ.get('CELERY_ENABLE_UTC', 'True'))
 CELERY_TIMEZONE = TIME_ZONE
