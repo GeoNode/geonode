@@ -1620,36 +1620,9 @@ TINYMCE_DEFAULT_CONFIG = {
 # - if True only admins can edit free-text kwds from admin dashboard
 FREETEXT_KEYWORDS_READONLY = ast.literal_eval(os.environ.get('FREETEXT_KEYWORDS_READONLY', 'False'))
 
-# notification settings
-NOTIFICATION_ENABLED = ast.literal_eval(os.environ.get('NOTIFICATION_ENABLED', 'True')) or TEST
-#PINAX_NOTIFICATIONS_LANGUAGE_MODEL = "people.Profile"
-
-# notifications backends
-_EMAIL_BACKEND = "geonode.notifications_backend.EmailBackend"
-PINAX_NOTIFICATIONS_BACKENDS = [
-    ("email", _EMAIL_BACKEND, 0),
-]
-PINAX_NOTIFICATIONS_HOOKSET = "pinax.notifications.hooks.DefaultHookSet"
-
-# Queue non-blocking notifications.
-PINAX_NOTIFICATIONS_QUEUE_ALL = ast.literal_eval(os.environ.get('NOTIFICATIONS_QUEUE_ALL', 'False'))
-PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT = os.environ.get('NOTIFICATIONS_LOCK_WAIT_TIMEOUT', -1)
-
-# explicitly define NOTIFICATION_LOCK_LOCATION
-# NOTIFICATION_LOCK_LOCATION = <path>
-
-# pinax.notifications
-# or notification
-NOTIFICATIONS_MODULE = 'pinax.notifications'
-
-# set to true to have multiple recipients in /message/create/
-USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = ast.literal_eval(
-    os.environ.get('USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS', 'True'))
-
-if NOTIFICATION_ENABLED:
-    if NOTIFICATIONS_MODULE not in INSTALLED_APPS:
-        INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
-
+# ########################################################################### #
+# ASYNC SETTINGS
+# ########################################################################### #
 # async signals can be the same as broker url
 # but they should have separate setting anyway
 # use amqp://localhost for local rabbitmq server
@@ -1794,6 +1767,40 @@ CELERY_SEND_TASK_SENT_EVENT = ast.literal_eval(os.environ.get('CELERY_SEND_TASK_
 
 # Disabled by default and I like it, because we use Sentry for this.
 CELERY_SEND_TASK_ERROR_EMAILS = ast.literal_eval(os.environ.get('CELERY_SEND_TASK_ERROR_EMAILS', 'False'))
+
+# ########################################################################### #
+# NOTIFICATIONS SETTINGS
+# ########################################################################### #
+NOTIFICATION_ENABLED = ast.literal_eval(os.environ.get('NOTIFICATION_ENABLED', 'True')) or TEST
+#PINAX_NOTIFICATIONS_LANGUAGE_MODEL = "people.Profile"
+
+# notifications backends
+_EMAIL_BACKEND = "geonode.notifications_backend.EmailBackend"
+PINAX_NOTIFICATIONS_BACKENDS = [
+    ("email", _EMAIL_BACKEND, 0),
+]
+PINAX_NOTIFICATIONS_HOOKSET = "pinax.notifications.hooks.DefaultHookSet"
+
+# Queue non-blocking notifications.
+# Set this to False in order to run async
+_QUEUE_ALL_FLAG = 'False' if ASYNC_SIGNALS else 'True'
+PINAX_NOTIFICATIONS_QUEUE_ALL = ast.literal_eval(os.environ.get('NOTIFICATIONS_QUEUE_ALL', _QUEUE_ALL_FLAG))
+PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT = os.environ.get('NOTIFICATIONS_LOCK_WAIT_TIMEOUT', 600)
+
+# explicitly define NOTIFICATION_LOCK_LOCATION
+# NOTIFICATION_LOCK_LOCATION = <path>
+
+# pinax.notifications
+# or notification
+NOTIFICATIONS_MODULE = 'pinax.notifications'
+
+# set to true to have multiple recipients in /message/create/
+USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = ast.literal_eval(
+    os.environ.get('USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS', 'True'))
+
+if NOTIFICATION_ENABLED:
+    if NOTIFICATIONS_MODULE not in INSTALLED_APPS:
+        INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
 
 # ########################################################################### #
 # SECURITY SETTINGS
