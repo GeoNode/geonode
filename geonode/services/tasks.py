@@ -23,8 +23,8 @@ import logging
 
 from django.db import IntegrityError, transaction
 
-from . import enumerations
 from . import models
+from . import enumerations
 from .serviceprocessors import get_service_handler
 
 from geonode.celery_app import app
@@ -84,3 +84,36 @@ def harvest_resource(self, harvest_job_id):
             status=enumerations.PROCESSED if result else enumerations.FAILED,
             details=details
         )
+
+
+@app.task(
+    bind=True,
+    name='geonode.services.tasks.probe_services',
+    queue='update',
+    countdown=60,
+    # expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 10,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
+def probe_services(self):
+    from hashlib import md5
+    from geonode.tasks.tasks import memcache_lock
+
+    # The cache key consists of the task name and the MD5 digest
+    # of the name.
+    name = b'probe_services'
+    hexdigest = md5(name).hexdigest()
+    lock_id = f'{name.decode()}-lock-{hexdigest}'
+    lock = memcache_lock(lock_id)
+    if lock.acquire(blocking=False) is True:
+        for service in models.Service.objects.all():
+            try:
+                service.probe = service.probe_service()
+                service.save()
+            except Exception as e:
+                logger.error(e)
