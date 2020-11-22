@@ -121,7 +121,7 @@ def get_notification_recipients(notice_type_label, exclude_user=None, resource=N
     profiles = get_user_model().objects.filter(id__in=recipients_ids)
     exclude_users_ids = []
     if exclude_user:
-        exclude_users_ids.append[exclude_user.id]
+        exclude_users_ids.append(exclude_user.id)
     if resource and resource.title:
         for user in profiles:
             try:
