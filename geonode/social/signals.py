@@ -52,7 +52,7 @@ if "relationships" in settings.INSTALLED_APPS:
     from relationships.models import Relationship
 
 ratings = None
-if "ratings" in settings.INSTALLED_APPS:
+if "pinax.ratings" in settings.INSTALLED_APPS:
     ratings = True
     from pinax.ratings.models import Rating
 
@@ -181,7 +181,7 @@ def rating_post_save(instance, sender, created, **kwargs):
                                              resource=instance.content_object)
     send_notification(recipients,
                       notice_type_label,
-                      {'resource': instance.content_object})
+                      {'resource': instance.content_object, 'user': instance.user, 'rating': instance.rating})
 
 
 def comment_post_save(instance, sender, created, **kwargs):

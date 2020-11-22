@@ -31,6 +31,7 @@ import json
 
 import gisdata
 from django.urls import reverse
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
@@ -578,10 +579,13 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
                 title='test notifications',
                 owner=self.norman)
             self.assertTrue(self.check_notification_out('document_created', self.u))
+
+            self.clear_notifications_queue()
             _d.title = 'test notifications 2'
             _d.save(notify=True)
             self.assertTrue(self.check_notification_out('document_updated', self.u))
 
+            self.clear_notifications_queue()
             from dialogos.models import Comment
             lct = ContentType.objects.get_for_model(_d)
             comment = Comment(author=self.norman,
@@ -591,8 +595,18 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
                               content_object=_d,
                               comment='test comment')
             comment.save()
-
             self.assertTrue(self.check_notification_out('document_comment', self.u))
+
+            if "pinax.ratings" in settings.INSTALLED_APPS:
+                self.clear_notifications_queue()
+                from pinax.ratings.models import Rating
+                rating = Rating(user=self.norman,
+                                content_type=lct,
+                                object_id=_d.id,
+                                content_object=_d,
+                                rating=5)
+                rating.save()
+                self.assertTrue(self.check_notification_out('document_rated', self.u))
 
 
 class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):

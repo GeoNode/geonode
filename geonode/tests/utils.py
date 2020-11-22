@@ -355,6 +355,7 @@ if has_notifications:
 
         def clear_notifications_queue(self):
             send_all()
+            mail.outbox = []
 
         def check_notification_out(self, notification_name, user):
             """
