@@ -132,37 +132,37 @@ class HelperTest(GeoNodeBaseTestSupport):
         <MetadataURL type="other">
           <Format>other</Format>
           <OnlineResource xlink:type="simple"
-xlink:href="http://localhost:8080/catalogue/csw?outputschema=...."/>
+xlink:href="http://geoserver:8080/catalogue/csw?outputschema=...."/>
         </MetadataURL>
         <MetadataURL type="other">
           <Format>other</Format>
           <OnlineResource xlink:type="simple"
-xlink:href="http://localhost:8080/catalogue/csw?outputschema=...."/>
+xlink:href="http://geoserver:8080/catalogue/csw?outputschema=...."/>
         </MetadataURL>
         <MetadataURL type="other">
           <Format>other</Format>
           <OnlineResource xlink:type="simple"
-xlink:href="http://localhost:8080/catalogue/csw?outputschema=...."/>
+xlink:href="http://geoserver:8080/catalogue/csw?outputschema=...."/>
         </MetadataURL>
         <MetadataURL type="other">
           <Format>other</Format>
           <OnlineResource xlink:type="simple"
-xlink:href="http://localhost:8080/catalogue/csw?outputschema=...."/>
+xlink:href="http://geoserver:8080/catalogue/csw?outputschema=...."/>
         </MetadataURL>
         <MetadataURL type="FGDC">
           <Format>text/xml</Format>
           <OnlineResource xlink:type="simple"
-xlink:href="http://localhost:8080/catalogue/csw?outputschema=...."/>
+xlink:href="http://geoserver:8080/catalogue/csw?outputschema=...."/>
         </MetadataURL>
         <MetadataURL type="other">
           <Format>other</Format>
           <OnlineResource xlink:type="simple"
-xlink:href="http://localhost:8080/catalogue/csw?outputschema=...."/>
+xlink:href="http://geoserver:8080/catalogue/csw?outputschema=...."/>
         </MetadataURL>
         <MetadataURL type="other">
           <Format>other</Format>
           <OnlineResource xlink:type="simple"
-xlink:href="http://localhost:8080/showmetadata/xsl/584"/>
+xlink:href="http://geoserver:8080/showmetadata/xsl/584"/>
         </MetadataURL>
         <Style>
           <Name>geonode:DE_USNG_UTM18</Name>
@@ -172,7 +172,7 @@ xlink:href="http://localhost:8080/showmetadata/xsl/584"/>
             <Format>image/png</Format>
             <OnlineResource
 xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
-xlink:href="http://localhost:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&...."/>
+xlink:href="http://geoserver:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&...."/>
           </LegendURL>
         </Style>
       </Layer>"""

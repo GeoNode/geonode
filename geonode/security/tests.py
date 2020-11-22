@@ -744,13 +744,12 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         store = get_store(gs_catalog, saved_layer.store, workspace=ws)
         self.assertIsNotNone(store)
 
-        # url = settings.OGC_SERVER['default']['LOCATION']
-        url = 'http://geoserver:8080/geoserver/'
+        url = settings.OGC_SERVER['default']['LOCATION']
         user = settings.OGC_SERVER['default']['USER']
         passwd = settings.OGC_SERVER['default']['PASSWORD']
 
         rest_path = 'rest/workspaces/geonode/datastores/{lyr_title}/featuretypes/{lyr_name}.xml'.\
-            format(lyr_title=title, lyr_name=name)
+            format(lyr_title=saved_layer.store, lyr_name=name)
         import requests
         from requests.auth import HTTPBasicAuth
         r = requests.get(url + rest_path,
