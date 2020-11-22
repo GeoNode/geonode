@@ -744,7 +744,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         store = get_store(gs_catalog, saved_layer.store, workspace=ws)
         self.assertIsNotNone(store)
 
-        url = settings.OGC_SERVER['default']['LOCATION']
+        # url = settings.OGC_SERVER['default']['LOCATION']
+        url = 'http://geoserver:8080/geoserver/'
         user = settings.OGC_SERVER['default']['USER']
         passwd = settings.OGC_SERVER['default']['PASSWORD']
 
@@ -945,7 +946,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # Set the layer private for not authenticated users
         layer.set_permissions({'users': {'AnonymousUser': []}, 'groups': []})
 
-        url = 'http://localhost:8080/geoserver/geonode/ows?' \
+        url = 'http://geoserver:8080/geoserver/geonode/ows?' \
             'LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES=' \
             '&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap' \
             '&SRS=EPSG%3A4326' \
@@ -995,7 +996,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         )
 
         # test change_layer_style
-        url = 'http://localhost:8080/geoserver/rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
+        url = 'http://geoserver:8080/geoserver/rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
         sld = """<?xml version="1.0" encoding="UTF-8"?>
     <sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld"
     xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc"
@@ -1193,7 +1194,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                 'resource_permissions', args=(
                     valid_layer_typename,)), data=json.dumps(
                 self.perm_spec), content_type="application/json")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
         # Login as a user with the proper permission and test the endpoint
         logged_in = self.client.login(username='admin', password='admin')
@@ -1481,7 +1482,6 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                                                    get_sld_for,
                                                    fixup_style,
                                                    set_layer_style,
-                                                   get_store,
                                                    set_attributes_from_geoserver,
                                                    set_styles,
                                                    create_gs_thumbnail,
@@ -1506,9 +1506,6 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertIsNotNone(name)
             ws = gs_catalog.get_workspace(workspace)
             self.assertIsNotNone(ws)
-            store = get_store(gs_catalog, name, workspace=ws)
-            _log("store. ------------ %s " % store)
-            self.assertIsNotNone(store)
 
             # Save layer attributes
             set_attributes_from_geoserver(test_perm_layer)

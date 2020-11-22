@@ -24,6 +24,8 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+import json
+
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from actstream import registry
@@ -64,8 +66,8 @@ class SimpleTest(GeoNodeBaseTestSupport):
         # The activity should read:
         # layer.owner (actor) 'uploaded' (verb) layer (object)
         self.assertEqual(action.actor, action.action_object.owner)
-        self.assertEqual(action.data.get('raw_action'), 'created')
-        self.assertEqual(action.data.get('object_name'), layer.name)
+        self.assertEqual(json.loads(action.data).get('raw_action'), 'created')
+        self.assertEqual(json.loads(action.data).get('object_name'), layer.name)
         self.assertTrue(isinstance(action.action_object, Layer))
         self.assertIsNone(action.target)
 
@@ -85,8 +87,8 @@ class SimpleTest(GeoNodeBaseTestSupport):
         # <user> deleted <object_name>
         action = Action.objects.all()[0]
 
-        self.assertEqual(action.data.get('raw_action'), 'deleted')
-        self.assertEqual(action.data.get('object_name'), layer_name)
+        self.assertEqual(json.loads(action.data).get('raw_action'), 'deleted')
+        self.assertEqual(json.loads(action.data).get('object_name'), layer_name)
 
         # objects are literally deleted so no action object or target should be related to a delete action.
         self.assertIsNone(action.action_object)
@@ -114,7 +116,7 @@ class SimpleTest(GeoNodeBaseTestSupport):
         action = Action.objects.all()[0]
 
         self.assertEqual(action.actor, self.user)
-        self.assertEqual(action.data.get('raw_action'), 'created')
+        self.assertEqual(json.loads(action.data).get('raw_action'), 'created')
         self.assertEqual(action.action_object, comment)
         self.assertEqual(action.target, layer)
 

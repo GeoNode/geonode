@@ -578,6 +578,7 @@ community."
         self.assertTrue('/maps/' in response['Location'])
 
         # After removal, map is not existent
+        url = reverse('map_detail', args=(map_id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 

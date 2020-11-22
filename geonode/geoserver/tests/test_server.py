@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeLiveTestSupport
+from geonode.tests.base import GeoNodeBaseTestSupport
 
 import base64
 import json
@@ -932,7 +932,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         with override_settings(OGC_SERVER=self.OGC_DEFAULT_SETTINGS, UPLOADER=self.UPLOADER_DEFAULT_SETTINGS):
             OGC_SERVER = self.OGC_DEFAULT_SETTINGS.copy()
             OGC_SERVER.update(
-                {'PUBLIC_LOCATION': 'http://localhost:8080/geoserver/'})
+                {'PUBLIC_LOCATION': 'http://geoserver:8080/geoserver/'})
 
             ogc_settings = OGC_Servers_Handler(OGC_SERVER)['default']
 
@@ -1174,7 +1174,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
             OGC_Servers_Handler(ogc_server_settings)['default']
 
 
-class SignalsTests(GeoNodeLiveTestSupport):
+class SignalsTests(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_set_resources_links(self):

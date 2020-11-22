@@ -513,7 +513,7 @@ class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.api_client.client.login(username='bobby', password='bob')
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 200)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 259)
 
     def test_tags_lockdown(self):
         filter_url = self.tag_list_url
