@@ -91,15 +91,16 @@ def send_notification(*args, **kwargs):
     Simple wrapper around notifications.model send().
     This can be called safely if notifications are not installed.
     """
-    resource = args[2]['resource']
-    if has_notifications and resource.title:
+    resource = args[2]['resource'] if len(args) > 1 and 'resource' in args[2] else None
+    if has_notifications and resource and resource.title:
         # queue for further processing if required
         if settings.PINAX_NOTIFICATIONS_QUEUE_ALL:
             return queue_notification(*args, **kwargs)
         try:
             return notifications.models.send(*args, **kwargs)
-        except Exception:
-            logger.exception("Could not send notifications.")
+        except Exception as e:
+            logger.exception(e)
+            logger.error(f"Could not send notifications: {args}")
             return False
 
 
@@ -124,7 +125,7 @@ def get_notification_recipients(notice_type_label, exclude_user=None, resource=N
     if resource and resource.title:
         for user in profiles:
             try:
-                if not user.has_perm('base.view_resourcebase', resource.get_self_resource()) and \
+                if not user.is_superuser and \
                 not user.has_perm('view_resourcebase', resource.get_self_resource()):
                     exclude_users_ids.append(user.id)
             except Exception:

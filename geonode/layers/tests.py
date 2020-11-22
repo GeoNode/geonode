@@ -1163,8 +1163,13 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
         self.setup_notifications_for(LayersAppConfig.NOTIFICATIONS, self.u)
 
     def testLayerNotifications(self):
-        with self.settings(PINAX_NOTIFICATIONS_QUEUE_ALL=True):
+        with self.settings(
+                EMAIL_ENABLE=True,
+                NOTIFICATION_ENABLED=True,
+                NOTIFICATIONS_BACKEND="pinax.notifications.backends.email.EmailBackend",
+                PINAX_NOTIFICATIONS_QUEUE_ALL=False):
             self.clear_notifications_queue()
+            self.client.login(username=self.user, password=self.passwd)
             _l = Layer.objects.create(
                 name='test notifications',
                 bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
@@ -1176,11 +1181,13 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
 
             from dialogos.models import Comment
             lct = ContentType.objects.get_for_model(_l)
-            comment = Comment(author=self.u, name=self.u.username,
-                              content_type=lct, object_id=_l.id,
-                              content_object=_l, comment='test comment')
+            comment = Comment(author=self.u,
+                              name=self.u.username,
+                              content_type=lct,
+                              object_id=_l.id,
+                              content_object=_l,
+                              comment='test comment')
             comment.save()
-
             self.assertTrue(self.check_notification_out('layer_comment', self.u))
 
 
