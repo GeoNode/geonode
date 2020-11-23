@@ -899,7 +899,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                         notice_type_label = '%s_approved' % self.class_name.lower()
                         recipients = get_notification_recipients(notice_type_label, resource=self)
                         send_notification(recipients, notice_type_label, {'resource': self})
-                        _notification_sent = True
 
                 # Publishing Notifications Here
                 if not _notification_sent and settings.RESOURCE_PUBLISHING:
@@ -911,15 +910,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                         notice_type_label = '%s_published' % self.class_name.lower()
                         recipients = get_notification_recipients(notice_type_label, resource=self)
                         send_notification(recipients, notice_type_label, {'resource': self})
-                        _notification_sent = True
 
                 # Updated Notifications Here
                 if not _notification_sent:
                     notice_type_label = '%s_updated' % self.class_name.lower()
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
-
-                _notification_sent = False
 
         super(ResourceBase, self).save(*args, **kwargs)
         self.__is_approved = self.is_approved
