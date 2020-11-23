@@ -129,7 +129,7 @@ def get_notification_recipients(notice_type_label, exclude_user=None, resource=N
                         not user.has_perm('view_resourcebase', resource.get_self_resource()):
                     exclude_users_ids.append(user.id)
                 if user.pk == resource.owner.pk and \
-                        not notice_type_label.endswith("_comment"):
+                        not (notice_type_label.endswith("_comment") or notice_type_label.endswith("_updated")):
                     exclude_users_ids.append(user.id)
             except Exception:
                 # fallback which wont send mails
