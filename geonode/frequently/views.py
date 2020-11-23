@@ -230,7 +230,7 @@ class EntryCreateView(AccessMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(EntryCreateView, self).get_form_kwargs()
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             kwargs.update({
                 'owner': self.request.user,
             })

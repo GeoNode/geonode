@@ -30,10 +30,8 @@ class StudyCases(models.Model):
     """
     Model to gather answers in topic groups.
 
-    :name: Name or title of the category.
-    :slug: Slugified name of the category.
-    :fixed_position: Set a position to avoid ordering by views.
-    :last_rank: Last rank calculated at the category list view.
+    :name: Study Case Name.
+    
 
     """
     name = models.CharField(
