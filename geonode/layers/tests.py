@@ -1178,8 +1178,11 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             _l = Layer.objects.create(
                 name='test notifications',
                 bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
-                srid='EPSG:4326')
+                srid='EPSG:4326',
+                owner=self.norman)
             self.assertTrue(self.check_notification_out('layer_created', self.u))
+            # Ensure "resource.owner" won't be notified for having uploaded its own resource
+            self.assertFalse(self.check_notification_out('layer_created', self.norman))
 
             self.clear_notifications_queue()
             _l.name = 'test notifications 2'
@@ -1198,6 +1201,7 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             comment.save()
             self.assertTrue(self.check_notification_out('layer_comment', self.u))
 
+            self.clear_notifications_queue()
             if "pinax.ratings" in settings.INSTALLED_APPS:
                 self.clear_notifications_queue()
                 from pinax.ratings.models import Rating
