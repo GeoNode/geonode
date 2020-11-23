@@ -1207,20 +1207,7 @@ class SignalsTests(GeoNodeLiveTestSupport):
                 Q(csw_anytext__exact='')
             )
             count = _layers.count()
-            self.assertTrue(count > 0, "No layers have got metadata")
-            if count:
-                _layers.update(metadata_xml=None)
-                _updated_layers = Layer.objects.exclude(
-                    Q(metadata_xml__isnull=True) |
-                    Q(metadata_xml__exact='') |
-                    Q(csw_anytext__isnull=True) |
-                    Q(csw_anytext__exact='')
-                )
-                updated_count = _updated_layers.count()
-                self.assertTrue(
-                    updated_count == 0,
-                    "Metadata have not been updated (deleted) correctly"
-                )
+            self.assertTrue(count == 0, "Metadata have not been updated (deleted) correctly")
             # Call migrate
             call_command("migrate", verbosity=0)
             # Check links
