@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% block body_outer %}
+  <h1>{% trans "Waterproof NBS CA" %}</h1>
+  <form method="post" action=".">
+    {% csrf_token %}
+    <div id="waterproof_nbs_ca">
+      {{ form|as_bootstrap }}
+    </div>    
+    <input type="submit" class="btn btn-primary" value="{% trans "Save" %}" />
+  </form>  
+{% endblock %}
+
+{% block extra_script %}
+  <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
+{% endblock %}

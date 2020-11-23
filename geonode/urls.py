@@ -185,6 +185,7 @@ urlpatterns += [
 urlpatterns += i18n_patterns(
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', admin.site.urls, name="admin"),
+    url(r'admin/doc/', include('django.contrib.admindocs.urls')),
 )
 
 # Internationalization Javascript
@@ -265,6 +266,16 @@ urlpatterns += [  # '',
 # FAQ
 urlpatterns += [
     url(r'^faq/', include('geonode.frequently.urls'), name='faq'),
+]
+
+# Study Cases
+urlpatterns += [
+    url(r'^study_cases/', include('geonode.study_cases.urls'), name='study_cases'),
+]
+
+# waterproof_nbs_ca
+urlpatterns += [
+    url(r'^waterproof_nbs_ca/', include('geonode.waterproof_nbs_ca.urls'), name='waterproof_nbs_ca'),
 ]
 
 if settings.MONITORING_ENABLED:

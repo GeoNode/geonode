@@ -8750,6 +8750,26 @@ msgstr "Políticas de privacidad"
 #: geonode/templates/base.html:540
 msgid "Collaborators"
 msgstr "Colaboradores"
+
+#: geonode/templates/waterproof_nbs_ca/waterproofnbsca_list.html.html:13
+msgid "List sbn"
+msgstr "Lista de Soluciones Basadas en la Naturaleza"
+
+#: geonode/templates/waterproof_nbs_ca/waterproofnbsca_list.html.html:13
+msgid "Time maximum benefit"
+msgstr "Tiempo requerido para obtener el máximo beneficio"
+
+#: geonode/templates/waterproof_nbs_ca/waterproofnbsca_list.html.html:13
+msgid "Detail sbn"
+msgstr "Detalles de la solución basada en la naturaleza"
+
+#: geonode/templates/waterproof_nbs_ca/waterproofnbsca_list.html.html:13
+msgid "Details"
+msgstr "Detalle"
+
+#: geonode/templates/waterproof_nbs_ca/waterproofnbsca_list.html.html:13
+msgid "Create new SBN"
+msgstr "Crear una solución basada en la naturaleza"
 #~ msgid ""
 #~ "GeoNode is an open source platform for sharing geospatial data and maps."
 #~ msgstr ""

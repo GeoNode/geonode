@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load bootstrap_tags %}
+
+{% block body_outer %}
+  <h1>{% trans "Study Cases." %}</h1>
+  <form method="post" action=".">
+    {% csrf_token %}
+    <div id="study_cases">
+      {{ form.as_p }}
+    </div>    
+    <input type="submit" value="{% trans "Save" %}" />
+  </form>  
+{% endblock %}
+
+{% block extra_script %}
+  <script src="{{ STATIC_URL }}study_cases/js/study_cases.js"></script>
+{% endblock %}

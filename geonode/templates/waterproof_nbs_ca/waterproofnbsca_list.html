@@ -1,0 +1,50 @@
+{% extends "geonode_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Waterproof NBS CA" %}{% endblock %}
+{% block main %}
+<h1>{% trans "Waterproof NBS CA" %}</h1>
+
+{% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <h2>{% trans "List sbn" %}</h2>
+  <a href="create">{% trans "Create new SBN" %}</a>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">{% trans "Name" %}</th>
+      <th scope="col">{% trans "Description" %}</th>
+      <th scope="col">{% trans "Details" %}</th>
+      <th scope="col">{% trans "Edit" %}</th>
+      <th scope="col">{% trans "Delete" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for sbn in object_list %}
+    <tr>
+      <td>{{sbn.name}}</td>
+      <td>{{sbn.description}}</td>
+      <td> <a href="sbn/{{sbn.pk}}/detail"><i class="glyphicon glyphicon-eye-open"></i></a>
+
+      </td>
+      <td>
+        <a href="sbn/{{sbn.pk}}/update"><i class="glyphicon glyphicon-pencil"></i></a>
+      </td>
+      <td>
+        <a href="sbn/{{sbn.pk}}/delete"><i class="glyphicon glyphicon-trash"></i></a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% block body %}{% endblock body %}
+{% block sidebar %}{% endblock sidebar %}
+
+{% endblock body_outer %}
+
+{% block extra_script %}
+<script src="{% static waterproof_nbs_ca/js/waterproof_nbs_ca.js}"></script>
+{% endblock %}

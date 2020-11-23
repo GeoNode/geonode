@@ -7,6 +7,7 @@
 
 {% block body_outer %}
   <h1>{% trans "FAQ" %}</h1>
+  
   <a href="{% url "frequently_submit_question" %}">{% trans "You can't find an answer to your issue? Submit your own! We'll help you out." %}</a>
    <div>
      {% for category in object_list %}

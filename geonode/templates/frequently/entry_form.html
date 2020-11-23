@@ -1,9 +1,9 @@
-{% extends "base.html" %}
+{% extends "frequently/base.html" %}
 {% load i18n %}
 
 {% block title %}{% trans "Your question" %}{% endblock %}
 
-{% block main %}
+{% block body_outer %}
   <h1>{% trans "Your question" %}</h1>
   <form method="post" action=".">
     {% csrf_token %}
