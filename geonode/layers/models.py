@@ -274,7 +274,7 @@ class Layer(ResourceBase):
         else:
             _attrs = Attribute.objects.filter(layer=self)
         if _attrs.filter(attribute='the_geom').exists():
-            _att_type = _attrs.get(attribute='the_geom').attribute_type
+            _att_type = _attrs.filter(attribute='the_geom').first().attribute_type
             _gtype = re.match(r'\(\'gml:(.*?)\',', _att_type)
             return _gtype.group(1) if _gtype else None
         return None
