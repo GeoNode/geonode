@@ -126,7 +126,10 @@ def get_notification_recipients(notice_type_label, exclude_user=None, resource=N
         for user in profiles:
             try:
                 if not user.is_superuser and \
-                not user.has_perm('view_resourcebase', resource.get_self_resource()):
+                        not user.has_perm('view_resourcebase', resource.get_self_resource()):
+                    exclude_users_ids.append(user.id)
+                if user.pk == resource.owner.pk and \
+                        not notice_type_label.endswith("_comment"):
                     exclude_users_ids.append(user.id)
             except Exception:
                 # fallback which wont send mails
@@ -139,5 +142,5 @@ def get_notification_recipients(notice_type_label, exclude_user=None, resource=N
 
 def get_comment_notification_recipients(notice_type_label, instance_owner, exclude_user=None, resource=None):
     profiles = get_notification_recipients(notice_type_label, exclude_user, resource=resource)
-    profiles = profiles.filter(Q(pk=instance_owner.pk) | Q(is_superuser=True))
+    profiles = profiles.filter(Q(pk=resource.owner.pk) | Q(is_superuser=True))
     return profiles
