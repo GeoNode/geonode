@@ -881,48 +881,47 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if hasattr(self, 'class_name') and (self.pk is None or notify):
             if self.pk is None and self.title:
                 # Resource Created
+
                 notice_type_label = '%s_created' % self.class_name.lower()
                 recipients = get_notification_recipients(notice_type_label, resource=self)
                 send_notification(recipients, notice_type_label, {'resource': self})
                 _notification_sent = True
-            else:
+            elif self.pk:
                 # Resource Updated
+
+                # Approval Notifications Here
+                if not _notification_sent and settings.ADMIN_MODERATE_UPLOADS:
+                    if not self.__is_approved and self.is_approved:
+                        # Set "approved" workflow permissions
+                        self.set_workflow_perms(approved=True)
+
+                        # Send "approved" notification
+                        notice_type_label = '%s_approved' % self.class_name.lower()
+                        recipients = get_notification_recipients(notice_type_label, resource=self)
+                        send_notification(recipients, notice_type_label, {'resource': self})
+                        _notification_sent = True
+
+                # Publishing Notifications Here
+                if not _notification_sent and settings.RESOURCE_PUBLISHING:
+                    if not self.__is_published and self.is_published:
+                        # Set "published" workflow permissions
+                        self.set_workflow_perms(published=True)
+
+                        # Send "published" notification
+                        notice_type_label = '%s_published' % self.class_name.lower()
+                        recipients = get_notification_recipients(notice_type_label, resource=self)
+                        send_notification(recipients, notice_type_label, {'resource': self})
+                        _notification_sent = True
+
+                # Updated Notifications Here
+                if not _notification_sent:
+                    notice_type_label = '%s_updated' % self.class_name.lower()
+                    recipients = get_notification_recipients(notice_type_label, resource=self)
+                    send_notification(recipients, notice_type_label, {'resource': self})
+
                 _notification_sent = False
 
         super(ResourceBase, self).save(*args, **kwargs)
-
-        # Approval Notifications Here
-        if not _notification_sent and settings.ADMIN_MODERATE_UPLOADS:
-            if self.is_approved and not self.is_published and \
-            self.__is_approved != self.is_approved:
-                # Set "approved" workflow permissions
-                self.set_workflow_perms(approved=True)
-
-                # Send "approved" notification
-                notice_type_label = '%s_approved' % self.class_name.lower()
-                recipients = get_notification_recipients(notice_type_label, resource=self)
-                send_notification(recipients, notice_type_label, {'resource': self})
-                _notification_sent = True
-
-        # Publishing Notifications Here
-        if not _notification_sent and settings.RESOURCE_PUBLISHING:
-            if self.is_approved and self.is_published and \
-            self.__is_published != self.is_published:
-                # Set "published" workflow permissions
-                self.set_workflow_perms(published=True)
-
-                # Send "published" notification
-                notice_type_label = '%s_published' % self.class_name.lower()
-                recipients = get_notification_recipients(notice_type_label, resource=self)
-                send_notification(recipients, notice_type_label, {'resource': self})
-                _notification_sent = True
-
-        # Updated Notifications Here
-        if not _notification_sent:
-            notice_type_label = '%s_updated' % self.class_name.lower()
-            recipients = get_notification_recipients(notice_type_label, resource=self)
-            send_notification(recipients, notice_type_label, {'resource': self})
-
         self.__is_approved = self.is_approved
         self.__is_published = self.is_published
 
