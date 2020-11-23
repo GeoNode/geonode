@@ -877,7 +877,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         Send a notification when a resource is created or updated
         """
-        _notification_sent = False
         if hasattr(self, 'class_name') and (self.pk is None or notify):
             if self.pk is None and self.title:
                 # Resource Created
@@ -885,9 +884,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 notice_type_label = '%s_created' % self.class_name.lower()
                 recipients = get_notification_recipients(notice_type_label, resource=self)
                 send_notification(recipients, notice_type_label, {'resource': self})
-                _notification_sent = True
             elif self.pk:
                 # Resource Updated
+                _notification_sent = False
 
                 # Approval Notifications Here
                 if not _notification_sent and settings.ADMIN_MODERATE_UPLOADS:
@@ -899,6 +898,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                         notice_type_label = '%s_approved' % self.class_name.lower()
                         recipients = get_notification_recipients(notice_type_label, resource=self)
                         send_notification(recipients, notice_type_label, {'resource': self})
+                        _notification_sent = True
 
                 # Publishing Notifications Here
                 if not _notification_sent and settings.RESOURCE_PUBLISHING:
@@ -910,6 +910,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                         notice_type_label = '%s_published' % self.class_name.lower()
                         recipients = get_notification_recipients(notice_type_label, resource=self)
                         send_notification(recipients, notice_type_label, {'resource': self})
+                        _notification_sent = True
 
                 # Updated Notifications Here
                 if not _notification_sent:
