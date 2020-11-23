@@ -548,7 +548,7 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             group.leave(norman)
 
 
-class DocumentNotificationsTestCase(NotificationsTestsHelper):
+class DocumentsNotificationsTestCase(NotificationsTestsHelper):
 
     def setUp(self):
         self.user = 'admin'
@@ -567,7 +567,7 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
         self.norman.save()
         self.setup_notifications_for(DocumentsAppConfig.NOTIFICATIONS, self.norman)
 
-    def testDocumentNotifications(self):
+    def testDocumentsNotifications(self):
         with self.settings(
                 EMAIL_ENABLE=True,
                 NOTIFICATION_ENABLED=True,
@@ -579,6 +579,8 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
                 title='test notifications',
                 owner=self.norman)
             self.assertTrue(self.check_notification_out('document_created', self.u))
+            # Ensure "resource.owner" won't be notified for having created its own document
+            self.assertFalse(self.check_notification_out('document_created', self.norman))
 
             self.clear_notifications_queue()
             _d.title = 'test notifications 2'

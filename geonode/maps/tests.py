@@ -1048,11 +1048,12 @@ class MapsNotificationsTestCase(NotificationsTestsHelper):
                 NOTIFICATIONS_BACKEND="pinax.notifications.backends.email.EmailBackend",
                 PINAX_NOTIFICATIONS_QUEUE_ALL=False):
             self.clear_notifications_queue()
-            self.client.login(username=self.user, password=self.passwd)
+            self.client.login(username='norman', password='norman')
             new_map = reverse('new_map_json')
-            response = self.client.post(new_map,
-                                        data=VIEWER_CONFIG,
-                                        content_type="text/json")
+            response = self.client.post(
+                new_map,
+                data=VIEWER_CONFIG,
+                content_type="text/json")
             self.assertEqual(response.status_code, 200)
             content = response.content
             if isinstance(content, bytes):
@@ -1078,6 +1079,7 @@ class MapsNotificationsTestCase(NotificationsTestsHelper):
             comment.save()
             self.assertTrue(self.check_notification_out('map_comment', self.u))
 
+            self.clear_notifications_queue()
             if "pinax.ratings" in settings.INSTALLED_APPS:
                 self.clear_notifications_queue()
                 from pinax.ratings.models import Rating
