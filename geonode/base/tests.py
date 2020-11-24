@@ -37,7 +37,7 @@ from geonode.base.models import (
 )
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
-from django.test import Client, TestCase, override_settings
+from django.test import Client, TestCase, override_settings, SimpleTestCase
 from django.shortcuts import reverse
 
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
@@ -49,7 +49,6 @@ from geonode.decorators import on_ogc_backend
 from django.core.files import File
 from django.core.management import call_command
 from django.core.management.base import CommandError
-
 
 test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
 
@@ -805,3 +804,28 @@ class TestGetVisibleResource(TestCase):
         assign_perm('view_resourcebase', self.user, self.rb)
         categories = get_visibile_resources(self.user)
         self.assertEqual(categories['iso_formats'].count(), 1)
+
+
+class TestHtmlTagRemoval(SimpleTestCase):
+
+    def test_not_tags_in_attribute(self):
+        attribute_target_value = "This is not a templated text"
+        r = ResourceBase()
+        filtered_value = r._remove_html_tags(attribute_target_value)
+        self.assertEqual(attribute_target_value, filtered_value)
+
+    def test_simple_tags_in_attribute(self):
+        tagged_value = "<p>This is not a templated text<p>"
+        attribute_target_value = "This is not a templated text"
+        r = ResourceBase()
+        filtered_value = r._remove_html_tags(tagged_value)
+        self.assertEqual(filtered_value, attribute_target_value)
+
+    def test_complex_tags_in_attribute(self):
+        tagged_value = """<p style="display:none;" id="test">This is not a templated text<p>
+        <div class="test_css">Something in container</div>"""
+        attribute_target_value = """This is not a templated text
+        Something in container"""
+        r = ResourceBase()
+        filtered_value = r._remove_html_tags(tagged_value)
+        self.assertEqual(filtered_value, attribute_target_value)
