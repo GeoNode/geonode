@@ -90,6 +90,9 @@ urlpatterns = [
     url(r'^collaborators/$',
         TemplateView.as_view(template_name='collaborators.html'),
         name='collaborators'),
+	url(r'^take-action/$',
+        TemplateView.as_view(template_name='take_action.html'),
+        name='take-action'),	
         
     # Meta
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
