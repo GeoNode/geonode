@@ -8573,3 +8573,130 @@ ol.linenums li {
   color: #bebec5;
   line-height: 20px;
   text-shadow: 0 1px 0 #fff;
+}
+
+.testor{
+position:fixed;
+top:50px;
+}
+.principal-menu{
+        background-image: url(/static/geonode/img/02-mapa2.png); 
+        background-size: auto 100%;
+        
+        background-position: center center;
+    }
+
+    .principal_img{
+        margin-top: 50px;
+    }
+
+    .center-img {
+        max-width: 100%;
+        height: auto;
+        max-height: 462px;
+    }
+
+    .center-img-movil{
+        max-width: 50%;
+        height: auto;
+        max-height: 200px;
+
+    }
+
+    .img1{
+        position: absolute;
+        max-width: 135px;
+        left: 137px;
+        top: 18px;
+    }
+
+    .img2{
+        position: absolute;
+        max-width: 135px;
+        left: 75px;
+        top: 169px;
+    }
+
+    .img3{
+        position: absolute;
+        max-width: 135px;
+        left: 136px;
+        top: 320px;
+    }
+
+    .img4{
+        position: absolute;
+        max-width: 135px;
+        right: 175px;
+        top: 22px;
+    }
+
+    .img5{
+        position: absolute;
+        max-width: 135px;
+        right: 112px;
+        top: 176px;
+    }
+
+    .img6{
+        position: absolute;
+        max-width: 135px;
+        right: 175px;
+        top: 331px;
+    }
+
+    .ani_headShake:hover{
+        animation: headShake;
+        animation-duration: 2s;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .ani_flip:hover{
+        animation: swing;
+        animation-duration: 1s;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .ico1-text{
+        position: absolute;
+        max-width: 170px;
+        left: -15px;
+        top: 46px;
+    }
+
+    .ico2-text{
+        position: absolute;
+        max-width: 177px;
+        left: -84px;
+        top: 191px;
+    }
+
+    .ico3-text{
+        position: absolute;
+        max-width: 121px;
+        left: 38px;
+        top: 341px;
+    }
+
+    .ico4-text{
+        position: absolute;
+        max-width: 230px;
+        right: -78px;
+        top: 53px;
+    }
+
+    .ico5-text{
+        position: absolute;
+        max-width: 205px;
+        right: -118px;
+        top: 198px;
+    }
+
+    .ico6-text{
+        position: absolute;
+        max-width: 255px;
+        right: -96px;
+        top: 355px;
+    }
