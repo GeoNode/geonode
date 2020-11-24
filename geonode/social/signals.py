@@ -28,7 +28,6 @@ from dialogos.models import Comment
 
 from django.conf import settings
 from django.db.models import signals
-from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 # from actstream.exceptions import ModelNotActionable
@@ -53,7 +52,7 @@ if "relationships" in settings.INSTALLED_APPS:
     from relationships.models import Relationship
 
 ratings = None
-if "ratings" in settings.INSTALLED_APPS:
+if "pinax.ratings" in settings.INSTALLED_APPS:
     ratings = True
     from pinax.ratings.models import Rating
 
@@ -177,8 +176,12 @@ def rating_post_save(instance, sender, created, **kwargs):
     """ Send a notification when rating a layer, map or document
     """
     notice_type_label = '%s_rated' % instance.content_object.class_name.lower()
-    recipients = get_notification_recipients(notice_type_label, instance.user)
-    send_notification(recipients, notice_type_label, {"instance": instance})
+    recipients = get_notification_recipients(notice_type_label,
+                                             instance.user,
+                                             resource=instance.content_object)
+    send_notification(recipients,
+                      notice_type_label,
+                      {'resource': instance.content_object, 'user': instance.user, 'rating': instance.rating})
 
 
 def comment_post_save(instance, sender, created, **kwargs):
@@ -186,12 +189,12 @@ def comment_post_save(instance, sender, created, **kwargs):
     been submitted
     """
     notice_type_label = '%s_comment' % instance.content_type.model.lower()
-    recipients = get_comment_notification_recipients(notice_type_label, instance.content_object.owner)
+    recipients = get_comment_notification_recipients(notice_type_label,
+                                                     instance.author,
+                                                     resource=instance.content_object)
     send_notification(recipients,
                       notice_type_label,
-                      extra_context={
-                          "instance": instance, 'notice_settings_url': reverse('pinax_notifications:notice_settings')
-                      })
+                      {'resource': instance.content_object, 'author': instance.author})
 
 
 # signals

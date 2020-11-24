@@ -38,6 +38,9 @@ from geonode.people.utils import get_valid_user
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.utils import remove_object_permissions
+from geonode.notifications_helper import (
+    send_notification,
+    get_notification_recipients)
 
 from ..services.enumerations import CASCADED
 from ..services.enumerations import INDEXED
@@ -629,6 +632,12 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.bbox_polygon,
         instance.bbox_polygon.srid
     )
+    # Send a notification when a layer is created
+    if instance.pk is None and instance.title:
+        # Resource Created
+        notice_type_label = '%s_created' % instance.class_name.lower()
+        recipients = get_notification_recipients(notice_type_label, resource=instance)
+        send_notification(recipients, notice_type_label, {'resource': instance})
 
 
 def pre_delete_layer(instance, sender, **kwargs):

@@ -31,6 +31,7 @@ import json
 
 import gisdata
 from django.urls import reverse
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
@@ -547,7 +548,7 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             group.leave(norman)
 
 
-class DocumentNotificationsTestCase(NotificationsTestsHelper):
+class DocumentsNotificationsTestCase(NotificationsTestsHelper):
 
     def setUp(self):
         self.user = 'admin'
@@ -557,26 +558,57 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
         self.u = get_user_model().objects.get(username=self.user)
         self.u.email = 'test@email.com'
         self.u.is_active = True
+        self.u.is_superuser = True
         self.u.save()
         self.setup_notifications_for(DocumentsAppConfig.NOTIFICATIONS, self.u)
+        self.norman = get_user_model().objects.get(username='norman')
+        self.norman.email = 'norman@email.com'
+        self.norman.is_active = True
+        self.norman.save()
+        self.setup_notifications_for(DocumentsAppConfig.NOTIFICATIONS, self.norman)
 
-    def testDocumentNotifications(self):
-        with self.settings(PINAX_NOTIFICATIONS_QUEUE_ALL=True):
+    def testDocumentsNotifications(self):
+        with self.settings(
+                EMAIL_ENABLE=True,
+                NOTIFICATION_ENABLED=True,
+                NOTIFICATIONS_BACKEND="pinax.notifications.backends.email.EmailBackend",
+                PINAX_NOTIFICATIONS_QUEUE_ALL=False):
             self.clear_notifications_queue()
-            _d = Document.objects.create(title='test notifications', owner=self.u)
+            self.client.login(username=self.user, password=self.passwd)
+            _d = Document.objects.create(
+                title='test notifications',
+                owner=self.norman)
             self.assertTrue(self.check_notification_out('document_created', self.u))
+            # Ensure "resource.owner" won't be notified for having created its own document
+            self.assertFalse(self.check_notification_out('document_created', self.norman))
+
+            self.clear_notifications_queue()
             _d.title = 'test notifications 2'
             _d.save(notify=True)
             self.assertTrue(self.check_notification_out('document_updated', self.u))
 
+            self.clear_notifications_queue()
             from dialogos.models import Comment
             lct = ContentType.objects.get_for_model(_d)
-            comment = Comment(author=self.u, name=self.u.username,
-                              content_type=lct, object_id=_d.id,
-                              content_object=_d, comment='test comment')
+            comment = Comment(author=self.norman,
+                              name=self.norman.username,
+                              content_type=lct,
+                              object_id=_d.id,
+                              content_object=_d,
+                              comment='test comment')
             comment.save()
-
             self.assertTrue(self.check_notification_out('document_comment', self.u))
+
+            if "pinax.ratings" in settings.INSTALLED_APPS:
+                self.clear_notifications_queue()
+                from pinax.ratings.models import Rating
+                rating = Rating(user=self.norman,
+                                content_type=lct,
+                                object_id=_d.id,
+                                content_object=_d,
+                                rating=5)
+                rating.save()
+                self.assertTrue(self.check_notification_out('document_rated', self.u))
 
 
 class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):

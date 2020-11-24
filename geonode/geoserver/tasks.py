@@ -88,7 +88,13 @@ def geoserver_post_save_layers(
     """
     Runs update layers.
     """
-    instance = Layer.objects.get(id=instance_id)
+    instance = None
+    try:
+        instance = Layer.objects.get(id=instance_id)
+    except Layer.DoesNotExist:
+        logger.error(f"Layer id {instance_id} does not exist yet!")
+        return
+
     # Don't run this signal if is a Layer from a remote service
     if getattr(instance, "remote_service", None) is not None:
         return
