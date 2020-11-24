@@ -27,7 +27,11 @@ from lxml import etree
 from defusedxml import lxml as dlxml
 from os.path import isfile
 
-from urllib.parse import urlsplit, urljoin, unquote
+from urllib.parse import (
+    urlsplit,
+    urljoin,
+    unquote,
+    parse_qsl)
 
 from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpResponseRedirect
@@ -56,16 +60,19 @@ from geonode.proxy.views import proxy
 from .tasks import geoserver_update_layers
 from geonode.utils import json_response, _get_basic_auth_info, http_client
 from geoserver.catalog import FailedRequestError
-from geonode.geoserver.signals import (gs_catalog,
-                                       geoserver_post_save_local)
-from .helpers import (get_stores,
-                      ogc_server_settings,
-                      extract_name_from_sld,
-                      set_styles,
-                      style_update,
-                      set_layer_style,
-                      _stylefilterparams_geowebcache_layer,
-                      _invalidate_geowebcache_layer)
+from geonode.geoserver.signals import (
+    gs_catalog,
+    geoserver_post_save_local)
+from .helpers import (
+    get_stores,
+    ogc_server_settings,
+    extract_name_from_sld,
+    set_styles,
+    style_update,
+    set_layer_style,
+    temp_style_name_regex,
+    _stylefilterparams_geowebcache_layer,
+    _invalidate_geowebcache_layer)
 
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_control
@@ -399,6 +406,8 @@ def style_change_check(request, path):
             style_name = os.path.splitext(request.path)[0].split('/')[-1]
             if style_name == 'styles' and 'raw' in request.GET:
                 authorized = True
+            elif re.match(temp_style_name_regex, style_name):
+                authorized = True
             else:
                 try:
                     style = Style.objects.get(name=style_name)
@@ -521,7 +530,16 @@ def geoserver_proxy(request,
                 logger.debug(
                     "[geoserver_proxy] Updating Style ---> url %s" %
                     url.geturl())
-                affected_layers = style_update(request, raw_url)
+                _style_name, _style_ext = os.path.splitext(os.path.basename(urlsplit(url.geturl()).path))
+                if _style_name == 'styles.json' and request.method == "PUT":
+                    _parsed_get_args = dict(parse_qsl(urlsplit(url.geturl()).query))
+                    if 'name' in _parsed_get_args:
+                        _style_name, _style_ext = os.path.splitext(_parsed_get_args['name'])
+                else:
+                    _style_name, _style_ext = os.path.splitext(_style_name)
+                if _style_name != 'style-check' and _style_ext == '.json' and \
+                not re.match(temp_style_name_regex, _style_name):
+                    affected_layers = style_update(request, raw_url)
             elif downstream_path == 'rest/layers':
                 logger.debug(
                     "[geoserver_proxy] Updating Layer ---> url %s" %
@@ -537,8 +555,9 @@ def geoserver_proxy(request,
     raw_url = unquote(raw_url)
     timeout = getattr(ogc_server_settings, 'TIMEOUT') or 60
     allowed_hosts = [urlsplit(ogc_server_settings.public_url).hostname, ]
-    return proxy(request, url=raw_url, response_callback=_response_callback,
-                 timeout=timeout, allowed_hosts=allowed_hosts, **kwargs)
+    response = proxy(request, url=raw_url, response_callback=_response_callback,
+                     timeout=timeout, allowed_hosts=allowed_hosts, **kwargs)
+    return response
 
 
 def _response_callback(**kwargs):

@@ -139,7 +139,7 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
         user = context.get("inviter") if context.get("inviter") else context.get("user")
         full_name = " ".join((user.first_name, user.last_name)) if user.first_name or user.last_name else None
         user_groups = GroupProfile.objects.filter(
-            slug__in=user.groupmember_set.filter().values_list("group__slug", flat=True))
+            slug__in=user.groupmember_set.all().values_list("group__slug", flat=True))
         enhanced_context = context.copy()
         enhanced_context.update({
             "username": user.username,

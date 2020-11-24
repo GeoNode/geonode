@@ -188,11 +188,11 @@ def qgis_server_post_save(instance, sender, **kwargs):
 
     # Create thumbnail
     overwrite = getattr(instance, 'overwrite', False)
-    create_qgis_server_thumbnail.delay(
+    create_qgis_server_thumbnail.apply_async((
         get_model_path(instance),
         instance.id,
-        overwrite=overwrite
-    )
+        overwrite
+    ))
 
     # Attributes
     set_attributes(instance)
@@ -383,11 +383,11 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
             qgis_map.qgis_project_path, ensure_string(response.content)))
 
     # Generate map thumbnail
-    create_qgis_server_thumbnail.delay(
+    create_qgis_server_thumbnail.apply_async((
         get_model_path(instance),
         instance.id,
-        overwrite=True
-    )
+        True
+    ))
 
 
 @on_ogc_backend(qgis_server.BACKEND_PACKAGE)

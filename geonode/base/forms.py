@@ -22,6 +22,8 @@ import six
 import html
 import logging
 
+from tinymce.widgets import TinyMCE
+
 from .fields import MultiThesauriField
 
 from dal import autocomplete
@@ -332,9 +334,28 @@ class ResourceBaseDateTimePicker(DateTimePicker):
 
 class ResourceBaseForm(TranslationModelForm):
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
-
+    abstract = forms.CharField(
+        label=_("Abstract"),
+        required=False,
+        widget=TinyMCE())
+    purpose = forms.CharField(
+        label=_("Purpose"),
+        required=False,
+        widget=TinyMCE())
+    constraints_other = forms.CharField(
+        label=_("Other constraints"),
+        required=False,
+        widget=TinyMCE())
+    supplemental_information = forms.CharField(
+        label=_('Supplemental information'),
+        required=False,
+        widget=TinyMCE())
+    data_quality_statement = forms.CharField(
+        label=_("Data quality statement"),
+        required=False,
+        widget=TinyMCE())
     owner = forms.ModelChoiceField(
-        empty_label="Owner",
+        empty_label=_("Owner"),
         label=_("Owner"),
         required=False,
         queryset=get_user_model().objects.exclude(username='AnonymousUser'),

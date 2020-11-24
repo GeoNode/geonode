@@ -253,7 +253,10 @@ urlpatterns += geonode.proxy.urls.urlpatterns
 urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.LOCAL_MEDIA_URL,
                       document_root=settings.MEDIA_ROOT)
+handler401 = 'geonode.views.err403'
 handler403 = 'geonode.views.err403'
+handler404 = 'geonode.views.handler404'
+handler500 = 'geonode.views.handler500'
 
 # Featured Maps Pattens
 urlpatterns += [  # '',

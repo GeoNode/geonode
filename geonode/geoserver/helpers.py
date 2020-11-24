@@ -72,6 +72,8 @@ from django.utils.module_loading import import_string
 
 logger = logging.getLogger(__name__)
 
+temp_style_name_regex = r'[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}_ms_.*'
+
 if not hasattr(settings, 'OGC_SERVER'):
     msg = (
         'Please configure OGC_SERVER when enabling geonode.geoserver.'
@@ -429,15 +431,12 @@ def cascading_delete(layer_name=None, catalog=None):
                     except FailedRequestError:
                         logger.debug(
                             'the store was not found in geoserver')
-                        return
                 else:
                     logger.debug(
                         'the store was not found in geoserver')
-                    return
             if ws is None or store is None:
                 logger.debug(
                     'cascading delete was called on a layer where the workspace was not found')
-                return
             resource = cat.get_resource(name=name, store=store, workspace=workspace)
         else:
             resource = cat.get_resource(name=layer_name)
@@ -447,7 +446,7 @@ def cascading_delete(layer_name=None, catalog=None):
                    'to save information for layer "%s"' % (
                        ogc_server_settings.LOCATION, layer_name)
                    )
-            logger.debug(msg)
+            logger.error(msg)
             return None
         else:
             raise e
@@ -1367,7 +1366,7 @@ def create_geoserver_db_featurestore(
              'Connection timeout': 10,
              'create database': 'false',
              'Batch insert size': 30,
-             'preparedStatements': 'false',
+             'preparedStatements': 'true',
              'min connections': 10,
              'max connections': 100,
              'Evictor tests per run': 3,
@@ -1797,13 +1796,10 @@ def style_update(request, url):
         # add style in GN and associate it to layer
         if request.method == 'DELETE':
             if style_name:
-                try:
-                    style = Style.objects.get(name=style_name)
-                    style.delete()
-                except Exception:
-                    pass
+                style = Style.objects.filter(name=style_name).delete()
         if request.method == 'POST':
-            if style_name:
+            style = None
+            if style_name and not re.match(temp_style_name_regex, style_name):
                 style, created = Style.objects.get_or_create(name=style_name)
                 style.sld_body = sld_body
                 style.sld_url = url
@@ -1818,11 +1814,12 @@ def style_update(request, url):
                     except Exception:
                         pass
             if layer:
-                style.layer_styles.add(layer)
-                style.save()
+                if style:
+                    style.layer_styles.add(layer)
+                    style.save()
                 affected_layers.append(layer)
         elif request.method == 'PUT':  # update style in GN
-            if style_name:
+            if style_name and not re.match(temp_style_name_regex, style_name):
                 style, created = Style.objects.get_or_create(name=style_name)
                 style.sld_body = sld_body
                 style.sld_url = url
@@ -1838,12 +1835,6 @@ def style_update(request, url):
             _invalidate_geowebcache_layer(layer_name)
         except Exception:
             pass
-
-    elif request.method == 'DELETE':  # delete style from GN
-        style_name = os.path.basename(request.path)
-        style = Style.objects.get(name=style_name)
-        style.delete()
-
     return affected_layers
 
 

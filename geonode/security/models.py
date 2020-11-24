@@ -300,7 +300,10 @@ class PermissionLevelMixin(object):
                     # Set the GeoFence Rules
                     if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                         if self.polymorphic_ctype.name == 'layer':
-                            sync_geofence_with_guardian(self.layer, perms, user=user)
+                            group_perms = None
+                            if 'groups' in perm_spec and len(perm_spec['groups']) > 0:
+                                group_perms = perm_spec['groups']
+                            sync_geofence_with_guardian(self.layer, perms, user=_user, group_perms=group_perms)
 
         # All the other groups
         if 'groups' in perm_spec and len(perm_spec['groups']) > 0:

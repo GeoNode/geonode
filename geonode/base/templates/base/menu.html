@@ -46,15 +46,39 @@
     {% endif %}
 
 {% endfor %}
+{% block content_reposition_script %}
 <script type="text/javascript">
-window.addEventListener("load", function(){
-    var reposition = function() {
-        const nav_bar_height = $("#navbar").height();
-        $("#wrap").css("margin-top", (nav_bar_height - 20));
-        $("#ms-container").css("top", nav_bar_height);
-    };
-    reposition();
-    // attach the function to the window resize event
-    $(window).resize(reposition);
-});
+    window.addEventListener('load', function(){
+        var reposition = function() {
+            if (document.querySelector) {
+                // we should target the wrapper of navbar
+                // to ensure all parts are computed in the height
+                const fixedNavarNode = document.querySelector('nav.navbar-fixed-top');
+                const wrapNode = document.querySelector('#wrap');
+                const msContainerNode = document.querySelector('#ms-container');
+                const fixedNavarNodeHeight = fixedNavarNode && fixedNavarNode.clientHeight;
+                if (fixedNavarNodeHeight) {
+                    if (wrapNode) {
+                        wrapNode.style.marginTop = fixedNavarNodeHeight + 'px';
+                        document.body.style.paddingTop = 0;
+                    }
+                    if (msContainerNode) {
+                        msContainerNode.style.top = fixedNavarNodeHeight + 'px';
+                        document.body.style.paddingTop = 0;
+                    }
+                }
+            }
+        };
+        if (ResizeObserver) {
+            const fixedNavarNode = document.querySelector('nav.navbar-fixed-top');
+            const resizeObserver = new ResizeObserver(reposition);
+            resizeObserver.observe(fixedNavarNode);
+        } else {
+            // attach the function to the window resize event
+            window.addEventListener('resize', reposition);
+        }
+
+        reposition();
+    });
 </script>
+{% endblock %}

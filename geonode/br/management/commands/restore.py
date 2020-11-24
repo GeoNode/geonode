@@ -272,7 +272,8 @@ class Command(BaseCommand):
                         chmod_tree(locale_files_folder)
                 except Exception as exception:
                     if notify:
-                        restore_notification.delay(admin_emails, backup_file, backup_md5, str(exception))
+                        restore_notification.apply_async(
+                            (admin_emails, backup_file, backup_md5, str(exception)))
 
                     print("...Sanity Checks on Folder failed. Please make sure that the current user has full WRITE access to the above folders (and sub-folders or files).")
                     print("Reason:")
@@ -299,7 +300,8 @@ class Command(BaseCommand):
                                 self.restore_geoserver_vector_data(config, settings, recovery_folder)
                                 self.restore_geoserver_externals(config, settings, recovery_folder)
                         if notify:
-                            restore_notification.delay(admin_emails, backup_file, backup_md5, str(exception))
+                            restore_notification.apply_async(
+                                (admin_emails, backup_file, backup_md5, str(exception)))
                         raise exception
                 else:
                     print("Skipping geoserver backup restore")
@@ -472,7 +474,8 @@ class Command(BaseCommand):
 
                 except Exception as exception:
                     if notify:
-                        restore_notification.delay(admin_emails, backup_file, backup_md5, str(exception))
+                        restore_notification.apply_async(
+                            (admin_emails, backup_file, backup_md5, str(exception)))
 
                 finally:
                     call_command('makemigrations', interactive=False)
@@ -480,7 +483,8 @@ class Command(BaseCommand):
                     call_command('sync_geonode_layers', updatepermissions=True, ignore_errors=True)
 
                 if notify:
-                    restore_notification.delay(admin_emails, backup_file, backup_md5)
+                    restore_notification.apply_async(
+                        (admin_emails, backup_file, backup_md5))
 
                 print("HINT: If you migrated from another site, do not forget to run the command 'migrate_baseurl' to fix Links")
                 print(
