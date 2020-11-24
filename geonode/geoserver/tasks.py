@@ -159,7 +159,7 @@ def geoserver_post_save_layers(
                 # raise GeoNodeException(msg)
                 return (values, None)
             gs_resource = None
-            sleep(3.00)
+            sleep(5.00)
         return (values, gs_resource)
 
     values, gs_resource = fetch_gs_resource(values, _tries)
@@ -236,15 +236,6 @@ def geoserver_post_save_layers(
         except Exception as e:
             logger.exception(e)
 
-    if instance.srid:
-        instance.srid_url = "http://www.spatialreference.org/ref/" + \
-            instance.srid.replace(':', '/').lower() + "/"
-    elif instance.bbox_polygon is not None:
-        # Guessing 'EPSG:4326' by default
-        instance.srid = 'EPSG:4326'
-    else:
-        raise GeoNodeException("Invalid Projection. Layer is missing CRS!")
-
     # Iterate over values from geoserver.
     if gs_resource:
         for key in ['alternate', 'store', 'storeType']:
@@ -252,7 +243,6 @@ def geoserver_post_save_layers(
             # print attr_name
             setattr(instance, key, values[key])
 
-    if gs_resource:
         try:
             if settings.RESOURCE_PUBLISHING:
                 if instance.is_published != gs_resource.advertised:
@@ -278,6 +268,15 @@ def geoserver_post_save_layers(
                    'try to use: "%s"' % (gs_resource, str(e)))
             e.args = (msg,)
             logger.exception(e)
+
+    if instance.srid:
+        instance.srid_url = "http://www.spatialreference.org/ref/" + \
+            instance.srid.replace(':', '/').lower() + "/"
+    elif instance.bbox_polygon is not None:
+        # Guessing 'EPSG:4326' by default
+        instance.srid = 'EPSG:4326'
+    else:
+        raise GeoNodeException("Invalid Projection. Layer is missing CRS!")
 
     to_update = {
         'title': instance.title or instance.name,
@@ -314,9 +313,8 @@ def geoserver_post_save_layers(
     if gs_resource:
         instance.gs_resource = gs_resource
 
-    # some thumbnail generators will update thumbnail_url.  If so, don't
-    # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
-    if gs_resource:
+        # some thumbnail generators will update thumbnail_url.  If so, don't
+        # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
         logger.debug("... Creating Default Resource Links for Layer [%s]" % (instance.alternate))
         set_resource_default_links(instance, instance, prune=True)
 
