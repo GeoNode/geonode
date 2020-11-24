@@ -677,16 +677,21 @@ def gs_slurp(
         the_store = resource.store
         workspace = the_store.workspace
         try:
-            layer, created = Layer.objects.get_or_create(name=name, workspace=workspace.name, defaults={
-                # "workspace": workspace.name,
-                "store": the_store.name,
-                "storeType": the_store.resource_type,
-                "alternate": "%s:%s" % (workspace.name, resource.name),
-                "title": resource.title or 'No title provided',
-                "abstract": resource.abstract or "{}".format(_('No abstract provided')),
-                "owner": owner,
-                "uuid": str(uuid.uuid4())
-            })
+            created = False
+            layer = Layer.objects.filter(name=name, workspace=workspace.name).first()
+            if not layer:
+                layer = Layer.objects.create(
+                    name=name,
+                    workspace=workspace.name,
+                    store=the_store.name,
+                    storeType=the_store.resource_type,
+                    alternate="%s:%s" % (workspace.name, resource.name),
+                    title=resource.title or 'No title provided',
+                    abstract=resource.abstract or "{}".format(_('No abstract provided')),
+                    owner=owner,
+                    uuid=str(uuid.uuid4())
+                )
+                created = True
             bbox = resource.native_bbox
             layer.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], resource.projection)
 

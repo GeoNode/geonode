@@ -689,14 +689,18 @@ def file_upload(filename,
                     layer = None
             if not layer:
                 if not metadata_upload_form:
-                    layer, created = Layer.objects.get_or_create(
-                        name=valid_name,
-                        workspace=settings.DEFAULT_WORKSPACE
-                    )
+                    layer = Layer.objects.filter(name=valid_name, workspace=settings.DEFAULT_WORKSPACE).first()
+                    if not layer:
+                        layer = Layer.objects.create(
+                            name=valid_name,
+                            workspace=settings.DEFAULT_WORKSPACE
+                        )
+                        created = True
                 elif identifier:
-                    layer, created = Layer.objects.get_or_create(
-                        uuid=identifier
-                    )
+                    layer = Layer.objects.filter(uuid=identifier).first()
+                    if not layer:
+                        layer = Layer.objects.create(uuid=identifier)
+                        created = True
     except IntegrityError:
         raise
 
