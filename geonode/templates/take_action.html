@@ -1,0 +1,227 @@
+{% extends "geonode_base.html" %}
+{% load static from staticfiles %}
+
+{% load i18n %}
+{% block title %} {% trans "Take action" %} — {{ block.super }} {% endblock %}
+
+{% block body_outer %}
+<section>
+	<div class="imgheaderpag">          
+		<img src= "{% static 'geonode/img/2-IMAGEN.jpg' %}">
+	</div>
+</section>
+<section>
+	<div class="page-header colorHeaderInstrucciones">
+		<h2>{% trans "Take Action" %}</h2>
+	</div>
+	<p class="text-justify">
+	 {% trans "Text that explains what is expected by putting into action the portfolio of nature-based solutions that was obtained with the models. Introduction to the content of this page: the general process for the implementation and detail of the steps; who can help you; Useful resources and references for implementation." %}
+	</p>	
+	<div class="row" style="height:30px;">
+	</div>
+</section>
+<section>	
+	<div class="row" style="height=500px;">
+            <div class="col-md-4 text-center">
+                <img src= "{% static 'geonode/img/take_action_info.png' %}" style="max-inline-size: -webkit-fill-available;">
+                <span class="text-left"> {% trans "Infographic: General Process to Take Action" %}
+                </span>                
+            </div>
+            <div class="col-md-7 col-md-offset-1">
+				<div class= "row">
+					<div class= "colorsubtitle">
+						<span> {% trans "General process to take your portfolio into action:" %} </span>
+					</div>
+				</div>
+				<div class= "row middle">
+					<p class="container text-justify">
+					{% trans "Text that explains in a general way the process to implement the SbN portfolio." %}
+					</p>
+					<ul>
+					<li> {% trans "Step 1. Example step" %} </li>
+					<li> {% trans "Step 2. Example step" %} </li>
+					<li> {% trans "Step 3. Example step" %} </li>
+					</ul>
+                </div>
+            </div>
+	</div>
+	<div class="row" style="height:30px;">
+	</div>
+</section>	
+<section>	
+	<div class="row" style="height=500px;">            
+            <div class="col-md-1 text-center">
+                <img src= "{% static 'geonode/img/step1logo.png' %}" style="max-inline-size: -webkit-fill-available;">                              
+            </div>
+			<div class="col-md-7">
+				<div class= "row">
+					<div class= "colorsubtitle">
+						<span> {% trans "Step 1, detail:" %} </span>
+					</div>
+				</div>
+				<div class= "row middle">
+					<span class="container text-justify">
+					{% trans "Text that explains the first step of the process to implement the SbN portfolio. The text includes links to other blocks that have the details of each step (below) and links to other blocks or their content (who can help you and useful resources)." %}
+					</span>					
+                </div>
+            </div>
+			<div class="col-md-4 text-center">
+                <img src= "{% static 'geonode/img/step1.png' %}" style="max-inline-size: -webkit-fill-available;">                             
+            </div>
+	</div>
+	<div class="row" style="height:30px;">
+	</div>
+</section>	
+<section>	
+	<div class="row" style="height=500px;">    
+            
+			<div class="col-md-7">
+				<div class= "row">
+					<div class= "colorsubtitle">
+						<span> {% trans "Step 2, detail:" %} </span>
+					</div>
+				</div>
+				<div class= "row middle">
+					<span class= "container text-justify">
+					{% trans "Text that explains the second step of the process to implement the SbN portfolio. The text includes links to other blocks that have the details of each step (below) and links to other blocks or their content (who can help you and useful resources)." %}
+					</span>					
+                </div>
+            </div>
+			<div class="col-md-1 text-center">
+                <img src= "{% static 'geonode/img/step2logo.png' %}" style="max-inline-size: -webkit-fill-available;">                              
+            </div>
+			<div class="col-md-4 text-center">
+                <img src= "{% static 'geonode/img/step2.png' %}" style="max-inline-size: -webkit-fill-available;">                             
+            </div>
+	</div>
+	<div class="row" style="height:30px;">
+	</div>
+</section>
+<section>	
+	<div class="row" style="height=500px;">
+            <div class="col-md-4 text-center">
+                <img src= "{% static 'geonode/img/step1.png' %}" style="max-inline-size: -webkit-fill-available;">                               
+            </div>
+            <div class="col-md-6 col-md-offset-1">
+				<div class= "row">
+					<div class= "colorsubtitle">
+						<span> {% trans "Step 3, detail:" %} </span>
+					</div>
+				</div>
+				<div class= "row middle">
+					<span class="container text-justify">
+					{% trans "Text that explains the third step of the process to implement the SbN portfolio. The text includes links to other blocks that have the details of each step (below) and links to other blocks or their content (who can help you and useful resources)." %}
+					</span>	
+                </div>				
+            </div>
+			<div class="col-md-1 text-center">
+					<img src= "{% static 'geonode/img/step3logo.png' %}" style="max-inline-size: -webkit-fill-available;">                              
+				</div>
+	</div>
+	<div class="row" style="height:30px;">
+	</div>
+</section>	
+<section>	
+	<div class="row" style="height=500px;">            
+            <div class="col-md-8">
+				<div class= "row">
+					<div class= "colorsubtitle">
+						<span> {% trans "Who can help you?" %} </span>
+					</div>
+				</div>
+				<div class= "row middle">					
+					<span class="container text-justify">
+					{% trans "Text that explains the capabilities that are required to implement a portfolio and the type of entities you can search for to help the user take action." %}
+					</span>
+					<span class="container text-justify" style="font-weight: bold;">
+					{% trans "Possible partners:" %}
+					</span>
+					<ul>
+					<li> {% trans "Academy and ONGs" %} </li>
+					<li> {% trans "Consulting firms" %} </li>
+					<li> {% trans "Local communities" %} </li>
+					<li> {% trans "Governance " %} </li>
+					<li> {% trans "mechanisms" %} </li>
+					<li> {% trans "Local authorities" %} </li>
+					<li> {% trans "Business" %} </li>
+					</ul>
+                </div>
+            </div>
+			<div class="col-md-4 text-center">
+                <img src= "{% static 'geonode/img/helpers.png' %}" style="max-inline-size: -webkit-fill-available;">                                
+            </div>
+	</div>
+	<div class="row" style="height:30px;">
+	</div>
+</section>	
+<section>	
+	<div class="row" style="height=500px;">
+		<div class="row">
+			<div class= "colorsubtitle">
+				<span> (% trans "Helpful resources and references" %} </span>
+			</div>
+			<p class="text-justify">
+			{% trans "Here you will find some links and references to implementation examples, useful resources (toolboxes, open software,….), Partners, stakeholder platforms." %}
+			</p>
+		</div>
+		<div class="row">
+            <div class="col-md-2 col-md-offset-1 text-center">             
+				<div class= "row">
+					<a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+						<img src= "{% static 'geonode/img/resources.png' %}" style="max-inline-size: -webkit-fill-available;">
+							<p class="text-center"> TNC Global
+							</p><br>
+							<p class="text-center"> Read more about TNC
+							</p>
+					</a>
+				</div>				
+            </div>
+			<div class="col-md-2 text-center">             
+				<div class= "row">
+					<a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+						<img src= "{% static 'geonode/img/resources2.png' %}" style="max-inline-size: -webkit-fill-available;">
+							<p class="text-center"> Conservation
+							</p><br>
+							<p class="text-center"> Subtitle
+							</p>
+					</a>
+				</div>				
+            </div>	
+			<div class="col-md-2 text-center">             
+				<div class= "row">
+					<a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+						<img src= "{% static 'geonode/img/resources.png' %}" style="max-inline-size: -webkit-fill-available;">
+							<p class="text-center"> Conservation
+							</p><br>
+							<p class="text-center"> Subtitle
+							</p>
+					</a>
+				</div>				
+            </div>	
+			<div class="col-md-2 text-center">             
+				<div class= "row">
+					<a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+						<img src= "{% static 'geonode/img/resources2.png' %}" style="max-inline-size: -webkit-fill-available;">
+							<p class="text-center"> Conservation
+							</p><br>
+							<p class="text-center"> Subtitle
+							</p>
+					</a>
+				</div>				
+            </div>	
+			<div class="col-md-2 text-center">             
+				<div class= "row">
+					<a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+						<img src= "{% static 'geonode/img/resources.png' %}" style="max-inline-size: -webkit-fill-available;">
+							<p class="text-center"> Conservation
+							</p><br>
+							<p class="text-center"> Subtitle
+							</p>
+					</a>
+				</div>				
+            </div>	
+		</div>
+	</div>
+</section>
+
+{% endblock %}
