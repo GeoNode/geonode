@@ -885,6 +885,30 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def __str__(self):
         return "{0}".format(self.title)
 
+    def _remove_html_tags(self, attribute_str):
+        pattern = re.compile('<.*?>')
+        return re.sub(pattern, '', attribute_str)
+
+    @property
+    def raw_abstract(self):
+        return self._remove_html_tags(self.abstract)
+
+    @property
+    def raw_purpose(self):
+        return self._remove_html_tags(self.purpose)
+
+    @property
+    def raw_constraints_other(self):
+        return self._remove_html_tags(self.constraints_other)
+
+    @property
+    def raw_supplemental_information(self):
+        return self._remove_html_tags(self.supplemental_information)
+
+    @property
+    def raw_data_quality_statement(self):
+        return self._remove_html_tags(self.data_quality_statement)
+
     def save(self, notify=False, *args, **kwargs):
         """
         Send a notification when a resource is created or updated
