@@ -1220,7 +1220,7 @@ class SignalsTests(GeoNodeLiveTestSupport):
                     updated_count == 0,
                     "Metadata have not been updated (deleted) correctly"
                 )
-            self.assertTrue(count == 0, "Metadata have not been updated (deleted) correctly")
+
             # Call migrate
             call_command("migrate", verbosity=0)
             # Check links
