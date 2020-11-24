@@ -914,6 +914,9 @@ def set_attributes(
         for attribute in attribute_map:
             field, ftype, description, label, display_order = attribute
             if field:
+                _gs_attrs = Attribute.objects.filter(layer=layer, attribute=field)
+                if _gs_attrs.count() > 1:
+                    _gs_attrs.delete()
                 la, created = Attribute.objects.get_or_create(layer=layer, attribute=field)
                 if created:
                     la.visible = ftype.find("gml:") != 0
