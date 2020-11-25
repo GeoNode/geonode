@@ -873,51 +873,73 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def __str__(self):
         return "{0}".format(self.title)
 
+    def _remove_html_tags(self, attribute_str):
+        pattern = re.compile('<.*?>')
+        return re.sub(pattern, '', attribute_str)
+
+    @property
+    def raw_abstract(self):
+        return self._remove_html_tags(self.abstract)
+
+    @property
+    def raw_purpose(self):
+        return self._remove_html_tags(self.purpose)
+
+    @property
+    def raw_constraints_other(self):
+        return self._remove_html_tags(self.constraints_other)
+
+    @property
+    def raw_supplemental_information(self):
+        return self._remove_html_tags(self.supplemental_information)
+
+    @property
+    def raw_data_quality_statement(self):
+        return self._remove_html_tags(self.data_quality_statement)
+
     def save(self, notify=False, *args, **kwargs):
         """
         Send a notification when a resource is created or updated
         """
         if hasattr(self, 'class_name') and (self.pk is None or notify):
-            if self.pk is None:
+            if self.pk is None and self.title:
                 # Resource Created
-                notice_type_label = '%s_created' % self.class_name.lower()
-                recipients = get_notification_recipients(notice_type_label)
-                send_notification(recipients, notice_type_label, {'resource': self})
 
-            else:
+                notice_type_label = '%s_created' % self.class_name.lower()
+                recipients = get_notification_recipients(notice_type_label, resource=self)
+                send_notification(recipients, notice_type_label, {'resource': self})
+            elif self.pk:
                 # Resource Updated
                 _notification_sent = False
 
                 # Approval Notifications Here
-                if settings.ADMIN_MODERATE_UPLOADS:
-                    if self.is_approved and not self.is_published and \
-                    self.__is_approved != self.is_approved:
+                if not _notification_sent and settings.ADMIN_MODERATE_UPLOADS:
+                    if not self.__is_approved and self.is_approved:
                         # Set "approved" workflow permissions
                         self.set_workflow_perms(approved=True)
 
                         # Send "approved" notification
                         notice_type_label = '%s_approved' % self.class_name.lower()
-                        recipients = get_notification_recipients(notice_type_label)
+                        recipients = get_notification_recipients(notice_type_label, resource=self)
                         send_notification(recipients, notice_type_label, {'resource': self})
                         _notification_sent = True
 
                 # Publishing Notifications Here
                 if not _notification_sent and settings.RESOURCE_PUBLISHING:
-                    if self.is_approved and self.is_published and \
-                    self.__is_published != self.is_published:
+                    if not self.__is_published and self.is_published:
                         # Set "published" workflow permissions
                         self.set_workflow_perms(published=True)
 
                         # Send "published" notification
                         notice_type_label = '%s_published' % self.class_name.lower()
-                        recipients = get_notification_recipients(notice_type_label)
+                        recipients = get_notification_recipients(notice_type_label, resource=self)
                         send_notification(recipients, notice_type_label, {'resource': self})
                         _notification_sent = True
 
                 # Updated Notifications Here
                 if not _notification_sent:
                     notice_type_label = '%s_updated' % self.class_name.lower()
-                    recipients = get_notification_recipients(notice_type_label)
+                    recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
 
         super(ResourceBase, self).save(*args, **kwargs)
@@ -930,7 +952,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         if hasattr(self, 'class_name') and notify:
             notice_type_label = '%s_deleted' % self.class_name.lower()
-            recipients = get_notification_recipients(notice_type_label)
+            recipients = get_notification_recipients(notice_type_label, resource=self)
             send_notification(recipients, notice_type_label, {'resource': self})
 
         super(ResourceBase, self).delete(*args, **kwargs)

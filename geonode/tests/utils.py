@@ -355,6 +355,7 @@ if has_notifications:
 
         def clear_notifications_queue(self):
             send_all()
+            mail.outbox = []
 
         def check_notification_out(self, notification_name, user):
             """
@@ -383,11 +384,13 @@ if has_notifications:
                 if not mail.outbox:
                     return False
 
-                msg = mail.outbox[-1]
                 user.noticesetting_set.get(notice_type__label=notification_name)
 
                 # unfortunatelly we can't use description check in subject, because subject is
                 # generated from other template.
                 # and notification.notice_type.description in msg.subject
                 # last email should contain notification
-                return user.email in msg.to
+                for msg in mail.outbox:
+                    if user.email in msg.to:
+                        return True
+                return False

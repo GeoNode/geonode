@@ -120,16 +120,17 @@ def send_queued_notifications(self, *args):
     advantage of this.
 
     """
-    try:
-        from notification.engine import send_all
-    except ImportError:
-        return
+    from importlib import import_module
+    notifications = getattr(settings, 'NOTIFICATIONS_MODULE', None)
 
-    # Make sure application can write to location where lock files are stored
-    if not args and getattr(settings, 'NOTIFICATION_LOCK_LOCATION', None):
-        send_all(settings.NOTIFICATION_LOCK_LOCATION)
-    else:
-        send_all(*args)
+    if notifications:
+        engine = import_module(f"{notifications}.engine")
+        send_all = getattr(engine, 'send_all')
+        # Make sure application can write to location where lock files are stored
+        if not args and getattr(settings, 'NOTIFICATION_LOCK_LOCATION', None):
+            send_all(settings.NOTIFICATION_LOCK_LOCATION)
+        else:
+            send_all(*args)
 
 
 @app.task(bind=True,
