@@ -75,34 +75,12 @@ class Profile(AbstractUser):
         null=True,
         blank=True,
         help_text=_('introduce yourself'))
-    position = models.CharField(
-        _('Position Name'),
-        max_length=255,
-        blank=True,
-        null=True,
-        help_text=_('role or position of the responsible person'))
-    voice = models.CharField(_('Voice'), max_length=255, blank=True, null=True, help_text=_(
-        'telephone number by which individuals can speak to the responsible organization or individual'))
-    fax = models.CharField(_('Facsimile'), max_length=255, blank=True, null=True, help_text=_(
-        'telephone number of a facsimile machine for the responsible organization or individual'))
-    delivery = models.CharField(
-        _('Delivery Point'),
-        max_length=255,
-        blank=True,
-        null=True,
-        help_text=_('physical and email address at which the organization or individual may be contacted'))
     area = models.CharField(
         _('Administrative Area'),
         max_length=255,
         blank=True,
         null=True,
         help_text=_('state, province of the location'))
-    zipcode = models.CharField(
-        _('Postal Code'),
-        max_length=255,
-        blank=True,
-        null=True,
-        help_text=_('ZIP or other postal code'))
     country = models.CharField(
         _('Country'),
         choices=COUNTRIES,
@@ -225,8 +203,7 @@ class Profile(AbstractUser):
 
     @property
     def location(self):
-        return format_address(self.delivery, self.zipcode,
-                              self.city, self.area, self.country)
+        return format_address(self.city, self.area, self.country)
 
     def save(self, *args, **kwargs):
         super(Profile, self).save(*args, **kwargs)
