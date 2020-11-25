@@ -118,6 +118,21 @@ class ProfileForm(forms.ModelForm):
             'is_active',
             'date_joined'
         )
+    
+    field_order = [
+        "email",
+        "username",    
+        "first_name",
+        "last_name",
+        "organization",
+        "professional_role",
+        "other_role",
+        "use_analysis",
+        "country",
+        "city",
+        "password",
+        "agree_conditions",
+    ]
 
 class CustomUserCreationForm2(SignupForm):
 

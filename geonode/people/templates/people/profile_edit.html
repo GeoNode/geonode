@@ -32,3 +32,29 @@
   </form>
 </div>
 {% endblock %}
+
+{% block extra_script %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            
+          $('#id_country').select2();
+          if ($("#id_professional_role").val() != 'OTHER'){
+            $("#div_id_other_role").hide();
+          }           
+            
+          $("#id_professional_role").on("change", function(e){
+            console.log("change id_professional_role:", e);
+            if (this.value == "OTHER"){
+              $("#div_id_other_role").show();
+            }else{
+              $("#div_id_other_role").hide();
+              $("#id_other_role").val("");
+            }
+          });       
+                    
+          getCode2Country($("#id_country").val());
+
+        });
+    </script>
+{% endblock %}

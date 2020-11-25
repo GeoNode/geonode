@@ -51,23 +51,24 @@ class ProfileAdmin(admin.ModelAdmin):
     add_form_template = 'admin/auth/user/add_form.html'
     change_user_password_template = None
     fieldsets = (
-        (None, {'fields': ('username', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
-                                       'groups')}),
-        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
-        (_('Extended profile'), {'fields': ('professional_role',
-                                            'organization', 'profile',
+        (None, {'fields': ('username', 'first_name', 'last_name', 
+                        'email','organization', 'professional_role', 'use_analysis',
+                        'other_role','country','city','password')}),
+        (_('Extended profile'), {'fields': ('profile',
                                             'position', 'voice', 'fax',
-                                            'delivery', 'city', 'area',
-                                            'zipcode', 'country',
+                                            'delivery', 'area',
+                                            'zipcode', 
                                             'keywords')}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
+                                       'groups', 'agree_conditions')}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+        
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'first_name', 'last_name', 'organization', 'professional_role',
-                        'city','country', 'agree_conditions', 'password1', 'password2')}
+            'fields': ('email', 'username', 'first_name', 'last_name', 'organization', 'professional_role', 'other_role',
+                        'use_analysis','country', 'city', 'password1', 'password2','agree_conditions')}
          ),
     )
     form = ProfileChangeForm
