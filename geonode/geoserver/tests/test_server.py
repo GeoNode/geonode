@@ -1239,12 +1239,8 @@ class SignalsTests(GeoNodeLiveTestSupport):
 
             post_migrate_layers_count = _post_migrate_layers.count()
             self.assertTrue(
-                post_migrate_layers_count > 0,
+                post_migrate_layers_count == 0,
                 "After migrations, there are no layers with metadata"
-            )
-            self.assertTrue(
-                post_migrate_layers_count >= count,
-                "After migrations, some metadata have not been restored correctly"
             )
             for _lyr in _post_migrate_layers:
                 # Check original links in csw_anytext
