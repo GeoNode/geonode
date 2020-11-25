@@ -75,9 +75,8 @@ class ProfileAdmin(admin.ModelAdmin):
     add_form = ProfileCreationForm
     change_password_form = AdminPasswordChangeForm
     list_display = (
-        'id', 'username', 'organization',
-        'email', 'first_name', 'last_name',
-        'is_staff', 'is_active')
+        'id', 'username', 'is_staff', 
+        'email', 'is_active', 'organization','city', 'country')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
     search_fields = (
         'username', 'organization', 'profile',
