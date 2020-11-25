@@ -52,7 +52,7 @@ class ProfileAdmin(admin.ModelAdmin):
     change_user_password_template = None
     fieldsets = (
         (None, {'fields': ('username', 'first_name', 'last_name', 
-                        'email','organization', 'professional_role', 'use_analysis',
+                        'email','organization', 'professional_role', 'use_analysis','other_analysis',
                         'other_role','country','city','password')}),
         (_('Extended profile'), {'fields': ('profile',
                                             'position', 'voice', 'fax',
@@ -68,7 +68,7 @@ class ProfileAdmin(admin.ModelAdmin):
         (None, {
             'classes': ('wide',),
             'fields': ('email', 'username', 'first_name', 'last_name', 'organization', 'professional_role', 'other_role',
-                        'use_analysis','country', 'city', 'password1', 'password2','agree_conditions')}
+                        'use_analysis','other_analysis','country', 'city', 'password1', 'password2','agree_conditions')}
          ),
     )
     form = ProfileChangeForm

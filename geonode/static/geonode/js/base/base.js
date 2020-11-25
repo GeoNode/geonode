@@ -28,6 +28,16 @@ $(".announcement").find(".close").on("click", function (e) {
     }
   });
 
+  $("#id_use_analysis").on("change", function(e){
+    console.log("change id_use_analysis:", e);
+    if (this.value == "OTHER"){
+      $("#div_id_other_analysis").show();
+    }else{
+      $("#div_id_other_analysis").hide();
+      $("#id_other_analysis").val("NA");
+    }
+  });
+
 });
 
 function getCode2Country(code){

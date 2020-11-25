@@ -128,6 +128,7 @@ class ProfileForm(forms.ModelForm):
         "professional_role",
         "other_role",
         "use_analysis",
+        'other_analysis',
         "country",
         "city",
         "password",
@@ -158,6 +159,11 @@ class CustomUserCreationForm2(SignupForm):
     
     use_analysis = forms.ChoiceField(label=_("Use Analysis"), choices=USE_ANALYSIS)
 
+    other_analysis = forms.CharField(label=_("Other Analysis"),
+                               widget=forms.TextInput(
+                                   attrs={'placeholder':
+                                          _('Other Analysis')}))
+
     organization = forms.CharField(label=_("Organization"),
                                widget=forms.TextInput(
                                    attrs={'placeholder':
@@ -182,6 +188,7 @@ class CustomUserCreationForm2(SignupForm):
         "professional_role",
         "other_role",
         "use_analysis",
+        "other_analysis",
         "country",
         "city",
         "password1",

@@ -152,6 +152,12 @@ class Profile(AbstractUser):
         blank=True,
         null=True,
         help_text=_('Use Analysis'))
+    other_analysis = models.CharField(
+        _('Other Analisys'),        
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text=_('Other Analysis'))
     agree_conditions = models.BooleanField(
         _('Agree Conditions'),
         default=False,

@@ -70,6 +70,7 @@
         $(document).ready(function() {
             $('#id_username').focus();
             $("#id_other_role").val("NA");
+            $("#div_id_other_analysis").val("NA");
 
             $(".form-group").each(function(k,l){
                 if(l.children[0].classList.contains("required-field")){
@@ -90,6 +91,7 @@
             })
 
             $("#div_id_other_role").hide();
+            $("#div_id_other_analysis").hide();
 
         });
     </script>
