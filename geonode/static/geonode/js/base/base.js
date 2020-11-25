@@ -24,7 +24,7 @@ $(".announcement").find(".close").on("click", function (e) {
       $("#div_id_other_role").show();
     }else{
       $("#div_id_other_role").hide();
-      $("#id_other_role").val("");
+      $("#id_other_role").val("NA");
     }
   });
 
