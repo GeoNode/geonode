@@ -102,12 +102,13 @@ if not SITEURL.endswith('/'):
     SITEURL = '{}/'.format(SITEURL)
 
 # spatialite or sqlite
-DATABASE_URL = os.getenv(
-    'DATABASE_URL',
-    'spatialite:///{path}'.format(
-        path=os.path.join(PROJECT_ROOT, 'development.db')
-    )
-)
+#DATABASE_URL = os.getenv(
+#    'DATABASE_URL',
+#    'spatialite:///{path}'.format(
+#        path=os.path.join(PROJECT_ROOT, 'development.db')
+#    )
+#)
+DATABASE_URL = 'postgresql://geonode:geonode_data@dev.skaphe.com:5432/geonode'
 
 if DATABASE_URL.startswith("spatialite"):
     try:
@@ -119,7 +120,7 @@ if DATABASE_URL.startswith("spatialite"):
     except FileNotFoundError as ex:
         print(ex)
 
-# DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
+ 
 
 # Defines settings for development
 
@@ -129,6 +130,7 @@ if DATABASE_URL.startswith("spatialite"):
 # detailed list of supported backends and notes.
 _db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=0)
 
+_db_conf['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 if 'CONN_TOUT' in _db_conf:
     _db_conf['CONN_TOUT'] = 5
 if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
@@ -139,7 +141,7 @@ if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
     })
 
 DATABASES = {
-    'default': _db_conf
+    'default': _db_conf,    
 }
 
 if os.getenv('DEFAULT_BACKEND_DATASTORE'):
