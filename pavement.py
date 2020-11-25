@@ -612,7 +612,7 @@ def start_django(options):
     sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
 
     if 'django_celery_beat' not in INSTALLED_APPS:
-        sh("{} celery -A geonode.celery_app:app worker -B -E --statedb=worker.state -s celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h {}".format(
+        sh("{} celery -A geonode.celery_app:app worker -B -E --statedb=worker.state -s celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h {}".format(  # noqa
             settings,
             foreground
         ))
@@ -1197,7 +1197,7 @@ def kill(arg1, arg2):
     if running:
         raise Exception('Could not stop %s: '
                         'Running processes are\n%s'
-                        % (arg1, '\n'.join([str(l).strip() for l in lines])))
+                        % (arg1, '\n'.join([str(_l).strip() for _l in lines])))
 
 
 def waitfor(url, timeout=300):
