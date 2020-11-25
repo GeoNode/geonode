@@ -174,6 +174,7 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
         city = data.get("city")
         agree_conditions = data.get('agree_conditions')
         use_analysis = data.get('use_analysis')
+        other_analysis = data.get("other_analysis")
         user_email(user, email)
         user_username(user, username)
         if first_name:
@@ -188,6 +189,8 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
             user_field(user, "organization", organization)
         if use_analysis:
             user_field(user, "use_analysis", use_analysis)
+        if other_analysis:
+            user_field(user, "other_analysis", other_analysis)
         if country:
             user_field(user, "country", country)
         if city:

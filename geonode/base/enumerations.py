@@ -479,7 +479,7 @@ PROFESSIONAL_ROLES = (('COPART','Corporate partner'),
                     ('REPECS','Representative of an economic sector'),
                     ('OTHER', 'Other'))
 
-USE_ANALYSIS = (('UACDMC','Academic'),
-                    ('UGNRL','General'),
-                    ('UBSNSS','Business'),
-                    ('UOTHER', 'Other'))
+USE_ANALYSIS = (('ACDMC','Academic'),
+                    ('GNRL','General'),
+                    ('BSNSS','Business'),
+                    ('OTHER', 'Other'))
