@@ -75,15 +75,10 @@ def update_profile(sociallogin):
             "area",
             "city",
             "country",
-            "delivery",
-            "fax",
             "first_name",
             "last_name",
-            "organization",
-            "position",
-            "profile",
-            "voice",
-            "zipcode"
+            "organization",            
+            "profile",            
         )
         for field in profile_fields:
             try:
