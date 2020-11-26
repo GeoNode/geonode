@@ -118,7 +118,7 @@ jdcal==1.4.1
 mock<5.0.0
 python-dateutil==2.8.1
 pytz==2020.4
-requests==2.24.0
+requests==2.25.0
 timeout-decorator==0.4.1
 python_resize_image==1.1.19
 
