@@ -311,6 +311,76 @@
         </div>
         
       </section>
+	  
+	 <section>
+	
+	
+	
+	<div class="carrouselcolor">
+        <div class="container">
+		<div class="row text-center colorHeaderInstrucciones">
+            <h2>News</h2>
+          </div>
+            <div class="slider owl-carousel">
+                <div class="card">
+                    <div class="img">
+                        <img src="/static/geonode/img/car1.jpg" class="img-card-news" alt=""></div>
+                    <div class="content">
+                        <div class="newstitle">
+                            Indicators of water risk and basin healths</div>
+                       
+                        <p>
+                            As part of the conceptualization carried out for the WaterFunds App, the incorporation of some indicators has been proposed that will allow users to have a notion of the water risk and the health status of a basin under analysis.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="img">
+                        <img src="/static/geonode/img/car2.jpg" class="img-card-news" alt=""></div>
+                    <div class="content">
+                        <div class="newstitle">
+                            RIOS model data requirement</div>                       
+                        <p>
+                            In summary, a total of 37 variables are identified to feed the 5 InVEST models, of which 28 correspond to variables associated with climate, and the rest are associated with soil and coverage.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="img">
+                        <img src="/static/geonode/img/car3.jpg" class="img-card-news" alt=""></div>
+                    <div class="content">
+                        <div class="newstitle">
+                            InVEST model data requirement</div>                        
+                        <p>
+                            This section lists the data required by each of the InVEST models that are considered to be incorporated into Waterproof</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="img">
+                        <img src="/static/geonode/img/car4.jpg" class="img-card-news" alt=""></div>
+                    <div class="content">
+                        <div class="newstitle">                            
+							Total monthly and annual average multi-year precipitation (Current condition) and rainy days</div>
+                        <p>                            
+							A total of 11 databases were identified from the review carried out for the multiannual monthly mean precipitation variables (January, February, ..., December) and multi-year mean annual precipitation.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="img">
+                        <img src="/static/geonode/img/car5.jpg" class="img-card-news" alt=""></div>
+                    <div class="content">
+                        <div class="newstitle">
+                            Multi-year average monthly and annual total reference evapotranspiration </div>
+                        
+                        <p>
+                            According to the review carried out, the databases that contain the reference evapotranspiration variable are scarce, since this variable is generally inferred from data such as temperature, relative humidity, radiation, among others.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script> -->
+	
+	</section> 	 
+	  
 	   <section>
         <div class="container text-center imgbackgroundwiki">
           <div class="row" style="height:30%;">
@@ -530,4 +600,18 @@ var Cli_Data = {"nn_cookie_ids":[],"cookielist":[]};
 /* ]]> */
 </script>
 <script type="text/javascript" src="{% static "geonode/js/cookie-law-info/cookie-law-info-public.js" %}"></script>
+<script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+<script type="text/javascript">
+        $(".slider").owlCarousel({
+            loop: true,
+            autoplay: true,
+            autoplayTimeout: 4000,
+            autoplayHoverPause: true,
+            items: 2,
+            margin: 50,
+			nav: true,
+            navText: ["<img src='./static/geonode/img/flecha-izq.png'>", "<img src='./static/geonode/img/flecha-der.png'>"]
+
+        });
+    </script>
 {% endblock extra_script %}

@@ -8700,3 +8700,27 @@ top:50px;
         right: -96px;
         top: 355px;
     }
+.img-card-news {
+        object-fit: cover;
+        width: 35vw;
+        height: 300px;
+    }
+    
+    .owl-nav>button {
+        outline: none;
+        margin: 5px 5px;
+    }
+    
+    .owl-nav>button>img:hover {
+        -webkit-filter: drop-shadow(5px 5px 5px #222);
+        filter: drop-shadow(5px 5px 5px #222);
+    }
+	.carrouselcolor {
+		background-color: #F7F7F7;
+		 background-size: auto 100%;
+	}
+	.newstitle{
+	color: #0A8B8E;
+	font-weight: lighter;
+	font-size: large;
+}
