@@ -169,7 +169,15 @@ if [ ! -z "$HTTPS_HOST" ]; then
     fi
     rm server.crt
 
-    JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.keyStore=/keystore.jks -Djavax.net.ssl.keyStorePassword=$PASSWORD"
+    export GEOSERVER_JAVA_OPTS="-Djava.awt.headless=true -Xms${INITIAL_MEMORY} -Xmx${MAXIMUM_MEMORY} \
+    -XX:PerfDataSamplingInterval=500 -XX:SoftRefLRUPolicyMSPerMB=36000 \
+    -XX:-UseGCOverheadLimit -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:ParallelGCThreads=4 \
+    -Dfile.encoding=UTF8 -Djavax.servlet.request.encoding=UTF-8 \
+    -Djavax.servlet.response.encoding=UTF-8 -Duser.timezone=GMT \
+    -Dorg.geotools.shapefile.datetime=false -DGEOSERVER_CSRF_DISABLED=${GEOSERVER_CSRF_DISABLED} \
+    -Djavax.net.ssl.keyStore=/keystore.jks -Djavax.net.ssl.keyStorePassword=$PASSWORD"
+
+    export JAVA_OPTS="$JAVA_OPTS ${GEOSERVER_JAVA_OPTS}"
 fi
 
 echo "-----------------------------------------------------"
