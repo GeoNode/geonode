@@ -17,6 +17,17 @@ services:
       - GEOSERVER_PUBLIC_LOCATION=http://localhost/geoserver/
       - GEOSERVER_WEB_UI_LOCATION=http://localhost/geoserver/
 
+  celery:
+    build: .
+    environment:
+      - DEBUG=False
+      - GEONODE_LB_HOST_IP=localhost
+      - GEONODE_LB_PORT=80
+      - SITEURL=http://localhost/
+      - ALLOWED_HOSTS=['localhost', ]
+      - GEOSERVER_PUBLIC_LOCATION=http://localhost/geoserver/
+      - GEOSERVER_WEB_UI_LOCATION=http://localhost/geoserver/
+
   geoserver:
     environment:
       - GEONODE_LB_HOST_IP=localhost
