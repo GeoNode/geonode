@@ -31,7 +31,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-06 09:28+0000\n"
+"POT-Creation-Date: 2020-11-28 17:58+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Bengali (http://www.transifex.com/geonode/geonode/language/"
@@ -182,7 +182,7 @@ msgstr "তথ্য প্রতি তিন মাস আপডেট হয�
 msgid "No information provided"
 msgstr "প্রদত্ত কোন তথ্য"
 
-#: geonode/base/forms.py:284 geonode/base/forms.py:514
+#: geonode/base/forms.py:286 geonode/base/forms.py:535
 #: geonode/base/templates/base/_resourcebase_info_panel.html:85
 #: geonode/catalogue/templates/geonode_metadata_full.html:145
 #: geonode/documents/templates/documents/document_metadata_advanced.html:76
@@ -197,24 +197,59 @@ msgstr "প্রদত্ত কোন তথ্য"
 msgid "Category"
 msgstr "শ্রেণী"
 
-#: geonode/base/forms.py:295
+#: geonode/base/forms.py:297
 msgid "Category is required."
 msgstr "শ্রেণী প্রয়োজন"
 
-#: geonode/base/forms.py:316
+#: geonode/base/forms.py:318
 msgid "Keywords from Thesaurus"
 msgstr ""
 
-#: geonode/base/forms.py:318
+#: geonode/base/forms.py:320
 msgid "List of keywords from Thesaurus"
 msgstr ""
 
-#: geonode/base/forms.py:338 geonode/base/forms.py:510
-#: geonode/base/models.py:629
+#: geonode/base/forms.py:338
+#: geonode/base/templates/base/_resourcebase_info_panel.html:29
+#: geonode/catalogue/templates/geonode_metadata_full.html:61
+#: geonode/client/templates/leaflet/maps/map_view.html:106
+#: geonode/services/forms.py:130
+#: geonode/services/templates/services/service_detail.html:10
+#: geonode/templates/metadata_detail.html:50
+msgid "Abstract"
+msgstr "বিমূর্ত"
+
+#: geonode/base/forms.py:342
+#: geonode/base/templates/base/_resourcebase_info_panel.html:179
+#: geonode/catalogue/templates/geonode_metadata_full.html:80
+#: geonode/templates/metadata_detail.html:240
+msgid "Purpose"
+msgstr "উদ্দেশ্য"
+
+#: geonode/base/forms.py:346
+#, fuzzy
+#| msgid "Notice settings"
+msgid "Other constraints"
+msgstr "Notice settings"
+
+#: geonode/base/forms.py:350
+#, fuzzy
+#| msgid "supplemental information"
+msgid "Supplemental information"
+msgstr "সম্পূরক তথ্য"
+
+#: geonode/base/forms.py:354
+#, fuzzy
+#| msgid "data quality statement"
+msgid "Data quality statement"
+msgstr "তথ্য মানের বিবৃতি"
+
+#: geonode/base/forms.py:358 geonode/base/forms.py:359
+#: geonode/base/forms.py:531 geonode/base/models.py:629
 msgid "Owner"
 msgstr "মালিক"
 
-#: geonode/base/forms.py:344 geonode/base/forms.py:526
+#: geonode/base/forms.py:365 geonode/base/forms.py:547
 #: geonode/base/templates/base/_resourcebase_info_panel.html:41
 #: geonode/catalogue/templates/geonode_metadata_full.html:58
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
@@ -223,19 +258,19 @@ msgstr "মালিক"
 msgid "Date"
 msgstr "তারিখ"
 
-#: geonode/base/forms.py:350 geonode/base/models.py:733
+#: geonode/base/forms.py:371 geonode/base/models.py:733
 msgid "temporal extent start"
 msgstr "সময়গত ব্যাপ্তি শুরু"
 
-#: geonode/base/forms.py:357 geonode/base/models.py:738
+#: geonode/base/forms.py:378 geonode/base/models.py:738
 msgid "temporal extent end"
 msgstr "সময়গত ব্যাপ্তি শেষ"
 
-#: geonode/base/forms.py:365 geonode/base/forms.py:373
+#: geonode/base/forms.py:386 geonode/base/forms.py:394
 msgid "Person outside GeoNode (fill form)"
 msgstr ""
 
-#: geonode/base/forms.py:366
+#: geonode/base/forms.py:387
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
 #: geonode/base/templates/base/_resourcebase_info_panel.html:112
 #: geonode/catalogue/templates/geonode_metadata_full.html:75
@@ -254,7 +289,7 @@ msgstr ""
 msgid "Point of Contact"
 msgstr "যোগাযোগ পয়েন্ট"
 
-#: geonode/base/forms.py:374
+#: geonode/base/forms.py:395
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
 #: geonode/documents/templates/documents/document_metadata.html:38
 #: geonode/documents/templates/documents/document_metadata_advanced.html:43
@@ -264,13 +299,13 @@ msgstr "যোগাযোগ পয়েন্ট"
 msgid "Metadata Author"
 msgstr "মেটাডাটা লেখক"
 
-#: geonode/base/forms.py:381
+#: geonode/base/forms.py:402
 #, fuzzy
 #| msgid "Keywords"
 msgid "Free-text Keywords"
 msgstr "মূলশব্দ"
 
-#: geonode/base/forms.py:383
+#: geonode/base/forms.py:404
 #, fuzzy
 #| msgid "A space or comma-separated list of keywords"
 msgid ""
@@ -278,7 +313,7 @@ msgid ""
 "Hierarchical tree."
 msgstr "একটি স্থান বা কীওয়ার্ড কমা-পৃথক তালিকা"
 
-#: geonode/base/forms.py:395 geonode/base/forms.py:522
+#: geonode/base/forms.py:416 geonode/base/forms.py:543
 #: geonode/base/templates/base/_resourcebase_info_panel.html:95
 #: geonode/catalogue/templates/geonode_metadata_full.html:149
 #: geonode/templates/metadata_detail.html:100
@@ -286,7 +321,7 @@ msgstr "একটি স্থান বা কীওয়ার্ড কম�
 msgid "Regions"
 msgstr "অঞ্চল"
 
-#: geonode/base/forms.py:506 geonode/base/forms.py:539
+#: geonode/base/forms.py:527 geonode/base/forms.py:560
 #: geonode/base/templates/base/_resourcebase_info_panel.html:117
 #: geonode/documents/templates/layouts/doc_panels.html:340
 #: geonode/geoapps/templates/layouts/app_panels.html:337
@@ -298,7 +333,7 @@ msgstr "অঞ্চল"
 msgid "Group"
 msgstr "গ্রুপ"
 
-#: geonode/base/forms.py:518 geonode/base/models.py:706
+#: geonode/base/forms.py:539 geonode/base/models.py:706
 #: geonode/base/templates/base/_resourcebase_info_panel.html:16
 #: geonode/base/templates/base/_resourcebase_info_panel.html:147
 #: geonode/catalogue/templates/geonode_metadata_full.html:98
@@ -307,7 +342,7 @@ msgstr "গ্রুপ"
 msgid "License"
 msgstr "লাইসেন্স"
 
-#: geonode/base/forms.py:529
+#: geonode/base/forms.py:550
 #: geonode/base/templates/base/_resourcebase_info_panel.html:184
 #: geonode/catalogue/templates/geonode_metadata_full.html:101
 #: geonode/templates/500.html:211 geonode/templates/base.html:548
@@ -315,40 +350,40 @@ msgstr "লাইসেন্স"
 msgid "Language"
 msgstr "ভাষা"
 
-#: geonode/base/forms.py:543 geonode/templates/index.html:158
+#: geonode/base/forms.py:564 geonode/templates/index.html:158
 #: geonode/templates/pinax/notifications/account_approve/full.txt:1
 msgid "User"
 msgid_plural "Users"
 msgstr[0] "ব্যবহারকারী"
 msgstr[1] "ব্যবহারকারী"
 
-#: geonode/base/forms.py:547
+#: geonode/base/forms.py:568
 #, fuzzy
 #| msgid "Permissions"
 msgid "Permission Type"
 msgstr "অনুমতি"
 
-#: geonode/base/forms.py:557
+#: geonode/base/forms.py:578
 #, fuzzy
 #| msgid "Model"
 msgid "Mode"
 msgstr "নকশা"
 
-#: geonode/base/forms.py:608
+#: geonode/base/forms.py:629
 #, fuzzy
 #| msgid "Resources"
 msgid "Resource"
 msgstr "সম্পদ"
 
-#: geonode/base/forms.py:612
+#: geonode/base/forms.py:633
 msgid "Reason"
 msgstr ""
 
-#: geonode/base/forms.py:614
+#: geonode/base/forms.py:635
 msgid "Short reasoning behind the request"
 msgstr ""
 
-#: geonode/base/models.py:102 geonode/services/models.py:194
+#: geonode/base/models.py:102 geonode/services/models.py:193
 msgid "function performed by the responsible party"
 msgstr "দায়ী পক্ষের দ্বারা সঞ্চালিত ফাংশন"
 
@@ -545,91 +580,91 @@ msgstr "ডেটা সেটটি সম্পর্কে অন্য ক�
 msgid "data quality statement"
 msgstr "তথ্য মানের বিবৃতি"
 
-#: geonode/base/models.py:773
+#: geonode/base/models.py:777
 msgid "CSW typename"
 msgstr "CSW TypeName"
 
-#: geonode/base/models.py:778
+#: geonode/base/models.py:782
 msgid "CSW schema"
 msgstr "CSW স্কিমা"
 
-#: geonode/base/models.py:783
+#: geonode/base/models.py:787
 msgid "CSW source"
 msgstr "CSW উৎস"
 
-#: geonode/base/models.py:788
+#: geonode/base/models.py:792
 msgid "CSW insert date"
 msgstr "CSW সন্নিবেশ তারিখ"
 
-#: geonode/base/models.py:790
+#: geonode/base/models.py:794
 msgid "CSW type"
 msgstr "CSW টাইপ"
 
-#: geonode/base/models.py:795
+#: geonode/base/models.py:799
 msgid "CSW anytext"
 msgstr "CSW anytext"
 
-#: geonode/base/models.py:797
+#: geonode/base/models.py:801
 msgid "CSW WKT geometry"
 msgstr "CSW উইকেটরক্ষক জ্যামিতি"
 
-#: geonode/base/models.py:803
+#: geonode/base/models.py:807
 #, fuzzy
 #| msgid "Metadata Provider"
 msgid "Metadata uploaded preserve"
 msgstr "মেটাডাটা সরবরাহকারী"
 
-#: geonode/base/models.py:810 geonode/templates/metadata_detail.html:110
+#: geonode/base/models.py:814 geonode/templates/metadata_detail.html:110
 msgid "Featured"
 msgstr "বৈশিষ্ট্য"
 
-#: geonode/base/models.py:811
+#: geonode/base/models.py:815
 msgid "Should this resource be advertised in home page?"
 msgstr "এই সম্পদ হোম পেজ এ বিজ্ঞাপনে করা উচিত?"
 
-#: geonode/base/models.py:813
+#: geonode/base/models.py:817
 #, fuzzy
 #| msgid "Published From"
 msgid "Is Published"
 msgstr "থেকে প্রকাশিত"
 
-#: geonode/base/models.py:815
+#: geonode/base/models.py:819
 msgid "Should this resource be published and searchable?"
 msgstr "এই সম্পদ প্রকাশিত এবং অনুসন্ধানযোগ্য করা উচিত?"
 
-#: geonode/base/models.py:817 geonode/templates/metadata_detail.html:104
+#: geonode/base/models.py:821 geonode/templates/metadata_detail.html:104
 #, fuzzy
 #| msgid "Not provided"
 msgid "Approved"
 msgstr "উপলব্ধ নেই"
 
-#: geonode/base/models.py:819
+#: geonode/base/models.py:823
 msgid "Is this resource validated from a publisher or editor?"
 msgstr ""
 
-#: geonode/base/models.py:822
+#: geonode/base/models.py:826
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Thumbnail url"
 msgstr "Thumbnail"
 
-#: geonode/base/models.py:830
+#: geonode/base/models.py:834
 msgid "Dirty State"
 msgstr ""
 
-#: geonode/base/models.py:832
+#: geonode/base/models.py:836
 msgid "Security Rules Are Not Synched with GeoServer!"
 msgstr ""
 
-#: geonode/base/models.py:1641
+#: geonode/base/models.py:1667
 msgid "For example \"kml\""
 msgstr "উদাহরণস্বরূপ \"KML\""
 
-#: geonode/base/models.py:1646
+#: geonode/base/models.py:1672
 msgid "For example \"View in Google Earth\""
 msgstr "উদাহরণস্বরূপ \"গুগল আর্থ দেখুন\""
 
-#: geonode/base/models.py:1648
+#: geonode/base/models.py:1674
 msgid "For example \"text/xml\""
 msgstr "উদাহরণস্বরূপ \"টেক্সট / XML\""
 
@@ -662,7 +697,7 @@ msgstr ""
 #: geonode/services/templates/services/service_detail.html:22
 #: geonode/services/templates/services/service_list.html:17
 #: geonode/templates/announcements/announcement_list.html:21
-#: geonode/templates/base.html:735 geonode/templates/metadata_detail.html:45
+#: geonode/templates/base.html:736 geonode/templates/metadata_detail.html:45
 msgid "Title"
 msgstr "খেতাব"
 
@@ -679,15 +714,6 @@ msgstr ""
 #| msgid "More info"
 msgid "For more info see"
 msgstr "অধিক তথ্য"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:29
-#: geonode/catalogue/templates/geonode_metadata_full.html:61
-#: geonode/client/templates/leaflet/maps/map_view.html:106
-#: geonode/services/forms.py:130
-#: geonode/services/templates/services/service_detail.html:10
-#: geonode/templates/metadata_detail.html:50
-msgid "Abstract"
-msgstr "বিমূর্ত"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:35
 #, fuzzy
@@ -751,12 +777,6 @@ msgstr "বিধিনিষেধ"
 #: geonode/templates/metadata_detail.html:235
 msgid "Edition"
 msgstr "সংস্করণ"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:179
-#: geonode/catalogue/templates/geonode_metadata_full.html:80
-#: geonode/templates/metadata_detail.html:240
-msgid "Purpose"
-msgstr "উদ্দেশ্য"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:189
 #: geonode/catalogue/templates/geonode_metadata_full.html:104
@@ -834,13 +854,13 @@ msgstr ""
 msgid "UNPUBLISHED"
 msgstr ""
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:80
+#: geonode/base/templates/base/_resourcebase_snippet.html:81
 #: geonode/layers/templates/layers/layer_detail.html:634
 #: geonode/templates/search/_search_content.html:11
 msgid "Create a Map"
 msgstr "একটি মানচিত্র তৈরি করুন"
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:86
+#: geonode/base/templates/base/_resourcebase_snippet.html:87
 #: geonode/client/templates/leaflet/maps/map_view.html:8
 #: geonode/maps/templates/maps/map_detail.html:198
 #: geonode/maps/templates/maps/map_detail.html:200
@@ -871,12 +891,12 @@ msgstr ""
 #: geonode/layers/templates/upload/layer_upload_time.html:119
 #: geonode/maps/templates/maps/map_download.html:58
 #: geonode/templates/_comments.html:64
-#: geonode/templates/_permissions_form.html:223
-#: geonode/templates/_permissions_form.html:293
+#: geonode/templates/_permissions_form.html:185
+#: geonode/templates/_permissions_form.html:255
 #: geonode/templates/admin/backups/confirm_cancel.html:21
 #: geonode/templates/announcements/announcement_confirm_delete.html:20
 #: geonode/templates/announcements/announcement_form.html:22
-#: geonode/templates/base.html:757
+#: geonode/templates/base.html:758
 msgid "Cancel"
 msgstr "বাতিল করুন"
 
@@ -925,7 +945,7 @@ msgstr ""
 #: geonode/maps/templates/maps/map_detail.html:167
 #: geonode/monitoring/models.py:355
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:58
-#: geonode/templates/_permissions_form.html:288
+#: geonode/templates/_permissions_form.html:250
 #, fuzzy
 #| msgid "uploaded"
 msgid "Upload"
@@ -973,27 +993,27 @@ msgstr "একটি মানচিত্র তৈরি করুন"
 msgid "me"
 msgstr ""
 
-#: geonode/base/views.py:351
+#: geonode/base/views.py:352
 msgid "System message: A request to modify resource"
 msgstr ""
 
-#: geonode/base/views.py:352
+#: geonode/base/views.py:353
 #, fuzzy
 #| msgid "A new user has requested access to the site"
 msgid "The resource owner has requested to modify the resource"
 msgstr "একজন নতুন ব্যবহারকারী প্রবেশের জন্য অনুরোধ করেছেন"
 
-#: geonode/base/views.py:354
+#: geonode/base/views.py:355
 #, fuzzy
 #| msgid "Resources"
 msgid "Resource title"
 msgstr "সম্পদ"
 
-#: geonode/base/views.py:356
+#: geonode/base/views.py:357
 msgid "Reason for the request"
 msgstr ""
 
-#: geonode/base/views.py:358
+#: geonode/base/views.py:359
 msgid ""
 "To allow the change, set the resource to not \"Approved\" under the metadata "
 "settingsand write message to the owner to notify him"
@@ -1080,7 +1100,8 @@ msgstr "আপলোড লেয়ার"
 
 #: geonode/client/templates/leaflet/maps/map_base.html:4
 #: geonode/client/templates/leaflet/maps/map_list.html:12
-#: geonode/maps/templates/maps/map_list_default.html:12
+#: geonode/maps/templates/maps/map_list_default.html:5
+#: geonode/maps/templates/maps/map_list_default.html:14
 #: geonode/maps/templates/maps/map_metadata_advanced.html:29
 #: geonode/templates/500.html:180 geonode/templates/base.html:316
 #: geonode/templates/base.html:501
@@ -1112,7 +1133,7 @@ msgstr "আপডেট"
 
 #: geonode/client/templates/leaflet/maps/map_list.html:10
 #: geonode/maps/templates/maps/map_detail.html:255
-#: geonode/maps/templates/maps/map_list_default.html:10
+#: geonode/maps/templates/maps/map_list_default.html:12
 msgid "Create a New Map"
 msgstr "একটি নতুন মানচিত্র তৈরি করুন"
 
@@ -1153,9 +1174,9 @@ msgstr "একটি মানচিত্র তৈরি করুন"
 #: geonode/maps/templates/maps/map_detail.html:301
 #: geonode/templates/500.html:238
 #: geonode/templates/_bulk_permissions_form.html:19
-#: geonode/templates/base.html:590 geonode/templates/metadata_base.html:134
-#: geonode/templates/metadata_base.html:168
-#: geonode/templates/metadata_base.html:185
+#: geonode/templates/base.html:590 geonode/templates/metadata_base.html:137
+#: geonode/templates/metadata_base.html:171
+#: geonode/templates/metadata_base.html:188
 msgid "Close"
 msgstr "ঘনিষ্ঠ"
 
@@ -1296,15 +1317,15 @@ msgstr "এই ফাইল টাইপের অনুমোদিত নয�
 msgid "Permissions must be valid JSON."
 msgstr "অনুমতি বৈধ JSON হতে হবে."
 
-#: geonode/documents/models.py:56
+#: geonode/documents/models.py:59
 msgid "File"
 msgstr "ফাইল"
 
-#: geonode/documents/models.py:66
+#: geonode/documents/models.py:69
 msgid "The URL of the document if it is external."
 msgstr "ডকুমেন্টের ইউআরএল এটা বাইরের যদি."
 
-#: geonode/documents/models.py:67 geonode/layers/models.py:478
+#: geonode/documents/models.py:70 geonode/layers/models.py:481
 #: geonode/monitoring/models.py:179
 #: geonode/services/templates/services/service_detail.html:9
 #: geonode/services/templates/services/service_list.html:18
@@ -1534,13 +1555,13 @@ msgstr "আপলোড ডকুমেন্টস"
 #: geonode/layers/templates/layers/layer_base.html:6
 #: geonode/layers/templates/layers/layer_metadata.html:15
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:10
-#: geonode/layers/templates/upload/layer_upload_base.html:157
+#: geonode/layers/templates/upload/layer_upload_base.html:10
 #: geonode/layers/templates/upload/layer_upload_metadata_base.html:6
 #: geonode/maps/templates/maps/map_base.html:6
 #: geonode/maps/templates/maps/map_metadata.html:15
 #: geonode/maps/templates/maps/map_metadata_advanced.html:10
 #: geonode/services/templates/services/services_base.html:6
-#: geonode/templates/metadata_base.html:120
+#: geonode/templates/metadata_base.html:123
 #: geonode/templates/metadata_detail.html:7
 #, fuzzy
 #| msgid "dataset"
@@ -1890,7 +1911,7 @@ msgstr "পরিবর্তন লেয়ার অনুমতি"
 #: geonode/geoapps/templates/layouts/app_panels.html:506
 #: geonode/layers/templates/layouts/panels.html:515
 #: geonode/maps/templates/layouts/map_panels.html:509
-#: geonode/templates/_permissions_form.html:236 geonode/templates/base.html:721
+#: geonode/templates/_permissions_form.html:198 geonode/templates/base.html:722
 #, fuzzy
 #| msgid "Message Inbox"
 msgid "Message box"
@@ -1900,16 +1921,16 @@ msgstr "বার্তা ইনবক্স"
 #: geonode/geoapps/templates/layouts/app_panels.html:512
 #: geonode/layers/templates/layouts/panels.html:521
 #: geonode/maps/templates/layouts/map_panels.html:515
-#: geonode/templates/_permissions_form.html:242
-#: geonode/templates/_permissions_form.html:481
-#: geonode/templates/_permissions_form.html:482
-#: geonode/templates/_permissions_form.html:502
-#: geonode/templates/_permissions_form.html:503
-#: geonode/templates/_permissions_form.html:568
-#: geonode/templates/_permissions_form.html:569
-#: geonode/templates/_permissions_form.html:639
-#: geonode/templates/_permissions_form.html:640 geonode/templates/base.html:727
-#: geonode/templates/base.html:758
+#: geonode/templates/_permissions_form.html:204
+#: geonode/templates/_permissions_form.html:539
+#: geonode/templates/_permissions_form.html:540
+#: geonode/templates/_permissions_form.html:560
+#: geonode/templates/_permissions_form.html:561
+#: geonode/templates/_permissions_form.html:626
+#: geonode/templates/_permissions_form.html:627
+#: geonode/templates/_permissions_form.html:698
+#: geonode/templates/_permissions_form.html:699 geonode/templates/base.html:728
+#: geonode/templates/base.html:759
 msgid "OK"
 msgstr ""
 
@@ -1942,23 +1963,81 @@ msgstr "আপনি এই নথির এর মেটাডেটা পর�
 msgid "You are not permitted to view this document"
 msgstr "আপনি এই নথি দেখতে অনুমতি নেই"
 
-#: geonode/documents/views.py:106 geonode/documents/views.py:207
+#: geonode/documents/views.py:96 geonode/documents/views.py:355
+#: geonode/documents/views.py:592 geonode/documents/views.py:607
+#: geonode/documents/views.py:621 geonode/geoapps/views.py:121
+#: geonode/geoapps/views.py:203 geonode/geoapps/views.py:261
+#: geonode/geoapps/views.py:287 geonode/geoapps/views.py:319
+#: geonode/layers/views.py:413 geonode/layers/views.py:846
+#: geonode/layers/views.py:898 geonode/layers/views.py:1257
+#: geonode/layers/views.py:1358 geonode/layers/views.py:1408
+#: geonode/layers/views.py:1453 geonode/layers/views.py:1519
+#: geonode/layers/views.py:1556 geonode/layers/views.py:1593
+#: geonode/layers/views.py:1618 geonode/maps/views.py:136
+#: geonode/maps/views.py:232 geonode/maps/views.py:450
+#: geonode/maps/views.py:521 geonode/maps/views.py:544
+#: geonode/maps/views.py:574 geonode/maps/views.py:595
+#: geonode/maps/views.py:648 geonode/maps/views.py:774
+#: geonode/maps/views.py:1085 geonode/maps/views.py:1174
+#: geonode/maps/views.py:1204 geonode/maps/views.py:1318
+#: geonode/maps/views.py:1360
+#, fuzzy
+#| msgid "Not provided"
+msgid "Not allowed"
+msgstr "উপলব্ধ নেই"
+
+#: geonode/documents/views.py:98 geonode/documents/views.py:100
+#: geonode/documents/views.py:357 geonode/documents/views.py:359
+#: geonode/documents/views.py:594 geonode/documents/views.py:596
+#: geonode/documents/views.py:623 geonode/documents/views.py:625
+#: geonode/geoapps/views.py:123 geonode/geoapps/views.py:125
+#: geonode/geoapps/views.py:205 geonode/geoapps/views.py:207
+#: geonode/geoapps/views.py:263 geonode/geoapps/views.py:265
+#: geonode/geoapps/views.py:289 geonode/geoapps/views.py:291
+#: geonode/geoapps/views.py:321 geonode/geoapps/views.py:323
+#: geonode/layers/views.py:415 geonode/layers/views.py:417
+#: geonode/layers/views.py:848 geonode/layers/views.py:850
+#: geonode/layers/views.py:900 geonode/layers/views.py:902
+#: geonode/layers/views.py:1259 geonode/layers/views.py:1261
+#: geonode/layers/views.py:1360 geonode/layers/views.py:1362
+#: geonode/layers/views.py:1410 geonode/layers/views.py:1412
+#: geonode/layers/views.py:1455 geonode/layers/views.py:1457
+#: geonode/layers/views.py:1521 geonode/layers/views.py:1523
+#: geonode/layers/views.py:1558 geonode/layers/views.py:1560
+#: geonode/layers/views.py:1595 geonode/layers/views.py:1597
+#: geonode/layers/views.py:1620 geonode/layers/views.py:1622
+#: geonode/maps/views.py:138 geonode/maps/views.py:140
+#: geonode/maps/views.py:234 geonode/maps/views.py:236
+#: geonode/maps/views.py:452 geonode/maps/views.py:454
+#: geonode/maps/views.py:523 geonode/maps/views.py:525
+#: geonode/maps/views.py:546 geonode/maps/views.py:548
+#: geonode/maps/views.py:576 geonode/maps/views.py:578
+#: geonode/maps/views.py:597 geonode/maps/views.py:599
+#: geonode/maps/views.py:650 geonode/maps/views.py:652
+#: geonode/maps/views.py:776 geonode/maps/views.py:778
+#: geonode/maps/views.py:1087 geonode/maps/views.py:1089
+#: geonode/maps/views.py:1176 geonode/maps/views.py:1178
+#: geonode/maps/views.py:1206 geonode/maps/views.py:1208
+#: geonode/maps/views.py:1320 geonode/maps/views.py:1322
+#: geonode/maps/views.py:1362 geonode/maps/views.py:1364
+#, fuzzy
+#| msgid "Page Not Found"
+msgid "Not found"
+msgstr "পাতা পাওয়া যায়নি"
+
+#: geonode/documents/views.py:194
 msgid "You are not allowed to view this document."
 msgstr "আপনি এই নথি দেখতে অনুমতি দেওয়া হয়নি."
 
-#: geonode/documents/views.py:379
-msgid "You are not allowed to edit this document."
-msgstr "আপনি এই নথি সম্পাদনা করার অনুমতি দেওয়া হয়নি."
-
-#: geonode/documents/views.py:464 geonode/geoapps/views.py:396
-#: geonode/layers/views.py:1033
+#: geonode/documents/views.py:436 geonode/geoapps/views.py:400
+#: geonode/layers/views.py:1057
 #, fuzzy
 #| msgid "You must set an author for this resource"
 msgid "You must set a point of contact for this resource"
 msgstr "এই উৎসের জন্য আপনাকে অবশ্যই একজন লেখক নির্বাচন করতে হবে"
 
-#: geonode/documents/views.py:481 geonode/geoapps/views.py:413
-#: geonode/layers/views.py:1050
+#: geonode/documents/views.py:453 geonode/geoapps/views.py:417
+#: geonode/layers/views.py:1074
 msgid "You must set an author for this resource"
 msgstr "এই উৎসের জন্য আপনাকে অবশ্যই একজন লেখক নির্বাচন করতে হবে"
 
@@ -2001,92 +2080,92 @@ msgstr "যার জন্য পছন্দসমূহ"
 msgid "Item"
 msgstr ""
 
-#: geonode/geoapps/__init__.py:30
+#: geonode/geoapps/__init__.py:28
 #, fuzzy
 #| msgid "Map Created"
 msgid "App Created"
 msgstr "মানচিত্র তৈরী করা"
 
-#: geonode/geoapps/__init__.py:30
+#: geonode/geoapps/__init__.py:28
 #, fuzzy
 #| msgid "A Layer was created"
 msgid "A App was created"
 msgstr "একটি স্থর তৈরী করা হয়েছিল"
 
-#: geonode/geoapps/__init__.py:31
+#: geonode/geoapps/__init__.py:29
 #, fuzzy
 #| msgid "Map Updated"
 msgid "App Updated"
 msgstr "মানচিত্র হালনাগাদ করা হয়েছে"
 
-#: geonode/geoapps/__init__.py:31
+#: geonode/geoapps/__init__.py:29
 #, fuzzy
 #| msgid "A Layer was updated"
 msgid "A App was updated"
 msgstr "একটি স্থর হাল নাগাদ করা হয়েছিল"
 
-#: geonode/geoapps/__init__.py:32
+#: geonode/geoapps/__init__.py:30
 #, fuzzy
 #| msgid "Not provided"
 msgid "App Approved"
 msgstr "উপলব্ধ নেই"
 
-#: geonode/geoapps/__init__.py:32
+#: geonode/geoapps/__init__.py:30
 #, fuzzy
 #| msgid "A Layer was created"
 msgid "A App was approved by a Manager"
 msgstr "একটি স্থর তৈরী করা হয়েছিল"
 
-#: geonode/geoapps/__init__.py:33
+#: geonode/geoapps/__init__.py:31
 #, fuzzy
 #| msgid "Published From"
 msgid "App Published"
 msgstr "থেকে প্রকাশিত"
 
-#: geonode/geoapps/__init__.py:33
+#: geonode/geoapps/__init__.py:31
 #, fuzzy
 #| msgid "A Map was deleted"
 msgid "A App was published"
 msgstr "একটি মানচিত্র মুছা হয়েছিল"
 
-#: geonode/geoapps/__init__.py:34
+#: geonode/geoapps/__init__.py:32
 #, fuzzy
 #| msgid "Map Deleted"
 msgid "App Deleted"
 msgstr "মানচিত্র মুছা হয়েছে"
 
-#: geonode/geoapps/__init__.py:34
+#: geonode/geoapps/__init__.py:32
 #, fuzzy
 #| msgid "A Map was deleted"
 msgid "A App was deleted"
 msgstr "একটি মানচিত্র মুছা হয়েছিল"
 
-#: geonode/geoapps/__init__.py:35
+#: geonode/geoapps/__init__.py:33
 #, fuzzy
 #| msgid "Comment on Map"
 msgid "Comment on App"
 msgstr "মানচিত্র মন্তব্য করুন"
 
-#: geonode/geoapps/__init__.py:35
+#: geonode/geoapps/__init__.py:33
 #, fuzzy
 #| msgid "A map was commented on"
 msgid "An App was commented on"
 msgstr "একটি মানচিত্রের মন্তব্য করেন"
 
-#: geonode/geoapps/__init__.py:36
+#: geonode/geoapps/__init__.py:34
 #, fuzzy
 #| msgid "Rating for Map"
 msgid "Rating for App"
 msgstr "মানচিত্র জন্য নির্ধারণ"
 
-#: geonode/geoapps/__init__.py:36
+#: geonode/geoapps/__init__.py:34
 #, fuzzy
 #| msgid "A rating was given to a map"
 msgid "A rating was given to an App"
 msgstr "একটি রেটিং একটি মানচিত্র দেওয়া হয়"
 
 #: geonode/geoapps/models.py:50 geonode/groups/models.py:50
-#: geonode/layers/models.py:168
+#: geonode/layers/models.py:171
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
 #: geonode/services/templates/services/service_resources_harvest.html:31
 #: geonode/templates/metadata_detail.html:135
@@ -2278,51 +2357,45 @@ msgstr ""
 msgid "Other Settings"
 msgstr "Notice settings"
 
-#: geonode/geoapps/views.py:65
+#: geonode/geoapps/views.py:64
 #, fuzzy
 #| msgid "You are not permitted to delete this map."
 msgid "You are not permitted to delete this app."
 msgstr "আপনি এই মানচিত্র মুছে করার অনুমতি নেই."
 
-#: geonode/geoapps/views.py:66
+#: geonode/geoapps/views.py:65
 #, fuzzy
 #| msgid "You do not have permissions for this map."
 msgid "You do not have permissions for this app."
 msgstr "আপনি এই মানচিত্রের জন্য অনুমতি নেই."
 
-#: geonode/geoapps/views.py:67
+#: geonode/geoapps/views.py:66
 #, fuzzy
 #| msgid "You must be logged in to save this map"
 msgid "You must be logged in to save this app"
 msgstr "আপনি এই মানচিত্র সংরক্ষণ আবশ্যক লগ ইন"
 
-#: geonode/geoapps/views.py:68
+#: geonode/geoapps/views.py:67
 #, fuzzy
 #| msgid "You are not permitted to save or edit this map."
 msgid "You are not permitted to save or edit this app."
 msgstr "আপনি সংরক্ষণ করো এই ম্যাপ এডিট করার অনুমতি নেই."
 
-#: geonode/geoapps/views.py:70
+#: geonode/geoapps/views.py:69
 #, fuzzy
 #| msgid "You are not allowed to modify this map's metadata."
 msgid "You are not allowed to modify this app's metadata."
 msgstr "আপনি এই ম্যাপ এর মেটাডেটা পরিবর্তন করার অনুমতি দেওয়া হয়নি."
 
-#: geonode/geoapps/views.py:71
+#: geonode/geoapps/views.py:70
 #, fuzzy
 #| msgid "You are not allowed to view this map."
 msgid "You are not allowed to view this app."
 msgstr "আপনি এই ম্যাপ দেখতে অনুমতি দেওয়া হয়নি."
 
-#: geonode/geoapps/views.py:72 geonode/maps/views.py:104
+#: geonode/geoapps/views.py:71 geonode/maps/views.py:107
 msgid "An unknown error has occured."
 msgstr "একটি অজানা ত্রুটি ঘটেছে."
-
-#: geonode/geoapps/views.py:311
-#, fuzzy
-#| msgid "You are not allowed to view this map."
-msgid "You are not allowed to edit this app."
-msgstr "আপনি এই ম্যাপ দেখতে অনুমতি দেওয়া হয়নি."
 
 #: geonode/geoserver/__init__.py:75
 msgid "Layer Uploaded"
@@ -2385,7 +2458,7 @@ msgstr "একটি মানচিত্র তৈরি করুন"
 #: geonode/layers/templates/layers/layer_replace.html:23
 #: geonode/layers/templates/layers/layer_style_upload.html:24
 #: geonode/layers/templates/upload/layer_upload.html:17
-#: geonode/layers/templates/upload/layer_upload_base.html:161
+#: geonode/layers/templates/upload/layer_upload_base.html:14
 #: geonode/layers/templates/upload/layer_upload_metadata_base.html:10
 msgid "Explore Layers"
 msgstr "স্তরসমূহ টেলিভিশন"
@@ -2409,17 +2482,17 @@ msgstr "গুণ"
 msgid "Create"
 msgstr "তৈরি করুন"
 
-#: geonode/geoserver/helpers.py:687
+#: geonode/geoserver/helpers.py:690
 #, fuzzy
 #| msgid "Not provided"
 msgid "No abstract provided"
 msgstr "উপলব্ধ নেই"
 
-#: geonode/geoserver/helpers.py:1437
+#: geonode/geoserver/helpers.py:1444
 msgid "An exception occurred loading data to PostGIS"
 msgstr ""
 
-#: geonode/geoserver/helpers.py:1442
+#: geonode/geoserver/helpers.py:1449
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
@@ -2467,11 +2540,11 @@ msgstr "পিডিএফ"
 msgid "PNG"
 msgstr "PNG"
 
-#: geonode/geoserver/views.py:517
+#: geonode/geoserver/views.py:526
 msgid "You don't have permissions to change style for this layer"
 msgstr "আপনি এই স্তর জন্য স্টাইল পরিবর্তন করার অনুমতি নেই"
 
-#: geonode/geoserver/views.py:602 geonode/geoserver/views.py:658
+#: geonode/geoserver/views.py:621 geonode/geoserver/views.py:677
 msgid "Bad HTTP Authorization Credentials."
 msgstr "খারাপ HTTP- র অনুমোদন প্রমাণপত্রাদি."
 
@@ -2947,200 +3020,200 @@ msgstr "স্থর মুছা হয়েছে"
 msgid "A Layer was deleted"
 msgstr "একটি স্থর মুছা হয়েছিল"
 
-#: geonode/layers/models.py:55
+#: geonode/layers/models.py:58
 msgid "YYYYMMDD"
 msgstr ""
 
-#: geonode/layers/models.py:56
+#: geonode/layers/models.py:59
 msgid "YYYYMMDD'T'hhmmss"
 msgstr ""
 
-#: geonode/layers/models.py:57
+#: geonode/layers/models.py:60
 msgid "YYYYMMDD'T'hhmmss'Z'"
 msgstr ""
 
-#: geonode/layers/models.py:75 geonode/qgis_server/models.py:198
+#: geonode/layers/models.py:78 geonode/qgis_server/models.py:198
 msgid "style name"
 msgstr "শৈলী নাম"
 
-#: geonode/layers/models.py:77
+#: geonode/layers/models.py:80
 msgid "sld text"
 msgstr "SLD টেক্সট"
 
-#: geonode/layers/models.py:79
+#: geonode/layers/models.py:82
 msgid "sld version"
 msgstr "SLD সংস্করণ"
 
-#: geonode/layers/models.py:83
+#: geonode/layers/models.py:86
 msgid "sld url"
 msgstr "SLD URL"
 
-#: geonode/layers/models.py:165
+#: geonode/layers/models.py:168
 msgid "Workspace"
 msgstr ""
 
-#: geonode/layers/models.py:166
+#: geonode/layers/models.py:169
 #, fuzzy
 #| msgid "feature type"
 msgid "Store"
 msgstr "বৈশিষ্ট্যের ধরণ"
 
-#: geonode/layers/models.py:167
+#: geonode/layers/models.py:170
 #, fuzzy
 #| msgid "feature type"
 msgid "Storetype"
 msgstr "বৈশিষ্ট্যের ধরণ"
 
-#: geonode/layers/models.py:169
+#: geonode/layers/models.py:172
 #, fuzzy
 #| msgid "CSW typename"
 msgid "Typename"
 msgstr "CSW TypeName"
 
-#: geonode/layers/models.py:171
+#: geonode/layers/models.py:174
 msgid "Is mosaic?"
 msgstr ""
 
-#: geonode/layers/models.py:172
+#: geonode/layers/models.py:175
 msgid "Has time?"
 msgstr ""
 
-#: geonode/layers/models.py:173
+#: geonode/layers/models.py:176
 msgid "Has elevation?"
 msgstr ""
 
-#: geonode/layers/models.py:175
+#: geonode/layers/models.py:178
 msgid "Time regex"
 msgstr ""
 
-#: geonode/layers/models.py:180
+#: geonode/layers/models.py:183
 msgid "Elevation regex"
 msgstr ""
 
-#: geonode/layers/models.py:196
+#: geonode/layers/models.py:199
 msgid "use featureinfo custom template?"
 msgstr ""
 
-#: geonode/layers/models.py:197
+#: geonode/layers/models.py:200
 msgid "specifies wether or not use a custom GetFeatureInfo template."
 msgstr ""
 
-#: geonode/layers/models.py:201
+#: geonode/layers/models.py:204
 msgid "featureinfo custom template"
 msgstr ""
 
-#: geonode/layers/models.py:202
+#: geonode/layers/models.py:205
 msgid "the custom GetFeatureInfo template HTML contents."
 msgstr ""
 
-#: geonode/layers/models.py:310
+#: geonode/layers/models.py:313
 msgid "File cannot be opened, maybe check the encoding"
 msgstr ""
 
-#: geonode/layers/models.py:426
+#: geonode/layers/models.py:429
 #, fuzzy
 #| msgid "attribute name"
 msgid "attribute name"
 msgstr "নাম বৈশিষ্ট্যাবলী"
 
-#: geonode/layers/models.py:427
+#: geonode/layers/models.py:430
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "shapefile / স্থানিক ডাটাবেসের মধ্যে সংরক্ষণ হিসাবে অ্যাট্রিবিউট নাম"
 
-#: geonode/layers/models.py:433
+#: geonode/layers/models.py:436
 #, fuzzy
 #| msgid "distribution description"
 msgid "attribute description"
 msgstr "distribution description"
 
-#: geonode/layers/models.py:434
+#: geonode/layers/models.py:437
 msgid "description of attribute to be used in metadata"
 msgstr "বৈশিষ্ট্য বর্ণনা মেটাডেটা ব্যবহার করা হবে"
 
-#: geonode/layers/models.py:439
+#: geonode/layers/models.py:442
 msgid "attribute label"
 msgstr "অ্যাট্রিবিউট ট্যাগ"
 
-#: geonode/layers/models.py:440
+#: geonode/layers/models.py:443
 msgid "title of attribute as displayed in GeoNode"
 msgstr "GeoNode প্রদর্শিত হিসাবে অ্যাট্রিবিউট শিরোনাম"
 
-#: geonode/layers/models.py:446
+#: geonode/layers/models.py:449
 msgid "attribute type"
 msgstr "অ্যাট্রিবিউট টাইপ"
 
-#: geonode/layers/models.py:447
+#: geonode/layers/models.py:450
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "অ্যাট্রিবিউট (ইত্যাদি পূর্ণসংখ্যা, স্ট্রিং, জ্যামিতি,) এর ডাটা টাইপ"
 
-#: geonode/layers/models.py:454
+#: geonode/layers/models.py:457
 msgid "visible?"
 msgstr "প্রোফাইল?"
 
-#: geonode/layers/models.py:455
+#: geonode/layers/models.py:458
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "বৈশিষ্ট্য প্রদর্শন করা উচিত যদি ফলাফল চিহ্নিত বিশিষ্ট"
 
-#: geonode/layers/models.py:458
+#: geonode/layers/models.py:461
 msgid "display order"
 msgstr "প্রদর্শন ক্রম"
 
-#: geonode/layers/models.py:459
+#: geonode/layers/models.py:462
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr "অ্যাট্রিবিউট ফলাফল চিহ্নিত প্রদর্শন করা উচিত ক্রম যা নির্দিষ্ট করে"
 
-#: geonode/layers/models.py:477
+#: geonode/layers/models.py:480
 #: geonode/layers/templates/layers/layer_detail.html:178
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:127
 #: geonode/layers/templates/layouts/panels.html:552
 msgid "Label"
 msgstr "লেবেল"
 
-#: geonode/layers/models.py:479
+#: geonode/layers/models.py:482
 msgid "Image"
 msgstr ""
 
-#: geonode/layers/models.py:480
+#: geonode/layers/models.py:483
 msgid "Video (mp4)"
 msgstr ""
 
-#: geonode/layers/models.py:481
+#: geonode/layers/models.py:484
 msgid "Video (ogg)"
 msgstr ""
 
-#: geonode/layers/models.py:482
+#: geonode/layers/models.py:485
 msgid "Video (webm)"
 msgstr ""
 
-#: geonode/layers/models.py:483
+#: geonode/layers/models.py:486
 msgid "Video (3gp)"
 msgstr ""
 
-#: geonode/layers/models.py:484
+#: geonode/layers/models.py:487
 msgid "Video (flv)"
 msgstr ""
 
-#: geonode/layers/models.py:485
+#: geonode/layers/models.py:488
 msgid "Video (YouTube/VIMEO - embedded)"
 msgstr ""
 
-#: geonode/layers/models.py:486
+#: geonode/layers/models.py:489
 msgid "Audio"
 msgstr ""
 
-#: geonode/layers/models.py:487
+#: geonode/layers/models.py:490
 msgid "IFRAME"
 msgstr ""
 
-#: geonode/layers/models.py:490
+#: geonode/layers/models.py:493
 #, fuzzy
 #| msgid "feature type"
 msgid "featureinfo type"
 msgstr "বৈশিষ্ট্যের ধরণ"
 
-#: geonode/layers/models.py:491
+#: geonode/layers/models.py:494
 #, fuzzy
 #| msgid "specifies if the attribute should be displayed in identify results"
 msgid ""
@@ -3148,75 +3221,75 @@ msgid ""
 "GetFeatureInfo template."
 msgstr "বৈশিষ্ট্য প্রদর্শন করা উচিত যদি ফলাফল চিহ্নিত বিশিষ্ট"
 
-#: geonode/layers/models.py:501
+#: geonode/layers/models.py:504
 #, fuzzy
 #| msgid "count"
 msgid "count"
 msgstr "গণনা"
 
-#: geonode/layers/models.py:502
+#: geonode/layers/models.py:505
 msgid "count value for this field"
 msgstr "এই ক্ষেত্রের জন্য মান গণনা"
 
-#: geonode/layers/models.py:505
+#: geonode/layers/models.py:508
 msgid "min"
 msgstr "কমপক্ষে"
 
-#: geonode/layers/models.py:506
+#: geonode/layers/models.py:509
 msgid "minimum value for this field"
 msgstr "এই ক্ষেত্রের জন্য সর্বনিম্ন মান"
 
-#: geonode/layers/models.py:513
+#: geonode/layers/models.py:516
 msgid "max"
 msgstr "সর্বোচ্চ"
 
-#: geonode/layers/models.py:514
+#: geonode/layers/models.py:517
 msgid "maximum value for this field"
 msgstr "এই ক্ষেত্রের জন্য সর্বাধিক মান"
 
-#: geonode/layers/models.py:521
+#: geonode/layers/models.py:524
 msgid "average"
 msgstr "গড়"
 
-#: geonode/layers/models.py:522
+#: geonode/layers/models.py:525
 msgid "average value for this field"
 msgstr "এই ক্ষেত্রের জন্য গড় মূল্য"
 
-#: geonode/layers/models.py:529
+#: geonode/layers/models.py:532
 msgid "median"
 msgstr "মধ্যমা"
 
-#: geonode/layers/models.py:530
+#: geonode/layers/models.py:533
 msgid "median value for this field"
 msgstr "এই ক্ষেত্রের জন্য মধ্যমা মূল্য"
 
-#: geonode/layers/models.py:537
+#: geonode/layers/models.py:540
 msgid "standard deviation"
 msgstr "প্রমিত বিচ্যুতি"
 
-#: geonode/layers/models.py:538
+#: geonode/layers/models.py:541
 msgid "standard deviation for this field"
 msgstr "এই ক্ষেত্রের জন্য প্রমিত বিচ্যুতি"
 
-#: geonode/layers/models.py:545
+#: geonode/layers/models.py:548
 msgid "sum"
 msgstr "সমষ্টি"
 
-#: geonode/layers/models.py:546
+#: geonode/layers/models.py:549
 msgid "sum value for this field"
 msgstr "এই ক্ষেত্র সমষ্টি জন্য মূল্য"
 
-#: geonode/layers/models.py:553
+#: geonode/layers/models.py:556
 msgid "unique values for this field"
 msgstr "এই ক্ষেত্রের জন্য অনন্য মান"
 
-#: geonode/layers/models.py:557
+#: geonode/layers/models.py:560
 #, fuzzy
 #| msgid "last modified"
 msgid "last modified"
 msgstr "সর্বশেষ সম্পাদিত"
 
-#: geonode/layers/models.py:558
+#: geonode/layers/models.py:561
 msgid "date when attribute statistics were last updated"
 msgstr "অ্যাট্রিবিউট পরিসংখ্যান গত ছিল যখন তারিখের আপডেট"
 
@@ -3594,7 +3667,7 @@ msgid "Change Layer Permissions"
 msgstr "পরিবর্তন লেয়ার অনুমতি"
 
 #: geonode/layers/templates/layers/layer_detail.html:753
-#: geonode/templates/base.html:703 geonode/templates/metadata_base.html:144
+#: geonode/templates/base.html:704 geonode/templates/metadata_base.html:147
 msgid "Processing..."
 msgstr ""
 
@@ -3635,7 +3708,7 @@ msgstr "একটি স্তর আপলোড করা হয় নি"
 
 #: geonode/layers/templates/layers/layer_list_default.html:12
 #: geonode/layers/templates/upload/layer_upload.html:18
-#: geonode/layers/templates/upload/layer_upload_base.html:162
+#: geonode/layers/templates/upload/layer_upload_base.html:15
 #: geonode/templates/500.html:273
 msgid "Upload Layers"
 msgstr "আপলোড স্তরসমূহ"
@@ -4435,7 +4508,7 @@ msgstr ""
 
 #: geonode/layers/templates/upload/layer_upload_time.html:279
 #: geonode/layers/templates/upload/layer_upload_time.html:299
-#: geonode/templates/base.html:754
+#: geonode/templates/base.html:755
 msgid "Some text in the modal"
 msgstr ""
 
@@ -4490,11 +4563,11 @@ msgstr "এখন"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr "আপনি একটি রাস্টার স্থর দ্বারা জ্যামিতিক স্থর পরিবর্তন করতে যাচ্ছেন"
 
-#: geonode/layers/utils.py:517 geonode/layers/views.py:1252
+#: geonode/layers/utils.py:517 geonode/layers/views.py:1282
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr "আপনি একটি রাস্টার স্থর দ্বারা জ্যামিতিক স্থর পরিবর্তন করতে যাচ্ছেন"
 
-#: geonode/layers/utils.py:520 geonode/layers/views.py:1256
+#: geonode/layers/utils.py:520 geonode/layers/views.py:1286
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr "আপনি একটি জ্যামিতিক স্থর দ্বারা রাস্টার স্থর পরিবর্তন করতে যাচ্ছেন"
 
@@ -4519,7 +4592,7 @@ msgstr ""
 msgid "Some error occurred while trying to access the uploaded schema: %s"
 msgstr ""
 
-#: geonode/layers/views.py:129
+#: geonode/layers/views.py:130
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
@@ -4527,51 +4600,51 @@ msgstr ""
 "আপনার তথ্য আপলোড করার প্রয়াসের সময় একটি ত্রুটি হয়েছিল. আবার চেষ্টা করুন, অথবা "
 "সমস্যা অব্যাহত থাকলে যোগাযোগ করুন এবং অ্যাডমিনিস্ট্রেটর দয়া করে."
 
-#: geonode/layers/views.py:132
+#: geonode/layers/views.py:133
 msgid ""
 "Note: this layer's orginal metadata was populated and preserved by importing "
 "a metadata XML file. This metadata cannot be edited."
 msgstr ""
 
-#: geonode/layers/views.py:136
+#: geonode/layers/views.py:137
 msgid "You are not permitted to delete this layer"
 msgstr "আপনি এই স্তর মুছে ফেলতে অনুমতি নেই"
 
-#: geonode/layers/views.py:137
+#: geonode/layers/views.py:138
 msgid "You do not have permissions for this layer."
 msgstr "আপনি এই স্তর জন্য অনুমতি নেই."
 
-#: geonode/layers/views.py:138
+#: geonode/layers/views.py:139
 msgid "You are not permitted to modify this layer"
 msgstr "আপনি এই স্তর পরিবর্তন করার অনুমতি নেই"
 
-#: geonode/layers/views.py:140
+#: geonode/layers/views.py:141
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "আপনি লেয়ারের মেটাডাটা পরিবর্তন করার অনুমতি নেই"
 
-#: geonode/layers/views.py:141
+#: geonode/layers/views.py:142
 msgid "You are not permitted to view this layer"
 msgstr "আপনি এই স্তর দেখতে অনুমতি নেই"
 
-#: geonode/layers/views.py:279
+#: geonode/layers/views.py:280
 #, fuzzy
 #| msgid "Files to be uploaded"
 msgid "Failed to upload the layer"
 msgstr "ফাইল আপলোড করা"
 
-#: geonode/layers/views.py:1341 geonode/layers/views.py:1386
+#: geonode/layers/views.py:1378 geonode/layers/views.py:1430
 #, fuzzy
 #| msgid "Unable to delete layer"
 msgid "Unable to delete layer"
 msgstr "স্তর মুছতে অক্ষম"
 
-#: geonode/layers/views.py:1345 geonode/layers/views.py:1390
+#: geonode/layers/views.py:1382 geonode/layers/views.py:1434
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 
-#: geonode/layers/views.py:1438 geonode/maps/views.py:1243
+#: geonode/layers/views.py:1489 geonode/maps/views.py:1334
 msgid "couldn't generate thumbnail"
 msgstr ""
 
@@ -4848,7 +4921,7 @@ msgstr "সমাপ্তি ডাউনলোড"
 msgid "Download Failed"
 msgstr "ডাউনলোড ব্যর্থ"
 
-#: geonode/maps/templates/maps/map_list_default.html:5
+#: geonode/maps/templates/maps/map_list_default.html:7
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
@@ -4880,37 +4953,37 @@ msgid ""
 "        "
 msgstr ""
 
-#: geonode/maps/views.py:97
+#: geonode/maps/views.py:100
 msgid "You are not permitted to delete this map."
 msgstr "আপনি এই মানচিত্র মুছে করার অনুমতি নেই."
 
-#: geonode/maps/views.py:98
+#: geonode/maps/views.py:101
 msgid "You do not have permissions for this map."
 msgstr "আপনি এই মানচিত্রের জন্য অনুমতি নেই."
 
-#: geonode/maps/views.py:99
+#: geonode/maps/views.py:102
 msgid "You must be logged in to save this map"
 msgstr "আপনি এই মানচিত্র সংরক্ষণ আবশ্যক লগ ইন"
 
-#: geonode/maps/views.py:100
+#: geonode/maps/views.py:103
 msgid "You are not permitted to save or edit this map."
 msgstr "আপনি সংরক্ষণ করো এই ম্যাপ এডিট করার অনুমতি নেই."
 
-#: geonode/maps/views.py:102
+#: geonode/maps/views.py:105
 msgid "You are not allowed to modify this map's metadata."
 msgstr "আপনি এই ম্যাপ এর মেটাডেটা পরিবর্তন করার অনুমতি দেওয়া হয়নি."
 
-#: geonode/maps/views.py:103
+#: geonode/maps/views.py:106
 msgid "You are not allowed to view this map."
 msgstr "আপনি এই ম্যাপ দেখতে অনুমতি দেওয়া হয়নি."
 
-#: geonode/maps/views.py:1250
+#: geonode/maps/views.py:1341
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Thumbnail saved"
 msgstr "Thumbnail"
 
-#: geonode/maps/views.py:1253
+#: geonode/maps/views.py:1344
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "error saving thumbnail"
@@ -5224,8 +5297,8 @@ msgstr ""
 msgid "1 hour"
 msgstr ""
 
-#: geonode/monitoring/models.py:1084 geonode/templates/metadata_base.html:128
-#: geonode/templates/metadata_base.html:131
+#: geonode/monitoring/models.py:1084 geonode/templates/metadata_base.html:131
+#: geonode/templates/metadata_base.html:134
 msgid "Error"
 msgstr ""
 
@@ -5530,7 +5603,7 @@ msgid "Timezone"
 msgstr ""
 
 #: geonode/people/templates/people/_profile_about_item.html:17
-#: geonode/templates/_permissions_form.html:125
+#: geonode/templates/_permissions_form.html:311
 msgid "No Group"
 msgstr "কোন গ্রুপ"
 
@@ -5734,32 +5807,32 @@ msgstr "আপনার ব্যবহারকারী নাম আপনা
 msgid "No user could be found with that email address."
 msgstr "কোন ব্যবহারকারী যে ইমেইল ঠিকানা দিয়ে পাওয়া যেতে পারে."
 
-#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:266
+#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:267
 #, fuzzy
 #| msgid "You are not permitted to save or edit this map."
 msgid "You are not permitted to save or edit this resource."
 msgstr "আপনি সংরক্ষণ করো এই ম্যাপ এডিট করার অনুমতি নেই."
 
-#: geonode/proxy/views.py:265
+#: geonode/proxy/views.py:266
 #, fuzzy
 #| msgid "You are not allowed to view this document."
 msgid "You are not authorized to download this resource."
 msgstr "আপনি এই নথি দেখতে অনুমতি দেওয়া হয়নি."
 
-#: geonode/proxy/views.py:267
+#: geonode/proxy/views.py:268
 msgid ""
 "No files have been found for this resource. Please, contact a system "
 "administrator."
 msgstr ""
 
-#: geonode/proxy/views.py:301 geonode/proxy/views.py:312
-#: geonode/proxy/views.py:415
+#: geonode/proxy/views.py:302 geonode/proxy/views.py:313
+#: geonode/proxy/views.py:416
 #, fuzzy
 #| msgid "Documents"
 msgid "No files found."
 msgstr "কাগজপত্র"
 
-#: geonode/proxy/views.py:423
+#: geonode/proxy/views.py:424
 #, fuzzy
 #| msgid "Not provided"
 msgid "Not Authorized"
@@ -5819,7 +5892,7 @@ msgstr "স্তর অপসারণ"
 msgid "Reload to see changes"
 msgstr ""
 
-#: geonode/qgis_server/views.py:266
+#: geonode/qgis_server/views.py:263
 #, python-brace-format
 msgid ""
 "You should use a GIS software or a library which support TMS service to use "
@@ -5907,7 +5980,7 @@ msgstr "ArcGIS বিশ্রাম পরিষেবা"
 msgid "ArcGIS REST ImageServer"
 msgstr "ArcGIS বিশ্রাম পরিষেবা"
 
-#: geonode/services/enumerations.py:51 geonode/services/models.py:51
+#: geonode/services/enumerations.py:51 geonode/services/models.py:50
 msgid "OpenGeoPortal"
 msgstr "OpenGeoPortal"
 
@@ -5956,27 +6029,27 @@ msgstr ""
 msgid "Found service of type %(found_type)s instead of %(service_type)s"
 msgstr ""
 
-#: geonode/services/models.py:46
+#: geonode/services/models.py:45
 msgid "Local"
 msgstr "স্থানীয়"
 
-#: geonode/services/models.py:47
+#: geonode/services/models.py:46
 msgid "Cascaded"
 msgstr "Cascaded"
 
-#: geonode/services/models.py:48
+#: geonode/services/models.py:47
 msgid "Harvested"
 msgstr "চাষ"
 
-#: geonode/services/models.py:49
+#: geonode/services/models.py:48
 msgid "Indexed"
 msgstr "সূচিবদ্ধ"
 
-#: geonode/services/models.py:50
+#: geonode/services/models.py:49
 msgid "Live"
 msgstr "লাইভ"
 
-#: geonode/services/models.py:211
+#: geonode/services/models.py:210
 #, fuzzy
 #| msgid "Resources"
 msgid "Resource is queued"
@@ -6171,73 +6244,73 @@ msgstr ""
 msgid "Re-scan Service for new Resources"
 msgstr ""
 
-#: geonode/services/views.py:96
+#: geonode/services/views.py:99
 #, fuzzy
 #| msgid "service interfaces"
 msgid "Service registered successfully"
 msgstr "সেবা ইন্টারফেস"
 
-#: geonode/services/views.py:193
+#: geonode/services/views.py:196
 msgid "The selected resources are being imported"
 msgstr ""
 
-#: geonode/services/views.py:194
+#: geonode/services/views.py:197
 msgid "The selected resources have been imported"
 msgstr ""
 
-#: geonode/services/views.py:224
+#: geonode/services/views.py:227
 msgid "Resource is already being processed"
 msgstr ""
 
-#: geonode/services/views.py:230
+#: geonode/services/views.py:233
 #, fuzzy
 #| msgid "Resources"
 msgid "Resource {} is being processed"
 msgstr "সম্পদ"
 
-#: geonode/services/views.py:259
+#: geonode/services/views.py:262
 #, fuzzy
 #| msgid "Password changed successfully."
 msgid "Service rescanned successfully"
 msgstr "পাসওয়ার্ড সফলভাবে পরিবর্তন."
 
-#: geonode/services/views.py:329
+#: geonode/services/views.py:332
 #, fuzzy
 #| msgid "You are not permitted to remove this service."
 msgid "You are not permitted to change this service."
 msgstr "আপনি এই সেবা অপসারণ করার অনুমতি নেই."
 
-#: geonode/services/views.py:357
+#: geonode/services/views.py:360
 msgid "You are not permitted to remove this service."
 msgstr "আপনি এই সেবা অপসারণ করার অনুমতি নেই."
 
-#: geonode/services/views.py:368
+#: geonode/services/views.py:371
 #, fuzzy
 #| msgid "Service has been created:"
 msgid "Service {} has been deleted"
 msgstr "পরিষেবা তৈরি করা হয়েছে:"
 
-#: geonode/social/signals.py:81
+#: geonode/social/signals.py:80
 msgid "created"
 msgstr "নির্মিত"
 
-#: geonode/social/signals.py:82 geonode/social/tests.py:104
+#: geonode/social/signals.py:81 geonode/social/tests.py:104
 msgid "deleted"
 msgstr "মোছা"
 
-#: geonode/social/signals.py:86
+#: geonode/social/signals.py:85
 msgid "updated"
 msgstr "আপডেট"
 
-#: geonode/social/signals.py:96 geonode/social/tests.py:124
+#: geonode/social/signals.py:95 geonode/social/tests.py:124
 msgid "added a comment"
 msgstr "একটি মন্তব্য যোগ"
 
-#: geonode/social/signals.py:98
+#: geonode/social/signals.py:97
 msgid "updated a comment"
 msgstr "একটি মন্তব্য আপডেট"
 
-#: geonode/social/signals.py:104 geonode/social/signals.py:109
+#: geonode/social/signals.py:103 geonode/social/signals.py:108
 #: geonode/social/tests.py:78
 msgid "uploaded"
 msgstr "আপলোড"
@@ -6313,7 +6386,7 @@ msgstr "সম্প্রদায়"
 
 #: geonode/templates/500.html:84 geonode/templates/500.html:86
 #: geonode/templates/_permissions_form.html:107
-#: geonode/templates/_permissions_form.html:165 geonode/templates/base.html:376
+#: geonode/templates/_permissions_form.html:127 geonode/templates/base.html:376
 #: geonode/templates/base.html:377 geonode/templates/base.html:378
 #: geonode/templates/base.html:381 geonode/templates/base.html:382
 #: geonode/templates/base.html:383 geonode/templates/index.html:101
@@ -6455,7 +6528,7 @@ msgid "Set permissions on selected resources"
 msgstr "নির্বাচিত সম্পদের উপর সেট অনুমতি"
 
 #: geonode/templates/_bulk_permissions_form.html:20
-#: geonode/templates/_permissions_form.html:224
+#: geonode/templates/_permissions_form.html:186
 msgid "Apply Changes"
 msgstr "পরিবর্তনগুলি প্রয়োগ"
 
@@ -6549,84 +6622,84 @@ msgstr ""
 msgid "Users"
 msgstr "ব্যবহারকারী"
 
-#: geonode/templates/_permissions_form.html:131
-#: geonode/templates/_permissions_form.html:185
+#: geonode/templates/_permissions_form.html:147
+#: geonode/templates/_permissions_form.html:326
 msgid "Show Geo Limits"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:135
-#: geonode/templates/_permissions_form.html:189
+#: geonode/templates/_permissions_form.html:151
+#: geonode/templates/_permissions_form.html:330
 #, fuzzy
 #| msgid "Upload Documents"
 msgid "Upload Geo Limits"
 msgstr "আপলোড ডকুমেন্টস"
 
-#: geonode/templates/_permissions_form.html:140
-#: geonode/templates/_permissions_form.html:194
-#: geonode/templates/_permissions_form.html:495
+#: geonode/templates/_permissions_form.html:156
+#: geonode/templates/_permissions_form.html:335
+#: geonode/templates/_permissions_form.html:553
 msgid "Save Geo Limits"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:144
-#: geonode/templates/_permissions_form.html:198
-#: geonode/templates/_permissions_form.html:632
+#: geonode/templates/_permissions_form.html:160
+#: geonode/templates/_permissions_form.html:339
+#: geonode/templates/_permissions_form.html:691
 #, fuzzy
 #| msgid "Delete from Favorites"
 msgid "Delete Geo Limits"
 msgstr "পছন্দ সমূহ হতে মুছুন"
 
-#: geonode/templates/_permissions_form.html:256
+#: geonode/templates/_permissions_form.html:218
 msgid "Mandatory files : SHP , DBF"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:260
-#: geonode/templates/_permissions_form.html:264
+#: geonode/templates/_permissions_form.html:222
+#: geonode/templates/_permissions_form.html:226
 msgid ""
 "Upload a ZIP file containing an ESRI Shapefile. If the ZIP provides also a ."
 "prj file, you don't have to specify the EPSG SRID"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:260
+#: geonode/templates/_permissions_form.html:222
 #, fuzzy
 #| msgid "Choose users..."
 msgid "Choose"
 msgstr "ব্যবহারকারীদের চয়ন করুন ..."
 
-#: geonode/templates/_permissions_form.html:265
+#: geonode/templates/_permissions_form.html:227
 #, fuzzy
 #| msgid "Choose users..."
 msgid "Choose a file..."
 msgstr "ব্যবহারকারীদের চয়ন করুন ..."
 
-#: geonode/templates/_permissions_form.html:267
+#: geonode/templates/_permissions_form.html:229
 msgid "Reset"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:279
+#: geonode/templates/_permissions_form.html:241
 msgid "Only the SRID number without the 'EPSG:' prefix!"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:280
+#: geonode/templates/_permissions_form.html:242
 msgid "Default : 4326"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:285
+#: geonode/templates/_permissions_form.html:247
 msgid "Set your desired encoding UTF-8, Big5, Big5-HKSCS ..."
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:474
+#: geonode/templates/_permissions_form.html:532
 msgid "Load SHP-ZIP"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:475
-#: geonode/templates/_permissions_form.html:562
+#: geonode/templates/_permissions_form.html:533
+#: geonode/templates/_permissions_form.html:620
 msgid ""
 "<p>This will remove the Geo Limits currently drawn on the map.</p><p>In "
 "order to store the Geo Limits you will need to <strong>save</strong> them "
 "anyway.</p><p>Do you want to proceed?</p>"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:496
+#: geonode/templates/_permissions_form.html:554
 msgid ""
 "<p>This will override the current stored Geo Limits on the DB.</p><p>To "
 "apply them you will need to click on <strong>Apply Changes</strong> button "
@@ -6634,50 +6707,50 @@ msgid ""
 "p><p>Do you want to proceed?</p>"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:541
-#: geonode/templates/_permissions_form.html:546
+#: geonode/templates/_permissions_form.html:599
+#: geonode/templates/_permissions_form.html:604
 msgid "Save Geo Limit"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:542
+#: geonode/templates/_permissions_form.html:600
 msgid ""
 "<p>Geometry <strong>successfully</strong> saved!</p><p>To apply them you "
 "will need to click on <strong>Apply Changes</strong> button.</p>"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:547
+#: geonode/templates/_permissions_form.html:605
 msgid "<p><strong>Error</strong> while trying to save the Geometry!</p>"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:561
+#: geonode/templates/_permissions_form.html:619
 msgid "Load Geo Limits"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:617
+#: geonode/templates/_permissions_form.html:675
 msgid "Load Geo Limit"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:618
+#: geonode/templates/_permissions_form.html:676
 msgid "<p><strong>No Geometry</strong> found!</p>"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:633
+#: geonode/templates/_permissions_form.html:692
 msgid ""
 "<p>This will <strong>permanently</strong> remove the Geo Limits from the DB."
 "</p><p>To apply them you will need to click on <strong>Apply Changes</"
 "strong> button.</p><p>Do you want to proceed?</p>"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:659
-#: geonode/templates/_permissions_form.html:667
+#: geonode/templates/_permissions_form.html:718
+#: geonode/templates/_permissions_form.html:726
 msgid "Delete Geo Limit"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:660
+#: geonode/templates/_permissions_form.html:719
 msgid "<p><strong>Geo Limitsy</strong> successfully deleted!</p>"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:669
+#: geonode/templates/_permissions_form.html:728
 msgid ""
 "<p><strong>Error</strong> occurred while trying to delete Geo Limits:</p>"
 msgstr ""
@@ -6922,7 +6995,7 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/account/email_confirm.html:20
-#: geonode/templates/base.html:751
+#: geonode/templates/base.html:752
 #: geonode/templates/relationships/confirm.html:12
 msgid "Confirm"
 msgstr "নিশ্চিত করা"
@@ -7302,25 +7375,25 @@ msgstr "যোগাযোগ:"
 msgid "Tel"
 msgstr ""
 
-#: geonode/templates/base.html:686
+#: geonode/templates/base.html:687
 #, fuzzy
 #| msgid "uploaded"
 msgid "Uploading..."
 msgstr "আপলোড"
 
-#: geonode/templates/base.html:691
+#: geonode/templates/base.html:692
 #, fuzzy
 #| msgid "Upload files"
 msgid "Upload in progress..."
 msgstr "ফাইল আপলোড করুন"
 
-#: geonode/templates/base.html:708
+#: geonode/templates/base.html:709
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Updating Thumbnail..."
 msgstr "Thumbnail"
 
-#: geonode/templates/base.html:736
+#: geonode/templates/base.html:737
 #, fuzzy
 #| msgid "Are you sure you want to remove"
 msgid "Message. Do you want to proceed?"
@@ -7791,22 +7864,22 @@ msgstr ""
 msgid "is a member of the following group(s)"
 msgstr "নিম্নলিখিত গ্রুপ:"
 
-#: geonode/templates/metadata_base.html:149
+#: geonode/templates/metadata_base.html:152
 #, fuzzy
 #| msgid "Download Metadata"
 msgid "Updating Metadata..."
 msgstr "ডাউনলোড মেটাডাটা"
 
-#: geonode/templates/metadata_base.html:162
-#: geonode/templates/metadata_base.html:179
+#: geonode/templates/metadata_base.html:165
+#: geonode/templates/metadata_base.html:182
 msgid "ERROR"
 msgstr ""
 
-#: geonode/templates/metadata_base.html:165
+#: geonode/templates/metadata_base.html:168
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
-#: geonode/templates/metadata_base.html:182
+#: geonode/templates/metadata_base.html:185
 msgid "Group is mandatory and cannot be empty!"
 msgstr ""
 
@@ -7998,7 +8071,6 @@ msgstr "দ্বারা প্রস্তুত Blogger"
 
 #: geonode/templates/pinax/notifications/document_approved/full.txt:4
 #: geonode/templates/pinax/notifications/document_comment/full.txt:3
-#: geonode/templates/pinax/notifications/document_created/full.txt:4
 #: geonode/templates/pinax/notifications/document_published/full.txt:4
 #: geonode/templates/pinax/notifications/document_updated/full.txt:4
 msgid "You can visit the document's detail page here"
@@ -8234,7 +8306,6 @@ msgstr "নিম্নলিখিত স্তর আমদানি করা
 
 #: geonode/templates/pinax/notifications/map_approved/full.txt:4
 #: geonode/templates/pinax/notifications/map_comment/full.txt:4
-#: geonode/templates/pinax/notifications/map_created/full.txt:4
 #: geonode/templates/pinax/notifications/map_published/full.txt:4
 #: geonode/templates/pinax/notifications/map_rated/full.txt:6
 #: geonode/templates/pinax/notifications/map_updated/full.txt:4
@@ -8857,6 +8928,14 @@ msgstr "অবৈধ অনুমতি স্তর."
 #: geonode/utils.py:974
 msgid "Permission Denied"
 msgstr "অনুমতি অস্বীকার"
+
+#~ msgid "You are not allowed to edit this document."
+#~ msgstr "আপনি এই নথি সম্পাদনা করার অনুমতি দেওয়া হয়নি."
+
+#, fuzzy
+#~| msgid "You are not allowed to view this map."
+#~ msgid "You are not allowed to edit this app."
+#~ msgstr "আপনি এই ম্যাপ দেখতে অনুমতি দেওয়া হয়নি."
 
 #~ msgid "JSON Configuration"
 #~ msgstr "JSON কনফিগারেশন"
