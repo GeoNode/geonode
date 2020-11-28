@@ -403,7 +403,7 @@ define(function (require, exports) {
     };
 
     LayerInfo.prototype.doResume = function (event) {
-        $(this).text('<img class="pull-right" src="../../static/geonode/img/loading.gif">').attr('disabled','disabled');
+        $(this).text(gettext('Finalizing')).attr('disabled', 'disabled').after('<img class="pull-right" src="../../static/geonode/img/loading.gif">');
         var id = (new Date()).getTime();
         /* ****
          * AF: Switching those two below allows to open a new window instead of redirecting
