@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-06 09:28+0000\n"
+"POT-Creation-Date: 2020-11-28 17:58+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/geonode/geonode/language/"
@@ -182,7 +182,7 @@ msgstr "Дані оновлюються раз на три місяці"
 msgid "No information provided"
 msgstr "Інформація відсутня"
 
-#: geonode/base/forms.py:284 geonode/base/forms.py:514
+#: geonode/base/forms.py:286 geonode/base/forms.py:535
 #: geonode/base/templates/base/_resourcebase_info_panel.html:85
 #: geonode/catalogue/templates/geonode_metadata_full.html:145
 #: geonode/documents/templates/documents/document_metadata_advanced.html:76
@@ -197,24 +197,59 @@ msgstr "Інформація відсутня"
 msgid "Category"
 msgstr "Категорія"
 
-#: geonode/base/forms.py:295
+#: geonode/base/forms.py:297
 msgid "Category is required."
 msgstr "Категорія вимагається."
 
-#: geonode/base/forms.py:316
+#: geonode/base/forms.py:318
 msgid "Keywords from Thesaurus"
 msgstr ""
 
-#: geonode/base/forms.py:318
+#: geonode/base/forms.py:320
 msgid "List of keywords from Thesaurus"
 msgstr ""
 
-#: geonode/base/forms.py:338 geonode/base/forms.py:510
-#: geonode/base/models.py:629
+#: geonode/base/forms.py:338
+#: geonode/base/templates/base/_resourcebase_info_panel.html:29
+#: geonode/catalogue/templates/geonode_metadata_full.html:61
+#: geonode/client/templates/leaflet/maps/map_view.html:106
+#: geonode/services/forms.py:130
+#: geonode/services/templates/services/service_detail.html:10
+#: geonode/templates/metadata_detail.html:50
+msgid "Abstract"
+msgstr "Абстрактний"
+
+#: geonode/base/forms.py:342
+#: geonode/base/templates/base/_resourcebase_info_panel.html:179
+#: geonode/catalogue/templates/geonode_metadata_full.html:80
+#: geonode/templates/metadata_detail.html:240
+msgid "Purpose"
+msgstr "Мета"
+
+#: geonode/base/forms.py:346
+#, fuzzy
+#| msgid "Notice settings"
+msgid "Other constraints"
+msgstr "Notice settings"
+
+#: geonode/base/forms.py:350
+#, fuzzy
+#| msgid "supplemental information"
+msgid "Supplemental information"
+msgstr "Довідкова інформація"
+
+#: geonode/base/forms.py:354
+#, fuzzy
+#| msgid "data quality statement"
+msgid "Data quality statement"
+msgstr "Якість даних заяву"
+
+#: geonode/base/forms.py:358 geonode/base/forms.py:359
+#: geonode/base/forms.py:531 geonode/base/models.py:629
 msgid "Owner"
 msgstr "Власник"
 
-#: geonode/base/forms.py:344 geonode/base/forms.py:526
+#: geonode/base/forms.py:365 geonode/base/forms.py:547
 #: geonode/base/templates/base/_resourcebase_info_panel.html:41
 #: geonode/catalogue/templates/geonode_metadata_full.html:58
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
@@ -223,19 +258,19 @@ msgstr "Власник"
 msgid "Date"
 msgstr "Дата"
 
-#: geonode/base/forms.py:350 geonode/base/models.py:733
+#: geonode/base/forms.py:371 geonode/base/models.py:733
 msgid "temporal extent start"
 msgstr "тимчасова старт ступеня"
 
-#: geonode/base/forms.py:357 geonode/base/models.py:738
+#: geonode/base/forms.py:378 geonode/base/models.py:738
 msgid "temporal extent end"
 msgstr "тимчасова кінець ступеня"
 
-#: geonode/base/forms.py:365 geonode/base/forms.py:373
+#: geonode/base/forms.py:386 geonode/base/forms.py:394
 msgid "Person outside GeoNode (fill form)"
 msgstr ""
 
-#: geonode/base/forms.py:366
+#: geonode/base/forms.py:387
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
 #: geonode/base/templates/base/_resourcebase_info_panel.html:112
 #: geonode/catalogue/templates/geonode_metadata_full.html:75
@@ -254,7 +289,7 @@ msgstr ""
 msgid "Point of Contact"
 msgstr "Точка дотику"
 
-#: geonode/base/forms.py:374
+#: geonode/base/forms.py:395
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
 #: geonode/documents/templates/documents/document_metadata.html:38
 #: geonode/documents/templates/documents/document_metadata_advanced.html:43
@@ -264,13 +299,13 @@ msgstr "Точка дотику"
 msgid "Metadata Author"
 msgstr "Metadata Автор"
 
-#: geonode/base/forms.py:381
+#: geonode/base/forms.py:402
 #, fuzzy
 #| msgid "Keywords"
 msgid "Free-text Keywords"
 msgstr "Ключові слова"
 
-#: geonode/base/forms.py:383
+#: geonode/base/forms.py:404
 #, fuzzy
 #| msgid "A space or comma-separated list of keywords"
 msgid ""
@@ -278,7 +313,7 @@ msgid ""
 "Hierarchical tree."
 msgstr "Простір або розділений комами список ключових слів"
 
-#: geonode/base/forms.py:395 geonode/base/forms.py:522
+#: geonode/base/forms.py:416 geonode/base/forms.py:543
 #: geonode/base/templates/base/_resourcebase_info_panel.html:95
 #: geonode/catalogue/templates/geonode_metadata_full.html:149
 #: geonode/templates/metadata_detail.html:100
@@ -286,7 +321,7 @@ msgstr "Простір або розділений комами список к�
 msgid "Regions"
 msgstr "Райони"
 
-#: geonode/base/forms.py:506 geonode/base/forms.py:539
+#: geonode/base/forms.py:527 geonode/base/forms.py:560
 #: geonode/base/templates/base/_resourcebase_info_panel.html:117
 #: geonode/documents/templates/layouts/doc_panels.html:340
 #: geonode/geoapps/templates/layouts/app_panels.html:337
@@ -298,7 +333,7 @@ msgstr "Райони"
 msgid "Group"
 msgstr "Групи"
 
-#: geonode/base/forms.py:518 geonode/base/models.py:706
+#: geonode/base/forms.py:539 geonode/base/models.py:706
 #: geonode/base/templates/base/_resourcebase_info_panel.html:16
 #: geonode/base/templates/base/_resourcebase_info_panel.html:147
 #: geonode/catalogue/templates/geonode_metadata_full.html:98
@@ -307,7 +342,7 @@ msgstr "Групи"
 msgid "License"
 msgstr "Ліцензія"
 
-#: geonode/base/forms.py:529
+#: geonode/base/forms.py:550
 #: geonode/base/templates/base/_resourcebase_info_panel.html:184
 #: geonode/catalogue/templates/geonode_metadata_full.html:101
 #: geonode/templates/500.html:211 geonode/templates/base.html:548
@@ -315,7 +350,7 @@ msgstr "Ліцензія"
 msgid "Language"
 msgstr "Мова"
 
-#: geonode/base/forms.py:543 geonode/templates/index.html:158
+#: geonode/base/forms.py:564 geonode/templates/index.html:158
 #: geonode/templates/pinax/notifications/account_approve/full.txt:1
 msgid "User"
 msgid_plural "Users"
@@ -323,31 +358,31 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: geonode/base/forms.py:547
+#: geonode/base/forms.py:568
 #, fuzzy
 #| msgid "Permissions"
 msgid "Permission Type"
 msgstr "Дозволи"
 
-#: geonode/base/forms.py:557
+#: geonode/base/forms.py:578
 msgid "Mode"
 msgstr ""
 
-#: geonode/base/forms.py:608
+#: geonode/base/forms.py:629
 #, fuzzy
 #| msgid "Resources"
 msgid "Resource"
 msgstr "Ресурси"
 
-#: geonode/base/forms.py:612
+#: geonode/base/forms.py:633
 msgid "Reason"
 msgstr ""
 
-#: geonode/base/forms.py:614
+#: geonode/base/forms.py:635
 msgid "Short reasoning behind the request"
 msgstr ""
 
-#: geonode/base/models.py:102 geonode/services/models.py:194
+#: geonode/base/models.py:102 geonode/services/models.py:193
 msgid "function performed by the responsible party"
 msgstr "Функція виконується відповідальною стороною"
 
@@ -550,91 +585,91 @@ msgstr "будь-який інший описової інформації пр�
 msgid "data quality statement"
 msgstr "Якість даних заяву"
 
-#: geonode/base/models.py:773
+#: geonode/base/models.py:777
 msgid "CSW typename"
 msgstr "РКС Ьурепате"
 
-#: geonode/base/models.py:778
+#: geonode/base/models.py:782
 msgid "CSW schema"
 msgstr "РКС схеми"
 
-#: geonode/base/models.py:783
+#: geonode/base/models.py:787
 msgid "CSW source"
 msgstr "Джерело РКС"
 
-#: geonode/base/models.py:788
+#: geonode/base/models.py:792
 msgid "CSW insert date"
 msgstr "РКС вставити дату"
 
-#: geonode/base/models.py:790
+#: geonode/base/models.py:794
 msgid "CSW type"
 msgstr "Тип РКС"
 
-#: geonode/base/models.py:795
+#: geonode/base/models.py:799
 msgid "CSW anytext"
 msgstr "РКС anytext"
 
-#: geonode/base/models.py:797
+#: geonode/base/models.py:801
 msgid "CSW WKT geometry"
 msgstr "РКС WKT геометрія"
 
-#: geonode/base/models.py:803
+#: geonode/base/models.py:807
 #, fuzzy
 #| msgid "Metadata Provider"
 msgid "Metadata uploaded preserve"
 msgstr "Провайдер метаданих"
 
-#: geonode/base/models.py:810 geonode/templates/metadata_detail.html:110
+#: geonode/base/models.py:814 geonode/templates/metadata_detail.html:110
 msgid "Featured"
 msgstr ""
 
-#: geonode/base/models.py:811
+#: geonode/base/models.py:815
 msgid "Should this resource be advertised in home page?"
 msgstr "Якщо цей ресурс рекламуватися на головній сторінці?"
 
-#: geonode/base/models.py:813
+#: geonode/base/models.py:817
 #, fuzzy
 #| msgid "Published From"
 msgid "Is Published"
 msgstr "Опубліковано С"
 
-#: geonode/base/models.py:815
+#: geonode/base/models.py:819
 msgid "Should this resource be published and searchable?"
 msgstr "Якщо цей ресурс опублікований і для пошуку?"
 
-#: geonode/base/models.py:817 geonode/templates/metadata_detail.html:104
+#: geonode/base/models.py:821 geonode/templates/metadata_detail.html:104
 #, fuzzy
 #| msgid "Not provided"
 msgid "Approved"
 msgstr "Не передбачено"
 
-#: geonode/base/models.py:819
+#: geonode/base/models.py:823
 msgid "Is this resource validated from a publisher or editor?"
 msgstr ""
 
-#: geonode/base/models.py:822
+#: geonode/base/models.py:826
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Thumbnail url"
 msgstr "Thumbnail"
 
-#: geonode/base/models.py:830
+#: geonode/base/models.py:834
 msgid "Dirty State"
 msgstr ""
 
-#: geonode/base/models.py:832
+#: geonode/base/models.py:836
 msgid "Security Rules Are Not Synched with GeoServer!"
 msgstr ""
 
-#: geonode/base/models.py:1641
+#: geonode/base/models.py:1667
 msgid "For example \"kml\""
 msgstr "Наприклад, \"KML\""
 
-#: geonode/base/models.py:1646
+#: geonode/base/models.py:1672
 msgid "For example \"View in Google Earth\""
 msgstr "Наприклад, \"Перегляд в Google Планета Земля\""
 
-#: geonode/base/models.py:1648
+#: geonode/base/models.py:1674
 msgid "For example \"text/xml\""
 msgstr "Наприклад, \"текст / XML\""
 
@@ -667,7 +702,7 @@ msgstr ""
 #: geonode/services/templates/services/service_detail.html:22
 #: geonode/services/templates/services/service_list.html:17
 #: geonode/templates/announcements/announcement_list.html:21
-#: geonode/templates/base.html:735 geonode/templates/metadata_detail.html:45
+#: geonode/templates/base.html:736 geonode/templates/metadata_detail.html:45
 msgid "Title"
 msgstr "Назва"
 
@@ -682,15 +717,6 @@ msgstr ""
 #: geonode/templates/metadata_detail.html:215
 msgid "For more info see"
 msgstr ""
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:29
-#: geonode/catalogue/templates/geonode_metadata_full.html:61
-#: geonode/client/templates/leaflet/maps/map_view.html:106
-#: geonode/services/forms.py:130
-#: geonode/services/templates/services/service_detail.html:10
-#: geonode/templates/metadata_detail.html:50
-msgid "Abstract"
-msgstr "Абстрактний"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:35
 #, fuzzy
@@ -754,12 +780,6 @@ msgstr "Обмеження"
 #: geonode/templates/metadata_detail.html:235
 msgid "Edition"
 msgstr "Видання"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:179
-#: geonode/catalogue/templates/geonode_metadata_full.html:80
-#: geonode/templates/metadata_detail.html:240
-msgid "Purpose"
-msgstr "Мета"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:189
 #: geonode/catalogue/templates/geonode_metadata_full.html:104
@@ -835,13 +855,13 @@ msgstr ""
 msgid "UNPUBLISHED"
 msgstr ""
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:80
+#: geonode/base/templates/base/_resourcebase_snippet.html:81
 #: geonode/layers/templates/layers/layer_detail.html:634
 #: geonode/templates/search/_search_content.html:11
 msgid "Create a Map"
 msgstr "Створення карти"
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:86
+#: geonode/base/templates/base/_resourcebase_snippet.html:87
 #: geonode/client/templates/leaflet/maps/map_view.html:8
 #: geonode/maps/templates/maps/map_detail.html:198
 #: geonode/maps/templates/maps/map_detail.html:200
@@ -872,12 +892,12 @@ msgstr ""
 #: geonode/layers/templates/upload/layer_upload_time.html:119
 #: geonode/maps/templates/maps/map_download.html:58
 #: geonode/templates/_comments.html:64
-#: geonode/templates/_permissions_form.html:223
-#: geonode/templates/_permissions_form.html:293
+#: geonode/templates/_permissions_form.html:185
+#: geonode/templates/_permissions_form.html:255
 #: geonode/templates/admin/backups/confirm_cancel.html:21
 #: geonode/templates/announcements/announcement_confirm_delete.html:20
 #: geonode/templates/announcements/announcement_form.html:22
-#: geonode/templates/base.html:757
+#: geonode/templates/base.html:758
 msgid "Cancel"
 msgstr "Скасувати"
 
@@ -926,7 +946,7 @@ msgstr ""
 #: geonode/maps/templates/maps/map_detail.html:167
 #: geonode/monitoring/models.py:355
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:58
-#: geonode/templates/_permissions_form.html:288
+#: geonode/templates/_permissions_form.html:250
 #, fuzzy
 #| msgid "uploaded"
 msgid "Upload"
@@ -974,27 +994,27 @@ msgstr "Створення карти"
 msgid "me"
 msgstr ""
 
-#: geonode/base/views.py:351
+#: geonode/base/views.py:352
 msgid "System message: A request to modify resource"
 msgstr ""
 
-#: geonode/base/views.py:352
+#: geonode/base/views.py:353
 #, fuzzy
 #| msgid "Set permissions for this resource"
 msgid "The resource owner has requested to modify the resource"
 msgstr "Завдання дозволів для цього ресурсу"
 
-#: geonode/base/views.py:354
+#: geonode/base/views.py:355
 #, fuzzy
 #| msgid "Resources"
 msgid "Resource title"
 msgstr "Ресурси"
 
-#: geonode/base/views.py:356
+#: geonode/base/views.py:357
 msgid "Reason for the request"
 msgstr ""
 
-#: geonode/base/views.py:358
+#: geonode/base/views.py:359
 msgid ""
 "To allow the change, set the resource to not \"Approved\" under the metadata "
 "settingsand write message to the owner to notify him"
@@ -1081,7 +1101,8 @@ msgstr "Завантажити Layer"
 
 #: geonode/client/templates/leaflet/maps/map_base.html:4
 #: geonode/client/templates/leaflet/maps/map_list.html:12
-#: geonode/maps/templates/maps/map_list_default.html:12
+#: geonode/maps/templates/maps/map_list_default.html:5
+#: geonode/maps/templates/maps/map_list_default.html:14
 #: geonode/maps/templates/maps/map_metadata_advanced.html:29
 #: geonode/templates/500.html:180 geonode/templates/base.html:316
 #: geonode/templates/base.html:501
@@ -1113,7 +1134,7 @@ msgstr "Оновлення"
 
 #: geonode/client/templates/leaflet/maps/map_list.html:10
 #: geonode/maps/templates/maps/map_detail.html:255
-#: geonode/maps/templates/maps/map_list_default.html:10
+#: geonode/maps/templates/maps/map_list_default.html:12
 msgid "Create a New Map"
 msgstr "Створіть нову карту"
 
@@ -1154,9 +1175,9 @@ msgstr "Створення карти"
 #: geonode/maps/templates/maps/map_detail.html:301
 #: geonode/templates/500.html:238
 #: geonode/templates/_bulk_permissions_form.html:19
-#: geonode/templates/base.html:590 geonode/templates/metadata_base.html:134
-#: geonode/templates/metadata_base.html:168
-#: geonode/templates/metadata_base.html:185
+#: geonode/templates/base.html:590 geonode/templates/metadata_base.html:137
+#: geonode/templates/metadata_base.html:171
+#: geonode/templates/metadata_base.html:188
 msgid "Close"
 msgstr "Близько"
 
@@ -1315,15 +1336,15 @@ msgstr "Цей тип файлу не допускається"
 msgid "Permissions must be valid JSON."
 msgstr "Дозволи повинні бути дійсні JSON."
 
-#: geonode/documents/models.py:56
+#: geonode/documents/models.py:59
 msgid "File"
 msgstr "Файл"
 
-#: geonode/documents/models.py:66
+#: geonode/documents/models.py:69
 msgid "The URL of the document if it is external."
 msgstr "Посилання на документ, якщо він є зовнішнім."
 
-#: geonode/documents/models.py:67 geonode/layers/models.py:478
+#: geonode/documents/models.py:70 geonode/layers/models.py:481
 #: geonode/monitoring/models.py:179
 #: geonode/services/templates/services/service_detail.html:9
 #: geonode/services/templates/services/service_list.html:18
@@ -1550,13 +1571,13 @@ msgstr "Завантажити документи"
 #: geonode/layers/templates/layers/layer_base.html:6
 #: geonode/layers/templates/layers/layer_metadata.html:15
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:10
-#: geonode/layers/templates/upload/layer_upload_base.html:157
+#: geonode/layers/templates/upload/layer_upload_base.html:10
 #: geonode/layers/templates/upload/layer_upload_metadata_base.html:6
 #: geonode/maps/templates/maps/map_base.html:6
 #: geonode/maps/templates/maps/map_metadata.html:15
 #: geonode/maps/templates/maps/map_metadata_advanced.html:10
 #: geonode/services/templates/services/services_base.html:6
-#: geonode/templates/metadata_base.html:120
+#: geonode/templates/metadata_base.html:123
 #: geonode/templates/metadata_detail.html:7
 #, fuzzy
 #| msgid "dataset"
@@ -1906,7 +1927,7 @@ msgstr "Зміна Layer Дозволи"
 #: geonode/geoapps/templates/layouts/app_panels.html:506
 #: geonode/layers/templates/layouts/panels.html:515
 #: geonode/maps/templates/layouts/map_panels.html:509
-#: geonode/templates/_permissions_form.html:236 geonode/templates/base.html:721
+#: geonode/templates/_permissions_form.html:198 geonode/templates/base.html:722
 #, fuzzy
 #| msgid "Message Inbox"
 msgid "Message box"
@@ -1916,16 +1937,16 @@ msgstr "Вхідні повідомлення"
 #: geonode/geoapps/templates/layouts/app_panels.html:512
 #: geonode/layers/templates/layouts/panels.html:521
 #: geonode/maps/templates/layouts/map_panels.html:515
-#: geonode/templates/_permissions_form.html:242
-#: geonode/templates/_permissions_form.html:481
-#: geonode/templates/_permissions_form.html:482
-#: geonode/templates/_permissions_form.html:502
-#: geonode/templates/_permissions_form.html:503
-#: geonode/templates/_permissions_form.html:568
-#: geonode/templates/_permissions_form.html:569
-#: geonode/templates/_permissions_form.html:639
-#: geonode/templates/_permissions_form.html:640 geonode/templates/base.html:727
-#: geonode/templates/base.html:758
+#: geonode/templates/_permissions_form.html:204
+#: geonode/templates/_permissions_form.html:539
+#: geonode/templates/_permissions_form.html:540
+#: geonode/templates/_permissions_form.html:560
+#: geonode/templates/_permissions_form.html:561
+#: geonode/templates/_permissions_form.html:626
+#: geonode/templates/_permissions_form.html:627
+#: geonode/templates/_permissions_form.html:698
+#: geonode/templates/_permissions_form.html:699 geonode/templates/base.html:728
+#: geonode/templates/base.html:759
 msgid "OK"
 msgstr ""
 
@@ -1958,23 +1979,81 @@ msgstr "Вам не дозволяється змінювати метадані
 msgid "You are not permitted to view this document"
 msgstr "Вам не дозволяється, щоб подивитися цей документ"
 
-#: geonode/documents/views.py:106 geonode/documents/views.py:207
+#: geonode/documents/views.py:96 geonode/documents/views.py:355
+#: geonode/documents/views.py:592 geonode/documents/views.py:607
+#: geonode/documents/views.py:621 geonode/geoapps/views.py:121
+#: geonode/geoapps/views.py:203 geonode/geoapps/views.py:261
+#: geonode/geoapps/views.py:287 geonode/geoapps/views.py:319
+#: geonode/layers/views.py:413 geonode/layers/views.py:846
+#: geonode/layers/views.py:898 geonode/layers/views.py:1257
+#: geonode/layers/views.py:1358 geonode/layers/views.py:1408
+#: geonode/layers/views.py:1453 geonode/layers/views.py:1519
+#: geonode/layers/views.py:1556 geonode/layers/views.py:1593
+#: geonode/layers/views.py:1618 geonode/maps/views.py:136
+#: geonode/maps/views.py:232 geonode/maps/views.py:450
+#: geonode/maps/views.py:521 geonode/maps/views.py:544
+#: geonode/maps/views.py:574 geonode/maps/views.py:595
+#: geonode/maps/views.py:648 geonode/maps/views.py:774
+#: geonode/maps/views.py:1085 geonode/maps/views.py:1174
+#: geonode/maps/views.py:1204 geonode/maps/views.py:1318
+#: geonode/maps/views.py:1360
+#, fuzzy
+#| msgid "Not provided"
+msgid "Not allowed"
+msgstr "Не передбачено"
+
+#: geonode/documents/views.py:98 geonode/documents/views.py:100
+#: geonode/documents/views.py:357 geonode/documents/views.py:359
+#: geonode/documents/views.py:594 geonode/documents/views.py:596
+#: geonode/documents/views.py:623 geonode/documents/views.py:625
+#: geonode/geoapps/views.py:123 geonode/geoapps/views.py:125
+#: geonode/geoapps/views.py:205 geonode/geoapps/views.py:207
+#: geonode/geoapps/views.py:263 geonode/geoapps/views.py:265
+#: geonode/geoapps/views.py:289 geonode/geoapps/views.py:291
+#: geonode/geoapps/views.py:321 geonode/geoapps/views.py:323
+#: geonode/layers/views.py:415 geonode/layers/views.py:417
+#: geonode/layers/views.py:848 geonode/layers/views.py:850
+#: geonode/layers/views.py:900 geonode/layers/views.py:902
+#: geonode/layers/views.py:1259 geonode/layers/views.py:1261
+#: geonode/layers/views.py:1360 geonode/layers/views.py:1362
+#: geonode/layers/views.py:1410 geonode/layers/views.py:1412
+#: geonode/layers/views.py:1455 geonode/layers/views.py:1457
+#: geonode/layers/views.py:1521 geonode/layers/views.py:1523
+#: geonode/layers/views.py:1558 geonode/layers/views.py:1560
+#: geonode/layers/views.py:1595 geonode/layers/views.py:1597
+#: geonode/layers/views.py:1620 geonode/layers/views.py:1622
+#: geonode/maps/views.py:138 geonode/maps/views.py:140
+#: geonode/maps/views.py:234 geonode/maps/views.py:236
+#: geonode/maps/views.py:452 geonode/maps/views.py:454
+#: geonode/maps/views.py:523 geonode/maps/views.py:525
+#: geonode/maps/views.py:546 geonode/maps/views.py:548
+#: geonode/maps/views.py:576 geonode/maps/views.py:578
+#: geonode/maps/views.py:597 geonode/maps/views.py:599
+#: geonode/maps/views.py:650 geonode/maps/views.py:652
+#: geonode/maps/views.py:776 geonode/maps/views.py:778
+#: geonode/maps/views.py:1087 geonode/maps/views.py:1089
+#: geonode/maps/views.py:1176 geonode/maps/views.py:1178
+#: geonode/maps/views.py:1206 geonode/maps/views.py:1208
+#: geonode/maps/views.py:1320 geonode/maps/views.py:1322
+#: geonode/maps/views.py:1362 geonode/maps/views.py:1364
+#, fuzzy
+#| msgid "Page Not Found"
+msgid "Not found"
+msgstr "Сторінку не знайдено"
+
+#: geonode/documents/views.py:194
 msgid "You are not allowed to view this document."
 msgstr "Ви не можете переглянути цей документ."
 
-#: geonode/documents/views.py:379
-msgid "You are not allowed to edit this document."
-msgstr "Ви не можете редагувати цей документ."
-
-#: geonode/documents/views.py:464 geonode/geoapps/views.py:396
-#: geonode/layers/views.py:1033
+#: geonode/documents/views.py:436 geonode/geoapps/views.py:400
+#: geonode/layers/views.py:1057
 #, fuzzy
 #| msgid "Set permissions for this resource"
 msgid "You must set a point of contact for this resource"
 msgstr "Завдання дозволів для цього ресурсу"
 
-#: geonode/documents/views.py:481 geonode/geoapps/views.py:413
-#: geonode/layers/views.py:1050
+#: geonode/documents/views.py:453 geonode/geoapps/views.py:417
+#: geonode/layers/views.py:1074
 #, fuzzy
 #| msgid "Set permissions for this resource"
 msgid "You must set an author for this resource"
@@ -2019,92 +2098,92 @@ msgstr ""
 msgid "Item"
 msgstr ""
 
-#: geonode/geoapps/__init__.py:30
+#: geonode/geoapps/__init__.py:28
 #, fuzzy
 #| msgid "Map Created"
 msgid "App Created"
 msgstr "Карта Створено"
 
-#: geonode/geoapps/__init__.py:30
+#: geonode/geoapps/__init__.py:28
 #, fuzzy
 #| msgid "A map was commented on"
 msgid "A App was created"
 msgstr "Карта була прокоментував"
 
-#: geonode/geoapps/__init__.py:31
+#: geonode/geoapps/__init__.py:29
 #, fuzzy
 #| msgid "Map Created"
 msgid "App Updated"
 msgstr "Карта Створено"
 
-#: geonode/geoapps/__init__.py:31
+#: geonode/geoapps/__init__.py:29
 #, fuzzy
 #| msgid "last updated on"
 msgid "A App was updated"
 msgstr "Останнє оновлення на"
 
-#: geonode/geoapps/__init__.py:32
+#: geonode/geoapps/__init__.py:30
 #, fuzzy
 #| msgid "Not provided"
 msgid "App Approved"
 msgstr "Не передбачено"
 
-#: geonode/geoapps/__init__.py:32
+#: geonode/geoapps/__init__.py:30
 #, fuzzy
 #| msgid "A layer was commented on"
 msgid "A App was approved by a Manager"
 msgstr "Шар прокоментував"
 
-#: geonode/geoapps/__init__.py:33
+#: geonode/geoapps/__init__.py:31
 #, fuzzy
 #| msgid "Published From"
 msgid "App Published"
 msgstr "Опубліковано С"
 
-#: geonode/geoapps/__init__.py:33
+#: geonode/geoapps/__init__.py:31
 #, fuzzy
 #| msgid "Published From"
 msgid "A App was published"
 msgstr "Опубліковано С"
 
-#: geonode/geoapps/__init__.py:34
+#: geonode/geoapps/__init__.py:32
 #, fuzzy
 #| msgid "Map Created"
 msgid "App Deleted"
 msgstr "Карта Створено"
 
-#: geonode/geoapps/__init__.py:34
+#: geonode/geoapps/__init__.py:32
 #, fuzzy
 #| msgid "A map was commented on"
 msgid "A App was deleted"
 msgstr "Карта була прокоментував"
 
-#: geonode/geoapps/__init__.py:35
+#: geonode/geoapps/__init__.py:33
 #, fuzzy
 #| msgid "Comment on Map"
 msgid "Comment on App"
 msgstr "Прокоментувати мапі"
 
-#: geonode/geoapps/__init__.py:35
+#: geonode/geoapps/__init__.py:33
 #, fuzzy
 #| msgid "A map was commented on"
 msgid "An App was commented on"
 msgstr "Карта була прокоментував"
 
-#: geonode/geoapps/__init__.py:36
+#: geonode/geoapps/__init__.py:34
 #, fuzzy
 #| msgid "Rating for Map"
 msgid "Rating for App"
 msgstr "Рейтинг на мапі"
 
-#: geonode/geoapps/__init__.py:36
+#: geonode/geoapps/__init__.py:34
 #, fuzzy
 #| msgid "A rating was given to a map"
 msgid "A rating was given to an App"
 msgstr "Оцінка була дана мапі"
 
 #: geonode/geoapps/models.py:50 geonode/groups/models.py:50
-#: geonode/layers/models.py:168
+#: geonode/layers/models.py:171
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
 #: geonode/services/templates/services/service_resources_harvest.html:31
 #: geonode/templates/metadata_detail.html:135
@@ -2296,51 +2375,45 @@ msgstr ""
 msgid "Other Settings"
 msgstr "Notice settings"
 
-#: geonode/geoapps/views.py:65
+#: geonode/geoapps/views.py:64
 #, fuzzy
 #| msgid "You are not permitted to delete this map."
 msgid "You are not permitted to delete this app."
 msgstr "Вам не дозволяється видаляти цю карту."
 
-#: geonode/geoapps/views.py:66
+#: geonode/geoapps/views.py:65
 #, fuzzy
 #| msgid "You do not have permissions for this map."
 msgid "You do not have permissions for this app."
 msgstr "Ви не маєте прав на цій карті."
 
-#: geonode/geoapps/views.py:67
+#: geonode/geoapps/views.py:66
 #, fuzzy
 #| msgid "You must be logged in to save this map"
 msgid "You must be logged in to save this app"
 msgstr "Ви повинні увійти в систему, щоб зберегти цю карту"
 
-#: geonode/geoapps/views.py:68
+#: geonode/geoapps/views.py:67
 #, fuzzy
 #| msgid "You are not permitted to save or edit this map."
 msgid "You are not permitted to save or edit this app."
 msgstr "Вам не дозволяється, щоб зберегти або створити карту."
 
-#: geonode/geoapps/views.py:70
+#: geonode/geoapps/views.py:69
 #, fuzzy
 #| msgid "You are not allowed to modify this map's metadata."
 msgid "You are not allowed to modify this app's metadata."
 msgstr "Ви не можете змінити метадані цій карті в."
 
-#: geonode/geoapps/views.py:71
+#: geonode/geoapps/views.py:70
 #, fuzzy
 #| msgid "You are not allowed to view this map."
 msgid "You are not allowed to view this app."
 msgstr "Ви не дозволено переглядати цю карту."
 
-#: geonode/geoapps/views.py:72 geonode/maps/views.py:104
+#: geonode/geoapps/views.py:71 geonode/maps/views.py:107
 msgid "An unknown error has occured."
 msgstr "Невідома помилка."
-
-#: geonode/geoapps/views.py:311
-#, fuzzy
-#| msgid "You are not allowed to view this map."
-msgid "You are not allowed to edit this app."
-msgstr "Ви не дозволено переглядати цю карту."
 
 #: geonode/geoserver/__init__.py:75
 msgid "Layer Uploaded"
@@ -2403,7 +2476,7 @@ msgstr "Створення карти"
 #: geonode/layers/templates/layers/layer_replace.html:23
 #: geonode/layers/templates/layers/layer_style_upload.html:24
 #: geonode/layers/templates/upload/layer_upload.html:17
-#: geonode/layers/templates/upload/layer_upload_base.html:161
+#: geonode/layers/templates/upload/layer_upload_base.html:14
 #: geonode/layers/templates/upload/layer_upload_metadata_base.html:10
 msgid "Explore Layers"
 msgstr "Досліджуйте Layers"
@@ -2427,17 +2500,17 @@ msgstr "Атрибут"
 msgid "Create"
 msgstr "Створити"
 
-#: geonode/geoserver/helpers.py:687
+#: geonode/geoserver/helpers.py:690
 #, fuzzy
 #| msgid "Not provided"
 msgid "No abstract provided"
 msgstr "Не передбачено"
 
-#: geonode/geoserver/helpers.py:1437
+#: geonode/geoserver/helpers.py:1444
 msgid "An exception occurred loading data to PostGIS"
 msgstr ""
 
-#: geonode/geoserver/helpers.py:1442
+#: geonode/geoserver/helpers.py:1449
 msgid " Additionally an error occured during database cleanup"
 msgstr ""
 
@@ -2485,11 +2558,11 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geonode/geoserver/views.py:517
+#: geonode/geoserver/views.py:526
 msgid "You don't have permissions to change style for this layer"
 msgstr "Ви не маєте прав на зміну стилю для цього шару"
 
-#: geonode/geoserver/views.py:602 geonode/geoserver/views.py:658
+#: geonode/geoserver/views.py:621 geonode/geoserver/views.py:677
 msgid "Bad HTTP Authorization Credentials."
 msgstr "Погані HTTP авторизації облікові дані."
 
@@ -2984,146 +3057,146 @@ msgstr "Шар Звичайний стиль"
 msgid "A Layer was deleted"
 msgstr "Шар прокоментував"
 
-#: geonode/layers/models.py:55
+#: geonode/layers/models.py:58
 msgid "YYYYMMDD"
 msgstr ""
 
-#: geonode/layers/models.py:56
+#: geonode/layers/models.py:59
 msgid "YYYYMMDD'T'hhmmss"
 msgstr ""
 
-#: geonode/layers/models.py:57
+#: geonode/layers/models.py:60
 msgid "YYYYMMDD'T'hhmmss'Z'"
 msgstr ""
 
-#: geonode/layers/models.py:75 geonode/qgis_server/models.py:198
+#: geonode/layers/models.py:78 geonode/qgis_server/models.py:198
 msgid "style name"
 msgstr "Назва стилю"
 
-#: geonode/layers/models.py:77
+#: geonode/layers/models.py:80
 msgid "sld text"
 msgstr "SLD текст"
 
-#: geonode/layers/models.py:79
+#: geonode/layers/models.py:82
 msgid "sld version"
 msgstr "SLD версія"
 
-#: geonode/layers/models.py:83
+#: geonode/layers/models.py:86
 msgid "sld url"
 msgstr "SLD гіперпосилання"
 
-#: geonode/layers/models.py:165
+#: geonode/layers/models.py:168
 msgid "Workspace"
 msgstr ""
 
-#: geonode/layers/models.py:166
+#: geonode/layers/models.py:169
 #, fuzzy
 #| msgid "date type"
 msgid "Store"
 msgstr "тип дата"
 
-#: geonode/layers/models.py:167
+#: geonode/layers/models.py:170
 #, fuzzy
 #| msgid "date type"
 msgid "Storetype"
 msgstr "тип дата"
 
-#: geonode/layers/models.py:169
+#: geonode/layers/models.py:172
 #, fuzzy
 #| msgid "CSW typename"
 msgid "Typename"
 msgstr "РКС Ьурепате"
 
-#: geonode/layers/models.py:171
+#: geonode/layers/models.py:174
 msgid "Is mosaic?"
 msgstr ""
 
-#: geonode/layers/models.py:172
+#: geonode/layers/models.py:175
 msgid "Has time?"
 msgstr ""
 
-#: geonode/layers/models.py:173
+#: geonode/layers/models.py:176
 msgid "Has elevation?"
 msgstr ""
 
-#: geonode/layers/models.py:175
+#: geonode/layers/models.py:178
 msgid "Time regex"
 msgstr ""
 
-#: geonode/layers/models.py:180
+#: geonode/layers/models.py:183
 msgid "Elevation regex"
 msgstr ""
 
-#: geonode/layers/models.py:196
+#: geonode/layers/models.py:199
 msgid "use featureinfo custom template?"
 msgstr ""
 
-#: geonode/layers/models.py:197
+#: geonode/layers/models.py:200
 msgid "specifies wether or not use a custom GetFeatureInfo template."
 msgstr ""
 
-#: geonode/layers/models.py:201
+#: geonode/layers/models.py:204
 msgid "featureinfo custom template"
 msgstr ""
 
-#: geonode/layers/models.py:202
+#: geonode/layers/models.py:205
 msgid "the custom GetFeatureInfo template HTML contents."
 msgstr ""
 
-#: geonode/layers/models.py:310
+#: geonode/layers/models.py:313
 msgid "File cannot be opened, maybe check the encoding"
 msgstr ""
 
-#: geonode/layers/models.py:426
+#: geonode/layers/models.py:429
 #, fuzzy
 #| msgid "attribute name"
 msgid "attribute name"
 msgstr "ім'я атрибута"
 
-#: geonode/layers/models.py:427
+#: geonode/layers/models.py:430
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "ім'я атрибута, як зберігається в шейп / просторових даних"
 
-#: geonode/layers/models.py:433
+#: geonode/layers/models.py:436
 #, fuzzy
 #| msgid "distribution description"
 msgid "attribute description"
 msgstr "distribution description"
 
-#: geonode/layers/models.py:434
+#: geonode/layers/models.py:437
 msgid "description of attribute to be used in metadata"
 msgstr "Опис атрибута, які використовуватимуться в метаданих"
 
-#: geonode/layers/models.py:439
+#: geonode/layers/models.py:442
 msgid "attribute label"
 msgstr "Етикетка атрибут"
 
-#: geonode/layers/models.py:440
+#: geonode/layers/models.py:443
 msgid "title of attribute as displayed in GeoNode"
 msgstr "Назва атрибута, як показано на GeoNode"
 
-#: geonode/layers/models.py:446
+#: geonode/layers/models.py:449
 msgid "attribute type"
 msgstr "Тип атрибута"
 
-#: geonode/layers/models.py:447
+#: geonode/layers/models.py:450
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "тип даних атрибута (ціле число, рядок, геометрії і т.д.)"
 
-#: geonode/layers/models.py:454
+#: geonode/layers/models.py:457
 msgid "visible?"
 msgstr "видно?"
 
-#: geonode/layers/models.py:455
+#: geonode/layers/models.py:458
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr ""
 "визначає, якщо атрибут повинен відображатися в ідентифікації результатів"
 
-#: geonode/layers/models.py:458
+#: geonode/layers/models.py:461
 msgid "display order"
 msgstr "Порядок відображення"
 
-#: geonode/layers/models.py:459
+#: geonode/layers/models.py:462
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
@@ -3131,56 +3204,56 @@ msgstr ""
 "визначає порядок, в якому атрибут повинен бути відображений в ідентифікації "
 "результатів"
 
-#: geonode/layers/models.py:477
+#: geonode/layers/models.py:480
 #: geonode/layers/templates/layers/layer_detail.html:178
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:127
 #: geonode/layers/templates/layouts/panels.html:552
 msgid "Label"
 msgstr "Етикетка"
 
-#: geonode/layers/models.py:479
+#: geonode/layers/models.py:482
 msgid "Image"
 msgstr ""
 
-#: geonode/layers/models.py:480
+#: geonode/layers/models.py:483
 msgid "Video (mp4)"
 msgstr ""
 
-#: geonode/layers/models.py:481
+#: geonode/layers/models.py:484
 msgid "Video (ogg)"
 msgstr ""
 
-#: geonode/layers/models.py:482
+#: geonode/layers/models.py:485
 msgid "Video (webm)"
 msgstr ""
 
-#: geonode/layers/models.py:483
+#: geonode/layers/models.py:486
 msgid "Video (3gp)"
 msgstr ""
 
-#: geonode/layers/models.py:484
+#: geonode/layers/models.py:487
 msgid "Video (flv)"
 msgstr ""
 
-#: geonode/layers/models.py:485
+#: geonode/layers/models.py:488
 msgid "Video (YouTube/VIMEO - embedded)"
 msgstr ""
 
-#: geonode/layers/models.py:486
+#: geonode/layers/models.py:489
 msgid "Audio"
 msgstr ""
 
-#: geonode/layers/models.py:487
+#: geonode/layers/models.py:490
 msgid "IFRAME"
 msgstr ""
 
-#: geonode/layers/models.py:490
+#: geonode/layers/models.py:493
 #, fuzzy
 #| msgid "date type"
 msgid "featureinfo type"
 msgstr "тип дата"
 
-#: geonode/layers/models.py:491
+#: geonode/layers/models.py:494
 #, fuzzy
 #| msgid "specifies if the attribute should be displayed in identify results"
 msgid ""
@@ -3189,75 +3262,75 @@ msgid ""
 msgstr ""
 "визначає, якщо атрибут повинен відображатися в ідентифікації результатів"
 
-#: geonode/layers/models.py:501
+#: geonode/layers/models.py:504
 #, fuzzy
 #| msgid "count"
 msgid "count"
 msgstr "вважати"
 
-#: geonode/layers/models.py:502
+#: geonode/layers/models.py:505
 msgid "count value for this field"
 msgstr "розраховувати значення для цього поля"
 
-#: geonode/layers/models.py:505
+#: geonode/layers/models.py:508
 msgid "min"
 msgstr "хв"
 
-#: geonode/layers/models.py:506
+#: geonode/layers/models.py:509
 msgid "minimum value for this field"
 msgstr "Мінімальне значення цього поля"
 
-#: geonode/layers/models.py:513
+#: geonode/layers/models.py:516
 msgid "max"
 msgstr "Макс"
 
-#: geonode/layers/models.py:514
+#: geonode/layers/models.py:517
 msgid "maximum value for this field"
 msgstr "Максимальне значення цього поля"
 
-#: geonode/layers/models.py:521
+#: geonode/layers/models.py:524
 msgid "average"
 msgstr "середній"
 
-#: geonode/layers/models.py:522
+#: geonode/layers/models.py:525
 msgid "average value for this field"
 msgstr "Середнє значення для цього поля"
 
-#: geonode/layers/models.py:529
+#: geonode/layers/models.py:532
 msgid "median"
 msgstr "медіана"
 
-#: geonode/layers/models.py:530
+#: geonode/layers/models.py:533
 msgid "median value for this field"
 msgstr "середнє значення для цього поля"
 
-#: geonode/layers/models.py:537
+#: geonode/layers/models.py:540
 msgid "standard deviation"
 msgstr "стандартне відхилення"
 
-#: geonode/layers/models.py:538
+#: geonode/layers/models.py:541
 msgid "standard deviation for this field"
 msgstr "стандартне відхилення для цього поля"
 
-#: geonode/layers/models.py:545
+#: geonode/layers/models.py:548
 msgid "sum"
 msgstr "сума"
 
-#: geonode/layers/models.py:546
+#: geonode/layers/models.py:549
 msgid "sum value for this field"
 msgstr "сумарне значення для цього поля"
 
-#: geonode/layers/models.py:553
+#: geonode/layers/models.py:556
 msgid "unique values for this field"
 msgstr "Унікальні значення для цього поля"
 
-#: geonode/layers/models.py:557
+#: geonode/layers/models.py:560
 #, fuzzy
 #| msgid "last modified"
 msgid "last modified"
 msgstr "Остання зміна"
 
-#: geonode/layers/models.py:558
+#: geonode/layers/models.py:561
 msgid "date when attribute statistics were last updated"
 msgstr "Дата, коли статистика атрибутів оновлені"
 
@@ -3635,7 +3708,7 @@ msgid "Change Layer Permissions"
 msgstr "Зміна Layer Дозволи"
 
 #: geonode/layers/templates/layers/layer_detail.html:753
-#: geonode/templates/base.html:703 geonode/templates/metadata_base.html:144
+#: geonode/templates/base.html:704 geonode/templates/metadata_base.html:147
 msgid "Processing..."
 msgstr ""
 
@@ -3676,7 +3749,7 @@ msgstr "Шар завантажене"
 
 #: geonode/layers/templates/layers/layer_list_default.html:12
 #: geonode/layers/templates/upload/layer_upload.html:18
-#: geonode/layers/templates/upload/layer_upload_base.html:162
+#: geonode/layers/templates/upload/layer_upload_base.html:15
 #: geonode/templates/500.html:273
 msgid "Upload Layers"
 msgstr "Завантажити Шари"
@@ -4478,7 +4551,7 @@ msgstr ""
 
 #: geonode/layers/templates/upload/layer_upload_time.html:279
 #: geonode/layers/templates/upload/layer_upload_time.html:299
-#: geonode/templates/base.html:754
+#: geonode/templates/base.html:755
 msgid "Some text in the modal"
 msgstr ""
 
@@ -4533,11 +4606,11 @@ msgstr "зараз"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr ""
 
-#: geonode/layers/utils.py:517 geonode/layers/views.py:1252
+#: geonode/layers/utils.py:517 geonode/layers/views.py:1282
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 
-#: geonode/layers/utils.py:520 geonode/layers/views.py:1256
+#: geonode/layers/utils.py:520 geonode/layers/views.py:1286
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 
@@ -4562,7 +4635,7 @@ msgstr ""
 msgid "Some error occurred while trying to access the uploaded schema: %s"
 msgstr ""
 
-#: geonode/layers/views.py:129
+#: geonode/layers/views.py:130
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
@@ -4570,51 +4643,51 @@ msgstr ""
 "Був помилка при спробі завантажити свої дані. Будь ласка, спробуйте ще раз, "
 "або зв'яжіться та адміністратор, якщо проблема не усунена."
 
-#: geonode/layers/views.py:132
+#: geonode/layers/views.py:133
 msgid ""
 "Note: this layer's orginal metadata was populated and preserved by importing "
 "a metadata XML file. This metadata cannot be edited."
 msgstr ""
 
-#: geonode/layers/views.py:136
+#: geonode/layers/views.py:137
 msgid "You are not permitted to delete this layer"
 msgstr "Вам не дозволяється видаляти цей шар"
 
-#: geonode/layers/views.py:137
+#: geonode/layers/views.py:138
 msgid "You do not have permissions for this layer."
 msgstr "Ви не маєте прав для цього шару."
 
-#: geonode/layers/views.py:138
+#: geonode/layers/views.py:139
 msgid "You are not permitted to modify this layer"
 msgstr "Вам не дозволяється змінювати цей шар"
 
-#: geonode/layers/views.py:140
+#: geonode/layers/views.py:141
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "Вам не дозволяється змінювати метадані цього шару"
 
-#: geonode/layers/views.py:141
+#: geonode/layers/views.py:142
 msgid "You are not permitted to view this layer"
 msgstr "Вам не дозволяється, щоб подивитися цей шар"
 
-#: geonode/layers/views.py:279
+#: geonode/layers/views.py:280
 #, fuzzy
 #| msgid "Files to be uploaded"
 msgid "Failed to upload the layer"
 msgstr "Файли для завантаження"
 
-#: geonode/layers/views.py:1341 geonode/layers/views.py:1386
+#: geonode/layers/views.py:1378 geonode/layers/views.py:1430
 #, fuzzy
 #| msgid "Files to be uploaded"
 msgid "Unable to delete layer"
 msgstr "Файли для завантаження"
 
-#: geonode/layers/views.py:1345 geonode/layers/views.py:1390
+#: geonode/layers/views.py:1382 geonode/layers/views.py:1434
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 
-#: geonode/layers/views.py:1438 geonode/maps/views.py:1243
+#: geonode/layers/views.py:1489 geonode/maps/views.py:1334
 msgid "couldn't generate thumbnail"
 msgstr ""
 
@@ -4896,7 +4969,7 @@ msgstr "Скачати повний"
 msgid "Download Failed"
 msgstr "Не вдалося завантажити"
 
-#: geonode/maps/templates/maps/map_list_default.html:5
+#: geonode/maps/templates/maps/map_list_default.html:7
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
@@ -4928,37 +5001,37 @@ msgid ""
 "        "
 msgstr ""
 
-#: geonode/maps/views.py:97
+#: geonode/maps/views.py:100
 msgid "You are not permitted to delete this map."
 msgstr "Вам не дозволяється видаляти цю карту."
 
-#: geonode/maps/views.py:98
+#: geonode/maps/views.py:101
 msgid "You do not have permissions for this map."
 msgstr "Ви не маєте прав на цій карті."
 
-#: geonode/maps/views.py:99
+#: geonode/maps/views.py:102
 msgid "You must be logged in to save this map"
 msgstr "Ви повинні увійти в систему, щоб зберегти цю карту"
 
-#: geonode/maps/views.py:100
+#: geonode/maps/views.py:103
 msgid "You are not permitted to save or edit this map."
 msgstr "Вам не дозволяється, щоб зберегти або створити карту."
 
-#: geonode/maps/views.py:102
+#: geonode/maps/views.py:105
 msgid "You are not allowed to modify this map's metadata."
 msgstr "Ви не можете змінити метадані цій карті в."
 
-#: geonode/maps/views.py:103
+#: geonode/maps/views.py:106
 msgid "You are not allowed to view this map."
 msgstr "Ви не дозволено переглядати цю карту."
 
-#: geonode/maps/views.py:1250
+#: geonode/maps/views.py:1341
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Thumbnail saved"
 msgstr "Thumbnail"
 
-#: geonode/maps/views.py:1253
+#: geonode/maps/views.py:1344
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "error saving thumbnail"
@@ -5270,8 +5343,8 @@ msgstr ""
 msgid "1 hour"
 msgstr ""
 
-#: geonode/monitoring/models.py:1084 geonode/templates/metadata_base.html:128
-#: geonode/templates/metadata_base.html:131
+#: geonode/monitoring/models.py:1084 geonode/templates/metadata_base.html:131
+#: geonode/templates/metadata_base.html:134
 msgid "Error"
 msgstr ""
 
@@ -5588,7 +5661,7 @@ msgid "Timezone"
 msgstr ""
 
 #: geonode/people/templates/people/_profile_about_item.html:17
-#: geonode/templates/_permissions_form.html:125
+#: geonode/templates/_permissions_form.html:311
 msgid "No Group"
 msgstr "Немає Група"
 
@@ -5792,32 +5865,32 @@ msgstr "Ваше ім'я користувача було по електронн
 msgid "No user could be found with that email address."
 msgstr "Жоден користувач не може знайти з такою адресою електронної пошти."
 
-#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:266
+#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:267
 #, fuzzy
 #| msgid "You are not permitted to save or edit this map."
 msgid "You are not permitted to save or edit this resource."
 msgstr "Вам не дозволяється, щоб зберегти або створити карту."
 
-#: geonode/proxy/views.py:265
+#: geonode/proxy/views.py:266
 #, fuzzy
 #| msgid "You are not allowed to view this document."
 msgid "You are not authorized to download this resource."
 msgstr "Ви не можете переглянути цей документ."
 
-#: geonode/proxy/views.py:267
+#: geonode/proxy/views.py:268
 msgid ""
 "No files have been found for this resource. Please, contact a system "
 "administrator."
 msgstr ""
 
-#: geonode/proxy/views.py:301 geonode/proxy/views.py:312
-#: geonode/proxy/views.py:415
+#: geonode/proxy/views.py:302 geonode/proxy/views.py:313
+#: geonode/proxy/views.py:416
 #, fuzzy
 #| msgid "Documents"
 msgid "No files found."
 msgstr "Документи"
 
-#: geonode/proxy/views.py:423
+#: geonode/proxy/views.py:424
 #, fuzzy
 #| msgid "Not provided"
 msgid "Not Authorized"
@@ -5877,7 +5950,7 @@ msgstr "Видалити служба"
 msgid "Reload to see changes"
 msgstr ""
 
-#: geonode/qgis_server/views.py:266
+#: geonode/qgis_server/views.py:263
 #, python-brace-format
 msgid ""
 "You should use a GIS software or a library which support TMS service to use "
@@ -5965,7 +6038,7 @@ msgstr "Сервіс ArcGIS REST"
 msgid "ArcGIS REST ImageServer"
 msgstr "Сервіс ArcGIS REST"
 
-#: geonode/services/enumerations.py:51 geonode/services/models.py:51
+#: geonode/services/enumerations.py:51 geonode/services/models.py:50
 msgid "OpenGeoPortal"
 msgstr "OpenGeoPortal"
 
@@ -6014,27 +6087,27 @@ msgstr ""
 msgid "Found service of type %(found_type)s instead of %(service_type)s"
 msgstr ""
 
-#: geonode/services/models.py:46
+#: geonode/services/models.py:45
 msgid "Local"
 msgstr "Місцевий"
 
-#: geonode/services/models.py:47
+#: geonode/services/models.py:46
 msgid "Cascaded"
 msgstr "Каскадна"
 
-#: geonode/services/models.py:48
+#: geonode/services/models.py:47
 msgid "Harvested"
 msgstr "Зібрані"
 
-#: geonode/services/models.py:49
+#: geonode/services/models.py:48
 msgid "Indexed"
 msgstr "Індексований"
 
-#: geonode/services/models.py:50
+#: geonode/services/models.py:49
 msgid "Live"
 msgstr "Жива"
 
-#: geonode/services/models.py:211
+#: geonode/services/models.py:210
 #, fuzzy
 #| msgid "Resources"
 msgid "Resource is queued"
@@ -6227,75 +6300,75 @@ msgstr ""
 msgid "Re-scan Service for new Resources"
 msgstr ""
 
-#: geonode/services/views.py:96
+#: geonode/services/views.py:99
 #, fuzzy
 #| msgid "service interfaces"
 msgid "Service registered successfully"
 msgstr "інтерфейси сервісів"
 
-#: geonode/services/views.py:193
+#: geonode/services/views.py:196
 msgid "The selected resources are being imported"
 msgstr ""
 
-#: geonode/services/views.py:194
+#: geonode/services/views.py:197
 msgid "The selected resources have been imported"
 msgstr ""
 
-#: geonode/services/views.py:224
+#: geonode/services/views.py:227
 msgid "Resource is already being processed"
 msgstr ""
 
-#: geonode/services/views.py:230
+#: geonode/services/views.py:233
 #, fuzzy
 #| msgid "Resources"
 msgid "Resource {} is being processed"
 msgstr "Ресурси"
 
-#: geonode/services/views.py:259
+#: geonode/services/views.py:262
 #, fuzzy
 #| msgid "Password changed successfully."
 msgid "Service rescanned successfully"
 msgstr "Пароль успішно змінений."
 
-#: geonode/services/views.py:329
+#: geonode/services/views.py:332
 #, fuzzy
 #| msgid "You are not permitted to remove this service."
 msgid "You are not permitted to change this service."
 msgstr "Вам не дозволяється видаляти цю послугу."
 
-#: geonode/services/views.py:357
+#: geonode/services/views.py:360
 msgid "You are not permitted to remove this service."
 msgstr "Вам не дозволяється видаляти цю послугу."
 
-#: geonode/services/views.py:368
+#: geonode/services/views.py:371
 #, fuzzy
 #| msgid "Service has been created:"
 msgid "Service {} has been deleted"
 msgstr "Сервіс був створений:"
 
-#: geonode/social/signals.py:81
+#: geonode/social/signals.py:80
 msgid "created"
 msgstr "створений"
 
-#: geonode/social/signals.py:82 geonode/social/tests.py:104
+#: geonode/social/signals.py:81 geonode/social/tests.py:104
 msgid "deleted"
 msgstr "віддалений"
 
-#: geonode/social/signals.py:86
+#: geonode/social/signals.py:85
 #, fuzzy
 #| msgid "Update"
 msgid "updated"
 msgstr "Оновлення"
 
-#: geonode/social/signals.py:96 geonode/social/tests.py:124
+#: geonode/social/signals.py:95 geonode/social/tests.py:124
 msgid "added a comment"
 msgstr "додав коментар"
 
-#: geonode/social/signals.py:98
+#: geonode/social/signals.py:97
 msgid "updated a comment"
 msgstr "оновлюються коментар"
 
-#: geonode/social/signals.py:104 geonode/social/signals.py:109
+#: geonode/social/signals.py:103 geonode/social/signals.py:108
 #: geonode/social/tests.py:78
 msgid "uploaded"
 msgstr "завантажено"
@@ -6373,7 +6446,7 @@ msgstr "Люди"
 
 #: geonode/templates/500.html:84 geonode/templates/500.html:86
 #: geonode/templates/_permissions_form.html:107
-#: geonode/templates/_permissions_form.html:165 geonode/templates/base.html:376
+#: geonode/templates/_permissions_form.html:127 geonode/templates/base.html:376
 #: geonode/templates/base.html:377 geonode/templates/base.html:378
 #: geonode/templates/base.html:381 geonode/templates/base.html:382
 #: geonode/templates/base.html:383 geonode/templates/index.html:101
@@ -6515,7 +6588,7 @@ msgid "Set permissions on selected resources"
 msgstr "Установка дозволів на обраних ресурсів"
 
 #: geonode/templates/_bulk_permissions_form.html:20
-#: geonode/templates/_permissions_form.html:224
+#: geonode/templates/_permissions_form.html:186
 msgid "Apply Changes"
 msgstr "Застосувати зміни"
 
@@ -6609,84 +6682,84 @@ msgstr ""
 msgid "Users"
 msgstr "Додати Layers"
 
-#: geonode/templates/_permissions_form.html:131
-#: geonode/templates/_permissions_form.html:185
+#: geonode/templates/_permissions_form.html:147
+#: geonode/templates/_permissions_form.html:326
 msgid "Show Geo Limits"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:135
-#: geonode/templates/_permissions_form.html:189
+#: geonode/templates/_permissions_form.html:151
+#: geonode/templates/_permissions_form.html:330
 #, fuzzy
 #| msgid "Upload Documents"
 msgid "Upload Geo Limits"
 msgstr "Завантажити документи"
 
-#: geonode/templates/_permissions_form.html:140
-#: geonode/templates/_permissions_form.html:194
-#: geonode/templates/_permissions_form.html:495
+#: geonode/templates/_permissions_form.html:156
+#: geonode/templates/_permissions_form.html:335
+#: geonode/templates/_permissions_form.html:553
 msgid "Save Geo Limits"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:144
-#: geonode/templates/_permissions_form.html:198
-#: geonode/templates/_permissions_form.html:632
+#: geonode/templates/_permissions_form.html:160
+#: geonode/templates/_permissions_form.html:339
+#: geonode/templates/_permissions_form.html:691
 #, fuzzy
 #| msgid "Delete These"
 msgid "Delete Geo Limits"
 msgstr "Видалити ці"
 
-#: geonode/templates/_permissions_form.html:256
+#: geonode/templates/_permissions_form.html:218
 msgid "Mandatory files : SHP , DBF"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:260
-#: geonode/templates/_permissions_form.html:264
+#: geonode/templates/_permissions_form.html:222
+#: geonode/templates/_permissions_form.html:226
 msgid ""
 "Upload a ZIP file containing an ESRI Shapefile. If the ZIP provides also a ."
 "prj file, you don't have to specify the EPSG SRID"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:260
+#: geonode/templates/_permissions_form.html:222
 #, fuzzy
 #| msgid "Choose users..."
 msgid "Choose"
 msgstr "Виберіть користувачів ..."
 
-#: geonode/templates/_permissions_form.html:265
+#: geonode/templates/_permissions_form.html:227
 #, fuzzy
 #| msgid "Choose users..."
 msgid "Choose a file..."
 msgstr "Виберіть користувачів ..."
 
-#: geonode/templates/_permissions_form.html:267
+#: geonode/templates/_permissions_form.html:229
 msgid "Reset"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:279
+#: geonode/templates/_permissions_form.html:241
 msgid "Only the SRID number without the 'EPSG:' prefix!"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:280
+#: geonode/templates/_permissions_form.html:242
 msgid "Default : 4326"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:285
+#: geonode/templates/_permissions_form.html:247
 msgid "Set your desired encoding UTF-8, Big5, Big5-HKSCS ..."
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:474
+#: geonode/templates/_permissions_form.html:532
 msgid "Load SHP-ZIP"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:475
-#: geonode/templates/_permissions_form.html:562
+#: geonode/templates/_permissions_form.html:533
+#: geonode/templates/_permissions_form.html:620
 msgid ""
 "<p>This will remove the Geo Limits currently drawn on the map.</p><p>In "
 "order to store the Geo Limits you will need to <strong>save</strong> them "
 "anyway.</p><p>Do you want to proceed?</p>"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:496
+#: geonode/templates/_permissions_form.html:554
 msgid ""
 "<p>This will override the current stored Geo Limits on the DB.</p><p>To "
 "apply them you will need to click on <strong>Apply Changes</strong> button "
@@ -6694,50 +6767,50 @@ msgid ""
 "p><p>Do you want to proceed?</p>"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:541
-#: geonode/templates/_permissions_form.html:546
+#: geonode/templates/_permissions_form.html:599
+#: geonode/templates/_permissions_form.html:604
 msgid "Save Geo Limit"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:542
+#: geonode/templates/_permissions_form.html:600
 msgid ""
 "<p>Geometry <strong>successfully</strong> saved!</p><p>To apply them you "
 "will need to click on <strong>Apply Changes</strong> button.</p>"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:547
+#: geonode/templates/_permissions_form.html:605
 msgid "<p><strong>Error</strong> while trying to save the Geometry!</p>"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:561
+#: geonode/templates/_permissions_form.html:619
 msgid "Load Geo Limits"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:617
+#: geonode/templates/_permissions_form.html:675
 msgid "Load Geo Limit"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:618
+#: geonode/templates/_permissions_form.html:676
 msgid "<p><strong>No Geometry</strong> found!</p>"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:633
+#: geonode/templates/_permissions_form.html:692
 msgid ""
 "<p>This will <strong>permanently</strong> remove the Geo Limits from the DB."
 "</p><p>To apply them you will need to click on <strong>Apply Changes</"
 "strong> button.</p><p>Do you want to proceed?</p>"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:659
-#: geonode/templates/_permissions_form.html:667
+#: geonode/templates/_permissions_form.html:718
+#: geonode/templates/_permissions_form.html:726
 msgid "Delete Geo Limit"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:660
+#: geonode/templates/_permissions_form.html:719
 msgid "<p><strong>Geo Limitsy</strong> successfully deleted!</p>"
 msgstr ""
 
-#: geonode/templates/_permissions_form.html:669
+#: geonode/templates/_permissions_form.html:728
 msgid ""
 "<p><strong>Error</strong> occurred while trying to delete Geo Limits:</p>"
 msgstr ""
@@ -6976,7 +7049,7 @@ msgid ""
 msgstr ""
 
 #: geonode/templates/account/email_confirm.html:20
-#: geonode/templates/base.html:751
+#: geonode/templates/base.html:752
 #: geonode/templates/relationships/confirm.html:12
 msgid "Confirm"
 msgstr "Підтвердити"
@@ -7356,25 +7429,25 @@ msgstr "Контакти:"
 msgid "Tel"
 msgstr ""
 
-#: geonode/templates/base.html:686
+#: geonode/templates/base.html:687
 #, fuzzy
 #| msgid "uploaded"
 msgid "Uploading..."
 msgstr "завантажено"
 
-#: geonode/templates/base.html:691
+#: geonode/templates/base.html:692
 #, fuzzy
 #| msgid "Upload files"
 msgid "Upload in progress..."
 msgstr "Завантаження файлів"
 
-#: geonode/templates/base.html:708
+#: geonode/templates/base.html:709
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Updating Thumbnail..."
 msgstr "Thumbnail"
 
-#: geonode/templates/base.html:736
+#: geonode/templates/base.html:737
 #, fuzzy
 #| msgid "Are you sure you want to remove"
 msgid "Message. Do you want to proceed?"
@@ -7846,22 +7919,22 @@ msgstr ""
 msgid "is a member of the following group(s)"
 msgstr "Такі групи:"
 
-#: geonode/templates/metadata_base.html:149
+#: geonode/templates/metadata_base.html:152
 #, fuzzy
 #| msgid "Download Metadata"
 msgid "Updating Metadata..."
 msgstr "Завантажити метаданих"
 
-#: geonode/templates/metadata_base.html:162
-#: geonode/templates/metadata_base.html:179
+#: geonode/templates/metadata_base.html:165
+#: geonode/templates/metadata_base.html:182
 msgid "ERROR"
 msgstr ""
 
-#: geonode/templates/metadata_base.html:165
+#: geonode/templates/metadata_base.html:168
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
-#: geonode/templates/metadata_base.html:182
+#: geonode/templates/metadata_base.html:185
 msgid "Group is mandatory and cannot be empty!"
 msgstr ""
 
@@ -8047,7 +8120,6 @@ msgstr "Харчування від"
 
 #: geonode/templates/pinax/notifications/document_approved/full.txt:4
 #: geonode/templates/pinax/notifications/document_comment/full.txt:3
-#: geonode/templates/pinax/notifications/document_created/full.txt:4
 #: geonode/templates/pinax/notifications/document_published/full.txt:4
 #: geonode/templates/pinax/notifications/document_updated/full.txt:4
 msgid "You can visit the document's detail page here"
@@ -8281,7 +8353,6 @@ msgstr "Наступні шари будуть імпортовані"
 
 #: geonode/templates/pinax/notifications/map_approved/full.txt:4
 #: geonode/templates/pinax/notifications/map_comment/full.txt:4
-#: geonode/templates/pinax/notifications/map_created/full.txt:4
 #: geonode/templates/pinax/notifications/map_published/full.txt:4
 #: geonode/templates/pinax/notifications/map_rated/full.txt:6
 #: geonode/templates/pinax/notifications/map_updated/full.txt:4
@@ -8904,6 +8975,14 @@ msgstr "Невірний рівень дозволів."
 #: geonode/utils.py:974
 msgid "Permission Denied"
 msgstr "Доступ заборонений"
+
+#~ msgid "You are not allowed to edit this document."
+#~ msgstr "Ви не можете редагувати цей документ."
+
+#, fuzzy
+#~| msgid "You are not allowed to view this map."
+#~ msgid "You are not allowed to edit this app."
+#~ msgstr "Ви не дозволено переглядати цю карту."
 
 #~ msgid "JSON Configuration"
 #~ msgstr "Конфігурація JSON"
