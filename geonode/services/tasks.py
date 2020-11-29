@@ -18,10 +18,8 @@
 #
 #########################################################################
 """Celery tasks for geonode.services"""
-
+import time
 import logging
-
-from django.db import IntegrityError, transaction
 
 from . import models
 from . import enumerations
@@ -54,21 +52,24 @@ def harvest_resource(self, harvest_job_id):
     result = False
     details = ""
     try:
-        with transaction.atomic():
-            handler = get_service_handler(
-                base_url=harvest_job.service.base_url,
-                proxy_base=harvest_job.service.proxy_base,
-                service_type=harvest_job.service.type
-            )
-            logger.debug("harvesting resource...")
-            handler.harvest_resource(
-                harvest_job.resource_id, harvest_job.service)
-            result = True
-            logger.debug("Resource harvested successfully")
-            layer = Layer.objects.get(alternate=harvest_job.resource_id)
-            layer.save(notify=True)
-    except IntegrityError:
-        raise
+        handler = get_service_handler(
+            base_url=harvest_job.service.base_url,
+            proxy_base=harvest_job.service.proxy_base,
+            service_type=harvest_job.service.type
+        )
+        logger.debug("harvesting resource...")
+        handler.harvest_resource(
+            harvest_job.resource_id, harvest_job.service)
+        logger.debug("Resource harvested successfully")
+        _cnt = 0
+        while _cnt < 5 and not result:
+            try:
+                layer = Layer.objects.get(alternate=harvest_job.resource_id)
+                layer.save(notify=True)
+                result = True
+            except Exception:
+                _cnt += 1
+                time.sleep(3)
     except Exception as err:
         logger.exception(msg="An error has occurred while harvesting "
                              "resource {!r}".format(harvest_job.resource_id))
