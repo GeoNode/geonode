@@ -29,7 +29,6 @@ from .serviceprocessors import get_service_handler
 
 from geonode.celery_app import app
 from geonode.layers.models import Layer
-from geonode.catalogue.models import catalogue_post_save
 
 logger = logging.getLogger(__name__)
 
@@ -55,24 +54,19 @@ def harvest_resource(self, harvest_job_id):
     result = False
     details = ""
     try:
-        handler = get_service_handler(
-            base_url=harvest_job.service.base_url,
-            proxy_base=harvest_job.service.proxy_base,
-            service_type=harvest_job.service.type
-        )
         with transaction.atomic():
+            handler = get_service_handler(
+                base_url=harvest_job.service.base_url,
+                proxy_base=harvest_job.service.proxy_base,
+                service_type=harvest_job.service.type
+            )
             logger.debug("harvesting resource...")
             handler.harvest_resource(
                 harvest_job.resource_id, harvest_job.service)
             result = True
-        logger.debug("Resource harvested successfully")
-
-        logger.debug("Updating Layer Metadata ...")
-        try:
+            logger.debug("Resource harvested successfully")
             layer = Layer.objects.get(alternate=harvest_job.resource_id)
-            catalogue_post_save(instance=layer, sender=layer.__class__)
-        except Exception:
-            logger.error("Remote Layer [%s] couldn't be updated" % (harvest_job.resource_id))
+            layer.save(notify=True)
     except IntegrityError:
         raise
     except Exception as err:
