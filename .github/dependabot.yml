@@ -4,11 +4,10 @@ updates:
   directory: "/"
   schedule:
     interval: weekly
-    time: "11:00"
+    time: "00:00"
   open-pull-requests-limit: 100
   labels:
   - dependencies
-  - backport 3.x
   ignore:
   - dependency-name: django
     versions:
