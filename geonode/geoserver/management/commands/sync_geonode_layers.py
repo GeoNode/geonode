@@ -27,7 +27,10 @@ from django.core.management.base import BaseCommand
 from geonode.layers.models import Layer
 from geonode.security.views import _perms_info_json
 from geonode.base.utils import remove_duplicate_links
-from geonode.geoserver.helpers import set_attributes_from_geoserver
+from geonode.geoserver.helpers import (
+    create_gs_thumbnail,
+    set_attributes_from_geoserver
+)
 
 
 def sync_geonode_layers(ignore_errors,
@@ -60,7 +63,7 @@ def sync_geonode_layers(ignore_errors,
                 set_attributes_from_geoserver(layer, overwrite=True)
             if updatethumbnails:
                 print("Regenerating thumbnails...")
-                layer.save()
+                create_gs_thumbnail(layer, overwrite=True, check_bbox=False)
             if removeduplicates:
                 # remove duplicates
                 print("Removing duplicate links...")

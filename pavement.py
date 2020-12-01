@@ -92,6 +92,7 @@ with open("dev_config.yml", 'r') as f:
 
 def grab(src, dest, name):
     src, dest, name = map(str, (src, dest, name))
+    print(f" src, dest, name --> {src} {dest} {name}")
 
     if not os.path.exists(dest):
         print("Downloading {}".format(name))
@@ -150,16 +151,16 @@ def setup_geoserver(options):
         return
     if on_travis and not options.get('force_exec', False):
         """Will make use of the docker container for the Integration Tests"""
-        pass
+        return
     else:
         download_dir = path('downloaded')
         if not download_dir.exists():
             download_dir.makedirs()
         geoserver_dir = path('geoserver')
         geoserver_bin = download_dir / \
-            os.path.basename(dev_config['GEOSERVER_URL'])
+            os.path.basename(urlparse(dev_config['GEOSERVER_URL']).path)
         jetty_runner = download_dir / \
-            os.path.basename(dev_config['JETTY_RUNNER_URL'])
+            os.path.basename(urlparse(dev_config['JETTY_RUNNER_URL']).path)
         grab(
             options.get(
                 'geoserver',
@@ -610,30 +611,13 @@ def start_django(options):
     foreground = '' if options.get('foreground', False) else '&'
     sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
 
-    celery_queues = [
-        "default",
-        "geonode",
-        "cleanup",
-        "update",
-        "email",
-        # Those queues are directly managed by messages.consumer
-        # "broadcast",
-        # "email.events",
-        # "all.geoserver",
-        # "geoserver.events",
-        # "geoserver.data",
-        # "geoserver.catalog",
-        # "notifications.events",
-        # "geonode.layer.viewer"
-    ]
     if 'django_celery_beat' not in INSTALLED_APPS:
-        sh("{} celery -A geonode.celery_app:app beat -l INFO {} {}".format(
+        sh("{} celery -A geonode.celery_app:app worker -B -E --statedb=worker.state -s celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h {}".format(  # noqa
             settings,
-            "-s celerybeat-schedule.db",
             foreground
         ))
     else:
-        sh("{} celery -A geonode.celery_app:app beat -l INFO {} {} {}".format(
+        sh("{} celery -A geonode.celery_app:app worker -l DEBUG {} {}".format(
             settings,
             "-s django_celery_beat.schedulers:DatabaseScheduler",
             foreground
@@ -878,15 +862,17 @@ def test_javascript(options):
 @task
 @cmdopts([
     ('name=', 'n', 'Run specific tests.'),
-    ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE')
+    ('settings=', 's', 'Specify custom DJANGO_SETTINGS_MODULE'),
+    ('local=', 'l', 'Set to True if running bdd tests locally')
 ])
 def test_integration(options):
     """
     Run GeoNode's Integration test suite against the external apps
     """
     prefix = options.get('prefix')
+    local = str2bool(options.get('local', 'false'))
     _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
-    if _backend == 'geonode.geoserver' or 'geonode.qgis_server' not in INSTALLED_APPS:
+    if local and _backend == 'geonode.geoserver' or 'geonode.qgis_server' not in INSTALLED_APPS:
         call_task('stop_geoserver')
         _reset()
     else:
@@ -904,12 +890,13 @@ def test_integration(options):
                 settings = 'geonode.local_settings' if _backend == 'geonode.qgis_server' else 'geonode.settings'
                 settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
             call_task('sync', options={'settings': settings})
-            if _backend == 'geonode.geoserver':
-                call_task('start_geoserver', options={'settings': settings, 'force_exec': True})
-            call_task('start', options={'settings': settings})
+            if local:
+                if _backend == 'geonode.geoserver':
+                    call_task('start_geoserver', options={'settings': settings, 'force_exec': True})
+                call_task('start', options={'settings': settings})
             if integration_server_tests:
                 call_task('setup_data', options={'settings': settings})
-        elif not integration_csw_tests and _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
+        elif _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
             sh("cp geonode/upload/tests/test_settings.py geonode/")
             settings = 'geonode.test_settings'
             sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
@@ -922,9 +909,7 @@ def test_integration(options):
                "loaddata geonode/base/fixtures/default_oauth_apps.json".format(settings))
             sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
                "loaddata geonode/base/fixtures/initial_data.json".format(settings))
-
             call_task('start_geoserver')
-
             bind = options.get('bind', '0.0.0.0:8000')
             foreground = '' if options.get('foreground', False) else '&'
             sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runmessaging %s' %
@@ -937,11 +922,11 @@ def test_integration(options):
         live_server_option = ''
         info("Running the tests now...")
         sh(('%s %s manage.py test %s'
-            ' %s --noinput %s' % (settings,
-                                  prefix,
-                                  name,
-                                  _keepdb,
-                                  live_server_option)))
+            ' -v 3 %s --noinput %s' % (settings,
+                                       prefix,
+                                       name,
+                                       _keepdb,
+                                       live_server_option)))
 
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
@@ -960,7 +945,7 @@ def test_integration(options):
         'start_qgis_server'])
 @cmdopts([
     ('coverage', 'c', 'use this flag to generate coverage during test runs'),
-    ('local=', 'l', 'Set to True if running bdd tests locally')
+    ('local=', 'l', 'Set to True if running tests locally')
 ])
 def run_tests(options):
     """
@@ -984,7 +969,7 @@ def run_tests(options):
         elif integration_monitoring_tests:
             call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.monitoring.tests.integration'})
         elif integration_csw_tests:
-            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.csw'})
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.csw', 'local': local})
         elif integration_bdd_tests:
             call_task('test_bdd', options={'local': local})
         else:
@@ -1211,13 +1196,11 @@ def kill(arg1, arg2):
 
         # Give it a little more time
         time.sleep(1)
-    else:
-        pass
 
     if running:
         raise Exception('Could not stop %s: '
                         'Running processes are\n%s'
-                        % (arg1, '\n'.join([str(l).strip() for l in lines])))
+                        % (arg1, '\n'.join([str(_l).strip() for _l in lines])))
 
 
 def waitfor(url, timeout=300):

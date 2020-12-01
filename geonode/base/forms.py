@@ -22,6 +22,8 @@ import six
 import html
 import logging
 
+from tinymce.widgets import TinyMCE
+
 from .fields import MultiThesauriField
 
 from dal import autocomplete
@@ -54,6 +56,7 @@ from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.documents.models import Document
 from geonode.base.enumerations import ALL_LANGUAGES
 from geonode.base.widgets import TaggitSelect2Custom
+from geonode.layers.models import Layer
 
 logger = logging.getLogger(__name__)
 
@@ -331,9 +334,28 @@ class ResourceBaseDateTimePicker(DateTimePicker):
 
 class ResourceBaseForm(TranslationModelForm):
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
-
+    abstract = forms.CharField(
+        label=_("Abstract"),
+        required=False,
+        widget=TinyMCE())
+    purpose = forms.CharField(
+        label=_("Purpose"),
+        required=False,
+        widget=TinyMCE())
+    constraints_other = forms.CharField(
+        label=_("Other constraints"),
+        required=False,
+        widget=TinyMCE())
+    supplemental_information = forms.CharField(
+        label=_('Supplemental information'),
+        required=False,
+        widget=TinyMCE())
+    data_quality_statement = forms.CharField(
+        label=_("Data quality statement"),
+        required=False,
+        widget=TinyMCE())
     owner = forms.ModelChoiceField(
-        empty_label="Owner",
+        empty_label=_("Owner"),
         label=_("Owner"),
         required=False,
         queryset=get_user_model().objects.exclude(username='AnonymousUser'),
@@ -461,10 +483,7 @@ class ResourceBaseForm(TranslationModelForm):
             'contacts',
             'name',
             'uuid',
-            'bbox_x0',
-            'bbox_x1',
-            'bbox_y0',
-            'bbox_y1',
+            'bbox_polygon',
             'srid',
             'category',
             'csw_typename',
@@ -505,34 +524,75 @@ class ValuesListField(forms.Field):
 class BatchEditForm(forms.Form):
     LANGUAGES = (('', '--------'),) + ALL_LANGUAGES
     group = forms.ModelChoiceField(
+        label=_('Group'),
         queryset=Group.objects.all(),
         required=False)
     owner = forms.ModelChoiceField(
+        label=_('Owner'),
         queryset=get_user_model().objects.all(),
         required=False)
     category = forms.ModelChoiceField(
+        label=_('Category'),
         queryset=TopicCategory.objects.all(),
         required=False)
     license = forms.ModelChoiceField(
+        label=_('License'),
         queryset=License.objects.all(),
         required=False)
     regions = forms.ModelChoiceField(
+        label=_('Regions'),
         queryset=Region.objects.all(),
         required=False)
-    date = forms.DateTimeField(required=False)
+    date = forms.DateTimeField(
+        label=_('Date'),
+        required=False)
     language = forms.ChoiceField(
+        label=_('Language'),
         required=False,
         choices=LANGUAGES,
     )
     keywords = forms.CharField(required=False)
+    ids = forms.CharField(required=False, widget=forms.HiddenInput())
 
 
 class BatchPermissionsForm(forms.Form):
     group = forms.ModelChoiceField(
+        label=_('Group'),
         queryset=Group.objects.all(),
         required=False)
     user = forms.ModelChoiceField(
+        label=_('User'),
         queryset=get_user_model().objects.all(),
+        required=False)
+    permission_type = forms.MultipleChoiceField(
+        label=_('Permission Type'),
+        required=True,
+        widget=forms.CheckboxSelectMultiple,
+        choices=(
+            ('r', 'Read'),
+            ('w', 'Write'),
+            ('d', 'Download'),
+        ),
+    )
+    mode = forms.ChoiceField(
+        label=_('Mode'),
+        required=True,
+        widget=forms.RadioSelect,
+        choices=(
+            ('set', 'Set'),
+            ('unset', 'Unset'),
+        ),
+    )
+    ids = forms.CharField(required=False, widget=forms.HiddenInput())
+
+
+class UserAndGroupPermissionsForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(UserAndGroupPermissionsForm, self).__init__(*args, **kwargs)
+        self.fields['layers'].label_from_instance = self.label_from_instance
+
+    layers = forms.ModelMultipleChoiceField(
+        queryset=Layer.objects.all(),
         required=False)
     permission_type = forms.MultipleChoiceField(
         required=True,
@@ -551,6 +611,11 @@ class BatchPermissionsForm(forms.Form):
             ('unset', 'Unset'),
         ),
     )
+    ids = forms.CharField(required=False, widget=forms.HiddenInput())
+
+    @staticmethod
+    def label_from_instance(obj):
+        return obj.title
 
 
 class CuratedThumbnailForm(ModelForm):
@@ -560,9 +625,15 @@ class CuratedThumbnailForm(ModelForm):
 
 
 class OwnerRightsRequestForm(forms.Form):
-    resource = forms.ModelChoiceField(queryset=ResourceBase.objects.all(),
-                                      widget=forms.HiddenInput())
-    reason = forms.CharField(widget=forms.Textarea, help_text=_('Short reasoning behind the request'), required=True)
+    resource = forms.ModelChoiceField(
+        label=_('Resource'),
+        queryset=ResourceBase.objects.all(),
+        widget=forms.HiddenInput())
+    reason = forms.CharField(
+        label=_('Reason'),
+        widget=forms.Textarea,
+        help_text=_('Short reasoning behind the request'),
+        required=True)
 
     class Meta:
         fields = ['reason', 'resource']

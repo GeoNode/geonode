@@ -1,0 +1,38 @@
+{% extends "layers/layer_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block title %} {% trans "Explore Layers" %} - {{ block.super }} {% endblock %}
+
+{% block body_class %}{% trans "layers explore" %}{% endblock %}
+
+{% block body %}
+<div class="page-header">
+  {% if not READ_ONLY_MODE %}
+    <a href="{% url "layer_upload" %}" class="btn btn-primary pull-right">{% trans "Upload Layers" %}</a>
+  {% endif %}
+  <h2 class="page-title">{% trans "Explore Layers" %}</h2>
+</div>
+  {% with include_type_filter='true' %}
+    {% with header='Type' %}
+      {% with filter='type__in' %}
+        {% include "search/_search_content.html" %}
+      {% endwith %}
+    {% endwith %}
+  {% endwith %}
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+  <script type="text/javascript">
+      {% if HAYSTACK_SEARCH %}
+          SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?type__in=layer'
+      {% else %}
+          SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='layers' %}';
+      {% endif %}
+    FILTER_TYPE = 'layer';
+  </script>
+  {% with include_spatial='true' %}
+    {% include 'search/search_scripts.html' %}
+  {% endwith %}
+{% endblock extra_script %}

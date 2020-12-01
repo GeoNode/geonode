@@ -28,7 +28,20 @@ from geonode.maps.models import Map
 logger = get_task_logger(__name__)
 
 
-@app.task(bind=True, queue='cleanup', expires=300)
+@app.task(
+    bind=True,
+    name='geonode.maps.tasks.delete_map',
+    queue='cleanup',
+    countdown=60,
+    # expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 10,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
 def delete_map(self, object_id):
     """
     Deletes a map and the associated map layers.

@@ -85,7 +85,7 @@ DATASTORE_URL = 'postgis://{}:{}@{}:{}/{}'.format(
     DB_PORT,
     DB_NAME
 )
-postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=5)
+postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
 
 logging.getLogger('south').setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
@@ -399,7 +399,7 @@ class RequestsTestCase(MonitoringTestBase):
         from geonode.monitoring.tasks import collect_metrics
         execution_times = []
         for _r in range(10):
-            result = collect_metrics.delay()
+            result = collect_metrics.apply_async()
             exec_tuple = result.get()
             if exec_tuple:
                 execution_times.append(exec_tuple[0])

@@ -61,13 +61,13 @@ DATABASE_PORT = '5432'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': DATABASE_NAME,
         'USER': DATABASE_USER,
         'PASSWORD': DATABASE_PASSWORD,
         'HOST': DATABASE_HOST,
         'PORT': DATABASE_PORT,
-        'CONN_MAX_AGE': 5,
+        'CONN_MAX_AGE': 0,
         'CONN_TOUT': 5,
         'OPTIONS': {
             'connect_timeout': 5,
@@ -82,7 +82,7 @@ DATABASES = {
         'PASSWORD': DATABASE_PASSWORD,
         'HOST': DATABASE_HOST,
         'PORT': DATABASE_PORT,
-        'CONN_MAX_AGE': 5,
+        'CONN_MAX_AGE': 0,
         'CONN_TOUT': 5,
         'OPTIONS': {
             'connect_timeout': 5,

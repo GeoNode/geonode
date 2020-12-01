@@ -19,18 +19,19 @@
 #########################################################################
 
 from django import template
+from django.db.models import Q
+from django.conf import settings
+from django.db.models import Count
+from django.utils.translation import ugettext
+from django.contrib.auth import get_user_model
+from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
 
 from pinax.ratings.models import Rating
-from django.db.models import Q
-from django.utils.translation import ugettext
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth import get_user_model
-from django.db.models import Count
-from django.conf import settings
-
 from guardian.shortcuts import get_objects_for_user
 
 from geonode.base.models import ResourceBase
+from geonode.base.bbox_utils import filter_bbox
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.documents.models import Document
@@ -44,11 +45,11 @@ from collections import OrderedDict
 register = template.Library()
 
 FACETS = {
-    'raster': 'Raster Layer',
-    'vector': 'Vector Layer',
-    'vector_time': 'Vector Temporal Serie',
-    'remote': 'Remote Layer',
-    'wms': 'WMS Cascade Layer'
+    'raster': _('Raster Layer'),
+    'vector': _('Vector Layer'),
+    'vector_time': _('Vector Temporal Serie'),
+    'remote': _('Remote Layer'),
+    'wms': _('WMS Cascade Layer')
 }
 
 
@@ -154,22 +155,7 @@ def facets(context):
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
         if extent_filter:
-            from geonode.utils import bbox_to_projection
-            bbox = extent_filter.split(',')
-            bbox = list(map(str, bbox))
-
-            intersects = (Q(bbox_x0__gt=bbox[0]) & Q(bbox_x1__lt=bbox[2]) &
-                          Q(bbox_y0__gt=bbox[1]) & Q(bbox_y1__lt=bbox[3]))
-
-            for proj in Layer.objects.order_by('srid').values('srid').distinct():
-                if proj['srid'] != 'EPSG:4326':
-                    proj_bbox = bbox_to_projection(bbox + ['4326', ],
-                                                   target_srid=int(proj['srid'][5:]))
-                    if proj_bbox[-1] != 4326:
-                        intersects = intersects | (Q(bbox_x0__gt=proj_bbox[0]) & Q(bbox_x1__lt=proj_bbox[2]) & Q(
-                            bbox_y0__gt=proj_bbox[1]) & Q(bbox_y1__lt=proj_bbox[3]))
-
-            layers = layers.filter(intersects)
+            layers = filter_bbox(layers, extent_filter)
 
         if keywords_filter:
             treeqs = HierarchicalKeyword.objects.none()
@@ -252,14 +238,7 @@ def facets(context):
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
         if extent_filter:
-            bbox = extent_filter.split(
-                ',')  # TODO: Why is this different when done through haystack?
-            bbox = map(str, bbox)  # 2.6 compat - float to decimal conversion
-            intersects = ~(Q(bbox_x0__gt=bbox[2]) | Q(bbox_x1__lt=bbox[0]) |
-                           Q(bbox_y0__gt=bbox[3]) | Q(bbox_y1__lt=bbox[1]))
-
-            maps = maps.filter(intersects)
-            documents = documents.filter(intersects)
+            documents = filter_bbox(documents, extent_filter)
 
         if keywords_filter:
             treeqs = HierarchicalKeyword.objects.none()
@@ -365,8 +344,13 @@ def get_visibile_resources(user):
 @register.simple_tag
 def display_edit_request_button(resource, user, perms):
     def _has_owner_his_permissions():
-        return (set(resource.BASE_PERMISSIONS.get('owner') + resource.BASE_PERMISSIONS.get('write')) - set(
-            perms)) == set()
+        _owner_set = set(resource.BASE_PERMISSIONS.get('owner') +
+                         resource.BASE_PERMISSIONS.get('read') +
+                         resource.BASE_PERMISSIONS.get('write') +
+                         resource.BASE_PERMISSIONS.get('download')) - \
+            set(perms)
+        return _owner_set == set() or \
+            _owner_set == set(['change_resourcebase_permissions', 'publish_resourcebase'])
 
     if not _has_owner_his_permissions() and resource.owner.pk == user.pk:
         return True

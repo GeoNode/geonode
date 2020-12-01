@@ -129,10 +129,10 @@
 						<dt>{% trans "Extent" %}</dt>
 							<dd>
 								<ul class="nop">
-									<li>x0: {{resource.bbox_x0}}</li>
-									<li>x1: {{resource.bbox_x1}}</li>
-									<li>y0: {{resource.bbox_y0}}</li>
-									<li>y1: {{resource.bbox_y1}}</li>
+									<li>x0: {{resource.bbox_helper.xmin}}</li>
+									<li>x1: {{resource.bbox_helper.xmax}}</li>
+									<li>y0: {{resource.bbox_helper.ymin}}</li>
+									<li>y1: {{resource.bbox_helper.ymax}}</li>
 								</ul>
 							</dd>
 

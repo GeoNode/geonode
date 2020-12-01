@@ -30,7 +30,7 @@
                                 <div class="col-md-9">
                                     {{job.status}} - {{ job.details }}
                                 </div>
-                                {% if job.status == 'FAILED' %}
+                                {% if job.status != 'PROCESSED' %}
                                     <div class="btn-group pull-right">
                                         <button title="{% trans "Retry job" %}" class="btn" name="retry-{{ job.resource_id }}"><i class="fa fa-refresh fa-fw" aria-hidden="true"></i></button>
                                     </div>

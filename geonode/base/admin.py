@@ -18,12 +18,13 @@
 #
 #########################################################################
 
+from django import forms
 from django.contrib import admin
 from django.conf import settings
+from django.shortcuts import render
 
 from dal import autocomplete
 from taggit.forms import TagField
-from django import forms
 
 from treebeard.admin import TreeAdmin
 from treebeard.forms import movenodeform_factory
@@ -45,16 +46,42 @@ from geonode.base.models import (
     CuratedThumbnail,
     Configuration,
 )
-from django.http import HttpResponseRedirect
 
+from geonode.base.forms import (
+    BatchEditForm,
+    BatchPermissionsForm,
+    UserAndGroupPermissionsForm
+)
 from geonode.base.widgets import TaggitSelect2Custom
 
 
 def metadata_batch_edit(modeladmin, request, queryset):
     ids = ','.join([str(element.pk) for element in queryset])
     resource = queryset[0].class_name.lower()
-    return HttpResponseRedirect(
-        '/{}s/metadata/batch/{}/'.format(resource, ids))
+    form = BatchEditForm({
+        'ids': ids
+    })
+    name_space_mapper = {
+        'layer': 'layer_batch_metadata',
+        'map': 'map_batch_metadata',
+        'document': 'document_batch_metadata'
+    }
+
+    try:
+        name_space = name_space_mapper[resource]
+    except KeyError:
+        name_space = None
+
+    return render(
+        request,
+        "base/batch_edit.html",
+        context={
+            'form': form,
+            'ids': ids,
+            'model': resource,
+            'name_space': name_space
+        }
+    )
 
 
 metadata_batch_edit.short_description = 'Metadata batch edit'
@@ -63,11 +90,52 @@ metadata_batch_edit.short_description = 'Metadata batch edit'
 def set_batch_permissions(modeladmin, request, queryset):
     ids = ','.join([str(element.pk) for element in queryset])
     resource = queryset[0].class_name.lower()
-    return HttpResponseRedirect(
-        '/{}s/permissions/batch/{}/'.format(resource, ids))
+    form = BatchPermissionsForm(
+        {
+            'permission_type': ('r', ),
+            'mode': 'set',
+            'ids': ids
+        })
+
+    return render(
+        request,
+        "base/batch_permissions.html",
+        context={
+            'form': form,
+            'model': resource,
+        }
+    )
 
 
 set_batch_permissions.short_description = 'Set permissions'
+
+
+def set_user_and_group_layer_permission(modeladmin, request, queryset):
+    ids = ','.join([str(element.pk) for element in queryset])
+    resource = queryset[0].__class__.__name__.lower()
+
+    model_mapper = {
+        "profile": "people",
+        "groupprofile": "groups"
+    }
+
+    form = UserAndGroupPermissionsForm({
+        'permission_type': ('r', ),
+        'mode': 'set',
+        'ids': ids,
+    })
+
+    return render(
+        request,
+        "base/user_and_group_permissions.html",
+        context={
+            "form": form,
+            "model": model_mapper[resource]
+        }
+    )
+
+
+set_user_and_group_layer_permission.short_description = 'Set layer permissions'
 
 
 class LicenseAdmin(TabbedTranslationAdmin):

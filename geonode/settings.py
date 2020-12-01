@@ -23,6 +23,7 @@ import os
 import re
 import ast
 import sys
+import subprocess
 from datetime import timedelta
 from distutils.util import strtobool  # noqa
 from urllib.parse import urlparse, urlunparse, urljoin
@@ -102,10 +103,20 @@ if not SITEURL.endswith('/'):
 
 DATABASE_URL = os.getenv(
     'DATABASE_URL',
-    'sqlite:///{path}'.format(
+    'spatialite:///{path}'.format(
         path=os.path.join(PROJECT_ROOT, 'development.db')
     )
 )
+
+if DATABASE_URL.startswith("spatialite"):
+    try:
+        spatialite_proc = subprocess.run(["spatialite", "-version"], stdout=subprocess.PIPE)
+        spatialite_version = int(spatialite_proc.stdout.decode()[0])
+        if spatialite_version < 5:
+            # To workaround Shapely/Spatialite interaction bug for Spatialite < 5
+            from shapely import speedups
+    except FileNotFoundError as ex:
+        print(ex)
 
 # DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
 
@@ -115,17 +126,20 @@ DATABASE_URL = os.getenv(
 # 'ENGINE': 'django.contrib.gis.db.backends.postgis'
 # see https://docs.djangoproject.com/en/1.8/ref/contrib/gis/db-api/#module-django.contrib.gis.db.backends for
 # detailed list of supported backends and notes.
-_db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=5)
-if 'spatialite' in DATABASE_URL:
-    SPATIALITE_LIBRARY_PATH = 'mod_spatialite.so'
+GEONODE_DB_CONN_MAX_AGE = int(os.getenv('GEONODE_DB_CONN_MAX_AGE', 0))
+GEONODE_DB_CONN_TOUT = int(os.getenv('GEONODE_DB_CONN_TOUT', 5))
+
+_db_conf = dj_database_url.parse(
+    DATABASE_URL,
+    conn_max_age=GEONODE_DB_CONN_MAX_AGE)
 
 if 'CONN_TOUT' in _db_conf:
-    _db_conf['CONN_TOUT'] = 5
+    _db_conf['CONN_TOUT'] = GEONODE_DB_CONN_TOUT
 if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
     if 'OPTIONS' not in _db_conf:
         _db_conf['OPTIONS'] = {}
     _db_conf['OPTIONS'].update({
-        'connect_timeout': 5,
+        'connect_timeout': GEONODE_DB_CONN_TOUT,
     })
 
 DATABASES = {
@@ -137,15 +151,15 @@ if os.getenv('DEFAULT_BACKEND_DATASTORE'):
                                 'postgis://\
 geonode_data:geonode_data@localhost:5432/geonode_data')
     DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = dj_database_url.parse(
-        GEODATABASE_URL, conn_max_age=5
+        GEODATABASE_URL, conn_max_age=GEONODE_DB_CONN_MAX_AGE
     )
     _geo_db = DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')]
     if 'CONN_TOUT' in DATABASES['default']:
-        _geo_db['CONN_TOUT'] = 5
+        _geo_db['CONN_TOUT'] = DATABASES['default']['CONN_TOUT']
     if 'postgresql' in GEODATABASE_URL or 'postgis' in GEODATABASE_URL:
         _geo_db['OPTIONS'] = DATABASES['default']['OPTIONS'] if 'OPTIONS' in DATABASES['default'] else {}
         _geo_db['OPTIONS'].update({
-            'connect_timeout': 5,
+            'connect_timeout': GEONODE_DB_CONN_TOUT,
         })
 
     DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = _geo_db
@@ -344,21 +358,25 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     },
+
     # MEMCACHED EXAMPLE
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
     #     'LOCATION': '127.0.0.1:11211',
-    #     },
+    # },
+
     # FILECACHE EXAMPLE
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
     #     'LOCATION': '/tmp/django_cache',
-    #     }
+    # },
+
     # DATABASE EXAMPLE -> python manage.py createcachetable
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
     #     'LOCATION': 'my_cache_table',
-    # }
+    # },
+
     # LOCAL-MEMORY CACHING
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -368,6 +386,7 @@ CACHES = {
     #         'MAX_ENTRIES': 10000
     #     }
     # },
+
     'resources': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'TIMEOUT': 600,
@@ -376,6 +395,18 @@ CACHES = {
         }
     }
 }
+
+MEMCACHED_ENABLED = ast.literal_eval(os.getenv('MEMCACHED_ENABLED', 'False'))
+MEMCACHED_BACKEND = os.getenv('MEMCACHED_BACKEND', 'django.core.cache.backends.memcached.MemcachedCache')
+MEMCACHED_LOCATION = os.getenv('MEMCACHED_LOCATION', '127.0.0.1:11211')
+MEMCACHED_LOCK_EXPIRE = int(os.getenv('MEMCACHED_LOCK_EXPIRE', 3600))
+MEMCACHED_LOCK_TIMEOUT = int(os.getenv('MEMCACHED_LOCK_TIMEOUT', 10))
+
+if MEMCACHED_ENABLED:
+    CACHES['default'] = {
+        'BACKEND': MEMCACHED_BACKEND,
+        'LOCATION': MEMCACHED_LOCATION,
+    }
 
 GEONODE_CORE_APPS = (
     # GeoNode internal apps
@@ -567,9 +598,11 @@ try:
 except ValueError:
     # fallback to regular list of values separated with misc chars
     ALLOWED_DOCUMENT_TYPES = [
-        'doc', 'docx', 'gif', 'jpg', 'jpeg', 'ods', 'odt', 'odp', 'pdf', 'png',
-        'ppt', 'pptx', 'rar', 'sld', 'tif', 'tiff', 'txt', 'xls', 'xlsx', 'xml',
-        'zip', 'gz', 'qml'
+        'txt', 'log', 'doc', 'docx', 'ods', 'odt', 'sld', 'qml', 'xls', 'xlsx', 'xml',
+        'bm', 'bmp', 'dwg', 'dxf', 'fif', 'gif', 'jpg', 'jpe', 'jpeg', 'png', 'tif',
+        'tiff', 'pbm', 'odp', 'ppt', 'pptx', 'pdf', 'tar', 'tgz', 'rar', 'gz', '7z',
+        'zip', 'aif', 'aifc', 'aiff', 'au', 'mp3', 'mpga', 'wav', 'afl', 'avi', 'avs',
+        'fli', 'mp2', 'mp4', 'mpg', 'ogg', 'webm', '3gp', 'flv', 'vdo'
     ] if os.getenv('ALLOWED_DOCUMENT_TYPES') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_DOCUMENT_TYPES'))
 
@@ -688,12 +721,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
-                # 'django.core.context_processors.debug',
-                # 'django.core.context_processors.i18n',
-                # 'django.core.context_processors.tz',
-                # 'django.core.context_processors.media',
-                # 'django.core.context_processors.static',
-                # 'django.core.context_processors.request',
                 'geonode.context_processors.resource_urls',
                 'geonode.geoserver.context_processors.geoserver_urls',
                 'geonode.themes.context_processors.custom_theme'
@@ -1608,7 +1635,6 @@ SEARCH_FILTERS = {
 
 # HTML WYSIWYG Editor (TINYMCE) Menu Bar Settings
 TINYMCE_DEFAULT_CONFIG = {
-    "selector": "textarea#id_resource-featureinfo_custom_template",
     "theme": "silver",
     "height": 500,
     "plugins": 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
@@ -1654,36 +1680,9 @@ TINYMCE_DEFAULT_CONFIG = {
 # - if True only admins can edit free-text kwds from admin dashboard
 FREETEXT_KEYWORDS_READONLY = ast.literal_eval(os.environ.get('FREETEXT_KEYWORDS_READONLY', 'False'))
 
-# notification settings
-NOTIFICATION_ENABLED = ast.literal_eval(os.environ.get('NOTIFICATION_ENABLED', 'True')) or TEST
-#PINAX_NOTIFICATIONS_LANGUAGE_MODEL = "people.Profile"
-
-# notifications backends
-_EMAIL_BACKEND = "geonode.notifications_backend.EmailBackend"
-PINAX_NOTIFICATIONS_BACKENDS = [
-    ("email", _EMAIL_BACKEND, 0),
-]
-PINAX_NOTIFICATIONS_HOOKSET = "pinax.notifications.hooks.DefaultHookSet"
-
-# Queue non-blocking notifications.
-PINAX_NOTIFICATIONS_QUEUE_ALL = ast.literal_eval(os.environ.get('NOTIFICATIONS_QUEUE_ALL', 'False'))
-PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT = os.environ.get('NOTIFICATIONS_LOCK_WAIT_TIMEOUT', -1)
-
-# explicitly define NOTIFICATION_LOCK_LOCATION
-# NOTIFICATION_LOCK_LOCATION = <path>
-
-# pinax.notifications
-# or notification
-NOTIFICATIONS_MODULE = 'pinax.notifications'
-
-# set to true to have multiple recipients in /message/create/
-USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = ast.literal_eval(
-    os.environ.get('USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS', 'True'))
-
-if NOTIFICATION_ENABLED:
-    if NOTIFICATIONS_MODULE not in INSTALLED_APPS:
-        INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
-
+# ########################################################################### #
+# ASYNC SETTINGS
+# ########################################################################### #
 # async signals can be the same as broker url
 # but they should have separate setting anyway
 # use amqp://localhost for local rabbitmq server
@@ -1735,13 +1734,19 @@ CELERY_IGNORE_RESULT = ast.literal_eval(os.environ.get('CELERY_IGNORE_RESULT', '
 CELERY_ACKS_LATE = ast.literal_eval(os.environ.get('CELERY_ACKS_LATE', 'True'))
 
 # Set this to False in order to run async
-CELERY_TASK_ALWAYS_EAGER = ast.literal_eval(os.environ.get('CELERY_TASK_ALWAYS_EAGER', 'True'))
+_EAGER_FLAG = 'False' if ASYNC_SIGNALS else 'True'
+CELERY_TASK_ALWAYS_EAGER = ast.literal_eval(os.environ.get('CELERY_TASK_ALWAYS_EAGER', _EAGER_FLAG))
 CELERY_TASK_EAGER_PROPAGATES = ast.literal_eval(os.environ.get('CELERY_TASK_EAGER_PROPAGATES', 'True'))
 CELERY_TASK_IGNORE_RESULT = ast.literal_eval(os.environ.get('CELERY_TASK_IGNORE_RESULT', 'True'))
 
+
+from . import serializer
+from kombu.serialization import register
+register('geonode_json', serializer.dumps, serializer.loads, content_type='application/json', content_encoding='utf-8')
+
 # I use these to debug kombu crashes; we get a more informative message.
-CELERY_TASK_SERIALIZER = os.environ.get('CELERY_TASK_SERIALIZER', 'json')
-CELERY_RESULT_SERIALIZER = os.environ.get('CELERY_RESULT_SERIALIZER', 'json')
+CELERY_TASK_SERIALIZER = os.environ.get('CELERY_TASK_SERIALIZER', 'geonode_json')
+CELERY_RESULT_SERIALIZER = os.environ.get('CELERY_RESULT_SERIALIZER', 'geonode_json')
 CELERY_ACCEPT_CONTENT = [CELERY_RESULT_SERIALIZER, ]
 
 # Set Tasks Queues
@@ -1753,11 +1758,11 @@ CELERY_TASK_CREATE_MISSING_QUEUES = ast.literal_eval(os.environ.get('CELERY_TASK
 GEONODE_EXCHANGE = Exchange("default", type="direct", durable=True)
 GEOSERVER_EXCHANGE = Exchange("geonode", type="topic", durable=False)
 CELERY_TASK_QUEUES = (
-    Queue('default', GEONODE_EXCHANGE, routing_key='default'),
-    Queue('geonode', GEONODE_EXCHANGE, routing_key='geonode'),
-    Queue('update', GEONODE_EXCHANGE, routing_key='update'),
-    Queue('cleanup', GEONODE_EXCHANGE, routing_key='cleanup'),
-    Queue('email', GEONODE_EXCHANGE, routing_key='email'),
+    Queue('default', GEONODE_EXCHANGE, routing_key='default', priority=0),
+    Queue('geonode', GEONODE_EXCHANGE, routing_key='geonode', priority=0),
+    Queue('update', GEONODE_EXCHANGE, routing_key='update', priority=0),
+    Queue('cleanup', GEONODE_EXCHANGE, routing_key='cleanup', priority=0),
+    Queue('email', GEONODE_EXCHANGE, routing_key='email', priority=0),
 )
 
 if USE_GEOSERVER:
@@ -1794,6 +1799,12 @@ if USE_GEOSERVER:
 #     },
 CELERY_BEAT_SCHEDULE = {}
 
+if 'geonode.services' in INSTALLED_APPS:
+    CELERY_BEAT_SCHEDULE['probe_services'] = {
+        'task': 'geonode.services.tasks.probe_services',
+        'schedule': 600.0,
+    }
+
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
 CELERY_ENABLE_UTC = ast.literal_eval(os.environ.get('CELERY_ENABLE_UTC', 'True'))
 CELERY_TIMEZONE = TIME_ZONE
@@ -1822,6 +1833,40 @@ CELERY_SEND_TASK_SENT_EVENT = ast.literal_eval(os.environ.get('CELERY_SEND_TASK_
 
 # Disabled by default and I like it, because we use Sentry for this.
 CELERY_SEND_TASK_ERROR_EMAILS = ast.literal_eval(os.environ.get('CELERY_SEND_TASK_ERROR_EMAILS', 'False'))
+
+# ########################################################################### #
+# NOTIFICATIONS SETTINGS
+# ########################################################################### #
+NOTIFICATION_ENABLED = ast.literal_eval(os.environ.get('NOTIFICATION_ENABLED', 'True')) or TEST
+#PINAX_NOTIFICATIONS_LANGUAGE_MODEL = "people.Profile"
+
+# notifications backends
+NOTIFICATIONS_BACKEND = os.environ.get('NOTIFICATIONS_BACKEND', 'geonode.notifications_backend.EmailBackend')
+PINAX_NOTIFICATIONS_BACKENDS = [
+    ("email", NOTIFICATIONS_BACKEND, 0),
+]
+PINAX_NOTIFICATIONS_HOOKSET = "pinax.notifications.hooks.DefaultHookSet"
+
+# Queue non-blocking notifications.
+# Set this to False in order to run async
+_QUEUE_ALL_FLAG = 'True' if ASYNC_SIGNALS else 'False'
+PINAX_NOTIFICATIONS_QUEUE_ALL = ast.literal_eval(os.environ.get('NOTIFICATIONS_QUEUE_ALL', _QUEUE_ALL_FLAG))
+PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT = os.environ.get('NOTIFICATIONS_LOCK_WAIT_TIMEOUT', 600)
+
+# explicitly define NOTIFICATION_LOCK_LOCATION
+# NOTIFICATION_LOCK_LOCATION = <path>
+
+# pinax.notifications
+# or notification
+NOTIFICATIONS_MODULE = 'pinax.notifications'
+
+# set to true to have multiple recipients in /message/create/
+USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = ast.literal_eval(
+    os.environ.get('USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS', 'True'))
+
+if NOTIFICATION_ENABLED:
+    if NOTIFICATIONS_MODULE not in INSTALLED_APPS:
+        INSTALLED_APPS += (NOTIFICATIONS_MODULE, )
 
 # ########################################################################### #
 # SECURITY SETTINGS
@@ -1856,6 +1901,9 @@ if os.name == 'nt':
 # ######################################################## #
 """
     - if [ RESOURCE_PUBLISHING == True ]
+      1. "unpublished" won't be visibile to Anonymous users
+      2. "unpublished" will be visible to registered users **IF** they have view permissions
+      3. "unpublished" will be always visible to the owner and Group Managers
       By default the uploaded resources will be "unpublished".
       The owner will be able to change them to "published" **UNLESS** the ADMIN_MODERATE_UPLOADS is activated.
       If the owner assigns unpublished resources to a Group, both from Metadata and Permissions, in any case
@@ -1875,13 +1923,13 @@ if os.name == 'nt':
       Editor will be **FORCED** to select a Group when editing the resource metadata.
 """
 
-# option to enable/disable resource unpublishing for administrators
+# option to enable/disable resource unpublishing for administrators and members
 RESOURCE_PUBLISHING = ast.literal_eval(os.getenv('RESOURCE_PUBLISHING', 'False'))
 
 # Each uploaded Layer must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get('ADMIN_MODERATE_UPLOADS', 'False'))
 
-# If this option is enabled, Resources belonging to a Group won't be
+# If this option is enabled, Resources belonging to a Group (with access private) won't be
 # visible by others
 GROUP_PRIVATE_RESOURCES = ast.literal_eval(os.environ.get('GROUP_PRIVATE_RESOURCES', 'False'))
 
@@ -1910,6 +1958,11 @@ ACCOUNT_AUTHENTICATION_METHOD = os.environ.get('ACCOUNT_AUTHENTICATION_METHOD', 
 ACCOUNT_CONFIRM_EMAIL_ON_GET = ast.literal_eval(os.environ.get('ACCOUNT_CONFIRM_EMAIL_ON_GET', 'True'))
 ACCOUNT_EMAIL_REQUIRED = ast.literal_eval(os.environ.get('ACCOUNT_EMAIL_REQUIRED', 'True'))
 ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION', 'none')
+
+# Since django-allauth 0.43.0.
+ACCOUNT_SIGNUP_REDIRECT_URL = os.environ.get('ACCOUNT_SIGNUP_REDIRECT_URL', os.getenv('SITEURL', _default_siteurl))
+ACCOUNT_LOGIN_ATTEMPTS_LIMIT = int(os.getenv('ACCOUNT_LOGIN_ATTEMPTS_LIMIT', '3'))
+ACCOUNT_MAX_EMAIL_ADDRESSES = int(os.getenv('ACCOUNT_MAX_EMAIL_ADDRESSES', '2'))
 
 SOCIALACCOUNT_ADAPTER = 'geonode.people.adapters.SocialAccountAdapter'
 SOCIALACCOUNT_AUTO_SIGNUP = ast.literal_eval(os.environ.get('SOCIALACCOUNT_AUTO_SIGNUP', 'True'))
@@ -2040,7 +2093,7 @@ if MONITORING_ENABLED:
 
     CELERY_BEAT_SCHEDULE['collect_metrics'] = {
         'task': 'geonode.monitoring.tasks.collect_metrics',
-        'schedule': 60.0,
+        'schedule': 300.0,
     }
 
 USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'False'))
@@ -2050,3 +2103,4 @@ GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat
 #This controls if tastypie search on resourches is performed only with titles
 SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'True'))
 # -- END Settings for MONITORING plugin
+

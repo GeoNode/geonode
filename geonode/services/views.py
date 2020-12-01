@@ -82,7 +82,10 @@ def register_service(request):
             service_handler = form.cleaned_data["service_handler"]
             service = service_handler.create_geonode_service(
                 owner=request.user)
-            service.full_clean()
+            try:
+                service.full_clean()
+            except Exception as e:
+                raise Http404(str(e))
             service.save()
             service.keywords.add(*service_handler.get_keywords())
             service.set_default_permissions()
@@ -213,8 +216,8 @@ def harvest_single_resource(request, service_id, resource_id):
     handler = _get_service_handler(request, service)
     try:  # check that resource_id is valid for this handler
         handler.get_resource(resource_id)
-    except KeyError:
-        raise Http404()
+    except KeyError as e:
+        raise Http404(str(e))
     harvest_job, created = HarvestJob.objects.get_or_create(
         service=service,
         resource_id=resource_id,

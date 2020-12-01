@@ -39,13 +39,14 @@ def delete_orphaned_document_files():
     Deletes orphaned files of deleted documents.
     """
     deleted = []
-    _, files = storage.listdir("documents")
+    _, files = storage.listdir(os.path.join("documents", "document"))
 
     for filename in files:
         if Document.objects.filter(doc_file__contains=filename).count() == 0:
             logger.debug("Deleting orphaned document " + filename)
             try:
-                storage.delete(os.path.join("documents", filename))
+                storage.delete(os.path.join(
+                    os.path.join("documents", "document"), filename))
                 deleted.append(filename)
             except NotImplementedError as e:
                 logger.error(

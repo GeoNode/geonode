@@ -219,7 +219,7 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
                     count += 1
                 elif layernode.find('wms:Name', namespaces).text == layer3.name:
                     count += 1
-            self.assertEqual(0, count)
+            self.assertEqual(1, count)
 
             # 3. test for a map
             # TODO
@@ -315,7 +315,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
     def test_default_anonymous_permissions(self):
         with override_settings(RESOURCE_PUBLISHING=False,
                                ADMIN_MODERATE_UPLOADS=False,
-                               DEFAULT_ANONYMOUS_VIEW_PERMISSION=False,
+                               DEFAULT_ANONYMOUS_VIEW_PERMISSION=True,
                                DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False):
             self.client.login(username='norman', password='norman')
             norman = get_user_model().objects.get(username="norman")
@@ -344,10 +344,8 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
                                  saved_layer.name)
                 self.client.logout()
                 resp = self.client.get(url)
-                with self.assertRaises(Exception):
-                    # GetCapabilities should be empty
-                    #  - XMLSyntaxError: Document is empty, line 1, column 1 (line 1)
-                    layercap = dlxml.fromstring(resp.content)
+                layercap = dlxml.fromstring(resp.content)
+                self.assertIsNotNone(layercap)
             finally:
                 # Cleanup
                 saved_layer.delete()

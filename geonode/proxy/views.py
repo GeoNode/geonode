@@ -183,12 +183,13 @@ def proxy(request, url=None, response_callback=None,
             '%s%s' % (settings.SITEURL, 'geoserver'),
             ogc_server_settings.LOCATION.rstrip('/'))
 
-    response, content = http_client.request(_url,
-                                            method=request.method,
-                                            data=_data,
-                                            headers=headers,
-                                            timeout=timeout,
-                                            user=request.user)
+    response, content = http_client.request(
+        _url,
+        method=request.method,
+        data=_data,
+        headers=headers,
+        timeout=timeout,
+        user=request.user)
     content = response.content or response.reason
     status = response.status_code
     content_type = response.headers.get('Content-Type')
@@ -321,10 +322,7 @@ def download(request, resourceid, sender=Layer):
                     sld_file = open(sld_file_path, "w")
                     sld_file.write(s.sld_body.strip())
                     sld_file.close()
-
                     try:
-                        sld_file = open(sld_file_path, "r")
-
                         # Collecting headers and cookies
                         headers, access_token = get_headers(request, urlsplit(s.sld_url), s.sld_url)
 

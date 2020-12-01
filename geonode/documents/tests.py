@@ -30,8 +30,8 @@ import io
 import json
 
 import gisdata
-from datetime import datetime
 from django.urls import reverse
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
@@ -365,14 +365,14 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         ids = ','.join([str(element.pk) for element in resources])
         # test non-admin access
         self.client.login(username="bobby", password="bob")
-        response = self.client.get(reverse(view, args=(ids,)))
+        response = self.client.get(reverse(view))
         self.assertTrue(response.status_code in (401, 403))
         # test group change
         group = Group.objects.first()
         self.client.login(username='admin', password='admin')
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'group': group.pk},
+            reverse(view),
+            data={'group': group.pk, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -381,8 +381,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # test owner change
         owner = get_user_model().objects.first()
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'owner': owner.pk},
+            reverse(view),
+            data={'owner': owner.pk, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -391,8 +391,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # test license change
         license = License.objects.first()
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'license': license.pk},
+            reverse(view),
+            data={'license': license.pk, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -401,32 +401,19 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # test regions change
         region = Region.objects.first()
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'region': region.pk},
+            reverse(view),
+            data={'region': region.pk, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
             if resource.regions.all():
                 self.assertTrue(region in resource.regions.all())
-        # test date change
-        from django.utils import timezone
-        date = datetime.now(timezone.get_current_timezone())
-        response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'date': date},
-        )
-        self.assertEqual(response.status_code, 200)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            today = date.today()
-            todoc = resource.date.today()
-            self.assertEqual((today.day, today.month, today.year), (todoc.day, todoc.month, todoc.year))
         # test language change
         language = 'eng'
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'language': language},
+            reverse(view),
+            data={'language': language, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -435,8 +422,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # test keywords change
         keywords = 'some,thing,new'
         response = self.client.post(
-            reverse(view, args=(ids,)),
-            data={'keywords': keywords},
+            reverse(view),
+            data={'keywords': keywords, 'ids': ids, 'regions': 1},
         )
         self.assertEqual(response.status_code, 302)
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
@@ -490,9 +477,11 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             _d.delete()
 
             from geonode.documents.utils import delete_orphaned_document_files
-            _, document_files_before = storage.listdir("documents")
+            _, document_files_before = storage.listdir(
+                os.path.join("documents", "document"))
             deleted = delete_orphaned_document_files()
-            _, document_files_after = storage.listdir("documents")
+            _, document_files_after = storage.listdir(
+                os.path.join("documents", "document"))
             self.assertTrue(len(deleted) > 0)
             self.assertEqual(set(deleted), set(document_files_before) - set(document_files_after))
 
@@ -503,7 +492,8 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             self.assertTrue(len(deleted) > 0)
             self.assertEqual(set(deleted), set(thumb_files_before) - set(thumb_files_after))
 
-            fn = os.path.join("documents", os.path.basename(input_path))
+            fn = os.path.join(
+                os.path.join("documents", "document"), os.path.basename(input_path))
             self.assertFalse(storage.exists(fn))
 
             files = [thumb for thumb in get_thumbs() if uuid in thumb]
@@ -558,7 +548,7 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             group.leave(norman)
 
 
-class DocumentNotificationsTestCase(NotificationsTestsHelper):
+class DocumentsNotificationsTestCase(NotificationsTestsHelper):
 
     def setUp(self):
         self.user = 'admin'
@@ -568,26 +558,57 @@ class DocumentNotificationsTestCase(NotificationsTestsHelper):
         self.u = get_user_model().objects.get(username=self.user)
         self.u.email = 'test@email.com'
         self.u.is_active = True
+        self.u.is_superuser = True
         self.u.save()
         self.setup_notifications_for(DocumentsAppConfig.NOTIFICATIONS, self.u)
+        self.norman = get_user_model().objects.get(username='norman')
+        self.norman.email = 'norman@email.com'
+        self.norman.is_active = True
+        self.norman.save()
+        self.setup_notifications_for(DocumentsAppConfig.NOTIFICATIONS, self.norman)
 
-    def testDocumentNotifications(self):
-        with self.settings(PINAX_NOTIFICATIONS_QUEUE_ALL=True):
+    def testDocumentsNotifications(self):
+        with self.settings(
+                EMAIL_ENABLE=True,
+                NOTIFICATION_ENABLED=True,
+                NOTIFICATIONS_BACKEND="pinax.notifications.backends.email.EmailBackend",
+                PINAX_NOTIFICATIONS_QUEUE_ALL=False):
             self.clear_notifications_queue()
-            _d = Document.objects.create(title='test notifications', owner=self.u)
+            self.client.login(username=self.user, password=self.passwd)
+            _d = Document.objects.create(
+                title='test notifications',
+                owner=self.norman)
             self.assertTrue(self.check_notification_out('document_created', self.u))
+            # Ensure "resource.owner" won't be notified for having created its own document
+            self.assertFalse(self.check_notification_out('document_created', self.norman))
+
+            self.clear_notifications_queue()
             _d.title = 'test notifications 2'
             _d.save(notify=True)
             self.assertTrue(self.check_notification_out('document_updated', self.u))
 
+            self.clear_notifications_queue()
             from dialogos.models import Comment
             lct = ContentType.objects.get_for_model(_d)
-            comment = Comment(author=self.u, name=self.u.username,
-                              content_type=lct, object_id=_d.id,
-                              content_object=_d, comment='test comment')
+            comment = Comment(author=self.norman,
+                              name=self.norman.username,
+                              content_type=lct,
+                              object_id=_d.id,
+                              content_object=_d,
+                              comment='test comment')
             comment.save()
-
             self.assertTrue(self.check_notification_out('document_comment', self.u))
+
+            if "pinax.ratings" in settings.INSTALLED_APPS:
+                self.clear_notifications_queue()
+                from pinax.ratings.models import Rating
+                rating = Rating(user=self.norman,
+                                content_type=lct,
+                                object_id=_d.id,
+                                content_object=_d,
+                                rating=5)
+                rating.save()
+                self.assertTrue(self.check_notification_out('document_rated', self.u))
 
 
 class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):

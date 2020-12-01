@@ -417,7 +417,7 @@ class MapUpdateView(UpdateView):
 
             try:
                 # Call the base implementation first to get a context
-                context = super(UpdateView, self).get_context_data(**kwargs)
+                context = super(MapUpdateView, self).get_context_data(**kwargs)
                 map_obj.update_from_viewer(body, context=context)
             except ValueError as e:
                 return self.render_to_response(str(e), status=400)
@@ -585,7 +585,8 @@ def set_thumbnail_map(request, mapid):
     bbox = _get_bbox_from_layers(layers)
 
     # Give thumbnail creation to celery tasks, and exit.
-    create_qgis_server_thumbnail.delay('maps.map', mapid, overwrite=True, bbox=bbox)
+    create_qgis_server_thumbnail.apply_async(
+        ('maps.map', mapid, True, bbox))
     retval = {
         'success': True
     }

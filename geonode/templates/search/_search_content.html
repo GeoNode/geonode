@@ -52,7 +52,7 @@
           {% elif facet_type == 'documents' %}
           <span style="font-size: 34px;" ng-bind="total_counts + ' ' + '{% trans "Documents found" %}'"></span>
           {% else %}
-          <span style="font-size: 34px;" ng-bind="total_counts + ' {{ facet_type | title }} found'"></span>
+          <span style="font-size: 34px;" ng-bind="total_counts + ' {{ facet_type | title }} {% trans "found" %}'"></span>
           {% endif %}
       </div>
       <div class="col-md-2">{% include "search/_sort_filters.html" %}</div>

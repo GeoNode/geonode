@@ -47,9 +47,9 @@ class FavoriteTest(GeoNodeBaseTestSupport):
     # tests of Favorite and FavoriteManager methods.
     def test_favorite(self):
         # assume we created at least one User and two Documents in setUp.
-        test_user = get_user_model().objects.get(id=1)
-        test_document_1 = Document.objects.get(id=1)
-        test_document_2 = Document.objects.get(id=2)
+        test_user = get_user_model().objects.first()
+        test_document_1 = Document.objects.first()
+        test_document_2 = Document.objects.last()
 
         # test create favorite.
         Favorite.objects.create_favorite(test_document_1, test_user)
@@ -97,13 +97,15 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         then call again to check for idempotent.
         """
         self.client.login(username=self.adm_un, password=self.adm_pw)
-        response = self._get_response("add_favorite_document", ("1",))
+
+        document_pk = Document.objects.first().pk
+        response = self._get_response("add_favorite_document", (document_pk,))
 
         # check persisted.
-        favorites = Favorite.objects.all()
-        self.assertEqual(favorites.count(), 1)
+        self.assertEqual(Favorite.objects.count(), 1)
         ct = ContentType.objects.get_for_model(Document)
-        self.assertEqual(favorites[0].content_type, ct)
+        self.assertEqual(Favorite.objects.first().content_type, ct)
+        favorite_pk = Favorite.objects.first().pk
 
         # check response.
         self.assertEqual(response.status_code, 200)
@@ -112,16 +114,16 @@ class FavoriteTest(GeoNodeBaseTestSupport):
             content = content.decode('UTF-8')
         json_content = json.loads(content)
         self.assertEqual(json_content["has_favorite"], "true")
-        expected_delete_url = reverse("delete_favorite", args=[favorites[0].pk])
+        expected_delete_url = reverse("delete_favorite", args=[favorite_pk])
         self.assertEqual(json_content["delete_url"], expected_delete_url)
 
         # call method again, check for idempotent.
-        response2 = self._get_response("add_favorite_document", ("1",))
+        document_pk = Document.objects.first().pk
+        response2 = self._get_response("add_favorite_document", (document_pk,))
 
         # check still one only persisted, same as before second call.
-        favorites2 = Favorite.objects.all()
-        self.assertEqual(favorites2.count(), 1)
-        self.assertEqual(favorites2[0].content_type, ct)
+        self.assertEqual(Favorite.objects.count(), 1)
+        self.assertEqual(Favorite.objects.first().content_type, ct)
 
         # check second response.
         self.assertEqual(response2.status_code, 200)
@@ -158,21 +160,20 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.client.login(username=self.adm_un, password=self.adm_pw)
 
         # first, add one to delete.
-        response = self._get_response("add_favorite_document", ("1",))
+        document_pk = Document.objects.first().pk
+        response = self._get_response("add_favorite_document", (document_pk,))
 
         # check persisted.
-        favorites = Favorite.objects.all()
-        self.assertEqual(favorites.count(), 1)
+        self.assertEqual(Favorite.objects.count(), 1)
         ct = ContentType.objects.get_for_model(Document)
-        self.assertEqual(favorites[0].content_type, ct)
-        favorite_pk = favorites[0].pk
+        self.assertEqual(Favorite.objects.first().content_type, ct)
+        favorite_pk = Favorite.objects.first().pk
 
         # call delete method.
         response = self._get_response("delete_favorite", (favorite_pk,))
 
         # check no longer persisted.
-        favorites = Favorite.objects.all()
-        self.assertEqual(favorites.count(), 0)
+        self.assertEqual(Favorite.objects.count(), 0)
 
         # check response.
         self.assertEqual(response.status_code, 200)
@@ -186,8 +187,7 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         response2 = self._get_response("delete_favorite", (favorite_pk,))
 
         # check still none persisted, same as before second call.
-        favorites2 = Favorite.objects.all()
-        self.assertEqual(favorites2.count(), 0)
+        self.assertEqual(Favorite.objects.count(), 0)
 
         # check second response.
         self.assertEqual(response2.status_code, 200)

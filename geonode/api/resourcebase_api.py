@@ -51,20 +51,23 @@ from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 from geonode.base.models import HierarchicalKeyword
+from geonode.base.bbox_utils import filter_bbox
 from geonode.groups.models import GroupProfile
 from geonode.utils import check_ogc_backend
 from geonode.security.utils import get_visible_resources
 from .authentication import OAuthAuthentication
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
 
-from .api import (TagResource,
-                  RegionResource,
-                  OwnersResource,
-                  ThesaurusKeywordResource,
-                  TopicCategoryResource,
-                  GroupResource,
-                  FILTER_TYPES)
+from .api import (
+    TagResource,
+    RegionResource,
+    OwnersResource,
+    ThesaurusKeywordResource,
+    TopicCategoryResource,
+    GroupResource,
+    FILTER_TYPES)
 from .paginator import CrossSiteXHRPaginator
+from django.utils.translation import gettext as _
 
 if settings.HAYSTACK_SEARCH:
     from haystack.query import SearchQuerySet  # noqa
@@ -81,17 +84,18 @@ FILTER_TYPES.update(LAYER_SUBTYPES)
 class CommonMetaApi:
     authorization = GeoNodeAuthorization()
     allowed_methods = ['get']
-    filtering = {'title': ALL,
-                 'keywords': ALL_WITH_RELATIONS,
-                 'tkeywords': ALL_WITH_RELATIONS,
-                 'regions': ALL_WITH_RELATIONS,
-                 'category': ALL_WITH_RELATIONS,
-                 'group': ALL_WITH_RELATIONS,
-                 'owner': ALL_WITH_RELATIONS,
-                 'date': ALL,
-                 'purpose': ALL,
-                 'abstract': ALL
-                 }
+    filtering = {
+        'title': ALL,
+        'keywords': ALL_WITH_RELATIONS,
+        'tkeywords': ALL_WITH_RELATIONS,
+        'regions': ALL_WITH_RELATIONS,
+        'category': ALL_WITH_RELATIONS,
+        'group': ALL_WITH_RELATIONS,
+        'owner': ALL_WITH_RELATIONS,
+        'date': ALL,
+        'purpose': ALL,
+        'abstract': ALL
+    }
     ordering = ['date', 'title', 'popular_count']
     max_limit = None
 
@@ -137,10 +141,7 @@ class CommonModelApi(ModelResource):
         'share_count',
         'popular_count',
         'srid',
-        'bbox_x0',
-        'bbox_x1',
-        'bbox_y0',
-        'bbox_y1',
+        'bbox_polygon',
         'category__gn_description',
         'supplemental_information',
         'site_url',
@@ -227,7 +228,7 @@ class CommonModelApi(ModelResource):
             filtered = self.filter_group(filtered, request)
 
         if extent:
-            filtered = self.filter_bbox(filtered, extent)
+            filtered = filter_bbox(filtered, extent)
 
         if keywords:
             filtered = self.filter_h_keywords(filtered, keywords)
@@ -240,13 +241,13 @@ class CommonModelApi(ModelResource):
                     Q(owner__username__iexact=str(user))))
             else:
                 filtered = filtered.exclude(Q(dirty_state=True))
-
         return filtered
 
     def filter_published(self, queryset, request):
         filter_set = get_visible_resources(
             queryset,
             request.user if request else None,
+            request=request,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
             unpublished_not_visible=settings.RESOURCE_PUBLISHING)
 
@@ -256,6 +257,7 @@ class CommonModelApi(ModelResource):
         filter_set = get_visible_resources(
             queryset,
             request.user if request else None,
+            request=request,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
         return filter_set
@@ -263,36 +265,19 @@ class CommonModelApi(ModelResource):
     def filter_h_keywords(self, queryset, keywords):
         filtered = queryset
         treeqs = HierarchicalKeyword.objects.none()
-        for keyword in keywords:
-            try:
-                kws = HierarchicalKeyword.objects.filter(Q(name__iexact=keyword) | Q(slug__iexact=keyword))
-                for kw in kws:
-                    treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
-            except ObjectDoesNotExist:
-                # Ignore keywords not actually used?
-                pass
+        if keywords and len(keywords) > 0:
+            for keyword in keywords:
+                try:
+                    kws = HierarchicalKeyword.objects.filter(
+                        Q(name__iexact=keyword) | Q(slug__iexact=keyword))
+                    for kw in kws:
+                        treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
+                except ObjectDoesNotExist:
+                    # Ignore keywords not actually used?
+                    pass
 
         filtered = queryset.filter(Q(keywords__in=treeqs))
         return filtered
-
-    def filter_bbox(self, queryset, extent_filter):
-        from geonode.utils import bbox_to_projection
-        bbox = extent_filter.split(',')
-        bbox = list(map(str, bbox))
-
-        intersects = (Q(bbox_x0__gte=bbox[0]) & Q(bbox_x1__lte=bbox[2]) &
-                      Q(bbox_y0__gte=bbox[1]) & Q(bbox_y1__lte=bbox[3]))
-
-        for proj in Layer.objects.order_by('srid').values('srid').distinct():
-            if proj['srid'] != 'EPSG:4326':
-                proj_bbox = bbox_to_projection(bbox + ['4326', ],
-                                               target_srid=int(proj['srid'][5:]))
-
-                if proj_bbox[-1] != 4326:
-                    intersects = intersects | (Q(bbox_x0__gte=proj_bbox[0]) & Q(bbox_x1__lte=proj_bbox[2]) & Q(
-                        bbox_y0__gte=proj_bbox[1]) & Q(bbox_y1__lte=proj_bbox[3]))
-
-        return queryset.filter(intersects)
 
     def build_haystack_filters(self, parameters):
         from haystack.inputs import Raw
@@ -521,7 +506,7 @@ class CommonModelApi(ModelResource):
             try:
                 page = paginator.page(
                     int(request.GET.get('offset') or 0) /
-                    int(request.GET.get('limit'), 0) + 1)
+                    int(request.GET.get('limit') or 0 + 1))
             except InvalidPage:
                 raise Http404("Sorry, no results on that page.")
 
@@ -762,7 +747,7 @@ class LayerResource(CommonModelApi):
             formatted_obj['owner__username'] = username
             formatted_obj['owner_name'] = full_name
             if obj.category:
-                formatted_obj['category__gn_description'] = obj.category.gn_description
+                formatted_obj['category__gn_description'] = _(obj.category.gn_description)
             if obj.group:
                 formatted_obj['group'] = obj.group
                 try:
@@ -964,7 +949,7 @@ class MapResource(CommonModelApi):
             formatted_obj['owner__username'] = username
             formatted_obj['owner_name'] = full_name
             if obj.category:
-                formatted_obj['category__gn_description'] = obj.category.gn_description
+                formatted_obj['category__gn_description'] = _(obj.category.gn_description)
             if obj.group:
                 formatted_obj['group'] = obj.group
                 try:
@@ -986,7 +971,7 @@ class MapResource(CommonModelApi):
             map_layers = obj.layers
             formatted_layers = []
             map_layer_fields = [
-                'id'
+                'id',
                 'stack_order',
                 'format',
                 'name',
@@ -1044,7 +1029,7 @@ class DocumentResource(CommonModelApi):
             formatted_obj['owner__username'] = username
             formatted_obj['owner_name'] = full_name
             if obj.category:
-                formatted_obj['category__gn_description'] = obj.category.gn_description
+                formatted_obj['category__gn_description'] = _(obj.category.gn_description)
             if obj.group:
                 formatted_obj['group'] = obj.group
                 try:
@@ -1064,9 +1049,12 @@ class DocumentResource(CommonModelApi):
 
             # replace thumbnail_url with curated_thumbs
             if hasattr(obj, 'curatedthumbnail'):
-                if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
-                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
-                else:
+                try:
+                    if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
+                        formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
+                    else:
+                        formatted_obj['thumbnail_url'] = ''
+                except Exception:
                     formatted_obj['thumbnail_url'] = ''
 
             formatted_objects.append(formatted_obj)

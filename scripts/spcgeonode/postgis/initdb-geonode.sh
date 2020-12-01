@@ -23,17 +23,26 @@ function create_geonode_user_and_geodatabase() {
 EOSQL
 }
 
+function update_database_with_postgis() {
+    local db=$1
+    echo "  Updating databse '$db' with extension"
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$db" <<-EOSQL
+        CREATE EXTENSION IF NOT EXISTS postgis;
+EOSQL
+}
+
 function update_geodatabase_with_postgis() {
 	local geonode_data=$1
 	echo "  Updating geodatabase '$geonode_data' with extension"
 	psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$geonode_data" <<-EOSQL
-		CREATE EXTENSION postgis;
+		CREATE EXTENSION IF NOT EXISTS postgis;
 EOSQL
 }
 
 if [ -n "$GEONODE_DATABASE" ]; then
 	echo "Geonode database creation requested: $GEONODE_DATABASE"
 	create_geonode_user_and_database $GEONODE_DATABASE
+    update_database_with_postgis $GEONODE_DATABASE
 	echo "Geonode database created"
 fi
 

@@ -27,55 +27,42 @@ import json
 import logging
 import traceback
 import requests
-from . import models
 
 from six import string_types
 from requests.auth import HTTPBasicAuth
 from django.conf import settings
 from django.db.models import Q
 from django.contrib.auth import get_user_model
-# from django.contrib.gis.geos import GEOSGeometry
+from django.core.exceptions import PermissionDenied
 from django.contrib.contenttypes.models import ContentType
-# from django.contrib.auth import login
 from django.contrib.auth.models import Group, Permission
 from django.core.exceptions import ObjectDoesNotExist
 from guardian.utils import get_user_obj_perms_model
 from guardian.shortcuts import assign_perm, get_anonymous_user
-from geonode.groups.models import GroupProfile
+
 from geonode.utils import get_layer_workspace
+from geonode.groups.models import GroupProfile
 
 logger = logging.getLogger("geonode.security.utils")
 
 
 def get_visible_resources(queryset,
                           user,
+                          request=None,
                           admin_approval_required=False,
                           unpublished_not_visible=False,
                           private_groups_not_visibile=False):
-    is_admin = False
-    is_manager = False
-    if user:
-        is_admin = user.is_superuser if user else False
-        try:
-            is_manager = user.groupmember_set.all().filter(role='manager').exists()
-        except Exception:
-            is_manager = False
-
     # Get the list of objects the user has access to
+    is_admin = user.is_superuser if user and user.is_authenticated else False
     anonymous_group = None
     public_groups = GroupProfile.objects.exclude(access="private").values('group')
     groups = []
     group_list_all = []
-    manager_groups = []
     try:
         group_list_all = user.group_list_all().values('group')
     except Exception:
         pass
-    try:
-        manager_groups = Group.objects.filter(
-            name__in=user.groupmember_set.filter(role="manager").values_list("group__slug", flat=True))
-    except Exception:
-        pass
+
     try:
         anonymous_group = Group.objects.get(name='anonymous')
         if anonymous_group and anonymous_group not in groups:
@@ -85,56 +72,52 @@ def get_visible_resources(queryset,
 
     filter_set = queryset
 
-    if admin_approval_required:
-        if not is_admin:
-            if is_manager:
-                filter_set = filter_set.filter(
-                    Q(is_published=True) |
-                    Q(group__in=groups) |
-                    Q(group__in=manager_groups) |
-                    Q(group__in=group_list_all) |
-                    Q(group__in=public_groups) |
-                    Q(owner__username__iexact=str(user)))
-            elif user:
-                filter_set = filter_set.filter(
-                    Q(is_published=True) |
-                    Q(group__in=groups) |
-                    Q(group__in=group_list_all) |
-                    Q(group__in=public_groups) |
-                    Q(owner__username__iexact=str(user)))
-            else:
+    if not is_admin:
+        if admin_approval_required:
+            if not user or user.is_anonymous:
                 filter_set = filter_set.filter(
                     Q(is_published=True) |
                     Q(group__in=public_groups) |
-                    Q(group__in=groups))
+                    Q(group__in=groups)
+                ).exclude(Q(is_approved=False))
 
-    if unpublished_not_visible:
-        if not is_admin:
-            if user:
-                filter_set = filter_set.exclude(
-                    Q(is_published=False) & ~(
-                        Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all)))
-            else:
+        # Hide Unpublished Resources to Anonymous Users
+        if unpublished_not_visible:
+            if not user or user.is_anonymous:
                 filter_set = filter_set.exclude(Q(is_published=False))
 
-    if private_groups_not_visibile:
-        if not is_admin:
+        # Hide Resources Belonging to Private Groups
+        if private_groups_not_visibile:
             private_groups = GroupProfile.objects.filter(access="private").values('group')
-            if user:
+            if user and user.is_authenticated:
                 filter_set = filter_set.exclude(
                     Q(group__in=private_groups) & ~(
-                        Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all)))
+                        Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all))
+                )
             else:
                 filter_set = filter_set.exclude(group__in=private_groups)
 
-    # Hide Dirty State Resources
-    if not is_admin:
-        if user:
+        # Hide Dirty State Resources
+        if user and user.is_authenticated:
             filter_set = filter_set.exclude(
                 Q(dirty_state=True) & ~(
-                    Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all)))
-        else:
+                    Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all))
+            )
+        elif not user or user.is_anonymous:
             filter_set = filter_set.exclude(Q(dirty_state=True))
+
+        if admin_approval_required or unpublished_not_visible or private_groups_not_visibile:
+            _allowed_resources = []
+            for _obj in filter_set.all():
+                try:
+                    resource = _obj.get_self_resource()
+                    if user.has_perm('base.view_resourcebase', resource) or \
+                    user.has_perm('view_resourcebase', resource):
+                        _allowed_resources.append(resource.id)
+                except (PermissionDenied, Exception) as e:
+                    logger.debug(e)
+            return filter_set.filter(id__in=_allowed_resources)
+
     return filter_set
 
 
@@ -142,9 +125,10 @@ def get_users_with_perms(obj):
     """
     Override of the Guardian get_users_with_perms
     """
+    from .models import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
-    PERMISSIONS_TO_FETCH = models.VIEW_PERMISSIONS + models.ADMIN_PERMISSIONS + models.LAYER_ADMIN_PERMISSIONS
+    PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
 
     for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
         permissions[perm.id] = perm.codename
@@ -463,30 +447,32 @@ def delete_layer_cache(layer_name):
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def set_geowebcache_invalidate_cache(layer_alternate):
+def set_geowebcache_invalidate_cache(layer_alternate, cat=None):
     """invalidate GeoWebCache Cache Rules"""
-    try:
-        url = settings.OGC_SERVER['default']['LOCATION']
-        user = settings.OGC_SERVER['default']['USER']
-        passwd = settings.OGC_SERVER['default']['PASSWORD']
-        # Check first that the rules does not exist already
-        """
-        curl -v -u admin:geoserver \
-            -H "Content-type: text/xml" \
-            -d "<truncateLayer><layerName>{layer_alternate}</layerName></truncateLayer>" \
-            http://localhost:8080/geoserver/gwc/rest/masstruncate
-        """
-        headers = {'Content-type': 'text/xml'}
-        payload = "<truncateLayer><layerName>%s</layerName></truncateLayer>" % layer_alternate
-        r = requests.post(url + 'gwc/rest/masstruncate',
-                          headers=headers,
-                          data=payload,
-                          auth=HTTPBasicAuth(user, passwd))
-        if (r.status_code < 200 or r.status_code > 201):
-            logger.debug("Could not Truncate GWC Cache for Layer '%s'." % layer_alternate)
-    except Exception:
-        tb = traceback.format_exc()
-        logger.debug(tb)
+    if layer_alternate is not None and len(layer_alternate) and "None" not in layer_alternate:
+        try:
+            if cat is None or cat.get_layer(layer_alternate) is not None:
+                url = settings.OGC_SERVER['default']['LOCATION']
+                user = settings.OGC_SERVER['default']['USER']
+                passwd = settings.OGC_SERVER['default']['PASSWORD']
+                """
+                curl -v -u admin:geoserver \
+                -H "Content-type: text/xml" \
+                -d "<truncateLayer><layerName>{layer_alternate}</layerName></truncateLayer>" \
+                http://localhost:8080/geoserver/gwc/rest/masstruncate
+                """
+                headers = {'Content-type': 'text/xml'}
+                payload = "<truncateLayer><layerName>%s</layerName></truncateLayer>" % layer_alternate
+                r = requests.post(
+                    url + 'gwc/rest/masstruncate',
+                    headers=headers,
+                    data=payload,
+                    auth=HTTPBasicAuth(user, passwd))
+                if (r.status_code < 200 or r.status_code > 201):
+                    logger.debug("Could not Truncate GWC Cache for Layer '%s'." % layer_alternate)
+        except Exception:
+            tb = traceback.format_exc()
+            logger.debug(tb)
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -546,7 +532,7 @@ def set_geofence_all(instance):
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def sync_geofence_with_guardian(layer, perms, user=None, group=None):
+def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms=None):
     """
     Sync Guardian permissions to GeoFence.
     """
@@ -554,8 +540,6 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
     _layer_workspace = get_layer_workspace(layer)
     # Create new rule-set
     gf_services = {}
-    gf_services["*"] = 'download_resourcebase' in perms and \
-        ('view_resourcebase' in perms or 'change_layer_style' in perms)
     gf_services["WMS"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
     gf_services["GWC"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
     gf_services["WFS"] = ('download_resourcebase' in perms or 'change_layer_data' in perms) \
@@ -563,7 +547,26 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
     gf_services["WCS"] = ('download_resourcebase' in perms or 'change_layer_data' in perms) \
         and not layer.is_vector()
     gf_services["WPS"] = 'download_resourcebase' in perms or 'change_layer_data' in perms
+    gf_services["*"] = 'download_resourcebase' in perms and \
+        ('view_resourcebase' in perms or 'change_layer_style' in perms)
 
+    gf_requests = {}
+    if 'change_layer_data' not in perms:
+        _skip_perm = False
+        if user and group_perms:
+            if isinstance(user, string_types):
+                user = get_user_model().objects.get(username=user)
+            user_groups = list(user.groups.all().values_list('name', flat=True))
+            for _group, _perm in group_perms.items():
+                if 'change_layer_data' in _perm and _group in user_groups:
+                    _skip_perm = True
+                    break
+        if not _skip_perm:
+            gf_requests["WFS"] = {
+                "TRANSACTION": False,
+                "LOCKFEATURE": False,
+                "GETFEATUREWITHLOCK": False
+            }
     _user = None
     _group = None
     _disable_layer_cache = False
@@ -593,6 +596,11 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
         # delete_layer_cache('{}:{}'.format(_layer_workspace, _layer_name))
         filters = None
         formats = None
+        # Re-order dictionary
+        # - if geo-limits have been defined for this user/group, the "*" rule must be the first one
+        gf_services_limits_first = {"*": gf_services.pop('*')}
+        gf_services_limits_first.update(gf_services)
+        gf_services = gf_services_limits_first
     else:
         filters = [{
             "styleParameterFilter": {
@@ -616,18 +624,30 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
                 _wkt = None
                 if users_geolimits and users_geolimits.count():
                     _wkt = users_geolimits.last().wkt
+                if service in gf_requests:
+                    for request, enabled in gf_requests[service].items():
+                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                                              service, request=request, user=_user, allow=enabled)
                 _update_geofence_rule(layer, _layer_name, _layer_workspace, service, user=_user, geo_limit=_wkt)
             elif not _group:
                 logger.debug("Adding to geofence the rule: %s %s *" % (layer, service))
                 _wkt = None
                 if anonymous_geolimits and anonymous_geolimits.count():
                     _wkt = anonymous_geolimits.last().wkt
+                if service in gf_requests:
+                    for request, enabled in gf_requests[service].items():
+                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                                              service, request=request, user=_user, allow=enabled)
                 _update_geofence_rule(layer, _layer_name, _layer_workspace, service, geo_limit=_wkt)
             if _group:
                 logger.debug("Adding 'group' to geofence the rule: %s %s %s" % (layer, service, _group))
                 _wkt = None
                 if groups_geolimits and groups_geolimits.count():
                     _wkt = groups_geolimits.last().wkt
+                if service in gf_requests:
+                    for request, enabled in gf_requests[service].items():
+                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                                              service, request=request, group=_group, allow=enabled)
                 _update_geofence_rule(layer, _layer_name, _layer_workspace, service, group=_group, geo_limit=_wkt)
     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
         set_geofence_invalidate_cache()
@@ -635,16 +655,28 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
         layer.set_dirty_state()
 
 
-def set_owner_permissions(resource):
+def set_owner_permissions(resource, members=None):
     """assign all admin permissions to the owner"""
+    from .models import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS)
     if resource.polymorphic_ctype:
-        # Set the GeoFence Owner Rule
-        admin_perms = models.VIEW_PERMISSIONS + models.ADMIN_PERMISSIONS
-        if resource.polymorphic_ctype.name == 'layer':
-            for perm in models.LAYER_ADMIN_PERMISSIONS:
-                assign_perm(perm, resource.owner, resource.layer)
+        # Owner & Manager Admin Perms
+        admin_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
         for perm in admin_perms:
-            assign_perm(perm, resource.owner, resource.get_self_resource())
+            if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
+                assign_perm(perm, resource.owner, resource.get_self_resource())
+            elif perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
+                assign_perm(perm, resource.owner, resource.get_self_resource())
+            if members:
+                for user in members:
+                    assign_perm(perm, user, resource.get_self_resource())
+
+        # Set the GeoFence Owner Rule
+        if resource.polymorphic_ctype.name == 'layer':
+            for perm in LAYER_ADMIN_PERMISSIONS:
+                assign_perm(perm, resource.owner, resource.layer)
+                if members:
+                    for user in members:
+                        assign_perm(perm, user, resource.layer)
 
 
 def remove_object_permissions(instance):
@@ -684,7 +716,7 @@ def remove_object_permissions(instance):
 
 
 def _get_geofence_payload(layer, layer_name, workspace, access, user=None, group=None,
-                          service=None, geo_limit=None):
+                          service=None, request=None, geo_limit=None):
     highest_priority = get_highest_priority()
     root_el = etree.Element("Rule")
     username_el = etree.SubElement(root_el, "userName")
@@ -704,19 +736,10 @@ def _get_geofence_payload(layer, layer_name, workspace, access, user=None, group
     if service is not None and service != "*":
         service_el = etree.SubElement(root_el, "service")
         service_el.text = service
+    if request is not None and request != "*":
+        service_el = etree.SubElement(root_el, "request")
+        service_el.text = request
     if service and service == "*" and geo_limit is not None and geo_limit != "":
-        # if getattr(layer, 'storeType', None) == 'coverageStore' and getattr(layer, 'srid', None):
-        #     native_crs = layer.srid
-        #     if native_crs != 'EPSG:4326':
-        #         try:
-        #             _native_srid = int(native_crs[5:])
-        #             _wkt_wgs84 = geo_limit.split(';')[1]
-        #             _poly = GEOSGeometry(_wkt_wgs84, srid=4326)
-        #             _poly.transform(_native_srid)
-        #             geo_limit = _poly.ewkt
-        #         except Exception as e:
-        #             traceback.print_exc()
-        #             logger.exception(e)
         access_el = etree.SubElement(root_el, "access")
         access_el.text = "LIMIT"
         limits = etree.SubElement(root_el, "limits")
@@ -730,15 +753,19 @@ def _get_geofence_payload(layer, layer_name, workspace, access, user=None, group
     return etree.tostring(root_el)
 
 
-def _update_geofence_rule(layer, layer_name, workspace, service, user=None, group=None, geo_limit=None):
+def _update_geofence_rule(layer, layer_name, workspace,
+                          service, request=None,
+                          user=None, group=None,
+                          geo_limit=None, allow=True):
     payload = _get_geofence_payload(
         layer=layer,
         layer_name=layer_name,
         workspace=workspace,
-        access="ALLOW",
+        access="ALLOW" if allow else "DENY",
         user=user,
         group=group,
         service=service,
+        request=request,
         geo_limit=geo_limit
     )
     logger.debug("request data: {}".format(payload))

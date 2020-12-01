@@ -48,7 +48,7 @@
               </h4>
             </div>
           </div>
-          <em ng-if="item.online && item.store_type == 'remoteStore'">
+          <em ng-if="item.store_type == 'remoteStore'">
             {% endverbatim %}
             <span ng-if="item.online == true"><i class="fa fa-power-off text-success"></i> {% trans "Service is" %} {% trans "online" %}</span>
             <span ng-if="item.online == false"><i class="fa fa-power-off text-danger"></i> {% trans "Service is" %} {% trans "offline" %}</span>
@@ -62,7 +62,8 @@
           <div class="alert alert-danger" ng-if="item.dirty_state == false && item.is_approved == true && item.is_published == false">{% trans "UNPUBLISHED" %}</div>
           {% verbatim %}
 
-          <p class="abstract">{{ item.abstract | limitTo: 300 }}{{ item.abstract.length  > 300 ? '...' : ''}}</p>
+          <div class="abstract" ng-bind-html="item.abstract | limitTo: 300"></div>
+          <p class="abstract">{{ item.abstract.length  > 300 ? '...' : ''}}</p>
           <div class="row">
             <div class="col-lg-12 item-items">
               <ul class="list-inline">
