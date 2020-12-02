@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from drf_yasg.utils import swagger_auto_schema
+from drf_spectacular.utils import extend_schema
 
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
@@ -55,8 +55,8 @@ class DocumentViewSet(DynamicModelViewSet):
     serializer_class = DocumentSerializer
     pagination_class = GeoNodeApiPagination
 
-    @swagger_auto_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
-                         operation_description="API endpoint allowing to retrieve the DocumentResourceLink(s).")
+    @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
+                   description="API endpoint allowing to retrieve the DocumentResourceLink(s).")
     @action(detail=True, methods=['get'])
     def linked_resources(self, request, pk=None):
         document = self.get_object()

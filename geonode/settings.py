@@ -490,7 +490,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework_gis',
     'dynamic_rest',
-    'drf_yasg',
+    'drf_spectacular',
 
     # Theme
     'django_forms_bootstrap',
@@ -537,6 +537,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         'dynamic_rest.renderers.DynamicBrowsableAPIRenderer',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 REST_API_DEFAULT_PAGE = os.getenv('REST_API_DEFAULT_PAGE', 1)

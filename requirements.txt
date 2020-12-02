@@ -25,6 +25,8 @@ tqdm==4.53.0
 Deprecated==1.2.10
 wrapt==1.12.1
 jsonfield==3.1.0
+jsonschema==3.2.0
+pyrsistent==0.17.3
 
 # Django Apps
 django-allauth==0.43.0
@@ -76,7 +78,7 @@ djangorestframework-gis==0.16
 djangorestframework-guardian==0.3.0
 drf-extensions==0.6.0
 drf-writable-nested==0.6.2
-drf-yasg==1.20.0
+drf-spectacular==0.11.1
 dynamic-rest==2.0.0
 Markdown==3.3.3
 

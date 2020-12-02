@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from drf_yasg.utils import swagger_auto_schema
+from drf_spectacular.utils import extend_schema
 
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
@@ -53,16 +53,16 @@ class MapViewSet(DynamicModelViewSet):
     serializer_class = MapSerializer
     pagination_class = GeoNodeApiPagination
 
-    @swagger_auto_schema(methods=['get'], responses={200: MapLayerSerializer(many=True)},
-                         operation_description="API endpoint allowing to retrieve the MapLayers list.")
+    @extend_schema(methods=['get'], responses={200: MapLayerSerializer(many=True)},
+                   description="API endpoint allowing to retrieve the MapLayers list.")
     @action(detail=True, methods=['get'])
     def layers(self, request, pk=None):
         map = self.get_object()
         resources = map.layers
         return Response(MapLayerSerializer(embed=True, many=True).to_representation(resources))
 
-    @swagger_auto_schema(methods=['get'], responses={200: LayerSerializer(many=True)},
-                         operation_description="API endpoint allowing to retrieve the local MapLayers.")
+    @extend_schema(methods=['get'], responses={200: LayerSerializer(many=True)},
+                   description="API endpoint allowing to retrieve the local MapLayers.")
     @action(detail=True, methods=['get'])
     def local_layers(self, request, pk=None):
         map = self.get_object()
