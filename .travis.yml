@@ -83,7 +83,7 @@ jobs:
           - ON_TRAVIS: 'True'
           - TEST_RUNNER_KEEPDB: 'True'
           - TEST_RUN_INTEGRATION: 'True'
-          - TEST_RUN_INTEGRATION_SERVER: 'True'
+          - TEST_RUN_INTEGRATION_SERVER: 'False'
           - TEST_RUN_INTEGRATION_UPLOAD: 'False'
           - TEST_RUN_INTEGRATION_MONITORING: 'False'
           - TEST_RUN_INTEGRATION_CSW: 'True'
