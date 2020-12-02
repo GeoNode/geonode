@@ -847,6 +847,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         null=True,
         blank=True)
 
+    resource_type = models.CharField(
+        _('Resource Type'),
+        max_length=1024,
+        blank=True,
+        null=True)
+
     __is_approved = False
     __is_published = False
 
@@ -901,6 +907,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         Send a notification when a resource is created or updated
         """
+        if not self.resource_type and self.polymorphic_ctype:
+            self.resource_type = self.polymorphic_ctype.name
+
         if hasattr(self, 'class_name') and (self.pk is None or notify):
             if self.pk is None and self.title:
                 # Resource Created

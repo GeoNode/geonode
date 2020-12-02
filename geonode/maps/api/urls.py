@@ -21,6 +21,6 @@ from geonode.api.urls import router
 
 from . import views
 
-router.register(r'maps', views.MapViewSet)
+router.register(r'maps', views.MapViewSet, 'maps')
 
 urlpatterns = []
