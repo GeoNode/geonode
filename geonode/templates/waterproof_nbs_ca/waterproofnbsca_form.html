@@ -3,16 +3,27 @@
 {% load bootstrap_tags %}
 
 {% block body_outer %}
-  <h1>{% trans "Waterproof NBS CA" %}</h1>
-  <form method="post" action=".">
-    {% csrf_token %}
-    <div id="waterproof_nbs_ca">
-      {{ form|as_bootstrap }}
-    </div>    
-    <input type="submit" class="btn btn-primary" value="{% trans "Save" %}" />
-  </form>  
-{% endblock %}
+<h1>{% trans "Waterproof NBS CA" %}</h1>
+<form>
+    <div class="form-group">
+        <label>{% trans "Name" %}</label>
+        <input type="text" class="form-control" id="title" placeholder="Enter title">
+    </div>
+    <div class="form-group">
+        <label>{% trans "Description" %}</label>
+        <textarea id="description" class="form-control" placeholder="Enter description"></textarea>
+    </div>
+    <div class="form-group">
+        <label>Shapefile</label>
+        <input type="file" id="shapefile" class="form-control-file">
+    </div>
+    <button type="button" id="submit" class="btn btn-primary">Submit</button>
+</form>
 
+{% endblock %}
 {% block extra_script %}
-  <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
+<script>
+    var token = '{{ csrf_token }}';
+</script>
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
 {% endblock %}
