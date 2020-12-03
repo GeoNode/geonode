@@ -31,7 +31,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
 from geonode.base.models import ResourceBase
-from geonode.base.api.filters import DynamicSearchFilter
+from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.security.utils import get_visible_resources
 
@@ -137,7 +137,10 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter, ResourceBasePermissionsFilter]
+    filter_backends = [
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
+        ExtentFilter, ResourceBasePermissionsFilter
+    ]
     queryset = ResourceBase.objects.all()
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination

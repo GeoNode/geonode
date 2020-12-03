@@ -38,7 +38,7 @@ from geonode.base.populate_test_data import create_models
 logger = logging.getLogger(__name__)
 
 
-class BaseApiTests(APITestCase, URLPatternsTestCase):
+class MapsApiTests(APITestCase, URLPatternsTestCase):
 
     fixtures = [
         'initial_data.json',
@@ -47,6 +47,9 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
     ]
 
     urlpatterns = [
+        url(r'^home/$',
+            TemplateView.as_view(template_name='index.html'),
+            name='home'),
         url(r'^help/$',
             TemplateView.as_view(template_name='help.html'),
             name='help'),

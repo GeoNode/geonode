@@ -47,6 +47,9 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
     ]
 
     urlpatterns = [
+        url(r'^home/$',
+            TemplateView.as_view(template_name='index.html'),
+            name='home'),
         url(r'^help/$',
             TemplateView.as_view(template_name='help.html'),
             name='help'),
@@ -261,6 +264,38 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.data['total'], 9)
         # Pagination
         self.assertEqual(len(response.data['resources']), 9)
+
+        # Extent Filter
+        response = self.client.get(f"{url}?page_size=26&extent=-180,-90,180,90", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.data['total'], 26)
+        # Pagination
+        self.assertEqual(len(response.data['resources']), 26)
+
+        response = self.client.get(f"{url}?page_size=26&extent=0,0,100,100", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.data['total'], 26)
+        # Pagination
+        self.assertEqual(len(response.data['resources']), 26)
+
+        response = self.client.get(f"{url}?page_size=26&extent=-10,-10,-1,-1", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.data['total'], 12)
+        # Pagination
+        self.assertEqual(len(response.data['resources']), 12)
+
+        # Extent Filter: Crossing Dateline
+        extent = "-180.0000,56.9689,-162.5977,70.7435,155.9180,56.9689,180.0000,70.7435"
+        response = self.client.get(
+            f"{url}?page_size=26&extent={extent}", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.data['total'], 12)
+        # Pagination
+        self.assertEqual(len(response.data['resources']), 12)
 
         # Sorting
         # Admin
