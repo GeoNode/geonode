@@ -907,8 +907,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         Send a notification when a resource is created or updated
         """
-        if not self.resource_type and self.polymorphic_ctype:
-            self.resource_type = self.polymorphic_ctype.name
+        if not self.resource_type and self.polymorphic_ctype and \
+        self.polymorphic_ctype.model:
+            self.resource_type = self.polymorphic_ctype.model.lower()
 
         if hasattr(self, 'class_name') and (self.pk is None or notify):
             if self.pk is None and self.title:
