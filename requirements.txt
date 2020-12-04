@@ -86,10 +86,10 @@ pinax-notifications==6.0.0
 pinax-ratings==4.0.0
 
 # GeoNode org maintained apps.
-# django_mapstore_adapter==2.0.6
-# django-geonode-mapstore-client==2.0.9
--e git+https://github.com/GeoNode/geonode-mapstore-client.git@rest_api_v2_geonode_apps#egg=django_geonode_mapstore_client
--e git+https://github.com/GeoNode/django-mapstore-adapter.git@rest_api_v2_geonode_apps#egg=django_mapstore_adapter
+# django_mapstore_adapter>=2.0.7
+# django-geonode-mapstore-client>=2.0.10
+-e git+https://github.com/GeoNode/geonode-mapstore-client.git@master#egg=django_geonode_mapstore_client
+-e git+https://github.com/GeoNode/django-mapstore-adapter.git@master#egg=django_mapstore_adapter
 geonode-avatar==5.0.7
 django-geonode-client==1.0.9
 geonode-oauth-toolkit==2.1.0
