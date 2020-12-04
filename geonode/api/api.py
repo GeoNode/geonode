@@ -122,7 +122,8 @@ class CountJSONSerializer(Serializer):
         else:
             counts = list(resources.values(options['count_type']).annotate(count=Count(options['count_type'])))
 
-        return dict([(c[options['count_type']], c['count']) for c in counts])
+        return dict(
+            [(c[options['count_type']], c['count']) for c in counts if c and c['count'] and options['count_type']])
 
     def to_json(self, data, options=None):
         options = options or {}

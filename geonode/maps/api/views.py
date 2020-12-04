@@ -17,11 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-<<<<<<< HEAD
-from drf_yasg.utils import swagger_auto_schema
-=======
 from drf_spectacular.utils import extend_schema
->>>>>>> 71577b9ae4f5fbea7c943173c50efc0773aa9e25
 
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
@@ -32,11 +28,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthentic
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
-<<<<<<< HEAD
-from geonode.base.api.filters import DynamicSearchFilter
-=======
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
->>>>>>> 71577b9ae4f5fbea7c943173c50efc0773aa9e25
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.layers.api.serializers import LayerSerializer
@@ -56,38 +48,24 @@ class MapViewSet(DynamicModelViewSet):
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-<<<<<<< HEAD
-    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter, MapPermissionsFilter]
-=======
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
         ExtentFilter, MapPermissionsFilter
     ]
->>>>>>> 71577b9ae4f5fbea7c943173c50efc0773aa9e25
     queryset = Map.objects.all()
     serializer_class = MapSerializer
     pagination_class = GeoNodeApiPagination
 
-<<<<<<< HEAD
-    @swagger_auto_schema(methods=['get'], responses={200: MapLayerSerializer(many=True)},
-                         operation_description="API endpoint allowing to retrieve the MapLayers list.")
-=======
     @extend_schema(methods=['get'], responses={200: MapLayerSerializer(many=True)},
                    description="API endpoint allowing to retrieve the MapLayers list.")
->>>>>>> 71577b9ae4f5fbea7c943173c50efc0773aa9e25
     @action(detail=True, methods=['get'])
     def layers(self, request, pk=None):
         map = self.get_object()
         resources = map.layers
         return Response(MapLayerSerializer(embed=True, many=True).to_representation(resources))
 
-<<<<<<< HEAD
-    @swagger_auto_schema(methods=['get'], responses={200: LayerSerializer(many=True)},
-                         operation_description="API endpoint allowing to retrieve the local MapLayers.")
-=======
     @extend_schema(methods=['get'], responses={200: LayerSerializer(many=True)},
                    description="API endpoint allowing to retrieve the local MapLayers.")
->>>>>>> 71577b9ae4f5fbea7c943173c50efc0773aa9e25
     @action(detail=True, methods=['get'])
     def local_layers(self, request, pk=None):
         map = self.get_object()
