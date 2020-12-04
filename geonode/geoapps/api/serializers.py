@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import six
 import json
 
 from django.contrib.auth import get_user_model
@@ -54,7 +55,11 @@ class GeoAppDataSerializer(DynamicModelSerializer):
 
     def to_representation(self, value):
         data = GeoAppData.objects.filter(resource__id=value).first()
-        return json.loads(data.blob) if data else {}
+        if data and data.blob:
+            if isinstance(data.blob, dict):
+                return data.blob
+            return json.loads(data.blob)
+        return {}
 
 
 class GeoAppSerializer(ResourceBaseSerializer):
@@ -73,6 +78,8 @@ class GeoAppSerializer(ResourceBaseSerializer):
         )
 
     def to_internal_value(self, data):
+        if isinstance(data, six.string_types):
+            data = json.loads(data)
         if 'data' in data:
             _data = data.pop('data')
             if self.is_valid():

@@ -197,7 +197,11 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         # Pagination
         self.assertEqual(len(response.data['resources']), 17)
 
-        # Search
+    def test_search_resources(self):
+        """
+        Ensure we can search across the Resource Base list.
+        """
+        url = reverse('base-resources-list')
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
@@ -209,7 +213,11 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         # Pagination
         self.assertEqual(len(response.data['resources']), 1)
 
-        # Filtering
+    def test_filter_resources(self):
+        """
+        Ensure we can filter across the Resource Base list.
+        """
+        url = reverse('base-resources-list')
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
@@ -297,7 +305,11 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         # Pagination
         self.assertEqual(len(response.data['resources']), 12)
 
-        # Sorting
+    def test_sort_resources(self):
+        """
+        Ensure we can sort the Resource Base list.
+        """
+        url = reverse('base-resources-list')
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
@@ -330,7 +342,11 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         reversed_resource_titles = sorted(resource_titles.copy())
         self.assertNotEqual(resource_titles, reversed_resource_titles)
 
-        # Get & Set Permissions
+    def test_perms_resources(self):
+        """
+        Ensure we can Get & Set Permissions across the Resource Base list.
+        """
+        url = reverse('base-resources-list')
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
@@ -371,3 +387,43 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
         self.assertFalse('norman' in resource_perm_spec['users'])
+
+    def test_featured_and_published_resources(self):
+        """
+        Ensure we can Get & Set Permissions across the Resource Base list.
+        """
+        url = reverse('base-resources-list')
+        # Admin
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+
+        resources = ResourceBase.objects.filter(owner__username='bobby')
+
+        url = urljoin(f"{reverse('base-resources-list')}/", 'featured/')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.data['total'], 0)
+        # Pagination
+        self.assertEqual(len(response.data['resources']), 0)
+
+        resources.filter(resource_type='map').update(featured=True)
+        url = urljoin(f"{reverse('base-resources-list')}/", 'featured/')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.data['total'], 2)
+        # Pagination
+        self.assertEqual(len(response.data['resources']), 2)
+
+    def test_resource_types(self):
+        """
+        Ensure we can Get & Set Permissions across the Resource Base list.
+        """
+        url = urljoin(f"{reverse('base-resources-list')}/", 'resource_types/')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('resource_types' in response.data)
+        self.assertTrue('layer' in response.data['resource_types'])
+        self.assertTrue('map' in response.data['resource_types'])
+        self.assertTrue('document' in response.data['resource_types'])
+        self.assertTrue('service' in response.data['resource_types'])
