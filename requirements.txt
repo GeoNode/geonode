@@ -29,7 +29,7 @@ jsonschema==3.2.0
 pyrsistent==0.17.3
 
 # Django Apps
-django-allauth==0.43.0
+django-allauth==0.44.0
 django-appconf==1.0.4
 django-filter==2.4.0
 django-imagekit==4.0.2
