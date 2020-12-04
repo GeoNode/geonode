@@ -18,8 +18,8 @@
 #
 #########################################################################
 
-import datetime
 import os
+import datetime
 import subprocess
 
 
@@ -51,8 +51,9 @@ def get_version(version=None):
 
 def version(request, version=None):
     from django.http import HttpResponse
+    from django.utils.html import escape
     _v = get_version(version=version)
-    return HttpResponse(_v)
+    return HttpResponse(escape(_v))
 
 
 def get_git_changeset():

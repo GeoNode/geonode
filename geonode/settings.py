@@ -486,6 +486,12 @@ INSTALLED_APPS = (
     'floppyforms',
     'tinymce',
 
+    # REST APIs
+    'rest_framework',
+    'rest_framework_gis',
+    'dynamic_rest',
+    'drf_spectacular',
+
     # Theme
     'django_forms_bootstrap',
 
@@ -522,11 +528,67 @@ MARKDOWNIFY_WHITELIST_TAGS = os.getenv('MARKDOWNIFY_WHITELIST_TAGS', markdown_wh
 INSTALLED_APPS += GEONODE_APPS
 
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'dynamic_rest.renderers.DynamicBrowsableAPIRenderer',
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+REST_API_DEFAULT_PAGE = os.getenv('REST_API_DEFAULT_PAGE', 1)
+REST_API_DEFAULT_PAGE_SIZE = os.getenv('REST_API_DEFAULT_PAGE_SIZE', 10)
+REST_API_DEFAULT_PAGE_QUERY_PARAM = os.getenv('REST_API_DEFAULT_PAGE_QUERY_PARAM', 'page_size')
+
+DYNAMIC_REST = {
+    # DEBUG: enable/disable internal debugging
+    'DEBUG': False,
+
+    # ENABLE_BROWSABLE_API: enable/disable the browsable API.
+    # It can be useful to disable it in production.
+    'ENABLE_BROWSABLE_API': True,
+
+    # ENABLE_LINKS: enable/disable relationship links
+    'ENABLE_LINKS': False,
+
+    # ENABLE_SERIALIZER_CACHE: enable/disable caching of related serializers
+    'ENABLE_SERIALIZER_CACHE': False,
+
+    # ENABLE_SERIALIZER_OPTIMIZATIONS: enable/disable representation speedups
+    'ENABLE_SERIALIZER_OPTIMIZATIONS': True,
+
+    # DEFER_MANY_RELATIONS: automatically defer many-relations, unless 
+    # `deferred=False` is explicitly set on the field.
+    'DEFER_MANY_RELATIONS': False,
+
+    # MAX_PAGE_SIZE: global setting for max page size.
+    # Can be overriden at the viewset level.
+    'MAX_PAGE_SIZE': None,
+
+    # PAGE_QUERY_PARAM: global setting for the pagination query parameter.
+    # Can be overriden at the viewset level.
+    'PAGE_QUERY_PARAM': 'page',
+
+    # PAGE_SIZE: global setting for page size.
+    # Can be overriden at the viewset level.
+    'PAGE_SIZE': None,
+
+    # PAGE_SIZE_QUERY_PARAM: global setting for the page size query parameter.
+    # Can be overriden at the viewset level.
+    'PAGE_SIZE_QUERY_PARAM': 'per_page',
+
+    # ADDITIONAL_PRIMARY_RESOURCE_PREFIX: String to prefix additional
+    # instances of the primary resource when sideloading.
+    'ADDITIONAL_PRIMARY_RESOURCE_PREFIX': '+',
+
+    # Enables host-relative links.  Only compatible with resources registered
+    # through the dynamic router.  If a resource doesn't have a canonical
+    # path registered, links will default back to being resource-relative urls
+    'ENABLE_HOST_RELATIVE_LINKS': True
 }
 
 GRAPPELLI_ADMIN_TITLE = os.getenv('GRAPPELLI_ADMIN_TITLE', 'GeoNode')

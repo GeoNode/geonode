@@ -179,6 +179,7 @@ def create_models(type=None, integration=False):
                         category=category,
                         )
                 m.save()
+                m.set_default_permissions()
                 obj_ids.append(m.id)
                 for kw in kws:
                     m.keywords.add(kw)
@@ -195,6 +196,7 @@ def create_models(type=None, integration=False):
                              category=category,
                              doc_file=f)
                 m.save()
+                m.set_default_permissions()
                 obj_ids.append(m.id)
                 for kw in kws:
                     m.keywords.add(kw)
@@ -218,6 +220,7 @@ def create_models(type=None, integration=False):
                               storeType=storeType,
                               category=category)
                 layer.save()
+                layer.set_default_permissions()
                 obj_ids.append(layer.id)
                 for kw in kws:
                     layer.keywords.add(kw)

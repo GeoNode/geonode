@@ -97,3 +97,5 @@ scripts/spcgeonode/_volume_*
 /geonode/development.db-journal
 
 /output.bin
+
+/worker.state
