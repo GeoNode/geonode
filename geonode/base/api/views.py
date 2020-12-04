@@ -20,7 +20,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from drf_yasg.utils import swagger_auto_schema
+from drf_spectacular.utils import extend_schema
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
@@ -31,7 +31,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
 from geonode.base.models import ResourceBase
-from geonode.base.api.filters import DynamicSearchFilter
+from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.security.utils import get_visible_resources
 
@@ -70,8 +70,8 @@ class UserViewSet(DynamicModelViewSet):
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
 
-    @swagger_auto_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
-                         operation_description="API endpoint allowing to retrieve the Resources visible to the user.")
+    @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
+                   description="API endpoint allowing to retrieve the Resources visible to the user.")
     @action(detail=True, methods=['get'])
     def resources(self, request, pk=None):
         user = self.get_object()
@@ -86,8 +86,8 @@ class UserViewSet(DynamicModelViewSet):
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
         return Response(ResourceBaseSerializer(embed=True, many=True).to_representation(resources))
 
-    @swagger_auto_schema(methods=['get'], responses={200: GroupProfileSerializer(many=True)},
-                         operation_description="API endpoint allowing to retrieve the Groups the user is member of.")
+    @extend_schema(methods=['get'], responses={200: GroupProfileSerializer(many=True)},
+                   description="API endpoint allowing to retrieve the Groups the user is member of.")
     @action(detail=True, methods=['get'])
     def groups(self, request, pk=None):
         user = self.get_object()
@@ -106,24 +106,24 @@ class GroupViewSet(DynamicModelViewSet):
     serializer_class = GroupProfileSerializer
     pagination_class = GeoNodeApiPagination
 
-    @swagger_auto_schema(methods=['get'], responses={200: UserSerializer(many=True)},
-                         operation_description="API endpoint allowing to retrieve the Group members.")
+    @extend_schema(methods=['get'], responses={200: UserSerializer(many=True)},
+                   description="API endpoint allowing to retrieve the Group members.")
     @action(detail=True, methods=['get'])
     def members(self, request, pk=None):
         group = self.get_object()
         members = get_user_model().objects.filter(id__in=group.member_queryset().values_list("user", flat=True))
         return Response(UserSerializer(embed=True, many=True).to_representation(members))
 
-    @swagger_auto_schema(methods=['get'], responses={200: UserSerializer(many=True)},
-                         operation_description="API endpoint allowing to retrieve the Group managers.")
+    @extend_schema(methods=['get'], responses={200: UserSerializer(many=True)},
+                   description="API endpoint allowing to retrieve the Group managers.")
     @action(detail=True, methods=['get'])
     def managers(self, request, pk=None):
         group = self.get_object()
         managers = group.get_managers()
         return Response(UserSerializer(embed=True, many=True).to_representation(managers))
 
-    @swagger_auto_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
-                         operation_description="API endpoint allowing to retrieve the Group specific resources.")
+    @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
+                   description="API endpoint allowing to retrieve the Group specific resources.")
     @action(detail=True, methods=['get'])
     def resources(self, request, pk=None):
         group = self.get_object()
@@ -137,13 +137,16 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter, ResourceBasePermissionsFilter]
+    filter_backends = [
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
+        ExtentFilter, ResourceBasePermissionsFilter
+    ]
     queryset = ResourceBase.objects.all()
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination
 
-    @swagger_auto_schema(methods=['get'], responses={200: PermSpecSerialiazer()},
-                         operation_description="""
+    @extend_schema(methods=['get'], responses={200: PermSpecSerialiazer()},
+                   description="""
         Gets an object's the permission levels based on the perm_spec JSON.
 
         the mapping looks like:
@@ -180,10 +183,10 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 perms_spec_obj["groups"][str(group)] = perms
         return Response(perms_spec_obj)
 
-    @swagger_auto_schema(methods=['put'],
-                         request_body=PermSpecSerialiazer(),
-                         responses={200: None},
-                         operation_description="""
+    @extend_schema(methods=['put'],
+                   request=PermSpecSerialiazer(),
+                   responses={200: None},
+                   description="""
         Sets an object's the permission levels based on the perm_spec JSON.
 
         the mapping looks like:

@@ -17,7 +17,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+<<<<<<< HEAD
 from drf_yasg.utils import swagger_auto_schema
+=======
+from drf_spectacular.utils import extend_schema
+>>>>>>> 71577b9ae4f5fbea7c943173c50efc0773aa9e25
 
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
@@ -28,7 +32,11 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthentic
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
+<<<<<<< HEAD
 from geonode.base.api.filters import DynamicSearchFilter
+=======
+from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
+>>>>>>> 71577b9ae4f5fbea7c943173c50efc0773aa9e25
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.documents.models import Document
@@ -50,13 +58,25 @@ class DocumentViewSet(DynamicModelViewSet):
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+<<<<<<< HEAD
     filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter, DocumentPermissionsFilter]
+=======
+    filter_backends = [
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
+        ExtentFilter, DocumentPermissionsFilter
+    ]
+>>>>>>> 71577b9ae4f5fbea7c943173c50efc0773aa9e25
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
     pagination_class = GeoNodeApiPagination
 
+<<<<<<< HEAD
     @swagger_auto_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
                          operation_description="API endpoint allowing to retrieve the DocumentResourceLink(s).")
+=======
+    @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
+                   description="API endpoint allowing to retrieve the DocumentResourceLink(s).")
+>>>>>>> 71577b9ae4f5fbea7c943173c50efc0773aa9e25
     @action(detail=True, methods=['get'])
     def linked_resources(self, request, pk=None):
         document = self.get_object()

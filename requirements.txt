@@ -1,6 +1,6 @@
 # native dependencies
 Pillow==8.0.1
-lxml==4.6.1
+lxml==4.6.2
 defusedxml==0.6.0
 psycopg2==2.8.6
 Django==2.2.16
@@ -19,15 +19,17 @@ decorator==4.4.2
 celery==5.0.2
 kombu==5.0.2
 vine==5.0.0
-boto3==1.16.16
+boto3==1.16.29
 six==1.15.0
-tqdm==4.53.0
+tqdm==4.54.0
 Deprecated==1.2.10
 wrapt==1.12.1
 jsonfield==3.1.0
+jsonschema==3.2.0
+pyrsistent==0.17.3
 
 # Django Apps
-django-allauth==0.43.0
+django-allauth==0.44.0
 django-appconf==1.0.4
 django-filter==2.4.0
 django-imagekit==4.0.2
@@ -43,10 +45,10 @@ django-downloadview==2.1.1
 django-polymorphic==3.0.0
 django-tastypie<0.15.0
 django-tinymce==3.1.0
-django-grappelli==2.14.2
+django-grappelli==2.14.3
 django-uuid-upload-path==1.0.0
 oauthlib==3.1.0
-pyopenssl==19.1.0
+pyopenssl==20.0.0
 
 # geopython dependencies
 pyproj==3.0.0.post1
@@ -71,12 +73,12 @@ django-invitations<1.9.4
 django-recaptcha==2.0.6
 
 # REST
-djangorestframework>=3.1.0,<3.12.3
-djangorestframework-gis>=0.16
-djangorestframework_guardian==0.3.0
+djangorestframework==3.11.2
+djangorestframework-gis==0.16
+djangorestframework-guardian==0.3.0
 drf-extensions==0.6.0
 drf-writable-nested==0.6.2
-drf-yasg==1.20.0
+drf-spectacular==0.11.1
 dynamic-rest==2.0.0
 Markdown==3.3.3
 
@@ -84,8 +86,8 @@ pinax-notifications==6.0.0
 pinax-ratings==4.0.0
 
 # GeoNode org maintained apps.
-# django_mapstore_adapter==2.0.4.7
-# django-geonode-mapstore-client==2.0.8.1
+# django_mapstore_adapter==2.0.6
+# django-geonode-mapstore-client==2.0.9
 -e git+https://github.com/GeoNode/geonode-mapstore-client.git@rest_api_v2_geonode_apps#egg=django_geonode_mapstore_client
 -e git+https://github.com/GeoNode/django-mapstore-adapter.git@rest_api_v2_geonode_apps#egg=django_mapstore_adapter
 geonode-avatar==5.0.7
@@ -151,7 +153,7 @@ splinter==0.14.0
 pytest-splinter==3.3.0
 pytest-django==4.1.0
 setuptools==50.3.2
-pip==20.2.4
+pip==20.3.1
 Twisted==20.3.0
 factory-boy==3.1.0
 flaky==3.7.0

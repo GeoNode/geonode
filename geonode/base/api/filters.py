@@ -17,10 +17,27 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from rest_framework.filters import SearchFilter
+import logging
+
+from rest_framework.filters import SearchFilter, BaseFilterBackend
+
+from geonode.base.bbox_utils import filter_bbox
+
+logger = logging.getLogger(__name__)
 
 
 class DynamicSearchFilter(SearchFilter):
 
     def get_search_fields(self, view, request):
         return request.GET.getlist('search_fields', [])
+
+
+class ExtentFilter(BaseFilterBackend):
+    """
+    Filter that only allows users to see their own objects.
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        if request.query_params.get('extent'):
+            return filter_bbox(queryset, request.query_params.get('extent'))
+        return queryset
