@@ -1799,9 +1799,10 @@ class CuratedThumbnail(models.Model):
             _upload_path = os.path.join(os.path.dirname(upload_path), actual_name)
             if not os.path.exists(_upload_path):
                 os.rename(upload_path, _upload_path)
+            return self.img_thumbnail.url
         except Exception as e:
             logger.exception(e)
-        return self.img_thumbnail.url
+        return ''
 
 
 class Configuration(SingletonModel):
