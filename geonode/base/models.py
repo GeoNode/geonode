@@ -880,8 +880,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return "{0}".format(self.title)
 
     def _remove_html_tags(self, attribute_str):
-        pattern = re.compile('<.*?>')
-        return re.sub(pattern, '', attribute_str)
+        try:
+            pattern = re.compile('<.*?>')
+            return re.sub(pattern, '', attribute_str)
+        except Exception:
+            return attribute_str
 
     @property
     def raw_abstract(self):
