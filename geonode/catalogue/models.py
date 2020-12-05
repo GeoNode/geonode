@@ -60,7 +60,8 @@ def catalogue_post_save(instance, sender, **kwargs):
     if not record:
         msg = ('Metadata record for %s does not exist,'
                ' check the catalogue signals.' % instance.title)
-        raise Exception(msg)
+        LOGGER.exception(msg)
+        return
 
     if not hasattr(record, 'links'):
         msg = ('Metadata record for %s should contain links.' % instance.title)
