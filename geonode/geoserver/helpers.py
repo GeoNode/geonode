@@ -925,7 +925,7 @@ def set_attributes(
                 la, created = Attribute.objects.get_or_create(layer=layer, attribute=field)
                 if created:
                     la.visible = ftype.find("gml:") != 0
-                    la.attribute_type = ftype,
+                    la.attribute_type = ftype
                     la.description = description
                     la.attribute_label = label
                     la.display_order = iter
