@@ -19,11 +19,24 @@
     </div>
     <button type="button" id="submit" class="btn btn-primary">Submit</button>
 </form>
+ <p>
+      Drag & drop your image
+    </p>
+    <div id="drag-items" class="col-md-2" style="height: 100px;">
+      <img src="https://cdn.icon-icons.com/icons2/1130/PNG/128/circle_80174.png" style="height:100px" draggable="true"/>
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAflBMVEX///8AAABYWFjIyMgPDw8EBATz8/P5+fn8/PwICAgUFBTT09Pv7+8vLy/29vbs7OyRkZGXl5fa2togICA5OTlERES+vr5NTU0YGBjQ0NCBgYFnZ2fh4eGoqKhfX18kJCSzs7N2dnaJiYk9PT0xMTG1tbVRUVGenp5xcXGpqam9Qj1dAAAC6UlEQVR4nO2Z61bCMBCEbaFARe6US4uIoFLe/wXV7IAUAqS5Hs/Z749SwQlpMrObPj0xDMMwDMMwDMMwjBmNRmD9ZjPoCBrNKAo5gl/9kCPoPkeC524Y/dUiAotVCP3BW3TibeBf/6UnpLNM/Oi9+Nbv74TwtNWail92fb/67flp6nEr5m2vA4iF6EQsvtVEvIh96he0/cb0akzbsfCnn0dVAyJDinJf+kMhl87+rsxScWnoR/9ViCWH82uHRFx89aG/Ia1R9eqIRrVxr4/Zvrrf+dV9ccOS1lt5/ZeSVubSrf54cXvPkzcsxi714Tly14M7ThxG44ACaHrD9/sUCz1n0YjcuZ18SMhpy41+O3s4xbhFmZNg6nxVAkAOYuGr42AAhdI2wzZ1EEzvikYDo3q3rb9VtlpY9dau/p6Kz73t96pyqPWttpK4NAP3VRIAckrLwYSCZ63+ifVFyWQGOrB5jb3doViw07PB3eoV/mgbbAQTyv66rQ9iwbxna31o/iMM/MMwmDCVOlUGahezng2LSa/OQizUWbxXrI02NOyjxva9pFQOADmIBWUDuyQ3NnXEgmbPRr2GWaxRLFx2MWpQB2Ya7FRG6PRsn4md0oYKqeSz7ucatILNizuUkmnNYMIe3lkob9s7DS+Bi5n6KAE3r+OmCEBbp3+IBfVoRJLZO//EmapqoqIDs3kCjJpGrWdDB1Z32d4Hm0qlZ+vEmhv3PrCV+PG2LrSt6z4w1ofGBut0cOA2VLL2rVF83SdXCLe94jzpUTyM943yStHiuL43t94wU98rehx3+I0SDx2YqxOeX+Bx8p4NpytuH/8gFmTnPAggl6d8d2WOQ3P+CLArn2hkto+HoFhq1VoDHZjtAJCDWDjv2VC3JV6eN/zEAo3grN6kDkyvetcBHcepZysdBoAcxEJZeZU1PJKdfWfMRxhGpxURiJ91X4TUF8m/T8PJp6I2WMbBcPyIjWEYhmEYhmEYhvkffANfaSbl+klaJwAAAABJRU5ErkJggg==" style="height:100px"draggable="true" />
+    </div>
+    <div id="container" class="col-md-9" style="background-color: rgba(0, 0, 0, 0.1);"></div>
+
 
 {% endblock %}
 {% block extra_script %}
 <script>
+
     var token = '{{ csrf_token }}';
+     
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/konva/7.2.0/konva.min.js"></script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
+
 {% endblock %}
