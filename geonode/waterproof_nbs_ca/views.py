@@ -23,13 +23,14 @@ from .models import RiosActivity
 from .models import RiosTransformation, TramsformationShapefile
 from .models import Countries
 from .models import Currency
-from django.contrib.gis.geos import Polygon,MultiPolygon,GEOSGeometry
+from django.contrib.gis.geos import Polygon, MultiPolygon, GEOSGeometry
+from django.contrib.gis.gdal import OGRGeometry
 from django.core import serializers
 from django.views import View
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 import json
-from shapely.geometry import shape, Point
+from shapely.geometry import shape, Point, Polygon
 logger = logging.getLogger(__name__)
 
 
@@ -38,16 +39,15 @@ def createNbs(request):
         title = request.POST.get('title')
         description = request.POST.get('description')
         image = request.FILES.get('shapefile')  # request.FILES used for to get files
-        imageJson=json.load(image)
+        imageJson = json.load(image)
         for feature in imageJson['features']:
-            polygonFile=shape(feature['geometry'])
-        print(title)
+            geom = GEOSGeometry(str(feature['geometry']))
 
         TramsformationShapefile.objects.create(
             name=title,
             action=description,
             activity=description,
-            polygon=polygonFile
+            polygon=GEOSGeometry(geom)
         )
 
         return render(request, 'waterproof_nbs_ca/waterproofnbsca_form.html')
@@ -55,6 +55,11 @@ def createNbs(request):
         nbs = WaterproofNbsCa.objects.all()
         return render(request, 'waterproof_nbs_ca/waterproofnbsca_form.html', {'nbs': nbs})
 
+
+def listNbs(request):
+    if request.method== 'GET':
+     nbs = WaterproofNbsCa.objects.all()
+     return render(request, 'waterproof_nbs_ca/waterproofnbsca_list.html', {'nbs': nbs})
 
 """
 class WaterproofNbsCaMixin(object):

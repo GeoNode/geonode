@@ -4,5 +4,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('create/', views.createNbs, name='create-nbs')
+    path('create/', views.createNbs, name='create-nbs'),
+    path('list/', views.listNbs, name='list-nbs')
 ]
