@@ -108,7 +108,7 @@ if not SITEURL.endswith('/'):
 #        path=os.path.join(PROJECT_ROOT, 'development.db')
 #    )
 #)
-# DATABASE_URL = 'postgresql://geonode:geonode_data@dev.skaphe.com:5432/geonode'
+DATABASE_URL = 'postgresql://localhost:5432/geonode'
 
 if DATABASE_URL.startswith("spatialite"):
     try:
@@ -141,7 +141,14 @@ if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
     })
 
 DATABASES = {
-    'default': _db_conf,    
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'geonode', 
+        'USER': 'postgres', 
+        'PASSWORD': 'Skaphe2020',
+        'HOST': '127.0.0.1', 
+        'PORT': '5432',
+    }
 }
 
 if os.getenv('DEFAULT_BACKEND_DATASTORE'):
