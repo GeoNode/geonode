@@ -639,6 +639,10 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
                         _update_geofence_rule(layer, _layer_name, _layer_workspace,
                                               service, request=request, user=_user, allow=enabled)
                 _update_geofence_rule(layer, _layer_name, _layer_workspace, service, geo_limit=_wkt)
+                if service in gf_requests:
+                    for request, enabled in gf_requests[service].items():
+                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                                              service, request=request, user=_user, allow=enabled)
             if _group:
                 logger.debug("Adding 'group' to geofence the rule: %s %s %s" % (layer, service, _group))
                 _wkt = None
@@ -649,6 +653,10 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
                         _update_geofence_rule(layer, _layer_name, _layer_workspace,
                                               service, request=request, group=_group, allow=enabled)
                 _update_geofence_rule(layer, _layer_name, _layer_workspace, service, group=_group, geo_limit=_wkt)
+                if service in gf_requests:
+                    for request, enabled in gf_requests[service].items():
+                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                                              service, request=request, group=_group, allow=enabled)
     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
         set_geofence_invalidate_cache()
     else:

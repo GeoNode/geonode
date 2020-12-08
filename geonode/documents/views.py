@@ -232,7 +232,7 @@ class DocumentUploadView(CreateView):
             self.object.is_approved = False
         if settings.RESOURCE_PUBLISHING:
             self.object.is_published = False
-        self.object.save(notify=True)
+        self.object.save()
         form.save_many2many()
         self.object.set_permissions(form.cleaned_data['permissions'])
 
@@ -258,12 +258,10 @@ class DocumentUploadView(CreateView):
 
         if abstract:
             self.object.abstract = abstract
-            self.object.save()
 
         if date:
             self.object.date = date
             self.object.date_type = "Creation"
-            self.object.save()
 
         if len(regions) > 0:
             self.object.regions.add(*regions)
@@ -286,6 +284,7 @@ class DocumentUploadView(CreateView):
             except Exception:
                 logger.error("Could not send slack message for new document.")
 
+        self.object.save(notify=True)
         register_event(self.request, EventType.EVENT_UPLOAD, self.object)
 
         if self.request.GET.get('no__redirect', False):

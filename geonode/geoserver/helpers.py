@@ -677,16 +677,21 @@ def gs_slurp(
         the_store = resource.store
         workspace = the_store.workspace
         try:
-            layer, created = Layer.objects.get_or_create(name=name, workspace=workspace.name, defaults={
-                # "workspace": workspace.name,
-                "store": the_store.name,
-                "storeType": the_store.resource_type,
-                "alternate": "%s:%s" % (workspace.name, resource.name),
-                "title": resource.title or 'No title provided',
-                "abstract": resource.abstract or "{}".format(_('No abstract provided')),
-                "owner": owner,
-                "uuid": str(uuid.uuid4())
-            })
+            created = False
+            layer = Layer.objects.filter(name=name, workspace=workspace.name).first()
+            if not layer:
+                layer = Layer.objects.create(
+                    name=name,
+                    workspace=workspace.name,
+                    store=the_store.name,
+                    storeType=the_store.resource_type,
+                    alternate="%s:%s" % (workspace.name, resource.name),
+                    title=resource.title or 'No title provided',
+                    abstract=resource.abstract or "{}".format(_('No abstract provided')),
+                    owner=owner,
+                    uuid=str(uuid.uuid4())
+                )
+                created = True
             bbox = resource.native_bbox
             layer.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], resource.projection)
 
@@ -914,10 +919,13 @@ def set_attributes(
         for attribute in attribute_map:
             field, ftype, description, label, display_order = attribute
             if field:
+                _gs_attrs = Attribute.objects.filter(layer=layer, attribute=field)
+                if _gs_attrs.count() > 1:
+                    _gs_attrs.delete()
                 la, created = Attribute.objects.get_or_create(layer=layer, attribute=field)
                 if created:
                     la.visible = ftype.find("gml:") != 0
-                    la.attribute_type = ftype,
+                    la.attribute_type = ftype
                     la.description = description
                     la.attribute_label = label
                     la.display_order = iter

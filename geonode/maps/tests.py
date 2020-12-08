@@ -1036,15 +1036,25 @@ class MapsNotificationsTestCase(NotificationsTestsHelper):
         self.u.is_active = True
         self.u.save()
         self.setup_notifications_for(MapsAppConfig.NOTIFICATIONS, self.u)
+        self.norman = get_user_model().objects.get(username='norman')
+        self.norman.email = 'norman@email.com'
+        self.norman.is_active = True
+        self.norman.save()
+        self.setup_notifications_for(MapsAppConfig.NOTIFICATIONS, self.norman)
 
     def testMapsNotifications(self):
-        with self.settings(PINAX_NOTIFICATIONS_QUEUE_ALL=True):
+        with self.settings(
+                EMAIL_ENABLE=True,
+                NOTIFICATION_ENABLED=True,
+                NOTIFICATIONS_BACKEND="pinax.notifications.backends.email.EmailBackend",
+                PINAX_NOTIFICATIONS_QUEUE_ALL=False):
             self.clear_notifications_queue()
-            self.client.login(username=self.user, password=self.passwd)
+            self.client.login(username='norman', password='norman')
             new_map = reverse('new_map_json')
-            response = self.client.post(new_map,
-                                        data=VIEWER_CONFIG,
-                                        content_type="text/json")
+            response = self.client.post(
+                new_map,
+                data=VIEWER_CONFIG,
+                content_type="text/json")
             self.assertEqual(response.status_code, 200)
             content = response.content
             if isinstance(content, bytes):
@@ -1052,15 +1062,32 @@ class MapsNotificationsTestCase(NotificationsTestsHelper):
             map_id = int(json.loads(content)['id'])
             _l = Map.objects.get(id=map_id)
             self.assertTrue(self.check_notification_out('map_created', self.u))
+
+            self.clear_notifications_queue()
             _l.title = 'test notifications 2'
-            _l.save()
+            _l.save(notify=True)
             self.assertTrue(self.check_notification_out('map_updated', self.u))
 
+            self.clear_notifications_queue()
             from dialogos.models import Comment
             lct = ContentType.objects.get_for_model(_l)
-            comment = Comment(author=self.u, name=self.u.username,
-                              content_type=lct, object_id=_l.id,
-                              content_object=_l, comment='test comment')
+            comment = Comment(author=self.norman,
+                              name=self.u.username,
+                              content_type=lct,
+                              object_id=_l.id,
+                              content_object=_l,
+                              comment='test comment')
             comment.save()
-
             self.assertTrue(self.check_notification_out('map_comment', self.u))
+
+            self.clear_notifications_queue()
+            if "pinax.ratings" in settings.INSTALLED_APPS:
+                self.clear_notifications_queue()
+                from pinax.ratings.models import Rating
+                rating = Rating(user=self.norman,
+                                content_type=lct,
+                                object_id=_l.id,
+                                content_object=_l,
+                                rating=5)
+                rating.save()
+                self.assertTrue(self.check_notification_out('map_rated', self.u))

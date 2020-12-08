@@ -118,6 +118,12 @@ def set_attributes(layer, overwrite=False):
         for attribute in attribute_map:
             field, ftype, description, label, display_order = attribute
             if field is not None:
+                _gs_attrs = Attribute.objects.filter(
+                    layer=layer, attribute=field, attribute_type=ftype,
+                    description=description, attribute_label=label,
+                    display_order=display_order)
+                if _gs_attrs.count() > 1:
+                    _gs_attrs.delete()
                 la, created = Attribute.objects.get_or_create(
                     layer=layer, attribute=field, attribute_type=ftype,
                     description=description, attribute_label=label,

@@ -222,10 +222,10 @@
          </gmd:CI_Citation>
        </gmd:citation>
        <gmd:abstract>
-         <gco:CharacterString>{{layer.abstract}}</gco:CharacterString>
+         <gco:CharacterString>{{layer.raw_abstract}}</gco:CharacterString>
        </gmd:abstract>
-       <gmd:purpose {% if not layer.purpose %}gco:nilReason="missing"{% endif %}>
-             {% if layer.purpose %}<gco:CharacterString>{{layer.purpose}}</gco:CharacterString>{% endif %}
+       <gmd:purpose {% if not layer.raw_purpose %}gco:nilReason="missing"{% endif %}>
+             {% if layer.raw_purpose %}<gco:CharacterString>{{layer.raw_purpose}}</gco:CharacterString>{% endif %}
        </gmd:purpose>
        <gmd:status>
          <gmd:MD_ProgressCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="completed">completed</gmd:MD_ProgressCode>
@@ -398,7 +398,7 @@
               <gmd:MD_RestrictionCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="{{layer.restriction_code_type.identifier}}">{{layer.restriction_code_type.identifier}}</gmd:MD_RestrictionCode>
            </gmd:useConstraints>
            <gmd:otherConstraints>
-             <gco:CharacterString>{{layer.constraints_other}}</gco:CharacterString>
+             <gco:CharacterString>{{layer.raw_constraints_other}}</gco:CharacterString>
            </gmd:otherConstraints>
          </gmd:MD_LegalConstraints>
        </gmd:resourceConstraints>
@@ -453,7 +453,7 @@
        </gmd:extent>
        {% endif %}
        <gmd:supplementalInformation>
-         <gco:CharacterString>{{ layer.supplemental_information }}</gco:CharacterString>
+         <gco:CharacterString>{{ layer.raw_supplemental_information }}</gco:CharacterString>
        </gmd:supplementalInformation>
      </gmd:MD_DataIdentification>
    </gmd:identificationInfo>
@@ -543,7 +543,7 @@
        </gmd:scope>
        <gmd:lineage>
          <gmd:LI_Lineage>
-           <gmd:statement {% if not layer.data_quality_statement %}gco:nilReason="missing"/>{% else %}><gco:CharacterString>{{layer.data_quality_statement}}</gco:CharacterString></gmd:statement>{% endif %}
+           <gmd:statement {% if not layer.raw_data_quality_statement %}gco:nilReason="missing"/>{% else %}><gco:CharacterString>{{layer.raw_data_quality_statement}}</gco:CharacterString></gmd:statement>{% endif %}
          </gmd:LI_Lineage>
        </gmd:lineage>
      </gmd:DQ_DataQuality>
