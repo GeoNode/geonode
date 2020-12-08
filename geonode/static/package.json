@@ -5,7 +5,7 @@
   "main": "gruntfile.js",
   "dependencies": {
     "@yaireo/tagify": "^3.6.2",
-    "angular": "^1.8.1",
+    "angular": "^1.8.2",
     "angular-cookies": "1.4.0",
     "angular-leaflet-directive": "^0.10.0",
     "angular-openlayers-directive": "^2.1.0",
