@@ -472,13 +472,23 @@ def _prepare_monitoring_fixture():
     print("Public Hostname or IP is {0}".format(pub_ip))
     pub_port = _geonode_public_port()
     print("Public PORT is {0}".format(pub_port))
+    geonode_ip = pub_ip
+    try:
+        geonode_ip = socket.gethostbyname('geonode')
+    except Exception:
+        pass
+    geoserver_ip = pub_ip
+    try:
+        geoserver_ip = socket.gethostbyname('geoserver')
+    except Exception:
+        pass
     #d = str(datetime.datetime.now())
     d = '1970-01-01 00:00:00'
     default_fixture = [
         {
             "fields": {
                 "active": True,
-                "ip": "{0}".format(socket.gethostbyname('geonode')),
+                "ip": "{0}".format(geonode_ip),
                 "name": "{0}".format(os.environ['MONITORING_HOST_NAME'])
             },
             "model": "monitoring.host",
@@ -487,7 +497,7 @@ def _prepare_monitoring_fixture():
         {
             "fields": {
                 "active": True,
-                "ip": "{0}".format(socket.gethostbyname('geoserver')),
+                "ip": "{0}".format(geoserver_ip),
                 "name": "geoserver"
             },
             "model": "monitoring.host",
