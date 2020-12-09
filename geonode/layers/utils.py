@@ -652,6 +652,8 @@ def file_upload(filename,
 
         if defaults['metadata_uploaded_preserve']:
             defaults['metadata_xml'] = xml_file
+
+        if identifier:
             defaults['uuid'] = identifier
 
         for key, value in vals.items():
