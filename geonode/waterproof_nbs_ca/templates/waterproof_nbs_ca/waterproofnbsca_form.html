@@ -97,17 +97,11 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <button class="btn btn-primary btn-block"><</button>
-                <button class="btn btn-primary btn-block"><<</button>
-                <button class="btn btn-primary btn-block">></button>
-                <button class="btn btn-primary btn-block">>></button>
+                <button id="move" class="btn btn-primary btn-block">>></button>
+                <button id="remove" class="btn btn-primary btn-block"><<</button>
             </div>
             <div class="col-md-5">
                 <select class="form-control" id="riosriosActivityTrans" size="10" style="height: 150px;">
-                    <option>Revegetation (unassisted)</option>
-                    <option>Revegetation (assisted)</option>
-                    <option>Agricultar vegetation management</option>
-                    <option>Ditching</option>
                 </select>
             </div>
         </div>
@@ -131,7 +125,15 @@
 <script>
     $(document).ready(function() {
 
+        $('#move').click(function() {
+            $('#riosActivity option:selected').appendTo('#riosriosActivityTrans');
+            return false;
+        });
 
+        $('#remove').click(function() {
+            $('#riosriosActivityTrans option:selected').appendTo('#riosActivity');
+            return false;
+        });
     });
 </script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>

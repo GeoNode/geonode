@@ -108,7 +108,7 @@ if not SITEURL.endswith('/'):
 #        path=os.path.join(PROJECT_ROOT, 'development.db')
 #    )
 #)
-#DATABASE_URL = 'postgresql://localhost:5432/geonode'
+DATABASE_URL = 'postgresql://localhost:5432/geonode'
 
 if DATABASE_URL.startswith("spatialite"):
     try:
@@ -140,7 +140,7 @@ if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
         'connect_timeout': 5,
     })
 
-'''
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
@@ -151,7 +151,7 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-'''
+
 if os.getenv('DEFAULT_BACKEND_DATASTORE'):
     GEODATABASE_URL = os.getenv('GEODATABASE_URL',
                                 'postgis://\
