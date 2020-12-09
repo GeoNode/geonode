@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-28 17:58+0000\n"
-"PO-Revision-Date: 2020-12-08 16:03+0100\n"
+"PO-Revision-Date: 2020-12-09 12:41+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/"
 "de/)\n"
@@ -37,7 +37,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Poedit 2.3\n"
 "X-Poedit-Bookmarks: 952,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
 #: geonode/base/__init__.py:27
@@ -225,7 +225,6 @@ msgid "Supplemental information"
 msgstr "Zusätzliche Information"
 
 #: geonode/base/forms.py:354
-#, fuzzy
 msgid "Data quality statement"
 msgstr "Kommentar zur Datenqualität"
 
@@ -5230,7 +5229,7 @@ msgstr "Profil"
 
 #: geonode/people/models.py:75
 msgid "introduce yourself"
-msgstr "Stelle dich vor"
+msgstr "Stellen Sie sich vor"
 
 #: geonode/people/models.py:77
 msgid "Position Name"
