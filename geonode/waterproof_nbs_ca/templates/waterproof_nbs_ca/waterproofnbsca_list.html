@@ -12,14 +12,16 @@
   <h2>{% trans "List sbn" %}</h2>
   <a href="create">{% trans "Create new SBN" %}</a>
 </div>
-<table class="table">
+<table id="example" class="table table-striped table-bordered" style="width:100%">
   <thead>
     <tr>
       <th scope="col">{% trans "Name" %}</th>
       <th scope="col">{% trans "Description" %}</th>
-      <th scope="col">{% trans "Details" %}</th>
-      <th scope="col">{% trans "Edit" %}</th>
-      <th scope="col">{% trans "Delete" %}</th>
+      <th scope="col" style="width:25rem">{% trans "Percentaje of benefit associated with interventions at time t = 0" %}</th>
+      <th scope="col">{% trans "Implementation cost" %}</th>
+      <th scope="col">{% trans "Maintenance Cost" %}</th>
+      <th scope="col">{% trans "Periodicity of Maintenance" %}</th>
+      <th scope="col">{% trans "Oppotunity Cost" %}</th>
     </tr>
   </thead>
   <tbody>
@@ -27,7 +29,7 @@
     <tr>
       <td>{{sbn.name}}</td>
       <td>{{sbn.description}}</td>
-      <td><button type="button" class="btn btn-default btn-md">
+      <!--<td><button type="button" class="btn btn-default btn-md">
         <a href="sbn/{{sbn.pk}}/detail">
           <span class="glyphicon glyphicon-eye-open	
           " aria-hidden="true"></span></a>
@@ -41,7 +43,7 @@
           <a href="sbn/{{sbn.pk}}/delete">
             <span class="glyphicon glyphicon-trash	
             " aria-hidden="true"></span></a>
-        </button></td>
+        </button></td>-->
     </tr>
     {% endfor %}
   </tbody>
@@ -52,5 +54,7 @@
 {% endblock body_outer %}
 
 {% block extra_script %}
-<script src="{% static waterproof_nbs_ca/js/waterproof_nbs_ca.js}"></script>
+<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap.min.js"></script>
+<script src="{{ STATIC URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
 {% endblock %}
