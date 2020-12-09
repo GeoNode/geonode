@@ -1,29 +1,146 @@
-{% extends "base.html" %}
-{% load i18n %}
-{% load bootstrap_tags %}
-
-{% block body_outer %}
-<h1>{% trans "Waterproof NBS CA" %}</h1>
+{% extends "base.html" %} {% load i18n %} {% load bootstrap_tags %} {% block body_outer %}
+<div class="row">
+    <div class="col-md-4">
+        <h4 class="text-center">Bogotá D.C.</h4>
+        <p><b>Country:</b> Colombia</p>
+        <p><b>Region:</b> Central</p>
+    </div>
+    <div class="col-md-8">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d254508.51641080936!2d-74.24789454527543!3d4.648283717196413!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9bfd2da6cb29%3A0x239d635520a33914!2zQm9nb3TDoQ!5e0!3m2!1ses!2sco!4v1607456076816!5m2!1ses!2sco"
+            width="750" height="150" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+    </div>
+</div>
+<h1>Create NBS</h1>
 <form>
+    <h3 class="text-primary">General Settings</h3>
     <div class="form-group">
-        <label>{% trans "Name" %}</label>
-        <input type="text" class="form-control" id="title" placeholder="Enter title">
+        <div class="form-group">
+            <label>{% trans "Name" %}</label>
+            <input type="text" class="form-control" id="nameNBS" placeholder="Enter title">
+        </div>
+        <div class="form-group">
+            <label>{% trans "Description" %}</label>
+            <textarea id="descNBS" class="form-control" placeholder="Enter description"></textarea>
+        </div>
     </div>
     <div class="form-group">
-        <label>{% trans "Description" %}</label>
-        <textarea id="description" class="form-control" placeholder="Enter description"></textarea>
+        <div class="row">
+            <div class="col-md-6">
+                <label>Country</label>
+                <select class="form-control">
+                    <option>COLOMBIA</option>
+                    <option>PERU</option>
+                    <option>ECUADOR</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label>Currency type cost calculation</label>
+                <select id="currencyCost" class="form-control">
+                    <option>USD</option>
+                    <option>COP</option>
+                    <option>EUR</option>
+                </select>
+            </div>
+        </div>
     </div>
     <div class="form-group">
-        <label>Shapefile</label>
-        <input type="file" id="shapefile" class="form-control-file">
+        <div class="row">
+            <div class="col-md-6">
+                <label>Time required to generate maximun benefit (yr)</label>
+                <input id="totalConsecTime" type="text" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label>Percentage of benefit associated with interventions at time t=0</label>
+                <input id="benefitTimePorc" type="text" class="form-control">
+            </div>
+        </div>
     </div>
+    <h3 class="text-primary">Unit Costs</h3>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-4">
+                <label>Unit Implementation Cost (US$/ha)</label>
+                <input id="implementCost" type="text" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label>Unit Maintenace Cost (US$/ha)</label>
+                <input id="maintenanceCost" type="text" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label>Unit Oportunity Cost (US$/ha)</label>
+                <input id="oportunityCost" type="text" class="form-control">
+            </div>
+        </div>
+    </div>
+    <h3 class="text-primary">RIOS Transition</h3>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-12">
+                <select id="riosTransition" class="form-control">
+                    <option>Revegetation (unassisted)</option>
+                    <option>Revegetation (assisted)</option>
+                    <option>Agricultar vegetation management</option>
+                    <option>Ditching</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <h3 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h3>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-5">
+                <select class="form-control" id="riosActivity" size="10" style="height: 150px;">
+                    <option>Revegetation (unassisted)</option>
+                    <option>Revegetation (assisted)</option>
+                    <option>Agricultar vegetation management</option>
+                    <option>Ditching</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button id="move" class="btn btn-primary btn-block">>></button>
+                <button id="remove" class="btn btn-primary btn-block"><<</button>
+            </div>
+            <div class="col-md-5">
+                <select class="form-control" id="riosriosActivityTrans" size="10" style="height: 150px;">
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-4">
+                <label>Restricted areas</label>
+                <input id="restrictedArea" type="file">
+            </div>
+        </div>
+    </div>
+
     <button type="button" id="submit" class="btn btn-primary">Submit</button>
 </form>
+<<<<<<< HEAD
 asdfasdf
 {% endblock %}
 {% block extra_script %}
+=======
+
+{% endblock %} {% block extra_script %}
+>>>>>>> origin/nbs_guille
 <script>
     var token = '{{ csrf_token }}';
+</script>
+<script>
+    $(document).ready(function() {
+
+        $('#move').click(function() {
+            $('#riosActivity option:selected').appendTo('#riosriosActivityTrans');
+            return false;
+        });
+
+        $('#remove').click(function() {
+            $('#riosriosActivityTrans option:selected').appendTo('#riosActivity');
+            return false;
+        });
+    });
 </script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
 {% endblock %}

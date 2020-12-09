@@ -19,17 +19,18 @@ from django_libs.views_mixins import AccessMixin
 from django.shortcuts import render
 from .forms import WaterproofNbsCaForm
 from .models import WaterproofNbsCa
-from .models import RiosActivity
+from .models import RiosActivity,RiosTransition
 from .models import RiosTransformation, TramsformationShapefile
 from .models import Countries
 from .models import Currency
-from django.contrib.gis.geos import Polygon,MultiPolygon,GEOSGeometry
+from django.contrib.gis.geos import Polygon, MultiPolygon, GEOSGeometry
+from django.contrib.gis.gdal import OGRGeometry
 from django.core import serializers
 from django.views import View
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 import json
-from shapely.geometry import shape, Point
+from shapely.geometry import shape, Point, Polygon
 logger = logging.getLogger(__name__)
 
 
@@ -38,16 +39,15 @@ def createNbs(request):
         title = request.POST.get('title')
         description = request.POST.get('description')
         image = request.FILES.get('shapefile')  # request.FILES used for to get files
-        imageJson=json.load(image)
+        imageJson = json.load(image)
         for feature in imageJson['features']:
-            polygonFile=shape(feature['geometry'])
-        print(title)
+            geom = GEOSGeometry(str(feature['geometry']))
 
         TramsformationShapefile.objects.create(
             name=title,
             action=description,
             activity=description,
-            polygon=polygonFile
+            polygon=GEOSGeometry(geom)
         )
 
         return render(request, 'waterproof_nbs_ca/waterproofnbsca_form.html')
@@ -56,33 +56,40 @@ def createNbs(request):
         return render(request, 'waterproof_nbs_ca/waterproofnbsca_form.html', {'nbs': nbs})
 
 
+def listNbs(request):
+    if request.method == 'GET':
+        nbs = WaterproofNbsCa.objects.all()
+        return render(request, 'waterproof_nbs_ca/waterproofnbsca_list.html', {'nbs': nbs})
+
+def loadCurrency(request):
+    currency = request.GET.get('currency')
+    currencies = Currency.objects.filter(id=currency)
+    currencies_serialized = serializers.serialize('json', currencies)
+    return JsonResponse(currencies_serialized, safe=False)
+
+def loadCountry(request):
+    country = request.GET.get('country')
+    countries = Countries.objects.filter(id=country)
+    countries_serialized = serializers.serialize('json', countries)
+    return JsonResponse(countries_serialized, safe=False)
+
+def loadAllTransitions(request):
+    transitions = RiosTransition.objects.all()
+    transitions_serialized = serializers.serialize('json', transitions)
+    return JsonResponse(transitions_serialized, safe=False)
+
+def loadActivityByTransition(request):
+    transition = request.GET.get('transition')
+    activities = RiosActivity.objects.filter(transition_id=transition)
+    activities_serialized = serializers.serialize('json', activities)
+    return JsonResponse(activities_serialized, safe=False)
+
+def loadTransformationbyActivity(request):
+    activity = request.GET.get('activity')
+    trasformations = RiosTransformation.objects.filter(activity_id=activity)
+    transformations_serialized = serializers.serialize('json', trasformations)
+    return JsonResponse(transformations_serialized, safe=False)
 """
-class WaterproofNbsCaMixin(object):
-   
-    Mixin to handle and arrange the entry list.
-
-    
-
-    def post(self, request, *args, **kwargs):
-
-        return self.get(self, request, *args, **kwargs)
-
-
-class WaterproofNbsCaListView(AccessMixin, WaterproofNbsCaMixin, ListView):
-   
-    Main view to display all WaterproofNbsCa
-
-   
-    model = WaterproofNbsCa
-    template_name = "waterproof_nbs_ca/entry_list.html"
-    access_mixin_setting_name = 'WATERPROOF_NBS_CA_ALLOW_ANONYMOUS'
-    logger.debug(template_name)
-
-    def get_queryset(self):
-        self.queryset = super(WaterproofNbsCaListView, self).get_queryset()
-        # self.queryset.user=get_user_model.objects.all()
-        return self.queryset
-
 
 class WaterproofNbsCaDetailView(AccessMixin, WaterproofNbsCaMixin, DetailView):
    

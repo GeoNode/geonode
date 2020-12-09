@@ -35,7 +35,10 @@ geonode/uploaded
 geonode/qgis_layer
 geonode/qgis_tiles
 geonode/settings.py
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/nbs_guille
 #Testing output
 .coverage
 .noseids
