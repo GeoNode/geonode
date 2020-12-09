@@ -1,7 +1,14 @@
 {% load i18n %}
 <div data-answer-id="{{ entry.pk }}">
   <p>{% trans "Rating" %}: <span data-id="rating-id{{ entry.pk }}">{{ entry.rating }}</span></p>
-  <p>{{ entry.answer|safe }}</p>
+  <p>
+    {% if request.LANGUAGE_CODE == "es" %}          
+          {{ entry.answer_es|safe }}
+        {% else %}          
+          {{ entry.answer|safe }}
+     {% endif %}
+
+  </p>
   {% if not entry.pk in rated_entries or feedback_entry == entry.pk %}
     {% include "frequently/partials/feedback.html" with object=entry %}
   {% else %}
