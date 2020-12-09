@@ -1,4 +1,10 @@
-<h2>{{ category.name }}</h2>
+<h2>
+  {% if request.LANGUAGE_CODE == "es" %}          
+    {{ category.name_es }}
+    {% else %}          
+      {{ category.name }}
+  {% endif %}
+</h2>
 {% for entry in category.get_entries %}
   {% if entry == object %}
     <a name="answer"></a>
