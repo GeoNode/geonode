@@ -1155,7 +1155,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         """
 
         # Setup some layer names to work with
-        valid_layer_typename = Layer.objects.all()[0].id
+        valid_layer_typename = Layer.objects.all().first().id
         invalid_layer_id = 9999999
 
         # Test that an invalid layer.alternate is handled for properly

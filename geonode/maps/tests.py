@@ -582,12 +582,6 @@ community."
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
-        # Prepare map object for later test that if it is completely removed
-        # map_obj = Map.objects.all().first()
-
-        # TODO: Also associated layers are not existent
-        # self.assertEquals(map_obj.layer_set.all().count(), 0)
-
     @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
     def test_map_download_leaflet(self):
         """ Test that a map can be downloaded as leaflet"""
