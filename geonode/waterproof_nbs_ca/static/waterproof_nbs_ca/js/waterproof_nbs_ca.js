@@ -5,6 +5,7 @@
 */
 $(function () {
     initialize = function () {
+        $('#example').DataTable();
         console.log('init event loaded');
         var countryDropdown = $('#countryNBS');
         var currencyDropdown = $('#currencyCost');
@@ -23,7 +24,6 @@ $(function () {
         changeActivityEvent(activitiesDropdown, transformDropdown);
         submitFormEvent();
         changeFileEvent();
-
     };
     submitFormEvent = function () {
         console.log('submit event loaded');
