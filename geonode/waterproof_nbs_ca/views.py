@@ -43,7 +43,7 @@ def createNbs(request):
         maxBenefitTime = request.POST.get('maxBenefitTime')
         benefitTimePorc = request.POST.get('benefitTimePorc')
         totalConsecTime = request.POST.get('totalConsecTime')
-        maintenancePeriod=request.POST.get('maintenancePeriod')
+        maintenancePeriod = request.POST.get('maintenancePeriod')
         implementCost = request.POST.get('implementCost')
         maintenanceCost = request.POST.get('maintenanceCost')
         oportunityCost = request.POST.get('oportunityCost')
@@ -53,10 +53,10 @@ def createNbs(request):
         for feature in areaJson['features']:
             geom = GEOSGeometry(str(feature['geometry']))
 
-        country=Countries.objects.get(id=countryNBS)
-        currency=Currency.objects.get(id=currencyCost)
-        transformation=RiosTransformation.objects.get(id=1)
-        nbs=WaterproofNbsCa(
+        country = Countries.objects.get(id=countryNBS)
+        currency = Currency.objects.get(id=currencyCost)
+        transformation = RiosTransformation.objects.get(id=1)
+        nbs = WaterproofNbsCa(
             country=country,
             currency=currency,
             name=nameNBS,
@@ -71,7 +71,7 @@ def createNbs(request):
         )
         nbs.save()
         nbs.rios_transformations.add(transformation)
-        
+
         TramsformationShapefile.objects.create(
             name=nameNBS,
             action=descNBS,
@@ -89,6 +89,13 @@ def listNbs(request):
     if request.method == 'GET':
         nbs = WaterproofNbsCa.objects.all()
         return render(request, 'waterproof_nbs_ca/waterproofnbsca_list.html', {'nbs': nbs})
+
+
+def viewNbs(request):
+    if request.method == 'GET':
+        nbs = request.GET.get('nbs')
+        filterNbs = WaterproofNbsCa.objects.filter(id=nbs)
+        return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs})
 
 
 def loadCurrency(request):

@@ -8,6 +8,8 @@ urlpatterns = [
     path('create/', views.createNbs, name='create-nbs'),
     # Default view, list all views
     path('', views.listNbs, name='list-nbs'),
+    # View NBS details
+    path('view/', views.viewNbs, name='view-nbs'),
     # Load all RIOS transitions
     path('load-transitions/', views.loadAllTransitions, name='waterproof_load_transformations'),
     # Load activities by it's transition id

@@ -12,52 +12,54 @@
 <div class="page-header">
   <h2>{% trans "Detail sbn" %}</h2>
 </div>
-<h3>{{ object.name }}</h3>
+{% for sbn in nbs %}
+<h3>{{ sbn.name }}</h3>
 <table class="table table-user-profile">
   <tbody>
     <tr>
       <td class="table-user-profile-attribute">{% trans 'Description' %}</td>
-      <td>{{object.description}}</td>
+      <td>{{sbn.description}}</td>
     </tr>
     <tr>
       <td class="table-user-profile-attribute">{% trans 'Time maximum benefit' %}</td>
-      <td>{{object.max_benefit_req_time}}</td>
+      <td>{{sbn.max_benefit_req_time}}</td>
     </tr>
     <tr>
       <td class="table-user-profile-attribute">
         {% trans 'Percentage of benefit associated with interventions at time t=0' %}</td>
-      <td>{{object.profit_pct_time_inter_assoc}}</td>
+      <td>{{sbn.profit_pct_time_inter_assoc}}</td>
     </tr>
     <tr>
       <td class="table-user-profile-attribute">{% trans 'Procurement time of total SBN benefits' %}</td>
-      <td>{{object.total_profits_sbn_consec_time}}</td>
+      <td>{{sbn.total_profits_sbn_consec_time}}</td>
     </tr>
     <tr>
       <td class="table-user-profile-attribute">{% trans 'Unit implementation costs (US $/ha)' %}</td>
-      <td>{{object.unit_implementation_cost}}</td>
+      <td>{{sbn.unit_implementation_cost}}</td>
     </tr>
     <tr>
       <td class="table-user-profile-attribute">{% trans 'Unit maintenance costs (US $/ha)' %}</td>
-      <td>{{object.unit_maintenance_cost}}</td>
+      <td>{{sbn.unit_maintenance_cost}}</td>
     </tr>
     <tr>
       <td class="table-user-profile-attribute">{% trans 'Periodicity of maintenance (year)' %}</td>
-      <td>{{object.periodicity_maitenance}}</td>
+      <td>{{sbn.periodicity_maitenance}}</td>
     </tr>
     <tr>
       <td class="table-user-profile-attribute">{% trans 'Unit oportunity costs (US $/ha)' %}</td>
-      <td>{{object.unit_oportunity_cost}}</td>
+      <td>{{sbn.unit_oportunity_cost}}</td>
     </tr>
     <tr>
       <td class="table-user-profile-attribute">{% trans 'RIOS transition' %}</td>
-      <td>{{object.rios_transition}}</td>
+      <td>{{sbn.rios_transition}}</td>
     </tr>
     <tr>
       <td class="table-user-profile-attribute">{% trans 'Land use definition' %}</td>
-      <td>{{object.land_cover_def}}</td>
+      <td>{{sbn.land_cover_def}}</td>
     </tr>
   </tbody>
 </table>
+{% endfor %}
 {% block body %}{% endblock body %}
 {% block sidebar %}{% endblock sidebar %}
 

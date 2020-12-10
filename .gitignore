@@ -97,3 +97,4 @@ scripts/spcgeonode/_volume_*
 /output.bin
 
 /worker.state
+/Geonode.session.sql
