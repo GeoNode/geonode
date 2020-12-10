@@ -23,8 +23,114 @@
 
 from django.conf import settings
 from django.db import models
+from django.contrib.gis.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
+
+
+class TramsformationShapefile(models.Model):
+    name = models.CharField(max_length=255)
+    activity = models.CharField(max_length=255)
+    action = models.CharField(max_length=255)
+    polygon = models.MultiPolygonField()
+
+
+class RiosTransition(models.Model):
+    name = models.CharField(
+        max_length=100,
+        verbose_name=_('Name'),
+    )
+    description = models.CharField(
+        max_length=1024,
+        verbose_name=_('Description'),
+    )
+
+    def __str__(self):
+        return "%s" % self.name
+
+
+class RiosActivity(models.Model):
+    transition = models.ForeignKey(RiosTransition, on_delete=models.CASCADE)
+    name = models.CharField(
+        max_length=100,
+        verbose_name=_('Name'),
+    )
+    description = models.CharField(
+        max_length=1024,
+        verbose_name=_('Description'),
+    )
+
+    def __str__(self):
+        return "%s" % self.name
+
+
+class RiosTransformation(models.Model):
+    activity = models.ForeignKey(RiosActivity, on_delete=models.CASCADE)
+    name = models.CharField(
+        max_length=100,
+        verbose_name=_('Name'),
+    )
+    description = models.CharField(
+        max_length=1024,
+        verbose_name=_('Description'),
+    )
+
+    def __str__(self):
+        return "%s" % self.name
+
+
+class Region(models.Model):
+    name = models.CharField(
+        max_length=100,
+        verbose_name=_('Name'),
+    )
+
+    def __str__(self):
+        return "%s" % self.name
+
+
+class Countries(models.Model):
+    region = models.ForeignKey(Region, on_delete=models.CASCADE)
+
+    name = models.CharField(
+        max_length=100,
+        verbose_name=_('Name'),
+    )
+
+    factor = models.FloatField(
+        default=0,
+        verbose_name=_('Factor'),
+    )
+
+    def __str__(self):
+        return "%s" % self.name
+
+
+class Currency(models.Model):
+    country = models.ForeignKey(Countries, on_delete=models.CASCADE)
+
+    name = models.CharField(
+        max_length=100,
+        verbose_name=_('Name'),
+    )
+
+    code = models.CharField(
+        max_length=50,
+        verbose_name=_('Code'),
+    )
+
+    symbol = models.CharField(
+        max_length=50,
+        verbose_name=_('Symbol'),
+    )
+
+    factor = models.FloatField(
+        default=0,
+        verbose_name=_('Factor'),
+    )
+
+    def __str__(self):
+        return "(%s)" % self.code
 
 
 class WaterproofNbsCa(models.Model):
@@ -33,24 +139,10 @@ class WaterproofNbsCa(models.Model):
 
     :name: Waterproof Name.
 
-
     """
-    RIOS_TRANSITION = (
-        ('nv', _('Keep native vegetation')),
-        ('rvU', _('Revegetation (unassisted)')),
-        ('rvA', _('Revegetation (assisted)')),
-        ('nv', _('Agricultural vegetation management')),
-        ('di', _('Ditching')),
-        ('rvA', _('Pasture management')),
-        ('rvA', _('Fertilizer management')),
-    )
+    country = models.ForeignKey(Countries, on_delete=models.CASCADE)
 
-    LAND_COVERS = (
-        ('Forest', _('Forest')),
-        ('Grassland', _('Grassland')),
-        ('Shrubland', _('Shrubland')),
-        ('Sparse vegetation', _('Sparse vegetation')),
-    )
+    currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
 
     name = models.CharField(
         max_length=100,
@@ -72,7 +164,7 @@ class WaterproofNbsCa(models.Model):
         verbose_name=_('Percentage of benefit associated with interventions at time t=0'),
     )
 
-    total_profits_sbn_consec_time = models.IntegerField(
+    total_profits_sbn_consec_time = models.FloatField(
         default=0,
         verbose_name=_('Procurement time of total SBN benefits'),
     )
@@ -92,22 +184,17 @@ class WaterproofNbsCa(models.Model):
         verbose_name=_('Periodicity of maintenance (year)'),
     )
 
-    unit_oportunity_cost = models.IntegerField(
+    unit_oportunity_cost = models.FloatField(
         default=0,
         verbose_name=_('Unit oportunity costs (US $/ha)'),
     )
 
-    rios_transition = models.CharField(
-        max_length=32,
-        choices=RIOS_TRANSITION,
-        default='1'
+    rios_transformations = models.ManyToManyField(
+        RiosTransformation,
     )
-
-    land_cover_def = models.CharField(
-        max_length=32,
-        choices=LAND_COVERS,
-        default=''
-    )
+    
+    added_by = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                 null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
         ordering = ['name', 'description']
