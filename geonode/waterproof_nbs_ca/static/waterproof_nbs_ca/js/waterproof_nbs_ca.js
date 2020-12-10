@@ -29,6 +29,9 @@ $(function () {
         console.log('submit event loaded');
         var formData = new FormData();
         $('#submit').on('click', function () {
+            var file=$('#restrictedArea')[0].files[0];
+            // validate extension file
+            var extension = validExtension(file);
             // NBS name
             formData.append('nameNBS', $('#nameNBS').val());
             // NBS description
@@ -77,6 +80,10 @@ $(function () {
             })
         });
     };
+    /** 
+     * Validate input file on change
+     *
+     */
     changeFileEvent = function () {
         $('#restrictedArea').change(function (evt) {
             var file = evt.currentTarget.files[0];
@@ -200,7 +207,7 @@ $(function () {
 
     };
     /** 
-     * Populate countries options in dropdown 
+     * Change acitivy option based in transition selected
      * @param {HTML} transDropdown Transitions dropdown
      * @param {HTML} activDropdown Activities  dropdown
      *
@@ -235,6 +242,12 @@ $(function () {
             });
         });
     };
+    /** 
+    * Change transformation options based in activity selected
+    * @param {HTML} transDropdown Transitions dropdown
+    * @param {HTML} activDropdown Activities  dropdown
+    *
+    */
     changeActivityEvent = function (activityDropdown, transformDropdown) {
         // Rios transitions dropdown listener
         activityDropdown.change(function () {
