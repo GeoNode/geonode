@@ -18,10 +18,8 @@
 #
 #########################################################################
 """Celery tasks for geonode.services"""
-
+import time
 import logging
-
-from django.db import IntegrityError, transaction
 
 from . import models
 from . import enumerations
@@ -29,7 +27,6 @@ from .serviceprocessors import get_service_handler
 
 from geonode.celery_app import app
 from geonode.layers.models import Layer
-from geonode.catalogue.models import catalogue_post_save
 
 logger = logging.getLogger(__name__)
 
@@ -60,21 +57,19 @@ def harvest_resource(self, harvest_job_id):
             proxy_base=harvest_job.service.proxy_base,
             service_type=harvest_job.service.type
         )
-        with transaction.atomic():
-            logger.debug("harvesting resource...")
-            handler.harvest_resource(
-                harvest_job.resource_id, harvest_job.service)
-            result = True
+        logger.debug("harvesting resource...")
+        handler.harvest_resource(
+            harvest_job.resource_id, harvest_job.service)
         logger.debug("Resource harvested successfully")
-
-        logger.debug("Updating Layer Metadata ...")
-        try:
-            layer = Layer.objects.get(alternate=harvest_job.resource_id)
-            catalogue_post_save(instance=layer, sender=layer.__class__)
-        except Exception:
-            logger.error("Remote Layer [%s] couldn't be updated" % (harvest_job.resource_id))
-    except IntegrityError:
-        raise
+        _cnt = 0
+        while _cnt < 5 and not result:
+            try:
+                layer = Layer.objects.get(alternate=harvest_job.resource_id)
+                layer.save(notify=True)
+                result = True
+            except Exception:
+                _cnt += 1
+                time.sleep(3)
     except Exception as err:
         logger.exception(msg="An error has occurred while harvesting "
                              "resource {!r}".format(harvest_job.resource_id))

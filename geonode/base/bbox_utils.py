@@ -69,27 +69,36 @@ def filter_bbox(queryset, bbox):
     """
     assert queryset.model.__class__.__name__ == "PolymorphicModelBase"
 
-    bbox = bbox.split(',')
-    bbox = list(map(Decimal, bbox))
+    bboxes = []
+    _bbox_index = -1
+    for _x, _y in enumerate(bbox.split(",")):
+        if _x % 4 == 0:
+            bboxes.append([])
+            _bbox_index += 1
+        bboxes[_bbox_index].append(_y)
 
-    # Return all layers when the search extent exceeds 360deg
-    if abs(bbox[0] - bbox[2]) >= 360:
-        return queryset.all()
+    for _bbox in bboxes:
+        _bbox = list(map(Decimal, _bbox))
 
-    x_min = normalize_x_value(bbox[0])
-    x_max = normalize_x_value(bbox[2])
+        # Return all layers when the search extent exceeds 360deg
+        if abs(_bbox[0] - _bbox[2]) >= 360:
+            return queryset.all()
 
-    # When the search extent crosses the 180th meridian, we'll need to search
-    # on two conditions
-    if x_min > x_max:
-        left_polygon = polygon_from_bbox((-180, bbox[1], x_max, bbox[3]))
-        right_polygon = polygon_from_bbox((x_min, bbox[1], 180, bbox[3]))
-        return queryset.filter(
-            Q(bbox_polygon__intersects=left_polygon) |
-            Q(bbox_polygon__intersects=right_polygon)
-        )
+        x_min = normalize_x_value(_bbox[0])
+        x_max = normalize_x_value(_bbox[2])
 
-    # Otherwise, we do a simple polygon-based search
-    else:
-        search_polygon = polygon_from_bbox((x_min, bbox[1], x_max, bbox[3]))
-        return queryset.filter(bbox_polygon__intersects=search_polygon)
+        # When the search extent crosses the 180th meridian, we'll need to search
+        # on two conditions
+        if x_min > x_max:
+            left_polygon = polygon_from_bbox((-180, _bbox[1], x_max, _bbox[3]))
+            right_polygon = polygon_from_bbox((x_min, _bbox[1], 180, _bbox[3]))
+            queryset = queryset.filter(
+                Q(bbox_polygon__intersects=left_polygon) |
+                Q(bbox_polygon__intersects=right_polygon)
+            )
+
+        # Otherwise, we do a simple polygon-based search
+        else:
+            search_polygon = polygon_from_bbox((x_min, _bbox[1], x_max, _bbox[3]))
+            queryset = queryset.filter(bbox_polygon__intersects=search_polygon)
+    return queryset
