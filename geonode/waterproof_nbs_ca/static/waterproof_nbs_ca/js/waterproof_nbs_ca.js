@@ -6,17 +6,58 @@
 $(function () {
     initialize = function () {
         console.log('init event loaded');
+        var countryDropdown = $('#countryNBS');
+        var currencyDropdown = $('#currencyCost');
+        var transitionsDropdown = $('#riosTransition');
+        var activitiesDropdown = $('#riosActivity');
+        var transformDropdown = $('#riosTransformationAct');
+        // Populate countries options
+        fillCountryDropdown(countryDropdown);
+        // Populate currencies options
+        fillCurrencyDropdown(currencyDropdown);
+        // Populate currencies options
+        fillTransitionsDropdown(transitionsDropdown);
+        // Change transition dropdown event listener
+        changeTransitionEvent(transitionsDropdown, activitiesDropdown);
+        // Change transition dropdown event listener
+        changeActivityEvent(activitiesDropdown, transformDropdown);
         submitFormEvent();
         changeFileEvent();
+
     };
     submitFormEvent = function () {
         console.log('submit event loaded');
         var formData = new FormData();
         $('#submit').on('click', function () {
-            formData.append('title', $('#title').val());
-            formData.append('description', $('#description').val());
-            formData.append('shapefile', $('#shapefile')[0].files[0]);
+            // NBS name
+            formData.append('nameNBS', $('#nameNBS').val());
+            // NBS description
+            formData.append('descNBS', $('#descNBS').val());
+            // NBS country
+            formData.append('countryNBS', $('#countryNBS').val());
+            // NBS currency cost
+            formData.append('currencyCost', $('#currencyCost').val());
+            // NBS Time required to generate maximun benefit (yr)
+            formData.append('maxBenefitTime', $('#maxBenefitTime').val());
+            // NBS Percentage of benefit associated with interventions at time t=0
+            formData.append('benefitTimePorc', $('#benefitTimePorc').val());
+            // NBS Consecution Time Total Benefits
+            formData.append('totalConsecTime', $('#totalConsecTime').val());
+            // NBS Maintenance Perodicity
+            formData.append('maintenancePeriod', $('#maintenancePeriod').val());
+            // NBS Unit Implementation Cost (US$/ha)
+            formData.append('implementCost', $('#implementCost').val());
+            // NBS Unit Maintenace Cost (US$/ha)
+            formData.append('maintenanceCost', $('#maintenanceCost').val());
+            // NBS Unit Oportunity Cost (US$/ha)
+            formData.append('oportunityCost', $('#oportunityCost').val());
+            // NBS RIOS Transformations selected
+            formData.append('riosTransformation', $('#riosTransformation').val());
+            // NBS restricted area geographic file
+            formData.append('restrictedArea', $('#restrictedArea')[0].files[0]);
+            // Type action for view
             formData.append('action', 'create-nbs');
+            // Required session token
             formData.append('csrfmiddlewaretoken', token);
 
             $.ajax({
@@ -37,14 +78,14 @@ $(function () {
         });
     };
     changeFileEvent = function () {
-        $('#shapefile').change(function (evt) {
+        $('#restrictedArea').change(function (evt) {
             var file = evt.currentTarget.files[0];
             var extension = validExtension(file);
             // Validate file's extension
             if (extension.valid) { //Valid
                 console.log('Extension valid!');
                 // Validate file's extension
-                if (extension.extension == 'geojson') {
+                if (extension.extension == 'geojson') { //GeoJSON
                     var readerGeoJson = new FileReader();
                     readerGeoJson.onload = function (evt) {
                         var contents = evt.target.result;
@@ -53,19 +94,225 @@ $(function () {
                     }
                     readerGeoJson.readAsText(file);
                 }
-                else {
-                    
+                else { //Zip
+                    var reader = new FileReader();
+                    var filename, readShp = false, readDbf = false, readShx = false, readPrj = false, prj, coord = true;
+                    var prjName;
+                    reader.onload = function (evt) {
+                        var contents = evt.target.result;
+                        JSZip.loadAsync(file).then(function (zip) {
+                            zip.forEach(function (relativePath, zipEntry) {
+                                filename = zipEntry.name.toLocaleLowerCase();
+                                if (filename.indexOf(".shp") != -1) {
+                                    readShp = true;
+                                }
+                                if (filename.indexOf(".dbf") != -1) {
+                                    readDbf = true;
+                                }
+                                if (filename.indexOf(".shx") != -1) {
+                                    readShx = true;
+                                }
+                                if (filename.indexOf(".prj") != -1) {
+                                    readPrj = true;
+                                    prjName = zipEntry.name;
+                                }
+                            });
+                            // Valid shapefile with minimum files req
+                            if (readShp && readDbf && readPrj && readShx) {
+                                zip.file(prjName).async("string").then(function (data) {
+                                    prj = data;
+                                    // Validar sistema de referencia
+                                    if (prj.toLocaleLowerCase().indexOf("gcs_wgs_1984") == -1) {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error en shapefile',
+                                            text: 'Sistema de proyección incorrecto',
+                                        })
+                                    }
+                                    // Shapefile válido
+                                    else {
+                                        shp(contents).then(function (shpToGeojson) {
+                                            geojson = shpToGeojson;
+                                            loadShapefile(geojson, file.name);
+                                        }).catch(function (e) {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Error en shapefile',
+                                                text: 'Ha ocurrido un error de lectura en el shapefile',
+                                            })
+                                            console.log("Ocurrió error convirtiendo el shapefile " + e);
+                                        });
+                                    }
+                                });
+                            } else { // Missing req files
+                                // Miss .shp
+                                if (!readShp) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error en shapefile',
+                                        text: 'Falta el archivo .shp requerido',
+                                    })
+                                }
+                                // Miss .dbf
+                                if (!readDbf) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error en shapefile',
+                                        text: 'Falta el archivo .dbf requerido',
+                                    })
+                                }
+                                // Miss .shx
+                                if (!readShx) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error en shapefile',
+                                        text: 'Falta el archivo .shx requerido',
+                                    })
+                                }
+                                // Miss .prj
+                                if (!readPrj) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error en shapefile',
+                                        text: 'Falta el archivo .prj requerido',
+                                    })
+                                }
+                            }
+                        });
+                    };
+                    reader.onerror = function (event) {
+                        console.error("File could not be read! Code " + event.target.error.code);
+                        //alert("El archivo no pudo ser cargado: " + event.target.error.code);
+                    };
+                    reader.readAsArrayBuffer(file);
                 }
             }
-            else { //Invalid
-
+            else { //Invalid extension
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de extensión',
+                    text: 'La extensión del archivo no está soportada, debe ser GeoJSON o un shapefile .zip',
+                })
             }
         });
     };
     checkEmptyFile = function () {
 
     };
+    /** 
+     * Populate countries options in dropdown 
+     * @param {HTML} transDropdown Transitions dropdown
+     * @param {HTML} activDropdown Activities  dropdown
+     *
+     */
+    changeTransitionEvent = function (transDropdown, activDropdown) {
+        // Rios transitions dropdown listener
+        transDropdown.change(function () {
+            // Get load activities from urls Django parameter
+            var transition_id = $(this).val();
 
+            /** 
+            * Get filtered activities by transition id 
+            * @param {String} url   activities URL 
+            * @param {Object} data  transition id  
+            *
+            * @return {String} activities in HTML option format
+            */
+            $.ajax({
+                url: '/waterproof_nbs_ca/load-activityByTransition/',
+                data: {
+                    'transition': transition_id
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
+                    // Empty before poupulate new options
+                    activDropdown.empty();
+                    $.each(result, function (index, activity) {
+                        activDropdown.append($("<option />").val(activity.pk).text(activity.fields.name));
+                    });
+                    activDropdown.val($('#' + activDropdown[0].id + ' option:first').val()).change();
+                }
+            });
+        });
+    };
+    changeActivityEvent = function (activityDropdown, transformDropdown) {
+        // Rios transitions dropdown listener
+        activityDropdown.change(function () {
+            // Get load activities from urls Django parameter
+            var activity_id = $(this).val();
+
+            /** 
+            * Get filtered activities by transition id 
+            * @param {String} url   activities URL 
+            * @param {Object} data  transition id  
+            *
+            * @return {String} activities in HTML option format
+            */
+            $.ajax({
+                url: '/waterproof_nbs_ca/load-transformationByActivity/',
+                data: {
+                    'activity': activity_id
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
+                    // Empty before poupulate new options
+                    transformDropdown.empty();
+                    $.each(result, function (index, transformation) {
+                        transformDropdown.append($("<option />").val(transformation.pk).text(transformation.fields.name));
+                    });
+                }
+            });
+        });
+    };
+    /** 
+     * Populate countries options in dropdown 
+     * @param {HTML} dropdown Dropdown selected element
+     *
+     */
+    fillCountryDropdown = function (dropdown) {
+        $.ajax({
+            url: '/waterproof_nbs_ca/load-allCountries',
+            success: function (result) {
+                result = JSON.parse(result);
+                $.each(result, function (index, country) {
+                    dropdown.append($("<option />").val(country.pk).text(country.fields.name));
+                });
+            }
+        });
+    };
+    /** 
+     * Populate currencies options in dropdown 
+     * @param {HTML} dropdown Dropdown selected element
+     *
+     */
+    fillCurrencyDropdown = function (dropdown) {
+        $.ajax({
+            url: '/waterproof_nbs_ca/load-allCurrencies',
+            success: function (result) {
+                result = JSON.parse(result);
+                $.each(result, function (index, currency) {
+                    dropdown.append($("<option />").val(currency.pk).text(currency.fields.code + ' (' + currency.fields.symbol + ') - ' + currency.fields.name));
+                });
+            }
+        });
+    };
+    /** 
+     * Populate transitions options in dropdown 
+     * @param {HTML} dropdown Dropdown selected element
+     *
+     */
+    fillTransitionsDropdown = function (dropdown) {
+        $.ajax({
+            url: '/waterproof_nbs_ca/load-transitions',
+            success: function (result) {
+                result = JSON.parse(result);
+                $.each(result, function (index, transition) {
+                    dropdown.append($("<option />").val(transition.pk).text(transition.fields.name));
+                });
+                dropdown.val(1).change();
+            }
+        });
+    };
     /** 
      * Get if file has a valid shape or GeoJSON extension 
      * @param {StriFileng} file   zip or GeoJSON file
@@ -94,195 +341,3 @@ $(function () {
     // Init 
     initialize();
 });
-/*
-  $.ajax({
-      type: 'POST',
-      url: '{% url "create-post" %}',
-      data: formData,
-      cache: false,
-      processData: false,
-      contentType: false,
-      enctype: 'multipart/form-data',
-      success: function (){
-          alert('The post has been created!')
-      },
-      error: function(xhr, errmsg, err) {
-          console.log(xhr.status + ":" + xhr.responseText)
-      }
-  })
-
-
-$('#id_added_by').val(userId).change();
-$('#id_added_by').hide();
-$('label[for="id_added_by"]').hide();
-$('#id_rios_transformations').empty();
-$('#id_transformations_available').empty();*/
-$('#update_costs').click(function () {
-    var country_id = $('#id_country').val();
-    var url = $('#nbscaForm').attr('data-countries-url');
-    var currency_id = $('#id_currency').val();
-    var urlCurrency = $('#nbscaForm').attr('data-currency-url');
-    country_id == "" ? country_id = 1 : country_id = country_id;
-    /** 
-         * Get filtered activities by transition id 
-         * @param {String} url   transformation URL 
-         * @param {Object} data  activity id  
-         *
-         * @return {String} activities in HTML option format
-         */
-    $.ajax({
-        url: url,
-        data: {
-            'country': country_id
-        },
-        success: function (data) {
-            data = JSON.parse(data);
-            factorCountry = data[0].fields.factor;
-            $.ajax({
-                url: urlCurrency,
-                data: {
-                    'currency': currency_id
-                },
-                success: function (data) {
-                    data = JSON.parse(data);
-                    factorCurrency = data[0].fields.factor;
-                    let check = $('#id_global_costs')[0].checked
-                    if (check) {
-                        let id_unit_oportunity_cost = 35000;
-                        let oportunityCost = id_unit_oportunity_cost * factorCountry * factorCurrency
-                        $('#id_unit_oportunity_cost').val(oportunityCost);
-                    }
-                    else {
-                        let id_unit_oportunity_cost = $('#id_unit_oportunity_cost').val();
-                        let oportunityCost = id_unit_oportunity_cost * factorCountry * factorCurrency
-                        $('#id_unit_oportunity_cost').val(oportunityCost);
-                    }
-                }
-            });
-        }
-    });
-});
-$('#id_transformations_available').change(function (evt) {
-    var optionsSelectedAvailable = [];
-    var optionsTransformations = [];
-    $.each($("#id_transformations_available option:selected"), function () {
-        var option = {};
-        option.value = $(this).val();
-        option.text = $(this).html();
-        optionsSelectedAvailable.push(option);
-    });
-    console.log(optionsSelectedAvailable);
-    $("#id_rios_transformations").each(function (index, opt) {
-        var option = {};
-        if (opt.options.length > 0) {
-            option.text = opt.options[index].text;
-            option.value = opt.options[index].value;
-        }
-        optionsTransformations.push(option);
-    });
-    console.log(optionsTransformations);
-    var onlyInA = optionsSelectedAvailable.filter(comparer(optionsTransformations));
-    if (onlyInA.length > 0)
-        $.each(onlyInA, function () {
-            $('#waterproof_nbs_ca').append('<label for="">Cargar shapefile </label>');
-            $('#waterproof_nbs_ca').append('<input type="file" name="">');
-            $("#id_rios_transformations").append('<option value=' + this.value + ' selected>' + this.text + '</option>');
-        });
-});
-$('#id_currency').change(function () {
-    var urlCurrency = $('#nbscaForm').attr('data-currency-url');
-    var currency_id = $('#id_currency').val();
-    $.ajax({
-        url: urlCurrency,
-        data: {
-            'currency': currency_id
-        },
-        success: function (data) {
-            data = JSON.parse(data);
-            let currencyCode = data[0].fields.code;
-            let currencySymbol = data[0].fields.symbol;
-            $('label[for="id_unit_maintenance_cost"]').html("Unit maintenance cost (" + currencyCode + " " + currencySymbol + "/ha)");
-            $('label[for="id_unit_oportunity_cost"]').html("Unit oportunity costs (" + currencyCode + " " + currencySymbol + "/ha)");
-            $('label[for="id_unit_implementation_cost"]').html("Unit implementation costs  (" + currencyCode + " " + currencySymbol + "/ha)");
-        }
-    });
-
-});
-$('#id_global_costs').change(function () {
-    if (this.checked) {
-        $('#id_unit_maintenance_cost').hide();
-        $('label[for="id_unit_maintenance_cost"]').hide();
-
-        $('#id_unit_implementation_cost').hide();
-        $('label[for="id_unit_implementation_cost"]').hide();
-
-        $('#id_periodicity_maitenance').hide();
-        $('label[for="id_periodicity_maitenance"]').hide();
-    }
-    else {
-        $('#id_unit_maintenance_cost').show();
-        $('label[for="id_unit_maintenance_cost"]').show();
-
-        $('#id_unit_implementation_cost').show();
-        $('label[for="id_unit_implementation_cost"]').show();
-
-        $('#id_periodicity_maitenance').show();
-        $('label[for="id_periodicity_maitenance"]').show();
-    }
-});
-// Rios transitions dropdown listener
-$('#id_rios_transitions').change(function () {
-    // Get load activities from urls Django parameter
-    var url = $('#nbscaForm').attr('data-activities-url');
-    var transition_id = $(this).val();
-
-    /** 
-    * Get filtered activities by transition id 
-    * @param {String} url   activities URL 
-    * @param {Object} data  transition id  
-    *
-    * @return {String} activities in HTML option format
-    */
-    $.ajax({
-        url: url,
-        data: {
-            'transition': transition_id
-        },
-        success: function (data) {
-            $('#id_rios_activities').empty().html(data);
-            $('#id_rios_activities').change();
-        }
-    });
-});
-
-// Rios activities dropdown listener
-$('#id_rios_activities').change(function () {
-    // Get load transformations from urls Django parameter
-    var url = $('#nbscaForm').attr('data-transformations-url');
-    var activity_id = $(this).val();
-
-    /** 
-    * Get filtered activities by transition id 
-    * @param {String} url   transformation URL 
-    * @param {Object} data  activity id  
-    *
-    * @return {String} activities in HTML option format
-    */
-    $.ajax({
-        url: url,
-        data: {
-            'transition': activity_id
-        },
-        success: function (data) {
-            $('#id_transformations_available').empty().html(data);
-        }
-    });
-});
-
-function comparer(otherArray) {
-    return function (current) {
-        return otherArray.filter(function (other) {
-            return other.value == current.value && other.display == current.display
-        }).length == 0;
-    }
-}

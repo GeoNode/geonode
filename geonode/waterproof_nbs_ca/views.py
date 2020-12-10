@@ -19,7 +19,7 @@ from django_libs.views_mixins import AccessMixin
 from django.shortcuts import render
 from .forms import WaterproofNbsCaForm
 from .models import WaterproofNbsCa
-from .models import RiosActivity,RiosTransition
+from .models import RiosActivity, RiosTransition
 from .models import RiosTransformation, TramsformationShapefile
 from .models import Countries
 from .models import Currency
@@ -36,17 +36,46 @@ logger = logging.getLogger(__name__)
 
 def createNbs(request):
     if request.POST.get('action') == 'create-nbs':
-        title = request.POST.get('title')
-        description = request.POST.get('description')
-        image = request.FILES.get('shapefile')  # request.FILES used for to get files
-        imageJson = json.load(image)
-        for feature in imageJson['features']:
+        nameNBS = request.POST.get('nameNBS')
+        descNBS = request.POST.get('descNBS')
+        countryNBS = request.POST.get('countryNBS')
+        currencyCost = request.POST.get('currencyCost')
+        maxBenefitTime = request.POST.get('maxBenefitTime')
+        benefitTimePorc = request.POST.get('benefitTimePorc')
+        totalConsecTime = request.POST.get('totalConsecTime')
+        maintenancePeriod=request.POST.get('maintenancePeriod')
+        implementCost = request.POST.get('implementCost')
+        maintenanceCost = request.POST.get('maintenanceCost')
+        oportunityCost = request.POST.get('oportunityCost')
+        riosTransformation = request.POST.get('riosTransformation')
+        restrictedArea = request.FILES.get('restrictedArea')  # request.FILES used for to get files
+        areaJson = json.load(restrictedArea)
+        for feature in areaJson['features']:
             geom = GEOSGeometry(str(feature['geometry']))
 
+        country=Countries.objects.get(id=countryNBS)
+        currency=Currency.objects.get(id=currencyCost)
+        transformation=RiosTransformation.objects.get(id=1)
+        nbs=WaterproofNbsCa(
+            country=country,
+            currency=currency,
+            name=nameNBS,
+            description=descNBS,
+            max_benefit_req_time=maxBenefitTime,
+            total_profits_sbn_consec_time=totalConsecTime,
+            profit_pct_time_inter_assoc=benefitTimePorc,
+            unit_implementation_cost=implementCost,
+            unit_maintenance_cost=maintenanceCost,
+            periodicity_maitenance=maintenancePeriod,
+            unit_oportunity_cost=oportunityCost,
+        )
+        nbs.save()
+        nbs.rios_transformations.add(transformation)
+        
         TramsformationShapefile.objects.create(
-            name=title,
-            action=description,
-            activity=description,
+            name=nameNBS,
+            action=descNBS,
+            activity=descNBS,
             polygon=GEOSGeometry(geom)
         )
 
@@ -61,11 +90,19 @@ def listNbs(request):
         nbs = WaterproofNbsCa.objects.all()
         return render(request, 'waterproof_nbs_ca/waterproofnbsca_list.html', {'nbs': nbs})
 
+
 def loadCurrency(request):
     currency = request.GET.get('currency')
     currencies = Currency.objects.filter(id=currency)
     currencies_serialized = serializers.serialize('json', currencies)
     return JsonResponse(currencies_serialized, safe=False)
+
+
+def loadAllCurrencies(request):
+    currencies = Currency.objects.all()
+    currencies_serialized = serializers.serialize('json', currencies)
+    return JsonResponse(currencies_serialized, safe=False)
+
 
 def loadCountry(request):
     country = request.GET.get('country')
@@ -73,10 +110,18 @@ def loadCountry(request):
     countries_serialized = serializers.serialize('json', countries)
     return JsonResponse(countries_serialized, safe=False)
 
+
 def loadAllTransitions(request):
     transitions = RiosTransition.objects.all()
     transitions_serialized = serializers.serialize('json', transitions)
     return JsonResponse(transitions_serialized, safe=False)
+
+
+def loadAllCountries(request):
+    countries = Countries.objects.all()
+    countries_serialized = serializers.serialize('json', countries)
+    return JsonResponse(countries_serialized, safe=False)
+
 
 def loadActivityByTransition(request):
     transition = request.GET.get('transition')
@@ -84,11 +129,14 @@ def loadActivityByTransition(request):
     activities_serialized = serializers.serialize('json', activities)
     return JsonResponse(activities_serialized, safe=False)
 
+
 def loadTransformationbyActivity(request):
     activity = request.GET.get('activity')
     trasformations = RiosTransformation.objects.filter(activity_id=activity)
     transformations_serialized = serializers.serialize('json', trasformations)
     return JsonResponse(transformations_serialized, safe=False)
+
+
 """
 
 class WaterproofNbsCaDetailView(AccessMixin, WaterproofNbsCaMixin, DetailView):

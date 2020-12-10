@@ -1,4 +1,5 @@
 {% extends "base.html" %} {% load i18n %} {% load bootstrap_tags %} {% block body_outer %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <div class="row">
     <div class="col-md-4">
         <h4 class="text-center">Bogotá D.C.</h4>
@@ -27,18 +28,12 @@
         <div class="row">
             <div class="col-md-6">
                 <label>Country</label>
-                <select class="form-control">
-                    <option>COLOMBIA</option>
-                    <option>PERU</option>
-                    <option>ECUADOR</option>
+                <select id="countryNBS" class="form-control">
                 </select>
             </div>
             <div class="col-md-6">
                 <label>Currency type cost calculation</label>
                 <select id="currencyCost" class="form-control">
-                    <option>USD</option>
-                    <option>COP</option>
-                    <option>EUR</option>
                 </select>
             </div>
         </div>
@@ -47,11 +42,24 @@
         <div class="row">
             <div class="col-md-6">
                 <label>Time required to generate maximun benefit (yr)</label>
-                <input id="totalConsecTime" type="text" class="form-control">
+                <input id="maxBenefitTime" type="text" class="form-control">
             </div>
             <div class="col-md-6">
                 <label>Percentage of benefit associated with interventions at time t=0</label>
                 <input id="benefitTimePorc" type="text" class="form-control">
+            </div>
+        </div>
+  </div>
+  <div class="form-group">
+        <div class="row">
+            <div class="col-md-6">
+                <label>Consecution Time Total Benefits
+                </label>
+                <input id="totalConsecTime" type="text" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label>Maintenance Perodicity</label>
+                <input id="maintenancePeriod" type="text" class="form-control">
             </div>
         </div>
     </div>
@@ -77,10 +85,15 @@
         <div class="row">
             <div class="col-md-12">
                 <select id="riosTransition" class="form-control">
-                    <option>Revegetation (unassisted)</option>
-                    <option>Revegetation (assisted)</option>
-                    <option>Agricultar vegetation management</option>
-                    <option>Ditching</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <h3 class="text-primary">RIOS Activities</h3>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-12">
+                <select id="riosActivity" class="form-control">
                 </select>
             </div>
         </div>
@@ -89,11 +102,7 @@
     <div class="form-group">
         <div class="row">
             <div class="col-md-5">
-                <select class="form-control" id="riosActivity" size="10" style="height: 150px;">
-                    <option>Revegetation (unassisted)</option>
-                    <option>Revegetation (assisted)</option>
-                    <option>Agricultar vegetation management</option>
-                    <option>Ditching</option>
+                <select class="form-control" id="riosTransformationAct" size="10" style="height: 150px;">
                 </select>
             </div>
             <div class="col-md-2">
@@ -101,7 +110,7 @@
                 <button id="remove" class="btn btn-primary btn-block"><<</button>
             </div>
             <div class="col-md-5">
-                <select class="form-control" id="riosriosActivityTrans" size="10" style="height: 150px;">
+                <select class="form-control" id="riosTransformation" size="10" style="height: 150px;">
                 </select>
             </div>
         </div>
@@ -117,8 +126,11 @@
 
     <button type="button" id="submit" class="btn btn-primary">Submit</button>
 </form>
-
 {% endblock %} {% block extra_script %}
+<!--ZIP reader library-->
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jszip.min.js"></script>
+<!--Shapefile reader library -->
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/shp.min.js"></script>
 <script>
     var token = '{{ csrf_token }}';
 </script>
@@ -126,12 +138,12 @@
     $(document).ready(function() {
 
         $('#move').click(function() {
-            $('#riosActivity option:selected').appendTo('#riosriosActivityTrans');
+            $('#riosTransformationAct option:selected').appendTo('#riosTransformation');
             return false;
         });
 
         $('#remove').click(function() {
-            $('#riosriosActivityTrans option:selected').appendTo('#riosActivity');
+            $('#riosTransformation option:selected').appendTo('#riosTransformationAct');
             return false;
         });
     });
