@@ -1,6 +1,12 @@
 {% load i18n %}
 <p data-frequently-entry="{{ entry.pk }}">
   <strong>
-    <a onclick="openAnswer('{{ entry.pk }}', '{% url "frequently_list" %}'); return false;" href="{% url "frequently_entry_detail" slug=entry.slug %}#answer">{{ entry.question }}</a>
+    <a onclick="openAnswer('{{ entry.pk }}', '{% url "frequently_list" %}'); return false;" href="{% url "frequently_entry_detail" slug=entry.slug %}#answer">
+      {% if request.LANGUAGE_CODE == "es" %}
+          {{ entry.question_es|safe }}
+        {% else %}
+          {{ entry.question|safe }}
+      {% endif %}
+    </a>
   </strong>
 </p>

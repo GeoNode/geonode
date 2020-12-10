@@ -279,7 +279,7 @@ def srs_step_view(request, upload_session):
             upload_session.completed_step = 'srs'
             return next_step_response(request, upload_session)
     elif request.method != 'POST':
-        raise Exception()
+        raise Exception("405 Method Not Allowed")
 
     source = request.POST.get('source', '')
     target = request.POST.get('target', '')

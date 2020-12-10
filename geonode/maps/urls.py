@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.views.generic import TemplateView
 
 from geonode import geoserver, qgis_server
@@ -89,6 +89,7 @@ urlpatterns = [
         name='maplayer_attributes'),
     url(r'^autocomplete/$',
         views.MapAutocomplete.as_view(), name='autocomplete_map'),
+    url(r'^', include('geonode.maps.api.urls')),
 ]
 
 if check_ogc_backend(qgis_server.BACKEND_PACKAGE):

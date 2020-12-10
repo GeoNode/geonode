@@ -85,6 +85,7 @@ class EntryMixin(object):
                     'entry': entry,
                     'rated_entries': self.request.session.get(
                         'rated_entries', False),
+                    'request' : self.request
                 },
             )
         self.feedback = Feedback()

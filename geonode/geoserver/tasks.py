@@ -204,19 +204,6 @@ def geoserver_post_save_layers(
         else:
             return
 
-    # Save layer attributes
-    set_attributes_from_geoserver(instance)
-
-    # Save layer styles
-    set_styles(instance, gs_catalog)
-
-    # Invalidate GeoWebCache for the updated resource
-    try:
-        _stylefilterparams_geowebcache_layer(instance.alternate)
-        _invalidate_geowebcache_layer(instance.alternate)
-    except Exception:
-        pass
-
     if instance.storeType == "remoteStore":
         return
 
@@ -318,6 +305,19 @@ def geoserver_post_save_layers(
     # store the resource to avoid another geoserver call in the post_save
     if gs_resource:
         instance.gs_resource = gs_resource
+
+        # Save layer attributes
+        set_attributes_from_geoserver(instance)
+
+        # Save layer styles
+        set_styles(instance, gs_catalog)
+
+        # Invalidate GeoWebCache for the updated resource
+        try:
+            _stylefilterparams_geowebcache_layer(instance.alternate)
+            _invalidate_geowebcache_layer(instance.alternate)
+        except Exception:
+            pass
 
         # some thumbnail generators will update thumbnail_url.  If so, don't
         # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
