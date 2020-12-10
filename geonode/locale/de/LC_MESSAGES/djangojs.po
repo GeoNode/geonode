@@ -31,7 +31,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-28 18:12+0000\n"
-"PO-Revision-Date: 2019-05-20 16:50+0200\n"
+"PO-Revision-Date: 2020-12-08 16:02+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/"
 "de/)\n"
@@ -40,16 +40,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Generator: Poedit 2.4.2\n"
 
 #: geonode/monitoring/static/monitoring/bundle.js:170
+#, fuzzy
 msgid "STORE_UPDATED"
-msgstr ""
+msgstr "STORE_UPDATED"
 
 #: geonode/static/geonode/js/upload/FileType.js:50
 #, javascript-format
 msgid "Missing a %s file, which is required"
-msgstr "Es fehlt eine erforderlich %s Datei"
+msgstr "Es fehlt eine erforderliche %s Datei"
 
 #: geonode/static/geonode/js/upload/FileTypes.js:7
 msgid "ESRI Shapefile"
@@ -166,23 +167,23 @@ msgid "GIF"
 msgstr "GIF"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:296
-#, fuzzy
-#| msgid "Unexpected Error"
 msgid "Unexpected error!"
-msgstr "Unerwarteter Fehler"
+msgstr "Unerwarteter Fehler!"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:299
 msgid ""
 " - 400 Bad Request. Server cannot or will not process the request due to "
 "something that is perceived to be a client error (e.g., malformed request "
 "syntax, invalid request message framing, or deceptive request routing)."
-msgstr ""
+msgstr " - 400 Bad Request. Die Anfrage-Nachricht war fehlerhaft aufgebaut."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:302
 msgid ""
 " - 401 Unauthorized. Request was not sent with the proper authentication "
 "credentials."
 msgstr ""
+" - 401 Unauthorized. Die Anfrage kann nicht ohne gültige Authentifizierung "
+"durchgeführt werden."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:305
 msgid ""
@@ -190,18 +191,23 @@ msgid ""
 "server. Contact the system administrator for more information regarding this "
 "error message."
 msgstr ""
+" - 403 Forbidden. Dies bezieht sich auf eine fehlerhafte Berechtigung des "
+"Clients. Kontaktieren Sie bitte den Administrator für weitere Informationen "
+"bzgl. dieser Fehlermeldung."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:308
 msgid ""
 " - 404 Not Found. Origin server was unable or unwilling to find the resource "
 "requested."
-msgstr ""
+msgstr " - 404 Not Found. Die angeforderte Ressource wurde nicht gefunden."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:311
 msgid ""
 " - 405 Method Not Allowed. Origin server is aware of the requested resource, "
 "but the request method used is not supported."
 msgstr ""
+" - 405 Method Not Allowed. Die Anfrage darf nur mit anderen HTTP-Methoden "
+"gestellt werden."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:314
 msgid ""
@@ -209,18 +215,25 @@ msgid ""
 "to negotiation headers that were  set prior (e.g. via 'Accept-Charset' and "
 "'Accept-Language' headers)."
 msgstr ""
+" - 406 Not Acceptable. Die angeforderte Ressource befindet sich nicht am "
+"Ort, der zuvor z.b. via 'Accept-Charset' oder 'Accept-Language' vereinbart "
+"wurde."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:317
 msgid ""
 " - 407 Authentication Required. The client did not send the required "
 "authentication with the request."
 msgstr ""
+" - 407 Authentication Required. Der Client hat sich nicht korrekt "
+"authentifiziert."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:320
 msgid ""
 " - 408 Request Timeout. The origin server did not receive the complete "
 "request in what it considers a reasonable time."
 msgstr ""
+" - 408 Request Timeout. Innerhalb der vom Server erlaubten Zeitspanne wurde "
+"keine vollständige Anfrage des Clients empfangen."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:323
 msgid ""
@@ -228,23 +241,32 @@ msgid ""
 "current state of the resource. Typically happens on a PUT request where "
 "multiple clients are attempting to edit the same resource."
 msgstr ""
+" - 409 Conflict. Die Anfrage wurde unter falschen Annahmen gestellt. Im "
+"Falle einer PUT-Anfrage kann dies zum Beispiel auf eine zwischenzeitliche "
+"Veränderung der Ressource durch Dritte zurückgehen."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:326
 msgid ""
 " - 410 Gone. The resource requested is permanently missing at the origin."
 msgstr ""
+" - 410 Gone. Die angeforderte Ressource wird nicht länger bereitgestellt und "
+"wurde dauerhaft entfernt."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:329
 msgid ""
 " - 411 Length Required. Client did not define the 'Content-Length' of the "
 "request body in the headers and this is required to obtain the resource."
 msgstr ""
+" - 411 Length Required. Die Anfrage kann ohne ein „Content-Length“-Header-"
+"Feld nicht bearbeitet werden."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:332
 msgid ""
 " - 412 Precondition Failed. Server denies the request because the resource "
 "failed to meet the conditions specified by the client."
 msgstr ""
+" - 412 Precondition Failed. Der Server lehnt die Anfrage ab, da die "
+"Ressource nicht den Anforderungen des Clients entsprach."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:335
 msgid ""
@@ -252,6 +274,8 @@ msgid ""
 "because the payload sent from the client is larger than the server wished to "
 "accept. Server has the optional to close the connection."
 msgstr ""
+" - 413 Payload Too Large. Die gestellte Anfrage war zu groß, um vom Server "
+"bearbeitet werden zu können."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:338
 msgid ""
@@ -260,6 +284,9 @@ msgid ""
 "unusually long URI after a POST, this could be seen as a security risk and a "
 "414 gets generated."
 msgstr ""
+" - 414 URI Too Long. Die URL der Anfrage war zu lang. Eine GET-Anfrage mit "
+"einer ungewöhnlich langen URL nach einer POST-Anfrage kann z.B. als "
+"Sicherheitsproblem angesehen werden, was in einem 414 Fehlercode resultiert."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:341
 msgid ""
@@ -268,18 +295,26 @@ msgid ""
 "look at the 'Content-Type' or 'Content-Encoding' headers sent in the "
 "client’s request."
 msgstr ""
+" - 415 Unsupported Media Type. Der Inhalt der Anfrage wurde mit ungültigem "
+"oder nicht erlaubtem Medientyp übermittelt. Das Problem kann möglicherweise "
+"durch Änderungen im Headerfeld 'Content-Type' oder 'Content-Encoding' der "
+"Anfrage behoben werden."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:344
 msgid ""
 " - 417 Expectation Failed. Failure of server to meet the requirements "
 "specified in the 'Expect' header of the client’s request."
 msgstr ""
+" - 417 Expectation Failed. Das im 'Expect'-Header-Feld geforderte Verhalten "
+"des Servers kann nicht erfüllt werden."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:347
 msgid ""
 " - 429 Too Many Requests. Client has sent too many requests in the specified "
 "amount of time according to the server."
 msgstr ""
+" - 429 Too Many Requests. Der Client hat zu viele Anfragen in einem "
+"bestimmten Zeitraum gesendet."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:350
 msgid ""
@@ -287,6 +322,8 @@ msgid ""
 "the connection has been closed by the client while the server is still "
 "processing its request, making server unable to send a status code back."
 msgstr ""
+" - 499 Client Close Request. Nginx spezifischer Code für den Fall, dass ein "
+"Client die Verbindung schließt, während nginx die Anforderung verarbeitet."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:353
 msgid ""
@@ -295,6 +332,9 @@ msgid ""
 "request cannot be fulfilled due to the application being configured "
 "incorrectly on the server."
 msgstr ""
+" - 500 Internal Server Error. Es ist ein unerwarteter Fehler auf dem Server "
+"aufgetreten. Dies tritt oft auf, wenn eine Anfrage nicht verarbeitet werden "
+"kann, da die Serveranwendung fehlerhaft konfiguriert wurde."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:356
 msgid ""
@@ -303,6 +343,8 @@ msgid ""
 "server being out of date. It is a very rare error and generally requires "
 "that the web server be updated."
 msgstr ""
+" - 501 Not Implemented. Die Funktionalität, um die Anfrage zu bearbeiten, "
+"wird von diesem Server nicht bereitgestellt."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:359
 msgid ""
@@ -310,6 +352,9 @@ msgid ""
 "servers. The first step in resolving the issue is to clear the client's "
 "cache."
 msgstr ""
+" - 502 Bad Gateway. Der Server konnte seine Funktion als Gateway oder Proxy "
+"nicht erfüllen. Möglicherweise kann der Fehler durch Leeren des Clientcaches "
+"behoben werden."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:362
 msgid ""
@@ -318,6 +363,8 @@ msgid ""
 "temporarily closed for maintenance. The error indicates that the server will "
 "only temporarily be down."
 msgstr ""
+" - 503 Service Unavailable. Der Server steht temporär nicht zur Verfügung, "
+"zum Beispiel wegen Überlastung oder Wartungsarbeiten."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:365
 msgid ""
@@ -325,6 +372,9 @@ msgid ""
 "to a connection timeout. Consider using the management commands to import "
 "data!"
 msgstr ""
+" - 504 Gateway Timeout. GeoNode hat die Verbindung zum GeoServer oder der "
+"Datenbank verloren. Möglicherweise kann ein Import auch über die Management-"
+"Kommandos erfolgen."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:368
 msgid ""
@@ -334,12 +384,17 @@ msgid ""
 "client computer; for example, if an invalid version number has been "
 "specified."
 msgstr ""
+" - 505 HTTP Version Not Supported. Dieser Fehler tritt auf, wenn der Server "
+"die vom Client angefragte HTTP-Version nicht unterstützt."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:371
 msgid ""
 " - 506 Variant Also Negotiates. This error indicates that the server is not "
 "properly configured. Contact the system administrator to resolve this issue."
 msgstr ""
+" - 506 Variant Also Negotiates. Diese Fehlermeldung zeigt, dass der Server "
+"fehlerhaft konfiguriert ist. Kontaktieren Sie bitte den Administrator, um "
+"den Fehler zu beheben."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:374
 msgid ""
@@ -351,6 +406,9 @@ msgid ""
 "expanded, or it may simply need to be restarted. Contact the system "
 "administrator for more information regarding this error message."
 msgstr ""
+" - 507 Insufficient Storage. Der Server verfügt über zu wenig Speicherplatz. "
+"Kontaktieren Sie bitte den Administrator, wenn Sie mehr über den Fehler "
+"erfahren möchten."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:377
 msgid ""
@@ -359,6 +417,8 @@ msgid ""
 "issue is to wait until the limit is reset in the following cycle. Consult "
 "the system administrator for information about acquiring more bandwidth."
 msgstr ""
+" - 509 Bandwidth Limit Exceeded. Dieser Fehler tritt auf, da die verfügbare "
+"Bandbreite überschritten wurde."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:380
 msgid ""
@@ -366,12 +426,17 @@ msgid ""
 "HTTP request is not supported by the web server. To resolve the issue, you "
 "may need to update the server."
 msgstr ""
+" - 510 Not Extended. Der Fehler tritt auf, wenn eine Erweiterung der HTTP-"
+"Anfrage nicht durch den Server unterstützt wird. Um das Problem zu beheben, "
+"muss möglicherweise der Server aktualisiert werden."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:383
 msgid ""
 " Error Code. Contact the system administrator for more information regarding "
 "this error message."
 msgstr ""
+" Fehlercode. Kontaktieren Sie bitte den Administrator, wenn Sie mehr über "
+"den Fehler erfahren möchten."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:421
 #: geonode/static/geonode/js/upload/LayerInfo.js:592
@@ -414,12 +479,11 @@ msgstr "GeoServer Konfiguration abschliessen"
 #: geonode/static/geonode/js/upload/LayerInfo.js:572
 msgid "You need to specify more information in order to complete your upload"
 msgstr ""
-"Sie müssen weitere Informationen angeben, um Ihre Upload abzuschließen "
-"angeben"
+"Sie müssen weitere Informationen angeben, um Ihren Upload abzuschließen"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:552
 msgid "Files are ready to be ingested!"
-msgstr "Die Dateien stehen bereit um hinzugefügt werden zu können!"
+msgstr "Die Dateien können jetzt hinzugefügt werden!"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:555
 msgid "A temporal dimension may be added to this Layer."
@@ -434,27 +498,29 @@ msgid ""
 "<br>Please check your network connection. In case of Layer Upload make sure "
 "GeoServer is running and accepting connections."
 msgstr ""
+"<br> Bitte überprüfen Sie Ihre Internetverbindung. Falls Sie einen Layer "
+"hochladen wollten, stellen Sie sicher, dass die Verbindung zum GeoServer "
+"gewährleistet ist."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:700
 #: geonode/static/geonode/js/upload/LayerInfo.js:703
 #: geonode/static/geonode/js/upload/LayerInfo.js:710
 #: geonode/static/geonode/js/upload/LayerInfo.js:713
 msgid "<br>"
-msgstr ""
+msgstr "<br>"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:705
 msgid "<br>Bad request or URL not found."
-msgstr ""
+msgstr "<br>Fehlerhafte Anfrage oder URL nicht verfügbar."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:715
 #, fuzzy
-#| msgid "Unknown Map"
 msgid "<br>Unknown."
-msgstr "Unbekannte Karte"
+msgstr "Unbekannte Karte."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:723
 msgid "Layer files uploaded, configuring in GeoServer"
-msgstr "Layer-Dateien hochgeladen, diese werden in GeoServer konfiguriert"
+msgstr "Layer-Dateien hochgeladen, diese werden im GeoServer konfiguriert"
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:874
 msgid "Remove"
@@ -464,7 +530,7 @@ msgstr "Entfernen"
 #, javascript-format
 msgid "The file %s is an unsupported file type, please select another file."
 msgstr ""
-"Die Datei %s ist ein nicht unterstütztes Dateityp, wählen Sie bitte eine "
+"Die Datei %s ist ein nicht unterstützter Dateityp, wählen Sie bitte eine "
 "andere Datei."
 
 #: geonode/static/geonode/js/upload/upload.js:296
