@@ -1,4 +1,6 @@
 {% extends "base.html" %} {% load i18n %} {% load bootstrap_tags %} {% block body_outer %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/bootstrap-duallistbox.min.css">
+
 <div class="row">
     <div class="col-md-4">
         <h4 class="text-center">Bogotá D.C.</h4>
@@ -28,18 +30,18 @@
             <div class="col-md-6">
                 <label>Country</label>
                 <select class="form-control">
-                    <option>COLOMBIA</option>
-                    <option>PERU</option>
-                    <option>ECUADOR</option>
-                </select>
+        <option>COLOMBIA</option>
+        <option>PERU</option>
+        <option>ECUADOR</option>
+    </select>
             </div>
             <div class="col-md-6">
                 <label>Currency type cost calculation</label>
                 <select id="currencyCost" class="form-control">
-                    <option>USD</option>
-                    <option>COP</option>
-                    <option>EUR</option>
-                </select>
+        <option>USD</option>
+        <option>COP</option>
+        <option>EUR</option>
+    </select>
             </div>
         </div>
     </div>
@@ -77,11 +79,11 @@
         <div class="row">
             <div class="col-md-12">
                 <select id="riosTransition" class="form-control">
-                    <option>Revegetation (unassisted)</option>
-                    <option>Revegetation (assisted)</option>
-                    <option>Agricultar vegetation management</option>
-                    <option>Ditching</option>
-                </select>
+        <option>Revegetation (unassisted)</option>
+        <option>Revegetation (assisted)</option>
+        <option>Agricultar vegetation management</option>
+        <option>Ditching</option>
+    </select>
             </div>
         </div>
     </div>
@@ -90,11 +92,11 @@
         <div class="row">
             <div class="col-md-5">
                 <select class="form-control" id="riosActivity" size="10" style="height: 150px;">
-                    <option>Revegetation (unassisted)</option>
-                    <option>Revegetation (assisted)</option>
-                    <option>Agricultar vegetation management</option>
-                    <option>Ditching</option>
-                </select>
+        <option>Revegetation (unassisted)</option>
+        <option>Revegetation (assisted)</option>
+        <option>Agricultar vegetation management</option>
+        <option>Ditching</option>
+    </select>
             </div>
             <div class="col-md-2">
                 <button id="move" class="btn btn-primary btn-block">>></button>
@@ -102,7 +104,7 @@
             </div>
             <div class="col-md-5">
                 <select class="form-control" id="riosriosActivityTrans" size="10" style="height: 150px;">
-                </select>
+    </select>
             </div>
         </div>
     </div>
@@ -114,7 +116,22 @@
             </div>
         </div>
     </div>
-
+    <form id="demoform" action="#" method="post">
+        <select multiple="multiple" size="10" name="duallistbox_demo1[]" title="duallistbox_demo1[]">
+          <option value="option1">Option 1</option>
+          <option value="option2">Option 2</option>
+          <option value="option3">Option 3</option>
+          <option value="option4">Option 4</option>
+          <option value="option5">Option 5</option>
+          <option value="option6">Option 6</option>
+          <option value="option7">Option 7</option>
+          <option value="option8">Option 8</option>
+          <option value="option9">Option 9</option>
+          <option value="option0">Option 10</option>
+        </select>
+        <br>
+        <button type="submit" class="btn btn-default btn-block">Submit data</button>
+    </form>
     <button type="button" id="submit" class="btn btn-primary">Submit</button>
 </form>
 
@@ -124,7 +141,6 @@
 </script>
 <script>
     $(document).ready(function() {
-
         $('#move').click(function() {
             $('#riosActivity option:selected').appendTo('#riosriosActivityTrans');
             return false;
@@ -134,7 +150,25 @@
             $('#riosriosActivityTrans option:selected').appendTo('#riosActivity');
             return false;
         });
+
+        $("#menu-toggle").click(function(e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+        });
+
+        var demo1 = $('select[name="duallistbox_demo1[]"]').bootstrapDualListbox({
+            filterPlaceHolder: "Buscar",
+            infoText: "Número de Elementos: {0}",
+            infoTextEmpty: "Lista Vacia",
+            preserveSelectionOnMove: 'moved',
+            moveOnSelect: false,
+        });
+        /*$("#demoform").submit(function() {
+            alert($('[name="duallistbox_demo1[]"]').val());
+            return false;
+        });*/
     });
 </script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jquery.bootstrap-duallistbox.min.js"></script>
 {% endblock %}
