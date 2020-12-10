@@ -984,9 +984,11 @@ def layer_metadata(
 
         layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
         if not layer_form.is_valid():
+            logger.error(f"Layer Metadata form is not valid: {layer_form.errors}")
             out = {
                 'success': False,
-                'errors': layer_form.errors
+                'errors': [
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in layer_form.errors]
             }
             return HttpResponse(
                 json.dumps(out),
@@ -997,10 +999,43 @@ def layer_metadata(
             instance=layer,
             prefix="layer_attribute_set",
             queryset=Attribute.objects.order_by('display_order'))
+        if not attribute_form.is_valid():
+            logger.error(f"Layer Attributes form is not valid: {attribute_form.errors}")
+            out = {
+                'success': False,
+                'errors': [
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in attribute_form.errors]
+            }
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
             request.POST["category_choice_field"] else None)
+        if not category_form.is_valid():
+            logger.error(f"Layer Category form is not valid: {category_form.errors}")
+            out = {
+                'success': False,
+                'errors': [
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in category_form.errors]
+            }
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
         tkeywords_form = TKeywordForm(request.POST)
+        if not tkeywords_form.is_valid():
+            logger.error(f"Layer Thesauri Keywords form is not valid: {tkeywords_form.errors}")
+            out = {
+                'success': False,
+                'errors': [
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in tkeywords_form.errors]
+            }
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
         layer_form.disable_keywords_widget_for_non_superuser(request.user)

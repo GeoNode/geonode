@@ -51,7 +51,7 @@ def catalogue_post_save(instance, sender, **kwargs):
         record = catalogue.get_record(instance.uuid)
     except EnvironmentError as err:
         msg = 'Could not connect to catalogue to save information for layer "%s"' % instance.name
-        if err.reason.errno == errno.ECONNREFUSED:
+        if err.errno == errno.ECONNREFUSED:
             LOGGER.warn(msg, err)
             return
         else:
