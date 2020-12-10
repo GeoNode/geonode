@@ -1,0 +1,20 @@
+{% extends "geonode_base.html" %}
+
+{% load i18n %}
+{% load base_tags %}
+{% load client_lib_tags %}
+
+{% block title %} {% trans "New Map" %} - {{ block.super }} {% endblock %}
+{% block head %}
+
+    <style>
+        #paneltbar {
+            margin-top: 90px !important;
+        }
+    </style>
+
+    {% get_geoapp_new %}
+	{{ block.super }}
+{% endblock %}
+
+{% block footer %}{% endblock %}

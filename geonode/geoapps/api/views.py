@@ -17,12 +17,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from drf_spectacular.utils import extend_schema
-
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
-from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly, DjangoModelPermissionsOrAnonReadOnly  # noqa
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
@@ -30,48 +27,26 @@ from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
-from geonode.documents.models import Document
+from geonode.geoapps.models import GeoApp
 
-from geonode.base.models import ResourceBase
-from geonode.base.api.serializers import ResourceBaseSerializer
-
-from .serializers import DocumentSerializer
-from .permissions import DocumentPermissionsFilter
+from .serializers import GeoAppSerializer
+from .permissions import GeoAppPermissionsFilter
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class DocumentViewSet(DynamicModelViewSet):
+class GeoAppViewSet(DynamicModelViewSet):
     """
-    API endpoint that allows documents to be viewed or edited.
+    API endpoint that allows geoapps to be viewed or edited.
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
-        ExtentFilter, DocumentPermissionsFilter
+        ExtentFilter, GeoAppPermissionsFilter
     ]
-    queryset = Document.objects.all()
-    serializer_class = DocumentSerializer
+    queryset = GeoApp.objects.all()
+    serializer_class = GeoAppSerializer
     pagination_class = GeoNodeApiPagination
-
-    @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
-                   description="API endpoint allowing to retrieve the DocumentResourceLink(s).")
-    @action(detail=True, methods=['get'])
-    def linked_resources(self, request, pk=None):
-        document = self.get_object()
-        resources_id = document.links.all().values('object_id')
-        resources = ResourceBase.objects.filter(id__in=resources_id)
-        exclude = []
-        for resource in resources:
-            if not request.user.is_superuser and \
-            not request.user.has_perm('view_resourcebase', resource.get_self_resource()):
-                exclude.append(resource.id)
-        resources = resources.exclude(id__in=exclude)
-        paginator = GeoNodeApiPagination()
-        paginator.page_size = request.GET.get('page_size', 10)
-        result_page = paginator.paginate_queryset(resources, request)
-        serializer = ResourceBaseSerializer(result_page, embed=True, many=True)
-        return paginator.get_paginated_response({"resources": serializer.data})

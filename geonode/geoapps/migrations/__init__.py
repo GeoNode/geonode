@@ -17,12 +17,3 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.api.urls import router
-
-from . import views
-
-router.register(r'users', views.UserViewSet, 'users')
-router.register(r'groups', views.GroupViewSet, 'group-profiles')
-router.register(r'resources', views.ResourceBaseViewSet, 'base-resources')
-
-urlpatterns = []

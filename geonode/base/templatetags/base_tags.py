@@ -90,7 +90,55 @@ def facets(context):
         except Exception:
             pass
 
-    if facet_type == 'documents':
+    if facet_type == 'geoapps':
+        facets = {}
+
+        from django.apps import apps
+        for label, app in apps.app_configs.items():
+            if hasattr(app, 'type') and app.type == 'GEONODE_APP':
+                if hasattr(app, 'default_model'):
+                    geoapps = get_visible_resources(
+                        apps.get_model(label, app.default_model).objects.all(),
+                        request.user if request else None,
+                        admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+                        unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+                        private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
+
+                    if category_filter:
+                        geoapps = geoapps.filter(category__identifier__in=category_filter)
+                    if regions_filter:
+                        geoapps = geoapps.filter(regions__name__in=regions_filter)
+                    if owner_filter:
+                        geoapps = geoapps.filter(owner__username__in=owner_filter)
+                    if date_gte_filter:
+                        geoapps = geoapps.filter(date__gte=date_gte_filter)
+                    if date_lte_filter:
+                        geoapps = geoapps.filter(date__lte=date_lte_filter)
+                    if date_range_filter:
+                        geoapps = geoapps.filter(date__range=date_range_filter.split(','))
+
+                    if extent_filter:
+                        geoapps = filter_bbox(geoapps, extent_filter)
+
+                    if keywords_filter:
+                        treeqs = HierarchicalKeyword.objects.none()
+                        for keyword in keywords_filter:
+                            try:
+                                kws = HierarchicalKeyword.objects.filter(name__iexact=keyword)
+                                for kw in kws:
+                                    treeqs = treeqs | HierarchicalKeyword.get_tree(kw)
+                            except Exception:
+                                # Ignore keywords not actually used?
+                                pass
+
+                        geoapps = geoapps.filter(Q(keywords__in=treeqs))
+
+                    if not settings.SKIP_PERMS_FILTER:
+                        geoapps = geoapps.filter(id__in=authorized)
+
+                    facets[app.default_model] = geoapps.count()
+        return facets
+    elif facet_type == 'documents':
         documents = Document.objects.filter(title__icontains=title_filter)
         if category_filter:
             documents = documents.filter(category__identifier__in=category_filter)
@@ -290,7 +338,7 @@ def get_current_path(context):
 @register.simple_tag(takes_context=True)
 def get_context_resourcetype(context):
     c_path = get_current_path(context)
-    resource_types = ['layers', 'maps', 'documents', 'search', 'people',
+    resource_types = ['layers', 'maps', 'geoapps', 'documents', 'search', 'people',
                       'groups/categories', 'groups']
     for resource_type in resource_types:
         if "/{0}/".format(resource_type) in c_path:

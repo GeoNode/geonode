@@ -17,12 +17,18 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.api.urls import router
+from geonode.geoapps.models import GeoApp
+from geonode.base.forms import ResourceBaseForm
 
-from . import views
 
-router.register(r'users', views.UserViewSet, 'users')
-router.register(r'groups', views.GroupViewSet, 'group-profiles')
-router.register(r'resources', views.ResourceBaseViewSet, 'base-resources')
+class GeoAppForm(ResourceBaseForm):
 
-urlpatterns = []
+    class Meta(ResourceBaseForm.Meta):
+        model = GeoApp
+        exclude = ResourceBaseForm.Meta.exclude + (
+            'zoom',
+            'projection',
+            'center_x',
+            'center_y',
+            'data'
+        )

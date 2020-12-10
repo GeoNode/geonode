@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2020 OSGeo
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,12 +17,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.api.urls import router
 
-from . import views
+from modeltranslation.translator import translator, TranslationOptions
+from geonode.geoapps.models import GeoApp
 
-router.register(r'users', views.UserViewSet, 'users')
-router.register(r'groups', views.GroupViewSet, 'group-profiles')
-router.register(r'resources', views.ResourceBaseViewSet, 'base-resources')
 
-urlpatterns = []
+class GeoAppTranslationOptions(TranslationOptions):
+    fields = ()
+
+
+translator.register(GeoApp, GeoAppTranslationOptions)
