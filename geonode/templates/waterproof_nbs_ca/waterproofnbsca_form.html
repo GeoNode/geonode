@@ -50,8 +50,8 @@
                 <input id="benefitTimePorc" type="text" class="form-control">
             </div>
         </div>
-  </div>
-  <div class="form-group">
+    </div>
+    <div class="form-group">
         <div class="row">
             <div class="col-md-6">
                 <label>Consecution Time Total Benefits
@@ -102,45 +102,15 @@
     <h3 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h3>
     <div class="form-group">
         <div class="row">
-            <div class="col-md-5">
-                <select class="form-control" id="riosTransformationAct" size="10" style="height: 150px;">
-                </select>
-            </div>
-            <div class="col-md-2">
-                <button id="move" class="btn btn-primary btn-block">>></button>
-                <button id="remove" class="btn btn-primary btn-block"><<</button>
-            </div>
-            <div class="col-md-5">
-                <select class="form-control" id="riosTransformation" size="10" style="height: 150px;">
-                </select>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
             <div class="col-md-4">
                 <label>Restricted areas</label>
                 <input id="restrictedArea" type="file">
             </div>
         </div>
     </div>
-    <form id="demoform" action="#" method="post">
-        <select multiple="multiple" size="10" name="duallistbox_demo1[]" title="duallistbox_demo1[]">
-          <option value="option1">Option 1</option>
-          <option value="option2">Option 2</option>
-          <option value="option3">Option 3</option>
-          <option value="option4">Option 4</option>
-          <option value="option5">Option 5</option>
-          <option value="option6">Option 6</option>
-          <option value="option7">Option 7</option>
-          <option value="option8">Option 8</option>
-          <option value="option9">Option 9</option>
-          <option value="option0">Option 10</option>
+    <select multiple="multiple" id="riosTransformationAct" size="10" name="duallistbox_demo1[]" title="duallistbox_demo1[]">
         </select>
-        <br>
-        <button type="submit" class="btn btn-default btn-block">Submit data</button>
-    </form>
-    <button type="button" id="submit" class="btn btn-primary">Submit</button>
+    <button type="button" id="porfin" class="btn btn-primary">Submit</button>
 </form>
 {% endblock %} {% block extra_script %}
 <!--ZIP reader library-->
@@ -153,32 +123,19 @@
 <script>
     $(document).ready(function() {
 
-        $('#move').click(function() {
-            $('#riosTransformationAct option:selected').appendTo('#riosTransformation');
-            return false;
-        });
-
-        $('#remove').click(function() {
-            $('#riosTransformation option:selected').appendTo('#riosTransformationAct');
-            return false;
-        });
-
         $("#menu-toggle").click(function(e) {
             e.preventDefault();
             $("#wrapper").toggleClass("toggled");
         });
 
         var demo1 = $('select[name="duallistbox_demo1[]"]').bootstrapDualListbox({
-            filterPlaceHolder: "Buscar",
-            infoText: "Número de Elementos: {0}",
-            infoTextEmpty: "Lista Vacia",
             preserveSelectionOnMove: 'moved',
             moveOnSelect: false,
         });
-        /*$("#demoform").submit(function() {
+
+        $("#porfin").click(function() {
             alert($('[name="duallistbox_demo1[]"]').val());
-            return false;
-        });*/
+        });
     });
 </script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
