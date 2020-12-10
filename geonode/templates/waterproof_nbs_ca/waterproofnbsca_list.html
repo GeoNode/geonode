@@ -12,17 +12,29 @@
   <h2>{% trans "List sbn" %}</h2>
   <a href="create">{% trans "Create new SBN" %}</a>
 </div>
+<div class="form-group">
+        <div class="row">
+            <div class="col-md-12">
+                <label>Country</label>
+                <select class="form-control">
+                  {% for sbn in nbsc %}
+                    <option>{{sbn.name}}</option>
+                  {% endfor %}
+                </select>
+            </div>
+            </div>
+            </div>
 <table id="example" class="table table-striped table-bordered" style="width:100%">
   <thead>
     <tr>
       <th scope="col">{% trans "Name" %}</th>
       <th scope="col">{% trans "Description" %}</th>
-      <th scope="col" style="width:25rem">{% trans "Percentaje of benefit associated with interventions at time t = 0" %}</th>
+      <th scope="col" style="width:20rem">{% trans "Percentaje of benefit associated with interventions at time t = 0" %}</th>
       <th scope="col">{% trans "Implementation cost" %}</th>
       <th scope="col">{% trans "Maintenance Cost" %}</th>
       <th scope="col">{% trans "Periodicity of Maintenance" %}</th>
       <th scope="col">{% trans "Oppotunity Cost" %}</th>
-      <th scope="col">{% trans "Options" %}</th>
+      <th scope="col"style="width:100px">{% trans "Options" %}</th>
     </tr>
   </thead>
   <tbody>
@@ -38,7 +50,7 @@
       <td>{{sbn.periodicity_maitenance}}</td>
       <td>{{sbn.unit_oportunity_cost}}</td>
       <!--td>{{sbn.rios_transformations.description}}</td-->
-      <td><button type="button" class="btn btn-default btn-md">
+      <td><div class="btn-group"><button type="button" class="btn btn-default btn-md">
         <a href="sbn/{{sbn.pk}}/detail">
           <span class="glyphicon glyphicon-eye-open	
           " aria-hidden="true"></span></a>
@@ -50,7 +62,7 @@
           <a href="sbn/{{sbn.pk}}/delete">
             <span class="glyphicon glyphicon-trash	
             " aria-hidden="true"></span></a>
-        </button></td>
+        </button></div></td>
     </tr>
     {% endfor %}
   </tbody>
