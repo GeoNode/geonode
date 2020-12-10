@@ -1,4 +1,5 @@
 {% extends "base.html" %} {% load i18n %} {% load bootstrap_tags %} {% block body_outer %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/bootstrap-duallistbox.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <div class="row">
     <div class="col-md-4">
@@ -42,11 +43,24 @@
         <div class="row">
             <div class="col-md-6">
                 <label>Time required to generate maximun benefit (yr)</label>
-                <input id="totalConsecTime" type="text" class="form-control">
+                <input id="maxBenefitTime" type="text" class="form-control">
             </div>
             <div class="col-md-6">
                 <label>Percentage of benefit associated with interventions at time t=0</label>
                 <input id="benefitTimePorc" type="text" class="form-control">
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-6">
+                <label>Consecution Time Total Benefits
+                </label>
+                <input id="totalConsecTime" type="text" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label>Maintenance Perodicity</label>
+                <input id="maintenancePeriod" type="text" class="form-control">
             </div>
         </div>
     </div>
@@ -88,30 +102,15 @@
     <h3 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h3>
     <div class="form-group">
         <div class="row">
-            <div class="col-md-5">
-                <select class="form-control" id="riosTransformation" size="10" style="height: 150px;">
-                </select>
-            </div>
-            <div class="col-md-2">
-                <button id="move" class="btn btn-primary btn-block">>></button>
-                <button id="remove" class="btn btn-primary btn-block"><<</button>
-            </div>
-            <div class="col-md-5">
-                <select class="form-control" id="riosriosActivityTrans" size="10" style="height: 150px;">
-                </select>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
             <div class="col-md-4">
                 <label>Restricted areas</label>
                 <input id="restrictedArea" type="file">
             </div>
         </div>
     </div>
-
-    <button type="button" id="submit" class="btn btn-primary">Submit</button>
+    <select multiple="multiple" id="riosTransformationAct" size="10" name="duallistbox_demo1[]" title="duallistbox_demo1[]">
+        </select>
+    <button type="button" id="porfin" class="btn btn-primary">Submit</button>
 </form>
 {% endblock %} {% block extra_script %}
 <!--ZIP reader library-->
@@ -124,16 +123,21 @@
 <script>
     $(document).ready(function() {
 
-        $('#move').click(function() {
-            $('#riosActivity option:selected').appendTo('#riosriosActivityTrans');
-            return false;
+        $("#menu-toggle").click(function(e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
         });
 
-        $('#remove').click(function() {
-            $('#riosriosActivityTrans option:selected').appendTo('#riosActivity');
-            return false;
+        var demo1 = $('select[name="duallistbox_demo1[]"]').bootstrapDualListbox({
+            preserveSelectionOnMove: 'moved',
+            moveOnSelect: false,
+        });
+
+        $("#porfin").click(function() {
+            alert($('[name="duallistbox_demo1[]"]').val());
         });
     });
 </script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jquery.bootstrap-duallistbox.min.js"></script>
 {% endblock %}
