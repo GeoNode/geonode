@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import six
 import errno
 import logging
 
@@ -96,8 +96,15 @@ def catalogue_post_save(instance, sender, **kwargs):
         md_doc = etree.tostring(dlxml.fromstring(instance.metadata_xml))
     else:
         md_doc = catalogue.catalogue.csw_gen_xml(instance, 'catalogue/full_metadata.xml')
-    csw_anytext = catalogue.catalogue.csw_gen_anytext(md_doc)
-    csw_wkt_geometry = instance.geographic_bounding_box.split(';')[-1]
+    try:
+        csw_anytext = catalogue.catalogue.csw_gen_anytext(md_doc)
+    except Exception as e:
+        LOGGER.exception(e)
+        csw_anytext = ''
+    if isinstance(instance.geographic_bounding_box, six.string_types):
+        csw_wkt_geometry = instance.geographic_bounding_box.split(';')[-1]
+    elif isinstance(instance.geographic_bounding_box, list):
+        csw_wkt_geometry = instance.geographic_bounding_box
 
     resources.update(
         metadata_xml=md_doc,
