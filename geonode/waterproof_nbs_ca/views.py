@@ -90,24 +90,30 @@ def listNbs(request):
         nbs = WaterproofNbsCa.objects.all()
         return render(request, 'waterproof_nbs_ca/waterproofnbsca_list.html', {'nbs': nbs})
 
-'''
-def viewNbs(request):
-    if request.method == 'GET':
-        nbs = request.GET.get('nbs')
-        filterNbs = WaterproofNbsCa.objects.filter(id=nbs)
-        return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs})
-'''
+def editNbs(request, idx):
+    filterNbs = WaterproofNbsCa.objects.filter(id=idx)
+    return render(request, 'waterproof_nbs_ca/waterproofnbsca_edit.html', {'nbs': filterNbs})
+
+def cloneNbs(request, idx):
+    filterNbs = WaterproofNbsCa.objects.filter(id=idx)
+    return render(request, 'waterproof_nbs_ca/waterproofnbsca_clone.html', {'nbs': filterNbs})
 
 def viewNbs(request, idx):
-        filterNbs = WaterproofNbsCa.objects.filter(id=idx)
-        currencies = Currency.objects.all()
-        return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs,'currencies': currencies})
-    #if request.method == 'GET':
+    filterNbs = WaterproofNbsCa.objects.filter(id=idx)
+    currencies = Currency.objects.all()
+    return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs, 'currencies': currencies})
 
 def loadCurrency(request):
     currency = request.GET.get('currency')
     currencies = Currency.objects.filter(id=currency)
     currencies_serialized = serializers.serialize('json', currencies)
+    return JsonResponse(currencies_serialized, safe=False)
+
+
+def loadCurrencyByCountry(request):
+    country_id = request.GET.get('country')
+    currency = Currency.objects.filter(country_id=country_id)
+    currencies_serialized = serializers.serialize('json', currency)
     return JsonResponse(currencies_serialized, safe=False)
 
 
@@ -123,25 +129,21 @@ def loadCountry(request):
     countries_serialized = serializers.serialize('json', countries)
     return JsonResponse(countries_serialized, safe=False)
 
-
 def loadAllTransitions(request):
     transitions = RiosTransition.objects.all()
     transitions_serialized = serializers.serialize('json', transitions)
     return JsonResponse(transitions_serialized, safe=False)
-
 
 def loadAllCountries(request):
     countries = Countries.objects.all()
     countries_serialized = serializers.serialize('json', countries)
     return JsonResponse(countries_serialized, safe=False)
 
-
 def loadActivityByTransition(request):
     transition = request.GET.get('transition')
     activities = RiosActivity.objects.filter(transition_id=transition)
     activities_serialized = serializers.serialize('json', activities)
     return JsonResponse(activities_serialized, safe=False)
-
 
 def loadTransformationbyActivity(request):
     activity = request.GET.get('activity')
@@ -153,10 +155,10 @@ def loadTransformationbyActivity(request):
 """
 
 class WaterproofNbsCaDetailView(AccessMixin, WaterproofNbsCaMixin, DetailView):
-   
+
     Main view to display one WaterproofNbsCa.
 
-  
+
     model = WaterproofNbsCa
     template_name = "waterproof_nbs_ca/waterproofnbsca_detail_list.html"
     access_mixin_setting_name = 'WATERPROOF_NBS_CA_ALLOW_ANONYMOUS'
