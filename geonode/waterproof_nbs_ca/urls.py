@@ -12,6 +12,8 @@ urlpatterns = [
     path('view/<int:idx>', views.viewNbs, name='view-nbs'),
     # Edit NBS
     path('edit/<int:idx>', views.editNbs, name='edit-nbs'),
+    # Clone NBS
+    path('clone/<int:idx>', views.cloneNbs, name='clone-nbs'),
     # Load all RIOS transitions
     path('load-transitions/', views.loadAllTransitions, name='waterproof_load_transformations'),
     # Load activities by it's transition id

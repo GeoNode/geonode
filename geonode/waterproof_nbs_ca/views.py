@@ -94,6 +94,10 @@ def editNbs(request, idx):
     filterNbs = WaterproofNbsCa.objects.filter(id=idx)
     return render(request, 'waterproof_nbs_ca/waterproofnbsca_edit.html', {'nbs': filterNbs})
 
+def cloneNbs(request, idx):
+    filterNbs = WaterproofNbsCa.objects.filter(id=idx)
+    return render(request, 'waterproof_nbs_ca/waterproofnbsca_clone.html', {'nbs': filterNbs})
+
 def viewNbs(request, idx):
     filterNbs = WaterproofNbsCa.objects.filter(id=idx)
     currencies = Currency.objects.all()
@@ -125,25 +129,21 @@ def loadCountry(request):
     countries_serialized = serializers.serialize('json', countries)
     return JsonResponse(countries_serialized, safe=False)
 
-
 def loadAllTransitions(request):
     transitions = RiosTransition.objects.all()
     transitions_serialized = serializers.serialize('json', transitions)
     return JsonResponse(transitions_serialized, safe=False)
-
 
 def loadAllCountries(request):
     countries = Countries.objects.all()
     countries_serialized = serializers.serialize('json', countries)
     return JsonResponse(countries_serialized, safe=False)
 
-
 def loadActivityByTransition(request):
     transition = request.GET.get('transition')
     activities = RiosActivity.objects.filter(transition_id=transition)
     activities_serialized = serializers.serialize('json', activities)
     return JsonResponse(activities_serialized, safe=False)
-
 
 def loadTransformationbyActivity(request):
     activity = request.GET.get('activity')
