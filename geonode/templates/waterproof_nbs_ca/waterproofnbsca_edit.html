@@ -13,6 +13,9 @@
     </div>
 </div>
 <h1>Create NBS</h1>
+{% for sbn in nbs %}
+
+
 <form>
     <h3 class="text-primary">General Settings</h3>
     <div class="form-group">
@@ -112,14 +115,18 @@
         </div>
     <button type="button" id="porfin" class="btn btn-primary">Submit</button>
 </form>
+<script>
+    var token = '{{ csrf_token }}';
+    var countryNbs='{{ sbn.country.pk }}';
+    var currencyNbs='{{ sbn.currency.pk }}';
+</script>
+{% endfor %}
 {% endblock %} {% block extra_script %}
 <!--ZIP reader library-->
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jszip.min.js"></script>
 <!--Shapefile reader library -->
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/shp.min.js"></script>
-<script>
-    var token = '{{ csrf_token }}';
-</script>
-<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
+
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca_edit.js"></script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jquery.bootstrap-duallistbox.min.js"></script>
 {% endblock %}

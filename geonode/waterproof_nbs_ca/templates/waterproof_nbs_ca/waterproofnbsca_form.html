@@ -8,8 +8,10 @@
         <p><b>Region:</b> Central</p>
     </div>
     <div class="col-md-8">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d254508.51641080936!2d-74.24789454527543!3d4.648283717196413!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9bfd2da6cb29%3A0x239d635520a33914!2zQm9nb3TDoQ!5e0!3m2!1ses!2sco!4v1607456076816!5m2!1ses!2sco"
-            width="750" height="150" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d254508.51641080936!2d-74.24789454527543!3d4.648283717196413!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9bfd2da6cb29%3A0x239d635520a33914!2zQm9nb3TDoQ!5e0!3m2!1ses!2sco!4v1607456076816!5m2!1ses!2sco"
+            width="750" height="150" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false"
+            tabindex="0"></iframe>
     </div>
 </div>
 <h1>Create NBS</h1>
@@ -100,6 +102,9 @@
         </div>
     </div>
     <h3 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h3>
+    <select multiple="multiple" id="riosTransformations" size="10" name="duallistbox_demo1[]"
+        title="duallistbox_demo1[]">
+    </select>
     <div class="form-group">
         <div class="row">
             <div class="col-md-4">
@@ -108,8 +113,6 @@
             </div>
         </div>
     </div>
-    <select multiple="multiple" id="riosTransformationAct" size="10" name="duallistbox_demo1[]" title="duallistbox_demo1[]">
-        </select>
     <button type="button" id="porfin" class="btn btn-primary">Submit</button>
 </form>
 {% endblock %} {% block extra_script %}
@@ -119,24 +122,6 @@
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/shp.min.js"></script>
 <script>
     var token = '{{ csrf_token }}';
-</script>
-<script>
-    $(document).ready(function() {
-
-        $("#menu-toggle").click(function(e) {
-            e.preventDefault();
-            $("#wrapper").toggleClass("toggled");
-        });
-
-        var demo1 = $('select[name="duallistbox_demo1[]"]').bootstrapDualListbox({
-            preserveSelectionOnMove: 'moved',
-            moveOnSelect: false,
-        });
-
-        $("#porfin").click(function() {
-            alert($('[name="duallistbox_demo1[]"]').val());
-        });
-    });
 </script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jquery.bootstrap-duallistbox.min.js"></script>

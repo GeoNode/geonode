@@ -97,6 +97,11 @@ def viewNbs(request):
         filterNbs = WaterproofNbsCa.objects.filter(id=nbs)
         return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs})
 
+def editNbs(request):
+    if request.method == 'GET':
+        nbs = request.GET.get('nbs')
+        filterNbs = WaterproofNbsCa.objects.filter(id=nbs)
+        return render(request, 'waterproof_nbs_ca/waterproofnbsca_edit.html', {'nbs': filterNbs})
 
 def loadCurrency(request):
     currency = request.GET.get('currency')
@@ -104,6 +109,11 @@ def loadCurrency(request):
     currencies_serialized = serializers.serialize('json', currencies)
     return JsonResponse(currencies_serialized, safe=False)
 
+def loadCurrencyByCountry(request):
+    country_id = request.GET.get('country')
+    currency = Currency.objects.filter(country_id=country_id)
+    currencies_serialized = serializers.serialize('json', currency)
+    return JsonResponse(currencies_serialized, safe=False)
 
 def loadAllCurrencies(request):
     currencies = Currency.objects.all()
