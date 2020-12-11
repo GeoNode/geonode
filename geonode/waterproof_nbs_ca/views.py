@@ -90,13 +90,19 @@ def listNbs(request):
         nbs = WaterproofNbsCa.objects.all()
         return render(request, 'waterproof_nbs_ca/waterproofnbsca_list.html', {'nbs': nbs})
 
-
+'''
 def viewNbs(request):
     if request.method == 'GET':
         nbs = request.GET.get('nbs')
         filterNbs = WaterproofNbsCa.objects.filter(id=nbs)
         return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs})
+'''
 
+def viewNbs(request, idx):
+        filterNbs = WaterproofNbsCa.objects.filter(id=idx)
+        currencies = Currency.objects.all()
+        return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs,'currencies': currencies})
+    #if request.method == 'GET':
 
 def loadCurrency(request):
     currency = request.GET.get('currency')
