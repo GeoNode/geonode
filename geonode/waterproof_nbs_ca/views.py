@@ -90,29 +90,14 @@ def listNbs(request):
         nbs = WaterproofNbsCa.objects.all()
         return render(request, 'waterproof_nbs_ca/waterproofnbsca_list.html', {'nbs': nbs})
 
-
-'''
-def viewNbs(request):
-    if request.method == 'GET':
-        nbs = request.GET.get('nbs')
-        filterNbs = WaterproofNbsCa.objects.filter(id=nbs)
-        return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs})
-'''
-
-
-def editNbs(request):
-    if request.method == 'GET':
-        nbs = request.GET.get('nbs')
-        filterNbs = WaterproofNbsCa.objects.filter(id=nbs)
-        return render(request, 'waterproof_nbs_ca/waterproofnbsca_edit.html', {'nbs': filterNbs})
-
+def editNbs(request, idx):
+    filterNbs = WaterproofNbsCa.objects.filter(id=idx)
+    return render(request, 'waterproof_nbs_ca/waterproofnbsca_edit.html', {'nbs': filterNbs})
 
 def viewNbs(request, idx):
     filterNbs = WaterproofNbsCa.objects.filter(id=idx)
     currencies = Currency.objects.all()
     return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs, 'currencies': currencies})
-    # if request.method == 'GET':
-
 
 def loadCurrency(request):
     currency = request.GET.get('currency')
@@ -170,10 +155,10 @@ def loadTransformationbyActivity(request):
 """
 
 class WaterproofNbsCaDetailView(AccessMixin, WaterproofNbsCaMixin, DetailView):
-   
+
     Main view to display one WaterproofNbsCa.
 
-  
+
     model = WaterproofNbsCa
     template_name = "waterproof_nbs_ca/waterproofnbsca_detail_list.html"
     access_mixin_setting_name = 'WATERPROOF_NBS_CA_ALLOW_ANONYMOUS'

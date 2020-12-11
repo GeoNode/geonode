@@ -9,10 +9,9 @@ urlpatterns = [
     # Default view, list all views
     path('', views.listNbs, name='list-nbs'),
     # View NBS details
-    #path('view/', views.viewNbs, name='view-nbs'),
     path('view/<int:idx>', views.viewNbs, name='view-nbs'),
     # Edit NBS
-    path('edit/', views.editNbs, name='view-nbs'),
+    path('edit/<int:idx>', views.editNbs, name='edit-nbs'),
     # Load all RIOS transitions
     path('load-transitions/', views.loadAllTransitions, name='waterproof_load_transformations'),
     # Load activities by it's transition id
