@@ -847,6 +847,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         null=True,
         blank=True)
 
+    resource_type = models.CharField(
+        _('Resource Type'),
+        max_length=1024,
+        blank=True,
+        null=True)
+
     __is_approved = False
     __is_published = False
 
@@ -874,8 +880,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return "{0}".format(self.title)
 
     def _remove_html_tags(self, attribute_str):
-        pattern = re.compile('<.*?>')
-        return re.sub(pattern, '', attribute_str)
+        try:
+            pattern = re.compile('<.*?>')
+            return re.sub(pattern, '', attribute_str)
+        except Exception:
+            return attribute_str
 
     @property
     def raw_abstract(self):
@@ -901,6 +910,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         Send a notification when a resource is created or updated
         """
+        if not self.resource_type and self.polymorphic_ctype and \
+        self.polymorphic_ctype.model:
+            self.resource_type = self.polymorphic_ctype.model.lower()
+
         if hasattr(self, 'class_name') and (self.pk is None or notify):
             if self.pk is None and self.title:
                 # Resource Created
@@ -1790,9 +1803,10 @@ class CuratedThumbnail(models.Model):
             _upload_path = os.path.join(os.path.dirname(upload_path), actual_name)
             if not os.path.exists(_upload_path):
                 os.rename(upload_path, _upload_path)
+            return self.img_thumbnail.url
         except Exception as e:
             logger.exception(e)
-        return self.img_thumbnail.url
+        return ''
 
 
 class Configuration(SingletonModel):

@@ -1,156 +1,121 @@
-{% extends "geonode_base.html" %}
-{% load markdownify %}
-{% load i18n %}
-{% load static from staticfiles %}
-{% load base_tags %}
-
-{% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %}
-
-{% block body_class %}home{% endblock %}
-
-{% block middle %}
-  {{ block.super }}
-
-  {% block hero %}
-  {% if block.super %}
-  {{ block.super }}
-  {% else %}
-
-{% if custom_theme.welcome_theme == 'JUMBOTRON_BG' or not slides %}
+{% extends "geonode_base.html" %} {% load markdownify %} {% load i18n %} {% load static from staticfiles %} {% load base_tags %} {% block title %} {% trans "Welcome!" %} - {{ block.super }} {% endblock %} {% block body_class %}home{% endblock %} {% block
+middle %} {{ block.super }} {% block hero %} {% if block.super %} {{ block.super }} {% else %} {% if custom_theme.welcome_theme == 'JUMBOTRON_BG' or not slides %}
 <div class="jumbotron">
-  <div class="container gn-container">
-      {% with jumbotron_welcome_title=custom_theme.jumbotron_welcome_title|default:"Welcome"|template_trans %}
-      <h1>{% trans jumbotron_welcome_title %}</h1>
-      {% endwith %}
-      <p></p>
-      {% with jumbotron_welcome_content=custom_theme.jumbotron_welcome_content|default:"GeoNode is an open source platform for sharing geospatial data and maps."|template_trans %}
-      <p>{% trans jumbotron_welcome_content %}</p>
-      {% endwith %}
-      {% if not custom_theme.jumbotron_cta_hide %}
-      <p><a class="btn btn-default btn-lg" target="_blank"
-          href="{{custom_theme.jumbotron_cta_link|default:"https://docs.geonode.org/en/master/usage/index.html"}}"
-          role="button">{{custom_theme.jumbotron_cta_text|default:_("Get Started &raquo;")}}</a></p>
-      {% endif %}
-  </div>
+    <div class="container gn-container">
+        {% with jumbotron_welcome_title=custom_theme.jumbotron_welcome_title|default:"Welcome"|template_trans %}
+        <h1>{% trans jumbotron_welcome_title %}</h1>
+        {% endwith %}
+        <p></p>
+        {% with jumbotron_welcome_content=custom_theme.jumbotron_welcome_content|default:"GeoNode is an open source platform for sharing geospatial data and maps."|template_trans %}
+        <p>{% trans jumbotron_welcome_content %}</p>
+        {% endwith %} {% if not custom_theme.jumbotron_cta_hide %}
+        <p><a class="btn btn-default btn-lg" target="_blank" href="{{custom_theme.jumbotron_cta_link|default:" https://docs.geonode.org/en/master/usage/index.html "}}" role="button">{{custom_theme.jumbotron_cta_text|default:_("Get Started &raquo;")}}</a></p>
+        {% endif %}
+    </div>
 </div>
 {% else %}
 <div class="geonode-slide-show">
-	<div class="jumbotron jumbotron--no_bg">
-	   <div class="container gn-container">
-		  <div id="myCarousel" class="carousel slide" data-ride="carousel">
-			 <!-- Indicators -->
-			 {% if slides.count > 1%}
-			 <ol class="carousel-indicators">
-				{% for slide in slides %}
-				<li data-target="#myCarousel" data-slide-to="{{ forloop.counter | add:'-1' }}" class="{% if forloop.counter == 1 %}active{%endif%}"></li>
-				{% endfor %}
-			 </ol>
-			 {% endif %}
-       {% with jumbotron_welcome_title=custom_theme.jumbotron_welcome_title|default:"Welcome"|template_trans %}
-       <h1 class="carousel-header">{% trans jumbotron_welcome_title %}</h1>
-       {% endwith %}
-			 <!-- Wrapper for slides -->
-			 <div class="carousel-inner" role="listbox">
-				{% for slide in slides %}
-				<div class="item {% if forloop.counter == 1 %}active{%endif%}">
-					{% if slide.jumbotron_slide_image %}
-				   <img src="{{ slide.jumbotron_slide_image_thumbnail.url }}" alt="{{ slide.slide_name }}">
-				   {% endif %}
-				   {% if not slide.hide_jumbotron_slide_content %}
-				   <div class="carousel-caption">
-            {% with jumbotron_slide_content=slide.jumbotron_slide_content|markdownify %}
-            {% trans jumbotron_slide_content %}
-            {% endwith %}
-				   </div>
-				   {% endif %}
-				</div>
-				{% endfor %}                
-			 </div>
-			 <!-- Left and right controls -->
-			 {% if slides.count > 1%}
-			 <a class="left carousel-control" href="#myCarousel" data-slide="prev">
-			 <span class="glyphicon glyphicon-chevron-left"></span>
-			 <span class="sr-only">Previous</span>
-			 </a>
-			 <a class="right carousel-control" href="#myCarousel" data-slide="next">
-			 <span class="glyphicon glyphicon-chevron-right"></span>
-			 <span class="sr-only">Next</span>
-			 </a>
-			 {% endif %}
-		  </div>
-	   </div>
-	</div>
- </div>
-{% endif %}
-  {% endif %}
-  {% endblock hero %}
+    <div class="jumbotron jumbotron--no_bg">
+        <div class="container gn-container">
+            <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                <!-- Indicators -->
+                {% if slides.count > 1%}
+                <ol class="carousel-indicators">
+                    {% for slide in slides %}
+                    <li data-target="#myCarousel" data-slide-to="{{ forloop.counter | add:'-1' }}" class="{% if forloop.counter == 1 %}active{%endif%}"></li>
+                    {% endfor %}
+                </ol>
+                {% endif %} {% with jumbotron_welcome_title=custom_theme.jumbotron_welcome_title|default:"Welcome"|template_trans %}
+                <h1 class="carousel-header">{% trans jumbotron_welcome_title %}</h1>
+                {% endwith %}
+                <!-- Wrapper for slides -->
+                <div class="carousel-inner" role="listbox">
+                    {% for slide in slides %}
+                    <div class="item {% if forloop.counter == 1 %}active{%endif%}">
+                        {% if slide.jumbotron_slide_image %}
+                        <img src="{{ slide.jumbotron_slide_image_thumbnail.url }}" alt="{{ slide.slide_name }}"> {% endif %} {% if not slide.hide_jumbotron_slide_content %}
+                        <div class="carousel-caption">
+                            {% with jumbotron_slide_content=slide.jumbotron_slide_content|markdownify %} {% trans jumbotron_slide_content %} {% endwith %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <!-- Left and right controls -->
+                {% if slides.count > 1%}
+                <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %} {% endif %} {% endblock hero %} {% block mainbody %} {% block bigsearch %} {% if block.super %} {{ block.super }} {% else %}
+<!-- <div class="big-search"> -->
+<!-- <div class="container"> -->
+<!-- <h1>{% trans "Search for Data." %}</h1> -->
+<!-- <div class="search"> -->
+<!-- <form id="main_search" action="{% url "search" %}" > -->
+<!-- <span class="fa fa-search fa-3x"></span> -->
+<!-- {% if HAYSTACK_SEARCH %} -->
+<!-- <input id="main_search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" name="q" autocomplete="off"> -->
+<!-- <input type="hidden" name="abstract__icontains" id="main_search_abstract_input" placeholder="{% trans 'Search' %}" > -->
+<!-- <input type="hidden" name="purpose__icontains" id="main_search_purpose_input" placeholder="{% trans 'Search' %}" > -->
+<!-- <input type="hidden" name="f_method" id="main_filtering_type" value="or" > -->
+<!-- {% else %} -->
+<!-- <input id="main_search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" autocomplete="off" name="title__icontains"> -->
+<!-- <input type="hidden" name="abstract__icontains" id="main_search_abstract_input"> -->
+<!-- <input type="hidden" name="purpose__icontains" id="main_search_purpose_input"> -->
+<!-- <input type="hidden" name="f_method" id="main_filtering_type" value="or" > -->
+<!-- {% endif %} -->
+<!-- </form> -->
+<!-- </div> -->
+<!-- <p><a class="btn btn-default btn-lg" href="{% url "search" %}">{% trans "Advanced Search" %}</a></p> -->
+<!-- </div> -->
+<!-- </div> -->
+{% endif %} {% endblock bigsearch %}
 
-  {% block mainbody %}
 
-      {% block bigsearch %}
-      {% if block.super %}
-      {{ block.super }}
-      {% else %}
-      <!-- <div class="big-search"> -->
-      	<!-- <div class="container"> -->
-      		<!-- <h1>{% trans "Search for Data." %}</h1> -->
-      		<!-- <div class="search"> -->
-      			<!-- <form id="main_search" action="{% url "search" %}" > -->
-      				<!-- <span class="fa fa-search fa-3x"></span> -->
-      				<!-- {% if HAYSTACK_SEARCH %} -->
-      				<!-- <input id="main_search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" name="q" autocomplete="off"> -->
-                    <!-- <input type="hidden" name="abstract__icontains" id="main_search_abstract_input" placeholder="{% trans 'Search' %}" > -->
-                    <!-- <input type="hidden" name="purpose__icontains" id="main_search_purpose_input" placeholder="{% trans 'Search' %}" > -->
-                    <!-- <input type="hidden" name="f_method" id="main_filtering_type" value="or" > -->
-      				<!-- {% else %} -->
-      				<!-- <input id="main_search_input" type="text" placeholder="{% trans 'Search' %}" class="form-control" autocomplete="off" name="title__icontains"> -->
-                    <!-- <input type="hidden" name="abstract__icontains" id="main_search_abstract_input"> -->
-                    <!-- <input type="hidden" name="purpose__icontains" id="main_search_purpose_input"> -->
-                    <!-- <input type="hidden" name="f_method" id="main_filtering_type" value="or" > -->
-      				<!-- {% endif %} -->
-      			<!-- </form> -->
-      		<!-- </div> -->
-      		<!-- <p><a class="btn btn-default btn-lg" href="{% url "search" %}">{% trans "Advanced Search" %}</a></p> -->
-      	<!-- </div> -->
-      <!-- </div> -->
-      {% endif %}
-      {% endblock bigsearch %}
-      
-      
-    
-	<!-- <section> -->
-        <!-- <div class="container text-center imgbackgroundModels"> -->
-          <!-- <div class="row colorHeaderInstrucciones"> -->
-            <!-- <h2>System operating instructions</h2> -->
+
+<!-- <section> -->
+<!-- <div class="container text-center imgbackgroundModels"> -->
+<!-- <div class="row colorHeaderInstrucciones"> -->
+<!-- <h2>System operating instructions</h2> -->
+<!-- </div> -->
+<!-- <div class="row" style="height=500px;"> -->
+<!-- <object data="{% static 'geonode/img/models.svg' %}" type="image/svg+xml" height="500"> -->
+<!-- </object> -->
+<!--img src="{% static 'geonode/img/models.svg' %}">
           <!-- </div> -->
-          <!-- <div class="row" style="height=500px;"> -->
-          <!-- <object data="{% static 'geonode/img/models.svg' %}" type="image/svg+xml" height="500"> -->
-        <!-- </object> -->
-            <!--img src="{% static 'geonode/img/models.svg' %}">
-          <!-- </div> -->
-        <!-- </div> -->
-        
-      <!-- </section> -->
-      
-	  
-	<section>
-	
+<!-- </div> -->
+
+<!-- </section> -->
+
+
+<section>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <!--link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous"-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-	
-	
-<div class="principal-menu">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+
+    <div class="principal-menu">
         <div class="container">
-		<div class="row text-center colorHeaderInstrucciones">
-            <h2>System operating instructions</h2>
-          </div>
+            <div class="row text-center colorHeaderInstrucciones">
+                <h2>System operating instructions</h2>
+            </div>
             <div class="row hidden-xs hidden-sm hidden-md">
                 <div class="col-md-4">
                     <div class="center-block text-center">
-                        <img class="center-img" src= "/static/geonode/img/2.png">
+                        <img class="center-img" src="/static/geonode/img/2.png">
                         <img class="img1 ani_headShake" src="/static/geonode/img/01-ICONO.png">
                         <h4 class="ico1-text ">Choose or create a new NBS</h4>
                         <img class="img2 ani_headShake" src="/static/geonode/img/02-ICONO.png">
@@ -185,231 +150,231 @@
                 <div class="col-md-12">
                     <div class="media">
                         <div class="media-left media-middle">
-                        <a href="#">
-                            <img class="media-object" src="/static/geonode/img/01-ICONO.png" style="max-width: 100px;">
-                        </a>
+                            <a href="#">
+                                <img class="media-object" src="/static/geonode/img/01-ICONO.png" style="max-width: 100px;">
+                            </a>
                         </div>
                         <div class="media-body">
-                        <h4>Choose or create a new NBS</h4>
+                            <h4>Choose or create a new NBS</h4>
                         </div>
                     </div>
                     <div class="media">
                         <div class="media-left media-middle">
-                        <a href="#">
-                            <img class="media-object" src="/static/geonode/img/02-ICONO.png" style="max-width: 100px;">
-                        </a>
+                            <a href="#">
+                                <img class="media-object" src="/static/geonode/img/02-ICONO.png" style="max-width: 100px;">
+                            </a>
                         </div>
                         <div class="media-body">
-                        <h4>Define and configure your Water Intakes</h4>
+                            <h4>Define and configure your Water Intakes</h4>
                         </div>
                     </div>
                     <div class="media">
                         <div class="media-left media-middle">
-                        <a href="#">
-                            <img class="media-object" src="/static/geonode/img/03-ICONO.png" style="max-width: 100px;">
-                        </a>
+                            <a href="#">
+                                <img class="media-object" src="/static/geonode/img/03-ICONO.png" style="max-width: 100px;">
+                            </a>
                         </div>
                         <div class="media-body">
-                        <h4>Locate your city</h4>
+                            <h4>Locate your city</h4>
                         </div>
                     </div>
                     <div class="media">
                         <div class="media-left media-middle">
-                        <a href="#">
-                            <img class="media-object" src="/static/geonode/img/04-ICONO.png" style="max-width: 100px;">
-                        </a>
+                            <a href="#">
+                                <img class="media-object" src="/static/geonode/img/04-ICONO.png" style="max-width: 100px;">
+                            </a>
                         </div>
                         <div class="media-body">
-                        <h4>Configure your treatment plants or customized infrastructure</h4>
+                            <h4>Configure your treatment plants or customized infrastructure</h4>
                         </div>
                     </div>
                     <div class="media">
                         <div class="media-left media-middle">
-                        <a href="#">
-                            <img class="media-object" src="/static/geonode/img/05-ICONO.png" style="max-width: 100px;">
-                        </a>
+                            <a href="#">
+                                <img class="media-object" src="/static/geonode/img/05-ICONO.png" style="max-width: 100px;">
+                            </a>
                         </div>
                         <div class="media-body">
-                        <h4>Define costs and create your case study</h4>
+                            <h4>Define costs and create your case study</h4>
                         </div>
                     </div>
                     <div class="media">
                         <div class="media-left media-middle">
-                        <a href="#">
-                            <img class="media-object" src="/static/geonode/img/06-ICONO.png" style="max-width: 100px;">
-                        </a>
+                            <a href="#">
+                                <img class="media-object" src="/static/geonode/img/06-ICONO.png" style="max-width: 100px;">
+                            </a>
                         </div>
                         <div class="media-body">
-                        <h4>Consult Compare. download and share the results</h4>
+                            <h4>Consult Compare. download and share the results</h4>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-      </div>
-    <!--script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script-->
-    <!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script-->
-
-<section>	
-	  
-	  
-	  
-      <section>
-               <div class="container text-center">
-          <div class="row colorHeaderInstrucciones">
-            <h2>Nature-based solutions</h2>
-          </div>
-          <div class="row">
-            <span style="font-size=12px"> We work to meet this ambitious goal</span> <br>
-            <span style="font-size=12px"> by focusing on these key conservation areas</span>
-           </div>
-            <div class="row" style="height:40px;">
-            </div>
-          <div class="row" style="height=500px;">
-            <div class="col-md-4">
-                <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                <img src= "{% static 'geonode/img/01-conservacion.png' %}">
-                <p class="text-center"> Conservation
-                </p>
-                </a>
-            </div>
-            <div class="col-md-3 col-md-offset-1">
-                <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                <img src= "{% static 'geonode/img/02-restauracion-activa.png' %}">
-                <p class="text-center"> Active restoration
-                </p>
-                </a>
-            </div>
-            <div class="col-md-3 col-md-offset-1">
-                <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                <img src= "{% static 'geonode/img/03-restauracion-pasiva.png' %}">
-                <p class="text-center"> Passive restoration
-                </p>
-                </a>
-            </div>           
-           </div>
-           <div class="row" style="height:50px;">
-            </div>
-          <div class="row" style="height=500px;">
-            <div class="col-md-7">
-                <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                <img src= "{% static 'geonode/img/04-practicas-agricolas.png' %}">
-                <p class="text-center"> Best agricultural practices 
-                </p>
-                </a>
-            </div>
-            <div class="col-md-3">
-                <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                <img src= "{% static 'geonode/img/05-sistemas-sostenibles.png' %}">
-                <p class="text-center"> Sustainable production systems
-                </p>
-                </a>
-            </div>           
-           </div> 
-		   <div class="row" style="height:30px;">
-           </div>
-        </div>
-        
-      </section>
-	  
-	 <section>
-	
-	
-	
-	<div class="carrouselcolor">
-        <div class="container">
-		<div class="row text-center colorHeaderInstrucciones">
-            <h2>News</h2>
-          </div>
-            <div class="slider owl-carousel">
-                <div class="card">
-                    <div class="img">
-                        <img src="/static/geonode/img/car1.jpg" class="img-card-news" alt=""></div>
-                    <div class="content">
-                        <div class="newstitle">
-                            Indicators of water risk and basin healths</div>
-                       
-                        <p>
-                            As part of the conceptualization carried out for the WaterFunds App, the incorporation of some indicators has been proposed that will allow users to have a notion of the water risk and the health status of a basin under analysis.</p>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="img">
-                        <img src="/static/geonode/img/car2.jpg" class="img-card-news" alt=""></div>
-                    <div class="content">
-                        <div class="newstitle">
-                            RIOS model data requirement</div>                       
-                        <p>
-                            In summary, a total of 37 variables are identified to feed the 5 InVEST models, of which 28 correspond to variables associated with climate, and the rest are associated with soil and coverage.</p>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="img">
-                        <img src="/static/geonode/img/car3.jpg" class="img-card-news" alt=""></div>
-                    <div class="content">
-                        <div class="newstitle">
-                            InVEST model data requirement</div>                        
-                        <p>
-                            This section lists the data required by each of the InVEST models that are considered to be incorporated into Waterproof</p>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="img">
-                        <img src="/static/geonode/img/car4.jpg" class="img-card-news" alt=""></div>
-                    <div class="content">
-                        <div class="newstitle">                            
-							Total monthly and annual average multi-year precipitation (Current condition) and rainy days</div>
-                        <p>                            
-							A total of 11 databases were identified from the review carried out for the multiannual monthly mean precipitation variables (January, February, ..., December) and multi-year mean annual precipitation.</p>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="img">
-                        <img src="/static/geonode/img/car5.jpg" class="img-card-news" alt=""></div>
-                    <div class="content">
-                        <div class="newstitle">
-                            Multi-year average monthly and annual total reference evapotranspiration </div>
-                        
-                        <p>
-                            According to the review carried out, the databases that contain the reference evapotranspiration variable are scarce, since this variable is generally inferred from data such as temperature, relative humidity, radiation, among others.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script> -->
-	
-	</section> 	 
-	  
-	   <section>
-        <div class="container text-center imgbackgroundwiki">
-          <div class="row" style="height:30%;">
+    <!--script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script-->
+    <!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script-->
+
+    <section>
+
+
+
+        <section>
+            <div class="container text-center">
+                <div class="row colorHeaderInstrucciones">
+                    <h2>Nature-based solutions</h2>
+                </div>
+                <div class="row">
+                    <span style="font-size=12px"> We work to meet this ambitious goal</span> <br>
+                    <span style="font-size=12px"> by focusing on these key conservation areas</span>
+                </div>
+                <div class="row" style="height:40px;">
+                </div>
+                <div class="row" style="height=500px;">
+                    <div class="col-md-4">
+                        <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+                            <img src="{% static 'geonode/img/01-conservacion.png' %}">
+                            <p class="text-center"> Conservation
+                            </p>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-md-offset-1">
+                        <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+                            <img src="{% static 'geonode/img/02-restauracion-activa.png' %}">
+                            <p class="text-center"> Active restoration
+                            </p>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-md-offset-1">
+                        <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+                            <img src="{% static 'geonode/img/03-restauracion-pasiva.png' %}">
+                            <p class="text-center"> Passive restoration
+                            </p>
+                        </a>
+                    </div>
+                </div>
+                <div class="row" style="height:50px;">
+                </div>
+                <div class="row" style="height=500px;">
+                    <div class="col-md-7">
+                        <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+                            <img src="{% static 'geonode/img/04-practicas-agricolas.png' %}">
+                            <p class="text-center"> Best agricultural practices
+                            </p>
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+                            <img src="{% static 'geonode/img/05-sistemas-sostenibles.png' %}">
+                            <p class="text-center"> Sustainable production systems
+                            </p>
+                        </a>
+                    </div>
+                </div>
+                <div class="row" style="height:30px;">
+                </div>
             </div>
-            <div class="row backgroundcolorwiki">
-           <div class= "row">
-            <p class="ppwpwiki">WATERPROOF WIKI</p>
-            <hr>
+
+        </section>
+
+        <section>
+
+
+
+            <div class="carrouselcolor">
+                <div class="container">
+                    <div class="row text-center colorHeaderInstrucciones">
+                        <h2>News</h2>
+                    </div>
+                    <div class="slider owl-carousel">
+                        <div class="card">
+                            <div class="img">
+                                <img src="/static/geonode/img/car1.jpg" class="img-card-news" alt=""></div>
+                            <div class="content">
+                                <div class="newstitle">
+                                    Indicators of water risk and basin healths</div>
+
+                                <p>
+                                    As part of the conceptualization carried out for the WaterFunds App, the incorporation of some indicators has been proposed that will allow users to have a notion of the water risk and the health status of a basin under analysis.</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="img">
+                                <img src="/static/geonode/img/car2.jpg" class="img-card-news" alt=""></div>
+                            <div class="content">
+                                <div class="newstitle">
+                                    RIOS model data requirement</div>
+                                <p>
+                                    In summary, a total of 37 variables are identified to feed the 5 InVEST models, of which 28 correspond to variables associated with climate, and the rest are associated with soil and coverage.</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="img">
+                                <img src="/static/geonode/img/car3.jpg" class="img-card-news" alt=""></div>
+                            <div class="content">
+                                <div class="newstitle">
+                                    InVEST model data requirement</div>
+                                <p>
+                                    This section lists the data required by each of the InVEST models that are considered to be incorporated into Waterproof</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="img">
+                                <img src="/static/geonode/img/car4.jpg" class="img-card-news" alt=""></div>
+                            <div class="content">
+                                <div class="newstitle">
+                                    Total monthly and annual average multi-year precipitation (Current condition) and rainy days</div>
+                                <p>
+                                    A total of 11 databases were identified from the review carried out for the multiannual monthly mean precipitation variables (January, February, ..., December) and multi-year mean annual precipitation.</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="img">
+                                <img src="/static/geonode/img/car5.jpg" class="img-card-news" alt=""></div>
+                            <div class="content">
+                                <div class="newstitle">
+                                    Multi-year average monthly and annual total reference evapotranspiration </div>
+
+                                <p>
+                                    According to the review carried out, the databases that contain the reference evapotranspiration variable are scarce, since this variable is generally inferred from data such as temperature, relative humidity, radiation, among others.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="row">
-            <p class="ppwpwiki2">Knowledge bank</p>
-            </div>
-             <div class="row" style="height:100px">
-            <p class="ppwpwiki3"> Check here the conceptual elements that Waterproof uses to propose</p>
-            <p class="ppwpwiki3"> nature-based solutions and calculate the return on your investment</p>
-           </div>
-          </div>
-          <div class="row" style="height:2%;">
-            </div>
-            <button class= "button-viki">
+            <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script> -->
+
+        </section>
+
+        <section>
+            <div class="container text-center imgbackgroundwiki">
+                <div class="row" style="height:30%;">
+                </div>
+                <div class="row backgroundcolorwiki">
+                    <div class="row">
+                        <p class="ppwpwiki">WATERPROOF WIKI</p>
+                        <hr>
+                    </div>
+                    <div class="row">
+                        <p class="ppwpwiki2">Knowledge bank</p>
+                    </div>
+                    <div class="row" style="height:100px">
+                        <p class="ppwpwiki3"> Check here the conceptual elements that Waterproof uses to propose</p>
+                        <p class="ppwpwiki3"> nature-based solutions and calculate the return on your investment</p>
+                    </div>
+                </div>
+                <div class="row" style="height:2%;">
+                </div>
+                <button class="button-viki">
             <a class= "link-wp-syle" href="{{ partner.partner_link|safe }}" target="_blank">
             <b class="ppwpwiki3"> Keep reading </b>
             </a>
             </button>
             </div>
-                   
-             
-      </section>
-	  <!-- {% block showcase %}
+
+
+        </section>
+        <!-- {% block showcase %}
       <section id="showcase">
         <div class="row">
           <div class="container text-center">
@@ -459,7 +424,7 @@
       </section>
 	  {% endblock showcase %} -->
 
-	  <!-- {% block datasets %}
+        <!-- {% block datasets %}
     <section id="datasets">
       {% get_visibile_resources request.user %}
       <div ng-app="featured" ng-if="featured.length > 0" ng-cloak class="row">
@@ -479,46 +444,45 @@
     </section>
     {% endblock datasets %} -->
 
-  <section>
-    <div class="row justify-content-md-center" style="height:20%;">
-		<div class= "col-md-6 text-center">           
-			<img src= "{% static 'geonode/img/LogoTNC2.png' %}" alt= "The nature Conservancy" style= "max-height: 100px;">
-        </div>
-		<div class= "col-md-6 text-center">
-			<img src= "{% static 'geonode/img/fundacionmoore.png' %}" alt="Moore fundation" style= "max-height: 100px;">
-        </div>
-	</div>                 
-          
-  </section>
-  
-  <!-- <section> -->
-	<!-- <div class="row justify-content-md-center">  -->
-		 <!-- <div class="col-md-4 text-center"> -->
-			<!-- <div class="row justify-content-md-center"> -->
-				<!-- <div class="col-md-4 text-center"> -->
-					<!-- <img src="{% static 'geonode/img/LogoTNC2.png' %}"> -->
-				<!-- </div> -->
-			<!-- </div> -->
-			<!-- <div class="row justify-content-md-center"> -->
-				<!-- <div class="col-md-4 text-center"> -->
-					<!-- <img src="{% static 'geonode/img/fundacionmoore.png' %}"> -->
-				<!-- </div> -->
-			<!-- </div> -->
-		<!-- </div> -->
-	<!-- </div> -->
-  <!-- </section> -->
-      
-      {% block partners %}
-        {% if custom_theme.partners.all %}
+        <section>
+            <div class="row justify-content-md-center" style="height:20%;">
+                <div class="col-md-6 text-center">
+                    <img src="{% static 'geonode/img/LogoTNC2.png' %}" alt="The nature Conservancy" style="max-height: 100px;">
+                </div>
+                <div class="col-md-6 text-center">
+                    <img src="{% static 'geonode/img/fundacionmoore.png' %}" alt="Moore fundation" style="max-height: 100px;">
+                </div>
+            </div>
+
+        </section>
+
+        <!-- <section> -->
+        <!-- <div class="row justify-content-md-center">  -->
+        <!-- <div class="col-md-4 text-center"> -->
+        <!-- <div class="row justify-content-md-center"> -->
+        <!-- <div class="col-md-4 text-center"> -->
+        <!-- <img src="{% static 'geonode/img/LogoTNC2.png' %}"> -->
+        <!-- </div> -->
+        <!-- </div> -->
+        <!-- <div class="row justify-content-md-center"> -->
+        <!-- <div class="col-md-4 text-center"> -->
+        <!-- <img src="{% static 'geonode/img/fundacionmoore.png' %}"> -->
+        <!-- </div> -->
+        <!-- </div> -->
+        <!-- </div> -->
+        <!-- </div> -->
+        <!-- </section> -->
+
+        {% block partners %} {% if custom_theme.partners.all %}
         <section id="partners">
-        <div class="container text-center">
-          {% with partners_title=custom_theme.partners_title|default:"Our partners"|template_trans %}
-          <h2>{% trans partners_title %}</h2>
-          {% endwith %}
-          <div class="row">
-              {% for partner in custom_theme.partners.all %}
-              <div class="col-md-2">
-                <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+            <div class="container text-center">
+                {% with partners_title=custom_theme.partners_title|default:"Our partners"|template_trans %}
+                <h2>{% trans partners_title %}</h2>
+                {% endwith %}
+                <div class="row">
+                    {% for partner in custom_theme.partners.all %}
+                    <div class="col-md-2">
+                        <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
                   {% if partner.logo %}
                   <div class="partner_logo" style="background-image: url({{partner.logo.url}})">
                   {% else %}
@@ -526,92 +490,88 @@
                   {% endif %}
                   </div>
                 </a>
-              </div>
-              {% endfor %}
-          </div>
-        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </section>
-        {% endif %}
-      {% endblock partners %}
-
-      {% block cookielawinfo %}
-      {% if custom_theme.cookie_law_info_bar_enabled %}
-          <div id="cookie-law-info-bar">
-              <h5 class="cli_messagebar_head">{{ custom_theme.cookie_law_info_bar_head }}</h5>
-              <span>{{ custom_theme.cookie_law_info_bar_text|safe }}
+        {% endif %} {% endblock partners %} {% block cookielawinfo %} {% if custom_theme.cookie_law_info_bar_enabled %}
+        <div id="cookie-law-info-bar">
+            <h5 class="cli_messagebar_head">{{ custom_theme.cookie_law_info_bar_head }}</h5>
+            <span>{{ custom_theme.cookie_law_info_bar_text|safe }}
                   <a data-cli_action="accept" id="cookie_action_close_header" target="_blank"  class="medium cli-plugin-button cli-plugin-main-button cookie_action_close_header cli_action_button" style="display:inline-block; ">{% trans "Accept" %}</a>
                   <a id="cookie_action_close_header_reject" class="medium cli-plugin-button cli-plugin-main-button cookie_action_close_header_reject cli_action_button"  data-cli_action="reject">{% trans "Reject" %}</a>
                   <a id="CONSTANT_OPEN_URL" href='{{ custom_theme.cookie_law_info_leave_url }}' class="medium cli-plugin-button cli-plugin-main-button" style="display:inline-block;">{% trans "Leave" %}</a>
               </span>
-          </div>
-          <div id="cookie-law-info-again" style="display:none;">
-              <span id="cookie_hdr_showagain">{{ custom_theme.cookie_law_info_showagain_head }}</span>
-          </div>
-          <div class="cli-modal-backdrop cli-fade cli-settings-overlay"></div>
-          <div class="cli-modal-backdrop cli-fade cli-popupbar-overlay"></div>
-          <script type="text/javascript">
+        </div>
+        <div id="cookie-law-info-again" style="display:none;">
+            <span id="cookie_hdr_showagain">{{ custom_theme.cookie_law_info_showagain_head }}</span>
+        </div>
+        <div class="cli-modal-backdrop cli-fade cli-settings-overlay"></div>
+        <div class="cli-modal-backdrop cli-fade cli-popupbar-overlay"></div>
+        <script type="text/javascript">
             /* <![CDATA[ */
-            cli_cookiebar_settings='{"animate_speed_hide":"{{custom_theme.cookie_law_info_animate_speed_hide}}","animate_speed_show":"{{custom_theme.cookie_law_info_animate_speed_show}}","background":"{{custom_theme.cookie_law_info_background}}","border":"{{custom_theme.cookie_law_info_border}}","border_on":{{custom_theme.cookie_law_info_border_on}},"button_1_button_colour":"{{custom_theme.cookie_law_info_button_1_button_colour}}","button_1_button_hover":"{{custom_theme.cookie_law_info_button_1_button_hover}}","button_1_link_colour":"{{custom_theme.cookie_law_info_button_1_link_colour}}","button_1_as_button":{{custom_theme.cookie_law_info_button_1_as_button}},"button_1_new_win":{{custom_theme.cookie_law_info_button_1_new_win}},"button_2_button_colour":"{{custom_theme.cookie_law_info_button_2_button_colour}}","button_2_button_hover":"{{custom_theme.cookie_law_info_button_2_button_hover}}","button_2_link_colour":"{{custom_theme.cookie_law_info_button_2_link_colour}}","button_2_as_button":{{custom_theme.cookie_law_info_button_2_as_button}},"button_2_hidebar":{{custom_theme.cookie_law_info_button_2_hidebar}},"button_3_button_colour":"{{custom_theme.cookie_law_info_button_3_button_colour}}","button_3_button_hover":"{{custom_theme.cookie_law_info_button_3_button_hover}}","button_3_link_colour":"{{custom_theme.cookie_law_info_button_3_link_colour}}","button_3_as_button":{{custom_theme.cookie_law_info_button_3_as_button}},"button_3_new_win":{{custom_theme.cookie_law_info_button_3_new_win}},"button_4_button_colour":"{{custom_theme.cookie_law_info_button_4_button_colour}}","button_4_button_hover":"{{custom_theme.cookie_law_info_button_4_button_hover}}","button_4_link_colour":"{{custom_theme.cookie_law_info_button_4_link_colour}}","button_4_as_button":{{custom_theme.cookie_law_info_button_4_as_button}},"font_family":"{{custom_theme.cookie_law_info_font_family}}","header_fix":{{custom_theme.cookie_law_info_header_fix}},"notify_animate_hide":{{custom_theme.cookie_law_info_notify_animate_hide}},"notify_animate_show":{{custom_theme.cookie_law_info_notify_animate_show}},"notify_div_id":"{{custom_theme.cookie_law_info_notify_div_id}}","notify_position_horizontal":"{{custom_theme.cookie_law_info_notify_position_horizontal}}","notify_position_vertical":"{{custom_theme.cookie_law_info_notify_position_vertical}}","scroll_close":{{custom_theme.cookie_law_info_scroll_close}},"scroll_close_reload":{{custom_theme.cookie_law_info_scroll_close_reload}},"accept_close_reload":{{custom_theme.cookie_law_info_accept_close_reload}},"reject_close_reload":{{custom_theme.cookie_law_info_reject_close_reload}},"showagain_tab":{{custom_theme.cookie_law_info_showagain_tab}},"showagain_background":"{{custom_theme.cookie_law_info_showagain_background}}","showagain_border":"{{custom_theme.cookie_law_info_showagain_border}}","showagain_div_id":"{{custom_theme.cookie_law_info_showagain_div_id}}","showagain_x_position":"{{custom_theme.cookie_law_info_showagain_x_position}}","text":"{{custom_theme.cookie_law_info_text}}","show_once_yn":{{custom_theme.cookie_law_info_show_once_yn}},"show_once":"{{custom_theme.cookie_law_info_show_once}}","logging_on":{{custom_theme.cookie_law_info_logging_on}},"as_popup":{{custom_theme.cookie_law_info_as_popup}},"popup_overlay":{{custom_theme.cookie_law_info_popup_overlay}},"bar_heading_text":"{{custom_theme.cookie_law_info_bar_heading_text}}","cookie_bar_as":"{{custom_theme.cookie_law_info_cookie_bar_as}}","popup_showagain_position":"{{custom_theme.cookie_law_info_popup_showagain_position}}","widget_position":"{{custom_theme.cookie_law_info_widget_position}}"}';
+            cli_cookiebar_settings = '{"animate_speed_hide":"{{custom_theme.cookie_law_info_animate_speed_hide}}","animate_speed_show":"{{custom_theme.cookie_law_info_animate_speed_show}}","background":"{{custom_theme.cookie_law_info_background}}","border":"{{custom_theme.cookie_law_info_border}}","border_on":{{custom_theme.cookie_law_info_border_on}},"button_1_button_colour":"{{custom_theme.cookie_law_info_button_1_button_colour}}","button_1_button_hover":"{{custom_theme.cookie_law_info_button_1_button_hover}}","button_1_link_colour":"{{custom_theme.cookie_law_info_button_1_link_colour}}","button_1_as_button":{{custom_theme.cookie_law_info_button_1_as_button}},"button_1_new_win":{{custom_theme.cookie_law_info_button_1_new_win}},"button_2_button_colour":"{{custom_theme.cookie_law_info_button_2_button_colour}}","button_2_button_hover":"{{custom_theme.cookie_law_info_button_2_button_hover}}","button_2_link_colour":"{{custom_theme.cookie_law_info_button_2_link_colour}}","button_2_as_button":{{custom_theme.cookie_law_info_button_2_as_button}},"button_2_hidebar":{{custom_theme.cookie_law_info_button_2_hidebar}},"button_3_button_colour":"{{custom_theme.cookie_law_info_button_3_button_colour}}","button_3_button_hover":"{{custom_theme.cookie_law_info_button_3_button_hover}}","button_3_link_colour":"{{custom_theme.cookie_law_info_button_3_link_colour}}","button_3_as_button":{{custom_theme.cookie_law_info_button_3_as_button}},"button_3_new_win":{{custom_theme.cookie_law_info_button_3_new_win}},"button_4_button_colour":"{{custom_theme.cookie_law_info_button_4_button_colour}}","button_4_button_hover":"{{custom_theme.cookie_law_info_button_4_button_hover}}","button_4_link_colour":"{{custom_theme.cookie_law_info_button_4_link_colour}}","button_4_as_button":{{custom_theme.cookie_law_info_button_4_as_button}},"font_family":"{{custom_theme.cookie_law_info_font_family}}","header_fix":{{custom_theme.cookie_law_info_header_fix}},"notify_animate_hide":{{custom_theme.cookie_law_info_notify_animate_hide}},"notify_animate_show":{{custom_theme.cookie_law_info_notify_animate_show}},"notify_div_id":"{{custom_theme.cookie_law_info_notify_div_id}}","notify_position_horizontal":"{{custom_theme.cookie_law_info_notify_position_horizontal}}","notify_position_vertical":"{{custom_theme.cookie_law_info_notify_position_vertical}}","scroll_close":{{custom_theme.cookie_law_info_scroll_close}},"scroll_close_reload":{{custom_theme.cookie_law_info_scroll_close_reload}},"accept_close_reload":{{custom_theme.cookie_law_info_accept_close_reload}},"reject_close_reload":{{custom_theme.cookie_law_info_reject_close_reload}},"showagain_tab":{{custom_theme.cookie_law_info_showagain_tab}},"showagain_background":"{{custom_theme.cookie_law_info_showagain_background}}","showagain_border":"{{custom_theme.cookie_law_info_showagain_border}}","showagain_div_id":"{{custom_theme.cookie_law_info_showagain_div_id}}","showagain_x_position":"{{custom_theme.cookie_law_info_showagain_x_position}}","text":"{{custom_theme.cookie_law_info_text}}","show_once_yn":{{custom_theme.cookie_law_info_show_once_yn}},"show_once":"{{custom_theme.cookie_law_info_show_once}}","logging_on":{{custom_theme.cookie_law_info_logging_on}},"as_popup":{{custom_theme.cookie_law_info_as_popup}},"popup_overlay":{{custom_theme.cookie_law_info_popup_overlay}},"bar_heading_text":"{{custom_theme.cookie_law_info_bar_heading_text}}","cookie_bar_as":"{{custom_theme.cookie_law_info_cookie_bar_as}}","popup_showagain_position":"{{custom_theme.cookie_law_info_popup_showagain_position}}","widget_position":"{{custom_theme.cookie_law_info_widget_position}}"}';
             /* ]]> */
-          </script>
-      {% endif %}
-      {% endblock cookielawinfo %}
+        </script>
+        {% endif %} {% endblock cookielawinfo %} {% endblock mainbody %} {% endblock middle %} {% block extra_script %}
+        <script type="text/javascript">
+            $('#main_search').on('submit', (e) => {
+                $('#main_search_abstract_input')[0].value = $('#main_search_input')[0].value;
+                $('#main_search_purpose_input')[0].value = $('#main_search_input')[0].value;
+            });
+        </script>
+        {{ block.super }} {% if DEBUG_STATIC %}
+        <script src="{% static " lib/js/angular.js " %}"></script>
+        {% endif %}
+        <script type="text/javascript">
+            FEATURED_URL = '{% url '
+            api_dispatch_list ' api_name='
+            api ' resource_name='
+            featured ' %}'
+            'use strict';
+            (function() {
+                var module = angular.module('featured', []);
+                module.run(function($http, $rootScope) {
+                    $http.get(FEATURED_URL).then(successCallback, errorCallback);
 
-  {% endblock mainbody %}
+                    function successCallback(data) {
+                        //success code
+                        $rootScope.featured = data.data.objects;
+                    };
 
-{% endblock middle %}
+                    function errorCallback(error) {
+                        //error code
+                    };
+                });
+            })();
+        </script>
+        <script>
+            $('[data-toggle="tooltip"]').tooltip({
+                container: 'body'
+            });
+        </script>
+        <script type='text/javascript'>
+            /* <![CDATA[ */
+            var Cli_Data = {
+                "nn_cookie_ids": [],
+                "cookielist": []
+            };
+            /* ]]> */
+        </script>
+        <script type="text/javascript" src="{% static " geonode/js/cookie-law-info/cookie-law-info-public.js " %}"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+        <script type="text/javascript">
+            $(".slider").owlCarousel({
+                loop: true,
+                autoplay: true,
+                autoplayTimeout: 4000,
+                autoplayHoverPause: true,
+                items: 2,
+                margin: 50,
+                nav: true,
+                navText: ["<img src='./static/geonode/img/flecha-izq.png'>", "<img src='./static/geonode/img/flecha-der.png'>"]
 
-{% block extra_script %}
-    <script type="text/javascript">
-      $('#main_search').on('submit', (e) => {
-          $('#main_search_abstract_input')[0].value =$('#main_search_input')[0].value;
-          $('#main_search_purpose_input')[0].value = $('#main_search_input')[0].value;
-      });
-    </script>
-{{ block.super }}
-{% if DEBUG_STATIC %}
-<script src="{% static "lib/js/angular.js" %}"></script>
-{% endif %}
-<script type="text/javascript">
-    FEATURED_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='featured' %}'
-    'use strict';
-    (function(){
-      var module = angular.module('featured', []);
-      module.run(function($http, $rootScope){
-		$http.get(FEATURED_URL).then(successCallback, errorCallback);
-
-		function successCallback(data) {
-			//success code
-          $rootScope.featured = data.data.objects;
-		};
-
-		function errorCallback(error) {
-			//error code
-		};
-      });
-    })();
-</script>
-<script>
-	$('[data-toggle="tooltip"]').tooltip({container: 'body'});
-</script>
-<script type='text/javascript'>
-/* <![CDATA[ */
-var Cli_Data = {"nn_cookie_ids":[],"cookielist":[]};
-/* ]]> */
-</script>
-<script type="text/javascript" src="{% static "geonode/js/cookie-law-info/cookie-law-info-public.js" %}"></script>
-<script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-<script type="text/javascript">
-        $(".slider").owlCarousel({
-            loop: true,
-            autoplay: true,
-            autoplayTimeout: 4000,
-            autoplayHoverPause: true,
-            items: 2,
-            margin: 50,
-			nav: true,
-            navText: ["<img src='./static/geonode/img/flecha-izq.png'>", "<img src='./static/geonode/img/flecha-der.png'>"]
-
-        });
-    </script>
-{% endblock extra_script %}
+            });
+        </script>
+        {% endblock extra_script %}

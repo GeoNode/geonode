@@ -14,15 +14,23 @@ class EntryCategory(models.Model):
     Model to gather answers in topic groups.
 
     :name: Name or title of the category.
+    :nombre: Nombre o titulo de la categoria
     :slug: Slugified name of the category.
     :fixed_position: Set a position to avoid ordering by views.
     :last_rank: Last rank calculated at the category list view.
 
     """
     name = models.CharField(
-        max_length=100,
-        verbose_name=_('Name'),
+        _('Name'),
+        max_length=100,        
     )
+
+    name_es = models.CharField(
+        _('Name in spanish'),
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text=_('Nombre in spanish'))
 
     slug = models.SlugField(
         max_length=100,
@@ -89,6 +97,13 @@ class Entry(models.Model):
         verbose_name=_('Question'),
     )
 
+    question_es = models.CharField(
+        _('Question Spanish'),
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text=_('Question Spanish'))
+
     slug = models.SlugField(
         max_length=200,
         unique=True,
@@ -97,6 +112,11 @@ class Entry(models.Model):
 
     answer = RichTextField(
         verbose_name=_('Answer'),
+        blank=True,
+    )
+
+    answer_es = RichTextField(
+        _('Answer Spanish'),
         blank=True,
     )
 

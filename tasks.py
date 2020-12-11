@@ -214,6 +214,21 @@ def prepare(ctx):
             client_secret=os.environ['OAUTH2_CLIENT_SECRET'],
             oauth_config=oauth_config
         ), pty=True)
+    ctx.run(
+        'sed -i "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>{new_ext_ip}o/authorize/</userAuthorizationUri>|g" {oauth_config}'.format(
+            new_ext_ip=os.environ['SITEURL'],
+            oauth_config=oauth_config
+        ), pty=True)
+    ctx.run(
+        'sed -i "s|<redirectUri>.*</redirectUri>|<redirectUri>{new_ext_ip}geoserver/index.html</redirectUri>|g" {oauth_config}'.format(
+            new_ext_ip=os.environ['SITEURL'],
+            oauth_config=oauth_config
+        ), pty=True)
+    ctx.run(
+        'sed -i "s|<logoutUri>.*</logoutUri>|<logoutUri>{new_ext_ip}account/logout/</logoutUri>|g" {oauth_config}'.format(
+            new_ext_ip=os.environ['SITEURL'],
+            oauth_config=oauth_config
+        ), pty=True)
 
 
 @task
@@ -474,13 +489,23 @@ def _prepare_monitoring_fixture():
     print("Public Hostname or IP is {0}".format(pub_ip))
     pub_port = _geonode_public_port()
     print("Public PORT is {0}".format(pub_port))
-    # d = str(datetime.datetime.now())
+    geonode_ip = pub_ip
+    try:
+        geonode_ip = socket.gethostbyname('geonode')
+    except Exception:
+        pass
+    geoserver_ip = pub_ip
+    try:
+        geoserver_ip = socket.gethostbyname('geoserver')
+    except Exception:
+        pass
+    #d = str(datetime.datetime.now())
     d = '1970-01-01 00:00:00'
     default_fixture = [
         {
             "fields": {
                 "active": True,
-                "ip": "{0}".format(socket.gethostbyname('geonode')),
+                "ip": "{0}".format(geonode_ip),
                 "name": "{0}".format(os.environ['MONITORING_HOST_NAME'])
             },
             "model": "monitoring.host",
@@ -489,7 +514,7 @@ def _prepare_monitoring_fixture():
         {
             "fields": {
                 "active": True,
-                "ip": "{0}".format(socket.gethostbyname('geoserver')),
+                "ip": "{0}".format(geoserver_ip),
                 "name": "geoserver"
             },
             "model": "monitoring.host",
@@ -564,22 +589,22 @@ def _prepare_admin_fixture(admin_password, admin_email):
     mdext_date = d.isoformat()[:23] + "Z"
     default_fixture = [
         {
-            "fields": {
-                "date_joined": mdext_date,
-                "email": admin_email,
-                "first_name": "",
-                "groups": [],
-                "is_active": True,
-                "is_staff": True,
-                "is_superuser": True,
-                "last_login": mdext_date,
-                "last_name": "",
-                "password": make_password(admin_password),
-                "user_permissions": [],
-                "username": "admin"
-            },
-            "model": "people.Profile",
-            "pk": 1000
+        	"fields": {
+        		"date_joined": mdext_date,
+        		"email": admin_email,
+        		"first_name": "",
+        		"groups": [],
+        		"is_active": True,
+        		"is_staff": True,
+        		"is_superuser": True,
+        		"last_login": mdext_date,
+        		"last_name": "",
+        		"password": make_password(admin_password),
+        		"user_permissions": [],
+        		"username": "admin"
+        	},
+        	"model": "people.Profile",
+        	"pk": 1000
         }
     ]
     with open('/tmp/django_admin_docker.json', 'w') as fixturefile:

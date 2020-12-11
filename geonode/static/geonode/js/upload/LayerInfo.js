@@ -293,7 +293,96 @@ define(function (require, exports) {
      *  @returns {string}
      */
     LayerInfo.prototype.markError = function (error, status) {
-        var error = (error != undefined ? error : 'Unexpected error!');
+        var default_message = gettext("Unexpected error!");
+
+        if (status == 400) {
+            default_message += gettext(" - 400 Bad Request. Server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).");
+        }
+        else if (status == 401) {
+            default_message += gettext(" - 401 Unauthorized. Request was not sent with the proper authentication credentials.");
+        }
+        else if (status == 403) {
+            default_message += gettext(" - 403 Forbidden. This is generally related to permission rules on your server. Contact the system administrator for more information regarding this error message.");
+        }
+        else if (status == 404) {
+            default_message += gettext(" - 404 Not Found. Origin server was unable or unwilling to find the resource requested.");
+        }
+        else if (status == 405) {
+            default_message += gettext(" - 405 Method Not Allowed. Origin server is aware of the requested resource, but the request method used is not supported.");
+        }
+        else if (status == 406) {
+            default_message += gettext(" - 406 Not Acceptable. Resource is not available at the origin that adheres to negotiation headers that were  set prior (e.g. via 'Accept-Charset' and 'Accept-Language' headers).");
+        }
+        else if (status == 407) {
+            default_message += gettext(" - 407 Authentication Required. The client did not send the required authentication with the request.");
+        }
+        else if (status == 408) {
+            default_message += gettext(" - 408 Request Timeout. The origin server did not receive the complete request in what it considers a reasonable time.");
+        }
+        else if (status == 409) {
+            default_message += gettext(" - 409 Conflict. The request did not complete because of a conflict with the current state of the resource. Typically happens on a PUT request where multiple clients are attempting to edit the same resource.");
+        }
+        else if (status == 410) {
+            default_message += gettext(" - 410 Gone. The resource requested is permanently missing at the origin.");
+        }
+        else if (status == 411) {
+            default_message += gettext(" - 411 Length Required. Client did not define the 'Content-Length' of the request body in the headers and this is required to obtain the resource.");
+        }
+        else if (status == 412) {
+            default_message += gettext(" - 412 Precondition Failed. Server denies the request because the resource failed to meet the conditions specified by the client.");
+        }
+        else if (status == 413) {
+            default_message += gettext(" - 413 Payload Too Large. Refusal from the server to process the request because the payload sent from the client is larger than the server wished to accept. Server has the optional to close the connection.");
+        }
+        else if (status == 414) {
+            default_message += gettext(" - 414 URI Too Long. Refusal from the server that the URI was too long to be processed. For example, if a client is attempting a GET request with an unusually long URI after a POST, this could be seen as a security risk and a 414 gets generated.");
+        }
+        else if (status == 415) {
+            default_message += gettext(" - 415 Unsupported Media Type. Refusal from the server to process the format of the current payload. One way to identify and fix this issue would be to look at the 'Content-Type' or 'Content-Encoding' headers sent in the client’s request.");
+        }
+        else if (status == 417) {
+            default_message += gettext(" - 417 Expectation Failed. Failure of server to meet the requirements specified in the 'Expect' header of the client’s request.");
+        }
+        else if (status == 429) {
+            default_message += gettext(" - 429 Too Many Requests. Client has sent too many requests in the specified amount of time according to the server.");
+        }
+        else if (status == 499) {
+            default_message += gettext(" - 499 Client Close Request. Nginx specific response code to indicate when the connection has been closed by the client while the server is still processing its request, making server unable to send a status code back.");
+        }
+        else if (status == 500) {
+            default_message += gettext(" - 500 Internal Server Error. This error indicates that the server has encountered an unexpected condition. This often occurs when an application request cannot be fulfilled due to the application being configured incorrectly on the server.");
+        }
+        else if (status == 501) {
+            default_message += gettext(" - 501 Not Implemented. This error indicates that the HTTP method sent by the client is not supported by the server. This is most often caused by the server being out of date. It is a very rare error and generally requires that the web server be updated.");
+        }
+        else if (status == 502) {
+            default_message += gettext(" - 502 Bad Gateway. This error is usually due to improperly configured proxy servers. The first step in resolving the issue is to clear the client's cache.");
+        }
+        else if (status == 503) {
+            default_message += gettext(" - 503 Service Unavailable. This error occurs when the server is unable to handle requests due to a temporary overload or due to the server being temporarily closed for maintenance. The error indicates that the server will only temporarily be down.");
+        }
+        else if (status == 504) {
+            default_message += gettext(" - 504 Gateway Timeout. GeoNode lost the connection with GeoServer or DB due to a connection timeout. Consider using the management commands to import data!");
+        }
+        else if (status == 505) {
+            default_message += gettext(" - 505 HTTP Version Not Supported. This error occurs when the server refuses to support the HTTP protocol that has been specified by the client computer. This can be caused by the protocol not being specified properly by the client computer; for example, if an invalid version number has been specified.");
+        }
+        else if (status == 506) {
+            default_message += gettext(" - 506 Variant Also Negotiates. This error indicates that the server is not properly configured. Contact the system administrator to resolve this issue.");
+        }
+        else if (status == 507) {
+            default_message += gettext(" - 507 Insufficient Storage. This error indicates that the server is out of free memory. This is most likely to occur when an application that is being requested cannot allocate the necessary system resources to run. To resolve the issue, the server's hard disk may need to be cleaned of any unnecessary documents to free up more hard disk space, its memory may need to be expanded, or it may simply need to be restarted. Contact the system administrator for more information regarding this error message.");
+        }
+        else if (status == 509) {
+            default_message += gettext(" - 509 Bandwidth Limit Exceeded. This error occurs when the bandwidth limit imposed by the system administrator has been reached. The only fix for this issue is to wait until the limit is reset in the following cycle. Consult the system administrator for information about acquiring more bandwidth.");
+        }
+        else if (status == 510) {
+            default_message += gettext(" - 510 Not Extended. This error occurs when an extension attached to the HTTP request is not supported by the web server. To resolve the issue, you may need to update the server.");
+        }
+        else {
+            default_message += " - " + status + gettext(" Error Code. Contact the system administrator for more information regarding this error message.");
+        }
+        var error = (error != undefined ? error : default_message);
         common.logError(error, this.element.find('#status'));
     };
 
@@ -314,7 +403,7 @@ define(function (require, exports) {
     };
 
     LayerInfo.prototype.doResume = function (event) {
-        $(this).text('Done').attr('disabled','disabled');
+        $(this).text(gettext('Finalizing')).attr('disabled', 'disabled').after('<img class="pull-right" src="../../static/geonode/img/loading.gif">');
         var id = (new Date()).getTime();
         /* ****
          * AF: Switching those two below allows to open a new window instead of redirecting
@@ -518,7 +607,7 @@ define(function (require, exports) {
     LayerInfo.prototype.doStep = function (resp, callback, array) {
         var self = this;
         self.logStatus({
-            msg: '<p>' + gettext('Performing GeoServer Config Step') + '</p>',
+            msg: '<p>' + gettext('Performing GeoServer Config Step') + '<img class="pull-right" src="../../static/geonode/img/loading.gif"></p>',
             level: 'alert-success',
             empty: 'true'
         });
@@ -547,7 +636,6 @@ define(function (require, exports) {
                     } else if (resp.status === 'error') {
                         self.polling = false;
                         self.markError(resp.error_msg, resp.status);
-
                         callback(array);
                     } else if (resp.redirect_to.indexOf('upload/final') > -1) {
                         self.doFinal(resp, callback, array);
@@ -559,7 +647,6 @@ define(function (require, exports) {
         } else if (resp.success === true && resp.status === 'error') {
             self.polling = false;
             self.markError(resp.error_msg, resp.status);
-
             callback(array);
         } else if (resp.success === true && typeof resp.url != 'undefined') {
             self.doFinal(resp, callback, array);

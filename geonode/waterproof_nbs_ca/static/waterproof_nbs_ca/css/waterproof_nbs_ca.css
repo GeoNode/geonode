@@ -1,0 +1,15 @@
+textarea {
+    resize: vertical;
+}
+
+.vat {
+    vertical-align: middle !important;
+}
+
+.btn-group-table {
+    display: flex;
+}
+
+.swal2-popup {
+    font-size: 2rem !important;
+}

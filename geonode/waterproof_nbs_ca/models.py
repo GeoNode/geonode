@@ -203,3 +203,5 @@ class WaterproofNbsCa(models.Model):
         return self.entries.filter(published=True).annotate(
             null_position=models.Count('fixed_position')).order_by(
             '-null_position', 'fixed_position', '-amount_of_views')
+    
+       

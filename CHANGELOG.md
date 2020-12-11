@@ -1,5 +1,70 @@
 # Change Log
 
+## Features
+
+ - Python upgrade 3.7+
+ - Django upgrade 2.2.16
+ - GeoServer upgrade 2.17.2
+ - MapStore2 Client Updates:
+   * Save Search Services to the Map
+   * Save Map Preferences into the adapter model
+   * Advanced Style Editor with graphical UI
+   * Improved Map Save Widget, specific for GeoNode
+ - Documentation Updates:
+   * [GetFeatureInfo Templating For GeoNode](https://docs.geonode.org/en/master/usage/managing_maps/exploring_maps/get_fetureinfo.html?highlight=GetFeatureInfo)
+   * [HowTo: Geonode with QGIS](https://docs.geonode.org/en/master/usage/other_apps/qgis/index.html)
+   * [Improve GeoNode OpenID SP Protocol in order to be able to provide access to external clients](https://docs.geonode.org/en/master/usage/other_apps/qgis/index.html?highlight=Connect%20to%20Private%20layers%20by%20using%20OAuth2#connect-to-private-layers-by-using-oauth2)
+   * [Document the use of slide show in themes](https://docs.geonode.org/en/master/admin/admin_panel/index.html?highlight=Slide%20show#slide-show)
+   * [Update Advanced Installation steps to work against Ubuntu 20.04LTS](https://docs.geonode.org/en/master/install/advanced/core/index.html?highlight=Ubuntu%2020.04LTS#ubuntu-20-04lts)
+   * [Update Advanced Installation steps to work against RHEL 7.x](https://docs.geonode.org/en/master/install/advanced/core/index.html?highlight=Ubuntu%2020.04LTS#rhel-7-x)
+   * [How to setup rabbitmq, supervisor and memcached in order to fully enable async workers](https://docs.geonode.org/en/master/install/advanced/core/index.html?highlight=Enabling%20Fully%20Asynchronous%20Tasks#enabling-fully-asynchronous-tasks)
+   * [How to Upgrade from 2.10.x / 3.0](https://docs.geonode.org/en/master/admin/upgrade/index.html?highlight=Upgrade%20from%202.10.x)
+ - [GNIP-77: GetFeatureInfo Templating For GeoNode](https://github.com/GeoNode/geonode/issues/6182)
+ - [GNIP-76: Add RTL Support](https://github.com/GeoNode/geonode/issues/6156)
+ - Improving GeoNode Theme Library: introducing Jumbotron Slides
+ - [Admin bulk perms] Implementation of an action to assign bulk permissions on layer to users selected from People and/or Group Django admin forms enhancement #6582
+ - Review of the current advanced resource workflow implementation enhancement security #6551
+ - File system operations do not adhere to Django file storage API enhancement in progress #6414
+ - Nav Toolbar gets distorted when multiple nav bar items are added by the admin enhancement frontend major #6412
+ - Allow only admins to edit/create keywords enhancement regression #6360
+ - In home page show only ISO categories currently assigned to some dataset enhancement frontend #6332
+ - Modify the admin theme customisation feature to allow for the use of a slide show in the home page enhancement feature frontend #6301
+ - Improve GeoNode OpenID SP Protocol in order to be able to provide access to external clients enhancement security #6273
+ - Limit "maps using this layer" to maps the user has permission to see enhancement security #6261
+ - Prevent integrity errors on singleton model save enhancement #6223
+ - Extend SPCGeonode setup to be customizable using Kubernetes docker enhancement #6208
+
+## [3.1](https://github.com/GeoNode/geonode/tree/3.1) (2020-11-30)
+
+ - **[Implemented Features](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A3.1+label%3Afeature)**
+
+ - **[Dependencies Updates](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+label%3Adependencies+milestone%3A3.1)**
+
+ - **[Updated Doccumentations](https://github.com/GeoNode/documentation/issues?q=label%3A3.1+is%3Aclosed)**
+
+ - **[Updated Documentations Diff](https://github.com/GeoNode/documentation/compare/6bd973af2bb9385f74840093615a87316fdd5400...d8be339725a02b40ba64a13d60ecacf5b32de0d2)**
+
+ - **[Fixed Security Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.1+label%3Asecurity)**
+
+ - **[Fixed Security Pull Requests](https://github.com/GeoNode/geonode/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed+label%3Asecurity+milestone%3A3.1+)**
+
+ - **[Resolved Regressions](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A3.1+label%3Aregression)**
+
+ - **[Fixed Critical Issues](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A3.1+label%3Ablocker)**
+
+ - **[Fixed Major Issues](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A3.1+label%3Amajor)**
+
+ - **[Fixed Minor Issues](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A3.1+label%3Aminor)**
+
+ - **[Updated Translations](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A3.1+label%3Atranslations)**
+
+ - **[All Closed Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A3.1)**
+
+## Full Changelog
+
+[https://github.com/GeoNode/geonode/compare/3.0...3.1](https://github.com/GeoNode/geonode/compare/3.0...3.1)
+
+
 ## [3.0](https://github.com/GeoNode/geonode/tree/3.0) (2020-05-18)
 
  - **[Implemented Features](https://github.com/GeoNode/geonode/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+milestone%3A3.0+label%3Afeature)**

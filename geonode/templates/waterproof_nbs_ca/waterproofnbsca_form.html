@@ -1,4 +1,8 @@
 {% extends "base.html" %} {% load i18n %} {% load bootstrap_tags %} {% block body_outer %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/bootstrap-duallistbox.min.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/waterproof_nbs_ca.css">
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <div class="row">
     <div class="col-md-4">
         <h4 class="text-center">Bogotá D.C.</h4>
@@ -11,34 +15,27 @@
     </div>
 </div>
 <h1>Create NBS</h1>
-<form>
-    <h3 class="text-primary">General Settings</h3>
+<form data-toggle="validator" role="form">
+    <h4 class="text-primary">General Settings</h4>
     <div class="form-group">
-        <div class="form-group">
-            <label>{% trans "Name" %}</label>
-            <input type="text" class="form-control" id="nameNBS" placeholder="Enter title">
-        </div>
-        <div class="form-group">
-            <label>{% trans "Description" %}</label>
-            <textarea id="descNBS" class="form-control" placeholder="Enter description"></textarea>
-        </div>
+        <label>Name</label>
+        <input type="text" class="form-control" id="nameNBS" name="nameNBS" placeholder="Enter title" data-match-error="Whoops, these don't match" required>
+        <div class="help-block with-errors"></div>
+    </div>
+    <div class="form-group">
+        <label>Description</label>
+        <textarea id="descNBS" class="form-control" placeholder="Enter description" rows="4" required></textarea>
     </div>
     <div class="form-group">
         <div class="row">
             <div class="col-md-6">
                 <label>Country</label>
-                <select class="form-control">
-                    <option>COLOMBIA</option>
-                    <option>PERU</option>
-                    <option>ECUADOR</option>
+                <select id="countryNBS" class="form-control" required>
                 </select>
             </div>
             <div class="col-md-6">
                 <label>Currency type cost calculation</label>
-                <select id="currencyCost" class="form-control">
-                    <option>USD</option>
-                    <option>COP</option>
-                    <option>EUR</option>
+                <select id="currencyCost" class="form-control" required>
                 </select>
             </div>
         </div>
@@ -47,110 +44,102 @@
         <div class="row">
             <div class="col-md-6">
                 <label>Time required to generate maximun benefit (yr)</label>
-                <input id="totalConsecTime" type="text" class="form-control">
+                <input id="maxBenefitTime" type="text" class="form-control" required>
             </div>
             <div class="col-md-6">
                 <label>Percentage of benefit associated with interventions at time t=0</label>
-                <input id="benefitTimePorc" type="text" class="form-control">
+                <input id="benefitTimePorc" type="text" class="form-control" required>
             </div>
         </div>
     </div>
-    <h3 class="text-primary">Unit Costs</h3>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-6">
+                <label>Consecution Time Total Benefits
+                </label>
+                <input id="totalConsecTime" type="text" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label>Maintenance Perodicity</label>
+                <input id="maintenancePeriod" type="text" class="form-control" required>
+            </div>
+        </div>
+    </div>
+    <h4 class="text-primary">Unit Costs</h4>
     <div class="form-group">
         <div class="row">
             <div class="col-md-4">
                 <label>Unit Implementation Cost (US$/ha)</label>
-                <input id="implementCost" type="text" class="form-control">
+                <input id="implementCost" type="text" class="form-control" required>
             </div>
             <div class="col-md-4">
                 <label>Unit Maintenace Cost (US$/ha)</label>
-                <input id="maintenanceCost" type="text" class="form-control">
+                <input id="maintenanceCost" type="text" class="form-control" required>
             </div>
             <div class="col-md-4">
                 <label>Unit Oportunity Cost (US$/ha)</label>
-                <input id="oportunityCost" type="text" class="form-control">
+                <input id="oportunityCost" type="text" class="form-control" required>
             </div>
         </div>
     </div>
-    <h3 class="text-primary">RIOS Transition</h3>
+    <h4 class="text-primary">RIOS Transition</h4>
     <div class="form-group">
         <div class="row">
             <div class="col-md-12">
-                <select id="riosTransition" class="form-control">
-                    <option>Revegetation (unassisted)</option>
-                    <option>Revegetation (assisted)</option>
-                    <option>Agricultar vegetation management</option>
-                    <option>Ditching</option>
+                <select id="riosTransition" class="form-control" required>
                 </select>
             </div>
         </div>
     </div>
-    <h3 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h3>
+    <h4 class="text-primary">RIOS Activities</h4>
     <div class="form-group">
         <div class="row">
-            <div class="col-md-5">
-                <select class="form-control" id="riosActivity" size="10" style="height: 150px;">
-                    <option>Revegetation (unassisted)</option>
-                    <option>Revegetation (assisted)</option>
-                    <option>Agricultar vegetation management</option>
-                    <option>Ditching</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <button id="move" class="btn btn-primary btn-block">>></button>
-                <button id="remove" class="btn btn-primary btn-block"><<</button>
-            </div>
-            <div class="col-md-5">
-                <select class="form-control" id="riosriosActivityTrans" size="10" style="height: 150px;">
+            <div class="col-md-12">
+                <select id="riosActivity" class="form-control" required>
                 </select>
             </div>
         </div>
     </div>
+    <h4 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h4>
     <div class="form-group">
         <div class="row">
             <div class="col-md-4">
                 <label>Restricted areas</label>
-                <input id="restrictedArea" type="file">
+                <input id="restrictedArea" type="file" required>
             </div>
         </div>
     </div>
-
-    <button type="button" id="submit" class="btn btn-primary">Submit</button>
+    <select multiple="multiple" id="riosTransformationAct" size="10" name="duallistbox_demo1[]" title="duallistbox_demo1[]">
+        </select>
+    <br>
+    <button type="submit" class="btn btn-primary ">Submit</button>
 </form>
- <p>
-      Drag & drop your image
-    </p>
-    <div id="drag-items" class="col-md-2" style="height: 100px;">
-      <img src="https://cdn.icon-icons.com/icons2/1130/PNG/128/circle_80174.png" style="height:100px" draggable="true"/>
-      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAflBMVEX///8AAABYWFjIyMgPDw8EBATz8/P5+fn8/PwICAgUFBTT09Pv7+8vLy/29vbs7OyRkZGXl5fa2togICA5OTlERES+vr5NTU0YGBjQ0NCBgYFnZ2fh4eGoqKhfX18kJCSzs7N2dnaJiYk9PT0xMTG1tbVRUVGenp5xcXGpqam9Qj1dAAAC6UlEQVR4nO2Z61bCMBCEbaFARe6US4uIoFLe/wXV7IAUAqS5Hs/Z749SwQlpMrObPj0xDMMwDMMwDMMwjBmNRmD9ZjPoCBrNKAo5gl/9kCPoPkeC524Y/dUiAotVCP3BW3TibeBf/6UnpLNM/Oi9+Nbv74TwtNWail92fb/67flp6nEr5m2vA4iF6EQsvtVEvIh96he0/cb0akzbsfCnn0dVAyJDinJf+kMhl87+rsxScWnoR/9ViCWH82uHRFx89aG/Ia1R9eqIRrVxr4/Zvrrf+dV9ccOS1lt5/ZeSVubSrf54cXvPkzcsxi714Tly14M7ThxG44ACaHrD9/sUCz1n0YjcuZ18SMhpy41+O3s4xbhFmZNg6nxVAkAOYuGr42AAhdI2wzZ1EEzvikYDo3q3rb9VtlpY9dau/p6Kz73t96pyqPWttpK4NAP3VRIAckrLwYSCZ63+ifVFyWQGOrB5jb3doViw07PB3eoV/mgbbAQTyv66rQ9iwbxna31o/iMM/MMwmDCVOlUGahezng2LSa/OQizUWbxXrI02NOyjxva9pFQOADmIBWUDuyQ3NnXEgmbPRr2GWaxRLFx2MWpQB2Ya7FRG6PRsn4md0oYKqeSz7ucatILNizuUkmnNYMIe3lkob9s7DS+Bi5n6KAE3r+OmCEBbp3+IBfVoRJLZO//EmapqoqIDs3kCjJpGrWdDB1Z32d4Hm0qlZ+vEmhv3PrCV+PG2LrSt6z4w1ofGBut0cOA2VLL2rVF83SdXCLe94jzpUTyM943yStHiuL43t94wU98rehx3+I0SDx2YqxOeX+Bx8p4NpytuH/8gFmTnPAggl6d8d2WOQ3P+CLArn2hkto+HoFhq1VoDHZjtAJCDWDjv2VC3JV6eN/zEAo3grN6kDkyvetcBHcepZysdBoAcxEJZeZU1PJKdfWfMRxhGpxURiJ91X4TUF8m/T8PJp6I2WMbBcPyIjWEYhmEYhmEYhvkffANfaSbl+klaJwAAAABJRU5ErkJggg==" style="height:100px"draggable="true" />
-    </div>
-    <div id="container" class="col-md-9" style="background-color: rgba(0, 0, 0, 0.1);"></div>
-
-
 {% endblock %} {% block extra_script %}
+<!--ZIP reader library-->
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jszip.min.js"></script>
+<!--Shapefile reader library -->
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/shp.min.js"></script>
 <script>
 
     var token = '{{ csrf_token }}';
      
 </script>
-<<<<<<< HEAD
-<script src="https://cdnjs.cloudflare.com/ajax/libs/konva/7.2.0/konva.min.js"></script>
-=======
 <script>
     $(document).ready(function() {
 
-        $('#move').click(function() {
-            $('#riosActivity option:selected').appendTo('#riosriosActivityTrans');
-            return false;
+        var demo1 = $('select[name="duallistbox_demo1[]"]').bootstrapDualListbox({
+            preserveSelectionOnMove: 'moved',
+            moveOnSelect: false,
         });
 
-        $('#remove').click(function() {
-            $('#riosriosActivityTrans option:selected').appendTo('#riosActivity');
-            return false;
+        $("#porfin").click(function() {
+            alert($('[name="duallistbox_demo1[]"]').val());
         });
     });
 </script>
->>>>>>> origin/nbs_guille
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js" integrity="sha512-dTu0vJs5ndrd3kPwnYixvOCsvef5SGYW/zSSK4bcjRBcZHzqThq7pt7PmCv55yb8iBvni0TSeIDV8RYKjZL36A==" crossorigin="anonymous"></script>
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jquery.bootstrap-duallistbox.min.js"></script>
 
 {% endblock %}

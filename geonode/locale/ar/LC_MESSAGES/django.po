@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-06 09:28+0000\n"
+"POT-Creation-Date: 2020-11-28 17:58+0000\n"
 "PO-Revision-Date: 2020-06-10 09:21+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Arabic (http://www.transifex.com/geonode/geonode/language/"
@@ -168,7 +168,7 @@ msgstr "يتم تحديث البيانات كل ثلاثة أشهر"
 msgid "No information provided"
 msgstr "لم يتم تقديم أية معلومات"
 
-#: geonode/base/forms.py:284 geonode/base/forms.py:514
+#: geonode/base/forms.py:286 geonode/base/forms.py:535
 #: geonode/base/templates/base/_resourcebase_info_panel.html:85
 #: geonode/catalogue/templates/geonode_metadata_full.html:145
 #: geonode/documents/templates/documents/document_metadata_advanced.html:76
@@ -183,24 +183,59 @@ msgstr "لم يتم تقديم أية معلومات"
 msgid "Category"
 msgstr "فئة"
 
-#: geonode/base/forms.py:295
+#: geonode/base/forms.py:297
 msgid "Category is required."
 msgstr "الفئة مطلوبة."
 
-#: geonode/base/forms.py:316
+#: geonode/base/forms.py:318
 msgid "Keywords from Thesaurus"
 msgstr "كلمات رئيسية من قاموس المرادفات"
 
-#: geonode/base/forms.py:318
+#: geonode/base/forms.py:320
 msgid "List of keywords from Thesaurus"
 msgstr "قائمة الكلمات الرئيسية من قاموس المرادفات"
 
-#: geonode/base/forms.py:338 geonode/base/forms.py:510
-#: geonode/base/models.py:629
+#: geonode/base/forms.py:338
+#: geonode/base/templates/base/_resourcebase_info_panel.html:29
+#: geonode/catalogue/templates/geonode_metadata_full.html:61
+#: geonode/client/templates/leaflet/maps/map_view.html:106
+#: geonode/services/forms.py:130
+#: geonode/services/templates/services/service_detail.html:10
+#: geonode/templates/metadata_detail.html:50
+msgid "Abstract"
+msgstr "ملخص"
+
+#: geonode/base/forms.py:342
+#: geonode/base/templates/base/_resourcebase_info_panel.html:179
+#: geonode/catalogue/templates/geonode_metadata_full.html:80
+#: geonode/templates/metadata_detail.html:240
+msgid "Purpose"
+msgstr "هدف"
+
+#: geonode/base/forms.py:346
+#, fuzzy
+#| msgid "Other Settings"
+msgid "Other constraints"
+msgstr "اعدادات اخرى"
+
+#: geonode/base/forms.py:350
+#, fuzzy
+#| msgid "supplemental information"
+msgid "Supplemental information"
+msgstr "معلومات إضافية"
+
+#: geonode/base/forms.py:354
+#, fuzzy
+#| msgid "data quality statement"
+msgid "Data quality statement"
+msgstr "بيان جودة البيانات"
+
+#: geonode/base/forms.py:358 geonode/base/forms.py:359
+#: geonode/base/forms.py:531 geonode/base/models.py:629
 msgid "Owner"
 msgstr "مالك"
 
-#: geonode/base/forms.py:344 geonode/base/forms.py:526
+#: geonode/base/forms.py:365 geonode/base/forms.py:547
 #: geonode/base/templates/base/_resourcebase_info_panel.html:41
 #: geonode/catalogue/templates/geonode_metadata_full.html:58
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
@@ -209,19 +244,19 @@ msgstr "مالك"
 msgid "Date"
 msgstr "تاريخ"
 
-#: geonode/base/forms.py:350 geonode/base/models.py:733
+#: geonode/base/forms.py:371 geonode/base/models.py:733
 msgid "temporal extent start"
 msgstr "بدء المدى الزمني"
 
-#: geonode/base/forms.py:357 geonode/base/models.py:738
+#: geonode/base/forms.py:378 geonode/base/models.py:738
 msgid "temporal extent end"
 msgstr "نهاية المدى الزمني"
 
-#: geonode/base/forms.py:365 geonode/base/forms.py:373
+#: geonode/base/forms.py:386 geonode/base/forms.py:394
 msgid "Person outside GeoNode (fill form)"
 msgstr "شخص خارج GeoNode (تعبئة نموذج)"
 
-#: geonode/base/forms.py:366
+#: geonode/base/forms.py:387
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:14
 #: geonode/base/templates/base/_resourcebase_info_panel.html:112
 #: geonode/catalogue/templates/geonode_metadata_full.html:75
@@ -240,7 +275,7 @@ msgstr "شخص خارج GeoNode (تعبئة نموذج)"
 msgid "Point of Contact"
 msgstr "جهة الاتصال"
 
-#: geonode/base/forms.py:374
+#: geonode/base/forms.py:395
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:18
 #: geonode/documents/templates/documents/document_metadata.html:38
 #: geonode/documents/templates/documents/document_metadata_advanced.html:43
@@ -250,11 +285,11 @@ msgstr "جهة الاتصال"
 msgid "Metadata Author"
 msgstr "مؤلف البيانات الوصفية"
 
-#: geonode/base/forms.py:381
+#: geonode/base/forms.py:402
 msgid "Free-text Keywords"
 msgstr "كلمات النص الحر"
 
-#: geonode/base/forms.py:383
+#: geonode/base/forms.py:404
 msgid ""
 "A space or comma-separated list of keywords. Use the widget to select from "
 "Hierarchical tree."
@@ -262,7 +297,7 @@ msgstr ""
 "مساحة أو قائمة مفصولة بفواصل بكلمات مفتاحية. استخدم عنصر واجهة المستخدم "
 "للتحديد من شجرة التسلسل الهرمي."
 
-#: geonode/base/forms.py:395 geonode/base/forms.py:522
+#: geonode/base/forms.py:416 geonode/base/forms.py:543
 #: geonode/base/templates/base/_resourcebase_info_panel.html:95
 #: geonode/catalogue/templates/geonode_metadata_full.html:149
 #: geonode/templates/metadata_detail.html:100
@@ -270,7 +305,7 @@ msgstr ""
 msgid "Regions"
 msgstr "المناطق"
 
-#: geonode/base/forms.py:506 geonode/base/forms.py:539
+#: geonode/base/forms.py:527 geonode/base/forms.py:560
 #: geonode/base/templates/base/_resourcebase_info_panel.html:117
 #: geonode/documents/templates/layouts/doc_panels.html:340
 #: geonode/geoapps/templates/layouts/app_panels.html:337
@@ -280,7 +315,7 @@ msgstr "المناطق"
 msgid "Group"
 msgstr "مجموعة"
 
-#: geonode/base/forms.py:518 geonode/base/models.py:706
+#: geonode/base/forms.py:539 geonode/base/models.py:706
 #: geonode/base/templates/base/_resourcebase_info_panel.html:16
 #: geonode/base/templates/base/_resourcebase_info_panel.html:147
 #: geonode/catalogue/templates/geonode_metadata_full.html:98
@@ -289,7 +324,7 @@ msgstr "مجموعة"
 msgid "License"
 msgstr "رخصة"
 
-#: geonode/base/forms.py:529
+#: geonode/base/forms.py:550
 #: geonode/base/templates/base/_resourcebase_info_panel.html:184
 #: geonode/catalogue/templates/geonode_metadata_full.html:101
 #: geonode/templates/500.html:211 geonode/templates/base.html:548
@@ -297,7 +332,7 @@ msgstr "رخصة"
 msgid "Language"
 msgstr "لغة"
 
-#: geonode/base/forms.py:543 geonode/templates/index.html:158
+#: geonode/base/forms.py:564 geonode/templates/index.html:158
 #: geonode/templates/pinax/notifications/account_approve/full.txt:1
 msgid "User"
 msgid_plural "Users"
@@ -308,33 +343,33 @@ msgstr[3] "مستخدمين"
 msgstr[4] "مستخدمين"
 msgstr[5] "مستخدمين"
 
-#: geonode/base/forms.py:547
+#: geonode/base/forms.py:568
 #, fuzzy
 #| msgid "Permissions"
 msgid "Permission Type"
 msgstr "أذونات"
 
-#: geonode/base/forms.py:557
+#: geonode/base/forms.py:578
 #, fuzzy
 #| msgid "Model"
 msgid "Mode"
 msgstr "نموذج"
 
-#: geonode/base/forms.py:608
+#: geonode/base/forms.py:629
 #, fuzzy
 #| msgid "Resources"
 msgid "Resource"
 msgstr "موارد"
 
-#: geonode/base/forms.py:612
+#: geonode/base/forms.py:633
 msgid "Reason"
 msgstr ""
 
-#: geonode/base/forms.py:614
+#: geonode/base/forms.py:635
 msgid "Short reasoning behind the request"
 msgstr "منطق مختصر وراء الطلب"
 
-#: geonode/base/models.py:102 geonode/services/models.py:194
+#: geonode/base/models.py:102 geonode/services/models.py:193
 msgid "function performed by the responsible party"
 msgstr "الوظيفة التي تؤديها الجهة المسؤولة"
 
@@ -531,83 +566,83 @@ msgstr "أي معلومات وصفية أخرى حول مجموعة البيان
 msgid "data quality statement"
 msgstr "بيان جودة البيانات"
 
-#: geonode/base/models.py:773
+#: geonode/base/models.py:777
 msgid "CSW typename"
 msgstr "نوع اسم CSW"
 
-#: geonode/base/models.py:778
+#: geonode/base/models.py:782
 msgid "CSW schema"
 msgstr "مخطط CSW"
 
-#: geonode/base/models.py:783
+#: geonode/base/models.py:787
 msgid "CSW source"
 msgstr "مصدر CSW"
 
-#: geonode/base/models.py:788
+#: geonode/base/models.py:792
 msgid "CSW insert date"
 msgstr "تاريخ إدراج CSW"
 
-#: geonode/base/models.py:790
+#: geonode/base/models.py:794
 msgid "CSW type"
 msgstr "نوع CSW"
 
-#: geonode/base/models.py:795
+#: geonode/base/models.py:799
 msgid "CSW anytext"
 msgstr "CSW أي نص"
 
-#: geonode/base/models.py:797
+#: geonode/base/models.py:801
 msgid "CSW WKT geometry"
 msgstr "هندسة CSW WKT"
 
-#: geonode/base/models.py:803
+#: geonode/base/models.py:807
 msgid "Metadata uploaded preserve"
 msgstr "تم تحميل بيانات التعريف المحفوظة"
 
-#: geonode/base/models.py:810 geonode/templates/metadata_detail.html:110
+#: geonode/base/models.py:814 geonode/templates/metadata_detail.html:110
 msgid "Featured"
 msgstr "متميز"
 
-#: geonode/base/models.py:811
+#: geonode/base/models.py:815
 msgid "Should this resource be advertised in home page?"
 msgstr "هل يجب الإعلان عن هذا المورد في الصفحة الرئيسية؟"
 
-#: geonode/base/models.py:813
+#: geonode/base/models.py:817
 msgid "Is Published"
 msgstr "تم نشره"
 
-#: geonode/base/models.py:815
+#: geonode/base/models.py:819
 msgid "Should this resource be published and searchable?"
 msgstr "هل ينبغي نشر هذه الموارد والبحث فيها؟"
 
-#: geonode/base/models.py:817 geonode/templates/metadata_detail.html:104
+#: geonode/base/models.py:821 geonode/templates/metadata_detail.html:104
 msgid "Approved"
 msgstr "موافق عليه"
 
-#: geonode/base/models.py:819
+#: geonode/base/models.py:823
 msgid "Is this resource validated from a publisher or editor?"
 msgstr "هل تم التحقق من هذا المورد من ناشر أو محرر؟"
 
-#: geonode/base/models.py:822
+#: geonode/base/models.py:826
 msgid "Thumbnail url"
 msgstr "رابط الصورة المصغرة"
 
-#: geonode/base/models.py:830
+#: geonode/base/models.py:834
 msgid "Dirty State"
 msgstr "الدولة القذرة"
 
-#: geonode/base/models.py:832
+#: geonode/base/models.py:836
 msgid "Security Rules Are Not Synched with GeoServer!"
 msgstr "لا تتم مزامنة قواعد الأمان مع GeoServer!"
 
-#: geonode/base/models.py:1641
+#: geonode/base/models.py:1667
 msgid "For example \"kml\""
 msgstr "على سبيل المثال “kml”"
 
-#: geonode/base/models.py:1646
+#: geonode/base/models.py:1672
 msgid "For example \"View in Google Earth\""
 msgstr "على سبيل المثال \"عرض في Google Earth\""
 
-#: geonode/base/models.py:1648
+#: geonode/base/models.py:1674
 msgid "For example \"text/xml\""
 msgstr "على سبيل المثال \"نص / XML\""
 
@@ -638,7 +673,7 @@ msgstr "الأطراف المسؤولة"
 #: geonode/services/templates/services/service_detail.html:22
 #: geonode/services/templates/services/service_list.html:17
 #: geonode/templates/announcements/announcement_list.html:21
-#: geonode/templates/base.html:735 geonode/templates/metadata_detail.html:45
+#: geonode/templates/base.html:736 geonode/templates/metadata_detail.html:45
 msgid "Title"
 msgstr "عنوان"
 
@@ -653,15 +688,6 @@ msgstr "رقم تعريف مرجعي لأنظمة الإحداثيات المك�
 #: geonode/templates/metadata_detail.html:215
 msgid "For more info see"
 msgstr "لمزيد من المعلومات راجع"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:29
-#: geonode/catalogue/templates/geonode_metadata_full.html:61
-#: geonode/client/templates/leaflet/maps/map_view.html:106
-#: geonode/services/forms.py:130
-#: geonode/services/templates/services/service_detail.html:10
-#: geonode/templates/metadata_detail.html:50
-msgid "Abstract"
-msgstr "ملخص"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:35
 #, fuzzy
@@ -725,12 +751,6 @@ msgstr "قيود"
 #: geonode/templates/metadata_detail.html:235
 msgid "Edition"
 msgstr "الإصدار"
-
-#: geonode/base/templates/base/_resourcebase_info_panel.html:179
-#: geonode/catalogue/templates/geonode_metadata_full.html:80
-#: geonode/templates/metadata_detail.html:240
-msgid "Purpose"
-msgstr "هدف"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:189
 #: geonode/catalogue/templates/geonode_metadata_full.html:104
@@ -800,13 +820,13 @@ msgstr "في انتظار الموافقة"
 msgid "UNPUBLISHED"
 msgstr "غير منشورة"
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:80
+#: geonode/base/templates/base/_resourcebase_snippet.html:81
 #: geonode/layers/templates/layers/layer_detail.html:634
 #: geonode/templates/search/_search_content.html:11
 msgid "Create a Map"
 msgstr "إنشاء خريطة"
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:86
+#: geonode/base/templates/base/_resourcebase_snippet.html:87
 #: geonode/client/templates/leaflet/maps/map_view.html:8
 #: geonode/maps/templates/maps/map_detail.html:198
 #: geonode/maps/templates/maps/map_detail.html:200
@@ -837,12 +857,12 @@ msgstr "تعديل دفعة"
 #: geonode/layers/templates/upload/layer_upload_time.html:119
 #: geonode/maps/templates/maps/map_download.html:58
 #: geonode/templates/_comments.html:64
-#: geonode/templates/_permissions_form.html:223
-#: geonode/templates/_permissions_form.html:293
+#: geonode/templates/_permissions_form.html:185
+#: geonode/templates/_permissions_form.html:255
 #: geonode/templates/admin/backups/confirm_cancel.html:21
 #: geonode/templates/announcements/announcement_confirm_delete.html:20
 #: geonode/templates/announcements/announcement_form.html:22
-#: geonode/templates/base.html:757
+#: geonode/templates/base.html:758
 msgid "Cancel"
 msgstr "إلغاء"
 
@@ -893,7 +913,7 @@ msgstr "لا يمكن توليد الصورة المصغرة"
 #: geonode/maps/templates/maps/map_detail.html:167
 #: geonode/monitoring/models.py:355
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:58
-#: geonode/templates/_permissions_form.html:288
+#: geonode/templates/_permissions_form.html:250
 msgid "Upload"
 msgstr "رفع"
 
@@ -939,27 +959,27 @@ msgstr "إنشاء طبقة"
 msgid "me"
 msgstr "أنا"
 
-#: geonode/base/views.py:351
+#: geonode/base/views.py:352
 msgid "System message: A request to modify resource"
 msgstr "رسالة النظام: طلب لتعديل المورد"
 
-#: geonode/base/views.py:352
+#: geonode/base/views.py:353
 #, fuzzy
 #| msgid "A user has requested access to the site"
 msgid "The resource owner has requested to modify the resource"
 msgstr "لقد طلب أحد المستخدمين الدخول إلى الموقع"
 
-#: geonode/base/views.py:354
+#: geonode/base/views.py:355
 #, fuzzy
 #| msgid "Resources"
 msgid "Resource title"
 msgstr "موارد"
 
-#: geonode/base/views.py:356
+#: geonode/base/views.py:357
 msgid "Reason for the request"
 msgstr "سبب الطلب"
 
-#: geonode/base/views.py:358
+#: geonode/base/views.py:359
 msgid ""
 "To allow the change, set the resource to not \"Approved\" under the metadata "
 "settingsand write message to the owner to notify him"
@@ -1036,7 +1056,8 @@ msgstr "تحميل نمط QML"
 
 #: geonode/client/templates/leaflet/maps/map_base.html:4
 #: geonode/client/templates/leaflet/maps/map_list.html:12
-#: geonode/maps/templates/maps/map_list_default.html:12
+#: geonode/maps/templates/maps/map_list_default.html:5
+#: geonode/maps/templates/maps/map_list_default.html:14
 #: geonode/maps/templates/maps/map_metadata_advanced.html:29
 #: geonode/templates/500.html:180 geonode/templates/base.html:316
 #: geonode/templates/base.html:501
@@ -1068,7 +1089,7 @@ msgstr "تحديث"
 
 #: geonode/client/templates/leaflet/maps/map_list.html:10
 #: geonode/maps/templates/maps/map_detail.html:255
-#: geonode/maps/templates/maps/map_list_default.html:10
+#: geonode/maps/templates/maps/map_list_default.html:12
 msgid "Create a New Map"
 msgstr "إنشاء خريطة جديدة"
 
@@ -1105,9 +1126,9 @@ msgstr "حفظ خريطة"
 #: geonode/maps/templates/maps/map_detail.html:301
 #: geonode/templates/500.html:238
 #: geonode/templates/_bulk_permissions_form.html:19
-#: geonode/templates/base.html:590 geonode/templates/metadata_base.html:134
-#: geonode/templates/metadata_base.html:168
-#: geonode/templates/metadata_base.html:185
+#: geonode/templates/base.html:590 geonode/templates/metadata_base.html:137
+#: geonode/templates/metadata_base.html:171
+#: geonode/templates/metadata_base.html:188
 msgid "Close"
 msgstr "أغلق"
 
@@ -1238,15 +1259,15 @@ msgstr "لا يسمح هذا النوع من الملفات"
 msgid "Permissions must be valid JSON."
 msgstr "يجب أن تكون الأذونات JSON صالحة."
 
-#: geonode/documents/models.py:56
+#: geonode/documents/models.py:59
 msgid "File"
 msgstr "ملف"
 
-#: geonode/documents/models.py:66
+#: geonode/documents/models.py:69
 msgid "The URL of the document if it is external."
 msgstr "عنوان المستند إذا كان خارجيًا."
 
-#: geonode/documents/models.py:67 geonode/layers/models.py:478
+#: geonode/documents/models.py:70 geonode/layers/models.py:481
 #: geonode/monitoring/models.py:179
 #: geonode/services/templates/services/service_detail.html:9
 #: geonode/services/templates/services/service_list.html:18
@@ -1464,13 +1485,13 @@ msgstr "تحميل المستندات"
 #: geonode/layers/templates/layers/layer_base.html:6
 #: geonode/layers/templates/layers/layer_metadata.html:15
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:10
-#: geonode/layers/templates/upload/layer_upload_base.html:157
+#: geonode/layers/templates/upload/layer_upload_base.html:10
 #: geonode/layers/templates/upload/layer_upload_metadata_base.html:6
 #: geonode/maps/templates/maps/map_base.html:6
 #: geonode/maps/templates/maps/map_metadata.html:15
 #: geonode/maps/templates/maps/map_metadata_advanced.html:10
 #: geonode/services/templates/services/services_base.html:6
-#: geonode/templates/metadata_base.html:120
+#: geonode/templates/metadata_base.html:123
 #: geonode/templates/metadata_detail.html:7
 msgid "data"
 msgstr "بيانات"
@@ -1798,7 +1819,7 @@ msgstr "المالك الصلاحيات"
 #: geonode/geoapps/templates/layouts/app_panels.html:506
 #: geonode/layers/templates/layouts/panels.html:515
 #: geonode/maps/templates/layouts/map_panels.html:509
-#: geonode/templates/_permissions_form.html:236 geonode/templates/base.html:721
+#: geonode/templates/_permissions_form.html:198 geonode/templates/base.html:722
 msgid "Message box"
 msgstr "صندوق الرسائل"
 
@@ -1806,16 +1827,16 @@ msgstr "صندوق الرسائل"
 #: geonode/geoapps/templates/layouts/app_panels.html:512
 #: geonode/layers/templates/layouts/panels.html:521
 #: geonode/maps/templates/layouts/map_panels.html:515
-#: geonode/templates/_permissions_form.html:242
-#: geonode/templates/_permissions_form.html:481
-#: geonode/templates/_permissions_form.html:482
-#: geonode/templates/_permissions_form.html:502
-#: geonode/templates/_permissions_form.html:503
-#: geonode/templates/_permissions_form.html:568
-#: geonode/templates/_permissions_form.html:569
-#: geonode/templates/_permissions_form.html:639
-#: geonode/templates/_permissions_form.html:640 geonode/templates/base.html:727
-#: geonode/templates/base.html:758
+#: geonode/templates/_permissions_form.html:204
+#: geonode/templates/_permissions_form.html:539
+#: geonode/templates/_permissions_form.html:540
+#: geonode/templates/_permissions_form.html:560
+#: geonode/templates/_permissions_form.html:561
+#: geonode/templates/_permissions_form.html:626
+#: geonode/templates/_permissions_form.html:627
+#: geonode/templates/_permissions_form.html:698
+#: geonode/templates/_permissions_form.html:699 geonode/templates/base.html:728
+#: geonode/templates/base.html:759
 msgid "OK"
 msgstr "حسنا"
 
@@ -1846,21 +1867,79 @@ msgstr "غير مسموح لك بتعديل البيانات الأولية له
 msgid "You are not permitted to view this document"
 msgstr "لا يسمح لك بعرض هذه الوثيقة"
 
-#: geonode/documents/views.py:106 geonode/documents/views.py:207
+#: geonode/documents/views.py:96 geonode/documents/views.py:355
+#: geonode/documents/views.py:592 geonode/documents/views.py:607
+#: geonode/documents/views.py:621 geonode/geoapps/views.py:121
+#: geonode/geoapps/views.py:203 geonode/geoapps/views.py:261
+#: geonode/geoapps/views.py:287 geonode/geoapps/views.py:319
+#: geonode/layers/views.py:413 geonode/layers/views.py:846
+#: geonode/layers/views.py:898 geonode/layers/views.py:1257
+#: geonode/layers/views.py:1358 geonode/layers/views.py:1408
+#: geonode/layers/views.py:1453 geonode/layers/views.py:1519
+#: geonode/layers/views.py:1556 geonode/layers/views.py:1593
+#: geonode/layers/views.py:1618 geonode/maps/views.py:136
+#: geonode/maps/views.py:232 geonode/maps/views.py:450
+#: geonode/maps/views.py:521 geonode/maps/views.py:544
+#: geonode/maps/views.py:574 geonode/maps/views.py:595
+#: geonode/maps/views.py:648 geonode/maps/views.py:774
+#: geonode/maps/views.py:1085 geonode/maps/views.py:1174
+#: geonode/maps/views.py:1204 geonode/maps/views.py:1318
+#: geonode/maps/views.py:1360
+#, fuzzy
+#| msgid "Not provided"
+msgid "Not allowed"
+msgstr "غير مزود"
+
+#: geonode/documents/views.py:98 geonode/documents/views.py:100
+#: geonode/documents/views.py:357 geonode/documents/views.py:359
+#: geonode/documents/views.py:594 geonode/documents/views.py:596
+#: geonode/documents/views.py:623 geonode/documents/views.py:625
+#: geonode/geoapps/views.py:123 geonode/geoapps/views.py:125
+#: geonode/geoapps/views.py:205 geonode/geoapps/views.py:207
+#: geonode/geoapps/views.py:263 geonode/geoapps/views.py:265
+#: geonode/geoapps/views.py:289 geonode/geoapps/views.py:291
+#: geonode/geoapps/views.py:321 geonode/geoapps/views.py:323
+#: geonode/layers/views.py:415 geonode/layers/views.py:417
+#: geonode/layers/views.py:848 geonode/layers/views.py:850
+#: geonode/layers/views.py:900 geonode/layers/views.py:902
+#: geonode/layers/views.py:1259 geonode/layers/views.py:1261
+#: geonode/layers/views.py:1360 geonode/layers/views.py:1362
+#: geonode/layers/views.py:1410 geonode/layers/views.py:1412
+#: geonode/layers/views.py:1455 geonode/layers/views.py:1457
+#: geonode/layers/views.py:1521 geonode/layers/views.py:1523
+#: geonode/layers/views.py:1558 geonode/layers/views.py:1560
+#: geonode/layers/views.py:1595 geonode/layers/views.py:1597
+#: geonode/layers/views.py:1620 geonode/layers/views.py:1622
+#: geonode/maps/views.py:138 geonode/maps/views.py:140
+#: geonode/maps/views.py:234 geonode/maps/views.py:236
+#: geonode/maps/views.py:452 geonode/maps/views.py:454
+#: geonode/maps/views.py:523 geonode/maps/views.py:525
+#: geonode/maps/views.py:546 geonode/maps/views.py:548
+#: geonode/maps/views.py:576 geonode/maps/views.py:578
+#: geonode/maps/views.py:597 geonode/maps/views.py:599
+#: geonode/maps/views.py:650 geonode/maps/views.py:652
+#: geonode/maps/views.py:776 geonode/maps/views.py:778
+#: geonode/maps/views.py:1087 geonode/maps/views.py:1089
+#: geonode/maps/views.py:1176 geonode/maps/views.py:1178
+#: geonode/maps/views.py:1206 geonode/maps/views.py:1208
+#: geonode/maps/views.py:1320 geonode/maps/views.py:1322
+#: geonode/maps/views.py:1362 geonode/maps/views.py:1364
+#, fuzzy
+#| msgid "Maps found"
+msgid "Not found"
+msgstr "خرائط وجدت"
+
+#: geonode/documents/views.py:194
 msgid "You are not allowed to view this document."
 msgstr "لا يسمح لك بعرض هذه الوثيقة."
 
-#: geonode/documents/views.py:379
-msgid "You are not allowed to edit this document."
-msgstr "لا يسمح لك بتحرير هذه الوثيقة."
-
-#: geonode/documents/views.py:464 geonode/geoapps/views.py:396
-#: geonode/layers/views.py:1033
+#: geonode/documents/views.py:436 geonode/geoapps/views.py:400
+#: geonode/layers/views.py:1057
 msgid "You must set a point of contact for this resource"
 msgstr "يجب تعيين نقطة اتصال لهذا المورد"
 
-#: geonode/documents/views.py:481 geonode/geoapps/views.py:413
-#: geonode/layers/views.py:1050
+#: geonode/documents/views.py:453 geonode/geoapps/views.py:417
+#: geonode/layers/views.py:1074
 msgid "You must set an author for this resource"
 msgstr "يجب تعيين مؤلف لهذا المورد"
 
@@ -1903,92 +1982,92 @@ msgstr "المفضلات ل"
 msgid "Item"
 msgstr ""
 
-#: geonode/geoapps/__init__.py:30
+#: geonode/geoapps/__init__.py:28
 #, fuzzy
 #| msgid "Map Created"
 msgid "App Created"
 msgstr "تم إنشاء الخريطة"
 
-#: geonode/geoapps/__init__.py:30
+#: geonode/geoapps/__init__.py:28
 #, fuzzy
 #| msgid "A Map was created"
 msgid "A App was created"
 msgstr "تم إنشاء خريطة"
 
-#: geonode/geoapps/__init__.py:31
+#: geonode/geoapps/__init__.py:29
 #, fuzzy
 #| msgid "Map Updated"
 msgid "App Updated"
 msgstr "تم تحديث الخريطة"
 
-#: geonode/geoapps/__init__.py:31
+#: geonode/geoapps/__init__.py:29
 #, fuzzy
 #| msgid "A Map was updated"
 msgid "A App was updated"
 msgstr "تم تحديث الخريطة مسبقا"
 
-#: geonode/geoapps/__init__.py:32
+#: geonode/geoapps/__init__.py:30
 #, fuzzy
 #| msgid "Map Approved"
 msgid "App Approved"
 msgstr "خريطة موافق عليها"
 
-#: geonode/geoapps/__init__.py:32
+#: geonode/geoapps/__init__.py:30
 #, fuzzy
 #| msgid "A Map was approved by a Manager"
 msgid "A App was approved by a Manager"
 msgstr "تمت الموافقة على الخريطة من قبل المدير"
 
-#: geonode/geoapps/__init__.py:33
+#: geonode/geoapps/__init__.py:31
 #, fuzzy
 #| msgid "Map Published"
 msgid "App Published"
 msgstr "الخريطة نشرت"
 
-#: geonode/geoapps/__init__.py:33
+#: geonode/geoapps/__init__.py:31
 #, fuzzy
 #| msgid "A Map was published"
 msgid "A App was published"
 msgstr "تم نشر خريطة"
 
-#: geonode/geoapps/__init__.py:34
+#: geonode/geoapps/__init__.py:32
 #, fuzzy
 #| msgid "Map Deleted"
 msgid "App Deleted"
 msgstr "تم حذف الخريطة"
 
-#: geonode/geoapps/__init__.py:34
+#: geonode/geoapps/__init__.py:32
 #, fuzzy
 #| msgid "A Map was deleted"
 msgid "A App was deleted"
 msgstr "تم حذف الخريطة مسبقا"
 
-#: geonode/geoapps/__init__.py:35
+#: geonode/geoapps/__init__.py:33
 #, fuzzy
 #| msgid "Comment on Map"
 msgid "Comment on App"
 msgstr "التعليق على خريطة"
 
-#: geonode/geoapps/__init__.py:35
+#: geonode/geoapps/__init__.py:33
 #, fuzzy
 #| msgid "A map was commented on"
 msgid "An App was commented on"
 msgstr "وقد علق على خريطة"
 
-#: geonode/geoapps/__init__.py:36
+#: geonode/geoapps/__init__.py:34
 #, fuzzy
 #| msgid "Rating for Map"
 msgid "Rating for App"
 msgstr "تصنيف للخريطة"
 
-#: geonode/geoapps/__init__.py:36
+#: geonode/geoapps/__init__.py:34
 #, fuzzy
 #| msgid "A rating was given to a map"
 msgid "A rating was given to an App"
 msgstr "وقدم تصنيف للخريطة"
 
 #: geonode/geoapps/models.py:50 geonode/groups/models.py:50
-#: geonode/layers/models.py:168
+#: geonode/layers/models.py:171
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
 #: geonode/services/templates/services/service_resources_harvest.html:31
 #: geonode/templates/metadata_detail.html:135
@@ -2180,51 +2259,45 @@ msgstr ""
 msgid "Other Settings"
 msgstr "اعدادات اخرى"
 
-#: geonode/geoapps/views.py:65
+#: geonode/geoapps/views.py:64
 #, fuzzy
 #| msgid "You are not permitted to delete this map."
 msgid "You are not permitted to delete this app."
 msgstr "لا يسمح لك بحذف هذه الخريطة."
 
-#: geonode/geoapps/views.py:66
+#: geonode/geoapps/views.py:65
 #, fuzzy
 #| msgid "You do not have permissions for this map."
 msgid "You do not have permissions for this app."
 msgstr "ليس لديك صلاحيات لهذه الخريطة."
 
-#: geonode/geoapps/views.py:67
+#: geonode/geoapps/views.py:66
 #, fuzzy
 #| msgid "You must be logged in to save this map"
 msgid "You must be logged in to save this app"
 msgstr "يجب أن تكون مسجلا لحفظ هذه الخريطة"
 
-#: geonode/geoapps/views.py:68
+#: geonode/geoapps/views.py:67
 #, fuzzy
 #| msgid "You are not permitted to save or edit this map."
 msgid "You are not permitted to save or edit this app."
 msgstr "لا يسمح لك بحفظ أو تعديل هذه الخريطة."
 
-#: geonode/geoapps/views.py:70
+#: geonode/geoapps/views.py:69
 #, fuzzy
 #| msgid "You are not allowed to modify this map's metadata."
 msgid "You are not allowed to modify this app's metadata."
 msgstr "لا يسمح لك بتعديل البيانات الوصفية هذه الخريطة ل."
 
-#: geonode/geoapps/views.py:71
+#: geonode/geoapps/views.py:70
 #, fuzzy
 #| msgid "You are not allowed to view this map."
 msgid "You are not allowed to view this app."
 msgstr "لا يسمح لك بعرض هذه الخريطة."
 
-#: geonode/geoapps/views.py:72 geonode/maps/views.py:104
+#: geonode/geoapps/views.py:71 geonode/maps/views.py:107
 msgid "An unknown error has occured."
 msgstr "حدث خطأ غير معروف."
-
-#: geonode/geoapps/views.py:311
-#, fuzzy
-#| msgid "You are not allowed to view this map."
-msgid "You are not allowed to edit this app."
-msgstr "لا يسمح لك بعرض هذه الخريطة."
 
 #: geonode/geoserver/__init__.py:75
 msgid "Layer Uploaded"
@@ -2277,7 +2350,7 @@ msgstr "إنشاء طبقة"
 #: geonode/layers/templates/layers/layer_replace.html:23
 #: geonode/layers/templates/layers/layer_style_upload.html:24
 #: geonode/layers/templates/upload/layer_upload.html:17
-#: geonode/layers/templates/upload/layer_upload_base.html:161
+#: geonode/layers/templates/upload/layer_upload_base.html:14
 #: geonode/layers/templates/upload/layer_upload_metadata_base.html:10
 msgid "Explore Layers"
 msgstr "تصفح الطبقات"
@@ -2297,15 +2370,15 @@ msgstr "إضافة سمة"
 msgid "Create"
 msgstr "إنشاء"
 
-#: geonode/geoserver/helpers.py:687
+#: geonode/geoserver/helpers.py:690
 msgid "No abstract provided"
 msgstr "تجريد غير مقدم"
 
-#: geonode/geoserver/helpers.py:1437
+#: geonode/geoserver/helpers.py:1444
 msgid "An exception occurred loading data to PostGIS"
 msgstr "حدث اعتراض أثناء تحميل البيانات إلى PostGIS"
 
-#: geonode/geoserver/helpers.py:1442
+#: geonode/geoserver/helpers.py:1449
 msgid " Additionally an error occured during database cleanup"
 msgstr " بالإضافة إلى ذلك حدث خطأ أثناء تنظيف قاعدة البيانات"
 
@@ -2353,11 +2426,11 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geonode/geoserver/views.py:517
+#: geonode/geoserver/views.py:526
 msgid "You don't have permissions to change style for this layer"
 msgstr "لم يكن لديك صلاحيات لتغيير نمط هذه الطبقة"
 
-#: geonode/geoserver/views.py:602 geonode/geoserver/views.py:658
+#: geonode/geoserver/views.py:621 geonode/geoserver/views.py:677
 msgid "Bad HTTP Authorization Credentials."
 msgstr "بيانات اعتماد تفويض HTTP غير صالحة."
 
@@ -2794,192 +2867,192 @@ msgstr "تم حذف الطبقة"
 msgid "A Layer was deleted"
 msgstr "تم حذف الطبقة مسبقا"
 
-#: geonode/layers/models.py:55
+#: geonode/layers/models.py:58
 msgid "YYYYMMDD"
 msgstr "YYYYMMDD"
 
-#: geonode/layers/models.py:56
+#: geonode/layers/models.py:59
 msgid "YYYYMMDD'T'hhmmss"
 msgstr "YYYYMMDD'T'hhmmss"
 
-#: geonode/layers/models.py:57
+#: geonode/layers/models.py:60
 msgid "YYYYMMDD'T'hhmmss'Z'"
 msgstr "YYYYMMDD'T'hhmmss'Z'"
 
-#: geonode/layers/models.py:75 geonode/qgis_server/models.py:198
+#: geonode/layers/models.py:78 geonode/qgis_server/models.py:198
 msgid "style name"
 msgstr "اسم النمط"
 
-#: geonode/layers/models.py:77
+#: geonode/layers/models.py:80
 msgid "sld text"
 msgstr "نص sld"
 
-#: geonode/layers/models.py:79
+#: geonode/layers/models.py:82
 msgid "sld version"
 msgstr "إصدار sld"
 
-#: geonode/layers/models.py:83
+#: geonode/layers/models.py:86
 msgid "sld url"
 msgstr "sld رابط"
 
-#: geonode/layers/models.py:165
+#: geonode/layers/models.py:168
 msgid "Workspace"
 msgstr "مساحة العمل"
 
-#: geonode/layers/models.py:166
+#: geonode/layers/models.py:169
 msgid "Store"
 msgstr "مخزن"
 
-#: geonode/layers/models.py:167
+#: geonode/layers/models.py:170
 msgid "Storetype"
 msgstr "نوع المخزن"
 
-#: geonode/layers/models.py:169
+#: geonode/layers/models.py:172
 msgid "Typename"
 msgstr "أكتب اسم"
 
-#: geonode/layers/models.py:171
+#: geonode/layers/models.py:174
 msgid "Is mosaic?"
 msgstr "هل هي فسيفساء؟"
 
-#: geonode/layers/models.py:172
+#: geonode/layers/models.py:175
 msgid "Has time?"
 msgstr "لديه وقت؟"
 
-#: geonode/layers/models.py:173
+#: geonode/layers/models.py:176
 msgid "Has elevation?"
 msgstr "لديه ارتفاع؟"
 
-#: geonode/layers/models.py:175
+#: geonode/layers/models.py:178
 msgid "Time regex"
 msgstr "وقت التعبير العادي"
 
-#: geonode/layers/models.py:180
+#: geonode/layers/models.py:183
 msgid "Elevation regex"
 msgstr "ارتفاع التعبير العادي"
 
-#: geonode/layers/models.py:196
+#: geonode/layers/models.py:199
 msgid "use featureinfo custom template?"
 msgstr ""
 
-#: geonode/layers/models.py:197
+#: geonode/layers/models.py:200
 msgid "specifies wether or not use a custom GetFeatureInfo template."
 msgstr ""
 
-#: geonode/layers/models.py:201
+#: geonode/layers/models.py:204
 msgid "featureinfo custom template"
 msgstr ""
 
-#: geonode/layers/models.py:202
+#: geonode/layers/models.py:205
 msgid "the custom GetFeatureInfo template HTML contents."
 msgstr ""
 
-#: geonode/layers/models.py:310
+#: geonode/layers/models.py:313
 msgid "File cannot be opened, maybe check the encoding"
 msgstr "لا يمكن فتح الملف، ربما تحقق من الترميز"
 
-#: geonode/layers/models.py:426
+#: geonode/layers/models.py:429
 msgid "attribute name"
 msgstr "اسم السمة"
 
-#: geonode/layers/models.py:427
+#: geonode/layers/models.py:430
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "اسم السمة كما تم تخزينها في shapefile/ قاعدة البيانات المكانية"
 
-#: geonode/layers/models.py:433
+#: geonode/layers/models.py:436
 msgid "attribute description"
 msgstr "وصف السمة"
 
-#: geonode/layers/models.py:434
+#: geonode/layers/models.py:437
 msgid "description of attribute to be used in metadata"
 msgstr "وصف السمة التي سيتم استخدامها في البيانات الوصفية"
 
-#: geonode/layers/models.py:439
+#: geonode/layers/models.py:442
 msgid "attribute label"
 msgstr "تسمية السمة"
 
-#: geonode/layers/models.py:440
+#: geonode/layers/models.py:443
 msgid "title of attribute as displayed in GeoNode"
 msgstr "عنوان السمة كما هو معروض في GeoNode"
 
-#: geonode/layers/models.py:446
+#: geonode/layers/models.py:449
 msgid "attribute type"
 msgstr "نوع السمة"
 
-#: geonode/layers/models.py:447
+#: geonode/layers/models.py:450
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr "نوع بيانات السمة (عدد صحيح، سلسلة، والهندسة، وغيرها)"
 
-#: geonode/layers/models.py:454
+#: geonode/layers/models.py:457
 msgid "visible?"
 msgstr "مرئية؟"
 
-#: geonode/layers/models.py:455
+#: geonode/layers/models.py:458
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "يحدد ما إذا كان يجب عرض السمة في تحديد النتائج"
 
-#: geonode/layers/models.py:458
+#: geonode/layers/models.py:461
 msgid "display order"
 msgstr "ترتيب العرض"
 
-#: geonode/layers/models.py:459
+#: geonode/layers/models.py:462
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
 msgstr "يحدد الترتيب الذي يجب أن يتم عرض السمة في تحديد النتائج"
 
-#: geonode/layers/models.py:477
+#: geonode/layers/models.py:480
 #: geonode/layers/templates/layers/layer_detail.html:178
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:127
 #: geonode/layers/templates/layouts/panels.html:552
 msgid "Label"
 msgstr "علامة"
 
-#: geonode/layers/models.py:479
+#: geonode/layers/models.py:482
 #, fuzzy
 #| msgid "Images"
 msgid "Image"
 msgstr "الصور"
 
-#: geonode/layers/models.py:480
+#: geonode/layers/models.py:483
 msgid "Video (mp4)"
 msgstr ""
 
-#: geonode/layers/models.py:481
+#: geonode/layers/models.py:484
 msgid "Video (ogg)"
 msgstr ""
 
-#: geonode/layers/models.py:482
+#: geonode/layers/models.py:485
 msgid "Video (webm)"
 msgstr ""
 
-#: geonode/layers/models.py:483
+#: geonode/layers/models.py:486
 msgid "Video (3gp)"
 msgstr ""
 
-#: geonode/layers/models.py:484
+#: geonode/layers/models.py:487
 msgid "Video (flv)"
 msgstr ""
 
-#: geonode/layers/models.py:485
+#: geonode/layers/models.py:488
 msgid "Video (YouTube/VIMEO - embedded)"
 msgstr ""
 
-#: geonode/layers/models.py:486
+#: geonode/layers/models.py:489
 msgid "Audio"
 msgstr ""
 
-#: geonode/layers/models.py:487
+#: geonode/layers/models.py:490
 msgid "IFRAME"
 msgstr ""
 
-#: geonode/layers/models.py:490
+#: geonode/layers/models.py:493
 #, fuzzy
 #| msgid "feature type"
 msgid "featureinfo type"
 msgstr "نوع الميزة"
 
-#: geonode/layers/models.py:491
+#: geonode/layers/models.py:494
 #, fuzzy
 #| msgid "specifies if the attribute should be displayed in identify results"
 msgid ""
@@ -2987,71 +3060,71 @@ msgid ""
 "GetFeatureInfo template."
 msgstr "يحدد ما إذا كان يجب عرض السمة في تحديد النتائج"
 
-#: geonode/layers/models.py:501
+#: geonode/layers/models.py:504
 msgid "count"
 msgstr "إحصاء"
 
-#: geonode/layers/models.py:502
+#: geonode/layers/models.py:505
 msgid "count value for this field"
 msgstr "قيمة العد لهذا الحقل"
 
-#: geonode/layers/models.py:505
+#: geonode/layers/models.py:508
 msgid "min"
 msgstr "الحد الأدنى"
 
-#: geonode/layers/models.py:506
+#: geonode/layers/models.py:509
 msgid "minimum value for this field"
 msgstr "قيمة الحد الأدنى لهذا الحقل"
 
-#: geonode/layers/models.py:513
+#: geonode/layers/models.py:516
 msgid "max"
 msgstr "الحد الأقصى"
 
-#: geonode/layers/models.py:514
+#: geonode/layers/models.py:517
 msgid "maximum value for this field"
 msgstr "القيمة القصوى لهذا الحقل"
 
-#: geonode/layers/models.py:521
+#: geonode/layers/models.py:524
 msgid "average"
 msgstr "متوسط"
 
-#: geonode/layers/models.py:522
+#: geonode/layers/models.py:525
 msgid "average value for this field"
 msgstr "متوسط ​قيمة لهذا الحقل"
 
-#: geonode/layers/models.py:529
+#: geonode/layers/models.py:532
 msgid "median"
 msgstr "الوسيط"
 
-#: geonode/layers/models.py:530
+#: geonode/layers/models.py:533
 msgid "median value for this field"
 msgstr "متوسط ​​قيمة لهذا الحقل"
 
-#: geonode/layers/models.py:537
+#: geonode/layers/models.py:540
 msgid "standard deviation"
 msgstr "الانحراف المعياري"
 
-#: geonode/layers/models.py:538
+#: geonode/layers/models.py:541
 msgid "standard deviation for this field"
 msgstr "الانحراف المعياري لهذا الحقل"
 
-#: geonode/layers/models.py:545
+#: geonode/layers/models.py:548
 msgid "sum"
 msgstr "مجموع"
 
-#: geonode/layers/models.py:546
+#: geonode/layers/models.py:549
 msgid "sum value for this field"
 msgstr "قيمة المجموع لهذا الحقل"
 
-#: geonode/layers/models.py:553
+#: geonode/layers/models.py:556
 msgid "unique values for this field"
 msgstr "قيم فريدة لهذا الحقل"
 
-#: geonode/layers/models.py:557
+#: geonode/layers/models.py:560
 msgid "last modified"
 msgstr "آخر تعديل"
 
-#: geonode/layers/models.py:558
+#: geonode/layers/models.py:561
 msgid "date when attribute statistics were last updated"
 msgstr "التاريخ الذي تم فيه تحديث آخر إحصاءات السمات"
 
@@ -3404,7 +3477,7 @@ msgid "Change Layer Permissions"
 msgstr "غير صلاحيات طبقة"
 
 #: geonode/layers/templates/layers/layer_detail.html:753
-#: geonode/templates/base.html:703 geonode/templates/metadata_base.html:144
+#: geonode/templates/base.html:704 geonode/templates/metadata_base.html:147
 msgid "Processing..."
 msgstr "معالجة..."
 
@@ -3444,7 +3517,7 @@ msgstr "تصفح الطبقات"
 
 #: geonode/layers/templates/layers/layer_list_default.html:12
 #: geonode/layers/templates/upload/layer_upload.html:18
-#: geonode/layers/templates/upload/layer_upload_base.html:162
+#: geonode/layers/templates/upload/layer_upload_base.html:15
 #: geonode/templates/500.html:273
 msgid "Upload Layers"
 msgstr "تحميل الطبقات"
@@ -4289,7 +4362,7 @@ msgstr "رأس الشكل"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:279
 #: geonode/layers/templates/upload/layer_upload_time.html:299
-#: geonode/templates/base.html:754
+#: geonode/templates/base.html:755
 msgid "Some text in the modal"
 msgstr "بعض النصوص في الوسائط"
 
@@ -4342,11 +4415,11 @@ msgstr "الآن"
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr "أنت تحاول استبدال طبقة متجه بنقطية."
 
-#: geonode/layers/utils.py:517 geonode/layers/views.py:1252
+#: geonode/layers/utils.py:517 geonode/layers/views.py:1282
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr "أنت تحاول استبدال طبقة متجه بنقطية."
 
-#: geonode/layers/utils.py:520 geonode/layers/views.py:1256
+#: geonode/layers/utils.py:520 geonode/layers/views.py:1286
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr "أنت تحاول استبدال طبقة النقطية بناقلات."
 
@@ -4373,7 +4446,7 @@ msgstr ""
 msgid "Some error occurred while trying to access the uploaded schema: %s"
 msgstr "حدث بعض الأخطاء أثناء محاولة الوصول إلى المخطط الذي تم تحميله: %s"
 
-#: geonode/layers/views.py:129
+#: geonode/layers/views.py:130
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
 "or contact and administrator if the problem continues."
@@ -4381,7 +4454,7 @@ msgstr ""
 "حدث خطأ أثناء محاولة تحميل بياناتك. الرجاء إعادة المحاولة، أو الاتصال "
 "بالمشرف إذا استمرت المشكلة."
 
-#: geonode/layers/views.py:132
+#: geonode/layers/views.py:133
 msgid ""
 "Note: this layer's orginal metadata was populated and preserved by importing "
 "a metadata XML file. This metadata cannot be edited."
@@ -4389,42 +4462,42 @@ msgstr ""
 "ملاحظة: تم تعبئة بيانات التعريف الأصلية لهذه الطبقة وحفظها عن طريق استيراد "
 "ملف XML لبيانات التعريف. لا يمكن تعديل هذه البيانات التعريفية."
 
-#: geonode/layers/views.py:136
+#: geonode/layers/views.py:137
 msgid "You are not permitted to delete this layer"
 msgstr "لا يسمح لك بحذف هذه الطبقة"
 
-#: geonode/layers/views.py:137
+#: geonode/layers/views.py:138
 msgid "You do not have permissions for this layer."
 msgstr "لم يكن لديك صلاحيات لهذه الطبقة."
 
-#: geonode/layers/views.py:138
+#: geonode/layers/views.py:139
 msgid "You are not permitted to modify this layer"
 msgstr "لا يسمح لك بتعديل هذه الطبقة"
 
-#: geonode/layers/views.py:140
+#: geonode/layers/views.py:141
 msgid "You are not permitted to modify this layer's metadata"
 msgstr "لا يسمح لك بتعديل البيانات الوصفية لهذه الطبقة"
 
-#: geonode/layers/views.py:141
+#: geonode/layers/views.py:142
 msgid "You are not permitted to view this layer"
 msgstr "لا يسمح لك بمشاهدة هذه الطبقة"
 
-#: geonode/layers/views.py:279
+#: geonode/layers/views.py:280
 msgid "Failed to upload the layer"
 msgstr "فشل تحميل الطبقة"
 
-#: geonode/layers/views.py:1341 geonode/layers/views.py:1386
+#: geonode/layers/views.py:1378 geonode/layers/views.py:1430
 msgid "Unable to delete layer"
 msgstr "تعذر حذف الطبقة"
 
-#: geonode/layers/views.py:1345 geonode/layers/views.py:1390
+#: geonode/layers/views.py:1382 geonode/layers/views.py:1434
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
 msgstr ""
 "هذه الطبقة عضو في مجموعة الطبقات، يجب إزالة الطبقة من المجموعة قبل الحذف."
 
-#: geonode/layers/views.py:1438 geonode/maps/views.py:1243
+#: geonode/layers/views.py:1489 geonode/maps/views.py:1334
 #, fuzzy
 #| msgid "couldn't generate thumbnail"
 msgid "couldn't generate thumbnail"
@@ -4685,7 +4758,7 @@ msgstr "تحميل منتهي"
 msgid "Download Failed"
 msgstr "فشل تحميل"
 
-#: geonode/maps/templates/maps/map_list_default.html:5
+#: geonode/maps/templates/maps/map_list_default.html:7
 msgid "maps explore"
 msgstr "تصفح الخرائط"
 
@@ -4722,35 +4795,35 @@ msgstr ""
 "هل تريد بالتأكيد إزالة <a href=\"%(map.get_absolute_url)s\">%(map_title)s</"
 "a>?"
 
-#: geonode/maps/views.py:97
+#: geonode/maps/views.py:100
 msgid "You are not permitted to delete this map."
 msgstr "لا يسمح لك بحذف هذه الخريطة."
 
-#: geonode/maps/views.py:98
+#: geonode/maps/views.py:101
 msgid "You do not have permissions for this map."
 msgstr "ليس لديك صلاحيات لهذه الخريطة."
 
-#: geonode/maps/views.py:99
+#: geonode/maps/views.py:102
 msgid "You must be logged in to save this map"
 msgstr "يجب أن تكون مسجلا لحفظ هذه الخريطة"
 
-#: geonode/maps/views.py:100
+#: geonode/maps/views.py:103
 msgid "You are not permitted to save or edit this map."
 msgstr "لا يسمح لك بحفظ أو تعديل هذه الخريطة."
 
-#: geonode/maps/views.py:102
+#: geonode/maps/views.py:105
 msgid "You are not allowed to modify this map's metadata."
 msgstr "لا يسمح لك بتعديل البيانات الوصفية هذه الخريطة ل."
 
-#: geonode/maps/views.py:103
+#: geonode/maps/views.py:106
 msgid "You are not allowed to view this map."
 msgstr "لا يسمح لك بعرض هذه الخريطة."
 
-#: geonode/maps/views.py:1250
+#: geonode/maps/views.py:1341
 msgid "Thumbnail saved"
 msgstr "تم حفظ الصورة المصغرة"
 
-#: geonode/maps/views.py:1253
+#: geonode/maps/views.py:1344
 msgid "error saving thumbnail"
 msgstr "خطأ في حفظ الصورة المصغرة"
 
@@ -5046,8 +5119,8 @@ msgstr "30 دقيقة"
 msgid "1 hour"
 msgstr "ساعة واحدة"
 
-#: geonode/monitoring/models.py:1084 geonode/templates/metadata_base.html:128
-#: geonode/templates/metadata_base.html:131
+#: geonode/monitoring/models.py:1084 geonode/templates/metadata_base.html:131
+#: geonode/templates/metadata_base.html:134
 msgid "Error"
 msgstr "قاتلة - مهلك"
 
@@ -5345,7 +5418,7 @@ msgid "Timezone"
 msgstr "وحدة زمنية"
 
 #: geonode/people/templates/people/_profile_about_item.html:17
-#: geonode/templates/_permissions_form.html:125
+#: geonode/templates/_permissions_form.html:311
 msgid "No Group"
 msgstr "لا توجد مجموعة"
 
@@ -5539,28 +5612,28 @@ msgstr "تم إرسال اسم المستخدم الخاص بك إليك عبر 
 msgid "No user could be found with that email address."
 msgstr "لا يمكن العثور على أي مستخدم باستخدام عنوان البريد الإلكتروني هذا."
 
-#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:266
+#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:267
 msgid "You are not permitted to save or edit this resource."
 msgstr "غير مسموح لك بحفظ أو تعديل هذا المورد."
 
-#: geonode/proxy/views.py:265
+#: geonode/proxy/views.py:266
 #, fuzzy
 #| msgid "You are not permitted to save or edit this resource."
 msgid "You are not authorized to download this resource."
 msgstr "غير مسموح لك بحفظ أو تعديل هذا المورد."
 
-#: geonode/proxy/views.py:267
+#: geonode/proxy/views.py:268
 msgid ""
 "No files have been found for this resource. Please, contact a system "
 "administrator."
 msgstr "لم يتم العثور على أية ملفات لهذا المورد. الرجاء الاتصال بمسؤول النظام."
 
-#: geonode/proxy/views.py:301 geonode/proxy/views.py:312
-#: geonode/proxy/views.py:415
+#: geonode/proxy/views.py:302 geonode/proxy/views.py:313
+#: geonode/proxy/views.py:416
 msgid "No files found."
 msgstr "وثائق وجدت."
 
-#: geonode/proxy/views.py:423
+#: geonode/proxy/views.py:424
 #, fuzzy
 #| msgid "Not provided"
 msgid "Not Authorized"
@@ -5606,7 +5679,7 @@ msgstr "إزالة النمط"
 msgid "Reload to see changes"
 msgstr "تحديث لرؤية التغييرات"
 
-#: geonode/qgis_server/views.py:266
+#: geonode/qgis_server/views.py:263
 #, python-brace-format
 msgid ""
 "You should use a GIS software or a library which support TMS service to use "
@@ -5691,7 +5764,7 @@ msgstr "خادم خريطة ArcGIS REST"
 msgid "ArcGIS REST ImageServer"
 msgstr "ArcGIS REST ImageServer"
 
-#: geonode/services/enumerations.py:51 geonode/services/models.py:51
+#: geonode/services/enumerations.py:51 geonode/services/models.py:50
 msgid "OpenGeoPortal"
 msgstr "OpenGeoPortal"
 
@@ -5735,27 +5808,27 @@ msgstr "تعذر العثور على موارد قابلة للاستيراد ل
 msgid "Found service of type %(found_type)s instead of %(service_type)s"
 msgstr "تم العثور على خدمة من النوع%(found_type)s بدلاً من %(service_type)s"
 
-#: geonode/services/models.py:46
+#: geonode/services/models.py:45
 msgid "Local"
 msgstr "محلي"
 
-#: geonode/services/models.py:47
+#: geonode/services/models.py:46
 msgid "Cascaded"
 msgstr "تتالي"
 
-#: geonode/services/models.py:48
+#: geonode/services/models.py:47
 msgid "Harvested"
 msgstr "حصاد"
 
-#: geonode/services/models.py:49
+#: geonode/services/models.py:48
 msgid "Indexed"
 msgstr "مفهرس"
 
-#: geonode/services/models.py:50
+#: geonode/services/models.py:49
 msgid "Live"
 msgstr "مباشر"
 
-#: geonode/services/models.py:211
+#: geonode/services/models.py:210
 msgid "Resource is queued"
 msgstr "المورد في قائمة الانتظار"
 
@@ -5920,63 +5993,63 @@ msgstr "حصاد الموارد ..."
 msgid "Re-scan Service for new Resources"
 msgstr "إعادة فحص الخدمة للحصول على موارد جديدة"
 
-#: geonode/services/views.py:96
+#: geonode/services/views.py:99
 msgid "Service registered successfully"
 msgstr "تم تسجيل الخدمة بنجاح"
 
-#: geonode/services/views.py:193
+#: geonode/services/views.py:196
 msgid "The selected resources are being imported"
 msgstr "يتم استيراد الموارد المحددة"
 
-#: geonode/services/views.py:194
+#: geonode/services/views.py:197
 msgid "The selected resources have been imported"
 msgstr "تم استيراد الموارد المحددة"
 
-#: geonode/services/views.py:224
+#: geonode/services/views.py:227
 msgid "Resource is already being processed"
 msgstr "المورد قيد المعالجة بالفعل"
 
-#: geonode/services/views.py:230
+#: geonode/services/views.py:233
 msgid "Resource {} is being processed"
 msgstr "المورد {} قيد المعالجة"
 
-#: geonode/services/views.py:259
+#: geonode/services/views.py:262
 msgid "Service rescanned successfully"
 msgstr "تم إعادة فحص الخدمة بنجاح"
 
-#: geonode/services/views.py:329
+#: geonode/services/views.py:332
 msgid "You are not permitted to change this service."
 msgstr "غير مسموح لك بتغيير هذه الخدمة."
 
-#: geonode/services/views.py:357
+#: geonode/services/views.py:360
 msgid "You are not permitted to remove this service."
 msgstr "لا يسمح لك بإزالة هذه الخدمة."
 
-#: geonode/services/views.py:368
+#: geonode/services/views.py:371
 msgid "Service {} has been deleted"
 msgstr "تم حذف الخدمة {}"
 
-#: geonode/social/signals.py:81
+#: geonode/social/signals.py:80
 msgid "created"
 msgstr "تم الإنشاء"
 
-#: geonode/social/signals.py:82 geonode/social/tests.py:104
+#: geonode/social/signals.py:81 geonode/social/tests.py:104
 msgid "deleted"
 msgstr "تم الحذف"
 
-#: geonode/social/signals.py:86
+#: geonode/social/signals.py:85
 msgid "updated"
 msgstr "تم التحديث"
 
-#: geonode/social/signals.py:96 geonode/social/tests.py:124
+#: geonode/social/signals.py:95 geonode/social/tests.py:124
 msgid "added a comment"
 msgstr "إضافة تعليق"
 
-#: geonode/social/signals.py:98
+#: geonode/social/signals.py:97
 msgid "updated a comment"
 msgstr "تحديث تعليق"
 
-#: geonode/social/signals.py:104 geonode/social/signals.py:109
+#: geonode/social/signals.py:103 geonode/social/signals.py:108
 #: geonode/social/tests.py:78
 msgid "uploaded"
 msgstr "تم رفعها"
@@ -6041,7 +6114,7 @@ msgstr "الاشخاص"
 
 #: geonode/templates/500.html:84 geonode/templates/500.html:86
 #: geonode/templates/_permissions_form.html:107
-#: geonode/templates/_permissions_form.html:165 geonode/templates/base.html:376
+#: geonode/templates/_permissions_form.html:127 geonode/templates/base.html:376
 #: geonode/templates/base.html:377 geonode/templates/base.html:378
 #: geonode/templates/base.html:381 geonode/templates/base.html:382
 #: geonode/templates/base.html:383 geonode/templates/index.html:101
@@ -6190,7 +6263,7 @@ msgid "Set permissions on selected resources"
 msgstr "تعيين الصلاحيات على الموارد المختارة"
 
 #: geonode/templates/_bulk_permissions_form.html:20
-#: geonode/templates/_permissions_form.html:224
+#: geonode/templates/_permissions_form.html:186
 msgid "Apply Changes"
 msgstr "تطبيق التغييرات"
 
@@ -6283,38 +6356,38 @@ msgstr "الحدود الجغرافية"
 msgid "Users"
 msgstr "المستخدم"
 
-#: geonode/templates/_permissions_form.html:131
-#: geonode/templates/_permissions_form.html:185
+#: geonode/templates/_permissions_form.html:147
+#: geonode/templates/_permissions_form.html:326
 msgid "Show Geo Limits"
 msgstr "إظهار الحدود الجغرافية"
 
-#: geonode/templates/_permissions_form.html:135
-#: geonode/templates/_permissions_form.html:189
+#: geonode/templates/_permissions_form.html:151
+#: geonode/templates/_permissions_form.html:330
 #, fuzzy
 #| msgid "Upload Documents"
 msgid "Upload Geo Limits"
 msgstr "تحميل المستندات"
 
-#: geonode/templates/_permissions_form.html:140
-#: geonode/templates/_permissions_form.html:194
-#: geonode/templates/_permissions_form.html:495
+#: geonode/templates/_permissions_form.html:156
+#: geonode/templates/_permissions_form.html:335
+#: geonode/templates/_permissions_form.html:553
 msgid "Save Geo Limits"
 msgstr "حفظ الحدود الجغرافية"
 
-#: geonode/templates/_permissions_form.html:144
-#: geonode/templates/_permissions_form.html:198
-#: geonode/templates/_permissions_form.html:632
+#: geonode/templates/_permissions_form.html:160
+#: geonode/templates/_permissions_form.html:339
+#: geonode/templates/_permissions_form.html:691
 #, fuzzy
 #| msgid "Delete from Favorites"
 msgid "Delete Geo Limits"
 msgstr "حذف من المفضلات"
 
-#: geonode/templates/_permissions_form.html:256
+#: geonode/templates/_permissions_form.html:218
 msgid "Mandatory files : SHP , DBF"
 msgstr "الملفات الإلزامية : SHP ، DBF"
 
-#: geonode/templates/_permissions_form.html:260
-#: geonode/templates/_permissions_form.html:264
+#: geonode/templates/_permissions_form.html:222
+#: geonode/templates/_permissions_form.html:226
 msgid ""
 "Upload a ZIP file containing an ESRI Shapefile. If the ZIP provides also a ."
 "prj file, you don't have to specify the EPSG SRID"
@@ -6322,38 +6395,38 @@ msgstr ""
 "تحميل ملف ZIP يحتوي على ملف شكل ESRI. إذا كان ZIP يوفر أيضا ملف .prj، لم يكن "
 "لديك لتحديد SRID EPSG"
 
-#: geonode/templates/_permissions_form.html:260
+#: geonode/templates/_permissions_form.html:222
 #, fuzzy
 #| msgid "Choose Files"
 msgid "Choose"
 msgstr "اختيار المستخدمين"
 
-#: geonode/templates/_permissions_form.html:265
+#: geonode/templates/_permissions_form.html:227
 msgid "Choose a file..."
 msgstr "اختيار المستخدمين."
 
-#: geonode/templates/_permissions_form.html:267
+#: geonode/templates/_permissions_form.html:229
 msgid "Reset"
 msgstr "إعادة تعيين"
 
-#: geonode/templates/_permissions_form.html:279
+#: geonode/templates/_permissions_form.html:241
 msgid "Only the SRID number without the 'EPSG:' prefix!"
 msgstr "فقط رقم SRID بدون بادئة \"EPSG:\" !"
 
-#: geonode/templates/_permissions_form.html:280
+#: geonode/templates/_permissions_form.html:242
 msgid "Default : 4326"
 msgstr "الافتراضي : 4326"
 
-#: geonode/templates/_permissions_form.html:285
+#: geonode/templates/_permissions_form.html:247
 msgid "Set your desired encoding UTF-8, Big5, Big5-HKSCS ..."
 msgstr "تعيين الترميز المطلوب UTF-8، Big5، Big5-HKSCS ..."
 
-#: geonode/templates/_permissions_form.html:474
+#: geonode/templates/_permissions_form.html:532
 msgid "Load SHP-ZIP"
 msgstr "تحميل SHP-ZIP"
 
-#: geonode/templates/_permissions_form.html:475
-#: geonode/templates/_permissions_form.html:562
+#: geonode/templates/_permissions_form.html:533
+#: geonode/templates/_permissions_form.html:620
 msgid ""
 "<p>This will remove the Geo Limits currently drawn on the map.</p><p>In "
 "order to store the Geo Limits you will need to <strong>save</strong> them "
@@ -6363,7 +6436,7 @@ msgstr ""
 "أجل تخزين حدود الجغرافية سوف تحتاج إلى <strong>حفظها</strong> على أي حال.</"
 "p><p>هل تريد المتابعة؟</p>"
 
-#: geonode/templates/_permissions_form.html:496
+#: geonode/templates/_permissions_form.html:554
 #, fuzzy
 #| msgid ""
 #| "<p>This will override the current stored Geo Limits on the DB.</p><p>To "
@@ -6377,12 +6450,12 @@ msgstr ""
 "<p>سيتجاوز هذا الحدود الجغرافية المخزنة الحالية على DB.</p><p>لتطبيقها سوف "
 "تحتاج إلى النقر على <strong>\\</strong>"
 
-#: geonode/templates/_permissions_form.html:541
-#: geonode/templates/_permissions_form.html:546
+#: geonode/templates/_permissions_form.html:599
+#: geonode/templates/_permissions_form.html:604
 msgid "Save Geo Limit"
 msgstr "حفظ الحد الجغرافي"
 
-#: geonode/templates/_permissions_form.html:542
+#: geonode/templates/_permissions_form.html:600
 #, fuzzy
 #| msgid ""
 #| "<p>Geometry <strong>successfully</strong> saved!</p><p>To apply them you "
@@ -6394,23 +6467,23 @@ msgstr ""
 "<p>الهندسة <strong>المحفوظة بنجاح!</strong></p><p>لتطبيقها سوف تحتاج إلى "
 "النقر على <strong>\\</strong>"
 
-#: geonode/templates/_permissions_form.html:547
+#: geonode/templates/_permissions_form.html:605
 msgid "<p><strong>Error</strong> while trying to save the Geometry!</p>"
 msgstr "<p><strong>خطأ</strong> أثناء محاولة حفظ الهندسة!</p>"
 
-#: geonode/templates/_permissions_form.html:561
+#: geonode/templates/_permissions_form.html:619
 msgid "Load Geo Limits"
 msgstr "تحميل الحدود الجغرافية"
 
-#: geonode/templates/_permissions_form.html:617
+#: geonode/templates/_permissions_form.html:675
 msgid "Load Geo Limit"
 msgstr "تحميل الحد الجغرافي"
 
-#: geonode/templates/_permissions_form.html:618
+#: geonode/templates/_permissions_form.html:676
 msgid "<p><strong>No Geometry</strong> found!</p>"
 msgstr "<p>لم يتم العثور على <strong>هندسة!</strong></p>"
 
-#: geonode/templates/_permissions_form.html:633
+#: geonode/templates/_permissions_form.html:692
 #, fuzzy
 #| msgid ""
 #| "<p>This will <strong>permanently</strong> remove the Geo Limits from the "
@@ -6423,16 +6496,16 @@ msgstr ""
 "<p>سيؤدي ذلك إلى إزالة الحدود الجغرافية من DB <strong>بشكل دائم.</strong></"
 "p><p>لتطبيقها سوف تحتاج إلى النقر على <strong>\\</strong>"
 
-#: geonode/templates/_permissions_form.html:659
-#: geonode/templates/_permissions_form.html:667
+#: geonode/templates/_permissions_form.html:718
+#: geonode/templates/_permissions_form.html:726
 msgid "Delete Geo Limit"
 msgstr "حذف الحد الجغرافي"
 
-#: geonode/templates/_permissions_form.html:660
+#: geonode/templates/_permissions_form.html:719
 msgid "<p><strong>Geo Limitsy</strong> successfully deleted!</p>"
 msgstr "<p><strong>Geo Limitsy</strong> حذف بنجاح!</p>"
 
-#: geonode/templates/_permissions_form.html:669
+#: geonode/templates/_permissions_form.html:728
 msgid ""
 "<p><strong>Error</strong> occurred while trying to delete Geo Limits:</p>"
 msgstr "<p>حدث <strong>خطأ</strong> أثناء محاولة حذف الحدود الجغرافية:</p>"
@@ -6678,7 +6751,7 @@ msgstr ""
 "إلكتروني للمستخدم%(user_display)s."
 
 #: geonode/templates/account/email_confirm.html:20
-#: geonode/templates/base.html:751
+#: geonode/templates/base.html:752
 #: geonode/templates/relationships/confirm.html:12
 msgid "Confirm"
 msgstr "أكد"
@@ -7059,19 +7132,19 @@ msgstr "اتصل بنا"
 msgid "Tel"
 msgstr "الهاتف"
 
-#: geonode/templates/base.html:686
+#: geonode/templates/base.html:687
 msgid "Uploading..."
 msgstr "تحميل ..."
 
-#: geonode/templates/base.html:691
+#: geonode/templates/base.html:692
 msgid "Upload in progress..."
 msgstr "التحميل قيد التقدم ..."
 
-#: geonode/templates/base.html:708
+#: geonode/templates/base.html:709
 msgid "Updating Thumbnail..."
 msgstr "جارٍ تحديث الصورة المصغرة ..."
 
-#: geonode/templates/base.html:736
+#: geonode/templates/base.html:737
 msgid "Message. Do you want to proceed?"
 msgstr "هل أنت متأكد من أنك تريد إزالة?"
 
@@ -8249,20 +8322,20 @@ msgstr "التي ترغب في الانضمام إلى مجموعاتها /مج�
 msgid "is a member of the following group(s)"
 msgstr "عضو في المجموعة (المجموعات) التالية"
 
-#: geonode/templates/metadata_base.html:149
+#: geonode/templates/metadata_base.html:152
 msgid "Updating Metadata..."
 msgstr "جارٍ تحديث بيانات التعريف ..."
 
-#: geonode/templates/metadata_base.html:162
-#: geonode/templates/metadata_base.html:179
+#: geonode/templates/metadata_base.html:165
+#: geonode/templates/metadata_base.html:182
 msgid "ERROR"
 msgstr "خطأ"
 
-#: geonode/templates/metadata_base.html:165
+#: geonode/templates/metadata_base.html:168
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr "موضوع الفئة إلزامي ولا يمكن أن يكون فارغًا!"
 
-#: geonode/templates/metadata_base.html:182
+#: geonode/templates/metadata_base.html:185
 msgid "Group is mandatory and cannot be empty!"
 msgstr "المجموعة إلزامية ولا يمكن أن تكون فارغة!"
 
@@ -8430,7 +8503,6 @@ msgstr "المملوكة من قبل"
 
 #: geonode/templates/pinax/notifications/document_approved/full.txt:4
 #: geonode/templates/pinax/notifications/document_comment/full.txt:3
-#: geonode/templates/pinax/notifications/document_created/full.txt:4
 #: geonode/templates/pinax/notifications/document_published/full.txt:4
 #: geonode/templates/pinax/notifications/document_updated/full.txt:4
 msgid "You can visit the document's detail page here"
@@ -8601,7 +8673,6 @@ msgstr "تمت الموافقة على الخريطة التالية"
 
 #: geonode/templates/pinax/notifications/map_approved/full.txt:4
 #: geonode/templates/pinax/notifications/map_comment/full.txt:4
-#: geonode/templates/pinax/notifications/map_created/full.txt:4
 #: geonode/templates/pinax/notifications/map_published/full.txt:4
 #: geonode/templates/pinax/notifications/map_rated/full.txt:6
 #: geonode/templates/pinax/notifications/map_updated/full.txt:4
@@ -9182,6 +9253,14 @@ msgstr "مستوى صلاحية غير صالح."
 #: geonode/utils.py:974
 msgid "Permission Denied"
 msgstr "طلب الاذن مرفوض"
+
+#~ msgid "You are not allowed to edit this document."
+#~ msgstr "لا يسمح لك بتحرير هذه الوثيقة."
+
+#, fuzzy
+#~| msgid "You are not allowed to view this map."
+#~ msgid "You are not allowed to edit this app."
+#~ msgstr "لا يسمح لك بعرض هذه الخريطة."
 
 #~ msgid "JSON Configuration"
 #~ msgstr "تكوين JSON"

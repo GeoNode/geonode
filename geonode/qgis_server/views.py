@@ -19,17 +19,17 @@
 #########################################################################
 
 import io
+import os
+import re
 import json
 import logging
-import os
 import zipfile
-from imghdr import what as image_format
 
-import re
-
+import shutil
 import datetime
 import requests
-import shutil
+from imghdr import what as image_format
+
 from django.conf import settings
 from django.urls import reverse
 from django.forms.models import model_to_dict
@@ -223,8 +223,13 @@ def legend(request, layername, layertitle=False, style=None):
         if qgis_layer.default_style:
             style = qgis_layer.default_style.name
 
+    tiles_directory = QGIS_SERVER_CONFIG['tiles_directory']
     legend_path = QGIS_SERVER_CONFIG['legend_path']
     legend_filename = legend_path % (qgis_layer.qgis_layer_name, style)
+    # GOOD -- Verify with normalised version of path
+    legend_filename = os.path.normpath(legend_filename)
+    if not legend_filename.startswith(tiles_directory):
+        return HttpResponseServerError()
 
     if not os.path.exists(legend_filename):
         if not os.path.exists(os.path.dirname(legend_filename)):
@@ -312,8 +317,13 @@ def tile(request, layername, z, x, y, style=None):
         if qgis_layer.default_style:
             style = qgis_layer.default_style.name
 
+    tiles_directory = QGIS_SERVER_CONFIG['tiles_directory']
     tile_path = QGIS_SERVER_CONFIG['tile_path']
     tile_filename = tile_path % (qgis_layer.qgis_layer_name, style, z, x, y)
+    # GOOD -- Verify with normalised version of path
+    tile_filename = os.path.normpath(tile_filename)
+    if not tile_filename.startswith(tiles_directory):
+        return HttpResponseServerError()
 
     if not os.path.exists(tile_filename):
 

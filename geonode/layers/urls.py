@@ -20,7 +20,7 @@
 
 from geonode import geoserver, qgis_server  # noqa
 from geonode.utils import check_ogc_backend
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.views.generic import TemplateView
 from geonode.monitoring import register_url_event
 
@@ -73,7 +73,7 @@ urlpatterns = [
         views.layer_batch_permissions, name='layer_batch_permissions'),
     url(r'^autocomplete/$',
         views.LayerAutocomplete.as_view(), name='autocomplete_layer'),
-
+    url(r'^', include('geonode.layers.api.urls')),
 ]
 
 # -- Deprecated url routes for Geoserver authentication -- remove after GeoNode 2.1
