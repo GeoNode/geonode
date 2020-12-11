@@ -1,5 +1,5 @@
 /**
- * @file Create form validations
+ * @file Edit form validations
  * @author Luis Saltron
  * @version 1.0
  */
@@ -11,7 +11,8 @@ $(function () {
         var currencyDropdown = $('#currencyCost');
         var transitionsDropdown = $('#riosTransition');
         var activitiesDropdown = $('#riosActivity');
-        var transformDropdown = $('#riosTransformation');
+        var transformDropdown = $('#riosTransformations');
+
         // Init transformations selection widget
         transformDropdown.bootstrapDualListbox({
             preserveSelectionOnMove: 'moved',
@@ -221,11 +222,11 @@ $(function () {
 
     };
     /** 
-   * Change currency option based in country selected
-   * @param {HTML} countryDropdown    Country dropdown
-   * @param {HTML} currencyDropdown   Currency  dropdown
-   *
-   */
+  * Change currency option based in country selected
+  * @param {HTML} countryDropdown    Country dropdown
+  * @param {HTML} currencyDropdown   Currency  dropdown
+  *
+  */
     changeCountryEvent = function (countryDropdown, currencyDropdown) {
         // Rios transitions dropdown listener
         countryDropdown.change(function () {
@@ -337,6 +338,7 @@ $(function () {
                 $.each(result, function (index, country) {
                     dropdown.append($("<option />").val(country.pk).text(country.fields.name));
                 });
+                dropdown.val(countryNbs).change();
             }
         });
     };
