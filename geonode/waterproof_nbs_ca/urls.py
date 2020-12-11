@@ -11,6 +11,8 @@ urlpatterns = [
     # View NBS details
     #path('view/', views.viewNbs, name='view-nbs'),
     path('view/<int:idx>', views.viewNbs, name='view-nbs'),
+    # Edit NBS
+    path('edit/', views.editNbs, name='view-nbs'),
     # Load all RIOS transitions
     path('load-transitions/', views.loadAllTransitions, name='waterproof_load_transformations'),
     # Load activities by it's transition id
@@ -23,6 +25,8 @@ urlpatterns = [
     path('load-allCountries/', views.loadAllCountries, name='load_allCountries'),
     # Load currency by id
     path('load-currency/', views.loadCurrency, name='load_currency'),
+    # Load currency by country id
+    path('load-currencyByCountry/', views.loadCurrencyByCountry, name='load_currencyByCountry'),
     # Load all currencies
     path('load-allCurrencies/', views.loadAllCurrencies, name='load_allCurrencies')
 ]
