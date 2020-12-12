@@ -17,6 +17,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
+import six
+import shutil
+import geoserver
+
 from time import sleep
 from django.conf import settings
 from django.db import IntegrityError, transaction
@@ -27,7 +32,12 @@ from celery.utils.log import get_task_logger
 from geonode.celery_app import app
 from geonode import GeoNodeException
 from geonode.layers.models import Layer
-from geonode.base.models import ResourceBase
+from geonode.layers.utils import resolve_regions
+from geonode.layers.metadata import set_metadata
+from geonode.base.models import (
+    ResourceBase,
+    TopicCategory,
+    SpatialRepresentationType)
 from geonode.utils import set_resource_default_links
 from geonode.geoserver.upload import geoserver_upload
 from geonode.catalogue.models import catalogue_post_save
@@ -36,10 +46,12 @@ from geonode.geoserver.helpers import (
     gs_catalog,
     ogc_server_settings,
     set_styles,
+    get_sld_for,
+    set_layer_style,
     create_gs_thumbnail,
     set_attributes_from_geoserver,
-    _stylefilterparams_geowebcache_layer,
-    _invalidate_geowebcache_layer)
+    _invalidate_geowebcache_layer,
+    _stylefilterparams_geowebcache_layer)
 
 from .helpers import gs_slurp, cascading_delete
 
@@ -65,6 +77,322 @@ def geoserver_update_layers(self, *args, **kwargs):
     Runs update layers.
     """
     return gs_slurp(*args, **kwargs)
+
+
+@app.task(
+    bind=True,
+    name='geonode.geoserver.tasks.geoserver_set_style',
+    queue='update',
+    countdown=60,
+    # expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 10,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
+def geoserver_set_style(
+        self,
+        instance_id,
+        base_file):
+    """
+    Sets styles from SLD file.
+    """
+    instance = None
+    try:
+        instance = Layer.objects.get(id=instance_id)
+    except Layer.DoesNotExist:
+        logger.error(f"Layer id {instance_id} does not exist yet!")
+        return
+
+    sld = open(base_file, "rb").read()
+    set_layer_style(
+        instance,
+        instance.alternate,
+        sld,
+        base_file=base_file)
+
+
+@app.task(
+    bind=True,
+    name='geonode.geoserver.tasks.geoserver_create_style',
+    queue='update',
+    countdown=60,
+    # expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 10,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
+def geoserver_create_style(
+        self,
+        instance_id,
+        name,
+        sld_file,
+        tempdir):
+    """
+    Sets or create styles from Upload Session.
+    """
+    instance = None
+    try:
+        instance = Layer.objects.get(id=instance_id)
+    except Layer.DoesNotExist:
+        logger.error(f"Layer id {instance_id} does not exist yet!")
+        return
+
+    if instance:
+        publishing = gs_catalog.get_layer(name)
+        if sld_file:
+            f = None
+            if os.path.isfile(sld_file):
+                try:
+                    f = open(sld_file, 'r')
+                except Exception:
+                    pass
+            elif tempdir and os.path.exists(tempdir):
+                if os.path.isfile(os.path.join(tempdir, sld_file)):
+                    try:
+                        f = open(os.path.join(tempdir, sld_file), 'r')
+                    except Exception:
+                        pass
+
+            if f:
+                sld = f.read()
+                f.close()
+            else:
+                sld = get_sld_for(gs_catalog, publishing)
+        else:
+            sld = get_sld_for(gs_catalog, publishing)
+
+        style = None
+        if sld is not None:
+            try:
+                gs_catalog.create_style(
+                    name,
+                    sld,
+                    raw=True,
+                    workspace=settings.DEFAULT_WORKSPACE)
+                gs_catalog.reset()
+            except geoserver.catalog.ConflictingDataError:
+                try:
+                    gs_catalog.create_style(
+                        name + '_layer',
+                        sld,
+                        raw=True,
+                        workspace=settings.DEFAULT_WORKSPACE)
+                    gs_catalog.reset()
+                except geoserver.catalog.ConflictingDataError as e:
+                    msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (
+                        name, str(e))
+                    logger.error(msg)
+                    e.args = (msg,)
+
+            if style is None:
+                try:
+                    style = gs_catalog.get_style(
+                        name, workspace=settings.DEFAULT_WORKSPACE) or gs_catalog.get_style(name)
+                except Exception:
+                    logger.warn('Could not retreive the Layer default Style name')
+                    # what are we doing with this var?
+                    msg = 'No style could be created for the layer, falling back to POINT default one'
+                    try:
+                        style = gs_catalog.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
+                            gs_catalog.get_style(name + '_layer')
+                    except Exception as e:
+                        style = gs_catalog.get_style('point')
+                        logger.warn(str(e))
+            if style:
+                publishing.default_style = style
+                logger.debug('default style set to %s', name)
+                gs_catalog.save(publishing)
+
+
+@app.task(
+    bind=True,
+    name='geonode.geoserver.tasks.geoserver_finalize_upload',
+    queue='update',
+    countdown=60,
+    # expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 10,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
+def geoserver_finalize_upload(
+        self,
+        import_id,
+        instance_id,
+        permissions,
+        created,
+        xml_file,
+        tempdir):
+    """
+    Finalize Layer and GeoServer configuration:
+     - Sets Layer Metadata from XML and updates GeoServer Layer accordingly.
+     - Sets Default Permissions
+    """
+    instance = None
+    try:
+        instance = Layer.objects.get(id=instance_id)
+    except Layer.DoesNotExist:
+        logger.error(f"Layer id {instance_id} does not exist yet!")
+        return
+
+    from geonode.upload.models import Upload
+    upload = Upload.objects.get(import_id=import_id)
+    upload.layer = instance
+    upload.save()
+
+    # Sanity checks
+    if isinstance(xml_file, list):
+        if len(xml_file) > 0:
+            xml_file = xml_file[0]
+        else:
+            xml_file = None
+    elif not isinstance(xml_file, six.string_types):
+        xml_file = None
+
+    if xml_file:
+        instance.metadata_uploaded = True
+        identifier, vals, regions, keywords = set_metadata(
+            open(xml_file).read())
+
+        try:
+            gs_resource = gs_catalog.get_resource(
+                name=instance.name,
+                store=instance.store,
+                workspace=instance.workspace)
+        except Exception:
+            try:
+                gs_resource = gs_catalog.get_resource(
+                    name=instance.alternate,
+                    store=instance.store,
+                    workspace=instance.workspace)
+            except Exception:
+                try:
+                    gs_resource = gs_catalog.get_resource(
+                        name=instance.alternate or instance.typename)
+                except Exception:
+                    gs_resource = None
+
+        if vals:
+            title = vals.get('title', '')
+            abstract = vals.get('abstract', '')
+
+            # Updating GeoServer resource
+            gs_resource.title = title
+            gs_resource.abstract = abstract
+            gs_catalog.save(gs_resource)
+
+            # Updating Importer session
+            # upload_session.layer_title = title
+            # upload_session.layer_abstract = abstract
+        else:
+            vals = {}
+
+        vals.update(dict(
+            uuid=instance.uuid,
+            name=instance.name,
+            owner=instance.owner,
+            store=gs_resource.store.name,
+            storeType=gs_resource.store.resource_type,
+            alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
+            title=gs_resource.title or gs_resource.store.name,
+            abstract=gs_resource.abstract or ''))
+
+        instance.metadata_xml = xml_file
+        regions_resolved, regions_unresolved = resolve_regions(regions)
+        keywords.extend(regions_unresolved)
+
+        # Assign the regions (needs to be done after saving)
+        regions_resolved = list(set(regions_resolved))
+        if regions_resolved:
+            if len(regions_resolved) > 0:
+                if not instance.regions:
+                    instance.regions = regions_resolved
+                else:
+                    instance.regions.clear()
+                    instance.regions.add(*regions_resolved)
+
+        # Assign the keywords (needs to be done after saving)
+        keywords = list(set(keywords))
+        if keywords:
+            if len(keywords) > 0:
+                if not instance.keywords:
+                    instance.keywords = keywords
+                else:
+                    instance.keywords.add(*keywords)
+
+        # set model properties
+        defaults = {}
+        for key, value in vals.items():
+            if key == 'spatial_representation_type':
+                value = SpatialRepresentationType(identifier=value)
+            elif key == 'topic_category':
+                value, created = TopicCategory.objects.get_or_create(
+                    identifier=value.lower(),
+                    defaults={'description': '', 'gn_description': value})
+                key = 'category'
+                defaults[key] = value
+            else:
+                defaults[key] = value
+
+        # Save all the modified information in the instance without triggering signals.
+        try:
+            if not defaults.get('title', title):
+                defaults['title'] = instance.title or instance.name
+            if not defaults.get('abstract', abstract):
+                defaults['abstract'] = instance.abstract or ''
+
+            to_update = {}
+            to_update['charset'] = defaults.pop('charset', instance.charset)
+            to_update['storeType'] = defaults.pop('storeType', instance.storeType)
+            for _key in ('name', 'workspace', 'store', 'storeType', 'alternate', 'typename'):
+                if _key in defaults:
+                    to_update[_key] = defaults.pop(_key)
+                else:
+                    to_update[_key] = getattr(instance, _key)
+            to_update.update(defaults)
+
+            with transaction.atomic():
+                ResourceBase.objects.filter(
+                    id=instance.resourcebase_ptr.id).update(
+                    **defaults)
+                Layer.objects.filter(id=instance.id).update(**to_update)
+
+                # Refresh from DB
+                instance.refresh_from_db()
+
+                # Pass the parameter overwrite to tell whether the
+                # geoserver_post_save_signal should upload the new file or not
+                instance.overwrite = True
+        except IntegrityError:
+            raise
+
+    logger.debug('Finalizing (permissions and notifications) Layer {0}'.format(instance))
+    instance.handle_moderated_uploads()
+    if permissions is not None:
+        logger.debug(f'Setting permissions {permissions} for {instance.name}')
+        instance.set_permissions(permissions, created=created)
+    elif created:
+        logger.debug(f'Setting default permissions for {instance.name}')
+        instance.set_default_permissions()
+    instance.save(notify=not created)
+
+    try:
+        if tempdir and os.path.exists(tempdir):
+            shutil.rmtree(tempdir)
+    finally:
+        upload.complete = True
+        upload.save()
 
 
 @app.task(

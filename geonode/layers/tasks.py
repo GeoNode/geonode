@@ -30,6 +30,7 @@ logger = get_task_logger(__name__)
 
 @app.task(
     bind=True,
+    name='geonode.layers.tasks.delete_layer',
     queue='cleanup',
     countdown=60,
     # expires=120,
@@ -48,6 +49,7 @@ def delete_layer(self, layer_id):
     try:
         layer = Layer.objects.get(id=layer_id)
     except Layer.DoesNotExist:
+        logger.warning(f"Layers {layer_id} does not exist!")
         return
     logger.debug('Deleting Layer {0}'.format(layer))
     try:
