@@ -1,6 +1,10 @@
 {% extends "base.html" %} {% load i18n %} {% load bootstrap_tags %} {% block body_outer %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/bootstrap-duallistbox.min.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/waterproof_nbs_ca.css">
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+ {% for sbn in nbs %}
 <div class="row">
     <div class="col-md-4">
         <h4 class="text-center">Bogotá D.C.</h4>
@@ -12,121 +16,145 @@
             width="750" height="150" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
     </div>
 </div>
-<h1>Create NBS</h1>
-{% for sbn in nbs %}
-
-
-<form>
-    <h3 class="text-primary">General Settings</h3>
+<div class="page-header">
+    <h1>Edit NBS</h1>
+</div>
+<form data-toggle="validator" role="form">
+    <h4 class="text-primary">General Settings</h4>
     <div class="form-group">
-        <div class="form-group">
-            <label>{% trans "Name" %}</label>
-            <input type="text" class="form-control" id="nameNBS" placeholder="Enter title">
-        </div>
-        <div class="form-group">
-            <label>{% trans "Description" %}</label>
-            <textarea id="descNBS" class="form-control" placeholder="Enter description"></textarea>
-        </div>
+        <label>Name <span class="text-danger-wp">(*)</span> </label>
+        <input type="text" value={{ sbn.name }} class="form-control" id="nameNBS" name="nameNBS" data-error="This field is required" placeholder="Enter title" required>
+        <div class="help-block with-errors"></div>
+    </div>
+    <div class="form-group">
+        <label>Description <span class="text-danger-wp">(*)</span> </label>
+        <textarea id="descNBS" class="form-control" placeholder="Enter description" data-error="This field is required" rows="4" required>{{ sbn.description }}</textarea>
+        <div class="help-block with-errors"></div>
     </div>
     <div class="form-group">
         <div class="row">
             <div class="col-md-6">
-                <label>Country</label>
-                <select id="countryNBS" class="form-control">
+                <label>Country <span class="text-danger-wp">(*)</span> </label>
+                <select id="countryNBS" class="form-control" data-error="This field is required" required>
                 </select>
+                <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-6">
-                <label>Currency type cost calculation</label>
-                <select id="currencyCost" class="form-control">
+                <label>Currency type cost calculation <span class="text-danger-wp">(*)</span> </label>
+                <select id="currencyCost" class="form-control" data-error="This field is required" required>
                 </select>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
     <div class="form-group">
         <div class="row">
             <div class="col-md-6">
-                <label>Time required to generate maximun benefit (yr)</label>
-                <input id="maxBenefitTime" type="text" class="form-control">
+                <label>Time required to generate maximun benefit (yr) <span class="text-danger-wp">(*)</span> </label>
+                <input id="maxBenefitTime" value="{{sbn.total_profits_sbn_consec_time}}"  type="text" class="form-control" data-error="This field is required" required>
+                <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-6">
-                <label>Percentage of benefit associated with interventions at time t=0</label>
-                <input id="benefitTimePorc" type="text" class="form-control">
+                <label>Percentage of benefit associated with interventions at time t=0 <span class="text-danger-wp">(*)</span> </label>
+                <input id="benefitTimePorc" value="{{sbn.profit_pct_time_inter_assoc}}" type="text" class="form-control" data-error="This field is required" required>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
     <div class="form-group">
         <div class="row">
             <div class="col-md-6">
-                <label>Consecution Time Total Benefits
-                </label>
-                <input id="totalConsecTime" type="text" class="form-control">
+                <label>Consecution Time Total Benefits <span class="text-danger-wp">(*)</span> </label>
+                <input id="totalConsecTime" value="{{ sbn.total_profits_sbn_consec_time }}"  type="text" class="form-control" data-error="This field is required" required>
+                <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-6">
-                <label>Maintenance Perodicity</label>
-                <input id="maintenancePeriod" type="text" class="form-control">
+                <label>Maintenance Perodicity <span class="text-danger-wp">(*)</span> </label>
+                <input id="maintenancePeriod" value="{{ sbn.periodicity_maitenance }}" type="text" class="form-control" data-error="This field is required" required>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
-    <h3 class="text-primary">Unit Costs</h3>
+    <h4 class="text-primary">Unit Costs</h4>
     <div class="form-group">
         <div class="row">
             <div class="col-md-4">
-                <label>Unit Implementation Cost (US$/ha)</label>
-                <input id="implementCost" type="text" class="form-control">
+                <label>Unit Implementation Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
+                <input id="implementCost" value="{{ sbn.unit_implementation_cost }}" type="text" class="form-control" data-error="This field is required" required>
+                <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-4">
-                <label>Unit Maintenace Cost (US$/ha)</label>
-                <input id="maintenanceCost" type="text" class="form-control">
+                <label>Unit Maintenace Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
+                <input id="maintenanceCost"  value="{{ sbn.unit_maintenance_cost }}" type="text" class="form-control" data-error="This field is required" required>
+                <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-4">
-                <label>Unit Oportunity Cost (US$/ha)</label>
-                <input id="oportunityCost" type="text" class="form-control">
+                <label>Unit Oportunity Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
+                <input id="oportunityCost" value="{{ sbn.unit_oportunity_cost }}"  type="text" class="form-control" data-error="This field is required" required>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
-    <h3 class="text-primary">RIOS Transition</h3>
+    <h4 class="text-primary">RIOS Transition</h4>
     <div class="form-group">
         <div class="row">
             <div class="col-md-12">
-                <select id="riosTransition" class="form-control">
+                <select id="riosTransition" class="form-control" data-error="This field is required" required>
                 </select>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
-    <h3 class="text-primary">RIOS Activities</h3>
+    <h4 class="text-primary">RIOS Activities</h4>
     <div class="form-group">
         <div class="row">
             <div class="col-md-12">
-                <select id="riosActivity" class="form-control">
+                <select id="riosActivity" class="form-control" data-error="This field is required" required>
                 </select>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
-    <h3 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h3>
-    <select multiple="multiple" id="riosTransformations" size="10" name="duallistbox_demo1[]" title="duallistbox_demo1[]">
-        </select>
-        <div class="form-group">
-            <div class="row">
-                <div class="col-md-4">
-                    <label>Restricted areas</label>
-                    <input id="restrictedArea" type="file">
-                </div>
+    <h4 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h4>
+
+    <select multiple="multiple" id="riosTransformation" size="10" name="duallistbox_demo1[]" title="duallistbox_demo1[]">
+    </select>
+    <br>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-4">
+                <label>Restricted areas <span class="text-danger-wp">(*)</span></label>
+                <input id="restrictedArea" type="file" data-error="This field is required" required>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
-    <button type="button" id="porfin" class="btn btn-primary">Submit</button>
-</form>
-<script>
+    </div>
+    <br>
+    <button type="submit" class="btn btn-primary ">Submit</button>
+</form><script>
     var token = '{{ csrf_token }}';
     var countryNbs='{{ sbn.country.pk }}';
     var currencyNbs='{{ sbn.currency.pk }}';
 </script>
-{% endfor %}
-{% endblock %} {% block extra_script %}
+{% endfor %} {% endblock body_outer %} {% block extra_script %}
 <!--ZIP reader library-->
+
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jszip.min.js"></script>
 <!--Shapefile reader library -->
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/shp.min.js"></script>
-
+<script>
+    var token = '{{ csrf_token }}';
+</script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca_edit.js"></script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jquery.bootstrap-duallistbox.min.js"></script>
+<script>
+    $(document).ready(function() {
+
+
+countryNBS
+    })
+
+
+
+</script>
 {% endblock %}
