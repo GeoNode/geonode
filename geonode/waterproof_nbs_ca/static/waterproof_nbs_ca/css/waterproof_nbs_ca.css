@@ -13,3 +13,7 @@ textarea {
 .swal2-popup {
     font-size: 2rem !important;
 }
+
+.text-danger-wp {
+    color: rgb(255, 0, 0) !important;
+}

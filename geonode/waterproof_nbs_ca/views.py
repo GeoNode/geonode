@@ -100,8 +100,11 @@ def cloneNbs(request, idx):
 
 def viewNbs(request, idx):
     filterNbs = WaterproofNbsCa.objects.filter(id=idx)
-    currencies = Currency.objects.all()
-    return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs, 'currencies': currencies})
+    currencies = Currency.objects.all();
+    riosTransition = RiosActivity.objects.filter(transition_id=2)
+    #riosTransition = riosTransformation.objects.all();
+    return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs, 'currencies': currencies, 'riosTransition': riosTransition})
+    #return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs, 'currencies': currencies})
 
 def loadCurrency(request):
     currency = request.GET.get('currency')
