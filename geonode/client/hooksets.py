@@ -104,9 +104,6 @@ class BaseHookSet(object):
 
     # Map Persisting
     def viewer_json(self, conf, context=None):
-        if not context:
-            context = {}
-
         if isinstance(conf, string_types):
             conf = json.loads(conf)
         return conf

@@ -198,11 +198,11 @@ def geoserver_create_style(
                         name, workspace=settings.DEFAULT_WORKSPACE) or gs_catalog.get_style(name)
                 except Exception:
                     logger.warn('Could not retreive the Layer default Style name')
-                    # what are we doing with this var?
-                    msg = 'No style could be created for the layer, falling back to POINT default one'
                     try:
                         style = gs_catalog.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
                             gs_catalog.get_style(name + '_layer')
+                        logger.warn(
+                            'No style could be created for the layer, falling back to POINT default one')
                     except Exception as e:
                         style = gs_catalog.get_style('point')
                         logger.warn(str(e))

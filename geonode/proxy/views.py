@@ -292,7 +292,6 @@ def download(request, resourceid, sender=Layer):
                     for lyr in layer_files:
                         if storage.exists(str(lyr.file)):
                             geonode_layer_path = storage.path(str(lyr.file))
-                            base_filename, original_ext = os.path.splitext(geonode_layer_path)
                             shutil.copy2(geonode_layer_path, target_folder)
                         else:
                             return HttpResponse(

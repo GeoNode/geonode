@@ -438,23 +438,6 @@ class ResourceBaseForm(TranslationModelForm):
             self['keywords'].field.disabled = True
 
     def clean_keywords(self):
-        from html.entities import codepoint2name
-
-        def unicode_escape(unistr):
-            """
-            Tidys up unicode entities into HTML friendly entities
-            Takes a unicode string as an argument
-            Returns a unicode string
-            """
-            escaped = ""
-            for char in unistr:
-                if ord(char) in codepoint2name:
-                    name = codepoint2name.get(ord(char))
-                    escaped += '&%s;' % name if 'nbsp' not in name else ' '
-                else:
-                    escaped += char
-            return escaped
-
         keywords = self.cleaned_data['keywords']
         _unsescaped_kwds = []
         for k in keywords:
