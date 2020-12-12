@@ -124,8 +124,8 @@ class Currency(models.Model):
         verbose_name=_('Symbol'),
     )
 
-    factor = models.FloatField(
-        default=0,
+    factor = models.CharField(
+        max_length=50,
         verbose_name=_('Factor'),
     )
 
@@ -150,7 +150,7 @@ class WaterproofNbsCa(models.Model):
     )
 
     description = models.CharField(
-        max_length=1024,
+        max_length=2048,
         verbose_name=_('Description'),
     )
 
@@ -159,32 +159,32 @@ class WaterproofNbsCa(models.Model):
         verbose_name=_('Time maximum benefit'),
     )
 
-    profit_pct_time_inter_assoc = models.FloatField(
+    profit_pct_time_inter_assoc = models.TextField(
         default=0,
         verbose_name=_('Percentage of benefit associated with interventions at time t=0'),
     )
 
-    total_profits_sbn_consec_time = models.FloatField(
+    total_profits_sbn_consec_time = models.TextField(
         default=0,
         verbose_name=_('Procurement time of total SBN benefits'),
     )
 
-    unit_implementation_cost = models.FloatField(
+    unit_implementation_cost = models.TextField(
         default=0,
         verbose_name=_('Unit implementation costs (US $/ha)'),
     )
 
-    unit_maintenance_cost = models.FloatField(
+    unit_maintenance_cost = models.TextField(
         default=0,
         verbose_name=_('Unit maintenance costs (US $/ha)'),
     )
 
-    periodicity_maitenance = models.IntegerField(
+    periodicity_maitenance = models.TextField(
         default=0,
         verbose_name=_('Periodicity of maintenance (year)'),
     )
 
-    unit_oportunity_cost = models.FloatField(
+    unit_oportunity_cost = models.TextField(
         default=0,
         verbose_name=_('Unit oportunity costs (US $/ha)'),
     )
