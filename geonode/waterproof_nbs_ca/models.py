@@ -32,7 +32,7 @@ class TramsformationShapefile(models.Model):
     name = models.CharField(max_length=255)
     activity = models.CharField(max_length=255)
     action = models.CharField(max_length=255)
-    polygon = models.MultiPolygonField()
+    area = models.MultiPolygonField()
 
 
 class RiosTransition(models.Model):
@@ -74,7 +74,11 @@ class RiosTransformation(models.Model):
         max_length=1024,
         verbose_name=_('Description'),
     )
-
+    unique_id= models.CharField(
+        max_length=1024,
+        verbose_name=_('Unique_id'),
+    )
+    
     def __str__(self):
         return "%s" % self.name
 
