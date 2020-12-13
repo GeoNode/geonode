@@ -41,9 +41,6 @@ $(function () {
         console.log('submit event loaded');
         var formData = new FormData();
         $('#submit').on('click', function () {
-            var file = $('#restrictedArea')[0].files[0];
-            // validate extension file
-            var extension = validExtension(file);
             // NBS name
             formData.append('nameNBS', $('#nameNBS').val());
             // NBS description
@@ -68,28 +65,71 @@ $(function () {
             formData.append('oportunityCost', $('#oportunityCost').val());
             // NBS RIOS Transformations selected
             formData.append('riosTransformation', $('#riosTransformation').val());
-            // NBS restricted area geographic file
-            formData.append('restrictedArea', $('#restrictedArea')[0].files[0]);
-            // Type action for view
-            formData.append('action', 'create-nbs');
-            // Required session token
-            formData.append('csrfmiddlewaretoken', token);
-
-            $.ajax({
-                type: 'POST',
-                url: '/waterproof_nbs_ca/create/',
-                data: formData,
-                cache: false,
-                processData: false,
-                contentType: false,
-                enctype: 'multipart/form-data',
-                success: function () {
-                    alert('The post has been created!')
-                },
-                error: function (xhr, errmsg, err) {
-                    console.log(xhr.status + ":" + xhr.responseText)
-                }
-            })
+            var file = $('#restrictedArea')[0].files[0];
+            // validate extension file
+            var extension = validExtension(file);
+            if (extension.extension == 'geojson') { //GeoJSON
+                // Restricted area extension file
+                formData.append('extension', 'geojson');
+                // NBS restricted area geographic file
+                formData.append('restrictedArea', $('#restrictedArea')[0].files[0]);
+                // Type action for view
+                formData.append('action', 'create-nbs');
+                // Required session token
+                formData.append('csrfmiddlewaretoken', token);
+                $.ajax({
+                    type: 'POST',
+                    url: '/waterproof_nbs_ca/create/',
+                    data: formData,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    enctype: 'multipart/form-data',
+                    success: function () {
+                        alert('The post has been created!')
+                    },
+                    error: function (xhr, errmsg, err) {
+                        console.log(xhr.status + ":" + xhr.responseText)
+                    }
+                });
+            }
+            else { // ZIP
+                var reader = new FileReader();
+                reader.onload = function (evt) {
+                    var contents = evt.target.result;
+                    shp(contents).then(function (shpToGeojson) {
+                        var restrictedArea = JSON.stringify(shpToGeojson);
+                        // Restricted area extension file
+                        formData.append('extension', 'zip');
+                        // NBS restricted area geographic file
+                        formData.append('restrictedArea', restrictedArea);
+                        // Type action for view
+                        formData.append('action', 'create-nbs');
+                        // Required session token
+                        formData.append('csrfmiddlewaretoken', token);
+                        $.ajax({
+                            type: 'POST',
+                            url: '/waterproof_nbs_ca/create/',
+                            data: formData,
+                            cache: false,
+                            processData: false,
+                            contentType: false,
+                            enctype: 'multipart/form-data',
+                            success: function () {
+                                alert('The post has been created!')
+                            },
+                            error: function (xhr, errmsg, err) {
+                                console.log(xhr.status + ":" + xhr.responseText)
+                            }
+                        });
+                    });
+                };
+                reader.onerror = function (event) {
+                    console.error("File could not be read! Code " + event.target.error.code);
+                    //alert("El archivo no pudo ser cargado: " + event.target.error.code);
+                };
+                reader.readAsArrayBuffer(file);
+            }
         });
     };
     /** 
@@ -155,7 +195,7 @@ $(function () {
                                     else {
                                         shp(contents).then(function (shpToGeojson) {
                                             geojson = shpToGeojson;
-                                            loadShapefile(geojson, file.name);
+                                            //loadShapefile(geojson, file.name);
                                         }).catch(function (e) {
                                             Swal.fire({
                                                 icon: 'error',
