@@ -198,7 +198,7 @@ def extract_name_from_sld(gs_catalog, sld, sld_file=None):
             sld = open(sld_file, "rb").read()
             if isinstance(sld, string_types):
                 sld = sld.encode('utf-8')
-            dom = dlxml.parse(sld_file)
+            dom = dlxml.parse(sld)
     except Exception:
         logger.exception("The uploaded SLD file is not valid XML")
         raise Exception(
@@ -1713,7 +1713,6 @@ def _stylefilterparams_geowebcache_layer(layer_name):
         return
 
     # check/write GWC filter parameters
-    import xml.etree.ElementTree as ET
     body = None
     tree = dlxml.fromstring(_)
     param_filters = tree.findall('parameterFilters')
@@ -1808,7 +1807,7 @@ def style_update(request, url):
         # add style in GN and associate it to layer
         if request.method == 'DELETE':
             if style_name:
-                style = Style.objects.filter(name=style_name).delete()
+                Style.objects.filter(name=style_name).delete()
         if request.method == 'POST':
             style = None
             if style_name and not re.match(temp_style_name_regex, style_name):
@@ -2078,6 +2077,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         if not smurl and getattr(settings, 'THUMBNAIL_GENERATOR_DEFAULT_BG', None):
             smurl = settings.THUMBNAIL_GENERATOR_DEFAULT_BG
         layers = None
+        thumbnail_tile_size = 256
         thumbnail_create_url = None
         if 'thumbnail_create_url' in request_body:
             thumbnail_create_url = request_body['thumbnail_create_url']
@@ -2132,31 +2132,31 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         bounds = wgs84_bbox[0:4]
         # Fixes bounds to tiles system
         bounds[0] = _v(bounds[0], x=True, target_srid=4326)
-        bounds[2] = _v(bounds[2], x=True, target_srid=4326)
+        bounds[1] = _v(bounds[1], x=True, target_srid=4326)
         if bounds[3] > 85.051:
             bounds[3] = 85.0
-        if bounds[1] < -85.051:
-            bounds[1] = -85.0
+        if bounds[2] < -85.051:
+            bounds[2] = -85.0
         if 'zoom' in request_body:
             zoom = int(request_body['zoom'])
         else:
             zoom = bounds_to_zoom_level(bounds, width, height)
 
-        t_ll = mercantile.tile(bounds[0], bounds[1], zoom)
-        t_ur = mercantile.tile(bounds[2], bounds[3], zoom)
+        t_ll = mercantile.tile(bounds[0], bounds[2], zoom)
+        t_ur = mercantile.tile(bounds[1], bounds[3], zoom)
 
         numberOfRows = t_ll.y - t_ur.y + 1
 
         bounds_ll = mercantile.bounds(t_ll)
         bounds_ur = mercantile.bounds(t_ur)
 
-        lat_res = abs(256 / (bounds_ur.north - bounds_ur.south))
-        lng_res = abs(256 / (bounds_ll.east - bounds_ll.west))
+        lat_res = abs(thumbnail_tile_size / (bounds_ur.north - bounds_ur.south))
+        lng_res = abs(thumbnail_tile_size / (bounds_ll.east - bounds_ll.west))
         top = round(abs(bounds_ur.north - bounds[3]) * -lat_res)
         left = round(abs(bounds_ll.west - bounds[0]) * -lng_res)
 
         tmp_tile = mercantile.tile(bounds[0], bounds[3], zoom)
-        width_acc = 256 + int(left)
+        width_acc = thumbnail_tile_size + int(left)
         first_row = [tmp_tile]
         # Add tiles to fill image width
         _n_step = 0
@@ -2167,7 +2167,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
                 lng = -180.0
             tmp_tile = mercantile.tile(lng, bounds[3], zoom)
             first_row.append(tmp_tile)
-            width_acc += 256
+            width_acc += thumbnail_tile_size
             _n_step = _n_step + 1
         # Build Image Request Template
         _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
@@ -2177,20 +2177,22 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
 
         for row in range(0, numberOfRows):
             for col in range(0, len(first_row)):
-                box = [col * 256, row * 256]
+                box = [col * thumbnail_tile_size, row * thumbnail_tile_size]
                 t = first_row[col]
                 y = t.y + row
                 if smurl:
                     imgurl = smurl.format(z=t.z, x=t.x, y=y)
-                    _img_request_template += _img_src_template.format(ogc_location=imgurl,
-                                                                      height=256, width=256,
-                                                                      left=box[0], top=box[1])
+                    _img_request_template += _img_src_template.format(
+                        ogc_location=imgurl,
+                        height=thumbnail_tile_size,
+                        width=thumbnail_tile_size,
+                        left=box[0], top=box[1])
                 xy_bounds = mercantile.xy_bounds(t.x, y, t.z)
                 bbox = ",".join([str(xy_bounds.left), str(xy_bounds.bottom),
                                  str(xy_bounds.right), str(xy_bounds.top)])
                 params = {
-                    'width': 256,
-                    'height': 256,
+                    'width': thumbnail_tile_size,
+                    'height': thumbnail_tile_size,
                     'transparent': True,
                     'bbox': bbox,
                     'crs': 'EPSG:3857',
@@ -2199,7 +2201,8 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
                 _p = "&".join("%s=%s" % item for item in params.items())
                 _img_request_template += \
                     _img_src_template.format(ogc_location=(thumbnail_create_url + '&' + _p),
-                                             height=256, width=256,
+                                             height=thumbnail_tile_size,
+                                             width=thumbnail_tile_size,
                                              left=box[0], top=box[1])
         _img_request_template += "</div></div>"
         image = _render_thumbnail(_img_request_template, width=width, height=height)
@@ -2214,7 +2217,6 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
 def _fixup_ows_url(thumb_spec):
     # @HACK - for whatever reason, a map's maplayers ows_url contains only /geoserver/wms
     # so rendering of thumbnails fails - replace those uri's with full geoserver URL
-    import re
     gspath = '"' + ogc_server_settings.public_url  # this should be in img src attributes
     repl = '"' + ogc_server_settings.LOCATION
     return re.sub(gspath, repl, thumb_spec)
