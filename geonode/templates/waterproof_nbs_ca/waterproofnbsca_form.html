@@ -93,6 +93,38 @@
             </div>
         </div>
     </div>
+    <h4 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h4>
+    <div class="form-group">
+        <div class="row">
+            {% for tran in transitions %}
+            <div class="col-md-4">
+                <div class="panel panel-info">
+                    <div class="panel-heading">{{ tran.name }}</div>
+                    <div class="panel-body">
+                        {% for riosa in riosActivity %}
+                            {% if tran.pk == riosa.transition_id %} 
+                                <h5>{{ riosa.name }}</h5>
+                                {% for riost in  riosTransformation %}
+                                {% if riosa.pk == riost.activity_id %} 
+                                <ul>
+                                    <li class="list-unstyled">
+                                        <div class="checkbox">
+                                            <label><input name="itemRT" type="checkbox" id="itemRT{{riost.pk}}" value="{{ riost.pk }}">{{riost.name}}</label>
+                                        </div>
+                                    </li>
+                                </ul>
+                                    
+                                {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+<!--
     <h4 class="text-primary">RIOS Transition</h4>
     <div class="form-group">
         <div class="row">
@@ -117,7 +149,7 @@
 
     <select multiple="multiple" id="riosTransformation" size="10" name="duallistbox_demo1[]" title="duallistbox_demo1[]">
     </select>
-    <br>
+-->
     <div class="form-group">
         <div class="row">
             <div class="col-md-4">
@@ -129,6 +161,8 @@
     </div>
     <br>
     <button type="submit" class="btn btn-primary ">Submit</button>
+    <button type="button" class="btn btn-primary" id="getAllValues">Get Values</button>
+
 </form>
 {% endblock %} {% block extra_script %}
 <!--ZIP reader library-->
@@ -141,4 +175,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js" integrity="sha512-dTu0vJs5ndrd3kPwnYixvOCsvef5SGYW/zSSK4bcjRBcZHzqThq7pt7PmCv55yb8iBvni0TSeIDV8RYKjZL36A==" crossorigin="anonymous"></script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jquery.bootstrap-duallistbox.min.js"></script>
+<script>
+ $(document).ready(function() {
+    var inputTypes = [];
+
+           
+
+            $("#getAllValues" ).click(function() {
+                $('input[name=itemRT]:checked').each(function(){
+                    inputTypes.push($(this).val());
+                });
+                console.log(inputTypes)
+            });
+   
+    })
+</script>
 {% endblock %}
