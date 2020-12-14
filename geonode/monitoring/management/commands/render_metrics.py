@@ -22,7 +22,7 @@ import pytz
 import logging
 import timeout_decorator
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 from six import string_types
 
 from django.core.management.base import BaseCommand, CommandError
