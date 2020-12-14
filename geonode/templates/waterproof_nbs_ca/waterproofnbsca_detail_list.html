@@ -129,9 +129,9 @@
 <h4 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h4>
 <ul class="list-group">
 
-    {% for cur in riosTransition %}
+    {% for transformation in sbn.rios_transformations.all %}
     <li class="list-group-item">
-        <span class="badge">{{ cur.description }}</span> {{ cur.name }}
+        <span class="badge">{{ transformation.description }}</span> {{ transformation.name }}
     </li>
     {% endfor %}
 
@@ -142,7 +142,6 @@
 
 <script>
     $(document).ready(function() {
-
         $("#currenciesComapreSelect").change(function() {
             var optionSelected = $(this).find("option:selected");
             var ValueSelected = optionSelected.val();
@@ -155,8 +154,6 @@
             $('#a_unit_maintenance_cost').val(maintenance * ValueSelected);
             $('#a_unit_oportunity_cost').val(oportunity * ValueSelected);
         });
-
-
     });
 </script>
 {% endblock %}

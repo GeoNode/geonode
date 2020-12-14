@@ -116,21 +116,117 @@ def editNbs(request, idx):
         filterNbs = WaterproofNbsCa.objects.filter(id=idx)
         return render(request, 'waterproof_nbs_ca/waterproofnbsca_edit.html', {'nbs': filterNbs})
     else:
-        filterNbs = WaterproofNbsCa.objects.filter(id=idx)
-        return render(request, 'waterproof_nbs_ca/waterproofnbsca_edit.html', {'nbs': filterNbs}) 
+        # Get all parameters from form
+        nameNBS = request.POST.get('nameNBS')
+        descNBS = request.POST.get('descNBS')
+        countryNBS = request.POST.get('countryNBS')
+        currencyCost = request.POST.get('currencyCost')
+        maxBenefitTime = request.POST.get('maxBenefitTime')
+        benefitTimePorc = request.POST.get('benefitTimePorc')
+        totalConsecTime = request.POST.get('totalConsecTime')
+        maintenancePeriod = request.POST.get('maintenancePeriod')
+        implementCost = request.POST.get('implementCost')
+        maintenanceCost = request.POST.get('maintenanceCost')
+        oportunityCost = request.POST.get('oportunityCost')
+        #transformations = request.POST.get('riosTransformation')
+        #extensionFile = request.POST.get('extension')
+        #riosTransformation = transformations.split(",")
+        """
+        if (extensionFile == 'zip'):  # Zip shapefile
+            restrictedArea = request.POST.get('restrictedArea')  # request.FILES used for to get files
+            areaJson = json.loads(restrictedArea)
+        else:  # GeoJSON
+            restrictedArea = request.FILES.get('restrictedArea')  # request.FILES used for to get files
+            areaJson = json.load(restrictedArea)
+        areas = []
+
+        for feature in areaJson['features']:
+            areaObject = {}
+            areaObject['name'] = areaJson['fileName']
+            areaObject['action'] = feature['properties']['action']
+            areaObject['activity'] = feature['properties']['activity_n']
+            areaObject['geometry'] = GEOSGeometry(str(feature['geometry']))
+            areas.append(areaObject)
+        """
+        country = Countries.objects.get(id=countryNBS)
+        currency = Currency.objects.get(id=currencyCost)
+        # transformation = RiosTransformation.objects.get(id=1)
+        nbs = WaterproofNbsCa.objects.get(id=idx)
+        nbs.name = nameNBS
+        nbs.description = descNBS,
+        # nbs.max_benefit_req_time=type(int(maxBenefitTime)),
+        nbs.total_profits_sbn_consec_time = totalConsecTime
+        nbs.profit_pct_time_inter_assoc = benefitTimePorc,
+        nbs.unit_implementation_cost = implementCost,
+        nbs.unit_maintenance_cost = maintenanceCost,
+        nbs.periodicity_maitenance = maintenancePeriod,
+        nbs.unit_oportunity_cost = oportunityCost,
+        nbs.save()
+        return render(request, 'waterproof_nbs_ca/waterproofnbsca_form.html')
+
 
 def cloneNbs(request, idx):
-    filterNbs = WaterproofNbsCa.objects.filter(id=idx)
-    return render(request, 'waterproof_nbs_ca/waterproofnbsca_clone.html', {'nbs': filterNbs})
+    if request.method == 'GET':
+        filterNbs = WaterproofNbsCa.objects.filter(id=idx)
+        return render(request, 'waterproof_nbs_ca/waterproofnbsca_clone.html', {'nbs': filterNbs})
+    else:
+        # Get all parameters from form
+        nameNBS = request.POST.get('nameNBS')
+        descNBS = request.POST.get('descNBS')
+        countryNBS = request.POST.get('countryNBS')
+        currencyCost = request.POST.get('currencyCost')
+        maxBenefitTime = request.POST.get('maxBenefitTime')
+        benefitTimePorc = request.POST.get('benefitTimePorc')
+        totalConsecTime = request.POST.get('totalConsecTime')
+        maintenancePeriod = request.POST.get('maintenancePeriod')
+        implementCost = request.POST.get('implementCost')
+        maintenanceCost = request.POST.get('maintenanceCost')
+        oportunityCost = request.POST.get('oportunityCost')
+        transformations = request.POST.get('riosTransformation')
+        #extensionFile = request.POST.get('extension')
+        riosTransformation = transformations.split(",")
+        """
+        if (extensionFile == 'zip'):  # Zip shapefile
+            restrictedArea = request.POST.get('restrictedArea')  # request.FILES used for to get files
+            areaJson = json.loads(restrictedArea)
+        else:  # GeoJSON
+            restrictedArea = request.FILES.get('restrictedArea')  # request.FILES used for to get files
+            areaJson = json.load(restrictedArea)
+        areas = []
+
+        for feature in areaJson['features']:
+            areaObject = {}
+            areaObject['name'] = areaJson['fileName']
+            areaObject['action'] = feature['properties']['action']
+            areaObject['activity'] = feature['properties']['activity_n']
+            areaObject['geometry'] = GEOSGeometry(str(feature['geometry']))
+            areas.append(areaObject)
+        """
+        country = Countries.objects.get(id=countryNBS)
+        currency = Currency.objects.get(id=currencyCost)
+        # transformation = RiosTransformation.objects.get(id=1)
+        nbs = WaterproofNbsCa(
+            country=country,
+            currency=currency,
+            name=nameNBS,
+            description=descNBS,
+            max_benefit_req_time=maxBenefitTime,
+            total_profits_sbn_consec_time=totalConsecTime,
+            profit_pct_time_inter_assoc=benefitTimePorc,
+            unit_implementation_cost=implementCost,
+            unit_maintenance_cost=maintenanceCost,
+            periodicity_maitenance=maintenancePeriod,
+            unit_oportunity_cost=oportunityCost,
+        )
+        nbs.save()
+        return render(request, 'waterproof_nbs_ca/waterproofnbsca_form.html')
 
 
 def viewNbs(request, idx):
     filterNbs = WaterproofNbsCa.objects.filter(id=idx)
-    currencies = Currency.objects.all();
+    currencies = Currency.objects.all()
     riosTransition = RiosActivity.objects.filter(transition_id=2)
-    #riosTransition = riosTransformation.objects.all();
     return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs, 'currencies': currencies, 'riosTransition': riosTransition})
-    #return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs, 'currencies': currencies})
 
 
 def loadCurrency(request):
