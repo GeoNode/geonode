@@ -31,7 +31,7 @@ from celery.utils.log import get_task_logger
 
 from geonode.celery_app import app
 from geonode import GeoNodeException
-from geonode.layers.models import Layer
+from geonode.layers.models import Layer, UploadSession
 from geonode.layers.utils import resolve_regions
 from geonode.layers.metadata import set_metadata
 from geonode.base.models import (
@@ -385,15 +385,18 @@ def geoserver_finalize_upload(
     elif created:
         logger.debug(f'Setting default permissions for {instance.name}')
         instance.set_default_permissions()
+    try:
+        # Update the upload sessions
+        geonode_upload_session, created = UploadSession.objects.get_or_create(resource=instance)
+        instance.upload_session = geonode_upload_session
+    except Exception as e:
+        logger.exception(e)
     instance.save(notify=not created)
 
-    logger.debug("... Creating Default Resource Links for Layer [%s]" % (instance.alternate))
-    set_resource_default_links(instance, instance, prune=True)
-
-    logger.debug("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
-    create_gs_thumbnail(instance, overwrite=True)
-
     try:
+        logger.debug(f"... Creating Default Resource Links for Layer {instance.alternate}")
+        set_resource_default_links(instance, instance, prune=True)
+        logger.debug(f"... Cleaning up the temporary folders {tempdir}")
         if tempdir and os.path.exists(tempdir):
             shutil.rmtree(tempdir)
     finally:
