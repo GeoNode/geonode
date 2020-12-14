@@ -147,7 +147,7 @@ def geoserver_create_style(
 
     if instance:
         publishing = gs_catalog.get_layer(name)
-        if sld_file:
+        if sld_file and os.path.exists(sld_file) and os.access(sld_file, os.R_OK):
             f = None
             if os.path.isfile(sld_file):
                 try:
@@ -260,7 +260,7 @@ def geoserver_finalize_upload(
     elif not isinstance(xml_file, six.string_types):
         xml_file = None
 
-    if xml_file:
+    if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
         instance.metadata_uploaded = True
         identifier, vals, regions, keywords = set_metadata(
             open(xml_file).read())
