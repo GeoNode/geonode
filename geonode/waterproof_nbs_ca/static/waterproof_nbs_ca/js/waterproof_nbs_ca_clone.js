@@ -1,5 +1,5 @@
 /**
- * @file Create form validations
+ * @file Edit form validations
  * @author Luis Saltron
  * @version 1.0
  */
@@ -12,6 +12,7 @@ $(function () {
         var transitionsDropdown = $('#riosTransition');
         var activitiesDropdown = $('#riosActivity');
         var transformDropdown = $('#riosTransformation');
+        var loadAreaChecked = $('#loadArea');
         // Init transformations selection widget
         transformDropdown.bootstrapDualListbox({
             preserveSelectionOnMove: 'moved',
@@ -22,6 +23,15 @@ $(function () {
             e.preventDefault();
             $("#wrapper").toggleClass("toggled");
         });
+        // Event to show or hide restricted area edition
+        loadAreaChecked.click(function (e) {
+            var checked = e.currentTarget.checked
+            if (checked)
+                $('#areas').show();
+            else
+                $('#areas').hide();
+        });
+
         // Populate countries options
         fillCountryDropdown(countryDropdown);
         // Populate currencies options
@@ -41,6 +51,8 @@ $(function () {
         console.log('submit event loaded');
         var formData = new FormData();
         $('#submit').on('click', function () {
+            var loadAreaChecked=('#loadArea');
+            var sbnId = $('#sbnId').val();
             // NBS name
             formData.append('nameNBS', $('#nameNBS').val());
             // NBS description
@@ -65,21 +77,91 @@ $(function () {
             formData.append('oportunityCost', $('#oportunityCost').val());
             // NBS RIOS Transformations selected
             formData.append('riosTransformation', $('#riosTransformation').val());
-            var file = $('#restrictedArea')[0].files[0];
-            // validate extension file
-            var extension = validExtension(file);
-            if (extension.extension == 'geojson') { //GeoJSON
-                // Restricted area extension file
-                formData.append('extension', 'geojson');
-                // NBS restricted area geographic file
-                formData.append('restrictedArea', $('#restrictedArea')[0].files[0]);
+            if (loadAreaChecked[0].checked) {
+                var file = $('#restrictedArea')[0].files[0];
+                // validate extension file
+                var extension = validExtension(file);
+                if (extension.extension == 'geojson') { //GeoJSON
+                    // Restricted area extension file
+                    formData.append('extension', 'geojson');
+                    // NBS restricted area geographic file
+                    formData.append('restrictedArea', $('#restrictedArea')[0].files[0]);
+                    // Type action for view
+                    formData.append('action', 'create-nbs');
+                    // Required session token
+                    formData.append('csrfmiddlewaretoken', token);
+                    $.ajax({
+                        type: 'POST',
+                        url: '/waterproof_nbs_ca/edit/',
+                        data: formData,
+                        cache: false,
+                        processData: false,
+                        contentType: false,
+                        enctype: 'multipart/form-data',
+                        success: function () {
+                            Swal.fire(
+                                'Excelente',
+                                'La SBN ha sido editada con éxito',
+                                'success'
+                            )
+                            location.href = "/waterproof_nbs_ca/"
+                        },
+                        error: function (xhr, errmsg, err) {
+                            console.log(xhr.status + ":" + xhr.responseText)
+                        }
+                    });
+                }
+                else { // ZIP
+                    var reader = new FileReader();
+                    reader.onload = function (evt) {
+                        var contents = evt.target.result;
+                        shp(contents).then(function (shpToGeojson) {
+                            var restrictedArea = JSON.stringify(shpToGeojson);
+                            // Restricted area extension file
+                            formData.append('extension', 'zip');
+                            // NBS restricted area geographic file
+                            formData.append('restrictedArea', restrictedArea);
+                            // Type action for view
+                            formData.append('action', 'create-nbs');
+                            // Required session token
+                            formData.append('csrfmiddlewaretoken', token);
+                            $.ajax({
+                                type: 'POST',
+                                url: '/waterproof_nbs_ca/edit/' + sbnId,
+                                data: formData,
+                                cache: false,
+                                processData: false,
+                                contentType: false,
+                                enctype: 'multipart/form-data',
+                                success: function () {
+                                    Swal.fire(
+                                        'Excelente',
+                                        'La SBN ha sido editada con éxito',
+                                        'success'
+                                    )
+                                    setTimeout(function () { location.href = "/waterproof_nbs_ca/"; }, 1000);
+                                },
+                                error: function (xhr, errmsg, err) {
+                                    console.log(xhr.status + ":" + xhr.responseText)
+                                }
+                            });
+                        });
+                    };
+                    reader.onerror = function (event) {
+                        console.error("File could not be read! Code " + event.target.error.code);
+                        //alert("El archivo no pudo ser cargado: " + event.target.error.code);
+                    };
+                    reader.readAsArrayBuffer(file);
+                }
+            }
+            else {
                 // Type action for view
-                formData.append('action', 'create-nbs');
+                formData.append('action', 'clone-nbs');
                 // Required session token
                 formData.append('csrfmiddlewaretoken', token);
                 $.ajax({
                     type: 'POST',
-                    url: '/waterproof_nbs_ca/create/',
+                    url: '/waterproof_nbs_ca/clone/' + sbnId,
                     data: formData,
                     cache: false,
                     processData: false,
@@ -88,57 +170,15 @@ $(function () {
                     success: function () {
                         Swal.fire(
                             'Excelente',
-                            'La SBN ha sido guardada con éxito',
+                            'La SBN ha sido editada con éxito',
                             'success'
                         )
-                        setTimeout(function(){ location.href="/waterproof_nbs_ca/"; }, 1000);
+                        setTimeout(function () { location.href = "/waterproof_nbs_ca/"; }, 1000);
                     },
                     error: function (xhr, errmsg, err) {
                         console.log(xhr.status + ":" + xhr.responseText)
                     }
                 });
-            }
-            else { // ZIP
-                var reader = new FileReader();
-                reader.onload = function (evt) {
-                    var contents = evt.target.result;
-                    shp(contents).then(function (shpToGeojson) {
-                        var restrictedArea = JSON.stringify(shpToGeojson);
-                        // Restricted area extension file
-                        formData.append('extension', 'zip');
-                        // NBS restricted area geographic file
-                        formData.append('restrictedArea', restrictedArea);
-                        // Type action for view
-                        formData.append('action', 'create-nbs');
-                        // Required session token
-                        formData.append('csrfmiddlewaretoken', token);
-                        $.ajax({
-                            type: 'POST',
-                            url: '/waterproof_nbs_ca/create/',
-                            data: formData,
-                            cache: false,
-                            processData: false,
-                            contentType: false,
-                            enctype: 'multipart/form-data',
-                            success: function () {
-                                Swal.fire(
-                                    'Excelente',
-                                    'La SBN ha sido guardada con éxito',
-                                    'success'
-                                )
-                                setTimeout(function(){ location.href="/waterproof_nbs_ca/"; }, 1000);
-                            },
-                            error: function (xhr, errmsg, err) {
-                                console.log(xhr.status + ":" + xhr.responseText)
-                            }
-                        });
-                    });
-                };
-                reader.onerror = function (event) {
-                    console.error("File could not be read! Code " + event.target.error.code);
-                    //alert("El archivo no pudo ser cargado: " + event.target.error.code);
-                };
-                reader.readAsArrayBuffer(file);
             }
         });
     };
@@ -205,7 +245,7 @@ $(function () {
                                     else {
                                         shp(contents).then(function (shpToGeojson) {
                                             geojson = shpToGeojson;
-                                            //loadShapefile(geojson, file.name);
+                                            loadShapefile(geojson, file.name);
                                         }).catch(function (e) {
                                             Swal.fire({
                                                 icon: 'error',
@@ -271,11 +311,11 @@ $(function () {
 
     };
     /** 
-   * Change currency option based in country selected
-   * @param {HTML} countryDropdown    Country dropdown
-   * @param {HTML} currencyDropdown   Currency  dropdown
-   *
-   */
+  * Change currency option based in country selected
+  * @param {HTML} countryDropdown    Country dropdown
+  * @param {HTML} currencyDropdown   Currency  dropdown
+  *
+  */
     changeCountryEvent = function (countryDropdown, currencyDropdown) {
         // Rios transitions dropdown listener
         countryDropdown.change(function () {
@@ -332,7 +372,7 @@ $(function () {
                     $.each(result, function (index, activity) {
                         activDropdown.append($("<option />").val(activity.pk).text(activity.fields.name));
                     });
-                    activDropdown.val($('#' + activDropdown[0].id + ' option:first').val()).change();
+                    //activDropdown.val($('#' + activDropdown[0].id + ' option:first').val()).change();
                 }
             });
         });
@@ -368,7 +408,6 @@ $(function () {
                     $.each(result, function (index, transformation) {
                         transformDropdown.append($("<option />").val(transformation.pk).text(transformation.fields.name));
                         transformDropdown.bootstrapDualListbox('refresh');
-
                     });
                 }
             });
@@ -387,6 +426,7 @@ $(function () {
                 $.each(result, function (index, country) {
                     dropdown.append($("<option />").val(country.pk).text(country.fields.name));
                 });
+                dropdown.val(countryNbs).change();
             }
         });
     };
