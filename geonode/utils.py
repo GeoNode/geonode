@@ -677,7 +677,6 @@ class GXPMapBase(object):
         else:
             (def_map_config, def_map_layers) = default_map_config(None)
             config = def_map_config
-            layers = def_map_layers
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 

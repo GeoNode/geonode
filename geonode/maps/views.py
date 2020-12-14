@@ -17,14 +17,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import six
 import math
 import logging
-import six
-from urllib.parse import quote, urlsplit
 import traceback
+from urllib.parse import quote, urlsplit
 from itertools import chain
-from six import string_types
 
 from guardian.shortcuts import get_perms
 
@@ -668,7 +666,7 @@ def map_edit(request, mapid, template='maps/map_edit.html'):
 
 
 def clean_config(conf):
-    if isinstance(conf, string_types):
+    if isinstance(conf, six.string_types):
         config = json.loads(conf)
         config_extras = [
             "tools",
@@ -942,8 +940,6 @@ def add_layers_to_map_config(
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             if layer.has_time:
                 from geonode.geoserver.views import get_capabilities
-                workspace, layername = layer.alternate.split(
-                    ":") if ":" in layer.alternate else (None, layer.alternate)
                 # WARNING Please make sure to have enabled DJANGO CACHE as per
                 # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
                 wms_capabilities_resp = get_capabilities(

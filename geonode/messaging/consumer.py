@@ -188,18 +188,17 @@ def _update_layer_data(body, last_message):
     if not last_message:
         last_message = message
         update_layer = True
+    last_workspace = message["source"]["workspace"] if "workspace" in message["source"] else None
+    last_store = message["source"]["store"] if "store" in message["source"] else None
+    last_filter = last_message["source"]["name"]
+    if (last_workspace, last_store, last_filter) != (workspace, store, filter):
+        update_layer = True
     else:
-        last_workspace = message["source"]["workspace"] if "workspace" in message["source"] else None
-        last_store = message["source"]["store"] if "store" in message["source"] else None
-        last_filter = last_message["source"]["name"]
-        if (last_workspace, last_store, last_filter) != (workspace, store, filter):
+        timestamp_t1 = datetime.strptime(last_message["timestamp"], '%Y-%m-%dT%H:%MZ')
+        timestamp_t2 = datetime.strptime(message["timestamp"], '%Y-%m-%dT%H:%MZ')
+        timestamp_delta = timestamp_t2 - timestamp_t1
+        if timestamp_t2 > timestamp_t1 and timestamp_delta.seconds > 60:
             update_layer = True
-        else:
-            timestamp_t1 = datetime.strptime(last_message["timestamp"], '%Y-%m-%dT%H:%MZ')
-            timestamp_t2 = datetime.strptime(message["timestamp"], '%Y-%m-%dT%H:%MZ')
-            timestamp_delta = timestamp_t2 - timestamp_t1
-            if timestamp_t2 > timestamp_t1 and timestamp_delta.seconds > 60:
-                update_layer = True
 
     if update_layer:
         gs_slurp(True, workspace=workspace, store=store, filter=filter, remove_deleted=True, execute_signals=True)

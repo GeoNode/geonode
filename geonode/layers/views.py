@@ -423,7 +423,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer.add_missing_metadata_author_or_poc()
 
     def decimal_encode(bbox):
-        import decimal
         _bbox = []
         for o in [float(coord) for coord in bbox]:
             if isinstance(o, decimal.Decimal):
@@ -540,8 +539,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         if layer.has_time:
             from geonode.geoserver.views import get_capabilities
-            workspace, layername = layer.alternate.split(
-                ":") if ":" in layer.alternate else (None, layer.alternate)
             # WARNING Please make sure to have enabled DJANGO CACHE as per
             # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
             wms_capabilities_resp = get_capabilities(
@@ -729,15 +726,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             item.url = Request('GET', item.url, params=params).prepare().url
     if request.user.has_perm('view_resourcebase', layer.get_self_resource()):
         context_dict["links"] = links_view
-    if request.user.has_perm(
-        'download_resourcebase',
-            layer.get_self_resource()):
-        if layer.storeType == 'dataStore':
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_VECTOR)
-        else:
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_RASTER)
+    if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
         context_dict["links_download"] = links_download
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
@@ -829,7 +818,6 @@ def load_layer_data(request, template='layers/layer_detail.html'):
 
         context_dict["feature_properties"] = properties
     except Exception:
-        import traceback
         traceback.print_exc()
         logger.error("Possible error with OWSLib.")
     return HttpResponse(json.dumps(context_dict),

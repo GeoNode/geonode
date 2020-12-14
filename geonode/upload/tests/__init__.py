@@ -50,9 +50,10 @@ def create_files(names, zipped=False):
     if zipped:
         basefile = os.path.join(tmpdir, 'files.zip')
         zf = zipfile.ZipFile(basefile, 'w', allowZip64=True)
-        for f in names:
-            zf.write(f, os.path.basename(f))
-        zf.close()
+        with zf:
+            for f in names:
+                zf.write(f, os.path.basename(f))
+
         for f in names:
             os.unlink(f)
         names = [basefile]

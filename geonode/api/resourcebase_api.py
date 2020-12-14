@@ -269,7 +269,6 @@ class CommonModelApi(ModelResource):
         return filter_set
 
     def filter_h_keywords(self, queryset, keywords):
-        filtered = queryset
         treeqs = HierarchicalKeyword.objects.none()
         if keywords and len(keywords) > 0:
             for keyword in keywords:
@@ -281,8 +280,9 @@ class CommonModelApi(ModelResource):
                 except ObjectDoesNotExist:
                     # Ignore keywords not actually used?
                     pass
-
-        filtered = queryset.filter(Q(keywords__in=treeqs))
+            filtered = queryset.filter(Q(keywords__in=treeqs))
+        else:
+            filtered = queryset
         return filtered
 
     def build_haystack_filters(self, parameters):
