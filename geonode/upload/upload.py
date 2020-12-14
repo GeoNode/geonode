@@ -563,13 +563,10 @@ def final_step(upload_session, user, charset="UTF-8"):
     # to verify the resource.name otherwise things will fail.  This happens
     # when the same data is uploaded a second time and the default name is
     # chosen
-
     cat = gs_catalog
-    cat._cache.clear()
 
     # Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py
-
     task = import_session.tasks[0]
     task.set_charset(charset)
 

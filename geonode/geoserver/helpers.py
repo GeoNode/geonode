@@ -2233,9 +2233,6 @@ def mosaic_delete_first_granule(cat, layer):
 def set_time_dimension(cat, name, workspace, time_presentation, time_presentation_res, time_presentation_default_value,
                        time_presentation_reference_value):
     # configure the layer time dimension as LIST
-    cat._cache.clear()
-    # cat.reload()
-
     presentation = time_presentation
     if not presentation:
         presentation = "LIST"

@@ -387,6 +387,12 @@ def geoserver_finalize_upload(
         instance.set_default_permissions()
     instance.save(notify=not created)
 
+    logger.debug("... Creating Default Resource Links for Layer [%s]" % (instance.alternate))
+    set_resource_default_links(instance, instance, prune=True)
+
+    logger.debug("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
+    create_gs_thumbnail(instance, overwrite=True)
+
     try:
         if tempdir and os.path.exists(tempdir):
             shutil.rmtree(tempdir)
