@@ -17,6 +17,7 @@ x-common-django:
     - geoserver-data-dir:/geoserver_data/data
     - backup-restore:/backup_restore
     - data:/data
+    - tmp:/tmp
 
 services:
 
@@ -96,6 +97,7 @@ services:
       - geoserver-data-dir:/geoserver_data/data
       - backup-restore:/backup_restore
       - data:/data
+      - tmp:/tmp
     restart: on-failure
 
   data-dir-conf:
@@ -146,5 +148,7 @@ volumes:
     name: ${COMPOSE_PROJECT_NAME}-backup-restore
   data:
     name: ${COMPOSE_PROJECT_NAME}-data
+  tmp:
+    name: ${COMPOSE_PROJECT_NAME}-tmp
   rabbitmq:
     name: ${COMPOSE_PROJECT_NAME}-rabbitmq
