@@ -1096,6 +1096,7 @@ def set_styles(layer, gs_catalog):
 
         if default_style:
             # make sure we are not using a default SLD (which won't be editable)
+            style = None
             if not default_style.workspace:
                 sld_name = default_style.sld_name
                 sld_body = default_style.sld_body
@@ -1110,10 +1111,11 @@ def set_styles(layer, gs_catalog):
             else:
                 style = default_style
 
-            gs_layer.default_style = style
-            gs_catalog.save(gs_layer)
-            layer.default_style = save_style(style, layer)
-            style_set.append(layer.default_style)
+            if style:
+                gs_layer.default_style = style
+                gs_catalog.save(gs_layer)
+                layer.default_style = save_style(style, layer)
+                style_set.append(layer.default_style)
         try:
             if gs_layer.styles:
                 alt_styles = gs_layer.styles
@@ -1153,19 +1155,18 @@ def set_styles(layer, gs_catalog):
                     'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
                     layer.alternate + '&STYLE=' + style_name + \
                     '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
-
-            if layer_legends.filter(url=legend_url).count() == 0:
-                Link.objects.update_or_create(
-                    resource=layer.resourcebase_ptr,
-                    name='Legend',
-                    url=legend_url,
-                    defaults=dict(
-                        extension='png',
+                if layer_legends.filter(url=legend_url).count() == 0:
+                    Link.objects.update_or_create(
+                        resource=layer.resourcebase_ptr,
+                        name='Legend',
                         url=legend_url,
-                        mime='image/png',
-                        link_type='image',
+                        defaults=dict(
+                            extension='png',
+                            url=legend_url,
+                            mime='image/png',
+                            link_type='image',
+                        )
                     )
-                )
         logger.debug(" -- Resource Links[Legend link]...done!")
     except Exception as e:
         logger.debug(f" -- Resource Links[Legend link]...error: {e}")

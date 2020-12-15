@@ -598,24 +598,11 @@ def geoserver_post_save_layers(
         # Updating the Catalogue
         catalogue_post_save(instance=instance, sender=instance.__class__)
 
-        # Save layer attributes
-        set_attributes_from_geoserver(instance)
-
-        # Save layer styles
-        set_styles(instance, gs_catalog)
-
-        # Invalidate GeoWebCache for the updated resource
-        try:
-            _stylefilterparams_geowebcache_layer(instance.alternate)
-            _invalidate_geowebcache_layer(instance.alternate)
-        except Exception:
-            pass
-
-        # some thumbnail generators will update thumbnail_url.  If so, don't
-        # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
         logger.debug(f"... Creating Default Resource Links for Layer {instance.title}")
         set_resource_default_links(instance, instance, prune=True)
 
+        # some thumbnail generators will update thumbnail_url.  If so, don't
+        # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
         _recreate_thumbnail = False
         logger.debug(f"... Creating Thumbnail for Layer {instance.title}")
         if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
@@ -630,6 +617,19 @@ def geoserver_post_save_layers(
             logger.debug(f"... Created Thumbnail for Layer {instance.title}")
         else:
             logger.debug(f"... Thumbnail for Layer {instance.title} already exists: {instance.thumbnail_url}")
+
+        # Save layer attributes
+        set_attributes_from_geoserver(instance)
+
+        # Save layer styles
+        set_styles(instance, gs_catalog)
+
+        # Invalidate GeoWebCache for the updated resource
+        try:
+            _stylefilterparams_geowebcache_layer(instance.alternate)
+            _invalidate_geowebcache_layer(instance.alternate)
+        except Exception:
+            pass
 
     # Updating HAYSTACK Indexes if needed
     if settings.HAYSTACK_SEARCH:
