@@ -27,12 +27,16 @@ import json
 import errno
 import logging
 import datetime
+import requests
 import traceback
 
 from six import (
     string_types,
     reraise as raise_
 )
+from PIL import Image
+from io import BytesIO
+from resizeimage import resizeimage
 from itertools import cycle
 from collections import namedtuple, defaultdict
 from os.path import basename, splitext, isfile
@@ -2008,6 +2012,33 @@ _esri_types = {
     "esriFieldTypeXML": "xsd:anyType"}
 
 
+def is_monochromatic_image(image_url):
+
+    def is_absolute(url):
+        return bool(urlparse(url).netloc)
+
+    try:
+        logger.debug(f"...Checking if '{image_url}' is a blank image")
+        url = image_url if is_absolute(image_url) else urljoin(settings.SITEURL, image_url)
+        response = requests.get(url, verify=False)
+        stream = BytesIO(response.content)
+        img = Image.open(stream).convert("L")
+        stream.close()
+        img.verify()  # verify that it is, in fact an image
+        extr = img.getextrema()
+        a = 0
+        for i in extr:
+            if isinstance(i, tuple):
+                a += abs(i[0] - i[1])
+            else:
+                a = abs(extr[0] - extr[1])
+                break
+        return a == 0
+    except Exception as e:
+        logger.exception(e)
+        return False
+
+
 def _render_thumbnail(req_body, width=240, height=200):
     spec = _fixup_ows_url(req_body)
     url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
@@ -2029,9 +2060,6 @@ def _render_thumbnail(req_body, width=240, height=200):
             raise Exception(content)
 
         # Optimize the Thumbnail size and resolution
-        from PIL import Image
-        from io import BytesIO
-        from resizeimage import resizeimage
         content_data = BytesIO(content)
         im = Image.open(content_data)
         im.thumbnail(

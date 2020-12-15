@@ -45,6 +45,10 @@ from django.core.files.storage import default_storage as storage
 
 from mptt.models import MPTTModel, TreeForeignKey
 
+from PIL import Image
+from io import BytesIO
+from resizeimage import resizeimage
+
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
@@ -1440,8 +1444,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         try:
             # Check that the image is valid
-            from PIL import Image
-            from io import BytesIO
             content_data = BytesIO(image)
             im = Image.open(content_data)
             im.verify()  # verify that it is, in fact an image
@@ -1467,8 +1469,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
                 try:
                     # Optimize the Thumbnail size and resolution
-                    from PIL import Image
-                    from resizeimage import resizeimage
                     _default_thumb_size = getattr(
                         settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
                     im = Image.open(open(storage.path(_upload_path), mode='rb'))

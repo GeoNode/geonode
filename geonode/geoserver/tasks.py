@@ -54,6 +54,7 @@ from .helpers import (
     cascading_delete,
     fetch_gs_resource,
     create_gs_thumbnail,
+    is_monochromatic_image,
     set_attributes_from_geoserver,
     _invalidate_geowebcache_layer,
     _stylefilterparams_geowebcache_layer)
@@ -571,6 +572,9 @@ def geoserver_post_save_layers(
             'srid': 'EPSG:4326'
         }
 
+        if is_monochromatic_image(instance.thumbnail_url):
+            to_update['thumbnail_url'] = staticfiles.static(settings.MISSING_THUMBNAIL)
+
         # Save all the modified information in the instance without triggering signals.
         try:
             with transaction.atomic():
@@ -618,7 +622,8 @@ def geoserver_post_save_layers(
         'thumbnail_url' in kwargs['update_fields']:
             _recreate_thumbnail = True
         if not instance.thumbnail_url or \
-        instance.thumbnail_url == staticfiles.static(settings.MISSING_THUMBNAIL):
+        instance.thumbnail_url == staticfiles.static(settings.MISSING_THUMBNAIL) or \
+        is_monochromatic_image(instance.thumbnail_url):
             _recreate_thumbnail = True
         if _recreate_thumbnail:
             create_gs_thumbnail(instance, overwrite=True)
