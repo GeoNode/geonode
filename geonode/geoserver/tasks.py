@@ -237,6 +237,8 @@ def geoserver_finalize_upload(
         permissions,
         created,
         xml_file,
+        sld_file,
+        sld_uploaded,
         tempdir):
     """
     Finalize Layer and GeoServer configuration:
@@ -372,6 +374,11 @@ def geoserver_finalize_upload(
                 instance.refresh_from_db()
         except IntegrityError:
             raise
+
+    if sld_uploaded:
+        geoserver_set_style(instance.id, sld_file)
+    else:
+        geoserver_create_style(instance.id, instance.name, sld_file, tempdir)
 
     logger.debug('Finalizing (permissions and notifications) Layer {0}'.format(instance))
     instance.handle_moderated_uploads()
@@ -595,33 +602,20 @@ def geoserver_post_save_layers(
         except IntegrityError:
             raise
 
-        # Updating the Catalogue
+        # Refreshing CSW records
+        logger.debug(f"... Updating the Catalogue entries for Layer {instance.title}")
         catalogue_post_save(instance=instance, sender=instance.__class__)
 
+        # Refreshing layer links
         logger.debug(f"... Creating Default Resource Links for Layer {instance.title}")
         set_resource_default_links(instance, instance, prune=True)
 
-        # some thumbnail generators will update thumbnail_url.  If so, don't
-        # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
-        _recreate_thumbnail = False
-        logger.debug(f"... Creating Thumbnail for Layer {instance.title}")
-        if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
-        'thumbnail_url' in kwargs['update_fields']:
-            _recreate_thumbnail = True
-        if not instance.thumbnail_url or \
-        instance.thumbnail_url == staticfiles.static(settings.MISSING_THUMBNAIL) or \
-        is_monochromatic_image(instance.thumbnail_url):
-            _recreate_thumbnail = True
-        if _recreate_thumbnail:
-            create_gs_thumbnail(instance, overwrite=True)
-            logger.debug(f"... Created Thumbnail for Layer {instance.title}")
-        else:
-            logger.debug(f"... Thumbnail for Layer {instance.title} already exists: {instance.thumbnail_url}")
-
         # Save layer attributes
+        logger.debug(f"... Refresh GeoServer attributes list for Layer {instance.title}")
         set_attributes_from_geoserver(instance)
 
         # Save layer styles
+        logger.debug(f"... Refresh Legend links for Layer {instance.title}")
         set_styles(instance, gs_catalog)
 
         # Invalidate GeoWebCache for the updated resource
@@ -630,6 +624,27 @@ def geoserver_post_save_layers(
             _invalidate_geowebcache_layer(instance.alternate)
         except Exception:
             pass
+
+        # Creating Layer Thumbnail
+        # some thumbnail generators will update thumbnail_url.  If so, don't
+        # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
+        _recreate_thumbnail = False
+        try:
+            logger.debug(f"... Creating Thumbnail for Layer {instance.title}")
+            if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
+            'thumbnail_url' in kwargs['update_fields']:
+                _recreate_thumbnail = True
+            if not instance.thumbnail_url or \
+            instance.thumbnail_url == staticfiles.static(settings.MISSING_THUMBNAIL) or \
+            is_monochromatic_image(instance.thumbnail_url):
+                _recreate_thumbnail = True
+            if _recreate_thumbnail:
+                create_gs_thumbnail(instance, overwrite=True)
+                logger.debug(f"... Created Thumbnail for Layer {instance.title}")
+            else:
+                logger.debug(f"... Thumbnail for Layer {instance.title} already exists: {instance.thumbnail_url}")
+        except Exception as e:
+            logger.exception(e)
 
     # Updating HAYSTACK Indexes if needed
     if settings.HAYSTACK_SEARCH:

@@ -59,8 +59,8 @@ from ..people.utils import get_default_user
 from ..layers.models import Layer, UploadSession
 from ..layers.utils import get_valid_layer_name
 from ..geoserver.tasks import (
-    geoserver_set_style,
-    geoserver_create_style,
+    # geoserver_set_style,
+    # geoserver_create_style,
     geoserver_finalize_upload
 )
 from ..geoserver.helpers import (
@@ -694,6 +694,8 @@ def final_step(upload_session, user, charset="UTF-8"):
     geonode_upload_session, created = UploadSession.objects.get_or_create(
         resource=saved_layer, user=user
     )
+    geonode_upload_session.processed = False
+    geonode_upload_session.save()
 
     # Add them to the upload session (new file fields are created).
     assigned_name = None
@@ -749,8 +751,6 @@ def final_step(upload_session, user, charset="UTF-8"):
                         geonode_upload_session,
                         _f,
                         assigned_name)
-    geonode_upload_session.processed = False
-    geonode_upload_session.save()
 
     # @todo if layer was not created, need to ensure upload target is
     # same as existing target
@@ -762,6 +762,7 @@ def final_step(upload_session, user, charset="UTF-8"):
     _log('Creating style for [%s]', name)
     # look for SLD
     sld_file = upload_session.base_file[0].sld_files
+    sld_uploaded = False
     if sld_file:
         # If it's contained within a zip, need to extract it
         if upload_session.base_file.archive:
@@ -770,16 +771,18 @@ def final_step(upload_session, user, charset="UTF-8"):
             zf.extract(sld_file[0], os.path.dirname(archive))
             # Assign the absolute path to this file
             sld_file[0] = os.path.dirname(archive) + '/' + sld_file[0]
-        geoserver_set_style.apply_async((saved_layer.id, sld_file[0]))
+        sld_file = sld_file[0]
+        sld_uploaded = True
+        # geoserver_set_style.apply_async((saved_layer.id, sld_file))
     else:
         # get_files will not find the sld if it doesn't match the base name
         # so we've worked around that in the view - if provided, it will be here
-        sld_file = None
         if upload_session.import_sld_file:
             _log('using provided sld file')
             base_file = upload_session.base_file
             sld_file = base_file[0].sld_files[0]
-        geoserver_create_style.apply_async((saved_layer.id, name, sld_file, upload_session.tempdir))
+        sld_uploaded = False
+        # geoserver_create_style.apply_async((saved_layer.id, name, sld_file, upload_session.tempdir))
 
     # look for xml and finalize Layer metadata
     xml_file = upload_session.base_file[0].xml_files
@@ -799,6 +802,7 @@ def final_step(upload_session, user, charset="UTF-8"):
     # Set default permissions on the newly created layer and send notifications
     permissions = upload_session.permissions
     geoserver_finalize_upload.apply_async(
-        (import_session.id, saved_layer.id, permissions, created, xml_file, upload_session.tempdir))
+        (import_session.id, saved_layer.id, permissions, created,
+         xml_file, sld_file, sld_uploaded, upload_session.tempdir))
 
     return saved_layer
