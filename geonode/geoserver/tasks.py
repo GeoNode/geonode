@@ -22,16 +22,18 @@ import six
 import shutil
 import geoserver
 
-from time import sleep
 from django.conf import settings
 from django.db import IntegrityError, transaction
 from django.contrib.auth import get_user_model
+from django.contrib.staticfiles.templatetags import staticfiles
 
 from celery.utils.log import get_task_logger
 
 from geonode.celery_app import app
 from geonode import GeoNodeException
-from geonode.layers.models import Layer, UploadSession
+from geonode.upload import signals
+from geonode.layers.models import (
+    Layer, UploadSession)
 from geonode.layers.utils import resolve_regions
 from geonode.layers.metadata import set_metadata
 from geonode.base.models import (
@@ -42,18 +44,19 @@ from geonode.utils import set_resource_default_links
 from geonode.geoserver.upload import geoserver_upload
 from geonode.catalogue.models import catalogue_post_save
 
-from geonode.geoserver.helpers import (
+from .helpers import (
     gs_catalog,
     ogc_server_settings,
+    gs_slurp,
     set_styles,
     get_sld_for,
     set_layer_style,
+    cascading_delete,
+    fetch_gs_resource,
     create_gs_thumbnail,
     set_attributes_from_geoserver,
     _invalidate_geowebcache_layer,
     _stylefilterparams_geowebcache_layer)
-
-from .helpers import gs_slurp, cascading_delete
 
 logger = get_task_logger(__name__)
 
@@ -291,10 +294,6 @@ def geoserver_finalize_upload(
             gs_resource.title = title
             gs_resource.abstract = abstract
             gs_catalog.save(gs_resource)
-
-            # Updating Importer session
-            # upload_session.layer_title = title
-            # upload_session.layer_abstract = abstract
         else:
             vals = {}
 
@@ -370,15 +369,12 @@ def geoserver_finalize_upload(
 
                 # Refresh from DB
                 instance.refresh_from_db()
-
-                # Pass the parameter overwrite to tell whether the
-                # geoserver_post_save_signal should upload the new file or not
-                instance.overwrite = True
         except IntegrityError:
             raise
 
     logger.debug('Finalizing (permissions and notifications) Layer {0}'.format(instance))
     instance.handle_moderated_uploads()
+
     if permissions is not None:
         logger.debug(f'Setting permissions {permissions} for {instance.name}')
         instance.set_permissions(permissions, created=created)
@@ -387,21 +383,23 @@ def geoserver_finalize_upload(
         instance.set_default_permissions()
     try:
         # Update the upload sessions
-        geonode_upload_session, created = UploadSession.objects.get_or_create(resource=instance)
-        instance.upload_session = geonode_upload_session
+        geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
+        geonode_upload_sessions.update(processed=False)
+        instance.upload_session = geonode_upload_sessions.first()
     except Exception as e:
         logger.exception(e)
+
     instance.save(notify=not created)
 
     try:
-        logger.debug(f"... Creating Default Resource Links for Layer {instance.alternate}")
-        set_resource_default_links(instance, instance, prune=True)
         logger.debug(f"... Cleaning up the temporary folders {tempdir}")
         if tempdir and os.path.exists(tempdir):
             shutil.rmtree(tempdir)
     finally:
         upload.complete = True
         upload.save()
+
+    signals.upload_complete.send(sender=geoserver_finalize_upload, layer=instance)
 
 
 @app.task(
@@ -436,10 +434,22 @@ def geoserver_post_save_layers(
     if getattr(instance, "remote_service", None) is not None:
         return
 
+    if instance.storeType == "remoteStore":
+        return
+
     # Don't run this signal handler if it is a tile layer or a remote store (Service)
     #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
     if hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remoteStore']:
         return instance
+
+    if isinstance(instance, ResourceBase):
+        if hasattr(instance, 'layer'):
+            instance = instance.layer
+        else:
+            return
+
+    geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
+    geonode_upload_sessions.update(processed=False)
 
     gs_resource = None
     values = None
@@ -465,49 +475,9 @@ def geoserver_post_save_layers(
             charset=instance.charset
         )
 
-    def fetch_gs_resource(values, tries):
-        try:
-            gs_resource = gs_catalog.get_resource(
-                name=instance.name,
-                store=instance.store,
-                workspace=instance.workspace)
-        except Exception:
-            try:
-                gs_resource = gs_catalog.get_resource(
-                    name=instance.alternate,
-                    store=instance.store,
-                    workspace=instance.workspace)
-            except Exception:
-                try:
-                    gs_resource = gs_catalog.get_resource(
-                        name=instance.alternate or instance.typename)
-                except Exception:
-                    gs_resource = None
-        if gs_resource:
-            if values:
-                gs_resource.title = values.get('title', '')
-                gs_resource.abstract = values.get('abstract', '')
-            else:
-                values = {}
-            values.update(dict(store=gs_resource.store.name,
-                               storeType=gs_resource.store.resource_type,
-                               alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
-                               title=gs_resource.title or gs_resource.store.name,
-                               abstract=gs_resource.abstract or '',
-                               owner=instance.owner))
-        else:
-            msg = "There isn't a geoserver resource for this layer: %s" % instance.name
-            logger.exception(msg)
-            if tries >= _max_tries:
-                # raise GeoNodeException(msg)
-                return (values, None)
-            gs_resource = None
-            sleep(5.00)
-        return (values, gs_resource)
-
-    values, gs_resource = fetch_gs_resource(values, _tries)
+    values, gs_resource = fetch_gs_resource(instance, values, _tries)
     while not gs_resource and _tries < _max_tries:
-        values, gs_resource = fetch_gs_resource(values, _tries)
+        values, gs_resource = fetch_gs_resource(instance, values, _tries)
         _tries += 1
 
     # Get metadata links
@@ -518,6 +488,7 @@ def geoserver_post_save_layers(
     if gs_resource:
         logger.debug("Found geoserver resource for this layer: %s" % instance.name)
         gs_resource.metadata_links = metadata_links
+        instance.gs_resource = gs_resource
 
         # Update Attribution link
         if instance.poc:
@@ -531,20 +502,7 @@ def geoserver_post_save_layers(
             profile = get_user_model().objects.get(username=instance.poc.username)
             site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
             gs_resource.attribution_link = site_url + profile.get_absolute_url()
-    else:
-        msg = "There isn't a geoserver resource for this layer: %s" % instance.name
-        logger.warn(msg)
 
-    if isinstance(instance, ResourceBase):
-        if hasattr(instance, 'layer'):
-            instance = instance.layer
-        else:
-            return
-
-    if instance.storeType == "remoteStore":
-        return
-
-    if gs_resource:
         """Get information from geoserver.
 
            The attributes retrieved include:
@@ -554,9 +512,6 @@ def geoserver_post_save_layers(
            * Download links (WMS, WCS or WFS and KML)
            * Styles (SLD)
         """
-        instance.workspace = gs_resource.store.workspace.name
-        instance.store = gs_resource.store.name
-
         try:
             # This is usually done in Layer.pre_save, however if the hooks
             # are bypassed by custom create/updates we need to ensure the
@@ -566,8 +521,16 @@ def geoserver_post_save_layers(
         except Exception as e:
             logger.exception(e)
 
-    # Iterate over values from geoserver.
-    if gs_resource:
+        if instance.srid:
+            instance.srid_url = "http://www.spatialreference.org/ref/" + \
+                instance.srid.replace(':', '/').lower() + "/"
+        elif instance.bbox_polygon is not None:
+            # Guessing 'EPSG:4326' by default
+            instance.srid = 'EPSG:4326'
+        else:
+            raise GeoNodeException("Invalid Projection. Layer is missing CRS!")
+
+        # Iterate over values from geoserver.
         for key in ['alternate', 'store', 'storeType']:
             # attr_name = key if 'typename' not in key else 'alternate'
             # print attr_name
@@ -599,49 +562,37 @@ def geoserver_post_save_layers(
             e.args = (msg,)
             logger.exception(e)
 
-    if instance.srid:
-        instance.srid_url = "http://www.spatialreference.org/ref/" + \
-            instance.srid.replace(':', '/').lower() + "/"
-    elif instance.bbox_polygon is not None:
-        # Guessing 'EPSG:4326' by default
-        instance.srid = 'EPSG:4326'
-    else:
-        raise GeoNodeException("Invalid Projection. Layer is missing CRS!")
+        # store the resource to avoid another geoserver call in the post_save
+        to_update = {
+            'title': instance.title or instance.name,
+            'abstract': instance.abstract or "",
+            'alternate': instance.alternate,
+            'bbox_polygon': instance.bbox_polygon,
+            'srid': 'EPSG:4326'
+        }
 
-    to_update = {
-        'title': instance.title or instance.name,
-        'abstract': instance.abstract or "",
-        'alternate': instance.alternate,
-        'bbox_polygon': instance.bbox_polygon,
-        'srid': 'EPSG:4326'
-    }
+        # Save all the modified information in the instance without triggering signals.
+        try:
+            with transaction.atomic():
+                ResourceBase.objects.filter(
+                    id=instance.resourcebase_ptr.id).update(
+                    **to_update)
 
-    # Save all the modified information in the instance without triggering signals.
-    try:
-        with transaction.atomic():
-            ResourceBase.objects.filter(
-                id=instance.resourcebase_ptr.id).update(
-                **to_update)
+                # to_update['name'] = instance.name,
+                to_update['workspace'] = gs_resource.store.workspace.name
+                to_update['store'] = gs_resource.store.name
+                to_update['storeType'] = instance.storeType
+                to_update['typename'] = instance.alternate
 
-            # to_update['name'] = instance.name,
-            to_update['workspace'] = instance.workspace
-            to_update['store'] = instance.store
-            to_update['storeType'] = instance.storeType
-            to_update['typename'] = instance.alternate
+                Layer.objects.filter(id=instance.id).update(**to_update)
 
-            Layer.objects.filter(id=instance.id).update(**to_update)
+                # Refresh from DB
+                instance.refresh_from_db()
+        except IntegrityError:
+            raise
 
-            # Refresh from DB
-            instance.refresh_from_db()
-    except IntegrityError:
-        raise
-
-    # Updating the Catalogue
-    catalogue_post_save(instance=instance, sender=instance.__class__)
-
-    # store the resource to avoid another geoserver call in the post_save
-    if gs_resource:
-        instance.gs_resource = gs_resource
+        # Updating the Catalogue
+        catalogue_post_save(instance=instance, sender=instance.__class__)
 
         # Save layer attributes
         set_attributes_from_geoserver(instance)
@@ -658,18 +609,30 @@ def geoserver_post_save_layers(
 
         # some thumbnail generators will update thumbnail_url.  If so, don't
         # immediately re-generate the thumbnail here.  use layer#save(update_fields=['thumbnail_url'])
-        logger.debug("... Creating Default Resource Links for Layer [%s]" % (instance.alternate))
+        logger.debug(f"... Creating Default Resource Links for Layer {instance.title}")
         set_resource_default_links(instance, instance, prune=True)
 
+        _recreate_thumbnail = False
+        logger.debug(f"... Creating Thumbnail for Layer {instance.title}")
         if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
-                'thumbnail_url' in kwargs['update_fields']:
-            logger.debug("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
+        'thumbnail_url' in kwargs['update_fields']:
+            _recreate_thumbnail = True
+        if not instance.thumbnail_url or \
+        instance.thumbnail_url == staticfiles.static(settings.MISSING_THUMBNAIL):
+            _recreate_thumbnail = True
+        if _recreate_thumbnail:
             create_gs_thumbnail(instance, overwrite=True)
+            logger.debug(f"... Created Thumbnail for Layer {instance.title}")
+        else:
+            logger.debug(f"... Thumbnail for Layer {instance.title} already exists: {instance.thumbnail_url}")
 
     # Updating HAYSTACK Indexes if needed
     if settings.HAYSTACK_SEARCH:
         from django.core.management import call_command
         call_command('update_index')
+
+    geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
+    geonode_upload_sessions.update(processed=True)
 
 
 @app.task(

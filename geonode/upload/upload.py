@@ -68,7 +68,6 @@ from ..geoserver.helpers import (
     gs_catalog,
     gs_uploader
 )
-from . import signals
 from . import utils
 from .models import Upload
 from .upload_preprocessing import preprocess_files
@@ -692,7 +691,9 @@ def final_step(upload_session, user, charset="UTF-8"):
             raise
 
     # Create a new upload session
-    geonode_upload_session = UploadSession.objects.create(resource=saved_layer, user=user)
+    geonode_upload_session, created = UploadSession.objects.get_or_create(
+        resource=saved_layer, user=user
+    )
 
     # Add them to the upload session (new file fields are created).
     assigned_name = None
@@ -748,6 +749,8 @@ def final_step(upload_session, user, charset="UTF-8"):
                         geonode_upload_session,
                         _f,
                         assigned_name)
+    geonode_upload_session.processed = False
+    geonode_upload_session.save()
 
     # @todo if layer was not created, need to ensure upload target is
     # same as existing target
@@ -790,19 +793,12 @@ def final_step(upload_session, user, charset="UTF-8"):
             # Assign the absolute path to this file
             xml_file = os.path.dirname(archive) + '/' + xml_file[0]
 
+    if upload_session.time_info:
+        set_time_info(saved_layer, **upload_session.time_info)
+
     # Set default permissions on the newly created layer and send notifications
     permissions = upload_session.permissions
     geoserver_finalize_upload.apply_async(
         (import_session.id, saved_layer.id, permissions, created, xml_file, upload_session.tempdir))
-
-    if upload_session.time_info:
-        set_time_info(saved_layer, **upload_session.time_info)
-
-    if geonode_upload_session:
-        geonode_upload_session.processed = True
-        saved_layer.upload_session = geonode_upload_session
-
-    signals.upload_complete.send(sender=final_step, layer=saved_layer)
-    geonode_upload_session.save()
 
     return saved_layer

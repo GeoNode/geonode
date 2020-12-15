@@ -1630,6 +1630,48 @@ class OGC_Servers_Handler(object):
         return [self[alias] for alias in self]
 
 
+def fetch_gs_resource(instance, values, tries):
+    _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 2)
+    try:
+        gs_resource = gs_catalog.get_resource(
+            name=instance.name,
+            store=instance.store,
+            workspace=instance.workspace)
+    except Exception:
+        try:
+            gs_resource = gs_catalog.get_resource(
+                name=instance.alternate,
+                store=instance.store,
+                workspace=instance.workspace)
+        except Exception:
+            try:
+                gs_resource = gs_catalog.get_resource(
+                    name=instance.alternate or instance.typename)
+            except Exception:
+                gs_resource = None
+    if gs_resource:
+        if values:
+            gs_resource.title = values.get('title', '')
+            gs_resource.abstract = values.get('abstract', '')
+        else:
+            values = {}
+        values.update(dict(store=gs_resource.store.name,
+                           storeType=gs_resource.store.resource_type,
+                           alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
+                           title=gs_resource.title or gs_resource.store.name,
+                           abstract=gs_resource.abstract or '',
+                           owner=instance.owner))
+    else:
+        msg = "There isn't a geoserver resource for this layer: %s" % instance.name
+        logger.exception(msg)
+        if tries >= _max_tries:
+            # raise GeoNodeException(msg)
+            return (values, None)
+        gs_resource = None
+        time.sleep(5)
+    return (values, gs_resource)
+
+
 def get_wms():
     wms_url = ogc_server_settings.internal_ows + \
         "?service=WMS&request=GetCapabilities&version=1.1.0"
@@ -2002,7 +2044,11 @@ def _render_thumbnail(req_body, width=240, height=200):
         cover.save(imgByteArr, format='JPEG')
         content = imgByteArr.getvalue()
     except Exception as e:
-        logger.debug(e)
+        logger.debug(f"Could not sucesfully send data to {url}")
+        logger.debug(f" - user: [{_user}]")
+        logger.debug(f" - headers: [{headers}]")
+        logger.debug(f" - data: [{spec}]")
+        logger.exception(e)
         raise e
 
     return content

@@ -680,7 +680,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "show_popup": show_popup,
         "filter": filter,
         "storeType": layer.storeType,
-        "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True
+        "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True,
+        "processed": layer.processed
     }
 
     context_dict["viewer"] = json.dumps(map_obj.viewer_json(
