@@ -1173,6 +1173,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 filled_fields.append(field)
         return '{}%'.format(len(filled_fields) * 100 / len(required_fields))
 
+    @property
+    def instance_is_processed(self):
+        try:
+            if hasattr(self.get_real_instance(), "processed"):
+                return self.get_real_instance().processed
+            return False
+        except Exception:
+            return False
+
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
 

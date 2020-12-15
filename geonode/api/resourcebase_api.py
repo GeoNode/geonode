@@ -794,6 +794,7 @@ class LayerResource(CommonModelApi):
             if hasattr(obj, 'curatedthumbnail'):
                 formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
 
+            formatted_obj['processed'] = obj.instance_is_processed
             # put the object on the response stack
             formatted_objects.append(formatted_obj)
         return formatted_objects
