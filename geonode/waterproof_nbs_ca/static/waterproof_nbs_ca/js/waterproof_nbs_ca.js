@@ -3,8 +3,8 @@
  * @author Luis Saltron
  * @version 1.0
  */
-$(function () {
-    initialize = function () {
+$(function() {
+    initialize = function() {
         $('#example').DataTable();
         console.log('init event loaded');
         var countryDropdown = $('#countryNBS');
@@ -18,7 +18,7 @@ $(function () {
             moveOnSelect: false,
         });
         // Transformations widget change option event
-        $("#menu-toggle").click(function (e) {
+        $("#menu-toggle").click(function(e) {
             e.preventDefault();
             $("#wrapper").toggleClass("toggled");
         });
@@ -29,18 +29,18 @@ $(function () {
         // Populate currencies options
         fillTransitionsDropdown(transitionsDropdown);
         // Change transition dropdown event listener
-        changeTransitionEvent(transitionsDropdown, activitiesDropdown);
+        //changeTransitionEvent(transitionsDropdown, activitiesDropdown);
         // Change country dropdown event listener 
-        changeCountryEvent(countryDropdown, currencyDropdown);
+        //changeCountryEvent(countryDropdown, currencyDropdown);
         // Change transition dropdown event listener
-        changeActivityEvent(activitiesDropdown, transformDropdown);
+        //changeActivityEvent(activitiesDropdown, transformDropdown);
         submitFormEvent();
         changeFileEvent();
     };
-    submitFormEvent = function () {
+    submitFormEvent = function() {
         console.log('submit event loaded');
         var formData = new FormData();
-        $('#submit').on('click', function () {
+        $('#submit').on('click', function() {
             var file = $('#restrictedArea')[0].files[0];
             // validate extension file
             var extension = validExtension(file);
@@ -83,10 +83,10 @@ $(function () {
                 processData: false,
                 contentType: false,
                 enctype: 'multipart/form-data',
-                success: function () {
+                success: function() {
                     alert('The post has been created!')
                 },
-                error: function (xhr, errmsg, err) {
+                error: function(xhr, errmsg, err) {
                     console.log(xhr.status + ":" + xhr.responseText)
                 }
             })
@@ -96,8 +96,8 @@ $(function () {
      * Validate input file on change
      *
      */
-    changeFileEvent = function () {
-        $('#restrictedArea').change(function (evt) {
+    changeFileEvent = function() {
+        $('#restrictedArea').change(function(evt) {
             var file = evt.currentTarget.files[0];
             var extension = validExtension(file);
             // Validate file's extension
@@ -106,7 +106,7 @@ $(function () {
                 // Validate file's extension
                 if (extension.extension == 'geojson') { //GeoJSON
                     var readerGeoJson = new FileReader();
-                    readerGeoJson.onload = function (evt) {
+                    readerGeoJson.onload = function(evt) {
                         var contents = evt.target.result;
                         geojson = JSON.parse(contents);
                         loadFile(geojson, file.name);
@@ -120,10 +120,10 @@ $(function () {
                         readPrj = false,
                         prj, coord = true;
                     var prjName;
-                    reader.onload = function (evt) {
+                    reader.onload = function(evt) {
                         var contents = evt.target.result;
-                        JSZip.loadAsync(file).then(function (zip) {
-                            zip.forEach(function (relativePath, zipEntry) {
+                        JSZip.loadAsync(file).then(function(zip) {
+                            zip.forEach(function(relativePath, zipEntry) {
                                 filename = zipEntry.name.toLocaleLowerCase();
                                 if (filename.indexOf(".shp") != -1) {
                                     readShp = true;
@@ -141,7 +141,7 @@ $(function () {
                             });
                             // Valid shapefile with minimum files req
                             if (readShp && readDbf && readPrj && readShx) {
-                                zip.file(prjName).async("string").then(function (data) {
+                                zip.file(prjName).async("string").then(function(data) {
                                     prj = data;
                                     // Validar sistema de referencia
                                     if (prj.toLocaleLowerCase().indexOf("gcs_wgs_1984") == -1) {
@@ -153,10 +153,10 @@ $(function () {
                                     }
                                     // Shapefile válido
                                     else {
-                                        shp(contents).then(function (shpToGeojson) {
+                                        shp(contents).then(function(shpToGeojson) {
                                             geojson = shpToGeojson;
                                             loadShapefile(geojson, file.name);
-                                        }).catch(function (e) {
+                                        }).catch(function(e) {
                                             Swal.fire({
                                                 icon: 'error',
                                                 title: 'Error en shapefile',
@@ -202,7 +202,7 @@ $(function () {
                             }
                         });
                     };
-                    reader.onerror = function (event) {
+                    reader.onerror = function(event) {
                         console.error("File could not be read! Code " + event.target.error.code);
                         //alert("El archivo no pudo ser cargado: " + event.target.error.code);
                     };
@@ -217,18 +217,18 @@ $(function () {
             }
         });
     };
-    checkEmptyFile = function () {
+    checkEmptyFile = function() {
 
     };
     /** 
-   * Change currency option based in country selected
-   * @param {HTML} countryDropdown    Country dropdown
-   * @param {HTML} currencyDropdown   Currency  dropdown
-   *
-   */
-    changeCountryEvent = function (countryDropdown, currencyDropdown) {
+     * Change currency option based in country selected
+     * @param {HTML} countryDropdown    Country dropdown
+     * @param {HTML} currencyDropdown   Currency  dropdown
+     *
+     */
+    changeCountryEvent = function(countryDropdown, currencyDropdown) {
         // Rios transitions dropdown listener
-        countryDropdown.change(function () {
+        countryDropdown.change(function() {
             // Get load activities from urls Django parameter
             var country_id = $(this).val();
 
@@ -244,7 +244,7 @@ $(function () {
                 data: {
                     'country': country_id
                 },
-                success: function (result) {
+                success: function(result) {
                     result = JSON.parse(result);
                     currencyDropdown.val(result[0].pk);
                 }
@@ -257,9 +257,10 @@ $(function () {
      * @param {HTML} activDropdown Activities  dropdown
      *
      */
-    changeTransitionEvent = function (transDropdown, activDropdown) {
+    /*
+    changeTransitionEvent = function(transDropdown, activDropdown) {
         // Rios transitions dropdown listener
-        transDropdown.change(function () {
+        transDropdown.change(function() {
             // Get load activities from urls Django parameter
             var transition_id = $(this).val();
 
@@ -269,17 +270,17 @@ $(function () {
              * @param {Object} data  transition id  
              *
              * @return {String} activities in HTML option format
-             */
+             *
             $.ajax({
                 url: '/waterproof_nbs_ca/load-activityByTransition/',
                 data: {
                     'transition': transition_id
                 },
-                success: function (result) {
+                success: function(result) {
                     result = JSON.parse(result);
                     // Empty before poupulate new options
                     activDropdown.empty();
-                    $.each(result, function (index, activity) {
+                    $.each(result, function(index, activity) {
                         activDropdown.append($("<option />").val(activity.pk).text(activity.fields.name));
                     });
                     activDropdown.val($('#' + activDropdown[0].id + ' option:first').val()).change();
@@ -292,10 +293,10 @@ $(function () {
      * @param {HTML} transDropdown Transitions dropdown
      * @param {HTML} activDropdown Activities  dropdown
      *
-     */
-    changeActivityEvent = function (activityDropdown, transformDropdown) {
+     *
+    changeActivityEvent = function(activityDropdown, transformDropdown) {
         // Rios transitions dropdown listener
-        activityDropdown.change(function () {
+        activityDropdown.change(function() {
             // Get load activities from urls Django parameter
             var activity_id = $(this).val();
 
@@ -305,17 +306,17 @@ $(function () {
              * @param {Object} data  transition id  
              *
              * @return {String} activities in HTML option format
-             */
+             *
             $.ajax({
                 url: '/waterproof_nbs_ca/load-transformationByActivity/',
                 data: {
                     'activity': activity_id
                 },
-                success: function (result) {
+                success: function(result) {
                     result = JSON.parse(result);
                     // Empty before poupulate new options
                     transformDropdown.empty();
-                    $.each(result, function (index, transformation) {
+                    $.each(result, function(index, transformation) {
                         transformDropdown.append($("<option />").val(transformation.pk).text(transformation.fields.name));
                         transformDropdown.bootstrapDualListbox('refresh');
 
@@ -324,17 +325,18 @@ $(function () {
             });
         });
     };
+    /*
     /** 
      * Populate countries options in dropdown 
      * @param {HTML} dropdown Dropdown selected element
      *
      */
-    fillCountryDropdown = function (dropdown) {
+    fillCountryDropdown = function(dropdown) {
         $.ajax({
             url: '/waterproof_nbs_ca/load-allCountries',
-            success: function (result) {
+            success: function(result) {
                 result = JSON.parse(result);
-                $.each(result, function (index, country) {
+                $.each(result, function(index, country) {
                     dropdown.append($("<option />").val(country.pk).text(country.fields.name));
                 });
             }
@@ -345,12 +347,12 @@ $(function () {
      * @param {HTML} dropdown Dropdown selected element
      *
      */
-    fillCurrencyDropdown = function (dropdown) {
+    fillCurrencyDropdown = function(dropdown) {
         $.ajax({
             url: '/waterproof_nbs_ca/load-allCurrencies',
-            success: function (result) {
+            success: function(result) {
                 result = JSON.parse(result);
-                $.each(result, function (index, currency) {
+                $.each(result, function(index, currency) {
                     dropdown.append($("<option />").val(currency.pk).text(currency.fields.code + ' (' + currency.fields.symbol + ') - ' + currency.fields.name));
                 });
             }
@@ -361,12 +363,12 @@ $(function () {
      * @param {HTML} dropdown Dropdown selected element
      *
      */
-    fillTransitionsDropdown = function (dropdown) {
+    fillTransitionsDropdown = function(dropdown) {
         $.ajax({
             url: '/waterproof_nbs_ca/load-transitions',
-            success: function (result) {
+            success: function(result) {
                 result = JSON.parse(result);
-                $.each(result, function (index, transition) {
+                $.each(result, function(index, transition) {
                     dropdown.append($("<option />").val(transition.pk).text(transition.fields.name));
                 });
                 dropdown.val(1).change();
@@ -379,7 +381,7 @@ $(function () {
      *
      * @return {Object} extension Object contain extension and is valid
      */
-    validExtension = function (file) {
+    validExtension = function(file) {
         var fileExtension = {};
         if (file.name.lastIndexOf(".") > 0) {
             var extension = file.name.substring(file.name.lastIndexOf(".") + 1, file.name.length);
@@ -394,7 +396,7 @@ $(function () {
         }
         return fileExtension;
     };
-    loadFile = function (file, name) {
+    loadFile = function(file, name) {
         console.log('Start loading file function!');
     };
     // Init 
