@@ -8,7 +8,7 @@ FROM python:3.7-slim-stretch
 RUN echo "Updating apt-get" && \
     apt-get update && \
     echo "Installing build dependencies" && \
-    apt-get install -y gcc make libc-dev musl-dev libpcre3 libpcre3-dev g++ && \
+    apt-get install -y gcc make libc-dev musl-dev libpcre3 libpcre3-dev g++ git && \
     echo "Installing Pillow dependencies" && \
     # RUN apt-get install -y NOTHING ?? It was probably added in other packages... ALPINE needed jpeg-dev zlib-dev && \
     echo "Installing GDAL dependencies" && \
