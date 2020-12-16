@@ -1,5 +1,4 @@
 {% extends "base.html" %} {% load i18n %} {% load bootstrap_tags %} {% block body_outer %}
-
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/bootstrap-duallistbox.min.css">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/waterproof_nbs_ca.css">
 
@@ -161,7 +160,7 @@
         </div>
     </div>
     <br>
-    <button type="submit" class="btn btn-primary ">Submit</button>
+    <button id="submit" type="button" class="btn btn-primary ">Submit</button>
     <button type="button" class="btn btn-primary" id="getAllValues">Get Values</button>
 
 </form>

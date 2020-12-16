@@ -4,7 +4,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
- {% for sbn in nbs %}
+{% for sbn in nbs %}
 <div class="row">
     <div class="col-md-4">
         <h4 class="text-center">Bogotá D.C.</h4>
@@ -12,23 +12,27 @@
         <p><b>Region:</b> Central</p>
     </div>
     <div class="col-md-8">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d254508.51641080936!2d-74.24789454527543!3d4.648283717196413!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9bfd2da6cb29%3A0x239d635520a33914!2zQm9nb3TDoQ!5e0!3m2!1ses!2sco!4v1607456076816!5m2!1ses!2sco"
-            width="750" height="150" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d254508.51641080936!2d-74.24789454527543!3d4.648283717196413!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9bfd2da6cb29%3A0x239d635520a33914!2zQm9nb3TDoQ!5e0!3m2!1ses!2sco!4v1607456076816!5m2!1ses!2sco"
+            width="750" height="150" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false"
+            tabindex="0"></iframe>
     </div>
 </div>
 <div class="page-header">
-    <h1>Edit NBS</h1>
+    <h1>Clone NBS</h1>
 </div>
 <form data-toggle="validator" role="form">
     <h4 class="text-primary">General Settings</h4>
     <div class="form-group">
         <label>Name <span class="text-danger-wp">(*)</span> </label>
-        <input type="text" value={{ sbn.name }} class="form-control" id="nameNBS" name="nameNBS" data-error="This field is required" placeholder="Enter title" required>
+        <input type="text" value={{ sbn.name }} class="form-control" id="nameNBS" name="nameNBS"
+            data-error="This field is required" placeholder="Enter title" required>
         <div class="help-block with-errors"></div>
     </div>
     <div class="form-group">
         <label>Description <span class="text-danger-wp">(*)</span> </label>
-        <textarea id="descNBS" class="form-control" placeholder="Enter description" data-error="This field is required" rows="4" required>{{ sbn.description }}</textarea>
+        <textarea id="descNBS" class="form-control" placeholder="Enter description" data-error="This field is required"
+            rows="4" required>{{ sbn.description }}</textarea>
         <div class="help-block with-errors"></div>
     </div>
     <div class="form-group">
@@ -51,12 +55,15 @@
         <div class="row">
             <div class="col-md-6">
                 <label>Time required to generate maximun benefit (yr) <span class="text-danger-wp">(*)</span> </label>
-                <input id="maxBenefitTime" value="{{sbn.total_profits_sbn_consec_time}}"  type="text" class="form-control" data-error="This field is required" required>
+                <input id="maxBenefitTime" value="{{sbn.total_profits_sbn_consec_time}}" type="text"
+                    class="form-control" data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-6">
-                <label>Percentage of benefit associated with interventions at time t=0 <span class="text-danger-wp">(*)</span> </label>
-                <input id="benefitTimePorc" value="{{sbn.profit_pct_time_inter_assoc}}" type="text" class="form-control" data-error="This field is required" required>
+                <label>Percentage of benefit associated with interventions at time t=0 <span
+                        class="text-danger-wp">(*)</span> </label>
+                <input id="benefitTimePorc" value="{{sbn.profit_pct_time_inter_assoc}}" type="text" class="form-control"
+                    data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
         </div>
@@ -65,12 +72,14 @@
         <div class="row">
             <div class="col-md-6">
                 <label>Consecution Time Total Benefits <span class="text-danger-wp">(*)</span> </label>
-                <input id="totalConsecTime" value="{{ sbn.total_profits_sbn_consec_time }}"  type="text" class="form-control" data-error="This field is required" required>
+                <input id="totalConsecTime" value="{{ sbn.total_profits_sbn_consec_time }}" type="text"
+                    class="form-control" data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-6">
                 <label>Maintenance Perodicity <span class="text-danger-wp">(*)</span> </label>
-                <input id="maintenancePeriod" value="{{ sbn.periodicity_maitenance }}" type="text" class="form-control" data-error="This field is required" required>
+                <input id="maintenancePeriod" value="{{ sbn.periodicity_maitenance }}" type="text" class="form-control"
+                    data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
         </div>
@@ -80,17 +89,20 @@
         <div class="row">
             <div class="col-md-4">
                 <label>Unit Implementation Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
-                <input id="implementCost" value="{{ sbn.unit_implementation_cost }}" type="text" class="form-control" data-error="This field is required" required>
+                <input id="implementCost" value="{{ sbn.unit_implementation_cost }}" type="text" class="form-control"
+                    data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-4">
                 <label>Unit Maintenace Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
-                <input id="maintenanceCost"  value="{{ sbn.unit_maintenance_cost }}" type="text" class="form-control" data-error="This field is required" required>
+                <input id="maintenanceCost" value="{{ sbn.unit_maintenance_cost }}" type="text" class="form-control"
+                    data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-4">
                 <label>Unit Oportunity Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
-                <input id="oportunityCost" value="{{ sbn.unit_oportunity_cost }}"  type="text" class="form-control" data-error="This field is required" required>
+                <input id="oportunityCost" value="{{ sbn.unit_oportunity_cost }}" type="text" class="form-control"
+                    data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
         </div>
@@ -117,11 +129,21 @@
     </div>
     <h4 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h4>
 
-    <select multiple="multiple" id="riosTransformation" size="10" name="duallistbox_demo1[]" title="duallistbox_demo1[]">
+    <select multiple="multiple" id="riosTransformation" size="10" name="duallistbox_demo1[]"
+        title="duallistbox_demo1[]">
+        {% for transformation in sbn.rios_transformations.all %}
+        <option value="{{transformation.pk}}" selected>{{transformation.name}}</option>
+        {% endfor %}
     </select>
     <br>
     <div class="form-group">
-        <div class="row">
+        <!-- Rounded switch -->
+        <label>Load new restricted area</label>
+        <label class="switch">
+            <input type="checkbox" id="loadArea">
+            <span class="slider round"></span>
+        </label>
+        <div class="row" style="display:none" id="areas">
             <div class="col-md-4">
                 <label>Restricted areas <span class="text-danger-wp">(*)</span></label>
                 <input id="restrictedArea" type="file" data-error="This field is required" required>
@@ -130,11 +152,13 @@
         </div>
     </div>
     <br>
-    <button type="submit" class="btn btn-primary ">Submit</button>
-</form><script>
+    <input type="hidden" value="{{sbn.pk}}" id="sbnId">
+    <button type="submit" id="submit" class="btn btn-primary ">Submit</button>
+</form>
+<script>
     var token = '{{ csrf_token }}';
-    var countryNbs='{{ sbn.country.pk }}';
-    var currencyNbs='{{ sbn.currency.pk }}';
+    var countryNbs = '{{ sbn.country.pk }}';
+    var currencyNbs = '{{ sbn.currency.pk }}';
 </script>
 {% endfor %} {% endblock body_outer %} {% block extra_script %}
 <!--ZIP reader library-->
@@ -147,14 +171,4 @@
 </script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca_edit.js"></script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jquery.bootstrap-duallistbox.min.js"></script>
-<script>
-    $(document).ready(function() {
-
-
-
-    })
-
-
-
-</script>
 {% endblock %}
