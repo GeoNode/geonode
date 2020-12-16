@@ -1,5 +1,4 @@
 {% extends "base.html" %} {% load i18n %} {% load bootstrap_tags %} {% block body_outer %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/bootstrap-duallistbox.min.css">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/waterproof_nbs_ca.css">
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
@@ -124,32 +123,6 @@
             {% endfor %}
         </div>
     </div>
-    <!--
-    <h4 class="text-primary">RIOS Transition</h4>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-md-12">
-                <select id="riosTransition" class="form-control" data-error="This field is required" required>
-                </select>
-                <div class="help-block with-errors"></div>
-            </div>
-        </div>
-    </div>
-    <h4 class="text-primary">RIOS Activities</h4>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-md-12">
-                <select id="riosActivity" class="form-control" data-error="This field is required" required>
-                </select>
-                <div class="help-block with-errors"></div>
-            </div>
-        </div>
-    </div>
-    <h4 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h4>
-
-    <select multiple="multiple" id="riosTransformation" size="10" name="duallistbox_demo1[]" title="duallistbox_demo1[]">
-    </select>
--->
     <div class="form-group">
         <div class="row">
             <div class="col-md-4">
@@ -174,7 +147,6 @@
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js" integrity="sha512-dTu0vJs5ndrd3kPwnYixvOCsvef5SGYW/zSSK4bcjRBcZHzqThq7pt7PmCv55yb8iBvni0TSeIDV8RYKjZL36A==" crossorigin="anonymous"></script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
-<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jquery.bootstrap-duallistbox.min.js"></script>
 <script>
     $(document).ready(function() {
         // Obtención de valores de los check de la solución
