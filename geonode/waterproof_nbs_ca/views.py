@@ -101,8 +101,11 @@ def createNbs(request):
 
         return render(request, 'waterproof_nbs_ca/waterproofnbsca_form.html')
     else:
-        nbs = WaterproofNbsCa.objects.all()
-        return render(request, 'waterproof_nbs_ca/waterproofnbsca_form.html', {'nbs': nbs})
+        nbs = WaterproofNbsCa.objects.all();
+        transitions = RiosTransition.objects.all();
+        riosActivity = RiosActivity.objects.all();
+        riosTransformation = RiosTransformation.objects.all();
+        return render(request, 'waterproof_nbs_ca/waterproofnbsca_form.html', {'nbs': nbs, 'transitions': transitions, 'riosActivity': riosActivity, 'riosTransformation': riosTransformation})
 
 
 def listNbs(request):
@@ -224,10 +227,12 @@ def cloneNbs(request, idx):
 
 def viewNbs(request, idx):
     filterNbs = WaterproofNbsCa.objects.filter(id=idx)
-    currencies = Currency.objects.all()
+    currencies = Currency.objects.all();
+    transitions = RiosTransition.objects.all();
     riosTransition = RiosActivity.objects.filter(transition_id=2)
-    return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs, 'currencies': currencies, 'riosTransition': riosTransition})
-
+    #riosTransition = riosTransformation.objects.all();
+    return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs, 'currencies': currencies, 'riosTransition': riosTransition, 'transitions': transitions})
+    #return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs, 'currencies': currencies})
 
 def loadCurrency(request):
     currency = request.GET.get('currency')
