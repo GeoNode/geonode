@@ -224,6 +224,7 @@ class LayersTest(GeoNodeBaseTestSupport):
     def test_layer_attributes_feature_catalogue(self):
         """ Test layer feature catalogue functionality
         """
+        self.assertTrue(self.client.login(username='admin', password='admin'))
         # test a non-existing layer
         url = reverse('layer_feature_catalogue', args=('bad_layer',))
         response = self.client.get(url)
@@ -967,7 +968,9 @@ class LayersTest(GeoNodeBaseTestSupport):
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
             perm_spec = resource.get_all_level_info()
-            self.assertTrue(group in perm_spec["groups"])
+            if "groups" in perm_spec and perm_spec["groups"]:
+                logger.error(f" -- perm_spec[groups] --> {perm_spec['groups']}")
+                self.assertTrue(group in perm_spec["groups"])
         # test user permissions
         user = get_user_model().objects.first()
         response = self.client.post(
@@ -983,6 +986,8 @@ class LayersTest(GeoNodeBaseTestSupport):
         resources = Model.objects.filter(id__in=[r.pk for r in resources])
         for resource in resources:
             perm_spec = resource.get_all_level_info()
+            if "users" in perm_spec and perm_spec["users"]:
+                logger.error(f" -- perm_spec[users] --> {perm_spec['users']}")
             self.assertTrue(user in perm_spec["users"])
 
 
