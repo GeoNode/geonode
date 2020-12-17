@@ -35,6 +35,10 @@ geonode/uploaded
 geonode/qgis_layer
 geonode/qgis_tiles
 geonode/settings.py
+<<<<<<< HEAD
+
+=======
+>>>>>>> origin/nbs_guille
 #Testing output
 .coverage
 .noseids
@@ -89,6 +93,7 @@ geonode\.tests\.bdd\.e2e\.test_login/
 scripts/spcgeonode/_volume_*
 
 /geonode/test_settings.py
+
 
 /geonode/static/yarn.lock
 
