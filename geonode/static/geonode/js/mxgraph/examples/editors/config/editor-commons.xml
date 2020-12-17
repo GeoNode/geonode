@@ -1,0 +1,267 @@
+<mxEditor>
+	<ui>
+		<resource basename="/static/mxgraph/resources/app"/>
+	</ui>
+	<mxDefaultPopupMenu as="popupHandler">
+		<add as="cut" action="cut" icon="/static/mxgraph/images/cut.gif"/>
+		<add as="copy" action="copy" icon="/static/mxgraph/images/copy.gif"/>
+		<add as="paste" action="paste" icon="/static/mxgraph/images/paste.gif"/>
+		<separator/>
+		<add as="delete" action="delete" icon="/static/mxgraph/images/delete.gif" if="cell"/>
+		<separator/>
+		<add as="exitGroup" action="exitGroup" icon="/static/mxgraph/images/up.gif" if="notRoot"/>
+		<add as="enterGroup" action="enterGroup" icon="/static/mxgraph/images/down.gif" if="validRoot"/>
+		<separator/>
+		<add as="shape" if="cell">
+			<add as="group" action="group" icon="/static/mxgraph/images/group.gif" if="ncells"/>
+			<add as="ungroup" action="ungroup" icon="/static/mxgraph/images/ungroup.gif" if="cell"/>
+			<separator/>
+			<add as="removeFromParent" action="removeFromParent" if="cell"/>
+			<separator/>
+			<add as="collapse" action="collapse" icon="/static/mxgraph/images/collapse.gif" if="expandable"/>
+			<add as="expand" action="expand" icon="/static/mxgraph/images/expand.gif" if="collapsable"/>
+			<separator/>
+			<add as="toFront" action="toFront" icon="/static/mxgraph/images/tofront.gif" if="cell"/>
+			<add as="toBack" action="toBack" icon="/static/mxgraph/images/toback.gif" if="cell"/>
+			<separator/>
+			<add as="editStyle" action="editStyle" if="cell"/>
+		</add>
+		<add as="format" if="cell">
+			<add as="fillColor" action="fillColor" icon="/static/mxgraph/images/fillcolor.gif" if="cell"/>
+			<add as="gradientColor" action="gradientColor" if="cell"/>
+			<add as="strokeColor" action="strokeColor" icon="/static/mxgraph/images/linecolor.gif" if="cell"/>
+			<separator/>
+			<add as="toggleRounded" action="toggleRounded" if="cell"/>
+			<add as="toggleShadow" action="toggleShadow" if="cell"/>
+		</add>
+		<add as="font" if="cell">
+			<add as="fontColor" action="fontColor" icon="/static/mxgraph/images/fontcolor.gif" if="cell"/>
+			<add as="fontFamily" action="fontFamily" if="cell"/>
+			<add as="fontSize" action="fontSize" if="cell"/>
+			<separator/>
+			<add as="bold" action="bold" icon="/static/mxgraph/images/bold.gif" if="cell"/>
+			<add as="italic" action="italic" icon="/static/mxgraph/images/italic.gif" if="cell"/>
+		</add>
+		<separator/>
+		<add as="properties" action="showProperties" icon="/static/mxgraph/images/properties.gif"/>
+		<separator/>
+		<add as="openHref" action="openHref" icon="/static/mxgraph/images/link.gif"/>
+	</mxDefaultPopupMenu>
+	<include name="/static/geonode/js/mxgraph/examples/editors/config/keyhandler-commons.xml"/>
+	<Array as="actions">
+		<add as="open"><![CDATA[
+			function (editor)
+			{
+				editor.open(mxUtils.prompt('Enter filename', 'workflow.xml'));
+			}
+		]]></add>
+		<add as="openHref"><![CDATA[
+			function (editor, cell)
+			{
+				cell = cell || editor.graph.getSelectionCell();
+				
+				if (cell == null)
+				{
+					cell = editor.graph.getCurrentRoot();
+
+					if (cell == null)
+					{
+						cell = editor.graph.getModel().getRoot();
+					}
+				}
+
+				if (cell != null)
+				{
+					var href = cell.getAttribute('href');
+					
+					if (href != null && href.length > 0)
+					{
+						window.open(href);
+					}
+					else
+					{
+						mxUtils.alert('No URL defined. Showing properties...');
+						editor.execute('showProperties', cell);
+					}
+				}
+			}
+		]]></add>
+		<add as="editStyle"><![CDATA[
+			function (editor)
+			{
+				var cell = editor.graph.getSelectionCell();
+				
+				if (cell != null)
+				{
+					var model = editor.graph.getModel();
+					var style = mxUtils.prompt(mxResources.get('enterStyle'), model.getStyle(cell) || '');
+
+					if (style != null)
+					{
+						model.setStyle(cell, style);
+					}
+				}
+			}
+		]]></add>
+		<add as="fillColor"><![CDATA[
+			function (editor)
+			{
+				var color = mxUtils.prompt(mxResources.get('enterColorname'), 'red');
+				
+				if (color != null)
+				{
+					editor.graph.model.beginUpdate();
+					try
+					{
+						editor.graph.setCellStyles("strokeColor", color);
+						editor.graph.setCellStyles("fillColor", color);
+					}
+					finally
+					{
+						editor.graph.model.endUpdate();
+					}
+				}
+			}
+		]]></add>
+		<add as="gradientColor"><![CDATA[
+			function (editor)
+			{
+				var color = mxUtils.prompt(mxResources.get('enterColorname'), 'white');
+				
+				if (color != null)
+				{
+					editor.graph.setCellStyles("gradientColor", color);
+				}
+			}
+		]]></add>
+		<add as="strokeColor"><![CDATA[
+			function (editor)
+			{
+				var color = mxUtils.prompt(mxResources.get('enterColorname'), 'red');
+				
+				if (color != null)
+				{
+					editor.graph.setCellStyles("strokeColor", color);
+				}
+			}
+		]]></add>
+		<add as="fontColor"><![CDATA[
+			function (editor)
+			{
+				var color = mxUtils.prompt(mxResources.get('enterColorname'), 'red');
+				
+				if (color != null)
+				{
+					editor.graph.setCellStyles("fontColor", color);
+				}
+			}
+		]]></add>
+		<add as="fontFamily"><![CDATA[
+			function (editor)
+			{
+				var family = mxUtils.prompt(mxResources.get('enterFontfamily'), 'Arial');
+				
+				if (family != null && family.length > 0)
+				{
+					editor.graph.setCellStyles("fontFamily", family);
+				}
+			}
+		]]></add>
+		<add as="fontSize"><![CDATA[
+			function (editor)
+			{
+				var size = mxUtils.prompt(mxResources.get('enterFontsize'), '10');
+				
+				if (size != null && size > 0 && size < 999)
+				{
+					editor.graph.setCellStyles("fontSize", size);
+				}
+			}
+		]]></add>
+		<add as="image"><![CDATA[
+			function (editor)
+			{
+				var image = mxUtils.prompt(mxResources.get('enterImageUrl'),
+					'examples//static/mxgraph/images/image.gif');
+				
+				if (image != null)
+				{
+					editor.graph.setCellStyles("image", image);
+				}
+			}
+		]]></add>
+		<add as="opacity"><![CDATA[
+			function (editor)
+			{
+				var opacity = mxUtils.prompt(mxResources.get('enterOpacity'), '100');
+				
+				if (opacity != null && opacity >= 0 && opacity <= 100)
+				{
+					editor.graph.setCellStyles("opacity", opacity);
+				}
+			}
+		]]></add>
+		<add as="straightConnector"><![CDATA[
+			function (editor)
+			{
+				editor.graph.setCellStyle("straightEdge");
+			}
+		]]></add>
+		<add as="elbowConnector"><![CDATA[
+			function (editor)
+			{
+				editor.graph.setCellStyle("");
+			}
+		]]></add>
+		<add as="arrowConnector"><![CDATA[
+			function (editor)
+			{
+				editor.graph.setCellStyle("arrowEdge");
+			}
+		]]></add>
+		<add as="toggleOrientation"><![CDATA[
+			function (editor, cell)
+			{
+				editor.graph.toggleCellStyles(mxConstants.STYLE_HORIZONTAL, true);
+			}
+		]]></add>
+		<add as="toggleRounded"><![CDATA[
+			function (editor)
+			{
+				editor.graph.toggleCellStyles(mxConstants.STYLE_ROUNDED);
+			}
+		]]></add>
+		<add as="toggleShadow"><![CDATA[
+			function (editor)
+			{
+				editor.graph.toggleCellStyles(mxConstants.STYLE_SHADOW);
+			}
+		]]></add>
+		<add as="horizontalTree"><![CDATA[
+			function (editor, cell)
+			{
+				cell = cell || editor.graph.getSelectionCell();
+				
+				if (cell == null)
+				{
+					cell = editor.graph.getDefaultParent();
+				}
+				
+				editor.treeLayout(cell, true);
+			}
+		]]></add>
+		<add as="verticalTree"><![CDATA[
+			function (editor, cell)
+			{
+				cell = cell || editor.graph.getSelectionCell();
+				
+				if (cell == null)
+				{
+					cell = editor.graph.getDefaultParent();
+				}
+				
+				editor.treeLayout(cell, false);
+			}
+		]]></add>
+	</Array>
+</mxEditor>
