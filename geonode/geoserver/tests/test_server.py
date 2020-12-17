@@ -1192,10 +1192,7 @@ class SignalsTests(GeoNodeBaseTestSupport):
                 _links,
                 "No 'original' and 'metadata' links have been found"
             )
-            self.assertTrue(
-                _links.count() > 0,
-                "No 'original' and 'metadata' links have been found"
-            )
+
             # Delete all 'original' and 'metadata' links
             _links.delete()
             self.assertFalse(_links.count() > 0, "No links have been deleted")
