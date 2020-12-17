@@ -1186,8 +1186,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 401)
 
         # Next Test with a user that does NOT have the proper perms
-        logged_in = self.client.login(username='bobby', password='bob')
-        self.assertEqual(logged_in, True)
+        self.assertTrue(self.client.login(username='norman', password='norman'))
         response = self.client.post(
             reverse(
                 'resource_permissions', args=(
@@ -1196,9 +1195,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 401)
 
         # Login as a user with the proper permission and test the endpoint
-        logged_in = self.client.login(username='admin', password='admin')
-        self.assertEqual(logged_in, True)
-
+        self.assertTrue(self.client.login(username='admin', password='admin'))
         response = self.client.post(
             reverse(
                 'resource_permissions', args=(
