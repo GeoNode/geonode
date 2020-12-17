@@ -145,18 +145,18 @@
 <div class="principal-menu">
         <div class="container">
 		<div class="row text-center colorHeaderInstrucciones">
-            <h2>System operating instructions</h2>
+            <h2>{% trans "System operating instructions" %}</h2>
           </div>
             <div class="row hidden-xs hidden-sm hidden-md">
                 <div class="col-md-4">
                     <div class="center-block text-center">
                         <img class="center-img" src= "/static/geonode/img/2.png">
                         <img class="img1 ani_headShake" src="/static/geonode/img/01-ICONO.png">
-                        <h4 class="ico1-text ">Choose or create a new NBS</h4>
+                        <h4 class="ico1-text "> {% trans "Choose or create a new NBS" %} </h4>
                         <img class="img2 ani_headShake" src="/static/geonode/img/02-ICONO.png">
-                        <h4 class="ico2-text ">Define and configure your Water Intakes</h4>
+                        <h4 class="ico2-text "> {% trans "Define and configure your Water Intakes" %} </h4>
                         <img class="img3 ani_headShake" src="/static/geonode/img/03-ICONO.png">
-                        <h4 class="ico3-text ">Locate your city</h4>
+                        <h4 class="ico3-text ">{% trans "Locate your city" %} </h4>
                     </div>
                 </div>
                 <div class="col-md-4 center-block">
@@ -168,11 +168,11 @@
                     <div class="center-block text-center">
                         <img class="center-img " src="/static/geonode/img/3.png">
                         <img class="img4 ani_headShake" src="/static/geonode/img/04-ICONO.png">
-                        <h4 class="ico4-text ">Configure your treatment plants or customized infrastructure</h4>
+                        <h4 class="ico4-text ">{% trans "Configure your treatment plants or customized infrastructure" %} </h4>
                         <img class="img5 ani_headShake" src="/static/geonode/img/05-ICONO.png">
-                        <h4 class="ico5-text ">Define costs and create your case study</h4>
+                        <h4 class="ico5-text ">{% trans "Define costs and create your case study" %}</h4>
                         <img class="img6 ani_headShake" src="/static/geonode/img/06-ICONO.png">
-                        <h4 class="ico6-text ">Consult Compare. download and share the results</h4>
+                        <h4 class="ico6-text ">{% trans "Consult Compare. download and share the results" %}</h4>
                     </div>
                 </div>
             </div>
@@ -190,7 +190,7 @@
                         </a>
                         </div>
                         <div class="media-body">
-                        <h4>Choose or create a new NBS</h4>
+                        <h4>{% trans "Choose or create a new NBS" %}</h4>
                         </div>
                     </div>
                     <div class="media">
@@ -200,7 +200,7 @@
                         </a>
                         </div>
                         <div class="media-body">
-                        <h4>Define and configure your Water Intakes</h4>
+                        <h4>{% trans "Define and configure your Water Intakes" %}</h4>
                         </div>
                     </div>
                     <div class="media">
@@ -210,7 +210,7 @@
                         </a>
                         </div>
                         <div class="media-body">
-                        <h4>Locate your city</h4>
+                        <h4>{% trans "Locate your city" %}</h4>
                         </div>
                     </div>
                     <div class="media">
@@ -220,7 +220,7 @@
                         </a>
                         </div>
                         <div class="media-body">
-                        <h4>Configure your treatment plants or customized infrastructure</h4>
+                        <h4>{% trans "Configure your treatment plants or customized infrastructure" %}</h4>
                         </div>
                     </div>
                     <div class="media">
@@ -230,7 +230,7 @@
                         </a>
                         </div>
                         <div class="media-body">
-                        <h4>Define costs and create your case study</h4>
+                        <h4>{% trans "Define costs and create your case study" %}</h4>
                         </div>
                     </div>
                     <div class="media">
@@ -240,7 +240,7 @@
                         </a>
                         </div>
                         <div class="media-body">
-                        <h4>Consult Compare. download and share the results</h4>
+                        <h4>{% trans "Consult Compare. download and share the results" %}</h4>
                         </div>
                     </div>
                 </div>
@@ -257,11 +257,11 @@
       <section>
                <div class="container text-center">
           <div class="row colorHeaderInstrucciones">
-            <h2>Nature-based solutions</h2>
+            <h2>{% trans "Nature-based solutions" %}</h2>
           </div>
           <div class="row">
-            <span style="font-size=12px"> We work to meet this ambitious goal</span> <br>
-            <span style="font-size=12px"> by focusing on these key conservation areas</span>
+            <span style="font-size=12px"> {% trans "We work to meet this ambitious goal" %}</span> <br>
+            <span style="font-size=12px"> {% trans "by focusing on these key conservation areas" %}</span>
            </div>
             <div class="row" style="height:40px;">
             </div>
@@ -269,21 +269,21 @@
             <div class="col-md-4">
                 <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
                 <img src= "{% static 'geonode/img/01-conservacion.png' %}">
-                <p class="text-center"> Conservation
+                <p class="text-center"> {% trans "Conservation" %}
                 </p>
                 </a>
             </div>
             <div class="col-md-3 col-md-offset-1">
                 <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
                 <img src= "{% static 'geonode/img/02-restauracion-activa.png' %}">
-                <p class="text-center"> Active restoration
+                <p class="text-center"> {% trans "Active restoration" %}
                 </p>
                 </a>
             </div>
             <div class="col-md-3 col-md-offset-1">
                 <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
                 <img src= "{% static 'geonode/img/03-restauracion-pasiva.png' %}">
-                <p class="text-center"> Passive restoration
+                <p class="text-center"> {% trans "Passive restoration" %}
                 </p>
                 </a>
             </div>           
@@ -294,14 +294,14 @@
             <div class="col-md-7">
                 <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
                 <img src= "{% static 'geonode/img/04-practicas-agricolas.png' %}">
-                <p class="text-center"> Best agricultural practices 
+                <p class="text-center"> {% trans "Best agricultural practices" %} 
                 </p>
                 </a>
             </div>
             <div class="col-md-3">
                 <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
                 <img src= "{% static 'geonode/img/05-sistemas-sostenibles.png' %}">
-                <p class="text-center"> Sustainable production systems
+                <p class="text-center"> {% trans "Sustainable production systems" %}
                 </p>
                 </a>
             </div>           
@@ -319,7 +319,7 @@
 	<div class="carrouselcolor">
         <div class="container">
 		<div class="row text-center colorHeaderInstrucciones">
-            <h2>News</h2>
+            <h2>{% trans "News" %}</h2>
           </div>
             <div class="slider owl-carousel">
                 <div class="card">
@@ -327,10 +327,10 @@
                         <img src="/static/geonode/img/car1.jpg" class="img-card-news" alt=""></div>
                     <div class="content">
                         <div class="newstitle">
-                            Indicators of water risk and basin healths</div>
+                            {% trans "Indicators of water risk and basin healths" %}</div>
                        
                         <p>
-                            As part of the conceptualization carried out for the WaterFunds App, the incorporation of some indicators has been proposed that will allow users to have a notion of the water risk and the health status of a basin under analysis.</p>
+                            {% trans "As part of the conceptualization carried out for the WaterFunds App, the incorporation of some indicators has been proposed that will allow users to have a notion of the water risk and the health status of a basin under analysis." %}</p>
                     </div>
                 </div>
                 <div class="card">
@@ -338,9 +338,9 @@
                         <img src="/static/geonode/img/car2.jpg" class="img-card-news" alt=""></div>
                     <div class="content">
                         <div class="newstitle">
-                            RIOS model data requirement</div>                       
+                            {% trans "RIOS model data requirement" %}</div>                       
                         <p>
-                            In summary, a total of 37 variables are identified to feed the 5 InVEST models, of which 28 correspond to variables associated with climate, and the rest are associated with soil and coverage.</p>
+                            {% trans "In summary, a total of 37 variables are identified to feed the 5 InVEST models, of which 28 correspond to variables associated with climate, and the rest are associated with soil and coverage" %}.</p>
                     </div>
                 </div>
                 <div class="card">
@@ -348,9 +348,9 @@
                         <img src="/static/geonode/img/car3.jpg" class="img-card-news" alt=""></div>
                     <div class="content">
                         <div class="newstitle">
-                            InVEST model data requirement</div>                        
+                            {% trans "InVEST model data requirement" %}</div>                        
                         <p>
-                            This section lists the data required by each of the InVEST models that are considered to be incorporated into Waterproof</p>
+                            {% trans "This section lists the data required by each of the InVEST models that are considered to be incorporated into Waterproof" %}</p>
                     </div>
                 </div>
                 <div class="card">
@@ -358,9 +358,9 @@
                         <img src="/static/geonode/img/car4.jpg" class="img-card-news" alt=""></div>
                     <div class="content">
                         <div class="newstitle">                            
-							Total monthly and annual average multi-year precipitation (Current condition) and rainy days</div>
+							{% trans "Total monthly and annual average multi-year precipitation (Current condition) and rainy days" %}</div>
                         <p>                            
-							A total of 11 databases were identified from the review carried out for the multiannual monthly mean precipitation variables (January, February, ..., December) and multi-year mean annual precipitation.</p>
+							{% trans "A total of 11 databases were identified from the review carried out for the multiannual monthly mean precipitation variables (January, February, ..., December) and multi-year mean annual precipitation." %}</p>
                     </div>
                 </div>
                 <div class="card">
@@ -368,10 +368,10 @@
                         <img src="/static/geonode/img/car5.jpg" class="img-card-news" alt=""></div>
                     <div class="content">
                         <div class="newstitle">
-                            Multi-year average monthly and annual total reference evapotranspiration </div>
+                            {% trans "Multi-year average monthly and annual total reference evapotranspiration" %} </div>
                         
                         <p>
-                            According to the review carried out, the databases that contain the reference evapotranspiration variable are scarce, since this variable is generally inferred from data such as temperature, relative humidity, radiation, among others.</p>
+                            {% trans "According to the review carried out, the databases that contain the reference evapotranspiration variable are scarce, since this variable is generally inferred from data such as temperature, relative humidity, radiation, among others." %}</p>
                     </div>
                 </div>
             </div>
@@ -387,22 +387,22 @@
             </div>
             <div class="row backgroundcolorwiki">
            <div class= "row">
-            <p class="ppwpwiki">WATERPROOF WIKI</p>
+            <p class="ppwpwiki">{% trans "WATERPROOF WIKI" %}</p>
             <hr>
             </div>
             <div class="row">
-            <p class="ppwpwiki2">Knowledge bank</p>
+            <p class="ppwpwiki2">{% trans "Knowledge bank" %}</p>
             </div>
              <div class="row" style="height:100px">
-            <p class="ppwpwiki3"> Check here the conceptual elements that Waterproof uses to propose</p>
-            <p class="ppwpwiki3"> nature-based solutions and calculate the return on your investment</p>
+            <p class="ppwpwiki3"> {% trans "Check here the conceptual elements that Waterproof uses to propose" %}</p>
+            <p class="ppwpwiki3"> {% trans "nature-based solutions and calculate the return on your investment" %}</p>
            </div>
           </div>
           <div class="row" style="height:2%;">
             </div>
             <button class= "button-viki">
             <a class= "link-wp-syle" href="{{ partner.partner_link|safe }}" target="_blank">
-            <b class="ppwpwiki3"> Keep reading </b>
+            <b class="ppwpwiki3"> {% trans "Keep reading" %} </b>
             </a>
             </button>
             </div>
