@@ -8704,23 +8704,112 @@ top:50px;
         object-fit: cover;
         width: 35vw;
         height: 300px;
-    }
+}
     
-    .owl-nav>button {
-        outline: none;
-        margin: 5px 5px;
-    }
-    
-    .owl-nav>button>img:hover {
-        -webkit-filter: drop-shadow(5px 5px 5px #222);
-        filter: drop-shadow(5px 5px 5px #222);
-    }
-	.carrouselcolor {
-		background-color: #F7F7F7;
-		 background-size: auto 100%;
-	}
-	.newstitle{
+.owl-nav>button {
+    outline: none;
+    margin: 5px 5px;
+}
+
+.owl-nav>button>img:hover {
+    -webkit-filter: drop-shadow(5px 5px 5px #222);
+    filter: drop-shadow(5px 5px 5px #222);
+}
+.carrouselcolor {
+  background-color: #F7F7F7;
+    background-size: auto 100%;
+}
+.newstitle{
 	color: #0A8B8E;
 	font-weight: lighter;
 	font-size: large;
+}
+
+.circle {
+  width: 35px;
+  height: 35px;
+  background: gray;
+  border-radius: 50%;
+  margin: auto;
+}
+
+.nav-pills > li.active > .circle{
+  background-color: #2c689c;
+}
+
+.nav-pills > li.active > .slant-line{
+  border-color: #2c689c;
+}
+
+.nav-pills > li.active > .slant-line-half-right{
+  border-color: #2c689c;
+}
+
+.nav-pills > li.active > .slant-line-half-left{
+  border-color: #2c689c;
+}
+
+.navbar .nav-pills > li {
+  float: right;
+  display: inline-block;
+  width: auto;
+  float: none;
+  text-align: center;
+  direction: rtl;
+  width:20%;
+  font-size:11px;
+}
+
+.slant-line {
+  width: 115%;
+  margin: auto;
+  margin-top: -7%;
+  margin-bottom: 1%;
+  border-color: gray;
+}
+
+.slant-line-half-right{
+  position: absolute;
+  width: 50%;
+  margin: auto;
+  margin-top: -7%;
+  margin-bottom: 1%;
+  border-color: gray;
+}
+
+.slant-line-half-left{
+  position: absolute;
+  width: 50%;
+  margin: auto;
+  margin-top: -7%;
+  margin-bottom: 1%;
+  border-color: gray;
+  left: -6px;
+}
+
+#map { 
+  height: 380px; 
+  cursor: pointer;
+}
+
+.inputCoords{
+  position: absolute;
+  z-index: 9999;
+  right: 1px;
+}
+
+.leaflet-control-coordinates {
+	background: white;
+	border-radius: 4px;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+	cursor: pointer;
+	padding: 2px 5px;
+}
+
+.leaflet-control-coordinates.hidden {
+	display: none;
+}
+
+.leaflet-control-coordinates-lng {
+	padding-left: 5px;
 }
