@@ -1,0 +1,25 @@
+{% extends "base.html" %} {% load i18n %} {% load bootstrap_tags %} {% block body_outer %}
+<h1>Create Water Intake</h1>
+<form  id="form" method="POST" action="">
+    {% csrf_token %}
+    <div class="form-group">
+        <div class="form-group">
+            <label>{% trans "Name" %}</label>
+            <input type="text" class="form-control" id="name" placeholder="Enter name">
+        </div>
+        <div class="form-group">
+            <label>{% trans "Description" %}</label>
+            <textarea id="description" class="form-control" placeholder="Enter description"></textarea>
+        </div>
+        <div class="form-group">
+            <label>{% trans "id_region" %}</label>
+            <input id="id_region" class="form-control" placeholder="region"></textarea>
+        </div>
+        <div class="form-group">
+            <label>{% trans "id_city" %}</label>
+            <input id="id_city" class="form-control" placeholder="city"></textarea>
+        </div>
+    </div>
+    <button type="submit" id="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}
