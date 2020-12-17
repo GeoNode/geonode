@@ -294,6 +294,11 @@ urlpatterns += [
     url(r'^waterproof_nbs_ca/', include('geonode.waterproof_nbs_ca.urls'), name='waterproof_nbs_ca'),
 ]
 
+# waterproof_intake
+urlpatterns += [
+    url(r'^intake/', include('geonode.waterproof_intake.urls'), name='waterproof_intake'),
+]
+
 if settings.MONITORING_ENABLED:
     urlpatterns += [url(r'^monitoring/',
                         include(('geonode.monitoring.urls', 'geonode.monitoring'),
