@@ -1,5 +1,4 @@
 {% extends "base.html" %} {% load i18n %} {% load bootstrap_tags %} {% block body_outer %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/bootstrap-duallistbox.min.css">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/waterproof_nbs_ca.css">
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
@@ -14,54 +13,62 @@
             width="750" height="150" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
     </div>
 </div>
-<h1>Create NBS</h1>
+<div class="page-header">
+    <h1>Create NBS</h1>
+</div>
 <form data-toggle="validator" role="form">
     <h4 class="text-primary">General Settings</h4>
     <div class="form-group">
-        <label>Name</label>
-        <input type="text" class="form-control" id="nameNBS" name="nameNBS" placeholder="Enter title" data-match-error="Whoops, these don't match" required>
+        <label>Name <span class="text-danger-wp">(*)</span> </label>
+        <input type="text" class="form-control" id="nameNBS" name="nameNBS" data-error="This field is required" placeholder="Enter title" required>
         <div class="help-block with-errors"></div>
     </div>
     <div class="form-group">
-        <label>Description</label>
-        <textarea id="descNBS" class="form-control" placeholder="Enter description" rows="4" required></textarea>
+        <label>Description <span class="text-danger-wp">(*)</span> </label>
+        <textarea id="descNBS" class="form-control" placeholder="Enter description" data-error="This field is required" rows="4" required></textarea>
+        <div class="help-block with-errors"></div>
     </div>
     <div class="form-group">
         <div class="row">
             <div class="col-md-6">
-                <label>Country</label>
-                <select id="countryNBS" class="form-control" required>
+                <label>Country <span class="text-danger-wp">(*)</span> </label>
+                <select id="countryNBS" class="form-control" data-error="This field is required" required>
                 </select>
+                <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-6">
-                <label>Currency type cost calculation</label>
-                <select id="currencyCost" class="form-control" required>
+                <label>Currency type cost calculation <span class="text-danger-wp">(*)</span> </label>
+                <select id="currencyCost" class="form-control" data-error="This field is required" required>
                 </select>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
     <div class="form-group">
         <div class="row">
             <div class="col-md-6">
-                <label>Time required to generate maximun benefit (yr)</label>
-                <input id="maxBenefitTime" type="text" class="form-control" required>
+                <label>Time required to generate maximun benefit (yr) <span class="text-danger-wp">(*)</span> </label>
+                <input id="maxBenefitTime" type="text" class="form-control" data-error="This field is required" required>
+                <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-6">
-                <label>Percentage of benefit associated with interventions at time t=0</label>
-                <input id="benefitTimePorc" type="text" class="form-control" required>
+                <label>Percentage of benefit associated with interventions at time t=0 <span class="text-danger-wp">(*)</span> </label>
+                <input id="benefitTimePorc" type="text" class="form-control" data-error="This field is required" required>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
     <div class="form-group">
         <div class="row">
             <div class="col-md-6">
-                <label>Consecution Time Total Benefits
-                </label>
-                <input id="totalConsecTime" type="text" class="form-control" required>
+                <label>Consecution Time Total Benefits <span class="text-danger-wp">(*)</span> </label>
+                <input id="totalConsecTime" type="text" class="form-control" data-error="This field is required" required>
+                <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-6">
-                <label>Maintenance Perodicity</label>
-                <input id="maintenancePeriod" type="text" class="form-control" required>
+                <label>Maintenance Perodicity <span class="text-danger-wp">(*)</span> </label>
+                <input id="maintenancePeriod" type="text" class="form-control" data-error="This field is required" required>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
@@ -69,16 +76,19 @@
     <div class="form-group">
         <div class="row">
             <div class="col-md-4">
-                <label>Unit Implementation Cost (US$/ha)</label>
-                <input id="implementCost" type="text" class="form-control" required>
+                <label>Unit Implementation Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
+                <input id="implementCost" type="text" class="form-control" data-error="This field is required" required>
+                <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-4">
-                <label>Unit Maintenace Cost (US$/ha)</label>
-                <input id="maintenanceCost" type="text" class="form-control" required>
+                <label>Unit Maintenace Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
+                <input id="maintenanceCost" type="text" class="form-control" data-error="This field is required" required>
+                <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-4">
-                <label>Unit Oportunity Cost (US$/ha)</label>
-                <input id="oportunityCost" type="text" class="form-control" required>
+                <label>Unit Oportunity Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
+                <input id="oportunityCost" type="text" class="form-control" data-error="This field is required" required>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
@@ -86,33 +96,46 @@
     <div class="form-group">
         <div class="row">
             <div class="col-md-12">
-                <select id="riosTransition" class="form-control" required>
+                <select id="riosTransition" class="form-control" data-error="This field is required" required>
+
                 </select>
-            </div>
-        </div>
-    </div>
-    <h4 class="text-primary">RIOS Activities</h4>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-md-12">
-                <select id="riosActivity" class="form-control" required>
-                </select>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
     <h4 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h4>
     <div class="form-group">
         <div class="row">
+            {% for tran in transitions %}
+            <div class="col-md-12" id="selectlanduse{{tran.pk}}" name="selectlanduse" data-value="{{tran.pk}}" style="display: none;">
+                {% for riosa in riosActivity %} {% if tran.pk == riosa.transition_id %}
+                <h5>{{ riosa.name }}</h5>
+                {% for riost in riosTransformation %} {% if riosa.pk == riost.activity_id %}
+                <ul>
+                    <li class="list-inline">
+                        <div class="checkbox">
+                            <label><input name="itemRT" type="checkbox" id="itemRT{{riost.pk}}" value="{{ riost.pk }}">{{riost.name}}</label>
+                        </div>
+                    </li>
+                </ul>
+                {% endif %} {% endfor %} {% endif %} {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
             <div class="col-md-4">
-                <label>Restricted areas</label>
-                <input id="restrictedArea" type="file" required>
+                <label>Restricted areas <span class="text-danger-wp">(*)</span></label>
+                <input id="restrictedArea" type="file" data-error="This field is required" required>
+                <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
-    <select multiple="multiple" id="riosTransformationAct" size="10" name="duallistbox_demo1[]" title="duallistbox_demo1[]">
-        </select>
     <br>
-    <button type="submit" class="btn btn-primary ">Submit</button>
+    <button id="submit" type="button" class="btn btn-primary ">Submit</button>
+    <button type="button" class="btn btn-primary" id="getAllValues">Get Values</button>
+
 </form>
 {% endblock %} {% block extra_script %}
 <!--ZIP reader library-->
@@ -120,26 +143,37 @@
 <!--Shapefile reader library -->
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/shp.min.js"></script>
 <script>
-
     var token = '{{ csrf_token }}';
-     
 </script>
-<script>
-    $(document).ready(function() {
-
-        var demo1 = $('select[name="duallistbox_demo1[]"]').bootstrapDualListbox({
-            preserveSelectionOnMove: 'moved',
-            moveOnSelect: false,
-        });
-
-        $("#porfin").click(function() {
-            alert($('[name="duallistbox_demo1[]"]').val());
-        });
-    });
-</script>
-<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js" integrity="sha512-dTu0vJs5ndrd3kPwnYixvOCsvef5SGYW/zSSK4bcjRBcZHzqThq7pt7PmCv55yb8iBvni0TSeIDV8RYKjZL36A==" crossorigin="anonymous"></script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
-<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jquery.bootstrap-duallistbox.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Obtención de valores de los check de la solución
+        $("#getAllValues").click(function() {
+            $('input[name=itemRT]:checked').each(function() {
+                inputTypes.push($(this).val());
+            });
+            console.log(inputTypes)
+        });
 
+        // Ocultar div dependiendo de la opción seleccionada
+        $("#riosTransition").change(function() {
+            dato = $("#riosTransition").val();
+            var data_value = $(`#selectlanduse${dato}`).attr('data-value');
+            $('div[name=selectlanduse]').each(function() {
+                $('div[name=selectlanduse]').css({
+                    "display": "none"
+                })
+            });
+
+            if (dato == data_value) {
+                $(`#selectlanduse${dato}`).css({
+                    "display": "block"
+                })
+            }
+        });
+
+    })
+</script>
 {% endblock %}

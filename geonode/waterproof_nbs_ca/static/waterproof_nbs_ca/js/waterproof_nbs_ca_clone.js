@@ -156,12 +156,12 @@ $(function () {
             }
             else {
                 // Type action for view
-                formData.append('action', 'edit-nbs');
+                formData.append('action', 'clone-nbs');
                 // Required session token
                 formData.append('csrfmiddlewaretoken', token);
                 $.ajax({
                     type: 'POST',
-                    url: '/waterproof_nbs_ca/edit/' + sbnId,
+                    url: '/waterproof_nbs_ca/clone/' + sbnId,
                     data: formData,
                     cache: false,
                     processData: false,

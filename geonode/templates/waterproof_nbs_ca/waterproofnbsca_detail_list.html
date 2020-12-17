@@ -1,6 +1,6 @@
 {% extends "geonode_base.html" %} {% load i18n %} {% block title %} {% trans "Waterproof Detail NBS CA" %} {% endblock %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/bootstrap-duallistbox.min.css">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/waterproof_nbs_ca.css"> {% block body_outer %} {% for sbn in nbs %}
+
 <div class="row">
     <div class="col-md-4">
         <h4 class="text-center">Bogotá D.C.</h4>
@@ -12,135 +12,147 @@
             width="750" height="150" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
     </div>
 </div>
-<h1>{% trans "Detail sbn" %}</h1>
-<form data-toggle="validator" role="form">
-    <h4 class="text-primary">General Settings</h4>
-    <div class="form-group">
-        <label>Name</label>
-        <input type="text" value="{{ sbn.name }}" class="form-control" disabled id="nameNBS" name="nameNBS" placeholder="Enter title" data-match-error="Whoops, these don't match" required>
-        <div class="help-block with-errors"></div>
-    </div>
-    <div class="form-group">
-        <label>Description</label>
-        <textarea id="descNBS" class="form-control" disabled placeholder="Enter description" rows="5" required>{{ sbn.description }}</textarea>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-md-6">
-                <label>Currency type cost calculation</label>
-                <select class="form-control" disabled required>
+<div class="page-header">
+    <h1>{% trans "Detail sbn" %}</h1>
+</div>
+
+<h4 class="text-primary">General Settings</h4>
+<div class="form-group">
+    <label>Name</label>
+    <input type="text" value="{{ sbn.name }}" class="form-control" disabled placeholder="Enter title" data-match-error="Whoops, these don't match" required>
+    <div class="help-block with-errors"></div>
+</div>
+<div class="form-group">
+    <label>Description</label>
+    <textarea class="form-control" disabled placeholder="Enter description" rows="5" required>{{ sbn.description }}</textarea>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="col-md-6">
+            <label>Currency type cost calculation</label>
+            <select class="form-control" disabled required>
                   {% for cur in currencies %}
                   <option value="{{cur.pk}}" {% if cur.pk == sbn.currency.pk %} selected{% endif %}>{{ cur.name}}</option>
                   {%  endfor %}
                 </select>
-            </div>
         </div>
     </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-md-6">
-                <label>Time required to generate maximun benefit (yr)</label>
-                <input id="maxBenefitTime" type="text" disabled class="form-control" required>
-            </div>
-            <div class="col-md-6">
-                <label>Percentage of benefit associated with interventions at time t=0</label>
-                <input id="benefitTimePorc" type="text" class="form-control" required>
-            </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="col-md-6">
+            <label>Time required to generate maximun benefit (yr)</label>
+            <input value="{{sbn.total_profits_sbn_consec_time}}" type="text" disabled class="form-control" required>
+        </div>
+        <div class="col-md-6">
+            <label>Percentage of benefit associated with interventions at time t=0</label>
+            <input value="{{sbn.profit_pct_time_inter_assoc}}" type="text" disabled class="form-control" required>
         </div>
     </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-md-6">
-                <label>Consecution Time Total Benefits
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="col-md-6">
+            <label>Consecution Time Total Benefits
               </label>
-                <input id="totalConsecTime" type="text" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-                <label>Maintenance Perodicity</label>
-                <input id="maintenancePeriod" type="text" class="form-control" required>
-            </div>
+            <input value="{{ sbn.total_profits_sbn_consec_time }}" disabled type="text" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+            <label>Maintenance Perodicity</label>
+            <input value="{{ sbn.periodicity_maitenance }}" disabled type="text" class="form-control" required>
         </div>
     </div>
-    <h4 class="text-primary">Unit Costs</h4>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="panel  panel-info">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Reference cost</h3>
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <label>Unit Implementation Cost (US$/ha)</label>
-                            <input id="implementCost" type="text" class="form-control" disabled required>
-                        </div>
-                        <div class="form-group">
-                            <label>Unit Maintenace Cost (US$/ha)</label>
-                            <input id="maintenanceCost" type="text" class="form-control" disabled required>
-                        </div>
-                        <div class="form-group">
-                            <label>Unit Oportunity Cost (US$/ha)</label>
-                            <input id="oportunityCost" type="text" class="form-control" disabled required>
-                        </div>
-                    </div>
+</div>
+<h4 class="text-primary">Unit Costs</h4>
+<div class="form-group">
+    <div class="row">
+        <div class="col-md-6">
+            <label>Currency type cost calculation</label>
+            <select id="currenciesComapreSelect" class="form-control" required>
+                {% for cur in currencies %}
+                <option value="{{cur.factor}}">{{ cur.country.name }}</option>
+                {%  endfor %}
+              </select>
+        </div>
+        <div class="col-md-6">
+            <label>Multiplying factor for overrall cost</label>
+            <input disabled id="multiplyCurrencies" type="text" class="form-control" required>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel  panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Reference cost</h3>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="panel  panel-warning">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Fact cost</h3>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label>Unit Implementation Cost (US$/ha)</label>
+                        <input value="{{ sbn.unit_implementation_cost }}" id="b_unit_implementation_cost" type="text" class="form-control" disabled required>
                     </div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <label>Unit Implementation Cost (US$/ha)</label>
-                            <input type="text" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Unit Maintenace Cost (US$/ha)</label>
-                            <input type="text" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Unit Oportunity Cost (US$/ha)</label>
-                            <input type="text" class="form-control" required>
-                        </div>
+                    <div class="form-group">
+                        <label>Unit Maintenace Cost (US$/ha)</label>
+                        <input value="{{ sbn.unit_maintenance_cost }}" id="b_unit_maintenance_cost" type="text" class="form-control" disabled required>
+                    </div>
+                    <div class="form-group">
+                        <label>Unit Oportunity Cost (US$/ha)</label>
+                        <input value="{{ sbn.unit_oportunity_cost }}" id="b_unit_oportunity_cost" type="text" class="form-control" disabled required>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <h4 class="text-primary">RIOS Transition</h4>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-md-12">
-                <select id="riosTransition" class="form-control" required>
-              </select>
+        <div class="col-md-6">
+            <div class="panel  panel-danger">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Fact cost</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label>Unit Implementation Cost (US$/ha)</label>
+                        <input type="text" class="form-control" id="a_unit_implementation_cost" required disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Unit Maintenace Cost (US$/ha)</label>
+                        <input type="text" class="form-control" id="a_unit_maintenance_cost" required disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Unit Oportunity Cost (US$/ha)</label>
+                        <input id="a_unit_oportunity_cost" type="text" class="form-control" required disabled>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <h4 class="text-primary">RIOS Activities</h4>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-md-12">
-                <select id="riosActivity" class="form-control" required>
-              </select>
-            </div>
-        </div>
-    </div>
-    <h4 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h4>
-    <select multiple="multiple" id="riosTransformationAct" size="10" name="duallistbox_demo1[]" title="duallistbox_demo1[]">
-      </select>
-    <br>
-    <button type="submit" class="btn btn-primary ">Submit</button>
-</form>
+</div>
+<h4 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h4>
+<ul class="list-group">
+
+    {% for transformation in sbn.rios_transformations.all %}
+    <li class="list-group-item">
+        <span class="badge">{{ transformation.description }}</span> {{ transformation.name }}
+    </li>
+    {% endfor %}
+
+</ul>
+
 {% endfor %} {% endblock body_outer %} {% block extra_script %}
 
-<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jquery.bootstrap-duallistbox.min.js"></script>
+
 <script>
     $(document).ready(function() {
-
-        var demo1 = $('select[name="duallistbox_demo1[]"]').bootstrapDualListbox({
-            preserveSelectionOnMove: 'moved',
-            moveOnSelect: false,
+        $("#currenciesComapreSelect").change(function() {
+            var optionSelected = $(this).find("option:selected");
+            var ValueSelected = optionSelected.val();
+            ValueSelected = parseFloat(ValueSelected.replace(/,/g, '.'));
+            var implementation = parseFloat($('#b_unit_implementation_cost').val().replace(/,/g, '.'));
+            var maintenance = parseFloat($('#b_unit_maintenance_cost').val().replace(/,/g, '.'));
+            var oportunity = parseFloat($('#b_unit_oportunity_cost').val().replace(/,/g, '.'));
+            $('#multiplyCurrencies').val(ValueSelected);
+            $('#a_unit_implementation_cost').val(implementation * ValueSelected);
+            $('#a_unit_maintenance_cost').val(maintenance * ValueSelected);
+            $('#a_unit_oportunity_cost').val(oportunity * ValueSelected);
         });
     });
 </script>
