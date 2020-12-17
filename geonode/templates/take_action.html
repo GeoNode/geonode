@@ -5,6 +5,7 @@
 {% block title %} {% trans "Take action" %} — {{ block.super }} {% endblock %}
 
 {% block body_outer %}
+
 <section>
 	<div class="imgheaderpag">          
 		<img src= "{% static 'geonode/img/2-IMAGEN.jpg' %}">
@@ -14,14 +15,64 @@
 	<div class="page-header colorHeaderInstrucciones">
 		<h2>{% trans "Take Action" %}</h2>
 	</div>
+	<div class="newstitle">
+		<span>{% trans "Now that you have a portfolio of nature-based solutions to improve water security in your basins of interest and you know the return on your investment," %}</span> <b>{% trans "Take it to action!" %}</b>
+	</div>
+	<div class="row" style="height: 10px;">
+	</div>
+	<div class="newstitle">
+		<span>{% trans "Why is it important to do it?" %}</span>
+	</div>
+	<div class="row" style="height: 10px;">
+	</div>
 	<p class="text-justify">
-	 {% trans "Text that explains what is expected by putting into action the portfolio of nature-based solutions that was obtained with the models. Introduction to the content of this page: the general process for the implementation and detail of the steps; who can help you; Useful resources and references for implementation." %}
+	 {% trans "Watersheds around the world are being transformed and degraded, as we lose terrestrial and freshwater ecosystems at ever higher rates. Likewise, the demand for water is increasing at a rate that is expected to have increased by 30% by 2050, which, added to the impacts of climate change, pose a greater risk to the health of ecosystems and to security. water." %}
 	</p>	
+	<p class="text-justify">
+	 {% trans "Healthy ecosystems are the foundation for multiple ecosystem services that provide benefits to us as individuals and as a society. Therefore, the deterioration of ecosystems has important consequences on our well-being and exacerbates the challenges we currently face as a society. The degradation of ecosystems, climate change and the increase in water demand are just some of the factors that can increase social conflicts over water use, increase our vulnerability, decrease production and impact our economy." %}
+	</p>	
+	<p class="text-justify">
+	 {% trans "Nature-based solutions are actions that are based on ecosystems and the services they provide, to respond to various societal challenges such as climate change, food security, disaster risk or water security. It is an umbrella concept that addresses various actions and approaches that seek to address social problems and share the interest of taking advantage of ecosystems, their characteristics or functions, to solve them, while providing benefits for human well-being and biodiversity." %}
+	</p>	
+	<p class="text-justify">
+	 {% trans "The solution to face the challenge of water security in your basins of interest is in your hands. Go ahead and take the next step!" %}
+	</p>
+	<div class="newstitle">
+		<span>{% trans "Why is it necessary to do it now?" %}</span>
+	</div>
+	<div class="row" style="height: 10px;">
+	</div>
+	<p class="text-justify">
+	 {% trans "People around the world are facing intensifying water security problems, hand in hand with the deterioration of nature. The degradation of watersheds, as a result of poor management of water resources, the transformation of their vegetation cover and poor management and land use practices, generates direct impacts on the health of aquatic ecosystems, which have been transformed from accelerated manner in recent years. These ecosystems present the highest rates of degradation, compared to terrestrial and marine ecosystems. In recent decades, the loss of these ecosystems has intensified around the world and almost one in three freshwater species is threatened." %}
+	</p>
+	<p class="text-justify">
+	 {% trans "The cost of water treatment in several cities of the planet has increased due to the degradation of the basins, which translates into higher costs for users and a lower quality of the water supply service. " %}
+	</p>
+	<p class="text-justify">
+	 {% trans "We are at a crucial moment to make decisions and take them to action. It is necessary to diversify our actions and accelerate them, to address the challenges we face as a society such as water security. " %}
+	</p>
+	<div class="newstitle">
+		<span>{% trans "Because investing in nature brings multiple benefits!" %}</span>
+	</div>
+	<div class="row" style="height: 10px;">
+	</div>
+	<p class="text-justify">
+	 {% trans "By implementing your portfolio of nature-based solutions you are not only improving water security in the basins of interest. It is also helping to solve other social challenges that concern us as a global society. The following are some of them:" %}
+	</p>	 
+	<p class="text-justify">
+	 <a href= "https://www.ipcc.ch/"> {% trans "Addressing climate change:" %} </a> {% trans "By implementing its portfolio of nature-based solutions, it is helping to mitigate greenhouse gas (GHG) emissions, by avoiding deforestation or land cover transformation, and by improving land use practices. It also promotes carbon sequestration in vegetation and soil, increasing the carbon storage capacity. These actions are also known as " %} <a href= "https://www.pnas.org/content/114/44/11645"> {% trans "natural climate solutions (NCS)." %} </a> {% trans "On the other hand, by improving the natural state of the basins of interest and also contributing with better productive practices, it is also helping to improve ecosystem resilience and the response capacity of people, which increases the capacity to adapt to climate change. These actions are also known as " %} <a href= "http://naturalclimatesolutions.org/"> {% trans "ecosystem based adaptation (ABE)." %} </a> 
+	</p>
+	<p class="text-justify">
+	 <a href= "https://www.cbd.int/"> {% trans "Confronting the loss of biodiversity:" %} </a> {% trans "improving the natural condition of watersheds through nature-based solutions, with actions of preservation, restoration and better land management practices, brings benefits to biodiversity. Recovering habitats, their connectivity and reducing pressures on basins, creates the conditions for biodiversity to flourish. A healthy territory with healthy terrestrial and freshwater ecosystems provides favorable conditions for multiple ecosystem services. Biodiversity provides benefits for productive systems, such as pest control and the fixation of nutrients in the soil, generates new business opportunities such as nature tourism, and better conditions for human health." %}
+	</p>
+	<p class="text-justify">
+	 {% trans "Now that you know the urgency and the critical moment in which we find ourselves, learn how to put into action the portfolio of nature-based solutions to improve water security in your basins." %}
+	</p>
 	<div class="row" style="height:30px;">
 	</div>
 </section>
 <section>	
-	<div class="row" style="height=500px;">
+	<div class="row" style="height:500px;">
             <div class="col-md-4 text-center">
                 <img src= "{% static 'geonode/img/take_action_info.png' %}" style="max-inline-size: -webkit-fill-available;">
                 <span class="text-left"> {% trans "Infographic: General Process to Take Action" %}
@@ -30,17 +81,27 @@
             <div class="col-md-7 col-md-offset-1">
 				<div class= "row">
 					<div class= "colorsubtitle">
-						<span> {% trans "General process to take your portfolio into action:" %} </span>
+							<span> {% trans "Do it now!" %} </span>
 					</div>
 				</div>
-				<div class= "row middle">
-					<p class="container text-justify">
-					{% trans "Text that explains in a general way the process to implement the SbN portfolio." %}
+				<div class= "row alignetextright">
+					<p class="text-justify">
+					{% trans "This general process will help you put your portfolio of nature-based solutions into action and improve water security in your watersheds." %}
+					</p>
+					<p class="text-justify">
+					{% trans "Implementing nature-based solutions in your watersheds can seem like a challenge. However, around the world they are done on a daily basis and we have done so for several decades, so we have the experience and knowledge to do it, as well as" %}
+					<a href= "#step1"> {% trans "useful resources and references." %}</a> {% trans "You may decide to run this general process independently, but remember that you also have the experience and capabilities of various actors in your region" %} <a href= "#step1"> {% trans "who can help you do it." %}</a>
+					{% trans "The general process that we propose here is a basic step by step with some actions that can facilitate the implementation and achieve the best results, learning and adjusting your plans in an adaptive management." %}
 					</p>
 					<ul>
-					<li> {% trans "Step 1. Example step" %} </li>
-					<li> {% trans "Step 2. Example step" %} </li>
-					<li> {% trans "Step 3. Example step" %} </li>
+					<li> {% trans "Get your portfolio of nature-based solutions and know your return on investment." %} </li>
+					<li> {% trans "Socialize your portfolio with other key stakeholders and entities in your watersheds." %} </li>
+					<li> {% trans "Identify opportunities and stakeholders to implement portfolio actions." %} </li>
+					<li> {% trans "Formalize the engagement with stakeholders (if necessary)." %} </li>
+					<li> {% trans "Implement nature-based solutions." %} </li>
+					<li> {% trans "Follow the implementation." %} </li>
+					<li> {% trans "Track nature-based solutions." %} </li>
+					<li> {% trans "Evaluate, learn and update your portfolio." %} </li>
 					</ul>
                 </div>
             </div>
@@ -56,6 +117,7 @@
 			<div class="col-md-7">
 				<div class= "row">
 					<div class= "colorsubtitle">
+					<div id= "step1"> </div>
 						<span> {% trans "Step 1, detail:" %} </span>
 					</div>
 				</div>
@@ -158,7 +220,7 @@
 	<div class="row" style="height=500px;">
 		<div class="row">
 			<div class= "colorsubtitle">
-				<span> (% trans "Helpful resources and references" %} </span>
+				<span> {% trans "Helpful resources and references" %} </span>
 			</div>
 			<p class="text-justify">
 			{% trans "Here you will find some links and references to implementation examples, useful resources (toolboxes, open software,….), Partners, stakeholder platforms." %}
