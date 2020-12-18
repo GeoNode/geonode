@@ -6,9 +6,45 @@
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin=""/>
     <link rel="stylesheet" href="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.css" />
+    <style>
+    #mainActions > button {
+        display: inline-block;
+        padding: 6px 12px;
+        margin-bottom: 0;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.42857143;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        -ms-touch-action: manipulation;
+        touch-action: manipulation;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        background-image: none;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        color: #fff;
+        background-color: #337ab7;
+        border-color: #2e6da4;
+        margin-right: 4px;
+    }
+
+    .vertical-align {
+    display: flex;
+    align-items: center;
+}
+
+    </style>
 {% endblock %}
 {% block body_outer %}
-    <h1>Create Water Intake</h1>
+<div class="page-header">
+     <h1>Create Water Intake</h1>
+</div>
+   
     <div id="rootwizard">
         <div class="navbar">
           <div class="navbar-inner">
@@ -38,9 +74,9 @@
             </div>
           </div>
         </div>
-        <div id="bar" class="progress">
+        <!--<div id="bar" class="progress">
           <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
-        </div>
+        </div>-->
         <div class="tab-content">
           <div class="tab-pane" id="tab1">
             <form  id="form" method="POST" action="">
@@ -56,6 +92,60 @@
             
           </div>
           <div class="tab-pane" id="tab2">
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="panel panel-default">
+                      <div class="panel-body" id="toolbar">
+                          Basic panel example
+                      </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-body" id="graph" tabindex="-1" style="height:790px;width:100%;overflow:hidden;cursor:default;">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="alert alert-info" role="alert"><h1 class="text-center">R1</h1></div>
+                            <form>
+                              <div class="form-group">
+                                <label for="exampleInputEmail1">Name:</label>
+                                <input type="text" class="form-control">
+                              </div>
+                               <div class="form-group">
+                                <label for="exampleInputEmail1">Parameter 1:</label>
+                                <input type="text" class="form-control">
+                              </div>
+                               <div class="form-group">
+                                <label for="exampleInputEmail1">Parameter 2:</label>
+                                <input type="text" class="form-control">
+                              </div>
+                               <div class="form-group">
+                                <label for="exampleInputEmail1">Costo 1:</label>
+                                <input type="text" class="form-control">
+                              </div>
+                              <div class="form-group">
+                                <label for="exampleInputEmail1">Costo 2:</label>
+                                <input type="text" class="form-control">
+                              </div>
+                              <div class="form-group">
+                                <label for="exampleInputEmail1">Costo 3:</label>
+                                <input type="text" class="form-control">
+                              </div>
+                              <div class="form-group">
+                                <label for="exampleInputEmail1">Costo 4:</label>
+                                <input type="text" class="form-control">
+                              </div>
+                              <div class="form-group">
+                                <label for="exampleInputEmail1">Costo 5:</label>
+                                <input type="text" class="form-control">
+                              </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div id="page">
               <div id="header">
                 <div id="headerimg" style="overflow:hidden;">
@@ -69,11 +159,11 @@
               </div>
               <table border="0" width="730px">
                 <tr>
-                  <td id="toolbar" style="width:16px;padding-left:20px;" valign="top">
+                  <!--<td id="toolbar" style="width:16px;padding-left:20px;" valign="top">
                     <!-- Toolbar Here -->				
                   </td>
                   <td valign="top" style="border-width:1px;border-style:solid;border-color:black;">
-                    <div id="graph" tabindex="-1" style="position:relative;height:480px;width:684px;overflow:hidden;cursor:default;">
+                    
                       <!-- Graph Here -->
                       <center id="splash" style="padding-top:230px;">
                         <img src="{{ STATIC_URL }}geonode/js/mxgraph/examples/images/loading.gif">
@@ -97,7 +187,7 @@
             </div>
           </div>
           <div class="tab-pane" id="tab3">
-              3
+3
           </div>
           <div class="tab-pane" id="tab4">
               4
@@ -241,6 +331,7 @@
       // XML and graphical display
       var textNode = document.getElementById('xml');
       var graphNode = editor.graph.container;
+      
       var sourceInput = document.getElementById('source');
       sourceInput.checked = false;
 
