@@ -88,30 +88,30 @@
 			</Shape>
 		</add>
 		<add as="rio">
-			<Symbol label="Symbol" description="" href="">
+			<Symbol label="" description="" href="">
 				<mxCell vertex="1" style="rio">      
-					<mxGeometry as="geometry" width="32" height="32"/>
+					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="embalse">
-			<Symbol label="Symbol" description="" href="">
+			<Symbol label="" value="wfState_1" value2="customValue" description="" href="">
 				<mxCell vertex="1" style="embalse">      
-					<mxGeometry as="geometry" width="32" height="32"/>
+					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bombeo">
-			<Symbol label="Symbol" description="" href="">
+			<Symbol label="" description="" href="">
 				<mxCell vertex="1" style="bombeo">      
-					<mxGeometry as="geometry" width="32" height="32"/>
+					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bocatoma">
-			<Symbol label="Symbol" description="" href="">
+			<Symbol label="" description="" href="">
 				<mxCell vertex="1" style="bocatoma">      
-					<mxGeometry as="geometry" width="32" height="32"/>
+					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
