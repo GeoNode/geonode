@@ -30,7 +30,7 @@
 					<mxGeometry as="geometry" width="200" height="200"/>
 				</mxCell>
 			</Container>
-		</add>
+		</add><!--
 		<add as="rectangle">
 			<Rect label="Rectangle" href="">
 				<mxCell vertex="1">	
@@ -86,7 +86,7 @@
 					<mxGeometry as="geometry" width="60" height="10"/>
 				</mxCell>
 			</Shape>
-		</add>
+		</add>-->
 		<add as="rio">
 			<Symbol label="" description="" href="">
 				<mxCell vertex="1" style="rio">      
@@ -95,7 +95,7 @@
 			</Symbol>
 		</add>
 		<add as="embalse">
-			<Symbol label="" value="wfState_1" value2="customValue" description="" href="">
+			<Symbol label="" value="wfState_1" value2="customValue" costo6="0.56" description="" href="">
 				<mxCell vertex="1" style="embalse">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
@@ -115,7 +115,48 @@
 				</mxCell>
 			</Symbol>
 		</add>
-
+		<add as="bocatomalateral">
+			<Symbol label="" description="" href="">
+				<mxCell vertex="1" style="bocatomalateral">      
+					<mxGeometry as="geometry" width="60" height="60"/>
+				</mxCell>
+			</Symbol>
+		</add>
+		<add as="bocatomaflotante">
+			<Symbol label="" description="" href="">
+				<mxCell vertex="1" style="bocatomaflotante">      
+					<mxGeometry as="geometry" width="60" height="60"/>
+				</mxCell>
+			</Symbol>
+		</add>
+		<add as="desarenador">
+			<Symbol label="" description="" href="">
+				<mxCell vertex="1" style="desarenador">      
+					<mxGeometry as="geometry" width="60" height="60"/>
+				</mxCell>
+			</Symbol>
+		</add>
+		<add as="camaraquiebre">
+			<Symbol label="" description="" href="">
+				<mxCell vertex="1" style="camaraquiebre">      
+					<mxGeometry as="geometry" width="60" height="60"/>
+				</mxCell>
+			</Symbol>
+		</add>
+		<add as="tuberia">
+			<Symbol label="" description="" href="">
+				<mxCell vertex="1" style="tuberia">      
+					<mxGeometry as="geometry" width="60" height="60"/>
+				</mxCell>
+			</Symbol>
+		</add>
+		<add as="canal">
+			<Symbol label="" description="" href="">
+				<mxCell vertex="1" style="canal">      
+					<mxGeometry as="geometry" width="60" height="60"/>
+				</mxCell>
+			</Symbol>
+		</add>
 	</Array>
 	<mxGraph as="graph" alternateEdgeStyle="verticalConnector" allowLoops="1" dropEnabled="1">
 		<add as="isAutoSizeCell"><![CDATA[
@@ -150,7 +191,7 @@
 			}
 		]]></add>
 		<mxStylesheet as="stylesheet">
-			<add as="text">
+			<!--add as="text">
 				<add as="shape" value="rectangle"/>
 				<add as="perimeter" value="rectanglePerimeter"/>
 				<add as="fontSize" value="12"/>
@@ -275,7 +316,7 @@
 				<add as="align" value="center"/>
 				<add as="verticalAlign" value="middle"/>
 				<add as="image" value="/static/mxgraph/images/draw/mxlogo.jpg"/>
-			</add>
+			</add-->
 			<add as="rio">
 				<add as="shape" value="image"/>
 				<add as="perimeter" value="rectanglePerimeter"/>
@@ -308,37 +349,53 @@
 				<add as="verticalAlign" value="middle"/>
 				<add as="image" value="/static/mxgraph/images/waterproof/05-bocatoma.png"/>
 			</add>
-			<add as="restauracion-pasiva">
+			<add as="bocatomalateral">
 				<add as="shape" value="image"/>
 				<add as="perimeter" value="rectanglePerimeter"/>
 				<add as="fontSize" value="10"/>
 				<add as="align" value="center"/>
 				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/03-restauracion-pasiva.png"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/06-bocatoma-lat.png"/>
 			</add>
-			<add as="restauracion-activa">
+			<add as="bocatomaflotante">
 				<add as="shape" value="image"/>
 				<add as="perimeter" value="rectanglePerimeter"/>
 				<add as="fontSize" value="10"/>
 				<add as="align" value="center"/>
 				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/02-restauracion-activa.png"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/07-bocatoma-flotante.png"/>
 			</add>
-			<add as="practicas-agricolas">
+			<add as="desarenador">
 				<add as="shape" value="image"/>
 				<add as="perimeter" value="rectanglePerimeter"/>
 				<add as="fontSize" value="10"/>
 				<add as="align" value="center"/>
 				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/04-practicas-agricolas.png"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/08-desarenador.png"/>
 			</add>
-			<add as="bocatoma">
+			<add as="camaraquiebre">
 				<add as="shape" value="image"/>
 				<add as="perimeter" value="rectanglePerimeter"/>
 				<add as="fontSize" value="10"/>
 				<add as="align" value="center"/>
 				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/05-bocatoma.png"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/09-camara-quiebre.png"/>
+			</add>
+			<add as="tuberia">
+				<add as="shape" value="image"/>
+				<add as="perimeter" value="rectanglePerimeter"/>
+				<add as="fontSize" value="10"/>
+				<add as="align" value="center"/>
+				<add as="verticalAlign" value="middle"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/10-tuberia.png"/>
+			</add>
+			<add as="canal">
+				<add as="shape" value="image"/>
+				<add as="perimeter" value="rectanglePerimeter"/>
+				<add as="fontSize" value="10"/>
+				<add as="align" value="center"/>
+				<add as="verticalAlign" value="middle"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/11-canal.png"/>
 			</add>
 			
 		</mxStylesheet>
@@ -409,7 +466,7 @@
 			}
 		]]></add>
 		<br/><br/>
-		<add as="Text" template="text" icon="/static/mxgraph/images/text.gif"/>
+		<!--add as="Text" template="text" icon="/static/mxgraph/images/text.gif"/>
 		<add as="Container" template="container" icon="/static/mxgraph/images/swimlane.gif"/>
 		<add as="Rectangle" template="rectangle" icon="/static/mxgraph/images/rectangle.gif"/>
 		<add as="Rounded" template="rounded" icon="/static/mxgraph/images/rounded.gif"/>
@@ -419,10 +476,17 @@
 		<add as="Triangle" template="actor" style="triangle" icon="/static/mxgraph/images/triangle.gif"/>
 		<add as="Hexagon" template="cloud" style="hexagon" icon="/static/mxgraph/images/hexagon.gif"/>
 		<add as="Cylinder" template="shape" style="cylinder" icon="/static/mxgraph/images/cylinder.gif"/>
-		<add as="Line" template="hline" style="hline" icon="/static/mxgraph/images/hline.gif"/>
+		<add as="Line" template="hline" style="hline" icon="/static/mxgraph/images/hline.gif"/-->
+		
 		<add as="Rio" template="rio" width="32" height="32" icon="/static/mxgraph/images/waterproof/01-rio.png"/>
 		<add as="Embalse" template="embalse" icon="/static/mxgraph/images/waterproof/02-embalse.png"/>
 		<add as="Bombeo" template="bombeo" icon="/static/mxgraph/images/waterproof/03-bombeo.png"/>
 		<add as="Bocatoma" template="bocatoma" icon="/static/mxgraph/images/waterproof/05-bocatoma.png"/>
-	</mxDefaultToolbar>
+		<add as="Bocatoma Lateral" template="bocatomalateral" icon="/static/mxgraph/images/waterproof/06-bocatoma-lat.png"/>
+		<add as="Bocatoma Flotante" template="bocatomaflotante" icon="/static/mxgraph/images/waterproof/07-bocatoma-flotante.png"/>
+		<add as="Desarenador" template="desarenador" icon="/static/mxgraph/images/waterproof/08-desarenador.png"/>
+		<add as="Camara De Quiebre" template="camaraquiebre" width="32" height="32" icon="/static/mxgraph/images/waterproof/09-camara-quiebre.png"/>
+		<add as="Tuberia" template="tuberia" width="32" height="32" icon="/static/mxgraph/images/waterproof/10-tuberia.png"/>
+		<add as="Canal" template="canal" icon="/static/mxgraph/images/waterproof/11-canal.png"/>
+		</mxDefaultToolbar>
 </mxEditor>
