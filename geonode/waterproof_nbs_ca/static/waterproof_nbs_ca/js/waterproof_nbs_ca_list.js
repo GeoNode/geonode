@@ -87,7 +87,6 @@ $(function () {
             formData.append('oportunityCost', $('#oportunityCost').val());
             // NBS RIOS Transformations selected
             formData.append('riosTransformation', getTransformationsSelected());
-            // NBS Unit Oportunity Cost (US$/ha)
             var file = $('#restrictedArea')[0].files[0];
             // validate extension file
             var extension = validExtension(file);

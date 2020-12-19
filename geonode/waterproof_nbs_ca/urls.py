@@ -5,7 +5,7 @@ from . import views
 
 urlpatterns = [
     # Create NBS
-    path('create/', views.createNbs, name='create-nbs'),
+    path('create/<int:countryId>', views.createNbs, name='create-nbs'),
     # Default view, list all views
     path('', views.listNbs, name='list-nbs'),
     # View NBS details
@@ -28,6 +28,8 @@ urlpatterns = [
     path('load-currency/', views.loadCurrency, name='load_currency'),
     # Load currency by country id
     path('load-currencyByCountry/', views.loadCurrencyByCountry, name='load_currencyByCountry'),
+     # Load region by country id
+    path('load-regionByCountry/', views.loadRegionByCountry, name='load_regionByCountry'),
     # Load all currencies
     path('load-allCurrencies/', views.loadAllCurrencies, name='load_allCurrencies')
 ]

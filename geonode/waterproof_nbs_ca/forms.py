@@ -6,7 +6,7 @@ from django import forms
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
-from .models import WaterproofNbsCa, RiosTransition, RiosTransformation, RiosActivity, TramsformationShapefile,Countries,Currency
+from .models import WaterproofNbsCa, RiosTransition, RiosTransformation, RiosActivity,Countries,Currency
 from django.contrib.gis.geos import Polygon
 
 class WaterproofNbsCaForm(forms.ModelForm):
@@ -51,12 +51,5 @@ class WaterproofNbsCaForm(forms.ModelForm):
         )
 
     def save(self, *args, **kwargs):
-        objTest = TramsformationShapefile(
-            name="forest_exclusion",
-            action="prevent",
-            activity="forest",
-            polygon=Polygon(((0.0, 0.0), (0.0, 50.0), (50.0, 50.0), (50.0, 0.0), (0.0, 0.0)))
-        )
-        objTest.save()
         obj = super(WaterproofNbsCaForm, self).save(*args, **kwargs)
         return obj

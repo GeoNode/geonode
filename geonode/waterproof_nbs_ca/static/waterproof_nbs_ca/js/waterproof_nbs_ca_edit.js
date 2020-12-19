@@ -7,21 +7,39 @@ $(function () {
     initialize = function () {
         $('#example').DataTable();
         console.log('init event loaded');
+        var dato;
         var countryDropdown = $('#countryNBS');
         var currencyDropdown = $('#currencyCost');
         var transitionsDropdown = $('#riosTransition');
         var activitiesDropdown = $('#riosActivity');
         var transformDropdown = $('#riosTransformation');
         var loadAreaChecked = $('#loadArea');
-        // Init transformations selection widget
-        transformDropdown.bootstrapDualListbox({
-            preserveSelectionOnMove: 'moved',
-            moveOnSelect: false,
-        });
-        // Transformations widget change option event
-        $("#menu-toggle").click(function (e) {
-            e.preventDefault();
-            $("#wrapper").toggleClass("toggled");
+       
+        // show/hide div with checkbuttons 
+        $("#riosTransition").change(function () {
+            dato = $("#riosTransition").val();
+            var data_value = $(`#selectlanduse${dato}`).attr('data-value');
+            $('div[name=selectlanduse]').each(function (idx, input) {
+                $('div[name=selectlanduse]').css({
+                    "display": "none"
+                });
+                var valueInput = input.getAttribute('data-value')
+                if (valueInput !== dato) {
+                    $(`#selectlanduse${valueInput}`).find('input[type=checkbox]:checked').each(function (idx, input) {
+                        input.checked = false;
+                    });
+                }
+            });
+            if (dato == data_value) {
+                $(`#selectlanduse${dato}`).css({
+                    "display": "block"
+                })
+            }
+            else {
+                $('div[name=selectlanduse]').find('input[type=checkbox]:checked').each(function (idx, input) {
+                    input.checked = false;
+                });
+            }
         });
         // Event to show or hide restricted area edition
         loadAreaChecked.click(function (e) {
@@ -33,25 +51,22 @@ $(function () {
         });
 
         // Populate countries options
-        fillCountryDropdown(countryDropdown);
         // Populate currencies options
         fillCurrencyDropdown(currencyDropdown);
-        // Populate currencies options
         fillTransitionsDropdown(transitionsDropdown);
         // Change transition dropdown event listener
         changeTransitionEvent(transitionsDropdown, activitiesDropdown);
         // Change country dropdown event listener 
         changeCountryEvent(countryDropdown, currencyDropdown);
-        // Change transition dropdown event listener
-        changeActivityEvent(activitiesDropdown, transformDropdown);
         submitFormEvent();
         changeFileEvent();
     };
     submitFormEvent = function () {
         console.log('submit event loaded');
         var formData = new FormData();
+        var uploadNewArea = false;
         $('#submit').on('click', function () {
-            var loadAreaChecked=('#loadArea');
+            var loadAreaChecked = ('#loadArea');
             var sbnId = $('#sbnId').val();
             // NBS name
             formData.append('nameNBS', $('#nameNBS').val());
@@ -64,21 +79,25 @@ $(function () {
             // NBS Time required to generate maximun benefit (yr)
             formData.append('maxBenefitTime', $('#maxBenefitTime').val());
             // NBS Percentage of benefit associated with interventions at time t=0
-            formData.append('benefitTimePorc', $('#benefitTimePorc').val());
+            formData.append('benefitTimePorc', parseFloat($('#benefitTimePorc').val()));
             // NBS Consecution Time Total Benefits
             formData.append('totalConsecTime', $('#totalConsecTime').val());
             // NBS Maintenance Perodicity
             formData.append('maintenancePeriod', $('#maintenancePeriod').val());
             // NBS Unit Implementation Cost (US$/ha)
-            formData.append('implementCost', $('#implementCost').val());
+            formData.append('implementCost', parseFloat($('#implementCost').val()));
             // NBS Unit Maintenace Cost (US$/ha)
-            formData.append('maintenanceCost', $('#maintenanceCost').val());
+            formData.append('maintenanceCost', parseFloat($('#maintenanceCost').val()));
             // NBS Unit Oportunity Cost (US$/ha)
-            formData.append('oportunityCost', $('#oportunityCost').val());
+            formData.append('oportunityCost', parseFloat($('#oportunityCost').val()));
             // NBS RIOS Transformations selected
-            formData.append('riosTransformation', $('#riosTransformation').val());
-            if (loadAreaChecked[0].checked) {
+            formData.append('riosTransformation', getTransformationsSelected());
+
+            // Validate if user want's to be upload new restricted area
+            if ($('#loadArea')[0].checked) { // Upload new restricted area
                 var file = $('#restrictedArea')[0].files[0];
+                uploadNewArea = true;
+                formData.append('uploadNewArea', uploadNewArea);
                 // validate extension file
                 var extension = validExtension(file);
                 if (extension.extension == 'geojson') { //GeoJSON
@@ -112,6 +131,7 @@ $(function () {
                     });
                 }
                 else { // ZIP
+
                     var reader = new FileReader();
                     reader.onload = function (evt) {
                         var contents = evt.target.result;
@@ -154,9 +174,11 @@ $(function () {
                     reader.readAsArrayBuffer(file);
                 }
             }
-            else {
+            else { // Maintain same restricted area
                 // Type action for view
                 formData.append('action', 'edit-nbs');
+                uploadNewArea = false;
+                formData.append('uploadNewArea', uploadNewArea);
                 // Required session token
                 formData.append('csrfmiddlewaretoken', token);
                 $.ajax({
@@ -245,7 +267,6 @@ $(function () {
                                     else {
                                         shp(contents).then(function (shpToGeojson) {
                                             geojson = shpToGeojson;
-                                            loadShapefile(geojson, file.name);
                                         }).catch(function (e) {
                                             Swal.fire({
                                                 icon: 'error',
@@ -309,6 +330,18 @@ $(function () {
     };
     checkEmptyFile = function () {
 
+    };
+    /** 
+   * Get the transformations selected
+   * @param {Array} transformations transformations selected
+   */
+    getTransformationsSelected = function () {
+        var transformations = [];
+        // Obtención de valores de los check de la solución
+        $('input[name=itemRT]:checked').each(function () {
+            transformations.push($(this).val());
+        });
+        return transformations;
     };
     /** 
   * Change currency option based in country selected
@@ -377,42 +410,7 @@ $(function () {
             });
         });
     };
-    /** 
-     * Change transformation options based in activity selected
-     * @param {HTML} transDropdown Transitions dropdown
-     * @param {HTML} activDropdown Activities  dropdown
-     *
-     */
-    changeActivityEvent = function (activityDropdown, transformDropdown) {
-        // Rios transitions dropdown listener
-        activityDropdown.change(function () {
-            // Get load activities from urls Django parameter
-            var activity_id = $(this).val();
 
-            /** 
-             * Get filtered activities by transition id 
-             * @param {String} url   activities URL 
-             * @param {Object} data  transition id  
-             *
-             * @return {String} activities in HTML option format
-             */
-            $.ajax({
-                url: '/waterproof_nbs_ca/load-transformationByActivity/',
-                data: {
-                    'activity': activity_id
-                },
-                success: function (result) {
-                    result = JSON.parse(result);
-                    // Empty before poupulate new options
-                    transformDropdown.empty();
-                    $.each(result, function (index, transformation) {
-                        transformDropdown.append($("<option />").val(transformation.pk).text(transformation.fields.name));
-                        transformDropdown.bootstrapDualListbox('refresh');
-                    });
-                }
-            });
-        });
-    };
     /** 
      * Populate countries options in dropdown 
      * @param {HTML} dropdown Dropdown selected element
@@ -452,16 +450,9 @@ $(function () {
      *
      */
     fillTransitionsDropdown = function (dropdown) {
-        $.ajax({
-            url: '/waterproof_nbs_ca/load-transitions',
-            success: function (result) {
-                result = JSON.parse(result);
-                $.each(result, function (index, transition) {
-                    dropdown.append($("<option />").val(transition.pk).text(transition.fields.name));
-                });
-                dropdown.val(1).change();
-            }
-        });
+
+        dropdown.change();
+
     };
     /** 
      * Get if file has a valid shape or GeoJSON extension 

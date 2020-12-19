@@ -90,15 +90,15 @@
                 <div class="panel-body">
                     <div class="form-group">
                         <label>Unit Implementation Cost (US$/ha)</label>
-                        <input value="{{ sbn.unit_implementation_cost }}" id="b_unit_implementation_cost" type="text" class="form-control" disabled required>
+                        <input value="{{ sbn.unit_implementation_cost|floatformat:2 }}" id="b_unit_implementation_cost" type="text" class="form-control" disabled required>
                     </div>
                     <div class="form-group">
                         <label>Unit Maintenace Cost (US$/ha)</label>
-                        <input value="{{ sbn.unit_maintenance_cost }}" id="b_unit_maintenance_cost" type="text" class="form-control" disabled required>
+                        <input value="{{ sbn.unit_maintenance_cost|floatformat:2 }}" id="b_unit_maintenance_cost" type="text" class="form-control" disabled required>
                     </div>
                     <div class="form-group">
                         <label>Unit Oportunity Cost (US$/ha)</label>
-                        <input value="{{ sbn.unit_oportunity_cost }}" id="b_unit_oportunity_cost" type="text" class="form-control" disabled required>
+                        <input value="{{ sbn.unit_oportunity_cost|floatformat:2 }}" id="b_unit_oportunity_cost" type="text" class="form-control" disabled required>
                     </div>
                 </div>
             </div>
