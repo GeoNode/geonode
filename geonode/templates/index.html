@@ -9,7 +9,7 @@
 {% block body_class %}home{% endblock %}
 
 {% block middle %}
-  {{ block.super }}
+{{ block.super }}
 
   {% block hero %}
   {% if block.super %}
@@ -22,7 +22,6 @@
       {% with jumbotron_welcome_title=custom_theme.jumbotron_welcome_title|default:"Welcome"|template_trans %}
       <h1>{% trans jumbotron_welcome_title %}</h1>
       {% endwith %}
-      <p></p>
       {% with jumbotron_welcome_content=custom_theme.jumbotron_welcome_content|default:"GeoNode is an open source platform for sharing geospatial data and maps."|template_trans %}
       <p>{% trans jumbotron_welcome_content %}</p>
       {% endwith %}
@@ -115,30 +114,7 @@
       <!-- </div> -->
       {% endif %}
       {% endblock bigsearch %}
-      
-      
-    
-	<!-- <section> -->
-        <!-- <div class="container text-center imgbackgroundModels"> -->
-          <!-- <div class="row colorHeaderInstrucciones"> -->
-            <!-- <h2>System operating instructions</h2> -->
-          <!-- </div> -->
-          <!-- <div class="row" style="height=500px;"> -->
-          <!-- <object data="{% static 'geonode/img/models.svg' %}" type="image/svg+xml" height="500"> -->
-        <!-- </object> -->
-            <!--img src="{% static 'geonode/img/models.svg' %}">
-          <!-- </div> -->
-        <!-- </div> -->
-        
-      <!-- </section> -->
-      
-	  
-	<section>
-	
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <!--link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous"-->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 	
 	
@@ -405,10 +381,36 @@
             <b class="ppwpwiki3"> {% trans "Keep reading" %} </b>
             </a>
             </button>
-            </div>
-                   
-             
-      </section>
+            <br>
+        </div>
+    </div>
+</section>
+<section>
+    <div class="row justify-content-md-center" style="height:20%;">
+        <div class="col-md-6 text-center">
+            <img src="{% static 'geonode/img/LogoTNC2.png' %}" alt="The nature Conservancy" style="max-height: 100px;">
+        </div>
+        <div class="col-md-6 text-center">
+            <img src="{% static 'geonode/img/fundacionmoore.png' %}" alt="Moore fundation" style="max-height: 100px;">
+        </div>
+    </div>
+</section> 
+      
+    
+	<!-- <section> -->
+        <!-- <div class="container text-center imgbackgroundModels"> -->
+          <!-- <div class="row colorHeaderInstrucciones"> -->
+            <!-- <h2>System operating instructions</h2> -->
+          <!-- </div> -->
+          <!-- <div class="row" style="height=500px;"> -->
+          <!-- <object data="{% static 'geonode/img/models.svg' %}" type="image/svg+xml" height="500"> -->
+        <!-- </object> -->
+            <!--img src="{% static 'geonode/img/models.svg' %}">
+          <!-- </div> -->
+        <!-- </div> -->
+        
+      <!-- </section> -->
+
 	  <!-- {% block showcase %}
       <section id="showcase">
         <div class="row">
@@ -479,17 +481,6 @@
     </section>
     {% endblock datasets %} -->
 
-  <section>
-    <div class="row justify-content-md-center" style="height:20%;">
-		<div class= "col-md-6 text-center">           
-			<img src= "{% static 'geonode/img/LogoTNC2.png' %}" alt= "The nature Conservancy" style= "max-height: 100px;">
-        </div>
-		<div class= "col-md-6 text-center">
-			<img src= "{% static 'geonode/img/fundacionmoore.png' %}" alt="Moore fundation" style= "max-height: 100px;">
-        </div>
-	</div>                 
-          
-  </section>
   
   <!-- <section> -->
 	<!-- <div class="row justify-content-md-center">  -->

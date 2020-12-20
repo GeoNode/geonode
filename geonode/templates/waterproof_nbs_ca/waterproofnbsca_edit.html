@@ -1,9 +1,12 @@
-{% extends "base.html" %} {% load i18n %} {% load bootstrap_tags %} {% block body_outer %}
+{% extends "base.html" %} {% load i18n %} {% load l10n %}{% load bootstrap_tags %} {% block body_outer %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/bootstrap-duallistbox.min.css">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/waterproof_nbs_ca.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin="" />
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+
 <div class="row">
     <div class="col-md-4">
         <h4 class="text-center" id="countryLabel">{{country.name}}</h4>
@@ -16,21 +19,20 @@
     </div>
 </div>
 <div class="page-header">
-    <h1>Create NBS</h1>
-
+    <h1>Edit NBS</h1>
 </div>
 <form data-toggle="validator" role="form" action="#">
     <h4 class="text-primary">General Settings</h4>
     <div class="form-group">
         <label>Name <span class="text-danger-wp">(*)</span> </label>
-        <input type="text" class="form-control" id="nameNBS" name="nameNBS" data-error="This field is required"
-            placeholder="Enter title" required>
+        <input type="text" value="{{ nbs.name }}" class="form-control" id="nameNBS" name="nameNBS"
+            data-error="This field is required" placeholder="Enter title" required>
         <div class="help-block with-errors"></div>
     </div>
     <div class="form-group">
         <label>Description <span class="text-danger-wp">(*)</span> </label>
         <textarea id="descNBS" class="form-control" placeholder="Enter description" data-error="This field is required"
-            rows="4" required></textarea>
+            rows="4" required>{{ nbs.description }}</textarea>
         <div class="help-block with-errors"></div>
     </div>
     <div class="form-group">
@@ -40,7 +42,7 @@
                 <select id="countryNBS" class="form-control" data-error="This field is required" required>
                     {% for country in countries %}
                     {% if nbs.country.pk == country.pk %}
-                    <option value="{{country.pk}}" selected data-value="{{country.code}}">{{country.name}}</option>
+                    <option value="{{country.pk}}" data-value="{{country.code}}" selected>{{country.name}}</option>
                     {% else %}
                     <option value="{{country.pk}}" data-value="{{country.code}}">{{country.name}}</option>
                     {% endif %}
@@ -67,15 +69,15 @@
         <div class="row">
             <div class="col-md-6">
                 <label>Time required to generate maximun benefit (yr) <span class="text-danger-wp">(*)</span> </label>
-                <input id="maxBenefitTime" type="text" class="form-control" data-error="This field is required"
-                    required>
+                <input id="maxBenefitTime" value="{{nbs.total_profits_sbn_consec_time}}" type="text"
+                    class="form-control" data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-6">
                 <label>Percentage of benefit associated with interventions at time t=0 <span
                         class="text-danger-wp">(*)</span> </label>
-                <input id="benefitTimePorc" type="text" class="form-control" data-error="This field is required"
-                    required>
+                <input id="benefitTimePorc" value="{{nbs.profit_pct_time_inter_assoc}}" type="text" class="form-control"
+                    data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
         </div>
@@ -84,14 +86,14 @@
         <div class="row">
             <div class="col-md-6">
                 <label>Consecution Time Total Benefits <span class="text-danger-wp">(*)</span> </label>
-                <input id="totalConsecTime" type="text" class="form-control" data-error="This field is required"
-                    required>
+                <input id="totalConsecTime" value="{{ nbs.total_profits_sbn_consec_time }}" type="text"
+                    class="form-control" data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-6">
                 <label>Maintenance Perodicity <span class="text-danger-wp">(*)</span> </label>
-                <input id="maintenancePeriod" type="text" class="form-control" data-error="This field is required"
-                    required>
+                <input id="maintenancePeriod" value="{{ nbs.periodicity_maitenance }}" type="text" class="form-control"
+                    data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
         </div>
@@ -101,19 +103,20 @@
         <div class="row">
             <div class="col-md-4">
                 <label>Unit Implementation Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
-                <input id="implementCost" type="text" class="form-control" data-error="This field is required" required>
+                <input id="implementCost" value="{{ nbs.unit_implementation_cost|floatformat:2 }}" type="text"
+                    class="form-control" data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-4">
                 <label>Unit Maintenace Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
-                <input id="maintenanceCost" type="text" class="form-control" data-error="This field is required"
-                    required>
+                <input id="maintenanceCost" value="{{ nbs.unit_maintenance_cost|floatformat:2 }}" type="text"
+                    class="form-control" data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-4">
                 <label>Unit Oportunity Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
-                <input id="oportunityCost" type="text" class="form-control" data-error="This field is required"
-                    required>
+                <input id="oportunityCost" value="{{ nbs.unit_oportunity_cost|floatformat:2 }}" type="text"
+                    class="form-control" data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
         </div>
@@ -123,11 +126,20 @@
         <div class="row">
             <div class="col-md-12">
                 <select id="riosTransition" class="form-control" data-error="This field is required" required>
+                    {% for transition in transitions %}
+                    {% if transition.pk == selectedTransition.pk %}
+                    <option value="{{transition.pk}}" selected>{{transition.name}}</option>
+                    {% else %}
+                    <option value="{{transition.pk}}">{{transition.name}}</option>
+                    {% endif %}
+
+                    {% endfor %}
                 </select>
                 <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
+
     <h4 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h4>
     <div class="form-group">
         <div class="row">
@@ -140,8 +152,13 @@
                 <ul>
                     <li class="list-inline">
                         <div class="checkbox">
+                            {% if riost.pk in selectedTransf %}
+                            <label><input name="itemRT" type="checkbox" id="itemRT{{riost.pk}}" value="{{ riost.pk }}"
+                                    checked=checked>{{riost.name}}</label>
+                            {% else %}
                             <label><input name="itemRT" type="checkbox" id="itemRT{{riost.pk}}"
                                     value="{{ riost.pk }}">{{riost.name}}</label>
+                            {% endif %}
                         </div>
                     </li>
                 </ul>
@@ -151,28 +168,41 @@
         </div>
     </div>
     <div class="form-group">
-        <div class="row">
+        <!-- Rounded switch -->
+
+        <label>Load new restricted area</label>
+        <label class="switch">
+            <input type="checkbox" id="loadArea">
+            <span class="slider round"></span>
+        </label>
+        <div class="row" style="display:none" id="areas">
             <div class="col-md-4">
                 <label>Restricted areas <span class="text-danger-wp">(*)</span></label>
-                <input id="restrictedArea" type="file" data-error="This field is required" required>
+                <input id="restrictedArea" type="file">
                 <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
     <br>
-    <button id="submit" type="button" class="btn btn-primary ">Submit</button>
-   
+    <input type="hidden" value="{{nbs.pk}}" id="sbnId">
+    <button type="button" id="submit" class="btn btn-primary ">Submit</button>
 </form>
-{% endblock %} {% block extra_script %}
-<!--ZIP reader library-->
-<scrip src="{{ STATIC_URL }}waterproof_nbs_ca/js/jszip.min.js"></scrip>
-<!--Shapefile reader library -->
-<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/shp.min.js"></script>
 <script>
     var token = '{{ csrf_token }}';
+    var countryNbs = '{{ sbn.country.pk }}';
+    var currencyNbs = '{{ sbn.currency.pk }}';
     var countriesLayerUrl = '{{ STATIC_URL }}waterproof_nbs_ca/data/countries.geojson';
+    var userCountryId = '{{userCountry.id}}';
+    var userCountryCode = '{{userCountry.code}}';
+    var userCountryName = '{{userCountry.name}}';
     var countryId = '{{country.id}}';
 </script>
+{% endblock body_outer %} {% block extra_script %}
+<!--ZIP reader library-->
+
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jszip.min.js"></script>
+<!--Shapefile reader library -->
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/shp.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"
     integrity="sha512-dTu0vJs5ndrd3kPwnYixvOCsvef5SGYW/zSSK4bcjRBcZHzqThq7pt7PmCv55yb8iBvni0TSeIDV8RYKjZL36A=="
     crossorigin="anonymous"></script>
@@ -180,6 +210,5 @@
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
     crossorigin=""></script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/leaflet.ajax.min.js"></script>
-
-<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca_edit.js"></script>
 {% endblock %}

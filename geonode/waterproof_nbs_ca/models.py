@@ -28,11 +28,10 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 
-class TramsformationShapefile(models.Model):
-    name = models.CharField(max_length=255)
+class ActivityShapefile(models.Model):
     activity = models.CharField(max_length=255)
     action = models.CharField(max_length=255)
-    polygon = models.MultiPolygonField()
+    area = models.MultiPolygonField()
 
 
 class RiosTransition(models.Model):
@@ -74,6 +73,10 @@ class RiosTransformation(models.Model):
         max_length=1024,
         verbose_name=_('Description'),
     )
+    unique_id = models.CharField(
+        max_length=1024,
+        verbose_name=_('Unique_id'),
+    )
 
     def __str__(self):
         return "%s" % self.name
@@ -95,6 +98,11 @@ class Countries(models.Model):
     name = models.CharField(
         max_length=100,
         verbose_name=_('Name'),
+    )
+
+    code = models.CharField(
+        max_length=5,
+        verbose_name=_('Code'),
     )
 
     factor = models.FloatField(
@@ -119,13 +127,8 @@ class Currency(models.Model):
         verbose_name=_('Code'),
     )
 
-    symbol = models.CharField(
+    factor = models.CharField(
         max_length=50,
-        verbose_name=_('Symbol'),
-    )
-
-    factor = models.FloatField(
-        default=0,
         verbose_name=_('Factor'),
     )
 
@@ -150,7 +153,7 @@ class WaterproofNbsCa(models.Model):
     )
 
     description = models.CharField(
-        max_length=1024,
+        max_length=2048,
         verbose_name=_('Description'),
     )
 
@@ -159,23 +162,25 @@ class WaterproofNbsCa(models.Model):
         verbose_name=_('Time maximum benefit'),
     )
 
-    profit_pct_time_inter_assoc = models.FloatField(
+    profit_pct_time_inter_assoc = models.IntegerField(
         default=0,
         verbose_name=_('Percentage of benefit associated with interventions at time t=0'),
     )
 
-    total_profits_sbn_consec_time = models.FloatField(
+    total_profits_sbn_consec_time = models.IntegerField(
         default=0,
         verbose_name=_('Procurement time of total SBN benefits'),
     )
 
-    unit_implementation_cost = models.FloatField(
-        default=0,
+    unit_implementation_cost = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
         verbose_name=_('Unit implementation costs (US $/ha)'),
     )
 
-    unit_maintenance_cost = models.FloatField(
-        default=0,
+    unit_maintenance_cost = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
         verbose_name=_('Unit maintenance costs (US $/ha)'),
     )
 
@@ -184,17 +189,27 @@ class WaterproofNbsCa(models.Model):
         verbose_name=_('Periodicity of maintenance (year)'),
     )
 
-    unit_oportunity_cost = models.FloatField(
-        default=0,
+    unit_oportunity_cost = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
         verbose_name=_('Unit oportunity costs (US $/ha)'),
     )
 
     rios_transformations = models.ManyToManyField(
         RiosTransformation,
     )
-    
-    added_by = models.ForeignKey(settings.AUTH_USER_MODEL,
-                                 null=True, blank=True, on_delete=models.SET_NULL)
+
+    activity_shapefile = models.ForeignKey(
+        ActivityShapefile,
+        on_delete=models.CASCADE
+    )
+
+    added_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
 
     class Meta:
         ordering = ['name', 'description']

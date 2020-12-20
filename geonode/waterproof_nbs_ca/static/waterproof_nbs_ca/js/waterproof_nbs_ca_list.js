@@ -4,6 +4,7 @@
  * @version 1.0
  */
 $(function () {
+    var table = $('#example').DataTable();
     var countryDropdown = $('#countryNBS');
     var currencyDropdown = $('#currencyCost');
     var transitionsDropdown = $('#riosTransition');
@@ -23,9 +24,7 @@ $(function () {
         weight: 0.2,
         fillOpacity: 0
     };
-    var initialTrigger = 0;
     initialize = function () {
-        $('#example').DataTable();
         console.log('init event loaded');
         // Transformations widget change option event
         $('#menu-toggle').click(function (e) {
@@ -56,8 +55,6 @@ $(function () {
         changeCountryEvent(countryDropdown, currencyDropdown);
         changeFileEvent();
         initMap();
-
-
     };
     submitFormEvent = function () {
         console.log('submit event loaded');
@@ -87,7 +84,6 @@ $(function () {
             formData.append('oportunityCost', $('#oportunityCost').val());
             // NBS RIOS Transformations selected
             formData.append('riosTransformation', getTransformationsSelected());
-            // NBS Unit Oportunity Cost (US$/ha)
             var file = $('#restrictedArea')[0].files[0];
             // validate extension file
             var extension = validExtension(file);
@@ -192,8 +188,11 @@ $(function () {
         countries.on("data:loaded", function () {
             let mapClick = false;
             // Preload selected country form list view
-            $('#countryNBS option[value=' + countryId + ']').attr('selected', true).trigger('click', { mapClick });
-
+            updateCountryMap(userCountryCode);
+            // Filter datables with country name
+            table.search(userCountryName).draw();
+            // Update url to create with country id parameter
+            udpateCreateUrl(userCountryId);
         });
 
         function onEachFeature(feature, layer) {
@@ -204,21 +203,56 @@ $(function () {
 
         function updateDropdownCountry(feature) {
             let mapClick = true;
+           
             let layerClicked = feature.target;
             if (lastClickedLayer) {
                 lastClickedLayer.setStyle(defaultStyle);
             }
-
             layerClicked.setStyle(highlighPolygon);
             let countryCode = feature.sourceTarget.feature.id;
-            $('#countryNBS option[data-value=' + countryCode + ']').attr('selected', true).trigger('click', { mapClick });
+            
+            $.ajax({
+                url: '/waterproof_nbs_ca/load-countryByCode/',
+                data: {
+                    'code': countryCode
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
+                    $('#countryLabel').text(result[0].fields.name);
+                    table.search(result[0].fields.name).draw();
+                    let countryId = result[0].pk;
+                    udpateCreateUrl(countryId);
+                    //
+                    $.ajax({
+                        url: '/waterproof_nbs_ca/load-regionByCountry/',
+                        data: {
+                            'country': countryId
+                        },
+                        success: function (result) {
+                            result = JSON.parse(result);
+                            $('#regionLabel').text(result[0].fields.name);
 
+                        }
+                    });
+                    $.ajax({
+                        url: '/waterproof_nbs_ca/load-currencyByCountry/',
+                        data: {
+                            'country': countryId
+                        },
+                        success: function (result) {
+                            result = JSON.parse(result);
+                            $('#currencyLabel').text('('+result[0].fields.code+') - '+result[0].fields.name);
+                        }
+                    });
+                }
+            });
             lastClickedLayer = feature.target;
         }
         //map.on('click', onMapClick);
     }
-
-
+    udpateCreateUrl = function (countryId) {
+       $('#createUrl').attr('href','create/'+countryId)
+    };
     /** 
     * Get the transformations selected
     * @param {Array} transformations transformations selected
@@ -304,7 +338,8 @@ $(function () {
                 }
             }
         });
-    };
+    
+    }
     /** 
      * Validate input file on change
      * @param {HTML} dropdown Dropdown selected element
