@@ -1,27 +1,27 @@
 {% extends "base.html" %} {% load i18n %} {% load l10n %}{% load bootstrap_tags %} {% block body_outer %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/bootstrap-duallistbox.min.css">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/waterproof_nbs_ca.css">
-
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin="" />
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 
 <div class="row">
     <div class="col-md-4">
-        <h4 class="text-center">Bogotá D.C.</h4>
-        <p><b>Country:</b> Colombia</p>
-        <p><b>Region:</b> Central</p>
+        <h4 class="text-center" id="countryLabel">{{country.name}}</h4>
+        <p><b>Region:</b> <span id="regionLabel">{{region.name}}</span> </p>
+        <p><b>Currency:</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
     </div>
     <div class="col-md-8">
-        <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d254508.51641080936!2d-74.24789454527543!3d4.648283717196413!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9bfd2da6cb29%3A0x239d635520a33914!2zQm9nb3TDoQ!5e0!3m2!1ses!2sco!4v1607456076816!5m2!1ses!2sco"
-            width="750" height="150" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false"
-            tabindex="0"></iframe>
+        <div id="mapid" style="width: 700px; height: 200px;"></div>
+
     </div>
 </div>
 <div class="page-header">
     <h1>Edit NBS</h1>
 </div>
-<form data-toggle="validator" role="form" action="#" id="formNBS">
+<form data-toggle="validator" role="form" action="#">
     <h4 class="text-primary">General Settings</h4>
     <div class="form-group">
         <label>Name <span class="text-danger-wp">(*)</span> </label>
@@ -42,9 +42,9 @@
                 <select id="countryNBS" class="form-control" data-error="This field is required" required>
                     {% for country in countries %}
                     {% if nbs.country.pk == country.pk %}
-                    <option value="{{country.pk}}" selected>{{country.name}}</option>
+                    <option value="{{country.pk}}" data-value="{{country.code}}" selected>{{country.name}}</option>
                     {% else %}
-                    <option value="{{country.pk}}">{{country.name}}</option>
+                    <option value="{{country.pk}}" data-value="{{country.code}}">{{country.name}}</option>
                     {% endif %}
                     {% endfor %}
                 </select>
@@ -169,6 +169,7 @@
     </div>
     <div class="form-group">
         <!-- Rounded switch -->
+
         <label>Load new restricted area</label>
         <label class="switch">
             <input type="checkbox" id="loadArea">
@@ -184,12 +185,17 @@
     </div>
     <br>
     <input type="hidden" value="{{nbs.pk}}" id="sbnId">
-    <button type="submit" id="submit" class="btn btn-primary ">Submit</button>
+    <button type="button" id="submit" class="btn btn-primary ">Submit</button>
 </form>
 <script>
     var token = '{{ csrf_token }}';
     var countryNbs = '{{ sbn.country.pk }}';
     var currencyNbs = '{{ sbn.currency.pk }}';
+    var countriesLayerUrl = '{{ STATIC_URL }}waterproof_nbs_ca/data/countries.geojson';
+    var userCountryId = '{{userCountry.id}}';
+    var userCountryCode = '{{userCountry.code}}';
+    var userCountryName = '{{userCountry.name}}';
+    var countryId = '{{country.id}}';
 </script>
 {% endblock body_outer %} {% block extra_script %}
 <!--ZIP reader library-->
@@ -197,12 +203,12 @@
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jszip.min.js"></script>
 <!--Shapefile reader library -->
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/shp.min.js"></script>
-<script>
-    var token = '{{ csrf_token }}';
-
-</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"
     integrity="sha512-dTu0vJs5ndrd3kPwnYixvOCsvef5SGYW/zSSK4bcjRBcZHzqThq7pt7PmCv55yb8iBvni0TSeIDV8RYKjZL36A=="
     crossorigin="anonymous"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/leaflet.ajax.min.js"></script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca_edit.js"></script>
 {% endblock %}

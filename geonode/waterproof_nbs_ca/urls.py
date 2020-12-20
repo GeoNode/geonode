@@ -14,6 +14,8 @@ urlpatterns = [
     path('edit/<int:idx>', views.editNbs, name='edit-nbs'),
     # Clone NBS
     path('clone/<int:idx>', views.cloneNbs, name='clone-nbs'),
+    # Delete NBS
+    path('delete/<int:idx>', views.deleteNbs, name='delete-nbs'),
     # Load all RIOS transitions
     path('load-transitions/', views.loadAllTransitions, name='waterproof_load_transformations'),
     # Load activities by it's transition id
@@ -22,6 +24,8 @@ urlpatterns = [
     path('load-transformationByActivity/', views.loadTransformationbyActivity, name='waterproof_load_transformations'),
     # Load a country by id
     path('load-country/', views.loadCountry, name='waterproof_load_country'),
+    # Load a country by id
+    path('load-countryByCode/', views.loadCountryByCode, name='waterproof_load_countryByCode'),
     # Load all countries
     path('load-allCountries/', views.loadAllCountries, name='load_allCountries'),
     # Load currency by id

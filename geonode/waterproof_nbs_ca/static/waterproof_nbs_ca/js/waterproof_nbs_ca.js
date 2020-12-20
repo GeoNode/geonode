@@ -304,7 +304,7 @@ $(function () {
                 }
             }
         });
-    }
+    };
     /** 
      * Validate input file on change
      * @param {HTML} dropdown Dropdown selected element

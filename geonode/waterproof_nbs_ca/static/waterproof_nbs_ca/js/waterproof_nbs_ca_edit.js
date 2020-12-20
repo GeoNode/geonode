@@ -4,6 +4,22 @@
  * @version 1.0
  */
 $(function () {
+    var map;
+    var highlighPolygon = {
+        fillColor: "#337ab7",
+        color: "#333333",
+        weight: 0.2,
+        fillOpacity: 0.7
+    };
+    // Default layer style
+    var defaultStyle = {
+        fillColor: "#337ab7",
+        color: "#333333",
+        weight: 0.2,
+        fillOpacity: 0
+    };
+    var transformations = [];
+    var lastClickedLayer;
     initialize = function () {
         $('#example').DataTable();
         console.log('init event loaded');
@@ -14,7 +30,7 @@ $(function () {
         var activitiesDropdown = $('#riosActivity');
         var transformDropdown = $('#riosTransformation');
         var loadAreaChecked = $('#loadArea');
-       
+
         // show/hide div with checkbuttons 
         $("#riosTransition").change(function () {
             dato = $("#riosTransition").val();
@@ -60,6 +76,7 @@ $(function () {
         changeCountryEvent(countryDropdown, currencyDropdown);
         submitFormEvent();
         changeFileEvent();
+        initMap();
     };
     submitFormEvent = function () {
         console.log('submit event loaded');
@@ -332,6 +349,59 @@ $(function () {
 
     };
     /** 
+   * Initialize map 
+   */
+    initMap = function () {
+        map = L.map('mapid').setView([51.505, -0.09], 13);
+
+        // Basemap layer
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+            maxZoom: 18,
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+                'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            id: 'mapbox/streets-v11',
+            tileSize: 512,
+            zoomOffset: -1
+        }).addTo(map);
+        // Countries layer
+        let countries = new L.GeoJSON.AJAX(countriesLayerUrl,
+            {
+                style: defaultStyle,
+                onEachFeature: onEachFeature
+            }
+        );
+        countries.addTo(map);
+
+        // When countries layer is loaded fire dropdown event change
+        countries.on("data:loaded", function () {
+            let mapClick = false;
+            // Preload selected country form list view
+            $('#countryNBS option[value=' + countryId + ']').attr('selected', true).trigger('click', { mapClick });
+
+        });
+
+        function onEachFeature(feature, layer) {
+            layer.on({
+                click: updateDropdownCountry
+            });
+        }
+
+        function updateDropdownCountry(feature) {
+            let mapClick = true;
+            let layerClicked = feature.target;
+            if (lastClickedLayer) {
+                lastClickedLayer.setStyle(defaultStyle);
+            }
+
+            layerClicked.setStyle(highlighPolygon);
+            let countryCode = feature.sourceTarget.feature.id;
+            $('#countryNBS option[data-value=' + countryCode + ']').attr('selected', true).trigger('click', { mapClick });
+
+            lastClickedLayer = feature.target;
+        }
+        //map.on('click', onMapClick);
+    }
+    /** 
    * Get the transformations selected
    * @param {Array} transformations transformations selected
    */
@@ -351,10 +421,19 @@ $(function () {
   */
     changeCountryEvent = function (countryDropdown, currencyDropdown) {
         // Rios transitions dropdown listener
-        countryDropdown.change(function () {
+        countryDropdown.click(function (event, params) {
             // Get load activities from urls Django parameter
             var country_id = $(this).val();
-
+            var countryName = $(this).find(':selected').text();
+            var countryCode = $(this).find(':selected').attr('data-value');
+            if (params) {
+                if (!params.mapClick) {
+                    updateCountryMap(countryCode);
+                }
+            }
+            else {
+                updateCountryMap(countryCode);
+            }
             /** 
              * Get filtered activities by transition id 
              * @param {String} url   activities URL 
@@ -370,8 +449,42 @@ $(function () {
                 success: function (result) {
                     result = JSON.parse(result);
                     currencyDropdown.val(result[0].pk);
+                    $('#currencyLabel').text('(' + result[0].fields.code + ') - ' + result[0].fields.name);
+                    $('#countryLabel').text(countryName);
+                    /** 
+                     * Get filtered activities by transition id 
+                     * @param {String} url   activities URL 
+                     * @param {Object} data  transition id  
+                     *
+                     * @return {String} activities in HTML option format
+                     */
+                    $.ajax({
+                        url: '/waterproof_nbs_ca/load-regionByCountry/',
+                        data: {
+                            'country': country_id
+                        },
+                        success: function (result) {
+                            result = JSON.parse(result);
+                            $('#regionLabel').text(result[0].fields.name);
+
+                        }
+                    });
                 }
             });
+        });
+    };
+    updateCountryMap = function (countryCode) {
+        map.eachLayer(function (layer) {
+            if (layer.feature) {
+                if (layer.feature.id == countryCode) {
+                    if (lastClickedLayer) {
+                        lastClickedLayer.setStyle(defaultStyle);
+                    }
+                    layer.setStyle(highlighPolygon);
+                    map.fitBounds(layer.getBounds());
+                    lastClickedLayer = layer;
+                }
+            }
         });
     };
     /** 

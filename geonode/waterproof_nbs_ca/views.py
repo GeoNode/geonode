@@ -134,25 +134,51 @@ def createNbs(request, countryId):
 def listNbs(request):
     if request.method == 'GET':
         if (request.user.professional_role == 'ADMIN'):
-            print("ADMIN")
+            userCountry = Countries.objects.get(code=request.user.country)
             nbs = WaterproofNbsCa.objects.all()
+            region = Region.objects.get(id=userCountry.region_id)
+            currency = Currency.objects.get(country_id=userCountry.id)
             return render(
                 request,
                 'waterproof_nbs_ca/waterproofnbsca_list.html',
                 {
-                    'nbs': nbs
+                    'nbs': nbs,
+                    'userCountry': userCountry,
+                    'region': region,
+                    'currency': currency
                 }
             )
-        if (request.user.professional_role == 'ANAL'):
-            print("ANALYST")
-            nbs = WaterproofNbsCa.objects.all()
-            return render(
-                request,
-                'waterproof_nbs_ca/waterproofnbsca_list.html',
-                {
-                    'nbs': nbs
-                }
-            )
+        else:
+            if (request.user.professional_role == 'ANAL'):
+                nbs = WaterproofNbsCa.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                currency = Currency.objects.get(country_id=userCountry.id)
+                return render(
+                    request,
+                    'waterproof_nbs_ca/waterproofnbsca_list.html',
+                    {
+                        'nbs': nbs,
+                        'userCountry': userCountry,
+                        'region': region,
+                        'currency': currency
+                    }
+                )
+            else:
+                nbs = WaterproofNbsCa.objects.filter(added_by=request.user.id)
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                currency = Currency.objects.get(country_id=userCountry.id)
+                return render(
+                    request,
+                    'waterproof_nbs_ca/waterproofnbsca_list.html',
+                    {
+                        'nbs': nbs,
+                        'userCountry': userCountry,
+                        'region': region,
+                        'currency': currency
+                    }
+                )
 
 
 def editNbs(request, idx):
@@ -160,10 +186,10 @@ def editNbs(request, idx):
         return render(request, 'waterproof_nbs_ca/waterproofnbsca_login_error.html')
     else:
         if request.method == 'GET':
-            filterNbs = WaterproofNbsCa.objects.filter(id=idx)
             countries = Countries.objects.all()
             currencies = Currency.objects.all()
             filterNbs = WaterproofNbsCa.objects.get(id=idx)
+            country = Countries.objects.get(id=filterNbs.country_id)
             transitions = RiosTransition.objects.all()
             riosActivity = RiosActivity.objects.all()
             riosTransformation = RiosTransformation.objects.all()
@@ -174,6 +200,7 @@ def editNbs(request, idx):
                 {
                     'nbs': filterNbs,
                     'countries': countries,
+                    'country': country,
                     'currencies': currencies,
                     'transitions': transitions,
                     'riosActivity': riosActivity,
@@ -265,6 +292,7 @@ def cloneNbs(request, idx):
             countries = Countries.objects.all()
             currencies = Currency.objects.all()
             filterNbs = WaterproofNbsCa.objects.get(id=idx)
+            country = Countries.objects.get(id=filterNbs.country_id)
             transitions = RiosTransition.objects.all()
             riosActivity = RiosActivity.objects.all()
             riosTransformation = RiosTransformation.objects.all()
@@ -275,6 +303,7 @@ def cloneNbs(request, idx):
                 {
                     'nbs': filterNbs,
                     'countries': countries,
+                    'country': country,
                     'currencies': currencies,
                     'transitions': transitions,
                     'riosActivity': riosActivity,
@@ -347,7 +376,8 @@ def cloneNbs(request, idx):
                 unit_maintenance_cost=maintenanceCost,
                 periodicity_maitenance=maintenancePeriod,
                 unit_oportunity_cost=oportunityCost,
-                activity_shapefile=shapefile
+                activity_shapefile=shapefile,
+                added_by=request.user
             )
             nbs.save()
             for trans in riosTransformation:
@@ -358,12 +388,38 @@ def cloneNbs(request, idx):
 
 def viewNbs(request, idx):
     filterNbs = WaterproofNbsCa.objects.filter(id=idx)
+    nbs = WaterproofNbsCa.objects.get(id=idx)
+    country = Countries.objects.get(id=nbs.country_id)
+    userCountry = Countries.objects.get(code=country.code)
+    region = Region.objects.get(id=nbs.country.region_id)
+    currency = Currency.objects.get(country_id=country.id)
     currencies = Currency.objects.all()
     transitions = RiosTransition.objects.all()
     riosTransition = RiosActivity.objects.filter(transition_id=2)
-    # riosTransition = riosTransformation.objects.all();
-    return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs, 'currencies': currencies, 'riosTransition': riosTransition, 'transitions': transitions})
-    # return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html', {'nbs': filterNbs, 'currencies': currencies})
+    return render(request, 'waterproof_nbs_ca/waterproofnbsca_detail_list.html',
+                  {
+                      'region': region,
+                      'userCountry': userCountry,
+                      'country': country,
+                      'nbs': filterNbs,
+                      'currency': currency,
+                      'currencies': currencies,
+                      'riosTransition': riosTransition,
+                      'transitions': transitions
+                  }
+                  )
+
+
+def deleteNbs(request, idx):
+    if request.method == "POST":
+        nbs = WaterproofNbsCa.objects.get(id=idx)
+        # delete object
+        nbs.delete()
+        # after deleting redirect to
+        # home page
+        return render(request, 'waterproof_nbs_ca/waterproofnbsca_list.html')
+    else:
+        return render(request, 'waterproof_nbs_ca/waterproofnbsca_confirm_delete.html', {"idx": idx})
 
 
 def loadCurrency(request):
@@ -389,6 +445,13 @@ def loadAllCurrencies(request):
 def loadCountry(request):
     country = request.GET.get('country')
     countries = Countries.objects.filter(id=country)
+    countries_serialized = serializers.serialize('json', countries)
+    return JsonResponse(countries_serialized, safe=False)
+
+
+def loadCountryByCode(request):
+    code = request.GET.get('code')
+    countries = Countries.objects.filter(code=code)
     countries_serialized = serializers.serialize('json', countries)
     return JsonResponse(countries_serialized, safe=False)
 

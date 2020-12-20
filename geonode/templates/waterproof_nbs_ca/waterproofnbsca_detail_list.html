@@ -1,15 +1,17 @@
 {% extends "geonode_base.html" %} {% load i18n %} {% block title %} {% trans "Waterproof Detail NBS CA" %} {% endblock %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/waterproof_nbs_ca.css"> {% block body_outer %} {% for sbn in nbs %}
-
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin="" />
 <div class="row">
     <div class="col-md-4">
-        <h4 class="text-center">Bogotá D.C.</h4>
-        <p><b>Country:</b> Colombia</p>
-        <p><b>Region:</b> Central</p>
+        <h4 class="text-center" id="countryLabel">{{country.name}}</h4>
+        <p><b>Region:</b> <span id="regionLabel">{{region.name}}</span> </p>
+        <p><b>Currency:</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
     </div>
     <div class="col-md-8">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d254508.51641080936!2d-74.24789454527543!3d4.648283717196413!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9bfd2da6cb29%3A0x239d635520a33914!2zQm9nb3TDoQ!5e0!3m2!1ses!2sco!4v1607456076816!5m2!1ses!2sco"
-            width="750" height="150" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+        <div id="mapid" style="width: 700px; height: 200px;"></div>
+
     </div>
 </div>
 <div class="page-header">
@@ -138,8 +140,17 @@
 </ul>
 
 {% endfor %} {% endblock body_outer %} {% block extra_script %}
-
-
+<script>
+    var countriesLayerUrl = '{{ STATIC_URL }}waterproof_nbs_ca/data/countries.geojson';
+    var userCountryId='{{userCountry.id}}';
+    var userCountryCode='{{userCountry.code}}';
+    var userCountryName='{{userCountry.name}}';
+</script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/leaflet.ajax.min.js"></script>
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca_list.js"></script>
 <script>
     $(document).ready(function() {
         $("#currenciesComapreSelect").change(function() {
@@ -156,4 +167,5 @@
         });
     });
 </script>
+
 {% endblock %}
