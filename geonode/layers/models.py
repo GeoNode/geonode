@@ -214,6 +214,14 @@ class Layer(ResourceBase):
         return self.upload_session
 
     @property
+    def processed(self):
+        self.upload_session = UploadSession.objects.filter(resource=self).first()
+        if self.upload_session:
+            return self.upload_session.processed
+        else:
+            return True
+
+    @property
     def display_type(self):
         return ({
             "dataStore": "Vector Data",

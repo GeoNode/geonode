@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-11-28 17:58+0000\n"
-"PO-Revision-Date: 2020-11-09 16:40+0000\n"
+"PO-Revision-Date: 2020-12-09 12:41+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/"
 "de/)\n"
@@ -37,7 +37,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.3\n"
 "X-Poedit-Bookmarks: 952,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
 #: geonode/base/__init__.py:27
@@ -217,22 +217,16 @@ msgid "Purpose"
 msgstr "Zweck"
 
 #: geonode/base/forms.py:346
-#, fuzzy
-#| msgid "Other Settings"
 msgid "Other constraints"
-msgstr "Andere Einstellungen"
+msgstr "Andere Einschränkungen"
 
 #: geonode/base/forms.py:350
-#, fuzzy
-#| msgid "supplemental information"
 msgid "Supplemental information"
 msgstr "Zusätzliche Information"
 
 #: geonode/base/forms.py:354
-#, fuzzy
-#| msgid "data quality statement"
 msgid "Data quality statement"
-msgstr "Datenqualitätskommentar"
+msgstr "Kommentar zur Datenqualität"
 
 #: geonode/base/forms.py:358 geonode/base/forms.py:359
 #: geonode/base/forms.py:531 geonode/base/models.py:629
@@ -915,7 +909,7 @@ msgstr "Remote Ebene"
 
 #: geonode/base/templatetags/base_tags.py:52
 msgid "WMS Cascade Layer"
-msgstr "kaskadierte WMS Ebene"
+msgstr "Kaskadierte WMS Ebene"
 
 #: geonode/base/templatetags/user_messages.py:32
 #: geonode/base/templatetags/user_messages.py:40
@@ -1241,11 +1235,11 @@ msgstr "Dokumente"
 
 #: geonode/documents/templates/documents/document_detail.html:41
 msgid "Your browser does not support the audio element."
-msgstr "Dein Browser unterstüzt keine Audio Elemente."
+msgstr "Ihr Browser unterstützt keine Audio Elemente."
 
 #: geonode/documents/templates/documents/document_detail.html:57
 msgid "Your browser does not support the video tag."
-msgstr "Dein Browser unterstüzt keine Video Elemente."
+msgstr "Ihr Browser unterstützt keine Video Elemente."
 
 #: geonode/documents/templates/documents/document_detail.html:62
 #: geonode/documents/templates/documents/document_detail.html:64
@@ -1842,10 +1836,8 @@ msgstr "Sie sind nicht dazu berechtigt dieses Dokument zu betrachten"
 #: geonode/maps/views.py:1085 geonode/maps/views.py:1174
 #: geonode/maps/views.py:1204 geonode/maps/views.py:1318
 #: geonode/maps/views.py:1360
-#, fuzzy
-#| msgid "Not provided"
 msgid "Not allowed"
-msgstr "Nicht zur Verfügung gestellt"
+msgstr "Zugriff verboten"
 
 #: geonode/documents/views.py:98 geonode/documents/views.py:100
 #: geonode/documents/views.py:357 geonode/documents/views.py:359
@@ -1881,10 +1873,8 @@ msgstr "Nicht zur Verfügung gestellt"
 #: geonode/maps/views.py:1206 geonode/maps/views.py:1208
 #: geonode/maps/views.py:1320 geonode/maps/views.py:1322
 #: geonode/maps/views.py:1362 geonode/maps/views.py:1364
-#, fuzzy
-#| msgid "found"
 msgid "Not found"
-msgstr "gefunden"
+msgstr "Nicht gefunden"
 
 #: geonode/documents/views.py:194
 msgid "You are not allowed to view this document."
@@ -2137,7 +2127,7 @@ msgid ""
 "      "
 msgstr ""
 "\n"
-"Bearbeiten von Details  for %(map_title)s"
+"Bearbeiten der Details  von %(map_title)s"
 
 #: geonode/geoapps/templates/apps/app_new.html:7
 #: geonode/maps/templates/maps/map_new.html:7
@@ -2153,8 +2143,8 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"          Bist du sicher, dass du  <a href=\"%(resource.get_absolute_url)s\">"
-"%(resource_title)s</a> entfernen willst?"
+"          Sind Sie sicher, dass Sie  <a href=\"%(resource.get_absolute_url)s"
+"\">%(resource_title)s</a> entfernen wollen?"
 
 #: geonode/geoapps/templates/layouts/app_panels.html:561
 #: geonode/layers/templates/layouts/panels.html:629
@@ -3721,7 +3711,7 @@ msgstr "EPSG Code (Source SRS)"
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:38
 msgid "Select a Source SRS"
-msgstr "Wählen sie ein Quell-KBS"
+msgstr "Wählen Sie ein Quell-KBS"
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:44
 msgid ""
@@ -3781,7 +3771,7 @@ msgstr "Wählen Sie ein Ziel SRS"
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:78
 msgid "leave it empty to use only Source SRS"
-msgstr "Leer lassen, um nur das Quell SRS zu verwenden"
+msgstr "Leer lassen, um nur das Quell-SRS zu verwenden"
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:84
 #: geonode/layers/templates/upload/layer_upload_time.html:225
@@ -3812,19 +3802,19 @@ msgid ""
 "referencing by coordinate."
 msgstr ""
 "Ein Koordinatenbezugsystem (KBS) oder Koordinatenreferenzsystem (KRS) ist "
-"einKoordinaten basiertes lokales,\n"
-"                            regionales or globales System das benutzt wird "
-"um geografische Objekte zu verorten. Ein räumliches Referenzsystem definiert "
-"eine spezifische Karten-\n"
+"ein koordinatenbasiertes lokales,\n"
+"                            regionales oder globales System das benutzt "
+"wird, um geografische Objekte zu verorten. Ein räumliches Referenzsystem "
+"definiert eine spezifische Karten-\n"
 "                            Projektion, sowie die Übersetzung zwischen "
 "verschiedenen räumlichen Bezugssystemen. Räumliche Bezugssysteme sind\n"
 "                            durch den 'OGC Simple Feature access' definiert "
-"der'well-known text' verwendet. Diese Definition wurde von diversen\n"
+"der 'well-known text' verwendet. Diese Definition wurde von diversen\n"
 "                            standardbasierten geografischen "
 "Informationssystemen implementiert. Auf räumliche Bezugssysteme kann durch "
 "Verwendung einer SRID-Ganzzahl verwiesen werden.\n"
 "                            Zum Beispiel durch Verwendung der EPSG-Codes die "
-"durch dieInternational Association of Oil and Gas Producers definiert "
+"durch die International Association of Oil and Gas Producers definiert "
 "wurden.\n"
 "                            Dies wurde in der Norm 'ISO 19111:2007 "
 "Geographic information—Spatial referencing by coordinates', festgehalten und "
@@ -3906,12 +3896,13 @@ msgid ""
 "                        "
 msgstr ""
 "\n"
-"In Geodatenbanken (wie IBM DB2, IBM Informix, Microsoft SQL Server, MySQL, "
+"In Geodatenbanken (z.B. IBM DB2, IBM Informix, Microsoft SQL Server, MySQL, "
 "Oracle RDBMS, Teradata PostGIS und SQL Anywhere) werden SRIDs verwendet, um "
 "eindeutig zu beschreiben, welches Koordinatenbezugssystem für die räumliche "
 "Spalte, oder das räumliche Objekt verwendet wird (Abhängig von der "
 "Implementierung). SRIDS sind üblicherweise mit einer 'well-known-text' (WKT) "
-"Textbeschreibung verknüpft (dem sog. SRTEXT)"
+"Textbeschreibung verknüpft (dem sog. SRTEXT)\n"
+" "
 
 #: geonode/layers/templates/upload/layer_upload_crs.html:137
 msgid ""
@@ -3966,7 +3957,7 @@ msgid ""
 "                        "
 msgstr ""
 "\n"
-"Mit räumlichen Daten verknüpften SRID-Werten können verwendet werden, um "
+"Mit räumlichen Daten verknüpfte SRID-Werte können verwendet werden, um "
 "räumliche Operationen einzuschränken - z. B. können in einigen Systemen "
 "räumliche Operationen nicht zwischen räumlichen Objekten mit "
 "unterschiedlichen SRIDs ausgeführt werden oder lösen eine "
@@ -3993,9 +3984,9 @@ msgid ""
 "project the coordinates from Source SRS to another one.\n"
 "                        "
 msgstr ""
-"Der Ziel-SRS-EPSG-Code ist optional. Dieser muss nur verwendet werden, wenn "
-"die Koordinaten vom Quellkoordinatensystem auf ein anderes projiziert werden "
-"müssen."
+"Der Ziel-SRS-EPSG-Code ist optional. Dieser sollte nur verwendet werden, "
+"wenn die Koordinaten vom Quellkoordinatensystem auf ein anderes projiziert "
+"werden müssen."
 
 #: geonode/layers/templates/upload/layer_upload_csv.html:7
 msgid "Upload Layer Step: CSV Field Mapping"
@@ -4090,8 +4081,8 @@ msgstr ""
 " Wenn GeoNode die Werte für das ausgewählte Attribut nicht analysieren kann, "
 "erscheinen rote Markierungen, um die Probleme hervorzuheben.\n"
 "<br> <br>\n"
-"Weitere Informationen finden Sie am unteren Rand der Seite in den "
-"Abschnitten \"Zusätzliche Hilfe\"."
+"Weitere Informationen finden Sie am Ende der Seite im Abschnitt "
+"\"Zusätzliche Hilfe\"."
 
 #: geonode/layers/templates/upload/layer_upload_time.html:43
 #: geonode/templates/index.html:128 geonode/templates/index.html:138
@@ -4152,12 +4143,12 @@ msgstr "Datumsformat für Textattribute"
 #: geonode/layers/templates/upload/layer_upload_time.html:142
 #: geonode/layers/templates/upload/layer_upload_time.html:174
 msgid "Best Guess"
-msgstr "beste Annahme"
+msgstr "Beste Annahme"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:143
 #: geonode/layers/templates/upload/layer_upload_time.html:175
 msgid "Custom"
-msgstr "maßgeschneidert"
+msgstr "Benutzerdefiniert"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:152
 msgid "Optional End-Time attribute"
@@ -4165,7 +4156,7 @@ msgstr "Optionales Endzeitattribut"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:161
 msgid "Existing Time Attribute"
-msgstr "vorhandenes Zeitattribut"
+msgstr "Vorhandenes Zeitattribut"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:169
 msgid "Convert Text Attribute"
@@ -4264,9 +4255,9 @@ msgid ""
 msgstr ""
 "\n"
 "Für Textattribute können Sie ein benutzerdefiniertes Format angeben (als "
-"Teil der \"Erweiterten Optionen\") oder den \"Vermuten\"-Ansatz verwenden, "
-"der versucht, bekannte und erkannte Muster automatisch in gültige Zeiten zu "
-"übersetzen."
+"Teil der \"Erweiterten Optionen\") oder den \"Beste Annahme\"-Ansatz "
+"verwenden, der versucht, bekannte und erkannte Muster automatisch in gültige "
+"Zeiten zu übersetzen."
 
 #: geonode/layers/templates/upload/layer_upload_time.html:248
 msgid "The 'best guess' will handle date and optional time variants of"
@@ -4291,7 +4282,7 @@ msgstr "Text im Modal"
 #: geonode/layers/templates/upload/layer_upload_time.html:354
 msgid " does NOT match any valid ISO-8601 Date-Time string!"
 msgstr ""
-"stimmt NICHT mit einer gültigen ISO-8601-Datums-Zeitzeichenfolge überein!"
+" stimmt NICHT mit einer gültigen ISO-8601-Datums-Zeitzeichenfolge überein!"
 
 #: geonode/layers/templates/upload/layer_upload_time.html:411
 msgid "Valid ISO-8601 for"
@@ -4322,11 +4313,11 @@ msgstr "Bitte wählen Sie ein Zeitattribut zum Testen aus!"
 msgid ""
 "Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
 msgstr ""
-"Rückkehr zur Startseite des Hochladens in <span id=\"cnt\">5</span> Sekunden"
+"Rückkehr zur Startseite des Hochladens in <span id=\"cnt\">5</span> Sekunden."
 
 #: geonode/layers/templates/upload/no_upload.html:8
 msgid " Or just go "
-msgstr "Oder sofort verlassen"
+msgstr " oder sofort verlassen"
 
 #: geonode/layers/templates/upload/no_upload.html:8
 #: geonode/templates/relationships/success.html:6
@@ -4355,7 +4346,7 @@ msgstr ""
 
 #: geonode/layers/utils.py:548
 msgid "Local GeoNode layer has no geometry type."
-msgstr "die lokale GeoNode Ebene hat keinen Geometrietyp."
+msgstr "Die lokale GeoNode Ebene hat keinen Geometrietyp."
 
 #: geonode/layers/utils.py:556
 msgid ""
@@ -4634,7 +4625,7 @@ msgid ""
 msgstr ""
 "\n"
 "<div class=\"alert alert-warning\"> Es konnten keine herunterladbaren Ebenen "
-"für diese Karte gefunden werden. Sie können zurück gehen zu"
+"für diese Karte gefunden werden. Sie können zurück gehen zu "
 
 #: geonode/maps/templates/maps/map_download.html:29
 msgid ""
@@ -4661,7 +4652,7 @@ msgstr ""
 
 #: geonode/maps/templates/maps/map_download.html:54
 msgid "Downloading"
-msgstr "wird heruntergeladen"
+msgstr "Wird heruntergeladen"
 
 #: geonode/maps/templates/maps/map_download.html:59
 msgid "Retry"
@@ -4711,8 +4702,8 @@ msgid ""
 "        "
 msgstr ""
 "\n"
-"Willst du wirklich diese Karte(n) <a href=\"%(map.get_absolute_url)s\">"
-"%(map_title)s</a> löschen?"
+"Sind Sie sicher, dass Sie diese Karte(n) <a href=\"%(map.get_absolute_url)s"
+"\">%(map_title)s</a> löschen wollen?"
 
 #: geonode/maps/views.py:100
 msgid "You are not permitted to delete this map."
@@ -4753,7 +4744,7 @@ msgstr "Nachricht erhalten"
 
 #: geonode/messaging/__init__.py:37
 msgid "New message received in one of your threads"
-msgstr "Neue Nachricht in einer deiner Unterhaltungen"
+msgstr "Neue Nachricht in einer Ihrer Unterhaltungen"
 
 #: geonode/monitoring/__init__.py:45
 msgid "Monitoring alert"
@@ -4971,7 +4962,7 @@ msgstr "Prozentsatz"
 
 #: geonode/monitoring/models.py:351
 msgid "Not OWS"
-msgstr "kein OWS"
+msgstr "Kein OWS"
 
 #: geonode/monitoring/models.py:352
 msgid "Any OWS"
@@ -5238,7 +5229,7 @@ msgstr "Profil"
 
 #: geonode/people/models.py:75
 msgid "introduce yourself"
-msgstr "Stelle dich vor"
+msgstr "Stellen Sie sich vor"
 
 #: geonode/people/models.py:77
 msgid "Position Name"
@@ -5362,7 +5353,7 @@ msgstr "Profil anlegen"
 
 #: geonode/people/templates/people/profile_detail.html:8
 msgid "Profile of "
-msgstr "Profil von"
+msgstr "Profil von "
 
 #: geonode/people/templates/people/profile_detail.html:20
 msgid "people explore"
@@ -5375,7 +5366,7 @@ msgstr "Benutzer erkunden"
 #: geonode/people/templates/people/profile_detail.html:98
 #: geonode/people/templates/people/profile_detail.html:102
 msgid "Not provided."
-msgstr "Nicht zur Verfügung gestellt"
+msgstr "Nicht zur Verfügung gestellt."
 
 #: geonode/people/templates/people/profile_detail.html:76
 #: geonode/templates/metadata_detail.html:141
@@ -5513,7 +5504,7 @@ msgstr "Benutzer entdecken"
 
 #: geonode/people/views.py:120
 msgid "Your username for "
-msgstr "Ihr Benutzername für"
+msgstr "Ihr Benutzername für "
 
 #: geonode/people/views.py:134
 msgid "Your username has been emailed to you."
@@ -5603,7 +5594,7 @@ msgstr "Sitzung ist abgelaufen. Bitte melden Sie sich erneut an!"
 
 #: geonode/security/views.py:68
 msgid "You are not allowed to change permissions for this resource"
-msgstr "Es ist ihnen nicht erlaubt die Berechtigungen der Ebene zu verändern."
+msgstr "Sie dürfen die Berechtigungen der Ebene nicht verändern."
 
 #: geonode/security/views.py:74
 msgid "Permissions successfully updated!"
@@ -6004,7 +5995,8 @@ msgid ""
 msgstr ""
 "\n"
 "Die angeforderte Seite existiert nicht. Vielleicht verwenden Sie ein "
-"veraltetes Lesezeichen?"
+"veraltetes Lesezeichen?\n"
+" "
 
 #: geonode/templates/500.html:45
 msgid "Toggle navigation"
@@ -6074,7 +6066,8 @@ msgstr ""
 "hat). Wenn Sie der Site-Administrator sind, aktivieren Sie den Debug-Modus, "
 "um den tatsächlichen Fehler anzuzeigen und zu beheben, oder beschreiben Sie "
 "ein Problem im <a href=\"http://github.com/GeoNode/geonode/issues\">GeoNode "
-"Issue Tracker</a>"
+"Issue Tracker</a>\n"
+" "
 
 #: geonode/templates/500.html:172 geonode/templates/base.html:307
 #: geonode/templates/base.html:493
@@ -6300,7 +6293,7 @@ msgstr "Dateien wählen..."
 
 #: geonode/templates/_permissions_form.html:229
 msgid "Reset"
-msgstr "zurücksetzen"
+msgstr "Zurücksetzen"
 
 #: geonode/templates/_permissions_form.html:241
 msgid "Only the SRID number without the 'EPSG:' prefix!"
@@ -6312,7 +6305,7 @@ msgstr "Standart: 4326"
 
 #: geonode/templates/_permissions_form.html:247
 msgid "Set your desired encoding UTF-8, Big5, Big5-HKSCS ..."
-msgstr "Setze dein gewünschtes encoding: UTF-8, Big5, Big5-HKSCS ..."
+msgstr "Setzen Sie Ihr gewünschtes Encoding: UTF-8, Big5, Big5-HKSCS ..."
 
 #: geonode/templates/_permissions_form.html:532
 msgid "Load SHP-ZIP"
@@ -6337,9 +6330,9 @@ msgid ""
 "p><p>Do you want to proceed?</p>"
 msgstr ""
 "<p>Dadurch werden die aktuellen Geo-Limits in der Datenbank überschrieben.</"
-"p><p>Um sie anzuwenden musst du zunächst auf <strong>Änderungen annehmen</"
+"p><p>Um sie anzuwenden, müssen Sie zunächst auf <strong>Änderungen annehmen</"
 "strong> klicken.</p><p><strong>WARNUNG:</strong> Dies kann nicht rückgängig "
-"gemacht werden!</p><p>Möchtest du fortfahren?</p>"
+"gemacht werden!</p><p>Möchten Sie fortfahren?</p>"
 
 #: geonode/templates/_permissions_form.html:599
 #: geonode/templates/_permissions_form.html:604
@@ -6352,7 +6345,7 @@ msgid ""
 "will need to click on <strong>Apply Changes</strong> button.</p>"
 msgstr ""
 "<p>Geo-Limits <strong>erfolgreich</strong> gespeichert!</p><p>Um sie "
-"anzuwenden musst du zunächst auf <strong>Änderungen annehmen</strong> "
+"anzuwenden, müssen Sie zunächst auf <strong>Änderungen annehmen</strong> "
 "klicken.</p>"
 
 #: geonode/templates/_permissions_form.html:605
@@ -6378,8 +6371,8 @@ msgid ""
 "strong> button.</p><p>Do you want to proceed?</p>"
 msgstr ""
 "<p>Dadurch werden die aktuellen Geo-Limits in der Datenbank "
-"<strong>permanent</strong> entfernt.</p><p>Um sie anzuwenden musst du "
-"zunächst auf <strong>Änderungen annehmen</strong> klicken.</p><p>Möchtest du "
+"<strong>permanent</strong> entfernt.</p><p>Um sie anzuwenden, müssen Sie "
+"zunächst auf <strong>Änderungen annehmen</strong> klicken.</p><p>Möchten Sie "
 "fortfahren?</p>"
 
 #: geonode/templates/_permissions_form.html:718
@@ -6611,7 +6604,7 @@ msgstr ""
 #, python-format
 msgid "In case you forgot, your username is %(username)s."
 msgstr ""
-"Falls Du deinen Anmeldenamen vergessen haben solltest:  Er lautet "
+"Falls Sie Ihren Anmeldenamen vergessen haben sollten:  Er lautet "
 "%(username)s."
 
 #: geonode/templates/account/email/password_reset_key.txt:10
@@ -6620,7 +6613,7 @@ msgid ""
 "Thank you for using %(site_name)s!\n"
 "%(site_domain)s"
 msgstr ""
-"Danke, dass du %(site_name)s benutzt!\n"
+"Danke, dass Sie %(site_name)s benutzent!\n"
 "%(site_domain)s"
 
 #: geonode/templates/account/email/password_reset_key_subject.txt:1
@@ -6712,7 +6705,7 @@ msgstr "Passwort ändern"
 
 #: geonode/templates/account/password_change.html:14
 msgid "Change your password here"
-msgstr "Ändern Sie ihr Passwort hier"
+msgstr "Ändern Sie Ihr Passwort hier"
 
 #: geonode/templates/account/password_change.html:20
 msgid "Change my password"
@@ -6792,7 +6785,7 @@ msgstr "Kennwort ändern"
 #: geonode/templates/account/password_reset_from_key.html:20
 #: geonode/templates/account/password_reset_from_key_done.html:8
 msgid "Your password is now changed."
-msgstr "Dein Passwort wurde geändert."
+msgstr "Ihr Passwort wurde geändert."
 
 #: geonode/templates/account/password_set.html:6
 msgid "Set Password"
@@ -6804,7 +6797,7 @@ msgstr "Password wurde gesetzt"
 
 #: geonode/templates/account/password_set.html:15
 msgid "Set your password here"
-msgstr "Setze dein Passwort hier"
+msgstr "Setzen Sie Ihr Passwort hier"
 
 #: geonode/templates/account/password_set.html:21
 msgid "Set password"
@@ -6864,7 +6857,7 @@ msgstr ""
 #: geonode/templates/account/verified_email_required.html:5
 #: geonode/templates/account/verified_email_required.html:8
 msgid "Verify Your E-mail Address"
-msgstr "Bestätige deine Email-Adresse"
+msgstr "Bestätigen Sie Ihre E-Mailadresse"
 
 #: geonode/templates/account/verified_email_required.html:12
 msgid ""
@@ -6872,9 +6865,8 @@ msgid ""
 "you are who you claim to be. For this purpose, we require that you\n"
 "verify ownership of your e-mail address. "
 msgstr ""
-"Dieser Teil der Website verlangt von uns zu überprüfen, dass Du der bist, "
-"der Du behauptest zu sein. Zu diesem Zweck verlangen wir, dass Du das "
-"Eigentum Deiner E-Mail-Adresse bestätigst. "
+"Um diesen Teil der Webseite zu nutzen, müssen Sie Ihre E-Mailadresse "
+"bestätigen."
 
 #: geonode/templates/account/verified_email_required.html:16
 msgid ""
@@ -6882,9 +6874,9 @@ msgid ""
 "verification. Please click on the link inside this e-mail. Please\n"
 "contact us if you do not receive it within a few minutes."
 msgstr ""
-"Wir haben Dir eine E-Mail zur Bestätigung gesendet. Bitte klicke auf den "
-"Link in dieser E-Mail. Bitte kontaktiere uns, wenn Du diese nicht innerhalb "
-"weniger Minuten erhältst."
+"Wir haben Ihnen eine E-Mail zur Bestätigung gesendet. Bitte klicken Sie auf "
+"den Link in dieser E-Mail. Bitte kontaktieren Sie uns, wenn Sie die E-Mail "
+"nicht innerhalb weniger Minuten erhalten."
 
 #: geonode/templates/account/verified_email_required.html:20
 #, python-format
@@ -6962,7 +6954,8 @@ msgid ""
 "          "
 msgstr ""
 "\n"
-"Veröffentlicht von <b>%(publish_start)s</b> bis <b>%(publish_end)s</b>."
+"Veröffentlicht von <b>%(publish_start)s</b> bis <b>%(publish_end)s</b>.\n"
+" "
 
 #: geonode/templates/announcements/detail.html:4
 #, python-format
@@ -6972,16 +6965,16 @@ msgstr "Ankündigungen: %(announcement)s"
 #: geonode/templates/avatar/add.html:6 geonode/templates/avatar/change.html:6
 #: geonode/templates/avatar/confirm_delete.html:5
 msgid "Back to edit your profile information"
-msgstr "Zurück zum Bearbeiten deiner Profilinformationen"
+msgstr "Zurück zum Bearbeiten Ihrer Profilinformationen"
 
 #: geonode/templates/avatar/add.html:7 geonode/templates/avatar/change.html:7
 msgid "Your current avatar: "
-msgstr "Dein aktueller Avatar: "
+msgstr "Ihr aktueller Avatar: "
 
 #: geonode/templates/avatar/add.html:10 geonode/templates/avatar/change.html:10
 msgid "You haven't uploaded an avatar yet. Please upload one now."
 msgstr ""
-"Du hast noch keinen Avatar hochgeladen. Bitte laden sie jetzt einen hinauf."
+"Sie haben noch keinen Avatar hochgeladen, bitte fügen Sie jetzt einen hinzu."
 
 #: geonode/templates/avatar/add.html:14 geonode/templates/avatar/change.html:21
 msgid "Upload New Image"
@@ -7159,16 +7152,16 @@ msgstr ""
 "jeder seinen eigenen GeoNode erstellen und anpassen kann. </p>\n"
 "<h3> GeoNode-Software </h3>\n"
 "\n"
-"<p> Der gesamte Code, auf dem GeoNode ausgeführt wird, ist Open Source. Der "
-"Code ist unter <a href=\"http://github.com/GeoNode/geonode\"> http://github."
-"com/GeoNode/geonode/ </a> verfügbar. Der Issue-Tracker für das Projekt ist "
-"unter <a href=\"http://github.com/GeoNode/geonode/issues\">http://github.com/"
-"GeoNode/geonode/issues</a>. </p>\n"
+"<p> Der gesamte Code, auf dem GeoNode basiert, ist Open Source. Der Code ist "
+"unter <a href=\"http://github.com/GeoNode/geonode\"> http://github.com/"
+"GeoNode/geonode/ </a> verfügbar. Der Issue-Tracker für das Projekt ist unter "
+"<a href=\"http://github.com/GeoNode/geonode/issues\">http://github.com/"
+"GeoNode/geonode/issues</a> zu finden. </p>\n"
 "\n"
 "<p> GeoNode basiert auf mehreren Open Source-Projekten, von denen jedes eine "
 "eigene Community hat. Wenn Sie daran interessiert sind, neue Funktionen in "
-"den GeoNode einzubringen, empfehlen wir Ihnen dies, indem Sie zu einem der "
-"Projekte beitragen, auf denen er basiert: </p>\n"
+"GeoNode einzubringen, empfehlen wir Ihnen, z.B. bei einem der folgenden "
+"Projekte mitzuwirken: </p>\n"
 "<ul>\n"
 "  <li> <a href=\"http://geoext.org\"> GeoExt </a> - Das JavaScript-Toolkit "
 "für umfangreiche Webmapping-Anwendungen </li>\n"
@@ -7183,23 +7176,24 @@ msgstr ""
 "</ul>\n"
 "\n"
 "<h3> Was sind OGC-Services? </h3>\n"
-"<p> Die Daten in dieser Anwendung werden mit offenen Standards geliefert, "
-"die von ISO und dem <a href=\"http://opengeospatial.org/\"> Open Geospatial "
-"Consortium </a> unterstützt werden. WMS (Web Map Service) wird insbesondere "
-"für den Zugriff auf Karten verwendet, WFS (Web Feature Service) für den "
-"Zugriff auf Vektordaten und WCS (Web Coverage Service) für den Zugriff auf "
-"Raster-Daten. WMC (Web Map Context Documents) wird zum Freigeben von Karten "
-"verwendet. Sie können diese Dienste in Ihren eigenen Anwendungen verwenden, "
-"indem Sie Bibliotheken wie OpenLayers, GeoTools und OGR verwenden (alle sind "
-"Open-Source-Software und ohne Aufpreis erhältlich). Darüber hinaus "
-"unterstützt CSW (Catalog Service for the Web) den Zugriff auf Sammlungen "
-"beschreibender Informationen (Metadaten) zu Daten und Diensten. </p>\n"
+"<p> Die Daten in dieser Anwendung werden mit offenen Standards "
+"bereitgestellt, die von ISO und dem <a href=\"http://opengeospatial.org/\"> "
+"Open Geospatial Consortium </a> unterstützt werden. WMS (Web Map Service) "
+"wird insbesondere für den Zugriff auf Karten verwendet, WFS (Web Feature "
+"Service) für den Zugriff auf Vektordaten und WCS (Web Coverage Service) für "
+"den Zugriff auf Raster-Daten. WMC (Web Map Context Documents) wird zum "
+"Freigeben von Karten verwendet. Sie können diese Dienste in Ihren eigenen "
+"Anwendungen verwenden, indem Sie Bibliotheken wie OpenLayers, GeoTools und "
+"OGR verwenden (alle sind Open-Source-Software und ohne Aufpreis erhältlich). "
+"Darüber hinaus unterstützt CSW (Catalog Service for the Web) den Zugriff auf "
+"Sammlungen beschreibender Informationen (Metadaten) zu Daten und Diensten. </"
+"p>\n"
 "\n"
 "<h3> Was ist GeoWebCache? </h3>\n"
 "<p> GeoWebCache bietet Mapping-Kacheln, die mit einer Reihe von Mapping-"
 "Engines kompatibel sind, darunter Google Maps, Bing Maps und OpenLayers. "
 "Alle von GeoNode gehosteten Daten sind auch über GeoWebCache verfügbar. "
-"GeoWebCache verbessert das WMS, indem Daten zwischengespeichert und "
+"GeoWebCache verbessert den WMS, indem Daten zwischengespeichert und "
 "reaktionsschnellere Karten bereitgestellt werden. </p>\n"
 "\n"
 "<h3> CSW-Beispielcode </h3>\n"
@@ -7220,9 +7214,9 @@ msgstr ""
 "<p> Um einen GeoNode-Karten-Layer in eine OpenLayers-Map aufzunehmen, suchen "
 "Sie zuerst den Namen für diesen Layer. Dies befindet sich im <code>name</"
 "code> -Feld der Ebene (nicht <code>title</code>) der Layerliste. In diesem "
-"Beispiel verwenden wir die Hintergrundebene der nicaraguanischen politischen "
-"Grenzen, deren Name <code>risk:nicaragua_admin</code> ist. Dann erstellen "
-"Sie eine Instanz von OpenLayers.Layer.WMS: </p>\n"
+"Beispiel verwenden wir die politische Grenze Nicaraguas, deren Name "
+"<code>risk:nicaragua_admin</code> ist. Dann erstellen Sie eine Instanz von "
+"OpenLayers.Layer.WMS: </p>\n"
 "<p><code>var geonodeLayer = new OpenLayers.Layer.WMS(\"GeoNode Risk Data\", "
 "\"http://demo.geonode.org/geoserver/wms\",{ layers: \"risk:nicaragua_admin"
 "\" });</code></p>\n"
@@ -7237,8 +7231,8 @@ msgstr ""
 "\n"
 "<h3> Shapefile / GeoJSON / GML-Ausgabe </h3>\n"
 "<p> Verwenden Sie das WFS-Protokoll, um Daten von den GeoNode-Webdiensten "
-"abzurufen. Verwenden Sie zum Beispiel die vollständigen nicaraguanischen "
-"Verwaltungsgrenzen: </p>\n"
+"abzurufen. Verwenden Sie zum Beispiel die vollständige politische Grenze "
+"Nicaraguas: </p>\n"
 "<p><code>http://demo.geonode.org/geoserver/wfs?request=GetFeature&#38;"
 "typeName=risk:nicaragua_admin&#38;outputformat=SHAPE-ZIP</code></p>\n"
 "<p> Wenn Sie das Ausgabeformat in <code>json</code>, <code>GML2</code>, "
@@ -7251,7 +7245,8 @@ msgstr ""
 "<h3>GeoTools Beispielcode</h3>\n"
 "<p>Erstellen Sie einen DataStore, extrahieren Sie einen FeatureType und "
 "führen Sie dann eine Abfrage aus. Weitere Informationen sind im Wiki unter "
-"<a href=\"http://geotools.org/\">geotools.org</a> zu finden</p>"
+"<a href=\"http://geotools.org/\">geotools.org</a> zu finden</p>\n"
+" "
 
 #: geonode/templates/developer.html:64
 msgid "GeoNode's Web Services"
@@ -7493,7 +7488,8 @@ msgstr ""
 "  <li> Speichern Sie die Karte. </li>\n"
 "</ol>\n"
 "<p> Sie können Ihre neue Karte anzeigen, wenn Sie sie über die Registerkarte "
-"<a href=\"/maps\">Karten</a> suchen.</p>"
+"<a href=\"/maps\">Karten</a> suchen.</p>\n"
+" "
 
 #: geonode/templates/help.html:66
 msgid "Sections"
@@ -7648,7 +7644,7 @@ msgstr ""
 #: geonode/templates/invitations/email/email_invite_message.html:8
 msgid "that you wish to join her/his group(s) through"
 msgstr ""
-"mitteilen, dass Sie sich ihren / seinen Gruppen anschließen möchten. Folgen "
+"mitteilen, dass Sie sich ihren/seinen Gruppen anschließen möchten. Folgen "
 "Sie dafür diesem Link: "
 
 #: geonode/templates/invitations/email/email_invite_message.html:8
@@ -7673,11 +7669,11 @@ msgstr "({{ site_name }})-Administrator."
 
 #: geonode/templates/invitations/email/email_invite_message.txt:5
 msgid "is inviting you to join"
-msgstr "lädt dich ein folgender Seite beizutreten: "
+msgstr "lädt Sie ein, folgender Seite beizutreten: "
 
 #: geonode/templates/invitations/email/email_invite_message.txt:7
 msgid "To do so, please register at"
-msgstr "Hierfür registrieren Sie sich unter: "
+msgstr "Hierfür registrieren Sie sich bitte unter: "
 
 #: geonode/templates/invitations/email/email_invite_message.txt:9
 msgid "that you wish to join her/his group(s) through this link"
@@ -7743,7 +7739,7 @@ msgstr "Identifikationsbild"
 
 #: geonode/templates/metadata_detail.html:182
 msgid "Spatial Extent"
-msgstr "räumliche Ausdehnung"
+msgstr "Räumliche Ausdehnung"
 
 #: geonode/templates/metadata_detail.html:185
 msgid "Projection System"
@@ -7800,7 +7796,7 @@ msgstr "Berechtigung anfragen"
 
 #: geonode/templates/owner_rights_request.html:8
 msgid "Request editing for resource: "
-msgstr "Herunterladen einer Ressource anfragen:"
+msgstr "Herunterladen einer Ressource anfragen: "
 
 #: geonode/templates/owner_rights_request.html:9
 msgid "Back to resource"
@@ -7962,7 +7958,8 @@ msgstr "Folgende Nachricht wurde erhalten von"
 
 #: geonode/templates/pinax/notifications/email_body.txt:8
 msgid "To change how you receive notifications, please go to "
-msgstr "Um die Benachrichtigungseinstellungen zu verändern gehen sie zu"
+msgstr ""
+"Um die Benachrichtigungseinstellungen zu verändern, gehen Sie bitte auf "
 
 #: geonode/templates/pinax/notifications/email_subject.txt:1
 #, python-format
@@ -8116,7 +8113,8 @@ msgstr ""
 "<span class=\"warning\">Note</span>:\n"
 "Sie haben keine bestätigte E-Mail-Adresse, an die Benachrichtigungen "
 "gesendet werden können. <a href=\"%(email_url)s\">Jetzt hinzufügen</a>.\n"
-" </p>"
+" </p>\n"
+" "
 
 #: geonode/templates/pinax/notifications/notice_settings.html:26
 msgid "Notification Type"
@@ -8197,7 +8195,7 @@ msgstr "Nicht mehr"
 #: geonode/templates/relationships/relationship_list.html:26
 #, python-format
 msgid "You're not %(status_slug)s anyone!"
-msgstr "Du bist nicht %(status_slug)s jedermann!"
+msgstr "Sie sind nicht %(status_slug)s jedermann!"
 
 #: geonode/templates/relationships/success.html:5
 msgid "Success"
@@ -8477,7 +8475,7 @@ msgstr "von"
 
 #: geonode/templates/user_messages/thread_detail.html:34
 msgid "You have no messages"
-msgstr "Du hast keine Nachrichten"
+msgstr "Sie haben keine Nachrichten"
 
 #: geonode/templates/user_messages/thread_detail.html:42
 msgid "Send Reply"

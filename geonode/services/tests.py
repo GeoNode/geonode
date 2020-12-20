@@ -37,10 +37,11 @@ from geonode.services.utils import test_resource_table_status
 from geonode.tests.base import GeoNodeBaseTestSupport
 from . import enumerations, forms
 from .models import Service
-from .serviceprocessors import (base,
-                                handler,
-                                wms,
-                                arcgis)
+from .serviceprocessors import (
+    base,
+    handler,
+    wms,
+    arcgis)
 from .serviceprocessors.arcgis import MapLayer
 from .serviceprocessors.wms import WebMapService
 

@@ -843,7 +843,6 @@ max\ connections={db_conn_max}"""
         z.close()
 
         # 2. Send a "create ImageMosaic" request to GeoServer through gs_config
-        cat._cache.clear()
         # - name = name of the ImageMosaic (equal to the base_name)
         # - data = abs path to the zip file
         # - configure = parameter allows for future configuration after harvesting

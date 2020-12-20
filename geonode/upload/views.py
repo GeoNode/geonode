@@ -587,9 +587,7 @@ def final_step_view(req, upload_session):
                         'success': True
                     }
                 )
-
                 register_event(req, EventType.EVENT_UPLOAD, saved_layer)
-
                 return _json_response
             except LayerNotReady:
                 force_ajax = '&force_ajax=true' if 'force_ajax' in req.GET and req.GET['force_ajax'] == 'true' else ''

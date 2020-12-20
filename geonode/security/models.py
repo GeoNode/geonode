@@ -254,11 +254,10 @@ class PermissionLevelMixin(object):
                 ]
         }
         """
-        if not created:
-            remove_object_permissions(self)
+        remove_object_permissions(self)
 
-            # default permissions for resource owner
-            set_owner_permissions(self)
+        # default permissions for resource owner
+        set_owner_permissions(self)
 
         # Anonymous User group
         if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:

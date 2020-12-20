@@ -88,18 +88,15 @@ def download_zip(request, layername):
 
     # The zip compressor
     zf = zipfile.ZipFile(s, "w", allowZip64=True)
+    with zf:
+        for fpath in filenames:
+            # Calculate path for file in zip
+            fdir, fname = os.path.split(fpath)
 
-    for fpath in filenames:
-        # Calculate path for file in zip
-        fdir, fname = os.path.split(fpath)
+            zip_path = os.path.join(zip_subdir, fname)
 
-        zip_path = os.path.join(zip_subdir, fname)
-
-        # Add file, at correct path
-        zf.write(fpath, zip_path)
-
-    # Must close zip for all contents to be written
-    zf.close()
+            # Add file, at correct path
+            zf.write(fpath, zip_path)
 
     # Grab ZIP file from in-memory, make response with correct MIME-type
     resp = HttpResponse(
@@ -160,28 +157,25 @@ def download_map(request, mapid):
 
     # The zip compressor
     zf = zipfile.ZipFile(s, "w", allowZip64=True)
+    with zf:
+        for map_layer in map_layers:
+            if 'osm' not in map_layer.layer_title and 'OpenMap' not in map_layer.layer_title:
+                layer = get_object_or_404(Layer, name=map_layer.layer_title)
+                qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
+                # Files (local path) to put in the .zip
+                filenames = qgis_layer.files
+                # Exclude qgis project files, because it contains server specific path
+                filenames = [f for f in filenames if f.endswith('.asc') or
+                             f.endswith('.shp') or f.endswith('.tif')]
 
-    for map_layer in map_layers:
-        if 'osm' not in map_layer.layer_title and 'OpenMap' not in map_layer.layer_title:
-            layer = get_object_or_404(Layer, name=map_layer.layer_title)
-            qgis_layer = get_object_or_404(QGISServerLayer, layer=layer)
-            # Files (local path) to put in the .zip
-            filenames = qgis_layer.files
-            # Exclude qgis project files, because it contains server specific path
-            filenames = [f for f in filenames if f.endswith('.asc') or
-                         f.endswith('.shp') or f.endswith('.tif')]
+                for fpath in filenames:
+                    # Calculate path for file in zip
+                    fdir, fname = os.path.split(fpath)
 
-            for fpath in filenames:
-                # Calculate path for file in zip
-                fdir, fname = os.path.split(fpath)
+                    zip_path = os.path.join(zip_subdir, fname)
 
-                zip_path = os.path.join(zip_subdir, fname)
-
-                # Add file, at correct path
-                zf.write(fpath, zip_path)
-
-    # Must close zip for all contents to be written
-    zf.close()
+                    # Add file, at correct path
+                    zf.write(fpath, zip_path)
 
     # Grab ZIP file from in-memory, make response with correct MIME-type
     resp = HttpResponse(

@@ -158,6 +158,40 @@ class GeoNodeClientLibraryTag(template.Node):
                 hookset.map_download_template(
                     context=context))
 
+        # GEONODE_APPS
+        if self.tag_name == 'get_geoapp_list':
+            t = context.template.engine.get_template(
+                hookset.geoapp_list_template(
+                    context=context))
+        elif self.tag_name == 'get_geoapp_detail':
+            t = context.template.engine.get_template(
+                hookset.geoapp_detail_template(
+                    context=context))
+        elif self.tag_name == 'get_geoapp_new':
+            t = context.template.engine.get_template(
+                hookset.geoapp_new_template(
+                    context=context))
+        elif self.tag_name == 'get_geoapp_view':
+            t = context.template.engine.get_template(
+                hookset.geoapp_view_template(
+                    context=context))
+        elif self.tag_name == 'get_geoapp_edit':
+            t = context.template.engine.get_template(
+                hookset.geoapp_edit_template(
+                    context=context))
+        elif self.tag_name == 'get_geoapp_update':
+            t = context.template.engine.get_template(
+                hookset.geoapp_update_template(
+                    context=context))
+        elif self.tag_name == 'get_geoapp_embed':
+            t = context.template.engine.get_template(
+                hookset.geoapp_embed_template(
+                    context=context))
+        elif self.tag_name == 'get_geoapp_download':
+            t = context.template.engine.get_template(
+                hookset.geoapp_download_template(
+                    context=context))
+
         if t:
             return t.render(context)
         else:
@@ -187,3 +221,12 @@ register.tag('get_map_edit', do_get_client_library_template)
 register.tag('get_map_update', do_get_client_library_template)
 register.tag('get_map_embed', do_get_client_library_template)
 register.tag('get_map_download', do_get_client_library_template)
+
+register.tag('get_geoapp_list', do_get_client_library_template)
+register.tag('get_geoapp_detail', do_get_client_library_template)
+register.tag('get_geoapp_new', do_get_client_library_template)
+register.tag('get_geoapp_view', do_get_client_library_template)
+register.tag('get_geoapp_edit', do_get_client_library_template)
+register.tag('get_geoapp_update', do_get_client_library_template)
+register.tag('get_geoapp_embed', do_get_client_library_template)
+register.tag('get_geoapp_download', do_get_client_library_template)

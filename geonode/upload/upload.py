@@ -34,10 +34,9 @@ State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
 
+import uuid
 import logging
 import os.path
-import shutil
-import uuid
 import zipfile
 import traceback
 from six import string_types
@@ -55,16 +54,20 @@ from gsimporter import BadRequest
 
 from geonode import GeoNodeException
 from geonode.upload import UploadException, LayerNotReady
-from geonode.base.models import ResourceBase, SpatialRepresentationType, TopicCategory
+
 from ..people.utils import get_default_user
 from ..layers.models import Layer, UploadSession
-from ..layers.metadata import set_metadata
-from ..layers.utils import get_valid_layer_name, resolve_regions
-from ..geoserver.helpers import (set_time_info,
-                                 set_layer_style,
-                                 gs_catalog,
-                                 gs_uploader)
-from . import signals
+from ..layers.utils import get_valid_layer_name
+from ..geoserver.tasks import (
+    # geoserver_set_style,
+    # geoserver_create_style,
+    geoserver_finalize_upload
+)
+from ..geoserver.helpers import (
+    set_time_info,
+    gs_catalog,
+    gs_uploader
+)
 from . import utils
 from .models import Upload
 from .upload_preprocessing import preprocess_files
@@ -550,7 +553,6 @@ def srs_step(upload_session, source, target):
 
 
 def final_step(upload_session, user, charset="UTF-8"):
-    from geonode.geoserver.helpers import get_sld_for
     import_session = upload_session.import_session
     _log('Reloading session %s to check validity', import_session.id)
     import_session = import_session.reload()
@@ -560,13 +562,10 @@ def final_step(upload_session, user, charset="UTF-8"):
     # to verify the resource.name otherwise things will fail.  This happens
     # when the same data is uploaded a second time and the default name is
     # chosen
-
     cat = gs_catalog
-    cat._cache.clear()
 
     # Create the style and assign it to the created resource
     # FIXME: Put this in gsconfig.py
-
     task = import_session.tasks[0]
     task.set_charset(charset)
 
@@ -591,90 +590,12 @@ def final_step(upload_session, user, charset="UTF-8"):
             "Expected to find layer named '%s' in geoserver" %
             name)
 
-    _log('Creating style for [%s]', name)
-    # get_files will not find the sld if it doesn't match the base name
-    # so we've worked around that in the view - if provided, it will be here
-    if upload_session.import_sld_file:
-        _log('using provided sld file')
-        base_file = upload_session.base_file
-        sld_file = base_file[0].sld_files[0]
-
-        f = None
-        if os.path.isfile(sld_file):
-            try:
-                f = open(sld_file, 'r')
-            except Exception:
-                pass
-        elif upload_session.tempdir and os.path.exists(upload_session.tempdir):
-            tempdir = upload_session.tempdir
-            if os.path.isfile(os.path.join(tempdir, sld_file)):
-                try:
-                    f = open(os.path.join(tempdir, sld_file), 'r')
-                except Exception:
-                    pass
-
-        if f:
-            sld = f.read()
-            f.close()
-        else:
-            sld = get_sld_for(cat, publishing)
-    else:
-        sld = get_sld_for(cat, publishing)
-
-    style = None
-    if sld is not None:
-        try:
-            cat.create_style(
-                name,
-                sld,
-                raw=True,
-                workspace=settings.DEFAULT_WORKSPACE)
-            cat.reset()
-        except geoserver.catalog.ConflictingDataError:
-            try:
-                cat.create_style(
-                    name + '_layer',
-                    sld,
-                    raw=True,
-                    workspace=settings.DEFAULT_WORKSPACE)
-                cat.reset()
-            except geoserver.catalog.ConflictingDataError as e:
-                msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (
-                    name, str(e))
-                logger.error(msg)
-                e.args = (msg,)
-
-        if style is None:
-            try:
-                style = cat.get_style(
-                    name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
-            except Exception:
-                logger.warn('Could not retreive the Layer default Style name')
-                # what are we doing with this var?
-                msg = 'No style could be created for the layer, falling back to POINT default one'
-                try:
-                    style = cat.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
-                        cat.get_style(name + '_layer')
-                except Exception as e:
-                    style = cat.get_style('point')
-                    logger.warn(str(e))
-
-        if style:
-            publishing.default_style = style
-            _log('default style set to %s', name)
-            cat.save(publishing)
-
     _log('Creating Django record for [%s]', name)
     target = task.target
     alternate = task.get_target_layer_name()
     layer_uuid = str(uuid.uuid1())
-
     title = upload_session.layer_title
     abstract = upload_session.layer_abstract
-
-    # @todo hacking - any cached layers might cause problems (maybe
-    # delete hook on layer should fix this?)
-    cat._cache.clear()
 
     # Is it a regular file or an ImageMosaic?
     # if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
@@ -697,15 +618,16 @@ def final_step(upload_session, user, charset="UTF-8"):
 
         if not upload_session.append_to_mosaic_opts:
             saved_layer, created = Layer.objects.get_or_create(
-                name=task.layer.name,
-                defaults=dict(store=target.name,
-                              storeType=target.store_type,
-                              alternate=alternate,
-                              workspace=target.workspace_name,
-                              title=title,
-                              uuid=layer_uuid,
-                              abstract=abstract or '',
-                              owner=user),
+                uuid=layer_uuid,
+                defaults=dict(
+                    store=target.name,
+                    storeType=target.store_type,
+                    alternate=alternate,
+                    workspace=target.workspace_name,
+                    title=title,
+                    name=task.layer.name,
+                    abstract=abstract or '',
+                    owner=user),
                 temporal_extent_start=start,
                 temporal_extent_end=end,
                 is_mosaic=True,
@@ -713,11 +635,16 @@ def final_step(upload_session, user, charset="UTF-8"):
                 has_elevation=False,
                 time_regex=upload_session.mosaic_time_regex
             )
+
+            assert saved_layer is not None
         else:
             # saved_layer = Layer.objects.filter(name=upload_session.append_to_mosaic_name)
             # created = False
             saved_layer, created = Layer.objects.get_or_create(
                 name=upload_session.append_to_mosaic_name)
+
+            assert saved_layer is not None
+
             try:
                 if saved_layer.temporal_extent_start and end:
                     if pytz.utc.localize(
@@ -739,27 +666,36 @@ def final_step(upload_session, user, charset="UTF-8"):
     else:
         _has_time = (True if upload_session.time and upload_session.time_info and
                      upload_session.time_transforms else False)
-        saved_layer, created = Layer.objects.get_or_create(
-            name=task.layer.name,
-            defaults=dict(store=target.name,
-                          storeType=target.store_type,
-                          alternate=alternate,
-                          workspace=target.workspace_name,
-                          title=title,
-                          uuid=layer_uuid,
-                          abstract=abstract or '',
-                          owner=user),
-            has_time=_has_time
-        )
+        saved_layer, created = Layer.objects.get_or_create(uuid=layer_uuid)
 
-    # Should we throw a clearer error here?
-    assert saved_layer is not None
+        assert saved_layer is not None
 
-    saved_layer.handle_moderated_uploads()
-    saved_layer.save()
+        try:
+            with transaction.atomic():
+                to_update = {
+                    "name": task.layer.name,
+                    "store": target.name,
+                    "storeType": target.store_type,
+                    "alternate": alternate,
+                    "workspace": target.workspace_name,
+                    "title": title,
+                    "abstract": abstract or '',
+                    "owner": user,
+                    "has_time": _has_time
+                }
+                Layer.objects.filter(id=saved_layer.id).update(**to_update)
+
+                # Refresh from DB
+                saved_layer.refresh_from_db()
+        except IntegrityError:
+            raise
 
     # Create a new upload session
-    geonode_upload_session = UploadSession.objects.create(resource=saved_layer, user=user)
+    geonode_upload_session, created = UploadSession.objects.get_or_create(
+        resource=saved_layer, user=user
+    )
+    geonode_upload_session.processed = False
+    geonode_upload_session.save()
 
     # Add them to the upload session (new file fields are created).
     assigned_name = None
@@ -791,11 +727,12 @@ def final_step(upload_session, user, charset="UTF-8"):
         sld_files = uploaded_files.sld_files
         xml_files = uploaded_files.xml_files
 
-        assigned_name = _store_file(saved_layer,
-                                    geonode_upload_session,
-                                    base_file,
-                                    assigned_name,
-                                    base=True)
+        assigned_name = _store_file(
+            saved_layer,
+            geonode_upload_session,
+            base_file,
+            assigned_name,
+            base=True)
 
         for _f in aux_files:
             _store_file(saved_layer,
@@ -817,146 +754,15 @@ def final_step(upload_session, user, charset="UTF-8"):
 
     # @todo if layer was not created, need to ensure upload target is
     # same as existing target
-
-    _log('layer was created : %s', created)
-
-    if created:
-        saved_layer.set_default_permissions()
-        saved_layer.handle_moderated_uploads()
-
     # Create the points of contact records for the layer
-    _log('Creating points of contact records for [%s]', name)
+    _log(f'Creating points of contact records for {name}')
     saved_layer.poc = user
     saved_layer.metadata_author = user
 
-    # look for xml
-    defaults = {}
-    xml_file = upload_session.base_file[0].xml_files
-    if xml_file:
-        saved_layer.metadata_uploaded = True
-        # get model properties from XML
-        # If it's contained within a zip, need to extract it
-        if upload_session.base_file.archive:
-            archive = upload_session.base_file.archive
-            zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
-            zf.extract(xml_file[0], os.path.dirname(archive))
-            # Assign the absolute path to this file
-            xml_file[0] = os.path.dirname(archive) + '/' + xml_file[0]
-        identifier, vals, regions, keywords = set_metadata(
-            open(xml_file[0]).read())
-
-        if publishing:
-            try:
-                gs_resource = cat.get_resource(
-                    name=saved_layer.name,
-                    store=saved_layer.store,
-                    workspace=saved_layer.workspace)
-            except Exception:
-                try:
-                    gs_resource = cat.get_resource(
-                        name=saved_layer.alternate,
-                        store=saved_layer.store,
-                        workspace=saved_layer.workspace)
-                except Exception:
-                    try:
-                        gs_resource = cat.get_resource(
-                            name=saved_layer.alternate or saved_layer.typename)
-                    except Exception:
-                        gs_resource = None
-
-            if gs_resource:
-                if vals:
-                    title = vals.get('title', '')
-                    abstract = vals.get('abstract', '')
-
-                    # Updating GeoServer resource
-                    gs_resource.title = title
-                    gs_resource.abstract = abstract
-                    cat.save(gs_resource)
-
-                    # Updating Importer session
-                    upload_session.layer_title = title
-                    upload_session.layer_abstract = abstract
-                else:
-                    vals = {}
-
-                vals.update(dict(store=gs_resource.store.name,
-                                 storeType=gs_resource.store.resource_type,
-                                 alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
-                                 title=gs_resource.title or gs_resource.store.name,
-                                 abstract=gs_resource.abstract or '',
-                                 owner=saved_layer.owner))
-
-        saved_layer.metadata_xml = xml_file[0]
-        regions_resolved, regions_unresolved = resolve_regions(regions)
-        keywords.extend(regions_unresolved)
-
-        # Assign the regions (needs to be done after saving)
-        regions_resolved = list(set(regions_resolved))
-        if regions_resolved:
-            if len(regions_resolved) > 0:
-                if not saved_layer.regions:
-                    saved_layer.regions = regions_resolved
-                else:
-                    saved_layer.regions.clear()
-                    saved_layer.regions.add(*regions_resolved)
-
-        # Assign the keywords (needs to be done after saving)
-        keywords = list(set(keywords))
-        if keywords:
-            if len(keywords) > 0:
-                if not saved_layer.keywords:
-                    saved_layer.keywords = keywords
-                else:
-                    saved_layer.keywords.add(*keywords)
-
-        # set model properties
-        for key, value in vals.items():
-            if key == 'spatial_representation_type':
-                value = SpatialRepresentationType(identifier=value)
-            elif key == 'topic_category':
-                value, created = TopicCategory.objects.get_or_create(
-                    identifier=value.lower(),
-                    defaults={'description': '', 'gn_description': value})
-                key = 'category'
-                defaults[key] = value
-            else:
-                defaults[key] = value
-
-        # Save all the modified information in the instance without triggering signals.
-        try:
-            if not defaults.get('title', title):
-                defaults['title'] = saved_layer.title or saved_layer.name
-            if not defaults.get('abstract', abstract):
-                defaults['abstract'] = saved_layer.abstract or ''
-
-            to_update = {}
-            to_update['storeType'] = defaults.pop('storeType', saved_layer.storeType)
-            to_update['charset'] = defaults.pop('charset', saved_layer.charset)
-            for _key in ('workspace', 'store', 'storeType', 'typename'):
-                if _key in defaults:
-                    to_update[_key] = defaults.pop(_key)
-                else:
-                    to_update[_key] = getattr(saved_layer, _key)
-            to_update.update(defaults)
-
-            with transaction.atomic():
-                ResourceBase.objects.filter(
-                    id=saved_layer.resourcebase_ptr.id).update(
-                    **defaults)
-                Layer.objects.filter(id=saved_layer.id).update(**to_update)
-
-                # Refresh from DB
-                saved_layer.refresh_from_db()
-
-                # Pass the parameter overwrite to tell whether the
-                # geoserver_post_save_signal should upload the new file or not
-                saved_layer.overwrite = True
-        except IntegrityError:
-            raise
-
+    _log('Creating style for [%s]', name)
     # look for SLD
     sld_file = upload_session.base_file[0].sld_files
+    sld_uploaded = False
     if sld_file:
         # If it's contained within a zip, need to extract it
         if upload_session.base_file.archive:
@@ -965,38 +771,38 @@ def final_step(upload_session, user, charset="UTF-8"):
             zf.extract(sld_file[0], os.path.dirname(archive))
             # Assign the absolute path to this file
             sld_file[0] = os.path.dirname(archive) + '/' + sld_file[0]
-        sld = open(sld_file[0], "rb").read()
-        set_layer_style(
-            saved_layer,
-            saved_layer.alternate,
-            sld,
-            base_file=sld_file[0])
+        sld_file = sld_file[0]
+        sld_uploaded = True
+        # geoserver_set_style.apply_async((saved_layer.id, sld_file))
+    else:
+        # get_files will not find the sld if it doesn't match the base name
+        # so we've worked around that in the view - if provided, it will be here
+        if upload_session.import_sld_file:
+            _log('using provided sld file')
+            base_file = upload_session.base_file
+            sld_file = base_file[0].sld_files[0]
+        sld_uploaded = False
+        # geoserver_create_style.apply_async((saved_layer.id, name, sld_file, upload_session.tempdir))
 
-    # Set default permissions on the newly created layer
-    # FIXME: Do this as part of the post_save hook
-
-    permissions = upload_session.permissions
-    if created and permissions is not None:
-        _log('Setting default permissions for [%s]', name)
-        saved_layer.set_permissions(permissions, created=True)
-
-    if upload_session.tempdir and os.path.exists(upload_session.tempdir):
-        shutil.rmtree(upload_session.tempdir)
-
-    upload = Upload.objects.get(import_id=import_session.id)
-    upload.layer = saved_layer
-    upload.complete = True
-    upload.save()
+    # look for xml and finalize Layer metadata
+    xml_file = upload_session.base_file[0].xml_files
+    if xml_file:
+        # get model properties from XML
+        # If it's contained within a zip, need to extract it
+        if upload_session.base_file.archive:
+            archive = upload_session.base_file.archive
+            zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
+            zf.extract(xml_file[0], os.path.dirname(archive))
+            # Assign the absolute path to this file
+            xml_file = os.path.dirname(archive) + '/' + xml_file[0]
 
     if upload_session.time_info:
         set_time_info(saved_layer, **upload_session.time_info)
 
-    if geonode_upload_session:
-        geonode_upload_session.processed = True
-        saved_layer.upload_session = geonode_upload_session
+    # Set default permissions on the newly created layer and send notifications
+    permissions = upload_session.permissions
+    geoserver_finalize_upload.apply_async(
+        (import_session.id, saved_layer.id, permissions, created,
+         xml_file, sld_file, sld_uploaded, upload_session.tempdir))
 
-    signals.upload_complete.send(sender=final_step, layer=saved_layer)
-    geonode_upload_session.save()
-    saved_layer.save(notify=not created)
-    cat._cache.clear()
     return saved_layer

@@ -1,7 +1,7 @@
 FROM openjdk:8-jre-alpine
 
-ARG version=2.17.2
-ARG branch=2.17.2
+ARG version=2.17.4
+ARG branch=2.17.4
 ARG plugins=
 
 # Install dependencies
@@ -17,7 +17,7 @@ WORKDIR /
 # TODO : merge into on step
 RUN echo "Download geoserver for geonode" && \
     wget https://downloads.sourceforge.net/project/geoserver/GeoServer/$version/geoserver-$version-bin.zip && \
-    wget https://www.dropbox.com/s/bdl6p64cuh4xu33/geoserver-$branch.war?dl=1 -O geoserver-$branch.war --no-check-certificate && \
+    wget https://www.dropbox.com/s/a0m1ugxtso8xtyf/geoserver-$branch.war?dl=1 -O geoserver-$branch.war --no-check-certificate && \
     mkdir -p geoserver-$version && \
     unzip geoserver-$version-bin.zip -d geoserver-$version && \
     mv geoserver-$version geoserver && \
@@ -36,7 +36,7 @@ RUN for plugin in $plugins; do \
     done
 
 # Download initial data dir
-RUN wget https://www.dropbox.com/s/43vw52s99w6w0rb/data-$branch.zip?dl=1 -O data-$branch.zip --no-check-certificate && \
+RUN wget https://www.dropbox.com/s/sebw3h90mtvnzwe/data-$branch.zip?dl=1 -O data-$branch.zip --no-check-certificate && \
 unzip /data-$branch.zip
 
 

@@ -153,9 +153,8 @@ def get_files(filename):
 
     # Let's unzip the filname in case it is a ZIP file
     import tempfile
-    import zipfile
     from geonode.utils import unzip_file
-    if zipfile.is_zipfile(filename):
+    if is_zipfile(filename):
         tempdir = tempfile.mkdtemp()
         _filename = unzip_file(filename,
                                '.shp', tempdir=tempdir)
@@ -280,24 +279,20 @@ def layer_type(filename):
     if extension.lower() == '.zip':
         zf = ZipFile(filename, allowZip64=True)
         # ZipFile doesn't support with statement in 2.6, so don't do it
-        try:
+        with zf:
             for n in zf.namelist():
                 b, e = os.path.splitext(n.lower())
                 if e in shp_exts or e in cov_exts or e in csv_exts:
                     extension = e
-        finally:
-            zf.close()
 
     if extension.lower() == '.tar' or filename.endswith('.tar.gz'):
         tf = tarfile.open(filename)
         # TarFile doesn't support with statement in 2.6, so don't do it
-        try:
+        with tf:
             for n in tf.getnames():
                 b, e = os.path.splitext(n.lower())
                 if e in shp_exts or e in cov_exts or e in csv_exts:
                     extension = e
-        finally:
-            tf.close()
 
     if extension.lower() in vec_exts:
         return 'vector'
@@ -662,9 +657,7 @@ def file_upload(filename,
                     identifier=value.lower(),
                     defaults={'description': '', 'gn_description': value})
                 key = 'category'
-                defaults[key] = value
-            else:
-                defaults[key] = value
+            defaults[key] = value
 
     regions_resolved, regions_unresolved = resolve_regions(regions)
     keywords.extend(regions_unresolved)

@@ -1,0 +1,36 @@
+{% extends "apps/app_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block body_class %}{% trans "apps explore" %}{% endblock %}
+
+{% block body %}
+  <div class="page-header">
+    {% if not READ_ONLY_MODE %}
+      <a href="{% url "new_geoapp" %}" class="btn btn-primary pull-right">{% trans "Create New" %} {% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a>
+    {% endif %}
+    <h2>{% trans "Explore" %} {% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</h2>
+  </div>
+  {% with include_type_filter='true' %}
+    {% with header='Type' %}
+      {% with filter='app_type__in' %}
+        {% include "search/_search_content.html" %}
+      {% endwith %}
+    {% endwith %}
+  {% endwith %}
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+  <script type="text/javascript">
+      {% if HAYSTACK_SEARCH %}
+          SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?type__in=geoapp'
+      {% else %}
+          SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='geoapps' %}';
+      {% endif %}
+      FILTER_TYPE = 'geoapp';
+  </script>
+  {% with include_spatial='true' %}
+    {% include 'search/search_scripts.html' %}
+  {% endwith %}
+{% endblock extra_script %}

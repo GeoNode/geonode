@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
     acks_late=True,
     retry=True,
     retry_policy={
-        'max_retries': 10,
+        'max_retries': 3,
         'interval_start': 0,
         'interval_step': 0.2,
         'interval_max': 0.2,
@@ -90,7 +90,7 @@ def harvest_resource(self, harvest_job_id):
     acks_late=True,
     retry=True,
     retry_policy={
-        'max_retries': 10,
+        'max_retries': 3,
         'interval_start': 0,
         'interval_step': 0.2,
         'interval_max': 0.2,
