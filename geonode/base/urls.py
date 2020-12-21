@@ -17,9 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-
-from django.conf.urls import url
+from django.conf.urls import url, include
 
 from .views import (
     ResourceBaseAutocomplete, RegionAutocomplete,
@@ -55,4 +53,5 @@ urlpatterns = [
         OwnerRightsRequestView.as_view(),
         name='owner_rights_request',
     ),
+    url(r'^', include('geonode.base.api.urls')),
 ]

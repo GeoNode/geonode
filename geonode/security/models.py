@@ -79,8 +79,9 @@ class PermissionLevelMixin(object):
     def get_all_level_info(self):
         resource = self.get_self_resource()
         users = get_users_with_perms(resource)
-        groups = get_groups_with_perms(resource,
-                                       attach_perms=True)
+        groups = get_groups_with_perms(
+            resource,
+            attach_perms=True)
         if groups:
             for group in groups:
                 try:
@@ -94,7 +95,8 @@ class PermissionLevelMixin(object):
                                     assign_perm(perm, manager, resource)
                                 users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS
                 except GroupProfile.DoesNotExist:
-                    pass
+                    tb = traceback.format_exc()
+                    logger.debug(tb)
         if resource.group:
             try:
                 group_profile = GroupProfile.objects.get(slug=resource.group.name)
@@ -107,7 +109,8 @@ class PermissionLevelMixin(object):
                                 assign_perm(perm, manager, resource)
                             users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS
             except GroupProfile.DoesNotExist:
-                pass
+                tb = traceback.format_exc()
+                logger.debug(tb)
         info = {
             'users': users,
             'groups': groups}
@@ -175,7 +178,8 @@ class PermissionLevelMixin(object):
                                 if manager not in obj_group_managers and not manager.is_superuser:
                                     obj_group_managers.append(manager)
                     except GroupProfile.DoesNotExist:
-                        pass
+                        tb = traceback.format_exc()
+                        logger.debug(tb)
 
         if not anonymous_group:
             raise Exception("Could not acquire 'anonymous' Group.")
@@ -254,11 +258,10 @@ class PermissionLevelMixin(object):
                 ]
         }
         """
-        if not created:
-            remove_object_permissions(self)
+        remove_object_permissions(self)
 
-            # default permissions for resource owner
-            set_owner_permissions(self)
+        # default permissions for resource owner
+        set_owner_permissions(self)
 
         # Anonymous User group
         if 'users' in perm_spec and "AnonymousUser" in perm_spec['users']:
@@ -300,7 +303,10 @@ class PermissionLevelMixin(object):
                     # Set the GeoFence Rules
                     if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                         if self.polymorphic_ctype.name == 'layer':
-                            sync_geofence_with_guardian(self.layer, perms, user=user)
+                            group_perms = None
+                            if 'groups' in perm_spec and len(perm_spec['groups']) > 0:
+                                group_perms = perm_spec['groups']
+                            sync_geofence_with_guardian(self.layer, perms, user=_user, group_perms=group_perms)
 
         # All the other groups
         if 'groups' in perm_spec and len(perm_spec['groups']) > 0:

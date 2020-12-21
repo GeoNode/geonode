@@ -77,11 +77,33 @@ class BaseHookSet(object):
     def map_download_template(self, context=None):
         return NotImplemented
 
+    # GeoApps
+    def geoapp_list_template(self, context=None):
+        return 'apps/app_list_default.html'
+
+    def geoapp_detail_template(self, context=None):
+        return NotImplemented
+
+    def geoapp_new_template(self, context=None):
+        return NotImplemented
+
+    def geoapp_view_template(self, context=None):
+        return NotImplemented
+
+    def geoapp_edit_template(self, context=None):
+        return NotImplemented
+
+    def geoapp_update_template(self, context=None):
+        return NotImplemented
+
+    def geoapp_embed_template(self, context=None):
+        return NotImplemented
+
+    def geoapp_download_template(self, context=None):
+        return NotImplemented
+
     # Map Persisting
     def viewer_json(self, conf, context=None):
-        if not context:
-            context = {}
-
         if isinstance(conf, string_types):
             conf = json.loads(conf)
         return conf

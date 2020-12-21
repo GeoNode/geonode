@@ -153,9 +153,8 @@ def get_files(filename):
 
     # Let's unzip the filname in case it is a ZIP file
     import tempfile
-    import zipfile
     from geonode.utils import unzip_file
-    if zipfile.is_zipfile(filename):
+    if is_zipfile(filename):
         tempdir = tempfile.mkdtemp()
         _filename = unzip_file(filename,
                                '.shp', tempdir=tempdir)
@@ -280,24 +279,20 @@ def layer_type(filename):
     if extension.lower() == '.zip':
         zf = ZipFile(filename, allowZip64=True)
         # ZipFile doesn't support with statement in 2.6, so don't do it
-        try:
+        with zf:
             for n in zf.namelist():
                 b, e = os.path.splitext(n.lower())
                 if e in shp_exts or e in cov_exts or e in csv_exts:
                     extension = e
-        finally:
-            zf.close()
 
     if extension.lower() == '.tar' or filename.endswith('.tar.gz'):
         tf = tarfile.open(filename)
         # TarFile doesn't support with statement in 2.6, so don't do it
-        try:
+        with tf:
             for n in tf.getnames():
                 b, e = os.path.splitext(n.lower())
                 if e in shp_exts or e in cov_exts or e in csv_exts:
                     extension = e
-        finally:
-            tf.close()
 
     if extension.lower() in vec_exts:
         return 'vector'
@@ -662,9 +657,7 @@ def file_upload(filename,
                     identifier=value.lower(),
                     defaults={'description': '', 'gn_description': value})
                 key = 'category'
-                defaults[key] = value
-            else:
-                defaults[key] = value
+            defaults[key] = value
 
     regions_resolved, regions_unresolved = resolve_regions(regions)
     keywords.extend(regions_unresolved)
@@ -689,14 +682,18 @@ def file_upload(filename,
                     layer = None
             if not layer:
                 if not metadata_upload_form:
-                    layer, created = Layer.objects.get_or_create(
-                        name=valid_name,
-                        workspace=settings.DEFAULT_WORKSPACE
-                    )
+                    layer = Layer.objects.filter(name=valid_name, workspace=settings.DEFAULT_WORKSPACE).first()
+                    if not layer:
+                        layer = Layer.objects.create(
+                            name=valid_name,
+                            workspace=settings.DEFAULT_WORKSPACE
+                        )
+                        created = True
                 elif identifier:
-                    layer, created = Layer.objects.get_or_create(
-                        uuid=identifier
-                    )
+                    layer = Layer.objects.filter(uuid=identifier).first()
+                    if not layer:
+                        layer = Layer.objects.create(uuid=identifier)
+                        created = True
     except IntegrityError:
         raise
 
@@ -1311,10 +1308,12 @@ def set_layers_permissions(permissions_name, resources_names=None,
                             # Existing permissions on the resource
                             perm_spec = resource.get_all_level_info()
                             if verbose:
-                                print(
-                                    "Initial permissions info for the resource %s:" % resource.title
+                                logger.info(
+                                    f"Initial permissions info for the resource {resource.title}: {perm_spec}"
                                 )
-                                print(perm_spec)
+                                print(
+                                    f"Initial permissions info for the resource {resource.title}: {perm_spec}"
+                                )
                             for u in users:
                                 _user = u
                                 # Add permissions
@@ -1395,9 +1394,12 @@ def set_layers_permissions(permissions_name, resources_names=None,
                             # Set final permissions
                             resource.set_permissions(perm_spec)
                             if verbose:
-                                print(
-                                    "Final permissions info for the resource %s:" % resource.title
+                                logger.info(
+                                    f"Final permissions info for the resource {resource.title}: {perm_spec}"
                                 )
-                                print(perm_spec)
+                                print(
+                                    f"Final permissions info for the resource {resource.title}: {perm_spec}"
+                                )
                         if verbose:
+                            logger.info("Permissions successfully updated!")
                             print("Permissions successfully updated!")

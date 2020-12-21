@@ -1,0 +1,14 @@
+{% load i18n %}
+{% load base_tags %}
+{% load client_lib_tags %}
+
+{% block head %}
+
+    <style>
+        #paneltbar {
+            margin-top: 90px !important;
+        }
+    </style>
+
+    {% get_geoapp_embed %}
+{% endblock %}

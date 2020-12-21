@@ -420,7 +420,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             3. Set permissions to a group of users
             4. Try to sync a layer from GeoServer
         """
-        layer = Layer.objects.first()
+        layer = Layer.objects.filter(storeType='dataStore').first()
         self.client.login(username='admin', password='admin')
 
         # Reset GeoFence Rules
@@ -447,6 +447,86 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         _log("3. geofence_rules_count: %s " % geofence_rules_count)
         self.assertEqual(geofence_rules_count, 7)
 
+        # FULL WFS-T
+        perm_spec = {
+            'users': {
+                'bobby': [
+                    'view_resourcebase',
+                    'download_resourcebase',
+                    'change_layer_style',
+                    'change_layer_data']
+            },
+            'groups': []
+        }
+        layer.set_permissions(perm_spec)
+        geofence_rules_count = get_geofence_rules_count()
+        self.assertEqual(geofence_rules_count, 10)
+
+        rules_objs = get_geofence_rules(entries=10)
+        _deny_wfst_rule_exists = False
+        for rule in rules_objs['rules']:
+            if rule['service'] == "WFS" and \
+            rule['userName'] == 'bobby' and \
+            rule['request'] == "TRANSACTION":
+                _deny_wfst_rule_exists = rule['access'] == 'DENY'
+                break
+        self.assertFalse(_deny_wfst_rule_exists)
+
+        # NO WFS-T
+        # - order it important
+        perm_spec = {
+            'users': {
+                'bobby': [
+                    'view_resourcebase',
+                    'download_resourcebase',
+                ]
+            },
+            'groups': []
+        }
+        layer.set_permissions(perm_spec)
+        geofence_rules_count = get_geofence_rules_count()
+        self.assertEqual(geofence_rules_count, 13)
+
+        rules_objs = get_geofence_rules(entries=13)
+        _deny_wfst_rule_exists = False
+        _deny_wfst_rule_position = -1
+        _allow_wfs_rule_position = -1
+        for cnt, rule in enumerate(rules_objs['rules']):
+            if rule['service'] == "WFS" and \
+            rule['userName'] == 'bobby' and \
+            rule['request'] == "TRANSACTION":
+                _deny_wfst_rule_exists = rule['access'] == 'DENY'
+                _deny_wfst_rule_position = cnt
+            elif rule['service'] == "WFS" and \
+            rule['userName'] == 'bobby' and \
+            (rule['request'] is None or rule['request'] == '*'):
+                _allow_wfs_rule_position = cnt
+        self.assertTrue(_deny_wfst_rule_exists)
+        self.assertTrue(_allow_wfs_rule_position > _deny_wfst_rule_position)
+
+        # NO WFS
+        perm_spec = {
+            'users': {
+                'bobby': [
+                    'view_resourcebase',
+                ]
+            },
+            'groups': []
+        }
+        layer.set_permissions(perm_spec)
+        geofence_rules_count = get_geofence_rules_count()
+        self.assertEqual(geofence_rules_count, 7)
+
+        rules_objs = get_geofence_rules(entries=7)
+        _deny_wfst_rule_exists = False
+        for rule in rules_objs['rules']:
+            if rule['service'] == "WFS" and \
+            rule['userName'] == 'bobby' and \
+            rule['request'] == "TRANSACTION":
+                _deny_wfst_rule_exists = rule['access'] == 'DENY'
+                break
+        self.assertFalse(_deny_wfst_rule_exists)
+
         perm_spec = {'users': {}, 'groups': {'bar': ['view_resourcebase']}}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
@@ -460,6 +540,11 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         self.assertEqual(geofence_rules_count, 5)
 
         # Testing GeoLimits
+        # Reset GeoFence Rules
+        purge_geofence_all()
+        geofence_rules_count = get_geofence_rules_count()
+        self.assertEqual(geofence_rules_count, 0)
+        layer = Layer.objects.first()
         # grab bobby
         bobby = get_user_model().objects.get(username="bobby")
 
@@ -482,7 +567,9 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
         rules_objs = get_geofence_rules(entries=5)
         self.assertEqual(len(rules_objs['rules']), 5)
-        for rule in rules_objs['rules']:
+        # Order is important
+        _limit_rule_position = -1
+        for cnt, rule in enumerate(rules_objs['rules']):
             if rule['service'] is None:
                 self.assertEqual(rule['userName'], 'bobby')
                 self.assertEqual(rule['workspace'], 'CA')
@@ -495,6 +582,10 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
 145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                 self.assertEqual(rule_limits['catalogMode'], 'MIXED')
+                _limit_rule_position = cnt
+            elif rule['userName'] == 'bobby':
+                # When there's a limit rule, "*" must be the first one
+                self.assertTrue(_limit_rule_position < cnt)
 
         geo_limit, _ = GroupGeoLimit.objects.get_or_create(
             group=GroupProfile.objects.get(group__name='bar'),
@@ -515,20 +606,26 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
         rules_objs = get_geofence_rules(entries=6)
         self.assertEqual(len(rules_objs['rules']), 6)
-        for rule in rules_objs['rules']:
+        # Order is important
+        _limit_rule_position = -1
+        for cnt, rule in enumerate(rules_objs['rules']):
             if rule['roleName'] == 'ROLE_BAR':
-                self.assertEqual(rule['service'], None)
-                self.assertEqual(rule['userName'], None)
-                self.assertEqual(rule['workspace'], 'CA')
-                self.assertEqual(rule['layer'], 'CA')
-                self.assertEqual(rule['access'], 'LIMIT')
+                if rule['service'] is None:
+                    self.assertEqual(rule['userName'], None)
+                    self.assertEqual(rule['workspace'], 'CA')
+                    self.assertEqual(rule['layer'], 'CA')
+                    self.assertEqual(rule['access'], 'LIMIT')
 
-                self.assertTrue('limits' in rule)
-                rule_limits = rule['limits']
-                self.assertEqual(rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
+                    self.assertTrue('limits' in rule)
+                    rule_limits = rule['limits']
+                    self.assertEqual(rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
 146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
 145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
-                self.assertEqual(rule_limits['catalogMode'], 'MIXED')
+                    self.assertEqual(rule_limits['catalogMode'], 'MIXED')
+                    _limit_rule_position = cnt
+                else:
+                    # When there's a limit rule, "*" must be the first one
+                    self.assertTrue(_limit_rule_position < cnt)
 
         # Change Layer Type and SRID in order to force GeoFence allowed-area reprojection
         _original_storeType = layer.storeType
@@ -543,21 +640,28 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
         rules_objs = get_geofence_rules(entries=6)
         self.assertEqual(len(rules_objs['rules']), 6)
-        for rule in rules_objs['rules']:
+        # Order is important
+        _limit_rule_position = -1
+        for cnt, rule in enumerate(rules_objs['rules']):
             if rule['roleName'] == 'ROLE_BAR':
-                self.assertEqual(rule['service'], None)
-                self.assertEqual(rule['userName'], None)
-                self.assertEqual(rule['workspace'], 'CA')
-                self.assertEqual(rule['layer'], 'CA')
-                self.assertEqual(rule['access'], 'LIMIT')
+                if rule['service'] is None:
+                    self.assertEqual(rule['service'], None)
+                    self.assertEqual(rule['userName'], None)
+                    self.assertEqual(rule['workspace'], 'CA')
+                    self.assertEqual(rule['layer'], 'CA')
+                    self.assertEqual(rule['access'], 'LIMIT')
 
-                self.assertTrue('limits' in rule)
-                rule_limits = rule['limits']
-                self.assertEqual(
-                    rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, 146.7000276171853 \
+                    self.assertTrue('limits' in rule)
+                    rule_limits = rule['limits']
+                    self.assertEqual(
+                        rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, 146.7000276171853 \
 -42.53655428642583, 146.7110139453067 -43.07256577359489, 145.9804231249952 \
 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
-                self.assertEqual(rule_limits['catalogMode'], 'MIXED')
+                    self.assertEqual(rule_limits['catalogMode'], 'MIXED')
+                    _limit_rule_position = cnt
+                else:
+                    # When there's a limit rule, "*" must be the first one
+                    self.assertTrue(_limit_rule_position < cnt)
 
         layer.storeType = _original_storeType
         layer.srid = _original_srid
@@ -645,7 +749,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         passwd = settings.OGC_SERVER['default']['PASSWORD']
 
         rest_path = 'rest/workspaces/geonode/datastores/{lyr_title}/featuretypes/{lyr_name}.xml'.\
-            format(lyr_title=title, lyr_name=name)
+            format(lyr_title=saved_layer.store, lyr_name=name)
         import requests
         from requests.auth import HTTPBasicAuth
         r = requests.get(url + rest_path,
@@ -841,7 +945,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # Set the layer private for not authenticated users
         layer.set_permissions({'users': {'AnonymousUser': []}, 'groups': []})
 
-        url = 'http://localhost:8080/geoserver/geonode/ows?' \
+        url = 'http://geoserver:8080/geoserver/geonode/ows?' \
             'LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES=' \
             '&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap' \
             '&SRS=EPSG%3A4326' \
@@ -891,7 +995,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         )
 
         # test change_layer_style
-        url = 'http://localhost:8080/geoserver/rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
+        url = 'http://geoserver:8080/geoserver/rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
         sld = """<?xml version="1.0" encoding="UTF-8"?>
     <sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld"
     xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc"
@@ -1051,7 +1155,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         """
 
         # Setup some layer names to work with
-        valid_layer_typename = Layer.objects.all()[0].id
+        valid_layer_typename = Layer.objects.all().first().id
         invalid_layer_id = 9999999
 
         # Test that an invalid layer.alternate is handled for properly
@@ -1082,19 +1186,16 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 401)
 
         # Next Test with a user that does NOT have the proper perms
-        logged_in = self.client.login(username='bobby', password='bob')
-        self.assertEqual(logged_in, True)
+        self.assertTrue(self.client.login(username='norman', password='norman'))
         response = self.client.post(
             reverse(
                 'resource_permissions', args=(
                     valid_layer_typename,)), data=json.dumps(
                 self.perm_spec), content_type="application/json")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
         # Login as a user with the proper permission and test the endpoint
-        logged_in = self.client.login(username='admin', password='admin')
-        self.assertEqual(logged_in, True)
-
+        self.assertTrue(self.client.login(username='admin', password='admin'))
         response = self.client.post(
             reverse(
                 'resource_permissions', args=(
@@ -1377,7 +1478,6 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                                                    get_sld_for,
                                                    fixup_style,
                                                    set_layer_style,
-                                                   get_store,
                                                    set_attributes_from_geoserver,
                                                    set_styles,
                                                    create_gs_thumbnail,
@@ -1402,9 +1502,6 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertIsNotNone(name)
             ws = gs_catalog.get_workspace(workspace)
             self.assertIsNotNone(ws)
-            store = get_store(gs_catalog, name, workspace=ws)
-            _log("store. ------------ %s " % store)
-            self.assertIsNotNone(store)
 
             # Save layer attributes
             set_attributes_from_geoserver(test_perm_layer)

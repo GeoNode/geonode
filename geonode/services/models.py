@@ -22,7 +22,6 @@ import logging
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
-from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 from geonode.base.models import ResourceBase
 from geonode.people.enumerations import ROLE_VALUES
@@ -146,6 +145,9 @@ class Service(ResourceBase):
         on_delete=models.CASCADE,
         related_name='service_set'
     )
+    probe = models.IntegerField(
+        default=200
+    )
 
     # Supported Capabilities
 
@@ -171,16 +173,13 @@ class Service(ResourceBase):
     def get_absolute_url(self):
         return '/services/%i' % self.id
 
-    @cached_property
-    def probe(self):
-        # AF: this must be handled asynchronously
-        # from geonode.utils import http_client
-        # try:
-        #     resp, content = http_client.request(self.service_url)
-        #     return resp.status
-        # except Exception:
-        #     return 404
-        return 200
+    def probe_service(self):
+        from geonode.utils import http_client
+        try:
+            resp, content = http_client.request(self.service_url)
+            return resp.status_code
+        except Exception:
+            return 404
 
 
 class ServiceProfileRole(models.Model):

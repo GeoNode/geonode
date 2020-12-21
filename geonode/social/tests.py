@@ -24,6 +24,9 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+import six
+import json
+
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from actstream import registry
@@ -64,8 +67,11 @@ class SimpleTest(GeoNodeBaseTestSupport):
         # The activity should read:
         # layer.owner (actor) 'uploaded' (verb) layer (object)
         self.assertEqual(action.actor, action.action_object.owner)
-        self.assertEqual(action.data.get('raw_action'), 'created')
-        self.assertEqual(action.data.get('object_name'), layer.name)
+        data = action.data
+        if isinstance(data, six.string_types) or isinstance(data, bytes):
+            data = json.loads(data)
+        self.assertEqual(data.get('raw_action'), 'created')
+        self.assertEqual(data.get('object_name'), layer.name)
         self.assertTrue(isinstance(action.action_object, Layer))
         self.assertIsNone(action.target)
 
@@ -84,9 +90,11 @@ class SimpleTest(GeoNodeBaseTestSupport):
 
         # <user> deleted <object_name>
         action = Action.objects.all()[0]
-
-        self.assertEqual(action.data.get('raw_action'), 'deleted')
-        self.assertEqual(action.data.get('object_name'), layer_name)
+        data = action.data
+        if isinstance(data, six.string_types) or isinstance(data, bytes):
+            data = json.loads(data)
+        self.assertEqual(data.get('raw_action'), 'deleted')
+        self.assertEqual(data.get('object_name'), layer_name)
 
         # objects are literally deleted so no action object or target should be related to a delete action.
         self.assertIsNone(action.action_object)
@@ -105,16 +113,19 @@ class SimpleTest(GeoNodeBaseTestSupport):
 
         content_type = ContentType.objects.get_for_model(Layer)
         layer = Layer.objects.all()[0]
-        comment = Comment(author=self.user,
-                          content_type=content_type,
-                          object_id=layer.id,
-                          comment="This is a cool layer.")
+        comment = Comment(
+            author=self.user,
+            content_type=content_type,
+            object_id=layer.id,
+            comment="This is a cool layer.")
         comment.save()
 
         action = Action.objects.all()[0]
-
+        data = action.data
+        if isinstance(data, six.string_types) or isinstance(data, bytes):
+            data = json.loads(data)
         self.assertEqual(action.actor, self.user)
-        self.assertEqual(action.data.get('raw_action'), 'created')
+        self.assertEqual(data.get('raw_action'), 'created')
         self.assertEqual(action.action_object, comment)
         self.assertEqual(action.target, layer)
 

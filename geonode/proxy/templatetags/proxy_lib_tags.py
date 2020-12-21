@@ -38,15 +38,14 @@ storage = FileSystemStorage()
 
 @register.simple_tag(takes_context=True)
 def original_link_available(context, resourceid, url):
-
     _not_permitted = _("You are not permitted to save or edit this resource.")
-
     request = context['request']
-    instance = resolve_object(request,
-                              Layer,
-                              {'pk': resourceid},
-                              permission='base.download_resourcebase',
-                              permission_msg=_not_permitted)
+    instance = resolve_object(
+        request,
+        Layer,
+        {'pk': resourceid},
+        permission='base.download_resourcebase',
+        permission_msg=_not_permitted)
 
     download_url = urljoin(settings.SITEURL, reverse("download", args={resourceid}))
     if urlsplit(url).netloc != urlsplit(download_url).netloc or \

@@ -31,6 +31,7 @@ import six
 from django.db.models import Q
 from urllib.parse import quote
 
+from django.http import Http404
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
 from django.template.response import TemplateResponse
@@ -402,11 +403,18 @@ def layer_upload(request, template='upload/layer_upload.html'):
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.view_resourcebase',
-        _PERMISSION_MSG_VIEW)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.view_resourcebase',
+            _PERMISSION_MSG_VIEW)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
 
     permission_manager = ManageResourceOwnerPermissions(layer)
     permission_manager.set_owner_permissions_according_to_workflow()
@@ -415,7 +423,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer.add_missing_metadata_author_or_poc()
 
     def decimal_encode(bbox):
-        import decimal
         _bbox = []
         for o in [float(coord) for coord in bbox]:
             if isinstance(o, decimal.Decimal):
@@ -532,8 +539,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         if layer.has_time:
             from geonode.geoserver.views import get_capabilities
-            workspace, layername = layer.alternate.split(
-                ":") if ":" in layer.alternate else (None, layer.alternate)
             # WARNING Please make sure to have enabled DJANGO CACHE as per
             # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
             wms_capabilities_resp = get_capabilities(
@@ -675,7 +680,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "show_popup": show_popup,
         "filter": filter,
         "storeType": layer.storeType,
-        # "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True
+        "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True,
+        "processed": layer.processed
     }
 
     context_dict["viewer"] = json.dumps(map_obj.viewer_json(
@@ -721,15 +727,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             item.url = Request('GET', item.url, params=params).prepare().url
     if request.user.has_perm('view_resourcebase', layer.get_self_resource()):
         context_dict["links"] = links_view
-    if request.user.has_perm(
-        'download_resourcebase',
-            layer.get_self_resource()):
-        if layer.storeType == 'dataStore':
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_VECTOR)
-        else:
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_RASTER)
+    if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
         context_dict["links_download"] = links_download
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
@@ -756,7 +754,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
     if request.user.is_authenticated and (request.user.is_superuser or "change_resourcebase_permissions" in perms_list):
         context_dict['users'] = [user for user in get_user_model().objects.all().exclude(
-            id=request.user.id).exclude(is_superuser=True)]
+            id=request.user.id).exclude(is_superuser=True).order_by('username')]
         if request.user.is_superuser:
             context_dict['groups'] = [group for group in GroupProfile.objects.all()]
         else:
@@ -821,7 +819,6 @@ def load_layer_data(request, template='layers/layer_detail.html'):
 
         context_dict["feature_properties"] = properties
     except Exception:
-        import traceback
         traceback.print_exc()
         logger.error("Possible error with OWSLib.")
     return HttpResponse(json.dumps(context_dict),
@@ -832,7 +829,15 @@ def layer_feature_catalogue(
         request,
         layername,
         template='../../catalogue/templates/catalogue/feature_catalogue.xml'):
-    layer = _resolve_layer(request, layername)
+    try:
+        layer = _resolve_layer(request, layername)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
+
     if layer.storeType != 'dataStore':
         out = {
             'success': False,
@@ -872,11 +877,19 @@ def layer_metadata(
         layername,
         template='layers/layer_metadata.html',
         ajax=True):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.change_resourcebase_metadata',
-        _PERMISSION_MSG_METADATA)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.change_resourcebase_metadata',
+            _PERMISSION_MSG_METADATA)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
+
     layer_attribute_set = inlineformset_factory(
         Layer,
         Attribute,
@@ -960,9 +973,11 @@ def layer_metadata(
 
         layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
         if not layer_form.is_valid():
+            logger.error(f"Layer Metadata form is not valid: {layer_form.errors}")
             out = {
                 'success': False,
-                'errors': layer_form.errors
+                'errors': [
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in layer_form.errors]
             }
             return HttpResponse(
                 json.dumps(out),
@@ -973,10 +988,43 @@ def layer_metadata(
             instance=layer,
             prefix="layer_attribute_set",
             queryset=Attribute.objects.order_by('display_order'))
+        if not attribute_form.is_valid():
+            logger.error(f"Layer Attributes form is not valid: {attribute_form.errors}")
+            out = {
+                'success': False,
+                'errors': [
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in attribute_form.errors]
+            }
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
             request.POST["category_choice_field"] else None)
+        if not category_form.is_valid():
+            logger.error(f"Layer Category form is not valid: {category_form.errors}")
+            out = {
+                'success': False,
+                'errors': [
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in category_form.errors]
+            }
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
         tkeywords_form = TKeywordForm(request.POST)
+        if not tkeywords_form.is_valid():
+            logger.error(f"Layer Thesauri Keywords form is not valid: {tkeywords_form.errors}")
+            out = {
+                'success': False,
+                'errors': [
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in tkeywords_form.errors]
+            }
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
         layer_form.disable_keywords_widget_for_non_superuser(request.user)
@@ -1161,11 +1209,10 @@ def layer_metadata(
         try:
             all_metadata_author_groups = chain(
                 request.user.group_list_all().distinct(),
-                GroupProfile.objects.exclude(
-                    access="private").exclude(access="public-invite"))
+                GroupProfile.objects.exclude(access="private"))
         except Exception:
             all_metadata_author_groups = GroupProfile.objects.exclude(
-                access="private").exclude(access="public-invite")
+                access="private")
         [metadata_author_groups.append(item) for item in all_metadata_author_groups
             if item not in metadata_author_groups]
 
@@ -1224,11 +1271,18 @@ def layer_change_poc(request, ids, template='layers/layer_change_poc.html'):
 
 @login_required
 def layer_replace(request, layername, template='layers/layer_replace.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.change_resourcebase',
-        _PERMISSION_MSG_MODIFY)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.change_resourcebase',
+            _PERMISSION_MSG_MODIFY)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
 
     if request.method == 'GET':
         ctx = {
@@ -1318,11 +1372,18 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
 
 @login_required
 def layer_remove(request, layername, template='layers/layer_remove.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.delete_resourcebase',
-        _PERMISSION_MSG_DELETE)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.delete_resourcebase',
+            _PERMISSION_MSG_DELETE)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
 
     if (request.method == 'GET'):
         return render(request, template, context={
@@ -1361,11 +1422,18 @@ def layer_granule_remove(
         granule_id,
         layername,
         template='layers/layer_granule_remove.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.delete_resourcebase',
-        _PERMISSION_MSG_DELETE)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.delete_resourcebase',
+            _PERMISSION_MSG_DELETE)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
 
     if (request.method == 'GET'):
         return render(request, template, context={
@@ -1403,7 +1471,14 @@ def layer_granule_remove(
 
 @require_http_methods(["POST"])
 def layer_thumbnail(request, layername):
-    layer_obj = _resolve_layer(request, layername)
+    try:
+        layer_obj = _resolve_layer(request, layername)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer_obj:
+        raise Http404(_("Not found"))
 
     try:
         try:
@@ -1462,7 +1537,15 @@ def get_layer(request, layername):
         raise TypeError
     logger.debug('Call get layer')
     if request.method == 'GET':
-        layer_obj = _resolve_layer(request, layername)
+        try:
+            layer_obj = _resolve_layer(request, layername)
+        except PermissionDenied:
+            return HttpResponse(_("Not allowed"), status=403)
+        except Exception:
+            raise Http404(_("Not found"))
+        if not layer_obj:
+            raise Http404(_("Not found"))
+
         logger.debug(layername)
         response = {
             'typename': layername,
@@ -1487,11 +1570,19 @@ def layer_metadata_detail(
         request,
         layername,
         template='layers/layer_metadata_detail.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'view_resourcebase',
-        _PERMISSION_MSG_METADATA)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'view_resourcebase',
+            _PERMISSION_MSG_METADATA)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
+
     group = None
     if layer.group:
         try:
@@ -1516,11 +1607,19 @@ def layer_metadata_upload(
         request,
         layername,
         template='layers/layer_metadata_upload.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.change_resourcebase',
-        _PERMISSION_MSG_METADATA)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.change_resourcebase',
+            _PERMISSION_MSG_METADATA)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
+
     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     return render(request, template, context={
         "resource": layer,
@@ -1533,11 +1632,19 @@ def layer_sld_upload(
         request,
         layername,
         template='layers/layer_style_upload.html'):
-    layer = _resolve_layer(
-        request,
-        layername,
-        'base.change_resourcebase',
-        _PERMISSION_MSG_METADATA)
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.change_resourcebase',
+            _PERMISSION_MSG_METADATA)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
+
     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
     return render(request, template, context={
         "resource": layer,
@@ -1596,12 +1703,12 @@ def batch_permissions(request, model):
             permissions_names = _data['permission_type']
             if permissions_names:
                 try:
-                    set_permissions.delay(
+                    set_permissions.apply_async((
                         permissions_names,
                         resources_names,
                         users_usernames,
                         groups_names,
-                        delete_flag)
+                        delete_flag))
                 except set_permissions.OperationalError as exc:
                     celery_logger.exception('Sending task raised: %r', exc)
             return HttpResponseRedirect(

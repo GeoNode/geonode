@@ -118,6 +118,174 @@ class SmokeTest(GeoNodeBaseTestSupport):
         self.assertTrue(groupprofile.user_is_role(admin, 'manager'))
         self.assertFalse(admin in groupprofile.get_managers())
 
+    def test_users_group_list_view(self):
+        """
+        1. Ensures that a superuser can see the whole group list.
+
+        2. Ensures that a user can see only public/public-invite groups.
+
+        3. Ensures that a user belonging to a private group, can see it.
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+
+        public_group, _public_created = GroupProfile.objects.get_or_create(
+            slug='public_group',
+            title='public_group',
+            access='public')
+        private_group, _private_created = GroupProfile.objects.get_or_create(
+            slug='private_group',
+            title='private_group',
+            access='private')
+
+        private_group.join(bobby)
+        data = {
+            "query": "p",
+            "page": 1,
+            "pageSize": 9
+        }
+
+        # Anonymous
+        """
+            '{
+                "users": [], "count": 0,
+                "groups": [
+                    {"name": "public_group", "title": "public_group"}]
+            }'
+        """
+        response = self.client.post(
+            reverse(
+                'account_ajax_lookup'
+            ),
+            data
+        )
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        logger.debug(f"Anonymous --> {content}")
+        self.assertEqual(len(content["groups"]), 1)
+        self.assertEqual(content["groups"][0]["name"], "public_group")
+        response = self.client.get(
+            reverse(
+                'group_detail',
+                args=['public_group', ])
+        )
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(
+            reverse(
+                'group_detail',
+                args=['private_group', ])
+        )
+        self.assertEqual(response.status_code, 404)
+
+        # Admin
+        """
+            '{
+                "users": [], "count": 0,
+                "groups": [
+                    {"name": "public_group", "title": "public_group"},
+                    {"name": "private_group", "title": "private_group"}]
+            }'
+        """
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        response = self.client.post(
+            reverse(
+                'account_ajax_lookup'
+            ),
+            data
+        )
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        logger.debug(f"admin --> {content}")
+        self.assertEqual(len(content["groups"]), 2)
+        self.assertEqual(content["groups"][0]["name"], "public_group")
+        self.assertEqual(content["groups"][1]["name"], "private_group")
+        response = self.client.get(
+            reverse(
+                'group_detail',
+                args=['public_group', ])
+        )
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(
+            reverse(
+                'group_detail',
+                args=['private_group', ])
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # Bobby
+        """
+            '{
+                "users": [], "count": 0,
+                "groups": [
+                    {"name": "public_group", "title": "public_group"},
+                    {"name": "private_group", "title": "private_group"}]
+            }'
+        """
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        response = self.client.post(
+            reverse(
+                'account_ajax_lookup'
+            ),
+            data
+        )
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        logger.debug(f"bobby --> {content}")
+        self.assertEqual(len(content["groups"]), 2)
+        self.assertEqual(content["groups"][0]["name"], "public_group")
+        self.assertEqual(content["groups"][1]["name"], "private_group")
+        response = self.client.get(
+            reverse(
+                'group_detail',
+                args=['public_group', ])
+        )
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(
+            reverse(
+                'group_detail',
+                args=['private_group', ])
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # Norman
+        """
+            '{
+                "users": [], "count": 0,
+                "groups": [
+                    {"name": "public_group", "title": "public_group"}]
+            }'
+        """
+        self.assertTrue(self.client.login(username="norman", password="norman"))
+        response = self.client.post(
+            reverse(
+                'account_ajax_lookup'
+            ),
+            data
+        )
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        logger.debug(f"norman --> {content}")
+        self.assertEqual(len(content["groups"]), 1)
+        self.assertEqual(content["groups"][0]["name"], "public_group")
+        response = self.client.get(
+            reverse(
+                'group_detail',
+                args=['public_group', ])
+        )
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(
+            reverse(
+                'group_detail',
+                args=['private_group', ])
+        )
+        self.assertEqual(response.status_code, 404)
+
+        if _public_created:
+            public_group.delete()
+            self.assertFalse(GroupProfile.objects.filter(slug='public_group').exists())
+        if _private_created:
+            private_group.delete()
+            self.assertFalse(GroupProfile.objects.filter(slug='private_group').exists())
+
     def test_group_permissions_extend_to_user(self):
         """
         Ensures that when a user is in a group, the group permissions
@@ -661,7 +829,7 @@ class GroupCategoriesTestCase(GeoNodeBaseTestSupport):
         super(GroupCategoriesTestCase, self).setUp()
 
         c1 = GroupCategory.objects.create(name='test #1 category')
-        g = GroupProfile.objects.create(title='test')
+        g = GroupProfile.objects.create(slug='test', title='test')
         g.categories.add(c1)
         g.save()
         User = get_user_model()

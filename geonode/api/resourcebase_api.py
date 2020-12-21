@@ -17,8 +17,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
 import re
+import json
+import logging
 
 from django.urls import resolve
 from django.db.models import Q
@@ -48,6 +49,7 @@ from tastypie.utils.mime import build_content_type
 from geonode import get_version, qgis_server, geoserver
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.geoapps.models import GeoApp
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 from geonode.base.models import HierarchicalKeyword
@@ -67,9 +69,12 @@ from .api import (
     GroupResource,
     FILTER_TYPES)
 from .paginator import CrossSiteXHRPaginator
+from django.utils.translation import gettext as _
 
 if settings.HAYSTACK_SEARCH:
     from haystack.query import SearchQuerySet  # noqa
+
+logger = logging.getLogger(__name__)
 
 LAYER_SUBTYPES = {
     'vector': 'dataStore',
@@ -161,6 +166,8 @@ class CommonModelApi(ModelResource):
             filters=filters, ignore_bad_filters=ignore_bad_filters, **kwargs)
         if 'type__in' in filters and filters['type__in'] in FILTER_TYPES.keys():
             orm_filters.update({'type': filters.getlist('type__in')})
+        if 'app_type__in' in filters:
+            orm_filters.update({'polymorphic_ctype__model': filters['app_type__in'].lower()})
         if 'extent' in filters:
             orm_filters.update({'extent': filters['extent']})
         orm_filters['f_method'] = filters['f_method'] if 'f_method' in filters else 'and'
@@ -262,7 +269,6 @@ class CommonModelApi(ModelResource):
         return filter_set
 
     def filter_h_keywords(self, queryset, keywords):
-        filtered = queryset
         treeqs = HierarchicalKeyword.objects.none()
         if keywords and len(keywords) > 0:
             for keyword in keywords:
@@ -274,8 +280,9 @@ class CommonModelApi(ModelResource):
                 except ObjectDoesNotExist:
                     # Ignore keywords not actually used?
                     pass
-
-        filtered = queryset.filter(Q(keywords__in=treeqs))
+            filtered = queryset.filter(Q(keywords__in=treeqs))
+        else:
+            filtered = queryset
         return filtered
 
     def build_haystack_filters(self, parameters):
@@ -746,7 +753,7 @@ class LayerResource(CommonModelApi):
             formatted_obj['owner__username'] = username
             formatted_obj['owner_name'] = full_name
             if obj.category:
-                formatted_obj['category__gn_description'] = obj.category.gn_description
+                formatted_obj['category__gn_description'] = _(obj.category.gn_description)
             if obj.group:
                 formatted_obj['group'] = obj.group
                 try:
@@ -787,6 +794,7 @@ class LayerResource(CommonModelApi):
             if hasattr(obj, 'curatedthumbnail'):
                 formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
 
+            formatted_obj['processed'] = obj.instance_is_processed
             # put the object on the response stack
             formatted_objects.append(formatted_obj)
         return formatted_objects
@@ -948,7 +956,7 @@ class MapResource(CommonModelApi):
             formatted_obj['owner__username'] = username
             formatted_obj['owner_name'] = full_name
             if obj.category:
-                formatted_obj['category__gn_description'] = obj.category.gn_description
+                formatted_obj['category__gn_description'] = _(obj.category.gn_description)
             if obj.group:
                 formatted_obj['group'] = obj.group
                 try:
@@ -990,11 +998,15 @@ class MapResource(CommonModelApi):
             formatted_obj['layers'] = formatted_layers
 
             # replace thumbnail_url with curated_thumbs
-            if hasattr(obj, 'curatedthumbnail'):
-                if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
-                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
-                else:
-                    formatted_obj['thumbnail_url'] = ''
+            try:
+                if hasattr(obj, 'curatedthumbnail'):
+                    if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
+                        formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
+                    else:
+                        formatted_obj['thumbnail_url'] = ''
+            except Exception as e:
+                formatted_obj['thumbnail_url'] = ''
+                logger.exception(e)
 
             formatted_objects.append(formatted_obj)
         return formatted_objects
@@ -1003,6 +1015,69 @@ class MapResource(CommonModelApi):
         paginator_class = CrossSiteXHRPaginator
         queryset = Map.objects.distinct().order_by('-date')
         resource_name = 'maps'
+        authentication = MultiAuthentication(SessionAuthentication(),
+                                             OAuthAuthentication(),
+                                             GeonodeApiKeyAuthentication())
+
+
+class GeoAppResource(CommonModelApi):
+
+    """GeoApps API"""
+
+    def format_objects(self, objects):
+        """
+        Formats the objects and provides reference to list of layers in GeoApp
+        resources.
+
+        :param objects: GeoApp objects
+        """
+        formatted_objects = []
+        for obj in objects:
+            # convert the object to a dict using the standard values.
+            formatted_obj = model_to_dict(obj, fields=self.VALUES)
+            username = obj.owner.get_username()
+            full_name = (obj.owner.get_full_name() or username)
+            formatted_obj['owner__username'] = username
+            formatted_obj['owner_name'] = full_name
+            if obj.category:
+                formatted_obj['category__gn_description'] = obj.category.gn_description
+            if obj.group:
+                formatted_obj['group'] = obj.group
+                try:
+                    formatted_obj['group_name'] = GroupProfile.objects.get(slug=obj.group.name)
+                except GroupProfile.DoesNotExist:
+                    formatted_obj['group_name'] = obj.group
+
+            formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
+            formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
+
+            if 'site_url' not in formatted_obj or len(formatted_obj['site_url']) == 0:
+                formatted_obj['site_url'] = settings.SITEURL
+
+            # Probe Remote Services
+            formatted_obj['store_type'] = 'geoapp'
+            formatted_obj['online'] = True
+
+            # replace thumbnail_url with curated_thumbs
+            try:
+                if hasattr(obj, 'curatedthumbnail'):
+                    if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
+                        formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
+                    else:
+                        formatted_obj['thumbnail_url'] = ''
+            except Exception as e:
+                formatted_obj['thumbnail_url'] = ''
+                logger.exception(e)
+
+            formatted_objects.append(formatted_obj)
+        return formatted_objects
+
+    class Meta(CommonMetaApi):
+        paginator_class = CrossSiteXHRPaginator
+        filtering = CommonMetaApi.filtering
+        filtering.update({'app_type': ALL})
+        queryset = GeoApp.objects.distinct().order_by('-date')
+        resource_name = 'geoapps'
         authentication = MultiAuthentication(SessionAuthentication(),
                                              OAuthAuthentication(),
                                              GeonodeApiKeyAuthentication())
@@ -1028,7 +1103,7 @@ class DocumentResource(CommonModelApi):
             formatted_obj['owner__username'] = username
             formatted_obj['owner_name'] = full_name
             if obj.category:
-                formatted_obj['category__gn_description'] = obj.category.gn_description
+                formatted_obj['category__gn_description'] = _(obj.category.gn_description)
             if obj.group:
                 formatted_obj['group'] = obj.group
                 try:

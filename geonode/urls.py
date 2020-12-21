@@ -34,7 +34,7 @@ import geonode.proxy.urls
 from . import views
 from . import version
 
-from geonode.api.urls import api
+from geonode.api.urls import api, router
 from geonode.api.views import verify_token, user_info, roles, users, admin_role
 from geonode.base.views import thumbnail_upload
 
@@ -88,14 +88,29 @@ urlpatterns = [
 
 urlpatterns += [
 
+    # ResourceBase views
+    url(r'^base/', include('geonode.base.urls')),
+
     # Layer views
     url(r'^layers/', include('geonode.layers.urls')),
+
+    # Remote Services views
+    url(r'^services/', include('geonode.services.urls')),
 
     # Map views
     url(r'^maps/', include('geonode.maps.urls')),
 
+    # Documents views
+    url(r'^documents/', include('geonode.documents.urls')),
+
+    # Apps views
+    url(r'^apps/', include('geonode.geoapps.urls')),
+
     # Catalogue views
     url(r'^catalogue/', include('geonode.catalogue.urls')),
+
+    # Group Profiles views
+    url(r'^groups/', include('geonode.groups.urls')),
 
     # ident
     url(r'^ident.json$',
@@ -139,11 +154,6 @@ urlpatterns += [
         geonode.views.moderator_contacted,
         name='moderator_contacted'),
 
-    url(r'^groups/', include('geonode.groups.urls')),
-    url(r'^documents/', include('geonode.documents.urls')),
-    url(r'^services/', include('geonode.services.urls')),
-    url(r'^base/', include('geonode.base.urls')),
-
     # OAuth Provider
     url(r'^o/',
         include('oauth2_provider.urls',
@@ -157,6 +167,9 @@ urlpatterns += [
     url(r'^api/roles', roles, name='roles'),
     url(r'^api/adminRole', admin_role, name='adminRole'),
     url(r'^api/users', users, name='users'),
+    url(r'^api/v2/', include(router.urls)),
+    url(r'^api/v2/', include('geonode.api.urls')),
+    url(r'^api/v2/api-auth/', include('rest_framework.urls', namespace='geonode_rest_framework')),
     url(r'', include(api.urls)),
 
     # Curated Thumbnail
@@ -237,7 +250,10 @@ urlpatterns += geonode.proxy.urls.urlpatterns
 urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.LOCAL_MEDIA_URL,
                       document_root=settings.MEDIA_ROOT)
+handler401 = 'geonode.views.err403'
 handler403 = 'geonode.views.err403'
+handler404 = 'geonode.views.handler404'
+handler500 = 'geonode.views.handler500'
 
 # Featured Maps Pattens
 urlpatterns += [  # '',

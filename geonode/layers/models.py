@@ -38,6 +38,9 @@ from geonode.people.utils import get_valid_user
 from geonode.utils import check_shp_columnnames
 from geonode.security.models import PermissionLevelMixin
 from geonode.security.utils import remove_object_permissions
+from geonode.notifications_helper import (
+    send_notification,
+    get_notification_recipients)
 
 from ..services.enumerations import CASCADED
 from ..services.enumerations import INDEXED
@@ -211,6 +214,14 @@ class Layer(ResourceBase):
         return self.upload_session
 
     @property
+    def processed(self):
+        self.upload_session = UploadSession.objects.filter(resource=self).first()
+        if self.upload_session:
+            return self.upload_session.processed
+        else:
+            return True
+
+    @property
     def display_type(self):
         return ({
             "dataStore": "Vector Data",
@@ -271,7 +282,7 @@ class Layer(ResourceBase):
         else:
             _attrs = Attribute.objects.filter(layer=self)
         if _attrs.filter(attribute='the_geom').exists():
-            _att_type = _attrs.get(attribute='the_geom').attribute_type
+            _att_type = _attrs.filter(attribute='the_geom').first().attribute_type
             _gtype = re.match(r'\(\'gml:(.*?)\',', _att_type)
             return _gtype.group(1) if _gtype else None
         return None
@@ -629,6 +640,12 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.bbox_polygon,
         instance.bbox_polygon.srid
     )
+    # Send a notification when a layer is created
+    if instance.pk is None and instance.title:
+        # Resource Created
+        notice_type_label = '%s_created' % instance.class_name.lower()
+        recipients = get_notification_recipients(notice_type_label, resource=instance)
+        send_notification(recipients, notice_type_label, {'resource': instance})
 
 
 def pre_delete_layer(instance, sender, **kwargs):

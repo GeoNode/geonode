@@ -27,12 +27,16 @@ import json
 import errno
 import logging
 import datetime
+import requests
 import traceback
 
 from six import (
     string_types,
     reraise as raise_
 )
+from PIL import Image
+from io import BytesIO
+from resizeimage import resizeimage
 from itertools import cycle
 from collections import namedtuple, defaultdict
 from os.path import basename, splitext, isfile
@@ -71,6 +75,8 @@ from django.utils.module_loading import import_string
 
 
 logger = logging.getLogger(__name__)
+
+temp_style_name_regex = r'[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}_ms_.*'
 
 if not hasattr(settings, 'OGC_SERVER'):
     msg = (
@@ -195,7 +201,7 @@ def extract_name_from_sld(gs_catalog, sld, sld_file=None):
             sld = open(sld_file, "rb").read()
             if isinstance(sld, string_types):
                 sld = sld.encode('utf-8')
-            dom = dlxml.parse(sld_file)
+            dom = dlxml.parse(sld)
     except Exception:
         logger.exception("The uploaded SLD file is not valid XML")
         raise Exception(
@@ -429,15 +435,12 @@ def cascading_delete(layer_name=None, catalog=None):
                     except FailedRequestError:
                         logger.debug(
                             'the store was not found in geoserver')
-                        return
                 else:
                     logger.debug(
                         'the store was not found in geoserver')
-                    return
             if ws is None or store is None:
                 logger.debug(
                     'cascading delete was called on a layer where the workspace was not found')
-                return
             resource = cat.get_resource(name=name, store=store, workspace=workspace)
         else:
             resource = cat.get_resource(name=layer_name)
@@ -447,7 +450,7 @@ def cascading_delete(layer_name=None, catalog=None):
                    'to save information for layer "%s"' % (
                        ogc_server_settings.LOCATION, layer_name)
                    )
-            logger.debug(msg)
+            logger.error(msg)
             return None
         else:
             raise e
@@ -678,16 +681,21 @@ def gs_slurp(
         the_store = resource.store
         workspace = the_store.workspace
         try:
-            layer, created = Layer.objects.get_or_create(name=name, workspace=workspace.name, defaults={
-                # "workspace": workspace.name,
-                "store": the_store.name,
-                "storeType": the_store.resource_type,
-                "alternate": "%s:%s" % (workspace.name, resource.name),
-                "title": resource.title or 'No title provided',
-                "abstract": resource.abstract or "{}".format(_('No abstract provided')),
-                "owner": owner,
-                "uuid": str(uuid.uuid4())
-            })
+            created = False
+            layer = Layer.objects.filter(name=name, workspace=workspace.name).first()
+            if not layer:
+                layer = Layer.objects.create(
+                    name=name,
+                    workspace=workspace.name,
+                    store=the_store.name,
+                    storeType=the_store.resource_type,
+                    alternate="%s:%s" % (workspace.name, resource.name),
+                    title=resource.title or 'No title provided',
+                    abstract=resource.abstract or "{}".format(_('No abstract provided')),
+                    owner=owner,
+                    uuid=str(uuid.uuid4())
+                )
+                created = True
             bbox = resource.native_bbox
             layer.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], resource.projection)
 
@@ -915,10 +923,13 @@ def set_attributes(
         for attribute in attribute_map:
             field, ftype, description, label, display_order = attribute
             if field:
+                _gs_attrs = Attribute.objects.filter(layer=layer, attribute=field)
+                if _gs_attrs.count() > 1:
+                    _gs_attrs.delete()
                 la, created = Attribute.objects.get_or_create(layer=layer, attribute=field)
                 if created:
                     la.visible = ftype.find("gml:") != 0
-                    la.attribute_type = ftype,
+                    la.attribute_type = ftype
                     la.description = description
                     la.attribute_label = label
                     la.display_order = iter
@@ -1085,6 +1096,7 @@ def set_styles(layer, gs_catalog):
 
         if default_style:
             # make sure we are not using a default SLD (which won't be editable)
+            style = None
             if not default_style.workspace:
                 sld_name = default_style.sld_name
                 sld_body = default_style.sld_body
@@ -1099,10 +1111,11 @@ def set_styles(layer, gs_catalog):
             else:
                 style = default_style
 
-            gs_layer.default_style = style
-            gs_catalog.save(gs_layer)
-            layer.default_style = save_style(style, layer)
-            style_set.append(layer.default_style)
+            if style:
+                gs_layer.default_style = style
+                gs_catalog.save(gs_layer)
+                layer.default_style = save_style(style, layer)
+                style_set.append(layer.default_style)
         try:
             if gs_layer.styles:
                 alt_styles = gs_layer.styles
@@ -1142,19 +1155,18 @@ def set_styles(layer, gs_catalog):
                     'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
                     layer.alternate + '&STYLE=' + style_name + \
                     '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
-
-            if layer_legends.filter(url=legend_url).count() == 0:
-                Link.objects.update_or_create(
-                    resource=layer.resourcebase_ptr,
-                    name='Legend',
-                    url=legend_url,
-                    defaults=dict(
-                        extension='png',
+                if layer_legends.filter(url=legend_url).count() == 0:
+                    Link.objects.update_or_create(
+                        resource=layer.resourcebase_ptr,
+                        name='Legend',
                         url=legend_url,
-                        mime='image/png',
-                        link_type='image',
+                        defaults=dict(
+                            extension='png',
+                            url=legend_url,
+                            mime='image/png',
+                            link_type='image',
+                        )
                     )
-                )
         logger.debug(" -- Resource Links[Legend link]...done!")
     except Exception as e:
         logger.debug(f" -- Resource Links[Legend link]...error: {e}")
@@ -1367,7 +1379,7 @@ def create_geoserver_db_featurestore(
              'Connection timeout': 10,
              'create database': 'false',
              'Batch insert size': 30,
-             'preparedStatements': 'false',
+             'preparedStatements': 'true',
              'min connections': 10,
              'max connections': 100,
              'Evictor tests per run': 3,
@@ -1623,6 +1635,48 @@ class OGC_Servers_Handler(object):
         return [self[alias] for alias in self]
 
 
+def fetch_gs_resource(instance, values, tries):
+    _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 2)
+    try:
+        gs_resource = gs_catalog.get_resource(
+            name=instance.name,
+            store=instance.store,
+            workspace=instance.workspace)
+    except Exception:
+        try:
+            gs_resource = gs_catalog.get_resource(
+                name=instance.alternate,
+                store=instance.store,
+                workspace=instance.workspace)
+        except Exception:
+            try:
+                gs_resource = gs_catalog.get_resource(
+                    name=instance.alternate or instance.typename)
+            except Exception:
+                gs_resource = None
+    if gs_resource:
+        if values:
+            gs_resource.title = values.get('title', '')
+            gs_resource.abstract = values.get('abstract', '')
+        else:
+            values = {}
+        values.update(dict(store=gs_resource.store.name,
+                           storeType=gs_resource.store.resource_type,
+                           alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
+                           title=gs_resource.title or gs_resource.store.name,
+                           abstract=gs_resource.abstract or '',
+                           owner=instance.owner))
+    else:
+        msg = "There isn't a geoserver resource for this layer: %s" % instance.name
+        logger.exception(msg)
+        if tries >= _max_tries:
+            # raise GeoNodeException(msg)
+            return (values, None)
+        gs_resource = None
+        time.sleep(5)
+    return (values, gs_resource)
+
+
 def get_wms():
     wms_url = ogc_server_settings.internal_ows + \
         "?service=WMS&request=GetCapabilities&version=1.1.0"
@@ -1702,7 +1756,6 @@ def _stylefilterparams_geowebcache_layer(layer_name):
         return
 
     # check/write GWC filter parameters
-    import xml.etree.ElementTree as ET
     body = None
     tree = dlxml.fromstring(_)
     param_filters = tree.findall('parameterFilters')
@@ -1797,13 +1850,10 @@ def style_update(request, url):
         # add style in GN and associate it to layer
         if request.method == 'DELETE':
             if style_name:
-                try:
-                    style = Style.objects.get(name=style_name)
-                    style.delete()
-                except Exception:
-                    pass
+                Style.objects.filter(name=style_name).delete()
         if request.method == 'POST':
-            if style_name:
+            style = None
+            if style_name and not re.match(temp_style_name_regex, style_name):
                 style, created = Style.objects.get_or_create(name=style_name)
                 style.sld_body = sld_body
                 style.sld_url = url
@@ -1818,11 +1868,12 @@ def style_update(request, url):
                     except Exception:
                         pass
             if layer:
-                style.layer_styles.add(layer)
-                style.save()
+                if style:
+                    style.layer_styles.add(layer)
+                    style.save()
                 affected_layers.append(layer)
         elif request.method == 'PUT':  # update style in GN
-            if style_name:
+            if style_name and not re.match(temp_style_name_regex, style_name):
                 style, created = Style.objects.get_or_create(name=style_name)
                 style.sld_body = sld_body
                 style.sld_url = url
@@ -1838,12 +1889,6 @@ def style_update(request, url):
             _invalidate_geowebcache_layer(layer_name)
         except Exception:
             pass
-
-    elif request.method == 'DELETE':  # delete style from GN
-        style_name = os.path.basename(request.path)
-        style = Style.objects.get(name=style_name)
-        style.delete()
-
     return affected_layers
 
 
@@ -1968,6 +2013,33 @@ _esri_types = {
     "esriFieldTypeXML": "xsd:anyType"}
 
 
+def is_monochromatic_image(image_url):
+
+    def is_absolute(url):
+        return bool(urlparse(url).netloc)
+
+    try:
+        logger.debug(f"...Checking if '{image_url}' is a blank image")
+        url = image_url if is_absolute(image_url) else urljoin(settings.SITEURL, image_url)
+        response = requests.get(url, verify=False)
+        stream = BytesIO(response.content)
+        img = Image.open(stream).convert("L")
+        stream.close()
+        img.verify()  # verify that it is, in fact an image
+        extr = img.getextrema()
+        a = 0
+        for i in extr:
+            if isinstance(i, tuple):
+                a += abs(i[0] - i[1])
+            else:
+                a = abs(extr[0] - extr[1])
+                break
+        return a == 0
+    except Exception as e:
+        logger.exception(e)
+        return False
+
+
 def _render_thumbnail(req_body, width=240, height=200):
     spec = _fixup_ows_url(req_body)
     url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
@@ -1989,9 +2061,6 @@ def _render_thumbnail(req_body, width=240, height=200):
             raise Exception(content)
 
         # Optimize the Thumbnail size and resolution
-        from PIL import Image
-        from io import BytesIO
-        from resizeimage import resizeimage
         content_data = BytesIO(content)
         im = Image.open(content_data)
         im.thumbnail(
@@ -2004,7 +2073,11 @@ def _render_thumbnail(req_body, width=240, height=200):
         cover.save(imgByteArr, format='JPEG')
         content = imgByteArr.getvalue()
     except Exception as e:
-        logger.debug(e)
+        logger.debug(f"Could not sucesfully send data to {url}")
+        logger.debug(f" - user: [{_user}]")
+        logger.debug(f" - headers: [{headers}]")
+        logger.debug(f" - data: [{spec}]")
+        logger.exception(e)
         raise e
 
     return content
@@ -2075,6 +2148,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         if not smurl and getattr(settings, 'THUMBNAIL_GENERATOR_DEFAULT_BG', None):
             smurl = settings.THUMBNAIL_GENERATOR_DEFAULT_BG
         layers = None
+        thumbnail_tile_size = 256
         thumbnail_create_url = None
         if 'thumbnail_create_url' in request_body:
             thumbnail_create_url = request_body['thumbnail_create_url']
@@ -2129,31 +2203,31 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         bounds = wgs84_bbox[0:4]
         # Fixes bounds to tiles system
         bounds[0] = _v(bounds[0], x=True, target_srid=4326)
-        bounds[2] = _v(bounds[2], x=True, target_srid=4326)
+        bounds[1] = _v(bounds[1], x=True, target_srid=4326)
         if bounds[3] > 85.051:
             bounds[3] = 85.0
-        if bounds[1] < -85.051:
-            bounds[1] = -85.0
+        if bounds[2] < -85.051:
+            bounds[2] = -85.0
         if 'zoom' in request_body:
             zoom = int(request_body['zoom'])
         else:
             zoom = bounds_to_zoom_level(bounds, width, height)
 
-        t_ll = mercantile.tile(bounds[0], bounds[1], zoom)
-        t_ur = mercantile.tile(bounds[2], bounds[3], zoom)
+        t_ll = mercantile.tile(bounds[0], bounds[2], zoom)
+        t_ur = mercantile.tile(bounds[1], bounds[3], zoom)
 
         numberOfRows = t_ll.y - t_ur.y + 1
 
         bounds_ll = mercantile.bounds(t_ll)
         bounds_ur = mercantile.bounds(t_ur)
 
-        lat_res = abs(256 / (bounds_ur.north - bounds_ur.south))
-        lng_res = abs(256 / (bounds_ll.east - bounds_ll.west))
+        lat_res = abs(thumbnail_tile_size / (bounds_ur.north - bounds_ur.south))
+        lng_res = abs(thumbnail_tile_size / (bounds_ll.east - bounds_ll.west))
         top = round(abs(bounds_ur.north - bounds[3]) * -lat_res)
         left = round(abs(bounds_ll.west - bounds[0]) * -lng_res)
 
         tmp_tile = mercantile.tile(bounds[0], bounds[3], zoom)
-        width_acc = 256 + int(left)
+        width_acc = thumbnail_tile_size + int(left)
         first_row = [tmp_tile]
         # Add tiles to fill image width
         _n_step = 0
@@ -2164,7 +2238,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
                 lng = -180.0
             tmp_tile = mercantile.tile(lng, bounds[3], zoom)
             first_row.append(tmp_tile)
-            width_acc += 256
+            width_acc += thumbnail_tile_size
             _n_step = _n_step + 1
         # Build Image Request Template
         _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
@@ -2174,20 +2248,22 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
 
         for row in range(0, numberOfRows):
             for col in range(0, len(first_row)):
-                box = [col * 256, row * 256]
+                box = [col * thumbnail_tile_size, row * thumbnail_tile_size]
                 t = first_row[col]
                 y = t.y + row
                 if smurl:
                     imgurl = smurl.format(z=t.z, x=t.x, y=y)
-                    _img_request_template += _img_src_template.format(ogc_location=imgurl,
-                                                                      height=256, width=256,
-                                                                      left=box[0], top=box[1])
+                    _img_request_template += _img_src_template.format(
+                        ogc_location=imgurl,
+                        height=thumbnail_tile_size,
+                        width=thumbnail_tile_size,
+                        left=box[0], top=box[1])
                 xy_bounds = mercantile.xy_bounds(t.x, y, t.z)
                 bbox = ",".join([str(xy_bounds.left), str(xy_bounds.bottom),
                                  str(xy_bounds.right), str(xy_bounds.top)])
                 params = {
-                    'width': 256,
-                    'height': 256,
+                    'width': thumbnail_tile_size,
+                    'height': thumbnail_tile_size,
                     'transparent': True,
                     'bbox': bbox,
                     'crs': 'EPSG:3857',
@@ -2196,7 +2272,8 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
                 _p = "&".join("%s=%s" % item for item in params.items())
                 _img_request_template += \
                     _img_src_template.format(ogc_location=(thumbnail_create_url + '&' + _p),
-                                             height=256, width=256,
+                                             height=thumbnail_tile_size,
+                                             width=thumbnail_tile_size,
                                              left=box[0], top=box[1])
         _img_request_template += "</div></div>"
         image = _render_thumbnail(_img_request_template, width=width, height=height)
@@ -2211,7 +2288,6 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
 def _fixup_ows_url(thumb_spec):
     # @HACK - for whatever reason, a map's maplayers ows_url contains only /geoserver/wms
     # so rendering of thumbnails fails - replace those uri's with full geoserver URL
-    import re
     gspath = '"' + ogc_server_settings.public_url  # this should be in img src attributes
     repl = '"' + ogc_server_settings.LOCATION
     return re.sub(gspath, repl, thumb_spec)
@@ -2232,9 +2308,6 @@ def mosaic_delete_first_granule(cat, layer):
 def set_time_dimension(cat, name, workspace, time_presentation, time_presentation_res, time_presentation_default_value,
                        time_presentation_reference_value):
     # configure the layer time dimension as LIST
-    cat._cache.clear()
-    # cat.reload()
-
     presentation = time_presentation
     if not presentation:
         presentation = "LIST"

@@ -87,7 +87,7 @@ def memcache_lock(lock_id):
     acks_late=True,
     retry=True,
     retry_policy={
-        'max_retries': 10,
+        'max_retries': 3,
         'interval_start': 0,
         'interval_step': 0.2,
         'interval_max': 0.2,
@@ -108,7 +108,7 @@ def send_email(self, *args, **kwargs):
     acks_late=True,
     retry=True,
     retry_policy={
-        'max_retries': 10,
+        'max_retries': 3,
         'interval_start': 0,
         'interval_step': 0.2,
         'interval_max': 0.2,
@@ -120,26 +120,43 @@ def send_queued_notifications(self, *args):
     advantage of this.
 
     """
-    try:
-        from notification.engine import send_all
-    except ImportError:
-        return
+    from importlib import import_module
+    notifications = getattr(settings, 'NOTIFICATIONS_MODULE', None)
 
-    # Make sure application can write to location where lock files are stored
-    if not args and getattr(settings, 'NOTIFICATION_LOCK_LOCATION', None):
-        send_all(settings.NOTIFICATION_LOCK_LOCATION)
-    else:
-        send_all(*args)
+    if notifications:
+        engine = import_module(f"{notifications}.engine")
+        send_all = getattr(engine, 'send_all')
+        # Make sure application can write to location where lock files are stored
+        if not args and getattr(settings, 'NOTIFICATION_LOCK_LOCATION', None):
+            send_all(settings.NOTIFICATION_LOCK_LOCATION)
+        else:
+            send_all(*args)
 
 
-@app.task(bind=True,
-          name='geonode.tasks.layers.set_permissions',
-          queue='default')
+@app.task(
+    bind=True,
+    name='geonode.tasks.layers.set_permissions',
+    queue='update',
+    countdown=60,
+    # expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 3,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
 def set_permissions(self, permissions_names, resources_names,
                     users_usernames, groups_names, delete_flag):
     from geonode.layers.utils import set_layers_permissions
     with transaction.atomic():
         for permissions_name in permissions_names:
             set_layers_permissions(
-                permissions_name, resources_names, users_usernames, groups_names, delete_flag
+                permissions_name,
+                resources_names,
+                users_usernames,
+                groups_names,
+                delete_flag,
+                verbose=True
             )

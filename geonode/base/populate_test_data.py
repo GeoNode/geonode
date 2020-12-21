@@ -17,31 +17,37 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import six
+import logging
+import os.path
 
 from io import BytesIO
-from datetime import datetime
-from datetime import timedelta
-from django.core.serializers import serialize
-from django.contrib.auth import get_user_model
-from django.contrib.gis.geos import Polygon
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.utils import timezone
-from geonode.layers.models import Layer
-from geonode.base.models import TopicCategory
-from geonode.maps.models import Map
-from geonode.documents.models import Document
-from geonode.compat import ensure_string
-from geonode import geoserver, qgis_server  # noqa
+from uuid import uuid4
 from itertools import cycle
 from taggit.models import Tag
 from taggit.models import TaggedItem
-from uuid import uuid4
-import os.path
-import six
+from datetime import datetime, timedelta
+
+from django.db import transaction
+from django.utils import timezone
+from django.contrib.gis.geos import Polygon
+from django.contrib.auth.models import Group
+from django.core.serializers import serialize
+from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
+
+from geonode import geoserver, qgis_server  # noqa
+from geonode.maps.models import Map
+from geonode.layers.models import Layer
+from geonode.compat import ensure_string
+from geonode.base.models import TopicCategory
+from geonode.documents.models import Document
 
 # This is used to populate the database with the search fixture data. This is
 # primarily used as a first step to generate the json data for the fixture using
 # django's dumpdata
+
+logger = logging.getLogger(__name__)
 
 imgfile = BytesIO(
     b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
@@ -140,25 +146,41 @@ def create_fixtures():
 
 
 def create_models(type=None, integration=False):
-    from django.contrib.auth.models import Group
     map_data, user_data, people_data, layer_data, document_data = create_fixtures()
     anonymous_group, created = Group.objects.get_or_create(name='anonymous')
-    u, _ = get_user_model().objects.get_or_create(username='admin', is_superuser=True, first_name='admin')
-    u.set_password('admin')
-    u.save()
-    users = []
+    with transaction.atomic():
+        logger.info("[SetUp] Get or create user admin")
+        u = get_user_model().objects.filter(username='admin').first()
+        if not u:
+            try:
+                u = get_user_model().objects.create(
+                    username='admin',
+                    is_superuser=True,
+                    first_name='admin')
+            except Exception:
+                raise
+        if u:
+            u.set_password('admin')
+            u.save()
 
+    users = []
     for ud, pd in zip(user_data, cycle(people_data)):
         user_name, password, first_name, last_name = ud
-        u, created = get_user_model().objects.get_or_create(username=user_name)
-        if created:
-            u.set_password(password)
-            u.first_name = first_name
-            u.last_name = last_name
-            u.save()
-        u.groups.add(anonymous_group)
-        users.append(u)
+        with transaction.atomic():
+            try:
+                logger.info(f"[SetUp] Get or create user {user_name}")
+                u, created = get_user_model().objects.get_or_create(username=user_name)
+                if created:
+                    u.set_password(password)
+                    u.first_name = first_name
+                    u.last_name = last_name
+                    u.save()
+                u.groups.add(anonymous_group)
+                users.append(u)
+            except Exception:
+                raise
 
+    logger.info(f"[SetUp] Add group {anonymous_group}")
     get_user_model().objects.get(username='AnonymousUser').groups.add(anonymous_group)
 
     obj_ids = []
@@ -167,18 +189,21 @@ def create_models(type=None, integration=False):
         if not type or ensure_string(type) == 'map':
             for md, user in zip(map_data, cycle(users)):
                 title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = md
-                m = Map(title=title,
-                        abstract=abstract,
-                        zoom=4,
-                        projection='EPSG:4326',
-                        center_x=42,
-                        center_y=-73,
-                        owner=user,
-                        bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
-                        srid='EPSG:4326',
-                        category=category,
-                        )
+                logger.info(f"[SetUp] Add map {title}")
+                m = Map(
+                    title=title,
+                    abstract=abstract,
+                    zoom=4,
+                    projection='EPSG:4326',
+                    center_x=42,
+                    center_y=-73,
+                    owner=user,
+                    bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+                    srid='EPSG:4326',
+                    category=category
+                )
                 m.save()
+                m.set_default_permissions()
                 obj_ids.append(m.id)
                 for kw in kws:
                     m.keywords.add(kw)
@@ -187,14 +212,18 @@ def create_models(type=None, integration=False):
         if not type or ensure_string(type) == 'document':
             for dd, user in zip(document_data, cycle(users)):
                 title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = dd
-                m = Document(title=title,
-                             abstract=abstract,
-                             owner=user,
-                             bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
-                             srid='EPSG:4326',
-                             category=category,
-                             doc_file=f)
+                logger.info(f"[SetUp] Add document {title}")
+                m = Document(
+                    title=title,
+                    abstract=abstract,
+                    owner=user,
+                    bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+                    srid='EPSG:4326',
+                    category=category,
+                    doc_file=f
+                )
                 m.save()
+                m.set_default_permissions()
                 obj_ids.append(m.id)
                 for kw in kws:
                     m.keywords.add(kw)
@@ -204,20 +233,24 @@ def create_models(type=None, integration=False):
             for ld, owner, storeType in zip(layer_data, cycle(users), cycle(('coverageStore', 'dataStore'))):
                 title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
                 end = start + timedelta(days=365)
-                layer = Layer(title=title,
-                              abstract=abstract,
-                              name=name,
-                              alternate=alternate,
-                              bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
-                              srid='EPSG:4326',
-                              uuid=str(uuid4()),
-                              owner=owner,
-                              temporal_extent_start=start,
-                              temporal_extent_end=end,
-                              date=start,
-                              storeType=storeType,
-                              category=category)
+                logger.info(f"[SetUp] Add layer {title}")
+                layer = Layer(
+                    title=title,
+                    abstract=abstract,
+                    name=name,
+                    alternate=alternate,
+                    bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+                    srid='EPSG:4326',
+                    uuid=str(uuid4()),
+                    owner=owner,
+                    temporal_extent_start=start,
+                    temporal_extent_end=end,
+                    date=start,
+                    storeType=storeType,
+                    category=category
+                )
                 layer.save()
+                layer.set_default_permissions()
                 obj_ids.append(layer.id)
                 for kw in kws:
                     layer.keywords.add(kw)

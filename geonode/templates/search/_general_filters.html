@@ -67,6 +67,14 @@
                     </a>
                 </li>
                 {% endverbatim %}
+            {% elif facet_type == 'geoapps' %}
+                {% verbatim %}
+                <li ng-repeat="group in groups" ng-if="group.resource_counts.geoapp.total > 0">
+                    <a data-value="{{ group.name }}" data-filter="group__group_profile__slug__in" ng-click="multiple_choice_listener($event)" class="{{group.active}}">{{ group.group_profile.title }}
+                        <span class="badge pull-right">{{ group.resource_counts.geoapp.total }}</span>
+                    </a>
+                </li>
+                {% endverbatim %}
             {% endif %}
         </ul>
     </nav>
@@ -96,6 +104,14 @@
                 <li ng-repeat="groupCategory in groupCategories" ng-if="groupCategory.resource_counts.map.total > 0">
                     <a data-value="{{ groupCategory.slug }}" data-filter="group__group_profile__categories__slug__in" ng-click="multiple_choice_listener($event)" class="{{groupCategory.active}}">{{ groupCategory.name }}
                         <span class="badge pull-right">{{ groupCategory.resource_counts.map.total }}</span>
+                    </a>
+                </li>
+                {% endverbatim %}
+            {% elif facet_type == 'geoapps' %}
+                {% verbatim %}
+                <li ng-repeat="groupCategory in groupCategories" ng-if="groupCategory.resource_counts.geoapp.total > 0">
+                    <a data-value="{{ groupCategory.slug }}" data-filter="group__group_profile__categories__slug__in" ng-click="multiple_choice_listener($event)" class="{{groupCategory.active}}">{{ groupCategory.name }}
+                        <span class="badge pull-right">{{ groupCategory.resource_counts.geoapp.total }}</span>
                     </a>
                 </li>
                 {% endverbatim %}

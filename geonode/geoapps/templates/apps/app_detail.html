@@ -1,0 +1,270 @@
+{% extends "apps/app_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+{% load dialogos_tags %}
+{% load pinax_ratings_tags %}
+{% load bootstrap_tags %}
+{% load pagination_tags %}
+{% load base_tags %}
+{% load guardian_tags %}
+{% load client_lib_tags %}
+
+{% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
+
+{% block head %}
+  {% if TWITTER_CARD %}
+    {% include "base/_resourcebase_twittercard.html" %}
+  {% endif %}
+  {% if OPENGRAPH_ENABLED %}
+    {% include "base/_resourcebase_opengraph.html" %}
+  {% endif %}
+
+  {{ block.super }}
+{% endblock %}
+
+{% block body_class %}{% blocktrans %}{{ resource.type }}{% endblocktrans %}{% endblock %}
+
+{% block body_outer %}
+  {% overall_rating resource "geoapp" as map_rating %}
+
+<div class="page-header">
+    <style>
+    #paneltbar {
+      margin-top: 1px !important;
+    }
+    </style>
+
+  <h2 class="page-title">{{ resource.title }}</h2>
+</div>
+
+  <div class="row">
+    <div class="col-md-8">
+
+      <div id="embedded_map">
+          <img src="{{ resource.curatedthumbnail.thumbnail_url|default:resource.thumbnail_url }}" width='500' class="img-responsive" />
+      </div>
+
+      <div class="map-actions">
+        {% include "_actions.html" %}
+      </div>
+
+      <div class="tab-content">
+        <article id="info" class="tab-pane{% if tab == 'info' or not tab %} active{% endif %}">
+          {% include "base/resourcebase_info_panel.html" %}
+        </article>
+        {% block social_links %}
+            {% if DISPLAY_SOCIAL %}
+              {% include "social_links.html" %}
+            {% endif %}
+        {% endblock %}
+
+        {% if DISPLAY_COMMENTS %}
+        <article class="tab-pane" id="comments">
+        {% include "_comments.html" %}
+        </article>
+        {% endif %}
+
+        {% if DISPLAY_RATINGS %}
+        <article class="tab-pane" id="rate">
+        <!-- TODO: Move this to a reusable template snippet -->
+          {% if request.user.is_authenticated %}
+          <h3>{% trans "Rate this" %} {{ resource.type }}</h3>
+          {% user_rating request.user resource "map" as user_map_rating %}
+          <div id="user_rating" class="category-map" data-score="{{ user_map_rating }}"></div>
+          {% endif %}
+          <h3>{% trans 'Average Rating' %}</h3>
+          {% overall_rating resource "map" as map_rating %}
+          {% num_ratings resource as num_votes %}
+          <div class="overall_rating" style="float:left" data-score="{{ map_rating }}"></div> ({{num_votes}})
+        </article>
+        {% endif %}
+
+      </div>
+
+    </div>
+
+    <div class="col-md-4">
+      <ul class="list-group">
+
+        <li class="list-group-item">
+           <a href="{% url "geoapp_metadata_detail" resource.id %}">
+               <button class="btn btn-primary btn-md btn-block" >{% trans "Metadata Detail" %}</button>
+           </a>
+        </li>
+
+        {% if not READ_ONLY_MODE %}
+          {% if "change_resourcebase" in perms_list  or "change_resourcebase_metadata" in perms_list %}
+          <li class="list-group-item">
+            <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#edit-map">{% trans "Editing Tools" %}</button>
+          </li>
+          <div class="modal fade" id="edit-map" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title" id="myModalLabel">{% trans "Editing Tools" %}</h4>
+                </div>
+                <div class="modal-body">
+                  <div class="row edit-modal">
+                    {% if "change_resourcebase_metadata" in perms_list %}
+                    <div class="col-sm-3">
+                      <i class="fa fa-list-alt fa-3x"></i>
+                      <h4>{% trans "Metadata" %}</h4>
+                      <a class="btn btn-default btn-block btn-xs" href="{% url "geoapp_metadata" resource.id %}">{% trans "Wizard" %}</a>
+                      <a class="btn btn-default btn-block btn-xs" href="{% url "geoapp_metadata_advanced" resource.id %}">{% trans "Advanced Edit" %}</a>
+                    </div>
+                    {% endif %}
+                    {% if "change_resourcebase" in perms_list %}
+                    <div class="col-sm-3">
+                      <i class="fa fa-photo fa-3x"></i>
+                      <h4>{% trans "Thumbnail" %}</h4>
+                      <a class="btn btn-default btn-block btn-xs" href="{% url "thumbnail_upload" resource.resourcebase_ptr.id %}">{% trans "Set" %}</a>
+                    </div>
+                    {% endif %}
+                    {% if "change_resourcebase" in perms_list %}
+                    <div class="col-sm-3">
+                      <i class="fa fa-map-marker fa-3x"></i>
+                      <h4>{{ resource.type }}</h4>
+                      <a class="btn btn-default btn-block btn-xs" href="{% url "geoapp_edit" resource.id %}">{% trans "Edit" %}</a>
+                      <a class="btn btn-danger btn-block btn-xs" href="{% url "geoapp_remove" resource.id %}">{% trans "Remove" %}</a>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        {% endif %}
+        {% display_edit_request_button resource request.user perms_list as display_request_button %}
+        {% if display_request_button %}
+            <li class="list-group-item">
+                <a href="{% url "owner_rights_request" resource.id %}">
+                    <button class="btn btn-primary btn-md btn-block">{% trans "Request change" %}</button>
+                </a>
+            </li>
+        {% endif %}
+        <li class="list-group-item">
+        {% if "change_resourcebase" not in perms_list and "change_resourcebase_metadata" not in perms_list %}
+          <a href="{% url "geoapp_view" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View" %} {{ resource.type }}</a>
+        {% else %}
+          <a href="{% url "geoapp_edit" resource.id %}" class="btn btn-default btn-md btn-block">{% trans "View" %} {{ resource.type }}</a>
+        {% endif %}
+        </li>
+
+        {% if GEONODE_SECURITY_ENABLED %}
+          {% if "change_resourcebase_permissions" in perms_list %}
+            {% if not READ_ONLY_MODE %}
+              <li class="list-group-item">
+                <h4>{% trans "Permissions" %}</h4>
+                <p>{% trans "Specify which users can view or modify this map" %}</p>
+                <button class="btn btn-primary btn-md btn-block" data-toggle="modal" data-target="#_permissions">{% trans "Change Permissions of this" %} {{ resource.type }}</button>
+              </li>
+            {% endif %}
+          {% include "_permissions_form.html" %}
+          {% endif %}
+        {% endif %}
+
+        {% include "base/_resourcebase_contact_snippet.html" %}
+
+      </ul>
+
+    </div>
+
+  </div>
+
+    <div class="modal fade" id="embed-iframe" tabindex="-1" role="dialog" aria-labelledby="Embed Iframe"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">{% trans "Embed Iframe" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{% trans "To embed this map, add the following code snippet and customize its properties (scrolling, width, height) based on your needs to your site" %}:</p>
+                    <p style="font-weight: bold">
+                        &lt;iframe scrolling="yes" src="{{ SITEURL|slice:":-1" }}{% url "map_embed" resource.id %}"
+                        width="480px" height="360px"&gt;&lt;/iframe&gt;
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+  {% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+    {% if DISPLAY_SOCIAL %}
+        {% include 'facebook_sdk.html' %}
+    {% endif %}
+    {% if request.user.is_authenticated %}
+          {% user_rating_js request.user resource "map" %}
+    {% else %}
+          {% overall_rating resource "map" as the_map_rating %}
+    {% endif %}
+    {% include 'rating.html' %}
+    <script type="text/javascript">
+     $(function() {
+      {% verbatim %}
+      // Publish layer group
+      // TODO: this should really not be inside a script tag...
+      var $wmsBtn = $("#layer-group"),
+          layerGroupElTpl;
+
+      if ($wmsBtn.length > 0) {
+
+        $wmsBtn.on("click", function(event) {
+          event.preventDefault();
+
+          $.ajax({
+            type: "PUT",
+            url: $wmsBtn.attr("href")
+          })
+            .done(function(data) {
+              layerGroupElTpl = "<dt>WMS layer group for local map layers:</dt> \
+                <dd><em>{{layerGroupName}}</em> (on <a href='{{ows}}?service=WMS&request=GetCapabilities'>local OWS</a>)</dd>";
+              $.each(data, function(key, value) {
+                // client-side template hack
+                layerGroupElTpl = layerGroupElTpl.replace("{{"+ key + "}}", value);
+              });
+            })
+            .fail(function(){
+              layerGroupElTpl = "<dt>Error:</dt> \
+                <dd>Layer group could not be created.</dd>";
+            })
+            .always(function(){
+              $("#layer-group-dl").html(layerGroupElTpl);
+            });
+
+        });
+      };
+      {% endverbatim %}
+     });
+      $("#comment_submit_btn").click(function(event) {
+        $.ajax({
+          type: "POST",
+          url: $("#form_post_comment").attr('action'),
+          data: $("#form_post_comment").serialize(),
+          success: function() {
+            $('#form_post_comment_div').modal().find('form')[0].reset();
+            $('#form_post_comment_div').modal('hide');
+            $('#comments_section').load(window.location.pathname + ' #comments_section',
+            		function(){$(this).children().unwrap()})
+          }
+        });
+        return false;
+      });
+    </script>
+
+    {% if GEONODE_SECURITY_ENABLED %}
+    {% include "_permissions_form_js.html" %}
+    {% endif %}
+
+{% endblock extra_script %}

@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import six
 import errno
 import logging
 
@@ -42,81 +42,74 @@ def catalogue_pre_delete(instance, sender, **kwargs):
 
 def catalogue_post_save(instance, sender, **kwargs):
     """Get information from catalogue"""
-
-    # if layer is not to be published, temporarily
-    # change publish state to be able to update
-    # properties (#2332)
-    is_published = instance.is_published
     resources = ResourceBase.objects.filter(id=instance.resourcebase_ptr.id)
-
-    # Trmporarly enable the Resources
-    if not is_published:
-        resources.update(is_published=True)
 
     # Update the Catalog
     try:
-        try:
-            catalogue = get_catalogue()
-            catalogue.create_record(instance)
-            record = catalogue.get_record(instance.uuid)
-        except EnvironmentError as err:
-            msg = 'Could not connect to catalogue to save information for layer "%s"' % instance.name
-            if err.reason.errno == errno.ECONNREFUSED:
-                LOGGER.warn(msg, err)
-                return
-            else:
-                raise err
-
-        if not record:
-            msg = ('Metadata record for %s does not exist,'
-                   ' check the catalogue signals.' % instance.title)
-            raise Exception(msg)
-
-        if not hasattr(record, 'links'):
-            msg = ('Metadata record for %s should contain links.' % instance.title)
-            raise Exception(msg)
-
-        # Create the different metadata links with the available formats
-        for mime, name, metadata_url in record.links['metadata']:
-            try:
-                Link.objects.get_or_create(resource=instance.resourcebase_ptr,
-                                           url=metadata_url,
-                                           defaults=dict(name=name,
-                                                         extension='xml',
-                                                         mime=mime,
-                                                         link_type='metadata')
-                                           )
-            except Exception:
-                _d = dict(name=name,
-                          extension='xml',
-                          mime=mime,
-                          link_type='metadata')
-                Link.objects.filter(resource=instance.resourcebase_ptr,
-                                    url=metadata_url,
-                                    extension='xml',
-                                    link_type='metadata').update(**_d)
-
-        # generate an XML document (GeoNode's default is ISO)
-        if instance.metadata_uploaded and instance.metadata_uploaded_preserve:
-            md_doc = etree.tostring(dlxml.fromstring(instance.metadata_xml))
+        catalogue = get_catalogue()
+        catalogue.create_record(instance)
+        record = catalogue.get_record(instance.uuid)
+    except EnvironmentError as err:
+        msg = 'Could not connect to catalogue to save information for layer "%s"' % instance.name
+        if err.errno == errno.ECONNREFUSED:
+            LOGGER.warn(msg, err)
+            return
         else:
-            md_doc = catalogue.catalogue.csw_gen_xml(instance, 'catalogue/full_metadata.xml')
+            raise err
 
+    if not record:
+        msg = ('Metadata record for %s does not exist,'
+               ' check the catalogue signals.' % instance.title)
+        LOGGER.exception(msg)
+        return
+
+    if not hasattr(record, 'links'):
+        msg = ('Metadata record for %s should contain links.' % instance.title)
+        raise Exception(msg)
+
+    # Create the different metadata links with the available formats
+    for mime, name, metadata_url in record.links['metadata']:
+        try:
+            Link.objects.get_or_create(
+                resource=instance.resourcebase_ptr,
+                url=metadata_url,
+                defaults=dict(
+                    name=name,
+                    extension='xml',
+                    mime=mime,
+                    link_type='metadata'
+                )
+            )
+        except Exception:
+            _d = dict(name=name,
+                      extension='xml',
+                      mime=mime,
+                      link_type='metadata')
+            Link.objects.filter(
+                resource=instance.resourcebase_ptr,
+                url=metadata_url,
+                extension='xml',
+                link_type='metadata').update(**_d)
+
+    # generate an XML document (GeoNode's default is ISO)
+    if instance.metadata_uploaded and instance.metadata_uploaded_preserve:
+        md_doc = etree.tostring(dlxml.fromstring(instance.metadata_xml))
+    else:
+        md_doc = catalogue.catalogue.csw_gen_xml(instance, 'catalogue/full_metadata.xml')
+    try:
         csw_anytext = catalogue.catalogue.csw_gen_anytext(md_doc)
-
-        csw_wkt_geometry = instance.geographic_bounding_box.split(';')[-1]
-
-        resources = ResourceBase.objects.filter(id=instance.resourcebase_ptr.id)
-
-        resources.update(metadata_xml=md_doc)
-        resources.update(csw_wkt_geometry=csw_wkt_geometry)
-        resources.update(csw_anytext=csw_anytext)
     except Exception as e:
-        LOGGER.debug(e)
-    finally:
-        # Revert temporarily changed publishing state
-        if not is_published:
-            resources.update(is_published=is_published)
+        LOGGER.exception(e)
+        csw_anytext = ''
+    if isinstance(instance.geographic_bounding_box, six.string_types):
+        csw_wkt_geometry = instance.geographic_bounding_box.split(';')[-1]
+    elif isinstance(instance.geographic_bounding_box, list):
+        csw_wkt_geometry = instance.geographic_bounding_box
+
+    resources.update(
+        metadata_xml=md_doc,
+        csw_wkt_geometry=csw_wkt_geometry,
+        csw_anytext=csw_anytext)
 
 
 if 'geonode.catalogue' in settings.INSTALLED_APPS:

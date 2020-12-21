@@ -292,9 +292,10 @@ def purge_geofence_layer_rules(resource):
             # Delete GeoFence Rules associated to the Layer
             # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
             for i, r_id in enumerate(r_ids):
-                r = requests.delete(url + 'rest/geofence/rules/id/' + str(r_id),
-                                    headers=headers,
-                                    auth=HTTPBasicAuth(user, passwd))
+                r = requests.delete(
+                    url + 'rest/geofence/rules/id/' + str(r_id),
+                    headers=headers,
+                    auth=HTTPBasicAuth(user, passwd))
                 if (r.status_code < 200 or r.status_code > 201):
                     msg = "Could not DELETE GeoServer Rule for Layer "
                     msg = msg + str(resource.layer.name)
@@ -532,7 +533,7 @@ def set_geofence_all(instance):
 
 
 @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-def sync_geofence_with_guardian(layer, perms, user=None, group=None):
+def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms=None):
     """
     Sync Guardian permissions to GeoFence.
     """
@@ -540,8 +541,6 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
     _layer_workspace = get_layer_workspace(layer)
     # Create new rule-set
     gf_services = {}
-    gf_services["*"] = 'download_resourcebase' in perms and \
-        ('view_resourcebase' in perms or 'change_layer_style' in perms)
     gf_services["WMS"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
     gf_services["GWC"] = 'view_resourcebase' in perms or 'change_layer_style' in perms
     gf_services["WFS"] = ('download_resourcebase' in perms or 'change_layer_data' in perms) \
@@ -549,7 +548,26 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
     gf_services["WCS"] = ('download_resourcebase' in perms or 'change_layer_data' in perms) \
         and not layer.is_vector()
     gf_services["WPS"] = 'download_resourcebase' in perms or 'change_layer_data' in perms
+    gf_services["*"] = 'download_resourcebase' in perms and \
+        ('view_resourcebase' in perms or 'change_layer_style' in perms)
 
+    gf_requests = {}
+    if 'change_layer_data' not in perms:
+        _skip_perm = False
+        if user and group_perms:
+            if isinstance(user, string_types):
+                user = get_user_model().objects.get(username=user)
+            user_groups = list(user.groups.all().values_list('name', flat=True))
+            for _group, _perm in group_perms.items():
+                if 'change_layer_data' in _perm and _group in user_groups:
+                    _skip_perm = True
+                    break
+        if not _skip_perm:
+            gf_requests["WFS"] = {
+                "TRANSACTION": False,
+                "LOCKFEATURE": False,
+                "GETFEATUREWITHLOCK": False
+            }
     _user = None
     _group = None
     _disable_layer_cache = False
@@ -579,6 +597,11 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
         # delete_layer_cache('{}:{}'.format(_layer_workspace, _layer_name))
         filters = None
         formats = None
+        # Re-order dictionary
+        # - if geo-limits have been defined for this user/group, the "*" rule must be the first one
+        gf_services_limits_first = {"*": gf_services.pop('*')}
+        gf_services_limits_first.update(gf_services)
+        gf_services = gf_services_limits_first
     else:
         filters = [{
             "styleParameterFilter": {
@@ -602,19 +625,39 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None):
                 _wkt = None
                 if users_geolimits and users_geolimits.count():
                     _wkt = users_geolimits.last().wkt
+                if service in gf_requests:
+                    for request, enabled in gf_requests[service].items():
+                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                                              service, request=request, user=_user, allow=enabled)
                 _update_geofence_rule(layer, _layer_name, _layer_workspace, service, user=_user, geo_limit=_wkt)
             elif not _group:
                 logger.debug("Adding to geofence the rule: %s %s *" % (layer, service))
                 _wkt = None
                 if anonymous_geolimits and anonymous_geolimits.count():
                     _wkt = anonymous_geolimits.last().wkt
+                if service in gf_requests:
+                    for request, enabled in gf_requests[service].items():
+                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                                              service, request=request, user=_user, allow=enabled)
                 _update_geofence_rule(layer, _layer_name, _layer_workspace, service, geo_limit=_wkt)
+                if service in gf_requests:
+                    for request, enabled in gf_requests[service].items():
+                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                                              service, request=request, user=_user, allow=enabled)
             if _group:
                 logger.debug("Adding 'group' to geofence the rule: %s %s %s" % (layer, service, _group))
                 _wkt = None
                 if groups_geolimits and groups_geolimits.count():
                     _wkt = groups_geolimits.last().wkt
+                if service in gf_requests:
+                    for request, enabled in gf_requests[service].items():
+                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                                              service, request=request, group=_group, allow=enabled)
                 _update_geofence_rule(layer, _layer_name, _layer_workspace, service, group=_group, geo_limit=_wkt)
+                if service in gf_requests:
+                    for request, enabled in gf_requests[service].items():
+                        _update_geofence_rule(layer, _layer_name, _layer_workspace,
+                                              service, request=request, group=_group, allow=enabled)
     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
         set_geofence_invalidate_cache()
     else:
@@ -682,7 +725,7 @@ def remove_object_permissions(instance):
 
 
 def _get_geofence_payload(layer, layer_name, workspace, access, user=None, group=None,
-                          service=None, geo_limit=None):
+                          service=None, request=None, geo_limit=None):
     highest_priority = get_highest_priority()
     root_el = etree.Element("Rule")
     username_el = etree.SubElement(root_el, "userName")
@@ -702,6 +745,9 @@ def _get_geofence_payload(layer, layer_name, workspace, access, user=None, group
     if service is not None and service != "*":
         service_el = etree.SubElement(root_el, "service")
         service_el.text = service
+    if request is not None and request != "*":
+        service_el = etree.SubElement(root_el, "request")
+        service_el.text = request
     if service and service == "*" and geo_limit is not None and geo_limit != "":
         access_el = etree.SubElement(root_el, "access")
         access_el.text = "LIMIT"
@@ -716,15 +762,19 @@ def _get_geofence_payload(layer, layer_name, workspace, access, user=None, group
     return etree.tostring(root_el)
 
 
-def _update_geofence_rule(layer, layer_name, workspace, service, user=None, group=None, geo_limit=None):
+def _update_geofence_rule(layer, layer_name, workspace,
+                          service, request=None,
+                          user=None, group=None,
+                          geo_limit=None, allow=True):
     payload = _get_geofence_payload(
         layer=layer,
         layer_name=layer_name,
         workspace=workspace,
-        access="ALLOW",
+        access="ALLOW" if allow else "DENY",
         user=user,
         group=group,
         service=service,
+        request=request,
         geo_limit=geo_limit
     )
     logger.debug("request data: {}".format(payload))

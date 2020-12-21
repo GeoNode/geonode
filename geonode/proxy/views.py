@@ -183,12 +183,13 @@ def proxy(request, url=None, response_callback=None,
             '%s%s' % (settings.SITEURL, 'geoserver'),
             ogc_server_settings.LOCATION.rstrip('/'))
 
-    response, content = http_client.request(_url,
-                                            method=request.method,
-                                            data=_data,
-                                            headers=headers,
-                                            timeout=timeout,
-                                            user=request.user)
+    response, content = http_client.request(
+        _url,
+        method=request.method,
+        data=_data,
+        headers=headers,
+        timeout=timeout,
+        user=request.user)
     content = response.content or response.reason
     status = response.status_code
     content_type = response.headers.get('Content-Type')
@@ -291,7 +292,6 @@ def download(request, resourceid, sender=Layer):
                     for lyr in layer_files:
                         if storage.exists(str(lyr.file)):
                             geonode_layer_path = storage.path(str(lyr.file))
-                            base_filename, original_ext = os.path.splitext(geonode_layer_path)
                             shutil.copy2(geonode_layer_path, target_folder)
                         else:
                             return HttpResponse(

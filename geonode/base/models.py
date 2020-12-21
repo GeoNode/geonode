@@ -45,6 +45,10 @@ from django.core.files.storage import default_storage as storage
 
 from mptt.models import MPTTModel, TreeForeignKey
 
+from PIL import Image
+from io import BytesIO
+from resizeimage import resizeimage
+
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
@@ -692,7 +696,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         help_text=restriction_code_type_help_text,
         null=True,
         blank=True,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         limit_choices_to=Q(is_choice=True))
     constraints_other = models.TextField(
         _('restrictions other'),
@@ -705,7 +709,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         verbose_name=_("License"),
         help_text=license_help_text,
-        on_delete=models.CASCADE)
+        on_delete=models.SET_NULL)
     language = models.CharField(
         _('language'),
         max_length=3,
@@ -716,14 +720,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         TopicCategory,
         null=True,
         blank=True,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         limit_choices_to=Q(is_choice=True),
         help_text=category_help_text)
     spatial_representation_type = models.ForeignKey(
         SpatialRepresentationType,
         null=True,
         blank=True,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         limit_choices_to=Q(is_choice=True),
         verbose_name=_("spatial representation type"),
         help_text=spatial_representation_type_help_text)
@@ -752,7 +756,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         null=True,
         help_text=data_quality_statement_help_text)
-    group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
+    group = models.ForeignKey(
+        Group,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL)
 
     # Section 9
     # see metadata_author property definition below
@@ -843,6 +851,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         null=True,
         blank=True)
 
+    resource_type = models.CharField(
+        _('Resource Type'),
+        max_length=1024,
+        blank=True,
+        null=True)
+
     __is_approved = False
     __is_published = False
 
@@ -869,51 +883,80 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def __str__(self):
         return "{0}".format(self.title)
 
+    def _remove_html_tags(self, attribute_str):
+        try:
+            pattern = re.compile('<.*?>')
+            return re.sub(pattern, '', attribute_str)
+        except Exception:
+            return attribute_str
+
+    @property
+    def raw_abstract(self):
+        return self._remove_html_tags(self.abstract)
+
+    @property
+    def raw_purpose(self):
+        return self._remove_html_tags(self.purpose)
+
+    @property
+    def raw_constraints_other(self):
+        return self._remove_html_tags(self.constraints_other)
+
+    @property
+    def raw_supplemental_information(self):
+        return self._remove_html_tags(self.supplemental_information)
+
+    @property
+    def raw_data_quality_statement(self):
+        return self._remove_html_tags(self.data_quality_statement)
+
     def save(self, notify=False, *args, **kwargs):
         """
         Send a notification when a resource is created or updated
         """
-        if hasattr(self, 'class_name') and (self.pk is None or notify):
-            if self.pk is None:
-                # Resource Created
-                notice_type_label = '%s_created' % self.class_name.lower()
-                recipients = get_notification_recipients(notice_type_label)
-                send_notification(recipients, notice_type_label, {'resource': self})
+        if not self.resource_type and self.polymorphic_ctype and \
+        self.polymorphic_ctype.model:
+            self.resource_type = self.polymorphic_ctype.model.lower()
 
-            else:
+        if hasattr(self, 'class_name') and (self.pk is None or notify):
+            if self.pk is None and self.title:
+                # Resource Created
+
+                notice_type_label = '%s_created' % self.class_name.lower()
+                recipients = get_notification_recipients(notice_type_label, resource=self)
+                send_notification(recipients, notice_type_label, {'resource': self})
+            elif self.pk:
                 # Resource Updated
                 _notification_sent = False
 
                 # Approval Notifications Here
-                if settings.ADMIN_MODERATE_UPLOADS:
-                    if self.is_approved and not self.is_published and \
-                    self.__is_approved != self.is_approved:
+                if not _notification_sent and settings.ADMIN_MODERATE_UPLOADS:
+                    if not self.__is_approved and self.is_approved:
                         # Set "approved" workflow permissions
                         self.set_workflow_perms(approved=True)
 
                         # Send "approved" notification
                         notice_type_label = '%s_approved' % self.class_name.lower()
-                        recipients = get_notification_recipients(notice_type_label)
+                        recipients = get_notification_recipients(notice_type_label, resource=self)
                         send_notification(recipients, notice_type_label, {'resource': self})
                         _notification_sent = True
 
                 # Publishing Notifications Here
                 if not _notification_sent and settings.RESOURCE_PUBLISHING:
-                    if self.is_approved and self.is_published and \
-                    self.__is_published != self.is_published:
+                    if not self.__is_published and self.is_published:
                         # Set "published" workflow permissions
                         self.set_workflow_perms(published=True)
 
                         # Send "published" notification
                         notice_type_label = '%s_published' % self.class_name.lower()
-                        recipients = get_notification_recipients(notice_type_label)
+                        recipients = get_notification_recipients(notice_type_label, resource=self)
                         send_notification(recipients, notice_type_label, {'resource': self})
                         _notification_sent = True
 
                 # Updated Notifications Here
                 if not _notification_sent:
                     notice_type_label = '%s_updated' % self.class_name.lower()
-                    recipients = get_notification_recipients(notice_type_label)
+                    recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
 
         super(ResourceBase, self).save(*args, **kwargs)
@@ -926,7 +969,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         if hasattr(self, 'class_name') and notify:
             notice_type_label = '%s_deleted' % self.class_name.lower()
-            recipients = get_notification_recipients(notice_type_label)
+            recipients = get_notification_recipients(notice_type_label, resource=self)
             send_notification(recipients, notice_type_label, {'resource': self})
 
         super(ResourceBase, self).delete(*args, **kwargs)
@@ -1129,6 +1172,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                         continue
                 filled_fields.append(field)
         return '{}%'.format(len(filled_fields) * 100 / len(required_fields))
+
+    @property
+    def instance_is_processed(self):
+        try:
+            if hasattr(self.get_real_instance(), "processed"):
+                return self.get_real_instance().processed
+            return False
+        except Exception:
+            return False
 
     def keyword_list(self):
         return [kw.name for kw in self.keywords.all()]
@@ -1401,8 +1453,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         try:
             # Check that the image is valid
-            from PIL import Image
-            from io import BytesIO
             content_data = BytesIO(image)
             im = Image.open(content_data)
             im.verify()  # verify that it is, in fact an image
@@ -1428,8 +1478,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
                 try:
                     # Optimize the Thumbnail size and resolution
-                    from PIL import Image
-                    from resizeimage import resizeimage
                     _default_thumb_size = getattr(
                         settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
                     im = Image.open(open(storage.path(_upload_path), mode='rb'))
@@ -1764,9 +1812,10 @@ class CuratedThumbnail(models.Model):
             _upload_path = os.path.join(os.path.dirname(upload_path), actual_name)
             if not os.path.exists(_upload_path):
                 os.rename(upload_path, _upload_path)
+            return self.img_thumbnail.url
         except Exception as e:
             logger.exception(e)
-        return self.img_thumbnail.url
+        return ''
 
 
 class Configuration(SingletonModel):

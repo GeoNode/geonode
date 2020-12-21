@@ -279,7 +279,7 @@ def srs_step_view(request, upload_session):
             upload_session.completed_step = 'srs'
             return next_step_response(request, upload_session)
     elif request.method != 'POST':
-        raise Exception()
+        raise Exception("405 Method Not Allowed")
 
     source = request.POST.get('source', '')
     target = request.POST.get('target', '')
@@ -587,9 +587,7 @@ def final_step_view(req, upload_session):
                         'success': True
                     }
                 )
-
                 register_event(req, EventType.EVENT_UPLOAD, saved_layer)
-
                 return _json_response
             except LayerNotReady:
                 force_ajax = '&force_ajax=true' if 'force_ajax' in req.GET and req.GET['force_ajax'] == 'true' else ''

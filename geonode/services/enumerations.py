@@ -55,6 +55,7 @@ SERVICE_TYPES = (
 )
 
 GXP_PTYPES = {
+    'AUTO': 'gxp_wmscsource',
     'OWS': 'gxp_wmscsource',
     'WMS': 'gxp_wmscsource',
     'WFS': 'gxp_wmscsource',

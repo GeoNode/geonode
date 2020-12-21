@@ -67,9 +67,9 @@ class MonitoringMiddleware(MiddlewareMixin):
         if host:
             try:
                 service = Service.objects.get(host=host, name=sname)
-                return service
             except Service.DoesNotExist:
                 service = None
+            return service
 
     @staticmethod
     def should_process(request):

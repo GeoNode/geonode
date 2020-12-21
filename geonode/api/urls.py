@@ -17,8 +17,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 from tastypie.api import Api
+from dynamic_rest import routers
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView
+)
+
+from django.urls import path
 
 from . import api as resources
 from . import resourcebase_api as resourcebase_resources
@@ -39,4 +46,13 @@ api.register(resourcebase_resources.DocumentResource())
 api.register(resourcebase_resources.FeaturedResourceBaseResource())
 api.register(resourcebase_resources.LayerResource())
 api.register(resourcebase_resources.MapResource())
+api.register(resourcebase_resources.GeoAppResource())
 api.register(resourcebase_resources.ResourceBaseResource())
+
+router = routers.DynamicRouter()
+
+urlpatterns = [
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+]
