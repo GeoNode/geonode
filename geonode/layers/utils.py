@@ -1308,10 +1308,12 @@ def set_layers_permissions(permissions_name, resources_names=None,
                             # Existing permissions on the resource
                             perm_spec = resource.get_all_level_info()
                             if verbose:
-                                print(
-                                    "Initial permissions info for the resource %s:" % resource.title
+                                logger.info(
+                                    f"Initial permissions info for the resource {resource.title}: {perm_spec}"
                                 )
-                                print(perm_spec)
+                                print(
+                                    f"Initial permissions info for the resource {resource.title}: {perm_spec}"
+                                )
                             for u in users:
                                 _user = u
                                 # Add permissions
@@ -1392,9 +1394,12 @@ def set_layers_permissions(permissions_name, resources_names=None,
                             # Set final permissions
                             resource.set_permissions(perm_spec)
                             if verbose:
-                                print(
-                                    "Final permissions info for the resource %s:" % resource.title
+                                logger.info(
+                                    f"Final permissions info for the resource {resource.title}: {perm_spec}"
                                 )
-                                print(perm_spec)
+                                print(
+                                    f"Final permissions info for the resource {resource.title}: {perm_spec}"
+                                )
                         if verbose:
+                            logger.info("Permissions successfully updated!")
                             print("Permissions successfully updated!")

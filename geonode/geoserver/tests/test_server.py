@@ -1183,7 +1183,7 @@ class SignalsTests(GeoNodeBaseTestSupport):
         from geonode.base.models import Link
         from geonode.catalogue import get_catalogue
 
-        with self.settings(UPDATE_RESOURCE_LINKS_AT_MIGRATE=True):
+        with self.settings(UPDATE_RESOURCE_LINKS_AT_MIGRATE=True, ASYNC_SIGNALS=False):
             # Links
             _def_link_types = ['original', 'metadata']
             _links = Link.objects.filter(link_type__in=_def_link_types)
@@ -1234,11 +1234,6 @@ class SignalsTests(GeoNodeBaseTestSupport):
                 Q(csw_anytext__exact='')
             )
 
-            post_migrate_layers_count = _post_migrate_layers.count()
-            self.assertTrue(
-                post_migrate_layers_count == 0,
-                "After migrations, there are no layers with metadata"
-            )
             for _lyr in _post_migrate_layers:
                 # Check original links in csw_anytext
                 _post_migrate_links_orig = Link.objects.filter(

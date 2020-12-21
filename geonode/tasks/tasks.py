@@ -133,14 +133,30 @@ def send_queued_notifications(self, *args):
             send_all(*args)
 
 
-@app.task(bind=True,
-          name='geonode.tasks.layers.set_permissions',
-          queue='default')
+@app.task(
+    bind=True,
+    name='geonode.tasks.layers.set_permissions',
+    queue='update',
+    countdown=60,
+    # expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 3,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
 def set_permissions(self, permissions_names, resources_names,
                     users_usernames, groups_names, delete_flag):
     from geonode.layers.utils import set_layers_permissions
     with transaction.atomic():
         for permissions_name in permissions_names:
             set_layers_permissions(
-                permissions_name, resources_names, users_usernames, groups_names, delete_flag
+                permissions_name,
+                resources_names,
+                users_usernames,
+                groups_names,
+                delete_flag,
+                verbose=True
             )
