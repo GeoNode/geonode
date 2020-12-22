@@ -17,11 +17,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import celery
+from celery.utils.log import get_task_logger
+
 from django.conf import settings
-from django.db import transaction
 from django.core.mail import send_mail
 
-from celery.utils.log import get_task_logger
+from django.db import (
+    connection,
+    transaction)
 
 from geonode.celery_app import app
 
@@ -76,6 +80,17 @@ def memcache_lock(lock_id):
     logger.info(f"Using '{lock_type}' lock type.")
     lock = Lock(lock_id, client=memcache_client)
     return lock
+
+
+class FaultTolerantTask(celery.Task):
+    """ Implements after return hook to close the invalid connection.
+    This way, django is forced to serve a new connection for the next
+    task.
+    """
+    abstract = True
+
+    def after_return(self, *args, **kwargs):
+        connection.close()
 
 
 @app.task(
@@ -135,6 +150,7 @@ def send_queued_notifications(self, *args):
 
 @app.task(
     bind=True,
+    base=FaultTolerantTask,
     name='geonode.tasks.layers.set_permissions',
     queue='update',
     countdown=60,

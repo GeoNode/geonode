@@ -31,6 +31,7 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from celery.utils.log import get_task_logger
 
 from geonode.celery_app import app
+from geonode.tasks import FaultTolerantTask
 from geonode import GeoNodeException
 from geonode.upload import signals
 from geonode.layers.models import (
@@ -65,6 +66,7 @@ logger = get_task_logger(__name__)
 
 @app.task(
     bind=True,
+    base=FaultTolerantTask,
     name='geonode.geoserver.tasks.geoserver_update_layers',
     queue='update',
     countdown=60,
@@ -86,6 +88,7 @@ def geoserver_update_layers(self, *args, **kwargs):
 
 @app.task(
     bind=True,
+    base=FaultTolerantTask,
     name='geonode.geoserver.tasks.geoserver_set_style',
     queue='update',
     countdown=60,
@@ -122,6 +125,7 @@ def geoserver_set_style(
 
 @app.task(
     bind=True,
+    base=FaultTolerantTask,
     name='geonode.geoserver.tasks.geoserver_create_style',
     queue='update',
     countdown=60,
@@ -219,6 +223,7 @@ def geoserver_create_style(
 
 @app.task(
     bind=True,
+    base=FaultTolerantTask,
     name='geonode.geoserver.tasks.geoserver_finalize_upload',
     queue='update',
     countdown=60,
@@ -413,6 +418,7 @@ def geoserver_finalize_upload(
 
 @app.task(
     bind=True,
+    base=FaultTolerantTask,
     name='geonode.geoserver.tasks.geoserver_post_save_layers',
     queue='update',
     countdown=60,
@@ -672,6 +678,7 @@ def geoserver_post_save_layers(
 
 @app.task(
     bind=True,
+    base=FaultTolerantTask,
     name='geonode.geoserver.tasks.geoserver_cascading_delete',
     queue='cleanup',
     countdown=60,
