@@ -262,6 +262,15 @@
 
     createEditor('{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/config/diagrameditor.xml');
 
+    var menu1Tab = document.getElementById('mapid');
+    var observer2 = new MutationObserver(function () {
+      if (menu1Tab.style.display != 'none') {
+        mapid.invalidateSize();
+      }
+    });
+    observer2.observe(menu1Tab, { attributes: true });
+  });
+
   // Program starts here. The document.onLoad executes the
   // createEditor function with a given configuration.
   // In the config file, the mxEditor.onInit method is
