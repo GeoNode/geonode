@@ -126,7 +126,7 @@ workflows:
           name: geonode_test_integration_csw
           load_docker_cache: true
           save_docker_cache: false
-          test_suite: SITEURL=http://localhost:8001/ ./test_csw.sh
+          test_suite: ./test_csw.sh
           requires:
             - geonode_test_suite
       - build:

@@ -962,9 +962,7 @@ def run_tests(options):
     if not integration_tests and not integration_csw_tests and not integration_bdd_tests:
         call_task('test', options={'prefix': prefix})
     elif integration_tests:
-        if integration_server_tests:
-            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.geoserver.tests.integration'})
-        elif integration_upload_tests:
+        if integration_upload_tests:
             call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.upload.tests.integration'})
         elif integration_monitoring_tests:
             call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.monitoring.tests.integration'})
@@ -972,6 +970,8 @@ def run_tests(options):
             call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.csw', 'local': local})
         elif integration_bdd_tests:
             call_task('test_bdd', options={'local': local})
+        elif integration_server_tests:
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.geoserver.tests.integration'})
         else:
             call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.integration'})
     sh('flake8 geonode')
