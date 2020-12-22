@@ -292,9 +292,10 @@ def purge_geofence_layer_rules(resource):
             # Delete GeoFence Rules associated to the Layer
             # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
             for i, r_id in enumerate(r_ids):
-                r = requests.delete(url + 'rest/geofence/rules/id/' + str(r_id),
-                                    headers=headers,
-                                    auth=HTTPBasicAuth(user, passwd))
+                r = requests.delete(
+                    url + 'rest/geofence/rules/id/' + str(r_id),
+                    headers=headers,
+                    auth=HTTPBasicAuth(user, passwd))
                 if (r.status_code < 200 or r.status_code > 201):
                     msg = "Could not DELETE GeoServer Rule for Layer "
                     msg = msg + str(resource.layer.name)

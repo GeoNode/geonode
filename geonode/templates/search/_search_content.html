@@ -51,6 +51,8 @@
           <span style="font-size: 34px;" ng-bind="total_counts + ' ' + '{% trans "Maps found" %}'"></span>
           {% elif facet_type == 'documents' %}
           <span style="font-size: 34px;" ng-bind="total_counts + ' ' + '{% trans "Documents found" %}'"></span>
+          {% elif facet_type == 'geoapps' %}
+          <span style="font-size: 34px;" ng-bind="total_counts + ' ' + '{% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %} {% trans "found" %}'"></span>
           {% else %}
           <span style="font-size: 34px;" ng-bind="total_counts + ' {{ facet_type | title }} {% trans "found" %}'"></span>
           {% endif %}

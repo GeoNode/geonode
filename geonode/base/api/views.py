@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
@@ -45,7 +46,8 @@ from .serializers import (
     UserSerializer,
     PermSpecSerialiazer,
     GroupProfileSerializer,
-    ResourceBaseSerializer
+    ResourceBaseSerializer,
+    ResourceBaseTypesSerializer
 )
 from .pagination import GeoNodeApiPagination
 
@@ -144,6 +146,71 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     queryset = ResourceBase.objects.all()
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination
+
+    def _filtered(self, request, filter):
+        paginator = GeoNodeApiPagination()
+        paginator.page_size = request.GET.get('page_size', 10)
+        resources = ResourceBase.objects.filter(**filter)
+        exclude = []
+        for resource in resources:
+            if not request.user.is_superuser and \
+            not request.user.has_perm('view_resourcebase', resource.get_self_resource()):
+                exclude.append(resource.id)
+        resources = resources.exclude(id__in=exclude)
+        result_page = paginator.paginate_queryset(resources, request)
+        serializer = ResourceBaseSerializer(result_page, embed=True, many=True)
+        return paginator.get_paginated_response({"resources": serializer.data})
+
+    @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
+                   description="API endpoint allowing to retrieve the approved Resources.")
+    @action(detail=False, methods=['get'])
+    def approved(self, request):
+        return self._filtered(request, {"is_approved": True})
+
+    @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
+                   description="API endpoint allowing to retrieve the published Resources.")
+    @action(detail=False, methods=['get'])
+    def published(self, request):
+        return self._filtered(request, {"is_published": True})
+
+    @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
+                   description="API endpoint allowing to retrieve the featured Resources.")
+    @action(detail=False, methods=['get'])
+    def featured(self, request):
+        return self._filtered(request, {"featured": True})
+
+    @extend_schema(methods=['get'], responses={200: ResourceBaseTypesSerializer()},
+                   description="""
+        Returns the list of available ResourceBase polymorphic_ctypes.
+
+        the mapping looks like:
+        ```
+        {
+            "resource_types": [
+                "layer",
+                "map",
+                "document",
+                "service"
+            ]
+        }
+        ```
+        """)
+    @action(detail=False, methods=['get'])
+    def resource_types(self, request):
+        resource_types = []
+        for _model in apps.get_models():
+            if _model.__name__ == "ResourceBase":
+                resource_types = [_m.__name__.lower() for _m in _model.__subclasses__()]
+        if "geoapp" in resource_types:
+            from geonode.geoapps.models import GeoApp
+            resource_types.remove("geoapp")
+            for label, app in apps.app_configs.items():
+                if hasattr(app, 'type') and app.type == 'GEONODE_APP':
+                    if hasattr(app, 'default_model'):
+                        _model = apps.get_model(label, app.default_model)
+                        if issubclass(_model, GeoApp):
+                            resource_types.append(_model.__name__.lower())
+        return Response({"resource_types": resource_types})
 
     @extend_schema(methods=['get'], responses={200: PermSpecSerialiazer()},
                    description="""

@@ -42,7 +42,7 @@ logger = get_task_logger(__name__)
     acks_late=True,
     retry=True,
     retry_policy={
-        'max_retries': 10,
+        'max_retries': 3,
         'interval_start': 0,
         'interval_step': 0.2,
         'interval_max': 0.2,
@@ -127,7 +127,7 @@ def create_document_thumbnail(self, object_id):
     acks_late=True,
     retry=True,
     retry_policy={
-        'max_retries': 10,
+        'max_retries': 3,
         'interval_start': 0,
         'interval_step': 0.2,
         'interval_max': 0.2,
@@ -146,7 +146,7 @@ def delete_orphaned_document_files(self):
     acks_late=True,
     retry=True,
     retry_policy={
-        'max_retries': 10,
+        'max_retries': 3,
         'interval_start': 0,
         'interval_step': 0.2,
         'interval_max': 0.2,

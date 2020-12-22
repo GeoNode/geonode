@@ -597,7 +597,7 @@ $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(on
                             if(xhr.responseJSON && xhr.responseJSON['errors']) {
                                 var errors = "<ul>";
                                 for(error in xhr.responseJSON['errors']) {
-                                    errors += "<li>" + error + ": " + xhr.responseJSON['errors'][error][0] + "</li>";
+                                    errors += "<li>" + error + ": " + xhr.responseJSON['errors'][error] + "</li>";
                                 }
                                 errors += "</ul>";
                                 $("#preview_errorDialog .modal-body").html(errors);

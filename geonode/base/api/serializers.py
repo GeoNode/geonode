@@ -44,6 +44,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class ResourceBaseTypesSerializer(DynamicEphemeralSerializer):
+
+    class Meta:
+        name = 'resource-type'
+
+    resource_types = serializers.ListField()
+
+
 class PermSpecSerialiazer(DynamicEphemeralSerializer):
 
     class Meta:

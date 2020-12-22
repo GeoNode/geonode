@@ -24,12 +24,12 @@ import re
 import ast
 import sys
 import subprocess
+import dj_database_url
+
 from datetime import timedelta
 from distutils.util import strtobool  # noqa
-from urllib.parse import urlparse, urlunparse, urljoin
+from urllib.parse import urlparse, urljoin
 
-import django
-import dj_database_url
 #
 # General Django development settings
 #
@@ -65,18 +65,18 @@ DEBUG_STATIC = ast.literal_eval(os.getenv('DEBUG_STATIC', 'False'))
 FORCE_SCRIPT_NAME = os.getenv('FORCE_SCRIPT_NAME', '')
 
 # Define email service on GeoNode
-EMAIL_ENABLE = ast.literal_eval(os.getenv('EMAIL_ENABLE', 'True'))
+EMAIL_ENABLE = ast.literal_eval(os.getenv('EMAIL_ENABLE', 'False'))
 
 if EMAIL_ENABLE:
     EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
                               default='django.core.mail.backends.smtp.EmailBackend')
-    EMAIL_HOST = os.getenv('DJANGO_EMAIL_HOST', 'smtp.gmail.com')
-    EMAIL_PORT = os.getenv('DJANGO_EMAIL_PORT', 465)
-    EMAIL_HOST_USER = os.getenv('DJANGO_EMAIL_HOST_USER', 'srst@skaphe.com')
-    EMAIL_HOST_PASSWORD = os.getenv('DJANGO_EMAIL_HOST_PASSWORD', 'Skaphe2020*')
+    EMAIL_HOST = os.getenv('DJANGO_EMAIL_HOST', 'localhost')
+    EMAIL_PORT = os.getenv('DJANGO_EMAIL_PORT', 25)
+    EMAIL_HOST_USER = os.getenv('DJANGO_EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.getenv('DJANGO_EMAIL_HOST_PASSWORD', '')
     EMAIL_USE_TLS = ast.literal_eval(os.getenv('DJANGO_EMAIL_USE_TLS', 'False'))
-    EMAIL_USE_SSL = ast.literal_eval(os.getenv('DJANGO_EMAIL_USE_SSL', 'True'))
-    DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Skaphe <srst@skaphe.com>')
+    EMAIL_USE_SSL = ast.literal_eval(os.getenv('DJANGO_EMAIL_USE_SSL', 'False'))
+    DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'GeoNode <no-reply@geonode.org>')
 else:
     EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
                               default='django.core.mail.backends.console.EmailBackend')
@@ -86,7 +86,7 @@ _DEFAULT_SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
 SECRET_KEY = os.getenv('SECRET_KEY', _DEFAULT_SECRET_KEY)
 
 SITE_HOST_SCHEMA = os.getenv('SITE_HOST_SCHEMA', 'http')
-SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'apps.skaphe.com')
+SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'localhost')
 SITE_HOST_PORT = os.getenv('SITE_HOST_PORT', 8000)
 _default_siteurl = "%s://%s:%s/" % (SITE_HOST_SCHEMA,
                                     SITE_HOST_NAME,
@@ -101,14 +101,12 @@ HOSTNAME = _surl.hostname
 if not SITEURL.endswith('/'):
     SITEURL = '{}/'.format(SITEURL)
 
-# spatialite or sqlite
-#DATABASE_URL = os.getenv(
-#    'DATABASE_URL',
-#    'spatialite:///{path}'.format(
-#        path=os.path.join(PROJECT_ROOT, 'development.db')
-#    )
-#)
-# DATABASE_URL = 'postgresql://geonode:geonode_data@dev.skaphe.com:5432/geonode'
+DATABASE_URL = os.getenv(
+    'DATABASE_URL',
+    'spatialite:///{path}'.format(
+        path=os.path.join(PROJECT_ROOT, 'development.db')
+    )
+)
 
 if DATABASE_URL.startswith("spatialite"):
     try:
@@ -120,7 +118,7 @@ if DATABASE_URL.startswith("spatialite"):
     except FileNotFoundError as ex:
         print(ex)
 
- 
+# DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
 
 # Defines settings for development
 
@@ -128,20 +126,24 @@ if DATABASE_URL.startswith("spatialite"):
 # 'ENGINE': 'django.contrib.gis.db.backends.postgis'
 # see https://docs.djangoproject.com/en/1.8/ref/contrib/gis/db-api/#module-django.contrib.gis.db.backends for
 # detailed list of supported backends and notes.
-_db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=0)
+GEONODE_DB_CONN_MAX_AGE = int(os.getenv('GEONODE_DB_CONN_MAX_AGE', 0))
+GEONODE_DB_CONN_TOUT = int(os.getenv('GEONODE_DB_CONN_TOUT', 5))
 
-_db_conf['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
+_db_conf = dj_database_url.parse(
+    DATABASE_URL,
+    conn_max_age=GEONODE_DB_CONN_MAX_AGE)
+
 if 'CONN_TOUT' in _db_conf:
-    _db_conf['CONN_TOUT'] = 5
+    _db_conf['CONN_TOUT'] = GEONODE_DB_CONN_TOUT
 if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
     if 'OPTIONS' not in _db_conf:
         _db_conf['OPTIONS'] = {}
     _db_conf['OPTIONS'].update({
-        'connect_timeout': 5,
+        'connect_timeout': GEONODE_DB_CONN_TOUT,
     })
 
 DATABASES = {
-    'default': _db_conf,    
+    'default': _db_conf
 }
 
 if os.getenv('DEFAULT_BACKEND_DATASTORE'):
@@ -149,7 +151,7 @@ if os.getenv('DEFAULT_BACKEND_DATASTORE'):
                                 'postgis://\
 geonode_data:geonode_data@localhost:5432/geonode_data')
     DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = dj_database_url.parse(
-        GEODATABASE_URL, conn_max_age=0
+        GEODATABASE_URL, conn_max_age=GEONODE_DB_CONN_MAX_AGE
     )
     _geo_db = DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')]
     if 'CONN_TOUT' in DATABASES['default']:
@@ -157,7 +159,7 @@ geonode_data:geonode_data@localhost:5432/geonode_data')
     if 'postgresql' in GEODATABASE_URL or 'postgis' in GEODATABASE_URL:
         _geo_db['OPTIONS'] = DATABASES['default']['OPTIONS'] if 'OPTIONS' in DATABASES['default'] else {}
         _geo_db['OPTIONS'].update({
-            'connect_timeout': 5,
+            'connect_timeout': GEONODE_DB_CONN_TOUT,
         })
 
     DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = _geo_db
@@ -413,11 +415,17 @@ GEONODE_CORE_APPS = (
     'geonode.br',
     'geonode.layers',
     'geonode.maps',
+    'geonode.geoapps',
     'geonode.documents',
     'geonode.security',
     'geonode.catalogue',
     'geonode.catalogue.metadataxsl',
 )
+
+# GeoNode Apps
+GEONODE_APPS_ENABLE = ast.literal_eval(os.getenv("GEONODE_APPS_ENABLE", "True"))
+GEONODE_APPS_NAME = os.getenv("GEONODE_APPS_NAME", "Apps")
+GEONODE_APPS_NAV_MENU_ENABLE = ast.literal_eval(os.getenv("GEONODE_APPS_NAV_MENU_ENABLE", "True"))
 
 GEONODE_INTERNAL_APPS = (
     # GeoNode internal apps
@@ -441,10 +449,6 @@ GEONODE_INTERNAL_APPS = (
     'geonode.tasks',
     'geonode.messaging',
     'geonode.monitoring',
-    'geonode.frequently',
-    'geonode.study_cases',
-    'geonode.waterproof_nbs_ca',
-
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -475,7 +479,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.humanize',
     'django.contrib.gis',
-    'django.contrib.admindocs',
 
     # Utility
     'dj_pagination',
@@ -519,10 +522,6 @@ INSTALLED_APPS = (
 
     # GeoNode
     'geonode',
-    
-    # FAQ
-    'ckeditor',
-    # 'frequently',
 )
 
 INSTALLED_APPS += ('markdownify',)
@@ -730,12 +729,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
-                # 'django.core.context_processors.debug',
-                # 'django.core.context_processors.i18n',
-                # 'django.core.context_processors.tz',
-                # 'django.core.context_processors.media',
-                # 'django.core.context_processors.static',
-                # 'django.core.context_processors.request',
                 'geonode.context_processors.resource_urls',
                 'geonode.geoserver.context_processors.geoserver_urls',
                 'geonode.themes.context_processors.custom_theme'
@@ -918,11 +911,10 @@ ACTSTREAM_SETTINGS = {
     'GFK_FETCH_DEPTH': 1,
 }
 
-ACCOUNT_FORMS = {'signup': 'geonode.people.forms.CustomUserCreationForm2'}
 
 # Email for users to contact admins.
 THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
-    'THEME_ACCOUNT_CONTACT_EMAIL', 'srst@skaphe.com'
+    'THEME_ACCOUNT_CONTACT_EMAIL', 'admin@example.com'
 )
 
 #
@@ -1235,7 +1227,6 @@ except ValueError:
     ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('ALLOWED_HOSTS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost','apps.skaphe.com','190.146.133.76']
 # AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
 # to only whitelisted IP addresses.
 #
@@ -1512,6 +1503,8 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     if 'geonode_mapstore_client' not in INSTALLED_APPS:
         INSTALLED_APPS += (
             'mapstore2_adapter',
+            'mapstore2_adapter.geoapps',
+            'mapstore2_adapter.geoapps.geostories',
             'geonode_mapstore_client',)
 
     def get_geonode_catalogue_service():
@@ -1652,7 +1645,6 @@ SEARCH_FILTERS = {
 
 # HTML WYSIWYG Editor (TINYMCE) Menu Bar Settings
 TINYMCE_DEFAULT_CONFIG = {
-    "selector": "textarea#id_resource-featureinfo_custom_template",
     "theme": "silver",
     "height": 500,
     "plugins": 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
@@ -1817,6 +1809,12 @@ if USE_GEOSERVER:
 #     },
 CELERY_BEAT_SCHEDULE = {}
 
+if 'geonode.services' in INSTALLED_APPS:
+    CELERY_BEAT_SCHEDULE['probe_services'] = {
+        'task': 'geonode.services.tasks.probe_services',
+        'schedule': 600.0,
+    }
+
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
 CELERY_ENABLE_UTC = ast.literal_eval(os.environ.get('CELERY_ENABLE_UTC', 'True'))
 CELERY_TIMEZONE = TIME_ZONE
@@ -1966,15 +1964,10 @@ ACCOUNT_APPROVAL_REQUIRED = ast.literal_eval(
     os.getenv('ACCOUNT_APPROVAL_REQUIRED', 'False')
 )
 ACCOUNT_ADAPTER = 'geonode.people.adapters.LocalAccountAdapter'
-ACCOUNT_AUTHENTICATION_METHOD = os.environ.get('ACCOUNT_AUTHENTICATION_METHOD', 'email')
+ACCOUNT_AUTHENTICATION_METHOD = os.environ.get('ACCOUNT_AUTHENTICATION_METHOD', 'username_email')
 ACCOUNT_CONFIRM_EMAIL_ON_GET = ast.literal_eval(os.environ.get('ACCOUNT_CONFIRM_EMAIL_ON_GET', 'True'))
 ACCOUNT_EMAIL_REQUIRED = ast.literal_eval(os.environ.get('ACCOUNT_EMAIL_REQUIRED', 'True'))
-ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION', 'mandatory')
-ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = os.environ.get('ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS', 'False')
-ACCOUNT_UNIQUE_EMAIL = os.environ.get('ACCOUNT_UNIQUE_EMAIL', 'True')
-ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = os.environ.get('ACCOUNT_EMAIL_CONFIRMATION_REQUIRED', 'True')
-ACCOUNT_USERNAME_REQUIRED = os.environ.get('ACCOUNT_USERNAME_REQUIRED', 'False')
-# ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = os.environ.get('ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS','3')
+ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION', 'none')
 
 # Since django-allauth 0.43.0.
 ACCOUNT_SIGNUP_REDIRECT_URL = os.environ.get('ACCOUNT_SIGNUP_REDIRECT_URL', os.getenv('SITEURL', _default_siteurl))
@@ -2121,9 +2114,3 @@ GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat
 SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'True'))
 # -- END Settings for MONITORING plugin
 
-FREQUENTLY_READY_FOR_V1 = True
-FREQUENTLY_ALLOW_ANONYMOUS = True
-
-STUDY_CASES_ALLOW_ANONYMOUS = True
-
-WATERPROOF_NBS_CA_ALLOW_ANONYMOUS = True

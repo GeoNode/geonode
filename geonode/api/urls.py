@@ -46,6 +46,7 @@ api.register(resourcebase_resources.DocumentResource())
 api.register(resourcebase_resources.FeaturedResourceBaseResource())
 api.register(resourcebase_resources.LayerResource())
 api.register(resourcebase_resources.MapResource())
+api.register(resourcebase_resources.GeoAppResource())
 api.register(resourcebase_resources.ResourceBaseResource())
 
 router = routers.DynamicRouter()

@@ -9,7 +9,7 @@
 {% block body_class %}home{% endblock %}
 
 {% block middle %}
-  {{ block.super }}
+{{ block.super }}
 
   {% block hero %}
   {% if block.super %}
@@ -22,7 +22,6 @@
       {% with jumbotron_welcome_title=custom_theme.jumbotron_welcome_title|default:"Welcome"|template_trans %}
       <h1>{% trans jumbotron_welcome_title %}</h1>
       {% endwith %}
-      <p></p>
       {% with jumbotron_welcome_content=custom_theme.jumbotron_welcome_content|default:"GeoNode is an open source platform for sharing geospatial data and maps."|template_trans %}
       <p>{% trans jumbotron_welcome_content %}</p>
       {% endwith %}
@@ -115,30 +114,7 @@
       <!-- </div> -->
       {% endif %}
       {% endblock bigsearch %}
-      
-      
-    
-	<!-- <section> -->
-        <!-- <div class="container text-center imgbackgroundModels"> -->
-          <!-- <div class="row colorHeaderInstrucciones"> -->
-            <!-- <h2>System operating instructions</h2> -->
-          <!-- </div> -->
-          <!-- <div class="row" style="height=500px;"> -->
-          <!-- <object data="{% static 'geonode/img/models.svg' %}" type="image/svg+xml" height="500"> -->
-        <!-- </object> -->
-            <!--img src="{% static 'geonode/img/models.svg' %}">
-          <!-- </div> -->
-        <!-- </div> -->
-        
-      <!-- </section> -->
-      
-	  
-	<section>
-	
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <!--link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous"-->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 	
 	
@@ -250,71 +226,61 @@
     <!--script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script-->
     <!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script-->
 
-<section>	
-	  
-	  
-	  
-      <section>
-               <div class="container text-center">
-          <div class="row colorHeaderInstrucciones">
-            <h2>{% trans "Nature-based solutions" %}</h2>
-          </div>
-          <div class="row">
-            <span style="font-size=12px"> {% trans "We work to meet this ambitious goal" %}</span> <br>
-            <span style="font-size=12px"> {% trans "by focusing on these key conservation areas" %}</span>
-           </div>
-            <div class="row" style="height:40px;">
-            </div>
-          <div class="row" style="height=500px;">
-            <div class="col-md-4">
-                <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                <img src= "{% static 'geonode/img/01-conservacion.png' %}">
-                <p class="text-center"> {% trans "Conservation" %}
-                </p>
-                </a>
-            </div>
-            <div class="col-md-3 col-md-offset-1">
-                <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                <img src= "{% static 'geonode/img/02-restauracion-activa.png' %}">
-                <p class="text-center"> {% trans "Active restoration" %}
-                </p>
-                </a>
-            </div>
-            <div class="col-md-3 col-md-offset-1">
-                <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                <img src= "{% static 'geonode/img/03-restauracion-pasiva.png' %}">
-                <p class="text-center"> {% trans "Passive restoration" %}
-                </p>
-                </a>
-            </div>           
-           </div>
-           <div class="row" style="height:50px;">
-            </div>
-          <div class="row" style="height=500px;">
-            <div class="col-md-7">
-                <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                <img src= "{% static 'geonode/img/04-practicas-agricolas.png' %}">
-                <p class="text-center"> {% trans "Best agricultural practices" %} 
-                </p>
-                </a>
-            </div>
-            <div class="col-md-3">
-                <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                <img src= "{% static 'geonode/img/05-sistemas-sostenibles.png' %}">
-                <p class="text-center"> {% trans "Sustainable production systems" %}
-                </p>
-                </a>
-            </div>           
-           </div> 
-		   <div class="row" style="height:30px;">
-           </div>
-        </div>
-        
-      </section>
-	  
+    <section>	    
+        <section>
+            <div class="container text-center">
+                    <div class="row colorHeaderInstrucciones">
+                        <h2>{% trans "Nature-based solutions" %}</h2>
+                    </div>
+                    <div class="row">
+                        <span style="font-size:12px"> {% trans "We work to meet this ambitious goal" %}</span> <br>
+                        <span style="font-size:12px"> {% trans "by focusing on these key conservation areas" %}</span>
+                    </div>
+                    <div class="row" style="height:40px;"></div>
+                    <div class="row" style="height:500px;">
+                        <div class="col-md-4">
+                            <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+                            <img src= "{% static 'geonode/img/01-conservacion.png' %}">
+                            <p class="text-center"> {% trans "Conservation" %}
+                            </p>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-md-offset-1">
+                            <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+                            <img src= "{% static 'geonode/img/02-restauracion-activa.png' %}">
+                            <p class="text-center"> {% trans "Active restoration" %}
+                            </p>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-md-offset-1">
+                            <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+                            <img src= "{% static 'geonode/img/03-restauracion-pasiva.png' %}">
+                            <p class="text-center"> {% trans "Passive restoration" %}
+                            </p>
+                            </a>
+                        </div>           
+                    </div>
+                    <div class="row" style="height:50px;"></div>
+                    <div class="row" style="height:500px;">
+                        <div class="col-md-7">
+                            <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+                            <img src= "{% static 'geonode/img/04-practicas-agricolas.png' %}">
+                            <p class="text-center"> {% trans "Best agricultural practices" %} 
+                            </p>
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
+                            <img src= "{% static 'geonode/img/05-sistemas-sostenibles.png' %}">
+                            <p class="text-center"> {% trans "Sustainable production systems" %}
+                            </p>
+                            </a>
+                        </div>           
+                </div> 
+                <div class="row" style="height:30px;"></div>
+            </div>        
+      </section>	  
 	 <section>
-	
-	
 	
 	<div class="carrouselcolor">
         <div class="container">
@@ -381,7 +347,7 @@
 	
 	</section> 	 
 	  
-	   <section>
+	<section>
         <div class="container text-center imgbackgroundwiki">
           <div class="row" style="height:30%;">
             </div>
@@ -405,10 +371,36 @@
             <b class="ppwpwiki3"> {% trans "Keep reading" %} </b>
             </a>
             </button>
+            <br>
+        </div>
+    </div>
+    </section>
+    <section>
+        <div class="row justify-content-md-center" style="height:20%;">
+            <div class="col-md-6 text-center">
+                <img src="{% static 'geonode/img/LogoTNC2.png' %}" alt="The nature Conservancy" style="max-height: 100px;">
             </div>
-                   
-             
-      </section>
+            <div class="col-md-6 text-center">
+                <img src="{% static 'geonode/img/fundacionmoore.png' %}" alt="Moore fundation" style="max-height: 100px;">
+            </div>
+        </div>
+    </section> 
+      
+    
+	<!-- <section> -->
+        <!-- <div class="container text-center imgbackgroundModels"> -->
+          <!-- <div class="row colorHeaderInstrucciones"> -->
+            <!-- <h2>System operating instructions</h2> -->
+          <!-- </div> -->
+          <!-- <div class="row" style="height=500px;"> -->
+          <!-- <object data="{% static 'geonode/img/models.svg' %}" type="image/svg+xml" height="500"> -->
+        <!-- </object> -->
+            <!--img src="{% static 'geonode/img/models.svg' %}">
+          <!-- </div> -->
+        <!-- </div> -->
+        
+      <!-- </section> -->
+
 	  <!-- {% block showcase %}
       <section id="showcase">
         <div class="row">
@@ -479,17 +471,6 @@
     </section>
     {% endblock datasets %} -->
 
-  <section>
-    <div class="row justify-content-md-center" style="height:20%;">
-		<div class= "col-md-6 text-center">           
-			<img src= "{% static 'geonode/img/LogoTNC2.png' %}" alt= "The nature Conservancy" style= "max-height: 100px;">
-        </div>
-		<div class= "col-md-6 text-center">
-			<img src= "{% static 'geonode/img/fundacionmoore.png' %}" alt="Moore fundation" style= "max-height: 100px;">
-        </div>
-	</div>                 
-          
-  </section>
   
   <!-- <section> -->
 	<!-- <div class="row justify-content-md-center">  -->

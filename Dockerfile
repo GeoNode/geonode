@@ -48,11 +48,11 @@ RUN apt-get update && apt-get install -y devscripts build-essential debhelper pk
 
 # Install pip packages
 RUN pip install pip --upgrade
-RUN pip install --upgrade --no-cache-dir --use-feature=2020-resolver --src /usr/src -r requirements.txt \
+RUN pip install --upgrade --no-cache-dir  --src /usr/src -r requirements.txt \
     && pip install pygdal==$(gdal-config --version).* \
     && pip install flower==0.9.4
 
-RUN pip install --upgrade --use-feature=2020-resolver -e .
+RUN pip install --upgrade  -e .
 
 # Activate "memcached"
 RUN apt install memcached
@@ -62,8 +62,8 @@ RUN pip install pylibmc \
 # Install "geonode-contribs" apps
 RUN cd /usr/src; git clone https://github.com/GeoNode/geonode-contribs.git -b master
 # Install logstash and centralized dashboard dependencies
-RUN cd /usr/src/geonode-contribs/geonode-logstash; pip install --upgrade --use-feature=2020-resolver -e . \
-    cd /usr/src/geonode-contribs/ldap; pip install --upgrade --use-feature=2020-resolver -e .
+RUN cd /usr/src/geonode-contribs/geonode-logstash; pip install --upgrade  -e . \
+    cd /usr/src/geonode-contribs/ldap; pip install --upgrade  -e .
 
 # Export ports
 EXPOSE 8000
