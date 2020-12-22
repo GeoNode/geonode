@@ -31,7 +31,7 @@ from django.contrib.staticfiles.templatetags import staticfiles
 from celery.utils.log import get_task_logger
 
 from geonode.celery_app import app
-from geonode.tasks import FaultTolerantTask
+from geonode.tasks.tasks import FaultTolerantTask
 from geonode import GeoNodeException
 from geonode.upload import signals
 from geonode.layers.models import (
