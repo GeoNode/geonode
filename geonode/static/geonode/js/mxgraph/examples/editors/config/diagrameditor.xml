@@ -434,6 +434,11 @@
 				<Layer label="Default Layer" id="1">
 					<mxCell parent="0"/>
 				</Layer>
+				<Symbol label="" description="" href="" id="2">
+      <mxCell style="rio" vertex="1" parent="1">
+        <mxGeometry x="30" y="10" width="90" height="80" as="geometry" />
+      </mxCell>
+    </Symbol>
 			</root>
 		</mxGraphModel>
 	</mxGraph>

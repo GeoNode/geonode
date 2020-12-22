@@ -6,5 +6,7 @@ from . import views
 urlpatterns = [
     # Create Water Intake
     path('create/', views.create, name='create'),
+    # List Water Intake
+    path('list/', views.list, name='list'),
 
 ]
