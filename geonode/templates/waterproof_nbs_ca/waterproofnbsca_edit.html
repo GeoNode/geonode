@@ -139,8 +139,7 @@
             </div>
         </div>
     </div>
-
-    <h4 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h4>
+    <h4 class="text-primary">LAND USE<span style="margin-left: 40%;">LAND COVER CHANGE DEFENITION</span></h4>
     <div class="form-group">
         <div class="row">
             {% for tran in transitions %}
@@ -149,19 +148,16 @@
                 {% for riosa in riosActivity %} {% if tran.pk == riosa.transition_id %}
                 <h5>{{ riosa.name }}</h5>
                 {% for riost in riosTransformation %} {% if riosa.pk == riost.activity_id %}
-                <ul>
-                    <li class="list-inline">
-                        <div class="checkbox">
-                            {% if riost.pk in selectedTransf %}
-                            <label><input name="itemRT" type="checkbox" id="itemRT{{riost.pk}}" value="{{ riost.pk }}"
-                                    checked=checked>{{riost.name}}</label>
+                <div class="checkbox" style="margin-left: 50%;">
+                    {% if riost.pk in selectedTransf %}
+                            <label><input data-value="itemRT" name="{{riosa.name}}_{{itemRT}}" type="radio"
+                                id="itemRT{{riost.pk}}" value="{{ riost.pk }}" checked> {{riost.name}}</label>
                             {% else %}
-                            <label><input name="itemRT" type="checkbox" id="itemRT{{riost.pk}}"
-                                    value="{{ riost.pk }}">{{riost.name}}</label>
+                            <label><input data-value="itemRT" name="{{riosa.name}}_{{itemRT}}" type="radio"
+                                id="itemRT{{riost.pk}}" value="{{ riost.pk }}"> {{riost.name}}</label>
                             {% endif %}
-                        </div>
-                    </li>
-                </ul>
+                </div>
+
                 {% endif %} {% endfor %} {% endif %} {% endfor %}
             </div>
             {% endfor %}
@@ -169,7 +165,6 @@
     </div>
     <div class="form-group">
         <!-- Rounded switch -->
-
         <label>Load new restricted area</label>
         <label class="switch">
             <input type="checkbox" id="loadArea">
