@@ -12,7 +12,6 @@
     <gmd:MD_ScopeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
    </gmd:hierarchyLevel>
 
-
    {% with layer.poc as poc %}
    <gmd:contact>
      <gmd:CI_ResponsibleParty>
