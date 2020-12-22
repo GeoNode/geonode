@@ -25,6 +25,7 @@ import geoserver
 from django.conf import settings
 from django.db import IntegrityError, transaction
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
 from django.contrib.staticfiles.templatetags import staticfiles
 
 from celery.utils.log import get_task_logger
@@ -604,19 +605,31 @@ def geoserver_post_save_layers(
 
         # Refreshing CSW records
         logger.debug(f"... Updating the Catalogue entries for Layer {instance.title}")
-        catalogue_post_save(instance=instance, sender=instance.__class__)
+        try:
+            catalogue_post_save(instance=instance, sender=instance.__class__)
+        except Exception as e:
+            logger.exception(e)
 
         # Refreshing layer links
         logger.debug(f"... Creating Default Resource Links for Layer {instance.title}")
-        set_resource_default_links(instance, instance, prune=True)
+        try:
+            set_resource_default_links(instance, instance, prune=True)
+        except Exception as e:
+            logger.exception(e)
 
         # Save layer attributes
         logger.debug(f"... Refresh GeoServer attributes list for Layer {instance.title}")
-        set_attributes_from_geoserver(instance)
+        try:
+            set_attributes_from_geoserver(instance)
+        except Exception as e:
+            logger.exception(e)
 
         # Save layer styles
         logger.debug(f"... Refresh Legend links for Layer {instance.title}")
-        set_styles(instance, gs_catalog)
+        try:
+            set_styles(instance, gs_catalog)
+        except Exception as e:
+            logger.exception(e)
 
         # Invalidate GeoWebCache for the updated resource
         try:
@@ -648,11 +661,13 @@ def geoserver_post_save_layers(
 
     # Updating HAYSTACK Indexes if needed
     if settings.HAYSTACK_SEARCH:
-        from django.core.management import call_command
         call_command('update_index')
 
-    geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
-    geonode_upload_sessions.update(processed=True)
+    try:
+        geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
+        geonode_upload_sessions.update(processed=True)
+    except Exception as e:
+        logger.exception(e)
 
 
 @app.task(
