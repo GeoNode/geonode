@@ -86,7 +86,7 @@ _DEFAULT_SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
 SECRET_KEY = os.getenv('SECRET_KEY', _DEFAULT_SECRET_KEY)
 
 SITE_HOST_SCHEMA = os.getenv('SITE_HOST_SCHEMA', 'http')
-SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'localhost')
+SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'apps.skaphe.com')
 SITE_HOST_PORT = os.getenv('SITE_HOST_PORT', 8000)
 _default_siteurl = "%s://%s:%s/" % (SITE_HOST_SCHEMA,
                                     SITE_HOST_NAME,
@@ -101,12 +101,14 @@ HOSTNAME = _surl.hostname
 if not SITEURL.endswith('/'):
     SITEURL = '{}/'.format(SITEURL)
 
-DATABASE_URL = os.getenv(
-    'DATABASE_URL',
-    'spatialite:///{path}'.format(
-        path=os.path.join(PROJECT_ROOT, 'development.db')
-    )
-)
+# DATABASE_URL = os.getenv(
+#      'DATABASE_URL',
+#      'spatialite:///{path}'.format(
+#          path=os.path.join(PROJECT_ROOT, 'development.db')
+#      )
+# )
+
+DATABASE_URL = 'postgresql://geonode:geonode_data@dev.skaphe.com:5432/geonode'
 
 if DATABASE_URL.startswith("spatialite"):
     try:
@@ -117,8 +119,6 @@ if DATABASE_URL.startswith("spatialite"):
             from shapely import speedups
     except FileNotFoundError as ex:
         print(ex)
-
-# DATABASE_URL = 'postgresql://test_geonode:test_geonode@localhost:5432/geonode'
 
 # Defines settings for development
 
@@ -133,6 +133,7 @@ _db_conf = dj_database_url.parse(
     DATABASE_URL,
     conn_max_age=GEONODE_DB_CONN_MAX_AGE)
 
+_db_conf['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 if 'CONN_TOUT' in _db_conf:
     _db_conf['CONN_TOUT'] = GEONODE_DB_CONN_TOUT
 if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
@@ -149,7 +150,7 @@ DATABASES = {
 if os.getenv('DEFAULT_BACKEND_DATASTORE'):
     GEODATABASE_URL = os.getenv('GEODATABASE_URL',
                                 'postgis://\
-geonode_data:geonode_data@localhost:5432/geonode_data')
+geonode:geonode_data@dev.skaphe.com:5432/geonode')
     DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = dj_database_url.parse(
         GEODATABASE_URL, conn_max_age=GEONODE_DB_CONN_MAX_AGE
     )
@@ -449,6 +450,10 @@ GEONODE_INTERNAL_APPS = (
     'geonode.tasks',
     'geonode.messaging',
     'geonode.monitoring',
+    'geonode.frequently',
+    'geonode.study_cases',
+    'geonode.waterproof_nbs_ca',
+    #'geonode.waterproof_intake',
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -1224,7 +1229,7 @@ try:
     ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
 except ValueError:
     # fallback to regular list of values separated with misc chars
-    ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('ALLOWED_HOSTS') is None \
+    ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode', 'apps.skaphe.com', 'apps.skaphe.com:8000'] if os.getenv('ALLOWED_HOSTS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
 # AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
