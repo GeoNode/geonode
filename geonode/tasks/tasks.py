@@ -87,7 +87,7 @@ def memcache_lock(lock_id):
     acks_late=True,
     retry=True,
     retry_policy={
-        'max_retries': 10,
+        'max_retries': 3,
         'interval_start': 0,
         'interval_step': 0.2,
         'interval_max': 0.2,
@@ -108,7 +108,7 @@ def send_email(self, *args, **kwargs):
     acks_late=True,
     retry=True,
     retry_policy={
-        'max_retries': 10,
+        'max_retries': 3,
         'interval_start': 0,
         'interval_step': 0.2,
         'interval_max': 0.2,

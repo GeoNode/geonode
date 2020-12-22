@@ -31,8 +31,6 @@ from django.contrib.auth import get_user_model
 
 from taggit.models import Tag
 
-from celery.exceptions import TimeoutError
-
 from geonode.base.models import TopicCategory
 from geonode.base.models import Region
 from geonode.documents.models import Document

@@ -1,38 +1,38 @@
-{% extends "base.html" %} {% load i18n %} {% load bootstrap_tags %} {% block body_outer %}
+{% extends "base.html" %} {% load i18n %} {% load l10n %}{% load bootstrap_tags %} {% block body_outer %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/bootstrap-duallistbox.min.css">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/waterproof_nbs_ca.css">
-
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin="" />
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
-{% for sbn in nbs %}
+
 <div class="row">
     <div class="col-md-4">
-        <h4 class="text-center">Bogotá D.C.</h4>
-        <p><b>Country:</b> Colombia</p>
-        <p><b>Region:</b> Central</p>
+        <h4 class="text-center" id="countryLabel">{{country.name}}</h4>
+        <p><b>Region:</b> <span id="regionLabel">{{region.name}}</span> </p>
+        <p><b>Currency:</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
     </div>
     <div class="col-md-8">
-        <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d254508.51641080936!2d-74.24789454527543!3d4.648283717196413!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9bfd2da6cb29%3A0x239d635520a33914!2zQm9nb3TDoQ!5e0!3m2!1ses!2sco!4v1607456076816!5m2!1ses!2sco"
-            width="750" height="150" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false"
-            tabindex="0"></iframe>
+        <div id="mapid" style="width: 700px; height: 200px;"></div>
+
     </div>
 </div>
 <div class="page-header">
     <h1>Clone NBS</h1>
 </div>
-<form data-toggle="validator" role="form">
+<form data-toggle="validator" role="form" action="#">
     <h4 class="text-primary">General Settings</h4>
     <div class="form-group">
         <label>Name <span class="text-danger-wp">(*)</span> </label>
-        <input type="text" value={{ sbn.name }} class="form-control" id="nameNBS" name="nameNBS"
+        <input type="text" value="{{ nbs.name }}" class="form-control" id="nameNBS" name="nameNBS"
             data-error="This field is required" placeholder="Enter title" required>
         <div class="help-block with-errors"></div>
     </div>
     <div class="form-group">
         <label>Description <span class="text-danger-wp">(*)</span> </label>
         <textarea id="descNBS" class="form-control" placeholder="Enter description" data-error="This field is required"
-            rows="4" required>{{ sbn.description }}</textarea>
+            rows="4" required>{{ nbs.description }}</textarea>
         <div class="help-block with-errors"></div>
     </div>
     <div class="form-group">
@@ -40,12 +40,26 @@
             <div class="col-md-6">
                 <label>Country <span class="text-danger-wp">(*)</span> </label>
                 <select id="countryNBS" class="form-control" data-error="This field is required" required>
+                    {% for country in countries %}
+                    {% if nbs.country.pk == country.pk %}
+                    <option value="{{country.pk}}" data-value="{{country.code}}" selected>{{country.name}}</option>
+                    {% else %}
+                    <option value="{{country.pk}}" data-value="{{country.code}}">{{country.name}}</option>
+                    {% endif %}
+                    {% endfor %}
                 </select>
                 <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-6">
                 <label>Currency type cost calculation <span class="text-danger-wp">(*)</span> </label>
                 <select id="currencyCost" class="form-control" data-error="This field is required" required>
+                    {% for currency in currencies %}
+                    {% if nbs.currency.pk == currency.pk%}
+                    <option value="{{currency.pk}}" selected>{{currency.name}}</option>
+                    {% else %}
+                    <option value="{{currency.pk}}">{{currency.name}}</option>
+                    {% endif %}
+                    {% endfor %}
                 </select>
                 <div class="help-block with-errors"></div>
             </div>
@@ -55,14 +69,14 @@
         <div class="row">
             <div class="col-md-6">
                 <label>Time required to generate maximun benefit (yr) <span class="text-danger-wp">(*)</span> </label>
-                <input id="maxBenefitTime" value="{{sbn.total_profits_sbn_consec_time}}" type="text"
+                <input id="maxBenefitTime" value="{{nbs.total_profits_sbn_consec_time}}" type="text"
                     class="form-control" data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-6">
                 <label>Percentage of benefit associated with interventions at time t=0 <span
                         class="text-danger-wp">(*)</span> </label>
-                <input id="benefitTimePorc" value="{{sbn.profit_pct_time_inter_assoc}}" type="text" class="form-control"
+                <input id="benefitTimePorc" value="{{nbs.profit_pct_time_inter_assoc}}" type="text" class="form-control"
                     data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
@@ -72,13 +86,13 @@
         <div class="row">
             <div class="col-md-6">
                 <label>Consecution Time Total Benefits <span class="text-danger-wp">(*)</span> </label>
-                <input id="totalConsecTime" value="{{ sbn.total_profits_sbn_consec_time }}" type="text"
+                <input id="totalConsecTime" value="{{ nbs.total_profits_sbn_consec_time }}" type="text"
                     class="form-control" data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-6">
                 <label>Maintenance Perodicity <span class="text-danger-wp">(*)</span> </label>
-                <input id="maintenancePeriod" value="{{ sbn.periodicity_maitenance }}" type="text" class="form-control"
+                <input id="maintenancePeriod" value="{{ nbs.periodicity_maitenance }}" type="text" class="form-control"
                     data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
@@ -89,20 +103,20 @@
         <div class="row">
             <div class="col-md-4">
                 <label>Unit Implementation Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
-                <input id="implementCost" value="{{ sbn.unit_implementation_cost }}" type="text" class="form-control"
-                    data-error="This field is required" required>
+                <input id="implementCost" value="{{ nbs.unit_implementation_cost|floatformat:2 }}" type="text"
+                    class="form-control" data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-4">
                 <label>Unit Maintenace Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
-                <input id="maintenanceCost" value="{{ sbn.unit_maintenance_cost }}" type="text" class="form-control"
-                    data-error="This field is required" required>
+                <input id="maintenanceCost" value="{{ nbs.unit_maintenance_cost|floatformat:2 }}" type="text"
+                    class="form-control" data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
             <div class="col-md-4">
                 <label>Unit Oportunity Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
-                <input id="oportunityCost" value="{{ sbn.unit_oportunity_cost }}" type="text" class="form-control"
-                    data-error="This field is required" required>
+                <input id="oportunityCost" value="{{ nbs.unit_oportunity_cost|floatformat:2 }}" type="text"
+                    class="form-control" data-error="This field is required" required>
                 <div class="help-block with-errors"></div>
             </div>
         </div>
@@ -112,30 +126,47 @@
         <div class="row">
             <div class="col-md-12">
                 <select id="riosTransition" class="form-control" data-error="This field is required" required>
+                    {% for transition in transitions %}
+                    {% if transition.pk == selectedTransition.pk %}
+                    <option value="{{transition.pk}}" selected>{{transition.name}}</option>
+                    {% else %}
+                    <option value="{{transition.pk}}">{{transition.name}}</option>
+                    {% endif %}
+
+                    {% endfor %}
                 </select>
                 <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
-    <h4 class="text-primary">RIOS Activities</h4>
+
+    <h4 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h4>
     <div class="form-group">
         <div class="row">
-            <div class="col-md-12">
-                <select id="riosActivity" class="form-control" data-error="This field is required" required>
-                </select>
-                <div class="help-block with-errors"></div>
+            {% for tran in transitions %}
+            <div class="col-md-12" id="selectlanduse{{tran.pk}}" name="selectlanduse" data-value="{{tran.pk}}"
+                style="display: none;">
+                {% for riosa in riosActivity %} {% if tran.pk == riosa.transition_id %}
+                <h5>{{ riosa.name }}</h5>
+                {% for riost in riosTransformation %} {% if riosa.pk == riost.activity_id %}
+                <ul>
+                    <li class="list-inline">
+                        <div class="checkbox">
+                            {% if riost.pk in selectedTransf %}
+                            <label><input name="itemRT" type="checkbox" id="itemRT{{riost.pk}}" value="{{ riost.pk }}"
+                                    checked=checked>{{riost.name}}</label>
+                            {% else %}
+                            <label><input name="itemRT" type="checkbox" id="itemRT{{riost.pk}}"
+                                    value="{{ riost.pk }}">{{riost.name}}</label>
+                            {% endif %}
+                        </div>
+                    </li>
+                </ul>
+                {% endif %} {% endfor %} {% endif %} {% endfor %}
             </div>
+            {% endfor %}
         </div>
     </div>
-    <h4 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h4>
-
-    <select multiple="multiple" id="riosTransformation" size="10" name="duallistbox_demo1[]"
-        title="duallistbox_demo1[]">
-        {% for transformation in sbn.rios_transformations.all %}
-        <option value="{{transformation.pk}}" selected>{{transformation.name}}</option>
-        {% endfor %}
-    </select>
-    <br>
     <div class="form-group">
         <!-- Rounded switch -->
         <label>Load new restricted area</label>
@@ -146,29 +177,38 @@
         <div class="row" style="display:none" id="areas">
             <div class="col-md-4">
                 <label>Restricted areas <span class="text-danger-wp">(*)</span></label>
-                <input id="restrictedArea" type="file" data-error="This field is required" required>
+                <input id="restrictedArea" type="file" >
                 <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
     <br>
-    <input type="hidden" value="{{sbn.pk}}" id="sbnId">
-    <button type="submit" id="submit" class="btn btn-primary ">Submit</button>
+    <input type="hidden" value="{{nbs.pk}}" id="sbnId">
+    <button type="button" id="submit" class="btn btn-primary ">Submit</button>
 </form>
 <script>
     var token = '{{ csrf_token }}';
     var countryNbs = '{{ sbn.country.pk }}';
     var currencyNbs = '{{ sbn.currency.pk }}';
+    var countriesLayerUrl = '{{ STATIC_URL }}waterproof_nbs_ca/data/countries.geojson';
+    var userCountryId='{{userCountry.id}}';
+    var userCountryCode='{{userCountry.code}}';
+    var userCountryName='{{userCountry.name}}';
+    var countryId = '{{country.id}}';
 </script>
-{% endfor %} {% endblock body_outer %} {% block extra_script %}
+{% endblock body_outer %} {% block extra_script %}
 <!--ZIP reader library-->
 
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jszip.min.js"></script>
 <!--Shapefile reader library -->
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/shp.min.js"></script>
-<script>
-    var token = '{{ csrf_token }}';
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"
+    integrity="sha512-dTu0vJs5ndrd3kPwnYixvOCsvef5SGYW/zSSK4bcjRBcZHzqThq7pt7PmCv55yb8iBvni0TSeIDV8RYKjZL36A=="
+    crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/leaflet.ajax.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js" integrity="sha512-dTu0vJs5ndrd3kPwnYixvOCsvef5SGYW/zSSK4bcjRBcZHzqThq7pt7PmCv55yb8iBvni0TSeIDV8RYKjZL36A==" crossorigin="anonymous"></script>
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca_clone.js"></script>
-<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/jquery.bootstrap-duallistbox.min.js"></script>
 {% endblock %}

@@ -22,7 +22,7 @@ import pytz
 import logging
 import timeout_decorator
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 from six import string_types
 
 from django.core.management.base import BaseCommand, CommandError
@@ -82,7 +82,7 @@ class Command(BaseCommand):
         interval = timedelta(seconds=options['interval'])
         metric_names = options['metric_name']
         resource = options['resource']
-        service = options['service']
+        # service = options['service']
         label = options['label']
         if not metric_names:
             raise CommandError("No metric name")
@@ -122,7 +122,6 @@ class Command(BaseCommand):
             print(' for label: {} label'.format(label.name))
 
         utc = pytz.utc
-        now = datetime.utcnow().replace(tzinfo=utc)
         since = since.replace(tzinfo=utc) if since else None
         until = until.replace(tzinfo=utc) if until else None
 

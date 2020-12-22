@@ -533,16 +533,18 @@ class TestUpload(UploaderBase):
         fd, abspath = self.temp_file('.zip')
         fp = os.fdopen(fd, 'wb')
         zf = ZipFile(fp, 'w', allowZip64=True)
-        fpath = os.path.join(
-            GOOD_DATA,
-            'vector',
-            'san_andres_y_providencia_poi.*')
-        for f in glob.glob(fpath):
-            zf.write(f, os.path.basename(f))
-        zf.close()
-        self.upload_file(abspath,
-                         self.complete_upload,
-                         check_name='san_andres_y_providencia_poi')
+        with zf:
+            fpath = os.path.join(
+                GOOD_DATA,
+                'vector',
+                'san_andres_y_providencia_poi.*')
+            for f in glob.glob(fpath):
+                zf.write(f, os.path.basename(f))
+
+        self.upload_file(
+            abspath,
+            self.complete_upload,
+            check_name='san_andres_y_providencia_poi')
 
     def test_ascii_grid_upload(self):
         """ Tests the layers that ASCII grid files are uploaded along with aux"""
