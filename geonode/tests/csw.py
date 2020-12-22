@@ -118,7 +118,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         self.assertEqual(record.title, "San Andres Y Providencia Location")
 
         # test that the ISO abstract maps correctly in Dublin Core
-        self.assertEqual(record.abstract, None)
+        self.assertEqual(record.abstract, 'No abstract provided')
 
         # test for correct service link articulation
         for link in record.references:
@@ -133,13 +133,13 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
                 if link['scheme'] == 'OGC:WMS':
                     self.assertEqual(
                         link['url'],
-                        'http://localhost:8000/qgis-server/ogc/'
+                        f'{settings.SITEURL}qgis-server/ogc/'
                         'san_andres_y_providencia_location',
                         'Expected a specific OGC:WMS URL')
                 elif link['scheme'] == 'OGC:WFS':
                     self.assertEqual(
                         link['url'],
-                        'http://localhost:8000/qgis-server/ogc/'
+                        f'{settings.SITEURL}qgis-server/ogc/'
                         'san_andres_y_providencia_location',
                         'Expected a specific OGC:WFS URL')
 
@@ -161,14 +161,14 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         self.assertEqual(record.identification.title, "San Andres Y Providencia Location")
 
         # test that the ISO abstract maps correctly in Dublin Core
-        self.assertEqual(record.identification.abstract, None)
+        self.assertEqual(record.identification.abstract, 'No abstract provided')
 
         # test BBOX properties in Dublin Core
         from decimal import Decimal
-        self.assertEqual(Decimal(record.identification.bbox.minx), Decimal('-81.8593555'))
-        self.assertEqual(Decimal(record.identification.bbox.miny), Decimal('12.1665322'))
-        self.assertEqual(Decimal(record.identification.bbox.maxx), Decimal('-81.356409'))
-        self.assertEqual(Decimal(record.identification.bbox.maxy), Decimal('13.396306'))
+        self.assertAlmostEqual(Decimal(record.identification.bbox.minx), Decimal('-81.8593555'), places=3)
+        self.assertAlmostEqual(Decimal(record.identification.bbox.miny), Decimal('12.1665322'), places=3)
+        self.assertAlmostEqual(Decimal(record.identification.bbox.maxx), Decimal('-81.356409'), places=3)
+        self.assertAlmostEqual(Decimal(record.identification.bbox.maxy), Decimal('13.396306'), places=3)
 
         # test for correct link articulation
         for link in record.distribution.online:
@@ -222,10 +222,10 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             from decimal import Decimal
             logger.debug([Decimal(record.bbox.minx), Decimal(record.bbox.miny),
                           Decimal(record.bbox.maxx), Decimal(record.bbox.maxy)])
-            self.assertEqual(Decimal(record.bbox.minx), Decimal('-81.859356'))
-            self.assertEqual(Decimal(record.bbox.miny), Decimal('12.166532'))
-            self.assertEqual(Decimal(record.bbox.maxx), Decimal('-81.356409'))
-            self.assertEqual(Decimal(record.bbox.maxy), Decimal('13.396306'))
+            self.assertAlmostEqual(Decimal(record.bbox.minx), Decimal('-81.859356'), places=3)
+            self.assertAlmostEqual(Decimal(record.bbox.miny), Decimal('12.166532'), places=3)
+            self.assertAlmostEqual(Decimal(record.bbox.maxx), Decimal('-81.356409'), places=3)
+            self.assertAlmostEqual(Decimal(record.bbox.maxy), Decimal('13.396306'), places=3)
 
     def test_csw_outputschema_fgdc(self):
         """Verify that GeoNode CSW can handle ISO metadata with FGDC outputSchema"""
@@ -247,7 +247,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             self.assertEqual(record.idinfo.citation.citeinfo['title'], "San Andres Y Providencia Location")
 
             # test that the ISO abstract maps correctly in FGDC
-            self.assertEqual(record.idinfo.descript.abstract, None)
+            self.assertEqual(record.idinfo.descript.abstract, 'No abstract provided')
 
     def test_csw_query_bbox(self):
         """Verify that GeoNode CSW can handle bbox queries"""
