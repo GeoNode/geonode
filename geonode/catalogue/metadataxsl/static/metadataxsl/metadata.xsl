@@ -224,7 +224,7 @@
                             <xsl:if test="$topicCategory">
                                 <xsl:for-each select="$topicCategory">
                                     <xsl:choose>
-                                        <xsl:when test="(.='farming')">Farmin<br/> </xsl:when>
+                                        <xsl:when test="(.='farming')">Farming <br/> </xsl:when>
                                         <xsl:when test="(.='biota')">Biota <br/> </xsl:when>
                                         <xsl:when test="(.='boundaries')">Boundaries <br/> </xsl:when>
                                         <xsl:when test="(.='climatologyMeteorologyAtmosphere')">Climatology, meteorology, atmosphere <br/> </xsl:when>
