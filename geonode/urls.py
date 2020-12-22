@@ -287,6 +287,12 @@ urlpatterns += [
     url(r'^faq/', include('geonode.frequently.urls'), name='faq'),
 ]
 
+# Search City
+urlpatterns += [
+    url(r'^search_city/', 
+    TemplateView.as_view(template_name='search_city.html'), name='search_city'),
+]
+
 # Study Cases
 urlpatterns += [
     url(r'^study_cases/', include('geonode.study_cases.urls'), name='study_cases'),
@@ -295,6 +301,11 @@ urlpatterns += [
 # waterproof_nbs_ca
 urlpatterns += [
     url(r'^waterproof_nbs_ca/', include('geonode.waterproof_nbs_ca.urls'), name='waterproof_nbs_ca'),
+]
+
+# waterproof_intake
+urlpatterns += [
+    url(r'^intake/', include('geonode.waterproof_intake.urls'), name='waterproof_intake'),
 ]
 
 if settings.MONITORING_ENABLED:
