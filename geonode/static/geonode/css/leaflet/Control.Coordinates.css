@@ -1,0 +1,32 @@
+
+.leaflet-control-coordinates {
+	background-color:#D8D8D8;
+	background-color:rgba(255, 255, 255, 0.8);
+	cursor:pointer;
+}
+.leaflet-control-coordinates,
+.leaflet-control-coordinates .uiElement input {
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+	border-radius:5px;
+}
+
+.leaflet-control-coordinates .uiElement {
+	margin:4px;
+}
+
+.leaflet-control-coordinates .uiElement .labelFirst {
+	margin-right:4px;
+}
+
+.leaflet-control-coordinates .uiHidden{
+	display:none;
+}
+
+.leaflet-control-coordinates .uiElement.label {
+	color:inherit;
+	font-weight: inherit;
+	font-size: inherit;
+	padding: 0;
+	display: inherit;
+}

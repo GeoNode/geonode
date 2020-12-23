@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static from staticfiles %}
 {% load bootstrap_tags %}
 {% block extra_head %}
 <link href="https://unpkg.com/smartwizard@5/dist/css/smart_wizard_all.min.css" rel="stylesheet" type="text/css" />
@@ -7,6 +8,7 @@
   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
   crossorigin="" />
 <link rel="stylesheet" href="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.css" />
+<link rel="stylesheet" href="{% static "geonode/css/leaflet/Control.Coordinates.css" %}"/>
 
 <style>
   #mainActions>button {
@@ -97,12 +99,7 @@
                 <button type="submit" id="submit" class="btn btn-primary">Submit</button>
             </form>
 
-            <div id="map">
-                <div id="inputCoords" class="inputCoords">
-                    <input id="lat" type="text">
-                    <input id="lon" type="text">
-                    <button type="button" id="btnCoords" class="btn btn-primary">>></button>
-                </div>
+            <div id="map">                
             </div>
         </div>
         <div id="step-2" class="tab-pane" role="tabpanel">
@@ -356,7 +353,8 @@
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
   crossorigin=""></script>
-<script src="https://www.zimmi.cz/Leaflet-Coordinates-Control/Control.Coordinates.js"></script>
+<script src="{% static "geonode/js/leaflet/coordinates/Control.Coordinates.js" %}"></script>
+<script src="{% static "geonode/js/leaflet/coordinates/util/NumberFormatter.js" %}"></script>
 <script src="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.js"></script>
 
 <script type="text/javascript">
@@ -456,16 +454,24 @@
     });
     map.addLayer(osm);
     mapid.addLayer(osmid);
-
-    var c = new L.Control.Coordinates();
+    
     L.control.mapCenterCoord().addTo(map);
-    c.addTo(map);
-
-    function onMapClick(e) {
-      c.setCoordinates(e);
-    }
-
-    map.on('click', onMapClick);
+    
+    L.control.coordinates({
+      position:"bottomleft", //optional default "bootomright"
+      decimals:2, //optional default 4
+      decimalSeperator:".", //optional default "."
+      labelTemplateLat:"Latitude: {y}", //optional default "Lat: {y}"
+      labelTemplateLng:"Longitude: {x}", //optional default "Lng: {x}"
+      enableUserInput:true, //optional default true
+      useDMS:false, //optional default false
+      useLatLngOrder: true, //ordering of labels, default false-> lng-lat
+      markerType: L.marker, //optional default L.marker
+      markerProps: {}, //optional default {},
+      labelFormatterLng : function(lng){return lng+" lng"}, //optional default none,
+      labelFormatterLat : function(lat){return lat+" lat"}, //optional default none      
+    }).addTo(map);
+    
 
     createEditor('{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/config/diagrameditor.xml');
 

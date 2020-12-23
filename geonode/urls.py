@@ -287,6 +287,12 @@ urlpatterns += [
     url(r'^faq/', include('geonode.frequently.urls'), name='faq'),
 ]
 
+# Search City
+urlpatterns += [
+    url(r'^search_city/', 
+    TemplateView.as_view(template_name='search_city.html'), name='search_city'),
+]
+
 # Study Cases
 urlpatterns += [
     url(r'^study_cases/', include('geonode.study_cases.urls'), name='study_cases'),
