@@ -31,8 +31,8 @@ from geonode.utils import json_serializer_producer
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.helpers import (
     gs_catalog,
-    ogc_server_settings,
-    create_gs_thumbnail)
+    ogc_server_settings)
+from geonode.geoserver.tasks import geoserver_create_thumbnail
 from geonode.layers.models import Layer
 from geonode.services.enumerations import CASCADED
 
@@ -127,4 +127,5 @@ def geoserver_post_save_map(instance, sender, created, **kwargs):
         if not instance.thumbnail_url or \
         instance.thumbnail_url == staticfiles.static(settings.MISSING_THUMBNAIL):
             logger.debug("... Creating Thumbnail for Map [%s]" % (instance.title))
-            create_gs_thumbnail(instance, overwrite=False, check_bbox=True)
+            # create_gs_thumbnail(instance, overwrite=False, check_bbox=True)
+            geoserver_create_thumbnail.apply_async(((instance.id, False, True, )))

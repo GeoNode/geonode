@@ -658,8 +658,7 @@ def geoserver_post_save_layers(
             is_monochromatic_image(instance.thumbnail_url):
                 _recreate_thumbnail = True
             if _recreate_thumbnail:
-                create_gs_thumbnail(instance, overwrite=True)
-                logger.debug(f"... Created Thumbnail for Layer {instance.title}")
+                geoserver_create_thumbnail.apply_async(((instance.id, )))
             else:
                 logger.debug(f"... Thumbnail for Layer {instance.title} already exists: {instance.thumbnail_url}")
         except Exception as e:
@@ -674,6 +673,36 @@ def geoserver_post_save_layers(
         geonode_upload_sessions.update(processed=True)
     except Exception as e:
         logger.exception(e)
+
+
+@app.task(
+    bind=True,
+    base=FaultTolerantTask,
+    name='geonode.geoserver.tasks.geoserver_create_thumbnail',
+    queue='cleanup',
+    countdown=60,
+    # expires=120,
+    acks_late=True,
+    retry=True,
+    retry_policy={
+        'max_retries': 3,
+        'interval_start': 0,
+        'interval_step': 0.2,
+        'interval_max': 0.2,
+    })
+def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=True):
+    """
+    Runs create_gs_thumbnail.
+    """
+    instance = None
+    try:
+        instance = ResourceBase.objects.get(id=instance_id).get_real_instance()
+    except Exception:
+        logger.error(f"Resource id {instance_id} does not exist yet!")
+        return
+
+    create_gs_thumbnail(instance, overwrite=overwrite, check_bbox=check_bbox)
+    logger.debug(f"... Created Thumbnail for Layer {instance.title}")
 
 
 @app.task(
