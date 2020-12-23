@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 
 
 def create(request):
-
     logger.debug(request.method)
     if request.method == 'POST':
         form = forms.IntakeForm(request.POST)

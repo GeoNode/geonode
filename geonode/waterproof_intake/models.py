@@ -38,8 +38,8 @@ class Intake(models.Model):
         verbose_name=_('Description'),
     )
 
-    area = models.MultiPolygonField()
-
+    area = models.MultiPolygonField(verbose_name='geo',srid = 4326, null=True, blank=True)
+    
     city = models.ForeignKey(Countries, on_delete=models.CASCADE)
 
     added_by = models.ForeignKey(
@@ -50,8 +50,8 @@ class Intake(models.Model):
     )
 
 
-class UserCosts(models.model):
-     name = models.CharField(
+class UserCosts(models.Model):
+    name = models.CharField(
         max_length=100,
         verbose_name=_('Name'),
     )
@@ -62,7 +62,7 @@ class UserCosts(models.model):
         verbose_name=_('Value')
     )
 
-class CategoryCosts(models.model):
+class CategoryCosts(models.Model):
     name = models.CharField(
         max_length=100,
         verbose_name=_('Name'),
@@ -73,7 +73,7 @@ class CategoryCosts(models.model):
         verbose_name=_('Name'),
     )
 
-class SystemCosts(models.model):
+class SystemCosts(models.Model):
 
     name = models.CharField(
         max_length=100,
@@ -87,7 +87,7 @@ class SystemCosts(models.model):
     )
 
    
-class ElementSystem(models.model):
+class ElementSystem(models.Model):
     origin = models.IntegerField(
         default=1980,
         verbose_name=_('Year'),
