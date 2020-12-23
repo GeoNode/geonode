@@ -10,9 +10,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='profile',
-            name='professional_role',
-            field=models.CharField(blank=True, choices=[('COPART', 'Corporate partner'), ('ACDMC', 'Academic'), ('SCADM', 'Service company administrator'), ('MCOMC', 'Manager that carries out monitoring and control'), ('CITIZN', 'Citizen'), ('REPECS', 'Representative of an economic sector'), ('OTHER', 'Other')], help_text='Professional or Academic user role', max_length=6, null=True, verbose_name='ProfessionalRole'),
-        ),
+        # migrations.AlterField(
+        #     model_name='profile',
+        #     name='professional_role',
+        #     field=models.CharField(blank=True, choices=[('COPART', 'Corporate partner'), ('ACDMC', 'Academic'), ('SCADM', 'Service company administrator'), ('MCOMC', 'Manager that carries out monitoring and control'), ('CITIZN', 'Citizen'), ('REPECS', 'Representative of an economic sector'), ('OTHER', 'Other')], help_text='Professional or Academic user role', max_length=6, null=True, verbose_name='ProfessionalRole'),
+        # ),
     ]
