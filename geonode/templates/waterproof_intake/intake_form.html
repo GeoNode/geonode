@@ -336,32 +336,12 @@
                     <th class="text-center" scope="col">Year</th>
                     <th class="text-center" scope="col">Water Volume (m3)</th>
                     <th class="text-center" scope="col">Sediment (Ton)</th>
-                    <th class="text-center" scope="col">Nitrogen (kg)</th>
-                    <th class="text-center" scope="col">Phosphorus (kG)</th>
+                    <th class="text-center" scope="col">Nitrogen (Kg)</th>
+                    <th class="text-center" scope="col">Phosphorus (Kg)</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <th class="text-center" scope="col">1</th>
-                    <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                    <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                    <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                    <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                </tr>
-                <tr>
-                    <th class="text-center" scope="col">2</th>
-                    <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                    <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                    <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                    <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                </tr>
-                <tr>
-                    <th class="text-center" scope="col">3</th>
-                    <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                    <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                    <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                    <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                </tr>
+            <tbody id="intakeEITA">
+
             </tbody>
         </table>
     </div>
@@ -403,12 +383,13 @@
 
       $("#intakeWECB").click(function() {
         $('#intakeECTAG tr').remove();
+        $('#intakeEITA tr').remove();
+        $('#autoAdjustHeightF').css("height","auto");
         typeProcessInterpolation = Number($("#typeProcessInterpolation").val());
         numberYearsInterpolationValue  = Number($("#numberYearsInterpolationValue").val());
         initialDataExtractionInterpolationValue = Number($("#initialDataExtractionInterpolationValue").val());
         finalDataExtractionInterpolationValue  = Number($("#finalDataExtractionInterpolationValue").val())  ;
 
-        $('#autoAdjustHeightF').css("height","auto");
         // Linear interpolation
         if(typeProcessInterpolation==1){
           m = (finalDataExtractionInterpolationValue-initialDataExtractionInterpolationValue)/(numberYearsInterpolationValue-0)
@@ -424,8 +405,26 @@
 
         // Potencial interpolation
         if(typeProcessInterpolation==2){
+          m = (Math.log(finalDataExtractionInterpolationValue)-Math.log(initialDataExtractionInterpolationValue))/((Math.log(numberYearsInterpolationValue)-Math.log(1)));
+          b =  Math.exp((-1*m*Math.log(1))+Math.log(initialDataExtractionInterpolationValue));
 
+          for (let index = 1; index <= numberYearsInterpolationValue; index++) {
+            $('#intakeECTAG').append(`<tr>
+                <th class="text-center" scope="row">${index}</th>
+                <td class="text-center">${(b*(Math.pow(index,m)))}</td>
+              </tr>`);
+          }
         }
+
+        for (let index = 0; index < numberYearsInterpolationValue; index++) {
+          $('#intakeEITA').append(`<tr>
+                  <th class="text-center" scope="col">${index+1}</th>
+                  <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
+                  <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
+                  <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
+                  <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
+              </tr>`);
+          }       
         });
 
       $('#smartwizard').smartWizard("next").click(function() {
