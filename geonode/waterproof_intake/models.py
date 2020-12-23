@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.gis.db import models
 from django.utils.translation import ugettext_lazy as _
 from geonode.waterproof_nbs_ca.models import Countries
+from geonode.waterproof_nbs_ca.models import Currency
 
 
 class City(models.Model):
@@ -184,3 +185,4 @@ class WaterExtraction(models.Model):
     )
 
     demand = models.ForeignKey(DemandParameters, on_delete=models.CASCADE)
+

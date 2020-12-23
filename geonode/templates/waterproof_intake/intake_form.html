@@ -731,21 +731,19 @@
 
     
 
-var model = editor.graph.model.cells[3].value.attributes[0].value;
+  var model = editor.graph.model.cells[3].value.attributes[0].value;
     model = `
-    [
-    {
-      "nombre":"rio",
-      "costo":"[{
-       "valor":"0.56"
-      },
-      {
-       "valor":"2.56"
-       
-      }]"
-    }
-    ]
-    `;
+        [{
+          "nombre":"rio",
+          "costo":"[{
+          "valor":"0.56"
+          },
+          {
+          "valor":"2.56"
+          }]"
+        }
+        ]
+        `;
     var model2 = editor.graph.model.cells[3].value.attributes;
     var node = document.getElementById('mxCell');
     //var snode = model.getValue(cell);
@@ -758,19 +756,6 @@ var model = editor.graph.model.cells[3].value.attributes[0].value;
 
   
   
-  //console.log(snode);
-/*.connectionHandler.setCreateTarget
-    var activity = {};
-    activity.id = snode.getAttribute("id");
-    activity.name = snode.getAttribute('label');
-    activity.code = snode.getAttribute('code');
-
-    var descriptionNode = snode.getElementsByTagName("Description")[0];    //child node
-    if (descriptionNode) activity.description = descriptionNode.textContent;
-
-    //activity type
-    var activityTypeNode = snode.getElementsByTagName("ActivityType")[0];   //child node
-    activity.type = activityTypeNode.getAttribute("type");*/
 
   window.onbeforeunload = function () { return mxResources.get('changesLost'); };
 
