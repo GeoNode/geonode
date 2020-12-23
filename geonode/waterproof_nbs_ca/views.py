@@ -133,22 +133,23 @@ def createNbs(request, countryId):
 
 def listNbs(request):
     if request.method == 'GET':
-        if (request.user.professional_role == 'ADMIN'):
-            userCountry = Countries.objects.get(code=request.user.country)
-            nbs = WaterproofNbsCa.objects.all()
-            region = Region.objects.get(id=userCountry.region_id)
-            currency = Currency.objects.get(country_id=userCountry.id)
-            return render(
-                request,
-                'waterproof_nbs_ca/waterproofnbsca_list.html',
-                {
-                    'nbs': nbs,
-                    'userCountry': userCountry,
-                    'region': region,
-                    'currency': currency
-                }
-            )
-        else:
+        if request.user.is_authenticated:
+            if (request.user.professional_role == 'ADMIN'):
+                userCountry = Countries.objects.get(code=request.user.country)
+                nbs = WaterproofNbsCa.objects.all()
+                region = Region.objects.get(id=userCountry.region_id)
+                currency = Currency.objects.get(country_id=userCountry.id)
+                return render(
+                    request,
+                    'waterproof_nbs_ca/waterproofnbsca_list.html',
+                    {
+                        'nbs': nbs,
+                        'userCountry': userCountry,
+                        'region': region,
+                        'currency': currency
+                    }
+                )
+        
             if (request.user.professional_role == 'ANAL'):
                 nbs = WaterproofNbsCa.objects.all()
                 userCountry = Countries.objects.get(code=request.user.country)
@@ -164,21 +165,21 @@ def listNbs(request):
                         'currency': currency
                     }
                 )
-            else:
-                nbs = WaterproofNbsCa.objects.filter(added_by=request.user.id)
-                userCountry = Countries.objects.get(code=request.user.country)
-                region = Region.objects.get(id=userCountry.region_id)
-                currency = Currency.objects.get(country_id=userCountry.id)
-                return render(
-                    request,
-                    'waterproof_nbs_ca/waterproofnbsca_list.html',
-                    {
-                        'nbs': nbs,
-                        'userCountry': userCountry,
-                        'region': region,
-                        'currency': currency
-                    }
-                )
+        else:
+            nbs = WaterproofNbsCa.objects.all()
+            userCountry = Countries.objects.get(code='COL')
+            region = Region.objects.get(id=userCountry.region_id)
+            currency = Currency.objects.get(country_id=userCountry.id)
+            return render(
+                request,
+                'waterproof_nbs_ca/waterproofnbsca_list.html',
+                {
+                    'nbs': nbs,
+                    'userCountry': userCountry,
+                    'region': region,
+                    'currency': currency
+                }
+            )
 
 
 def editNbs(request, idx):

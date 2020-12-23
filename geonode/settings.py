@@ -24,12 +24,12 @@ import re
 import ast
 import sys
 import subprocess
+import dj_database_url
+
 from datetime import timedelta
 from distutils.util import strtobool  # noqa
-from urllib.parse import urlparse, urlunparse, urljoin
+from urllib.parse import urlparse, urljoin
 
-import django
-import dj_database_url
 #
 # General Django development settings
 #
@@ -101,14 +101,14 @@ HOSTNAME = _surl.hostname
 if not SITEURL.endswith('/'):
     SITEURL = '{}/'.format(SITEURL)
 
-# spatialite or sqlite
-#DATABASE_URL = os.getenv(
-#    'DATABASE_URL',
-#    'spatialite:///{path}'.format(
-#        path=os.path.join(PROJECT_ROOT, 'development.db')
-#    )
-#)
-DATABASE_URL = 'postgresql://localhost:5432/geonode'
+# DATABASE_URL = os.getenv(
+#      'DATABASE_URL',
+#      'spatialite:///{path}'.format(
+#          path=os.path.join(PROJECT_ROOT, 'development.db')
+#      )
+# )
+
+#DATABASE_URL = 'postgresql://geonode:geonode_data@dev.skaphe.com:5432/geonode'
 
 if DATABASE_URL.startswith("spatialite"):
     try:
@@ -120,43 +120,39 @@ if DATABASE_URL.startswith("spatialite"):
     except FileNotFoundError as ex:
         print(ex)
 
- 
-
 # Defines settings for development
 
 # since GeoDjango is in use, you should use gis-enabled engine, for example:
 # 'ENGINE': 'django.contrib.gis.db.backends.postgis'
 # see https://docs.djangoproject.com/en/1.8/ref/contrib/gis/db-api/#module-django.contrib.gis.db.backends for
 # detailed list of supported backends and notes.
-_db_conf = dj_database_url.parse(DATABASE_URL, conn_max_age=0)
+GEONODE_DB_CONN_MAX_AGE = int(os.getenv('GEONODE_DB_CONN_MAX_AGE', 0))
+GEONODE_DB_CONN_TOUT = int(os.getenv('GEONODE_DB_CONN_TOUT', 5))
+
+_db_conf = dj_database_url.parse(
+    DATABASE_URL,
+    conn_max_age=GEONODE_DB_CONN_MAX_AGE)
 
 _db_conf['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 if 'CONN_TOUT' in _db_conf:
-    _db_conf['CONN_TOUT'] = 5
+    _db_conf['CONN_TOUT'] = GEONODE_DB_CONN_TOUT
 if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
     if 'OPTIONS' not in _db_conf:
         _db_conf['OPTIONS'] = {}
     _db_conf['OPTIONS'].update({
-        'connect_timeout': 5,
+        'connect_timeout': GEONODE_DB_CONN_TOUT,
     })
 
 DATABASES = {
-   'default': {
-       'ENGINE': 'django.contrib.gis.db.backends.postgis',
-       'NAME': 'geonode',
-       'USER': 'postgres',
-       'PASSWORD': 'Skaphe2020',
-       'HOST': '127.0.0.1',
-       'PORT': '5432',
-   }
+    'default': _db_conf
 }
 
 if os.getenv('DEFAULT_BACKEND_DATASTORE'):
     GEODATABASE_URL = os.getenv('GEODATABASE_URL',
                                 'postgis://\
-geonode_data:geonode_data@localhost:5432/geonode_data')
+geonode:geonode_data@dev.skaphe.com:5432/geonode')
     DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = dj_database_url.parse(
-        GEODATABASE_URL, conn_max_age=0
+        GEODATABASE_URL, conn_max_age=GEONODE_DB_CONN_MAX_AGE
     )
     _geo_db = DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')]
     if 'CONN_TOUT' in DATABASES['default']:
@@ -164,7 +160,7 @@ geonode_data:geonode_data@localhost:5432/geonode_data')
     if 'postgresql' in GEODATABASE_URL or 'postgis' in GEODATABASE_URL:
         _geo_db['OPTIONS'] = DATABASES['default']['OPTIONS'] if 'OPTIONS' in DATABASES['default'] else {}
         _geo_db['OPTIONS'].update({
-            'connect_timeout': 5,
+            'connect_timeout': GEONODE_DB_CONN_TOUT,
         })
 
     DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = _geo_db
@@ -420,11 +416,17 @@ GEONODE_CORE_APPS = (
     'geonode.br',
     'geonode.layers',
     'geonode.maps',
+    'geonode.geoapps',
     'geonode.documents',
     'geonode.security',
     'geonode.catalogue',
     'geonode.catalogue.metadataxsl',
 )
+
+# GeoNode Apps
+GEONODE_APPS_ENABLE = ast.literal_eval(os.getenv("GEONODE_APPS_ENABLE", "True"))
+GEONODE_APPS_NAME = os.getenv("GEONODE_APPS_NAME", "Apps")
+GEONODE_APPS_NAV_MENU_ENABLE = ast.literal_eval(os.getenv("GEONODE_APPS_NAV_MENU_ENABLE", "True"))
 
 GEONODE_INTERNAL_APPS = (
     # GeoNode internal apps
@@ -452,7 +454,6 @@ GEONODE_INTERNAL_APPS = (
     'geonode.study_cases',
     'geonode.waterproof_nbs_ca',
     'geonode.waterproof_intake',
-
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -530,7 +531,7 @@ INSTALLED_APPS = (
     
     # FAQ
     'ckeditor',
-    # 'frequently',
+    
 )
 
 INSTALLED_APPS += ('markdownify',)
@@ -738,12 +739,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
-                # 'django.core.context_processors.debug',
-                # 'django.core.context_processors.i18n',
-                # 'django.core.context_processors.tz',
-                # 'django.core.context_processors.media',
-                # 'django.core.context_processors.static',
-                # 'django.core.context_processors.request',
                 'geonode.context_processors.resource_urls',
                 'geonode.geoserver.context_processors.geoserver_urls',
                 'geonode.themes.context_processors.custom_theme'
@@ -1240,10 +1235,9 @@ try:
     ALLOWED_HOSTS = ast.literal_eval(os.getenv('ALLOWED_HOSTS'))
 except ValueError:
     # fallback to regular list of values separated with misc chars
-    ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('ALLOWED_HOSTS') is None \
+    ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode', 'apps.skaphe.com', 'apps.skaphe.com:8000'] if os.getenv('ALLOWED_HOSTS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost','apps.skaphe.com','190.146.133.76']
 # AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
 # to only whitelisted IP addresses.
 #
@@ -1520,6 +1514,8 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     if 'geonode_mapstore_client' not in INSTALLED_APPS:
         INSTALLED_APPS += (
             'mapstore2_adapter',
+            'mapstore2_adapter.geoapps',
+            'mapstore2_adapter.geoapps.geostories',
             'geonode_mapstore_client',)
 
     def get_geonode_catalogue_service():
@@ -1660,7 +1656,6 @@ SEARCH_FILTERS = {
 
 # HTML WYSIWYG Editor (TINYMCE) Menu Bar Settings
 TINYMCE_DEFAULT_CONFIG = {
-    "selector": "textarea#id_resource-featureinfo_custom_template",
     "theme": "silver",
     "height": 500,
     "plugins": 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
@@ -1824,6 +1819,12 @@ if USE_GEOSERVER:
 #          'schedule': crontab(hour=16, day_of_week=5),
 #     },
 CELERY_BEAT_SCHEDULE = {}
+
+if 'geonode.services' in INSTALLED_APPS:
+    CELERY_BEAT_SCHEDULE['probe_services'] = {
+        'task': 'geonode.services.tasks.probe_services',
+        'schedule': 600.0,
+    }
 
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
 CELERY_ENABLE_UTC = ast.literal_eval(os.environ.get('CELERY_ENABLE_UTC', 'True'))

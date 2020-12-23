@@ -226,7 +226,7 @@ $(function () {
     getTransformationsSelected = function () {
         var transformations = [];
         // Obtención de valores de los check de la solución
-        $('input[name=itemRT]:checked').each(function () {
+        $('input[data-value=itemRT]:checked').each(function () {
             transformations.push($(this).val());
         });
         return transformations;
