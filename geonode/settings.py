@@ -65,18 +65,18 @@ DEBUG_STATIC = ast.literal_eval(os.getenv('DEBUG_STATIC', 'False'))
 FORCE_SCRIPT_NAME = os.getenv('FORCE_SCRIPT_NAME', '')
 
 # Define email service on GeoNode
-EMAIL_ENABLE = ast.literal_eval(os.getenv('EMAIL_ENABLE', 'False'))
+EMAIL_ENABLE = ast.literal_eval(os.getenv('EMAIL_ENABLE', 'True'))
 
 if EMAIL_ENABLE:
     EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
                               default='django.core.mail.backends.smtp.EmailBackend')
-    EMAIL_HOST = os.getenv('DJANGO_EMAIL_HOST', 'localhost')
-    EMAIL_PORT = os.getenv('DJANGO_EMAIL_PORT', 25)
-    EMAIL_HOST_USER = os.getenv('DJANGO_EMAIL_HOST_USER', '')
-    EMAIL_HOST_PASSWORD = os.getenv('DJANGO_EMAIL_HOST_PASSWORD', '')
+    EMAIL_HOST = os.getenv('DJANGO_EMAIL_HOST', 'smtp.gmail.com')
+    EMAIL_PORT = os.getenv('DJANGO_EMAIL_PORT', 465)
+    EMAIL_HOST_USER = os.getenv('DJANGO_EMAIL_HOST_USER', 'srst@skaphe.com')
+    EMAIL_HOST_PASSWORD = os.getenv('DJANGO_EMAIL_HOST_PASSWORD', 'Skaphe2020*')
     EMAIL_USE_TLS = ast.literal_eval(os.getenv('DJANGO_EMAIL_USE_TLS', 'False'))
-    EMAIL_USE_SSL = ast.literal_eval(os.getenv('DJANGO_EMAIL_USE_SSL', 'False'))
-    DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'GeoNode <no-reply@geonode.org>')
+    EMAIL_USE_SSL = ast.literal_eval(os.getenv('DJANGO_EMAIL_USE_SSL', 'True'))
+    DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Skaphe <srst@skaphe.com>')
 else:
     EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
                               default='django.core.mail.backends.console.EmailBackend')
@@ -108,7 +108,7 @@ if not SITEURL.endswith('/'):
 #      )
 # )
 
-DATABASE_URL = 'postgresql://geonode:geonode_data@dev.skaphe.com:5432/geonode'
+#DATABASE_URL = 'postgresql://geonode:geonode_data@dev.skaphe.com:5432/geonode'
 
 if DATABASE_URL.startswith("spatialite"):
     try:
@@ -453,7 +453,7 @@ GEONODE_INTERNAL_APPS = (
     'geonode.frequently',
     'geonode.study_cases',
     'geonode.waterproof_nbs_ca',
-    #'geonode.waterproof_intake',
+    'geonode.waterproof_intake',
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -484,6 +484,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.humanize',
     'django.contrib.gis',
+    'django.contrib.admindocs',
 
     # Utility
     'dj_pagination',
@@ -527,6 +528,10 @@ INSTALLED_APPS = (
 
     # GeoNode
     'geonode',
+    
+    # FAQ
+    'ckeditor',
+    
 )
 
 INSTALLED_APPS += ('markdownify',)
@@ -916,10 +921,11 @@ ACTSTREAM_SETTINGS = {
     'GFK_FETCH_DEPTH': 1,
 }
 
+ACCOUNT_FORMS = {'signup': 'geonode.people.forms.CustomUserCreationForm2'}
 
 # Email for users to contact admins.
 THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
-    'THEME_ACCOUNT_CONTACT_EMAIL', 'admin@example.com'
+    'THEME_ACCOUNT_CONTACT_EMAIL', 'srst@skaphe.com'
 )
 
 #
@@ -1969,10 +1975,15 @@ ACCOUNT_APPROVAL_REQUIRED = ast.literal_eval(
     os.getenv('ACCOUNT_APPROVAL_REQUIRED', 'False')
 )
 ACCOUNT_ADAPTER = 'geonode.people.adapters.LocalAccountAdapter'
-ACCOUNT_AUTHENTICATION_METHOD = os.environ.get('ACCOUNT_AUTHENTICATION_METHOD', 'username_email')
+ACCOUNT_AUTHENTICATION_METHOD = os.environ.get('ACCOUNT_AUTHENTICATION_METHOD', 'email')
 ACCOUNT_CONFIRM_EMAIL_ON_GET = ast.literal_eval(os.environ.get('ACCOUNT_CONFIRM_EMAIL_ON_GET', 'True'))
 ACCOUNT_EMAIL_REQUIRED = ast.literal_eval(os.environ.get('ACCOUNT_EMAIL_REQUIRED', 'True'))
-ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION', 'none')
+ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION', 'mandatory')
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = os.environ.get('ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS', 'False')
+ACCOUNT_UNIQUE_EMAIL = os.environ.get('ACCOUNT_UNIQUE_EMAIL', 'True')
+ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = os.environ.get('ACCOUNT_EMAIL_CONFIRMATION_REQUIRED', 'True')
+ACCOUNT_USERNAME_REQUIRED = os.environ.get('ACCOUNT_USERNAME_REQUIRED', 'False')
+# ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = os.environ.get('ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS','3')
 
 # Since django-allauth 0.43.0.
 ACCOUNT_SIGNUP_REDIRECT_URL = os.environ.get('ACCOUNT_SIGNUP_REDIRECT_URL', os.getenv('SITEURL', _default_siteurl))
@@ -2119,3 +2130,9 @@ GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat
 SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'True'))
 # -- END Settings for MONITORING plugin
 
+FREQUENTLY_READY_FOR_V1 = True
+FREQUENTLY_ALLOW_ANONYMOUS = True
+
+STUDY_CASES_ALLOW_ANONYMOUS = True
+
+WATERPROOF_NBS_CA_ALLOW_ANONYMOUS = True
