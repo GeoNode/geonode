@@ -1393,7 +1393,7 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
         try:
             logger.debug('Deleting Layer {0}'.format(layer))
             with transaction.atomic():
-                layer.delete()
+                Layer.objects.filter(id=layer.id).delete()
         except IntegrityError:
             raise
         except Exception as e:
