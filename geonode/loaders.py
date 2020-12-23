@@ -25,6 +25,8 @@ class GeoNodeCeleryTaksLoader(DjangoLoader):
     def on_task_init(self, task_id, task):
         """Called before every task."""
         for conn in db.connections.all():
-            if not conn.in_atomic_block:
-                conn.close_if_unusable_or_obsolete()
+            if not conn.in_atomic_block and \
+            (not conn.connection or
+             (conn.connection.cursor() and not conn.is_usable())):
+                conn.close()
         super(GeoNodeCeleryTaksLoader, self).on_task_init(task_id, task)

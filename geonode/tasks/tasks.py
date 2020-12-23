@@ -91,8 +91,10 @@ class FaultTolerantTask(celery.Task):
 
     def after_return(self, *args, **kwargs):
         for conn in connections.all():
-            if not conn.in_atomic_block and not conn.open:
-                conn.close_if_unusable_or_obsolete()
+            if not conn.in_atomic_block and \
+            (not conn.connection or
+             (conn.connection.cursor() and not conn.is_usable())):
+                conn.close()
 
 
 @app.task(
