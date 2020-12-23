@@ -1814,7 +1814,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         if os.path.splitext(settings.MISSING_THUMBNAIL)[0] in instance.get_thumbnail_url():
             from geonode.geoserver.tasks import geoserver_create_thumbnail
             # create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
-            geoserver_create_thumbnail.apply_async(((instance.id )))
+            geoserver_create_thumbnail.apply_async(((instance.id, )))
         else:
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
