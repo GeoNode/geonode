@@ -10,9 +10,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='profile',
-            name='agree_conditions',
-            field=models.BooleanField(default=False, verbose_name='Agree Conditions'),
-        ),
+        # migrations.AlterField(
+        #     model_name='profile',
+        #     name='agree_conditions',
+        #     field=models.BooleanField(default=False, verbose_name='Agree Conditions'),
+        # ),
     ]
