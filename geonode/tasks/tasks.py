@@ -24,7 +24,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 
 from django.db import (
-    connection,
+    connections,
     transaction)
 
 from geonode.celery_app import app
@@ -90,7 +90,8 @@ class FaultTolerantTask(celery.Task):
     abstract = True
 
     def after_return(self, *args, **kwargs):
-        connection.close()
+        for conn in connections.all():
+            conn.close_if_unusable_or_obsolete()
 
 
 @app.task(
