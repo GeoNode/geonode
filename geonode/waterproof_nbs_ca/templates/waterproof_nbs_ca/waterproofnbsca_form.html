@@ -6,9 +6,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <div class="row">
     <div class="col-md-4">
-        <h4 class="text-center" id="countryLabel">{{country.name}}</h4>
-        <p><b>Region:</b> <span id="regionLabel">{{region.name}}</span> </p>
-        <p><b>Currency:</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
+        <h4 class="text-center">Bogotá D.C.</h4>
+        <p><b>Country:</b> Colombia</p>
+        <p><b>Region:</b> Central</p>
     </div>
     <div class="col-md-8">
         <div id="mapid" style="width: 700px; height: 200px;"></div>
@@ -123,25 +123,27 @@
         <div class="row">
             <div class="col-md-12">
                 <select id="riosTransition" class="form-control" data-error="This field is required" required>
+
                 </select>
                 <div class="help-block with-errors"></div>
             </div>
         </div>
     </div>
-    <h4 class="text-primary">LAND USE<span style="margin-left: 40%;">LAND COVER CHANGE DEFENITION</span></h4>
+    <h4 class="text-primary">LAND USE / LAND COVER CHANGE DEFENITION</h4>
     <div class="form-group">
         <div class="row">
             {% for tran in transitions %}
-            <div class="col-md-12" id="selectlanduse{{tran.pk}}" name="selectlanduse" data-value="{{tran.pk}}"
-                style="display: none;">
+            <div class="col-md-12" id="selectlanduse{{tran.pk}}" name="selectlanduse" data-value="{{tran.pk}}" style="display: none;">
                 {% for riosa in riosActivity %} {% if tran.pk == riosa.transition_id %}
                 <h5>{{ riosa.name }}</h5>
                 {% for riost in riosTransformation %} {% if riosa.pk == riost.activity_id %}
-                <div class="checkbox" style="margin-left: 50%;">
-                    <label><input data-value="itemRT" name="{{riosa.name}}_{{itemRT}}" type="radio"
-                            id="itemRT{{riost.pk}}" value="{{ riost.pk }}"> {{riost.name}}</label>
-                </div>
-
+                <ul>
+                    <li class="list-inline">
+                        <div class="checkbox">
+                            <label><input name="itemRT" type="checkbox" id="itemRT{{riost.pk}}" value="{{ riost.pk }}">{{riost.name}}</label>
+                        </div>
+                    </li>
+                </ul>
                 {% endif %} {% endfor %} {% endif %} {% endfor %}
             </div>
             {% endfor %}
@@ -158,6 +160,7 @@
     </div>
     <br>
     <button id="submit" type="button" class="btn btn-primary ">Submit</button>
+    <button type="button" class="btn btn-primary" id="getAllValues">Get Values</button>
 
 </form>
 {% endblock %} {% block extra_script %}
@@ -179,4 +182,33 @@
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/leaflet.ajax.min.js"></script>
 
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
+<script>
+    $(document).ready(function() {
+        // Obtención de valores de los check de la solución
+        $("#getAllValues").click(function() {
+            $('input[name=itemRT]:checked').each(function() {
+                inputTypes.push($(this).val());
+            });
+            console.log(inputTypes)
+        });
+
+        // Ocultar div dependiendo de la opción seleccionada
+        $("#riosTransition").change(function() {
+            dato = $("#riosTransition").val();
+            var data_value = $(`#selectlanduse${dato}`).attr('data-value');
+            $('div[name=selectlanduse]').each(function() {
+                $('div[name=selectlanduse]').css({
+                    "display": "none"
+                })
+            });
+
+            if (dato == data_value) {
+                $(`#selectlanduse${dato}`).css({
+                    "display": "block"
+                })
+            }
+        });
+
+    })
+</script>
 {% endblock %}

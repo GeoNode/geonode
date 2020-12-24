@@ -15,11 +15,13 @@ class IntakeForm(forms.ModelForm):
         model = Intake
         fields = ('name', 
                 'description',
+        )
+        """
                 'id_region', 
                 'id_city')
         widgets = {'id_region': forms.HiddenInput(),
                     'id_city': forms.HiddenInput()}
-
+        """
     def save(self, *args, **kwargs):
         
         obj = super(IntakeForm, self).save(*args, **kwargs)
