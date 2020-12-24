@@ -438,7 +438,7 @@
 		</mxGraphModel>
 	</mxGraph>
 	<mxDefaultToolbar as="toolbar">
-		<add as="connect" mode="connect" icon="/static/mxgraph/images/connect.gif"><![CDATA[
+		<!--<add as="connect" mode="connect" icon="/static/mxgraph/images/connect.gif"><![CDATA[
 			function (editor)
 			{
 				if (editor.defaultEdge != null)
@@ -464,8 +464,7 @@
 					editor.defaultEdge.style = 'arrowConnector';
 				}
 			}
-		]]></add>
-		<br/><br/>
+		]]></add>-->
 		<!--add as="Text" template="text" icon="/static/mxgraph/images/text.gif"/>
 		<add as="Container" template="container" icon="/static/mxgraph/images/swimlane.gif"/>
 		<add as="Rectangle" template="rectangle" icon="/static/mxgraph/images/rectangle.gif"/>

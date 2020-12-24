@@ -102,101 +102,71 @@
             <div id="map">                
             </div>
         </div>
-        <div id="step-2" class="tab-pane" role="tabpanel">
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="panel panel-default">
-                        <div class="panel-body" id="toolbar">
-                            Basic panel example
-                        </div>
-                    </div>
-                    <div class="panel panel-default">
-                        <div class="panel-body" id="graph" tabindex="-1" style="height:790px;width:100%;overflow:hidden;cursor:default;">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="alert alert-info" role="alert">
-                                <h1 class="text-center">R1</h1>
-                            </div>
-                            <form>
-                                <div class="form-group">
-                                    <label for="exampleInputEmail1">Name:</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="exampleInputEmail1">Parameter 1:</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="exampleInputEmail1">Parameter 2:</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="exampleInputEmail1">Costo 1:</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="exampleInputEmail1">Costo 2:</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="exampleInputEmail1">Costo 3:</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="exampleInputEmail1">Costo 4:</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="exampleInputEmail1">Costo 5:</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="page">
-                <div id="header">
-                    <div id="headerimg" style="overflow:hidden;">
-                        <h1 id="title">Draw</h1>
-                    </div>
-                </div>
-                <div id="mainActions" style="width:100%;padding-top:8px;padding-left:24px;padding-bottom:8px;">
-                </div>
-                <div id="selectActions" style="width:100%;padding-left:54px;padding-bottom:4px;">
-                </div>
-                <table border="0" width="730px">
-                    <tr>
-                        <!--<td id="toolbar" style="width:16px;padding-left:20px;" valign="top">
-                      <!-- Toolbar Here -->
-                        </td>
-                        <td valign="top" style="border-width:1px;border-style:solid;border-color:black;">
-
-                            <!-- Graph Here -->
-                            <center id="splash" style="padding-top:230px;">
-                                <img src="{{ STATIC_URL }}geonode/js/mxgraph/examples/images/loading.gif">
-                            </center>
-            </div>
-            <textarea id="xml" style="height:480px;width:684px;display:none;border-style:none;"></textarea>
-            </td>
-            </tr>
-            </table>
-            <span style="float:right;padding-right:36px;">
-          <input id="source" type="checkbox" />Source
-        </span>
-            <div id="zoomActions" style="width:100%;padding-left:54px;padding-top:4px;">
-            </div>
-            <div id="footer">
-                <p id="status" style="display:none;">
-                    <!-- Status Here -->Loading...
-                </p>
-                <br />
+<div id="step-2" class="tab-pane" role="tabpanel">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-info">
+                <div class="panel-body text-center" id="toolbar"></div>
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="panel panel-danger">
+                <div class="panel-body" id="graph" tabindex="-1" style="height:790px;width:100%;overflow:hidden;cursor:default;"></div>
+                 <span style="float:right;padding-right:36px;">
+                    <input id="source" type="checkbox" />Ver Codigo
+                  </span>
+                <textarea id="xml" style="height:480px;width:684px;display:none;border-style:none;"></textarea>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="alert alert-info" role="alert">
+                        <h1 class="text-center">R1</h1>
+                    </div>
+
+                    <form>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Name:</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Parameter 1:</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Parameter 2:</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Costo 1:</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Costo 2:</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Costo 3:</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Costo 4:</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Costo 5:</label>
+                            <input type="text" class="form-control">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>   
     <div id="step-3" class="tab-pane" role="tabpanel">
         <div class="page-header">
             <h3>Water Extraction</h3>
@@ -223,13 +193,13 @@
                                         <select class="form-control" id="typeProcessInterpolation">
                                   <option value="1">Linear interpolation</option>
                                   <option value="2">Potential interpolation</option>
-                                  <option Value="3">Exponential interpolation</option>
+                                  <option Value="3" selected>Exponential interpolation</option>
                                   <option Value="4">Logistics interpolation</option>
                                 </select>
                                     </div>
                                     <div class="col-md-6">
                                         <label>Number Year <span class="text-danger-wp">(*)</span> </label>
-                                        <input type="text" class="form-control" id="numberYearsInterpolationValue" required>
+                                        <input type="text" value="30" class="form-control" id="numberYearsInterpolationValue" required>
                                     </div>
                                 </div>
                             </div>
@@ -238,11 +208,11 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label>Initial <span class="text-danger-wp">(*)</span> </label>
-                                        <input type="text" class="form-control" id="initialDataExtractionInterpolationValue" required>
+                                        <input type="text" value="100" class="form-control" id="initialDataExtractionInterpolationValue" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label>Final <span class="text-danger-wp">(*)</span> </label>
-                                        <input type="text" class="form-control" id="finalDataExtractionInterpolationValue" required>
+                                        <input type="text" value="1000" class="form-control" id="finalDataExtractionInterpolationValue" required>
                                     </div>
                                 </div>
                             </div>
@@ -412,6 +382,20 @@
                 <td class="text-center">${(b*(Math.pow(index,m)))}</td>
               </tr>`);
           }
+        }
+
+        // Exponential interpolation
+        if(typeProcessInterpolation==3){
+          m = (Math.log(finalDataExtractionInterpolationValue)-Math.log(initialDataExtractionInterpolationValue))/(numberYearsInterpolationValue-0)
+          b =  Math.exp((-1*m*0)+Math.log(initialDataExtractionInterpolationValue));
+
+          for (let index = 0; index <= numberYearsInterpolationValue; index++) {
+           $('#intakeECTAG').append(`<tr>
+                <th class="text-center" scope="row">${index}</th>
+                <td class="text-center">${(b*(Math.exp(m*index)))}</td>
+              </tr>`);
+          }
+          
         }
 
         for (let index = 0; index < numberYearsInterpolationValue; index++) {
@@ -594,7 +578,7 @@
     });
 
     // Create select actions in page
-    var node = document.getElementById('mainActions');
+    //var node = document.getElementById('mainActions');
     var buttons = ['group', 'ungroup', 'cut', 'copy', 'paste', 'delete', 'undo', 'redo', 'print', 'show'];
 
     // Only adds image and SVG export if backend is available
@@ -703,10 +687,10 @@
       };
 
       mxEvent.addListener(button, 'click', factory(buttons[i]));
-      node.appendChild(button);
+      //node.appendChild(button);
     }
 
-    // Create select actions in page
+    /* Create select actions in page
     var node = document.getElementById('selectActions');
     mxUtils.write(node, 'Select: ');
     mxUtils.linkAction(node, 'All', editor, 'selectAll');
@@ -716,9 +700,9 @@
     mxUtils.linkAction(node, 'Vertices', editor, 'selectVertices');
     mxUtils.write(node, ', ');
     mxUtils.linkAction(node, 'Edges', editor, 'selectEdges');
-
+    */
     // Create select actions in page
-    var node = document.getElementById('zoomActions');
+    /*var node = document.getElementById('zoomActions');
     mxUtils.write(node, 'Zoom: ');
     mxUtils.linkAction(node, 'In', editor, 'zoomIn');
     mxUtils.write(node, ', ');
@@ -726,7 +710,7 @@
     mxUtils.write(node, ', ');
     mxUtils.linkAction(node, 'Actual', editor, 'actualSize');
     mxUtils.write(node, ', ');
-    mxUtils.linkAction(node, 'Fit', editor, 'fit');
+    mxUtils.linkAction(node, 'Fit', editor, 'fit');*/
   }
 
   window.onbeforeunload = function () { return mxResources.get('changesLost'); };
