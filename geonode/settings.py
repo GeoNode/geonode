@@ -108,7 +108,7 @@ if not SITEURL.endswith('/'):
 #      )
 # )
 
-#DATABASE_URL = 'postgresql://geonode:geonode_data@dev.skaphe.com:5432/geonode'
+DATABASE_URL = 'postgresql://geonode:geonode_data@dev.skaphe.com:5432/geonode'
 
 if DATABASE_URL.startswith("spatialite"):
     try:
@@ -2136,3 +2136,9 @@ FREQUENTLY_ALLOW_ANONYMOUS = True
 STUDY_CASES_ALLOW_ANONYMOUS = True
 
 WATERPROOF_NBS_CA_ALLOW_ANONYMOUS = True
+
+WATERPROOF_API_SERVER = "http://dev.skaphe.com:8000/"
+
+#WATERPROOF_API_METHODS = {
+#
+#}

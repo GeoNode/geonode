@@ -1,0 +1,88 @@
+.leaflet-loader-container {
+	height: 100%;
+	width: 100%;
+	
+	position: absolute;
+	z-index: 1000;
+
+	cursor: auto;
+}
+.leaflet-loader-container .leaflet-loader-background {
+	position: absolute;;
+	height: 100%;
+	width: 100%;
+	background-color: rgba(0,0,0,0.9);
+}
+
+.leaflet-loader {
+	width:57.6px;
+	margin: 30em auto;
+
+}
+
+@-webkit-keyframes hideLoader {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+@keyframes hideLoader {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+
+/*
+Following css for the loading animations comes from :
+https://connoratherton.com/loaders
+*/
+
+@-webkit-keyframes scale {
+  0% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    opacity: 1; }
+
+  45% {
+    -webkit-transform: scale(0.1);
+            transform: scale(0.1);
+    opacity: 0.7; }
+
+  80% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    opacity: 1; } }
+@keyframes scale {
+  0% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    opacity: 1; }
+
+  45% {
+    -webkit-transform: scale(0.1);
+            transform: scale(0.1);
+    opacity: 0.7; }
+
+  80% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    opacity: 1; } }
+
+.leaflet-loader > div:nth-child(0) {
+  -webkit-animation: scale 0.75s -0.36s infinite cubic-bezier(.2, .68, .18, 1.08);
+          animation: scale 0.75s -0.36s infinite cubic-bezier(.2, .68, .18, 1.08); }
+.leaflet-loader > div:nth-child(1) {
+  -webkit-animation: scale 0.75s -0.24s infinite cubic-bezier(.2, .68, .18, 1.08);
+          animation: scale 0.75s -0.24s infinite cubic-bezier(.2, .68, .18, 1.08); }
+.leaflet-loader > div:nth-child(2) {
+  -webkit-animation: scale 0.75s -0.12s infinite cubic-bezier(.2, .68, .18, 1.08);
+          animation: scale 0.75s -0.12s infinite cubic-bezier(.2, .68, .18, 1.08); }
+.leaflet-loader > div:nth-child(3) {
+  -webkit-animation: scale 0.75s 0s infinite cubic-bezier(.2, .68, .18, 1.08);
+          animation: scale 0.75s 0s infinite cubic-bezier(.2, .68, .18, 1.08); }
+.leaflet-loader > div {
+  background-color: #fff;
+  width: 15px;
+  height: 15px;
+  border-radius: 100%;
+  margin: 2px;
+  -webkit-animation-fill-mode: both;
+          animation-fill-mode: both;
+  display: inline-block; }
