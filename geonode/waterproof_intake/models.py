@@ -40,7 +40,7 @@ class Intake(models.Model):
 
     area = models.MultiPolygonField(verbose_name='geo',srid = 4326, null=True, blank=True)
     
-    city = models.ForeignKey(Countries, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, on_delete=models.CASCADE)
 
     added_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

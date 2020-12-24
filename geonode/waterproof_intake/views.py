@@ -24,16 +24,18 @@ def create(request):
         form = forms.IntakeForm(request.POST)
         if form.is_valid():
             intake = form.save(commit=False)
+            """
+            zf = zipfile.ZipFile(request.FILES['area'])
+            print(zf.namelist())
+            for filename in zf.namelist():
+                if filename=='prevent_grass_strips_slope_gura.shp':
+                    print('es el que es')
+            """
             intake.save()
+            messages.success(request, ("Water Intake created."))
         else:
-            intake = Intake(
-                name = "intake 6",
-                description = "intake 5",
-                id_region = "5",
-                id_city = "5",
-            )
-            intake.save()
-        messages.success(request, ("Water Intake created."))        
+            messages.error(request, ("Water Intake not created."))
+
     else:
         form = forms.IntakeForm()
     return render(request, 'waterproof_intake/intake_form.html', context={"form": form, "serverApi": settings.WATERPROOF_API_SERVER})
