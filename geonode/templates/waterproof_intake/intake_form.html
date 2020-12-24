@@ -115,7 +115,7 @@
             <div class="panel panel-danger">
                 <div class="panel-body" id="graph" tabindex="-1" style="height:790px;width:100%;overflow:hidden;cursor:default;"></div>
                  <span style="float:right;padding-right:36px;">
-                    <input id="source" type="checkbox" />Ver Codigo
+                    <input id="source" type="checkbox" />Source
                   </span>
                 <textarea id="xml" style="height:480px;width:684px;display:none;border-style:none;"></textarea>
             </div>
@@ -127,40 +127,25 @@
                         <h1 class="text-center">R1</h1>
                     </div>
 
-                    <form>
-                        <div class="form-group">
-                            <label for="exampleInputEmail1">Name:</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleInputEmail1">Parameter 1:</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleInputEmail1">Parameter 2:</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleInputEmail1">Costo 1:</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleInputEmail1">Costo 2:</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleInputEmail1">Costo 3:</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleInputEmail1">Costo 4:</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleInputEmail1">Costo 5:</label>
-                            <input type="text" class="form-control">
-                        </div>
-                    </form>
+                      
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Name:</label>
+                        <input type="text" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Parameter 1:</label>
+                        <input type="text" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Parameter 2:</label>
+                        <input type="text" class="form-control">
+                    </div>
+                    <div id="intakeaddcost">
+
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" id="btnaddcost"> Add Cost</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -470,7 +455,6 @@
       
        
 
-main(document.getElementById('graph'))
 
   });
 
@@ -716,7 +700,7 @@ main(document.getElementById('graph'))
     mxUtils.write(node, ', ');
     mxUtils.linkAction(node, 'Actual', editor, 'actualSize');
     mxUtils.write(node, ', ');
-    mxUtils.linkAction(node, 'Fit', editor, 'fit');
+    mxUtils.linkAction(node, 'Fit', editor, 'fit');*/
 
     
 
@@ -747,9 +731,9 @@ main(document.getElementById('graph'))
 
 
 
-  $('#btndata').click(function (){
+  $('#btnaddcost').click(function (){
 
-        $('#costos div').append(`<div class="form-group">
+        $('#intakeaddcost').append(`<div class="form-group">
                                     <label for="exampleInputEmail1">Costo:</label>
                                     <input type="text" class="form-control">
                                 </div>`);
