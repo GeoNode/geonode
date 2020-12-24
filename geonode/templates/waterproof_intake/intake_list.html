@@ -31,7 +31,6 @@
                 <th scope="col" class="small text-center vat">{% trans "Description" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "User" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "Date" %}</th>
-                <th scope="col" class="small text-center vat">{% trans "System type" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "Demand" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "Options" %}</th>
             </tr>
@@ -43,13 +42,18 @@
                 <td class="small text-center vat">{{sbn.description}}</td>
                 <td class="small text-center vat">{{sbn.added_by.first_name}}</td>
                 <!--td>{{sbn.max_benefit_req_time}}</td-->
-                <!--td class="small text-center vat">{{sbn.profit_pct_time_inter_assoc}}%</td-->
+                <td class="small text-center vat">Navidad</td>
                 <!--td>{{sbn.total_profits_sbn_consec_time}}</td-->
                 <!--td class="small text-center vat">{{sbn.creation_date}}</td>
-                <!--td class="small text-center vat">{{sbn.unit_maintenance_cost|floatformat:2}}</td>
+                <!td class="small text-center vat">{{sbn.unit_maintenance_cost|floatformat:2}}</td>
                 <td class="small text-center vat">{{sbn.periodicity_maitenance}}</td>
                 <td class="small text-center vat">{{sbn.unit_oportunity_cost|floatformat:2}}</td-->
                 <!--td>{{sbn.rios_transformations.description}}</td-->
+                <td>
+                    <div class="btn-group btn-group-table" role="group">
+                        <a class="btn btn-primary" href="/waterproof_nbs_ca/view/{{sbn.pk}}"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
+                     </div> 
+                </td>  
                 <td>
                     <div class="btn-group btn-group-table" role="group">
                         <a class="btn btn-primary" href="/waterproof_nbs_ca/view/{{sbn.pk}}"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>

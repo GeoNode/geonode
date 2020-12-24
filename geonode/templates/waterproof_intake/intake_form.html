@@ -134,25 +134,12 @@
                                     <label for="exampleInputEmail1">Parameter 2:</label>
                                     <input type="text" class="form-control">
                                 </div>
-                                <div class="form-group">
-                                    <label for="exampleInputEmail1">Costo 1:</label>
-                                    <input type="text" class="form-control">
+                                
+                                <div id="costos">
+                                
                                 </div>
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Costo 2:</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="exampleInputEmail1">Costo 3:</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="exampleInputEmail1">Costo 4:</label>
-                                    <input type="text" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="exampleInputEmail1">Costo 5:</label>
-                                    <input type="text" class="form-control">
+                                    <button id="btndata">get data</button>
                                 </div>
                         </div>
                     </div>
@@ -433,7 +420,7 @@
       });
 
     $('#smartwizard').smartWizard({
-      selected: 0,
+      selected: 1,
       theme: 'dots',
       enableURLhash: false,
       autoAdjustHeight: true,
@@ -483,6 +470,12 @@
       }
     });
     observer2.observe(menu1Tab, { attributes: true });
+
+      
+       
+
+main(document.getElementById('graph'))
+
   });
 
   // Program starts here. The document.onLoad executes the
@@ -530,7 +523,7 @@
     }
 
     // Changes the zoom on mouseWheel events
-    mxEvent.addMouseWheelListener(function (evt, up) {
+   /* mxEvent.addMouseWheelListener(function (evt, up) {
       if (!mxEvent.isConsumed(evt)) {
         if (up) {
           editor.execute('zoomIn');
@@ -541,7 +534,7 @@
 
         mxEvent.consume(evt);
       }
-    });
+    });*/
 
     // Defines a new action to switch between
     // XML and graphical display
@@ -731,7 +724,7 @@
 
     
 
-  var model = editor.graph.model.cells[3].value.attributes[0].value;
+    var model = editor.graph.model.cells[3].value.attributes[0].value;
     model = `
         [{
           "nombre":"rio",
@@ -753,6 +746,44 @@
     
 
   }
+
+  
+
+
+
+  $('#btndata').click(function (){
+
+        $('#costos div').append(`<div class="form-group">
+                                    <label for="exampleInputEmail1">Costo:</label>
+                                    <input type="text" class="form-control">
+                                </div>`);
+          
+    }
+  );
+  function cambiop(editor){
+    console.log($('#graph'));
+    var model = editor.graph.model.cells[3].value.attributes[0].value;
+    model = `
+        [{
+          "nombre":"rio",
+          "costo":"[{
+          "valor":"0.56"
+          },
+          {
+          "valor":"2.56"
+          }]"
+        }
+        ]
+        `;
+    var model2 = editor.graph.model.cells[3].value.attributes;
+    var node = document.getElementById('mxCell');
+    //var snode = model.getValue(cell);
+    console.log(model);
+    console.log(model2);
+    console.log(node);
+  }
+  
+
 
   
   
