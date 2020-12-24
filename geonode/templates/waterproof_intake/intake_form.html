@@ -9,6 +9,7 @@
   crossorigin="" />
 <link rel="stylesheet" href="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.css" />
 <link rel="stylesheet" href="{% static "geonode/css/leaflet/Control.Coordinates.css" %}"/>
+<link rel="stylesheet" href="{% static "geonode/css/leaflet/Control.Loader.css" %}"/>
 
 <style>
   #mainActions>button {
@@ -99,7 +100,10 @@
                 <button type="submit" id="submit" class="btn btn-primary">Submit</button>
             </form>
 
-            <div id="map">                
+            <div id="map">      
+              <div id="analysisOptions">
+                <button id="validateBtn">Validate</button>
+              </div>         
             </div>
         </div>
         <div id="step-2" class="tab-pane" role="tabpanel">
@@ -375,12 +379,15 @@
   crossorigin=""></script>
 <script src="{% static "geonode/js/leaflet/coordinates/Control.Coordinates.js" %}"></script>
 <script src="{% static "geonode/js/leaflet/coordinates/util/NumberFormatter.js" %}"></script>
+<script src="{% static "geonode/js/leaflet/Control.loader.js" %}"></script>
+<script src="{% static "geonode/js/waterproof/waterIntake.js" %}"></script>
 <script src="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.js"></script>
 
 <script type="text/javascript">
 
   var mxBasePath = '{{ STATIC_URL }}geonode/js/mxgraph/src';
   var mxImageBasePath = '{{ STATIC_URL }}geonode/js/mxgraph/examples/images';
+  var serverApi = '{{serverApi}}';
   var urlParams = (function (url) {
     var result = new Object();
     var params = window.location.search.slice(1).split('&');
@@ -396,6 +403,10 @@
   })(window.location.href);
 
   var mxLanguage = urlParams['lang'];
+  var map;
+  var snapMarker;
+  var catchmentPoly;
+  var mapLoader;
 
   $(document).ready(function () {
 
@@ -445,8 +456,8 @@
         toolbarButtonPosition: 'center', // both bottom
       }
     });
-    var map = L.map('map').setView([4, -74], 5);
-    var mapid = L.map('mapid').setView([4, -74], 5);
+    map = L.map('map',{}).setView([4.1, -74.1], 5);
+    var mapid = L.map('mapid').setView([4.1, -74.1], 5);
     var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     });
@@ -469,10 +480,18 @@
       useLatLngOrder: true, //ordering of labels, default false-> lng-lat
       markerType: L.marker, //optional default L.marker
       markerProps: {}, //optional default {},
+      centerUserCoordinates: true,
       labelFormatterLng : function(lng){return lng+" lng"}, //optional default none,
       labelFormatterLat : function(lat){return lat+" lat"}, //optional default none      
     }).addTo(map);
+
+    $("#validateBtn").on("click", validateCoordinateWithApi);
     
+    if (!mapLoader){
+      mapLoader = L.control.loader().addTo(map);
+    }
+    
+    mapLoader.hide();
 
     createEditor('{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/config/diagrameditor.xml');
 
@@ -484,6 +503,8 @@
     });
     observer2.observe(menu1Tab, { attributes: true });
   });
+
+
 
   // Program starts here. The document.onLoad executes the
   // createEditor function with a given configuration.

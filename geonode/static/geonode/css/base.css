@@ -8791,3 +8791,9 @@ top:50px;
   height: 380px; 
   cursor: pointer;
 }
+
+#analysisOptions{
+  position: absolute;
+  z-index: 999;
+  right: 1px;
+}

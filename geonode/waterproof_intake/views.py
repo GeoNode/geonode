@@ -5,6 +5,7 @@ Views for the ``Waterproof intake`` application.
 
 import logging
 
+from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
@@ -35,4 +36,4 @@ def create(request):
         messages.success(request, ("Water Intake created."))        
     else:
         form = forms.IntakeForm()
-    return render(request, 'waterproof_intake/intake_form.html', context={"form": form})
+    return render(request, 'waterproof_intake/intake_form.html', context={"form": form, "serverApi": settings.WATERPROOF_API_SERVER})
