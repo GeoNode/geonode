@@ -924,16 +924,18 @@ def set_attributes(
             field, ftype, description, label, display_order = attribute
             if field:
                 _gs_attrs = Attribute.objects.filter(layer=layer, attribute=field)
-                if _gs_attrs.count() > 1:
-                    _gs_attrs.delete()
-                la, created = Attribute.objects.get_or_create(layer=layer, attribute=field)
-                if created:
+                if _gs_attrs.count() == 1:
+                    la = _gs_attrs.get()
+                elif _gs_attrs.count() == 0:
+                    la = Attribute.objects.create(layer=layer, attribute=field)
                     la.visible = ftype.find("gml:") != 0
                     la.attribute_type = ftype
                     la.description = description
                     la.attribute_label = label
                     la.display_order = iter
                     iter += 1
+                else:
+                    la = _gs_attrs.last()
                 if (not attribute_stats or layer.name not in attribute_stats or
                         field not in attribute_stats[layer.name]):
                     result = None
@@ -950,7 +952,10 @@ def set_attributes(
                     la.sum = result['Sum']
                     la.unique_values = result['unique_values']
                     la.last_stats_updated = datetime.datetime.now(timezone.get_current_timezone())
-                la.save()
+                try:
+                    la.save()
+                except Exception as e:
+                    logger.exception(e)
     else:
         logger.debug("No attributes found")
 
@@ -1155,7 +1160,9 @@ def set_styles(layer, gs_catalog):
                     'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
                     layer.alternate + '&STYLE=' + style_name + \
                     '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
-                if layer_legends.filter(url=legend_url).count() == 0:
+                if layer_legends.filter(resource=layer.resourcebase_ptr,
+                                        name='Legend',
+                                        url=legend_url).count() < 2:
                     Link.objects.update_or_create(
                         resource=layer.resourcebase_ptr,
                         name='Legend',

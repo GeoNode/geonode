@@ -970,14 +970,14 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
         image = None
 
         if valid:
-            Link.objects.get_or_create(resource=instance.get_self_resource(),
-                                       url=thumbnail_remote_url,
-                                       defaults=dict(
-                                           extension='png',
-                                           name="Remote Thumbnail",
-                                           mime='image/png',
-                                           link_type='image',
-            )
+            Link.objects.get_or_create(
+                resource=instance.get_self_resource(),
+                url=thumbnail_remote_url,
+                defaults=dict(
+                    extension='png',
+                    name="Remote Thumbnail",
+                    mime='image/png',
+                    link_type='image')
             )
             ResourceBase.objects.filter(id=instance.id) \
                 .update(thumbnail_url=thumbnail_remote_url)

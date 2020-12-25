@@ -1729,7 +1729,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     name = 'Zipped Shapefile'
                 if (Link.objects.filter(resource=instance.resourcebase_ptr,
                                         url=wfs_url,
-                                        name=name).count() < 2):
+                                        name=name,
+                                        link_type='data').count() < 2):
                     Link.objects.update_or_create(
                         resource=instance.resourcebase_ptr,
                         url=wfs_url,
@@ -1750,7 +1751,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         for ext, name, mime, wcs_url in links:
             if (Link.objects.filter(resource=instance.resourcebase_ptr,
                                     url=wcs_url,
-                                    name=name).count() < 2):
+                                    name=name,
+                                    link_type='data').count() < 2):
                 Link.objects.update_or_create(
                     resource=instance.resourcebase_ptr,
                     url=wcs_url,
@@ -1768,7 +1770,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
         if (Link.objects.filter(resource=instance.resourcebase_ptr,
                                 url=html_link_url,
-                                name=instance.alternate).count() < 2):
+                                name=instance.alternate,
+                                link_type='html').count() < 2):
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
                 url=html_link_url,
@@ -1815,11 +1818,13 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             from geonode.geoserver.tasks import geoserver_create_thumbnail
             # create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
             geoserver_create_thumbnail.apply_async(((instance.id, )))
-        else:
+        elif (Link.objects.filter(resource=instance.resourcebase_ptr,
+                                  url=instance.get_thumbnail_url(),
+                                  name='Thumbnail').count() < 2):
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
-                name='Thumbnail',
                 url=instance.get_thumbnail_url(),
+                name='Thumbnail',
                 defaults=dict(
                     extension='png',
                     mime='image/png',

@@ -349,17 +349,20 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         ogc_wms_url = geonode_layer.ows_url
         ogc_wms_name = 'OGC WMS: %s Service' % geonode_layer.store
         ogc_wms_link_type = 'OGC:WMS'
-        Link.objects.update_or_create(
-            resource=geonode_layer.resourcebase_ptr,
-            name=ogc_wms_name,
-            link_type=ogc_wms_link_type,
-            defaults=dict(
-                extension='html',
-                url=ogc_wms_url,
-                mime='text/html',
-                link_type=ogc_wms_link_type
+        if Link.objects.filter(resource=geonode_layer.resourcebase_ptr,
+                               name=ogc_wms_name,
+                               link_type=ogc_wms_link_type,).count() < 2:
+            Link.objects.update_or_create(
+                resource=geonode_layer.resourcebase_ptr,
+                name=ogc_wms_name,
+                link_type=ogc_wms_link_type,
+                defaults=dict(
+                    extension='html',
+                    url=ogc_wms_url,
+                    mime='text/html',
+                    link_type=ogc_wms_link_type
+                )
             )
-        )
 
     def _get_cascaded_layer_fields(self, geoserver_resource):
         name = geoserver_resource.name

@@ -104,16 +104,13 @@ class FaultTolerantTask(celery.Task):
     bind=True,
     name='geonode.tasks.email.send_mail',
     queue='email',
-    countdown=60,
-    # expires=120,
-    acks_late=True,
-    retry=True,
-    retry_policy={
-        'max_retries': 3,
-        'interval_start': 0,
-        'interval_step': 0.2,
-        'interval_max': 0.2,
-    })
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def send_email(self, *args, **kwargs):
     """
     Sends an email using django's send_mail functionality.
@@ -125,16 +122,13 @@ def send_email(self, *args, **kwargs):
     bind=True,
     name='geonode.tasks.notifications.send_queued_notifications',
     queue='email',
-    countdown=60,
-    # expires=120,
-    acks_late=True,
-    retry=True,
-    retry_policy={
-        'max_retries': 3,
-        'interval_start': 0,
-        'interval_step': 0.2,
-        'interval_max': 0.2,
-    })
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def send_queued_notifications(self, *args):
     """Sends queued notifications.
 
@@ -159,17 +153,14 @@ def send_queued_notifications(self, *args):
     bind=True,
     base=FaultTolerantTask,
     name='geonode.tasks.layers.set_permissions',
-    queue='update',
-    countdown=60,
-    # expires=120,
-    acks_late=True,
-    retry=True,
-    retry_policy={
-        'max_retries': 3,
-        'interval_start': 0,
-        'interval_step': 0.2,
-        'interval_max': 0.2,
-    })
+    queue='security',
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def set_permissions(self, permissions_names, resources_names,
                     users_usernames, groups_names, delete_flag):
     from geonode.layers.utils import set_layers_permissions

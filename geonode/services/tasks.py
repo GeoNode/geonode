@@ -34,17 +34,14 @@ logger = logging.getLogger(__name__)
 @app.task(
     bind=True,
     name='geonode.services.tasks.harvest_resource',
-    queue='update',
-    countdown=60,
-    # expires=120,
-    acks_late=True,
-    retry=True,
-    retry_policy={
-        'max_retries': 3,
-        'interval_start': 0,
-        'interval_step': 0.2,
-        'interval_max': 0.2,
-    })
+    queue='upload',
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def harvest_resource(self, harvest_job_id):
     harvest_job = models.HarvestJob.objects.get(pk=harvest_job_id)
     harvest_job.update_status(
@@ -84,17 +81,14 @@ def harvest_resource(self, harvest_job_id):
 @app.task(
     bind=True,
     name='geonode.services.tasks.probe_services',
-    queue='update',
-    countdown=60,
-    # expires=120,
-    acks_late=True,
-    retry=True,
-    retry_policy={
-        'max_retries': 3,
-        'interval_start': 0,
-        'interval_step': 0.2,
-        'interval_max': 0.2,
-    })
+    queue='geonode',
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 1, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def probe_services(self):
     from hashlib import md5
     from geonode.tasks.tasks import memcache_lock
