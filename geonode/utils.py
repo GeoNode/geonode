@@ -1460,12 +1460,18 @@ class HttpClient(object):
         session.verify = False
         action = getattr(session, method.lower(), None)
         if action:
-            response = action(
-                url=url,
-                data=data,
-                headers=headers,
-                timeout=timeout or self.timeout,
-                stream=stream)
+            _req_tout = timeout or self.timeout
+            try:
+                response = action(
+                    url=url,
+                    data=data,
+                    headers=headers,
+                    timeout=_req_tout,
+                    stream=stream)
+            except (requests.exceptions.RequestException, ValueError) as e:
+                msg = f"Request exception [{e}] - TOUT [{_req_tout}] to URL: {url} - headers: {headers}"
+                logger.exception(Exception(msg))
+                response = None
         else:
             response = session.get(url, headers=headers, timeout=self.timeout)
 
