@@ -15,6 +15,7 @@ class IntakeForm(forms.ModelForm):
         model = Intake
         fields = ('name', 
                 'description',
+                'city'
         )
         """
                 'id_region', 

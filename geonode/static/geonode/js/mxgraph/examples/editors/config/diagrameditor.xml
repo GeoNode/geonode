@@ -434,11 +434,16 @@
 				<Layer label="Default Layer" id="1">
 					<mxCell parent="0"/>
 				</Layer>
+				<Symbol parametro="0.56" id="3">
+					<mxCell style="rio" vertex="1" parent="1">
+						<mxGeometry x="40" y="30" width="60" height="60" as="geometry" />
+					</mxCell>
+				</Symbol>
 			</root>
 		</mxGraphModel>
 	</mxGraph>
 	<mxDefaultToolbar as="toolbar">
-		<add as="connect" mode="connect" icon="/static/mxgraph/images/connect.gif"><![CDATA[
+		<!--<add as="connect" mode="connect" icon="/static/mxgraph/images/connect.gif"><![CDATA[
 			function (editor)
 			{
 				if (editor.defaultEdge != null)
@@ -464,8 +469,7 @@
 					editor.defaultEdge.style = 'arrowConnector';
 				}
 			}
-		]]></add>
-		<br/><br/>
+		]]></add>-->
 		<!--add as="Text" template="text" icon="/static/mxgraph/images/text.gif"/>
 		<add as="Container" template="container" icon="/static/mxgraph/images/swimlane.gif"/>
 		<add as="Rectangle" template="rectangle" icon="/static/mxgraph/images/rectangle.gif"/>
