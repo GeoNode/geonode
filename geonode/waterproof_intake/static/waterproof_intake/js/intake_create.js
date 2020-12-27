@@ -3,7 +3,7 @@
  * validations & interactions
  * @version 1.0
  */
-var urlParams = (function (url) {
+var urlParams = (function(url) {
     var result = new Object();
     var params = window.location.search.slice(1).split('&');
     for (var i = 0; i < params.length; i++) {
@@ -23,8 +23,9 @@ var snapMarkerMapDelimit;
 var catchmentPoly;
 var catchmentPolyDelimit;
 var mapLoader;
-$(document).ready(function () {
-    $("#intakeWECB").click(function () {
+$(document).ready(function() {
+
+    $("#intakeWECB").click(function() {
         $('#intakeECTAG tr').remove();
         $('#intakeEITA tr').remove();
         $('#autoAdjustHeightF').css("height", "auto");
@@ -41,54 +42,71 @@ $(document).ready(function () {
             for (let index = 0; index <= numberYearsInterpolationValue; index++) {
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${((m * index) + b).toFixed(2)}</td>
+                <td class="text-center">${((m*index)+b).toFixed(2)}</td>
               </tr>`);
             }
         }
 
+        // Potencial interpolation
+        if (typeProcessInterpolation == 2) {
+            m = (Math.log(finalDataExtractionInterpolationValue) - Math.log(initialDataExtractionInterpolationValue)) / ((Math.log(numberYearsInterpolationValue) - Math.log(1)));
+            b = Math.exp((-1 * m * Math.log(1)) + Math.log(initialDataExtractionInterpolationValue));
+
+            for (let index = 1; index <= numberYearsInterpolationValue; index++) {
+                $('#intakeECTAG').append(`<tr>
+                <th class="text-center" scope="row">${index}</th>
+                <td class="text-center">${(b*(Math.pow(index,m)))}</td>
+              </tr>`);
+            }
+        }
+
+        // Exponential interpolation
+        if (typeProcessInterpolation == 3) {
+            m = (Math.log(finalDataExtractionInterpolationValue) - Math.log(initialDataExtractionInterpolationValue)) / (numberYearsInterpolationValue - 0)
+            b = Math.exp((-1 * m * 0) + Math.log(initialDataExtractionInterpolationValue));
+
+            for (let index = 0; index <= numberYearsInterpolationValue; index++) {
+                $('#intakeECTAG').append(`<tr>
+                <th class="text-center" scope="row">${index}</th>
+                <td class="text-center">${(b*(Math.exp(m*index)))}</td>
+              </tr>`);
+            }
+
+        }
+
+        for (let index = 0; index < numberYearsInterpolationValue; index++) {
+            $('#intakeEITA').append(`<tr>
+                  <th class="text-center" scope="col">${index+1}</th>
+                  <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
+                  <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
+                  <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
+                  <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
+              </tr>`);
+        }
     });
 
-    // Potencial interpolation
-    if (typeProcessInterpolation == 2) {
-        m = (Math.log(finalDataExtractionInterpolationValue) - Math.log(initialDataExtractionInterpolationValue)) / ((Math.log(numberYearsInterpolationValue) - Math.log(1)));
-        b = Math.exp((-1 * m * Math.log(1)) + Math.log(initialDataExtractionInterpolationValue));
-
-        for (let index = 1; index <= numberYearsInterpolationValue; index++) {
-            $('#intakeECTAG').append(`<tr>
-                <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${(b * (Math.pow(index, m)))}</td>
-              </tr>`);
-        }
-    }
-
-    // Exponential interpolation
-    if (typeProcessInterpolation == 3) {
-        m = (Math.log(finalDataExtractionInterpolationValue) - Math.log(initialDataExtractionInterpolationValue)) / (numberYearsInterpolationValue - 0)
-        b = Math.exp((-1 * m * 0) + Math.log(initialDataExtractionInterpolationValue));
-
-        for (let index = 0; index <= numberYearsInterpolationValue; index++) {
-            $('#intakeECTAG').append(`<tr>
-                <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${(b * (Math.exp(m * index)))}</td>
-              </tr>`);
-        }
-
-    }
-
-    for (let index = 0; index < numberYearsInterpolationValue; index++) {
-        $('#intakeEITA').append(`<tr>
-                  <th class="text-center" scope="col">${index + 1}</th>
-                  <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                  <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                  <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                  <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-              </tr>`);
-    }
-
-
-    $('#smartwizard').smartWizard("next").click(function () {
+    $('#smartwizard').smartWizard("next").click(function() {
         $('#autoAdjustHeightF').css("height", "auto");
-        mapDelimit.invalidateSize();
+        mapid.invalidateSize();
+        map.invalidateSize();
+    });
+
+    $('#intakeNIBYMI').click(function() {
+        $('#intakeWEMI div').remove();
+        intakeNIYMI = Number($("#intakeNIYMI").val());
+        for (let index = 0; index < intakeNIYMI; index++) {
+            $('#intakeWEMI').append(`<div class="form-group">
+                <label class="col-sm-1 control-label">${index+1}</label>
+                <div class="col-sm-11">
+                    <input type="text" class="form-control" required>
+                </div>
+            </div>`);
+        }
+    });
+
+
+    $('#smartwizard').smartWizard("next").click(function() {
+        $('#autoAdjustHeightF').css("height", "auto");
         map.invalidateSize();
     });
 
@@ -106,7 +124,7 @@ $(document).ready(function () {
         }
     });
 
-    $("#smartwizard").on("showStep", function (e, anchorObject, stepIndex, stepDirection) {
+    $("#smartwizard").on("showStep", function(e, anchorObject, stepIndex, stepDirection) {
         if (stepIndex == 3) {
             if (catchmentPoly)
                 mapDelimit.fitBounds(catchmentPoly.getBounds());
@@ -138,8 +156,8 @@ $(document).ready(function () {
         markerType: L.marker, //optional default L.marker
         markerProps: {}, //optional default {},
         centerUserCoordinates: true,
-        labelFormatterLng: function (lng) { return lng + " lng" }, //optional default none,
-        labelFormatterLat: function (lat) { return lat + " lat" }, //optional default none      
+        labelFormatterLng: function(lng) { return lng + " lng" }, //optional default none,
+        labelFormatterLat: function(lat) { return lat + " lat" }, //optional default none      
     }).addTo(map);
 
     $("#validateBtn").on("click", validateCoordinateWithApi);
@@ -153,7 +171,7 @@ $(document).ready(function () {
     createEditor(editorUrl);
 
     var menu1Tab = document.getElementById('mapid');
-    var observer2 = new MutationObserver(function () {
+    var observer2 = new MutationObserver(function() {
         if (menu1Tab.style.display != 'none') {
             mapDelimit.invalidateSize();
         }
@@ -162,25 +180,24 @@ $(document).ready(function () {
 
 });
 
-$('#btnaddcost').click(function () {
+$('#btnaddcost').click(function() {
 
     $('#intakeaddcost').append(`<div class="form-group">
                                     <label for="exampleInputEmail1">Costo:</label>
                                     <input type="text" class="form-control">
                                 </div>`);
 
-}
-);
+});
 
-window.onbeforeunload = function () { return mxResources.get('changesLost'); };
+window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 
 
 /** 
-* Validate input file on change
-* @param {HTML} dropdown Dropdown selected element
-*/
+ * Validate input file on change
+ * @param {HTML} dropdown Dropdown selected element
+ */
 function changeFileEvent() {
-    $('#intakeArea').change(function (evt) {
+    $('#intakeArea').change(function(evt) {
         var file = evt.currentTarget.files[0];
         var extension = validExtension(file);
         // Validate file's extension
@@ -189,7 +206,7 @@ function changeFileEvent() {
             // Validate file's extension
             if (extension.extension == 'geojson') { //GeoJSON
                 var readerGeoJson = new FileReader();
-                readerGeoJson.onload = function (evt) {
+                readerGeoJson.onload = function(evt) {
                     var contents = evt.target.result;
                     geojson = JSON.parse(contents);
                     loadFile(geojson, file.name);
@@ -203,10 +220,10 @@ function changeFileEvent() {
                     readPrj = false,
                     prj, coord = true;
                 var prjName;
-                reader.onload = function (evt) {
+                reader.onload = function(evt) {
                     var contents = evt.target.result;
-                    JSZip.loadAsync(file).then(function (zip) {
-                        zip.forEach(function (relativePath, zipEntry) {
+                    JSZip.loadAsync(file).then(function(zip) {
+                        zip.forEach(function(relativePath, zipEntry) {
                             filename = zipEntry.name.toLocaleLowerCase();
                             if (filename.indexOf(".shp") != -1) {
                                 readShp = true;
@@ -224,7 +241,7 @@ function changeFileEvent() {
                         });
                         // Valid shapefile with minimum files req
                         if (readShp && readDbf && readPrj && readShx) {
-                            zip.file(prjName).async("string").then(function (data) {
+                            zip.file(prjName).async("string").then(function(data) {
                                 prj = data;
                                 // Validar sistema de referencia
                                 if (!prj) {
@@ -236,7 +253,7 @@ function changeFileEvent() {
                                 }
                                 // Shapefile válido
                                 else {
-                                    shp(contents).then(function (shpToGeojson) {
+                                    shp(contents).then(function(shpToGeojson) {
                                         geojson = shpToGeojson;
                                         let polygonStyle = {
                                             fillColor: "#337ab7",
@@ -247,8 +264,8 @@ function changeFileEvent() {
                                         var layer = L.geoJSON(geojson, { style: polygonStyle })
                                         layer.addTo(mapDelimit);
                                         map.fitBounds(layer.getBounds())
-                                        //loadShapefile(geojson, file.name);
-                                    }).catch(function (e) {
+                                            //loadShapefile(geojson, file.name);
+                                    }).catch(function(e) {
                                         Swal.fire({
                                             icon: 'error',
                                             title: 'Error en shapefile',
@@ -294,7 +311,7 @@ function changeFileEvent() {
                         }
                     });
                 };
-                reader.onerror = function (event) {
+                reader.onerror = function(event) {
                     console.error("File could not be read! Code " + event.target.error.code);
                     //alert("El archivo no pudo ser cargado: " + event.target.error.code);
                 };
