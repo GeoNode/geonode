@@ -115,7 +115,7 @@
             <div class="panel panel-danger">
                 <div class="panel-body" id="graph" tabindex="-1" style="height:790px;width:100%;overflow:hidden;cursor:default;"></div>
                  <span style="float:right;padding-right:36px;">
-                    <input id="source" type="checkbox" />Ver Codigo
+                    <input id="source" type="checkbox" />Source
                   </span>
                 <textarea id="xml" style="height:480px;width:684px;display:none;border-style:none;"></textarea>
             </div>
@@ -193,13 +193,13 @@
                                         <select class="form-control" id="typeProcessInterpolation">
                                   <option value="1">Linear interpolation</option>
                                   <option value="2">Potential interpolation</option>
-                                  <option Value="3" selected>Exponential interpolation</option>
+                                  <option Value="3">Exponential interpolation</option>
                                   <option Value="4">Logistics interpolation</option>
                                 </select>
                                     </div>
                                     <div class="col-md-6">
                                         <label>Number Year <span class="text-danger-wp">(*)</span> </label>
-                                        <input type="text" value="30" class="form-control" id="numberYearsInterpolationValue" required>
+                                        <input type="text" class="form-control" id="numberYearsInterpolationValue" required>
                                     </div>
                                 </div>
                             </div>
@@ -208,11 +208,11 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label>Initial <span class="text-danger-wp">(*)</span> </label>
-                                        <input type="text" value="100" class="form-control" id="initialDataExtractionInterpolationValue" required>
+                                        <input type="text" class="form-control" id="initialDataExtractionInterpolationValue" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label>Final <span class="text-danger-wp">(*)</span> </label>
-                                        <input type="text" value="1000" class="form-control" id="finalDataExtractionInterpolationValue" required>
+                                        <input type="text" class="form-control" id="finalDataExtractionInterpolationValue" required>
                                     </div>
                                 </div>
                             </div>
@@ -244,35 +244,17 @@
                             <h5 class="text-primary">Year number for analysis</h5>
                             <div class="form-group">
                                 <label>Number Years <span class="text-danger-wp">(*)</span> </label>
-                                <input type="text" class="form-control" required>
+                                <input type="text" class="form-control" required id="intakeNIYMI">
                             </div>
-                            <button type="button" class="btn btn-primary">Generate</button>
+                            <button type="button" class="btn btn-primary" id="intakeNIBYMI">Generate</button>
                             <button type="button" class="btn btn-danger">Save asignation</button>
-
                         </div>
                         <div class="col-md-6">
                             <h5 class="text-primary">Results</h5>
                             <div class="panel panel-primary">
                                 <div class="panel-body">
-                                    <div class="form-horizontal">
-                                        <div class="form-group">
-                                            <label class="col-sm-1 control-label">1</label>
-                                            <div class="col-sm-11">
-                                                <input type="text" class="form-control" required>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-sm-1 control-label">2</label>
-                                            <div class="col-sm-11">
-                                                <input type="text" class="form-control" required>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-sm-1 control-label">3</label>
-                                            <div class="col-sm-11">
-                                                <input type="text" class="form-control" required>
-                                            </div>
-                                        </div>
+                                    <div class="form-horizontal" id="intakeWEMI">
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -414,6 +396,20 @@
           mapid.invalidateSize();
           map.invalidateSize();
       });
+
+      $('#intakeNIBYMI').click(function() {
+        $('#intakeWEMI div').remove();
+        intakeNIYMI = Number($("#intakeNIYMI").val());
+        for (let index = 0; index < intakeNIYMI; index++) {
+            $('#intakeWEMI').append(`<div class="form-group">
+                <label class="col-sm-1 control-label">${index+1}</label>
+                <div class="col-sm-11">
+                    <input type="text" class="form-control" required>
+                </div>
+            </div>`);
+          }
+      });
+      
 
     $('#smartwizard').smartWizard({
       selected: 0,
