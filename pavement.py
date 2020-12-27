@@ -909,14 +909,15 @@ def test_integration(options):
                "loaddata geonode/base/fixtures/default_oauth_apps.json".format(settings))
             sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
                "loaddata geonode/base/fixtures/initial_data.json".format(settings))
-            call_task('start_geoserver')
-            bind = options.get('bind', '0.0.0.0:8000')
-            foreground = '' if options.get('foreground', False) else '&'
-            sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runmessaging %s' %
-               (settings, foreground))
-            sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runserver %s %s' %
-               (settings, bind, foreground))
-            sh('sleep 30')
+            if local:
+                call_task('start_geoserver')
+                bind = options.get('bind', '0.0.0.0:8000')
+                foreground = '' if options.get('foreground', False) else '&'
+                sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runmessaging %s' %
+                (settings, foreground))
+                sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runserver %s %s' %
+                (settings, bind, foreground))
+                sh('sleep 30')
             settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
 
         live_server_option = ''
@@ -963,17 +964,17 @@ def run_tests(options):
         call_task('test', options={'prefix': prefix})
     elif integration_tests:
         if integration_upload_tests:
-            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.upload.tests.integration'})
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.upload.tests.integration', 'local': local})
         elif integration_monitoring_tests:
-            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.monitoring.tests.integration'})
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.monitoring.tests.integration', 'local': local})
         elif integration_csw_tests:
             call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.csw', 'local': local})
         elif integration_bdd_tests:
             call_task('test_bdd', options={'local': local})
         elif integration_server_tests:
-            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.geoserver.tests.integration'})
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.geoserver.tests.integration', 'local': local})
         else:
-            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.integration'})
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.integration', 'local': local})
     sh('flake8 geonode')
 
 
