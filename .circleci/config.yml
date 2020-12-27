@@ -34,7 +34,7 @@ jobs:
 
       - run:
           name: Build the stack
-          command: docker-compose -f docker-compose.yml build
+          command: docker-compose -f docker-compose-test.yml build
           working_directory: ./
 
       - when:
@@ -54,7 +54,7 @@ jobs:
 
       - run:
           name: Start the stack
-          command: docker-compose -f docker-compose.yml up -d
+          command: docker-compose -f docker-compose-test.yml up -d
           working_directory: ./
 
       - run:
@@ -99,19 +99,19 @@ jobs:
             - run:
                 name: Run test suite
                 command: |
-                  docker-compose -f docker-compose.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
-                  docker-compose -f docker-compose.yml exec db createdb -U postgres -T postgres test_postgres
-                  docker-compose -f docker-compose.yml exec db createdb -U postgres -T postgres test_geonode
-                  docker-compose -f docker-compose.yml exec db createdb -U postgres -T postgres test_geonode_data
-                  docker-compose -f docker-compose.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-                  docker-compose -f docker-compose.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
-                  docker-compose -f docker-compose.yml exec django bash -c '<<parameters.test_suite>>'
+                  docker-compose -f docker-compose-test.yml exec db psql -U postgres -c 'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid();'
+                  docker-compose -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_postgres
+                  docker-compose -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode
+                  docker-compose -f docker-compose-test.yml exec db createdb -U postgres -T postgres test_geonode_data
+                  docker-compose -f docker-compose-test.yml exec db psql -U postgres -d test_geonode -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+                  docker-compose -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+                  docker-compose -f docker-compose-test.yml exec django bash -c '<<parameters.test_suite>>'
                 working_directory: ./
             - run:
                 name: Run pep8 checks
                 command: |
-                  docker-compose -f docker-compose.yml exec django bash -c 'flake8 geonode'
-                  docker-compose -f docker-compose.yml exec django bash -c 'codecov; bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
+                  docker-compose -f docker-compose-test.yml exec django bash -c 'flake8 geonode'
+                  docker-compose -f docker-compose-test.yml exec django bash -c 'codecov; bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
                 working_directory: ./
 
 workflows:
