@@ -162,9 +162,9 @@
 </form>
 {% endblock %} {% block extra_script %}
 <!--ZIP reader library-->
-<scrip src="{{ STATIC_URL }}waterproof_nbs_ca/js/jszip.min.js"></scrip>
+<script src="{{ STATIC_URL }}geonode/js/jszip/jszip.min.js"></script>
 <!--Shapefile reader library -->
-<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/shp.min.js"></script>
+<script src="{{ STATIC_URL }}geonode/js/shp/shp.min.js"></script>
 <script>
     var token = '{{ csrf_token }}';
     var countriesLayerUrl = '{{ STATIC_URL }}waterproof_nbs_ca/data/countries.geojson';
@@ -176,7 +176,7 @@
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
     crossorigin=""></script>
-<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/leaflet.ajax.min.js"></script>
+<script src="{{ STATIC_URL }}geonode/js/leaflet/leaflet.ajax.min.js"></script>
 
 <script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca.js"></script>
 {% endblock %}
