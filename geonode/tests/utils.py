@@ -27,6 +27,7 @@ import pickle
 import requests
 from urllib.parse import urlencode
 from urllib.request import (
+    urljoin,
     urlopen,
     build_opener,
     install_opener,
@@ -60,7 +61,10 @@ logger = logging.getLogger(__name__)
 
 
 def upload_step(step=None):
-    step = reverse('data_upload', args=[step] if step else [])
+    step = urljoin(
+        settings.SITEURL,
+        reverse('data_upload', args=[step] if step else [])
+    )
     return step
 
 
@@ -144,7 +148,10 @@ class Client(DjangoTestClient):
             'next': '/',
             'password': self.passwd}
         response = self.make_request(
-            reverse('account_login'),
+            urljoin(
+                settings.SITEURL,
+                reverse('account_login')
+            ),
             data=params
         )
         self.csrf_token = self.get_csrf_token()
