@@ -87,7 +87,7 @@ $(document).ready(function() {
 
     $('#smartwizard').smartWizard("next").click(function() {
         $('#autoAdjustHeightF').css("height", "auto");
-        mapid.invalidateSize();
+        //mapid.invalidateSize();
         map.invalidateSize();
     });
 
@@ -111,7 +111,7 @@ $(document).ready(function() {
     });
 
     $('#smartwizard').smartWizard({
-        selected: 0,
+        selected: 1,
         theme: 'dots',
         enableURLhash: false,
         autoAdjustHeight: true,
@@ -183,8 +183,15 @@ $(document).ready(function() {
 $('#btnaddcost').click(function() {
 
     $('#intakeaddcost').append(`<div class="form-group">
-                                    <label for="exampleInputEmail1">Costo:</label>
-                                    <input type="text" class="form-control">
+                                    <label for="exampleInputEmail1">Funcion de costo:</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="Funcion de costo">
+                                        <span class="input-group-btn">
+                                            <a class="btn btn-primary" href="">
+                                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                            </a>
+                                        </span>
+                                    </div>
                                 </div>`);
 
 });
