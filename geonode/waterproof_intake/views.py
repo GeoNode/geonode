@@ -86,10 +86,10 @@ Load process by ID
 
 Attributes
 ----------
-idx: int
+process: string
     process id
 """
-def loadProcessEfficiency(request,idx):
-    process = ProcessEfficiencies.objects.filter(id=idx)
+def loadProcessEfficiency(request,name):
+    process = ProcessEfficiencies.objects.filter(name=name)
     process_serialized = serializers.serialize('json', process)
     return JsonResponse(process_serialized, safe=False)
