@@ -54,6 +54,26 @@
   .table>tbody>tr>th {
     vertical-align: middle;
   }
+
+
+.modal {
+  text-align: center;
+}
+
+@media screen and (min-width: 768px) { 
+  .modal:before {
+    display: inline-block;
+    vertical-align: middle;
+    content: " ";
+    height: 100%;
+  }
+}
+
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
 </style>
 {% endblock %}
 {% block body_outer %}
@@ -165,7 +185,8 @@
 
                             </div>
                             <div class="form-group">
-                                <button type="button" class="btn btn-primary" id="btnaddcost"> Add Cost</button>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Add Cost</button>
+                                <!--<button type="button" class="btn btn-primary" id="btnaddcost"> Add Cost</button>-->
                             </div>
                         </div>
                     </div>
@@ -309,17 +330,25 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Add Cost</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        ...
+      <div class="row">
+        <div class="col-md-12">
+            <h3 class="text-primary">Internal Math</h3>
+            <button type="button" class="btn btn-link">`math`  min([0.8515*WP_r*((1E3)/31536), 0.0532*WN_r*((1E3)/31536)]) `math`</button>
+        </div>
       </div>
+      <div class="form-group">
+      <textarea class="form-control"></textarea>
+      </div>
+     
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-primary">Add Cost</button>
       </div>
     </div>
   </div>
@@ -350,4 +379,6 @@
 <script src="{{ STATIC_URL }}waterproof_intake/js/graph.js"></script>
 <script script src="{{ STATIC_URL }}geonode/js/mxgraph/mxClient.js"></script>
 <script src="{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/js/app.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 {% endblock %}
