@@ -122,14 +122,15 @@ workflows:
           name: geonode_test_suite
           load_docker_cache: true
           save_docker_cache: true
-          test_suite: coverage run --branch --source=geonode manage.py test -v 3 --keepdb geonode.tests.smoke $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS]))")
-      - build:
-          name: geonode_test_integration_csw
-          load_docker_cache: true
-          save_docker_cache: false
-          test_suite: ./test_csw.sh
-          requires:
-            - geonode_test_suite
+          # test_suite: coverage run --branch --source=geonode manage.py test -v 3 --keepdb geonode.tests.smoke $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS]))")
+          test_suite: coverage run --branch --source=geonode manage.py test -v 3 --keepdb geonode.tests.smoke
+      # - build:
+      #     name: geonode_test_integration_csw
+      #     load_docker_cache: true
+      #     save_docker_cache: false
+      #     test_suite: ./test_csw.sh
+      #     requires:
+      #       - geonode_test_suite
       - build:
           name: geonode_test_integration_upload
           load_docker_cache: true
@@ -137,13 +138,15 @@ workflows:
           test_suite: ./test_upload.sh
           requires:
             - geonode_test_suite
-      - build:
-          name: geonode_test_integration_monitoring
-          load_docker_cache: true
-          save_docker_cache: false
-          test_suite: coverage run --branch --source=geonode manage.py test -v 3 --keepdb geonode.tests.smoke geonode.monitoring.tests.integration
-          requires:
-            - geonode_test_suite
+      # - build:
+      #     name: geonode_test_integration_monitoring
+      #     load_docker_cache: true
+      #     save_docker_cache: false
+      #     test_suite: coverage run --branch --source=geonode manage.py test -v 3 --keepdb geonode.tests.smoke geonode.monitoring.tests.integration
+      #     requires:
+      #       - geonode_test_suite
+
+      # TODO
       # - build:
       #     name: tests_integration
       #     load_docker_cache: true

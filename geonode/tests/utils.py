@@ -93,6 +93,7 @@ class Client(DjangoTestClient):
 
     def make_request(self, path, data=None, ajax=False, debug=True, force_login=False):
         url = path if path.startswith("http") else self.url + path
+        logger.error(f" make_request ----------> url: {url}")
 
         if ajax:
             url += "{}force_ajax=true".format('&' if '?' in url else '?')
