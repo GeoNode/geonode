@@ -39,8 +39,8 @@ class Intake(models.Model):
         verbose_name=_('Description'),
     )
 
-    area = models.MultiPolygonField(verbose_name='geo',srid = 4326, null=True, blank=True)
-    
+    area = models.MultiPolygonField(verbose_name='geo', srid=4326, null=True, blank=True)
+
     city = models.ForeignKey(City, on_delete=models.CASCADE)
 
     added_by = models.ForeignKey(
@@ -63,16 +63,18 @@ class UserCosts(models.Model):
         verbose_name=_('Value')
     )
 
+
 class CategoryCosts(models.Model):
     name = models.CharField(
         max_length=100,
         verbose_name=_('Name'),
     )
 
-    description=models.CharField(
+    description = models.CharField(
         max_length=100,
         verbose_name=_('Name'),
     )
+
 
 class SystemCosts(models.Model):
 
@@ -87,7 +89,7 @@ class SystemCosts(models.Model):
         verbose_name=_('Extraction value')
     )
 
-   
+
 class ElementSystem(models.Model):
     origin = models.IntegerField(
         default=1980,
@@ -99,19 +101,90 @@ class ElementSystem(models.Model):
         verbose_name=_('Year'),
     )
 
-    user_cost=models.ManyToManyField(
+    user_cost = models.ManyToManyField(
         UserCosts,
     )
 
-    system_cost=models.ManyToManyField(
+    system_cost = models.ManyToManyField(
         SystemCosts,
+    )
+
+
+class ProcessEfficiencies(models.Model):
+
+    name = models.CharField(
+        max_length=100,
+        verbose_name=_('Name')
+    )
+
+    unitary_process = models.CharField(
+        max_length=100,
+        verbose_name=_('Unitary process')
+    )
+
+    symbol = models.CharField(
+        max_length=100,
+        verbose_name=_('Unitary process')
+    )
+
+    categorys = models.CharField(
+        max_length=100,
+        verbose_name=_('Categorys')
+    )
+
+    minimal_sediment_perc = models.IntegerField(
+        default=0,
+        verbose_name=_('Minimal sediment')
+    )
+
+    predefined_sediment_perc = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
+        verbose_name=_('Predefined sediment')
+    )
+
+    maximal_sediment_perc = models.IntegerField(
+        default=0,
+        verbose_name=_('Maximal sediment')
+    )
+
+    minimal_nitrogen_perc = models.IntegerField(
+        default=0,
+        verbose_name=_('Minimal nitrogen')
+    )
+
+    predefined_nitrogen_perc = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
+        verbose_name=_('Predefined nitrogen')
+    )
+
+    maximal_nitrogen_perc = models.IntegerField(
+        default=0,
+        verbose_name=_('Maximal nitrogen')
+    )
+
+    minimal_phoshorus_perc = models.IntegerField(
+        default=0,
+        verbose_name=_('Minimal phosphorus')
+    )
+
+    predefined_phosphorus_perc = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
+        verbose_name=_('Predefined phosphorus')
+    )
+
+    maximal_phosphorus_perc = models.IntegerField(
+        default=0,
+        verbose_name=_('Maximal phosphorus')
     )
 
 
 class ExternalInputs(models.Model):
     year = models.IntegerField(
         default=1980,
-        verbose_name=_('Year'),
+        verbose_name=_('Year')
     )
 
     water_volume = models.DecimalField(
@@ -185,4 +258,3 @@ class WaterExtraction(models.Model):
     )
 
     demand = models.ForeignKey(DemandParameters, on_delete=models.CASCADE)
-

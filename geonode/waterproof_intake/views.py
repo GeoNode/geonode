@@ -11,10 +11,10 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext as _
 from .models import ExternalInputs
-from .models import City
+from .models import City,ProcessEfficiencies,Intake
+from django.core import serializers
+from django.http import JsonResponse
 from . import forms
-from . import models
-from .models import Intake
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ def listIntake(request):
                         'city': city,
                     }
                 )
-        
+
             if (request.user.professional_role == 'ANAL'):
                 intake = Intake.objects.all()
                 city = City.objects.all()
@@ -80,3 +80,16 @@ def listIntake(request):
                     'city': city,
                 }
             )
+
+"""
+Load process by ID
+
+Attributes
+----------
+idx: int
+    process id
+"""
+def loadProcessEfficiency(request,idx):
+    process = ProcessEfficiencies.objects.filter(id=idx)
+    process_serialized = serializers.serialize('json', process)
+    return JsonResponse(process_serialized, safe=False)
