@@ -137,12 +137,12 @@ class Client(DjangoTestClient):
         """ Method to login the GeoNode site"""
         from django.contrib.auth import authenticate
         assert authenticate(username=self.user, password=self.passwd)
-
         self.csrf_token = self.get_csrf_token()
-        params = {'csrfmiddlewaretoken': self.csrf_token,
-                  'login': self.user,
-                  'next': '/',
-                  'password': self.passwd}
+        params = {
+            'csrfmiddlewaretoken': self.csrf_token,
+            'login': self.user,
+            'next': '/',
+            'password': self.passwd}
         response = self.make_request(
             reverse('account_login'),
             data=params

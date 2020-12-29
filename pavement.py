@@ -872,10 +872,10 @@ def test_integration(options):
     prefix = options.get('prefix')
     local = str2bool(options.get('local', 'false'))
     _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
-    if local and _backend == 'geonode.geoserver' or 'geonode.qgis_server' not in INSTALLED_APPS:
+    if local and (_backend == 'geonode.geoserver' or 'geonode.qgis_server' not in INSTALLED_APPS):
         call_task('stop_geoserver')
         _reset()
-    else:
+    elif _backend == 'geonode.qgis_server':
         call_task('stop_qgis_server')
         _reset()
 
@@ -919,9 +919,9 @@ def test_integration(options):
                 sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runserver %s %s' %
                 (settings, bind, foreground))
                 sh('sleep 30')
+                settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
             else:
                 call_task('sync', options={'settings': settings})
-            settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
 
         live_server_option = ''
         info("Running the tests now...")
@@ -937,8 +937,9 @@ def test_integration(options):
     else:
         success = True
     finally:
-        stop(options)
-        _reset()
+        if local:
+            stop(options)
+            _reset()
 
     if not success:
         sys.exit(1)

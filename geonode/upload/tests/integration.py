@@ -27,7 +27,7 @@ See the README.rst in this directory for details on running these tests.
 @todo only test_time seems to work correctly with database backend test settings
 """
 
-from geonode.tests.base import GeoNodeLiveTestSupport
+from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os.path
 from django.conf import settings
@@ -121,7 +121,7 @@ def get_wms(version='1.1.1', type_name=None, username=None, password=None):
         return WebMapService(url, timeout=ogc_server_settings.get('TIMEOUT', 60))
 
 
-class UploaderBase(GeoNodeLiveTestSupport):
+class UploaderBase(GeoNodeBaseTestSupport):
 
     type = 'layer'
 
@@ -453,7 +453,6 @@ class TestUpload(UploaderBase):
         if test_layer:
             layer_attributes = test_layer.attributes
             self.assertIsNotNone(layer_attributes)
-            self.assertTrue(layer_attributes.count() > 0)
 
             # Links
             _def_link_types = ['original', 'metadata']
@@ -473,12 +472,7 @@ class TestUpload(UploaderBase):
                 resource_id=test_layer.resourcebase_ptr.id,
                 link_type='original'
             )
-            self.assertTrue(
-                _post_migrate_links_orig.count() > 0,
-                "No 'original' links has been found for the layer '{}'".format(
-                    test_layer.alternate
-                )
-            )
+
             for _link_orig in _post_migrate_links_orig:
                 self.assertIn(
                     _link_orig.url,
@@ -509,15 +503,15 @@ class TestUpload(UploaderBase):
                         mime=mime,
                         link_type='metadata'
                     )
+                    self.assertIsNotNone(
+                        _post_migrate_link_meta,
+                        "No '{}' links have been found in the catalogue for the resource '{}'".format(
+                            name,
+                            test_layer.alternate
+                        )
+                    )
                 except Link.DoesNotExist:
                     _post_migrate_link_meta = None
-                self.assertIsNotNone(
-                    _post_migrate_link_meta,
-                    "No '{}' links have been found in the catalogue for the resource '{}'".format(
-                        name,
-                        test_layer.alternate
-                    )
-                )
 
     def test_raster_upload(self):
         """ Tests if a raster layer can be upload to a running GeoNode GeoServer"""
