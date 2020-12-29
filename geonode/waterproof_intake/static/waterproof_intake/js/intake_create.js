@@ -87,7 +87,7 @@ $(document).ready(function() {
 
     $('#smartwizard').smartWizard("next").click(function() {
         $('#autoAdjustHeightF').css("height", "auto");
-        mapid.invalidateSize();
+        mapDelimit.invalidateSize();
         map.invalidateSize();
     });
 
@@ -121,7 +121,7 @@ $(document).ready(function() {
     });
 
     $('#smartwizard').smartWizard({
-        selected: 1,
+        selected: 0,
         theme: 'dots',
         enableURLhash: false,
         autoAdjustHeight: true,
@@ -142,7 +142,7 @@ $(document).ready(function() {
         }
     });
     map = L.map('map', {}).setView([4.1, -74.1], 5);
-    mapDelimit = L.map('mapid').setView([4.1, -74.1], 5);
+    mapDelimit = L.map('mapid',{editable: true}).setView([4.1, -74.1], 5);
     var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     });
@@ -171,7 +171,7 @@ $(document).ready(function() {
     }).addTo(map);
 
     $("#validateBtn").on("click", validateCoordinateWithApi);
-
+    $('#btnDelimitArea').on("click",delimitIntakeArea)
     if (!mapLoader) {
         mapLoader = L.control.loader().addTo(map);
     }
@@ -201,6 +201,11 @@ $('#btnaddcost').click(function() {
 
 window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 
+
+function delimitIntakeArea(){
+    console.log('Delimiting');
+
+}
 
 /** 
  * Validate input file on change
@@ -273,7 +278,7 @@ function changeFileEvent() {
                                         };
                                         var layer = L.geoJSON(geojson, { style: polygonStyle })
                                         layer.addTo(mapDelimit);
-                                        map.fitBounds(layer.getBounds())
+                                        mapDelimit.fitBounds(layer.getBounds())
                                             //loadShapefile(geojson, file.name);
                                     }).catch(function(e) {
                                         Swal.fire({

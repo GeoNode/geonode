@@ -8,5 +8,7 @@ urlpatterns = [
     path('create/', views.create, name='create'),
     # Default view, list all views
     path('', views.listIntake, name='list-intake'),
+    # Load process effciciency by ID 
+    path('loadProcess/<str:name>', views.loadProcessEfficiency, name='clone-nbs'),
 ]
 
