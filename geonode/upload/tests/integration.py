@@ -57,7 +57,7 @@ import os
 import csv
 import glob
 import time
-from urllib.parse import unquote
+from urllib.parse import unquote, urlsplit
 from urllib.error import HTTPError
 import logging
 import tempfile
@@ -284,7 +284,10 @@ class UploaderBase(GeoNodeBaseTestSupport):
             final_step = current_step.replace('srs', 'final')
             resp = self.client.make_request(final_step)
         else:
-            self.assertTrue(upload_step('final') in current_step)
+            self.assertTrue(
+                urlsplit(upload_step('final')).path in current_step,
+                f"current_step: {current_step} - upload_step('final'): {upload_step('final')}"
+            )
             resp = self.client.get(current_step)
 
         self.assertEqual(resp.status_code, 200)

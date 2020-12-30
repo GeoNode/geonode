@@ -612,7 +612,9 @@ def start_django(options):
     sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
 
     if 'django_celery_beat' not in INSTALLED_APPS:
-        sh("{} celery -A geonode.celery_app:app worker -B -E --statedb=worker.state -s celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h {}".format(  # noqa
+        sh("{} celery -A geonode.celery_app:app worker -B -E \
+--statedb=worker.state -s celerybeat-schedule --loglevel=DEBUG \
+--concurrency=2 -n worker1@%h -f celery.log {}".format(  # noqa
             settings,
             foreground
         ))

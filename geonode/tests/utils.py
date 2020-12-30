@@ -26,7 +26,7 @@ import time
 import base64
 import pickle
 import requests
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 from urllib.request import (
     urljoin,
     urlopen,
@@ -42,6 +42,7 @@ import contextlib
 
 from io import IOBase
 from bs4 import BeautifulSoup
+from requests.packages.urllib3.util.retry import Retry
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from django.core import mail
@@ -82,6 +83,17 @@ class Client(DjangoTestClient):
         self.csrf_token = None
         self.response_cookies = None
         self._session = requests.Session()
+        self._retry = Retry(
+            total=3,
+            read=3,
+            connect=3,
+            backoff_factor=0.3,
+            status_forcelist=(104, 500, 502, 503, 504),
+        )
+        self._adapter = requests.adapters.HTTPAdapter(
+            max_retries=self._retry,
+            pool_maxsize=10,
+            pool_connections=10)
 
         self._register_user()
 
@@ -94,7 +106,7 @@ class Client(DjangoTestClient):
 
     def make_request(self, path, data=None, ajax=False, debug=True, force_login=False):
         url = path if path.startswith("http") else self.url + path
-        logger.error(f" make_request ----------> url: {url}")
+        # logger.error(f" make_request ----------> url: {url}")
 
         if ajax:
             url += "{}force_ajax=true".format('&' if '?' in url else '?')
@@ -118,9 +130,29 @@ class Client(DjangoTestClient):
 
             encoder = MultipartEncoder(fields=data)
             self._session.headers['Content-Type'] = encoder.content_type
-            response = self._session.post(url, data=encoder)
+            self._session.mount(f"{urlsplit(url).scheme}://", self._adapter)
+            self._session.verify = False
+            self._action = getattr(self._session, 'post', None)
+
+            # response = self._session.post(url, data=encoder)
+            response = self._action(
+                url=url,
+                data=encoder,
+                headers=self._session.headers,
+                timeout=30,
+                stream=False)
         else:
-            response = self._session.get(url)
+            self._session.mount(f"{urlsplit(url).scheme}://", self._adapter)
+            self._session.verify = False
+            self._action = getattr(self._session, 'get', None)
+
+            # response = self._session.get(url)
+            response = self._action(
+                url=url,
+                data=None,
+                headers=self._session.headers,
+                timeout=30,
+                stream=False)
 
         try:
             response.raise_for_status()
