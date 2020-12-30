@@ -119,7 +119,7 @@ $(document).ready(function() {
     });
 
     $('#smartwizard').smartWizard({
-        selected: 0,
+        selected: 3,
         theme: 'dots',
         enableURLhash: false,
         autoAdjustHeight: true,
@@ -274,11 +274,6 @@ function validateIntakeArea() {
             console.log(error);
         }
     });
-}
-
-function delimitIntakeArea() {
-    console.log('Delimiting');
-
 }
 
 /** 
