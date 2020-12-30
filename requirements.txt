@@ -110,7 +110,7 @@ elasticsearch>=2.0.0,<8.0.0
 django-bootstrap3-datetimepicker-2==2.8.2
 
 # AWS S3 dependencies
-django-storages==1.11
+django-storages==1.11.1
 
 # Django Caches
 python-memcached<=1.59
