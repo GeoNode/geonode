@@ -155,6 +155,7 @@ $(function() {
                 reader.onerror = function(event) {
                     console.error("File could not be read! Code " + event.target.error.code);
                     //alert("El archivo no pudo ser cargado: " + event.target.error.code);
+
                 };
                 reader.readAsArrayBuffer(file);
             }
