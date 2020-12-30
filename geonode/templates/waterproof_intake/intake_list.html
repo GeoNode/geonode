@@ -1,5 +1,17 @@
-{% extends "geonode_base.html" %} {% load i18n %} {% block title %}{% trans "Water Intakes" %}{% endblock %} {% block main %}
+{% extends "geonode_base.html" %} {% load i18n %} {% block title %}{% trans "Water Intakes" %}{% endblock %} 
+ 
+{% load i18n %} 
+{% load static from staticfiles %}
+{% load bootstrap_tags %} 
 <h1>{% trans "Water Intakes" %}</h1>
+
+{% block extra_head %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+    <link rel="stylesheet" href="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.css" />
+    <link rel="stylesheet" href="https://photon.komoot.io/static/leaflet.photon/leaflet.photon.css"></link>
+
 
 {% endblock %} {% block body_outer %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/dataTables.bootstrap.min.css">
@@ -14,7 +26,7 @@
         <p><b>Currency:</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
     </div>
     <div class="col-md-8">
-        <div id="mapid" style="width: 700px; height: 200px;"></div>
+        <div id="map" style="width: 700px; height: 200px;"></div>
 
     </div>
 </div>
@@ -40,7 +52,7 @@
             <tr>
                 <td class="small text-center vat">{{sbn.name}}</td>
                 <td class="small text-center vat">{{sbn.description}}</td>
-                <td class="small text-center vat">{{sbn.added_by.first_name}}</td>
+                <td class="small text-center vat">{{sbn.added_by.first_name}} {{sbn.added_by.last_name}}</td>
                 <!--td>{{sbn.max_benefit_req_time}}</td-->
                 <td class="small text-center vat">Navidad</td>
                 <!--td>{{sbn.total_profits_sbn_consec_time}}</td-->
@@ -94,6 +106,64 @@
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
     crossorigin=""></script>
-<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/leaflet.ajax.min.js"></script>
-<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca_list.js"></script>
+<script src="{{ STATIC_URL }}geonode/js/leaflet/leaflet.ajax.min.js"></script>
+<script src="{{ STATIC_URL }}waterproof_intake/js/intake_list.js"></script>
+
+
+
+<script src="https://vinceg.github.io/twitter-bootstrap-wizard/jquery.bootstrap.wizard.js"></script>
+  <script src="https://vinceg.github.io/twitter-bootstrap-wizard/prettify.js"></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+  <script src="https://www.zimmi.cz/Leaflet-Coordinates-Control/Control.Coordinates.js"></script>
+  <script src="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.js"></script>
+  <script src="{% static "geonode/js/leaflet/photon/leaflet.photon.js" %}"></script>
+  
+  <script type="text/javascript">
+    API_URL = '/proxy/?url=https://photon.komoot.de/api/?';
+    TILELAYER = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
+    CENTER = [-74.4879, 4.582];
+    MAXZOOM = 11;
+
+    let waterproof = {};
+
+    $(document).ready(function () {
+        
+        //var map = L.map('map').setView([4, -74],5);
+        //var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        //    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        //});
+        //map.addLayer(osm);
+        
+        var map = L.map('map', {scrollWheelZoom: false, zoomControl: false, photonControl: true, photonControlOptions: {resultsHandler: showWaterIntakes, placeholder: 'Search water intake', position: 'topright', url: API_URL}});
+        map.setView([4, -74],5);
+        searchPoints.addTo(map);
+        var tilelayer = L.tileLayer(TILELAYER, {maxZoom: MAXZOOM, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 Komoot'}).addTo(map);
+        var zoomControl = new L.Control.Zoom({position: 'topleft'}).addTo(map);
+
+        var c = new L.Control.Coordinates();
+        L.control.mapCenterCoord().addTo(map);
+		  c.addTo(map);
+
+        function onMapClick(e) {
+            c.setCoordinates(e);      
+        }
+        map.on('click', onMapClick);
+      
+    });    
+
+    var searchPoints = L.geoJson(null, {
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup(feature.properties.name);
+        }
+    });
+
+    function showWaterIntakes (geojson) {
+        searchPoints.clearLayers();
+        let geojsonFilter = geojson.features.filter(feature  => feature.properties.type == "city");
+        searchPoints.addData(geojsonFilter);
+    }
+    
+  </script>  
 {% endblock %}

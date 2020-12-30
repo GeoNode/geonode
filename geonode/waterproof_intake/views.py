@@ -83,7 +83,6 @@ def listIntake(request):
                 }
             )
 
-
 """
 Load process by ID
 
