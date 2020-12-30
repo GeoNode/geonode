@@ -95,7 +95,7 @@
 			</Symbol>
 		</add>-->
 		<add as="embalse">
-			<Symbol label="" value="wfState_1" value2="customValue" costo6="0.56" description="" href="">
+			<Symbol label="" description="" href="">
 				<mxCell vertex="1" style="embalse">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
