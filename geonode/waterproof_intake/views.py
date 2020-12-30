@@ -11,11 +11,13 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext as _
 from .models import ExternalInputs
-from .models import City,ProcessEfficiencies,Intake
+from .models import City, ProcessEfficiencies, Intake
 from django.core import serializers
 from django.http import JsonResponse
 from . import forms
-
+import json
+from django.contrib.gis.geos import Polygon, MultiPolygon, GEOSGeometry
+from django.contrib.gis.gdal import OGRGeometry
 logger = logging.getLogger(__name__)
 
 
@@ -81,15 +83,79 @@ def listIntake(request):
                 }
             )
 
+
 """
 Load process by ID
 
 Attributes
 ----------
 process: string
-    process id
+    Process name
 """
-def loadProcessEfficiency(request,name):
+
+
+def loadProcessEfficiency(request, name):
     process = ProcessEfficiencies.objects.filter(name=name)
     process_serialized = serializers.serialize('json', process)
     return JsonResponse(process_serialized, safe=False)
+
+
+"""
+Validate polygon geometry
+
+Attributes
+----------
+geometry: geoJSON
+    Polygon geometry
+"""
+
+
+def validateGeometry(request):
+    geometryValidations = {
+        'validPolygon': False,
+        'polygonContains': False
+    }
+    # Polygon uploaded | polygon copied from intake
+    editableGeomString = request.POST.get('editablePolygon')
+    # True | False
+    isFile = request.POST.get('isFile')
+    # GeoJSON | SHP
+    typeDelimitFile = request.POST.get('typeDelimit')
+    print(isFile)
+    # Validate if delimited by file or manually
+    if (isFile):
+        # Validate file's extension
+        if (typeDelimitFile == 'geojson'):
+            editableGeomJson = json.loads(editableGeomString)
+            print(editableGeomJson)
+            for feature in editableGeomJson['features']:
+                editableGeometry = GEOSGeometry(str(feature['geometry']))
+            print('geojson')
+        # Shapefile
+        else:
+            editableGeomJson = json.loads(editableGeomString)
+            for feature in editableGeomJson['features']:
+                editableGeometry = GEOSGeometry(str(feature['geometry']))
+            print('shp')
+    # Manually delimit
+    else:
+        editableGeomJson = json.loads(editableGeomString)
+        editableGeometry = GEOSGeometry(str(editableGeomJson['geometry']))
+    
+    intakeGeomString = request.POST.get('intakePolygon')
+    intakeGeomJson = json.loads(intakeGeomString)
+
+    for feature in intakeGeomJson['features']:
+        intakeGeometry = GEOSGeometry(str(feature['geometry']))
+    intakeGeometry.contains(editableGeometry)
+
+    if (editableGeometry.valid):
+        geometryValidations['validPolygon'] = True
+    else:
+        geometryValidations['validPolygon'] = False
+    if (intakeGeometry.contains(editableGeometry)):
+        geometryValidations['polygonContains'] = True
+    else:
+        geometryValidations['polygonContains'] = False
+
+    return JsonResponse(geometryValidations, safe=False)
