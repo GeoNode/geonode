@@ -263,11 +263,31 @@ function onInit(editor) {
     mxUtils.write(node, ', ');
     mxUtils.linkAction(node, 'Fit', editor, 'fit');*/
 
+
+
+
+
     //use jquery
     $(document).ready(function() {
         var nombrep = $("#title");
 
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
+
+            /** 
+             * Get filtered activities by transition id 
+             * @param {String} url   activities URL 
+             * @param {Object} data  transition id  
+             *
+             * @return {String} activities in HTML option format
+             */
+            $.ajax({
+                url: '/intake/loadProcess/Bombeo', //se supone va el nombre y el id de la figurita
+
+                success: function(result) {
+                    resultadop = JSON.parse(result);
+                    console.log(resultadop)
+                }
+            })
 
             //get the xml save in (node)
             var enc = new mxCodec();
@@ -304,5 +324,7 @@ function onInit(editor) {
 
         });
     });
+
+
 
 }
