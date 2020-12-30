@@ -111,7 +111,7 @@ def geoserver_set_style(
     try:
         instance = Layer.objects.get(id=instance_id)
     except Layer.DoesNotExist:
-        logger.error(f"Layer id {instance_id} does not exist yet!")
+        logger.debug(f"Layer id {instance_id} does not exist yet!")
         raise
 
     lock_id = f'{self.request.id}'
@@ -150,7 +150,7 @@ def geoserver_create_style(
     try:
         instance = Layer.objects.get(id=instance_id)
     except Layer.DoesNotExist:
-        logger.error(f"Layer id {instance_id} does not exist yet!")
+        logger.debug(f"Layer id {instance_id} does not exist yet!")
         raise
 
     lock_id = f'{self.request.id}'
@@ -254,7 +254,7 @@ def geoserver_finalize_upload(
     try:
         instance = Layer.objects.get(id=instance_id)
     except Layer.DoesNotExist:
-        logger.error(f"Layer id {instance_id} does not exist yet!")
+        logger.debug(f"Layer id {instance_id} does not exist yet!")
         raise
 
     lock_id = f'{self.request.id}'
@@ -441,7 +441,7 @@ def geoserver_post_save_layers(
     try:
         instance = Layer.objects.get(id=instance_id)
     except Layer.DoesNotExist:
-        logger.error(f"Layer id {instance_id} does not exist yet!")
+        logger.debug(f"Layer id {instance_id} does not exist yet!")
         raise
 
     lock_id = f'{self.request.id}'

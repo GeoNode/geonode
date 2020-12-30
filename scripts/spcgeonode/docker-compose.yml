@@ -72,7 +72,7 @@ services:
   celery:
     << : *default-common-django
     entrypoint: []
-    command: 'celery -A geonode.celery_app:app worker -B -E --statedb=worker.state -s celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h'
+    command: 'celery -A geonode.celery_app:app worker -B -E --statedb=worker.state -s celerybeat-schedule --loglevel=INFO --concurrency=2 -n worker1@%h'
 
   # Nginx is serving django static and media files and proxies to django and geonode
   nginx:

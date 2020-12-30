@@ -10,7 +10,7 @@ x-common-django:
     context: ./
     dockerfile: Dockerfile
   env_file:
-    - .env
+    - .env_test
   volumes:
     # - '.:/usr/src/geonode'
     - statics:/mnt/volumes/statics
