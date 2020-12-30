@@ -93,8 +93,8 @@ process: string
 """
 
 
-def loadProcessEfficiency(request, name):
-    process = ProcessEfficiencies.objects.filter(name=name)
+def loadProcessEfficiency(request, category):
+    process = ProcessEfficiencies.objects.filter(categorys=category)
     process_serialized = serializers.serialize('json', process)
     return JsonResponse(process_serialized, safe=False)
 
@@ -122,7 +122,7 @@ def validateGeometry(request):
     typeDelimitFile = request.POST.get('typeDelimit')
     print(isFile)
     # Validate if delimited by file or manually
-    if (isFile):
+    if (isFile=='true'):
         # Validate file's extension
         if (typeDelimitFile == 'geojson'):
             editableGeomJson = json.loads(editableGeomString)
