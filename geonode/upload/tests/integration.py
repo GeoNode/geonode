@@ -31,7 +31,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os.path
 from django.conf import settings
-from django.db import connections
+from django.db import connections, transaction
 from django.contrib.auth import get_user_model
 
 from geonode.maps.models import Map
@@ -175,10 +175,14 @@ class UploaderBase(GeoNodeBaseTestSupport):
             os.unlink(temp_file)
 
         # Cleanup
-        Upload.objects.all().delete()
-        Layer.objects.all().delete()
-        Map.objects.all().delete()
-        Document.objects.all().delete()
+        try:
+            with transaction.atomic():
+                Upload.objects.all().delete()
+                Layer.objects.all().delete()
+                Map.objects.all().delete()
+                Document.objects.all().delete()
+        except Exception as e:
+            logger.error(e)
 
         if settings.OGC_SERVER['default'].get(
                 "GEOFENCE_SECURITY_ENABLED", False):
