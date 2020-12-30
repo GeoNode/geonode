@@ -129,48 +129,6 @@ function onInit(editor) {
         editor.execute('switchView');
     });
 
-    //use jquery
-    $(document).ready(function() {
-        var nombrep = $("#title");
-
-        editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
-
-            //get the xml save in (node)
-            var enc = new mxCodec();
-            var node = enc.encode(editor.graph.getModel());
-            console.log(node);
-
-            //get xml like text
-            textNode.value = mxUtils.getPrettyXml(node);
-            console.log(textNode.value)
-
-            //get cell
-            var selectedCell = evt.getProperty("cell");
-            console.log(selectedCell);
-
-            //set attributes
-            selectedCell.setAttribute("parametrop", "45");
-
-            //object to save the attribute
-            var nombre = {};
-            //get element ('symbol') from xml (node)
-            console.log(node.querySelectorAll('Symbol'))
-            node.querySelectorAll('Symbol').forEach(function(node) {
-                nombre[node.id] = node.getAttribute('parametrop');
-
-            });
-            console.log(nombre)
-
-            //put title on right view
-            if (selectedCell.style != undefined) {
-                console.log(selectedCell.style);
-                nombrep.empty();
-                nombrep.append(selectedCell.style);
-            }
-
-        });
-    });
-
     // Create select actions in page
     //var node = document.getElementById('mainActions');
     var buttons = ['group', 'ungroup', 'cut', 'copy', 'paste', 'delete', 'undo', 'redo', 'print', 'show'];
@@ -305,27 +263,46 @@ function onInit(editor) {
     mxUtils.write(node, ', ');
     mxUtils.linkAction(node, 'Fit', editor, 'fit');*/
 
-}
+    //use jquery
+    $(document).ready(function() {
+        var nombrep = $("#title");
 
-function cambiop(editor) {
-    console.log($('#graph'));
-    var model = editor.graph.model.cells[3].value.attributes[0].value;
-    model = `
-        [{
-          "nombre":"rio",
-          "costo":"[{
-          "valor":"0.56"
-          },
-          {
-          "valor":"2.56"
-          }]"
-        }
-        ]
-        `;
-    var model2 = editor.graph.model.cells[3].value.attributes;
-    var node = document.getElementById('mxCell');
-    //var snode = model.getValue(cell);
-    console.log(model);
-    console.log(model2);
-    console.log(node);
+        editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
+
+            //get the xml save in (node)
+            var enc = new mxCodec();
+            var node = enc.encode(editor.graph.getModel());
+            console.log(node);
+
+            //get xml like text
+            textNode.value = mxUtils.getPrettyXml(node);
+            console.log(textNode.value)
+
+            //get cell
+            var selectedCell = evt.getProperty("cell");
+            console.log(selectedCell);
+
+            //set attributes
+            selectedCell.setAttribute("parametrop", "45");
+
+            //object to save the attribute
+            var nombre = {};
+            //get element ('symbol') from xml (node)
+            console.log(node.querySelectorAll('Symbol'))
+            node.querySelectorAll('Symbol').forEach(function(node) {
+                nombre[node.id] = node.getAttribute('parametrop');
+
+            });
+            console.log(nombre)
+
+            //put title on right view
+            if (selectedCell.style != undefined) {
+                console.log(selectedCell.style);
+                nombrep.empty();
+                nombrep.append(selectedCell.style);
+            }
+
+        });
+    });
+
 }
