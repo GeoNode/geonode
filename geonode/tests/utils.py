@@ -22,6 +22,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
 import copy
+import time
 import base64
 import pickle
 import requests
@@ -109,6 +110,7 @@ class Client(DjangoTestClient):
         if self.response_cookies:
             self._session.headers['cookie'] = self.response_cookies
 
+        time.sleep(1.0)
         if data:
             for name, value in data.items():
                 if isinstance(value, IOBase):

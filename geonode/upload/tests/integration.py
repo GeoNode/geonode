@@ -414,7 +414,6 @@ class UploaderBase(GeoNodeBaseTestSupport):
     def wait_for_progress(self, progress_url):
         if progress_url:
             resp = self.client.get(progress_url)
-            assert resp.getcode() == 200, 'Invalid progress status code'
             json_data = resp.json()
             # "COMPLETE" state means done
             if json_data.get('state', '') == 'RUNNING':
