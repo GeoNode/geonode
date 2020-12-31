@@ -994,7 +994,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                             resp, image = ogc_client.request(
                                 thumbnail_remote_url,
                                 headers=headers,
-                                timeout=600)
+                                timeout=ogc_server_settings.get('TIMEOUT', 60))
                             if 'ServiceException' in image or \
                                     resp.status_code < 200 or resp.status_code > 299:
                                 msg = 'Unable to obtain thumbnail: %s' % image
@@ -1063,7 +1063,10 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                             valid_uname_pw = base64.b64encode(
                                 ("%s:%s" % (_user, _pwd)).encode("UTF-8")).decode("ascii")
                             headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
-                        resp, image = ogc_client.request(thumbnail_create_url, headers=headers)
+                        resp, image = ogc_client.request(
+                            thumbnail_create_url,
+                            headers=headers,
+                            timeout=ogc_server_settings.get('TIMEOUT', 60))
                         if 'ServiceException' in str(image) or \
                         resp.status_code < 200 or resp.status_code > 299:
                             msg = 'Unable to obtain thumbnail: %s' % image
