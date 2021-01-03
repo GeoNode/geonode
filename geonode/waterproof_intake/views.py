@@ -11,7 +11,8 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext as _
 from .models import ExternalInputs
-from .models import City, ProcessEfficiencies, Intake
+from .models import City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction
+from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from django.core import serializers
 from django.http import JsonResponse
 from . import forms
@@ -27,6 +28,52 @@ def create(request):
         form = forms.IntakeForm(request.POST)
         if form.is_valid():
             intake = form.save(commit=False)
+            xmlGraph = request.POST.get('xmlGraph')
+            # True | False
+            isFile = request.POST.get('isFile')
+            # GeoJSON | SHP
+            typeDelimitFile = request.POST.get('typeDelimit')
+            interpolationString = request.POST.get('waterExtraction')
+            interpolation = json.loads(interpolationString)
+            intakeAreaString = request.POST.get('areaGeometry')
+            
+            if (isFile == 'true'):
+            # Validate file's extension
+                if (typeDelimitFile == 'geojson'):
+                    intakeAreaJson = json.loads(intakeAreaString)
+                    print(intakeAreaJson)
+                    for feature in intakeAreaJson['features']:
+                        intakeAreaGeom = GEOSGeometry(str(feature['geometry']))
+                    print('geojson')
+                # Shapefile
+                else:
+                    intakeAreaJson = json.loads(intakeAreaString)
+                    for feature in intakeAreaJson['features']:
+                        intakeAreaGeom = GEOSGeometry(str(feature['geometry']))
+                    print('shp')
+            # Manually delimit
+            else:
+                intakeAreaJson = json.loads(intakeAreaString)
+                intakeAreaGeom = GEOSGeometry(str(intakeAreaJson['geometry']))
+
+            demand_parameters = DemandParameters.objects.create(
+                interpolation_type=interpolation['typeInterpolation'],
+                initial_extraction=interpolation['initialValue'],
+                ending_extraction=interpolation['finalValue'],
+                years_number=interpolation['yearCount'],
+                is_manual=True,
+            )
+
+            for extraction in interpolation['yearValues']:
+                water_extraction = WaterExtraction.objects.create(
+                    year=extraction['year'],
+                    value=extraction['value'],
+                    demand=demand_parameters
+                )
+            intake.area = intakeAreaGeom
+            intake.xml_graph = xmlGraph
+            intake.demand_parameters = demand_parameters
+            intake.added_by = request.user
             """
             zf = zipfile.ZipFile(request.FILES['area'])
             print(zf.namelist())
@@ -48,7 +95,6 @@ def listIntake(request):
     if request.method == 'GET':
         if request.user.is_authenticated:
             if (request.user.professional_role == 'ADMIN'):
-
                 intake = Intake.objects.all()
                 city = City.objects.all()
                 return render(
@@ -82,6 +128,7 @@ def listIntake(request):
                     'city': city,
                 }
             )
+
 
 """
 Load process by ID
@@ -122,7 +169,7 @@ def validateGeometry(request):
     typeDelimitFile = request.POST.get('typeDelimit')
     print(isFile)
     # Validate if delimited by file or manually
-    if (isFile=='true'):
+    if (isFile == 'true'):
         # Validate file's extension
         if (typeDelimitFile == 'geojson'):
             editableGeomJson = json.loads(editableGeomString)
@@ -140,7 +187,7 @@ def validateGeometry(request):
     else:
         editableGeomJson = json.loads(editableGeomString)
         editableGeometry = GEOSGeometry(str(editableGeomJson['geometry']))
-    
+
     intakeGeomString = request.POST.get('intakePolygon')
     intakeGeomJson = json.loads(intakeGeomString)
 

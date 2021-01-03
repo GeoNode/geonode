@@ -95,7 +95,7 @@
                             Nombre
                         </label>
                         <div class="">
-                            <input type="text" name="name" maxlength="100" class=" form-control" required=""
+                            <input type="text" name="name" maxlength="100" class=" form-control" required
                                 id="id_name">
                         </div>
                     </div>
@@ -106,7 +106,7 @@
                         Descripción
                     </label>
                     <div class="">
-                        <input type="text" name="description" maxlength="1024" class=" form-control" required=""
+                        <input type="text" name="description" maxlength="1024" class=" form-control" required
                             id="id_description">
                     </div>
                 </div>
@@ -116,12 +116,14 @@
                     </label>
                     <div class="">{{form.city}}</div>
                 </div>
-                <button type="submit" id="submit" class="btn btn-primary">Submit</button>
-
-
+                <input type="hidden" id="xmlGraph" name="xmlGraph">
+                <input type="hidden" id="isFile" name="isFile">
+                <input type="hidden" id="typeDelimit" name="typeDelimit">
+                <input type="hidden" id="waterExtraction" name="waterExtraction" value="">
+                <input type="hidden" id="areaGeometry" name="areaGeometry" value="">
                 <div id="map">
                     <div id="analysisOptions">
-                        <button id="validateBtn">Validate</button>
+                        <button type="button" id="validateBtn">Validate</button>
                     </div>
                 </div>
         </div>
@@ -139,8 +141,8 @@
                         <div class="panel-body" id="graph" tabindex="-1"
                             style="height:790px;width:100%;overflow:hidden;cursor:default;"></div>
                         <span style="float:right;padding-right:36px;">
-                <input id="getdata" type="checkbox" />Source
-              </span>
+                            <input id="getdata" type="checkbox" />Source
+                        </span>
                         <textarea id="xml" style="height:480px;width:684px;display:none;border-style:none;"></textarea>
                     </div>
                 </div>
@@ -164,15 +166,19 @@
                             </div>
                             <div class="form-group">
                                 <label for="exampleInputEmail1">Concentración de Fósforo:</label>
-                                <input type="text" id ="fosforo" class="form-control">
+                                <input type="text" id="fosforo" class="form-control">
                             </div>
                             <h2 for="exampleInputEmail1">Funciones de costo</h2>
                             <div id="intakeaddcost">
-                                
+
                             </div>
                             <div class="form-group">
                                 <button type="button" class="btn btn-primary" id="btnaddcost"> Add Cost</button>
                             </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" id="btnSaveGraph"> Save Graph</button>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -211,8 +217,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <label>Number Year <span class="text-danger-wp">(*)</span> </label>
-                                            <input type="text" class="form-control" id="numberYearsInterpolationValue"
-                                                required>
+                                            <input type="text" class="form-control" id="numberYearsInterpolationValue">
                                         </div>
                                     </div>
                                 </div>
@@ -222,12 +227,12 @@
                                         <div class="col-md-6">
                                             <label>Initial <span class="text-danger-wp">(*)</span> </label>
                                             <input type="text" class="form-control"
-                                                id="initialDataExtractionInterpolationValue" required>
+                                                id="initialDataExtractionInterpolationValue">
                                         </div>
                                         <div class="col-md-6">
                                             <label>Final <span class="text-danger-wp">(*)</span> </label>
                                             <input type="text" class="form-control"
-                                                id="finalDataExtractionInterpolationValue" required>
+                                                id="finalDataExtractionInterpolationValue">
                                         </div>
                                     </div>
                                 </div>
@@ -246,7 +251,9 @@
                                         <tbody id="intakeECTAG">
                                         </tbody>
                                     </table>
+
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -259,7 +266,7 @@
                                 <h5 class="text-primary">Year number for analysis</h5>
                                 <div class="form-group">
                                     <label>Number Years <span class="text-danger-wp">(*)</span> </label>
-                                    <input type="text" class="form-control" required id="intakeNIYMI">
+                                    <input type="text" class="form-control"  id="intakeNIYMI">
                                 </div>
                                 <button type="button" class="btn btn-primary" id="intakeNIBYMI">Generate</button>
                                 <button type="button" class="btn btn-danger">Save asignation</button>
@@ -328,17 +335,23 @@
                                 <input id="intakeArea" type="file">
                             </div>
                             <div class="form-group">
-                                <button type="button" class="btn btn-primary" id="btnDelimitArea"> Delimit subarea</button>
+                                <button type="button" class="btn btn-primary" id="btnDelimitArea"> Delimit
+                                    subarea</button>
                             </div>
                             <div class="form-group">
-                                <button type="button" class="btn btn-primary" id="btnValidateArea"> Validate area</button>
+                                <button type="button" class="btn btn-primary" id="btnValidateArea"> Validate
+                                    area</button>
                             </div>
+                            <div class="form-group"></div>
+                            <button type="submit" id="submit" class="btn btn-primary">Submit</button>
                         </div>
                     </div>
                 </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

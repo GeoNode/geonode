@@ -281,6 +281,7 @@ function onInit(editor) {
 
             //get xml like text
             textNode.value = mxUtils.getPrettyXml(node);
+            xmlGraph=textNode.value;
             console.log(textNode.value)
 
             //get cell
