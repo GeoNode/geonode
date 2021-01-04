@@ -427,11 +427,11 @@ function onInit(editor) {
                 nombrep.append(selectedCell.name);
             }
 
+
         });
         
     });
     */
-
 
 
 }
