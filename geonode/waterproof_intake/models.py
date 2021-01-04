@@ -101,11 +101,11 @@ class ProcessEfficiencies(models.Model):
         verbose_name=_('Categorys')
     )
 
-    normalized_category= models.CharField(
+    normalized_category = models.CharField(
         max_length=100,
         verbose_name=_('Normalized category')
     )
-    
+
     minimal_sediment_perc = models.IntegerField(
         default=0,
         verbose_name=_('Minimal sediment')
@@ -251,7 +251,7 @@ class Intake(models.Model):
         verbose_name=_('Source name'),
     )
 
-    area = models.PolygonField(verbose_name='geo', srid=4326, null=True, blank=True)
+    area = models.PolygonField(verbose_name='area', srid=4326, null=True, blank=True)
 
     city = models.ForeignKey(City, on_delete=models.CASCADE)
 
@@ -260,6 +260,10 @@ class Intake(models.Model):
     xml_graph = models.TextField(
         verbose_name=_('Graph')
     )
+
+    creation_date = models.DateField(auto_now=True)
+
+    updated_date = models.DateField(auto_now=True)
 
     added_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

@@ -150,7 +150,7 @@ def listNbs(request):
                     }
                 )
         
-            if (request.user.professional_role == 'ANAL'):
+            if (request.user.professional_role == 'ANALYST'):
                 nbs = WaterproofNbsCa.objects.all()
                 userCountry = Countries.objects.get(code=request.user.country)
                 region = Region.objects.get(id=userCountry.region_id)
