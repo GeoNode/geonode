@@ -116,275 +116,243 @@
       {% endblock bigsearch %}
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-	
-	
-<div class="principal-menu">
-        <div class="container">
-		<div class="row text-center colorHeaderInstrucciones">
-            <h2>{% trans "System operating instructions" %}</h2>
-          </div>
-            <div class="row hidden-xs hidden-sm hidden-md">
-                <div class="col-md-4">
-                    <div class="center-block text-center">
-                        <img class="center-img" src= "/static/geonode/img/2.png">
-                        <img class="img1 ani_headShake" src="/static/geonode/img/01-ICONO.png">
-                        <h4 class="ico1-text "> {% trans "Choose or create a new NBS" %} </h4>
-                        <img class="img2 ani_headShake" src="/static/geonode/img/02-ICONO.png">
-                        <h4 class="ico2-text "> {% trans "Define and configure your Water Intakes" %} </h4>
-                        <img class="img3 ani_headShake" src="/static/geonode/img/03-ICONO.png">
-                        <h4 class="ico3-text ">{% trans "Locate your city" %} </h4>
-                    </div>
-                </div>
-                <div class="col-md-4 center-block">
-                    <div class="center-block text-center">
-                        <img class="center-img principal_img ani_flip" src="/static/geonode/img/1.png">
-                    </div>
-                </div>
-                <div class="col-md-4 center-block ">
-                    <div class="center-block text-center">
-                        <img class="center-img " src="/static/geonode/img/3.png">
-                        <img class="img4 ani_headShake" src="/static/geonode/img/04-ICONO.png">
-                        <h4 class="ico4-text ">{% trans "Configure your treatment plants or customized infrastructure" %} </h4>
-                        <img class="img5 ani_headShake" src="/static/geonode/img/05-ICONO.png">
-                        <h4 class="ico5-text ">{% trans "Define costs and create your case study" %}</h4>
-                        <img class="img6 ani_headShake" src="/static/geonode/img/06-ICONO.png">
-                        <h4 class="ico6-text ">{% trans "Consult Compare. download and share the results" %}</h4>
-                    </div>
-                </div>
-            </div>
-            <div class="row hidden-lg">
-                <div class="col-md-12 center-block text-center">
-                    <img class="center-img-movil" src="/static/geonode/img/1.png">
-                </div>
-            </div>
-            <div class="row hidden-lg">
-                <div class="col-md-12">
-                    <div class="media">
-                        <div class="media-left media-middle">
-                        <a href="#">
-                            <img class="media-object" src="/static/geonode/img/01-ICONO.png" style="max-width: 100px;">
-                        </a>
-                        </div>
-                        <div class="media-body">
-                        <h4>{% trans "Choose or create a new NBS" %}</h4>
-                        </div>
-                    </div>
-                    <div class="media">
-                        <div class="media-left media-middle">
-                        <a href="#">
-                            <img class="media-object" src="/static/geonode/img/02-ICONO.png" style="max-width: 100px;">
-                        </a>
-                        </div>
-                        <div class="media-body">
-                        <h4>{% trans "Define and configure your Water Intakes" %}</h4>
-                        </div>
-                    </div>
-                    <div class="media">
-                        <div class="media-left media-middle">
-                        <a href="#">
-                            <img class="media-object" src="/static/geonode/img/03-ICONO.png" style="max-width: 100px;">
-                        </a>
-                        </div>
-                        <div class="media-body">
-                        <h4>{% trans "Locate your city" %}</h4>
-                        </div>
-                    </div>
-                    <div class="media">
-                        <div class="media-left media-middle">
-                        <a href="#">
-                            <img class="media-object" src="/static/geonode/img/04-ICONO.png" style="max-width: 100px;">
-                        </a>
-                        </div>
-                        <div class="media-body">
-                        <h4>{% trans "Configure your treatment plants or customized infrastructure" %}</h4>
-                        </div>
-                    </div>
-                    <div class="media">
-                        <div class="media-left media-middle">
-                        <a href="#">
-                            <img class="media-object" src="/static/geonode/img/05-ICONO.png" style="max-width: 100px;">
-                        </a>
-                        </div>
-                        <div class="media-body">
-                        <h4>{% trans "Define costs and create your case study" %}</h4>
-                        </div>
-                    </div>
-                    <div class="media">
-                        <div class="media-left media-middle">
-                        <a href="#">
-                            <img class="media-object" src="/static/geonode/img/06-ICONO.png" style="max-width: 100px;">
-                        </a>
-                        </div>
-                        <div class="media-body">
-                        <h4>{% trans "Consult Compare. download and share the results" %}</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-      </div>
-    <!--script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script-->
-    <!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script-->
+<style>
+    .nav-link:hover {
+       text-decoration: none;
+    }
 
-    <section>	    
-        <section>
-            <div class="container text-center">
-                    <div class="row colorHeaderInstrucciones">
-                        <h2>{% trans "Nature-based solutions" %}</h2>
-                    </div>
-                    <div class="row">
-                        <span style="font-size:12px"> {% trans "We work to meet this ambitious goal" %}</span> <br>
-                        <span style="font-size:12px"> {% trans "by focusing on these key conservation areas" %}</span>
-                    </div>
-                    <div class="row" style="height:40px;"></div>
-                    <div class="row" style="height:500px;">
-                        <div class="col-md-4">
-                            <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                            <img src= "{% static 'geonode/img/01-conservacion.png' %}">
-                            <p class="text-center"> {% trans "Conservation" %}
-                            </p>
-                            </a>
-                        </div>
-                        <div class="col-md-3 col-md-offset-1">
-                            <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                            <img src= "{% static 'geonode/img/02-restauracion-activa.png' %}">
-                            <p class="text-center"> {% trans "Active restoration" %}
-                            </p>
-                            </a>
-                        </div>
-                        <div class="col-md-3 col-md-offset-1">
-                            <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                            <img src= "{% static 'geonode/img/03-restauracion-pasiva.png' %}">
-                            <p class="text-center"> {% trans "Passive restoration" %}
-                            </p>
-                            </a>
-                        </div>           
-                    </div>
-                    <div class="row" style="height:50px;"></div>
-                    <div class="row" style="height:500px;">
-                        <div class="col-md-7">
-                            <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                            <img src= "{% static 'geonode/img/04-practicas-agricolas.png' %}">
-                            <p class="text-center"> {% trans "Best agricultural practices" %} 
-                            </p>
-                            </a>
-                        </div>
-                        <div class="col-md-3">
-                            <a style="font-size: 12px" href="{{ partner.partner_link|safe }}" target="_blank">
-                            <img src= "{% static 'geonode/img/05-sistemas-sostenibles.png' %}">
-                            <p class="text-center"> {% trans "Sustainable production systems" %}
-                            </p>
-                            </a>
-                        </div>           
-                </div> 
-                <div class="row" style="height:30px;"></div>
-            </div>        
-      </section>	  
-	 <section>
-	
-	<div class="carrouselcolor">
-        <div class="container">
-		<div class="row text-center colorHeaderInstrucciones">
-            <h2>{% trans "News" %}</h2>
+    .imgbackgroundwiki {
+      padding-top: 170px;
+}
+</style>
+<section class="container" id="soi-menu">
+  <div class="row text-center">
+      <h2 class="colorHeaderInstrucciones">{% trans "System operating instructions" %}</h2>
+  </div>
+  <div class="row hidden-xs hidden-sm hidden-md">
+      <div class="col-md-4">
+          <div class="center-block text-center">
+              <img class="center-img" src="/static/geonode/img/2.png">
+              <img class="img1 ani_headShake" src="/static/geonode/img/01-ICONO.png">
+              <h4 class="ico1-text ">{% trans "Choose or create a new NBS" %}</h4>
+              <img class="img2 ani_headShake" src="/static/geonode/img/02-ICONO.png">
+              <h4 class="ico2-text ">{% trans "Define and configure your Water Intakes" %}</h4>
+              <img class="img3 ani_headShake" src="/static/geonode/img/03-ICONO.png">
+              <h4 class="ico3-text ">{% trans "Locate your city" %}</h4>
           </div>
-            <div class="slider owl-carousel">
-                <div class="card">
-                    <div class="img">
-                        <img src="/static/geonode/img/car1.jpg" class="img-card-news" alt=""></div>
-                    <div class="content">
-                        <div class="newstitle">
-                            {% trans "Indicators of water risk and basin healths" %}</div>
-                       
-                        <p>
-                            {% trans "As part of the conceptualization carried out for the WaterFunds App, the incorporation of some indicators has been proposed that will allow users to have a notion of the water risk and the health status of a basin under analysis." %}</p>
-                    </div>
+      </div>
+      <div class="col-md-4 center-block">
+          <div class="center-block text-center">
+              <img class="center-img principal_img ani_flip" src="/static/geonode/img/1.png">
+          </div>
+      </div>
+      <div class="col-md-4 center-block ">
+          <div class="center-block text-center">
+              <img class="center-img " src="/static/geonode/img/3.png">
+              <img class="img4 ani_headShake" src="/static/geonode/img/04-ICONO.png">
+              <h4 class="ico4-text ">{% trans "Configure your treatment plants or customized infrastructure" %} </h4>
+              <img class="img5 ani_headShake" src="/static/geonode/img/05-ICONO.png">
+              <h4 class="ico5-text ">{% trans "Define costs and create your case study" %}</h4>
+              <img class="img6 ani_headShake" src="/static/geonode/img/06-ICONO.png">
+              <h4 class="ico6-text ">{% trans "Consult Compare. download and share the results" %}</h4>
+          </div>
+      </div>
+  </div>
+  <div class="row hidden-lg">
+      <div class="col-md-12 center-block text-center">
+          <img class="center-img-movil" src="/static/geonode/img/1.png">
+      </div>
+  </div>
+  <div class="row hidden-lg">
+      <div class="col-md-12">
+          <div class="media">
+              <div class="media-left media-middle">
+                  <a href="#">
+                      <img class="media-object" src="/static/geonode/img/01-ICONO.png" style="max-width: 100px;">
+                  </a>
+              </div>
+              <div class="media-body">
+                  <h4>{% trans "Choose or create a new NBS" %}</h4>
+              </div>
+          </div>
+          <div class="media">
+              <div class="media-left media-middle">
+                  <a href="#">
+                      <img class="media-object" src="/static/geonode/img/02-ICONO.png" style="max-width: 100px;">
+                  </a>
+              </div>
+              <div class="media-body">
+                  <h4>{% trans "Define and configure your Water Intakes" %}</h4>
+              </div>
+          </div>
+          <div class="media">
+              <div class="media-left media-middle">
+                  <a href="#">
+                      <img class="media-object" src="/static/geonode/img/03-ICONO.png" style="max-width: 100px;">
+                  </a>
+              </div>
+              <div class="media-body">
+                  <h4>{% trans "Locate your city" %}</h4>
+              </div>
+          </div>
+          <div class="media">
+              <div class="media-left media-middle">
+                  <a href="#">
+                      <img class="media-object" src="/static/geonode/img/04-ICONO.png" style="max-width: 100px;">
+                  </a>
+              </div>
+              <div class="media-body">
+                  <h4>{% trans "Configure your treatment plants or customized infrastructure" %}</h4>
+              </div>
+          </div>
+          <div class="media">
+              <div class="media-left media-middle">
+                  <a href="#">
+                      <img class="media-object" src="/static/geonode/img/05-ICONO.png" style="max-width: 100px;">
+                  </a>
+              </div>
+              <div class="media-body">
+                  <h4>{% trans "Define costs and create your case study" %}</h4>
+              </div>
+          </div>
+          <div class="media">
+              <div class="media-left media-middle">
+                  <a href="#">
+                      <img class="media-object" src="/static/geonode/img/06-ICONO.png" style="max-width: 100px;">
+                  </a>
+              </div>
+              <div class="media-body">
+                  <h4>{% trans "Consult Compare. download and share the results" %}</h4>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+<section class="container" id="nbs-menu">
+    <div class="row text-center">
+        <h2 class="colorHeaderInstrucciones">{% trans "Nature-based solutions" %}</h2>
+        <p>{% trans "We work to meet this ambitious goal" %}</p>
+    </div>
+    <div class="row text-center">
+        <div class="col-md-4">
+            <a href="{{ partner.partner_link |safe }}" target="_blank" class="nav-link">
+                <img class="img-responsive center-block" src="{% static 'geonode/img/01-conservacion.png' %}">
+                <h4 class="text-center lead">{% trans "Conservation" %}</h4>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ partner.partner_link|safe }}" target="_blank" class="nav-link">
+                <img class="img-responsive center-block" src="{% static 'geonode/img/02-restauracion-activa.png' %}">
+                <h4 class="text-center lead"> {% trans "Active restoration" %}</h4>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ partner.partner_link|safe }}" target="_blank" class="nav-link">
+                <img class="img-responsive center-block" src="{% static 'geonode/img/03-restauracion-pasiva.png' %}">
+                <h4 class="text-center lead">{% trans "Passive restoration" %}</h4>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <a href="{{ partner.partner_link|safe }}" target="_blank" class="nav-link">
+                <img class="img-responsive center-block" src="{% static 'geonode/img/04-practicas-agricolas.png' %}">
+                <h4 class="text-center lead"> {% trans "Best agricultural practices" %} </h4>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="{{ partner.partner_link|safe }}" target="_blank" class="nav-link">
+                <img class="img-responsive center-block" src="{% static 'geonode/img/05-sistemas-sostenibles.png' %}">
+                <h4 class="text-center lead"> {% trans "Sustainable production systems" %}</h4>
+            </a>
+        </div>
+    </div>
+</section>
+<section class="carrouselcolor" id="news-menu">
+    <div class="container">
+        <div class="row text-center">
+            <h2 class="colorHeaderInstrucciones">{% trans "News" %}</h2>
+            <br>
+        </div>
+        <div class="slider owl-carousel">
+            <div class="card">
+                <div class="img">
+                    <img src="/static/geonode/img/car1.jpg" class="img-card-news" alt=""></div>
+                <div class="content">
+                    <div class="newstitle"> {% trans "Indicators of water risk and basin healths" %}</div>
+                    <p>{% trans "As part of the conceptualization carried out for the WaterFunds App, the incorporation of some indicators has been proposed that will allow users to have a notion of the water risk and the health status of a basin under analysis." %}</p>
                 </div>
-                <div class="card">
-                    <div class="img">
-                        <img src="/static/geonode/img/car2.jpg" class="img-card-news" alt=""></div>
-                    <div class="content">
-                        <div class="newstitle">
-                            {% trans "RIOS model data requirement" %}</div>                       
-                        <p>
-                            {% trans "In summary, a total of 37 variables are identified to feed the 5 InVEST models, of which 28 correspond to variables associated with climate, and the rest are associated with soil and coverage" %}.</p>
-                    </div>
+            </div>
+            <div class="card">
+                <div class="img">
+                    <img src="/static/geonode/img/car2.jpg" class="img-card-news" alt=""></div>
+                <div class="content">
+                    <div class="newstitle">{% trans "RIOS model data requirement" %}</div>
+                    <p>{% trans "In summary, a total of 37 variables are identified to feed the 5 InVEST models, of which 28 correspond to variables associated with climate, and the rest are associated with soil and coverage" %}.</p>
                 </div>
-                <div class="card">
-                    <div class="img">
-                        <img src="/static/geonode/img/car3.jpg" class="img-card-news" alt=""></div>
-                    <div class="content">
-                        <div class="newstitle">
-                            {% trans "InVEST model data requirement" %}</div>                        
-                        <p>
-                            {% trans "This section lists the data required by each of the InVEST models that are considered to be incorporated into Waterproof" %}</p>
-                    </div>
+            </div>
+            <div class="card">
+                <div class="img">
+                    <img src="/static/geonode/img/car3.jpg" class="img-card-news" alt=""></div>
+                <div class="content">
+                    <div class="newstitle">{% trans "InVEST model data requirement" %}</div>
+                    <p>{% trans "This section lists the data required by each of the InVEST models that are considered to be incorporated into Waterproof" %}</p>
                 </div>
-                <div class="card">
-                    <div class="img">
-                        <img src="/static/geonode/img/car4.jpg" class="img-card-news" alt=""></div>
-                    <div class="content">
-                        <div class="newstitle">                            
-							{% trans "Total monthly and annual average multi-year precipitation (Current condition) and rainy days" %}</div>
-                        <p>                            
-							{% trans "A total of 11 databases were identified from the review carried out for the multiannual monthly mean precipitation variables (January, February, ..., December) and multi-year mean annual precipitation." %}</p>
-                    </div>
+            </div>
+            <div class="card">
+                <div class="img">
+                    <img src="/static/geonode/img/car4.jpg" class="img-card-news" alt=""></div>
+                <div class="content">
+                    <div class="newstitle">{% trans "Total monthly and annual average multi-year precipitation (Current condition) and rainy days" %}</div>
+                    <p>{% trans "A total of 11 databases were identified from the review carried out for the multiannual monthly mean precipitation variables (January, February, ..., December) and multi-year mean annual precipitation." %}</p>
                 </div>
-                <div class="card">
-                    <div class="img">
-                        <img src="/static/geonode/img/car5.jpg" class="img-card-news" alt=""></div>
-                    <div class="content">
-                        <div class="newstitle">
-                            {% trans "Multi-year average monthly and annual total reference evapotranspiration" %} </div>
-                        
-                        <p>
-                            {% trans "According to the review carried out, the databases that contain the reference evapotranspiration variable are scarce, since this variable is generally inferred from data such as temperature, relative humidity, radiation, among others." %}</p>
-                    </div>
+            </div>
+            <div class="card">
+                <div class="img">
+                    <img src="/static/geonode/img/car5.jpg" class="img-card-news" alt=""></div>
+                <div class="content">
+                    <div class="newstitle"> {% trans "Multi-year average monthly and annual total reference evapotranspiration" %} </div>
+                    <p>{% trans "According to the review carried out, the databases that contain the reference evapotranspiration variable are scarce, since this variable is generally inferred from data such as temperature, relative humidity, radiation, among others." %}</p>
                 </div>
             </div>
         </div>
     </div>
-	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script> -->
-	
-	</section> 	 
-	  
-	<section>
-        <div class="container text-center imgbackgroundwiki">
-          <div class="row" style="height:30%;">
-            </div>
-            <div class="row backgroundcolorwiki">
-           <div class= "row">
+</section>
+<section class="imgbackgroundwiki" id="wtw-menu">
+    <div class="backgroundcolorwiki">
+        <div class="row text-center">
             <p class="ppwpwiki">{% trans "WATERPROOF WIKI" %}</p>
             <hr>
-            </div>
-            <div class="row">
+        </div>
+        <div class="row text-center">
             <p class="ppwpwiki2">{% trans "Knowledge bank" %}</p>
-            </div>
-             <div class="row" style="height:100px">
+        </div>
+        <div class="row text-center">
             <p class="ppwpwiki3"> {% trans "Check here the conceptual elements that Waterproof uses to propose" %}</p>
             <p class="ppwpwiki3"> {% trans "nature-based solutions and calculate the return on your investment" %}</p>
-           </div>
-          </div>
-          <div class="row" style="height:2%;">
-            </div>
-            <button class= "button-viki">
-            <a class= "link-wp-syle" href="{{ partner.partner_link|safe }}" target="_blank">
-            <b class="ppwpwiki3"> {% trans "Keep reading" %} </b>
-            </a>
+        </div>
+        <br>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <br>
+            <button class="button-viki">
+              <a class= "link-wp-syle" href="{{ partner.partner_link|safe }}" target="_blank"><span class="ppwpwiki3"> {% trans "Keep reading" %}  </span></a>
             </button>
             <br>
         </div>
     </div>
-    </section>
-    <section>
-        <div class="row justify-content-md-center" style="height:20%;">
-            <div class="col-md-6 text-center">
-                <img src="{% static 'geonode/img/LogoTNC2.png' %}" alt="The nature Conservancy" style="max-height: 100px;">
-            </div>
-            <div class="col-md-6 text-center">
-                <img src="{% static 'geonode/img/fundacionmoore.png' %}" alt="Moore fundation" style="max-height: 100px;">
-            </div>
+</section>
+<section id="partner_tnc">
+    <div class="row justify-content-md-center" style="height:20%;">
+        <div class="col-md-6 text-center">
+            <img src="{% static 'geonode/img/LogoTNC2.png' %}" alt="The nature Conservancy" style="max-height: 100px;">
         </div>
-    </section> 
+        <div class="col-md-6 text-center">
+            <img src="{% static 'geonode/img/fundacionmoore.png' %}" alt="Moore fundation" style="max-height: 100px;">
+        </div>
+    </div>
+</section> 
       
     
 	<!-- <section> -->

@@ -9,21 +9,21 @@
     <title>{{ resource.title }}</title>
     {% block head %}
       {% if DEBUG_STATIC %}
-      <link href="{% static "lib/css/jquery.dataTables.css" %}" rel="stylesheet" />
+     <!-- <link href="{% static "lib/css/jquery.dataTables.css" %}" rel="stylesheet" />-->
       <link href="{% static "lib/css/select2.css" %}" rel="stylesheet"/>
       <link href="{% static "lib/css/bootstrap.css" %}" rel="stylesheet"/>
       <link href="{% static "lib/css/jquery-ui.css" %}" rel="stylesheet"/>
       <link href="{% static "lib/css/bootstrap-datetimepicker.css" %}" rel="stylesheet" />
       {% else %}
-      <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet"/>
+      <!-- <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet"/>-->
       {% endif %}
-      <link href="{% static "geonode/css/base.css" %}" rel="stylesheet" />
-      <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
+      <!--<link href="{% static "geonode/css/base.css" %}" rel="stylesheet" />-->
+      <!--<style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
 	<style>
 	dl dd{ margin-left:20px; }
 	dl dt {margin-top:10px;}
 	ul.nop {list-style-type: none;}
-	</style>
+	</style>-->
 
     {% endblock %}
 	</head>
