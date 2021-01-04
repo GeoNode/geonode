@@ -52,10 +52,12 @@ $(document).ready(function() {
             m = (Math.log(finalDataExtractionInterpolationValue) - Math.log(initialDataExtractionInterpolationValue)) / ((Math.log(numberYearsInterpolationValue) - Math.log(1)));
             b = Math.exp((-1 * m * Math.log(1)) + Math.log(initialDataExtractionInterpolationValue));
 
+            console.log(m);
+            console.log(b);
             for (let index = 1; index <= numberYearsInterpolationValue; index++) {
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${(b*(Math.pow(index,m)))}</td>
+                <td class="text-center">${(b*(Math.pow(index,m))).toFixed(2)}</td>
               </tr>`);
             }
         }
@@ -68,7 +70,20 @@ $(document).ready(function() {
             for (let index = 0; index <= numberYearsInterpolationValue; index++) {
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${(b*(Math.exp(m*index)))}</td>
+                <td class="text-center">${(b*(Math.exp(m*index))).toFixed(2)}</td>
+              </tr>`);
+            }
+
+        }
+
+        // Interpolación Logistica
+        if (typeProcessInterpolation == 4) {
+            r = (-Math.log(0.000000001) / initialDataExtractionInterpolationValue);
+            console.log(r)
+            for (let index = 0; index <= numberYearsInterpolationValue; index++) {
+                $('#intakeECTAG').append(`<tr>
+                <th class="text-center" scope="row">${index}</th>
+                <td class="text-center">${((finalDataExtractionInterpolationValue)/(1+((finalDataExtractionInterpolationValue/initialDataExtractionInterpolationValue)-1)*Math.exp(-r*index))).toFixed(2)}</td>
               </tr>`);
             }
 
@@ -104,16 +119,7 @@ $(document).ready(function() {
         }
     });
 
-    MathJax = {
-        loader: {
-            load: ['input/asciimath']
-        },
-        asciimath: {
-            delimiters: [
-                ['`math`', '`math`']
-            ]
-        }
-    };
+
 
     $('#smartwizard').smartWizard("next").click(function() {
         $('#autoAdjustHeightF').css("height", "auto");
@@ -121,7 +127,7 @@ $(document).ready(function() {
     });
 
     $('#smartwizard').smartWizard({
-        selected: 0,
+        selected: 1,
         theme: 'dots',
         enableURLhash: false,
         autoAdjustHeight: true,
@@ -142,7 +148,7 @@ $(document).ready(function() {
         }
     });
     map = L.map('map', {}).setView([4.1, -74.1], 5);
-    mapDelimit = L.map('mapid',{editable: true}).setView([4.1, -74.1], 5);
+    mapDelimit = L.map('mapid', { editable: true }).setView([4.1, -74.1], 5);
     var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     });
@@ -171,7 +177,7 @@ $(document).ready(function() {
     }).addTo(map);
 
     $("#validateBtn").on("click", validateCoordinateWithApi);
-    $('#btnDelimitArea').on("click",delimitIntakeArea)
+    $('#btnDelimitArea').on("click", delimitIntakeArea)
     if (!mapLoader) {
         mapLoader = L.control.loader().addTo(map);
     }
@@ -202,7 +208,7 @@ $('#btnaddcost').click(function() {
 window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 
 
-function delimitIntakeArea(){
+function delimitIntakeArea() {
     console.log('Delimiting');
 
 }

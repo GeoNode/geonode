@@ -11,6 +11,18 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Coordinates.css" %}" />
 <link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Loader.css" %}" />
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+    MathJax = {
+        loader: {
+            load: ['input/asciimath']
+        },
+        asciimath: {
+            delimiters: [
+                ['`math`', '`math`']
+            ]
+        }
+    };
+</script>
 <style>
     #mainActions>button {
         display: inline-block;
@@ -101,11 +113,16 @@
         </li>
         <li>
             <a class="nav-link" href="#step-3">
-                Water Extraction and External
+                Water Extraction
+            </a>
+        </li>
+         <li>
+            <a class="nav-link" href="#step-4">
+                External
             </a>
         </li>
         <li>
-            <a class="nav-link" href="#step-4">
+            <a class="nav-link" href="#step-5">
                 Sub-area
             </a>
         </li>
@@ -176,8 +193,6 @@
                             <div class="alert alert-info" role="alert">
                                 <h1 class="text-center">R1</h1>
                             </div>
-
-
                             <div class="form-group">
                                 <label for="exampleInputEmail1">Name:</label>
                                 <input type="text" class="form-control">
@@ -195,7 +210,7 @@
                             </div>
                             <div class="form-group">
                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Add Cost</button>
-                             <button type="button" class="btn btn-primary" id="btnaddcost"> Add Cost</button>
+                             <!--<button type="button" class="btn btn-primary" id="btnaddcost"> Add Cost</button>-->
                             </div>
                         </div>
                     </div>
@@ -207,11 +222,9 @@
                 <h3>Water Extraction</h3>
                 <p>Please enter the annual water extraction (l/s) associated with the Extraction Connection element x defined in the Water Intake system diagram</p>
             </div>
-
-            <h4 class="text-primary">Type data</h4>
             <ul class="nav nav-tabs">
-                <li data-toggle="tab" data-target="#automatic" class="active"><a href="#">Automatic</a></li>
-                <li data-toggle="tab" data-target="#manual"><a href="#">Manual</a></li>
+                <li data-toggle="tab" data-target="#automatic" class="active"><a href="#">Interpolation Wizard</a></li>
+                <li data-toggle="tab" data-target="#manual"><a href="#">Manual Edit</a></li>
             </ul>
 
             <div class="tab-content">
@@ -219,41 +232,42 @@
                     <br>
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-7">
                                 <h5 class="text-primary">Data Analysis</h5>
+                                <p>Please selected the method you wish to use to fill in the table associated with annual water extraction from the source.</p>
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <label>Type process <span class="text-danger-wp">(*)</span> </label>
+                                            <label>Interpolation Method <span class="text-danger-wp">(*)</span> </label>
                                             <select class="form-control" id="typeProcessInterpolation">
-                                  <option value="1">Linear interpolation</option>
-                                  <option value="2">Potential interpolation</option>
-                                  <option Value="3">Exponential interpolation</option>
-                                  <option Value="4">Logistics interpolation</option>
-                                </select>
+                                                <option value="1">Linear interpolation</option>
+                                                <option value="2">Potential interpolation</option>
+                                                <option Value="3">Exponential interpolation</option>
+                                                <option Value="4">Logistics interpolation</option>
+                                                </select>
                                         </div>
                                         <div class="col-md-6">
-                                            <label>Number Year <span class="text-danger-wp">(*)</span> </label>
+                                            <label>Number of years for time series <span class="text-danger-wp">(*)</span> </label>
                                             <input type="text" class="form-control" id="numberYearsInterpolationValue" required>
                                         </div>
                                     </div>
                                 </div>
-                                <h5 class="text-primary">Data for Extraction</h5>
+                                <h5 class="text-primary">Extraction</h5>
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <label>Initial <span class="text-danger-wp">(*)</span> </label>
+                                            <label>Initial year<span class="text-danger-wp">(*)</span> </label>
                                             <input type="text" class="form-control" id="initialDataExtractionInterpolationValue" required>
                                         </div>
-                                        <div class="col-md-6">
-                                            <label>Final <span class="text-danger-wp">(*)</span> </label>
+                                        <div class="col-md-6" id="finalColumnExtraction">
+                                            <label>Final year<span class="text-danger-wp">(*)</span> </label>
                                             <input type="text" class="form-control" id="finalDataExtractionInterpolationValue" required>
                                         </div>
                                     </div>
                                 </div>
                                 <button type="button" class="btn btn-primary" id="intakeWECB">Generate</button>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <h5 class="text-primary">Results</h5>
                                 <div style="max-height: 400px; overflow-y: auto;">
                                     <table class="table">
@@ -276,13 +290,13 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-6">
-                                <h5 class="text-primary">Year number for analysis</h5>
+                                <h5 class="text-primary">Number of years for time series</h5>
+                                <p>You can edit the table manually by activating this option.</p>
                                 <div class="form-group">
-                                    <label>Number Years <span class="text-danger-wp">(*)</span> </label>
+                                    <label>Number of years <span class="text-danger-wp">(*)</span> </label>
                                     <input type="text" class="form-control" required id="intakeNIYMI">
                                 </div>
                                 <button type="button" class="btn btn-primary" id="intakeNIBYMI">Generate</button>
-                                <button type="button" class="btn btn-danger">Save asignation</button>
                             </div>
                             <div class="col-md-6">
                                 <h5 class="text-primary">Results</h5>
@@ -298,6 +312,8 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div id="step-4" class="tab-pane" role="tabpanel">
             <div class="page-header">
                 <h3>External Inputs</h3>
                 <p>You define 2 external inputs. For Each of these external inputs you have to define Annual Water Volume (m3), Annual Sediment Load (Ton), Annual Nitrogen Load(kg), Annual Phosphorus Load (kg).</p>
@@ -329,7 +345,7 @@
                 </tbody>
             </table>
         </div>
-        <div id="step-4" class="tab-pane" role="tabpanel">
+        <div id="step-5" class="tab-pane" role="tabpanel">
             <div class="row">
                 <div class="col-md-8">
                     <div class="panel panel-danger">
@@ -358,7 +374,7 @@
 </div>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Add Cost</h5>
@@ -368,18 +384,54 @@
       </div>
       <div class="modal-body">
       <div class="row">
-        <div class="col-md-12">
-            <h3 class="text-primary">Internal Math</h3>
-            <button type="button" class="btn btn-link">`math`  min([0.8515*WP_r*((1E3)/31536), 0.0532*WN_r*((1E3)/31536)]) `math`</button>
+        <div class="col-md-6">
+            <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action active">
+                Rio
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">CL1</a>
+            <a href="#" class="list-group-item list-group-item-action">WSED_RES1</a>
+            </div>
+            <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action active">
+                Conexion
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">WN_2</a>
+            <a href="#" class="list-group-item list-group-item-action">WP_RET_2</a>
+            </div>
+        </div>
+        <div class="col-md-6">
+        <div class="form-group">
+            <label>Cost function name</label>
+            <textarea rows="4" class="form-control"></textarea>
+        </div>
+            <div class="form-group">
+            <label>Cost function description</label>
+            <textarea rows="4" class="form-control"></textarea>
+        </div>
         </div>
       </div>
-      <div class="form-group">
+      <div class="row">
+        <div class="col-md-12">
+            <h5 class="text-primary">Internal Math</h5>
+            <button type="button" class="btn btn-link">`math` sum `math`</button>
+            <button type="button" class="btn btn-link">`math` int `math`</button>
+            <button type="button" class="btn btn-link">`math` sqrt x `math`</button>
+            <button type="button" class="btn btn-link">`math` gamma `math`</button>
+            <button type="button" class="btn btn-link">`math` alpha `math`</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+      <h5 class="text-primary">Value</h5>
+      <button type="button" class="btn btn-link">`math`  \left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right) `math`</button>
+      <p></p>
       <textarea class="form-control"></textarea>
       </div>
-     
+     </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Add Cost</button>
+        <button type="button" class="btn btn-danger">Valide and add cost</button>
       </div>
     </div>
     </div>
