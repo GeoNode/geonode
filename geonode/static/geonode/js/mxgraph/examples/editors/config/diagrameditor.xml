@@ -20,8 +20,8 @@
 			</Symbol>
 		</add>
 		<add as="bombeo">
-			<Symbol label="" description="" href="" dbreference="Bombeo" name="Bombeo" externalData="false">
-				<mxCell vertex="1" style="bombeo">      
+			<Symbol label="" name="Bombeo" externalData="false">
+				<mxCell vertex="1" style="bombeo" dbreference="BOMBEO">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>

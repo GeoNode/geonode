@@ -281,6 +281,7 @@ function onInit(editor) {
                     'id': node.id,
                     "name": node.getAttribute('name'),
                     'external': node.getAttribute('externalData'),
+                    'resultdb': node.getAttribute('resultdb'),
                 })
 
             });
@@ -290,88 +291,146 @@ function onInit(editor) {
 
         function loadData(data) {
 
-            $('#titleDiagram').text(data[0].fields.categorys);
-            $('#sedimentosDiagram').val(data[0].fields.predefined_sediment_perc);
-            $('#nitrogenoDiagram').val(data[0].fields.predefined_nitrogen_perc);
-            $('#fosforoDiagram').val(data[0].fields.predefined_phosphorus_perc);
-            console.log(data);
 
+
+
+            node.querySelectorAll('Symbol').forEach(function(node) {
+                console.log(node);
+
+            });
         }
 
 
-        var nombrep = $("#title");
-
-        editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
-
-            //get the xml save in (node)
-            var enc = new mxCodec();
-
-            var selectedCell = evt.getProperty("cell");
-
+        editor.graph.addListener(mxEvent.ADD_CELLS, function(sender, evt) {
+            var selectedCell = evt.getProperty("cells");
             if (selectedCell != undefined) {
                 $.ajax({
-                    url: `/intake/loadProcess/${selectedCell.getAttribute('dbreference')}`,
+                    url: `/intake/loadProcess/${selectedCell[0].dbreference}`,
                     success: function(result) {
-                        var info = JSON.parse(result);
-                        loadData(info);
+                        selectedCell[0].setAttribute("resultdb", result);
                     }
                 });
             }
+        });
 
+        var resultdb = [];
+        var selectedCell;
 
+        editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
+            selectedCell = evt.getProperty("cell");
+            if (selectedCell != undefined) {
+                resultdb = JSON.parse(selectedCell.getAttribute('resultdb'));
+                $('#titleDiagram').text(resultdb[0].fields.categorys);
+                // add Value
+                $('#sedimentosDiagram').val(resultdb[0].fields.predefined_sediment_perc);
+                $('#nitrogenoDiagram').val(resultdb[0].fields.predefined_nitrogen_perc);
+                $('#fosforoDiagram').val(resultdb[0].fields.predefined_phosphorus_perc);
+                // Add Validator
+                $('#sedimentosDiagram').attr('min', resultdb[0].fields.minimal_sediment_perc);
+                $('#sedimentosDiagram').attr('max', resultdb[0].fields.maximal_sediment_perc);
+                $('#nitrogenoDiagram').attr('min', resultdb[0].fields.minimal_nitrogen_perc);
+                $('#nitrogenoDiagram').attr('max', resultdb[0].fields.maximal_nitrogen_perc);
+                $('#fosforoDiagram').attr('min', resultdb[0].fields.minimal_phosphorus_perc);
+                $('#fosforoDiagram').attr('max', resultdb[0].fields.maximal_phosphorus_perc);
+            }
+        });
 
-            //
-            //console.log(node);
-            /*
-                        //get xml like text
-                        textNode.value = mxUtils.getPrettyXml(node);
-                        //console.log(textNode.value)
+        $('#sedimentosDiagram').change(function() {
+            resultdb[0].fields.predefined_sediment_perc = $('#sedimentosDiagram').val();
+            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+        });
 
-                        //get cell
-                        var selectedCell = evt.getProperty("cell");
-                        //console.log(selectedCell);
+        $('#nitrogenoDiagram').change(function() {
+            resultdb[0].fields.predefined_nitrogen_perc = $('#nitrogenoDiagram').val();
+            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+        });
 
-                        //set attributes
-                        selectedCell.setAttribute("parametrop", "45");
+        $('#fosforoDiagram').change(function() {
+            resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
+            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+        });
 
-                        
+    });
 
-                        //object to save the attribute
-                        var graphData = [];
-                        //get element ('symbol') from xml (node)
-                        //console.log(node.querySelectorAll('Symbol'))
-                        node.querySelectorAll('Symbol').forEach(function(node) {
-                            console.log(node)
-                            graphData.push({
-                                'id': node.id,
-                                "name": node.getAttribute('name'),
-                                'external': node.getAttribute('externalData'),
-                            })
+    /*
+    editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
 
-                        });
-                        console.log(graphData)
-                        */
+        var graphData = [];
+        var enc = new mxCodec();
+        var node = enc.encode(editor.graph.getModel());
 
-            /** 
-             * Get filtered activities by transition id 
-             * @param {String} url   activities URL 
-             * @param {Object} data  transition id  
-             *
-             * @return {String} activities in HTML option format
-             */
-            /*
+        node.querySelectorAll('Symbol').forEach(function(node) {
             
-            */
 
-            //put title on right view
-            /*if (selectedCell.style != undefined) {
+        });
+
+
+        var selectedCell = evt.getProperty("cell");
+
+        if (selectedCell != undefined) {
+            $.ajax({
+                url: `/intake/loadProcess/${selectedCell.getAttribute('dbreference')}`,
+                success: function(result) {
+                    var info = JSON.parse(result);
+                    loadData(info);
+                }
+            });
+        }
+
+
+
+        //
+        //console.log(node);
+        
+                    //get xml like text
+                    textNode.value = mxUtils.getPrettyXml(node);
+                    //console.log(textNode.value)
+
+                    //get cell
+                    var selectedCell = evt.getProperty("cell");
+                    //console.log(selectedCell);
+
+                    //set attributes
+                    selectedCell.setAttribute("parametrop", "45");
+
+                    
+
+                    //object to save the attribute
+                    var graphData = [];
+                    //get element ('symbol') from xml (node)
+                    //console.log(node.querySelectorAll('Symbol'))
+                    node.querySelectorAll('Symbol').forEach(function(node) {
+                        console.log(node)
+                        graphData.push({
+                            'id': node.id,
+                            "name": node.getAttribute('name'),
+                            'external': node.getAttribute('externalData'),
+                        })
+
+                    });
+                    console.log(graphData)
+                   
+
+        / 
+         * Get filtered activities by transition id 
+         * @param {String} url   activities URL 
+         * @param {Object} data  transition id  
+         *
+         * @return {String} activities in HTML option format
+         */
+
+
+    //put title on right view
+    /*if (selectedCell.style != undefined) {
                 console.log(selectedCell.name);
                 nombrep.empty();
                 nombrep.append(selectedCell.name);
-            }*/
+            }
 
         });
+        
     });
+    */
 
 
 
