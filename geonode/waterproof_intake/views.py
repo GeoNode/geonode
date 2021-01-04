@@ -141,7 +141,7 @@ process: string
 
 
 def loadProcessEfficiency(request, category):
-    process = ProcessEfficiencies.objects.filter(categorys=category)
+    process = ProcessEfficiencies.objects.filter(normalized_category=category)
     process_serialized = serializers.serialize('json', process)
     return JsonResponse(process_serialized, safe=False)
 
