@@ -95,8 +95,7 @@
                             Nombre
                         </label>
                         <div class="">
-                            <input type="text" name="name" maxlength="100" class=" form-control" required
-                                id="id_name">
+                            <input type="text" name="name" maxlength="100" class=" form-control" required id="id_name">
                         </div>
                     </div>
 
@@ -106,10 +105,20 @@
                         Descripción
                     </label>
                     <div class="">
-                        <input type="text" name="description" maxlength="1024" class=" form-control" required
+                        <input type="text" name="description" maxlength="1024" class=" form-control"
                             id="id_description">
                     </div>
                 </div>
+                <div id="id_water_source_name" class="form-group  ">
+                    <label for="id_description" class="control-label required-field ">
+                        Nombre de la fuente
+                    </label>
+                    <div class="">
+                        <input type="text" name="water_source_name" maxlength="100" required=""
+                            id="id_water_source_name"  class=" form-control">
+                    </div>
+                </div>
+               
                 <div id="div_id_city" class="form-group  ">
                     <label for="id_description" class="control-label required-field ">
                         Ciudad
@@ -266,7 +275,7 @@
                                 <h5 class="text-primary">Year number for analysis</h5>
                                 <div class="form-group">
                                     <label>Number Years <span class="text-danger-wp">(*)</span> </label>
-                                    <input type="text" class="form-control"  id="intakeNIYMI">
+                                    <input type="text" class="form-control" id="intakeNIYMI">
                                 </div>
                                 <button type="button" class="btn btn-primary" id="intakeNIBYMI">Generate</button>
                                 <button type="button" class="btn btn-danger">Save asignation</button>

@@ -101,6 +101,11 @@ class ProcessEfficiencies(models.Model):
         verbose_name=_('Categorys')
     )
 
+    normalized_category= models.CharField(
+        max_length=100,
+        verbose_name=_('Normalized category')
+    )
+    
     minimal_sediment_perc = models.IntegerField(
         default=0,
         verbose_name=_('Minimal sediment')
@@ -239,6 +244,11 @@ class Intake(models.Model):
     description = models.CharField(
         max_length=1024,
         verbose_name=_('Description'),
+    )
+
+    water_source_name = models.CharField(
+        max_length=100,
+        verbose_name=_('Source name'),
     )
 
     area = models.PolygonField(verbose_name='geo', srid=4326, null=True, blank=True)

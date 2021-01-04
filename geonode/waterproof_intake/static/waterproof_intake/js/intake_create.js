@@ -75,7 +75,10 @@ $(document).ready(function () {
             waterExtractionData.typeInterpolation = interpolationType.POTENTIAL;
             m = (Math.log(finalDataExtractionInterpolationValue) - Math.log(initialDataExtractionInterpolationValue)) / ((Math.log(numberYearsInterpolationValue) - Math.log(1)));
             b = Math.exp((-1 * m * Math.log(1)) + Math.log(initialDataExtractionInterpolationValue));
-
+            var yearData = {};
+            yearData.year = index + 1;
+            yearData.value = (b * (Math.pow(index, m)));
+            waterExtractionValue.push(yearData);
             for (let index = 1; index <= numberYearsInterpolationValue; index++) {
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
@@ -89,7 +92,9 @@ $(document).ready(function () {
             waterExtractionData.typeInterpolation = interpolationType.EXPONENTIAL;
             m = (Math.log(finalDataExtractionInterpolationValue) - Math.log(initialDataExtractionInterpolationValue)) / (numberYearsInterpolationValue - 0)
             b = Math.exp((-1 * m * 0) + Math.log(initialDataExtractionInterpolationValue));
-
+            var yearData = {};
+            yearData.year = index + 1;
+            yearData.value = (b * (Math.exp(m * index)));
             for (let index = 0; index <= numberYearsInterpolationValue; index++) {
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
