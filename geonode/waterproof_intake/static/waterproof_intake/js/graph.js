@@ -269,39 +269,88 @@ function onInit(editor) {
 
     //use jquery
     $(document).ready(function() {
+
+
+        $('#saveGraph').click(function() {
+            var enc = new mxCodec();
+            var node = enc.encode(editor.graph.getModel());
+            var graphData = [];
+
+            node.querySelectorAll('Symbol').forEach(function(node) {
+                graphData.push({
+                    'id': node.id,
+                    "name": node.getAttribute('name'),
+                    'external': node.getAttribute('externalData'),
+                })
+
+            });
+
+            console.log(graphData);
+        });
+
+        function loadData(data) {
+
+            $('#titleDiagram').text(data[0].fields.categorys);
+            $('#sedimentosDiagram').val(data[0].fields.predefined_sediment_perc);
+            $('#nitrogenoDiagram').val(data[0].fields.predefined_nitrogen_perc);
+            $('#fosforoDiagram').val(data[0].fields.predefined_phosphorus_perc);
+            console.log(data);
+
+        }
+
+
         var nombrep = $("#title");
 
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
 
-
             //get the xml save in (node)
             var enc = new mxCodec();
-            var node = enc.encode(editor.graph.getModel());
-            console.log(node);
 
-            //get xml like text
-            textNode.value = mxUtils.getPrettyXml(node);
-            console.log(textNode.value)
-
-            //get cell
             var selectedCell = evt.getProperty("cell");
-            console.log(selectedCell);
 
-            //set attributes
-            selectedCell.setAttribute("parametrop", "45");
+            if (selectedCell != undefined) {
+                $.ajax({
+                    url: `/intake/loadProcess/${selectedCell.getAttribute('dbreference')}`,
+                    success: function(result) {
+                        var info = JSON.parse(result);
+                        loadData(info);
+                    }
+                });
+            }
 
-            var categorys = selectedCell.getAttribute("style");
 
-            //object to save the attribute
-            var nombre = {};
-            //get element ('symbol') from xml (node)
-            console.log(node.querySelectorAll('Symbol'))
-            node.querySelectorAll('Symbol').forEach(function(node) {
-                nombre[node.id] = node.getAttribute('parametrop');
 
-            });
-            console.log(nombre)
+            //
+            //console.log(node);
+            /*
+                        //get xml like text
+                        textNode.value = mxUtils.getPrettyXml(node);
+                        //console.log(textNode.value)
 
+                        //get cell
+                        var selectedCell = evt.getProperty("cell");
+                        //console.log(selectedCell);
+
+                        //set attributes
+                        selectedCell.setAttribute("parametrop", "45");
+
+                        
+
+                        //object to save the attribute
+                        var graphData = [];
+                        //get element ('symbol') from xml (node)
+                        //console.log(node.querySelectorAll('Symbol'))
+                        node.querySelectorAll('Symbol').forEach(function(node) {
+                            console.log(node)
+                            graphData.push({
+                                'id': node.id,
+                                "name": node.getAttribute('name'),
+                                'external': node.getAttribute('externalData'),
+                            })
+
+                        });
+                        console.log(graphData)
+                        */
 
             /** 
              * Get filtered activities by transition id 
@@ -310,21 +359,16 @@ function onInit(editor) {
              *
              * @return {String} activities in HTML option format
              */
-            $.ajax({
-                url: `/intake/loadProcess/${categorys}`, //se supone va el nombre y el id de la figurita
-                success: function(result) {
-                    resultadop = JSON.parse(result);
-                    console.log(resultadop)
-                }
-            })
-
+            /*
+            
+            */
 
             //put title on right view
-            if (selectedCell.style != undefined) {
+            /*if (selectedCell.style != undefined) {
                 console.log(selectedCell.name);
                 nombrep.empty();
                 nombrep.append(selectedCell.name);
-            }
+            }*/
 
         });
     });
