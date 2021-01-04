@@ -13,64 +13,64 @@
 	</ui>
 	<Array as="templates">
 		<add as="embalse">
-			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="embalse" name="Embalse">      
+			<Symbol label="" description="" href="" name="Embalse">
+				<mxCell vertex="1" style="embalse">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bombeo">
-			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="bombeo" name="Bombeo">      
+			<Symbol label="" description="" href="" name="Bombeo">
+				<mxCell vertex="1" style="bombeo">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bocatoma">
-			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="bocatoma" name="Bocatoma">      
+			<Symbol label="" description="" href="" name="Bocatoma">
+				<mxCell vertex="1" style="bocatoma">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bocatomalateral">
-			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="bocatomalateral" name="Bocatoma Lateral">      
+			<Symbol label="" description="" href="" name="Bocatoma Lateral">
+				<mxCell vertex="1" style="bocatomalateral">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bocatomaflotante">
-			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="bocatomaflotante" name="Bocatoma Flotante">      
+			<Symbol label="" description="" href="" name="Bocatoma Flotante">
+				<mxCell vertex="1" style="bocatomaflotante">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="desarenador">
-			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="desarenador" name="Desarenador">      
+			<Symbol label="" description="" href="" name="Desarenador">
+				<mxCell vertex="1" style="desarenador">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="camaraquiebre">
-			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="camaraquiebre" name="Camara de Quiebre">      
+			<Symbol label="" description="" href="" name="Camara de Quiebre">
+				<mxCell vertex="1" style="camaraquiebre">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="tuberia">
-			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="tuberia" name="Tubería">      
+			<Symbol label="" description="" href="" name="Tubería">
+				<mxCell vertex="1" style="tuberia">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="canal">
-			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="canal" name="Canal">      
+			<Symbol label="" description="" href="" name="Canal">
+				<mxCell vertex="1" style="canal">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
