@@ -226,7 +226,7 @@
 				<Layer label="Default Layer" id="1">
 					<mxCell parent="0"/>
 				</Layer>
-				<Symbol label="" description="" id="3">
+				<Symbol label="" description="" name="Rio">
 					<mxCell style="rio" vertex="1" parent="1">
 						<mxGeometry x="40" y="30" width="60" height="60" as="geometry" />
 					</mxCell>
