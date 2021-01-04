@@ -54,7 +54,6 @@ $(function() {
         submitFormEvent();
         changeCountryEvent(countryDropdown, currencyDropdown);
         changeFileEvent();
-        initMap();
     };
     submitFormEvent = function() {
         console.log('submit event loaded');
