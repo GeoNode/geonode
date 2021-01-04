@@ -22,6 +22,14 @@ var snapMarker;
 var snapMarkerMapDelimit;
 var catchmentPoly;
 var catchmentPolyDelimit;
+var editablepolygon;
+var validPolygon;
+var isFile;
+var delimitationFileType;
+const delimitationFileEnum = {
+    GEOJSON: 'geojson',
+    SHP: 'shapefile'
+}
 var mapLoader;
 $(document).ready(function() {
 
@@ -42,7 +50,7 @@ $(document).ready(function() {
             for (let index = 0; index <= numberYearsInterpolationValue; index++) {
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${((m*index)+b).toFixed(2)}</td>
+                <td class="text-center">${((m * index) + b).toFixed(2)}</td>
               </tr>`);
             }
         }
@@ -111,7 +119,7 @@ $(document).ready(function() {
         intakeNIYMI = Number($("#intakeNIYMI").val());
         for (let index = 0; index < intakeNIYMI; index++) {
             $('#intakeWEMI').append(`<div class="form-group">
-                <label class="col-sm-1 control-label">${index+1}</label>
+                <label class="col-sm-1 control-label">${index + 1}</label>
                 <div class="col-sm-11">
                     <input type="text" class="form-control" required>
                 </div>
@@ -120,14 +128,13 @@ $(document).ready(function() {
     });
 
 
-
     $('#smartwizard').smartWizard("next").click(function() {
         $('#autoAdjustHeightF').css("height", "auto");
         map.invalidateSize();
     });
 
     $('#smartwizard').smartWizard({
-        selected: 1,
+        selected: 0,
         theme: 'dots',
         enableURLhash: false,
         autoAdjustHeight: true,
@@ -178,6 +185,7 @@ $(document).ready(function() {
 
     $("#validateBtn").on("click", validateCoordinateWithApi);
     $('#btnDelimitArea').on("click", delimitIntakeArea)
+    $('#btnValidateArea').on("click", validateIntakeArea)
     if (!mapLoader) {
         mapLoader = L.control.loader().addTo(map);
     }
@@ -197,20 +205,90 @@ $(document).ready(function() {
 });
 
 $('#btnaddcost').click(function() {
+    for (let index = 0; index < 1; index++) {
 
-    $('#intakeaddcost').append(`<div class="form-group">
-                                    <label for="exampleInputEmail1">Costo:</label>
-                                    <input type="text" class="form-control">
+        $('#intakeaddcost').append(`<div class="form-group">
+                                    <label for="exampleInputEmail1">Funcion de costo ${index+1}:</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="Funcion de costo">
+                                        <span class="input-group-btn">
+                                            <a class="btn btn-primary" href="">
+                                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                            </a>
+                                        </span>
+                                    </div>
                                 </div>`);
-
+    }
 });
 
 window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 
-
+/** 
+ * Delimit manually the intake polygon
+ */
 function delimitIntakeArea() {
+    isFile = false;
+    var copyCoordinates = [];
     console.log('Delimiting');
+    var polygonKeys = Object.keys(catchmentPoly._layers);
+    var keyNamePolygon = polygonKeys[0];
+    var geometryCoordinates = catchmentPoly._layers[keyNamePolygon].feature.geometry.coordinates[0];
+    geometryCoordinates.forEach(function(geom) {
+        var coordinates = [];
+        coordinates.push(geom[1]);
+        coordinates.push(geom[0]);
+        copyCoordinates.push(coordinates);
+    })
+    editablepolygon = L.polygon(copyCoordinates, { color: 'red' });
+    editablepolygon.addTo(mapDelimit)
+    editablepolygon.enableEdit();
+    editablepolygon.on('dblclick', L.DomEvent.stop).on('dblclick', editablepolygon.toggleEdit);
+}
 
+function validateIntakeArea() {
+    var editablePolygonJson = editablepolygon.toGeoJSON();
+    var intakePolygonJson = catchmentPoly.toGeoJSON();
+    /** 
+     * Get filtered activities by transition id 
+     * @param {String} url   activities URL 
+     * @param {Object} data  transition id  
+     *
+     * @return {String} activities in HTML option format
+     */
+    $.ajax({
+        url: '/intake/validateGeometry/',
+        type: 'POST',
+        data: {
+            'editablePolygon': JSON.stringify(editablePolygonJson),
+            'intakePolygon': JSON.stringify(intakePolygonJson),
+            'isFile': JSON.stringify(isFile),
+            'typeDelimit': delimitationFileType
+        },
+        success: function(result) {
+            if (!result.validPolygon) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de Geometría',
+                    text: 'El polígono editado no es válido, por favor intente de nuevo',
+                })
+            } else if (!result.polygonContains) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'El polígono debe estar dentro del área de la captación',
+                    text: 'El polígono editado no es válido, por favor intente de nuevo',
+                })
+            } else {
+                Swal.fire(
+                    'Excelente',
+                    'El polígono es válido y está dentro de la captación',
+                    'success'
+                )
+            }
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    });
 }
 
 /** 
@@ -224,13 +302,24 @@ function changeFileEvent() {
         // Validate file's extension
         if (extension.valid) { //Valid
             console.log('Extension valid!');
+            isFile = true;
             // Validate file's extension
             if (extension.extension == 'geojson') { //GeoJSON
                 var readerGeoJson = new FileReader();
                 readerGeoJson.onload = function(evt) {
                     var contents = evt.target.result;
                     geojson = JSON.parse(contents);
-                    loadFile(geojson, file.name);
+                    delimitationFileType = delimitationFileEnum.GEOJSON;
+                    let polygonStyle = {
+                        fillColor: "red",
+                        color: "#333333",
+                        weight: 0.2,
+                        fillOpacity: 0.3
+                    };
+                    editablepolygon = L.geoJSON(geojson, { style: polygonStyle })
+                    editablepolygon.addTo(mapDelimit);
+                    mapDelimit.fitBounds(editablepolygon.getBounds())
+                        //loadShapefile(geojson, file.name);
                 }
                 readerGeoJson.readAsText(file);
             } else { //Zip
@@ -276,15 +365,16 @@ function changeFileEvent() {
                                 else {
                                     shp(contents).then(function(shpToGeojson) {
                                         geojson = shpToGeojson;
+                                        delimitationFileType = delimitationFileEnum.SHP;
                                         let polygonStyle = {
                                             fillColor: "#337ab7",
                                             color: "#333333",
                                             weight: 0.2,
                                             fillOpacity: 0.3
                                         };
-                                        var layer = L.geoJSON(geojson, { style: polygonStyle })
-                                        layer.addTo(mapDelimit);
-                                        mapDelimit.fitBounds(layer.getBounds())
+                                        editablepolygon = L.geoJSON(geojson, { style: polygonStyle })
+                                        editablepolygon.addTo(mapDelimit);
+                                        mapDelimit.fitBounds(editablepolygon.getBounds())
                                             //loadShapefile(geojson, file.name);
                                     }).catch(function(e) {
                                         Swal.fire({

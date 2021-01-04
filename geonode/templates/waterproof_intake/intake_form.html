@@ -182,8 +182,8 @@
                         <div class="panel-body" id="graph" tabindex="-1"
                             style="height:790px;width:100%;overflow:hidden;cursor:default;"></div>
                         <span style="float:right;padding-right:36px;">
-                            <input id="source" type="checkbox" />Source
-                        </span>
+                <input id="getdata" type="checkbox" />Source
+              </span>
                         <textarea id="xml" style="height:480px;width:684px;display:none;border-style:none;"></textarea>
                     </div>
                 </div>
@@ -191,22 +191,27 @@
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <div class="alert alert-info" role="alert">
-                                <h1 class="text-center">R1</h1>
+                                <h1 class="text-center" id="title"></h1>
                             </div>
                             <div class="form-group">
                                 <label for="exampleInputEmail1">Name:</label>
                                 <input type="text" class="form-control">
                             </div>
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Parameter 1:</label>
-                                <input type="text" class="form-control">
+                                <label for="exampleInputEmail1">Concentración de Sedimentos:</label>
+                                <input type="text" id="sedimentos" class="form-control">
                             </div>
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Parameter 2:</label>
-                                <input type="text" class="form-control">
+                                <label for="exampleInputEmail1">Concentración de Nitrógeno:</label>
+                                <input type="text" id="nitrogeno" class="form-control">
                             </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Concentración de Fósforo:</label>
+                                <input type="text" id ="fosforo" class="form-control">
+                            </div>
+                            <h2 for="exampleInputEmail1">Funciones de costo</h2>
                             <div id="intakeaddcost">
-
+                                
                             </div>
                             <div class="form-group">
                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Add Cost</button>
@@ -364,6 +369,9 @@
                             </div>
                             <div class="form-group">
                                 <button type="button" class="btn btn-primary" id="btnDelimitArea"> Delimit subarea</button>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" id="btnValidateArea"> Validate area</button>
                             </div>
                         </div>
                     </div>
