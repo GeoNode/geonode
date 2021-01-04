@@ -14,63 +14,63 @@
 	<Array as="templates">
 		<add as="embalse">
 			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="embalse">      
+				<mxCell vertex="1" style="embalse" name="Embalse">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bombeo">
 			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="bombeo">      
+				<mxCell vertex="1" style="bombeo" name="Bombeo">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bocatoma">
 			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="bocatoma">      
+				<mxCell vertex="1" style="bocatoma" name="Bocatoma">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bocatomalateral">
 			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="bocatomalateral">      
+				<mxCell vertex="1" style="bocatomalateral" name="Bocatoma Lateral">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bocatomaflotante">
 			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="bocatomaflotante">      
+				<mxCell vertex="1" style="bocatomaflotante" name="Bocatoma Flotante">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="desarenador">
 			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="desarenador">      
+				<mxCell vertex="1" style="desarenador" name="Desarenador">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="camaraquiebre">
 			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="camaraquiebre">      
+				<mxCell vertex="1" style="camaraquiebre" name="Camara de Quiebre">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="tuberia">
 			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="tuberia">      
+				<mxCell vertex="1" style="tuberia" name="Tubería">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="canal">
 			<Symbol label="" description="" href="">
-				<mxCell vertex="1" style="canal">      
+				<mxCell vertex="1" style="canal" name="Canal">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
