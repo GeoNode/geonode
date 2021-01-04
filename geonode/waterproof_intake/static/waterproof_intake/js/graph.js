@@ -271,7 +271,7 @@ function onInit(editor) {
     $(document).ready(function() {
         var nombrep = $("#title");
 
-        editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
+        editor.graph.addListener(mxEvent.ADD_CELLS, function(sender, evt) {
 
 
             //get the xml save in (node)
@@ -281,55 +281,79 @@ function onInit(editor) {
 
             //get xml like text
             textNode.value = mxUtils.getPrettyXml(node);
-            xmlGraph=textNode.value;
+            xmlGraph = textNode.value;
             console.log(textNode.value)
+            console.log(evt)
+
 
             //get cell
-            var selectedCell = evt.getProperty("cell");
+            var selectedCell = evt.getProperty("cells");
             console.log(selectedCell);
 
-            //set attributes
-            selectedCell.setAttribute("parametrop", "45");
+            if (selectedCell != undefined) {
 
-            var categorys = selectedCell.getAttribute("style");
+                console.log(selectedCell[0].getAttribute('Nitrogeno'));
+                if (selectedCell[0].getAttribute('Nitrogeno') == undefined) {
 
-            //object to save the attribute
-            var nombre = {};
-            //get element ('symbol') from xml (node)
-            console.log(node.querySelectorAll('Symbol'))
-            node.querySelectorAll('Symbol').forEach(function(node) {
-                nombre[node.id] = node.getAttribute('parametrop');
+                    //set attributes
+                    var normalized_category = selectedCell[0].getAttribute("dbreference");
 
-            });
-            console.log(nombre)
+                    //object to save the attribute
+                    var graphData = [];
+
+                    /** 
+                     * Get filtered activities by transition id 
+                     * @param {String} url   activities URL 
+                     * @param {Object} data  transition id  
+                     * @return {String} activities in HTML option format
+                     */
+                    $.ajax({
+                        url: `/intake/loadProcess/${normalized_category}`, //se supone va el nombre y el id de la figurita
+                        success: function(result) {
+                            resultadop = JSON.parse(result);
+                            console.log(resultadop[0].fields.predefined_nitrogen_perc)
+                            selectedCell[0].setAttribute('Sedimentos', resultadop[0].fields.predefined_sediment_perc);
+                            selectedCell[0].setAttribute('Nitrogeno', resultadop[0].fields.predefined_nitrogen_perc);
+                            selectedCell[0].setAttribute('Fosforo', resultadop[0].fields.predefined_phosphorus_perc);
+
+                            //get element ('symbol') from xml (node)
+                            console.log(node.querySelectorAll('Symbol'))
+                            node.querySelectorAll('Symbol').forEach(function(node) {
+                                graphData.push({
+                                    'id': node.id,
+                                    'name': node.getAttribute('name'),
+                                    'dbreference': node.getAttribute('dbreference'),
+                                    'sedimentos': node.getAttribute('Sedimentos'),
+                                    'nitrogeno': node.getAttribute('Nitrogeno'),
+                                    'fosforo': node.getAttribute('Fosforo')
+
+                                })
+                            });
+                            console.log(graphData)
+                        }
+                    })
+                } else {
+                    $('#sedimentosgraphs').change(function() {
 
 
-            /** 
-             * Get filtered activities by transition id 
-             * @param {String} url   activities URL 
-             * @param {Object} data  transition id  
-             *
-             * @return {String} activities in HTML option format
-             */
-            $.ajax({
-                url: `/intake/loadProcess/${categorys}`, //se supone va el nombre y el id de la figurita
-                success: function(result) {
-                    resultadop = JSON.parse(result);
-                    console.log(resultadop)
+
+                    })
+
                 }
-            })
 
 
-            //put title on right view
-            if (selectedCell.style != undefined) {
-                console.log(selectedCell.name);
-                nombrep.empty();
-                nombrep.append(selectedCell.name);
+
+                //put title on right view
+                if (selectedCell.style != undefined) {
+                    console.log(selectedCell.name);
+                    nombrep.empty();
+                    nombrep.append(selectedCell.name);
+                }
             }
+
 
         });
     });
-
 
 
 }
