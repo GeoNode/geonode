@@ -12,6 +12,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext as _
 from .models import ExternalInputs
 from .models import City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction
+from geonode.waterproof_nbs_ca.models import Countries,Region
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from django.core import serializers
 from django.http import JsonResponse
@@ -19,6 +20,7 @@ from . import forms
 import json
 from django.contrib.gis.geos import Polygon, MultiPolygon, GEOSGeometry
 from django.contrib.gis.gdal import OGRGeometry
+import datetime
 logger = logging.getLogger(__name__)
 
 
@@ -36,9 +38,9 @@ def create(request):
             interpolationString = request.POST.get('waterExtraction')
             interpolation = json.loads(interpolationString)
             intakeAreaString = request.POST.get('areaGeometry')
-            
+
             if (isFile == 'true'):
-            # Validate file's extension
+                # Validate file's extension
                 if (typeDelimitFile == 'geojson'):
                     intakeAreaJson = json.loads(intakeAreaString)
                     print(intakeAreaJson)
@@ -73,14 +75,9 @@ def create(request):
             intake.area = intakeAreaGeom
             intake.xml_graph = xmlGraph
             intake.demand_parameters = demand_parameters
+            intake.creation_date=datetime.datetime.now()
+            intake.updated_date=datetime.datetime.now()
             intake.added_by = request.user
-            """
-            zf = zipfile.ZipFile(request.FILES['area'])
-            print(zf.namelist())
-            for filename in zf.namelist():
-                if filename=='prevent_grass_strips_slope_gura.shp':
-                    print('es el que es')
-            """
             intake.save()
             messages.success(request, ("Water Intake created."))
         else:
@@ -95,36 +92,46 @@ def listIntake(request):
     if request.method == 'GET':
         if request.user.is_authenticated:
             if (request.user.professional_role == 'ADMIN'):
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
                 intake = Intake.objects.all()
                 city = City.objects.all()
                 return render(
                     request,
                     'waterproof_intake/intake_list.html',
                     {
-                        'intake': intake,
+                        'intakeList': intake,
                         'city': city,
+                        'userCountry': userCountry,
+                        'region': region
                     }
                 )
 
-            if (request.user.professional_role == 'ANAL'):
+            if (request.user.professional_role == 'ANALYST'):
                 intake = Intake.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
                 city = City.objects.all()
                 return render(
                     request,
                     'waterproof_intake/intake_list.html',
                     {
-                        'intake': intake,
+                        'intakeList': intake,
                         'city': city,
+                        'userCountry': userCountry,
+                        'region': region
                     }
                 )
         else:
             intake = Intake.objects.all()
+            userCountry = Countries.objects.get(code='COL')
+            region = Region.objects.get(id=userCountry.region_id)
             city = City.objects.all()
             return render(
                 request,
                 'waterproof_intake/intake_list.html',
                 {
-                    'intake': intake,
+                    'intakeList': intake,
                     'city': city,
                 }
             )

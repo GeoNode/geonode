@@ -27,15 +27,15 @@
 			</Symbol>
 		</add>
 		<add as="reservorioagua">
-			<Symbol name="Reservorio de Agua Cruda (RAC)" dbreference="RESERVORIOAGUACRUDA" externalData="false">
+			<Symbol name="Reservorio de Agua Cruda (RAC)" externalData="false">
 				<mxCell vertex="1" style="reservorioagua" dbreference="RESERVORIOAGUACRUDA">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bocatoma">
-			<Symbol name="Bocatoma" dbreference="" externalData="false">
-				<mxCell vertex="1" style="bocatoma">      
+			<Symbol name="Bocatoma" externalData="false">
+				<mxCell vertex="1" style="bocatoma" dbreference="BOCATOMADEFONDO">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
