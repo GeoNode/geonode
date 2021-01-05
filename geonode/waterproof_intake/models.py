@@ -154,6 +154,22 @@ class ProcessEfficiencies(models.Model):
         verbose_name=_('Maximal phosphorus')
     )
 
+    minimal_transp_water_perc = models.IntegerField(
+        default=0,
+        verbose_name=_('Minimal transported water')
+    )
+
+    predefined_transp_water_perc = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
+        verbose_name=_('Predefined transported water')
+    )
+
+    maximal_transp_water_perc = models.IntegerField(
+        default=0,
+        verbose_name=_('Maximal transported water')
+    )
+
 
 class ExternalInputs(models.Model):
     year = models.IntegerField(
