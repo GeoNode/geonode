@@ -279,23 +279,58 @@ function onInit(editor) {
             var textxml = mxUtils.getPrettyXml(node)
 
             graphData = [];
+            var connetion = [];
             node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
                     'id': node.id,
                     "name": node.getAttribute('name'),
                     'external': node.getAttribute('externalData'),
                     'resultdb': node.getAttribute('resultdb'),
+                    'quantity': node.getAttribute('quantity'),
+
                 })
             });
+
+            node.querySelectorAll('mxCell').forEach(function(node) {
+                if (node.id != "") {
+                    connetion.push({
+                        'id': node.id,
+                        'source': node.getAttribute('source'),
+                        'target': node.getAttribute('target'),
+                    })
+                }
+
+            });
+
+
+
             console.log(graphData);
             console.log(textxml);
+            console.log(connetion);
         });
 
 
          //load data when add an object in a diagram
         editor.graph.addListener(mxEvent.ADD_CELLS, function(sender, evt) {
+
             var selectedCell = evt.getProperty("cells");
+            var idvar = selectedCell[0].id;
             if (selectedCell != undefined) {
+                var varcost = [];
+                varcost.push({
+                    'annual_water_volume': `Q_${idvar}`,
+                    'sediment_concentration': `CSed_${idvar}`,
+                    'nitrogen_concentration': `CN_${idvar}`,
+                    'phosphorus_concentration': `CP_${idvar}`,
+                    'sediment_load': `WSed_${idvar}`,
+                    'nitrogen_load': `WN_${idvar}`,
+                    'phosphorus_load': `WP_${idvar}`,
+                    'retained_sediment_load': `WSed_ret_${idvar}`,
+                    'retained_nitrogen_load': `WN_ret_${idvar}`,
+                    'retained_phosphorus_charge': `WP_ret_${idvar}`
+                });
+                selectedCell[0].setAttribute('varcost', JSON.stringify(varcost));
+
                 $.ajax({
                     url: `/intake/loadProcess/${selectedCell[0].dbreference}`,
                     success: function(result) {
@@ -318,6 +353,8 @@ function onInit(editor) {
 
         var resultdb = [];
         var selectedCell;
+        var notConnectedCells = [];
+        var parentCellId = "2";
 
         //Load data from figure to html
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
@@ -356,6 +393,77 @@ function onInit(editor) {
             resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });
+
+        function Validate(mxCell) {
+            let isConnected = true;
+            // check each cell that each edge connected to
+            for (let i = 0; i < mxCell.getEdgeCount(); i++) {
+                let edge = mxCell.getEdgeAt(i);
+
+                if (edge.target === null) continue; // no target
+                if (mxCell.getId() === edge.target.getId()) continue; // target is mxCell itself
+
+                isConnected = edge.source !== null && edge.target !== null;
+                if (isConnected) {
+                    // remove source cell if found and so on
+                    let sourceIndex = notConnectedCells.findIndex(c => c.id === edge.source.getId());
+                    if (sourceIndex !== -1) notConnectedCells.splice(sourceIndex, 1);
+
+                    let targetIndex = notConnectedCells.findIndex(c => c.id === edge.target.getId());
+                    if (targetIndex !== -1) notConnectedCells.splice(targetIndex, 1);
+
+                    let edgeIndex = notConnectedCells.findIndex(c => c.id === edge.getId());
+                    if (edgeIndex !== -1) notConnectedCells.splice(edgeIndex, 1);
+
+                    // check next cell and its edges
+                    Validate(edge.target);
+                }
+            }
+        }
+
+        function ResetColor(state) {
+            state.shape.node.classList.remove("not_connected");
+            if (state.text)
+                state.text.node.classList.remove("not_connected");
+        }
+
+        function SetNotConnectedColor(state) {
+            for (let i = 0; i < notConnectedCells.length; i++) {
+                let mxCell = notConnectedCells[i];
+                let state = graphView.getState(mxCell);
+                state.shape.node.classList.add("not_connected");
+                if (state.text)
+                    state.text.node.classList.add("not_connected");
+            }
+        }
+
+        document.querySelector("#validate_btn").addEventListener("click", function() {
+
+            let cells = editor.graph.getModel().cells;
+            graphView = editor.graph.getView();
+            notConnectedCells.length = 0;
+            console.log(cells)
+            console.log(graphView)
+
+            // create an array of cells and reset the color
+            for (let key in cells) {
+                if (!cells.hasOwnProperty(key)) continue;
+
+                let mxCell = cells[key];
+                if (!mxCell.isVertex() && !mxCell.isEdge()) continue;
+                notConnectedCells.push(mxCell);
+                let state = graphView.getState(mxCell);
+
+                console.log(state)
+                ResetColor(state);
+            }
+
+            // starts with the parent cell
+            let parentCell = notConnectedCells.find(c => c.id === parentCellId);
+            Validate(parentCell);
+
+            SetNotConnectedColor();
+        })
 
     });
 

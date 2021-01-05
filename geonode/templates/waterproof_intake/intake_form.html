@@ -92,6 +92,13 @@
     text-align: left;
     vertical-align: middle;
     }
+
+    .not_connected * {
+        color: red;
+        font-color: red;
+        stroke: red;
+        stroke-color: red;
+    }
 </style>
 {% endblock %}
 {% block body_outer %}
@@ -202,6 +209,7 @@
                             <div class="panel-body" id="graph" tabindex="-1" style="height:790px;width:100%;overflow:hidden;cursor:default;"></div>
                             <span style="float:right;padding-right:36px;">
                                 <input id="getdata" type="checkbox" />Source
+                                <button style="position:absolute; left:300px;padding:8px 40px;background:orangered;color:#fff;outline:none;border:none;z-index:100;" id="validate_btn">Validate</button>
                             </span>
                             <textarea id="xml" style="height:480px;width:684px;display:none;border-style:none;"></textarea>
                         </div>
