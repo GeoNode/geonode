@@ -18,7 +18,7 @@ function onInit(editor) {
     mxGraphHandler.prototype.guidesEnabled = true;
 
     // Alt disables guides
-    mxGuide.prototype.isEnabledForEvent = function (evt) {
+    mxGuide.prototype.isEnabledForEvent = function(evt) {
         return !mxEvent.isAltDown(evt);
     };
 
@@ -27,7 +27,7 @@ function onInit(editor) {
 
     // Defines an icon for creating new connections in the connection handler.
     // This will automatically disable the highlighting of the source vertex.
-    mxConnectionHandler.prototype.connectImage = new mxImage('{{ STATIC_URL }}geonode/js/mxgraph/examples/images/connector.gif', 16, 16);
+    mxConnectionHandler.prototype.connectImage = new mxImage('/static/mxgraph/images/connector.gif', 16, 16);
 
     // Enables connections in the graph and disables
     // reset of zoom and translate on root change
@@ -41,7 +41,7 @@ function onInit(editor) {
     var title = document.getElementById('title');
 
     if (title != null) {
-        var f = function (sender) {
+        var f = function(sender) {
             title.innerHTML = sender.getTitle();
         };
 
@@ -69,10 +69,14 @@ function onInit(editor) {
     var graphNode = editor.graph.container;
 
     var sourceInput = document.getElementById('source');
-    sourceInput.checked = false;
 
-    var funct = function (editor) {
-        if (sourceInput.checked) {
+
+    var getdata = document.getElementById('getdata');
+    getdata.checked = false;
+
+    var funct = function(editor) {
+        if (getdata.checked) {
+            console.log(getdata.checked)
             graphNode.style.display = 'none';
             textNode.style.display = 'inline';
 
@@ -82,8 +86,7 @@ function onInit(editor) {
             textNode.value = mxUtils.getPrettyXml(node);
             textNode.originalValue = textNode.value;
             textNode.focus();
-        }
-        else {
+        } else {
             graphNode.style.display = '';
 
             if (textNode.value != textNode.originalValue) {
@@ -106,11 +109,23 @@ function onInit(editor) {
         }
     };
 
+    /* var getd = function(editor){
+         graphNode.style.display = 'none';
+             textNode.style.display = 'inline';
+
+             var enc = new mxCodec();
+             var node = enc.encode(editor.graph.getModel());
+
+             textNode.value = mxUtils.getPrettyXml(node);
+             textNode.originalValue = textNode.value;
+             textNode.focus();
+     }*/
+
     editor.addAction('switchView', funct);
 
     // Defines a new action to switch between
     // XML and graphical display
-    mxEvent.addListener(sourceInput, 'click', function () {
+    mxEvent.addListener(getdata, 'click', function() {
         editor.execute('switchView');
     });
 
@@ -122,7 +137,7 @@ function onInit(editor) {
     // NOTE: The old image export in mxEditor is not used, the urlImage is used for the new export.
     if (editor.urlImage != null) {
         // Client-side code for image export
-        var exportImage = function (editor) {
+        var exportImage = function(editor) {
             var graph = editor.graph;
             var scale = graph.view.scale;
             var bounds = graph.getGraphBounds();
@@ -153,14 +168,14 @@ function onInit(editor) {
 
                 new mxXmlRequest(editor.urlImage, 'filename=' + name + '&format=' + format +
                     bg + '&w=' + w + '&h=' + h + '&xml=' + encodeURIComponent(xml)).
-                    simulate(document, '_blank');
+                simulate(document, '_blank');
             }
         };
 
         editor.addAction('exportImage', exportImage);
 
         // Client-side code for SVG export
-        var exportSvg = function (editor) {
+        var exportSvg = function(editor) {
             var graph = editor.graph;
             var scale = graph.view.scale;
             var bounds = graph.getGraphBounds();
@@ -172,8 +187,7 @@ function onInit(editor) {
 
             if (root.style != null) {
                 root.style.backgroundColor = '#FFFFFF';
-            }
-            else {
+            } else {
                 root.setAttribute('style', 'background-color:#FFFFFF');
             }
 
@@ -217,8 +231,8 @@ function onInit(editor) {
         var button = document.createElement('button');
         mxUtils.write(button, mxResources.get(buttons[i]));
 
-        var factory = function (name) {
-            return function () {
+        var factory = function(name) {
+            return function() {
                 editor.execute(name);
             };
         };
@@ -249,46 +263,99 @@ function onInit(editor) {
     mxUtils.write(node, ', ');
     mxUtils.linkAction(node, 'Fit', editor, 'fit');*/
 
-    var model = editor.graph.model.cells[3].value.attributes[0].value;
-    model = `
-        [{
-          "nombre":"rio",
-          "costo":"[{
-          "valor":"0.56"
-          },
-          {
-          "valor":"2.56"
-          }]"
-        }
-        ]
-        `;
-    var model2 = editor.graph.model.cells[3].value.attributes;
-    var node = document.getElementById('mxCell');
-    //var snode = model.getValue(cell);
-    console.log(model);
-    console.log(model2);
-    console.log(node);
-}
 
-function cambiop(editor) {
-    console.log($('#graph'));
-    var model = editor.graph.model.cells[3].value.attributes[0].value;
-    model = `
-        [{
-          "nombre":"rio",
-          "costo":"[{
-          "valor":"0.56"
-          },
-          {
-          "valor":"2.56"
-          }]"
+    //use jquery
+    $(document).ready(function() {
+        //Button to save data on graphData
+        /**
+         * Button to save 
+         * data on graphData
+         * xml on textxml
+         */
+        $('#saveGraph').click(function() {
+            var enc = new mxCodec();
+            var node = enc.encode(editor.graph.getModel());
+            var textxml = mxUtils.getPrettyXml(node)
+
+            var graphData = [];
+            node.querySelectorAll('Symbol').forEach(function(node) {
+                graphData.push({
+                    'id': node.id,
+                    "name": node.getAttribute('name'),
+                    'external': node.getAttribute('externalData'),
+                    'resultdb': node.getAttribute('resultdb'),
+                })
+            });
+            console.log(graphData);
+            console.log(textxml);
+        });
+
+        function loadData(data) {
+            node.querySelectorAll('Symbol').forEach(function(node) {
+                console.log(node);
+            });
         }
-        ]
-        `;
-    var model2 = editor.graph.model.cells[3].value.attributes;
-    var node = document.getElementById('mxCell');
-    //var snode = model.getValue(cell);
-    console.log(model);
-    console.log(model2);
-    console.log(node);
+
+        //load data when add an object in a diagram
+        editor.graph.addListener(mxEvent.ADD_CELLS, function(sender, evt) {
+            var selectedCell = evt.getProperty("cells");
+            if (selectedCell != undefined) {
+                $.ajax({
+                    url: `/intake/loadProcess/${selectedCell[0].dbreference}`,
+                    success: function(result) {
+                        selectedCell[0].setAttribute("resultdb", result);
+                    }
+                });
+            }
+        });
+
+        /**  
+         * Global variables for save data 
+         * @param {Array} resultdb   all data from DB
+         * @param {Object} selectedCell  cell selected from Diagram 
+         */
+
+        var resultdb = [];
+        var selectedCell;
+
+        //Load data from figure to html
+        editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
+            selectedCell = evt.getProperty("cell");
+            if (selectedCell != undefined) {
+                resultdb = JSON.parse(selectedCell.getAttribute('resultdb'));
+                $('#titleDiagram').text(resultdb[0].fields.categorys);
+                // Add Value to Panel Information Right on HTML
+                $('#sedimentosDiagram').val(resultdb[0].fields.predefined_sediment_perc);
+                $('#nitrogenoDiagram').val(resultdb[0].fields.predefined_nitrogen_perc);
+                $('#fosforoDiagram').val(resultdb[0].fields.predefined_phosphorus_perc);
+                // Add Validator 
+                $('#sedimentosDiagram').attr('min', resultdb[0].fields.minimal_sediment_perc);
+                $('#sedimentosDiagram').attr('max', resultdb[0].fields.maximal_sediment_perc);
+                $('#nitrogenoDiagram').attr('min', resultdb[0].fields.minimal_nitrogen_perc);
+                $('#nitrogenoDiagram').attr('max', resultdb[0].fields.maximal_nitrogen_perc);
+                $('#fosforoDiagram').attr('min', resultdb[0].fields.minimal_phosphorus_perc);
+                $('#fosforoDiagram').attr('max', resultdb[0].fields.maximal_phosphorus_perc);
+            }
+        });
+
+        //Add value entered in sediments in the field resultdb
+        $('#sedimentosDiagram').change(function() {
+            resultdb[0].fields.predefined_sediment_perc = $('#sedimentosDiagram').val();
+            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+        });
+
+        //Add value entered in nitrogen in the field resultdb
+        $('#nitrogenoDiagram').change(function() {
+            resultdb[0].fields.predefined_nitrogen_perc = $('#nitrogenoDiagram').val();
+            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+        });
+
+        //Add value entered in phosphorus in the field resultdb
+        $('#fosforoDiagram').change(function() {
+            resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
+            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+        });
+
+    });
+
 }
