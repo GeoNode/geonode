@@ -76,7 +76,7 @@ function onInit(editor) {
 
     var funct = function(editor) {
         if (getdata.checked) {
-            console.log(getdata.checked)
+            //console.log(getdata.checked)
             graphNode.style.display = 'none';
             textNode.style.display = 'inline';
 
@@ -266,16 +266,13 @@ function onInit(editor) {
 
     //use jquery
     $(document).ready(function() {
-        //Button to save data on graphData
-        /**
-         * Button to save 
-         * data on graphData
-         * xml on textxml
-         */
+
+        var graphData = [];
+
         $('#saveGraph').click(function() {
             var enc = new mxCodec();
             var node = enc.encode(editor.graph.getModel());
-            var textxml = mxUtils.getPrettyXml(node)
+            graphData = [];
 
             var graphData = [];
             var connetion = [];
@@ -337,6 +334,11 @@ function onInit(editor) {
                     }
                 });
             }
+
+            if (selectedCell[0].dbreference == 'EXTERNALINPUT') {
+                //Si se añade un elemento externo
+            }
+
         });
 
         /**  

@@ -84,7 +84,7 @@
 		</add>
 		<add as="conexion">
 			<Symbol name="Conexion" externalData="true">
-				<mxCell vertex="1" style="conexion" dbreference="">      
+				<mxCell vertex="1" style="conexion" dbreference="EXTERNALINPUT">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
