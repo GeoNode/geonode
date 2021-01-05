@@ -98,7 +98,7 @@
 <div class="page-header">
     <h1>Create Water Intake</h1>
 </div>
-
+ <form id="form" role="form" action="#" data-toggle="validator">
 <div id="smartwizard">
     <ul class="nav">
         <li>
@@ -127,7 +127,7 @@
             </a>
         </li>
     </ul>
-    <form id="form" role="form" action="#" data-toggle="validator">
+   
         <div class="tab-content" id="autoAdjustHeightF">
 
             <div id="step-1" class="tab-pane" role="tabpanel">
@@ -202,35 +202,27 @@
                                     <h1 class="text-center" id="titleDiagram"></h1>
                                 </div>
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Concentración de Sedimentos:</label>
-                                    <input type="number" id="sedimentosDiagram" min="" max="" class="form-control">
+                                    <label>Concentración de Sedimentos:</label>
+                                    <input type="number" id="sedimentosDiagram" class="form-control">
                                 </div>
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Concentración de Nitrógeno:</label>
+                                    <label >Concentración de Nitrógeno:</label>
                                     <input type="number" id="nitrogenoDiagram" class="form-control">
                                 </div>
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Concentración de Fósforo:</label>
+                                    <label >Concentración de Fósforo:</label>
                                     <input type="number" id="fosforoDiagram" class="form-control">
                                 </div>
-                                <h2 for="exampleInputEmail1">Funciones de costo</h2>
+                                <h4 class="text-primary">Funciones de costo</h4>
                                 <div id="intakeaddcost">
 
                                 </div>
+                                <hr>
                                 <div class="form-group">
                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Add Cost</button>
-                                    <!--<button type="button" class="btn btn-primary" id="btnaddcost"> Add Cost</button>-->
                                     <button type="button" class="btn btn-primary" id="saveGraph">Save Graph</button>
-
-                                </div>
-                                <div class="form-group">
-                                    <button type="button" class="btn btn-primary" id="btnSaveGraph"> Save Graph</button>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-primary" id="btnSaveGraph"> Save Graph</button>
-                            </div>
-
                         </div>
                     </div>
                 </div>
@@ -301,7 +293,6 @@
 
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -343,9 +334,8 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Type element for asignation</label>
                         <div class="col-sm-9">
-                            <select class="form-control">
-                                <option value="2">External Input 1</option>
-                                <option Value="2">External Input 2</option>
+                            <select class="form-control" id="externalSelect">
+                                
                             </select>
                         </div>
                     </div>
@@ -393,19 +383,15 @@
                                 <div class="form-group"></div>
                                 <button type="submit" id="submit" class="btn btn-primary">Submit</button>
                             </div>
-                            <div class="form-group"></div>
-                            <button type="submit" id="submit" class="btn btn-primary">Submit</button>
                         </div>
                     </div>
                 </div>
-                </form>
             </div>
 
         </div>
-    </form>
+    
 </div>
-</div>
-
+</form>
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">

@@ -76,7 +76,7 @@ function onInit(editor) {
 
     var funct = function(editor) {
         if (getdata.checked) {
-            console.log(getdata.checked)
+            //console.log(getdata.checked)
             graphNode.style.display = 'none';
             textNode.style.display = 'inline';
 
@@ -270,11 +270,12 @@ function onInit(editor) {
     //use jquery
     $(document).ready(function() {
 
+        var graphData = [];
 
         $('#saveGraph').click(function() {
             var enc = new mxCodec();
             var node = enc.encode(editor.graph.getModel());
-            var graphData = [];
+            graphData = [];
 
             node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
@@ -289,18 +290,6 @@ function onInit(editor) {
             console.log(graphData);
         });
 
-        function loadData(data) {
-
-
-
-
-            node.querySelectorAll('Symbol').forEach(function(node) {
-                console.log(node);
-
-            });
-        }
-
-
         editor.graph.addListener(mxEvent.ADD_CELLS, function(sender, evt) {
             var selectedCell = evt.getProperty("cells");
             if (selectedCell != undefined) {
@@ -311,6 +300,11 @@ function onInit(editor) {
                     }
                 });
             }
+
+            if (selectedCell[0].dbreference == 'EXTERNALINPUT') {
+                //Si se añade un elemento externo
+            }
+
         });
 
         var resultdb = [];
