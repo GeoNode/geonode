@@ -264,18 +264,20 @@ function onInit(editor) {
     mxUtils.linkAction(node, 'Fit', editor, 'fit');*/
 
 
-
-
-
     //use jquery
     $(document).ready(function() {
-
-
+        //Button to save data on graphData
+        /**
+         * Button to save 
+         * data on graphData
+         * xml on textxml
+         */
         $('#saveGraph').click(function() {
             var enc = new mxCodec();
             var node = enc.encode(editor.graph.getModel());
-            var graphData = [];
+            var textxml = mxUtils.getPrettyXml(node)
 
+            var graphData = [];
             node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
                     'id': node.id,
@@ -283,24 +285,18 @@ function onInit(editor) {
                     'external': node.getAttribute('externalData'),
                     'resultdb': node.getAttribute('resultdb'),
                 })
-
             });
-
             console.log(graphData);
+            console.log(textxml);
         });
 
         function loadData(data) {
-
-
-
-
             node.querySelectorAll('Symbol').forEach(function(node) {
                 console.log(node);
-
             });
         }
 
-
+        //load data when add an object in a diagram
         editor.graph.addListener(mxEvent.ADD_CELLS, function(sender, evt) {
             var selectedCell = evt.getProperty("cells");
             if (selectedCell != undefined) {
@@ -313,19 +309,26 @@ function onInit(editor) {
             }
         });
 
+        /**  
+         * Global variables for save data 
+         * @param {Array} resultdb   all data from DB
+         * @param {Object} selectedCell  cell selected from Diagram 
+         */
+
         var resultdb = [];
         var selectedCell;
 
+        //Load data from figure to html
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
             selectedCell = evt.getProperty("cell");
             if (selectedCell != undefined) {
                 resultdb = JSON.parse(selectedCell.getAttribute('resultdb'));
                 $('#titleDiagram').text(resultdb[0].fields.categorys);
-                // add Value
+                // Add Value to Panel Information Right on HTML
                 $('#sedimentosDiagram').val(resultdb[0].fields.predefined_sediment_perc);
                 $('#nitrogenoDiagram').val(resultdb[0].fields.predefined_nitrogen_perc);
                 $('#fosforoDiagram').val(resultdb[0].fields.predefined_phosphorus_perc);
-                // Add Validator
+                // Add Validator 
                 $('#sedimentosDiagram').attr('min', resultdb[0].fields.minimal_sediment_perc);
                 $('#sedimentosDiagram').attr('max', resultdb[0].fields.maximal_sediment_perc);
                 $('#nitrogenoDiagram').attr('min', resultdb[0].fields.minimal_nitrogen_perc);
@@ -335,103 +338,24 @@ function onInit(editor) {
             }
         });
 
+        //Add value entered in sediments in the field resultdb
         $('#sedimentosDiagram').change(function() {
             resultdb[0].fields.predefined_sediment_perc = $('#sedimentosDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });
 
+        //Add value entered in nitrogen in the field resultdb
         $('#nitrogenoDiagram').change(function() {
             resultdb[0].fields.predefined_nitrogen_perc = $('#nitrogenoDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });
 
+        //Add value entered in phosphorus in the field resultdb
         $('#fosforoDiagram').change(function() {
             resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });
 
     });
-
-    /*
-    editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
-
-        var graphData = [];
-        var enc = new mxCodec();
-        var node = enc.encode(editor.graph.getModel());
-
-        node.querySelectorAll('Symbol').forEach(function(node) {
-            
-
-        });
-
-
-        var selectedCell = evt.getProperty("cell");
-
-        if (selectedCell != undefined) {
-            $.ajax({
-                url: `/intake/loadProcess/${selectedCell.getAttribute('dbreference')}`,
-                success: function(result) {
-                    var info = JSON.parse(result);
-                    loadData(info);
-                }
-            });
-        }
-
-
-
-        //
-        //console.log(node);
-        
-                    //get xml like text
-                    textNode.value = mxUtils.getPrettyXml(node);
-                    //console.log(textNode.value)
-
-                    //get cell
-                    var selectedCell = evt.getProperty("cell");
-                    //console.log(selectedCell);
-
-                    //set attributes
-                    selectedCell.setAttribute("parametrop", "45");
-
-                    
-
-                    //object to save the attribute
-                    var graphData = [];
-                    //get element ('symbol') from xml (node)
-                    //console.log(node.querySelectorAll('Symbol'))
-                    node.querySelectorAll('Symbol').forEach(function(node) {
-                        console.log(node)
-                        graphData.push({
-                            'id': node.id,
-                            "name": node.getAttribute('name'),
-                            'external': node.getAttribute('externalData'),
-                        })
-
-                    });
-                    console.log(graphData)
-                   
-
-        / 
-         * Get filtered activities by transition id 
-         * @param {String} url   activities URL 
-         * @param {Object} data  transition id  
-         *
-         * @return {String} activities in HTML option format
-         */
-
-
-    //put title on right view
-    /*if (selectedCell.style != undefined) {
-                console.log(selectedCell.name);
-                nombrep.empty();
-                nombrep.append(selectedCell.name);
-            }
-
-
-        });
-        
-    });
-    */
-
 
 }
