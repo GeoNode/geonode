@@ -15,6 +15,8 @@ class IntakeForm(forms.ModelForm):
         model = Intake
         fields = ('name', 
                 'description',
+                'water_source_name',
+                'city'
         )
         """
                 'id_region', 

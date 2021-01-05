@@ -1,8 +1,10 @@
 /**
  * @file Create form validations
+ * @author Luis Saltron
  * @version 1.0
  */
 $(function () {
+    var table = $('#example').DataTable();
     var countryDropdown = $('#countryNBS');
     var currencyDropdown = $('#currencyCost');
     var transitionsDropdown = $('#riosTransition');
@@ -22,9 +24,7 @@ $(function () {
         weight: 0.2,
         fillOpacity: 0
     };
-    var initialTrigger = 0;
     initialize = function () {
-        $('#example').DataTable();
         console.log('init event loaded');
         // Transformations widget change option event
         $('#menu-toggle').click(function (e) {
@@ -54,9 +54,6 @@ $(function () {
         submitFormEvent();
         changeCountryEvent(countryDropdown, currencyDropdown);
         changeFileEvent();
-        initMap();
-
-
     };
     submitFormEvent = function () {
         console.log('submit event loaded');
@@ -86,7 +83,6 @@ $(function () {
             formData.append('oportunityCost', $('#oportunityCost').val());
             // NBS RIOS Transformations selected
             formData.append('riosTransformation', getTransformationsSelected());
-            // NBS Unit Oportunity Cost (US$/ha)
             var file = $('#restrictedArea')[0].files[0];
             // validate extension file
             var extension = validExtension(file);
@@ -166,58 +162,50 @@ $(function () {
     /** 
     * Initialize map 
     */
+    API_URL = '/proxy/?url=https://photon.komoot.de/api/?';
+    TILELAYER = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
+    CENTER = [-74.4879, 4.582];
+    MAXZOOM = 11;
+
     initMap = function () {
-        map = L.map('mapid').setView([51.505, -0.09], 13);
+        
+        //var map = L.map('map').setView([4, -74],5);
+        //var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        //    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        //});
+        //map.addLayer(osm);
+        
+        var map = L.map('mapidcuenca', {scrollWheelZoom: false, zoomControl: false, photonControl: true, photonControlOptions: {resultsHandler: showSearchPoints, placeholder: 'Search City...', position: 'topleft', url: API_URL}});
+        map.setView([4, -72],5);
+        searchPoints.addTo(map);
+        var tilelayer = L.tileLayer(TILELAYER, {maxZoom: MAXZOOM, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 Komoot'}).addTo(map);
+        var zoomControl = new L.Control.Zoom({position: 'topright'}).addTo(map);
 
-        // Basemap layer
-        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-            maxZoom: 18,
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
-                'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-            id: 'mapbox/streets-v11',
-            tileSize: 512,
-            zoomOffset: -1
-        }).addTo(map);
-        // Countries layer
-        let countries = new L.GeoJSON.AJAX(countriesLayerUrl,
-            {
-                style: defaultStyle,
-                onEachFeature: onEachFeature
-            }
-        );
-        countries.addTo(map);
+        var c = new L.Control.Coordinates();
+        L.control.mapCenterCoord().addTo(map);
+		  c.addTo(map);
 
-        // When countries layer is loaded fire dropdown event change
-        countries.on("data:loaded", function () {
-            let mapClick = false;
-            // Preload selected country form list view
-            $('#countryNBS option[value=' + countryId + ']').attr('selected', true).trigger('click', { mapClick });
-
-        });
-
-        function onEachFeature(feature, layer) {
-            layer.on({
-                click: updateDropdownCountry
-            });
+        function onMapClick(e) {
+            c.setCoordinates(e);      
         }
-
-        function updateDropdownCountry(feature) {
-            let mapClick = true;
-            let layerClicked = feature.target;
-            if (lastClickedLayer) {
-                lastClickedLayer.setStyle(defaultStyle);
-            }
-
-            layerClicked.setStyle(highlighPolygon);
-            let countryCode = feature.sourceTarget.feature.id;
-            $('#countryNBS option[data-value=' + countryCode + ']').attr('selected', true).trigger('click', { mapClick });
-
-            lastClickedLayer = feature.target;
-        }
-        //map.on('click', onMapClick);
+        map.on('click', onMapClick);
     }
 
+    var searchPoints = L.geoJson(null, {
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup(feature.properties.name);
+        }
+    });
 
+    function showSearchPoints (geojson) {
+        searchPoints.clearLayers();
+        let geojsonFilter = geojson.features.filter(feature  => feature.properties.type == "city");
+        searchPoints.addData(geojsonFilter);
+    }
+
+    udpateCreateUrl = function (countryId) {
+       $('#createUrl').attr('href','create/'+countryId)
+    };
     /** 
     * Get the transformations selected
     * @param {Array} transformations transformations selected
@@ -225,7 +213,7 @@ $(function () {
     getTransformationsSelected = function () {
         var transformations = [];
         // Obtención de valores de los check de la solución
-        $('input[data-value=itemRT]:checked').each(function () {
+        $('input[name=itemRT]:checked').each(function () {
             transformations.push($(this).val());
         });
         return transformations;
@@ -303,7 +291,8 @@ $(function () {
                 }
             }
         });
-    };
+    
+    }
     /** 
      * Validate input file on change
      * @param {HTML} dropdown Dropdown selected element
