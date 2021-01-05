@@ -278,6 +278,7 @@ function onInit(editor) {
             var textxml = mxUtils.getPrettyXml(node)
 
             var graphData = [];
+            var connetion = [];
             node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
                     'id': node.id,
@@ -285,12 +286,28 @@ function onInit(editor) {
                     'external': node.getAttribute('externalData'),
                     'resultdb': node.getAttribute('resultdb'),
                     'quantity': node.getAttribute('quantity'),
+
                 })
             });
 
+            node.querySelectorAll('mxCell').forEach(function(node) {
+                if (node.id != "") {
+                    connetion.push({
+                        'id': node.id,
+                        'source': node.getAttribute('source'),
+                        'target': node.getAttribute('target'),
+                    })
+                }
+
+            });
+
+
+
             console.log(graphData);
             console.log(textxml);
+            console.log(connetion);
         });
+
 
         //load data when add an object in a diagram
         editor.graph.addListener(mxEvent.ADD_CELLS, function(sender, evt) {
