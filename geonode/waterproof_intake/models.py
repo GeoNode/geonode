@@ -20,37 +20,6 @@ class City(models.Model):
         return "%s" % self.name
 
 
-class Intake(models.Model):
-    """
-    Model to Waterproof Intake.
-
-    :name: Intake Name.
-    :descripcion: Intake Description.
-
-    """
-
-    name = models.CharField(
-        max_length=100,
-        verbose_name=_('Name'),
-    )
-
-    description = models.CharField(
-        max_length=1024,
-        verbose_name=_('Description'),
-    )
-
-    area = models.MultiPolygonField(verbose_name='geo', srid=4326, null=True, blank=True)
-
-    city = models.ForeignKey(City, on_delete=models.CASCADE)
-
-    added_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL
-    )
-
-
 class UserCosts(models.Model):
     name = models.CharField(
         max_length=100,
@@ -132,6 +101,11 @@ class ProcessEfficiencies(models.Model):
         verbose_name=_('Categorys')
     )
 
+    normalized_category = models.CharField(
+        max_length=100,
+        verbose_name=_('Normalized category')
+    )
+
     minimal_sediment_perc = models.IntegerField(
         default=0,
         verbose_name=_('Minimal sediment')
@@ -180,6 +154,22 @@ class ProcessEfficiencies(models.Model):
         verbose_name=_('Maximal phosphorus')
     )
 
+    minimal_transp_water_perc = models.IntegerField(
+        default=0,
+        verbose_name=_('Minimal transported water')
+    )
+
+    predefined_transp_water_perc = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
+        verbose_name=_('Predefined transported water')
+    )
+
+    maximal_transp_water_perc = models.IntegerField(
+        default=0,
+        verbose_name=_('Maximal transported water')
+    )
+
 
 class ExternalInputs(models.Model):
     year = models.IntegerField(
@@ -211,43 +201,36 @@ class ExternalInputs(models.Model):
         verbose_name=_('Extraction value')
     )
 
-    intake = models.ForeignKey(Intake, on_delete=models.CASCADE)
-
 
 class DemandParameters(models.Model):
 
-    initial_year = models.IntegerField(
-        verbose_name=_('Year'),
-    )
-
-    ending_year = models.IntegerField(
-        verbose_name=_('Year'),
-    )
-
-    interpolation_type = models.IntegerField(
-        verbose_name=_('Year'),
+    interpolation_type = models.CharField(
+        max_length=30,
+        verbose_name=_('Interpolation type')
     )
 
     initial_extraction = models.DecimalField(
         decimal_places=4,
         max_digits=14,
-        verbose_name=_('Extraction value')
+        verbose_name=_('Initial extraction')
     )
 
     ending_extraction = models.DecimalField(
         decimal_places=4,
         max_digits=14,
-        verbose_name=_('Extraction value')
+        verbose_name=_('Ending extraction')
+    )
+
+    years_number = models.IntegerField(
+        verbose_name=_('Years number'),
     )
 
     is_manual = models.BooleanField(verbose_name=_('Manual'), default=False)
 
-    intake = models.ForeignKey(Intake, on_delete=models.CASCADE)
-
 
 class WaterExtraction(models.Model):
     year = models.IntegerField(
-        default=1980,
+        default=0,
         verbose_name=_('Year'),
     )
 
@@ -258,3 +241,49 @@ class WaterExtraction(models.Model):
     )
 
     demand = models.ForeignKey(DemandParameters, on_delete=models.CASCADE)
+
+
+class Intake(models.Model):
+    """
+    Model to Waterproof Intake.
+
+    :name: Intake Name.
+    :descripcion: Intake Description.
+
+    """
+
+    name = models.CharField(
+        max_length=100,
+        verbose_name=_('Name'),
+    )
+
+    description = models.CharField(
+        max_length=1024,
+        verbose_name=_('Description'),
+    )
+
+    water_source_name = models.CharField(
+        max_length=100,
+        verbose_name=_('Source name'),
+    )
+
+    area = models.PolygonField(verbose_name='area', srid=4326, null=True, blank=True)
+
+    city = models.ForeignKey(City, on_delete=models.CASCADE)
+
+    demand_parameters = models.ForeignKey(DemandParameters, on_delete=models.CASCADE)
+
+    xml_graph = models.TextField(
+        verbose_name=_('Graph')
+    )
+
+    creation_date = models.DateField(auto_now=True)
+
+    updated_date = models.DateField(auto_now=True)
+
+    added_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )

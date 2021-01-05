@@ -26,13 +26,22 @@ var editablepolygon;
 var validPolygon;
 var isFile;
 var delimitationFileType;
+var xmlGraph;
+var waterExtractionData = {};
+var waterExtractionValue;
 const delimitationFileEnum = {
     GEOJSON: 'geojson',
     SHP: 'shapefile'
 }
+const interpolationType = {
+    LINEAR: 'LINEAR',
+    POTENTIAL: 'POTENTIAL',
+    EXPONENTIAL: 'EXPONENTIAL',
+    LOGARITHMIC: 'LOGARITHMIC'
+}
+
 var mapLoader;
 $(document).ready(function() {
-
     $("#intakeWECB").click(function() {
         $('#intakeECTAG tr').remove();
         $('#intakeEITA tr').remove();
@@ -44,10 +53,16 @@ $(document).ready(function() {
 
         // Linear interpolation
         if (typeProcessInterpolation == 1) {
+            waterExtractionValue = [];
+            waterExtractionData.typeInterpolation = interpolationType.LINEAR;
             m = (finalDataExtractionInterpolationValue - initialDataExtractionInterpolationValue) / (numberYearsInterpolationValue - 0)
             b = (-1 * m * 0) + initialDataExtractionInterpolationValue;
 
             for (let index = 0; index <= numberYearsInterpolationValue; index++) {
+                var yearData = {};
+                yearData.year = index + 1;
+                yearData.value = ((m * index) + b).toFixed(2);
+                waterExtractionValue.push(yearData);
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
                 <td class="text-center">${((m * index) + b).toFixed(2)}</td>
@@ -57,40 +72,67 @@ $(document).ready(function() {
 
         // Potencial interpolation
         if (typeProcessInterpolation == 2) {
+            waterExtractionData.typeInterpolation = interpolationType.POTENTIAL;
             m = (Math.log(finalDataExtractionInterpolationValue) - Math.log(initialDataExtractionInterpolationValue)) / ((Math.log(numberYearsInterpolationValue) - Math.log(1)));
             b = Math.exp((-1 * m * Math.log(1)) + Math.log(initialDataExtractionInterpolationValue));
 
+            console.log(m);
+            console.log(b);
             for (let index = 1; index <= numberYearsInterpolationValue; index++) {
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${(b * (Math.pow(index, m)))}</td>
+                <td class="text-center">${(b*(Math.pow(index,m))).toFixed(2)}</td>
               </tr>`);
             }
         }
 
         // Exponential interpolation
         if (typeProcessInterpolation == 3) {
+            waterExtractionData.typeInterpolation = interpolationType.EXPONENTIAL;
             m = (Math.log(finalDataExtractionInterpolationValue) - Math.log(initialDataExtractionInterpolationValue)) / (numberYearsInterpolationValue - 0)
             b = Math.exp((-1 * m * 0) + Math.log(initialDataExtractionInterpolationValue));
-
+            var yearData = {};
+            yearData.year = index + 1;
+            yearData.value = (b * (Math.exp(m * index)));
             for (let index = 0; index <= numberYearsInterpolationValue; index++) {
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${(b * (Math.exp(m * index)))}</td>
+                <td class="text-center">${(b*(Math.exp(m*index))).toFixed(2)}</td>
               </tr>`);
             }
 
         }
 
+        // Interpolación Logistica
+        if (typeProcessInterpolation == 4) {
+            r = (-Math.log(0.000000001) / initialDataExtractionInterpolationValue);
+            console.log(r)
+            for (let index = 0; index <= numberYearsInterpolationValue; index++) {
+                $('#intakeECTAG').append(`<tr>
+                <th class="text-center" scope="row">${index}</th>
+                <td class="text-center">${((finalDataExtractionInterpolationValue)/(1+((finalDataExtractionInterpolationValue/initialDataExtractionInterpolationValue)-1)*Math.exp(-r*index))).toFixed(2)}</td>
+              </tr>`);
+            }
+
+
+        }
+
         for (let index = 0; index < numberYearsInterpolationValue; index++) {
             $('#intakeEITA').append(`<tr>
-                  <th class="text-center" scope="col">${index + 1}</th>
+                  <th class="text-center" scope="col">${index+1}</th>
                   <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
                   <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
                   <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
                   <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
               </tr>`);
         }
+        // Set object data for later persistence
+        waterExtractionData.yearCount = numberYearsInterpolationValue;
+        waterExtractionData.initialValue = initialDataExtractionInterpolationValue;
+        waterExtractionData.finalValue = finalDataExtractionInterpolationValue;
+        waterExtractionData.yearValues = waterExtractionValue;
+        $('#waterExtraction').val(JSON.stringify(waterExtractionData));
+        console.log(waterExtractionData);
     });
 
     $('#smartwizard').smartWizard("next").click(function() {
@@ -119,7 +161,7 @@ $(document).ready(function() {
     });
 
     $('#smartwizard').smartWizard({
-        selected: 3,
+        selected: 1,
         theme: 'dots',
         enableURLhash: false,
         autoAdjustHeight: true,
@@ -171,6 +213,9 @@ $(document).ready(function() {
     $("#validateBtn").on("click", validateCoordinateWithApi);
     $('#btnDelimitArea').on("click", delimitIntakeArea)
     $('#btnValidateArea').on("click", validateIntakeArea)
+    $('#btnSaveGraph').on("click", function() {
+        $('#xmlGraph').val(xmlGraph);
+    })
     if (!mapLoader) {
         mapLoader = L.control.loader().addTo(map);
     }
@@ -193,7 +238,7 @@ $('#btnaddcost').click(function() {
     for (let index = 0; index < 1; index++) {
 
         $('#intakeaddcost').append(`<div class="form-group">
-                                    <label for="exampleInputEmail1">Funcion de costo ${index+1}:</label>
+                                    <label for="exampleInputEmail1">Funcion de costo ${index + 1}:</label>
                                     <div class="input-group">
                                         <input type="text" class="form-control" placeholder="Funcion de costo">
                                         <span class="input-group-btn">
@@ -258,16 +303,20 @@ function validateIntakeArea() {
                 })
             } else if (!result.polygonContains) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'El polígono debe estar dentro del área de la captación',
-                    text: 'El polígono editado no es válido, por favor intente de nuevo',
-                })
+                        icon: 'error',
+                        title: 'El polígono debe estar dentro del área de la captación',
+                        text: 'El polígono editado no es válido, por favor intente de nuevo',
+                    })
+                    // Correct geometry
             } else {
                 Swal.fire(
                     'Excelente',
                     'El polígono es válido y está dentro de la captación',
                     'success'
                 )
+                $('#areaGeometry').val(JSON.stringify(editablePolygonJson))
+                $('#isFile').val(JSON.stringify(isFile))
+                $('#typeDelimit').val(JSON.stringify(delimitationFileType))
             }
         },
         error: function(error) {
