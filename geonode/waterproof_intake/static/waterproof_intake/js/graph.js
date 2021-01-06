@@ -3,7 +3,8 @@
  * configurations (Step 2 of create wizard)
  * @version 1.0
  */
-
+var graphData = [];
+var connetion = [];
 
 // Program starts here. The document.onLoad executes the
 // createEditor function with a given configuration.
@@ -272,8 +273,7 @@ function onInit(editor) {
     //use jquery
     $(document).ready(function() {
 
-        var graphData = [];
-        var connetion = [];
+
 
         /**
          * Button to save 
@@ -295,7 +295,7 @@ function onInit(editor) {
                 <div class="panel panel-info">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#VarCostListGroup" href="#VarCostListGroup_${index.id}">${index.id} - ${ index.name }</a>
+                            <a data-toggle="collapse" data-parent="#VarCostListGroup" href="#VarCostListGroup_${index.id}">${index.id} - ${index.name}</a>
                         </h4>
                     </div>
                     <div id="VarCostListGroup_${index.id}" class="panel-collapse collapse">
@@ -344,8 +344,8 @@ function onInit(editor) {
             var enc = new mxCodec();
             var node = enc.encode(editor.graph.getModel());
             var textxml = mxUtils.getPrettyXml(node)
-
-            var graphData = [];
+            graphData = [];
+            connetion = [];
             node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
                     'id': node.id,
@@ -357,7 +357,6 @@ function onInit(editor) {
                 })
             });
 
-            var connetion = [];
             node.querySelectorAll('mxCell').forEach(function(node) {
                 if (node.id != "") {
                     connetion.push({
@@ -368,8 +367,9 @@ function onInit(editor) {
                 }
 
             });
-
             console.log(graphData);
+            $('#xmlGraph').val(textxml);
+            $('#graphElements').val(JSON.stringify(graphData));
             //console.log(textxml);
             //console.log(connetion);
         });
