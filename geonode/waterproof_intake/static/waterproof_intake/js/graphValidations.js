@@ -1,7 +1,7 @@
 const connectionsType={
-    EC: {name:'Extraction connection', id:'EC', color:'#00ff00'},
+    EC: {name:'Extraction connection', id:'EC', color:'#008000'},
     EI: {name:'External input', id:'EI', color:'#e6e200'},
-    PL: {name:'Pipeline', id:'PL', color:'#222222'},
+    PL: {name:'Pipeline', id:'PL', color:'#191970'},
     CN: {name:'Connection', id:'CN', color:'#555555'},
 }
 
