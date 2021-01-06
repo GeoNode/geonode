@@ -19,7 +19,7 @@ function onInit(editor) {
     mxGraphHandler.prototype.guidesEnabled = true;
 
     // Alt disables guides
-    mxGuide.prototype.isEnabledForEvent = function (evt) {
+    mxGuide.prototype.isEnabledForEvent = function(evt) {
         return !mxEvent.isAltDown(evt);
     };
 
@@ -39,7 +39,7 @@ function onInit(editor) {
     editor.graph.connectionHandler.setCreateTarget(true);
 
     // Installs a popupmenu handler using local function (see below).
-    editor.graph.popupMenuHandler.factoryMethod = function(menu, cell, evt){
+    editor.graph.popupMenuHandler.factoryMethod = function(menu, cell, evt) {
         return createPopupMenu(editor.graph, menu, cell, evt);
     };
 
@@ -47,7 +47,7 @@ function onInit(editor) {
     var title = document.getElementById('title');
 
     if (title != null) {
-        var f = function (sender) {
+        var f = function(sender) {
             title.innerHTML = sender.getTitle();
         };
 
@@ -80,7 +80,7 @@ function onInit(editor) {
     var getdata = document.getElementById('getdata');
     getdata.checked = false;
 
-    var funct = function (editor) {
+    var funct = function(editor) {
         if (getdata.checked) {
             //console.log(getdata.checked)
             graphNode.style.display = 'none';
@@ -131,7 +131,7 @@ function onInit(editor) {
 
     // Defines a new action to switch between
     // XML and graphical display
-    mxEvent.addListener(getdata, 'click', function () {
+    mxEvent.addListener(getdata, 'click', function() {
         editor.execute('switchView');
     });
 
@@ -143,7 +143,7 @@ function onInit(editor) {
     // NOTE: The old image export in mxEditor is not used, the urlImage is used for the new export.
     if (editor.urlImage != null) {
         // Client-side code for image export
-        var exportImage = function (editor) {
+        var exportImage = function(editor) {
             var graph = editor.graph;
             var scale = graph.view.scale;
             var bounds = graph.getGraphBounds();
@@ -174,14 +174,14 @@ function onInit(editor) {
 
                 new mxXmlRequest(editor.urlImage, 'filename=' + name + '&format=' + format +
                     bg + '&w=' + w + '&h=' + h + '&xml=' + encodeURIComponent(xml)).
-                    simulate(document, '_blank');
+                simulate(document, '_blank');
             }
         };
 
         editor.addAction('exportImage', exportImage);
 
         // Client-side code for SVG export
-        var exportSvg = function (editor) {
+        var exportSvg = function(editor) {
             var graph = editor.graph;
             var scale = graph.view.scale;
             var bounds = graph.getGraphBounds();
@@ -237,8 +237,8 @@ function onInit(editor) {
         var button = document.createElement('button');
         mxUtils.write(button, mxResources.get(buttons[i]));
 
-        var factory = function (name) {
-            return function () {
+        var factory = function(name) {
+            return function() {
                 editor.execute(name);
             };
         };
@@ -271,9 +271,7 @@ function onInit(editor) {
 
 
     //use jquery
-    $(document).ready(function () {
-
-
+    $(document).ready(function() {
 
         /**
          * Button to save 
@@ -281,13 +279,16 @@ function onInit(editor) {
          * xml on textxml
          */
 
-        $('#inputMathAscii').keyup(function () {
+        $('#inputMathAscii').keyup(function() {
             $('#RenderingMathAscii').text(`'math' ${$(this).val()} 'math'`);
-            MathJax.typeset()
+            MathJax.typeset();
         });
 
-        $('#ModalAddCostBtn').click(function () {
+        $('#saveAndValideCost').click(function() {
+            console.log($('#RenderingMathAscii > mjx-container > mjx-assistive-mml')[0].innerHTML)
+        });
 
+        $('#ModalAddCostBtn').click(function() {
             $('#VarCostListGroup div').remove();
             for (const index of graphData) {
                 tmp = JSON.parse(index.varcost);
@@ -315,90 +316,76 @@ function onInit(editor) {
                 </div>
                 `);
             }
-            /*
-            for (let index = 0; index < graphData.length; index++) {
-                tmp = JSON.parse(graphData[index].varcost)
-                $('#VarCostListGroup').html(`
-                <div class="list-group">
-                    <a href="#" class="list-group-item list-group-item-action active">
-                        ${ graphData[index].name }
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">${tmp[0]}</a>
-                    <a href="#" class="list-group-item list-group-item-action">${tmp[1]}</a>
-                    <a href="#" class="list-group-item list-group-item-action">${tmp[2]}</a>
-                    <a href="#" class="list-group-item list-group-item-action">${tmp[3]}</a>
-                    <a href="#" class="list-group-item list-group-item-action">${tmp[4]}</a>
-                    <a href="#" class="list-group-item list-group-item-action">${tmp[5]}</a>
-                    <a href="#" class="list-group-item list-group-item-action">${tmp[6]}</a>
-                    <a href="#" class="list-group-item list-group-item-action">${tmp[7]}</a>
-                    <a href="#" class="list-group-item list-group-item-action">${tmp[8]}</a>
-                    <a href="#" class="list-group-item list-group-item-action">${tmp[9]}</a>
-                </div>
-                `)
-            }*/
-
         });
 
+        function funcost(ecuation_db) {
+            $('#funcostgenerate div').remove();
+            $('#funcostgenerate').append(
+                ` <div class="form-group">
+                <label>Annual Operation and Maintenance Cost</label>
+                <input type="text" value="${ ecuation_db }" class="form-control" disabled>
+            </div>`);
+        }
 
-        $('#saveGraph').click(function () {
+        $('#saveGraph').click(function() {
             var enc = new mxCodec();
             var node = enc.encode(editor.graph.getModel());
             var textxml = mxUtils.getPrettyXml(node)
             graphData = [];
             connetion = [];
-            node.querySelectorAll('Symbol').forEach(function (node) {
+            node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
                     'id': node.id,
                     "name": node.getAttribute('name'),
                     'external': node.getAttribute('externalData'),
                     'resultdb': node.getAttribute('resultdb'),
-                    'quantity': node.getAttribute('quantity'),
                     'varcost': node.getAttribute('varcost'),
+                    'funcost': node.getAttribute('funcost'),
                 })
             });
 
-            node.querySelectorAll('mxCell').forEach(function (node) {
+            node.querySelectorAll('mxCell').forEach(function(node) {
                 if (node.id != "") {
+                    let varcost = Object.values(JSON.parse(node.getAttribute('value')))[1];
                     connetion.push({
                         'id': node.id,
                         'source': node.getAttribute('source'),
                         'target': node.getAttribute('target'),
+                        'varcost': JSON.stringify(varcost)
                     })
                 }
-
             });
-            console.log(graphData);
+            //console.log(graphData);
             $('#xmlGraph').val(textxml);
             $('#graphElements').val(JSON.stringify(graphData));
             //console.log(textxml);
             //console.log(connetion);
         });
 
-
         //load data when add an object in a diagram
-        editor.graph.addListener(mxEvent.ADD_CELLS, function (sender, evt) {
+        editor.graph.addListener(mxEvent.ADD_CELLS, function(sender, evt) {
 
             var selectedCell = evt.getProperty("cells");
             var idvar = selectedCell[0].id;
             if (selectedCell != undefined) {
                 var varcost = [];
                 varcost.push(
-                    `Q_${idvar}`,
-                    `CSed_${idvar}`,
-                    `CN_${idvar}`,
-                    `CP_${idvar}`,
-                    `WSed_${idvar}`,
-                    `WN_${idvar}`,
-                    `WP_${idvar}`,
-                    `WSed_ret_${idvar}`,
-                    `WN_ret_${idvar}`,
-                    `WP_ret_${idvar}`
+                    `Q_${idvar} (m³)`,
+                    `CSed_${idvar} (mg/l)`,
+                    `CN_${idvar} (mg/l)`,
+                    `CP_${idvar} (mg/l)`,
+                    `WSed_${idvar} (Ton)`,
+                    `WN_${idvar} (Kg)`,
+                    `WP_${idvar} (Kg)`,
+                    `WSed_ret_${idvar} (Ton)`,
+                    `WN_ret_${idvar} (Kg)`,
+                    `WP_ret_${idvar} (Kg)`
                 );
                 selectedCell[0].setAttribute('varcost', JSON.stringify(varcost));
 
                 $.ajax({
                     url: `/intake/loadProcess/${selectedCell[0].dbreference}`,
-                    success: function (result) {
+                    success: function(result) {
                         selectedCell[0].setAttribute("resultdb", result);
                     }
                 });
@@ -418,48 +405,58 @@ function onInit(editor) {
 
         var resultdb = [];
         var selectedCell;
-        var notConnectedCells = [];
-        var parentCellId = "2";
 
         //Load data from figure to html
-        editor.graph.addListener(mxEvent.CLICK, function (sender, evt) {
+        editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
             selectedCell = evt.getProperty("cell");
             if (selectedCell != undefined) {
                 resultdb = JSON.parse(selectedCell.getAttribute('resultdb'));
                 $('#titleDiagram').text(resultdb[0].fields.categorys);
                 // Add Value to Panel Information Right on HTML
+                $('#aguaDiagram').val(resultdb[0].fields.predefined_transp_water_perc);
                 $('#sedimentosDiagram').val(resultdb[0].fields.predefined_sediment_perc);
                 $('#nitrogenoDiagram').val(resultdb[0].fields.predefined_nitrogen_perc);
                 $('#fosforoDiagram').val(resultdb[0].fields.predefined_phosphorus_perc);
                 // Add Validator 
+                $('#aguaDiagram').attr('min', resultdb[0].fields.minimal_transp_water_perc);
+                $('#aguaDiagram').attr('max', resultdb[0].fields.maximal_transp_water_perc);
                 $('#sedimentosDiagram').attr('min', resultdb[0].fields.minimal_sediment_perc);
                 $('#sedimentosDiagram').attr('max', resultdb[0].fields.maximal_sediment_perc);
                 $('#nitrogenoDiagram').attr('min', resultdb[0].fields.minimal_nitrogen_perc);
                 $('#nitrogenoDiagram').attr('max', resultdb[0].fields.maximal_nitrogen_perc);
                 $('#fosforoDiagram').attr('min', resultdb[0].fields.minimal_phosphorus_perc);
                 $('#fosforoDiagram').attr('max', resultdb[0].fields.maximal_phosphorus_perc);
+
+                funcost('((11126.6*text(Q)) + 30939.7)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))');
             }
+
+
         });
 
         //Add value entered in sediments in the field resultdb
-        $('#sedimentosDiagram').keyup(function () {
+        $('#sedimentosDiagram').keyup(function() {
             resultdb[0].fields.predefined_sediment_perc = $('#sedimentosDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });
 
         //Add value entered in nitrogen in the field resultdb
-        $('#nitrogenoDiagram').keyup(function () {
+        $('#nitrogenoDiagram').keyup(function() {
             resultdb[0].fields.predefined_nitrogen_perc = $('#nitrogenoDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });
 
         //Add value entered in phosphorus in the field resultdb
-        $('#fosforoDiagram').keyup(function () {
+        $('#fosforoDiagram').keyup(function() {
             resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });
 
-        function Validate(mxCell) {
+        $('#aguaDiagram').keyup(function() {
+            resultdb[0].fields.predefined_transp_water_perc = $('#aguaDiagram').val();
+            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+        });
+
+        /*function Validate(mxCell) {
             let isConnected = true;
             // check each cell that each edge connected to
             for (let i = 0; i < mxCell.getEdgeCount(); i++) {
@@ -484,51 +481,7 @@ function onInit(editor) {
                     Validate(edge.target);
                 }
             }
-        }
-
-        function ResetColor(state) {
-            state.shape.node.classList.remove("not_connected");
-            if (state.text)
-                state.text.node.classList.remove("not_connected");
-        }
-
-        function SetNotConnectedColor(state) {
-            for (let i = 0; i < notConnectedCells.length; i++) {
-                let mxCell = notConnectedCells[i];
-                let state = graphView.getState(mxCell);
-                state.shape.node.classList.add("not_connected");
-                if (state.text)
-                    state.text.node.classList.add("not_connected");
-            }
-        }
-
-        document.querySelector("#validate_btn").addEventListener("click", function () {
-
-            let cells = editor.graph.getModel().cells;
-            graphView = editor.graph.getView();
-            notConnectedCells.length = 0;
-            console.log(cells)
-            console.log(graphView)
-
-            // create an array of cells and reset the color
-            for (let key in cells) {
-                if (!cells.hasOwnProperty(key)) continue;
-
-                let mxCell = cells[key];
-                if (!mxCell.isVertex() && !mxCell.isEdge()) continue;
-                notConnectedCells.push(mxCell);
-                let state = graphView.getState(mxCell);
-
-                console.log(state)
-                ResetColor(state);
-            }
-
-            // starts with the parent cell
-            let parentCell = notConnectedCells.find(c => c.id === parentCellId);
-            Validate(parentCell);
-
-            SetNotConnectedColor();
-        })
+        }*/
 
     });
 
