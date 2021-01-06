@@ -322,7 +322,7 @@ function onInit(editor) {
             $('#funcostgenerate div').remove();
             $('#funcostgenerate').append(
                 ` <div class="form-group">
-                <label>Costo de Operacion y Mantenimiento Anual</label>
+                <label>Annual Operation and Maintenance Cost</label>
                 <input type="text" value="${ ecuation_db }" class="form-control" disabled>
             </div>`);
         }
@@ -448,6 +448,11 @@ function onInit(editor) {
         //Add value entered in phosphorus in the field resultdb
         $('#fosforoDiagram').keyup(function() {
             resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
+            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+        });
+
+        $('#aguaDiagram').keyup(function() {
+            resultdb[0].fields.predefined_transp_water_perc = $('#aguaDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });
 
