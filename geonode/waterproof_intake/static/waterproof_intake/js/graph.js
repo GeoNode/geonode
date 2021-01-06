@@ -339,7 +339,6 @@ function onInit(editor) {
 
         });
 
-        var graphData = [];
 
         $('#saveGraph').click(function() {
             var enc = new mxCodec();
