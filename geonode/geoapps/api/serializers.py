@@ -114,6 +114,12 @@ class GeoAppSerializer(ResourceBaseSerializer):
             raise ValidationError("A GeoApp with the same 'name' already exists!")
 
         self.extra_update_checks(validated_data)
+
+    def create(self, validated_data):
+
+        # perform sanity checks
+        self.extra_create_checks(validated_data)
+
         # Extract JSON blob
         _data = None
         if 'blob' in validated_data:
@@ -135,18 +141,8 @@ class GeoAppSerializer(ResourceBaseSerializer):
 
     def update(self, instance, validated_data):
 
-        # Extract users' profiles
-        _user_profiles = {}
-        for _key, _value in validated_data.items():
-            if _key in ('owner', 'poc', 'metadata_owner'):
-                _user_profiles[_key] = _value
-        for _key, _value in _user_profiles.items():
-            validated_data.pop(_key)
-            _u = get_user_model().objects.filter(username=_value).first()
-            if _u:
-                validated_data[_key] = _u
-            else:
-                raise ValidationError("The specified '{}' does not exist!".format(_key))
+        # perform sanity checks
+        self.extra_update_checks(validated_data)
 
         # Extract JSON blob
         _data = None
