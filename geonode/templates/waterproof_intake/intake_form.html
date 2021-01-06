@@ -18,7 +18,7 @@
         },
         asciimath: {
             delimiters: [
-                ['`math`', '`math`']
+                ["'math'", "'math'"]
             ]
         }
     };
@@ -91,6 +91,13 @@
     display: inline-block;
     text-align: left;
     vertical-align: middle;
+    }
+
+    .not_connected * {
+        color: red;
+        font-color: red;
+        stroke: red;
+        stroke-color: red;
     }
 </style>
 {% endblock %}
@@ -202,6 +209,7 @@
                             <div class="panel-body" id="graph" tabindex="-1" style="height:790px;width:100%;overflow:hidden;cursor:default;"></div>
                             <span style="float:right;padding-right:36px;">
                                 <input id="getdata" type="checkbox" />Source
+                                <button style="position:absolute; left:300px;padding:8px 40px;background:orangered;color:#fff;outline:none;border:none;z-index:100;" id="validate_btn">Validate</button>
                             </span>
                             <textarea id="xml" style="height:480px;width:684px;display:none;border-style:none;"></textarea>
                         </div>
@@ -216,25 +224,26 @@
                                 </div>
                                 <!--Sediments-->
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Concentración de Sedimentos:</label>
-                                    <input type="number" id="sedimentosDiagram" min="" max="" class="form-control">
+                                    <label>Concentración de Sedimentos:</label>
+                                    <input type="number" id="sedimentosDiagram" class="form-control">
                                 </div>
                                 <!--Nitrogen-->
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Concentración de Nitrógeno:</label>
+                                    <label >Concentración de Nitrógeno:</label>
                                     <input type="number" id="nitrogenoDiagram" class="form-control">
                                 </div>
                                 <!--Phosphorus-->
                                 <div class="form-group">
-                                    <label for="exampleInputEmail1">Concentración de Fósforo:</label>
+                                    <label >Concentración de Fósforo:</label>
                                     <input type="number" id="fosforoDiagram" class="form-control">
                                 </div>
-                                <h2 for="exampleInputEmail1">Funciones de costo</h2>
-                                <!--div for Add Cost-->
-                                <div id="intakeaddcost"></div>
-                                <!--Buttons Add cost and Save graph-->   
+                                <h4 class="text-primary">Funciones de costo</h4>
+                                <div id="intakeaddcost">
+
+                                </div>
+                                <hr>
                                 <div class="form-group">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Add Cost</button>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id="ModalAddCostBtn">Add Cost</button>
                                     <button type="button" class="btn btn-primary" id="saveGraph">Save Graph</button>
                                 </div>
                             </div>
@@ -358,9 +367,8 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Type element for asignation</label>
                         <div class="col-sm-9">
-                            <select class="form-control">
-                                <option value="2">External Input 1</option>
-                                <option Value="2">External Input 2</option>
+                            <select class="form-control" id="externalSelect">
+                                
                             </select>
                         </div>
                     </div>
@@ -420,7 +428,6 @@
         </div>
     </div>
 </form>
-
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -433,48 +440,34 @@
       <div class="modal-body">
       <div class="row">
         <div class="col-md-6">
-            <div class="list-group">
-            <a href="#" class="list-group-item list-group-item-action active">
-                Rio
-            </a>
-            <a href="#" class="list-group-item list-group-item-action">CL1</a>
-            <a href="#" class="list-group-item list-group-item-action">WSED_RES1</a>
+        
+            <div class="panel-group" id="VarCostListGroup">
+                
             </div>
-            <div class="list-group">
-            <a href="#" class="list-group-item list-group-item-action active">
-                Conexion
-            </a>
-            <a href="#" class="list-group-item list-group-item-action">WN_2</a>
-            <a href="#" class="list-group-item list-group-item-action">WP_RET_2</a>
-            </div>
+
+            
         </div>
         <div class="col-md-6">
-        <div class="form-group">
-            <label>Cost function name</label>
-            <textarea rows="4" class="form-control"></textarea>
-        </div>
             <div class="form-group">
-            <label>Cost function description</label>
-            <textarea rows="4" class="form-control"></textarea>
-        </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12">
-            <h5 class="text-primary">Internal Math</h5>
-            <button type="button" class="btn btn-link">`math` sum `math`</button>
-            <button type="button" class="btn btn-link">`math` int `math`</button>
-            <button type="button" class="btn btn-link">`math` sqrt x `math`</button>
-            <button type="button" class="btn btn-link">`math` gamma `math`</button>
-            <button type="button" class="btn btn-link">`math` alpha `math`</button>
+                <label>Cost function name</label>
+                <textarea rows="4" class="form-control"></textarea>
+            </div>
+                <div class="form-group">
+                <label>Cost function description</label>
+                <textarea rows="4" class="form-control"></textarea>
+            </div>
         </div>
       </div>
       <div class="row">
         <div class="col-md-12">
-      <h5 class="text-primary">Value</h5>
-      <button type="button" class="btn btn-link">`math`  \left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right) `math`</button>
-      <p></p>
-      <textarea class="form-control"></textarea>
+            <h5 class="text-primary">Expretion</h5>
+            <textarea class="form-control" id="inputMathAscii"></textarea>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+      <h5 class="text-primary">Rendering</h5>
+      <button type="button" class="btn btn-link btn-block" id="RenderingMathAscii"></button>
       </div>
      </div>
       <div class="modal-footer">

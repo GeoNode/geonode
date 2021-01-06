@@ -84,7 +84,14 @@
 		</add>
 		<add as="conexion">
 			<Symbol name="Conexion" externalData="true">
-				<mxCell vertex="1" style="conexion" dbreference="">      
+				<mxCell vertex="1" style="conexion" dbreference="EXTERNALINPUT">      
+					<mxGeometry as="geometry" width="60" height="60"/>
+				</mxCell>
+			</Symbol>
+		</add>
+		<add as="csinfra">
+			<Symbol name="CSINFRA" externalData="false">
+				<mxCell vertex="1" style="csinfra" dbreference="">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
@@ -135,7 +142,7 @@
 				<add as="fontSize" value="10"/>
 				<add as="align" value="center"/>
 				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/01-rio.png"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/01 RIO.svg"/>
 			</add>
 			<add as="embalse">
 				<add as="shape" value="image"/>
@@ -143,7 +150,7 @@
 				<add as="fontSize" value="10"/>
 				<add as="align" value="center"/>
 				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/02-embalse.png"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/02 EMBALSE.png"/>
 			</add>
 			<add as="bombeo">
 				<add as="shape" value="image"/>
@@ -151,7 +158,7 @@
 				<add as="fontSize" value="10"/>
 				<add as="align" value="center"/>
 				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/03-bombeo.png"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/03 BOMBEO.svg"/>
 			</add>
 			<add as="reservorioagua">
 				<add as="shape" value="image"/>
@@ -159,7 +166,7 @@
 				<add as="fontSize" value="10"/>
 				<add as="align" value="center"/>
 				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/04-reservorio-agua.png"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/04 RESERVORIO AGUA.svg"/>
 			</add>
 			<add as="bocatoma">
 				<add as="shape" value="image"/>
@@ -167,7 +174,7 @@
 				<add as="fontSize" value="10"/>
 				<add as="align" value="center"/>
 				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/05-bocatoma.png"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/05 BOCATOMA.svg"/>
 			</add>
 			<add as="bocatomalateral">
 				<add as="shape" value="image"/>
@@ -175,7 +182,7 @@
 				<add as="fontSize" value="10"/>
 				<add as="align" value="center"/>
 				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/06-bocatoma-lat.png"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/06 BOCATOMA LAT.svg"/>
 			</add>
 			<add as="bocatomaflotante">
 				<add as="shape" value="image"/>
@@ -183,7 +190,7 @@
 				<add as="fontSize" value="10"/>
 				<add as="align" value="center"/>
 				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/07-bocatoma-flotante.png"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/07 BOCATOMA FLOTANTE.svg"/>
 			</add>
 			<add as="desarenador">
 				<add as="shape" value="image"/>
@@ -191,7 +198,7 @@
 				<add as="fontSize" value="10"/>
 				<add as="align" value="center"/>
 				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/08-desarenador.png"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/08-DESARENADOR.png"/>
 			</add>
 			<add as="camaraquiebre">
 				<add as="shape" value="image"/>
@@ -199,7 +206,7 @@
 				<add as="fontSize" value="10"/>
 				<add as="align" value="center"/>
 				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/09-camara-quiebre.png"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/09 CAMARA QUIEBRE.svg"/>
 			</add>
 			<add as="tuberia">
 				<add as="shape" value="image"/>
@@ -224,6 +231,14 @@
 				<add as="align" value="center"/>
 				<add as="verticalAlign" value="middle"/>
 				<add as="image" value="/static/mxgraph/images/waterproof/12-conexion.png"/>
+			</add>
+			<add as="csinfra">
+				<add as="shape" value="image"/>
+				<add as="perimeter" value="rectanglePerimeter"/>
+				<add as="fontSize" value="10"/>
+				<add as="align" value="center"/>
+				<add as="verticalAlign" value="middle"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/13 CSINFRA.svg"/>
 			</add>
 			
 		</mxStylesheet>
@@ -262,7 +277,7 @@
 				<Layer label="Default Layer" id="1">
 					<mxCell parent="0"/>
 				</Layer>
-				<Symbol name="Rio">
+				<Symbol name="Rio" varcost="[&quot;Q_2&quot;,&quot;CSed_2&quot;,&quot;CN_2&quot;,&quot;CP_2&quot;,&quot;WSed_2&quot;,&quot;WN_2&quot;,&quot;WP_2&quot;,&quot;WSed_ret_2&quot;,&quot;WN_ret_2&quot;,&quot;WP_ret_2&quot;]">
 					<mxCell style="rio" vertex="1" parent="1">
 						<mxGeometry x="40" y="30" width="60" height="60" as="geometry" />
 					</mxCell>
@@ -301,16 +316,17 @@
 		]]></add>-->
 
 		<!--<add as="Rio" template="rio" width="32" height="32" icon="/static/mxgraph/images/waterproof/01-rio.png"/-->
-		<add as="Embalse" template="embalse" icon="/static/mxgraph/images/waterproof/02-embalse.png"/>
-		<add as="Bombeo" template="bombeo" icon="/static/mxgraph/images/waterproof/03-bombeo.png"/>
-		<add as="Reservorio Agua" template="reservorioagua" icon="/static/mxgraph/images/waterproof/04-reservorio-agua.png"/>
-		<add as="Bocatoma" template="bocatoma" icon="/static/mxgraph/images/waterproof/05-bocatoma.png"/>
-		<add as="Bocatoma Lateral" template="bocatomalateral" icon="/static/mxgraph/images/waterproof/06-bocatoma-lat.png"/>
-		<add as="Bocatoma Flotante" template="bocatomaflotante" icon="/static/mxgraph/images/waterproof/07-bocatoma-flotante.png"/>
-		<add as="Desarenador" template="desarenador" icon="/static/mxgraph/images/waterproof/08-desarenador.png"/>
-		<add as="Camara De Quiebre" template="camaraquiebre" width="32" height="32" icon="/static/mxgraph/images/waterproof/09-camara-quiebre.png"/>
+		<add as="Embalse" template="embalse" icon="/static/mxgraph/images/waterproof/02 EMBALSE.png"/>
+		<add as="Bombeo" template="bombeo"  width="32" height="32" icon="/static/mxgraph/images/waterproof/03 BOMBEO.svg"/>
+		<add as="Reservorio Agua" template="reservorioagua" width="32" height="32" icon="/static/mxgraph/images/waterproof/04 RESERVORIO AGUA.svg"/>
+		<add as="Bocatoma" template="bocatoma" icon="/static/mxgraph/images/waterproof/05 BOCATOMA.svg"/>
+		<add as="Bocatoma Lateral" template="bocatomalateral" icon="/static/mxgraph/images/waterproof/06 BOCATOMA LAT.svg"/>
+		<add as="Bocatoma Flotante" template="bocatomaflotante" icon="/static/mxgraph/images/waterproof/07 BOCATOMA FLOTANTE.svg"/>
+		<add as="Desarenador" template="desarenador" icon="/static/mxgraph/images/waterproof/08-DESARENADOR.png"/>
+		<add as="Camara De Quiebre" template="camaraquiebre" width="32" height="32" icon="/static/mxgraph/images/waterproof/09 CAMARA QUIEBRE.svg"/>
 		<add as="Tuberia" template="tuberia" width="32" height="32" icon="/static/mxgraph/images/waterproof/10-tuberia.png"/>
 		<add as="Canal" template="canal" icon="/static/mxgraph/images/waterproof/11-canal.png"/>
 		<add as="Conexion" template="conexion" icon="/static/mxgraph/images/waterproof/12-conexion.png"/>
+		<add as="CSINFRA" template="csinfra" icon="/static/mxgraph/images/waterproof/13 CSINFRA.svg"/>
 		</mxDefaultToolbar>
 </mxEditor>

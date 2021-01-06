@@ -81,7 +81,7 @@ function onInit(editor) {
 
     var funct = function(editor) {
         if (getdata.checked) {
-            console.log(getdata.checked)
+            //console.log(getdata.checked)
             graphNode.style.display = 'none';
             textNode.style.display = 'inline';
 
@@ -271,40 +271,133 @@ function onInit(editor) {
 
     //use jquery
     $(document).ready(function() {
-        //Button to save data on graphData
+
+        var graphData = [];
+        var connetion = [];
+
         /**
          * Button to save 
          * data on graphData
          * xml on textxml
          */
+
+        $('#inputMathAscii').keyup(function() {
+            $('#RenderingMathAscii').text(`'math' ${$(this).val()} 'math'`);
+            MathJax.typeset()
+        });
+
+        $('#ModalAddCostBtn').click(function() {
+
+            $('#VarCostListGroup div').remove();
+            for (const index of graphData) {
+                tmp = JSON.parse(index.varcost);
+                $('#VarCostListGroup').append(`
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#VarCostListGroup" href="#VarCostListGroup_${index.id}">${index.id} - ${ index.name }</a>
+                        </h4>
+                    </div>
+                    <div id="VarCostListGroup_${index.id}" class="panel-collapse collapse">
+                        <div class="panel-body">
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[0]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[1]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[2]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[3]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[4]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[5]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[6]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[7]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[8]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[9]}</a>
+                        </div>
+                    </div>
+                </div>
+                `);
+            }
+            /*
+            for (let index = 0; index < graphData.length; index++) {
+                tmp = JSON.parse(graphData[index].varcost)
+                $('#VarCostListGroup').html(`
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action active">
+                        ${ graphData[index].name }
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[0]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[1]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[2]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[3]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[4]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[5]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[6]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[7]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[8]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[9]}</a>
+                </div>
+                `)
+            }*/
+
+        });
+
+
         $('#saveGraph').click(function() {
             var enc = new mxCodec();
             var node = enc.encode(editor.graph.getModel());
             var textxml = mxUtils.getPrettyXml(node)
 
-            var graphData = [];
+            graphData = [];
+            connetion = [];
             node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
                     'id': node.id,
                     "name": node.getAttribute('name'),
                     'external': node.getAttribute('externalData'),
                     'resultdb': node.getAttribute('resultdb'),
+                    'quantity': node.getAttribute('quantity'),
+                    'varcost': node.getAttribute('varcost'),
                 })
             });
+
+            node.querySelectorAll('mxCell').forEach(function(node) {
+                if (node.id != "") {
+                    connetion.push({
+                        'id': node.id,
+                        'source': node.getAttribute('source'),
+                        'target': node.getAttribute('target'),
+                    })
+                }
+
+            });
+
+
+
             console.log(graphData);
-            console.log(textxml);
+            //console.log(textxml);
+            //console.log(connetion);
         });
 
-        function loadData(data) {
-            node.querySelectorAll('Symbol').forEach(function(node) {
-                console.log(node);
-            });
-        }
 
         //load data when add an object in a diagram
         editor.graph.addListener(mxEvent.ADD_CELLS, function(sender, evt) {
+
             var selectedCell = evt.getProperty("cells");
+            var idvar = selectedCell[0].id;
             if (selectedCell != undefined) {
+                var varcost = [];
+                varcost.push(
+                    `Q_${idvar}`,
+                    `CSed_${idvar}`,
+                    `CN_${idvar}`,
+                    `CP_${idvar}`,
+                    `WSed_${idvar}`,
+                    `WN_${idvar}`,
+                    `WP_${idvar}`,
+                    `WSed_ret_${idvar}`,
+                    `WN_ret_${idvar}`,
+                    `WP_ret_${idvar}`
+                );
+                selectedCell[0].setAttribute('varcost', JSON.stringify(varcost));
+
                 $.ajax({
                     url: `/intake/loadProcess/${selectedCell[0].dbreference}`,
                     success: function(result) {
@@ -312,6 +405,11 @@ function onInit(editor) {
                     }
                 });
             }
+
+            if (selectedCell[0].dbreference == 'EXTERNALINPUT') {
+                //Si se añade un elemento externo
+            }
+
         });
 
         /**  
@@ -322,6 +420,8 @@ function onInit(editor) {
 
         var resultdb = [];
         var selectedCell;
+        var notConnectedCells = [];
+        var parentCellId = "2";
 
         //Load data from figure to html
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
@@ -344,22 +444,93 @@ function onInit(editor) {
         });
 
         //Add value entered in sediments in the field resultdb
-        $('#sedimentosDiagram').change(function() {
+        $('#sedimentosDiagram').keyup(function() {
             resultdb[0].fields.predefined_sediment_perc = $('#sedimentosDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });
 
         //Add value entered in nitrogen in the field resultdb
-        $('#nitrogenoDiagram').change(function() {
+        $('#nitrogenoDiagram').keyup(function() {
             resultdb[0].fields.predefined_nitrogen_perc = $('#nitrogenoDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });
 
         //Add value entered in phosphorus in the field resultdb
-        $('#fosforoDiagram').change(function() {
+        $('#fosforoDiagram').keyup(function() {
             resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });
+
+        function Validate(mxCell) {
+            let isConnected = true;
+            // check each cell that each edge connected to
+            for (let i = 0; i < mxCell.getEdgeCount(); i++) {
+                let edge = mxCell.getEdgeAt(i);
+
+                if (edge.target === null) continue; // no target
+                if (mxCell.getId() === edge.target.getId()) continue; // target is mxCell itself
+
+                isConnected = edge.source !== null && edge.target !== null;
+                if (isConnected) {
+                    // remove source cell if found and so on
+                    let sourceIndex = notConnectedCells.findIndex(c => c.id === edge.source.getId());
+                    if (sourceIndex !== -1) notConnectedCells.splice(sourceIndex, 1);
+
+                    let targetIndex = notConnectedCells.findIndex(c => c.id === edge.target.getId());
+                    if (targetIndex !== -1) notConnectedCells.splice(targetIndex, 1);
+
+                    let edgeIndex = notConnectedCells.findIndex(c => c.id === edge.getId());
+                    if (edgeIndex !== -1) notConnectedCells.splice(edgeIndex, 1);
+
+                    // check next cell and its edges
+                    Validate(edge.target);
+                }
+            }
+        }
+
+        function ResetColor(state) {
+            state.shape.node.classList.remove("not_connected");
+            if (state.text)
+                state.text.node.classList.remove("not_connected");
+        }
+
+        function SetNotConnectedColor(state) {
+            for (let i = 0; i < notConnectedCells.length; i++) {
+                let mxCell = notConnectedCells[i];
+                let state = graphView.getState(mxCell);
+                state.shape.node.classList.add("not_connected");
+                if (state.text)
+                    state.text.node.classList.add("not_connected");
+            }
+        }
+
+        document.querySelector("#validate_btn").addEventListener("click", function() {
+
+            let cells = editor.graph.getModel().cells;
+            graphView = editor.graph.getView();
+            notConnectedCells.length = 0;
+            console.log(cells)
+            console.log(graphView)
+
+            // create an array of cells and reset the color
+            for (let key in cells) {
+                if (!cells.hasOwnProperty(key)) continue;
+
+                let mxCell = cells[key];
+                if (!mxCell.isVertex() && !mxCell.isEdge()) continue;
+                notConnectedCells.push(mxCell);
+                let state = graphView.getState(mxCell);
+
+                console.log(state)
+                ResetColor(state);
+            }
+
+            // starts with the parent cell
+            let parentCell = notConnectedCells.find(c => c.id === parentCellId);
+            Validate(parentCell);
+
+            SetNotConnectedColor();
+        })
 
     });
 
