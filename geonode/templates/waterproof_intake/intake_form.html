@@ -107,7 +107,8 @@
     <h1>Create Water Intake</h1>
 </div>
 <!--Begin Form-->
-<form id="form" role="form" action="#" data-toggle="validator">
+<form id="form" method="POST" action="">
+    {% csrf_token %}
     <!--Start smartwizard-->
     <div id="smartwizard">
         <!--panel of navigation-->
@@ -142,7 +143,7 @@
         <div class="tab-content" id="autoAdjustHeightF">
             <!--Step 1-->
             <div id="step-1" class="tab-pane" role="tabpanel">
-                {% csrf_token %}
+                
                 <!--Input Name -->
                 <div id="water_intake">
                     <div id="div_id_name" class="form-group  ">
@@ -150,7 +151,7 @@
                             Nombre
                         </label>
                         <div class="">
-                            <input type="text" name="name" maxlength="100" class=" form-control" required id="id_name">
+                            <input type="text" name="name" maxlength="100" class=" form-control"  id="id_name">
                         </div>
                     </div>
                 </div>
@@ -169,7 +170,7 @@
                         Nombre de la fuente
                     </label>
                     <div class="">
-                        <input type="text" name="water_source_name" maxlength="100" required="" id="id_water_source_name" class=" form-control">
+                        <input type="text" name="water_source_name" maxlength="100" id="id_water_source_name" class=" form-control">
                     </div>
                 </div>
                 <!--Select City-->
@@ -181,6 +182,7 @@
                 </div>
                 <!--Inputs hidden for save data-->
                 <input type="hidden" id="xmlGraph" name="xmlGraph">
+                <input type="hidden" id="graphElements" name="graphElements">
                 <input type="hidden" id="isFile" name="isFile">
                 <input type="hidden" id="typeDelimit" name="typeDelimit">
                 <input type="hidden" id="waterExtraction" name="waterExtraction" value="">
@@ -209,7 +211,7 @@
                             <div class="panel-body" id="graph" tabindex="-1" style="height:790px;width:100%;overflow:hidden;cursor:default;"></div>
                             <span style="float:right;padding-right:36px;">
                                 <input id="getdata" type="checkbox" />Source
-                                <button style="position:absolute; left:300px;padding:8px 40px;background:orangered;color:#fff;outline:none;border:none;z-index:100;" id="validate_btn">Validate</button>
+                                <button type="button" style="position:absolute; left:300px;padding:8px 40px;background:orangered;color:#fff;outline:none;border:none;z-index:100;" id="validate_btn">Validate</button>
                             </span>
                             <textarea id="xml" style="height:480px;width:684px;display:none;border-style:none;"></textarea>
                         </div>
@@ -287,7 +289,7 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <label>Number of years for time series <span class="text-danger-wp">(*)</span> </label>
-                                                <input type="text" class="form-control" id="numberYearsInterpolationValue" required>
+                                                <input type="text" class="form-control" id="numberYearsInterpolationValue">
                                             </div>
                                         </div>
                                     </div>
@@ -296,11 +298,11 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <label>Initial year<span class="text-danger-wp">(*)</span> </label>
-                                                <input type="text" class="form-control" id="initialDataExtractionInterpolationValue" required>
+                                                <input type="text" class="form-control" id="initialDataExtractionInterpolationValue" >
                                             </div>
                                             <div class="col-md-6" id="finalColumnExtraction">
                                                 <label>Final year<span class="text-danger-wp">(*)</span> </label>
-                                                <input type="text" class="form-control" id="finalDataExtractionInterpolationValue" required>
+                                                <input type="text" class="form-control" id="finalDataExtractionInterpolationValue" >
                                             </div>
                                         </div>
                                     </div>
@@ -336,7 +338,7 @@
                                     <p>You can edit the table manually by activating this option.</p>
                                     <div class="form-group">
                                         <label>Number of years <span class="text-danger-wp">(*)</span> </label>
-                                        <input type="text" class="form-control" required id="intakeNIYMI">
+                                        <input type="text" class="form-control"  id="intakeNIYMI">
                                     </div>
                                     <button type="button" class="btn btn-primary" id="intakeNIBYMI">Generate</button>
                                 </div>
@@ -418,7 +420,7 @@
                                     area</button>
                                 </div>
                                 <div class="form-group">
-                                <button type="submit" id="submit" class="btn btn-primary">Submit</button>
+                                <input type="submit" id="submit" class="btn btn-primary" value="Submit"></input>
                                 </div>
                             </div>
                         </div>
@@ -502,11 +504,12 @@
 </script>
 <script src="{{ STATIC_URL }}waterproof_intake/js/intake_create.js"></script>
 <script src="{{ STATIC_URL }}waterproof_intake/js/graph.js"></script>
+<script src="{{ STATIC_URL }}waterproof_intake/js/graphValidations.js"></script>
 <script script src="{{ STATIC_URL }}geonode/js/mxgraph/mxClient.js"></script>
 <script src="{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/js/app.js"></script>
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"
     integrity="sha512-dTu0vJs5ndrd3kPwnYixvOCsvef5SGYW/zSSK4bcjRBcZHzqThq7pt7PmCv55yb8iBvni0TSeIDV8RYKjZL36A=="
-    crossorigin="anonymous"></script>
+    crossorigin="anonymous"></script>-->
 {% endblock %}

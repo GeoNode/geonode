@@ -38,7 +38,9 @@ def create(request):
             interpolationString = request.POST.get('waterExtraction')
             interpolation = json.loads(interpolationString)
             intakeAreaString = request.POST.get('areaGeometry')
-
+            graphElementsString=request.POST.get('graphElements')
+            graphElements = json.loads(graphElementsString)
+            print(graphElements)
             if (isFile == 'true'):
                 # Validate file's extension
                 if (typeDelimitFile == 'geojson'):
@@ -65,6 +67,7 @@ def create(request):
                 years_number=interpolation['yearCount'],
                 is_manual=True,
             )
+            
 
             for extraction in interpolation['yearValues']:
                 water_extraction = WaterExtraction.objects.create(

@@ -531,6 +531,9 @@ INSTALLED_APPS = (
     
     # FAQ
     'ckeditor',
+
+    # Documentation
+    'django_extensions',
     
 )
 
@@ -1222,6 +1225,12 @@ LICENSES = {
     'ENABLED': True,
     'DETAIL': 'above',
     'METADATA': 'verbose',
+}
+
+# graph models
+GRAPH_MODELS = {
+  'all_applications': True,
+  'group_models': True,
 }
 
 SRID = {
@@ -2088,6 +2097,8 @@ MONITORING_DATA_TTL = timedelta(days=int(os.getenv("MONITORING_DATA_TTL", 365)))
 # this will disable csrf check for notification config views,
 # use with caution - for dev purpose only
 MONITORING_DISABLE_CSRF = ast.literal_eval(os.environ.get('MONITORING_DISABLE_CSRF', 'False'))
+
+os.environ["PATH"] += os.pathsep + r'C:\Graphviz\bin'
 
 if MONITORING_ENABLED:
     if 'geonode.monitoring' not in INSTALLED_APPS:
