@@ -345,7 +345,6 @@ function onInit(editor) {
             var node = enc.encode(editor.graph.getModel());
             var textxml = mxUtils.getPrettyXml(node)
             graphData = [];
-            connetion = [];
             node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
                     'id': node.id,
@@ -353,19 +352,19 @@ function onInit(editor) {
                     'external': node.getAttribute('externalData'),
                     'resultdb': node.getAttribute('resultdb'),
                     'varcost': node.getAttribute('varcost'),
-
                 })
             });
 
             node.querySelectorAll('mxCell').forEach(function(node) {
                 if (node.id != "") {
+                    let varcost = Object.values(JSON.parse(node.getAttribute('value')))[1];
                     connetion.push({
                         'id': node.id,
                         'source': node.getAttribute('source'),
                         'target': node.getAttribute('target'),
+                        'varcost': JSON.stringify(varcost)
                     })
                 }
-
             });
             console.log(graphData);
             $('#xmlGraph').val(textxml);
@@ -383,16 +382,16 @@ function onInit(editor) {
             if (selectedCell != undefined) {
                 var varcost = [];
                 varcost.push(
-                    `Q_${idvar}`,
-                    `CSed_${idvar}`,
-                    `CN_${idvar}`,
-                    `CP_${idvar}`,
-                    `WSed_${idvar}`,
-                    `WN_${idvar}`,
-                    `WP_${idvar}`,
-                    `WSed_ret_${idvar}`,
-                    `WN_ret_${idvar}`,
-                    `WP_ret_${idvar}`
+                    `Q_${idvar} (m³)`,
+                    `CSed_${idvar} (mg/l)`,
+                    `CN_${idvar} (mg/l)`,
+                    `CP_${idvar} (mg/l)`,
+                    `WSed_${idvar} (Ton)`,
+                    `WN_${idvar} (Kg)`,
+                    `WP_${idvar} (Kg)`,
+                    `WSed_ret_${idvar} (Ton)`,
+                    `WN_ret_${idvar} (Kg)`,
+                    `WP_ret_${idvar} (Kg)`
                 );
                 selectedCell[0].setAttribute('varcost', JSON.stringify(varcost));
 
@@ -418,8 +417,6 @@ function onInit(editor) {
 
         var resultdb = [];
         var selectedCell;
-        var notConnectedCells = [];
-        var parentCellId = "2";
 
         //Load data from figure to html
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {

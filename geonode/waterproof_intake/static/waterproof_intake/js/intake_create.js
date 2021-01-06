@@ -231,22 +231,6 @@ $(document).ready(function() {
 
 });
 
-$('#btnaddcost').click(function() {
-    for (let index = 0; index < 1; index++) {
-
-        $('#intakeaddcost').append(`<div class="form-group">
-                                    <label for="exampleInputEmail1">Funcion de costo ${index + 1}:</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="Funcion de costo">
-                                        <span class="input-group-btn">
-                                            <a class="btn btn-primary" href="">
-                                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-                                            </a>
-                                        </span>
-                                    </div>
-                                </div>`);
-    }
-});
 
 window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 

@@ -54,9 +54,25 @@ function createPopupMenu(graph, menu, cell, evt) {
 function updateStyleLine(graph, cell, type) {
     let strokeWidth = "4";
     let style = "strokeWidth=" + strokeWidth + ";strokeColor=" + type.color + ";";
+    let idvar = cell.id;
+    console.log(graph);
+    console.log(cell);
+    let varcost = [
+        `Q_${idvar} (m³)`,
+        `CSed_${idvar} (mg/l)`,
+        `CN_${idvar} (mg/l)`,
+        `CP_${idvar} (mg/l)`,
+        `WSed_${idvar} (Ton)`,
+        `WN_${idvar} (Kg)`,
+        `WP_${idvar} (Kg)`,
+        `WSed_ret_${idvar} (Ton)`,
+        `WN_ret_${idvar} (Kg)`,
+        `WP_ret_${idvar} (Kg)`
+    ];
     let value = {
-        "connectorType": type.id
-    }
+        "connectorType": type.id,
+        "varcost": varcost
+    };
     value = JSON.stringify(value);
     cell.setValue(value);
     graph.model.setStyle(cell, style);
