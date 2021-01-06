@@ -161,7 +161,7 @@ $(document).ready(function() {
     });
 
     $('#smartwizard').smartWizard({
-        selected: 1,
+        selected: 0,
         theme: 'dots',
         enableURLhash: false,
         autoAdjustHeight: true,
@@ -230,6 +230,7 @@ $(document).ready(function() {
     observer2.observe(menu1Tab, { attributes: true });
 
 });
+
 
 window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 

@@ -277,7 +277,7 @@
 				<Layer label="Default Layer" id="1">
 					<mxCell parent="0"/>
 				</Layer>
-				<Symbol name="Rio" varcost="[&quot;Q_2&quot;,&quot;CSed_2&quot;,&quot;CN_2&quot;,&quot;CP_2&quot;,&quot;WSed_2&quot;,&quot;WN_2&quot;,&quot;WP_2&quot;,&quot;WSed_ret_2&quot;,&quot;WN_ret_2&quot;,&quot;WP_ret_2&quot;]">
+				<Symbol name="Rio" varcost="[&quot;Q_2 (m³)&quot;,&quot;CSed_2 (mg/l)&quot;,&quot;CN_2 (mg/l)&quot;,&quot;CP_2 (mg/l)&quot;,&quot;WSed_2 (Ton)&quot;,&quot;WN_2 (Kg)&quot;,&quot;WP_2 (Kg)&quot;,&quot;WSed_ret_2 (Ton)&quot;,&quot;WN_ret_2 (Kg)&quot;,&quot;WP_ret_2 (Kg)&quot;]">
 					<mxCell style="rio" vertex="1" parent="1">
 						<mxGeometry x="40" y="30" width="60" height="60" as="geometry" />
 					</mxCell>
