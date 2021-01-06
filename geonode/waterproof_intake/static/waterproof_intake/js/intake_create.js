@@ -120,10 +120,10 @@ $(document).ready(function() {
         for (let index = 0; index < numberYearsInterpolationValue; index++) {
             $('#intakeEITA').append(`<tr>
                   <th class="text-center" scope="col">${index+1}</th>
-                  <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                  <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                  <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
-                  <td class="text-center" scope="col"><input type="text" class="form-control" required></td>
+                  <td class="text-center" scope="col"><input type="text" class="form-control" ></td>
+                  <td class="text-center" scope="col"><input type="text" class="form-control" ></td>
+                  <td class="text-center" scope="col"><input type="text" class="form-control" ></td>
+                  <td class="text-center" scope="col"><input type="text" class="form-control" ></td>
               </tr>`);
         }
         // Set object data for later persistence
@@ -148,7 +148,7 @@ $(document).ready(function() {
             $('#intakeWEMI').append(`<div class="form-group">
                 <label class="col-sm-1 control-label">${index + 1}</label>
                 <div class="col-sm-11">
-                    <input type="text" class="form-control" required>
+                    <input type="text" class="form-control">
                 </div>
             </div>`);
         }
@@ -213,9 +213,6 @@ $(document).ready(function() {
     $("#validateBtn").on("click", validateCoordinateWithApi);
     $('#btnDelimitArea').on("click", delimitIntakeArea)
     $('#btnValidateArea').on("click", validateIntakeArea)
-    $('#btnSaveGraph').on("click", function() {
-        $('#xmlGraph').val(xmlGraph);
-    })
     if (!mapLoader) {
         mapLoader = L.control.loader().addTo(map);
     }
