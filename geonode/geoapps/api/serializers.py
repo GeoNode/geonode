@@ -93,7 +93,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
         'owner' not in validated_data:
             raise ValidationError("No valid data: 'name' and 'owner' are mandatory fields!")
 
-        if GeoApp.objects.filter(name=validated_data['name']).count():
+        if self.Meta.model.objects.filter(name=validated_data['name']).count():
             raise ValidationError("A GeoApp with the same 'name' already exists!")
 
         # Extract users' profiles
@@ -115,7 +115,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
             _data = validated_data.pop('blob')
 
         # Create a new instance
-        _instance = GeoApp.objects.create(**validated_data)
+        _instance = self.Meta.model.objects.create(**validated_data)
 
         if _instance and _data:
             try:
@@ -149,7 +149,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
             _data = validated_data.pop('blob')
 
         try:
-            GeoApp.objects.filter(pk=instance.id).update(**validated_data)
+            self.Meta.model.objects.filter(pk=instance.id).update(**validated_data)
             instance.refresh_from_db()
         except Exception as e:
             raise ValidationError(e)
