@@ -215,6 +215,14 @@
                             </span>
                             <textarea id="xml" style="height:480px;width:684px;display:none;border-style:none;"></textarea>
                         </div>
+                          <div class="panel panel-danger">
+                            <div class="panel-body">
+                                <h4 class="text-primary">Funciones de costo</h4>
+                                <div id="funcostgenerate">
+                               
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <!--Panel Information Right-->
                     <div class="col-md-4">
@@ -238,10 +246,6 @@
                                 <div class="form-group">
                                     <label >Concentración de Fósforo:</label>
                                     <input type="number" id="fosforoDiagram" class="form-control">
-                                </div>
-                                <h4 class="text-primary">Funciones de costo</h4>
-                                <div id="intakeaddcost">
-
                                 </div>
                                 <hr>
                                 <div class="form-group">
@@ -462,19 +466,21 @@
       </div>
       <div class="row">
         <div class="col-md-12">
-            <h5 class="text-primary">Expretion</h5>
+            <h5 class="text-primary">Math expression</h5>
             <textarea class="form-control" id="inputMathAscii"></textarea>
         </div>
       </div>
       <div class="row">
         <div class="col-md-12">
       <h5 class="text-primary">Rendering</h5>
-      <button type="button" class="btn btn-link btn-block" id="RenderingMathAscii"></button>
+      <div id="RenderingMathAscii">
+
+      </div>
       </div>
      </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-danger">Valide and add cost</button>
+        <button type="button" class="btn btn-danger" id="saveAndValideCost">Valide and add cost</button>
       </div>
     </div>
     </div>
