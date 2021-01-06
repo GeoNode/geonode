@@ -17,20 +17,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import six
 import json
-
-from django.contrib.auth import get_user_model
-
-from rest_framework.serializers import ValidationError
-
-from dynamic_rest.serializers import DynamicModelSerializer
-from dynamic_rest.fields.fields import DynamicRelationField
-
-from geonode.geoapps.models import GeoApp, GeoAppData
-from geonode.base.api.serializers import ResourceBaseSerializer
-
 import logging
+
+import six
+from django.contrib.auth import get_user_model
+from dynamic_rest.fields.fields import DynamicRelationField
+from dynamic_rest.serializers import DynamicModelSerializer
+from geonode.base.api.serializers import ResourceBaseSerializer
+from geonode.geoapps.models import GeoApp, GeoAppData
+from rest_framework.serializers import ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +86,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
     def create(self, validated_data):
         # Sanity checks
         if 'name' not in validated_data or \
-        'owner' not in validated_data:
+                'owner' not in validated_data:
             raise ValidationError("No valid data: 'name' and 'owner' are mandatory fields!")
 
         if self.Meta.model.objects.filter(name=validated_data['name']).count():
