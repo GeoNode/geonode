@@ -60,6 +60,17 @@ class SystemCosts(models.Model):
 
 
 class ElementSystem(models.Model):
+
+    name = models.CharField(
+        max_length=100,
+        verbose_name=_('Name'),
+    )
+
+    normalized_category = models.CharField(
+        max_length=100,
+        verbose_name=_('Normalized category')
+    )
+
     origin = models.IntegerField(
         default=1980,
         verbose_name=_('Year'),
@@ -70,6 +81,24 @@ class ElementSystem(models.Model):
         verbose_name=_('Year'),
     )
 
+    sediment = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
+        verbose_name=_('Extraction value')
+    )
+
+    nitrogen = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
+        verbose_name=_('Extraction value')
+    )
+
+    phosphorus = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
+        verbose_name=_('Extraction value')
+    )
+    """
     user_cost = models.ManyToManyField(
         UserCosts,
     )
@@ -77,7 +106,7 @@ class ElementSystem(models.Model):
     system_cost = models.ManyToManyField(
         SystemCosts,
     )
-
+    """
 
 class ProcessEfficiencies(models.Model):
 
