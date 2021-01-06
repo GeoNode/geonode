@@ -92,16 +92,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
 
         return data
 
-    def create(self, validated_data):
-        # Sanity checks
-        if 'name' not in validated_data or \
-                'owner' not in validated_data:
-            raise ValidationError("No valid data: 'name' and 'owner' are mandatory fields!")
-
-        if self.Meta.model.objects.filter(name=validated_data['name']).count():
-            raise ValidationError("A GeoApp with the same 'name' already exists!")
-
-        # Extract users' profiles
+    def extra_update_checks(self, validated_data):
         _user_profiles = {}
         for _key, _value in validated_data.items():
             if _key in ('owner', 'poc', 'metadata_owner'):
@@ -114,6 +105,15 @@ class GeoAppSerializer(ResourceBaseSerializer):
             else:
                 raise ValidationError("The specified '{}' does not exist!".format(_key))
 
+    def extra_create_checks(self, validated_data):
+        if 'name' not in validated_data or \
+                'owner' not in validated_data:
+            raise ValidationError("No valid data: 'name' and 'owner' are mandatory fields!")
+
+        if self.Meta.model.objects.filter(name=validated_data['name']).count():
+            raise ValidationError("A GeoApp with the same 'name' already exists!")
+
+        self.extra_update_checks(validated_data)
         # Extract JSON blob
         _data = None
         if 'blob' in validated_data:
