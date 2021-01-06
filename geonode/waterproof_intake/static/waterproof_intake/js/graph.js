@@ -268,18 +268,80 @@ function onInit(editor) {
     $(document).ready(function() {
 
         var graphData = [];
-		/**
+        var connetion = [];
+
+        /**
          * Button to save 
          * data on graphData
          * xml on textxml
          */
+
+        $('#inputMathAscii').keyup(function() {
+            $('#RenderingMathAscii').text(`'math' ${$(this).val()} 'math'`);
+            MathJax.typeset()
+        });
+
+        $('#ModalAddCostBtn').click(function() {
+
+            $('#VarCostListGroup div').remove();
+            for (const index of graphData) {
+                tmp = JSON.parse(index.varcost);
+                $('#VarCostListGroup').append(`
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#VarCostListGroup" href="#VarCostListGroup_${index.id}">${index.id} - ${ index.name }</a>
+                        </h4>
+                    </div>
+                    <div id="VarCostListGroup_${index.id}" class="panel-collapse collapse">
+                        <div class="panel-body">
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[0]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[1]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[2]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[3]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[4]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[5]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[6]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[7]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[8]}</a>
+                        <a href="#" class="list-group-item list-group-item-action">${tmp[9]}</a>
+                        </div>
+                    </div>
+                </div>
+                `);
+            }
+            /*
+            for (let index = 0; index < graphData.length; index++) {
+                tmp = JSON.parse(graphData[index].varcost)
+                $('#VarCostListGroup').html(`
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action active">
+                        ${ graphData[index].name }
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[0]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[1]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[2]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[3]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[4]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[5]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[6]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[7]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[8]}</a>
+                    <a href="#" class="list-group-item list-group-item-action">${tmp[9]}</a>
+                </div>
+                `)
+            }*/
+
+        });
+
+
         $('#saveGraph').click(function() {
             var enc = new mxCodec();
             var node = enc.encode(editor.graph.getModel());
             var textxml = mxUtils.getPrettyXml(node)
 
             graphData = [];
-            var connetion = [];
+            connetion = [];
             node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
                     'id': node.id,
@@ -287,7 +349,7 @@ function onInit(editor) {
                     'external': node.getAttribute('externalData'),
                     'resultdb': node.getAttribute('resultdb'),
                     'quantity': node.getAttribute('quantity'),
-
+                    'varcost': node.getAttribute('varcost'),
                 })
             });
 
@@ -305,30 +367,30 @@ function onInit(editor) {
 
 
             console.log(graphData);
-            console.log(textxml);
-            console.log(connetion);
+            //console.log(textxml);
+            //console.log(connetion);
         });
 
 
-         //load data when add an object in a diagram
+        //load data when add an object in a diagram
         editor.graph.addListener(mxEvent.ADD_CELLS, function(sender, evt) {
 
             var selectedCell = evt.getProperty("cells");
             var idvar = selectedCell[0].id;
             if (selectedCell != undefined) {
                 var varcost = [];
-                varcost.push({
-                    'annual_water_volume': `Q_${idvar}`,
-                    'sediment_concentration': `CSed_${idvar}`,
-                    'nitrogen_concentration': `CN_${idvar}`,
-                    'phosphorus_concentration': `CP_${idvar}`,
-                    'sediment_load': `WSed_${idvar}`,
-                    'nitrogen_load': `WN_${idvar}`,
-                    'phosphorus_load': `WP_${idvar}`,
-                    'retained_sediment_load': `WSed_ret_${idvar}`,
-                    'retained_nitrogen_load': `WN_ret_${idvar}`,
-                    'retained_phosphorus_charge': `WP_ret_${idvar}`
-                });
+                varcost.push(
+                    `Q_${idvar}`,
+                    `CSed_${idvar}`,
+                    `CN_${idvar}`,
+                    `CP_${idvar}`,
+                    `WSed_${idvar}`,
+                    `WN_${idvar}`,
+                    `WP_${idvar}`,
+                    `WSed_ret_${idvar}`,
+                    `WN_ret_${idvar}`,
+                    `WP_ret_${idvar}`
+                );
                 selectedCell[0].setAttribute('varcost', JSON.stringify(varcost));
 
                 $.ajax({
@@ -377,19 +439,19 @@ function onInit(editor) {
         });
 
         //Add value entered in sediments in the field resultdb
-        $('#sedimentosDiagram').change(function() {
+        $('#sedimentosDiagram').keyup(function() {
             resultdb[0].fields.predefined_sediment_perc = $('#sedimentosDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });
 
         //Add value entered in nitrogen in the field resultdb
-        $('#nitrogenoDiagram').change(function() {
+        $('#nitrogenoDiagram').keyup(function() {
             resultdb[0].fields.predefined_nitrogen_perc = $('#nitrogenoDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });
 
         //Add value entered in phosphorus in the field resultdb
-        $('#fosforoDiagram').change(function() {
+        $('#fosforoDiagram').keyup(function() {
             resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });

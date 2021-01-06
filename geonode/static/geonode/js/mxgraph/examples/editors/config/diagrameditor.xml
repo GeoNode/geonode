@@ -271,7 +271,7 @@
 				<Layer label="Default Layer" id="1">
 					<mxCell parent="0"/>
 				</Layer>
-				<Symbol name="Rio" varcost="[{&quot;annual_water_volume&quot;:&quot;Q_2&quot;,&quot;sediment_concentration&quot;:&quot;CSed_2&quot;,&quot;nitrogen_concentration&quot;:&quot;CN_2&quot;,&quot;phosphorus_concentration&quot;:&quot;CP_2&quot;,&quot;sediment_load&quot;:&quot;WSed_2&quot;,&quot;nitrogen_load&quot;:&quot;WN_2&quot;,&quot;phosphorus_load&quot;:&quot;WP_2&quot;,&quot;retained_sediment_load&quot;:&quot;WSed_ret_2&quot;,&quot;retained_nitrogen_load&quot;:&quot;WN_ret_2&quot;,&quot;retained_phosphorus_charge&quot;:&quot;WP_ret_2&quot;}]">
+				<Symbol name="Rio" varcost="[&quot;Q_2&quot;,&quot;CSed_2&quot;,&quot;CN_2&quot;,&quot;CP_2&quot;,&quot;WSed_2&quot;,&quot;WN_2&quot;,&quot;WP_2&quot;,&quot;WSed_ret_2&quot;,&quot;WN_ret_2&quot;,&quot;WP_ret_2&quot;]">
 					<mxCell style="rio" vertex="1" parent="1">
 						<mxGeometry x="40" y="30" width="60" height="60" as="geometry" />
 					</mxCell>

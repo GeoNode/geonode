@@ -18,7 +18,7 @@
         },
         asciimath: {
             delimiters: [
-                ['`math`', '`math`']
+                ["'math'", "'math'"]
             ]
         }
     };
@@ -243,7 +243,7 @@
                                 </div>
                                 <hr>
                                 <div class="form-group">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Add Cost</button>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id="ModalAddCostBtn">Add Cost</button>
                                     <button type="button" class="btn btn-primary" id="saveGraph">Save Graph</button>
                                 </div>
                             </div>
@@ -440,48 +440,34 @@
       <div class="modal-body">
       <div class="row">
         <div class="col-md-6">
-            <div class="list-group">
-            <a href="#" class="list-group-item list-group-item-action active">
-                Rio
-            </a>
-            <a href="#" class="list-group-item list-group-item-action">CL1</a>
-            <a href="#" class="list-group-item list-group-item-action">WSED_RES1</a>
+        
+            <div class="panel-group" id="VarCostListGroup">
+                
             </div>
-            <div class="list-group">
-            <a href="#" class="list-group-item list-group-item-action active">
-                Conexion
-            </a>
-            <a href="#" class="list-group-item list-group-item-action">WN_2</a>
-            <a href="#" class="list-group-item list-group-item-action">WP_RET_2</a>
-            </div>
+
+            
         </div>
         <div class="col-md-6">
-        <div class="form-group">
-            <label>Cost function name</label>
-            <textarea rows="4" class="form-control"></textarea>
-        </div>
             <div class="form-group">
-            <label>Cost function description</label>
-            <textarea rows="4" class="form-control"></textarea>
-        </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12">
-            <h5 class="text-primary">Internal Math</h5>
-            <button type="button" class="btn btn-link">`math` sum `math`</button>
-            <button type="button" class="btn btn-link">`math` int `math`</button>
-            <button type="button" class="btn btn-link">`math` sqrt x `math`</button>
-            <button type="button" class="btn btn-link">`math` gamma `math`</button>
-            <button type="button" class="btn btn-link">`math` alpha `math`</button>
+                <label>Cost function name</label>
+                <textarea rows="4" class="form-control"></textarea>
+            </div>
+                <div class="form-group">
+                <label>Cost function description</label>
+                <textarea rows="4" class="form-control"></textarea>
+            </div>
         </div>
       </div>
       <div class="row">
         <div class="col-md-12">
-      <h5 class="text-primary">Value</h5>
-      <button type="button" class="btn btn-link">`math`  \left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right) `math`</button>
-      <p></p>
-      <textarea class="form-control"></textarea>
+            <h5 class="text-primary">Expretion</h5>
+            <textarea class="form-control" id="inputMathAscii"></textarea>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+      <h5 class="text-primary">Rendering</h5>
+      <button type="button" class="btn btn-link btn-block" id="RenderingMathAscii"></button>
       </div>
      </div>
       <div class="modal-footer">
