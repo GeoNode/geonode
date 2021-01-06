@@ -38,6 +38,11 @@ function onInit(editor) {
     // Clones the source if new connection has no target
     editor.graph.connectionHandler.setCreateTarget(true);
 
+    // Installs a popupmenu handler using local function (see below).
+    editor.graph.popupMenuHandler.factoryMethod = function(menu, cell, evt){
+        return createPopupMenu(editor.graph, menu, cell, evt);
+    };
+
     // Updates the title if the root changes
     var title = document.getElementById('title');
 
