@@ -55,8 +55,6 @@ function updateStyleLine(graph, cell, type) {
     let strokeWidth = "4";
     let style = "strokeWidth=" + strokeWidth + ";strokeColor=" + type.color + ";";
     let idvar = cell.id;
-    console.log(graph);
-    console.log(cell);
     let varcost = [
         `Q_${idvar} (m³)`,
         `CSed_${idvar} (mg/l)`,

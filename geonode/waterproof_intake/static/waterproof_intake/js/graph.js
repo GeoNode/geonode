@@ -366,7 +366,7 @@ function onInit(editor) {
                     })
                 }
             });
-            console.log(graphData);
+            //console.log(graphData);
             $('#xmlGraph').val(textxml);
             $('#graphElements').val(JSON.stringify(graphData));
             //console.log(textxml);
