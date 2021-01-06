@@ -59,6 +59,15 @@ class GeoAppDataSerializer(DynamicModelSerializer):
 
 
 class GeoAppSerializer(ResourceBaseSerializer):
+    """
+     - Deferred / not Embedded --> ?include[]=data
+    """
+    data = GeoAppDataField(
+        GeoAppDataSerializer,
+        source='id',
+        many=False,
+        embed=False,
+        deferred=True)
 
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
@@ -160,13 +169,3 @@ class GeoAppSerializer(ResourceBaseSerializer):
 
         instance.save()
         return instance
-
-    """
-     - Deferred / not Embedded --> ?include[]=data
-    """
-    data = GeoAppDataField(
-        GeoAppDataSerializer,
-        source='id',
-        many=False,
-        embed=False,
-        deferred=True)
