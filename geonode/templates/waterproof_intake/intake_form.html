@@ -93,12 +93,6 @@
     vertical-align: middle;
     }
 
-    .not_connected * {
-        color: red;
-        font-color: red;
-        stroke: red;
-        stroke-color: red;
-    }
 </style>
 {% endblock %}
 {% block body_outer %}
@@ -107,7 +101,7 @@
     <h1>Create Water Intake</h1>
 </div>
 <!--Begin Form-->
-<form id="form" role="form" action="#" data-toggle="validator">
+<form id="form" metod="POST" role="form" action="" data-toggle="validator">
     <!--Start smartwizard-->
     <div id="smartwizard">
         <!--panel of navigation-->
@@ -205,36 +199,40 @@
                 <div class="row">
                     <!--Graph-->
                     <div class="col-md-8">
-                        <div class="panel panel-danger">
+                        <div class="panel panel-info">
                             <div class="panel-body" id="graph" tabindex="-1" style="height:790px;width:100%;overflow:hidden;cursor:default;"></div>
                             <span style="float:right;padding-right:36px;">
                                 <input id="getdata" type="checkbox" />Source
-                                <button style="position:absolute; left:300px;padding:8px 40px;background:orangered;color:#fff;outline:none;border:none;z-index:100;" id="validate_btn">Validate</button>
-                            </span>
+                                </span>
                             <textarea id="xml" style="height:480px;width:684px;display:none;border-style:none;"></textarea>
                         </div>
                     </div>
                     <!--Panel Information Right-->
                     <div class="col-md-4">
-                        <div class="panel panel-default">
+                        <div class="panel panel-info">
                             <div class="panel-body">
                                 <!--Figure Name-->
                                 <div class="alert alert-info" role="alert">
                                     <h1 class="text-center" id="titleDiagram"></h1>
                                 </div>
+                                <!--Water transport-->
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">% de agua transportada:</label>
+                                    <input type="number" id="aguaDiagram" min="" max="" class="form-control">
+                                </div>
                                 <!--Sediments-->
                                 <div class="form-group">
-                                    <label>Concentración de Sedimentos:</label>
-                                    <input type="number" id="sedimentosDiagram" class="form-control">
+                                    <label for="exampleInputEmail1">% de Sedimentos retenidos:</label>
+                                    <input type="number" id="sedimentosDiagram" min="" max="" class="form-control">
                                 </div>
                                 <!--Nitrogen-->
                                 <div class="form-group">
-                                    <label >Concentración de Nitrógeno:</label>
+                                    <label for="exampleInputEmail1">% de Nitrógeno retenido:</label>
                                     <input type="number" id="nitrogenoDiagram" class="form-control">
                                 </div>
                                 <!--Phosphorus-->
                                 <div class="form-group">
-                                    <label >Concentración de Fósforo:</label>
+                                    <label for="exampleInputEmail1">% de Fósforo retenido:</label>
                                     <input type="number" id="fosforoDiagram" class="form-control">
                                 </div>
                                 <h2 for="exampleInputEmail1">Funciones de costo</h2>

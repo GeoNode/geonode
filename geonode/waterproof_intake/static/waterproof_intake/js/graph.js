@@ -38,7 +38,7 @@ function onInit(editor) {
     editor.graph.connectionHandler.setCreateTarget(true);
 
     // Installs a popupmenu handler using local function (see below).
-    editor.graph.popupMenuHandler.factoryMethod = function(menu, cell, evt){
+    editor.graph.popupMenuHandler.factoryMethod = function(menu, cell, evt) {
         return createPopupMenu(editor.graph, menu, cell, evt);
     };
 
@@ -343,19 +343,21 @@ function onInit(editor) {
         $('#saveGraph').click(function() {
             var enc = new mxCodec();
             var node = enc.encode(editor.graph.getModel());
-            graphData = [];
-            connetion = [];
+            var textxml = mxUtils.getPrettyXml(node)
+
+            var graphData = [];
             node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
                     'id': node.id,
                     "name": node.getAttribute('name'),
                     'external': node.getAttribute('externalData'),
                     'resultdb': node.getAttribute('resultdb'),
-                    'quantity': node.getAttribute('quantity'),
                     'varcost': node.getAttribute('varcost'),
+
                 })
             });
 
+            var connetion = [];
             node.querySelectorAll('mxCell').forEach(function(node) {
                 if (node.id != "") {
                     connetion.push({
@@ -366,8 +368,6 @@ function onInit(editor) {
                 }
 
             });
-
-
 
             console.log(graphData);
             //console.log(textxml);
@@ -428,10 +428,13 @@ function onInit(editor) {
                 resultdb = JSON.parse(selectedCell.getAttribute('resultdb'));
                 $('#titleDiagram').text(resultdb[0].fields.categorys);
                 // Add Value to Panel Information Right on HTML
+                $('#aguaDiagram').val(resultdb[0].fields.predefined_transp_water_perc);
                 $('#sedimentosDiagram').val(resultdb[0].fields.predefined_sediment_perc);
                 $('#nitrogenoDiagram').val(resultdb[0].fields.predefined_nitrogen_perc);
                 $('#fosforoDiagram').val(resultdb[0].fields.predefined_phosphorus_perc);
                 // Add Validator 
+                $('#aguaDiagram').attr('min', resultdb[0].fields.minimal_transp_water_perc);
+                $('#aguaDiagram').attr('max', resultdb[0].fields.maximal_transp_water_perc);
                 $('#sedimentosDiagram').attr('min', resultdb[0].fields.minimal_sediment_perc);
                 $('#sedimentosDiagram').attr('max', resultdb[0].fields.maximal_sediment_perc);
                 $('#nitrogenoDiagram').attr('min', resultdb[0].fields.minimal_nitrogen_perc);
@@ -459,7 +462,7 @@ function onInit(editor) {
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });
 
-        function Validate(mxCell) {
+        /*function Validate(mxCell) {
             let isConnected = true;
             // check each cell that each edge connected to
             for (let i = 0; i < mxCell.getEdgeCount(); i++) {
@@ -484,51 +487,7 @@ function onInit(editor) {
                     Validate(edge.target);
                 }
             }
-        }
-
-        function ResetColor(state) {
-            state.shape.node.classList.remove("not_connected");
-            if (state.text)
-                state.text.node.classList.remove("not_connected");
-        }
-
-        function SetNotConnectedColor(state) {
-            for (let i = 0; i < notConnectedCells.length; i++) {
-                let mxCell = notConnectedCells[i];
-                let state = graphView.getState(mxCell);
-                state.shape.node.classList.add("not_connected");
-                if (state.text)
-                    state.text.node.classList.add("not_connected");
-            }
-        }
-
-        document.querySelector("#validate_btn").addEventListener("click", function() {
-
-            let cells = editor.graph.getModel().cells;
-            graphView = editor.graph.getView();
-            notConnectedCells.length = 0;
-            console.log(cells)
-            console.log(graphView)
-
-            // create an array of cells and reset the color
-            for (let key in cells) {
-                if (!cells.hasOwnProperty(key)) continue;
-
-                let mxCell = cells[key];
-                if (!mxCell.isVertex() && !mxCell.isEdge()) continue;
-                notConnectedCells.push(mxCell);
-                let state = graphView.getState(mxCell);
-
-                console.log(state)
-                ResetColor(state);
-            }
-
-            // starts with the parent cell
-            let parentCell = notConnectedCells.find(c => c.id === parentCellId);
-            Validate(parentCell);
-
-            SetNotConnectedColor();
-        })
+        }*/
 
     });
 
