@@ -105,8 +105,46 @@ function onInit(editor) {
     // XML and graphical display
     var textNode = document.getElementById('xml');
     var graphNode = editor.graph.container;
-
     var parent = editor.graph.getDefaultParent();
+    var xmlDocument = mxUtils.createXmlDocument();
+    var sourceNode = xmlDocument.createElement('Symbol');
+    var sourceNode1 = xmlDocument.createElement('Symbol');
+
+
+    //Create River at the beginning of the diagram
+    var river = editor.graph.insertVertex(parent, null, sourceNode1, 40, 30, 60, 60);
+    river.setAttribute('name', 'River');
+    editor.graph.model.setStyle(river, 'rio');
+    river.setAttribute('varcost', [
+        `Q_${river.id} (m³)`, `CSed_${river.id} (mg/l)`,
+        `CN_${river.id} (mg/l)`, `CP_${river.id} (mg/l)`,
+        `WSed_${river.id} (Ton)`, `WN_${river.id} (Kg)`,
+        `WP_${river.id} (Kg)`, `WSed_ret_${river.id} (Ton)`,
+        `WN_ret_${river.id} (Kg)`, `WP_ret_${river.id} (Kg)`
+    ]);
+
+    //Create CSINFRA at the beginning of the diagram
+    var vertex = editor.graph.insertVertex(parent, null, sourceNode, 500, 30, 60, 60);
+    vertex.setAttribute('name', 'CSINFRA');
+    editor.graph.model.setStyle(vertex, 'csinfra');
+    var varcost = [
+        `Q_${vertex.id} (m³)`, `CSed_${vertex.id} (mg/l)`,
+        `CN_${vertex.id} (mg/l)`, `CP_${vertex.id} (mg/l)`,
+        `WSed_${vertex.id} (Ton)`, `WN_${vertex.id} (Kg)`,
+        `WP_${vertex.id} (Kg)`, `WSed_ret_${vertex.id} (Ton)`,
+        `WN_ret_${vertex.id} (Kg)`, `WP_ret_${vertex.id} (Kg)`
+    ];
+
+
+    $.ajax({
+        url: `/intake/loadProcess/CSINFRA`,
+        success: function(result) {
+            vertex.setAttribute('varcost', varcost);
+            vertex.setAttribute('resultdb', result);
+        }
+    });
+
+
 
     var edge = editor.graph.insertEdge(parent, null, '', parent.children[0], parent.children[1]);
     let value = { "connectorType": connectionsType.EC.id };
@@ -115,7 +153,7 @@ function onInit(editor) {
 
     // Source nodes needs 1..2 connected Targets
     editor.graph.multiplicities.push(new mxMultiplicity(
-        true, 'Symbol', 'name', 'Rio', 1, 2, ['Symbol'],
+        true, 'Symbol', 'name', 'River', 1, 2, ['Symbol'],
         'Rio Must Have 1 or more Elements',
         'Source Must Connect to Target'));
 
@@ -381,7 +419,7 @@ function onInit(editor) {
             $('#xmlGraph').val(textxml);
             $('#graphElements').val(JSON.stringify(graphData));
             //console.log(textxml);
-            //console.log(connetion);
+           // console.log(connetion);
         });
 
         //load data when add an object in a diagram
@@ -428,30 +466,10 @@ function onInit(editor) {
         //Load data from figure to html
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
             selectedCell = evt.getProperty("cell");
-            if (selectedCell != undefined) {
-                if (selectedCell.getAttribute('resultdb') == undefined) return;
-                resultdb = JSON.parse(selectedCell.getAttribute('resultdb'));
-                if (resultdb.length == 0) return;
-                $('#titleDiagram').text(resultdb[0].fields.categorys);
-                // Add Value to Panel Information Right on HTML
-                $('#aguaDiagram').val(resultdb[0].fields.predefined_transp_water_perc);
-                $('#sedimentosDiagram').val(resultdb[0].fields.predefined_sediment_perc);
-                $('#nitrogenoDiagram').val(resultdb[0].fields.predefined_nitrogen_perc);
-                $('#fosforoDiagram').val(resultdb[0].fields.predefined_phosphorus_perc);
-                // Add Validator 
-                $('#aguaDiagram').attr('min', resultdb[0].fields.minimal_transp_water_perc);
-                $('#aguaDiagram').attr('max', resultdb[0].fields.maximal_transp_water_perc);
-                $('#sedimentosDiagram').attr('min', resultdb[0].fields.minimal_sediment_perc);
-                $('#sedimentosDiagram').attr('max', resultdb[0].fields.maximal_sediment_perc);
-                $('#nitrogenoDiagram').attr('min', resultdb[0].fields.minimal_nitrogen_perc);
-                $('#nitrogenoDiagram').attr('max', resultdb[0].fields.maximal_nitrogen_perc);
-                $('#fosforoDiagram').attr('min', resultdb[0].fields.minimal_phosphorus_perc);
-                $('#fosforoDiagram').attr('max', resultdb[0].fields.maximal_phosphorus_perc);
-
-                funcost('((11126.6*text(Q)) + 30939.7)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))');
-            }
-
-
+            // Clear Inputs
+            clearDataHtml(selectedCell, evt);
+            //console.log(selectedCell)
+            if (selectedCell != undefined) addData(selectedCell);
         });
 
         //Add value entered in sediments in the field resultdb
