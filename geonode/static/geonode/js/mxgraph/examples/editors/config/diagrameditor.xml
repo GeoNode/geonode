@@ -136,7 +136,7 @@
 			}
 		]]></add>
 		<mxStylesheet as="stylesheet">
-				<add as="rio">
+			<add as="rio">
 				<add as="shape" value="image"/>
 				<add as="perimeter" value="rectanglePerimeter"/>
 				<add as="fontSize" value="10"/>
@@ -277,7 +277,7 @@
 				<Layer label="Default Layer" id="1">
 					<mxCell parent="0"/>
 				</Layer>
-				<Symbol name="Rio" varcost="[&quot;Q_2&quot;,&quot;CSed_2&quot;,&quot;CN_2&quot;,&quot;CP_2&quot;,&quot;WSed_2&quot;,&quot;WN_2&quot;,&quot;WP_2&quot;,&quot;WSed_ret_2&quot;,&quot;WN_ret_2&quot;,&quot;WP_ret_2&quot;]">
+				<Symbol name="Rio" varcost="[&quot;Q_2 (m³)&quot;,&quot;CSed_2 (mg/l)&quot;,&quot;CN_2 (mg/l)&quot;,&quot;CP_2 (mg/l)&quot;,&quot;WSed_2 (Ton)&quot;,&quot;WN_2 (Kg)&quot;,&quot;WP_2 (Kg)&quot;,&quot;WSed_ret_2 (Ton)&quot;,&quot;WN_ret_2 (Kg)&quot;,&quot;WP_ret_2 (Kg)&quot;]">
 					<mxCell style="rio" vertex="1" parent="1">
 						<mxGeometry x="40" y="30" width="60" height="60" as="geometry" />
 					</mxCell>
@@ -286,36 +286,7 @@
 		</mxGraphModel>
 	</mxGraph>
 	<mxDefaultToolbar as="toolbar">
-	<!--conectores-->
-		<!--<add as="connect" mode="connect" icon="/static/mxgraph/images/connect.gif"><![CDATA[
-			function (editor)
-			{
-				if (editor.defaultEdge != null)
-				{
-					editor.defaultEdge.style = null;
-				}
-			}
-		]]></add>
-		<add as="connect" mode="connect" icon="/static/mxgraph/images/straight.gif"><![CDATA[
-			function (editor)
-			{
-				if (editor.defaultEdge != null)
-				{
-					editor.defaultEdge.style = 'straightConnector';
-				}
-			}
-		]]></add>
-		<add as="connect" mode="connect" icon="/static/mxgraph/images/arrow.gif"><![CDATA[
-			function (editor)
-			{
-				if (editor.defaultEdge != null)
-				{
-					editor.defaultEdge.style = 'arrowConnector';
-				}
-			}
-		]]></add>-->
-
-		<!--<add as="Rio" template="rio" width="32" height="32" icon="/static/mxgraph/images/waterproof/01-rio.png"/-->
+		<add as="Empty" template="empty" icon="/static/geonode/js/mxgraph/examples/editors/images/loading.gif"/>
 		<add as="Embalse" template="embalse" icon="/static/mxgraph/images/waterproof/02 EMBALSE.png"/>
 		<add as="Bombeo" template="bombeo"  width="32" height="32" icon="/static/mxgraph/images/waterproof/03 BOMBEO.svg"/>
 		<add as="Reservorio Agua" template="reservorioagua" width="32" height="32" icon="/static/mxgraph/images/waterproof/04 RESERVORIO AGUA.svg"/>
