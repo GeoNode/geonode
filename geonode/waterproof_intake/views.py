@@ -38,6 +38,7 @@ def create(request):
             interpolation = json.loads(interpolationString)
             intakeAreaString = request.POST.get('areaGeometry')
             graphElementsString = request.POST.get('graphElements')
+            print(graphElementsString)
             graphElements = json.loads(graphElementsString)
             if (isFile == 'true'):
                 # Validate file's extension
