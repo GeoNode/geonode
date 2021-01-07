@@ -471,7 +471,7 @@ function onInit(editor) {
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
             selectedCell = evt.getProperty("cell");
             // Clear Inputs
-            clearDataHtml(selectedCell, evt);
+            if (selectedCell != undefined) clearDataHtml(selectedCell, evt);
             //console.log(selectedCell)
             if (selectedCell != undefined) addData(selectedCell);
             funcost('((11126.6*text(Q)) + 30939.7)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))');

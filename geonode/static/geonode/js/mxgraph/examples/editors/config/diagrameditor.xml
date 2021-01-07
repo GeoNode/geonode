@@ -67,20 +67,6 @@
 				</mxCell>
 			</Symbol>
 		</add>
-		<add as="tuberia">
-			<Symbol name="Tubería">
-				<mxCell vertex="1" style="tuberia" dbreference="TUBERIA">      
-					<mxGeometry as="geometry" width="60" height="60"/>
-				</mxCell>
-			</Symbol>
-		</add>
-		<add as="canal">
-			<Symbol name="Canal">
-				<mxCell vertex="1" style="canal" dbreference="CANAL">      
-					<mxGeometry as="geometry" width="60" height="60"/>
-				</mxCell>
-			</Symbol>
-		</add>
 		<add as="csinfra">
 			<Symbol name="CSINFRA">
 				<mxCell vertex="1" style="csinfra" dbreference="">      
@@ -199,22 +185,6 @@
 				<add as="verticalAlign" value="middle"/>
 				<add as="image" value="/static/mxgraph/images/waterproof/09-camara-quiebre.svg"/>
 			</add>
-			<add as="tuberia">
-				<add as="shape" value="image"/>
-				<add as="perimeter" value="rectanglePerimeter"/>
-				<add as="fontSize" value="10"/>
-				<add as="align" value="center"/>
-				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/10-tuberia.png"/>
-			</add>
-			<add as="canal">
-				<add as="shape" value="image"/>
-				<add as="perimeter" value="rectanglePerimeter"/>
-				<add as="fontSize" value="10"/>
-				<add as="align" value="center"/>
-				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/11-canal.png"/>
-			</add>
 			<add as="csinfra">
 				<add as="shape" value="image"/>
 				<add as="perimeter" value="rectanglePerimeter"/>
@@ -289,8 +259,6 @@
 		<add as="Bocatoma Flotante" template="bocatomaflotante" icon="/static/mxgraph/images/waterproof/07-bocatoma-flotante.svg"/>
 		<add as="Desarenador" template="desarenador" icon="/static/mxgraph/images/waterproof/08-desarenador.png"/>
 		<add as="Camara De Quiebre" template="camaraquiebre" width="32" height="32" icon="/static/mxgraph/images/waterproof/09-camara-quiebre.svg"/>
-		<add as="Tuberia" template="tuberia" width="32" height="32" icon="/static/mxgraph/images/waterproof/10-tuberia.png"/>
-		<add as="Canal" template="canal" icon="/static/mxgraph/images/waterproof/11-canal.png"/>
 		<add as="CSINFRA" template="csinfra" icon="/static/mxgraph/images/waterproof/13-csinfra.svg"/>
 	</mxDefaultToolbar>
 </mxEditor>
