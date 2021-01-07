@@ -52,8 +52,6 @@ function createPopupMenu(graph, menu, cell, evt) {
 };
 
 function updateStyleLine(graph, cell, type) {
-    let strokeWidth = "4";
-    let style = "strokeWidth=" + strokeWidth + ";strokeColor=" + type.color + ";";
     let idvar = cell.id;
     let varcost = [
         `Q_${idvar} (m³)`,
@@ -73,6 +71,6 @@ function updateStyleLine(graph, cell, type) {
     };
     value = JSON.stringify(value);
     cell.setValue(value);
-    graph.model.setStyle(cell, style);
+    graph.model.setStyle(cell, type.style);
 
 }

@@ -312,13 +312,13 @@ function onInit(editor) {
             let state = graphView.getState(mxCell);
 
             console.log(state)
-            resetColor(state);
+            //resetColor(state);
         }
 
         // starts with the parent cell
         let parentCell = notConnectedCells.find(c => c.id === parentCellId);
-        validate(parentCell);
-        setNotConnectedColor();
+        //validate(parentCell);
+        //setNotConnectedColor();
     })
 
     /* Create select actions in page
@@ -526,58 +526,6 @@ function onInit(editor) {
             resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });   
-
-
-}
-
-function validate(mxCell) {
-    let isConnected = true;
-    // check each cell that each edge connected to
-    for (let i = 0; i < mxCell.getEdgeCount(); i++) {
-        let edge = mxCell.getEdgeAt(i);
-
-        if (edge.target === null) continue; // no target
-        if (mxCell.getId() === edge.target.getId()) continue; // target is mxCell itself
-
-        isConnected = edge.source !== null && edge.target !== null;
-        if (isConnected) {
-            // remove source cell if found and so on
-            let sourceIndex = notConnectedCells.findIndex(c => c.id === edge.source.getId());
-            if (sourceIndex !== -1) notConnectedCells.splice(sourceIndex, 1);
-
-        });
-
-        $('#aguaDiagram').keyup(function() {
-            resultdb[0].fields.predefined_transp_water_perc = $('#aguaDiagram').val();
-            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
-        });
-
-        /*function Validate(mxCell) {
-            let isConnected = true;
-            // check each cell that each edge connected to
-            for (let i = 0; i < mxCell.getEdgeCount(); i++) {
-                let edge = mxCell.getEdgeAt(i);
-
-                if (edge.target === null) continue; // no target
-                if (mxCell.getId() === edge.target.getId()) continue; // target is mxCell itself
-
-                isConnected = edge.source !== null && edge.target !== null;
-                if (isConnected) {
-                    // remove source cell if found and so on
-                    let sourceIndex = notConnectedCells.findIndex(c => c.id === edge.source.getId());
-                    if (sourceIndex !== -1) notConnectedCells.splice(sourceIndex, 1);
-
-                    let targetIndex = notConnectedCells.findIndex(c => c.id === edge.target.getId());
-                    if (targetIndex !== -1) notConnectedCells.splice(targetIndex, 1);
-
-                    let edgeIndex = notConnectedCells.findIndex(c => c.id === edge.getId());
-                    if (edgeIndex !== -1) notConnectedCells.splice(edgeIndex, 1);
-
-                    // check next cell and its edges
-                    Validate(edge.target);
-                }
-            }
-        }*/
 
     });
 
