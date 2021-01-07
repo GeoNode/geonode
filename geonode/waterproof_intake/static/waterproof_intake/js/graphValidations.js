@@ -15,6 +15,15 @@ function createPopupMenu(graph, menu, cell, evt) {
 
     if (cell != null) {
         if (cell.geometry.width == 0 && cell.geometry.height == 0) {
+            if (cell.hasOwnProperty("value") && cell.value != undefined) {
+                if (typeof(cell.value) == 'string' && cell.value.indexOf("connectorType") != -1) {
+                    let obj = JSON.parse(cell.value);
+                    if (obj.connectorType == connectionsType.EC.id) {
+                        // selected edge is Extraction Connection, can't change type
+                        return;
+                    }
+                }
+            }
             let existEC = false; // validate just one Extraction connection type
             for (k in graph.model.cells) {
                 let cell = graph.model.cells[k];
