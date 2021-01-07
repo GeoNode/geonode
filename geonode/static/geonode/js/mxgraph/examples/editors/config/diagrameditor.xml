@@ -296,7 +296,7 @@
 						<mxGeometry x="40" y="30" width="60" height="60" as="geometry" />
 					</mxCell>
 				</Symbol>
-				<Symbol name="CSINFRA" varcost="[&quot;Q_2&quot;,&quot;CSed_2&quot;,&quot;CN_2&quot;,&quot;CP_2&quot;,&quot;WSed_2&quot;,&quot;WN_2&quot;,&quot;WP_2&quot;,&quot;WSed_ret_2&quot;,&quot;WN_ret_2&quot;,&quot;WP_ret_2&quot;]">
+				<Symbol name="CSINFRA" resultdb="[{&quot;model&quot;: &quot;waterproof_intake.processefficiencies&quot;, &quot;pk&quot;: 1, &quot;fields&quot;: {&quot;name&quot;: &quot;Captaci\u00f3n&quot;, &quot;unitary_process&quot;: &quot;CSINFRA&quot;, &quot;symbol&quot;: &quot;B&quot;, &quot;categorys&quot;: &quot;CSINFRA&quot;, &quot;normalized_category&quot;: &quot;CSINFRA&quot;, &quot;minimal_sediment_perc&quot;: 0, &quot;predefined_sediment_perc&quot;: &quot;0.0000&quot;, &quot;maximal_sediment_perc&quot;: 0, &quot;minimal_nitrogen_perc&quot;: 0, &quot;predefined_nitrogen_perc&quot;: &quot;0.0000&quot;, &quot;maximal_nitrogen_perc&quot;: 0, &quot;minimal_phoshorus_perc&quot;: 0, &quot;predefined_phosphorus_perc&quot;: &quot;0.0000&quot;, &quot;maximal_phosphorus_perc&quot;: 0, &quot;minimal_transp_water_perc&quot;: 0, &quot;predefined_transp_water_perc&quot;: &quot;0.0000&quot;, &quot;maximal_transp_water_perc&quot;: 0}}]"  varcost="[&quot;Q_2&quot;,&quot;CSed_2&quot;,&quot;CN_2&quot;,&quot;CP_2&quot;,&quot;WSed_2&quot;,&quot;WN_2&quot;,&quot;WP_2&quot;,&quot;WSed_ret_2&quot;,&quot;WN_ret_2&quot;,&quot;WP_ret_2&quot;]">
 					<mxCell style="csinfra" vertex="1" parent="1">
 						<mxGeometry x="500" y="30" width="60" height="60" as="geometry" />
 					</mxCell>
