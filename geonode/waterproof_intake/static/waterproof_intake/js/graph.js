@@ -444,7 +444,7 @@ function onInit(editor) {
                 $('#sedimentosDiagram').val(resultdb[0].fields.predefined_sediment_perc);
                 $('#nitrogenoDiagram').val(resultdb[0].fields.predefined_nitrogen_perc);
                 $('#fosforoDiagram').val(resultdb[0].fields.predefined_phosphorus_perc);
-                // Add Validator 
+                /*// Add Validator 
                 $('#aguaDiagram').attr('min', resultdb[0].fields.minimal_transp_water_perc);
                 $('#aguaDiagram').attr('max', resultdb[0].fields.maximal_transp_water_perc);
                 $('#sedimentosDiagram').attr('min', resultdb[0].fields.minimal_sediment_perc);
@@ -452,7 +452,7 @@ function onInit(editor) {
                 $('#nitrogenoDiagram').attr('min', resultdb[0].fields.minimal_nitrogen_perc);
                 $('#nitrogenoDiagram').attr('max', resultdb[0].fields.maximal_nitrogen_perc);
                 $('#fosforoDiagram').attr('min', resultdb[0].fields.minimal_phosphorus_perc);
-                $('#fosforoDiagram').attr('max', resultdb[0].fields.maximal_phosphorus_perc);
+                $('#fosforoDiagram').attr('max', resultdb[0].fields.maximal_phosphorus_perc);*/
 
                 funcost('((11126.6*text(Q)) + 30939.7)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))');
             }
