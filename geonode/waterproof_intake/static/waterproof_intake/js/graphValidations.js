@@ -1,8 +1,8 @@
 const connectionsType={
-    EC: {name:'Extraction connection', id:'EC', color:'#008000'},
-    EI: {name:'External input', id:'EI', color:'#e6e200'},
-    PL: {name:'Pipeline', id:'PL', color:'#191970'},
-    CN: {name:'Connection', id:'CN', color:'#555555'},
+    EC: {name:'Extraction connection', id:'EC', style:'Extraction_connection'},
+    EI: {name:'External input', id:'EI', style:'External_input'},
+    PL: {name:'Pipeline', id:'PL', style:'Pipeline'},
+    CN: {name:'Connection', id:'CN', style:'Connection'},
 }
 
 function customMenuForConnectors(){
@@ -53,13 +53,9 @@ function createPopupMenu(graph, menu, cell, evt){
 };
 
 function updateStyleLine(graph,cell, type){
-    let strokeWidth = "4";    
-    let style = "strokeWidth=" + strokeWidth + ";strokeColor=" + type.color + ";";
-    let value = {
-        "connectorType" : type.id
-    }
+    let value = {"connectorType" : type.id};
     value = JSON.stringify(value);
     cell.setValue(value);
-    graph.model.setStyle(cell, style);    
+    graph.model.setStyle(cell, type.style);    
     
 }

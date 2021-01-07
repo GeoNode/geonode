@@ -4,6 +4,9 @@
  * @version 1.0
  */
 
+var notConnectedCells = [];
+var parentCellId = "2";
+        
 
 // Program starts here. The document.onLoad executes the
 // createEditor function with a given configuration.
@@ -12,10 +15,10 @@
 // last step in the editor constructor.
 function onInit(editor) {
     // Enables rotation handle
-    mxVertexHandler.prototype.rotationEnabled = true;
+    mxVertexHandler.prototype.rotationEnabled = false;
 
     // Enables guides
-    mxGraphHandler.prototype.guidesEnabled = true;
+    mxGraphHandler.prototype.guidesEnabled = false;
 
     // Alt disables guides
     mxGuide.prototype.isEnabledForEvent = function(evt) {
@@ -35,12 +38,44 @@ function onInit(editor) {
     editor.graph.setConnectable(true);
 
     // Clones the source if new connection has no target
-    editor.graph.connectionHandler.setCreateTarget(true);
+    //editor.graph.connectionHandler.setCreateTarget(true);
+
+    var style = editor.graph.getStylesheet().getDefaultEdgeStyle();
+    style[mxConstants.STYLE_ROUNDED] = true;
+    style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+    style[mxConstants.STYLE_STROKEWIDTH] = 4;
+    style[mxConstants.STYLE_STROKECOLOR] = "#ff0000";
+
 
     // Installs a popupmenu handler using local function (see below).
     editor.graph.popupMenuHandler.factoryMethod = function(menu, cell, evt){
         return createPopupMenu(editor.graph, menu, cell, evt);
     };
+
+    // Removes cells when [DELETE] is pressed
+    // elements with id == 2 is River and id==3 is CSINFRA can't remove
+    var keyHandler = new mxKeyHandler(editor.graph);
+    keyHandler.bindKey(46, function(evt){
+        if (editor.graph.isEnabled()){
+            let cells = editor.graph.getSelectionCells();
+            let cells2Remove = cells.filter(cell => (cell.style != "rio" && 
+                                            cell.style != "csinfra" && 
+                                            cell.style != connectionsType.EC.style) || 
+                                            parseInt(cell.id)  > 4);
+            if (cells2Remove.length > 0){
+                editor.graph.removeCells(cells2Remove);    
+            }
+        }
+    });
+
+    editor.graph.setAllowDanglingEdges(false);
+    editor.graph.setMultigraph(false);
+
+    var listener = function(sender, evt){
+        editor.graph.validateGraph();
+    };
+
+    editor.graph.getModel().addListener(mxEvent.CHANGE, listener);       
 
     // Updates the title if the root changes
     var title = document.getElementById('title');
@@ -73,9 +108,25 @@ function onInit(editor) {
     var textNode = document.getElementById('xml');
     var graphNode = editor.graph.container;
 
-    var sourceInput = document.getElementById('source');
+    var parent = editor.graph.getDefaultParent();
 
+    var edge = editor.graph.insertEdge(parent, null, '', parent.children[0], parent.children[1]);
+    let value = {"connectorType" : connectionsType.EC.id};
+    edge.setValue(JSON.stringify(value));
+    editor.graph.model.setStyle(edge, connectionsType.EC.style); 
 
+    // Source nodes needs 1..2 connected Targets
+    editor.graph.multiplicities.push(new mxMultiplicity(
+        true, 'Symbol', 'name', 'Rio', 1, 2, ['Symbol'],
+        'Rio Must Have 1 or more Elements',
+        'Source Must Connect to Target')); 
+
+    // Target needs exactly one incoming connection from Source
+    editor.graph.multiplicities.push(new mxMultiplicity(
+        false, 'Symbol', 'name', 'CSINFRA', 1, 1, ['Symbol'],
+        'Target Must Have 1 Source',
+        'Target Must Connect From Source'));
+        
     var getdata = document.getElementById('getdata');
     getdata.checked = false;
 
@@ -246,6 +297,32 @@ function onInit(editor) {
         //node.appendChild(button);
     }
 
+    $("#validate_btn").on("click", function() {
+
+        return;
+
+        let cells = editor.graph.getModel().cells;
+        graphView = editor.graph.getView();
+        notConnectedCells.length = 0;
+        // create an array of cells and reset the color
+        for (let key in cells) {
+            if (!cells.hasOwnProperty(key)) continue;
+
+            let mxCell = cells[key];
+            if (!mxCell.isVertex() && !mxCell.isEdge()) continue;
+            notConnectedCells.push(mxCell);
+            let state = graphView.getState(mxCell);
+
+            console.log(state)
+            resetColor(state);
+        }
+
+        // starts with the parent cell
+        let parentCell = notConnectedCells.find(c => c.id === parentCellId);
+        validate(parentCell);
+        setNotConnectedColor();
+    })
+
     /* Create select actions in page
     var node = document.getElementById('selectActions');
     mxUtils.write(node, 'Select: ');
@@ -268,7 +345,7 @@ function onInit(editor) {
     mxUtils.write(node, ', ');
     mxUtils.linkAction(node, 'Fit', editor, 'fit');*/
 
-
+    
     //use jquery
     $(document).ready(function() {
 
@@ -420,14 +497,15 @@ function onInit(editor) {
 
         var resultdb = [];
         var selectedCell;
-        var notConnectedCells = [];
-        var parentCellId = "2";
+        
 
         //Load data from figure to html
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
             selectedCell = evt.getProperty("cell");
             if (selectedCell != undefined) {
+                if (selectedCell.getAttribute('resultdb') == undefined) return;
                 resultdb = JSON.parse(selectedCell.getAttribute('resultdb'));
+                if (resultdb.length == 0) return;
                 $('#titleDiagram').text(resultdb[0].fields.categorys);
                 // Add Value to Panel Information Right on HTML
                 $('#sedimentosDiagram').val(resultdb[0].fields.predefined_sediment_perc);
@@ -459,79 +537,51 @@ function onInit(editor) {
         $('#fosforoDiagram').keyup(function() {
             resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
-        });
-
-        function Validate(mxCell) {
-            let isConnected = true;
-            // check each cell that each edge connected to
-            for (let i = 0; i < mxCell.getEdgeCount(); i++) {
-                let edge = mxCell.getEdgeAt(i);
-
-                if (edge.target === null) continue; // no target
-                if (mxCell.getId() === edge.target.getId()) continue; // target is mxCell itself
-
-                isConnected = edge.source !== null && edge.target !== null;
-                if (isConnected) {
-                    // remove source cell if found and so on
-                    let sourceIndex = notConnectedCells.findIndex(c => c.id === edge.source.getId());
-                    if (sourceIndex !== -1) notConnectedCells.splice(sourceIndex, 1);
-
-                    let targetIndex = notConnectedCells.findIndex(c => c.id === edge.target.getId());
-                    if (targetIndex !== -1) notConnectedCells.splice(targetIndex, 1);
-
-                    let edgeIndex = notConnectedCells.findIndex(c => c.id === edge.getId());
-                    if (edgeIndex !== -1) notConnectedCells.splice(edgeIndex, 1);
-
-                    // check next cell and its edges
-                    Validate(edge.target);
-                }
-            }
-        }
-
-        function ResetColor(state) {
-            state.shape.node.classList.remove("not_connected");
-            if (state.text)
-                state.text.node.classList.remove("not_connected");
-        }
-
-        function SetNotConnectedColor(state) {
-            for (let i = 0; i < notConnectedCells.length; i++) {
-                let mxCell = notConnectedCells[i];
-                let state = graphView.getState(mxCell);
-                state.shape.node.classList.add("not_connected");
-                if (state.text)
-                    state.text.node.classList.add("not_connected");
-            }
-        }
-
-        document.querySelector("#validate_btn").addEventListener("click", function() {
-
-            let cells = editor.graph.getModel().cells;
-            graphView = editor.graph.getView();
-            notConnectedCells.length = 0;
-            console.log(cells)
-            console.log(graphView)
-
-            // create an array of cells and reset the color
-            for (let key in cells) {
-                if (!cells.hasOwnProperty(key)) continue;
-
-                let mxCell = cells[key];
-                if (!mxCell.isVertex() && !mxCell.isEdge()) continue;
-                notConnectedCells.push(mxCell);
-                let state = graphView.getState(mxCell);
-
-                console.log(state)
-                ResetColor(state);
-            }
-
-            // starts with the parent cell
-            let parentCell = notConnectedCells.find(c => c.id === parentCellId);
-            Validate(parentCell);
-
-            SetNotConnectedColor();
-        })
+        });   
 
     });
 
+}
+
+function validate(mxCell) {
+    let isConnected = true;
+    // check each cell that each edge connected to
+    for (let i = 0; i < mxCell.getEdgeCount(); i++) {
+        let edge = mxCell.getEdgeAt(i);
+
+        if (edge.target === null) continue; // no target
+        if (mxCell.getId() === edge.target.getId()) continue; // target is mxCell itself
+
+        isConnected = edge.source !== null && edge.target !== null;
+        if (isConnected) {
+            // remove source cell if found and so on
+            let sourceIndex = notConnectedCells.findIndex(c => c.id === edge.source.getId());
+            if (sourceIndex !== -1) notConnectedCells.splice(sourceIndex, 1);
+
+            let targetIndex = notConnectedCells.findIndex(c => c.id === edge.target.getId());
+            if (targetIndex !== -1) notConnectedCells.splice(targetIndex, 1);
+
+            let edgeIndex = notConnectedCells.findIndex(c => c.id === edge.getId());
+            if (edgeIndex !== -1) notConnectedCells.splice(edgeIndex, 1);
+
+            // check next cell and its edges
+            validate(edge.target);
+        }
+    }
+}
+
+function resetColor(state) {
+    state.shape.node.classList.remove("not_connected");
+    if (state.text)
+        state.text.node.classList.remove("not_connected");
+}
+
+function setNotConnectedColor(state) {
+    for (let i = 0; i < notConnectedCells.length; i++) {
+        let mxCell = notConnectedCells[i];
+        let state = graphView.getState(mxCell);
+        state.shape.node.classList.add("not_connected");
+        if (state.text)
+            state.text.node.classList.add("not_connected");
+    }
 }
