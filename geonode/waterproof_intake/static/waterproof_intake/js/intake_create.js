@@ -161,7 +161,7 @@ $(document).ready(function() {
     });
 
     $('#smartwizard').smartWizard({
-        selected: 4,
+        selected: 0,
         theme: 'dots',
         enableURLhash: false,
         autoAdjustHeight: true,
