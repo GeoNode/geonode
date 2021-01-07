@@ -122,14 +122,17 @@ img.mxToolbarMode {
     height: 79px;
 }
 
+img.mxToolbarMode:hover {
+    border-width: 1px;
+}
+
 img.mxToolbarModeSelected {
-    margin: 0px;
-    margin-right: 2px;
-    margin-bottom: 2px;
-    border-width: 2px;
+    margin: 2px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    border-width: 0px;
+    height: 79px;
     border-style: inset;
-    height: 0px;
-    display: none;
 }
 
 div.mxTooltip {

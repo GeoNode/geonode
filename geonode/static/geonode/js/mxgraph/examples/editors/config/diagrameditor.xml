@@ -196,7 +196,7 @@
 				<add as="fontSize" value="10"/>
 				<add as="align" value="center"/>
 				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/08-DESARENADOR.png"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/08-desarenador.png"/>
 			</add>
 			<add as="camaraquiebre">
 				<add as="shape" value="image"/>
@@ -295,7 +295,7 @@
 		</mxGraphModel>
 	</mxGraph>
 	<mxDefaultToolbar as="toolbar">
-		<add as="Empty" template="empty" icon="/static/geonode/js/mxgraph/examples/editors/images/loading.gif"/>
+		<add as="Empty" template="empty" class="empty_icon" icon="/static/geonode/js/mxgraph/examples/editors/images/loading.gif"/>
 		<add as="Embalse" template="embalse" icon="/static/mxgraph/images/waterproof/02-embalse.png"/>
 		<add as="Bombeo" template="bombeo"  width="32" height="32" icon="/static/mxgraph/images/waterproof/03-bombeo.svg"/>
 		<add as="Reservorio Agua" template="reservorioagua" width="32" height="32" icon="/static/mxgraph/images/waterproof/04-reservorio-agua.svg"/>
