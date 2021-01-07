@@ -609,8 +609,8 @@ def geoserver_post_save_layers(
 
                     # Refresh from DB
                     instance.refresh_from_db()
-            except IntegrityError:
-                raise
+            except Exception as e:
+                logger.exception(e)
 
             # Refreshing CSW records
             logger.debug(f"... Updating the Catalogue entries for Layer {instance.title}")
@@ -651,16 +651,15 @@ def geoserver_post_save_layers(
             from geonode.geoserver.signals import geoserver_post_save_complete
             geoserver_post_save_complete.send(
                 sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
-
-        # Updating HAYSTACK Indexes if needed
-        if settings.HAYSTACK_SEARCH:
-            call_command('update_index')
-
         try:
             geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
             geonode_upload_sessions.update(processed=True)
         except Exception as e:
             logger.exception(e)
+
+        # Updating HAYSTACK Indexes if needed
+        if settings.HAYSTACK_SEARCH:
+            call_command('update_index')
 
 
 @app.task(
