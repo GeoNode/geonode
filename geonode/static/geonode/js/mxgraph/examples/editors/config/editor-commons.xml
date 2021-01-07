@@ -42,7 +42,7 @@
 		<add as="properties" action="showProperties" icon="/static/mxgraph/images/properties.gif"/>
 		<add as="openHref" action="openHref" icon="/static/mxgraph/images/link.gif"/>
 	</mxDefaultPopupMenu>
-	<include name="/static/geonode/js/mxgraph/examples/editors/config/keyhandler-commons.xml"/>
+	<!--include name="/static/geonode/js/mxgraph/examples/editors/config/keyhandler-commons.xml"/-->
 	<Array as="actions">
 		<add as="open"><![CDATA[
 			function (editor)
