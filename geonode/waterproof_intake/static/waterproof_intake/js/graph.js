@@ -334,55 +334,6 @@ function onInit(editor) {
         //node.appendChild(button);
     }
 
-    $("#validate_btn").on("click", function() {
-
-        return;
-
-        let cells = editor.graph.getModel().cells;
-        graphView = editor.graph.getView();
-        notConnectedCells.length = 0;
-        // create an array of cells and reset the color
-        for (let key in cells) {
-            if (!cells.hasOwnProperty(key)) continue;
-
-            let mxCell = cells[key];
-            if (!mxCell.isVertex() && !mxCell.isEdge()) continue;
-            notConnectedCells.push(mxCell);
-            let state = graphView.getState(mxCell);
-
-            console.log(state)
-                //resetColor(state);
-        }
-
-        // starts with the parent cell
-        let parentCell = notConnectedCells.find(c => c.id === parentCellId);
-        //validate(parentCell);
-        //setNotConnectedColor();
-    })
-
-    /* Create select actions in page
-    var node = document.getElementById('selectActions');
-    mxUtils.write(node, 'Select: ');
-    mxUtils.linkAction(node, 'All', editor, 'selectAll');
-    mxUtils.write(node, ', ');
-    mxUtils.linkAction(node, 'None', editor, 'selectNone');
-    mxUtils.write(node, ', ');
-    mxUtils.linkAction(node, 'Vertices', editor, 'selectVertices');
-    mxUtils.write(node, ', ');
-    mxUtils.linkAction(node, 'Edges', editor, 'selectEdges');
-    */
-    // Create select actions in page
-    /*var node = document.getElementById('zoomActions');
-    mxUtils.write(node, 'Zoom: ');
-    mxUtils.linkAction(node, 'In', editor, 'zoomIn');
-    mxUtils.write(node, ', ');
-    mxUtils.linkAction(node, 'Out', editor, 'zoomOut');
-    mxUtils.write(node, ', ');
-    mxUtils.linkAction(node, 'Actual', editor, 'actualSize');
-    mxUtils.write(node, ', ');
-    mxUtils.linkAction(node, 'Fit', editor, 'fit');*/
-
-
     //use jquery
     $(document).ready(function() {
 
@@ -545,6 +496,12 @@ function onInit(editor) {
         //Add value entered in phosphorus in the field resultdb
         $('#fosforoDiagram').keyup(function() {
             resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
+            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+        });
+
+        //Add value entered in aguaDiagram in the field resultdb
+        $('#aguaDiagram').keyup(function() {
+            resultdb[0].fields.predefined_transp_water_perc = $('#aguaDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
         });
 
