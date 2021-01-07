@@ -11,6 +11,7 @@ $(function() {
     var transformations = [];
     var lastClickedLayer;
     var map;
+    var lyrsPolygons = [];
     var highlighPolygon = {
         fillColor: "#337ab7",
         color: "#333333",
@@ -66,13 +67,7 @@ $(function() {
 
     initMap = function() {
 
-        //var map = L.map('map').setView([4, -74],5);
-        //var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        //    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-        //});
-        //map.addLayer(osm);
-
-        var map = L.map('mapidcuenca', { scrollWheelZoom: false, zoomControl: false, photonControl: true, photonControlOptions: { resultsHandler: showSearchPoints, placeholder: 'Search City...', position: 'topleft', url: API_URL } });
+        map = L.map('mapidcuenca', { scrollWheelZoom: false, zoomControl: false, photonControl: true, photonControlOptions: { resultsHandler: showSearchPoints, placeholder: 'Search City...', position: 'topleft', url: API_URL } });
         map.setView([4, -72], 5);
 
         searchPoints.addTo(map);
@@ -105,6 +100,7 @@ $(function() {
         console.log(geojsonFilter[0].properties.name)
         table.search(cityName.substr(0, 2)).draw();
 
+        drawPolygons();
     }
 
     udpateCreateUrl = function(countryId) {
@@ -367,4 +363,22 @@ $(function() {
     };
     // Init 
     initialize();
+
+    //draw polygons
+    drawPolygons = function(){
+        // TODO: Next line only for test purpose
+        intakePolygons = polygons;
+        
+        lyrsPolygons.forEach(lyr => map.removeLayer(lyr));
+        lyrsPolygons = [];
+
+        intakePolygons.forEach(feature =>{
+            let poly = feature.polygon;
+            if (poly.indexOf("SRID") >= 0){
+                poly = poly.split(";")[1];
+            }
+            lyrsPolygons.push(omnivore.wkt.parse(poly).addTo(map));
+        });
+    }
+
 });
