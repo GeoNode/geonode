@@ -53,15 +53,15 @@ function onInit(editor) {
     // Removes cells when [DELETE] is pressed
     // elements with id == 2 is River and id==3 is CSINFRA can't remove
     var keyHandler = new mxKeyHandler(editor.graph);
-    keyHandler.bindKey(46, function(evt){
-        if (editor.graph.isEnabled()){
+    keyHandler.bindKey(46, function(evt) {
+        if (editor.graph.isEnabled()) {
             let cells = editor.graph.getSelectionCells();
-            let cells2Remove = cells.filter(cell => (cell.style != "rio" && 
-                                            cell.style != "csinfra" && 
-                                            cell.style != connectionsType.EC.style) || 
-                                            parseInt(cell.id)  > 4);
-            if (cells2Remove.length > 0){
-                editor.graph.removeCells(cells2Remove);    
+            let cells2Remove = cells.filter(cell => (cell.style != "rio" &&
+                    cell.style != "csinfra" &&
+                    cell.style != connectionsType.EC.style) ||
+                parseInt(cell.id) > 4);
+            if (cells2Remove.length > 0) {
+                editor.graph.removeCells(cells2Remove);
             }
         }
     });
@@ -69,11 +69,11 @@ function onInit(editor) {
     editor.graph.setAllowDanglingEdges(false);
     editor.graph.setMultigraph(false);
 
-    var listener = function(sender, evt){
+    var listener = function(sender, evt) {
         editor.graph.validateGraph();
     };
 
-    editor.graph.getModel().addListener(mxEvent.CHANGE, listener);       
+    editor.graph.getModel().addListener(mxEvent.CHANGE, listener);
 
     // Updates the title if the root changes
     var title = document.getElementById('title');
@@ -105,26 +105,65 @@ function onInit(editor) {
     // XML and graphical display
     var textNode = document.getElementById('xml');
     var graphNode = editor.graph.container;
-
     var parent = editor.graph.getDefaultParent();
+    var xmlDocument = mxUtils.createXmlDocument();
+    var sourceNode = xmlDocument.createElement('Symbol');
+    var sourceNode1 = xmlDocument.createElement('Symbol');
+
+
+    //Create River at the beginning of the diagram
+    var river = editor.graph.insertVertex(parent, null, sourceNode1, 40, 30, 60, 60);
+    river.setAttribute('name', 'River');
+    editor.graph.model.setStyle(river, 'rio');
+    river.setAttribute('varcost', [
+        `Q_${river.id} (m³)`, `CSed_${river.id} (mg/l)`,
+        `CN_${river.id} (mg/l)`, `CP_${river.id} (mg/l)`,
+        `WSed_${river.id} (Ton)`, `WN_${river.id} (Kg)`,
+        `WP_${river.id} (Kg)`, `WSed_ret_${river.id} (Ton)`,
+        `WN_ret_${river.id} (Kg)`, `WP_ret_${river.id} (Kg)`
+    ]);
+
+    //Create CSINFRA at the beginning of the diagram
+    var vertex = editor.graph.insertVertex(parent, null, sourceNode, 500, 30, 60, 60);
+    vertex.setAttribute('name', 'CSINFRA');
+    editor.graph.model.setStyle(vertex, 'csinfra');
+    var varcost = [
+        `Q_${vertex.id} (m³)`, `CSed_${vertex.id} (mg/l)`,
+        `CN_${vertex.id} (mg/l)`, `CP_${vertex.id} (mg/l)`,
+        `WSed_${vertex.id} (Ton)`, `WN_${vertex.id} (Kg)`,
+        `WP_${vertex.id} (Kg)`, `WSed_ret_${vertex.id} (Ton)`,
+        `WN_ret_${vertex.id} (Kg)`, `WP_ret_${vertex.id} (Kg)`
+    ];
+
+
+    $.ajax({
+        url: `/intake/loadProcess/CSINFRA`,
+        success: function(result) {
+            vertex.setAttribute('varcost', varcost);
+            vertex.setAttribute('resultdb', result);
+        }
+    });
+
+
+    console.log(vertex)
+    console.log(river)
 
     var edge = editor.graph.insertEdge(parent, null, '', parent.children[0], parent.children[1]);
-    let value = {"connectorType" : connectionsType.EC.id};
+    let value = { "connectorType": connectionsType.EC.id };
     edge.setValue(JSON.stringify(value));
-    editor.graph.model.setStyle(edge, connectionsType.EC.style); 
-
+    editor.graph.model.setStyle(edge, connectionsType.EC.style);
     // Source nodes needs 1..2 connected Targets
     editor.graph.multiplicities.push(new mxMultiplicity(
-        true, 'Symbol', 'name', 'Rio', 1, 2, ['Symbol'],
+        true, 'Symbol', 'name', 'River', 1, 2, ['Symbol'],
         'Rio Must Have 1 or more Elements',
-        'Source Must Connect to Target')); 
+        'Source Must Connect to Target'));
 
     // Target needs exactly one incoming connection from Source
     editor.graph.multiplicities.push(new mxMultiplicity(
         false, 'Symbol', 'name', 'CSINFRA', 1, 1, ['Symbol'],
         'Target Must Have 1 Source',
         'Target Must Connect From Source'));
-        
+
     var getdata = document.getElementById('getdata');
     getdata.checked = false;
 
@@ -312,7 +351,7 @@ function onInit(editor) {
             let state = graphView.getState(mxCell);
 
             console.log(state)
-            //resetColor(state);
+                //resetColor(state);
         }
 
         // starts with the parent cell
@@ -343,7 +382,7 @@ function onInit(editor) {
     mxUtils.write(node, ', ');
     mxUtils.linkAction(node, 'Fit', editor, 'fit');*/
 
-    
+
     //use jquery
     $(document).ready(function() {
 
@@ -421,19 +460,21 @@ function onInit(editor) {
             node.querySelectorAll('mxCell').forEach(function(node) {
                 if (node.id != "") {
                     let varcost = Object.values(JSON.parse(node.getAttribute('value')))[1];
+                    let external = Object.values(JSON.parse(node.getAttribute('value')))[2];
                     connetion.push({
                         'id': node.id,
                         'source': node.getAttribute('source'),
                         'target': node.getAttribute('target'),
-                        'varcost': JSON.stringify(varcost)
+                        'varcost': JSON.stringify(varcost),
+                        'external': JSON.stringify(external)
                     })
                 }
             });
-            //console.log(graphData);
+            console.log(graphData);
             $('#xmlGraph').val(textxml);
             $('#graphElements').val(JSON.stringify(graphData));
-            //console.log(textxml);
-            //console.log(connetion);
+            console.log(textxml);
+            console.log(connetion);
         });
 
         //load data when add an object in a diagram
@@ -482,12 +523,36 @@ function onInit(editor) {
 
         //Load data from figure to html
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
+            $('#idDiagram').empty();
+            $('#titleDiagram').empty();
+            $('#aguaDiagram').val('');
+            $('#sedimentosDiagram').val('');
+            $('#nitrogenoDiagram').val('');
+            $('#fosforoDiagram').val('');
             selectedCell = evt.getProperty("cell");
+            if (selectedCell.getAttribute('name') == 'River') {
+                $('#aguaDiagram').prop('disabled', true);
+                $('#sedimentosDiagram').prop('disabled', true);
+                $('#nitrogenoDiagram').prop('disabled', true);
+                $('#fosforoDiagram').prop('disabled', true);
+            } else {
+                $('#aguaDiagram').prop('disabled', false);
+                $('#sedimentosDiagram').prop('disabled', false);
+                $('#nitrogenoDiagram').prop('disabled', false);
+                $('#fosforoDiagram').prop('disabled', false);
+            }
+            console.log(selectedCell)
+
             if (selectedCell != undefined) {
+
+                $('#titleDiagram').text(selectedCell.getAttribute('name'));
+                $('#idDiagram').val(selectedCell.id);
                 if (selectedCell.getAttribute('resultdb') == undefined) return;
                 resultdb = JSON.parse(selectedCell.getAttribute('resultdb'));
                 if (resultdb.length == 0) return;
                 $('#titleDiagram').text(resultdb[0].fields.categorys);
+                // Clear Inputs
+
                 // Add Value to Panel Information Right on HTML
                 $('#aguaDiagram').val(resultdb[0].fields.predefined_transp_water_perc);
                 $('#sedimentosDiagram').val(resultdb[0].fields.predefined_sediment_perc);
@@ -502,7 +567,6 @@ function onInit(editor) {
                 $('#nitrogenoDiagram').attr('max', resultdb[0].fields.maximal_nitrogen_perc);
                 $('#fosforoDiagram').attr('min', resultdb[0].fields.minimal_phosphorus_perc);
                 $('#fosforoDiagram').attr('max', resultdb[0].fields.maximal_phosphorus_perc);
-
                 funcost('((11126.6*text(Q)) + 30939.7)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))');
             }
 
@@ -525,7 +589,7 @@ function onInit(editor) {
         $('#fosforoDiagram').keyup(function() {
             resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
-        });   
+        });
 
     });
 
