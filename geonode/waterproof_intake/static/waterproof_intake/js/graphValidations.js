@@ -1,8 +1,8 @@
-const connectionsType = {
-    EC: { name: 'Extraction connection', id: 'EC', color: '#008000' },
-    EI: { name: 'External input', id: 'EI', color: '#e6e200' },
-    PL: { name: 'Pipeline', id: 'PL', color: '#191970' },
-    CN: { name: 'Connection', id: 'CN', color: '#555555' },
+const connectionsType={
+    EC: {name:'Extraction connection', id:'EC', style:'Extraction_connection'},
+    EI: {name:'External input', id:'EI', style:'External_input'},
+    PL: {name:'Pipeline', id:'PL', style:'Pipeline'},
+    CN: {name:'Connection', id:'CN', style:'Connection'},
 }
 
 function customMenuForConnectors() {
