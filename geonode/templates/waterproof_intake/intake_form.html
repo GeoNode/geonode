@@ -63,6 +63,8 @@
         vertical-align: middle;
     }
 
+    [title^='Empty'] {
+        display: none;
     }
 
     .table>tbody>tr>td {
@@ -144,7 +146,7 @@
                             Nombre
                         </label>
                         <div class="">
-                            <input type="text" name="name" maxlength="100" class=" form-control" id="id_name">
+                            <input type="text" name="name" maxlength="100" class=" form-control"  id="id_name">
                         </div>
                     </div>
                 </div>
@@ -154,8 +156,7 @@
                         Descripción
                     </label>
                     <div class="">
-                        <input type="text" name="description" maxlength="1024" class=" form-control"
-                            id="id_description">
+                        <input type="text" name="description" maxlength="1024" class=" form-control" id="id_description">
                     </div>
                 </div>
                 <!--Input Source Name -->
@@ -164,8 +165,7 @@
                         Nombre de la fuente
                     </label>
                     <div class="">
-                        <input type="text" name="water_source_name" maxlength="100" id="id_water_source_name"
-                            class=" form-control">
+                        <input type="text" name="water_source_name" maxlength="100" id="id_water_source_name" class=" form-control">
                     </div>
                 </div>
                 <!--Select City-->
@@ -175,7 +175,13 @@
                     </label>
                     <div class="">{{form.city}}</div>
                 </div>
-
+                <!--Inputs hidden for save data-->
+                <input type="hidden" id="xmlGraph" name="xmlGraph">
+                <input type="hidden" id="graphElements" name="graphElements">
+                <input type="hidden" id="isFile" name="isFile">
+                <input type="hidden" id="typeDelimit" name="typeDelimit">
+                <input type="hidden" id="waterExtraction" name="waterExtraction" value="">
+                <input type="hidden" id="areaGeometry" name="areaGeometry" value="">
                 <!-- Map -->
                 <div id="map">
                     <div id="analysisOptions">
@@ -197,19 +203,17 @@
                     <!--Graph-->
                     <div class="col-md-8">
                         <div class="panel panel-info">
-                            <div class="panel-body" id="graph" tabindex="-1"
-                                style="height:790px;width:100%;overflow:hidden;cursor:default;"></div>
+                            <div class="panel-body" id="graph" tabindex="-1" style="height:790px;width:100%;overflow:hidden;cursor:default;"></div>
                             <span style="float:right;padding-right:36px;">
                                 <input id="getdata" type="checkbox" />Source
-                            </span>
-                            <textarea id="xml"
-                                style="height:480px;width:684px;display:none;border-style:none;"></textarea>
+                                </span>
+                            <textarea id="xml" style="height:480px;width:684px;display:none;border-style:none;"></textarea>
                         </div>
-                        <div class="panel panel-danger">
+                          <div class="panel panel-danger">
                             <div class="panel-body">
                                 <h4 class="text-primary">Cost Function</h4>
                                 <div id="funcostgenerate">
-
+                               
                                 </div>
                             </div>
                         </div>
@@ -244,8 +248,7 @@
                                 </div>
                                 <hr>
                                 <div class="form-group">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal"
-                                        data-target="#exampleModal" id="ModalAddCostBtn">Add Cost</button>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id="ModalAddCostBtn">Add Cost</button>
                                     <button type="button" class="btn btn-primary" id="saveGraph">Save Graph</button>
                                 </div>
                             </div>
@@ -258,13 +261,11 @@
                 <!--Header-->
                 <div class="page-header">
                     <h3>Water Extraction</h3>
-                    <p>Please enter the annual water extraction (l/s) associated with the Extraction Connection element
-                        x defined in the Water Intake system diagram</p>
+                    <p>Please enter the annual water extraction (l/s) associated with the Extraction Connection element x defined in the Water Intake system diagram</p>
                 </div>
                 <!--navigation-->
                 <ul class="nav nav-tabs">
-                    <li data-toggle="tab" data-target="#automatic" class="active"><a href="#">Interpolation Wizard</a>
-                    </li>
+                    <li data-toggle="tab" data-target="#automatic" class="active"><a href="#">Interpolation Wizard</a></li>
                     <li data-toggle="tab" data-target="#manual"><a href="#">Manual Edit</a></li>
                 </ul>
                 <!--contents tabs manual and automatic-->
@@ -277,25 +278,21 @@
                                 <!--Data analysis Insert-->
                                 <div class="col-md-7">
                                     <h5 class="text-primary">Data Analysis</h5>
-                                    <p>Please selected the method you wish to use to fill in the table associated with
-                                        annual water extraction from the source.</p>
+                                    <p>Please selected the method you wish to use to fill in the table associated with annual water extraction from the source.</p>
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <label>Interpolation Method <span class="text-danger-wp">(*)</span>
-                                                </label>
+                                                <label>Interpolation Method <span class="text-danger-wp">(*)</span> </label>
                                                 <select class="form-control" id="typeProcessInterpolation">
-                                                    <option value="1">Linear interpolation</option>
-                                                    <option value="2">Potential interpolation</option>
-                                                    <option Value="3">Exponential interpolation</option>
-                                                    <option Value="4">Logistics interpolation</option>
+                                                <option value="1">Linear interpolation</option>
+                                                <option value="2">Potential interpolation</option>
+                                                <option Value="3">Exponential interpolation</option>
+                                                <option Value="4">Logistics interpolation</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
-                                                <label>Number of years for time series <span
-                                                        class="text-danger-wp">(*)</span> </label>
-                                                <input type="text" class="form-control"
-                                                    id="numberYearsInterpolationValue">
+                                                <label>Number of years for time series <span class="text-danger-wp">(*)</span> </label>
+                                                <input type="text" class="form-control" id="numberYearsInterpolationValue">
                                             </div>
                                         </div>
                                     </div>
@@ -304,13 +301,11 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <label>Initial year<span class="text-danger-wp">(*)</span> </label>
-                                                <input type="text" class="form-control"
-                                                    id="initialDataExtractionInterpolationValue">
+                                                <input type="text" class="form-control" id="initialDataExtractionInterpolationValue" >
                                             </div>
                                             <div class="col-md-6" id="finalColumnExtraction">
                                                 <label>Final year<span class="text-danger-wp">(*)</span> </label>
-                                                <input type="text" class="form-control"
-                                                    id="finalDataExtractionInterpolationValue">
+                                                <input type="text" class="form-control" id="finalDataExtractionInterpolationValue" >
                                             </div>
                                         </div>
                                     </div>
@@ -369,9 +364,7 @@
                 <!--Header-->
                 <div class="page-header">
                     <h3>External Inputs</h3>
-                    <p>You define 2 external inputs. For Each of these external inputs you have to define Annual Water
-                        Volume (m3), Annual Sediment Load (Ton), Annual Nitrogen Load(kg), Annual Phosphorus Load (kg).
-                    </p>
+                    <p>You define 2 external inputs. For Each of these external inputs you have to define Annual Water Volume (m3), Annual Sediment Load (Ton), Annual Nitrogen Load(kg), Annual Phosphorus Load (kg).</p>
                 </div>
                 <h4 class="text-primary">Asignation</h4>
                 <!--Select with external input from diagram-->
@@ -380,7 +373,7 @@
                         <label class="col-sm-3 control-label">Type element for asignation</label>
                         <div class="col-sm-9">
                             <select class="form-control" id="externalSelect">
-
+                                
                             </select>
                         </div>
                     </div>
@@ -423,14 +416,14 @@
                                 </div>
                                 <div class="form-group">
                                     <button type="button" class="btn btn-primary" id="btnDelimitArea"> Delimit
-                                        subarea</button>
+                                    subarea</button>
                                 </div>
                                 <div class="form-group">
                                     <button type="button" class="btn btn-primary" id="btnValidateArea"> Validate
-                                        area</button>
+                                    area</button>
                                 </div>
                                 <div class="form-group">
-                                    <input type="submit" id="submit" class="btn btn-primary" value="Submit"></input>
+                                <input type="submit" id="submit" class="btn btn-primary" value="Submit"></input>
                                 </div>
                             </div>
                         </div>
@@ -439,13 +432,6 @@
             </div>
         </div>
     </div>
-    <!--Inputs hidden for save data-->
-    <input type="hidden" id="xmlGraph" name="xmlGraph">
-    <input type="hidden" id="graphElements" name="graphElements">
-    <input type="hidden" id="isFile" name="isFile">
-    <input type="hidden" id="typeDelimit" name="typeDelimit">
-    <input type="hidden" id="waterExtraction" name="waterExtraction" value="">
-    <input type="hidden" id="areaGeometry" name="areaGeometry" value="">
 </form>
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
