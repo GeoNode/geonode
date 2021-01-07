@@ -94,6 +94,11 @@
         text-align: left;
         vertical-align: middle;
     }
+
+    .mxToolbarMode:hover{
+        border: 5px solid #d0d0d0;
+        border-radius: 50%;
+    }
 </style>
 {% endblock %}
 {% block body_outer %}
@@ -203,19 +208,11 @@
                     <!--Graph-->
                     <div class="col-md-8">
                         <div class="panel panel-info">
-                            <div class="panel-body" id="graph" tabindex="-1" style="height:790px;width:100%;overflow:hidden;cursor:default;"></div>
+                            <div class="panel-body" id="graph" tabindex="-1" style="height:700px;width:100%;overflow:hidden;cursor:default; outline:none;"></div>
                             <span style="float:right;padding-right:36px;">
                                 <input id="getdata" type="checkbox" />Source
                                 </span>
                             <textarea id="xml" style="height:480px;width:684px;display:none;border-style:none;"></textarea>
-                        </div>
-                          <div class="panel panel-danger">
-                            <div class="panel-body">
-                                <h4 class="text-primary">Cost Function</h4>
-                                <div id="funcostgenerate">
-                               
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <!--Panel Information Right-->
@@ -251,15 +248,22 @@
                                     <label>% Phosphorus retained:</label>
                                     <input type="number" id="fosforoDiagram" class="form-control">
                                 </div>
-                                <hr>
-                                <div class="form-group">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id="ModalAddCostBtn">Add Cost</button>
-                                    <button type="button" class="btn btn-primary" id="saveGraph">Save Graph</button>
-                                </div>
                             </div>
                         </div>
+                        <button type="button" class="btn btn-primary btn-block" id="saveGraph">Validate Graph</button>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3 class="text-primary">Cost Function</h3>
+                        <div class="panel panel-danger">
+                            <div class="panel-body">
+                                <div id="funcostgenerate"></div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id="ModalAddCostBtn">Add Cost</button>
+                    </div> 
+                </div> 
             </div>
             <!--Step 3-->
             <div id="step-3" class="tab-pane" role="tabpanel">
@@ -371,33 +375,16 @@
                     <h3>External Inputs</h3>
                     <p>You define 2 external inputs. For Each of these external inputs you have to define Annual Water Volume (m3), Annual Sediment Load (Ton), Annual Nitrogen Load(kg), Annual Phosphorus Load (kg).</p>
                 </div>
-                <h4 class="text-primary">Asignation</h4>
-                <!--Select with external input from diagram-->
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Type element for asignation</label>
-                        <div class="col-sm-9">
-                            <select class="form-control" id="externalSelect">
-                                
-                            </select>
-                        </div>
+                  <div class="row">
+                     <div class="col-md-12">
+                        <h4 class="text-primary">Asignation</h4>
+                        <div class="form-group">
+                            <label >Type element for asignation</label>
+                            <select class="form-control" id="externalSelect"></select>
+                         </div>
+                        <div id="IntakeTDLE"></div>
                     </div>
                 </div>
-                <!--table asignations-->
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th class="text-center" scope="col">Year</th>
-                            <th class="text-center" scope="col">Water Volume (m3)</th>
-                            <th class="text-center" scope="col">Sediment (Ton)</th>
-                            <th class="text-center" scope="col">Nitrogen (Kg)</th>
-                            <th class="text-center" scope="col">Phosphorus (Kg)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="intakeEITA">
-
-                    </tbody>
-                </table>
             </div>
             <!--Step 5-->
             <div id="step-5" class="tab-pane" role="tabpanel">

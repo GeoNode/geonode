@@ -4,7 +4,7 @@
  * @version 1.0
  */
 var graphData = [];
-var connetion = [];
+var connetionData = [];
 
 // Program starts here. The document.onLoad executes the
 // createEditor function with a given configuration.
@@ -355,7 +355,10 @@ function onInit(editor) {
         $('#ModalAddCostBtn').click(function() {
             $('#VarCostListGroup div').remove();
             for (const index of graphData) {
-                tmp = JSON.parse(index.varcost);
+                var costlabel = "";
+                for (const iterator of JSON.parse(index.varcost)) {
+                    costlabel += `<a href="#" class="list-group-item list-group-item-action">${iterator}</a>`
+                }
                 $('#VarCostListGroup').append(`
                 <div class="panel panel-info">
                     <div class="panel-heading">
@@ -365,16 +368,7 @@ function onInit(editor) {
                     </div>
                     <div id="VarCostListGroup_${index.id}" class="panel-collapse collapse">
                         <div class="panel-body">
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[0]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[1]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[2]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[3]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[4]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[5]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[6]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[7]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[8]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[9]}</a>
+                        ${costlabel}
                         </div>
                     </div>
                 </div>
@@ -385,9 +379,12 @@ function onInit(editor) {
         function funcost(ecuation_db) {
             $('#funcostgenerate div').remove();
             $('#funcostgenerate').append(
-                ` <div class="form-group">
+                `<div class="form-group">
                 <label>Annual Operation and Maintenance Cost</label>
-                <input type="text" value="${ ecuation_db }" class="form-control" disabled>
+                <div class="input-group">
+                    <input type="text" class="form-control" value="${ ecuation_db }" disabled>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></span>
+                    </div>
             </div>`);
         }
 
@@ -396,12 +393,11 @@ function onInit(editor) {
             var node = enc.encode(editor.graph.getModel());
             var textxml = mxUtils.getPrettyXml(node)
             graphData = [];
-            connetion = [];
+            connetionData = [];
             node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
                     'id': node.id,
                     "name": node.getAttribute('name'),
-                    'external': node.getAttribute('externalData'),
                     'resultdb': node.getAttribute('resultdb'),
                     'varcost': node.getAttribute('varcost'),
                     'funcost': node.getAttribute('funcost'),
@@ -410,14 +406,13 @@ function onInit(editor) {
 
             node.querySelectorAll('mxCell').forEach(function(node) {
                 if (node.id != "") {
-                    let varcost = Object.values(JSON.parse(node.getAttribute('value')))[1];
-                    let external = Object.values(JSON.parse(node.getAttribute('value')))[2];
-                    connetion.push({
+                    let value = Object.values(JSON.parse(node.getAttribute('value')));
+                    connetionData.push({
                         'id': node.id,
                         'source': node.getAttribute('source'),
                         'target': node.getAttribute('target'),
-                        'varcost': JSON.stringify(varcost),
-                        'external': JSON.stringify(external)
+                        'external': JSON.stringify(value[2]),
+                        'varcost': JSON.stringify(value[1])
                     })
                 }
             });
@@ -457,9 +452,6 @@ function onInit(editor) {
                 });
             }
 
-            if (selectedCell[0].dbreference == 'EXTERNALINPUT') {
-                //Si se añade un elemento externo
-            }
 
         });
 

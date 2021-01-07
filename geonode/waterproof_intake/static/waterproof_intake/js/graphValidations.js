@@ -65,9 +65,13 @@ function updateStyleLine(graph, cell, type) {
         `WN_ret_${idvar} (Kg)`,
         `WP_ret_${idvar} (Kg)`
     ];
+
+    let external = false;
+    if (type.id == 'EI') external = true;
     let value = {
         "connectorType": type.id,
-        "varcost": varcost
+        "varcost": varcost,
+        "external": external
     };
     value = JSON.stringify(value);
     cell.setValue(value);
