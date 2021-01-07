@@ -4,7 +4,7 @@
  * @version 1.0
  */
 var graphData = [];
-var connetion = [];
+var connetionData = [];
 
 // Program starts here. The document.onLoad executes the
 // createEditor function with a given configuration.
@@ -105,8 +105,50 @@ function onInit(editor) {
     // XML and graphical display
     var textNode = document.getElementById('xml');
     var graphNode = editor.graph.container;
-
     var parent = editor.graph.getDefaultParent();
+    var xmlDocument = mxUtils.createXmlDocument();
+    var sourceNode = xmlDocument.createElement('Symbol');
+    var sourceNode1 = xmlDocument.createElement('Symbol');
+
+
+    //Create River at the beginning of the diagram
+    var river = editor.graph.insertVertex(parent, null, sourceNode1, 40, 30, 60, 60);
+    river.setAttribute('name', 'River');
+    editor.graph.model.setStyle(river, 'rio');
+    var temp = []
+    temp.push(
+        `Q_${river.id} (m³), CSed_${river.id} (mg/l)`,
+        `CN_${river.id} (mg/l), CP_${river.id} (mg/l)`,
+        `WSed_${river.id} (Ton), WN_${river.id} (Kg)`,
+        `WP_${river.id} (Kg),WSed_ret_${river.id} (Ton)`,
+        `WN_ret_${river.id} (Kg), WP_ret_${river.id} (Kg)`
+    );
+
+    river.setAttribute('varcost', JSON.stringify(temp));
+
+    //Create CSINFRA at the beginning of the diagram
+    var vertex = editor.graph.insertVertex(parent, null, sourceNode, 500, 30, 60, 60);
+    vertex.setAttribute('name', 'CSINFRA');
+    editor.graph.model.setStyle(vertex, 'csinfra');
+    var temp2 = []
+    temp2.push(
+        `Q_${vertex.id} (m³), CSed_${vertex.id} (mg/l)`,
+        `CN_${vertex.id} (mg/l), CP_${vertex.id} (mg/l)`,
+        `WSed_${vertex.id} (Ton), WN_${vertex.id} (Kg)`,
+        `WP_${vertex.id} (Kg),WSed_ret_${vertex.id} (Ton)`,
+        `WN_ret_${vertex.id} (Kg), WP_ret_${vertex.id} (Kg)`
+    );
+
+
+    $.ajax({
+        url: `/intake/loadProcess/CSINFRA`,
+        success: function(result) {
+            vertex.setAttribute('varcost', JSON.stringify(temp2));
+            vertex.setAttribute('resultdb', result);
+        }
+    });
+
+
 
     var edge = editor.graph.insertEdge(parent, null, '', parent.children[0], parent.children[1]);
     let value = { "connectorType": connectionsType.EC.id };
@@ -115,7 +157,7 @@ function onInit(editor) {
 
     // Source nodes needs 1..2 connected Targets
     editor.graph.multiplicities.push(new mxMultiplicity(
-        true, 'Symbol', 'name', 'Rio', 1, 2, ['Symbol'],
+        true, 'Symbol', 'name', 'River', 1, 2, ['Symbol'],
         'Rio Must Have 1 or more Elements',
         'Source Must Connect to Target'));
 
@@ -316,7 +358,10 @@ function onInit(editor) {
         $('#ModalAddCostBtn').click(function() {
             $('#VarCostListGroup div').remove();
             for (const index of graphData) {
-                tmp = JSON.parse(index.varcost);
+                var costlabel = "";
+                for (const iterator of JSON.parse(index.varcost)) {
+                    costlabel += `<a href="#" class="list-group-item list-group-item-action">${iterator}</a>`
+                }
                 $('#VarCostListGroup').append(`
                 <div class="panel panel-info">
                     <div class="panel-heading">
@@ -326,16 +371,7 @@ function onInit(editor) {
                     </div>
                     <div id="VarCostListGroup_${index.id}" class="panel-collapse collapse">
                         <div class="panel-body">
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[0]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[1]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[2]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[3]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[4]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[5]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[6]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[7]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[8]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[9]}</a>
+                        ${costlabel}
                         </div>
                     </div>
                 </div>
@@ -346,9 +382,12 @@ function onInit(editor) {
         function funcost(ecuation_db) {
             $('#funcostgenerate div').remove();
             $('#funcostgenerate').append(
-                ` <div class="form-group">
+                `<div class="form-group">
                 <label>Annual Operation and Maintenance Cost</label>
-                <input type="text" value="${ ecuation_db }" class="form-control" disabled>
+                <div class="input-group">
+                    <input type="text" class="form-control" value="${ ecuation_db }" disabled>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></span>
+                    </div>
             </div>`);
         }
 
@@ -357,12 +396,11 @@ function onInit(editor) {
             var node = enc.encode(editor.graph.getModel());
             var textxml = mxUtils.getPrettyXml(node)
             graphData = [];
-            connetion = [];
+            connetionData = [];
             node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
                     'id': node.id,
                     "name": node.getAttribute('name'),
-                    'external': node.getAttribute('externalData'),
                     'resultdb': node.getAttribute('resultdb'),
                     'varcost': node.getAttribute('varcost'),
                     'funcost': node.getAttribute('funcost'),
@@ -371,12 +409,13 @@ function onInit(editor) {
 
             node.querySelectorAll('mxCell').forEach(function(node) {
                 if (node.id != "") {
-                    let varcost = Object.values(JSON.parse(node.getAttribute('value')))[1];
-                    connetion.push({
+                    let value = Object.values(JSON.parse(node.getAttribute('value')));
+                    connetionData.push({
                         'id': node.id,
                         'source': node.getAttribute('source'),
                         'target': node.getAttribute('target'),
-                        'varcost': JSON.stringify(varcost)
+                        'external': JSON.stringify(value[2]),
+                        'varcost': JSON.stringify(value[1])
                     })
                 }
             });
@@ -384,7 +423,7 @@ function onInit(editor) {
             $('#xmlGraph').val(textxml);
             $('#graphElements').val(JSON.stringify(graphData));
             //console.log(textxml);
-            //console.log(connetion);
+            // console.log(connetion);
         });
 
         //load data when add an object in a diagram
@@ -416,9 +455,6 @@ function onInit(editor) {
                 });
             }
 
-            if (selectedCell[0].dbreference == 'EXTERNALINPUT') {
-                //Si se añade un elemento externo
-            }
 
         });
 
@@ -434,30 +470,11 @@ function onInit(editor) {
         //Load data from figure to html
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
             selectedCell = evt.getProperty("cell");
-            if (selectedCell != undefined) {
-                if (selectedCell.getAttribute('resultdb') == undefined) return;
-                resultdb = JSON.parse(selectedCell.getAttribute('resultdb'));
-                if (resultdb.length == 0) return;
-                $('#titleDiagram').text(resultdb[0].fields.categorys);
-                // Add Value to Panel Information Right on HTML
-                $('#aguaDiagram').val(resultdb[0].fields.predefined_transp_water_perc);
-                $('#sedimentosDiagram').val(resultdb[0].fields.predefined_sediment_perc);
-                $('#nitrogenoDiagram').val(resultdb[0].fields.predefined_nitrogen_perc);
-                $('#fosforoDiagram').val(resultdb[0].fields.predefined_phosphorus_perc);
-                /*// Add Validator 
-                $('#aguaDiagram').attr('min', resultdb[0].fields.minimal_transp_water_perc);
-                $('#aguaDiagram').attr('max', resultdb[0].fields.maximal_transp_water_perc);
-                $('#sedimentosDiagram').attr('min', resultdb[0].fields.minimal_sediment_perc);
-                $('#sedimentosDiagram').attr('max', resultdb[0].fields.maximal_sediment_perc);
-                $('#nitrogenoDiagram').attr('min', resultdb[0].fields.minimal_nitrogen_perc);
-                $('#nitrogenoDiagram').attr('max', resultdb[0].fields.maximal_nitrogen_perc);
-                $('#fosforoDiagram').attr('min', resultdb[0].fields.minimal_phosphorus_perc);
-                $('#fosforoDiagram').attr('max', resultdb[0].fields.maximal_phosphorus_perc);*/
-
-                funcost('((11126.6*text(Q)) + 30939.7)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))');
-            }
-
-
+            // Clear Inputs
+            if (selectedCell != undefined) clearDataHtml(selectedCell, evt);
+            //console.log(selectedCell)
+            if (selectedCell != undefined) addData(selectedCell);
+            funcost('((11126.6*text(Q)) + 30939.7)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))');
         });
 
         //Add value entered in sediments in the field resultdb

@@ -37,14 +37,17 @@ const interpolationType = {
     LINEAR: 'LINEAR',
     POTENTIAL: 'POTENTIAL',
     EXPONENTIAL: 'EXPONENTIAL',
-    LOGARITHMIC: 'LOGARITHMIC'
+    LOGISTICS: 'LOGISTICS'
 }
 
 var mapLoader;
 $(document).ready(function () {
     $("#intakeWECB").click(function () {
         $('#intakeECTAG tr').remove();
-        $('#intakeEITA tr').remove();
+        $('#IntakeTDLE table').remove();
+        $('#externalSelect option').remove();
+
+
         $('#autoAdjustHeightF').css("height", "auto");
         typeProcessInterpolation = Number($("#typeProcessInterpolation").val());
         numberYearsInterpolationValue = Number($("#numberYearsInterpolationValue").val());
@@ -75,9 +78,6 @@ $(document).ready(function () {
             waterExtractionData.typeInterpolation = interpolationType.POTENTIAL;
             m = (Math.log(finalDataExtractionInterpolationValue) - Math.log(initialDataExtractionInterpolationValue)) / ((Math.log(numberYearsInterpolationValue) - Math.log(1)));
             b = Math.exp((-1 * m * Math.log(1)) + Math.log(initialDataExtractionInterpolationValue));
-
-            console.log(m);
-            console.log(b);
             for (let index = 1; index <= numberYearsInterpolationValue; index++) {
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
@@ -105,34 +105,71 @@ $(document).ready(function () {
 
         // Interpolación Logistica
         if (typeProcessInterpolation == 4) {
+            waterExtractionData.typeInterpolation = interpolationType.LOGISTICS;
             r = (-Math.log(0.000000001) / initialDataExtractionInterpolationValue);
-            console.log(r)
             for (let index = 0; index <= numberYearsInterpolationValue; index++) {
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
                 <td class="text-center">${((finalDataExtractionInterpolationValue) / (1 + ((finalDataExtractionInterpolationValue / initialDataExtractionInterpolationValue) - 1) * Math.exp(-r * index))).toFixed(2)}</td>
               </tr>`);
             }
-
-
         }
 
-        for (let index = 0; index < numberYearsInterpolationValue; index++) {
-            $('#intakeEITA').append(`<tr>
-                  <th class="text-center" scope="col">${index + 1}</th>
-                  <td class="text-center" scope="col"><input type="text" class="form-control" ></td>
-                  <td class="text-center" scope="col"><input type="text" class="form-control" ></td>
-                  <td class="text-center" scope="col"><input type="text" class="form-control" ></td>
-                  <td class="text-center" scope="col"><input type="text" class="form-control" ></td>
-              </tr>`);
-        }
+        externalInput(numberYearsInterpolationValue);
         // Set object data for later persistence
         waterExtractionData.yearCount = numberYearsInterpolationValue;
         waterExtractionData.initialValue = initialDataExtractionInterpolationValue;
         waterExtractionData.finalValue = finalDataExtractionInterpolationValue;
         waterExtractionData.yearValues = waterExtractionValue;
         $('#waterExtraction').val(JSON.stringify(waterExtractionData));
-        console.log(waterExtractionData);
+
+
+    });
+
+    function externalInput(numYear) {
+        var rows = "";
+        $('#externalSelect').append(`<option value="null" selected>Choose here</option>`);
+        for (let p = 0; p < connetionData.length; p++) {
+            if (connetionData[p].external == 'true') {
+                $('#externalSelect').append(`
+                            <option value="${connetionData[p].id}">${ connetionData[p].id } - External Input</option>
+                 `);
+                rows = "";
+                for (let index = 0; index < numYear; index++) {
+                    rows += (`<tr>
+                                <th class="text-center" scope="col">${index+1}</th>
+                                <td class="text-center" name="waterVolume_${ connetionData[p].id }" scope="col"><input type="text" class="form-control"></td>
+                                <td class="text-center" name="sediment_${ connetionData[p].id }" scope="col"><input type="text" class="form-control"></td>
+                                <td class="text-center" name="nitrogen_${ connetionData[p].id }" scope="col"><input type="text" class="form-control"></td>
+                                <td class="text-center" name="phosphorus_${ connetionData[p].id }" scope="col"><input type="text" class="form-control"></td>
+                          </tr>`);
+                }
+                $('#IntakeTDLE').append(`
+                        <table class="table" id="table_${connetionData[p].id}" style="display: none">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" scope="col">Year</th>
+                                    <th class="text-center" scope="col">Water Volume (m3)</th>
+                                    <th class="text-center" scope="col">Sediment (Ton)</th>
+                                    <th class="text-center" scope="col">Nitrogen (Kg)</th>
+                                    <th class="text-center" scope="col">Phosphorus (Kg)</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>    
+                `);
+            }
+
+        }
+    }
+
+    $('#externalSelect').change(function() {
+        for (let t = 0; t < connetionData.length; t++) {
+            if (connetionData[t].external == 'true') {
+                $(`#table_${connetionData[t].id}`).css('display', 'none');
+            }
+        }
+        $(`#table_${$('#externalSelect').val()}`).css('display', 'block');
     });
 
     $('#smartwizard').smartWizard("next").click(function () {
@@ -171,6 +208,9 @@ $(document).ready(function () {
         toolbarSettings: {
             toolbarPosition: 'bottom', // both bottom
             toolbarButtonPosition: 'center', // both bottom
+        },
+        keyboardSettings: {
+            keyNavigation: false
         }
     });
 
