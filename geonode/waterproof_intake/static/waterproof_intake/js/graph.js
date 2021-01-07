@@ -53,15 +53,15 @@ function onInit(editor) {
     // Removes cells when [DELETE] is pressed
     // elements with id == 2 is River and id==3 is CSINFRA can't remove
     var keyHandler = new mxKeyHandler(editor.graph);
-    keyHandler.bindKey(46, function(evt){
-        if (editor.graph.isEnabled()){
+    keyHandler.bindKey(46, function(evt) {
+        if (editor.graph.isEnabled()) {
             let cells = editor.graph.getSelectionCells();
-            let cells2Remove = cells.filter(cell => (cell.style != "rio" && 
-                                            cell.style != "csinfra" && 
-                                            cell.style != connectionsType.EC.style) || 
-                                            parseInt(cell.id)  > 4);
-            if (cells2Remove.length > 0){
-                editor.graph.removeCells(cells2Remove);    
+            let cells2Remove = cells.filter(cell => (cell.style != "rio" &&
+                    cell.style != "csinfra" &&
+                    cell.style != connectionsType.EC.style) ||
+                parseInt(cell.id) > 4);
+            if (cells2Remove.length > 0) {
+                editor.graph.removeCells(cells2Remove);
             }
         }
     });
@@ -69,11 +69,11 @@ function onInit(editor) {
     editor.graph.setAllowDanglingEdges(false);
     editor.graph.setMultigraph(false);
 
-    var listener = function(sender, evt){
+    var listener = function(sender, evt) {
         editor.graph.validateGraph();
     };
 
-    editor.graph.getModel().addListener(mxEvent.CHANGE, listener);       
+    editor.graph.getModel().addListener(mxEvent.CHANGE, listener);
 
     // Updates the title if the root changes
     var title = document.getElementById('title');
@@ -109,22 +109,22 @@ function onInit(editor) {
     var parent = editor.graph.getDefaultParent();
 
     var edge = editor.graph.insertEdge(parent, null, '', parent.children[0], parent.children[1]);
-    let value = {"connectorType" : connectionsType.EC.id};
+    let value = { "connectorType": connectionsType.EC.id };
     edge.setValue(JSON.stringify(value));
-    editor.graph.model.setStyle(edge, connectionsType.EC.style); 
+    editor.graph.model.setStyle(edge, connectionsType.EC.style);
 
     // Source nodes needs 1..2 connected Targets
     editor.graph.multiplicities.push(new mxMultiplicity(
         true, 'Symbol', 'name', 'Rio', 1, 2, ['Symbol'],
         'Rio Must Have 1 or more Elements',
-        'Source Must Connect to Target')); 
+        'Source Must Connect to Target'));
 
     // Target needs exactly one incoming connection from Source
     editor.graph.multiplicities.push(new mxMultiplicity(
         false, 'Symbol', 'name', 'CSINFRA', 1, 1, ['Symbol'],
         'Target Must Have 1 Source',
         'Target Must Connect From Source'));
-        
+
     var getdata = document.getElementById('getdata');
     getdata.checked = false;
 
@@ -295,55 +295,6 @@ function onInit(editor) {
         //node.appendChild(button);
     }
 
-    $("#validate_btn").on("click", function() {
-
-        return;
-
-        let cells = editor.graph.getModel().cells;
-        graphView = editor.graph.getView();
-        notConnectedCells.length = 0;
-        // create an array of cells and reset the color
-        for (let key in cells) {
-            if (!cells.hasOwnProperty(key)) continue;
-
-            let mxCell = cells[key];
-            if (!mxCell.isVertex() && !mxCell.isEdge()) continue;
-            notConnectedCells.push(mxCell);
-            let state = graphView.getState(mxCell);
-
-            console.log(state)
-            //resetColor(state);
-        }
-
-        // starts with the parent cell
-        let parentCell = notConnectedCells.find(c => c.id === parentCellId);
-        //validate(parentCell);
-        //setNotConnectedColor();
-    })
-
-    /* Create select actions in page
-    var node = document.getElementById('selectActions');
-    mxUtils.write(node, 'Select: ');
-    mxUtils.linkAction(node, 'All', editor, 'selectAll');
-    mxUtils.write(node, ', ');
-    mxUtils.linkAction(node, 'None', editor, 'selectNone');
-    mxUtils.write(node, ', ');
-    mxUtils.linkAction(node, 'Vertices', editor, 'selectVertices');
-    mxUtils.write(node, ', ');
-    mxUtils.linkAction(node, 'Edges', editor, 'selectEdges');
-    */
-    // Create select actions in page
-    /*var node = document.getElementById('zoomActions');
-    mxUtils.write(node, 'Zoom: ');
-    mxUtils.linkAction(node, 'In', editor, 'zoomIn');
-    mxUtils.write(node, ', ');
-    mxUtils.linkAction(node, 'Out', editor, 'zoomOut');
-    mxUtils.write(node, ', ');
-    mxUtils.linkAction(node, 'Actual', editor, 'actualSize');
-    mxUtils.write(node, ', ');
-    mxUtils.linkAction(node, 'Fit', editor, 'fit');*/
-
-    
     //use jquery
     $(document).ready(function() {
 
@@ -525,7 +476,13 @@ function onInit(editor) {
         $('#fosforoDiagram').keyup(function() {
             resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
             selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
-        });   
+        });
+
+        //Add value entered in aguaDiagram in the field resultdb
+        $('#aguaDiagram').keyup(function() {
+            resultdb[0].fields.predefined_transp_water_perc = $('#aguaDiagram').val();
+            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+        });
 
     });
 
