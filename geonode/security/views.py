@@ -38,9 +38,7 @@ from geonode.base.models import (
 from geonode.layers.models import Layer
 from geonode.groups.models import GroupProfile
 
-from geonode.notifications_helper import (send_notification, queue_notification,
-                                          has_notifications, get_notification_recipients,
-                                          get_comment_notification_recipients)
+from geonode.notifications_helper import send_notification
 
 logger = logging.getLogger(__name__)
 
