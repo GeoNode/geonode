@@ -10,9 +10,8 @@ from django.contrib import messages
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext as _
-from .models import ExternalInputs
-from .models import City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction
-from geonode.waterproof_nbs_ca.models import Countries,Region
+from .models import ExternalInputs, City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction, ElementSystem, ExternalInputs
+from geonode.waterproof_nbs_ca.models import Countries, Region
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from django.core import serializers
 from django.http import JsonResponse
@@ -38,9 +37,8 @@ def create(request):
             interpolationString = request.POST.get('waterExtraction')
             interpolation = json.loads(interpolationString)
             intakeAreaString = request.POST.get('areaGeometry')
-            graphElementsString=request.POST.get('graphElements')
+            graphElementsString = request.POST.get('graphElements')
             graphElements = json.loads(graphElementsString)
-            print(graphElements)
             if (isFile == 'true'):
                 # Validate file's extension
                 if (typeDelimitFile == 'geojson'):
@@ -67,7 +65,6 @@ def create(request):
                 years_number=interpolation['yearCount'],
                 is_manual=True,
             )
-            
 
             for extraction in interpolation['yearValues']:
                 water_extraction = WaterExtraction.objects.create(
@@ -78,10 +75,29 @@ def create(request):
             intake.area = intakeAreaGeom
             intake.xml_graph = xmlGraph
             intake.demand_parameters = demand_parameters
-            intake.creation_date=datetime.datetime.now()
-            intake.updated_date=datetime.datetime.now()
+            intake.creation_date = datetime.datetime.now()
+            intake.updated_date = datetime.datetime.now()
             intake.added_by = request.user
             intake.save()
+            intakeCreated = Intake.objects.get(id=intake.pk)
+
+            for element in graphElements:
+                # River element has diferent parameters
+                if (element['id'] == '2'):
+                    print('River element')
+                #
+                else:
+                    parameter = json.loads(element['resultdb'])
+                    element_system = ElementSystem.objects.create(
+                        name=element['name'],
+                        normalized_category=parameter[0]['fields']['normalized_category'],
+                        origin=1,
+                        destination=2,
+                        sediment=parameter[0]['fields']['maximal_sediment_perc'],
+                        nitrogen=parameter[0]['fields']['maximal_nitrogen_perc'],
+                        phosphorus=parameter[0]['fields']['maximal_phosphorus_perc'],
+                        intake=intakeCreated
+                    )
             messages.success(request, ("Water Intake created."))
         else:
             messages.error(request, ("Water Intake not created."))
@@ -141,6 +157,8 @@ def listIntake(request):
 
 
 """
+
+
 Load process by ID
 
 Attributes
