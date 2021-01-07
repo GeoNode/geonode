@@ -147,9 +147,9 @@ DATABASES = {
    'default': {
        'ENGINE': 'django.contrib.gis.db.backends.postgis',
        'NAME': 'geonode',
-       'USER': 'postgres',
-       'PASSWORD': 'Skaphe2020',
-       'HOST': '127.0.0.1',
+       'USER': 'geonode',
+       'PASSWORD': 'geonode_data',
+       'HOST': 'dev.skaphe.com',
        'PORT': '5432',
    }
 }
