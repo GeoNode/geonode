@@ -1,8 +1,8 @@
-const connectionsType={
-    EC: {name:'Extraction connection', id:'EC', style:'Extraction_connection'},
-    EI: {name:'External input', id:'EI', style:'External_input'},
-    PL: {name:'Pipeline', id:'PL', style:'Pipeline'},
-    CN: {name:'Connection', id:'CN', style:'Connection'},
+const connectionsType = {
+    EC: { name: 'Extraction connection', id: 'EC', style: 'Extraction_connection' },
+    EI: { name: 'External input', id: 'EI', style: 'External_input' },
+    PL: { name: 'Pipeline', id: 'PL', style: 'Pipeline' },
+    CN: { name: 'Connection', id: 'CN', style: 'Connection' },
 }
 
 function customMenuForConnectors() {
@@ -65,9 +65,13 @@ function updateStyleLine(graph, cell, type) {
         `WN_ret_${idvar} (Kg)`,
         `WP_ret_${idvar} (Kg)`
     ];
+
+    let external = false;
+    if (type.id == 'EI') external = true;
     let value = {
         "connectorType": type.id,
-        "varcost": varcost
+        "varcost": varcost,
+        "external": external
     };
     value = JSON.stringify(value);
     cell.setValue(value);
