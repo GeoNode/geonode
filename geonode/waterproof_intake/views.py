@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext as _
-from .models import ExternalInputs, City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction, ElementSystem
+from .models import ExternalInputs, City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction, ElementSystem, ExternalInputs
 from geonode.waterproof_nbs_ca.models import Countries, Region
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from django.core import serializers
@@ -66,20 +66,6 @@ def create(request):
                 is_manual=True,
             )
 
-            for element in graphElements:
-                if (element['id'] == '2'):
-                    print('Es un río')
-                else:
-                    parameter = json.loads(element['resultdb'])
-                    element_system = ElementSystem.objects.create(
-                        name=element['name'],
-                        normalized_category=parameter[0]['fields']['normalized_category'],
-                        origin=1,
-                        destination=2,
-                        sediment=parameter[0]['fields']['maximal_sediment_perc'],
-                        nitrogen=parameter[0]['fields']['maximal_nitrogen_perc'],
-                        phosphorus=parameter[0]['fields']['maximal_phosphorus_perc']
-                    )
             for extraction in interpolation['yearValues']:
                 water_extraction = WaterExtraction.objects.create(
                     year=extraction['year'],
@@ -93,6 +79,25 @@ def create(request):
             intake.updated_date = datetime.datetime.now()
             intake.added_by = request.user
             intake.save()
+            intakeCreated = Intake.objects.get(id=intake.pk)
+
+            for element in graphElements:
+                # River element has diferent parameters
+                if (element['id'] == '2'):
+                    print('River element')
+                #
+                else:
+                    parameter = json.loads(element['resultdb'])
+                    element_system = ElementSystem.objects.create(
+                        name=element['name'],
+                        normalized_category=parameter[0]['fields']['normalized_category'],
+                        origin=1,
+                        destination=2,
+                        sediment=parameter[0]['fields']['maximal_sediment_perc'],
+                        nitrogen=parameter[0]['fields']['maximal_nitrogen_perc'],
+                        phosphorus=parameter[0]['fields']['maximal_phosphorus_perc'],
+                        intake=intakeCreated
+                    )
             messages.success(request, ("Water Intake created."))
         else:
             messages.error(request, ("Water Intake not created."))
