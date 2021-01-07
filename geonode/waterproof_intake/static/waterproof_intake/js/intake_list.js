@@ -3,7 +3,7 @@
  * @author Luis Saltron
  * @version 1.0
  */
-$(function () {
+$(function() {
     var table = $('#example').DataTable();
     var countryDropdown = $('#countryNBS');
     var currencyDropdown = $('#currencyCost');
@@ -24,23 +24,23 @@ $(function () {
         weight: 0.2,
         fillOpacity: 0
     };
-    initialize = function () {
+    initialize = function() {
         console.log('init event loaded');
         // Transformations widget change option event
-        $('#menu-toggle').click(function (e) {
+        $('#menu-toggle').click(function(e) {
             e.preventDefault();
             $('#wrapper').toggleClass('toggled');
         });
 
         // show/hide div with checkbuttons 
-        $("#riosTransition").change(function () {
+        $("#riosTransition").change(function() {
             dato = $("#riosTransition").val();
             var data_value = $(`#selectlanduse${dato}`).attr('data-value');
-            $('div[name=selectlanduse]').each(function () {
+            $('div[name=selectlanduse]').each(function() {
                 $('div[name=selectlanduse]').css({
                     "display": "none"
                 });
-                $('div[name=selectlanduse]').find('input[type=checkbox]:checked').each(function (idx, input) {
+                $('div[name=selectlanduse]').find('input[type=checkbox]:checked').each(function(idx, input) {
                     input.checked = false;
                 });
             });
@@ -51,182 +51,86 @@ $(function () {
             }
         });
         fillTransitionsDropdown(transitionsDropdown);
-        submitFormEvent();
+
         changeCountryEvent(countryDropdown, currencyDropdown);
         changeFileEvent();
-    };
-    submitFormEvent = function () {
-        console.log('submit event loaded');
-        var formData = new FormData();
-        $('#submit').on('click', function () {
-            // NBS name
-            formData.append('nameNBS', $('#nameNBS').val());
-            // NBS description
-            formData.append('descNBS', $('#descNBS').val());
-            // NBS country
-            formData.append('countryNBS', $('#countryNBS').val());
-            // NBS currency cost
-            formData.append('currencyCost', $('#currencyCost').val());
-            // NBS Time required to generate maximun benefit (yr)
-            formData.append('maxBenefitTime', $('#maxBenefitTime').val());
-            // NBS Percentage of benefit associated with interventions at time t=0
-            formData.append('benefitTimePorc', $('#benefitTimePorc').val());
-            // NBS Consecution Time Total Benefits
-            formData.append('totalConsecTime', $('#totalConsecTime').val());
-            // NBS Maintenance Perodicity
-            formData.append('maintenancePeriod', $('#maintenancePeriod').val());
-            // NBS Unit Implementation Cost (US$/ha)
-            formData.append('implementCost', $('#implementCost').val());
-            // NBS Unit Maintenace Cost (US$/ha)
-            formData.append('maintenanceCost', $('#maintenanceCost').val());
-            // NBS Unit Oportunity Cost (US$/ha)
-            formData.append('oportunityCost', $('#oportunityCost').val());
-            // NBS RIOS Transformations selected
-            formData.append('riosTransformation', getTransformationsSelected());
-            var file = $('#restrictedArea')[0].files[0];
-            // validate extension file
-            var extension = validExtension(file);
-            if (extension.extension == 'geojson') { //GeoJSON
-                // Restricted area extension file
-                formData.append('extension', 'geojson');
-                // NBS restricted area geographic file
-                formData.append('restrictedArea', $('#restrictedArea')[0].files[0]);
-                // Type action for view
-                formData.append('action', 'create-nbs');
-                // Required session token
-                formData.append('csrfmiddlewaretoken', token);
-                $.ajax({
-                    type: 'POST',
-                    url: '/waterproof_nbs_ca/create/' + countryId,
-                    data: formData,
-                    cache: false,
-                    processData: false,
-                    contentType: false,
-                    enctype: 'multipart/form-data',
-                    success: function () {
-                        Swal.fire(
-                            'Excelente',
-                            'La SBN ha sido guardada con éxito',
-                            'success'
-                        )
-                        setTimeout(function () { location.href = "/waterproof_nbs_ca/"; }, 1000);
-                    },
-                    error: function (xhr, errmsg, err) {
-                        console.log(xhr.status + ":" + xhr.responseText)
-                    }
-                });
-            } else { // ZIP
-                var reader = new FileReader();
-                reader.onload = function (evt) {
-                    var contents = evt.target.result;
-                    shp(contents).then(function (shpToGeojson) {
-                        var restrictedArea = JSON.stringify(shpToGeojson);
-                        // Restricted area extension file
-                        formData.append('extension', 'zip');
-                        // NBS restricted area geographic file
-                        formData.append('restrictedArea', restrictedArea);
-                        // Type action for view
-                        formData.append('action', 'create-nbs');
-                        // Required session token
-                        formData.append('csrfmiddlewaretoken', token);
-                        $.ajax({
-                            type: 'POST',
-                            url: '/waterproof_nbs_ca/create/' + countryId,
-                            data: formData,
-                            cache: false,
-                            processData: false,
-                            contentType: false,
-                            enctype: 'multipart/form-data',
-                            success: function () {
-                                Swal.fire(
-                                    'Excelente',
-                                    'La SBN ha sido guardada con éxito',
-                                    'success'
-                                )
-                                setTimeout(function () { location.href = "/waterproof_nbs_ca/"; }, 1000);
-                            },
-                            error: function (xhr, errmsg, err) {
-                                console.log(xhr.status + ":" + xhr.responseText)
-                            }
-                        });
-                    });
-                };
-                reader.onerror = function (event) {
-                    console.error("File could not be read! Code " + event.target.error.code);
-                    //alert("El archivo no pudo ser cargado: " + event.target.error.code);
-                };
-                reader.readAsArrayBuffer(file);
-            }
-        });
+        initMap();
     };
     /** 
-    * Initialize map 
-    */
+     * Initialize map 
+     */
     API_URL = '/proxy/?url=https://photon.komoot.de/api/?';
     TILELAYER = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
     CENTER = [-74.4879, 4.582];
     MAXZOOM = 11;
 
-    initMap = function () {
-        
+    initMap = function() {
+
         //var map = L.map('map').setView([4, -74],5);
         //var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         //    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
         //});
         //map.addLayer(osm);
-        
-        var map = L.map('mapidcuenca', {scrollWheelZoom: false, zoomControl: false, photonControl: true, photonControlOptions: {resultsHandler: showSearchPoints, placeholder: 'Search City...', position: 'topleft', url: API_URL}});
-        map.setView([4, -72],5);
+
+        var map = L.map('mapidcuenca', { scrollWheelZoom: false, zoomControl: false, photonControl: true, photonControlOptions: { resultsHandler: showSearchPoints, placeholder: 'Search City...', position: 'topleft', url: API_URL } });
+        map.setView([4, -72], 5);
+
         searchPoints.addTo(map);
-        var tilelayer = L.tileLayer(TILELAYER, {maxZoom: MAXZOOM, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 Komoot'}).addTo(map);
-        var zoomControl = new L.Control.Zoom({position: 'topright'}).addTo(map);
+
+        var tilelayer = L.tileLayer(TILELAYER, { maxZoom: MAXZOOM, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 Komoot' }).addTo(map);
+        var zoomControl = new L.Control.Zoom({ position: 'topright' }).addTo(map);
 
         var c = new L.Control.Coordinates();
         L.control.mapCenterCoord().addTo(map);
-		  c.addTo(map);
+        c.addTo(map);
+
 
         function onMapClick(e) {
-            c.setCoordinates(e);      
+            c.setCoordinates(e);
         }
         map.on('click', onMapClick);
     }
 
     var searchPoints = L.geoJson(null, {
-        onEachFeature: function (feature, layer) {
+        onEachFeature: function(feature, layer) {
             layer.bindPopup(feature.properties.name);
         }
     });
 
-    function showSearchPoints (geojson) {
+    function showSearchPoints(geojson) {
         searchPoints.clearLayers();
-        let geojsonFilter = geojson.features.filter(feature  => feature.properties.type == "city");
+        let geojsonFilter = geojson.features.filter(feature => feature.properties.type == "city");
         searchPoints.addData(geojsonFilter);
+        let cityName = geojsonFilter[0].properties.name;
+        console.log(geojsonFilter[0].properties.name)
+        table.search(cityName.substr(0, 2)).draw();
+
     }
 
-    udpateCreateUrl = function (countryId) {
-       $('#createUrl').attr('href','create/'+countryId)
+    udpateCreateUrl = function(countryId) {
+        $('#createUrl').attr('href', 'create/' + countryId)
     };
     /** 
-    * Get the transformations selected
-    * @param {Array} transformations transformations selected
-    */
-    getTransformationsSelected = function () {
+     * Get the transformations selected
+     * @param {Array} transformations transformations selected
+     */
+    getTransformationsSelected = function() {
         var transformations = [];
         // Obtención de valores de los check de la solución
-        $('input[name=itemRT]:checked').each(function () {
+        $('input[name=itemRT]:checked').each(function() {
             transformations.push($(this).val());
         });
         return transformations;
     };
     /** 
-  * Change currency option based in country selected
-  * @param {HTML} countryDropdown    Country dropdown
-  * @param {HTML} currencyDropdown   Currency  dropdown
-  *
-  */
-    changeCountryEvent = function (countryDropdown, currencyDropdown) {
+     * Change currency option based in country selected
+     * @param {HTML} countryDropdown    Country dropdown
+     * @param {HTML} currencyDropdown   Currency  dropdown
+     *
+     */
+    changeCountryEvent = function(countryDropdown, currencyDropdown) {
         // Rios transitions dropdown listener
-        countryDropdown.click(function (event, params) {
+        countryDropdown.click(function(event, params) {
             // Get load activities from urls Django parameter
             var country_id = $(this).val();
             var countryName = $(this).find(':selected').text();
@@ -235,8 +139,7 @@ $(function () {
                 if (!params.mapClick) {
                     updateCountryMap(countryCode);
                 }
-            }
-            else {
+            } else {
                 updateCountryMap(countryCode);
             }
             /** 
@@ -251,7 +154,7 @@ $(function () {
                 data: {
                     'country': country_id
                 },
-                success: function (result) {
+                success: function(result) {
                     result = JSON.parse(result);
                     currencyDropdown.val(result[0].pk);
                     $('#currencyLabel').text('(' + result[0].fields.code + ') - ' + result[0].fields.name);
@@ -268,7 +171,7 @@ $(function () {
                         data: {
                             'country': country_id
                         },
-                        success: function (result) {
+                        success: function(result) {
                             result = JSON.parse(result);
                             $('#regionLabel').text(result[0].fields.name);
 
@@ -278,27 +181,27 @@ $(function () {
             });
         });
     };
-    updateCountryMap = function (countryCode) {
-        map.eachLayer(function (layer) {
-            if (layer.feature) {
-                if (layer.feature.id == countryCode) {
-                    if (lastClickedLayer) {
-                        lastClickedLayer.setStyle(defaultStyle);
+    updateCountryMap = function(countryCode) {
+            map.eachLayer(function(layer) {
+                if (layer.feature) {
+                    if (layer.feature.id == countryCode) {
+                        if (lastClickedLayer) {
+                            lastClickedLayer.setStyle(defaultStyle);
+                        }
+                        layer.setStyle(highlighPolygon);
+                        map.fitBounds(layer.getBounds());
+                        lastClickedLayer = layer;
                     }
-                    layer.setStyle(highlighPolygon);
-                    map.fitBounds(layer.getBounds());
-                    lastClickedLayer = layer;
                 }
-            }
-        });
-    
-    }
-    /** 
-     * Validate input file on change
-     * @param {HTML} dropdown Dropdown selected element
-     */
-    changeFileEvent = function () {
-        $('#restrictedArea').change(function (evt) {
+            });
+
+        }
+        /** 
+         * Validate input file on change
+         * @param {HTML} dropdown Dropdown selected element
+         */
+    changeFileEvent = function() {
+        $('#restrictedArea').change(function(evt) {
             var file = evt.currentTarget.files[0];
             var extension = validExtension(file);
             // Validate file's extension
@@ -307,7 +210,7 @@ $(function () {
                 // Validate file's extension
                 if (extension.extension == 'geojson') { //GeoJSON
                     var readerGeoJson = new FileReader();
-                    readerGeoJson.onload = function (evt) {
+                    readerGeoJson.onload = function(evt) {
                         var contents = evt.target.result;
                         geojson = JSON.parse(contents);
                         loadFile(geojson, file.name);
@@ -321,10 +224,10 @@ $(function () {
                         readPrj = false,
                         prj, coord = true;
                     var prjName;
-                    reader.onload = function (evt) {
+                    reader.onload = function(evt) {
                         var contents = evt.target.result;
-                        JSZip.loadAsync(file).then(function (zip) {
-                            zip.forEach(function (relativePath, zipEntry) {
+                        JSZip.loadAsync(file).then(function(zip) {
+                            zip.forEach(function(relativePath, zipEntry) {
                                 filename = zipEntry.name.toLocaleLowerCase();
                                 if (filename.indexOf(".shp") != -1) {
                                     readShp = true;
@@ -342,7 +245,7 @@ $(function () {
                             });
                             // Valid shapefile with minimum files req
                             if (readShp && readDbf && readPrj && readShx) {
-                                zip.file(prjName).async("string").then(function (data) {
+                                zip.file(prjName).async("string").then(function(data) {
                                     prj = data;
                                     // Validar sistema de referencia
                                     if (prj.toLocaleLowerCase().indexOf("gcs_wgs_1984") == -1) {
@@ -354,10 +257,10 @@ $(function () {
                                     }
                                     // Shapefile válido
                                     else {
-                                        shp(contents).then(function (shpToGeojson) {
+                                        shp(contents).then(function(shpToGeojson) {
                                             geojson = shpToGeojson;
                                             //loadShapefile(geojson, file.name);
-                                        }).catch(function (e) {
+                                        }).catch(function(e) {
                                             Swal.fire({
                                                 icon: 'error',
                                                 title: 'Error en shapefile',
@@ -403,7 +306,7 @@ $(function () {
                             }
                         });
                     };
-                    reader.onerror = function (event) {
+                    reader.onerror = function(event) {
                         console.error("File could not be read! Code " + event.target.error.code);
                         //alert("El archivo no pudo ser cargado: " + event.target.error.code);
                     };
@@ -418,7 +321,7 @@ $(function () {
             }
         });
     };
-    checkEmptyFile = function () {
+    checkEmptyFile = function() {
 
     };
     /** 
@@ -426,12 +329,12 @@ $(function () {
      * @param {HTML} dropdown Dropdown selected element
      *
      */
-    fillTransitionsDropdown = function (dropdown) {
+    fillTransitionsDropdown = function(dropdown) {
         $.ajax({
             url: '/waterproof_nbs_ca/load-transitions',
-            success: function (result) {
+            success: function(result) {
                 result = JSON.parse(result);
-                $.each(result, function (index, transition) {
+                $.each(result, function(index, transition) {
                     dropdown.append($("<option />").val(transition.pk).text(transition.fields.name));
                 });
                 dropdown.val(1).change();
@@ -444,7 +347,7 @@ $(function () {
      *
      * @return {Object} extension Object contain extension and is valid
      */
-    validExtension = function (file) {
+    validExtension = function(file) {
         var fileExtension = {};
         if (file.name.lastIndexOf(".") > 0) {
             var extension = file.name.substring(file.name.lastIndexOf(".") + 1, file.name.length);
@@ -459,7 +362,7 @@ $(function () {
         }
         return fileExtension;
     };
-    loadFile = function (file, name) {
+    loadFile = function(file, name) {
         console.log('Start loading file function!');
     };
     // Init 
