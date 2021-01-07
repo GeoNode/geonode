@@ -28,7 +28,7 @@
         <p><b>Currency:</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
     </div>
     <div class="col-md-8">
-        <div id="map" style="width: 700px; height: 200px;"></div>
+        <div id="mapidcuenca" style="width: 700px; height: 200px;"></div>
 
     </div>
 </div>
@@ -106,7 +106,7 @@
 
 {% block body %}{% endblock body %} {% block sidebar %}{% endblock sidebar %} {% endblock body_outer %} {% block extra_script %}
 <script>
-    var countriesLayerUrl = '{{ STATIC_URL }}waterproof_nbs_ca/data/countries.geojson';
+        var countriesLayerUrl = '{{ STATIC_URL }}waterproof_intake/data/countries.geojson';
     var userCountryId='{{userCountry.id}}';
     var userCountryCode='{{userCountry.code}}';
     var userCountryName='{{userCountry.name}}';
