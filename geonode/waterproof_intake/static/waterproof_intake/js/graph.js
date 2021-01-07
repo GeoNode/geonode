@@ -54,16 +54,7 @@ function onInit(editor) {
     // elements with id == 2 is River and id==3 is CSINFRA can't remove
     var keyHandler = new mxKeyHandler(editor.graph);
     keyHandler.bindKey(46, function(evt) {
-        if (editor.graph.isEnabled()) {
-            let cells = editor.graph.getSelectionCells();
-            let cells2Remove = cells.filter(cell => (cell.style != "rio" &&
-                    cell.style != "csinfra" &&
-                    cell.style != connectionsType.EC.style) ||
-                parseInt(cell.id) > 4);
-            if (cells2Remove.length > 0) {
-                editor.graph.removeCells(cells2Remove);
-            }
-        }
+        deleteWithValidations(editor);
     });
 
     editor.graph.setAllowDanglingEdges(false);
