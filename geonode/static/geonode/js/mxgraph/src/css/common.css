@@ -128,7 +128,8 @@ img.mxToolbarModeSelected {
     margin-bottom: 2px;
     border-width: 2px;
     border-style: inset;
-    height: 79px;
+    height: 0px;
+    display: none;
 }
 
 div.mxTooltip {
