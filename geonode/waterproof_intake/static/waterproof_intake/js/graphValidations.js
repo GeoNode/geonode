@@ -119,5 +119,5 @@ function addData(element) {
     $('#nitrogenoDiagram').attr('max', resultdb[0].fields.maximal_nitrogen_perc);
     $('#fosforoDiagram').attr('min', resultdb[0].fields.minimal_phosphorus_perc);
     $('#fosforoDiagram').attr('max', resultdb[0].fields.maximal_phosphorus_perc);
-    funcost('((11126.6*text(Q)) + 30939.7)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))');
+
 }

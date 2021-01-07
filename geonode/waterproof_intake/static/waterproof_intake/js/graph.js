@@ -115,31 +115,35 @@ function onInit(editor) {
     var river = editor.graph.insertVertex(parent, null, sourceNode1, 40, 30, 60, 60);
     river.setAttribute('name', 'River');
     editor.graph.model.setStyle(river, 'rio');
-    river.setAttribute('varcost', [
-        `Q_${river.id} (m³)`, `CSed_${river.id} (mg/l)`,
-        `CN_${river.id} (mg/l)`, `CP_${river.id} (mg/l)`,
-        `WSed_${river.id} (Ton)`, `WN_${river.id} (Kg)`,
-        `WP_${river.id} (Kg)`, `WSed_ret_${river.id} (Ton)`,
-        `WN_ret_${river.id} (Kg)`, `WP_ret_${river.id} (Kg)`
-    ]);
+    var temp = []
+    temp.push(
+        `Q_${river.id} (m³), CSed_${river.id} (mg/l)`,
+        `CN_${river.id} (mg/l), CP_${river.id} (mg/l)`,
+        `WSed_${river.id} (Ton), WN_${river.id} (Kg)`,
+        `WP_${river.id} (Kg),WSed_ret_${river.id} (Ton)`,
+        `WN_ret_${river.id} (Kg), WP_ret_${river.id} (Kg)`
+    );
+
+    river.setAttribute('varcost', JSON.stringify(temp));
 
     //Create CSINFRA at the beginning of the diagram
     var vertex = editor.graph.insertVertex(parent, null, sourceNode, 500, 30, 60, 60);
     vertex.setAttribute('name', 'CSINFRA');
     editor.graph.model.setStyle(vertex, 'csinfra');
-    var varcost = [
-        `Q_${vertex.id} (m³)`, `CSed_${vertex.id} (mg/l)`,
-        `CN_${vertex.id} (mg/l)`, `CP_${vertex.id} (mg/l)`,
-        `WSed_${vertex.id} (Ton)`, `WN_${vertex.id} (Kg)`,
-        `WP_${vertex.id} (Kg)`, `WSed_ret_${vertex.id} (Ton)`,
-        `WN_ret_${vertex.id} (Kg)`, `WP_ret_${vertex.id} (Kg)`
-    ];
+    var temp2 = []
+    temp2.push(
+        `Q_${vertex.id} (m³), CSed_${vertex.id} (mg/l)`,
+        `CN_${vertex.id} (mg/l), CP_${vertex.id} (mg/l)`,
+        `WSed_${vertex.id} (Ton), WN_${vertex.id} (Kg)`,
+        `WP_${vertex.id} (Kg),WSed_ret_${vertex.id} (Ton)`,
+        `WN_ret_${vertex.id} (Kg), WP_ret_${vertex.id} (Kg)`
+    );
 
 
     $.ajax({
         url: `/intake/loadProcess/CSINFRA`,
         success: function(result) {
-            vertex.setAttribute('varcost', varcost);
+            vertex.setAttribute('varcost', JSON.stringify(temp2));
             vertex.setAttribute('resultdb', result);
         }
     });
@@ -419,7 +423,7 @@ function onInit(editor) {
             $('#xmlGraph').val(textxml);
             $('#graphElements').val(JSON.stringify(graphData));
             //console.log(textxml);
-           // console.log(connetion);
+            // console.log(connetion);
         });
 
         //load data when add an object in a diagram
@@ -470,6 +474,7 @@ function onInit(editor) {
             clearDataHtml(selectedCell, evt);
             //console.log(selectedCell)
             if (selectedCell != undefined) addData(selectedCell);
+            funcost('((11126.6*text(Q)) + 30939.7)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))');
         });
 
         //Add value entered in sediments in the field resultdb
