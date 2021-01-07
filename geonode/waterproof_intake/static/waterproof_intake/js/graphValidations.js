@@ -83,3 +83,33 @@ function updateStyleLine(graph, cell, type) {
     graph.model.setStyle(cell, type.style);
 
 }
+
+function deleteWithValidations(editor){
+    let msg = "Selected element is connected with Extraction connection element. Can't be deleted!";
+    if (editor.graph.isEnabled()) {
+        let cells = editor.graph.getSelectionCells();
+        let cells2Remove = cells.filter(cell => (cell.style != "rio" &&
+                cell.style != "csinfra" &&
+                cell.style != connectionsType.EC.style) ||
+            parseInt(cell.id) > 4);
+        if (cells2Remove.length > 0) {
+            let vertexIsEC = false;
+            cells2Remove.filter(cell =>{
+                if (cell.edges.length > 0){
+                    for (let c in cell.edges){
+                        if (cell.edges[c].style == connectionsType.EC.style){
+                            vertexIsEC = true;
+                            break;
+                        }
+                    }
+                }
+            });
+            if (vertexIsEC){
+                mxUtils.alert(msg);                
+            }else{
+                editor.graph.removeCells(cells2Remove);
+            }
+            
+        }
+    }
+}
