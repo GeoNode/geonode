@@ -38,8 +38,9 @@ from geonode.base.models import (
 from geonode.layers.models import Layer
 from geonode.groups.models import GroupProfile
 
-if "notification" in settings.INSTALLED_APPS:
-    from notification import models as notification
+from geonode.notifications_helper import (send_notification, queue_notification,
+                                          has_notifications, get_notification_recipients,
+                                          get_comment_notification_recipients)
 
 logger = logging.getLogger(__name__)
 
@@ -432,11 +433,9 @@ def request_permissions(request):
     uuid = request.POST['uuid']
     resource = get_object_or_404(ResourceBase, uuid=uuid)
     try:
-        notification.send(
-            [resource.owner],
-            'request_download_resourcebase',
-            {'from_user': request.user, 'resource': resource}
-        )
+        send_notification([resource.owner],
+                          'request_download_resourcebase',
+                          {'resource': resource, 'from_user': request.user})
         return HttpResponse(
             json.dumps({'success': 'ok', }),
             status=200,
@@ -452,11 +451,9 @@ def request_permissions(request):
 def send_email_consumer(layer_uuid, user_id):
     resource = get_object_or_404(ResourceBase, uuid=layer_uuid)
     user = get_user_model().objects.get(id=user_id)
-    notification.send(
-        [resource.owner],
-        'request_download_resourcebase',
-        {'from_user': user, 'resource': resource}
-    )
+    send_notification([resource.owner],
+                      'request_download_resourcebase',
+                      {'resource': resource, 'from_user': user})
 
 
 def send_email_owner_on_view(owner, viewer, layer_id, geonode_email="email@geo.node"):
