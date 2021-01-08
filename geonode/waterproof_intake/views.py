@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext as _
-from .models import ExternalInputs, City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction, ElementSystem, ExternalInputs
+from .models import ExternalInputs, City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction, ElementSystem, ExternalInputs,CostFunctionsProcess
 from geonode.waterproof_nbs_ca.models import Countries, Region
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from django.core import serializers
@@ -75,7 +75,7 @@ def create(request):
                 )
             intake.area = intakeAreaGeom
             intake.xml_graph = xmlGraph
-            intake.city=City.objects.get(id=1)
+            intake.city = City.objects.get(id=1)
             intake.demand_parameters = demand_parameters
             intake.creation_date = datetime.datetime.now()
             intake.updated_date = datetime.datetime.now()
@@ -161,12 +161,11 @@ def listIntake(request):
 """
 
 
-Load process by ID
+Load process by category
 
 Attributes
 ----------
-process: string
-    Process name
+cagegory: string Category
 """
 
 
@@ -174,6 +173,23 @@ def loadProcessEfficiency(request, category):
     process = ProcessEfficiencies.objects.filter(normalized_category=category)
     process_serialized = serializers.serialize('json', process)
     return JsonResponse(process_serialized, safe=False)
+
+
+"""
+
+
+Load Cost function by category
+
+Attributes
+----------
+cagegory: string Category
+"""
+
+
+def loadCostFunctionsProcess(request, symbol):
+    function = CostFunctionsProcess.objects.filter(symbol=symbol)
+    function_serialized = serializers.serialize('json', function)
+    return JsonResponse(function_serialized, safe=False)
 
 
 """
