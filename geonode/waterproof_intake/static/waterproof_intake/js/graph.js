@@ -43,6 +43,9 @@ function onInit(editor) {
     style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
     style[mxConstants.STYLE_STROKEWIDTH] = 4;
     style[mxConstants.STYLE_STROKECOLOR] = "#ff0000";
+    style[mxConstants.STYLE_FONTSIZE] = '11';
+    style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
+	style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_MIDDLE;
 
 
     // Installs a popupmenu handler using local function (see below).
@@ -63,6 +66,21 @@ function onInit(editor) {
     var listener = function(sender, evt) {
         editor.graph.validateGraph();
     };
+
+    editor.graph.addListener(mxEvent.CELLS_ADDED, function(sender, evt){
+        //return;
+
+        let cell = evt.properties.cells[0];
+        let id = parseInt(cell.id) - 1;
+        if (cell.value != undefined && typeof(cell.value) == "object"){
+            let lbl = cell.getAttribute("label");
+            cell.setAttribute("label", lbl + " (" + id.toString() + ")");
+            editor.graph.model.setValue(cell, cell.value);
+        }
+        
+        
+        console.log("cell added");
+    });
 
     editor.graph.getModel().addListener(mxEvent.CHANGE, listener);
 
@@ -98,11 +116,25 @@ function onInit(editor) {
     var graphNode = editor.graph.container;
 
     var parent = editor.graph.getDefaultParent();
+    let v1 = parent.children[0];    
+    let v2 = parent.children[1];
+    
 
-    var edge = editor.graph.insertEdge(parent, null, '', parent.children[0], parent.children[1]);
+    editor.graph.getModel().beginUpdate();
+    let id = parseInt(v1.id) -1;
+    let lbl = v1.getAttribute("label");
+    v1.setAttribute("label", lbl + " (" + id.toString() + ")");
+    id = parseInt(v2.id) -1;
+    lbl = v2.getAttribute("label");
+    v2.setAttribute("label", lbl + " (" + id.toString() + ")");
+    var edge = editor.graph.insertEdge(parent, null, 'Extraction connection', v1, v2);
     let value = { "connectorType": connectionsType.EC.id };
     edge.setValue(JSON.stringify(value));
     editor.graph.model.setStyle(edge, connectionsType.EC.style);
+
+    editor.graph.model.setValue(v1, v1.value);
+    editor.graph.model.setValue(v2, v2.value);
+    editor.graph.getModel().endUpdate();
 
     // Source nodes needs 1..2 connected Targets
     editor.graph.multiplicities.push(new mxMultiplicity(
