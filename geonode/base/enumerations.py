@@ -472,7 +472,7 @@ CHARSETS = (('', 'None/Unknown'),
             ('windows-1258', 'Windows CP1258'))
 
 PROFESSIONAL_ROLES = (('ADMIN','Administrator'),
-                    ('ANALYST','Analyst'),
+                    ('ANALYS','Analyst'),
                     ('COPART','Corporate partner'),
                     ('ACDMC','Academic'),
                     ('SCADM','Service company administrator'),

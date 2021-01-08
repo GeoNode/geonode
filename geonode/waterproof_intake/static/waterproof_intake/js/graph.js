@@ -43,6 +43,9 @@ function onInit(editor) {
     style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
     style[mxConstants.STYLE_STROKEWIDTH] = 4;
     style[mxConstants.STYLE_STROKECOLOR] = "#ff0000";
+    style[mxConstants.STYLE_FONTSIZE] = '11';
+    style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
+	style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_MIDDLE;
 
 
     // Installs a popupmenu handler using local function (see below).
@@ -54,16 +57,7 @@ function onInit(editor) {
     // elements with id == 2 is River and id==3 is CSINFRA can't remove
     var keyHandler = new mxKeyHandler(editor.graph);
     keyHandler.bindKey(46, function(evt) {
-        if (editor.graph.isEnabled()) {
-            let cells = editor.graph.getSelectionCells();
-            let cells2Remove = cells.filter(cell => (cell.style != "rio" &&
-                    cell.style != "csinfra" &&
-                    cell.style != connectionsType.EC.style) ||
-                parseInt(cell.id) > 4);
-            if (cells2Remove.length > 0) {
-                editor.graph.removeCells(cells2Remove);
-            }
-        }
+        deleteWithValidations(editor);
     });
 
     editor.graph.setAllowDanglingEdges(false);
@@ -72,6 +66,41 @@ function onInit(editor) {
     var listener = function(sender, evt) {
         editor.graph.validateGraph();
     };
+
+    editor.graph.getLabel = function(cell){
+        var label = (this.labelsVisible) ? this.convertValueToString(cell) : '';
+        var geometry = this.model.getGeometry(cell);
+        
+        if ( geometry != null && geometry.width == 0){
+            var style = this.getCellStyle(cell);
+            var fontSize = style[mxConstants.STYLE_FONTSIZE] || mxConstants.DEFAULT_FONTSIZE;            
+        }
+        if (label == undefined){
+            if (typeof(cell.value) == "string" && cell.value.length > 0){
+                try{
+                    let obj = JSON.parse(cell.value);
+                    label = connectionsType[obj.connectorType].name + " (" + cell.id + ")";
+                }catch(e){
+                    label = "";
+                }                
+            }
+        }
+        return label;
+    };
+
+    editor.graph.addListener(mxEvent.CELLS_ADDED, function(sender, evt){
+        //return;
+
+        let cell = evt.properties.cells[0];
+        if (cell.value != undefined && typeof(cell.value) == "object"){
+            let lbl = cell.getAttribute("label");
+            cell.setAttribute("label", lbl + " (" + cell.id + ")");
+            editor.graph.model.setValue(cell, cell.value);
+        }
+        
+        
+        console.log("cell added");
+    });
 
     editor.graph.getModel().addListener(mxEvent.CHANGE, listener);
 
@@ -112,46 +141,51 @@ function onInit(editor) {
 
 
     //Create River at the beginning of the diagram
-    var river = editor.graph.insertVertex(parent, null, sourceNode1, 40, 30, 60, 60);
+    var river = editor.graph.insertVertex(parent, null, sourceNode1, 40, 30, 60, 92);
     river.setAttribute('name', 'River');
+    river.setAttribute('label', 'River (2)');
     editor.graph.model.setStyle(river, 'rio');
-    river.setAttribute('varcost', [
-        `Q_${river.id} (m³)`, `CSed_${river.id} (mg/l)`,
-        `CN_${river.id} (mg/l)`, `CP_${river.id} (mg/l)`,
-        `WSed_${river.id} (Ton)`, `WN_${river.id} (Kg)`,
-        `WP_${river.id} (Kg)`, `WSed_ret_${river.id} (Ton)`,
-        `WN_ret_${river.id} (Kg)`, `WP_ret_${river.id} (Kg)`
-    ]);
+    var temp = [];
+    temp.push(
+        `Q_${river.id} (m³), CSed_${river.id} (mg/l)`,
+        `CN_${river.id} (mg/l), CP_${river.id} (mg/l)`,
+        `WSed_${river.id} (Ton), WN_${river.id} (Kg)`,
+        `WP_${river.id} (Kg),WSed_ret_${river.id} (Ton)`,
+        `WN_ret_${river.id} (Kg), WP_ret_${river.id} (Kg)`
+    );
+
+    river.setAttribute('varcost', JSON.stringify(temp));
 
     //Create CSINFRA at the beginning of the diagram
-    var vertex = editor.graph.insertVertex(parent, null, sourceNode, 500, 30, 60, 60);
+    var vertex = editor.graph.insertVertex(parent, null, sourceNode, 500, 30, 60, 92);
     vertex.setAttribute('name', 'CSINFRA');
+    vertex.setAttribute('label', 'CS Infra (3)');
     editor.graph.model.setStyle(vertex, 'csinfra');
-    var varcost = [
-        `Q_${vertex.id} (m³)`, `CSed_${vertex.id} (mg/l)`,
-        `CN_${vertex.id} (mg/l)`, `CP_${vertex.id} (mg/l)`,
-        `WSed_${vertex.id} (Ton)`, `WN_${vertex.id} (Kg)`,
-        `WP_${vertex.id} (Kg)`, `WSed_ret_${vertex.id} (Ton)`,
-        `WN_ret_${vertex.id} (Kg)`, `WP_ret_${vertex.id} (Kg)`
-    ];
+    var temp2 = [];
+    temp2.push(
+        `Q_${vertex.id} (m³), CSed_${vertex.id} (mg/l)`,
+        `CN_${vertex.id} (mg/l), CP_${vertex.id} (mg/l)`,
+        `WSed_${vertex.id} (Ton), WN_${vertex.id} (Kg)`,
+        `WP_${vertex.id} (Kg),WSed_ret_${vertex.id} (Ton)`,
+        `WN_ret_${vertex.id} (Kg), WP_ret_${vertex.id} (Kg)`
+    );
 
 
     $.ajax({
         url: `/intake/loadProcess/CSINFRA`,
         success: function(result) {
-            vertex.setAttribute('varcost', varcost);
+            vertex.setAttribute('varcost', JSON.stringify(temp2));
             vertex.setAttribute('resultdb', result);
         }
     });
 
 
-    console.log(vertex)
-    console.log(river)
 
     var edge = editor.graph.insertEdge(parent, null, '', parent.children[0], parent.children[1]);
     let value = { "connectorType": connectionsType.EC.id };
     edge.setValue(JSON.stringify(value));
     editor.graph.model.setStyle(edge, connectionsType.EC.style);
+
     // Source nodes needs 1..2 connected Targets
     editor.graph.multiplicities.push(new mxMultiplicity(
         true, 'Symbol', 'name', 'River', 1, 2, ['Symbol'],
@@ -416,11 +450,11 @@ function onInit(editor) {
                     })
                 }
             });
-            console.log(graphData);
+            //console.log(graphData);
             $('#xmlGraph').val(textxml);
             $('#graphElements').val(JSON.stringify(graphData));
-            console.log(textxml);
-            console.log(connetion);
+            //console.log(textxml);
+            // console.log(connetion);
         });
 
         //load data when add an object in a diagram
@@ -468,9 +502,10 @@ function onInit(editor) {
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
             selectedCell = evt.getProperty("cell");
             // Clear Inputs
-            clearDataHtml(selectedCell, evt);
+            if (selectedCell != undefined) clearDataHtml(selectedCell, evt);
             //console.log(selectedCell)
             if (selectedCell != undefined) addData(selectedCell);
+            funcost('((11126.6*text(Q)) + 30939.7)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))');
         });
 
         //Add value entered in sediments in the field resultdb

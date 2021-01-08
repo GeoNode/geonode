@@ -81,7 +81,7 @@ $(document).ready(function() {
             for (let index = 1; index <= numberYearsInterpolationValue; index++) {
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${(b*(Math.pow(index,m))).toFixed(2)}</td>
+                <td class="text-center">${(b * (Math.pow(index, m))).toFixed(2)}</td>
               </tr>`);
             }
         }
@@ -97,7 +97,7 @@ $(document).ready(function() {
             for (let index = 0; index <= numberYearsInterpolationValue; index++) {
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${(b*(Math.exp(m*index))).toFixed(2)}</td>
+                <td class="text-center">${(b * (Math.exp(m * index))).toFixed(2)}</td>
               </tr>`);
             }
 
@@ -110,7 +110,7 @@ $(document).ready(function() {
             for (let index = 0; index <= numberYearsInterpolationValue; index++) {
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${((finalDataExtractionInterpolationValue)/(1+((finalDataExtractionInterpolationValue/initialDataExtractionInterpolationValue)-1)*Math.exp(-r*index))).toFixed(2)}</td>
+                <td class="text-center">${((finalDataExtractionInterpolationValue) / (1 + ((finalDataExtractionInterpolationValue / initialDataExtractionInterpolationValue) - 1) * Math.exp(-r * index))).toFixed(2)}</td>
               </tr>`);
             }
         }
@@ -250,7 +250,23 @@ $(document).ready(function() {
         labelFormatterLat: function(lat) { return lat + " lat" }, //optional default none      
     }).addTo(map);
 
-    $("#validateBtn").on("click", validateCoordinateWithApi);
+    $("#validateBtn").on("click", function() {
+        Swal.fire({
+            title: 'Delimitar punto y cuenca',
+            text: "El sistema ajustará las coordenadas del punto a la captación más cercana, ¿Desea continuar?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ajustar punto',
+            cancelButtonText: 'Cancelar',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                mapLoader = L.control.loader().addTo(map);
+                validateCoordinateWithApi();
+            }
+        })
+    });
     $('#btnDelimitArea').on("click", delimitIntakeArea)
     $('#btnValidateArea').on("click", validateIntakeArea)
     if (!mapLoader) {
