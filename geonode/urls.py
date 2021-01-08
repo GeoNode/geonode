@@ -206,7 +206,7 @@ urlpatterns += i18n_patterns(
 
 # Internationalization Javascript
 urlpatterns += [
-    url(r'^i18n/', include(django.conf.urls.i18n), name="i18n"),
+    url(r'i18n/', include('django_translation_flags.urls')),
     url(r'^jsi18n/$', JavaScriptCatalog.as_view(), js_info_dict, name='javascript-catalog')
 ]
 
