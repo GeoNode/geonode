@@ -43,6 +43,9 @@ function onInit(editor) {
     style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
     style[mxConstants.STYLE_STROKEWIDTH] = 4;
     style[mxConstants.STYLE_STROKECOLOR] = "#ff0000";
+    style[mxConstants.STYLE_FONTSIZE] = '11';
+    style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
+	style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_MIDDLE;
 
 
     // Installs a popupmenu handler using local function (see below).
@@ -63,6 +66,20 @@ function onInit(editor) {
     var listener = function(sender, evt) {
         editor.graph.validateGraph();
     };
+
+    editor.graph.addListener(mxEvent.CELLS_ADDED, function(sender, evt){
+        //return;
+
+        let cell = evt.properties.cells[0];
+        if (cell.value != undefined && typeof(cell.value) == "object"){
+            let lbl = cell.getAttribute("label");
+            cell.setAttribute("label", lbl + " (" + cell.id + ")");
+            editor.graph.model.setValue(cell, cell.value);
+        }
+        
+        
+        console.log("cell added");
+    });
 
     editor.graph.getModel().addListener(mxEvent.CHANGE, listener);
 
@@ -103,10 +120,11 @@ function onInit(editor) {
 
 
     //Create River at the beginning of the diagram
-    var river = editor.graph.insertVertex(parent, null, sourceNode1, 40, 30, 60, 60);
+    var river = editor.graph.insertVertex(parent, null, sourceNode1, 40, 30, 60, 92);
     river.setAttribute('name', 'River');
+    river.setAttribute('label', 'River (2)');
     editor.graph.model.setStyle(river, 'rio');
-    var temp = []
+    var temp = [];
     temp.push(
         `Q_${river.id} (m³), CSed_${river.id} (mg/l)`,
         `CN_${river.id} (mg/l), CP_${river.id} (mg/l)`,
@@ -118,10 +136,11 @@ function onInit(editor) {
     river.setAttribute('varcost', JSON.stringify(temp));
 
     //Create CSINFRA at the beginning of the diagram
-    var vertex = editor.graph.insertVertex(parent, null, sourceNode, 500, 30, 60, 60);
+    var vertex = editor.graph.insertVertex(parent, null, sourceNode, 500, 30, 60, 92);
     vertex.setAttribute('name', 'CSINFRA');
+    vertex.setAttribute('label', 'CS Infra (3)');
     editor.graph.model.setStyle(vertex, 'csinfra');
-    var temp2 = []
+    var temp2 = [];
     temp2.push(
         `Q_${vertex.id} (m³), CSed_${vertex.id} (mg/l)`,
         `CN_${vertex.id} (mg/l), CP_${vertex.id} (mg/l)`,

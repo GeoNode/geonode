@@ -142,7 +142,7 @@ function deleteWithValidations(editor){
         if (cells2Remove.length > 0) {
             let vertexIsEC = false;
             cells2Remove.filter(cell =>{
-                if (cell.edges.length > 0){
+                if (cell.edges != null && cell.edges.length > 0){
                     for (let c in cell.edges){
                         if (cell.edges[c].style == connectionsType.EC.style){
                             vertexIsEC = true;
