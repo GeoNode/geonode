@@ -21,6 +21,7 @@
 {% load static from staticfiles %}
 {% load account socialaccount %}
 {% load base_tags %}
+{% load flags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -290,25 +291,6 @@
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav toolbar">
-        <!-- <div class="row">
-        <div class="col-md-2" >
-          <label class="hidden">{% trans "Language" %}</label>
-          {% if csrf_token != "NOTPROVIDED" %}
-          {% get_current_language as LANGUAGE %}
-          <form class="form-inline" action="/i18n/setlang/" method="post">
-          {% csrf_token %}
-            <select class="col-md-6 pull-right" name="language" onchange="javascript:form.submit()">
-              {% for lang in LANGUAGES %}
-              <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
-                {{ lang.1 }}
-              </option>
-              {% endfor %}
-            </select>
-          </form>
-          {% endif %}
-          </div>
-        </div> -->
-
           {% block tabs %}
 
           <li id="nav_layers">
@@ -456,10 +438,15 @@
           {% else %}
           <li><a href="#" data-toggle="modal" data-target="#SigninModal" role="button" >{% trans "Sign in" %} </a></li>
               {% endif %}
-            </ul>
-          </div> <!--/.nav-collapse -->
-        </div>
-      </nav>
+          <li>
+            <div>
+              {% languages 'square' %}
+            </div>            
+          </li>
+        </ul>
+      </div> <!--/.nav-collapse -->
+    </div>
+  </nav>
       {% endblock header %}
       <!-- End of Navbar -->
 
@@ -586,25 +573,7 @@
               {% if custom_theme.contact_email %}<li style="text-align: left;">{% trans "E-mail" %}: {{ custom_theme.contact_email }}</li>{% endif %}
           </ul>
           {% endif %}
-          {% endblock contactus %}
-          <!-- <ul class="list-unstyled"> -->
-            <!-- <li>{% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a>{% if user.is_staff %} <em>{% trans "version" %} {{ VERSION }}</em>{% endif %}</li> -->
-            <!-- <li><a href="{% url "developer" %}">{% trans "Developers" %}</a> | <a href="{% url "about" %}">{% trans "About" %}</a><li> -->
-          <!-- </ul> -->
-          <label class="hidden">{% trans "Language" %}</label>
-          {% if csrf_token != "NOTPROVIDED" %}
-          {% get_current_language as LANGUAGE %}
-          <form class="form-inline" action="/i18n/setlang/" method="post">
-          {% csrf_token %}
-            <select class="col-md-6 pull-right" name="language" onchange="javascript:form.submit()">
-              {% for lang in LANGUAGES %}
-              <option value="{{ lang.0 }}" {% ifequal LANGUAGE_CODE lang.0 %} selected="selected"{% endifequal %}>
-                {{ lang.1 }}
-              </option>
-              {% endfor %}
-            </select>
-          </form>
-          {% endif %} 
+          {% endblock contactus %}          
         </div>
       </div>
     </div>
