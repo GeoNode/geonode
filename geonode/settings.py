@@ -144,7 +144,14 @@ if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
     })
 
 DATABASES = {
-    'default': _db_conf
+   'default': {
+       'ENGINE': 'django.contrib.gis.db.backends.postgis',
+       'NAME': 'geonode',
+       'USER': 'geonode',
+       'PASSWORD': 'geonode_data',
+       'HOST': 'dev.skaphe.com',
+       'PORT': '5432',
+   }
 }
 
 if os.getenv('DEFAULT_BACKEND_DATASTORE'):
@@ -220,6 +227,12 @@ _DEFAULT_LANGUAGES = """(
     ('ja', '日本語'),
     ('ko', '한국어'),
 )"""
+
+_DEFAULT_LANGUAGES = """(
+    ('en', 'English'),
+    ('es', 'Español'),    
+)"""
+
 
 LANGUAGES = ast.literal_eval(os.getenv('LANGUAGES', _DEFAULT_LANGUAGES))
 
@@ -534,6 +547,9 @@ INSTALLED_APPS = (
 
     # Documentation
     'django_extensions',
+
+    # translation flags
+    'django_translation_flags',
     
 )
 
@@ -2148,7 +2164,7 @@ STUDY_CASES_ALLOW_ANONYMOUS = True
 
 WATERPROOF_NBS_CA_ALLOW_ANONYMOUS = True
 
-WATERPROOF_API_SERVER = "http://dev.skaphe.com:8000/"
+WATERPROOF_API_SERVER = "http://ec2-3-17-67-220.us-east-2.compute.amazonaws.com:9000/"
 
 #WATERPROOF_API_METHODS = {
 #

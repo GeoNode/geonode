@@ -33,18 +33,6 @@ class UserCosts(models.Model):
     )
 
 
-class CategoryCosts(models.Model):
-    name = models.CharField(
-        max_length=100,
-        verbose_name=_('Name'),
-    )
-
-    description = models.CharField(
-        max_length=100,
-        verbose_name=_('Name'),
-    )
-
-
 class SystemCosts(models.Model):
 
     name = models.CharField(
@@ -56,6 +44,54 @@ class SystemCosts(models.Model):
         decimal_places=4,
         max_digits=14,
         verbose_name=_('Extraction value')
+    )
+
+
+class CostFunctionsProcess(models.Model):
+
+    symbol = models.CharField(
+        max_length=5,
+        verbose_name=_('Symbol')
+    )
+
+    categorys = models.CharField(
+        max_length=100,
+        verbose_name=_('Categorys')
+    )
+
+    energy = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
+        verbose_name=_('Energy')
+    )
+
+    labour = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
+        verbose_name=_('Labour')
+    )
+
+    mater_equipment = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
+        verbose_name=_('Materials equipment')
+    )
+
+    function_value=models.CharField(
+        max_length=1000,
+        verbose_name=_('Function')
+    )
+
+    function_name=models.CharField(
+        max_length=250,
+        verbose_name=_('Function name')
+    )
+
+    function_description=models.CharField(
+        null=True,
+        blank=True,
+        max_length=250,
+        verbose_name=_('Function description')
     )
 
 
@@ -73,7 +109,7 @@ class ProcessEfficiencies(models.Model):
 
     symbol = models.CharField(
         max_length=100,
-        verbose_name=_('Unitary process')
+        verbose_name=_('Symbol')
     )
 
     categorys = models.CharField(
@@ -201,8 +237,6 @@ class Intake(models.Model):
         verbose_name=_('Source name'),
     )
 
-    area = models.PolygonField(verbose_name='area', srid=4326, null=True, blank=True)
-
     city = models.ForeignKey(City, on_delete=models.CASCADE)
 
     demand_parameters = models.ForeignKey(DemandParameters, on_delete=models.CASCADE)
@@ -221,6 +255,81 @@ class Intake(models.Model):
         blank=True,
         on_delete=models.SET_NULL
     )
+
+
+class Basins(models.Model):
+    geom = models.PolygonField(verbose_name='geom', srid=4326, null=True, blank=True)
+
+    continent = models.CharField(
+        max_length=254,
+        verbose_name=_('Continent'),
+    )
+
+    symbol = models.CharField(
+        max_length=254,
+        verbose_name=_('Symbol'),
+    )
+
+    code = models.IntegerField(
+        default=0,
+        verbose_name=_('Code')
+    )
+
+    label = models.CharField(
+        max_length=50,
+        verbose_name=_('Label'),
+    )
+
+    x_min = models.FloatField(
+        null=False,
+        blank=False,
+        default=None,
+        verbose_name=_('Xmin')
+    )
+
+    x_max = models.FloatField(
+        null=False,
+        blank=False,
+        default=None,
+        verbose_name=_('Xmax')
+    )
+
+    y_min = models.FloatField(
+        null=False,
+        blank=False,
+        default=None,
+        verbose_name=_('Ymin')
+    )
+
+    y_max = models.FloatField(
+        null=False,
+        blank=False,
+        default=None,
+        verbose_name=_('Ymax')
+    )
+
+
+class Polygon(models.Model):
+
+    area = models.FloatField(
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name=_('Awy')
+    )
+
+    geom = models.PolygonField(verbose_name='geom', srid=4326, null=True, blank=True)
+
+    delimitation_date = models.DateField(auto_now=True)
+
+    delimitation_type = models.CharField(
+        max_length=30,
+        verbose_name=_('Delimitation type')
+    )
+
+    basin = models.ForeignKey(Basins, on_delete=models.CASCADE)
+
+    intake = models.ForeignKey(Intake, on_delete=models.CASCADE)
 
 
 class ExternalInputs(models.Model):
@@ -307,6 +416,76 @@ class ElementSystem(models.Model):
         SystemCosts,
     )
     """
+
+    awy = models.FloatField(
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name=_('Awy')
+    )
+
+    q_l_s = models.FloatField(
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name=_('Qls')
+    )
+
+    wsed_ton = models.FloatField(
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name=_('WsedTon')
+    )
+
+    wn_kg = models.FloatField(
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name=_('WnKg')
+    )
+
+    csed_mg_l = models.FloatField(
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name=_('CsedMgL')
+    )
+
+    cn_mg_l = models.FloatField(
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name=_('Cn')
+    )
+
+    cp_mg_l = models.FloatField(
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name=_('CpMgl')
+    )
+
+    wsed_ret_ton = models.FloatField(
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name=_('WsedRetTon')
+    )
+
+    wn_ret_kg = models.FloatField(
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name=_('WnRetKg')
+    )
+
+    wp_ret_ton = models.FloatField(
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name=_('WpRetTon')
+    )
 
 
 class WaterExtraction(models.Model):
