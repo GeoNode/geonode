@@ -1131,9 +1131,8 @@ class UtilsTests(GeoNodeBaseTestSupport):
             'height': height,
             'layers': instance.alternate
         }
-        if hasattr(instance, 'default_style'):
-            if instance.default_style:
-                request_body['styles'] = instance.default_style.name
+        if hasattr(instance, 'default_style') and instance.default_style:
+            request_body['styles'] = instance.default_style.name
             self.assertIsNotNone(request_body['styles'])
 
         try:
