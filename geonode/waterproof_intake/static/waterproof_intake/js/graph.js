@@ -43,6 +43,9 @@ function onInit(editor) {
     style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
     style[mxConstants.STYLE_STROKEWIDTH] = 4;
     style[mxConstants.STYLE_STROKECOLOR] = "#ff0000";
+    style[mxConstants.STYLE_FONTSIZE] = '11';
+    style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
+	style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_MIDDLE;
 
 
     // Installs a popupmenu handler using local function (see below).
@@ -63,6 +66,21 @@ function onInit(editor) {
     var listener = function(sender, evt) {
         editor.graph.validateGraph();
     };
+
+    editor.graph.addListener(mxEvent.CELLS_ADDED, function(sender, evt){
+        //return;
+
+        let cell = evt.properties.cells[0];
+        let id = parseInt(cell.id) - 1;
+        if (cell.value != undefined && typeof(cell.value) == "object"){
+            let lbl = cell.getAttribute("label");
+            cell.setAttribute("label", lbl + " (" + id.toString() + ")");
+            editor.graph.model.setValue(cell, cell.value);
+        }
+        
+        
+        console.log("cell added");
+    });
 
     editor.graph.getModel().addListener(mxEvent.CHANGE, listener);
 
