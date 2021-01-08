@@ -23,7 +23,7 @@
     crossorigin="" />
 <div class="row">
     <div class="col-md-4">
-        <h4 class="text-center" id="countryLabel">{{city.name}}</h4>
+        <h4 class="text-center" id="countryLabel">{{intake.city.name}}</h4>
         <p><b>Region:</b> <span id="regionLabel">{{region.name}}</span> </p>
         <p><b>Currency:</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
     </div>
@@ -45,7 +45,8 @@
                 <th scope="col" class="small text-center vat">{% trans "Description" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "User" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "Creation Date" %}</th>
-                <th scope="col" class="small text-center vat">{% trans "City" %}</th>
+                <th scope="col" class="small text-center vat" style="display: none;">{% trans "City" %}</th>
+                <th scope="col" class="small text-center vat" style="display: none;">{% trans "Region" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "Demand" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "Options" %}</th>
             </tr>
@@ -58,7 +59,8 @@
                 <td class="small text-center vat">{{intake.added_by.first_name}} {{intake.added_by.last_name}}</td>
                 <!--td>{{intake.max_benefit_req_time}}</td-->
                 <td class="small text-center vat">{{intake.creation_date | date:"d-m-Y"}}</td>
-                <td class="small text-center vat">{{intake.city.name}}</td>
+                <td class="small text-center vat" style="display: none;">{{intake.city.name}}</td>
+                <td class="small text-center vat" style="display: none;">{{intake.area}}</td>
                 <!--td>{{intake.total_profits_intake_consec_time}}</td-->
                 <!--td class="small text-center vat">{{intake.creation_date}}</td>
                 <!td class="small text-center vat">{{intake.unit_maintenance_cost|floatformat:2}}</td>
@@ -153,11 +155,8 @@
         }
     });
 
-    function showWaterIntakes (geojson) {
-        searchPoints.clearLayers();
-        let geojsonFilter = geojson.features.filter(feature  => feature.properties.type == "city");
-        searchPoints.addData(geojsonFilter);
-    }
+
+   
     
   </script>  
 {% endblock %}

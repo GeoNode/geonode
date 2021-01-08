@@ -144,14 +144,7 @@ if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
     })
 
 DATABASES = {
-   'default': {
-       'ENGINE': 'django.contrib.gis.db.backends.postgis',
-       'NAME': 'geonode',
-       'USER': 'geonode',
-       'PASSWORD': 'geonode_data',
-       'HOST': 'dev.skaphe.com',
-       'PORT': '5432',
-   }
+    'default': _db_conf
 }
 
 if os.getenv('DEFAULT_BACKEND_DATASTORE'):

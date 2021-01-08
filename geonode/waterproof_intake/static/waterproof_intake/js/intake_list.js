@@ -99,8 +99,7 @@ $(function() {
         let cityName = geojsonFilter[0].properties.name;
         console.log(geojsonFilter[0].properties.name)
         table.search(cityName.substr(0, 2)).draw();
-
-        drawPolygons();
+        drawPolygons();        
     }
 
     udpateCreateUrl = function(countryId) {
@@ -367,7 +366,7 @@ $(function() {
     //draw polygons
     drawPolygons = function(){
         // TODO: Next line only for test purpose
-        intakePolygons = polygons;
+        //intakePolygons = polygons;
         
         lyrsPolygons.forEach(lyr => map.removeLayer(lyr));
         lyrsPolygons = [];
