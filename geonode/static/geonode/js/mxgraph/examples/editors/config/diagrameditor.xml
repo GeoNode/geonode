@@ -69,7 +69,7 @@
 		</add>
 		<add as="csinfra">
 			<Symbol name="CSINFRA" label="CS Infra" externalData="false">
-				<mxCell vertex="1" style="csinfra" dbreference="">      
+				<mxCell vertex="1" style="csinfra" dbreference="CSINFRA">      
 					<mxGeometry as="geometry" width="60" height="92"/>
 				</mxCell>
 			</Symbol>
