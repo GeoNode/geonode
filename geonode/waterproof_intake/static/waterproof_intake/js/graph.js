@@ -71,10 +71,9 @@ function onInit(editor) {
         //return;
 
         let cell = evt.properties.cells[0];
-        let id = parseInt(cell.id) - 1;
         if (cell.value != undefined && typeof(cell.value) == "object"){
             let lbl = cell.getAttribute("label");
-            cell.setAttribute("label", lbl + " (" + id.toString() + ")");
+            cell.setAttribute("label", lbl + " (" + cell.id + ")");
             editor.graph.model.setValue(cell, cell.value);
         }
         
@@ -123,7 +122,7 @@ function onInit(editor) {
     //Create River at the beginning of the diagram
     var river = editor.graph.insertVertex(parent, null, sourceNode1, 40, 30, 60, 92);
     river.setAttribute('name', 'River');
-    river.setAttribute('label', 'River (1)');
+    river.setAttribute('label', 'River (2)');
     editor.graph.model.setStyle(river, 'rio');
     var temp = [];
     temp.push(
@@ -139,7 +138,7 @@ function onInit(editor) {
     //Create CSINFRA at the beginning of the diagram
     var vertex = editor.graph.insertVertex(parent, null, sourceNode, 500, 30, 60, 92);
     vertex.setAttribute('name', 'CSINFRA');
-    vertex.setAttribute('label', 'CS Infra (2)');
+    vertex.setAttribute('label', 'CS Infra (3)');
     editor.graph.model.setStyle(vertex, 'csinfra');
     var temp2 = [];
     temp2.push(
