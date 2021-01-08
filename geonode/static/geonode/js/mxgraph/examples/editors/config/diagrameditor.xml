@@ -12,84 +12,63 @@
 	</ui>
 	<Array as="templates">
 		<add as="embalse">
-			<Symbol name="Embalse" externalData="false">
+			<Symbol name="Embalse">
 				<mxCell vertex="1" style="embalse" dbreference="EMBALSE">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bombeo">
-			<Symbol name="Bombeo" externalData="false">
+			<Symbol name="Bombeo">
 				<mxCell vertex="1" style="bombeo" dbreference="BOMBEO">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="reservorioagua">
-			<Symbol name="Reservorio de Agua Cruda (RAC)" externalData="false">
+			<Symbol name="Reservorio de Agua Cruda (RAC)">
 				<mxCell vertex="1" style="reservorioagua" dbreference="RESERVORIOAGUACRUDA">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bocatoma">
-			<Symbol name="Bocatoma" externalData="false">
+			<Symbol name="Bocatoma">
 				<mxCell vertex="1" style="bocatoma" dbreference="BOCATOMADEFONDO">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bocatomalateral">
-			<Symbol name="Bocatoma Lateral" externalData="false">
+			<Symbol name="Bocatoma Lateral">
 				<mxCell vertex="1" style="bocatomalateral" dbreference="BOCATOMALATERAL">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bocatomaflotante">
-			<Symbol name="Bocatoma Flotante" externalData="false">
+			<Symbol name="Bocatoma Flotante">
 				<mxCell vertex="1" style="bocatomaflotante" dbreference="BOCATOMAFLOTANTE">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="desarenador">
-			<Symbol name="Desarenador" externalData="false">
+			<Symbol name="Desarenador">
 				<mxCell vertex="1" style="desarenador" dbreference="DESARENADOR">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="camaraquiebre">
-			<Symbol name="Camara de Quiebre" externalData="false">
+			<Symbol name="Camara de Quiebre">
 				<mxCell vertex="1" style="camaraquiebre" dbreference="CAMARADEQUIEBRE">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
 			</Symbol>
 		</add>
-		<add as="tuberia">
-			<Symbol name="Tubería" externalData="false">
-				<mxCell vertex="1" style="tuberia" dbreference="TUBERIA">      
-					<mxGeometry as="geometry" width="60" height="60"/>
-				</mxCell>
-			</Symbol>
-		</add>
-		<add as="canal">
-			<Symbol name="Canal" externalData="false">
-				<mxCell vertex="1" style="canal" dbreference="CANAL">      
-					<mxGeometry as="geometry" width="60" height="60"/>
-				</mxCell>
-			</Symbol>
-		</add>
-		<add as="conexion">
-			<Symbol name="Conexion" externalData="true">
-				<mxCell vertex="1" style="conexion" dbreference="EXTERNALINPUT">      
-					<mxGeometry as="geometry" width="60" height="60"/>
-				</mxCell>
-			</Symbol>
-		</add>
 		<add as="csinfra">
-			<Symbol name="CSINFRA" externalData="false">
+			<Symbol name="CSINFRA">
 				<mxCell vertex="1" style="csinfra" dbreference="">      
 					<mxGeometry as="geometry" width="60" height="60"/>
 				</mxCell>
@@ -206,30 +185,6 @@
 				<add as="verticalAlign" value="middle"/>
 				<add as="image" value="/static/mxgraph/images/waterproof/09-camara-quiebre.svg"/>
 			</add>
-			<add as="tuberia">
-				<add as="shape" value="image"/>
-				<add as="perimeter" value="rectanglePerimeter"/>
-				<add as="fontSize" value="10"/>
-				<add as="align" value="center"/>
-				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/10-tuberia.png"/>
-			</add>
-			<add as="canal">
-				<add as="shape" value="image"/>
-				<add as="perimeter" value="rectanglePerimeter"/>
-				<add as="fontSize" value="10"/>
-				<add as="align" value="center"/>
-				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/11-canal.png"/>
-			</add>
-			<add as="conexion">
-				<add as="shape" value="image"/>
-				<add as="perimeter" value="rectanglePerimeter"/>
-				<add as="fontSize" value="10"/>
-				<add as="align" value="center"/>
-				<add as="verticalAlign" value="middle"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/12-conexion.png"/>
-			</add>
 			<add as="csinfra">
 				<add as="shape" value="image"/>
 				<add as="perimeter" value="rectanglePerimeter"/>
@@ -291,16 +246,6 @@
 				<Layer label="Default Layer" id="1">
 					<mxCell parent="0"/>
 				</Layer>
-				<Symbol name="Rio" varcost="[&quot;Q_2 (m³)&quot;,&quot;CSed_2 (mg/l)&quot;,&quot;CN_2 (mg/l)&quot;,&quot;CP_2 (mg/l)&quot;,&quot;WSed_2 (Ton)&quot;,&quot;WN_2 (Kg)&quot;,&quot;WP_2 (Kg)&quot;,&quot;WSed_ret_2 (Ton)&quot;,&quot;WN_ret_2 (Kg)&quot;,&quot;WP_ret_2 (Kg)&quot;]">
-					<mxCell style="rio" vertex="1" parent="1">
-						<mxGeometry x="40" y="30" width="60" height="60" as="geometry" />
-					</mxCell>
-				</Symbol>
-				<Symbol name="CSINFRA" varcost="[&quot;Q_2&quot;,&quot;CSed_2&quot;,&quot;CN_2&quot;,&quot;CP_2&quot;,&quot;WSed_2&quot;,&quot;WN_2&quot;,&quot;WP_2&quot;,&quot;WSed_ret_2&quot;,&quot;WN_ret_2&quot;,&quot;WP_ret_2&quot;]">
-					<mxCell style="csinfra" vertex="1" parent="1">
-						<mxGeometry x="500" y="30" width="60" height="60" as="geometry" />
-					</mxCell>
-				</Symbol>
 			</root>
 		</mxGraphModel>
 	</mxGraph>
@@ -314,9 +259,6 @@
 		<add as="Bocatoma Flotante" template="bocatomaflotante" icon="/static/mxgraph/images/waterproof/07-bocatoma-flotante.svg"/>
 		<add as="Desarenador" template="desarenador" icon="/static/mxgraph/images/waterproof/08-desarenador.png"/>
 		<add as="Camara De Quiebre" template="camaraquiebre" width="32" height="32" icon="/static/mxgraph/images/waterproof/09-camara-quiebre.svg"/>
-		<add as="Tuberia" template="tuberia" width="32" height="32" icon="/static/mxgraph/images/waterproof/10-tuberia.png"/>
-		<add as="Canal" template="canal" icon="/static/mxgraph/images/waterproof/11-canal.png"/>
-		<add as="Conexion" template="conexion" icon="/static/mxgraph/images/waterproof/12-conexion.png"/>
 		<add as="CSINFRA" template="csinfra" icon="/static/mxgraph/images/waterproof/13-csinfra.svg"/>
 	</mxDefaultToolbar>
 </mxEditor>
