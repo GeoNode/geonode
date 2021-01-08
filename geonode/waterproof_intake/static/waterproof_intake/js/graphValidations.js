@@ -1,8 +1,8 @@
-const connectionsType = {
-    EC: { name: 'Extraction connection', id: 'EC', style: 'Extraction_connection' },
-    EI: { name: 'External input', id: 'EI', style: 'External_input' },
-    PL: { name: 'Pipeline', id: 'PL', style: 'Pipeline' },
-    CN: { name: 'Connection', id: 'CN', style: 'Connection' },
+const connectionsType={
+    EC: {name:'Extraction connection', id:'EC', style:'Extraction_connection'},
+    EI: {name:'External input', id:'EI', style:'External_input'},
+    PL: {name:'Pipeline', id:'PL', style:'Pipeline'},
+    CN: {name:'Connection', id:'CN', style:'Connection'},
 }
 
 function customMenuForConnectors() {
@@ -15,6 +15,15 @@ function createPopupMenu(graph, menu, cell, evt) {
 
     if (cell != null) {
         if (cell.geometry.width == 0 && cell.geometry.height == 0) {
+            if (cell.hasOwnProperty("value") && cell.value != undefined) {
+                if (typeof(cell.value) == 'string' && cell.value.indexOf("connectorType") != -1) {
+                    let obj = JSON.parse(cell.value);
+                    if (obj.connectorType == connectionsType.EC.id) {
+                        // selected edge is Extraction Connection, can't change type
+                        return;
+                    }
+                }
+            }
             let existEC = false; // validate just one Extraction connection type
             for (k in graph.model.cells) {
                 let cell = graph.model.cells[k];
@@ -120,4 +129,34 @@ function addData(element) {
     $('#fosforoDiagram').attr('min', resultdb[0].fields.minimal_phosphorus_perc);
     $('#fosforoDiagram').attr('max', resultdb[0].fields.maximal_phosphorus_perc);
 
+}
+
+function deleteWithValidations(editor){
+    let msg = "Selected element is connected with Extraction connection element. Can't be deleted!";
+    if (editor.graph.isEnabled()) {
+        let cells = editor.graph.getSelectionCells();
+        let cells2Remove = cells.filter(cell => (cell.style != "rio" &&
+                cell.style != "csinfra" &&
+                cell.style != connectionsType.EC.style) ||
+            parseInt(cell.id) > 4);
+        if (cells2Remove.length > 0) {
+            let vertexIsEC = false;
+            cells2Remove.filter(cell =>{
+                if (cell.edges.length > 0){
+                    for (let c in cell.edges){
+                        if (cell.edges[c].style == connectionsType.EC.style){
+                            vertexIsEC = true;
+                            break;
+                        }
+                    }
+                }
+            });
+            if (vertexIsEC){
+                mxUtils.alert(msg);                
+            }else{
+                editor.graph.removeCells(cells2Remove);
+            }
+            
+        }
+    }
 }

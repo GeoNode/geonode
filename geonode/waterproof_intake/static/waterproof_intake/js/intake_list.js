@@ -11,6 +11,7 @@ $(function() {
     var transformations = [];
     var lastClickedLayer;
     var map;
+    var lyrsPolygons = [];
     var highlighPolygon = {
         fillColor: "#337ab7",
         color: "#333333",
@@ -51,114 +52,10 @@ $(function() {
             }
         });
         fillTransitionsDropdown(transitionsDropdown);
-        submitFormEvent();
+
         changeCountryEvent(countryDropdown, currencyDropdown);
         changeFileEvent();
-    };
-    submitFormEvent = function() {
-        console.log('submit event loaded');
-        var formData = new FormData();
-        $('#submit').on('click', function() {
-            // NBS name
-            formData.append('nameNBS', $('#nameNBS').val());
-            // NBS description
-            formData.append('descNBS', $('#descNBS').val());
-            // NBS country
-            formData.append('countryNBS', $('#countryNBS').val());
-            // NBS currency cost
-            formData.append('currencyCost', $('#currencyCost').val());
-            // NBS Time required to generate maximun benefit (yr)
-            formData.append('maxBenefitTime', $('#maxBenefitTime').val());
-            // NBS Percentage of benefit associated with interventions at time t=0
-            formData.append('benefitTimePorc', $('#benefitTimePorc').val());
-            // NBS Consecution Time Total Benefits
-            formData.append('totalConsecTime', $('#totalConsecTime').val());
-            // NBS Maintenance Perodicity
-            formData.append('maintenancePeriod', $('#maintenancePeriod').val());
-            // NBS Unit Implementation Cost (US$/ha)
-            formData.append('implementCost', $('#implementCost').val());
-            // NBS Unit Maintenace Cost (US$/ha)
-            formData.append('maintenanceCost', $('#maintenanceCost').val());
-            // NBS Unit Oportunity Cost (US$/ha)
-            formData.append('oportunityCost', $('#oportunityCost').val());
-            // NBS RIOS Transformations selected
-            formData.append('riosTransformation', getTransformationsSelected());
-            var file = $('#restrictedArea')[0].files[0];
-            // validate extension file
-            var extension = validExtension(file);
-            if (extension.extension == 'geojson') { //GeoJSON
-                // Restricted area extension file
-                formData.append('extension', 'geojson');
-                // NBS restricted area geographic file
-                formData.append('restrictedArea', $('#restrictedArea')[0].files[0]);
-                // Type action for view
-                formData.append('action', 'create-nbs');
-                // Required session token
-                formData.append('csrfmiddlewaretoken', token);
-                $.ajax({
-                    type: 'POST',
-                    url: '/waterproof_nbs_ca/create/' + countryId,
-                    data: formData,
-                    cache: false,
-                    processData: false,
-                    contentType: false,
-                    enctype: 'multipart/form-data',
-                    success: function() {
-                        Swal.fire(
-                            'Excelente',
-                            'La SBN ha sido guardada con éxito',
-                            'success'
-                        )
-                        setTimeout(function() { location.href = "/waterproof_nbs_ca/"; }, 1000);
-                    },
-                    error: function(xhr, errmsg, err) {
-                        console.log(xhr.status + ":" + xhr.responseText)
-                    }
-                });
-            } else { // ZIP
-                var reader = new FileReader();
-                reader.onload = function(evt) {
-                    var contents = evt.target.result;
-                    shp(contents).then(function(shpToGeojson) {
-                        var restrictedArea = JSON.stringify(shpToGeojson);
-                        // Restricted area extension file
-                        formData.append('extension', 'zip');
-                        // NBS restricted area geographic file
-                        formData.append('restrictedArea', restrictedArea);
-                        // Type action for view
-                        formData.append('action', 'create-nbs');
-                        // Required session token
-                        formData.append('csrfmiddlewaretoken', token);
-                        $.ajax({
-                            type: 'POST',
-                            url: '/waterproof_nbs_ca/create/' + countryId,
-                            data: formData,
-                            cache: false,
-                            processData: false,
-                            contentType: false,
-                            enctype: 'multipart/form-data',
-                            success: function() {
-                                Swal.fire(
-                                    'Excelente',
-                                    'La SBN ha sido guardada con éxito',
-                                    'success'
-                                )
-                                setTimeout(function() { location.href = "/waterproof_nbs_ca/"; }, 1000);
-                            },
-                            error: function(xhr, errmsg, err) {
-                                console.log(xhr.status + ":" + xhr.responseText)
-                            }
-                        });
-                    });
-                };
-                reader.onerror = function(event) {
-                    console.error("File could not be read! Code " + event.target.error.code);
-                    //alert("El archivo no pudo ser cargado: " + event.target.error.code);
-
-                };
-                reader.readAsArrayBuffer(file);
-            }
-        });
+        initMap();
     };
     /** 
      * Initialize map 
@@ -170,21 +67,18 @@ $(function() {
 
     initMap = function() {
 
-        //var map = L.map('map').setView([4, -74],5);
-        //var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        //    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-        //});
-        //map.addLayer(osm);
-
-        var map = L.map('mapidcuenca', { scrollWheelZoom: false, zoomControl: false, photonControl: true, photonControlOptions: { resultsHandler: showSearchPoints, placeholder: 'Search City...', position: 'topleft', url: API_URL } });
+        map = L.map('mapidcuenca', { scrollWheelZoom: false, zoomControl: false, photonControl: true, photonControlOptions: { resultsHandler: showSearchPoints, placeholder: 'Search City...', position: 'topleft', url: API_URL } });
         map.setView([4, -72], 5);
+
         searchPoints.addTo(map);
+
         var tilelayer = L.tileLayer(TILELAYER, { maxZoom: MAXZOOM, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 Komoot' }).addTo(map);
         var zoomControl = new L.Control.Zoom({ position: 'topright' }).addTo(map);
 
         var c = new L.Control.Coordinates();
         L.control.mapCenterCoord().addTo(map);
         c.addTo(map);
+
 
         function onMapClick(e) {
             c.setCoordinates(e);
@@ -202,6 +96,11 @@ $(function() {
         searchPoints.clearLayers();
         let geojsonFilter = geojson.features.filter(feature => feature.properties.type == "city");
         searchPoints.addData(geojsonFilter);
+        let cityName = geojsonFilter[0].properties.name;
+        console.log(geojsonFilter[0].properties.name)
+        table.search(cityName.substr(0, 2)).draw();
+
+        drawPolygons();
     }
 
     udpateCreateUrl = function(countryId) {
@@ -464,4 +363,22 @@ $(function() {
     };
     // Init 
     initialize();
+
+    //draw polygons
+    drawPolygons = function(){
+        // TODO: Next line only for test purpose
+        intakePolygons = polygons;
+        
+        lyrsPolygons.forEach(lyr => map.removeLayer(lyr));
+        lyrsPolygons = [];
+
+        intakePolygons.forEach(feature =>{
+            let poly = feature.polygon;
+            if (poly.indexOf("SRID") >= 0){
+                poly = poly.split(";")[1];
+            }
+            lyrsPolygons.push(omnivore.wkt.parse(poly).addTo(map));
+        });
+    }
+
 });
