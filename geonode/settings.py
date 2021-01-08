@@ -228,6 +228,12 @@ _DEFAULT_LANGUAGES = """(
     ('ko', '한국어'),
 )"""
 
+_DEFAULT_LANGUAGES = """(
+    ('en', 'English'),
+    ('es', 'Español'),    
+)"""
+
+
 LANGUAGES = ast.literal_eval(os.getenv('LANGUAGES', _DEFAULT_LANGUAGES))
 
 EXTRA_LANG_INFO = {
@@ -541,6 +547,9 @@ INSTALLED_APPS = (
 
     # Documentation
     'django_extensions',
+
+    # translation flags
+    'django_translation_flags',
     
 )
 
