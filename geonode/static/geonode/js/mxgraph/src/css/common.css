@@ -135,6 +135,8 @@ img.mxToolbarModeSelected {
     border-width: 0px;
     height: 79px;
     border-style: inset;
+    background-color: #e6e1e1;
+    cursor: pointer;
 }
 
 div.mxTooltip {
