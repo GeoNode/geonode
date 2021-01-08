@@ -77,7 +77,7 @@ class CostFunctionsProcess(models.Model):
         verbose_name=_('Materials equipment')
     )
 
-    function=models.CharField(
+    function_value=models.CharField(
         max_length=1000,
         verbose_name=_('Function')
     )
@@ -88,6 +88,8 @@ class CostFunctionsProcess(models.Model):
     )
 
     function_description=models.CharField(
+        null=True,
+        blank=True,
         max_length=250,
         verbose_name=_('Function description')
     )
