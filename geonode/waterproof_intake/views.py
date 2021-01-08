@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext as _
-from .models import ExternalInputs, City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction, ElementSystem, ExternalInputs,CostFunctionsProcess
+from .models import ExternalInputs, City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction, ElementSystem, ExternalInputs,CostFunctionsProcess,Polygon,Basins
 from geonode.waterproof_nbs_ca.models import Countries, Region
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from django.core import serializers
@@ -73,7 +73,6 @@ def create(request):
                     value=extraction['value'],
                     demand=demand_parameters
                 )
-            intake.area = intakeAreaGeom
             intake.xml_graph = xmlGraph
             intake.city = City.objects.get(id=1)
             intake.demand_parameters = demand_parameters
@@ -82,6 +81,13 @@ def create(request):
             intake.added_by = request.user
             intake.save()
             intakeCreated = Intake.objects.get(id=intake.pk)
+            intakePolygon=Polygon.objects.create(
+                area=0,
+                geom=intakeAreaGeom,
+                delimitation_date=datetime.datetime.now(),
+                delimitation_type='CATCHMENT',
+
+            )
 
             for element in graphElements:
                 # River element has diferent parameters

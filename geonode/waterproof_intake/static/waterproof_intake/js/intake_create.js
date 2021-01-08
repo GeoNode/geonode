@@ -17,6 +17,7 @@ var urlParams = (function (url) {
 
 var mxLanguage = urlParams['lang'];
 var map;
+var basinId;
 var mapDelimit;
 var snapMarker;
 var snapMarkerMapDelimit;
