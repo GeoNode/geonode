@@ -67,6 +67,27 @@ function onInit(editor) {
         editor.graph.validateGraph();
     };
 
+    editor.graph.getLabel = function(cell){
+        var label = (this.labelsVisible) ? this.convertValueToString(cell) : '';
+        var geometry = this.model.getGeometry(cell);
+        
+        if ( geometry != null && geometry.width == 0){
+            var style = this.getCellStyle(cell);
+            var fontSize = style[mxConstants.STYLE_FONTSIZE] || mxConstants.DEFAULT_FONTSIZE;            
+        }
+        if (label == undefined){
+            if (typeof(cell.value) == "string" && cell.value.length > 0){
+                try{
+                    let obj = JSON.parse(cell.value);
+                    label = connectionsType[obj.connectorType].name + " (" + cell.id + ")";
+                }catch(e){
+                    label = "";
+                }                
+            }
+        }
+        return label;
+    };
+
     editor.graph.addListener(mxEvent.CELLS_ADDED, function(sender, evt){
         //return;
 
