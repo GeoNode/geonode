@@ -75,6 +75,7 @@ def create(request):
                 )
             intake.area = intakeAreaGeom
             intake.xml_graph = xmlGraph
+            intake.city=City.objects.get(id=1)
             intake.demand_parameters = demand_parameters
             intake.creation_date = datetime.datetime.now()
             intake.updated_date = datetime.datetime.now()
@@ -127,7 +128,7 @@ def listIntake(request):
                     }
                 )
 
-            if (request.user.professional_role == 'ANALYST'):
+            if (request.user.professional_role == 'ANALYS'):
                 intake = Intake.objects.all()
                 userCountry = Countries.objects.get(code=request.user.country)
                 region = Region.objects.get(id=userCountry.region_id)
