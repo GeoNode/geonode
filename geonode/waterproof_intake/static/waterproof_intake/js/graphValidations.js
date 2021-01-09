@@ -1,8 +1,8 @@
-const connectionsType={
-    EC: {name:'Extraction connection', id:'EC', style:'Extraction_connection'},
-    EI: {name:'External input', id:'EI', style:'External_input'},
-    PL: {name:'Pipeline', id:'PL', style:'Pipeline'},
-    CN: {name:'Connection', id:'CN', style:'Connection'},
+const connectionsType = {
+    EC: { name: 'Extraction connection', id: 'EC', style: 'Extraction_connection' },
+    EI: { name: 'External input', id: 'EI', style: 'External_input' },
+    PL: { name: 'Pipeline', id: 'PL', style: 'Pipeline' },
+    CN: { name: 'Connection', id: 'CN', style: 'Connection' },
 }
 
 function customMenuForConnectors() {
@@ -106,7 +106,16 @@ function clearDataHtml(cell, evt) {
 }
 
 function addData(element) {
-
+    //add title for connectors
+    if (typeof(element.value) == "string" && element.value.length > 0) {
+        try {
+            let obj = JSON.parse(element.value);
+            label = connectionsType[obj.connectorType].name;
+            $('#titleDiagram').text(connectionsType[obj.connectorType].name);
+        } catch (e) {
+            label = "";
+        }
+    }
     $('#titleDiagram').text(element.getAttribute('name'));
     $('#idDiagram').val(element.id);
     if (element.getAttribute('resultdb') == undefined) return;
@@ -131,7 +140,7 @@ function addData(element) {
 
 }
 
-function deleteWithValidations(editor){
+function deleteWithValidations(editor) {
     let msg = "Selected element is connected with Extraction connection element. Can't be deleted!";
     if (editor.graph.isEnabled()) {
         let cells = editor.graph.getSelectionCells();
@@ -141,22 +150,22 @@ function deleteWithValidations(editor){
             parseInt(cell.id) > 4);
         if (cells2Remove.length > 0) {
             let vertexIsEC = false;
-            cells2Remove.filter(cell =>{
-                if (cell.edges != null && cell.edges.length > 0){
-                    for (let c in cell.edges){
-                        if (cell.edges[c].style == connectionsType.EC.style){
+            cells2Remove.filter(cell => {
+                if (cell.edges != null && cell.edges.length > 0) {
+                    for (let c in cell.edges) {
+                        if (cell.edges[c].style == connectionsType.EC.style) {
                             vertexIsEC = true;
                             break;
                         }
                     }
                 }
             });
-            if (vertexIsEC){
-                mxUtils.alert(msg);                
-            }else{
+            if (vertexIsEC) {
+                mxUtils.alert(msg);
+            } else {
                 editor.graph.removeCells(cells2Remove);
             }
-            
+
         }
     }
 }
