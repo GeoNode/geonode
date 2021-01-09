@@ -842,17 +842,14 @@ def test_bdd(options):
     local = str2bool(options.get('local', 'false'))
     if local:
         call_task('reset_hard')
-    else:
-        call_task('reset')
+
     call_task('setup')
     call_task('sync')
-    sh('sleep 30')
-    info("GeoNode is now available, running the bdd tests now.")
-
-    sh('py.test')
-
     if local:
-        call_task('reset_hard')
+        sh('sleep 30')
+
+    info("GeoNode is now available, running the bdd tests now.")
+    sh('py.test')
 
 
 @task
