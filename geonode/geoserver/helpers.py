@@ -28,7 +28,10 @@ import errno
 import logging
 import datetime
 import requests
+import tempfile
 import traceback
+
+from shutil import copyfile
 
 from six import (
     string_types,
@@ -2090,8 +2093,33 @@ def _render_thumbnail(req_body, width=240, height=200):
     return content
 
 
-def _prepare_thumbnail_body_from_opts(request_body, request=None):
+def _dump_image_spec(request_body, image_spec):
+    millis = int(round(time.time() * 1000))
+    try:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            _request_body_file_name = os.path.join(
+                tmp_dir,
+                f"request_body_{millis}.dump")
+            _image_spec_file_name = os.path.join(
+                tmp_dir,
+                f"image_spec_{millis}.dump")
+            with open(_request_body_file_name, "w") as _request_body_file:
+                _request_body_file.write(f"{request_body}")
+            copyfile(
+                _request_body_file_name,
+                os.path.join(tempfile.gettempdir(), f"request_body_{millis}.dump"))
+            with open(_image_spec_file_name, "w") as _image_spec_file:
+                _image_spec_file.write(f"{image_spec}")
+            copyfile(
+                _image_spec_file_name,
+                os.path.join(tempfile.gettempdir(), f"image_spec_{millis}.dump"))
+        return f"Dumping image_spec to: {os.path.join(tempfile.gettempdir(), f'image_spec_{millis}.dump')}"
+    except Exception as e:
+        logger.exception(e)
+        return f"Unable to dump image_spec for request: {request_body}"
 
+
+def _prepare_thumbnail_body_from_opts(request_body, request=None):
     if isinstance(request_body, bytes):
         request_body = request_body.decode("UTF-8")
     try:
@@ -2283,6 +2311,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
                                              width=thumbnail_tile_size,
                                              left=box[0], top=box[1])
         _img_request_template += "</div></div>"
+        logger.debug(_dump_image_spec(request_body, _img_request_template))
         image = _render_thumbnail(_img_request_template, width=width, height=height)
     except Exception as e:
         logger.warning('Error generating thumbnail')

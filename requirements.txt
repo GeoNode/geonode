@@ -1,5 +1,5 @@
 # native dependencies
-Pillow==8.0.1
+Pillow==8.1.0
 lxml==4.6.2
 defusedxml==0.6.0
 psycopg2==2.8.6
@@ -140,7 +140,7 @@ uWSGI==2.0.19.1
 gunicorn==20.0.4
 ipython==7.19.0
 docker==4.4.1
-invoke==1.4.1
+invoke==1.5.0
 
 # tests
 coverage==5.3.1
@@ -155,5 +155,5 @@ pytest-django==4.1.0
 setuptools==51.1.1
 pip==20.3.3
 Twisted==20.3.0
-factory-boy==3.1.0
+factory-boy==3.2.0
 flaky==3.7.0

@@ -122,10 +122,10 @@ def send_email(self, *args, **kwargs):
     bind=True,
     name='geonode.tasks.notifications.send_queued_notifications',
     queue='email',
-    expires=600,
+    expires=10,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_kwargs={'max_retries': 2, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
