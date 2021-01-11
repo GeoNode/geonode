@@ -99,6 +99,27 @@
         border: 5px solid #d0d0d0;
         border-radius: 50%;
     }
+
+    .btn-group > button{
+        height: 45px;
+        width: 48.5px;
+        outline:none;
+    }
+
+    .btn-group > button >  mjx-container{
+        outline:none;
+    }
+
+    .edit-group-btn {
+        background:#2C689C;
+        color: #FFF;
+    }
+
+    .trash-group-btn{
+        background:#AF0900;
+        color: #FFF;
+    }
+   
 </style>
 {% endblock %}
 {% block body_outer %}
@@ -430,6 +451,7 @@
     <input type="hidden" id="waterExtraction" name="waterExtraction" value="">
     <input type="hidden" id="areaGeometry" name="areaGeometry" value="">
 </form>
+
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -441,39 +463,46 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-6">
-
-                        <div class="panel-group" id="VarCostListGroup">
-
-                        </div>
-
-
+                    <div class="col-md-5">
+                        <div class="panel-group" id="VarCostListGroup"></div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-7">
                         <div class="form-group">
                             <label>Cost function name</label>
-                            <textarea rows="4" class="form-control"></textarea>
+                            <input type="text" class="form-control">
                         </div>
                         <div class="form-group">
                             <label>Cost function description</label>
-                            <textarea rows="4" class="form-control"></textarea>
+                            <textarea rows="3" class="form-control"></textarea>
+                        </div>
+                        <h5 class="text-primary">Syntax keyboard</h5>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="=">'math' = 'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="+">'math' + 'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">'math' - 'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">'math' * 'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">'math' a/b 'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">'math' a^b 'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="root(a)(b)">'math' root(a)(b) 'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="min">'math' min 'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="max">'math' max 'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="text(edit_variable)">'math' text(var) 'math'</button>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12">
                         <h5 class="text-primary">Math expression</h5>
-                        <textarea class="form-control" id="inputMathAscii"></textarea>
+                        <input class="form-control" id="inputMathAscii" value="((11126.6*text(Q)) + 30939.7)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12">
                         <h5 class="text-primary">Rendering</h5>
-                        <div id="RenderingMathAscii">
-
-                        </div>
+                        <div id="RenderingMathAscii" class="text-center"></div>
                     </div>
                 </div>
+                <br>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-danger" id="saveAndValideCost">Valide and add cost</button>
@@ -481,6 +510,7 @@
             </div>
         </div>
     </div>
+</div>
     {% endblock %}
 
     {% block extra_script %}
