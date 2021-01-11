@@ -141,6 +141,7 @@ function onInit(editor) {
     var river = editor.graph.insertVertex(parent, null, sourceNode1, 40, 30, 60, 92);
     river.setAttribute('name', 'River');
     river.setAttribute('label', 'River (2)');
+    river.setAttribute('externalData', 'false');
     editor.graph.model.setStyle(river, 'rio');
     var temp = [];
     temp.push(
@@ -162,6 +163,7 @@ function onInit(editor) {
     var vertex = editor.graph.insertVertex(parent, null, sourceNode, 500, 30, 60, 92);
     vertex.setAttribute('name', 'CSINFRA');
     vertex.setAttribute('label', 'CS Infra (3)');
+    vertex.setAttribute('externalData', 'false');
     editor.graph.model.setStyle(vertex, 'csinfra');
     var temp2 = [];
     temp2.push(
@@ -462,6 +464,7 @@ function onInit(editor) {
                     'resultdb': node.getAttribute('resultdb'),
                     'varcost': node.getAttribute('varcost'),
                     'funcost': node.getAttribute('funcost'),
+                    'external': node.getAttribute('externalData'),
                 })
             });
 
@@ -472,7 +475,6 @@ function onInit(editor) {
                         'id': node.id,
                         'source': node.getAttribute('source'),
                         'target': node.getAttribute('target'),
-                        'external': JSON.stringify(value[2]),
                         'varcost': JSON.stringify(value[1])
                     })
                 }

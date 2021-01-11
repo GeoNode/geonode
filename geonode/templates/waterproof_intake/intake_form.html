@@ -102,7 +102,7 @@
 
     .btn-group > button{
         height: 45px;
-        width: 48.5px;
+        width: 50.2px;
         outline:none;
     }
 
@@ -118,6 +118,12 @@
     .trash-group-btn{
         background:#AF0900;
         color: #FFF;
+    }
+
+    .btn-add-cost{
+        position: absolute;
+        right: 0;
+        margin-right: 15px;
     }
    
 </style>
@@ -224,10 +230,6 @@
                 <div class="col-md-8">
                     <div class="panel panel-info">
                         <div class="panel-body" id="graph" tabindex="-1" style="height:700px;width:100%;overflow:hidden;cursor:default; outline:none;"></div>
-                        <span style="float:right;padding-right:36px;">
-                            <input id="getdata" type="checkbox" />Source
-                        </span>
-                        <textarea id="xml" style="height:480px;width:684px;display:none;border-style:none;"></textarea>
                     </div>
                 </div>
                 <!--Panel Information Right-->
@@ -266,17 +268,22 @@
                         </div>
                     </div>
                     <button type="button" class="btn btn-primary btn-block" id="saveGraph">Validate Graph</button>
+                    <span style="float:right;padding-right:36px;">
+                            <input id="getdata" type="checkbox" />Source
+                        </span>
+                        <textarea id="xml" style="height:480px;width:100%;display:none;border-style:none;"></textarea>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <h3 class="text-primary">Cost Function</h3>
-                    <div class="panel panel-danger">
+                    <h3>Cost functions <small id="titleCostFunSmall"></small>
+                    <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal" data-target="#exampleModal" id="ModalAddCostBtn">Add Cost</button>
+                    </h3>
+                    <div class="panel panel-info">
                         <div class="panel-body">
                             <div id="funcostgenerate"></div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id="ModalAddCostBtn">Add Cost</button>
                 </div>
             </div>
         </div>
@@ -345,7 +352,7 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th class="text-center" scope="col">#</th>
+                                                <th class="text-center" scope="col">Year</th>
                                                 <th class="text-center" scope="col">Extraction Value</th>
                                             </tr>
                                         </thead>
