@@ -10,6 +10,8 @@ urlpatterns = [
     path('', views.listIntake, name='list-intake'),
     # Load process effciciency by ID
     path('loadProcess/<str:category>', views.loadProcessEfficiency, name='load-process'),
+    # Load function cost by symbol
+    path('loadFunctionBySymbol/<str:symbol>', views.loadCostFunctionsProcess, name='load-functionCost'),
     # Load process effciciency by ID
     path('validateGeometry/', views.validateGeometry, name='valid-geometry'),
 ]
