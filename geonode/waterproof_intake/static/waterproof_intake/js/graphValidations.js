@@ -165,6 +165,7 @@ function addData(element) {
         }
     }
     $('#titleDiagram').text(element.getAttribute('name'));
+    $('#titleCostFunSmall').text(`ID: ${element.id} - ${element.getAttribute('name')}`);
     $('#idDiagram').val(element.id);
     if (element.getAttribute('resultdb') == undefined) return;
     resultdb = JSON.parse(element.getAttribute('resultdb'));
