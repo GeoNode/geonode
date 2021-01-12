@@ -268,10 +268,6 @@
                         </div>
                     </div>
                     <button type="button" class="btn btn-primary btn-block" id="saveGraph">Validate Graph</button>
-                    <span style="float:right;padding-right:36px;">
-                            <input id="getdata" type="checkbox" />Source
-                        </span>
-                        <textarea id="xml" style="height:480px;width:100%;display:none;border-style:none;"></textarea>
                 </div>
                 <div class="col-md-12">
                     <h3>Cost functions <small id="titleCostFunSmall"></small>
@@ -284,6 +280,10 @@
                     </div>
                 </div>
             </div>
+            <span style="float:right;padding-right:36px;">
+                            <input id="getdata" type="checkbox" />Source
+                        </span>
+                        <textarea id="xml" style="height:600px;width:100%;display:none;border-style:none;"></textarea>
         </div>
         <!--Step 3-->
         <div id="step-3" class="tab-pane" role="tabpanel">
@@ -324,7 +324,7 @@
                                         <div class="col-md-6">
                                             <label>Number of years for time series <span
                                                     class="text-danger-wp">(*)</span> </label>
-                                            <input type="text" class="form-control" id="numberYearsInterpolationValue">
+                                            <input type="text" value="2" class="form-control" id="numberYearsInterpolationValue">
                                         </div>
                                     </div>
                                 </div>
@@ -333,11 +333,11 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <label>Initial year<span class="text-danger-wp">(*)</span> </label>
-                                            <input type="text" class="form-control" id="initialDataExtractionInterpolationValue">
+                                            <input type="text" value="100" class="form-control" id="initialDataExtractionInterpolationValue">
                                         </div>
                                         <div class="col-md-6" id="finalColumnExtraction">
                                             <label>Final year<span class="text-danger-wp">(*)</span> </label>
-                                            <input type="text" class="form-control" id="finalDataExtractionInterpolationValue">
+                                            <input type="text" value="1000" class="form-control" id="finalDataExtractionInterpolationValue">
                                         </div>
                                     </div>
                                 </div>
@@ -407,7 +407,9 @@
                         <select class="form-control" id="externalSelect"></select>
                     </div>
                     <div id="IntakeTDLE"></div>
+                    <button class="btn btn-primary" type="button" id="saveExternalData">Save Data</button>
                 </div>
+                
             </div>
         </div>
         <!--Step 5-->

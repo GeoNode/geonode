@@ -12,7 +12,6 @@
 var resultdb = [];
 var selectedCell;
 var graphData = [];
-var connetionData = [];
 
 // Program starts here. The document.onLoad executes the
 // createEditor function with a given configuration.
@@ -500,7 +499,6 @@ function onInit(editor) {
             var node = enc.encode(editor.graph.getModel());
             var textxml = mxUtils.getPrettyXml(node)
             graphData = [];
-            connetionData = [];
             node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
                     'id': node.id,
@@ -509,13 +507,14 @@ function onInit(editor) {
                     'varcost': node.getAttribute('varcost'),
                     'funcost': node.getAttribute('funcost'),
                     'external': node.getAttribute('externalData'),
+                    'externaldata': []
                 })
             });
 
             node.querySelectorAll('mxCell').forEach(function(node) {
                 if (node.id != "") {
                     let value = Object.values(JSON.parse(node.getAttribute('value')));
-                    connetionData.push({
+                    graphData.push({
                         'id': node.id,
                         'source': node.getAttribute('source'),
                         'target': node.getAttribute('target'),
