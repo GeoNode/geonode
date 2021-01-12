@@ -1746,7 +1746,7 @@ CELERY_IGNORE_RESULT = ast.literal_eval(os.environ.get('CELERY_IGNORE_RESULT', '
 CELERY_ACKS_LATE = ast.literal_eval(os.environ.get('CELERY_ACKS_LATE', 'True'))
 
 # Add a ten-minutes timeout to all Celery tasks.
-CELERYD_TASK_SOFT_TIME_LIMIT = 600
+CELERYD_SOFT_TIME_LIMIT = 600
 
 # Set this to False in order to run async
 _EAGER_FLAG = 'False' if ASYNC_SIGNALS else 'True'
