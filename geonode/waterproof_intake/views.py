@@ -10,21 +10,30 @@ from django.contrib import messages
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext as _
-from .models import ExternalInputs, City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction, ElementSystem, ExternalInputs,CostFunctionsProcess,Polygon,Basins
+from .models import ExternalInputs, City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction, ElementSystem, ExternalInputs, CostFunctionsProcess, Polygon, Basins
 from geonode.waterproof_nbs_ca.models import Countries, Region
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from django.core import serializers
 from django.http import JsonResponse
 from . import forms
 import json
-from django.contrib.gis.geos import Polygon, MultiPolygon, GEOSGeometry
+from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.gdal import OGRGeometry
 import datetime
 logger = logging.getLogger(__name__)
 
+"""
+Create Waterproof intake
+
+Attributes
+----------
+request: Request
+"""
+
 
 def create(request):
     logger.debug(request.method)
+    # POST submit FORM
     if request.method == 'POST':
         form = forms.IntakeForm(request.POST)
         if form.is_valid():
@@ -34,30 +43,42 @@ def create(request):
             isFile = request.POST.get('isFile')
             # GeoJSON | SHP
             typeDelimitFile = request.POST.get('typeDelimit')
+            basinId = request.POST.get('basinId')
             interpolationString = request.POST.get('waterExtraction')
             interpolation = json.loads(interpolationString)
-            intakeAreaString = request.POST.get('areaGeometry')
+            delimitAreaString = request.POST.get('delimitArea')
+            intakeAreaString = request.POST.get('intakeAreaPolygon')
             graphElementsString = request.POST.get('graphElements')
-            print(graphElementsString)
             graphElements = json.loads(graphElementsString)
             if (isFile == 'true'):
                 # Validate file's extension
                 if (typeDelimitFile == 'geojson'):
-                    intakeAreaJson = json.loads(intakeAreaString)
-                    print(intakeAreaJson)
-                    for feature in intakeAreaJson['features']:
-                        intakeAreaGeom = GEOSGeometry(str(feature['geometry']))
-                    print('geojson')
+                    delimitAreaJson = json.loads(delimitAreaString)
+                    print(delimitAreaJson)
+                    for feature in delimitAreaJson['features']:
+                        delimitAreaGeom = GEOSGeometry(str(feature['geometry']))
+                    print('Delimitation file: geojson')
                 # Shapefile
                 else:
-                    intakeAreaJson = json.loads(intakeAreaString)
-                    for feature in intakeAreaJson['features']:
-                        intakeAreaGeom = GEOSGeometry(str(feature['geometry']))
-                    print('shp')
+                    delimitAreaJson = json.loads(delimitAreaString)
+                    for feature in delimitAreaJson['features']:
+                        delimitAreaGeom = GEOSGeometry(str(feature['geometry']))
+                    print('Delimitation file: shp')
             # Manually delimit
             else:
-                intakeAreaJson = json.loads(intakeAreaString)
-                intakeAreaGeom = GEOSGeometry(str(intakeAreaJson['geometry']))
+                delimitAreaJson = json.loads(delimitAreaString)
+                delimitAreaGeom = GEOSGeometry(str(delimitAreaJson['geometry']))
+
+            intakeGeomJson = json.loads(intakeAreaString)
+
+            # Get intake original area
+            for feature in intakeGeomJson['features']:
+                intakeGeom = GEOSGeometry(str(feature['geometry']))
+
+            if (intakeGeom.equals(delimitAreaGeom)):
+                delimitation_type='CATCHMENT'
+            else:
+                delimitation_type='MANUAL'
 
             demand_parameters = DemandParameters.objects.create(
                 interpolation_type=interpolation['typeInterpolation'],
@@ -81,12 +102,16 @@ def create(request):
             intake.added_by = request.user
             intake.save()
             intakeCreated = Intake.objects.get(id=intake.pk)
-            intakePolygon=Polygon.objects.create(
+            print("Basin Id:"+basinId)
+            print("Delimitation type:"+delimitation_type)
+            basin = Basins.objects.get(id=basinId)
+            intakePolygon = Polygon.objects.create(
                 area=0,
-                geom=intakeAreaGeom,
+                geom=delimitAreaGeom,
                 delimitation_date=datetime.datetime.now(),
-                delimitation_type='CATCHMENT',
-
+                delimitation_type=delimitation_type,
+                basin=basin,
+                intake=intakeCreated
             )
 
             for element in graphElements:
@@ -165,8 +190,6 @@ def listIntake(request):
 
 
 """
-
-
 Load process by category
 
 Attributes
@@ -182,8 +205,6 @@ def loadProcessEfficiency(request, category):
 
 
 """
-
-
 Load Cost function by category
 
 Attributes
@@ -219,7 +240,7 @@ def validateGeometry(request):
     isFile = request.POST.get('isFile')
     # GeoJSON | SHP
     typeDelimitFile = request.POST.get('typeDelimit')
-    print(isFile)
+    print("Is file delimitation?:"+isFile)
     # Validate if delimited by file or manually
     if (isFile == 'true'):
         # Validate file's extension
