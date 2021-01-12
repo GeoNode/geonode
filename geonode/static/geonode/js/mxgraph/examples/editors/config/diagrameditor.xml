@@ -11,6 +11,13 @@
 		<add as="toolbar" element="toolbar"/>
 	</ui>
 	<Array as="templates">
+		<add as="Empty">
+			<Connector label="" href="">
+				<mxCell edge="1">
+					<mxGeometry as="geometry" relative="1"/>
+				</mxCell>
+			</Connector>
+		</add>
 		<add as="embalse">
 			<Symbol name="Embalse" label="Damming" externalData="false">
 				<mxCell vertex="1" style="embalse" dbreference="EMBALSE">      
@@ -299,7 +306,9 @@
 		</mxGraphModel>
 	</mxGraph>
 	<mxDefaultToolbar as="toolbar">
-		<add as="Empty" template="empty" class="empty_icon" icon="/static/geonode/js/mxgraph/examples/editors/images/loading.gif"/>
+		<add as="Empty" mode="connect" class="empty_icon">
+		<![CDATA[ function (editor) { if (editor.defaultEdge != null) { editor.defaultEdge.style = null; } } ]]>
+		</add>
 		<add as="Embalse" template="embalse" icon="/static/mxgraph/images/waterproof/02-embalse.png"/>
 		<add as="Bombeo" template="bombeo"  width="32" height="32" icon="/static/mxgraph/images/waterproof/03-bombeo.svg"/>
 		<add as="Reservorio Agua" template="reservorioagua" width="32" height="32" icon="/static/mxgraph/images/waterproof/04-reservorio-agua.svg"/>

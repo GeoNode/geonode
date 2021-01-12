@@ -61,32 +61,63 @@ function createPopupMenu(graph, menu, cell, evt) {
 };
 
 function updateStyleLine(graph, cell, type) {
-    let idvar = cell.id;
-    let varcost = [
-        `Q_${idvar} (m³)`,
-        `CSed_${idvar} (mg/l)`,
-        `CN_${idvar} (mg/l)`,
-        `CP_${idvar} (mg/l)`,
-        `WSed_${idvar} (Ton)`,
-        `WN_${idvar} (Kg)`,
-        `WP_${idvar} (Kg)`,
-        `WSed_ret_${idvar} (Ton)`,
-        `WN_ret_${idvar} (Kg)`,
-        `WP_ret_${idvar} (Kg)`
-    ];
+    $.ajax({
+        url: `/intake/loadProcess/${type.style}`,
+        success: function(result) {
+            let idvar = cell.id;
+            let varcost = [
+                `Q_${idvar}`,
+                `CSed_${idvar}`,
+                `CN_${idvar}`,
+                `CP_${idvar}`,
+                `WSed_${idvar}`,
+                `WN_${idvar}`,
+                `WP_${idvar}`,
+                `WSed_ret_${idvar}`,
+                `WN_ret_${idvar}`,
+                `WP_ret_${idvar}`
+            ];
 
-    /*
-    let external = false;
-    if (type.id == 'EI') external = true;*/
-    let value = {
-        "connectorType": type.id,
-        "varcost": varcost,
-        //"external": external
-    };
-    value = JSON.stringify(value);
-    cell.setValue(value);
-    graph.model.setStyle(cell, type.style);
+            let external = false;
+            if (type.id == 'EI') external = true;
+            let value = {
+                "connectorType": type.id,
+                "varcost": varcost,
+                "external": external,
+                'resultdb': result
+            };
+            value = JSON.stringify(value);
+            cell.setValue(value);
+            graph.model.setStyle(cell, type.style);
 
+            //add data in HTML for connectors
+            if (typeof(cell.value) == "string" && cell.value.length > 0) {
+                try {
+                    let obj = JSON.parse(cell.value);
+                    let dbfields = JSON.parse(obj.resultdb);
+                    label = connectionsType[obj.connectorType].name;
+                    $('#titleDiagram').text(connectionsType[obj.connectorType].name);
+
+                    // Add Value to Panel Information Right on HTML
+                    $('#aguaDiagram').val(dbfields[0].fields.predefined_transp_water_perc);
+                    $('#sedimentosDiagram').val(dbfields[0].fields.predefined_sediment_perc);
+                    $('#nitrogenoDiagram').val(dbfields[0].fields.predefined_nitrogen_perc);
+                    $('#fosforoDiagram').val(dbfields[0].fields.predefined_phosphorus_perc);
+                    // Add Validator 
+                    $('#aguaDiagram').attr('min', dbfields[0].fields.minimal_transp_water_perc);
+                    $('#aguaDiagram').attr('max', dbfields[0].fields.maximal_transp_water_perc);
+                    $('#sedimentosDiagram').attr('min', dbfields[0].fields.minimal_sediment_perc);
+                    $('#sedimentosDiagram').attr('max', dbfields[0].fields.maximal_sediment_perc);
+                    $('#nitrogenoDiagram').attr('min', dbfields[0].fields.minimal_nitrogen_perc);
+                    $('#nitrogenoDiagram').attr('max', dbfields[0].fields.maximal_nitrogen_perc);
+                    $('#fosforoDiagram').attr('min', dbfields[0].fields.minimal_phosphorus_perc);
+                    $('#fosforoDiagram').attr('max', dbfields[0].fields.maximal_phosphorus_perc);
+                } catch (e) {
+                    label = "";
+                }
+            }
+        }
+    });
 }
 
 function clearDataHtml(cell, evt) {
@@ -107,9 +138,33 @@ function clearDataHtml(cell, evt) {
 }
 
 function addData(element) {
+    //add data in HTML for connectors
+    if (typeof(element.value) == "string" && element.value.length > 0) {
+        try {
+            let obj = JSON.parse(element.value);
+            let dbfields = JSON.parse(obj.resultdb);
+            label = connectionsType[obj.connectorType].name;
+            $('#titleDiagram').text(connectionsType[obj.connectorType].name);
 
+            // Add Value to Panel Information Right on HTML
+            $('#aguaDiagram').val(dbfields[0].fields.predefined_transp_water_perc);
+            $('#sedimentosDiagram').val(dbfields[0].fields.predefined_sediment_perc);
+            $('#nitrogenoDiagram').val(dbfields[0].fields.predefined_nitrogen_perc);
+            $('#fosforoDiagram').val(dbfields[0].fields.predefined_phosphorus_perc);
+            // Add Validator 
+            $('#aguaDiagram').attr('min', dbfields[0].fields.minimal_transp_water_perc);
+            $('#aguaDiagram').attr('max', dbfields[0].fields.maximal_transp_water_perc);
+            $('#sedimentosDiagram').attr('min', dbfields[0].fields.minimal_sediment_perc);
+            $('#sedimentosDiagram').attr('max', dbfields[0].fields.maximal_sediment_perc);
+            $('#nitrogenoDiagram').attr('min', dbfields[0].fields.minimal_nitrogen_perc);
+            $('#nitrogenoDiagram').attr('max', dbfields[0].fields.maximal_nitrogen_perc);
+            $('#fosforoDiagram').attr('min', dbfields[0].fields.minimal_phosphorus_perc);
+            $('#fosforoDiagram').attr('max', dbfields[0].fields.maximal_phosphorus_perc);
+        } catch (e) {
+            label = "";
+        }
+    }
     $('#titleDiagram').text(element.getAttribute('name'));
-    $('#titleCostFunSmall').text(`ID: ${element.id} - ${element.getAttribute('name')}`);
     $('#idDiagram').val(element.id);
     if (element.getAttribute('resultdb') == undefined) return;
     resultdb = JSON.parse(element.getAttribute('resultdb'));
