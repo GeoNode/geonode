@@ -33,8 +33,9 @@ async function validateCoordinateWithApi(e) {
         catchmentPolyDelimit = L.geoJSON().addTo(mapDelimit);
       }
 
-      catchmentPoly.addData(resultCatchment.resultado.features);
-      catchmentPolyDelimit.addData(resultCatchment.resultado.features);
+      catchmentPoly.addData(resultCatchment.resultado.geometry.features);
+      catchmentPolyDelimit.addData(resultCatchment.resultado.geometry.features);
+      basinId=resultCatchment.resultado.basin;
       map.fitBounds(catchmentPoly.getBounds());
       mapDelimit.fitBounds(catchmentPoly.getBounds());
       mapLoader.hide();

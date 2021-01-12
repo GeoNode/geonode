@@ -17,6 +17,7 @@ var urlParams = (function (url) {
 
 var mxLanguage = urlParams['lang'];
 var map;
+var basinId;
 var mapDelimit;
 var snapMarker;
 var snapMarkerMapDelimit;
@@ -132,16 +133,16 @@ $(document).ready(function () {
         for (let p = 0; p < connetionData.length; p++) {
             if (connetionData[p].external == 'true') {
                 $('#externalSelect').append(`
-                            <option value="${connetionData[p].id}">${ connetionData[p].id } - External Input</option>
+                            <option value="${connetionData[p].id}">${connetionData[p].id} - External Input</option>
                  `);
                 rows = "";
                 for (let index = 0; index < numYear; index++) {
                     rows += (`<tr>
-                                <th class="text-center" scope="col">${index+1}</th>
-                                <td class="text-center" name="waterVolume_${ connetionData[p].id }" scope="col"><input type="text" class="form-control"></td>
-                                <td class="text-center" name="sediment_${ connetionData[p].id }" scope="col"><input type="text" class="form-control"></td>
-                                <td class="text-center" name="nitrogen_${ connetionData[p].id }" scope="col"><input type="text" class="form-control"></td>
-                                <td class="text-center" name="phosphorus_${ connetionData[p].id }" scope="col"><input type="text" class="form-control"></td>
+                                <th class="text-center" scope="col">${index + 1}</th>
+                                <td class="text-center" name="waterVolume_${connetionData[p].id}" scope="col"><input type="text" class="form-control"></td>
+                                <td class="text-center" name="sediment_${connetionData[p].id}" scope="col"><input type="text" class="form-control"></td>
+                                <td class="text-center" name="nitrogen_${connetionData[p].id}" scope="col"><input type="text" class="form-control"></td>
+                                <td class="text-center" name="phosphorus_${connetionData[p].id}" scope="col"><input type="text" class="form-control"></td>
                           </tr>`);
                 }
                 $('#IntakeTDLE').append(`
@@ -163,7 +164,7 @@ $(document).ready(function () {
         }
     }
 
-    $('#externalSelect').change(function() {
+    $('#externalSelect').change(function () {
         for (let t = 0; t < connetionData.length; t++) {
             if (connetionData[t].external == 'true') {
                 $(`#table_${connetionData[t].id}`).css('display', 'none');
@@ -350,10 +351,14 @@ function validateIntakeArea() {
                     'Excelente',
                     'El polígono es válido y está dentro de la captación',
                     'success'
-                )
-                $('#areaGeometry').val(JSON.stringify(editablePolygonJson))
-                $('#isFile').val(JSON.stringify(isFile))
-                $('#typeDelimit').val(JSON.stringify(delimitationFileType))
+                );
+                // Set original intake area geom in hidden input for posterior reading
+                $('#intakeAreaPolygon').val(JSON.stringify(intakePolygonJson));
+                $('#basinId').val(basinId);
+                // Set delimited area geom in hidden input for posterior reading
+                $('#delimitArea').val(JSON.stringify(editablePolygonJson));
+                $('#isFile').val(JSON.stringify(isFile));
+                $('#typeDelimit').val(JSON.stringify(delimitationFileType));
             }
         },
         error: function (error) {
