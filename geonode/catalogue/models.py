@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import six
 import errno
 import logging
 
@@ -101,14 +100,10 @@ def catalogue_post_save(instance, sender, **kwargs):
     except Exception as e:
         LOGGER.exception(e)
         csw_anytext = ''
-    if isinstance(instance.geographic_bounding_box, six.string_types):
-        csw_wkt_geometry = instance.geographic_bounding_box.split(';')[-1]
-    elif isinstance(instance.geographic_bounding_box, list):
-        csw_wkt_geometry = instance.geographic_bounding_box
 
     resources.update(
         metadata_xml=md_doc,
-        csw_wkt_geometry=csw_wkt_geometry,
+        csw_wkt_geometry=instance.geographic_bounding_box,
         csw_anytext=csw_anytext)
 
 
