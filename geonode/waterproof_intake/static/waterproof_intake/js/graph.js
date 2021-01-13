@@ -206,7 +206,7 @@ function onInit(editor) {
     var edge = editor.graph.insertEdge(parent, null, '', parent.children[0], parent.children[1]);
 
     $.ajax({
-        url: `/intake/loadProcess/RIVER`,
+        url: `/intake/loadProcess/${connectionsType.EC.style}`,
         success: function(result) {
             let idvar = edge.id;
             let varcost = [
