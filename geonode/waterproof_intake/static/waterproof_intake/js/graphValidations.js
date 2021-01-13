@@ -1,6 +1,6 @@
 const connectionsType = {
     EC: { name: 'Extraction connection', id: 'EC', style: 'Extraction_connection' },
-    EI: { name: 'External input', id: 'EI', style: 'External_input' },
+    CH: { name: 'Channel', id: 'CH', style: 'CHANNEL' },
     PL: { name: 'Pipeline', id: 'PL', style: 'Pipeline' },
     CN: { name: 'Connection', id: 'CN', style: 'Connection' },
 }
@@ -84,7 +84,8 @@ function updateStyleLine(graph, cell, type) {
                 "connectorType": type.id,
                 "varcost": varcost,
                 "external": external,
-                'resultdb': result
+                'resultdb': result,
+                'name': type.name
             };
             value = JSON.stringify(value);
             cell.setValue(value);
@@ -140,29 +141,26 @@ function clearDataHtml(cell, evt) {
 function addData(element) {
     //add data in HTML for connectors
     if (typeof(element.value) == "string" && element.value.length > 0) {
-        try {
-            let obj = JSON.parse(element.value);
-            let dbfields = JSON.parse(obj.resultdb);
-            label = connectionsType[obj.connectorType].name;
-            $('#titleDiagram').text(connectionsType[obj.connectorType].name);
+        let obj = JSON.parse(element.value);
+        let dbfields = JSON.parse(obj.resultdb);
+        label = connectionsType[obj.connectorType].name;
+        $('#titleDiagram').text(connectionsType[obj.connectorType].name);
 
-            // Add Value to Panel Information Right on HTML
-            $('#aguaDiagram').val(dbfields[0].fields.predefined_transp_water_perc);
-            $('#sedimentosDiagram').val(dbfields[0].fields.predefined_sediment_perc);
-            $('#nitrogenoDiagram').val(dbfields[0].fields.predefined_nitrogen_perc);
-            $('#fosforoDiagram').val(dbfields[0].fields.predefined_phosphorus_perc);
-            // Add Validator 
-            $('#aguaDiagram').attr('min', dbfields[0].fields.minimal_transp_water_perc);
-            $('#aguaDiagram').attr('max', dbfields[0].fields.maximal_transp_water_perc);
-            $('#sedimentosDiagram').attr('min', dbfields[0].fields.minimal_sediment_perc);
-            $('#sedimentosDiagram').attr('max', dbfields[0].fields.maximal_sediment_perc);
-            $('#nitrogenoDiagram').attr('min', dbfields[0].fields.minimal_nitrogen_perc);
-            $('#nitrogenoDiagram').attr('max', dbfields[0].fields.maximal_nitrogen_perc);
-            $('#fosforoDiagram').attr('min', dbfields[0].fields.minimal_phosphorus_perc);
-            $('#fosforoDiagram').attr('max', dbfields[0].fields.maximal_phosphorus_perc);
-        } catch (e) {
-            label = "";
-        }
+        // Add Value to Panel Information Right on HTML
+        $('#aguaDiagram').val(dbfields[0].fields.predefined_transp_water_perc);
+        $('#sedimentosDiagram').val(dbfields[0].fields.predefined_sediment_perc);
+        $('#nitrogenoDiagram').val(dbfields[0].fields.predefined_nitrogen_perc);
+        $('#fosforoDiagram').val(dbfields[0].fields.predefined_phosphorus_perc);
+        // Add Validator 
+        $('#aguaDiagram').attr('min', dbfields[0].fields.minimal_transp_water_perc);
+        $('#aguaDiagram').attr('max', dbfields[0].fields.maximal_transp_water_perc);
+        $('#sedimentosDiagram').attr('min', dbfields[0].fields.minimal_sediment_perc);
+        $('#sedimentosDiagram').attr('max', dbfields[0].fields.maximal_sediment_perc);
+        $('#nitrogenoDiagram').attr('min', dbfields[0].fields.minimal_nitrogen_perc);
+        $('#nitrogenoDiagram').attr('max', dbfields[0].fields.maximal_nitrogen_perc);
+        $('#fosforoDiagram').attr('min', dbfields[0].fields.minimal_phosphorus_perc);
+        $('#fosforoDiagram').attr('max', dbfields[0].fields.maximal_phosphorus_perc);
+
     }
     $('#titleDiagram').text(element.getAttribute('name'));
     $('#titleCostFunSmall').text(`ID: ${element.id} - ${element.getAttribute('name')}`);
