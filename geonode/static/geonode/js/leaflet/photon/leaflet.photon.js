@@ -4,7 +4,7 @@ L.Control.Photon = L.Control.extend({
     includes: L.Mixin.Events,
 
     options: {
-        url: 'http://photon.komoot.de/api/?',
+        url: 'http://photon.komoot.io/api/?',
         placeholder: "Start typing...",
         emptyMessage: "No result",
         minChar: 3,
@@ -285,18 +285,16 @@ L.Control.Photon = L.Control.extend({
         this.clear();
         this.resultsContainer.style.display = "block";
         this.resizeContainer();
+        geojson.features = geojson.features.filter(feature => feature.properties.type=="city" || feature.properties.osm_value=="town");
         this.forEach(geojson.features, function (feature, index) {
             self.RESULTS.push(self.createResult(feature));
         });
+
         if (geojson.features.length === 0) {
             var noresult = L.DomUtil.create('li', 'photon-no-result', this.resultsContainer);
             noresult.innerHTML = this.options.noResultLabel;
         }
-        if (this.options.feedbackEmail) {
-            var feedback = L.DomUtil.create('a', 'photon-feedback', this.resultsContainer);
-            feedback.href = "mailto:" + this.options.feedbackEmail;
-            feedback.innerHTML = "Feedback";
-        }
+        
         this.CURRENT = 0;
         this.highlight();
         if (this.options.resultsHandler) {
@@ -344,15 +342,15 @@ L.Control.Photon = L.Control.extend({
         if (typeof this.xhr === "object") {
             this.xhr.abort();
         }
+        let filter_city = ""; // "&osm_tag=place:city";
         this.xhr = new XMLHttpRequest(),
             params = {
                 q: val,
                 lang: this.options.lang,
                 limit: this.options.limit,
-                lat: this.options.includePosition ? this.map.getCenter().lat : null,
-                lon: this.options.includePosition ? this.map.getCenter().lng : null
+                bbox: this.toValidBBox(this.map.getBounds()),
             }, self = this;
-        this.xhr.open('GET', this.options.url + this.buildQueryString(params), true);
+        this.xhr.open('GET', this.options.url + this.buildQueryString(params) + filter_city, true);
         this.xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
 
         this.xhr.onload = function(e) {
@@ -378,7 +376,16 @@ L.Control.Photon = L.Control.extend({
                 query_string.push(encodeURIComponent(key) + "=" + encodeURIComponent(params[key]));
             }
         }
-        return query_string.join('&');
+        return query_string.join('%26');
+    },
+
+    toValidBBox: function(bbox){
+        if (bbox.getWest() < -180 || bbox.getEast() > 180 || bbox.getNorth() > 90 || bbox.getSouth() < -90 ){
+            return "-180,-90,180,90";
+        }else{
+            return bbox.toBBoxString();
+        }
+
     }
 
 });

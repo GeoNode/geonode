@@ -3,7 +3,7 @@
  * validations & interactions
  * @version 1.0
  */
-var urlParams = (function (url) {
+var urlParams = (function(url) {
     var result = new Object();
     var params = window.location.search.slice(1).split('&');
     for (var i = 0; i < params.length; i++) {
@@ -42,8 +42,8 @@ const interpolationType = {
 }
 
 var mapLoader;
-$(document).ready(function () {
-    $("#intakeWECB").click(function () {
+$(document).ready(function() {
+    $("#intakeWECB").click(function() {
         $('#intakeECTAG tr').remove();
         $('#IntakeTDLE table').remove();
         $('#externalSelect option').remove();
@@ -173,13 +173,13 @@ $(document).ready(function () {
         $(`#table_${$('#externalSelect').val()}`).css('display', 'block');
     });
 
-    $('#smartwizard').smartWizard("next").click(function () {
+    $('#smartwizard').smartWizard("next").click(function() {
         $('#autoAdjustHeightF').css("height", "auto");
         mapDelimit.invalidateSize();
         map.invalidateSize();
     });
 
-    $('#intakeNIBYMI').click(function () {
+    $('#intakeNIBYMI').click(function() {
         $('#intakeWEMI div').remove();
         intakeNIYMI = Number($("#intakeNIYMI").val());
         for (let index = 0; index < intakeNIYMI; index++) {
@@ -193,13 +193,13 @@ $(document).ready(function () {
     });
 
 
-    $('#smartwizard').smartWizard("next").click(function () {
+    $('#smartwizard').smartWizard("next").click(function() {
         $('#autoAdjustHeightF').css("height", "auto");
         map.invalidateSize();
     });
 
     $('#smartwizard').smartWizard({
-        selected: 0,
+        selected: 3,
         theme: 'dots',
         enableURLhash: false,
         autoAdjustHeight: true,
@@ -215,7 +215,7 @@ $(document).ready(function () {
         }
     });
 
-    $("#smartwizard").on("showStep", function (e, anchorObject, stepIndex, stepDirection) {
+    $("#smartwizard").on("showStep", function(e, anchorObject, stepIndex, stepDirection) {
         if (stepIndex == 3) {
             if (catchmentPoly)
                 mapDelimit.fitBounds(catchmentPoly.getBounds());
@@ -247,11 +247,11 @@ $(document).ready(function () {
         markerType: L.marker, //optional default L.marker
         markerProps: {}, //optional default {},
         centerUserCoordinates: true,
-        labelFormatterLng: function (lng) { return lng + " lng" }, //optional default none,
-        labelFormatterLat: function (lat) { return lat + " lat" }, //optional default none      
+        labelFormatterLng: function(lng) { return lng + " lng" }, //optional default none,
+        labelFormatterLat: function(lat) { return lat + " lat" }, //optional default none      
     }).addTo(map);
 
-    $("#validateBtn").on("click", function () {
+    $("#validateBtn").on("click", function() {
         Swal.fire({
             title: 'Delimitar punto y cuenca',
             text: "El sistema ajustará las coordenadas del punto a la captación más cercana, ¿Desea continuar?",
@@ -279,7 +279,7 @@ $(document).ready(function () {
     createEditor(editorUrl);
 
     var menu1Tab = document.getElementById('mapid');
-    var observer2 = new MutationObserver(function () {
+    var observer2 = new MutationObserver(function() {
         if (menu1Tab.style.display != 'none') {
             mapDelimit.invalidateSize();
         }
@@ -289,7 +289,7 @@ $(document).ready(function () {
 });
 
 
-window.onbeforeunload = function () { return mxResources.get('changesLost'); };
+window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 
 /** 
  * Delimit manually the intake polygon
@@ -301,7 +301,7 @@ function delimitIntakeArea() {
     var polygonKeys = Object.keys(catchmentPoly._layers);
     var keyNamePolygon = polygonKeys[0];
     var geometryCoordinates = catchmentPoly._layers[keyNamePolygon].feature.geometry.coordinates[0];
-    geometryCoordinates.forEach(function (geom) {
+    geometryCoordinates.forEach(function(geom) {
         var coordinates = [];
         coordinates.push(geom[1]);
         coordinates.push(geom[0]);
@@ -332,7 +332,7 @@ function validateIntakeArea() {
             'isFile': JSON.stringify(isFile),
             'typeDelimit': delimitationFileType
         },
-        success: function (result) {
+        success: function(result) {
             if (!result.validPolygon) {
                 Swal.fire({
                     icon: 'error',
@@ -341,11 +341,11 @@ function validateIntakeArea() {
                 })
             } else if (!result.polygonContains) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'El polígono debe estar dentro del área de la captación',
-                    text: 'El polígono editado no es válido, por favor intente de nuevo',
-                })
-                // Correct geometry
+                        icon: 'error',
+                        title: 'El polígono debe estar dentro del área de la captación',
+                        text: 'El polígono editado no es válido, por favor intente de nuevo',
+                    })
+                    // Correct geometry
             } else {
                 Swal.fire(
                     'Excelente',
@@ -361,7 +361,7 @@ function validateIntakeArea() {
                 $('#typeDelimit').val(JSON.stringify(delimitationFileType));
             }
         },
-        error: function (error) {
+        error: function(error) {
             console.log(error);
         }
     });
@@ -372,7 +372,7 @@ function validateIntakeArea() {
  * @param {HTML} dropdown Dropdown selected element
  */
 function changeFileEvent() {
-    $('#intakeArea').change(function (evt) {
+    $('#intakeArea').change(function(evt) {
         var file = evt.currentTarget.files[0];
         var extension = validExtension(file);
         // Validate file's extension
@@ -382,7 +382,7 @@ function changeFileEvent() {
             // Validate file's extension
             if (extension.extension == 'geojson') { //GeoJSON
                 var readerGeoJson = new FileReader();
-                readerGeoJson.onload = function (evt) {
+                readerGeoJson.onload = function(evt) {
                     var contents = evt.target.result;
                     geojson = JSON.parse(contents);
                     delimitationFileType = delimitationFileEnum.GEOJSON;
@@ -395,7 +395,7 @@ function changeFileEvent() {
                     editablepolygon = L.geoJSON(geojson, { style: polygonStyle })
                     editablepolygon.addTo(mapDelimit);
                     mapDelimit.fitBounds(editablepolygon.getBounds())
-                    //loadShapefile(geojson, file.name);
+                        //loadShapefile(geojson, file.name);
                 }
                 readerGeoJson.readAsText(file);
             } else { //Zip
@@ -406,10 +406,10 @@ function changeFileEvent() {
                     readPrj = false,
                     prj, coord = true;
                 var prjName;
-                reader.onload = function (evt) {
+                reader.onload = function(evt) {
                     var contents = evt.target.result;
-                    JSZip.loadAsync(file).then(function (zip) {
-                        zip.forEach(function (relativePath, zipEntry) {
+                    JSZip.loadAsync(file).then(function(zip) {
+                        zip.forEach(function(relativePath, zipEntry) {
                             filename = zipEntry.name.toLocaleLowerCase();
                             if (filename.indexOf(".shp") != -1) {
                                 readShp = true;
@@ -427,7 +427,7 @@ function changeFileEvent() {
                         });
                         // Valid shapefile with minimum files req
                         if (readShp && readDbf && readPrj && readShx) {
-                            zip.file(prjName).async("string").then(function (data) {
+                            zip.file(prjName).async("string").then(function(data) {
                                 prj = data;
                                 // Validar sistema de referencia
                                 if (!prj) {
@@ -439,7 +439,7 @@ function changeFileEvent() {
                                 }
                                 // Shapefile válido
                                 else {
-                                    shp(contents).then(function (shpToGeojson) {
+                                    shp(contents).then(function(shpToGeojson) {
                                         geojson = shpToGeojson;
                                         delimitationFileType = delimitationFileEnum.SHP;
                                         let polygonStyle = {
@@ -451,8 +451,8 @@ function changeFileEvent() {
                                         editablepolygon = L.geoJSON(geojson, { style: polygonStyle })
                                         editablepolygon.addTo(mapDelimit);
                                         mapDelimit.fitBounds(editablepolygon.getBounds())
-                                        //loadShapefile(geojson, file.name);
-                                    }).catch(function (e) {
+                                            //loadShapefile(geojson, file.name);
+                                    }).catch(function(e) {
                                         Swal.fire({
                                             icon: 'error',
                                             title: 'Error en shapefile',
@@ -498,7 +498,7 @@ function changeFileEvent() {
                         }
                     });
                 };
-                reader.onerror = function (event) {
+                reader.onerror = function(event) {
                     console.error("File could not be read! Code " + event.target.error.code);
                     //alert("El archivo no pudo ser cargado: " + event.target.error.code);
                 };
