@@ -271,9 +271,7 @@ class DocumentUploadView(CreateView):
 
         if bbox:
             bbox = BBOXHelper.from_xy(bbox)
-            Document.objects.filter(id=self.object.pk).update(
-                bbox_polygon=bbox.as_polygon()
-            )
+            self.object.bbox_polygon = bbox.as_polygon()
 
         if getattr(settings, 'SLACK_ENABLED', False):
             try:

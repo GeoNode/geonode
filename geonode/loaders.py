@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #########################################################################
 #
-# Copyright (C) 2018 OSGeo
+# Copyright (C) 2020 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,26 +17,19 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.conf import settings
-from celery import shared_task
-
-from .utils import sync_resources_with_guardian
+from django import db
+from djcelery.loaders import DjangoLoader
 
 
-@shared_task(
-    bind=True,
-    name='geonode.security.tasks.synch_guardian',
-    queue='security',
-    expires=600,
-    acks_late=False,
-    autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
-def synch_guardian():
-    """
-    Sync resources with Guardian and clear their dirty state
-    """
-    if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
-        sync_resources_with_guardian()
+class GeoNodeCeleryTaksLoader(DjangoLoader):
+    def on_task_init(self, task_id, task):
+        """Called before every task."""
+        for conn in db.connections.all():
+            try:
+                if not conn.in_atomic_block and \
+                (not conn.connection or
+                 (conn.connection.cursor() and not conn.is_usable())):
+                    conn.close()
+            except Exception:
+                pass
+        super(GeoNodeCeleryTaksLoader, self).on_task_init(task_id, task)

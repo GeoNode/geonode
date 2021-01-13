@@ -215,10 +215,11 @@ def pre_save_document(instance, sender, **kwargs):
 
     resources = get_related_resources(instance)
 
+    # if there are (new) linked resources update the bbox computed by their bboxes
     if resources:
         bbox = MultiPolygon([r.bbox_polygon for r in resources])
         instance.set_bbox_polygon(bbox.extent, instance.srid)
-    else:
+    elif not instance.bbox_polygon:
         instance.set_bbox_polygon((-180, -90, 180, 90), '4326')
 
 

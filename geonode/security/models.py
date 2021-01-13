@@ -79,8 +79,9 @@ class PermissionLevelMixin(object):
     def get_all_level_info(self):
         resource = self.get_self_resource()
         users = get_users_with_perms(resource)
-        groups = get_groups_with_perms(resource,
-                                       attach_perms=True)
+        groups = get_groups_with_perms(
+            resource,
+            attach_perms=True)
         if groups:
             for group in groups:
                 try:
@@ -94,7 +95,8 @@ class PermissionLevelMixin(object):
                                     assign_perm(perm, manager, resource)
                                 users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS
                 except GroupProfile.DoesNotExist:
-                    pass
+                    tb = traceback.format_exc()
+                    logger.debug(tb)
         if resource.group:
             try:
                 group_profile = GroupProfile.objects.get(slug=resource.group.name)
@@ -107,7 +109,8 @@ class PermissionLevelMixin(object):
                                 assign_perm(perm, manager, resource)
                             users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS
             except GroupProfile.DoesNotExist:
-                pass
+                tb = traceback.format_exc()
+                logger.debug(tb)
         info = {
             'users': users,
             'groups': groups}
@@ -175,7 +178,8 @@ class PermissionLevelMixin(object):
                                 if manager not in obj_group_managers and not manager.is_superuser:
                                     obj_group_managers.append(manager)
                     except GroupProfile.DoesNotExist:
-                        pass
+                        tb = traceback.format_exc()
+                        logger.debug(tb)
 
         if not anonymous_group:
             raise Exception("Could not acquire 'anonymous' Group.")

@@ -666,36 +666,41 @@ def final_step(upload_session, user, charset="UTF-8"):
     else:
         _has_time = (True if upload_session.time and upload_session.time_info and
                      upload_session.time_transforms else False)
-        saved_layer, created = Layer.objects.get_or_create(uuid=layer_uuid)
-
-        assert saved_layer is not None
-
+        saved_layer = None
         try:
             with transaction.atomic():
-                to_update = {
-                    "name": task.layer.name,
-                    "store": target.name,
-                    "storeType": target.store_type,
-                    "alternate": alternate,
-                    "workspace": target.workspace_name,
-                    "title": title,
-                    "abstract": abstract or '',
-                    "owner": user,
-                    "has_time": _has_time
-                }
-                Layer.objects.filter(id=saved_layer.id).update(**to_update)
+                saved_layer = Layer.objects.create(uuid=layer_uuid)
+                assert saved_layer is not None
+                created = Layer.objects.filter(id=saved_layer.id).exists()
+                if created:
+                    to_update = {
+                        "name": task.layer.name,
+                        "store": target.name,
+                        "storeType": target.store_type,
+                        "alternate": alternate,
+                        "workspace": target.workspace_name,
+                        "title": title,
+                        "abstract": abstract or '',
+                        "owner": user,
+                        "has_time": _has_time
+                    }
+                    Layer.objects.filter(id=saved_layer.id).update(**to_update)
 
-                # Refresh from DB
-                saved_layer.refresh_from_db()
+                    # Refresh from DB
+                    saved_layer.refresh_from_db()
         except IntegrityError:
             raise
 
     # Create a new upload session
-    geonode_upload_session, created = UploadSession.objects.get_or_create(
-        resource=saved_layer, user=user
-    )
-    geonode_upload_session.processed = False
-    geonode_upload_session.save()
+    try:
+        with transaction.atomic():
+            geonode_upload_session, created = UploadSession.objects.get_or_create(
+                resource=saved_layer, user=user
+            )
+            geonode_upload_session.processed = False
+            geonode_upload_session.save()
+    except IntegrityError:
+        raise
 
     # Add them to the upload session (new file fields are created).
     assigned_name = None

@@ -945,7 +945,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # Set the layer private for not authenticated users
         layer.set_permissions({'users': {'AnonymousUser': []}, 'groups': []})
 
-        url = 'http://geoserver:8080/geoserver/geonode/ows?' \
+        url = f'{settings.GEOSERVER_LOCATION}geonode/ows?' \
             'LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES=' \
             '&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap' \
             '&SRS=EPSG%3A4326' \
@@ -995,7 +995,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         )
 
         # test change_layer_style
-        url = 'http://geoserver:8080/geoserver/rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
+        url = f'{settings.GEOSERVER_LOCATION}rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
         sld = """<?xml version="1.0" encoding="UTF-8"?>
     <sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld"
     xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc"
