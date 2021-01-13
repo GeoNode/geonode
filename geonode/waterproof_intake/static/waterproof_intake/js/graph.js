@@ -3,6 +3,14 @@
  * configurations (Step 2 of create wizard)
  * @version 1.0
  */
+/**  
+ * Global variables for save data 
+ * @param {Array} resultdb   all data from DB
+ * @param {Object} selectedCell  cell selected from Diagram 
+ */
+
+var resultdb = [];
+var selectedCell;
 var graphData = [];
 
 // Program starts here. The document.onLoad executes the
@@ -156,7 +164,13 @@ function onInit(editor) {
         `WP_ret_${river.id}`
     );
 
-    river.setAttribute('varcost', JSON.stringify(temp));
+    $.ajax({
+        url: `/intake/loadProcess/RIVER`,
+        success: function(result) {
+            river.setAttribute('varcost', JSON.stringify(temp));
+            river.setAttribute('resultdb', result);
+        }
+    });
 
     //Create CSINFRA at the beginning of the diagram
     var vertex = editor.graph.insertVertex(parent, null, sourceNode, 500, 30, 60, 92);
@@ -190,9 +204,39 @@ function onInit(editor) {
 
 
     var edge = editor.graph.insertEdge(parent, null, '', parent.children[0], parent.children[1]);
-    let value = { "connectorType": connectionsType.EC.id };
-    edge.setValue(JSON.stringify(value));
-    editor.graph.model.setStyle(edge, connectionsType.EC.style);
+
+    $.ajax({
+        url: `/intake/loadProcess/RIVER`,
+        success: function(result) {
+            let idvar = edge.id;
+            let varcost = [
+                `Q_${idvar} (m³)`,
+                `CSed_${idvar} (mg/l)`,
+                `CN_${idvar} (mg/l)`,
+                `CP_${idvar} (mg/l)`,
+                `WSed_${idvar} (Ton)`,
+                `WN_${idvar} (Kg)`,
+                `WP_${idvar} (Kg)`,
+                `WSed_ret_${idvar} (Ton)`,
+                `WN_ret_${idvar} (Kg)`,
+                `WP_ret_${idvar} (Kg)`
+            ];
+
+            let external = false;
+            let value = {
+                "connectorType": connectionsType.EC.id,
+                "varcost": varcost,
+                "external": external,
+                'resultdb': result,
+                'name': connectionsType.EC.name
+            };
+
+            edge.setValue(JSON.stringify(value));
+            editor.graph.model.setStyle(edge, connectionsType.EC.style);
+
+        }
+    });
+
 
     // Source nodes needs 1..2 connected Targets
     editor.graph.multiplicities.push(new mxMultiplicity(
@@ -517,14 +561,7 @@ function onInit(editor) {
 
         });
 
-        /**  
-         * Global variables for save data 
-         * @param {Array} resultdb   all data from DB
-         * @param {Object} selectedCell  cell selected from Diagram 
-         */
 
-        var resultdb = [];
-        var selectedCell;
 
         //Load data from figure to html
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
@@ -541,26 +578,63 @@ function onInit(editor) {
 
         //Add value entered in sediments in the field resultdb
         $('#sedimentosDiagram').keyup(function() {
-            resultdb[0].fields.predefined_sediment_perc = $('#sedimentosDiagram').val();
-            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+            if (typeof(selectedCell.value) == "string" && selectedCell.value.length > 0) {
+                var obj = JSON.parse(selectedCell.value);
+                let dbfields = JSON.parse(obj.resultdb);
+                dbfields[0].fields.predefined_sediment_perc = $('#sedimentosDiagram').val();
+                values = JSON.stringify(dbfields);
+                obj.resultdb = values;
+                selectedCell.setValue(JSON.stringify(obj));
+            } else {
+                resultdb[0].fields.predefined_sediment_perc = $('#sedimentosDiagram').val();
+                selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+            }
+
         });
 
         //Add value entered in nitrogen in the field resultdb
         $('#nitrogenoDiagram').keyup(function() {
-            resultdb[0].fields.predefined_nitrogen_perc = $('#nitrogenoDiagram').val();
-            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+            if (typeof(selectedCell.value) == "string" && selectedCell.value.length > 0) {
+                var obj = JSON.parse(selectedCell.value);
+                let dbfields = JSON.parse(obj.resultdb);
+                dbfields[0].fields.predefined_nitrogen_perc = $('#nitrogenoDiagram').val();
+                values = JSON.stringify(dbfields);
+                obj.resultdb = values;
+                selectedCell.setValue(JSON.stringify(obj));
+            } else {
+                resultdb[0].fields.predefined_nitrogen_perc = $('#nitrogenoDiagram').val();
+                selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+            }
         });
 
         //Add value entered in phosphorus in the field resultdb
         $('#fosforoDiagram').keyup(function() {
-            resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
-            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+            if (typeof(selectedCell.value) == "string" && selectedCell.value.length > 0) {
+                var obj = JSON.parse(selectedCell.value);
+                let dbfields = JSON.parse(obj.resultdb);
+                dbfields[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
+                values = JSON.stringify(dbfields);
+                obj.resultdb = values;
+                selectedCell.setValue(JSON.stringify(obj));
+            } else {
+                resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
+                selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+            }
         });
 
         //Add value entered in aguaDiagram in the field resultdb
         $('#aguaDiagram').keyup(function() {
-            resultdb[0].fields.predefined_transp_water_perc = $('#aguaDiagram').val();
-            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+            if (typeof(selectedCell.value) == "string" && selectedCell.value.length > 0) {
+                var obj = JSON.parse(selectedCell.value);
+                let dbfields = JSON.parse(obj.resultdb);
+                dbfields[0].fields.predefined_transp_water_perc = $('#aguaDiagram').val();
+                values = JSON.stringify(dbfields);
+                obj.resultdb = values;
+                selectedCell.setValue(JSON.stringify(obj));
+            } else {
+                resultdb[0].fields.predefined_transp_water_perc = $('#aguaDiagram').val();
+                selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+            }
         });
 
 
