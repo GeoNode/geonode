@@ -772,6 +772,10 @@ def file_upload(filename,
     else:
         try:
             with transaction.atomic():
+                if 'spatial_representation_type' in defaults:
+                    _spatial_ref_type = defaults.pop('spatial_representation_type')
+                    _spatial_ref_type.save()
+                    defaults['spatial_representation_type'] = _spatial_ref_type
                 ResourceBase.objects.filter(
                     id=layer.resourcebase_ptr.id).update(
                     **defaults)
@@ -993,7 +997,6 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                     if is_remote and thumbnail_remote_url:
                         try:
                             _ogc_server_settings = settings.OGC_SERVER['default']
-                            logger.error(f" ---------------------------------- 995: {thumbnail_remote_url}")
                             resp, image = ogc_client.request(
                                 thumbnail_remote_url,
                                 headers=headers,
@@ -1033,7 +1036,6 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                                 request_body['styles'] = instance.default_style.name
 
                         try:
-                            logger.error(f" ---------------------------------- 1035: {request_body}")
                             image = _prepare_thumbnail_body_from_opts(request_body)
                         except Exception as e:
                             logger.exception(e)
@@ -1067,7 +1069,6 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                             valid_uname_pw = base64.b64encode(
                                 ("%s:%s" % (_user, _pwd)).encode("UTF-8")).decode("ascii")
                             headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
-                        logger.error(f" ---------------------------------- 1069: {thumbnail_create_url}")
                         resp, image = ogc_client.request(
                             thumbnail_create_url,
                             headers=headers,
