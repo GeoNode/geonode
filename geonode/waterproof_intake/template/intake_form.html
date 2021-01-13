@@ -95,8 +95,7 @@
                             Nombre
                         </label>
                         <div class="">
-                            <input type="text" name="name" maxlength="100" class=" form-control" required
-                                id="id_name">
+                            <input type="text" name="name" maxlength="100" class=" form-control" required id="id_name">
                         </div>
                     </div>
 
@@ -121,7 +120,8 @@
                 <input type="hidden" id="isFile" name="isFile">
                 <input type="hidden" id="typeDelimit" name="typeDelimit">
                 <input type="hidden" id="waterExtraction" name="waterExtraction" value="">
-                <input type="hidden" id="areaGeometry" name="areaGeometry" value="">
+                <input type="hidden" id="delimitArea" name="delimitArea" value="">
+                <input type="hidden" id="intakeArea" name="intakeArea" value="">
                 <div id="map">
                     <div id="analysisOptions">
                         <button type="button" id="validateBtn">Validate</button>
@@ -269,7 +269,7 @@
                                 <h5 class="text-primary">Year number for analysis</h5>
                                 <div class="form-group">
                                     <label>Number Years <span class="text-danger-wp">(*)</span> </label>
-                                    <input type="text" class="form-control"  id="intakeNIYMI">
+                                    <input type="text" class="form-control" id="intakeNIYMI">
                                 </div>
                                 <button type="button" class="btn btn-primary" id="intakeNIBYMI">Generate</button>
                                 <button type="button" class="btn btn-danger">Save asignation</button>
