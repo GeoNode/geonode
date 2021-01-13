@@ -120,17 +120,20 @@ def create(request):
                     print('River element')
                 #
                 else:
-                    parameter = json.loads(element['resultdb'])
-                    element_system = ElementSystem.objects.create(
-                        name=element['name'],
-                        normalized_category=parameter[0]['fields']['normalized_category'],
-                        origin=1,
-                        destination=2,
-                        sediment=parameter[0]['fields']['maximal_sediment_perc'],
-                        nitrogen=parameter[0]['fields']['maximal_nitrogen_perc'],
-                        phosphorus=parameter[0]['fields']['maximal_phosphorus_perc'],
-                        intake=intakeCreated
-                    )
+                    if hasattr(element,'resultdb'):
+                        print('Has resultdb element')
+                        parameter = json.loads(element['resultdb'])
+                        element_system = ElementSystem.objects.create(
+                            name=element['name'],
+                            normalized_category=parameter[0]['fields']['normalized_category'],
+                            origin=1,
+                            destination=2,
+                            sediment=parameter[0]['fields']['maximal_sediment_perc'],
+                            nitrogen=parameter[0]['fields']['maximal_nitrogen_perc'],
+                            phosphorus=parameter[0]['fields']['maximal_phosphorus_perc'],
+                            intake=intakeCreated
+                        )
+                    
             messages.success(request, ("Water Intake created."))
         else:
             messages.error(request, ("Water Intake not created."))
