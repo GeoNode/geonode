@@ -26,9 +26,14 @@ from .utils import sync_resources_with_guardian
 @shared_task(
     bind=True,
     name='geonode.security.tasks.synch_guardian',
-    queue='update',
+    queue='security',
+    expires=600,
+    acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5, 'countdown': 180})
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def synch_guardian():
     """
     Sync resources with Guardian and clear their dirty state

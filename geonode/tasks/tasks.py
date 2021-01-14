@@ -17,11 +17,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import celery
+from celery.utils.log import get_task_logger
+
 from django.conf import settings
-from django.db import transaction
 from django.core.mail import send_mail
 
-from celery.utils.log import get_task_logger
+from django.db import (
+    connections,
+    transaction)
 
 from geonode.celery_app import app
 
@@ -78,20 +82,35 @@ def memcache_lock(lock_id):
     return lock
 
 
+class FaultTolerantTask(celery.Task):
+    """ Implements after return hook to close the invalid connection.
+    This way, django is forced to serve a new connection for the next
+    task.
+    """
+    abstract = True
+
+    def after_return(self, *args, **kwargs):
+        for conn in connections.all():
+            try:
+                if not conn.in_atomic_block and \
+                (not conn.connection or
+                 (conn.connection.cursor() and not conn.is_usable())):
+                    conn.close()
+            except Exception:
+                pass
+
+
 @app.task(
     bind=True,
     name='geonode.tasks.email.send_mail',
     queue='email',
-    countdown=60,
-    # expires=120,
-    acks_late=True,
-    retry=True,
-    retry_policy={
-        'max_retries': 3,
-        'interval_start': 0,
-        'interval_step': 0.2,
-        'interval_max': 0.2,
-    })
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def send_email(self, *args, **kwargs):
     """
     Sends an email using django's send_mail functionality.
@@ -103,16 +122,13 @@ def send_email(self, *args, **kwargs):
     bind=True,
     name='geonode.tasks.notifications.send_queued_notifications',
     queue='email',
-    countdown=60,
-    # expires=120,
-    acks_late=True,
-    retry=True,
-    retry_policy={
-        'max_retries': 3,
-        'interval_start': 0,
-        'interval_step': 0.2,
-        'interval_max': 0.2,
-    })
+    expires=10,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 2, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def send_queued_notifications(self, *args):
     """Sends queued notifications.
 
@@ -133,14 +149,28 @@ def send_queued_notifications(self, *args):
             send_all(*args)
 
 
-@app.task(bind=True,
-          name='geonode.tasks.layers.set_permissions',
-          queue='default')
+@app.task(
+    bind=True,
+    base=FaultTolerantTask,
+    name='geonode.tasks.layers.set_permissions',
+    queue='security',
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def set_permissions(self, permissions_names, resources_names,
                     users_usernames, groups_names, delete_flag):
     from geonode.layers.utils import set_layers_permissions
     with transaction.atomic():
         for permissions_name in permissions_names:
             set_layers_permissions(
-                permissions_name, resources_names, users_usernames, groups_names, delete_flag
+                permissions_name,
+                resources_names,
+                users_usernames,
+                groups_names,
+                delete_flag,
+                verbose=True
             )

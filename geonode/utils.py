@@ -1460,12 +1460,18 @@ class HttpClient(object):
         session.verify = False
         action = getattr(session, method.lower(), None)
         if action:
-            response = action(
-                url=url,
-                data=data,
-                headers=headers,
-                timeout=timeout or self.timeout,
-                stream=stream)
+            _req_tout = timeout or self.timeout
+            try:
+                response = action(
+                    url=url,
+                    data=data,
+                    headers=headers,
+                    timeout=_req_tout,
+                    stream=stream)
+            except (requests.exceptions.RequestException, ValueError) as e:
+                msg = f"Request exception [{e}] - TOUT [{_req_tout}] to URL: {url} - headers: {headers}"
+                logger.exception(Exception(msg))
+                response = None
         else:
             response = session.get(url, headers=headers, timeout=self.timeout)
 
@@ -1729,7 +1735,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     name = 'Zipped Shapefile'
                 if (Link.objects.filter(resource=instance.resourcebase_ptr,
                                         url=wfs_url,
-                                        name=name).count() < 2):
+                                        name=name,
+                                        link_type='data').count() < 2):
                     Link.objects.update_or_create(
                         resource=instance.resourcebase_ptr,
                         url=wfs_url,
@@ -1750,7 +1757,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         for ext, name, mime, wcs_url in links:
             if (Link.objects.filter(resource=instance.resourcebase_ptr,
                                     url=wcs_url,
-                                    name=name).count() < 2):
+                                    name=name,
+                                    link_type='data').count() < 2):
                 Link.objects.update_or_create(
                     resource=instance.resourcebase_ptr,
                     url=wcs_url,
@@ -1768,7 +1776,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
         if (Link.objects.filter(resource=instance.resourcebase_ptr,
                                 url=html_link_url,
-                                name=instance.alternate).count() < 2):
+                                name=instance.alternate,
+                                link_type='html').count() < 2):
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
                 url=html_link_url,
@@ -1811,14 +1820,13 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
         # Thumbnail link
         logger.debug(" -- Resource Links[Thumbnail link]...")
-        if os.path.splitext(settings.MISSING_THUMBNAIL)[0] in instance.get_thumbnail_url():
-            from geonode.geoserver.helpers import create_gs_thumbnail
-            create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
-        else:
+        if (Link.objects.filter(resource=instance.resourcebase_ptr,
+                                url=instance.get_thumbnail_url(),
+                                name='Thumbnail').count() < 2):
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
-                name='Thumbnail',
                 url=instance.get_thumbnail_url(),
+                name='Thumbnail',
                 defaults=dict(
                     extension='png',
                     mime='image/png',

@@ -32,16 +32,13 @@ logger = get_task_logger(__name__)
     bind=True,
     name='geonode.maps.tasks.delete_map',
     queue='cleanup',
-    countdown=60,
-    # expires=120,
-    acks_late=True,
-    retry=True,
-    retry_policy={
-        'max_retries': 3,
-        'interval_start': 0,
-        'interval_step': 0.2,
-        'interval_max': 0.2,
-    })
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def delete_map(self, object_id):
     """
     Deletes a map and the associated map layers.

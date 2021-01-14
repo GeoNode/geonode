@@ -36,17 +36,14 @@ logger = get_task_logger(__name__)
 @app.task(
     bind=True,
     name='geonode.documents.tasks.create_document_thumbnail',
-    queue='update',
-    countdown=60,
-    # expires=120,
-    acks_late=True,
-    retry=True,
-    retry_policy={
-        'max_retries': 3,
-        'interval_start': 0,
-        'interval_step': 0.2,
-        'interval_max': 0.2,
-    })
+    queue='geonode',
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 5, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def create_document_thumbnail(self, object_id):
     """
     Create thumbnail for a document.
@@ -57,7 +54,7 @@ def create_document_thumbnail(self, object_id):
         document = Document.objects.get(id=object_id)
     except Document.DoesNotExist:
         logger.error("Document #{} does not exist.".format(object_id))
-        return
+        raise
 
     image_path = None
     image_file = None
@@ -122,16 +119,13 @@ def create_document_thumbnail(self, object_id):
     bind=True,
     name='geonode.documents.tasks.delete_orphaned_document_files',
     queue='cleanup',
-    countdown=60,
-    # expires=120,
-    acks_late=True,
-    retry=True,
-    retry_policy={
-        'max_retries': 3,
-        'interval_start': 0,
-        'interval_step': 0.2,
-        'interval_max': 0.2,
-    })
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def delete_orphaned_document_files(self):
     from geonode.documents.utils import delete_orphaned_document_files
     delete_orphaned_document_files()
@@ -141,16 +135,13 @@ def delete_orphaned_document_files(self):
     bind=True,
     name='geonode.documents.tasks.delete_orphaned_thumbnails',
     queue='cleanup',
-    countdown=60,
-    # expires=120,
-    acks_late=True,
-    retry=True,
-    retry_policy={
-        'max_retries': 3,
-        'interval_start': 0,
-        'interval_step': 0.2,
-        'interval_max': 0.2,
-    })
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def delete_orphaned_thumbnails(self):
     from geonode.base.utils import delete_orphaned_thumbs
     delete_orphaned_thumbs()
