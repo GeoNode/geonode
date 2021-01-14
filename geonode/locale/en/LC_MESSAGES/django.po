@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-14 16:30-0500\n"
+"POT-Creation-Date: 2021-01-14 16:58-0500\n"
 "PO-Revision-Date: 2020-11-28 19:00+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
@@ -313,6 +313,7 @@ msgstr "Language"
 #: geonode/templates/index.html:411
 #: geonode/templates/pinax/notifications/account_approve/full.txt:1
 #: geonode/templates/waterproof_intake/intake_list.html:46
+#: geonode/templates/waterproof_study_cases/studycases_list.html:46
 msgid "User"
 msgid_plural "Users"
 msgstr[0] "User"
@@ -605,15 +606,15 @@ msgstr "Security Rules Are Not Synched with GeoServer!"
 msgid "Resource Type"
 msgstr "Resource base"
 
-#: geonode/base/models.py:1689
+#: geonode/base/models.py:1694
 msgid "For example \"kml\""
 msgstr "For example \"kml\""
 
-#: geonode/base/models.py:1694
+#: geonode/base/models.py:1699
 msgid "For example \"View in Google Earth\""
 msgstr "For example \"View in Google Earth\""
 
-#: geonode/base/models.py:1696
+#: geonode/base/models.py:1701
 msgid "For example \"text/xml\""
 msgstr "For example \"text/xml\""
 
@@ -661,6 +662,7 @@ msgstr "For more info see"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:35
 #: geonode/templates/waterproof_intake/intake_list.html:47
+#: geonode/templates/waterproof_study_cases/studycases_list.html:47
 msgid "Creation Date"
 msgstr "Creation Date"
 
@@ -842,7 +844,7 @@ msgstr "Cancel"
 #: geonode/layers/templates/layers/layer_change_poc.html:17
 #: geonode/people/templates/people/forgot_username_form.html:15
 #: geonode/templates/invitations/forms/_invite.html:29
-#: geonode/templates/study_cases/studycases_form.html:61
+#: geonode/templates/waterproof_study_cases/studycases_form.html:61
 msgid "Submit"
 msgstr "Submit"
 
@@ -990,9 +992,9 @@ msgstr "Attribute name"
 #: geonode/services/forms.py:122
 #: geonode/services/templates/services/service_detail.html:23
 #: geonode/services/templates/services/service_resources_harvest.html:32
-#: geonode/study_cases/models.py:44
 #: geonode/templates/waterproof_intake/intake_list.html:45
 #: geonode/templates/waterproof_nbs_ca/waterproofnbsca_list.html:31
+#: geonode/templates/waterproof_study_cases/studycases_list.html:45
 msgid "Description"
 msgstr "Description"
 
@@ -1053,7 +1055,6 @@ msgstr "Available layers"
 #: geonode/layers/templates/layouts/panels.html:284
 #: geonode/maps/templates/layouts/map_panels.html:279
 #: geonode/services/templates/services/service_edit.html:21
-#: geonode/study_cases/templates/study_cases/studycases_form.html:12
 #: geonode/templates/announcements/announcement_form.html:26
 msgid "Save"
 msgstr "Save"
@@ -1810,9 +1811,9 @@ msgstr "You are not permitted to modify this document's metadata"
 msgid "You are not permitted to view this document"
 msgstr "You are not permitted to view this document"
 
-#: geonode/documents/views.py:96 geonode/documents/views.py:355
-#: geonode/documents/views.py:589 geonode/documents/views.py:604
-#: geonode/documents/views.py:618 geonode/geoapps/views.py:121
+#: geonode/documents/views.py:96 geonode/documents/views.py:353
+#: geonode/documents/views.py:587 geonode/documents/views.py:602
+#: geonode/documents/views.py:616 geonode/geoapps/views.py:121
 #: geonode/geoapps/views.py:203 geonode/geoapps/views.py:261
 #: geonode/geoapps/views.py:287 geonode/geoapps/views.py:319
 #: geonode/layers/views.py:413 geonode/layers/views.py:835
@@ -1832,9 +1833,9 @@ msgid "Not allowed"
 msgstr "Not allowed"
 
 #: geonode/documents/views.py:98 geonode/documents/views.py:100
-#: geonode/documents/views.py:357 geonode/documents/views.py:359
-#: geonode/documents/views.py:591 geonode/documents/views.py:593
-#: geonode/documents/views.py:620 geonode/documents/views.py:622
+#: geonode/documents/views.py:355 geonode/documents/views.py:357
+#: geonode/documents/views.py:589 geonode/documents/views.py:591
+#: geonode/documents/views.py:618 geonode/documents/views.py:620
 #: geonode/geoapps/views.py:123 geonode/geoapps/views.py:125
 #: geonode/geoapps/views.py:205 geonode/geoapps/views.py:207
 #: geonode/geoapps/views.py:263 geonode/geoapps/views.py:265
@@ -1872,12 +1873,12 @@ msgstr "Not found"
 msgid "You are not allowed to view this document."
 msgstr "You are not allowed to view this document."
 
-#: geonode/documents/views.py:436 geonode/geoapps/views.py:400
+#: geonode/documents/views.py:434 geonode/geoapps/views.py:400
 #: geonode/layers/views.py:1081
 msgid "You must set a point of contact for this resource"
 msgstr "You must set a point of contact for this resource"
 
-#: geonode/documents/views.py:452 geonode/geoapps/views.py:417
+#: geonode/documents/views.py:450 geonode/geoapps/views.py:417
 #: geonode/layers/views.py:1098
 msgid "You must set an author for this resource"
 msgstr "You must set an author for this resource"
@@ -1929,11 +1930,12 @@ msgstr "Email"
 #: geonode/groups/models.py:50 geonode/layers/models.py:171
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:19
 #: geonode/services/templates/services/service_resources_harvest.html:31
-#: geonode/study_cases/models.py:39 geonode/templates/metadata_detail.html:135
+#: geonode/templates/metadata_detail.html:135
 #: geonode/templates/metadata_detail.html:277
 #: geonode/templates/metadata_detail.html:358
 #: geonode/templates/waterproof_intake/intake_list.html:44
 #: geonode/templates/waterproof_nbs_ca/waterproofnbsca_list.html:30
+#: geonode/templates/waterproof_study_cases/studycases_list.html:44
 msgid "Name"
 msgstr "Name"
 
@@ -2107,7 +2109,6 @@ msgstr ""
 #: geonode/templates/base.html:541
 #: geonode/templates/frequently/entry_list.html:6
 #: geonode/templates/frequently/entry_list.html:9
-#: geonode/templates/study_cases/studycases_list.html:4
 msgid "FAQ"
 msgstr ""
 
@@ -2491,15 +2492,15 @@ msgstr "Add Attribute"
 msgid "Create"
 msgstr "Create"
 
-#: geonode/geoserver/helpers.py:694
+#: geonode/geoserver/helpers.py:697
 msgid "No abstract provided"
 msgstr "No abstract provided"
 
-#: geonode/geoserver/helpers.py:1449
+#: geonode/geoserver/helpers.py:1459
 msgid "An exception occurred loading data to PostGIS"
 msgstr "An exception occurred loading data to PostGIS"
 
-#: geonode/geoserver/helpers.py:1454
+#: geonode/geoserver/helpers.py:1464
 msgid " Additionally an error occured during database cleanup"
 msgstr " Additionally an error occured during database cleanup"
 
@@ -2547,11 +2548,11 @@ msgstr "PDF"
 msgid "PNG"
 msgstr "PNG"
 
-#: geonode/geoserver/views.py:526
+#: geonode/geoserver/views.py:543
 msgid "You don't have permissions to change style for this layer"
 msgstr "You don't have permissions to change style for this layer"
 
-#: geonode/geoserver/views.py:621 geonode/geoserver/views.py:677
+#: geonode/geoserver/views.py:638 geonode/geoserver/views.py:694
 msgid "Bad HTTP Authorization Credentials."
 msgstr "Bad HTTP Authorization Credentials."
 
@@ -5494,6 +5495,7 @@ msgstr "Country"
 #: geonode/people/forms.py:174 geonode/people/forms.py:176
 #: geonode/people/models.py:92
 #: geonode/templates/waterproof_intake/intake_list.html:48
+#: geonode/templates/waterproof_study_cases/studycases_list.html:48
 msgid "City"
 msgstr "City"
 
@@ -5823,40 +5825,40 @@ msgstr ""
 msgid "Session is Expired. Please login again!"
 msgstr "Session is Expired. Please login again!"
 
-#: geonode/security/views.py:68
+#: geonode/security/views.py:66
 msgid "You are not allowed to change permissions for this resource"
 msgstr "You are not allowed to change permissions for this resource"
 
-#: geonode/security/views.py:74
+#: geonode/security/views.py:72
 msgid "Permissions successfully updated!"
 msgstr "Permissions successfully updated!"
 
-#: geonode/security/views.py:106
+#: geonode/security/views.py:104
 msgid "Error updating permissions :("
 msgstr "Error updating permissions :("
 
-#: geonode/security/views.py:294
+#: geonode/security/views.py:292
 msgid "Security Rules Cache Refreshed!"
 msgstr "Security Rules Cache Refreshed!"
 
-#: geonode/security/views.py:301 geonode/security/views.py:365
-#: geonode/security/views.py:393
+#: geonode/security/views.py:299 geonode/security/views.py:363
+#: geonode/security/views.py:391
 msgid "You cannot modify this resource!"
 msgstr "You cannot modify this resource!"
 
-#: geonode/security/views.py:359
+#: geonode/security/views.py:357
 msgid "Attributes/Stats Refreshed Successfully!"
 msgstr "Attributes/Stats Refreshed Successfully!"
 
-#: geonode/security/views.py:387
+#: geonode/security/views.py:385
 msgid "GeoWebCache Tiled Layer Emptied!"
 msgstr "GeoWebCache Tiled Layer Emptied!"
 
-#: geonode/security/views.py:423
+#: geonode/security/views.py:421
 msgid "Wrong permissions specification"
 msgstr "Wrong permissions specification"
 
-#: geonode/security/views.py:447
+#: geonode/security/views.py:443
 msgid "error delivering notification"
 msgstr "error delivering notification"
 
@@ -6187,183 +6189,6 @@ msgstr "to"
 #: geonode/templates/_comments.html:31
 msgid "on"
 msgstr "on"
-
-#: geonode/study_cases/models.py:49
-msgid "Treatment Plants"
-msgstr ""
-
-#: geonode/study_cases/models.py:54
-#: geonode/templates/waterproof_intake/intake_list.html:1
-#: geonode/templates/waterproof_intake/intake_list.html:6
-msgid "Water Intakes"
-msgstr ""
-
-#: geonode/study_cases/models.py:58
-msgid "Carbon Markets"
-msgstr ""
-
-#: geonode/study_cases/models.py:63
-msgid "Erosion Control For Drinking Water Quality"
-msgstr ""
-
-#: geonode/study_cases/models.py:68
-msgid "Nutrient Retention - Phosphorus"
-msgstr ""
-
-#: geonode/study_cases/models.py:73
-msgid "Nutrient Retention - Nitrogen"
-msgstr ""
-
-#: geonode/study_cases/models.py:78
-msgid "Flood Mitigation"
-msgstr ""
-
-#: geonode/study_cases/models.py:83
-msgid "Groundwater Recharge Enhancement"
-msgstr ""
-
-#: geonode/study_cases/models.py:88
-msgid "Baseflow"
-msgstr ""
-
-#: geonode/study_cases/models.py:94 geonode/templates/about_models.html:37
-msgid "Annual Water Yield"
-msgstr ""
-
-#: geonode/study_cases/models.py:99
-msgid "Sediment Delivery Radio"
-msgstr ""
-
-#: geonode/study_cases/models.py:104
-msgid "Nutrient Delivery"
-msgstr ""
-
-#: geonode/study_cases/models.py:109 geonode/templates/about_models.html:38
-msgid "Seasonal Water Yield"
-msgstr ""
-
-#: geonode/study_cases/models.py:114
-msgid "Carbon Storage"
-msgstr ""
-
-#: geonode/study_cases/models.py:119
-msgid "Platform Cost Per Year"
-msgstr ""
-
-#: geonode/study_cases/models.py:124
-msgid "Personal Salary and Benefits"
-msgstr ""
-
-#: geonode/study_cases/models.py:129
-msgid "Program Director"
-msgstr ""
-
-#: geonode/study_cases/models.py:134
-#, fuzzy
-#| msgid "Monitoring & Analytics"
-msgid "Monitoring And Evaluation Manager"
-msgstr "Monitoring & Analytics"
-
-#: geonode/study_cases/models.py:139
-msgid "Finance and Administrator"
-msgstr ""
-
-#: geonode/study_cases/models.py:144
-#, fuzzy
-#| msgid "Identification Image"
-msgid "Implementation Manager"
-msgstr "Identification Image"
-
-#: geonode/study_cases/models.py:149
-msgid "Office Costs"
-msgstr ""
-
-#: geonode/study_cases/models.py:154
-msgid "Travel"
-msgstr ""
-
-#: geonode/study_cases/models.py:159
-#, fuzzy
-#| msgid "Environment"
-msgid "Equipment"
-msgstr "Environment"
-
-#: geonode/study_cases/models.py:164
-#, fuzzy
-#| msgid "Contact"
-msgid "Contracts"
-msgstr "Contact"
-
-#: geonode/study_cases/models.py:169
-msgid "Overhead"
-msgstr ""
-
-#: geonode/study_cases/models.py:174
-#, fuzzy
-#| msgid "Other"
-msgid "Others"
-msgstr "Other"
-
-#: geonode/study_cases/models.py:179
-#, fuzzy
-#| msgid "Transportation"
-msgid "Transaction Cost"
-msgstr "Transportation"
-
-#: geonode/study_cases/models.py:184
-#, fuzzy
-#| msgid "Account Inactive"
-msgid "Discount Rate"
-msgstr "Account Inactive"
-
-#: geonode/study_cases/models.py:189
-msgid "Sentivity Analysys - Min Discount Rate"
-msgstr ""
-
-#: geonode/study_cases/models.py:194
-msgid "Sentivity Analysys - Max Discount Rate"
-msgstr ""
-
-#: geonode/study_cases/models.py:198 geonode/templates/index.html:240
-#, fuzzy
-#| msgid "Elevation"
-msgid "Conservation"
-msgstr "Elevation"
-
-#: geonode/study_cases/models.py:203
-#, fuzzy
-#| msgid "Attribute Information"
-msgid "Active Restoration"
-msgstr "Attribute Information"
-
-#: geonode/study_cases/models.py:208
-msgid "Passive Restoration"
-msgstr ""
-
-#: geonode/study_cases/models.py:213
-msgid "Agroforestry"
-msgstr ""
-
-#: geonode/study_cases/models.py:218
-msgid "Silvopastoral"
-msgstr ""
-
-#: geonode/study_cases/templates/study_cases/studycases_form.html:6
-msgid "Study Cases."
-msgstr ""
-
-#: geonode/study_cases/templates/study_cases/studycases_list.html:4
-#: geonode/study_cases/templates/study_cases/studycases_list.html:6
-#: geonode/templates/study_cases/studycases_list.html:6
-msgid "Study Cases"
-msgstr ""
-
-#: geonode/study_cases/templates/study_cases/studycases_list.html:7
-#: geonode/templates/study_cases/studycases_list.html:7
-#, fuzzy
-#| msgid "Create a new layer"
-msgid "Create new study case"
-msgstr "Create a new layer"
 
 #: geonode/templates/401.html:10
 msgid "Not Permitted"
@@ -7019,6 +6844,14 @@ msgstr ""
 msgid ""
 "For the specific case of the Waterproof application, the InVEST models "
 "related to:"
+msgstr ""
+
+#: geonode/templates/about_models.html:37
+msgid "Annual Water Yield"
+msgstr ""
+
+#: geonode/templates/about_models.html:38
+msgid "Seasonal Water Yield"
 msgstr ""
 
 #: geonode/templates/about_models.html:39
@@ -8291,6 +8124,12 @@ msgstr "Spatial Resolution"
 msgid "We work to meet this ambitious goal"
 msgstr ""
 
+#: geonode/templates/index.html:240
+#, fuzzy
+#| msgid "Elevation"
+msgid "Conservation"
+msgstr "Elevation"
+
 #: geonode/templates/index.html:246
 #, fuzzy
 #| msgid "Average rating"
@@ -9279,10 +9118,6 @@ msgstr "Connect with"
 msgid "Sign up with"
 msgstr "Sign up with"
 
-#: geonode/templates/study_cases/studycases_form.html:6
-msgid "Study Cases (beta)"
-msgstr ""
-
 #: geonode/templates/take_action.html:5
 #, fuzzy
 #| msgid "Sections"
@@ -10034,6 +9869,13 @@ msgstr ""
 msgid "Detail sbn"
 msgstr ""
 
+#: geonode/templates/waterproof_intake/intake_list.html:1
+#: geonode/templates/waterproof_intake/intake_list.html:6
+#: geonode/templates/waterproof_study_cases/studycases_list.html:1
+#: geonode/templates/waterproof_study_cases/studycases_list.html:6
+msgid "Water Intakes"
+msgstr ""
+
 #: geonode/templates/waterproof_intake/intake_list.html:37
 msgid "List Water Intake"
 msgstr ""
@@ -10045,11 +9887,13 @@ msgid "Create new Water Intake"
 msgstr "Create a new layer"
 
 #: geonode/templates/waterproof_intake/intake_list.html:49
+#: geonode/templates/waterproof_study_cases/studycases_list.html:49
 msgid "Demand"
 msgstr ""
 
 #: geonode/templates/waterproof_intake/intake_list.html:50
 #: geonode/templates/waterproof_nbs_ca/waterproofnbsca_list.html:38
+#: geonode/templates/waterproof_study_cases/studycases_list.html:50
 #, fuzzy
 #| msgid "Optional"
 msgid "Options"
@@ -10090,6 +9934,20 @@ msgstr ""
 #: geonode/templates/waterproof_nbs_ca/waterproofnbsca_list.html:37
 msgid "Oppotunity Cost"
 msgstr ""
+
+#: geonode/templates/waterproof_study_cases/studycases_form.html:6
+msgid "Study Cases (beta)"
+msgstr ""
+
+#: geonode/templates/waterproof_study_cases/studycases_list.html:37
+msgid "Study Cases List"
+msgstr ""
+
+#: geonode/templates/waterproof_study_cases/studycases_list.html:38
+#, fuzzy
+#| msgid "Create a new layer"
+msgid "Create new Study Case"
+msgstr "Create a new layer"
 
 #: geonode/themes/apps.py:28
 msgid "GeoNode Themes Library"
@@ -10224,6 +10082,46 @@ msgstr "Invalid permission level."
 #: geonode/utils.py:973
 msgid "Permission Denied"
 msgstr "Permission Denied"
+
+#, fuzzy
+#~| msgid "Monitoring & Analytics"
+#~ msgid "Monitoring And Evaluation Manager"
+#~ msgstr "Monitoring & Analytics"
+
+#, fuzzy
+#~| msgid "Identification Image"
+#~ msgid "Implementation Manager"
+#~ msgstr "Identification Image"
+
+#, fuzzy
+#~| msgid "Environment"
+#~ msgid "Equipment"
+#~ msgstr "Environment"
+
+#, fuzzy
+#~| msgid "Contact"
+#~ msgid "Contracts"
+#~ msgstr "Contact"
+
+#, fuzzy
+#~| msgid "Other"
+#~ msgid "Others"
+#~ msgstr "Other"
+
+#, fuzzy
+#~| msgid "Transportation"
+#~ msgid "Transaction Cost"
+#~ msgstr "Transportation"
+
+#, fuzzy
+#~| msgid "Account Inactive"
+#~ msgid "Discount Rate"
+#~ msgstr "Account Inactive"
+
+#, fuzzy
+#~| msgid "Attribute Information"
+#~ msgid "Active Restoration"
+#~ msgstr "Attribute Information"
 
 #, fuzzy
 #~| msgid "List"

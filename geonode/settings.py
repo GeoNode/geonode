@@ -283,7 +283,8 @@ _DEFAULT_LOCALE_PATHS = (
 LOCALE_PATHS = [
     os.path.join(PROJECT_ROOT, "locale"),
     os.path.join(PROJECT_ROOT, "waterproof_intake/locale"),
-    os.path.join(PROJECT_ROOT, "waterproof_nbs_ca/locale")
+    os.path.join(PROJECT_ROOT, "waterproof_nbs_ca/locale"),
+    os.path.join(PROJECT_ROOT, "waterproof_study_cases/locale")
 ]
 
 # Location of url mappings
