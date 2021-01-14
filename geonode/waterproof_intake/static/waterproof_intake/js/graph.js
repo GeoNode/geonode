@@ -187,6 +187,13 @@ function onInit(editor) {
         }
     });
 
+    $.ajax({
+        url: `/intake/loadFunctionBySymbol/CS`,
+        success: function(result) {
+            vertex.setAttribute('funcost', result);
+        }
+    });
+
 
 
     var edge = editor.graph.insertEdge(parent, null, '', parent.children[0], parent.children[1]);
@@ -379,6 +386,18 @@ function onInit(editor) {
     //use jquery
     $(document).ready(function() {
 
+        var MQ = MathQuill.getInterface(2);
+
+        var mathFieldSpan = document.getElementById('math-field');
+        var latexSpan = document.getElementById('latex');
+        var mathField = MQ.MathField(mathFieldSpan, {
+            spaceBehavesLikeTab: true,
+            handlers: {
+                edit: function() {
+                    latexSpan.textContent = mathField.latex();
+                }
+            }
+        });
         /**
          * Button to save 
          * data on graphData
@@ -389,6 +408,7 @@ function onInit(editor) {
             $('#RenderingMathAscii').text(`'math' ${$(this).val()} 'math'`);
             MathJax.typeset();
         });
+
 
         $('#saveAndValideCost').click(function() {
             console.log($('#RenderingMathAscii > mjx-container > mjx-assistive-mml')[0].innerHTML)
@@ -416,18 +436,54 @@ function onInit(editor) {
             }
         });
 
-        function funcost(ecuation_db) {
+        function funcost(ecuation_db, ecuation_name, index) {
 
             $('#funcostgenerate').append(
-                `<div class="form-group">
-                <label>Annual Operation and Maintenance Cost</label>
+                ` $$ ${ecuation_db} $$
+                <div class="form-group" idvalue="fun_${index}">
+                <label>${ecuation_name}</label>
                 <div class="input-group">
-                    <input type="text" class="form-control" value="${ ecuation_db }" disabled>
-                    <span class="input-group-addon edit-group-btn"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></span>
-                    <span class="input-group-addon trash-group-btn"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></span>
+                    <input type="text" class="form-control" value="$$ ${ ecuation_db } $$" disabled>
+                    <span class="input-group-addon edit-group-btn" value="${index}" idvalue="${index}" name="glyphicon-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></span>
+                    <span class="input-group-addon trash-group-btn" idvalue="${index}" name="glyphicon-trash"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></span>
                     </div>
             </div>`);
         }
+
+        $(document).on('click', 'span[name=glyphicon-edit]', function() {
+            mathField.clearSelection()
+            $('#exampleModal').modal('show');
+            //value = funcostdb[$(this).attr('idvalue')].fields.function_value};
+            value = funcostdb[$(this).attr('idvalue')].fields.function_value
+            mathField.latex(value);
+            mathField.focus();
+
+
+        });
+
+        $(document).on('click', 'span[name=glyphicon-trash]', function() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var id = $(this).attr('idvalue');
+                    $(`#funcostgenerate div[idvalue='fun_${id}']`).remove();
+                    funcostdb.splice(id, 1);
+                    selectedCell.setAttribute('funcost', JSON.stringify(funcostdb));
+                    Swal.fire(
+                        'Deleted!',
+                        'Your file has been deleted.',
+                        'success'
+                    )
+                }
+            })
+        });
 
         jQuery.fn.ForceNumericOnly =
             function() {
@@ -448,7 +504,7 @@ function onInit(editor) {
                 });
             };
 
-        $("#inputMathAscii").ForceNumericOnly();
+        $("#math-field").ForceNumericOnly();
 
         $('#saveGraph').click(function() {
             var enc = new mxCodec();
@@ -493,7 +549,7 @@ function onInit(editor) {
             if (selectedCell != undefined) {
                 var varcost = [];
                 varcost.push(
-                    `Q_${idvar})`,
+                    `Q_${idvar}`,
                     `CSed_${idvar}`,
                     `CN_${idvar}`,
                     `CP_${idvar}`,
@@ -512,6 +568,13 @@ function onInit(editor) {
                         selectedCell[0].setAttribute("resultdb", result);
                     }
                 });
+
+                $.ajax({
+                    url: `/intake/loadFunctionBySymbol/${selectedCell[0].funcionreference}`,
+                    success: function(result) {
+                        selectedCell[0].setAttribute("funcost", result);
+                    }
+                });
             }
 
 
@@ -524,6 +587,7 @@ function onInit(editor) {
          */
 
         var resultdb = [];
+        var funcostdb = [];
         var selectedCell;
 
         //Load data from figure to html
@@ -534,8 +598,15 @@ function onInit(editor) {
             //console.log(selectedCell)
             if (selectedCell != undefined) addData(selectedCell);
             $('#funcostgenerate div').remove();
-            funcost('((11126.6*text(Q)) + 30939.7)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))');
-            funcost('((11126.6*text(Q)) + 30939.7)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))');
+
+            if (selectedCell != undefined) {
+                funcostdb = JSON.parse(selectedCell.getAttribute('funcost'));
+                for (let index = 0; index < funcostdb.length; index++) {
+                    funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index);
+                }
+
+
+            }
 
         });
 
@@ -569,7 +640,7 @@ function onInit(editor) {
         });
 
         $(document).on('click', '.list-group-item', function() {
-            addInfo(`(${$(this).attr('value')})`);
+            addInfo(mathField.write(`\\mathit{${$(this).attr('value')}}`));
         });
 
         $('button[name=mathKeyBoard]').click(function() {
@@ -577,6 +648,9 @@ function onInit(editor) {
         });
 
         function addInfo(value) {
+            mathField.cmd(value);
+            mathField.focus();
+            /*
             var text = $(`#inputMathAscii`).val();
             var selectionStart = $(`#inputMathAscii`)[0].selectionStart;
             var selectionEnd = $(`#inputMathAscii`)[0].selectionEnd;
@@ -585,6 +659,8 @@ function onInit(editor) {
             $(`#inputMathAscii`).val(`${prefixStr}${value}${sufixStr}`);
             $('#RenderingMathAscii').text(`'math' ${prefixStr}${value}${sufixStr} 'math'`);
             MathJax.typeset();
+
+            */
         }
 
 
