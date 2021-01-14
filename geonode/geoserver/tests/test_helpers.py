@@ -22,6 +22,9 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 import os
 import re
 import gisdata
+from urllib.parse import urljoin
+
+from django.conf import settings
 
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
@@ -81,7 +84,7 @@ class HelperTest(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_replace_callback(self):
-        content = """<Layer>
+        content = f"""<Layer>
       <Title>GeoNode Local GeoServer</Title>
       <Abstract>This is a description of your Web Map Server.</Abstract>
       <!--Limited list of EPSG projections:-->
@@ -132,37 +135,37 @@ class HelperTest(GeoNodeBaseTestSupport):
         <MetadataURL type="other">
           <Format>other</Format>
           <OnlineResource xlink:type="simple"
-xlink:href="http://geoserver:8080/catalogue/csw?outputschema=...."/>
+xlink:href="{settings.GEOSERVER_LOCATION}catalogue/csw?outputschema=...."/>
         </MetadataURL>
         <MetadataURL type="other">
           <Format>other</Format>
           <OnlineResource xlink:type="simple"
-xlink:href="http://geoserver:8080/catalogue/csw?outputschema=...."/>
+xlink:href="{settings.GEOSERVER_LOCATION}catalogue/csw?outputschema=...."/>
         </MetadataURL>
         <MetadataURL type="other">
           <Format>other</Format>
           <OnlineResource xlink:type="simple"
-xlink:href="http://geoserver:8080/catalogue/csw?outputschema=...."/>
+xlink:href="{settings.GEOSERVER_LOCATION}catalogue/csw?outputschema=...."/>
         </MetadataURL>
         <MetadataURL type="other">
           <Format>other</Format>
           <OnlineResource xlink:type="simple"
-xlink:href="http://geoserver:8080/catalogue/csw?outputschema=...."/>
+xlink:href="{settings.GEOSERVER_LOCATION}catalogue/csw?outputschema=...."/>
         </MetadataURL>
         <MetadataURL type="FGDC">
           <Format>text/xml</Format>
           <OnlineResource xlink:type="simple"
-xlink:href="http://geoserver:8080/catalogue/csw?outputschema=...."/>
+xlink:href="{settings.GEOSERVER_LOCATION}catalogue/csw?outputschema=...."/>
         </MetadataURL>
         <MetadataURL type="other">
           <Format>other</Format>
           <OnlineResource xlink:type="simple"
-xlink:href="http://geoserver:8080/catalogue/csw?outputschema=...."/>
+xlink:href="{settings.GEOSERVER_LOCATION}catalogue/csw?outputschema=...."/>
         </MetadataURL>
         <MetadataURL type="other">
           <Format>other</Format>
           <OnlineResource xlink:type="simple"
-xlink:href="http://geoserver:8080/showmetadata/xsl/584"/>
+xlink:href="{settings.GEOSERVER_LOCATION}showmetadata/xsl/584"/>
         </MetadataURL>
         <Style>
           <Name>geonode:DE_USNG_UTM18</Name>
@@ -172,18 +175,22 @@ xlink:href="http://geoserver:8080/showmetadata/xsl/584"/>
             <Format>image/png</Format>
             <OnlineResource
 xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
-xlink:href="http://geoserver:8080/geoserver/ows?service=WMS&amp;request=GetLegendGraphic&...."/>
+xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGraphic&...."/>
           </LegendURL>
         </Style>
       </Layer>"""
-        kwargs = {'content': content,
-                  'status': 200,
-                  'content_type': 'application/xml'}
+        kwargs = {
+          'content': content,
+          'status': 200,
+          'content_type': 'application/xml'
+        }
         _content = _response_callback(**kwargs).content
-        self.assertTrue(re.findall('8000/gs/ows', str(_content)))
+        self.assertTrue(re.findall(f'{urljoin(settings.SITEURL, "/gs/")}ows', str(_content)))
 
-        kwargs = {'content': content,
-                  'status': 200,
-                  'content_type': 'text/xml; charset=UTF-8'}
+        kwargs = {
+          'content': content,
+          'status': 200,
+          'content_type': 'text/xml; charset=UTF-8'
+        }
         _content = _response_callback(**kwargs).content
-        self.assertTrue(re.findall('8000/gs/ows', str(_content)))
+        self.assertTrue(re.findall(f'{urljoin(settings.SITEURL, "/gs/")}ows', str(_content)))

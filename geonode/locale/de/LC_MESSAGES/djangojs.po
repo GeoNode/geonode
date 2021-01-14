@@ -30,7 +30,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-28 18:12+0000\n"
+"POT-Creation-Date: 2020-12-23 15:40+0000\n"
 "PO-Revision-Date: 2020-12-08 16:02+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/"
@@ -437,6 +437,10 @@ msgid ""
 msgstr ""
 " Fehlercode. Kontaktieren Sie bitte den Administrator, wenn Sie mehr über "
 "den Fehler erfahren möchten."
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:406
+msgid "Finalizing"
+msgstr ""
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:421
 #: geonode/static/geonode/js/upload/LayerInfo.js:592
