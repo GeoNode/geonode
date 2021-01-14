@@ -569,7 +569,7 @@ function onInit(editor) {
             // Clear Inputs
             if (selectedCell != undefined) clearDataHtml(selectedCell, evt);
             //console.log(selectedCell)
-            if (selectedCell != undefined) addData(selectedCell);
+            if (selectedCell != undefined) { addData(selectedCell); } else { clearDataHtml(selectedCell, evt); }
             $('#funcostgenerate div').remove();
             funcost('((11126.6*text(Q)) + 30939.7)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))');
             funcost('((11126.6*text(Q)) + 30939.7)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))');
@@ -624,6 +624,7 @@ function onInit(editor) {
 
         //Add value entered in aguaDiagram in the field resultdb
         $('#aguaDiagram').keyup(function() {
+
             if (typeof(selectedCell.value) == "string" && selectedCell.value.length > 0) {
                 var obj = JSON.parse(selectedCell.value);
                 let dbfields = JSON.parse(obj.resultdb);
@@ -635,6 +636,7 @@ function onInit(editor) {
                 resultdb[0].fields.predefined_transp_water_perc = $('#aguaDiagram').val();
                 selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
             }
+            validationTransportedWater(editor, selectedCell);
         });
 
 
