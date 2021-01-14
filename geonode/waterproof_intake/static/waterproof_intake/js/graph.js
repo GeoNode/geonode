@@ -439,7 +439,7 @@ function onInit(editor) {
         function funcost(ecuation_db, ecuation_name, index) {
 
             $('#funcostgenerate').append(
-                ` $$ ${ecuation_db} $$
+                `
                 <div class="form-group" idvalue="fun_${index}">
                 <label>${ecuation_name}</label>
                 <div class="input-group">
