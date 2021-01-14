@@ -295,7 +295,7 @@ urlpatterns += [
 
 # Study Cases
 urlpatterns += [
-    url(r'^study_cases/', include('geonode.study_cases.urls'), name='study_cases'),
+    url(r'^study_cases/', include('geonode.waterproof_study_cases.urls'), name='study_cases'),
 ]
 
 # waterproof_nbs_ca

@@ -77,17 +77,17 @@ class CostFunctionsProcess(models.Model):
         verbose_name=_('Materials equipment')
     )
 
-    function_value=models.CharField(
+    function_value = models.CharField(
         max_length=1000,
         verbose_name=_('Function')
     )
 
-    function_name=models.CharField(
+    function_name = models.CharField(
         max_length=250,
         verbose_name=_('Function name')
     )
 
-    function_description=models.CharField(
+    function_description = models.CharField(
         null=True,
         blank=True,
         max_length=250,
@@ -320,6 +320,10 @@ class Polygon(models.Model):
 
     geom = models.PolygonField(verbose_name='geom', srid=4326, null=True, blank=True)
 
+    geomIntake=models.PolygonField(verbose_name='geomIntake', srid=4326, null=True, blank=True)
+
+    geomPoint=models.PointField(verbose_name='geomPoint', srid=4326, null=True, blank=True)
+
     delimitation_date = models.DateField(auto_now=True)
 
     delimitation_type = models.CharField(
@@ -328,39 +332,6 @@ class Polygon(models.Model):
     )
 
     basin = models.ForeignKey(Basins, on_delete=models.CASCADE)
-
-    intake = models.ForeignKey(Intake, on_delete=models.CASCADE)
-
-
-class ExternalInputs(models.Model):
-    year = models.IntegerField(
-        default=1980,
-        verbose_name=_('Year')
-    )
-
-    water_volume = models.DecimalField(
-        decimal_places=4,
-        max_digits=14,
-        verbose_name=_('Water_volume')
-    )
-
-    sediment = models.DecimalField(
-        decimal_places=4,
-        max_digits=14,
-        verbose_name=_('Extraction value')
-    )
-
-    nitrogen = models.DecimalField(
-        decimal_places=4,
-        max_digits=14,
-        verbose_name=_('Extraction value')
-    )
-
-    phosphorus = models.DecimalField(
-        decimal_places=4,
-        max_digits=14,
-        verbose_name=_('Extraction value')
-    )
 
     intake = models.ForeignKey(Intake, on_delete=models.CASCADE)
 
@@ -377,16 +348,6 @@ class ElementSystem(models.Model):
         verbose_name=_('Normalized category')
     )
 
-    origin = models.IntegerField(
-        default=1980,
-        verbose_name=_('Year'),
-    )
-
-    destination = models.IntegerField(
-        default=1980,
-        verbose_name=_('Year'),
-    )
-
     sediment = models.DecimalField(
         decimal_places=4,
         max_digits=14,
@@ -406,16 +367,6 @@ class ElementSystem(models.Model):
     )
 
     intake = models.ForeignKey(Intake, on_delete=models.CASCADE)
-
-    """
-    user_cost = models.ManyToManyField(
-        UserCosts,
-    )
-
-    system_cost = models.ManyToManyField(
-        SystemCosts,
-    )
-    """
 
     awy = models.FloatField(
         null=True,
@@ -439,6 +390,13 @@ class ElementSystem(models.Model):
     )
 
     wn_kg = models.FloatField(
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name=_('WnKg')
+    )
+
+    wp_kg = models.FloatField(
         null=True,
         blank=True,
         default=None,
@@ -486,6 +444,39 @@ class ElementSystem(models.Model):
         default=None,
         verbose_name=_('WpRetTon')
     )
+
+
+class ExternalInputs(models.Model):
+    year = models.IntegerField(
+        default=1980,
+        verbose_name=_('Year')
+    )
+
+    water_volume = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
+        verbose_name=_('Water_volume')
+    )
+
+    sediment = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
+        verbose_name=_('Extraction value')
+    )
+
+    nitrogen = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
+        verbose_name=_('Extraction value')
+    )
+
+    phosphorus = models.DecimalField(
+        decimal_places=4,
+        max_digits=14,
+        verbose_name=_('Extraction value')
+    )
+
+    element = models.ForeignKey(ElementSystem, on_delete=models.CASCADE)
 
 
 class WaterExtraction(models.Model):

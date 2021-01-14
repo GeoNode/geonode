@@ -81,6 +81,13 @@
 				</mxCell>
 			</Symbol>
 		</add>
+		<add as="externalinput">
+			<Symbol name="External Input" label="External Input" externalData="true">
+				<mxCell vertex="1" style="externalinput" dbreference="ENTRADAEXTERNA">      
+					<mxGeometry as="geometry" width="60" height="92"/>
+				</mxCell>
+			</Symbol>
+		</add>
 	</Array>
 	<mxGraph as="graph" alternateEdgeStyle="verticalConnector" allowLoops="0" dropEnabled="1" htmlLabels="1">
 		<add as="isAutoSizeCell"><![CDATA[
@@ -220,6 +227,16 @@
 				<add as="imageVerticalAlign" value="bottom"/>
 				<add as="image" value="/static/mxgraph/images/waterproof/13-csinfra.svg"/>
 			</add>
+			<add as="externalinput">
+				<add as="shape" value="image"/>
+				<add as="perimeter" value="rectanglePerimeter"/>
+				<add as="fontSize" value="11"/>
+				<add as="fontColor" value="#222"/>
+				<add as="fontStyle" value="1"/>
+				<add as="verticalAlign" value="top"/>
+				<add as="imageVerticalAlign" value="bottom"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/12-conexion.png"/>
+			</add>
 			<add as="Extraction_connection">
 				<add as="strokeWidth" value="4"/>
 				<add as="strokeColor" value="#008000"/>				
@@ -227,7 +244,7 @@
 				<add as="fontColor" value="#222"/>
 				<add as="fontStyle" value="1"/>
 			</add>
-			<add as="External_input">
+			<add as="CHANNEL">
 				<add as="strokeWidth" value="4"/>
 				<add as="strokeColor" value="#e6e200"/>				
 				<add as="fontSize" value="11"/>
@@ -301,5 +318,6 @@
 		<add as="Desarenador" template="desarenador" icon="/static/mxgraph/images/waterproof/08-desarenador.png"/>
 		<add as="Camara De Quiebre" template="camaraquiebre" width="32" height="32" icon="/static/mxgraph/images/waterproof/09-camara-quiebre.svg"/>
 		<add as="CSINFRA" template="csinfra" icon="/static/mxgraph/images/waterproof/13-csinfra.svg"/>
+		<add as="External Input" template="externalinput" icon="/static/mxgraph/images/waterproof/12-conexion.png"/>
 	</mxDefaultToolbar>
 </mxEditor>

@@ -48,6 +48,7 @@ def create(request):
             interpolation = json.loads(interpolationString)
             delimitAreaString = request.POST.get('delimitArea')
             intakeAreaString = request.POST.get('intakeAreaPolygon')
+            pointIntakeString = request.POST.get('pointIntake')
             graphElementsString = request.POST.get('graphElements')
             graphElements = json.loads(graphElementsString)
             if (isFile == 'true'):
@@ -70,15 +71,17 @@ def create(request):
                 delimitAreaGeom = GEOSGeometry(str(delimitAreaJson['geometry']))
 
             intakeGeomJson = json.loads(intakeAreaString)
-
+            pointIntakeJson = json.loads(pointIntakeString)
             # Get intake original area
             for feature in intakeGeomJson['features']:
                 intakeGeom = GEOSGeometry(str(feature['geometry']))
+            # Get the intake point geom
+            pointIntakeGeom = GEOSGeometry(str(pointIntakeJson['geometry']))
 
             if (intakeGeom.equals(delimitAreaGeom)):
-                delimitation_type='CATCHMENT'
+                delimitation_type = 'CATCHMENT'
             else:
-                delimitation_type='MANUAL'
+                delimitation_type = 'MANUAL'
 
             demand_parameters = DemandParameters.objects.create(
                 interpolation_type=interpolation['typeInterpolation'],
@@ -108,29 +111,60 @@ def create(request):
             intakePolygon = Polygon.objects.create(
                 area=0,
                 geom=delimitAreaGeom,
+                geomIntake=intakeGeom,
+                geomPoint=pointIntakeGeom,
                 delimitation_date=datetime.datetime.now(),
                 delimitation_type=delimitation_type,
                 basin=basin,
                 intake=intakeCreated
             )
-
+            # Loop into graph elements for persistence
             for element in graphElements:
-                # River element has diferent parameters
-                if (element['id'] == '2'):
-                    print('River element')
-                #
-                else:
-                    parameter = json.loads(element['resultdb'])
-                    element_system = ElementSystem.objects.create(
-                        name=element['name'],
-                        normalized_category=parameter[0]['fields']['normalized_category'],
-                        origin=1,
-                        destination=2,
-                        sediment=parameter[0]['fields']['maximal_sediment_perc'],
-                        nitrogen=parameter[0]['fields']['maximal_nitrogen_perc'],
-                        phosphorus=parameter[0]['fields']['maximal_phosphorus_perc'],
-                        intake=intakeCreated
-                    )
+                if ('external' in element):
+                    # Regular element
+                    if (element['external'] == 'false'):
+                        parameter = json.loads(element['resultdb'])
+                        element_system = ElementSystem.objects.create(
+                            name=element['name'],
+                            normalized_category=parameter[0]['fields']['normalized_category'],
+                            sediment=parameter[0]['fields']['maximal_sediment_perc'],
+                            nitrogen=parameter[0]['fields']['maximal_nitrogen_perc'],
+                            phosphorus=parameter[0]['fields']['maximal_phosphorus_perc'],
+                            intake=intakeCreated
+                        )
+
+                    # External element
+                    else:
+                        parameter = json.loads(element['resultdb'])
+                        if (len(parameter) > 0):
+                            element_system = ElementSystem.objects.create(
+                                name=element['name'],
+                                normalized_category=parameter[0]['fields']['normalized_category'],
+                                sediment=parameter[0]['fields']['maximal_sediment_perc'],
+                                nitrogen=parameter[0]['fields']['maximal_nitrogen_perc'],
+                                phosphorus=parameter[0]['fields']['maximal_phosphorus_perc'],
+                                intake=intakeCreated
+                            )
+                        else:
+                            element_system = ElementSystem.objects.create(
+                                name=element['name'],
+                                normalized_category='',
+                                sediment=0,
+                                nitrogen=0,
+                                phosphorus=0,
+                                intake=intakeCreated
+                            )
+                        external_info = json.loads(element['externaldata'])
+                        elementCreated = ElementSystem.objects.get(id=element_system.pk)
+                        for external in external_info:
+                            external_input = ExternalInputs.objects.create(
+                                year=external['year'],
+                                water_volume=external['water'],
+                                sediment=external['sediment'],
+                                nitrogen=external['nitrogen'],
+                                phosphorus=external['phosphorus'],
+                                element=elementCreated
+                            )
             messages.success(request, ("Water Intake created."))
         else:
             messages.error(request, ("Water Intake not created."))
