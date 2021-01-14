@@ -19,9 +19,10 @@
 #########################################################################
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-import base64
-import json
 import os
+import json
+import time
+import base64
 import shutil
 import tempfile
 
@@ -1123,24 +1124,26 @@ class UtilsTests(GeoNodeBaseTestSupport):
         create_gs_thumbnail_geonode(instance, overwrite=True, check_bbox=True)
 
         # Thumbnails Generation Through "image"
+        time.sleep(10)
+        instance.refresh_from_db()
         request_body = {
             'width': width,
             'height': height,
             'layers': instance.alternate
         }
-        if hasattr(instance, 'default_style'):
-            if instance.default_style:
-                request_body['styles'] = instance.default_style.name
-        self.assertIsNotNone(request_body['styles'])
+        if hasattr(instance, 'default_style') and instance.default_style:
+            request_body['styles'] = instance.default_style.name
+            self.assertIsNotNone(request_body['styles'])
 
         try:
             image = _prepare_thumbnail_body_from_opts(request_body)
+            self.assertIsNotNone(image)
         except Exception as e:
             logger.exception(e)
             image = None
-        # We are offline here, the layer does not exists in GeoServer
-        # - we expect the image is None
-        self.assertIsNone(image)
+            # We are offline here, the layer does not exists in GeoServer
+            # - we expect the image is None
+            self.assertIsNone(image)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_importer_configuration(self):
@@ -1183,7 +1186,7 @@ class SignalsTests(GeoNodeBaseTestSupport):
         from geonode.base.models import Link
         from geonode.catalogue import get_catalogue
 
-        with self.settings(UPDATE_RESOURCE_LINKS_AT_MIGRATE=True):
+        with self.settings(UPDATE_RESOURCE_LINKS_AT_MIGRATE=True, ASYNC_SIGNALS=False):
             # Links
             _def_link_types = ['original', 'metadata']
             _links = Link.objects.filter(link_type__in=_def_link_types)
@@ -1234,11 +1237,6 @@ class SignalsTests(GeoNodeBaseTestSupport):
                 Q(csw_anytext__exact='')
             )
 
-            post_migrate_layers_count = _post_migrate_layers.count()
-            self.assertTrue(
-                post_migrate_layers_count == 0,
-                "After migrations, there are no layers with metadata"
-            )
             for _lyr in _post_migrate_layers:
                 # Check original links in csw_anytext
                 _post_migrate_links_orig = Link.objects.filter(

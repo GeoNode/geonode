@@ -120,6 +120,12 @@ img.mxToolbarMode {
     margin-bottom: 4px;
     border-width: 0px;
     height: 79px;
+    cursor: pointer;
+}
+
+img.mxToolbarMode:hover {
+    border-width: 1px;
+    background: #eee;
 }
 
 img.mxToolbarMode:hover {
@@ -133,6 +139,8 @@ img.mxToolbarModeSelected {
     border-width: 0px;
     height: 79px;
     border-style: inset;
+    background-color: #e6e1e1;
+    cursor: pointer;
 }
 
 div.mxTooltip {

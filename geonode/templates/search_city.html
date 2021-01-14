@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin=""/>
-    <link rel="stylesheet" href="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.css" />
+    <link rel="stylesheet" href="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.css" />    <script src="{% static "geonode/css/leaflet/L.Control.MapCenterCoord.css" %}"></script>
     <link rel="stylesheet" href="https://photon.komoot.io/static/leaflet.photon/leaflet.photon.css"></link>
 {% endblock %}
 
@@ -23,11 +23,11 @@
    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
    crossorigin=""></script>
   <script src="https://www.zimmi.cz/Leaflet-Coordinates-Control/Control.Coordinates.js"></script>
-  <script src="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.js"></script>
   <script src="{% static "geonode/js/leaflet/photon/leaflet.photon.js" %}"></script>
+  <script src="{% static "geonode/js/leaflet/L.Control.MapCenterCoord.js" %}"></script>
   
   <script type="text/javascript">
-    API_URL = '/proxy/?url=https://photon.komoot.de/api/?';
+    API_URL = '/proxy/?url=https://photon.komoot.io/api/?';
     TILELAYER = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
     CENTER = [-74.4879, 4.582];
     MAXZOOM = 11;
@@ -43,7 +43,7 @@
         //map.addLayer(osm);
         
         var map = L.map('map', {scrollWheelZoom: false, zoomControl: false, photonControl: true, photonControlOptions: {resultsHandler: showSearchPoints, placeholder: 'Search City...', position: 'topleft', url: API_URL}});
-        map.setView([4, -74],5);
+        map.setView([4.5, -74.4],5);
         searchPoints.addTo(map);
         var tilelayer = L.tileLayer(TILELAYER, {maxZoom: MAXZOOM, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 Komoot'}).addTo(map);
         var zoomControl = new L.Control.Zoom({position: 'topright'}).addTo(map);

@@ -3,7 +3,7 @@
  * validations & interactions
  * @version 1.0
  */
-var urlParams = (function(url) {
+var urlParams = (function (url) {
     var result = new Object();
     var params = window.location.search.slice(1).split('&');
     for (var i = 0; i < params.length; i++) {
@@ -17,6 +17,7 @@ var urlParams = (function(url) {
 
 var mxLanguage = urlParams['lang'];
 var map;
+var basinId;
 var mapDelimit;
 var snapMarker;
 var snapMarkerMapDelimit;
@@ -37,14 +38,17 @@ const interpolationType = {
     LINEAR: 'LINEAR',
     POTENTIAL: 'POTENTIAL',
     EXPONENTIAL: 'EXPONENTIAL',
-    LOGARITHMIC: 'LOGARITHMIC'
+    LOGISTICS: 'LOGISTICS'
 }
 
 var mapLoader;
-$(document).ready(function() {
-    $("#intakeWECB").click(function() {
+$(document).ready(function () {
+    $("#intakeWECB").click(function () {
         $('#intakeECTAG tr').remove();
-        $('#intakeEITA tr').remove();
+        $('#IntakeTDLE table').remove();
+        $('#externalSelect option').remove();
+
+
         $('#autoAdjustHeightF').css("height", "auto");
         typeProcessInterpolation = Number($("#typeProcessInterpolation").val());
         numberYearsInterpolationValue = Number($("#numberYearsInterpolationValue").val());
@@ -73,15 +77,12 @@ $(document).ready(function() {
         // Potencial interpolation
         if (typeProcessInterpolation == 2) {
             waterExtractionData.typeInterpolation = interpolationType.POTENTIAL;
-            m = (Math.log(finalDataExtractionInterpolationValue) - Math.log(initialDataExtractionInterpolationValue)) / ((Math.log(numberYearsInterpolationValue) - Math.log(1)));
+            m = (Math.log(finalDataExtractionInterpolationValue) - Math.log(initialDataExtractionInterpolationValue)) / ((Math.log(numberYearsInterpolationValue + 1) - Math.log(1)));
             b = Math.exp((-1 * m * Math.log(1)) + Math.log(initialDataExtractionInterpolationValue));
-
-            console.log(m);
-            console.log(b);
-            for (let index = 1; index <= numberYearsInterpolationValue; index++) {
+            for (let index = 1; index <= numberYearsInterpolationValue + 1; index++) {
                 $('#intakeECTAG').append(`<tr>
-                <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${(b*(Math.pow(index,m))).toFixed(2)}</td>
+                <th class="text-center" scope="row">${index - 1}</th>
+                <td class="text-center">${(b * (Math.pow(index, m))).toFixed(2)}</td>
               </tr>`);
             }
         }
@@ -91,13 +92,13 @@ $(document).ready(function() {
             waterExtractionData.typeInterpolation = interpolationType.EXPONENTIAL;
             m = (Math.log(finalDataExtractionInterpolationValue) - Math.log(initialDataExtractionInterpolationValue)) / (numberYearsInterpolationValue - 0)
             b = Math.exp((-1 * m * 0) + Math.log(initialDataExtractionInterpolationValue));
-            var yearData = {};
-            yearData.year = index + 1;
-            yearData.value = (b * (Math.exp(m * index)));
             for (let index = 0; index <= numberYearsInterpolationValue; index++) {
+                var yearData = {};
+                yearData.year = index + 1;
+                yearData.value = (b * (Math.exp(m * index)));
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${(b*(Math.exp(m*index))).toFixed(2)}</td>
+                <td class="text-center">${(b * (Math.exp(m * index))).toFixed(2)}</td>
               </tr>`);
             }
 
@@ -105,43 +106,103 @@ $(document).ready(function() {
 
         // Interpolación Logistica
         if (typeProcessInterpolation == 4) {
+            waterExtractionData.typeInterpolation = interpolationType.LOGISTICS;
             r = (-Math.log(0.000000001) / initialDataExtractionInterpolationValue);
-            console.log(r)
             for (let index = 0; index <= numberYearsInterpolationValue; index++) {
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${((finalDataExtractionInterpolationValue)/(1+((finalDataExtractionInterpolationValue/initialDataExtractionInterpolationValue)-1)*Math.exp(-r*index))).toFixed(2)}</td>
+                <td class="text-center">${((finalDataExtractionInterpolationValue) / (1 + ((finalDataExtractionInterpolationValue / initialDataExtractionInterpolationValue) - 1) * Math.exp(-r * index))).toFixed(2)}</td>
               </tr>`);
             }
-
-
         }
 
-        for (let index = 0; index < numberYearsInterpolationValue; index++) {
-            $('#intakeEITA').append(`<tr>
-                  <th class="text-center" scope="col">${index+1}</th>
-                  <td class="text-center" scope="col"><input type="text" class="form-control" ></td>
-                  <td class="text-center" scope="col"><input type="text" class="form-control" ></td>
-                  <td class="text-center" scope="col"><input type="text" class="form-control" ></td>
-                  <td class="text-center" scope="col"><input type="text" class="form-control" ></td>
-              </tr>`);
-        }
+        externalInput(numberYearsInterpolationValue);
         // Set object data for later persistence
         waterExtractionData.yearCount = numberYearsInterpolationValue;
         waterExtractionData.initialValue = initialDataExtractionInterpolationValue;
         waterExtractionData.finalValue = finalDataExtractionInterpolationValue;
         waterExtractionData.yearValues = waterExtractionValue;
         $('#waterExtraction').val(JSON.stringify(waterExtractionData));
-        console.log(waterExtractionData);
+
     });
 
-    $('#smartwizard').smartWizard("next").click(function() {
+    function externalInput(numYear) {
+        var rows = "";
+        $('#externalSelect').append(`<option value="null" selected>Choose here</option>`);
+        for (let p = 0; p < graphData.length; p++) {
+            if (graphData[p].external == 'true') {
+                $('#externalSelect').append(`
+                            <option value="${graphData[p].id}">${graphData[p].id} - External Input</option>
+                 `);
+                rows = "";
+                for (let index = 0; index <= numYear; index++) {
+                    rows += (`<tr>
+                                <th class="text-center" scope="col" name="year_${graphData[p].id}" year_value="${index + 1}">${index + 1}</th>
+                                <td class="text-center" scope="col"><input type="text" class="form-control" name="waterVolume_${index + 1}_${graphData[p].id}"></td>
+                                <td class="text-center" scope="col"><input type="text" class="form-control" name="sediment_${index + 1}_${graphData[p].id}"></td>
+                                <td class="text-center" scope="col"><input type="text" class="form-control" name="nitrogen_${index + 1}_${graphData[p].id}" ></td>
+                                <td class="text-center" scope="col"><input type="text" class="form-control" name="phosphorus_${index + 1}_${graphData[p].id}"></td>
+                          </tr>`);
+                }
+                $('#IntakeTDLE').append(`
+                        <table class="table" id="table_${graphData[p].id}" style="display: none">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" scope="col">Year</th>
+                                    <th class="text-center" scope="col">Water Volume (m3)</th>
+                                    <th class="text-center" scope="col">Sediment (Ton)</th>
+                                    <th class="text-center" scope="col">Nitrogen (Kg)</th>
+                                    <th class="text-center" scope="col">Phosphorus (Kg)</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>    
+                `);
+            }
+
+        }
+
+
+    }
+
+
+    $('#saveExternalData').click(function () {
+        for (let id = 0; id < graphData.length; id++) {
+            if (graphData[id].external) {
+                graphData[id].externaldata = [];
+                $(`th[name=year_${graphData[id].id}]`).each(function () {
+                    graphData[id].externaldata.push({
+                        "year": $(this).attr('year_value'),
+                        "water": $(`input[name="waterVolume_${$(this).attr('year_value')}_${graphData[id].id}"]`).val(),
+                        "sediment": $(`input[name="sediment_${$(this).attr('year_value')}_${graphData[id].id}"]`).val(),
+                        "nitrogen": $(`input[name="nitrogen_${$(this).attr('year_value')}_${graphData[id].id}"]`).val(),
+                        "phosphorus": $(`input[name="phosphorus_${$(this).attr('year_value')}_${graphData[id].id}"]`).val()
+                    })
+                });
+                graphData[id].externaldata = JSON.stringify(graphData[id].externaldata);
+            }
+        }
+
+
+        $('#graphElements').val(JSON.stringify(graphData));
+    });
+
+    $('#externalSelect').change(function () {
+        for (let t = 0; t < graphData.length; t++) {
+            if (graphData[t].external == 'true') {
+                $(`#table_${graphData[t].id}`).css('display', 'none');
+            }
+        }
+        $(`#table_${$('#externalSelect').val()}`).css('display', 'block');
+    });
+
+    $('#smartwizard').smartWizard("next").click(function () {
         $('#autoAdjustHeightF').css("height", "auto");
         mapDelimit.invalidateSize();
         map.invalidateSize();
     });
 
-    $('#intakeNIBYMI').click(function() {
+    $('#intakeNIBYMI').click(function () {
         $('#intakeWEMI div').remove();
         intakeNIYMI = Number($("#intakeNIYMI").val());
         for (let index = 0; index < intakeNIYMI; index++) {
@@ -155,7 +216,7 @@ $(document).ready(function() {
     });
 
 
-    $('#smartwizard').smartWizard("next").click(function() {
+    $('#smartwizard').smartWizard("next").click(function () {
         $('#autoAdjustHeightF').css("height", "auto");
         map.invalidateSize();
     });
@@ -171,10 +232,13 @@ $(document).ready(function() {
         toolbarSettings: {
             toolbarPosition: 'bottom', // both bottom
             toolbarButtonPosition: 'center', // both bottom
+        },
+        keyboardSettings: {
+            keyNavigation: false
         }
     });
 
-    $("#smartwizard").on("showStep", function(e, anchorObject, stepIndex, stepDirection) {
+    $("#smartwizard").on("showStep", function (e, anchorObject, stepIndex, stepDirection) {
         if (stepIndex == 3) {
             if (catchmentPoly)
                 mapDelimit.fitBounds(catchmentPoly.getBounds());
@@ -206,11 +270,27 @@ $(document).ready(function() {
         markerType: L.marker, //optional default L.marker
         markerProps: {}, //optional default {},
         centerUserCoordinates: true,
-        labelFormatterLng: function(lng) { return lng + " lng" }, //optional default none,
-        labelFormatterLat: function(lat) { return lat + " lat" }, //optional default none      
+        labelFormatterLng: function (lng) { return lng + " lng" }, //optional default none,
+        labelFormatterLat: function (lat) { return lat + " lat" }, //optional default none      
     }).addTo(map);
 
-    $("#validateBtn").on("click", validateCoordinateWithApi);
+    $("#validateBtn").on("click", function () {
+        Swal.fire({
+            title: 'Delimitar punto y cuenca',
+            text: "El sistema ajustará las coordenadas del punto a la captación más cercana, ¿Desea continuar?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ajustar punto',
+            cancelButtonText: 'Cancelar',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                mapLoader = L.control.loader().addTo(map);
+                validateCoordinateWithApi();
+            }
+        })
+    });
     $('#btnDelimitArea').on("click", delimitIntakeArea)
     $('#btnValidateArea').on("click", validateIntakeArea)
     if (!mapLoader) {
@@ -222,7 +302,7 @@ $(document).ready(function() {
     createEditor(editorUrl);
 
     var menu1Tab = document.getElementById('mapid');
-    var observer2 = new MutationObserver(function() {
+    var observer2 = new MutationObserver(function () {
         if (menu1Tab.style.display != 'none') {
             mapDelimit.invalidateSize();
         }
@@ -232,7 +312,7 @@ $(document).ready(function() {
 });
 
 
-window.onbeforeunload = function() { return mxResources.get('changesLost'); };
+window.onbeforeunload = function () { return mxResources.get('changesLost'); };
 
 /** 
  * Delimit manually the intake polygon
@@ -244,7 +324,7 @@ function delimitIntakeArea() {
     var polygonKeys = Object.keys(catchmentPoly._layers);
     var keyNamePolygon = polygonKeys[0];
     var geometryCoordinates = catchmentPoly._layers[keyNamePolygon].feature.geometry.coordinates[0];
-    geometryCoordinates.forEach(function(geom) {
+    geometryCoordinates.forEach(function (geom) {
         var coordinates = [];
         coordinates.push(geom[1]);
         coordinates.push(geom[0]);
@@ -259,6 +339,7 @@ function delimitIntakeArea() {
 function validateIntakeArea() {
     var editablePolygonJson = editablepolygon.toGeoJSON();
     var intakePolygonJson = catchmentPoly.toGeoJSON();
+    var pointIntakeJson=snapMarker.toGeoJSON();
     /** 
      * Get filtered activities by transition id 
      * @param {String} url   activities URL 
@@ -275,7 +356,7 @@ function validateIntakeArea() {
             'isFile': JSON.stringify(isFile),
             'typeDelimit': delimitationFileType
         },
-        success: function(result) {
+        success: function (result) {
             if (!result.validPolygon) {
                 Swal.fire({
                     icon: 'error',
@@ -284,23 +365,28 @@ function validateIntakeArea() {
                 })
             } else if (!result.polygonContains) {
                 Swal.fire({
-                        icon: 'error',
-                        title: 'El polígono debe estar dentro del área de la captación',
-                        text: 'El polígono editado no es válido, por favor intente de nuevo',
-                    })
-                    // Correct geometry
+                    icon: 'error',
+                    title: 'El polígono debe estar dentro del área de la captación',
+                    text: 'El polígono editado no es válido, por favor intente de nuevo',
+                })
+                // Correct geometry
             } else {
                 Swal.fire(
                     'Excelente',
                     'El polígono es válido y está dentro de la captación',
                     'success'
-                )
-                $('#areaGeometry').val(JSON.stringify(editablePolygonJson))
-                $('#isFile').val(JSON.stringify(isFile))
-                $('#typeDelimit').val(JSON.stringify(delimitationFileType))
+                );
+                // Set original intake area geom in hidden input for posterior reading
+                $('#intakeAreaPolygon').val(JSON.stringify(intakePolygonJson));
+                $('#basinId').val(basinId);
+                // Set delimited area geom in hidden input for posterior reading
+                $('#delimitArea').val(JSON.stringify(editablePolygonJson));
+                $('#pointIntake').val(JSON.stringify(pointIntakeJson));
+                $('#isFile').val(JSON.stringify(isFile));
+                $('#typeDelimit').val(JSON.stringify(delimitationFileType));
             }
         },
-        error: function(error) {
+        error: function (error) {
             console.log(error);
         }
     });
@@ -311,7 +397,7 @@ function validateIntakeArea() {
  * @param {HTML} dropdown Dropdown selected element
  */
 function changeFileEvent() {
-    $('#intakeArea').change(function(evt) {
+    $('#intakeArea').change(function (evt) {
         var file = evt.currentTarget.files[0];
         var extension = validExtension(file);
         // Validate file's extension
@@ -321,7 +407,7 @@ function changeFileEvent() {
             // Validate file's extension
             if (extension.extension == 'geojson') { //GeoJSON
                 var readerGeoJson = new FileReader();
-                readerGeoJson.onload = function(evt) {
+                readerGeoJson.onload = function (evt) {
                     var contents = evt.target.result;
                     geojson = JSON.parse(contents);
                     delimitationFileType = delimitationFileEnum.GEOJSON;
@@ -334,7 +420,7 @@ function changeFileEvent() {
                     editablepolygon = L.geoJSON(geojson, { style: polygonStyle })
                     editablepolygon.addTo(mapDelimit);
                     mapDelimit.fitBounds(editablepolygon.getBounds())
-                        //loadShapefile(geojson, file.name);
+                    //loadShapefile(geojson, file.name);
                 }
                 readerGeoJson.readAsText(file);
             } else { //Zip
@@ -345,10 +431,10 @@ function changeFileEvent() {
                     readPrj = false,
                     prj, coord = true;
                 var prjName;
-                reader.onload = function(evt) {
+                reader.onload = function (evt) {
                     var contents = evt.target.result;
-                    JSZip.loadAsync(file).then(function(zip) {
-                        zip.forEach(function(relativePath, zipEntry) {
+                    JSZip.loadAsync(file).then(function (zip) {
+                        zip.forEach(function (relativePath, zipEntry) {
                             filename = zipEntry.name.toLocaleLowerCase();
                             if (filename.indexOf(".shp") != -1) {
                                 readShp = true;
@@ -366,7 +452,7 @@ function changeFileEvent() {
                         });
                         // Valid shapefile with minimum files req
                         if (readShp && readDbf && readPrj && readShx) {
-                            zip.file(prjName).async("string").then(function(data) {
+                            zip.file(prjName).async("string").then(function (data) {
                                 prj = data;
                                 // Validar sistema de referencia
                                 if (!prj) {
@@ -378,7 +464,7 @@ function changeFileEvent() {
                                 }
                                 // Shapefile válido
                                 else {
-                                    shp(contents).then(function(shpToGeojson) {
+                                    shp(contents).then(function (shpToGeojson) {
                                         geojson = shpToGeojson;
                                         delimitationFileType = delimitationFileEnum.SHP;
                                         let polygonStyle = {
@@ -390,8 +476,8 @@ function changeFileEvent() {
                                         editablepolygon = L.geoJSON(geojson, { style: polygonStyle })
                                         editablepolygon.addTo(mapDelimit);
                                         mapDelimit.fitBounds(editablepolygon.getBounds())
-                                            //loadShapefile(geojson, file.name);
-                                    }).catch(function(e) {
+                                        //loadShapefile(geojson, file.name);
+                                    }).catch(function (e) {
                                         Swal.fire({
                                             icon: 'error',
                                             title: 'Error en shapefile',
@@ -437,7 +523,7 @@ function changeFileEvent() {
                         }
                     });
                 };
-                reader.onerror = function(event) {
+                reader.onerror = function (event) {
                     console.error("File could not be read! Code " + event.target.error.code);
                     //alert("El archivo no pudo ser cargado: " + event.target.error.code);
                 };

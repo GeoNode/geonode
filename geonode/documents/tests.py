@@ -489,8 +489,13 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             thumb_files_before = get_thumbs()
             deleted = delete_orphaned_thumbs()
             thumb_files_after = get_thumbs()
-            self.assertTrue(len(deleted) > 0)
-            self.assertEqual(set(deleted), set(thumb_files_before) - set(thumb_files_after))
+            if len(thumb_files_before):
+                self.assertTrue(
+                    len(deleted) > 0,
+                    f"before: {thumb_files_before} - deleted: {deleted} - after: {thumb_files_after}")
+                self.assertEqual(
+                    set(deleted), set(thumb_files_before) - set(thumb_files_after),
+                    f"deleted: {deleted} vs {set(thumb_files_before) - set(thumb_files_after)}")
 
             fn = os.path.join(
                 os.path.join("documents", "document"), os.path.basename(input_path))

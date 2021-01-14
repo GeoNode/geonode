@@ -28,7 +28,10 @@ import errno
 import logging
 import datetime
 import requests
+import tempfile
 import traceback
+
+from shutil import copyfile
 
 from six import (
     string_types,
@@ -924,16 +927,18 @@ def set_attributes(
             field, ftype, description, label, display_order = attribute
             if field:
                 _gs_attrs = Attribute.objects.filter(layer=layer, attribute=field)
-                if _gs_attrs.count() > 1:
-                    _gs_attrs.delete()
-                la, created = Attribute.objects.get_or_create(layer=layer, attribute=field)
-                if created:
+                if _gs_attrs.count() == 1:
+                    la = _gs_attrs.get()
+                elif _gs_attrs.count() == 0:
+                    la = Attribute.objects.create(layer=layer, attribute=field)
                     la.visible = ftype.find("gml:") != 0
                     la.attribute_type = ftype
                     la.description = description
                     la.attribute_label = label
                     la.display_order = iter
                     iter += 1
+                else:
+                    la = _gs_attrs.last()
                 if (not attribute_stats or layer.name not in attribute_stats or
                         field not in attribute_stats[layer.name]):
                     result = None
@@ -950,7 +955,10 @@ def set_attributes(
                     la.sum = result['Sum']
                     la.unique_values = result['unique_values']
                     la.last_stats_updated = datetime.datetime.now(timezone.get_current_timezone())
-                la.save()
+                try:
+                    la.save()
+                except Exception as e:
+                    logger.exception(e)
     else:
         logger.debug("No attributes found")
 
@@ -1155,7 +1163,9 @@ def set_styles(layer, gs_catalog):
                     'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
                     layer.alternate + '&STYLE=' + style_name + \
                     '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
-                if layer_legends.filter(url=legend_url).count() == 0:
+                if layer_legends.filter(resource=layer.resourcebase_ptr,
+                                        name='Legend',
+                                        url=legend_url).count() < 2:
                     Link.objects.update_or_create(
                         resource=layer.resourcebase_ptr,
                         name='Legend',
@@ -2083,8 +2093,33 @@ def _render_thumbnail(req_body, width=240, height=200):
     return content
 
 
-def _prepare_thumbnail_body_from_opts(request_body, request=None):
+def _dump_image_spec(request_body, image_spec):
+    millis = int(round(time.time() * 1000))
+    try:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            _request_body_file_name = os.path.join(
+                tmp_dir,
+                f"request_body_{millis}.dump")
+            _image_spec_file_name = os.path.join(
+                tmp_dir,
+                f"image_spec_{millis}.dump")
+            with open(_request_body_file_name, "w") as _request_body_file:
+                _request_body_file.write(f"{request_body}")
+            copyfile(
+                _request_body_file_name,
+                os.path.join(tempfile.gettempdir(), f"request_body_{millis}.dump"))
+            with open(_image_spec_file_name, "w") as _image_spec_file:
+                _image_spec_file.write(f"{image_spec}")
+            copyfile(
+                _image_spec_file_name,
+                os.path.join(tempfile.gettempdir(), f"image_spec_{millis}.dump"))
+        return f"Dumping image_spec to: {os.path.join(tempfile.gettempdir(), f'image_spec_{millis}.dump')}"
+    except Exception as e:
+        logger.exception(e)
+        return f"Unable to dump image_spec for request: {request_body}"
 
+
+def _prepare_thumbnail_body_from_opts(request_body, request=None):
     if isinstance(request_body, bytes):
         request_body = request_body.decode("UTF-8")
     try:
@@ -2161,7 +2196,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             ogc_server_location = request_body["ogc_server_location"] if "ogc_server_location" \
                 in request_body else ogc_server_settings.LOCATION
             wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or 'wms'
-            wms_version = getattr(ogc_server_settings, "WMS_VERSION") or '1.3.0'
+            wms_version = getattr(ogc_server_settings, "WMS_VERSION") or '1.1.0'
             wms_format = getattr(ogc_server_settings, "WMS_FORMAT") or 'image/png'
 
             params = {
@@ -2276,6 +2311,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
                                              width=thumbnail_tile_size,
                                              left=box[0], top=box[1])
         _img_request_template += "</div></div>"
+        logger.debug(_dump_image_spec(request_body, _img_request_template))
         image = _render_thumbnail(_img_request_template, width=width, height=height)
     except Exception as e:
         logger.warning('Error generating thumbnail')
