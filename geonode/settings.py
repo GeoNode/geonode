@@ -457,7 +457,7 @@ GEONODE_INTERNAL_APPS = (
     'geonode.messaging',
     'geonode.monitoring',
     'geonode.frequently',
-    'geonode.study_cases',
+    'geonode.waterproof_study_cases',
     'geonode.waterproof_nbs_ca',
     'geonode.waterproof_intake',
 )
@@ -2153,7 +2153,7 @@ SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'Tr
 FREQUENTLY_READY_FOR_V1 = True
 FREQUENTLY_ALLOW_ANONYMOUS = True
 
-STUDY_CASES_ALLOW_ANONYMOUS = True
+WATERPROOF_STUDY_CASES_ALLOW_ANONYMOUS = True
 
 WATERPROOF_NBS_CA_ALLOW_ANONYMOUS = True
 
