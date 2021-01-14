@@ -244,7 +244,7 @@
 				<add as="fontColor" value="#222"/>
 				<add as="fontStyle" value="1"/>
 			</add>
-			<add as="External_input">
+			<add as="CHANNEL">
 				<add as="strokeWidth" value="4"/>
 				<add as="strokeColor" value="#e6e200"/>				
 				<add as="fontSize" value="11"/>
