@@ -38,11 +38,8 @@ from defusedxml import lxml as dlxml
 from django.conf import settings
 from django.db.models.fields.related import RelatedField
 
-from geonode.settings import DATETIME_INPUT_FORMATS
 from geonode.tasks.tasks import AcquireLock
-from geonode.monitoring.models import Service
-from geonode.monitoring.collector import CollectorAPI
-
+from geonode.settings import DATETIME_INPUT_FORMATS
 
 GS_FORMAT = '%Y-%m-%dT%H:%M:%S'  # 2010-06-20T2:00:00
 
@@ -403,6 +400,10 @@ def extend_datetime_input_formats(formats):
 
 
 def collect_metric(**options):
+    # Avoid possible module circular dependency issues
+    from geonode.monitoring.models import Service
+    from geonode.monitoring.collector import CollectorAPI
+
     _start_time = None
     _end_time = None
     # The cache key consists of the task name and the MD5 digest
