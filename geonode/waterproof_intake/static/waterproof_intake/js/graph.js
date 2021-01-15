@@ -228,19 +228,22 @@ function onInit(editor) {
                 `WN_ret_${idvar} (Kg)`,
                 `WP_ret_${idvar} (Kg)`
             ];
-
-            let external = false;
-            let value = {
-                "connectorType": connectionsType.EC.id,
-                "varcost": varcost,
-                "external": external,
-                'resultdb': result,
-                'name': connectionsType.EC.name
-            };
-
-            edge.setValue(JSON.stringify(value));
-            editor.graph.model.setStyle(edge, connectionsType.EC.style);
-
+            $.ajax({
+                url: `/intake/loadFunctionBySymbol/${connectionsType.EC.funcionreference}`,
+                success: function(result2) {
+                    let external = false;
+                    let value = {
+                        "connectorType": connectionsType.EC.id,
+                        "varcost": JSON.stringify(varcost),
+                        "external": external,
+                        'resultdb': result,
+                        'name': connectionsType.EC.name,
+                        "funcost": result2
+                    };
+                    edge.setValue(JSON.stringify(value));
+                    editor.graph.model.setStyle(edge, connectionsType.EC.style);
+                }
+            });
         }
     });
 
@@ -667,8 +670,7 @@ function onInit(editor) {
             validationTransportedWater(editor, selectedCell);
         });
 
-        //Fornce only numbers into calculator funcion cost
-        $("#math-field").ForceNumericOnly();
+
 
         jQuery.fn.ForceNumericOnly = function() {
             return this.each(function() {
@@ -687,7 +689,8 @@ function onInit(editor) {
                 });
             });
         };
-
+        //Force only numbers into calculator funcion cost
+        $("#math-field").ForceNumericOnly();
         //Append values and var into funcion cost
         function addInfo(value) {
             mathField.cmd(value);

@@ -11,8 +11,6 @@ function customMenuForConnectors() {
 
 // Function to create the entries in the popupmenu
 function createPopupMenu(graph, menu, cell, evt) {
-
-
     if (cell != null) {
         if (cell.geometry.width == 0 && cell.geometry.height == 0) {
             if (cell.hasOwnProperty("value") && cell.value != undefined) {
@@ -61,8 +59,6 @@ function createPopupMenu(graph, menu, cell, evt) {
 };
 
 function updateStyleLine(graph, cell, type) {
-
-
     $.ajax({
         url: `/intake/loadProcess/${type.style}`,
 
@@ -98,37 +94,21 @@ function updateStyleLine(graph, cell, type) {
                     value = JSON.stringify(value);
                     cell.setValue(value);
                     graph.model.setStyle(cell, type.style);
+                    //add data in HTML for connectors
+                    if (typeof(cell.value) == "string" && cell.value.length > 0) {
+                        try {
+                            let obj = JSON.parse(cell.value);
+                            let dbfields = JSON.parse(obj.resultdb);
+                            label = connectionsType[obj.connectorType].name;
+                            $('#titleDiagram').text(connectionsType[obj.connectorType].name);
+                            $('#titleCostFunSmall').text(`ID: ${cell.id} - ${connectionsType[obj.connectorType].name}`);
+                            addData2(dbfields)
+                        } catch (e) {
+                            label = "";
+                        }
+                    }
                 }
             });
-
-
-
-            //add data in HTML for connectors
-            if (typeof(cell.value) == "string" && cell.value.length > 0) {
-                try {
-                    let obj = JSON.parse(cell.value);
-                    let dbfields = JSON.parse(obj.resultdb);
-                    label = connectionsType[obj.connectorType].name;
-                    $('#titleDiagram').text(connectionsType[obj.connectorType].name);
-                    $('#titleCostFunSmall').text(`ID: ${cell.id} - ${connectionsType[obj.connectorType].name}`);
-                    // Add Value to Panel Information Right on HTML
-                    $('#aguaDiagram').val(dbfields[0].fields.predefined_transp_water_perc);
-                    $('#sedimentosDiagram').val(dbfields[0].fields.predefined_sediment_perc);
-                    $('#nitrogenoDiagram').val(dbfields[0].fields.predefined_nitrogen_perc);
-                    $('#fosforoDiagram').val(dbfields[0].fields.predefined_phosphorus_perc);
-                    // Add Validator 
-                    $('#aguaDiagram').attr('min', dbfields[0].fields.minimal_transp_water_perc);
-                    $('#aguaDiagram').attr('max', dbfields[0].fields.maximal_transp_water_perc);
-                    $('#sedimentosDiagram').attr('min', dbfields[0].fields.minimal_sediment_perc);
-                    $('#sedimentosDiagram').attr('max', dbfields[0].fields.maximal_sediment_perc);
-                    $('#nitrogenoDiagram').attr('min', dbfields[0].fields.minimal_nitrogen_perc);
-                    $('#nitrogenoDiagram').attr('max', dbfields[0].fields.maximal_nitrogen_perc);
-                    $('#fosforoDiagram').attr('min', dbfields[0].fields.minimal_phosphorus_perc);
-                    $('#fosforoDiagram').attr('max', dbfields[0].fields.maximal_phosphorus_perc);
-                } catch (e) {
-                    label = "";
-                }
-            }
         }
     });
 }
@@ -148,8 +128,6 @@ function clearDataHtml(cell, evt) {
     $('#nitrogenoDiagram').prop('disabled', show);
     $('#fosforoDiagram').prop('disabled', show);
     $('#funcostgenerate div').remove();
-
-
 }
 
 function funcost(ecuation_db, ecuation_name, index) {
@@ -174,20 +152,7 @@ function addData(element) {
         label = connectionsType[obj.connectorType].name;
         $('#titleDiagram').text(connectionsType[obj.connectorType].name);
 
-        // Add Value to Panel Information Right on HTML
-        $('#aguaDiagram').val(dbfields[0].fields.predefined_transp_water_perc);
-        $('#sedimentosDiagram').val(dbfields[0].fields.predefined_sediment_perc);
-        $('#nitrogenoDiagram').val(dbfields[0].fields.predefined_nitrogen_perc);
-        $('#fosforoDiagram').val(dbfields[0].fields.predefined_phosphorus_perc);
-        // Add Validator 
-        $('#aguaDiagram').attr('min', dbfields[0].fields.minimal_transp_water_perc);
-        $('#aguaDiagram').attr('max', dbfields[0].fields.maximal_transp_water_perc);
-        $('#sedimentosDiagram').attr('min', dbfields[0].fields.minimal_sediment_perc);
-        $('#sedimentosDiagram').attr('max', dbfields[0].fields.maximal_sediment_perc);
-        $('#nitrogenoDiagram').attr('min', dbfields[0].fields.minimal_nitrogen_perc);
-        $('#nitrogenoDiagram').attr('max', dbfields[0].fields.maximal_nitrogen_perc);
-        $('#fosforoDiagram').attr('min', dbfields[0].fields.minimal_phosphorus_perc);
-        $('#fosforoDiagram').attr('max', dbfields[0].fields.maximal_phosphorus_perc);
+        addData2HTML(dbfields)
         funcostdb = JSON.parse(obj.funcost);
         for (let index = 0; index < funcostdb.length; index++) {
             funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index);
@@ -201,6 +166,13 @@ function addData(element) {
     if (resultdb.length == 0 && funcostdb.length == 0) return;
     $('#titleDiagram').text(resultdb[0].fields.categorys);
 
+    addData2HTML(resultdb)
+    for (let index = 0; index < funcostdb.length; index++) {
+        funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index);
+    }
+}
+
+function addData2HTML(resultdb) {
     // Add Value to Panel Information Right on HTML
     $('#aguaDiagram').val(resultdb[0].fields.predefined_transp_water_perc);
     $('#sedimentosDiagram').val(resultdb[0].fields.predefined_sediment_perc);
@@ -215,9 +187,6 @@ function addData(element) {
     $('#nitrogenoDiagram').attr('max', resultdb[0].fields.maximal_nitrogen_perc);
     $('#fosforoDiagram').attr('min', resultdb[0].fields.minimal_phosphorus_perc);
     $('#fosforoDiagram').attr('max', resultdb[0].fields.maximal_phosphorus_perc);
-    for (let index = 0; index < funcostdb.length; index++) {
-        funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index);
-    }
 }
 
 function deleteWithValidations(editor) {
