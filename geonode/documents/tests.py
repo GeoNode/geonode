@@ -54,6 +54,7 @@ from geonode.documents import DocumentsAppConfig
 from geonode.documents.forms import DocumentFormMixin
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.base.populate_test_data import create_models
+from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
 from geonode.documents.models import Document, DocumentResourceLink
 
 
@@ -75,6 +76,23 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
             b'\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
         self.anonymous_user = get_anonymous_user()
+
+    def test_document_mimetypes_rendering(self):
+        ARCHIVETYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'archive']
+        AUDIOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'audio']
+        IMGTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'image']
+        VIDEOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'video']
+        self.assertIsNotNone(ARCHIVETYPES)
+        self.assertIsNotNone(AUDIOTYPES)
+        self.assertIsNotNone(IMGTYPES)
+        self.assertIsNotNone(VIDEOTYPES)
+
+        # Make sure we won't have template rendering issues
+        self.assertTrue('dwg' in ARCHIVETYPES)
+        self.assertTrue('dxf' in ARCHIVETYPES)
+        self.assertTrue('tif' in ARCHIVETYPES)
+        self.assertTrue('tiff' in ARCHIVETYPES)
+        self.assertTrue('pbm' in ARCHIVETYPES)
 
     def test_create_document_with_no_rel(self):
         """Tests the creation of a document with no relations"""
