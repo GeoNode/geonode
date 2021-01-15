@@ -17,8 +17,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
 import re
+import json
+import logging
 
 from django.urls import resolve
 from django.db.models import Q
@@ -70,6 +71,8 @@ from django.utils.translation import gettext as _
 
 if settings.HAYSTACK_SEARCH:
     from haystack.query import SearchQuerySet  # noqa
+
+logger = logging.getLogger(__name__)
 
 LAYER_SUBTYPES = {
     'vector': 'dataStore',
@@ -1012,11 +1015,15 @@ class MapResource(CommonModelApi):
             formatted_obj['layers'] = formatted_layers
 
             # replace thumbnail_url with curated_thumbs
-            if hasattr(obj, 'curatedthumbnail'):
-                if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
-                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
-                else:
-                    formatted_obj['thumbnail_url'] = ''
+            try:
+                if hasattr(obj, 'curatedthumbnail'):
+                    if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
+                        formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
+                    else:
+                        formatted_obj['thumbnail_url'] = ''
+            except Exception as e:
+                formatted_obj['thumbnail_url'] = ''
+                logger.exception(e)
 
             formatted_objects.append(formatted_obj)
         return formatted_objects
