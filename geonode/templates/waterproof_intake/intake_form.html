@@ -118,6 +118,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="panel panel-info">
+                        <h4 class="text-center"style="color: #5bc0de;">Select the elements that make up your capture system and click on the drawing area to add them.</h4>
                         <div class="panel-body text-center" id="toolbar"></div>
                     </div>
                 </div>
@@ -125,6 +126,10 @@
             <div class="row">
                 <!--Graph-->
                 <div class="col-md-8">
+                    <span style="float:right;padding-right:36px;">
+                            <input id="getdata" type="checkbox" />Source
+                    </span>
+                    <textarea id="xml" style="height:600px;width:100%;display:none;border-style:none;"></textarea>
                     <div class="panel panel-info">
                         <div class="panel-body" id="graph" tabindex="-1" style="height:700px;width:100%;overflow:hidden;cursor:default; outline:none;"></div>
                     </div>
@@ -168,7 +173,7 @@
                 </div>
                 <div class="col-md-12">
                     <h3>Cost functions <small id="titleCostFunSmall"></small>
-                    <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal" data-target="#exampleModal" id="ModalAddCostBtn">Add Cost</button>
+                        <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal" data-target="#exampleModal" id="ModalAddCostBtn">Add Cost</button>
                     </h3>
                     <div class="panel panel-info">
                         <div class="panel-body">
@@ -177,10 +182,6 @@
                     </div>
                 </div>
             </div>
-            <span style="float:right;padding-right:36px;">
-                            <input id="getdata" type="checkbox" />Source
-                        </span>
-                        <textarea id="xml" style="height:600px;width:100%;display:none;border-style:none;"></textarea>
         </div>
         <!--Step 3-->
         <div id="step-3" class="tab-pane" role="tabpanel">
@@ -346,7 +347,7 @@
             </div>
         </div>
     </div>
-</div>
+
   <!--Inputs hidden for save data-->
     <input type="hidden" id="xmlGraph" name="xmlGraph">
     <input type="hidden" id="isFile" name="isFile">

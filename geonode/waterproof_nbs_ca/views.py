@@ -165,6 +165,118 @@ def listNbs(request):
                         'currency': currency
                     }
                 )
+        
+            if (request.user.professional_role == 'COPART'):
+                nbs = WaterproofNbsCa.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                currency = Currency.objects.get(country_id=userCountry.id)
+                return render(
+                    request,
+                    'waterproof_nbs_ca/waterproofnbsca_list.html',
+                    {
+                        'nbs': nbs,
+                        'userCountry': userCountry,
+                        'region': region,
+                        'currency': currency
+                    }
+                )
+        
+            if (request.user.professional_role == 'ACDMC'):
+                nbs = WaterproofNbsCa.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                currency = Currency.objects.get(country_id=userCountry.id)
+                return render(
+                    request,
+                    'waterproof_nbs_ca/waterproofnbsca_list.html',
+                    {
+                        'nbs': nbs,
+                        'userCountry': userCountry,
+                        'region': region,
+                        'currency': currency
+                    }
+                )
+        
+            if (request.user.professional_role == 'SCADM'):
+                nbs = WaterproofNbsCa.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                currency = Currency.objects.get(country_id=userCountry.id)
+                return render(
+                    request,
+                    'waterproof_nbs_ca/waterproofnbsca_list.html',
+                    {
+                        'nbs': nbs,
+                        'userCountry': userCountry,
+                        'region': region,
+                        'currency': currency
+                    }
+                )
+        
+            if (request.user.professional_role == 'MCOMC'):
+                nbs = WaterproofNbsCa.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                currency = Currency.objects.get(country_id=userCountry.id)
+                return render(
+                    request,
+                    'waterproof_nbs_ca/waterproofnbsca_list.html',
+                    {
+                        'nbs': nbs,
+                        'userCountry': userCountry,
+                        'region': region,
+                        'currency': currency
+                    }
+                )
+        
+            if (request.user.professional_role == 'CITIZN'):
+                nbs = WaterproofNbsCa.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                currency = Currency.objects.get(country_id=userCountry.id)
+                return render(
+                    request,
+                    'waterproof_nbs_ca/waterproofnbsca_list.html',
+                    {
+                        'nbs': nbs,
+                        'userCountry': userCountry,
+                        'region': region,
+                        'currency': currency
+                    }
+                )
+        
+            if (request.user.professional_role == 'REPECS'):
+                nbs = WaterproofNbsCa.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                currency = Currency.objects.get(country_id=userCountry.id)
+                return render(
+                    request,
+                    'waterproof_nbs_ca/waterproofnbsca_list.html',
+                    {
+                        'nbs': nbs,
+                        'userCountry': userCountry,
+                        'region': region,
+                        'currency': currency
+                    }
+                )
+        
+            if (request.user.professional_role == 'OTHER'):
+                nbs = WaterproofNbsCa.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                currency = Currency.objects.get(country_id=userCountry.id)
+                return render(
+                    request,
+                    'waterproof_nbs_ca/waterproofnbsca_list.html',
+                    {
+                        'nbs': nbs,
+                        'userCountry': userCountry,
+                        'region': region,
+                        'currency': currency
+                    }
+                )
         else:
             nbs = WaterproofNbsCa.objects.all()
             userCountry = Countries.objects.get(code='COL')
