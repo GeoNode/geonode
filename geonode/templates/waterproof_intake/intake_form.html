@@ -11,8 +11,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Coordinates.css" %}" />
 <link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Loader.css" %}" />
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/mathquill/mathquill.css"/>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/css/intake.css"/>
 <script>
     MathJax = {
         loader: {
@@ -25,113 +24,6 @@
         }
     };
 </script>
-<style>
-    #mainActions>button {
-        display: inline-block;
-        padding: 6px 12px;
-        margin-bottom: 0;
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 1.42857143;
-        text-align: center;
-        white-space: nowrap;
-        vertical-align: middle;
-        -ms-touch-action: manipulation;
-        touch-action: manipulation;
-        cursor: pointer;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-        background-image: none;
-        border: 1px solid transparent;
-        border-radius: 4px;
-        color: #fff;
-        background-color: #337ab7;
-        border-color: #2e6da4;
-        margin-right: 4px;
-    }
-
-    .vertical-align {
-        display: flex;
-        align-items: center;
-    }
-
-    .text-danger-wp {
-        color: rgb(255, 0, 0) !important;
-    }
-
-    .table>tbody>tr>td {
-        vertical-align: middle;
-    }
-
-    [title^='Empty'] {
-        display: none;
-    }
-
-    .table>tbody>tr>td {
-        vertical-align: middle;
-    }
-
-    .table>tbody>tr>th {
-        vertical-align: middle;
-    }
-
-
-    .modal {
-        text-align: center;
-    }
-
-    @media screen and (min-width: 768px) {
-        .modal:before {
-            display: inline-block;
-            vertical-align: middle;
-            content: " ";
-            height: 100%;
-        }
-    }
-
-    .modal-dialog {
-        display: inline-block;
-        text-align: left;
-        vertical-align: middle;
-    }
-
-    .mxToolbarMode:hover{
-        border: 5px solid #d0d0d0;
-        border-radius: 50%;
-    }
-
-    .btn-group > button{
-        height: 45px;
-        width: 50.2px;
-        outline:none;
-    }
-
-    .btn-group > button >  mjx-container{
-        outline:none;
-    }
-
-    .edit-group-btn {
-        background:#2C689C;
-        color: #FFF;
-    }
-
-    .trash-group-btn{
-        background:#AF0900;
-        color: #FFF;
-    }
-
-    .btn-add-cost{
-        position: absolute;
-        right: 0;
-        margin-right: 15px;
-    }
-   
-   .swal2-popup {
-    font-size: 1.6rem !important;
-    }
-</style>
 {% endblock %}
 {% block body_outer %}
 <!--header-->
@@ -515,18 +407,6 @@
                         <p>LaTeX of what you typed: <span id="latex"></span></p>
                     </div>
                 </div>
-                <!--<div class="row">
-                    <div class="col-md-12">
-                        <h5 class="text-primary">Math expression</h5>
-                        <input class="form-control" id="inputMathAscii">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <h5 class="text-primary">Rendering</h5>
-                        <div id="RenderingMathAscii" class="text-center"></div>
-                    </div>
-                </div-->
                 <br>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -568,6 +448,7 @@
     <script src="{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/js/app.js"></script>
     <script src="{{ STATIC_URL }}waterproof_intake/mathquill/mathquill.min.js"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"
     integrity="sha512-dTu0vJs5ndrd3kPwnYixvOCsvef5SGYW/zSSK4bcjRBcZHzqThq7pt7PmCv55yb8iBvni0TSeIDV8RYKjZL36A=="
     crossorigin="anonymous"></script>-->
