@@ -237,30 +237,34 @@
 				<add as="imageVerticalAlign" value="bottom"/>
 				<add as="image" value="/static/mxgraph/images/waterproof/12-conexion.png"/>
 			</add>
-			<add as="Extraction_connection">
+			<add as="EXTRACTIONCONNECTION">
 				<add as="strokeWidth" value="4"/>
-				<add as="strokeColor" value="#008000"/>				
+				<add as="strokeColor" value="#008000"/>	
+				<add as="verticalAlign" value="bottom"/>			
 				<add as="fontSize" value="11"/>
 				<add as="fontColor" value="#222"/>
 				<add as="fontStyle" value="1"/>
 			</add>
 			<add as="CHANNEL">
 				<add as="strokeWidth" value="4"/>
-				<add as="strokeColor" value="#e6e200"/>				
+				<add as="strokeColor" value="#e6e200"/>	
+				<add as="verticalAlign" value="bottom"/>			
 				<add as="fontSize" value="11"/>
 				<add as="fontColor" value="#222"/>
 				<add as="fontStyle" value="1"/>
 			</add>
-			<add as="Pipeline">
+			<add as="PIPELINE">
 				<add as="strokeWidth" value="4"/>
-				<add as="strokeColor" value="#191970"/>				
+				<add as="strokeColor" value="#191970"/>	
+				<add as="verticalAlign" value="bottom"/>			
 				<add as="fontSize" value="11"/>
 				<add as="fontColor" value="#222"/>
 				<add as="fontStyle" value="1"/>
 			</add>
-			<add as="Connection">
+			<add as="CONNECTION">
 				<add as="strokeWidth" value="4"/>
-				<add as="strokeColor" value="#555555"/>				
+				<add as="strokeColor" value="#555555"/>	
+				<add as="verticalAlign" value="bottom"/>			
 				<add as="fontSize" value="11"/>
 				<add as="fontColor" value="#222"/>
 				<add as="fontStyle" value="1"/>
@@ -318,6 +322,6 @@
 		<add as="Desarenador" template="desarenador" icon="/static/mxgraph/images/waterproof/08-desarenador.png"/>
 		<add as="Camara De Quiebre" template="camaraquiebre" width="32" height="32" icon="/static/mxgraph/images/waterproof/09-camara-quiebre.svg"/>
 		<add as="CSINFRA" template="csinfra" icon="/static/mxgraph/images/waterproof/13-csinfra.svg"/>
-		<add as="External Input" template="externalinput" icon="/static/mxgraph/images/waterproof/12-conexion.png"/>
+		<add as="External Input" template="externalinput" icon="/static/mxgraph/images/waterproof/12-conexion.svg"/>
 	</mxDefaultToolbar>
 </mxEditor>

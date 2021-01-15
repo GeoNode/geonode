@@ -1,8 +1,8 @@
 const connectionsType = {
-    EC: { name: 'Extraction connection', id: 'EC', style: 'Extraction_connection', funcionreference: 'EC' },
+    EC: { name: 'Extraction connection', id: 'EC', style: 'EXTRACTIONCONNECTION', funcionreference: 'EC' },
     CH: { name: 'Channel', id: 'CH', style: 'CHANNEL', funcionreference: 'C' },
-    PL: { name: 'Pipeline', id: 'PL', style: 'Pipeline', funcionreference: 'T' },
-    CN: { name: 'Connection', id: 'CN', style: 'Connection', funcionreference: 'CON' },
+    PL: { name: 'Pipeline', id: 'PL', style: 'PIPELINE', funcionreference: 'T' },
+    CN: { name: 'Connection', id: 'CN', style: 'CONNECTION', funcionreference: 'CON' },
 }
 
 function customMenuForConnectors() {
@@ -102,7 +102,7 @@ function updateStyleLine(graph, cell, type) {
                             label = connectionsType[obj.connectorType].name;
                             $('#titleDiagram').text(connectionsType[obj.connectorType].name);
                             $('#titleCostFunSmall').text(`ID: ${cell.id} - ${connectionsType[obj.connectorType].name}`);
-                            addData2(dbfields)
+                            addData2HTML(dbfields)
                         } catch (e) {
                             label = "";
                         }
@@ -117,6 +117,7 @@ function clearDataHtml(cell, evt) {
     $('#idDiagram').val('');
     $('#titleDiagram').empty();
     $('#aguaDiagram').val('');
+    $('#titleCostFunSmall').empty();
     $('#sedimentosDiagram').val('');
     $('#nitrogenoDiagram').val('');
     $('#fosforoDiagram').val('');
@@ -151,25 +152,33 @@ function addData(element) {
         let dbfields = JSON.parse(obj.resultdb);
         label = connectionsType[obj.connectorType].name;
         $('#titleDiagram').text(connectionsType[obj.connectorType].name);
-
+        $('#titleCostFunSmall').text(`ID: ${element.id} - ${connectionsType[obj.connectorType].name}`);
+        $('#idDiagram').val(element.id);
         addData2HTML(dbfields)
         funcostdb = JSON.parse(obj.funcost);
         for (let index = 0; index < funcostdb.length; index++) {
             funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index);
         }
-    }
-    $('#titleDiagram').text(element.getAttribute('name'));
-    $('#idDiagram').val(element.id);
-    if (element.getAttribute('resultdb') == undefined && element.getAttribute('funcost') == undefined) return;
-    resultdb = JSON.parse(element.getAttribute('resultdb'));
-    funcostdb = JSON.parse(element.getAttribute('funcost'));
-    if (resultdb.length == 0 && funcostdb.length == 0) return;
-    $('#titleDiagram').text(resultdb[0].fields.categorys);
+    } else {
+        $('#titleDiagram').text(element.getAttribute('name'));
+        $('#titleCostFunSmall').text(`ID: ${element.id} - ${element.getAttribute('name')}`);
+        $('#idDiagram').val(element.id);
+        if (element.getAttribute('resultdb') == undefined && element.getAttribute('funcost') == undefined) return;
+        resultdb = JSON.parse(element.getAttribute('resultdb'));
+        if (element.getAttribute('name') == 'River') {
+            addData2HTML(resultdb);
+            return;
+        }
+        funcostdb = JSON.parse(element.getAttribute('funcost'));
+        if (resultdb.length == 0 && funcostdb.length == 0) return;
+        $('#titleDiagram').text(resultdb[0].fields.categorys);
 
-    addData2HTML(resultdb)
-    for (let index = 0; index < funcostdb.length; index++) {
-        funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index);
+        addData2HTML(resultdb)
+        for (let index = 0; index < funcostdb.length; index++) {
+            funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index);
+        }
     }
+
 }
 
 function addData2HTML(resultdb) {
@@ -193,9 +202,11 @@ function deleteWithValidations(editor) {
     let msg = "Selected element is connected with Extraction connection element. Can't be deleted!";
     if (editor.graph.isEnabled()) {
         let cells = editor.graph.getSelectionCells();
-        let cells2Remove = cells.filter(cell => (cell.style != "rio" &&
-                cell.style != "csinfra" &&
-                cell.style != connectionsType.EC.style) ||
+        let cells2Remove = cells.filter(cell => (cell.style != "rio"
+                /* &&
+                                cell.style != "csinfra" &&
+                                cell.style != connectionsType.EC.style*/
+            ) ||
             parseInt(cell.id) > 4);
         if (cells2Remove.length > 0) {
             let vertexIsEC = false;
@@ -247,11 +258,9 @@ function validationTransportedWater(editor, cell) {
     });
     //Select all dom of the elements called Simboll
     node.querySelectorAll('Symbol').forEach(function(cellfilter) {
-
         if (node.id == "" && connectors.length > 0) {
             //Validates connectors that are connected with the symbol
             if (cellfilter.id == connectors[0].source) {
-                console.log(cellfilter)
                 let cells = JSON.parse(cellfilter.getAttribute('resultdb'));
                 //Validates sumatory of connectors it's less than %Transported water of the Symbol
                 if (total > cells[0].fields.predefined_transp_water_perc) {
