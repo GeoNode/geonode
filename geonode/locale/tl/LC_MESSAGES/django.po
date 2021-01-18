@@ -680,7 +680,7 @@ msgid "Creation Date"
 msgstr "Create a map"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:37
-msgid "Pubblication Date"
+msgid "Publication Date"
 msgstr ""
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:39
