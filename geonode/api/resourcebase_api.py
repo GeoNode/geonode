@@ -822,7 +822,6 @@ class LayerResource(CommonModelApi):
 
         if obj is None and self._meta.object_class:
             obj = self._meta.object_class()
-
         elif obj:
             obj = self.populate_object(obj)
 
@@ -830,6 +829,15 @@ class LayerResource(CommonModelApi):
             obj=obj,
             data=data,
             request=request, **kwargs)
+
+    def populate_object(self, obj):
+        """Populate results with necessary fields
+
+        :param obj: Layer obj
+        :type obj: Layer
+        :return:
+        """
+        return obj
 
     # copy parent attribute before modifying
     VALUES = CommonModelApi.VALUES[:]
