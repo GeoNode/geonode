@@ -235,7 +235,7 @@
 				<add as="fontStyle" value="1"/>
 				<add as="verticalAlign" value="top"/>
 				<add as="imageVerticalAlign" value="bottom"/>
-				<add as="image" value="/static/mxgraph/images/waterproof/12-conexion.png"/>
+				<add as="image" value="/static/mxgraph/images/waterproof/12-conexion.svg"/>
 			</add>
 			<add as="EXTRACTIONCONNECTION">
 				<add as="strokeWidth" value="4"/>
