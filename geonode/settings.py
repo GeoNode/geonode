@@ -437,10 +437,6 @@ GEONODE_INTERNAL_APPS = (
     'geonode.groups',
     'geonode.services',
 
-    # QGIS Server Apps
-    # Only enable this if using QGIS Server
-    # 'geonode.qgis_server',
-
     # GeoServer Apps
     # Geoserver needs to come last because
     # it's signals may rely on other apps' signals.
@@ -663,8 +659,6 @@ LOGGING = {
         "django": {
             "handlers": ["console"], "level": "ERROR", },
         "geonode": {
-            "handlers": ["console"], "level": "ERROR", },
-        "geonode.qgis_server": {
             "handlers": ["console"], "level": "ERROR", },
         "geoserver-restconfig.catalog": {
             "handlers": ["console"], "level": "ERROR", },
@@ -1282,8 +1276,6 @@ DOWNLOAD_FORMATS_METADATA = [
 DOWNLOAD_FORMATS_VECTOR = [
     'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV',
     'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
-    'QGIS layer file (.qlr)',
-    'QGIS project file (.qgs)',
 ]
 DOWNLOAD_FORMATS_RASTER = [
     'JPEG',
@@ -1298,8 +1290,6 @@ DOWNLOAD_FORMATS_RASTER = [
     'Tiles',
     'GML',
     'GZIP',
-    'QGIS layer file (.qlr)',
-    'QGIS project file (.qgs)',
     'Zipped All Files'
 ]
 

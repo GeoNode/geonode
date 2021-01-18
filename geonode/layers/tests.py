@@ -46,7 +46,7 @@ from django.test.utils import override_settings
 from guardian.shortcuts import get_anonymous_user
 from guardian.shortcuts import assign_perm, remove_perm
 
-from geonode import GeoNodeException, geoserver, qgis_server
+from geonode import GeoNodeException, geoserver
 from geonode.decorators import on_ogc_backend
 from geonode.layers.models import Layer, Style, Attribute
 from geonode.layers.utils import (
@@ -601,20 +601,6 @@ class LayersTest(GeoNodeBaseTestSupport):
         try:
             if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                 d, expected_files = generate_files("shp", "shx", "prj", "dbf", "sld")
-                gotten_files = get_files(os.path.join(d, "foo.shp"))
-                gotten_files = {k: os.path.basename(v) for k, v in gotten_files.items()}
-                self.assertEqual(gotten_files, expected_files)
-        finally:
-            if d is not None:
-                shutil.rmtree(d)
-
-        # Check that including a QML with a valid shapefile
-        # results in the QML
-        # getting picked up
-        d = None
-        try:
-            if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-                d, expected_files = generate_files("shp", "shx", "prj", "dbf", "qml", "json")
                 gotten_files = get_files(os.path.join(d, "foo.shp"))
                 gotten_files = {k: os.path.basename(v) for k, v in gotten_files.items()}
                 self.assertEqual(gotten_files, expected_files)

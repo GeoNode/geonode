@@ -440,10 +440,6 @@
       {% get_obj_perms request.user for resource.layer as "layer_perms" %}
     {% endif %}
 
-    {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
-      {% get_obj_perms request.user for resource.layer as "layer_perms" %}
-    {% endif %}
-
     <li class="list-group-item">
       <a href="{% url "layer_metadata_detail" resource.alternate %}">
         <button class="btn btn-primary btn-md btn-block">{% trans "Metadata Detail" %}</button>
@@ -496,15 +492,6 @@
                     </div>
                     {% endif %}
                   {% endif %}
-                {% elif OGC_SERVER.default.BACKEND == 'geonode.qgis_server' and not resource.service %}
-                  {% if "change_layer_style" in layer_perms and preview == 'leaflet' %}
-                  <div class="col-sm-3">
-                    <i class="fa fa-tint fa-3x"></i>
-                    <h4>{% trans "Styles" %}</h4>
-                    <a class="btn btn-default btn-block btn-xs style-edit" data-dismiss="modal" href="#">{% trans "Edit" %}</a>
-                  </div>
-                  {% endif %}
-                {% endif %}
                 {% if "change_resourcebase" in perms_list %}
                 <div class="col-sm-3">
                   <i class="fa fa-photo fa-3x"></i>
@@ -688,20 +675,6 @@
               <input type="radio" name="style" id="{{ style.name }}" value="{{ style.sld_title|default_if_none:style.name }}"/>
               {% endif %}
               <a href="{{ GEOSERVER_BASE_URL }}{{ style.absolute_url }}" >{{ style.sld_title|default_if_none:style.name }}</a>
-            </li>
-            {% empty %}
-            <li>{% trans "No styles associated with this layer" %}</li>
-            {% endfor %}
-        {% elif OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
-            {% for style in resource.qgis_layer.styles.all %}
-            <li>
-              {% if resource.qgis_layer.default_style == style %}
-              <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.title }}"/>
-              {% trans "(default style)" %}
-              {% else %}
-              <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
-              {% endif %}
-              <a href="{{ style.style_url }}" >{{ style.title }}</a>
             </li>
             {% empty %}
             <li>{% trans "No styles associated with this layer" %}</li>
