@@ -152,7 +152,7 @@ function addData(element) {
         label = connectionsType[obj.connectorType].name;
         $('#titleDiagram').text(connectionsType[obj.connectorType].name);
 
-        addData2HTML(dbfields)
+        addData2HTML(dbfields);
         funcostdb = JSON.parse(obj.funcost);
         for (let index = 0; index < funcostdb.length; index++) {
             funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index);

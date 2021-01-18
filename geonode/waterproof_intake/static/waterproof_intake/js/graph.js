@@ -534,7 +534,7 @@ function onInit(editor) {
 
         //Set var into calculator
         $(document).on('click', '.list-group-item', function() {
-            addInfo(mathField.write(`\\mathit{${$(this).attr('value')}}`));
+            addInfo(`\\mathit{${$(this).attr('value')}}`);
         });
 
         //Edit funcion cost 
