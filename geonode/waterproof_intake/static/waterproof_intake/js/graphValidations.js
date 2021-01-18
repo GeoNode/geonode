@@ -275,3 +275,7 @@ function validationTransportedWater(editor, cell) {
         }
     });
 }
+
+$(document).on('click', '#helpgraph', function() {
+    $('#HelpModal').modal('show');
+});
