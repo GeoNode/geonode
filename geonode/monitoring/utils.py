@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import os
 import pytz
 import queue
@@ -39,8 +38,8 @@ from defusedxml import lxml as dlxml
 from django.conf import settings
 from django.db.models.fields.related import RelatedField
 
+from geonode.tasks.tasks import AcquireLock
 from geonode.settings import DATETIME_INPUT_FORMATS
-
 
 GS_FORMAT = '%Y-%m-%dT%H:%M:%S'  # 2010-06-20T2:00:00
 
@@ -401,7 +400,7 @@ def extend_datetime_input_formats(formats):
 
 
 def collect_metric(**options):
-    from geonode.tasks.tasks import memcache_lock
+    # Avoid possible module circular dependency issues
     from geonode.monitoring.models import Service
     from geonode.monitoring.collector import CollectorAPI
 
@@ -416,62 +415,61 @@ def collect_metric(**options):
     log.info('[{}] Collecting Metrics - started @ {}'.format(
         lock_id,
         _start_time))
-    lock = memcache_lock(lock_id)
-    if lock.acquire(blocking=False) is True:
-        log.info('[{}] Collecting Metrics - [...acquired lock] @ {}'.format(
-            lock_id,
-            _start_time))
-        try:
-            oservice = options['service']
-            if not oservice:
-                services = Service.objects.all()
-            else:
-                services = [oservice]
-            if options['list_services']:
-                print('available services')
+    with AcquireLock(lock_id) as lock:
+        if lock.acquire() is True:
+            log.info('[{}] Collecting Metrics - [...acquired lock] @ {}'.format(
+                lock_id,
+                _start_time))
+            try:
+                oservice = options['service']
+                if not oservice:
+                    services = Service.objects.all()
+                else:
+                    services = [oservice]
+                if options['list_services']:
+                    print('available services')
+                    for s in services:
+                        print('  ', s.name, '(', s.url, ')')
+                        print('   type', s.service_type.name)
+                        print('   running on', s.host.name, s.host.ip)
+                        print('   active:', s.active)
+                        if s.last_check:
+                            print('    last check:', s.last_check)
+                        else:
+                            print('    not checked yet')
+                        print(' ')
+                    return
+                c = CollectorAPI()
                 for s in services:
-                    print('  ', s.name, '(', s.url, ')')
-                    print('   type', s.service_type.name)
-                    print('   running on', s.host.name, s.host.ip)
-                    print('   active:', s.active)
-                    if s.last_check:
-                        print('    last check:', s.last_check)
-                    else:
-                        print('    not checked yet')
-                    print(' ')
-                return
-            c = CollectorAPI()
-            for s in services:
-                try:
-                    run_check(s,
-                              collector=c,
-                              since=options['since'],
-                              until=options['until'],
-                              force_check=options['force_check'],
-                              format=options['format'])
-                except Exception as e:
-                    log.warning(e)
-            if not options['do_not_clear']:
-                log.info("Clearing old data")
-                c.clear_old_data()
-            if options['emit_notifications']:
-                log.info("Processing notifications for %s", options['until'])
-                # s = Service.objects.first()
-                # interval = s.check_interval
-                # now = datetime.utcnow().replace(tzinfo=pytz.utc)
-                # notifications_check = now - interval
-                c.emit_notifications()  # notifications_check))
-            _end_time = datetime.utcnow().isoformat()
-            log.info('[{}] Collecting Metrics - finished @ {}'.format(
-                lock_id,
-                _end_time))
-        except Exception as e:
-            log.info('[{}] Collecting Metrics - errored @ {}'.format(
-                lock_id,
-                _end_time))
-            log.exception(e)
-        finally:
-            lock.release()
+                    try:
+                        run_check(
+                            s,
+                            collector=c,
+                            since=options['since'],
+                            until=options['until'],
+                            force_check=options['force_check'],
+                            format=options['format'])
+                    except Exception as e:
+                        log.warning(e)
+                if not options['do_not_clear']:
+                    log.info("Clearing old data")
+                    c.clear_old_data()
+                if options['emit_notifications']:
+                    log.info("Processing notifications for %s", options['until'])
+                    # s = Service.objects.first()
+                    # interval = s.check_interval
+                    # now = datetime.utcnow().replace(tzinfo=pytz.utc)
+                    # notifications_check = now - interval
+                    c.emit_notifications()  # notifications_check))
+                _end_time = datetime.utcnow().isoformat()
+                log.info('[{}] Collecting Metrics - finished @ {}'.format(
+                    lock_id,
+                    _end_time))
+            except Exception as e:
+                log.info('[{}] Collecting Metrics - errored @ {}'.format(
+                    lock_id,
+                    _end_time))
+                log.exception(e)
     log.info('[{}] Collecting Metrics - exit @ {}'.format(
         lock_id,
         _end_time))
