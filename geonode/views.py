@@ -26,7 +26,7 @@ from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template.response import TemplateResponse
-from geonode.base.templatetags.base_tags import facets
+from geonode.client.templatetags.base_tags import facets
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, get_user_model
 

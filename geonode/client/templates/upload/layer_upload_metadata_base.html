@@ -1,0 +1,17 @@
+{% extends "geonode_base.html" %}
+{% load i18n %}
+
+{% block title %} {{ block.super }} {% endblock %}
+
+{% block body_class %}{% trans "data" %}{% endblock %}
+
+{% block body_outer %}
+<div class="page-header">
+  <a href="{% url "layer_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}" class="btn btn-primary pull-right">{% trans "Explore Layers" %}</a>
+  <h2 class="page-title">{% trans "Upload Layer Metadata" %}</h2>
+</div>
+<div class="row">
+  {% block body %}{% endblock body %}
+  {% block sidebar %}{% endblock sidebar %}
+</div>
+{% endblock body_outer %}

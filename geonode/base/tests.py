@@ -42,7 +42,7 @@ from django.shortcuts import reverse
 
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.models import CuratedThumbnail
-from geonode.base.templatetags.base_tags import get_visibile_resources
+from geonode.client.templatetags.base_tags import get_visibile_resources
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 
