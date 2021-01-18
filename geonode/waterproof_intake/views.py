@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext as _
-from .models import ExternalInputs, City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction, ElementSystem, ExternalInputs, CostFunctionsProcess, Polygon, Basins
+from .models import ValuesTime, City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction, ElementSystem, ValuesTime, CostFunctionsProcess, Polygon, Basins, ElementConnections
 from geonode.waterproof_nbs_ca.models import Countries, Region
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from django.core import serializers
@@ -118,6 +118,7 @@ def create(request):
                 basin=basin,
                 intake=intakeCreated
             )
+            elementsCreated = []
             # Loop into graph elements for persistence
             for element in graphElements:
                 if ('external' in element):
@@ -125,39 +126,58 @@ def create(request):
                     if (element['external'] == 'false'):
                         parameter = json.loads(element['resultdb'])
                         element_system = ElementSystem.objects.create(
+                            graphId=element['id'],
                             name=element['name'],
                             normalized_category=parameter[0]['fields']['normalized_category'],
+                            transported_water=parameter[0]['fields']['maximal_transp_water_perc'],
                             sediment=parameter[0]['fields']['maximal_sediment_perc'],
                             nitrogen=parameter[0]['fields']['maximal_nitrogen_perc'],
                             phosphorus=parameter[0]['fields']['maximal_phosphorus_perc'],
+                            is_external=False,
                             intake=intakeCreated
                         )
-
+                        elementC = {}
+                        elementC['pk'] = element_system.pk
+                        elementC['xmlId'] = element_system.graphId
+                        elementsCreated.append(elementC)
                     # External element
                     else:
                         parameter = json.loads(element['resultdb'])
                         if (len(parameter) > 0):
                             element_system = ElementSystem.objects.create(
+                                graphId=element['id'],
                                 name=element['name'],
                                 normalized_category=parameter[0]['fields']['normalized_category'],
+                                transported_water=parameter[0]['fields']['maximal_transp_water_perc'],
                                 sediment=parameter[0]['fields']['maximal_sediment_perc'],
                                 nitrogen=parameter[0]['fields']['maximal_nitrogen_perc'],
                                 phosphorus=parameter[0]['fields']['maximal_phosphorus_perc'],
+                                is_external=True,
                                 intake=intakeCreated
                             )
+                            elementC = {}
+                            elementC['pk'] = element_system.pk
+                            elementC['xmlId'] = element_system.graphId
+                            elementsCreated.append(elementC)
                         else:
                             element_system = ElementSystem.objects.create(
+                                graphId=element['id'],
                                 name=element['name'],
-                                normalized_category='',
+                                transported_water=0,
                                 sediment=0,
                                 nitrogen=0,
                                 phosphorus=0,
+                                is_external=True,
                                 intake=intakeCreated
                             )
+                            elementC = {}
+                            elementC['pk'] = element_system.pk
+                            elementC['xmlId'] = element_system.graphId
+                            elementsCreated.append(elementC)
                         external_info = json.loads(element['externaldata'])
                         elementCreated = ElementSystem.objects.get(id=element_system.pk)
                         for external in external_info:
-                            external_input = ExternalInputs.objects.create(
+                            external_input = ValuesTime.objects.create(
                                 year=external['year'],
                                 water_volume=external['water'],
                                 sediment=external['sediment'],
@@ -165,10 +185,30 @@ def create(request):
                                 phosphorus=external['phosphorus'],
                                 element=elementCreated
                             )
+                # Connections
+                else:
+                    print("Connection")
+                    print(elementsCreated[0]['xmlId'])
+                    print(element['source'])
+                    for e in elementsCreated:
+                        connection = {}
+                        elementConnection = []
+                        if (e['xmlId'] == element['source']):
+                            sourceElement = ElementSystem.objects.get(id=e['pk'])
+                            for el in elementsCreated:
+                                if(el['xmlId'] == element['target']):
+                                    targetElement = ElementSystem.objects.get(id=el['pk'])
+                                    print(sourceElement)
+                                    print(targetElement)
+                                    ElementConnections.objects.create(
+                                        source=sourceElement,
+                                        target=targetElement
+                                    )
+
             messages.success(request, ("Water Intake created."))
         else:
             messages.error(request, ("Water Intake not created."))
-
+            return render(request, 'waterproof_intake/intake_form.html', context={"form": form, "serverApi": settings.WATERPROOF_API_SERVER})
     else:
         form = forms.IntakeForm()
     return render(request, 'waterproof_intake/intake_form.html', context={"form": form, "serverApi": settings.WATERPROOF_API_SERVER})
