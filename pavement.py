@@ -384,7 +384,7 @@ def upgradedb(options):
     Add 'fake' data migrations for existing tables from legacy GeoNode versions
     """
     version = options.get('version')
-    if version in ['1.1', '1.2']:
+    if version in {'1.1', '1.2'}:
         sh("python -W ignore manage.py migrate maps 0001 --fake")
         sh("python -W ignore manage.py migrate avatar 0001 --fake")
     elif version is None:
@@ -1024,7 +1024,7 @@ def setup_data(options):
 
     data_dir = gisdata.GOOD_DATA
 
-    if ctype in ['vector', 'raster', 'time']:
+    if ctype in {'vector', 'raster', 'time'}:
         data_dir = os.path.join(gisdata.GOOD_DATA, ctype)
 
     settings = options.get('settings', '')

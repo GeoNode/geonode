@@ -828,7 +828,7 @@ def upload(incoming, user=None, overwrite=False,
         basename, extension = os.path.splitext(short_filename)
         filename = incoming
 
-        if extension in ['.tif', '.shp', '.tar', '.zip']:
+        if extension in {'.tif', '.shp', '.tar', '.zip'}:
             potential_files.append((basename, filename))
         elif short_filename.endswith('.tar.gz'):
             potential_files.append((basename, filename))
@@ -844,7 +844,7 @@ def upload(incoming, user=None, overwrite=False,
             for short_filename in files:
                 basename, extension = os.path.splitext(short_filename)
                 filename = os.path.join(root, short_filename)
-                if extension in ['.tif', '.shp', '.tar', '.zip']:
+                if extension in {'.tif', '.shp', '.tar', '.zip'}:
                     potential_files.append((basename, filename))
                 elif short_filename.endswith('.tar.gz'):
                     potential_files.append((basename, filename))

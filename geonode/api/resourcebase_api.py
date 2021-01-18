@@ -332,7 +332,7 @@ class CommonModelApi(ModelResource):
             subtypes = []
 
             for type in type_facets:
-                if type in ["map", "layer", "document", "user"]:
+                if type in {"map", "layer", "document", "user"}:
                     # Type is one of our Major Types (not a sub type)
                     types.append(type)
                 elif type in LAYER_SUBTYPES.keys():
@@ -376,7 +376,7 @@ class CommonModelApi(ModelResource):
                             SQ(description=Raw(search_word)) |
                             SQ(content=Raw(search_word))
                         )
-                    elif search_word in ["AND", "OR"]:
+                    elif search_word in {"AND", "OR"}:
                         pass
                     elif words[i - 1] == "OR":  # previous word OR this word
                         sqs = sqs.filter_or(

@@ -253,7 +253,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         # once this is implemented we can remove this condition
 
         csw = get_catalogue()
-        if csw.catalogue.type in ['pycsw_http', 'pycsw_local']:
+        if csw.catalogue.type in {'pycsw_http', 'pycsw_local'}:
             # get all ISO records in FGDC schema
             csw.catalogue.getrecords(
                 typenames='gmd:MD_Metadata',
