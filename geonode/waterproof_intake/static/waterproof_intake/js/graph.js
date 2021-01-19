@@ -501,6 +501,7 @@ function onInit(editor) {
             var node = enc.encode(editor.graph.getModel());
             var textxml = mxUtils.getPrettyXml(node)
             graphData = [];
+            validations(node);
             node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
                     'id': node.id,
@@ -527,11 +528,8 @@ function onInit(editor) {
                     })
                 }
             });
-            //console.log(graphData);
             $('#xmlGraph').val(textxml);
             $('#graphElements').val(JSON.stringify(graphData));
-            //console.log(textxml);
-            // console.log(connetion);
         });
 
         //Set var into calculator
