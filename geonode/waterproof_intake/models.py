@@ -140,6 +140,11 @@ class ProcessEfficiencies(models.Model):
         verbose_name=_('Normalized category')
     )
 
+    id_wb = models.IntegerField(
+        default=0,
+        verbose_name=_('ID Wb')
+    )
+
     minimal_sediment_perc = models.IntegerField(
         default=0,
         verbose_name=_('Minimal sediment')
@@ -396,15 +401,10 @@ class ElementSystem(models.Model):
         verbose_name=_('Extraction value')
     )
 
-    is_external=models.BooleanField(verbose_name=_('External'), default=False)
+    is_external = models.BooleanField(verbose_name=_('External'), default=False)
 
     intake = models.ForeignKey(Intake, on_delete=models.CASCADE)
 
-    id_wb=models.IntegerField(
-        default=0,
-        verbose_name=_('Year')
-    )
-    
     awy = models.FloatField(
         null=True,
         blank=True,
