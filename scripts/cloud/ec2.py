@@ -34,12 +34,15 @@ import configparser
 import os
 import sys
 import time
-
+import logging
 import botocore
 
 import boto3
 
+
 CONFIG_FILE = ".gnec2.cfg"
+logger = logging.getLogger(__name__)
+
 
 # Ubuntu
 # https://help.ubuntu.com/community/EC2StartersGuide
@@ -199,7 +202,7 @@ def launch():
         key_pairs = ec2.describe_key_pairs(KeyNames=[key_name])['KeyPairs']
     except botocore.exceptions.ClientError:
         # Key is not likely not defined
-        print("GeoNode file not found in server.")
+        logger.warning("GeoNode file not found in server.")
         key_pairs = ec2.describe_key_pairs()['KeyPairs']
 
     key = key_pairs[0] if len(
