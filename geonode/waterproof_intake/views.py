@@ -190,6 +190,19 @@ def create(request):
                     print("Connection")
                     print(elementsCreated[0]['xmlId'])
                     print(element['source'])
+                    parameter = json.loads(element['resultdb'])
+                    if (len(parameter) > 0):
+                        element_system = ElementSystem.objects.create(
+                            graphId=element['id'],
+                            name=element['name'],
+                            normalized_category=parameter[0]['fields']['normalized_category'],
+                            transported_water=parameter[0]['fields']['maximal_transp_water_perc'],
+                            sediment=parameter[0]['fields']['maximal_sediment_perc'],
+                            nitrogen=parameter[0]['fields']['maximal_nitrogen_perc'],
+                            phosphorus=parameter[0]['fields']['maximal_phosphorus_perc'],
+                            is_external=False,
+                            intake=intakeCreated
+                        )
                     for e in elementsCreated:
                         connection = {}
                         elementConnection = []
