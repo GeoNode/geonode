@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# Translators:
+# aaizemberg <ariel.aizemberg@gmail.com>, 2013
+# Andres Alfonso Lemon Gomez <lemon.andres@gmail.com>, 2014
+# aaizemberg <ariel.aizemberg@gmail.com>, 2013
+# aaizemberg <ariel.aizemberg@gmail.com>, 2013
+# Clarisa Andrea Moraña <clarisa.morana@gmail.com>, 2013
+# Clarisa Andrea Moraña <clarisa.morana@gmail.com>, 2013
+# cristianzamar <cristianzamar@gmail.com>, 2016
+# cristianzamar <cristianzamar@gmail.com>, 2016
+# francesco.stompanato <francesco.stompanato@wfp.org>, 2014
+# francesco.stompanato <francesco.stompanato@wfp.org>, 2014
+# ingenieroariel <ingenieroariel@gmail.com>, 2013-2015
+# ingenieroariel <ingenieroariel@gmail.com>, 2013
+# Juan Lautaro Silva Ortiz <jlautarosilva@gmail.com>, 2015
+# Scott Clark, 2013
+# Scott Clark, 2013
+# Scott Clark, 2013
+# Sergio Luis Arnal <sergioarnal@gmail.com>, 2013
+# Sergio Luis Arnal <sergioarnal@gmail.com>, 2013-2016
+msgid ""
+msgstr ""
+"Project-Id-Version: GeoNode\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-01-14 16:58-0500\n"
+"PO-Revision-Date: 2020-12-15 18:41-0500\n"
+"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
+"Language-Team: Spanish (http://www.transifex.com/geonode/geonode/language/"
+"es/)\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.4.2\n"
+
+#: geonode/waterproof_study_cases/templates/study_cases/studycases_form.html:6
+msgid "Study Cases."
+msgstr ""
+
+#: geonode/waterproof_study_cases/templates/study_cases/studycases_form.html:12
+msgid "Save"
+msgstr ""
+
+#: geonode/waterproof_study_cases/templates/study_cases/studycases_list.html:4
+#: geonode/waterproof_study_cases/templates/study_cases/studycases_list.html:6
+msgid "Study Cases"
+msgstr ""
+
+#: geonode/waterproof_study_cases/templates/study_cases/studycases_list.html:7
+#, fuzzy
+#| msgid "List Water Intake"
+msgid "Create new study case"
+msgstr "Listar captaciones"
+
+#, fuzzy
+#~| msgid "List Water Intake"
+#~ msgid "Water Intakes"
+#~ msgstr "Listar captaciones"
+
+#~ msgid "List Water Intake"
+#~ msgstr "Listar captaciones"

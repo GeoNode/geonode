@@ -3,9 +3,16 @@
  * configurations (Step 2 of create wizard)
  * @version 1.0
  */
-var graphData = [];
-var connetion = [];
+/**  
+ * Global variables for save data 
+ * @param {Array} resultdb   all data from DB
+ * @param {Object} selectedCell  cell selected from Diagram 
+ */
 
+var resultdb = [];
+var selectedCell;
+var graphData = [];
+var funcostdb = [];
 // Program starts here. The document.onLoad executes the
 // createEditor function with a given configuration.
 // In the config file, the mxEditor.onInit method is
@@ -43,6 +50,9 @@ function onInit(editor) {
     style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
     style[mxConstants.STYLE_STROKEWIDTH] = 4;
     style[mxConstants.STYLE_STROKECOLOR] = "#ff0000";
+    style[mxConstants.STYLE_FONTSIZE] = '11';
+    style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
+    style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_BOTTOM;
 
 
     // Installs a popupmenu handler using local function (see below).
@@ -63,6 +73,39 @@ function onInit(editor) {
     var listener = function(sender, evt) {
         editor.graph.validateGraph();
     };
+
+    editor.graph.getLabel = function(cell) {
+        var label = (this.labelsVisible) ? this.convertValueToString(cell) : '';
+        var geometry = this.model.getGeometry(cell);
+
+        if (geometry != null && geometry.width == 0) {
+            var style = this.getCellStyle(cell);
+            var fontSize = style[mxConstants.STYLE_FONTSIZE] || mxConstants.DEFAULT_FONTSIZE;
+        }
+        if (label == undefined) {
+            label = "This connection doesn't have a defined type, \n please define a type";
+            if (typeof(cell.value) == "string" && cell.value.length > 0) {
+                try {
+                    let obj = JSON.parse(cell.value);
+                    label = connectionsType[obj.connectorType].name + " (" + cell.id + ")";
+                } catch (e) {
+                    label = "";
+                }
+            }
+        }
+        return label;
+    };
+
+    editor.graph.addListener(mxEvent.CELLS_ADDED, function(sender, evt) {
+        //return;
+
+        let cell = evt.properties.cells[0];
+        if (cell.value != undefined && typeof(cell.value) == "object") {
+            let lbl = cell.getAttribute("label");
+            cell.setAttribute("label", lbl + " (" + cell.id + ")");
+            editor.graph.model.setValue(cell, cell.value);
+        }
+    });
 
     editor.graph.getModel().addListener(mxEvent.CHANGE, listener);
 
@@ -96,17 +139,119 @@ function onInit(editor) {
     // XML and graphical display
     var textNode = document.getElementById('xml');
     var graphNode = editor.graph.container;
-
     var parent = editor.graph.getDefaultParent();
+    var xmlDocument = mxUtils.createXmlDocument();
+    var sourceNode = xmlDocument.createElement('Symbol');
+    var sourceNode1 = xmlDocument.createElement('Symbol');
 
-    var edge = editor.graph.insertEdge(parent, null, '', parent.children[0], parent.children[1]);
-    let value = { "connectorType": connectionsType.EC.id };
-    edge.setValue(JSON.stringify(value));
-    editor.graph.model.setStyle(edge, connectionsType.EC.style);
+
+    //Create River at the beginning of the diagram
+    var river = editor.graph.insertVertex(parent, null, sourceNode1, 40, 30, 60, 92);
+    river.setAttribute('name', 'River');
+    river.setAttribute('label', 'River (2)');
+    river.setAttribute('externalData', 'false');
+    editor.graph.model.setStyle(river, 'rio');
+    var temp = [];
+    temp.push(
+        `Q_${river.id}`,
+        `CSed_${river.id}`,
+        `CN_${river.id}`,
+        `CP_${river.id}`,
+        `WSed_${river.id}`,
+        `WN_${river.id}`,
+        `WP_${river.id}`,
+        `WSed_ret_${river.id}`,
+        `WN_ret_${river.id}`,
+        `WP_ret_${river.id}`
+    );
+
+    $.ajax({
+        url: `/intake/loadProcess/RIVER`,
+        success: function(result) {
+            river.setAttribute('varcost', JSON.stringify(temp));
+            river.setAttribute('resultdb', result);
+        }
+    });
+    /*
+        //Create CSINFRA at the beginning of the diagram
+        var vertex = editor.graph.insertVertex(parent, null, sourceNode, 500, 30, 60, 92);
+        vertex.setAttribute('name', 'CSINFRA');
+        vertex.setAttribute('label', 'CS Infra (3)');
+        vertex.setAttribute('externalData', 'false');
+        editor.graph.model.setStyle(vertex, 'csinfra');
+        var temp2 = [];
+        temp2.push(
+            `Q_${vertex.id}`,
+            `CSed_${vertex.id}`,
+            `CN_${vertex.id}`,
+            `CP_${vertex.id}`,
+            `WSed_${vertex.id}`,
+            `WN_${vertex.id}`,
+            `WP_${vertex.id}`,
+            `WSed_ret_${vertex.id}`,
+            `WN_ret_${vertex.id}`,
+            `WP_ret_${vertex.id}`
+        );
+
+
+        $.ajax({
+            url: `/intake/loadProcess/CSINFRA`,
+            success: function(result) {
+                vertex.setAttribute('varcost', JSON.stringify(temp2));
+                vertex.setAttribute('resultdb', result);
+            }
+        });
+
+        $.ajax({
+            url: `/intake/loadFunctionBySymbol/CS`,
+            success: function(result) {
+                vertex.setAttribute('funcost', result);
+            }
+        });
+
+
+
+        var edge = editor.graph.insertEdge(parent, null, '', parent.children[0], parent.children[1]);
+
+        $.ajax({
+            url: `/intake/loadProcess/${connectionsType.EC.style}`,
+            success: function(result) {
+                let idvar = edge.id;
+                let varcost = [
+                    `Q_${idvar} (m³)`,
+                    `CSed_${idvar} (mg/l)`,
+                    `CN_${idvar} (mg/l)`,
+                    `CP_${idvar} (mg/l)`,
+                    `WSed_${idvar} (Ton)`,
+                    `WN_${idvar} (Kg)`,
+                    `WP_${idvar} (Kg)`,
+                    `WSed_ret_${idvar} (Ton)`,
+                    `WN_ret_${idvar} (Kg)`,
+                    `WP_ret_${idvar} (Kg)`
+                ];
+                $.ajax({
+                    url: `/intake/loadFunctionBySymbol/${connectionsType.EC.funcionreference}`,
+                    success: function(result2) {
+                        let external = false;
+                        let value = {
+                            "connectorType": connectionsType.EC.id,
+                            "varcost": JSON.stringify(varcost),
+                            "external": external,
+                            'resultdb': result,
+                            'name': connectionsType.EC.name,
+                            "funcost": result2
+                        };
+                        edge.setValue(JSON.stringify(value));
+                        editor.graph.model.setStyle(edge, connectionsType.EC.style);
+                    }
+                });
+            }
+        });
+    */
 
     // Source nodes needs 1..2 connected Targets
     editor.graph.multiplicities.push(new mxMultiplicity(
-        true, 'Symbol', 'name', 'Rio', 1, 2, ['Symbol'],
+        true, 'Symbol', 'name', 'River', 1, 2, ['Symbol'],
         'Rio Must Have 1 or more Elements',
         'Source Must Connect to Target'));
 
@@ -289,93 +434,17 @@ function onInit(editor) {
     //use jquery
     $(document).ready(function() {
 
-        /**
-         * Button to save 
-         * data on graphData
-         * xml on textxml
-         */
+        var MQ = MathQuill.getInterface(2);
 
-        $('#inputMathAscii').keyup(function() {
-            $('#RenderingMathAscii').text(`'math' ${$(this).val()} 'math'`);
-            MathJax.typeset();
-        });
-
-        $('#saveAndValideCost').click(function() {
-            console.log($('#RenderingMathAscii > mjx-container > mjx-assistive-mml')[0].innerHTML)
-        });
-
-        $('#ModalAddCostBtn').click(function() {
-            $('#VarCostListGroup div').remove();
-            for (const index of graphData) {
-                tmp = JSON.parse(index.varcost);
-                $('#VarCostListGroup').append(`
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#VarCostListGroup" href="#VarCostListGroup_${index.id}">${index.id} - ${index.name}</a>
-                        </h4>
-                    </div>
-                    <div id="VarCostListGroup_${index.id}" class="panel-collapse collapse">
-                        <div class="panel-body">
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[0]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[1]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[2]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[3]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[4]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[5]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[6]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[7]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[8]}</a>
-                        <a href="#" class="list-group-item list-group-item-action">${tmp[9]}</a>
-                        </div>
-                    </div>
-                </div>
-                `);
-            }
-        });
-
-        function funcost(ecuation_db) {
-            $('#funcostgenerate div').remove();
-            $('#funcostgenerate').append(
-                ` <div class="form-group">
-                <label>Annual Operation and Maintenance Cost</label>
-                <input type="text" value="${ ecuation_db }" class="form-control" disabled>
-            </div>`);
-        }
-
-        $('#saveGraph').click(function() {
-            var enc = new mxCodec();
-            var node = enc.encode(editor.graph.getModel());
-            var textxml = mxUtils.getPrettyXml(node)
-            graphData = [];
-            connetion = [];
-            node.querySelectorAll('Symbol').forEach(function(node) {
-                graphData.push({
-                    'id': node.id,
-                    "name": node.getAttribute('name'),
-                    'external': node.getAttribute('externalData'),
-                    'resultdb': node.getAttribute('resultdb'),
-                    'varcost': node.getAttribute('varcost'),
-                    'funcost': node.getAttribute('funcost'),
-                })
-            });
-
-            node.querySelectorAll('mxCell').forEach(function(node) {
-                if (node.id != "") {
-                    let varcost = Object.values(JSON.parse(node.getAttribute('value')))[1];
-                    connetion.push({
-                        'id': node.id,
-                        'source': node.getAttribute('source'),
-                        'target': node.getAttribute('target'),
-                        'varcost': JSON.stringify(varcost)
-                    })
+        var mathFieldSpan = document.getElementById('math-field');
+        var latexSpan = document.getElementById('latex');
+        var mathField = MQ.MathField(mathFieldSpan, {
+            spaceBehavesLikeTab: true,
+            handlers: {
+                edit: function() {
+                    latexSpan.textContent = mathField.latex();
                 }
-            });
-            //console.log(graphData);
-            $('#xmlGraph').val(textxml);
-            $('#graphElements').val(JSON.stringify(graphData));
-            //console.log(textxml);
-            //console.log(connetion);
+            }
         });
 
         //load data when add an object in a diagram
@@ -386,16 +455,16 @@ function onInit(editor) {
             if (selectedCell != undefined) {
                 var varcost = [];
                 varcost.push(
-                    `Q_${idvar} (m³)`,
-                    `CSed_${idvar} (mg/l)`,
-                    `CN_${idvar} (mg/l)`,
-                    `CP_${idvar} (mg/l)`,
-                    `WSed_${idvar} (Ton)`,
-                    `WN_${idvar} (Kg)`,
-                    `WP_${idvar} (Kg)`,
-                    `WSed_ret_${idvar} (Ton)`,
-                    `WN_ret_${idvar} (Kg)`,
-                    `WP_ret_${idvar} (Kg)`
+                    `Q_${idvar}`,
+                    `CSed_${idvar}`,
+                    `CN_${idvar}`,
+                    `CP_${idvar}`,
+                    `WSed_${idvar}`,
+                    `WN_${idvar}`,
+                    `WP_${idvar}`,
+                    `WSed_ret_${idvar}`,
+                    `WN_ret_${idvar}`,
+                    `WP_ret_${idvar}`
                 );
                 selectedCell[0].setAttribute('varcost', JSON.stringify(varcost));
 
@@ -405,76 +474,234 @@ function onInit(editor) {
                         selectedCell[0].setAttribute("resultdb", result);
                     }
                 });
+
+                $.ajax({
+                    url: `/intake/loadFunctionBySymbol/${selectedCell[0].funcionreference}`,
+                    success: function(result) {
+                        selectedCell[0].setAttribute("funcost", result);
+                    }
+                });
             }
 
-            if (selectedCell[0].dbreference == 'EXTERNALINPUT') {
-                //Si se añade un elemento externo
-            }
 
         });
-
-        /**  
-         * Global variables for save data 
-         * @param {Array} resultdb   all data from DB
-         * @param {Object} selectedCell  cell selected from Diagram 
-         */
-
-        var resultdb = [];
-        var selectedCell;
 
         //Load data from figure to html
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
             selectedCell = evt.getProperty("cell");
-            if (selectedCell != undefined) {
-                if (selectedCell.getAttribute('resultdb') == undefined) return;
-                resultdb = JSON.parse(selectedCell.getAttribute('resultdb'));
-                if (resultdb.length == 0) return;
-                $('#titleDiagram').text(resultdb[0].fields.categorys);
-                // Add Value to Panel Information Right on HTML
-                $('#aguaDiagram').val(resultdb[0].fields.predefined_transp_water_perc);
-                $('#sedimentosDiagram').val(resultdb[0].fields.predefined_sediment_perc);
-                $('#nitrogenoDiagram').val(resultdb[0].fields.predefined_nitrogen_perc);
-                $('#fosforoDiagram').val(resultdb[0].fields.predefined_phosphorus_perc);
-                // Add Validator 
-                $('#aguaDiagram').attr('min', resultdb[0].fields.minimal_transp_water_perc);
-                $('#aguaDiagram').attr('max', resultdb[0].fields.maximal_transp_water_perc);
-                $('#sedimentosDiagram').attr('min', resultdb[0].fields.minimal_sediment_perc);
-                $('#sedimentosDiagram').attr('max', resultdb[0].fields.maximal_sediment_perc);
-                $('#nitrogenoDiagram').attr('min', resultdb[0].fields.minimal_nitrogen_perc);
-                $('#nitrogenoDiagram').attr('max', resultdb[0].fields.maximal_nitrogen_perc);
-                $('#fosforoDiagram').attr('min', resultdb[0].fields.minimal_phosphorus_perc);
-                $('#fosforoDiagram').attr('max', resultdb[0].fields.maximal_phosphorus_perc);
+            // Clear Inputs
+            if (selectedCell != undefined) clearDataHtml(selectedCell, evt);
+            //console.log(selectedCell)
+            if (selectedCell != undefined) { addData(selectedCell); } else { clearDataHtml(selectedCell, evt); }
+        });
 
-                funcost('((11126.6*text(Q)) + 30939.7)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))');
+        //Button for valide graph
+        $('#saveGraph').click(function() {
+            var enc = new mxCodec();
+            var node = enc.encode(editor.graph.getModel());
+            var textxml = mxUtils.getPrettyXml(node)
+            graphData = [];
+            validations(node);
+            node.querySelectorAll('Symbol').forEach(function(node) {
+                graphData.push({
+                    'id': node.id,
+                    "name": node.getAttribute('name'),
+                    'resultdb': node.getAttribute('resultdb'),
+                    'varcost': node.getAttribute('varcost'),
+                    'funcost': node.getAttribute('funcost'),
+                    'external': node.getAttribute('externalData'),
+                    'externaldata': []
+                })
+            });
+
+            node.querySelectorAll('mxCell').forEach(function(node) {
+                if (node.id != "") {
+                    let value = Object.values(JSON.parse(node.getAttribute('value')));
+                    graphData.push({
+                        'id': node.id,
+                        'source': node.getAttribute('source'),
+                        'target': node.getAttribute('target'),
+                        'resultdb': JSON.stringify(value[3]),
+                        'funcost': JSON.stringify(value[5]),
+                        'name': JSON.stringify(value[4]),
+                        'varcost': JSON.stringify(value[1])
+                    })
+                }
+            });
+            $('#xmlGraph').val(textxml);
+            $('#graphElements').val(JSON.stringify(graphData));
+        });
+
+        //Set var into calculator
+        $(document).on('click', '.list-group-item', function() {
+            addInfo(mathField.write(`\\mathit{${$(this).attr('value')}}`));
+        });
+
+        //Edit funcion cost 
+        $(document).on('click', 'span[name=glyphicon-edit]', function() {
+            mathField.clearSelection()
+            $('#exampleModal').modal('show');
+            value = funcostdb[$(this).attr('idvalue')].fields.function_value
+            mathField.latex(value);
+            mathField.focus();
+        });
+
+        //Delete funcion cost 
+        $(document).on('click', 'span[name=glyphicon-trash]', function() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var id = $(this).attr('idvalue');
+                    $(`#funcostgenerate div[idvalue='fun_${id}']`).remove();
+
+                    if (typeof(selectedCell.value) == "string" && selectedCell.value.length > 0) {
+                        var obj = JSON.parse(selectedCell.value);
+                        let dbfields = JSON.parse(obj.funcost);
+                        dbfields.splice(id, 1);
+                        obj.funcost = JSON.stringify(dbfields);
+                        selectedCell.setValue(JSON.stringify(obj));
+                    } else {
+                        funcostdb.splice(id, 1);
+                        selectedCell.setAttribute('funcost', JSON.stringify(funcostdb));
+                    }
+
+                    Swal.fire(
+                        'Deleted!',
+                        'Your funcion has been deleted.',
+                        'success'
+                    )
+                }
+            })
+        });
+
+        $('#ModalAddCostBtn').click(function() {
+            $('#VarCostListGroup div').remove();
+            for (const index of graphData) {
+                var costlabel = "";
+                for (const iterator of JSON.parse(index.varcost)) {
+                    costlabel += `<a value="${iterator}" class="list-group-item list-group-item-action" style="padding-top: 4px;padding-bottom: 4px;">${iterator}</a>`
+                }
+                $('#VarCostListGroup').append(`
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#VarCostListGroup" href="#VarCostListGroup_${index.id}">${index.id} - ${index.name}</a>
+                        </h4>
+                    </div>
+                    <div id="VarCostListGroup_${index.id}" class="panel-collapse collapse">
+                        ${costlabel}
+                    </div>
+                </div>
+                `);
             }
+        });
 
-
+        //KeyBoard calculator funcion cost
+        $('button[name=mathKeyBoard]').click(function() {
+            addInfo($(this).attr('value'));
         });
 
         //Add value entered in sediments in the field resultdb
         $('#sedimentosDiagram').keyup(function() {
-            resultdb[0].fields.predefined_sediment_perc = $('#sedimentosDiagram').val();
-            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+            if (typeof(selectedCell.value) == "string" && selectedCell.value.length > 0) {
+                var obj = JSON.parse(selectedCell.value);
+                let dbfields = JSON.parse(obj.resultdb);
+                dbfields[0].fields.predefined_sediment_perc = $('#sedimentosDiagram').val();
+                values = JSON.stringify(dbfields);
+                obj.resultdb = values;
+                selectedCell.setValue(JSON.stringify(obj));
+            } else {
+                resultdb[0].fields.predefined_sediment_perc = $('#sedimentosDiagram').val();
+                selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+            }
+
         });
 
         //Add value entered in nitrogen in the field resultdb
         $('#nitrogenoDiagram').keyup(function() {
-            resultdb[0].fields.predefined_nitrogen_perc = $('#nitrogenoDiagram').val();
-            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+            if (typeof(selectedCell.value) == "string" && selectedCell.value.length > 0) {
+                var obj = JSON.parse(selectedCell.value);
+                let dbfields = JSON.parse(obj.resultdb);
+                dbfields[0].fields.predefined_nitrogen_perc = $('#nitrogenoDiagram').val();
+                values = JSON.stringify(dbfields);
+                obj.resultdb = values;
+                selectedCell.setValue(JSON.stringify(obj));
+            } else {
+                resultdb[0].fields.predefined_nitrogen_perc = $('#nitrogenoDiagram').val();
+                selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+            }
         });
 
         //Add value entered in phosphorus in the field resultdb
         $('#fosforoDiagram').keyup(function() {
-            resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
-            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+            if (typeof(selectedCell.value) == "string" && selectedCell.value.length > 0) {
+                var obj = JSON.parse(selectedCell.value);
+                let dbfields = JSON.parse(obj.resultdb);
+                dbfields[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
+                values = JSON.stringify(dbfields);
+                obj.resultdb = values;
+                selectedCell.setValue(JSON.stringify(obj));
+            } else {
+                resultdb[0].fields.predefined_phosphorus_perc = $('#fosforoDiagram').val();
+                selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+            }
         });
 
         //Add value entered in aguaDiagram in the field resultdb
         $('#aguaDiagram').keyup(function() {
-            resultdb[0].fields.predefined_transp_water_perc = $('#aguaDiagram').val();
-            selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+            if (typeof(selectedCell.value) == "string" && selectedCell.value.length > 0) {
+                var obj = JSON.parse(selectedCell.value);
+                let dbfields = JSON.parse(obj.resultdb);
+                dbfields[0].fields.predefined_transp_water_perc = $('#aguaDiagram').val();
+                values = JSON.stringify(dbfields);
+                obj.resultdb = values;
+                selectedCell.setValue(JSON.stringify(obj));
+            } else {
+                resultdb[0].fields.predefined_transp_water_perc = $('#aguaDiagram').val();
+                selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
+            }
+            validationTransportedWater(editor, selectedCell);
         });
 
+
+
+        jQuery.fn.ForceNumericOnly = function() {
+            return this.each(function() {
+                $(this).keydown(function(e) {
+                    var key = e.charCode || e.keyCode || 0;
+                    return (
+                        key == 8 ||
+                        key == 9 ||
+                        key == 13 ||
+                        key == 46 ||
+                        key == 110 ||
+                        key == 190 ||
+                        (key >= 35 && key <= 40) ||
+                        (key >= 48 && key <= 57) ||
+                        (key >= 96 && key <= 105));
+                });
+            });
+        };
+        //Force only numbers into calculator funcion cost
+        $("#math-field").ForceNumericOnly();
+        //Append values and var into funcion cost
+        function addInfo(value) {
+            mathField.cmd(value);
+            mathField.focus();
+        }
+
+
+
+
     });
+
+
 
 }

@@ -4,7 +4,7 @@ async function validateCoordinateWithApi(e) {
   let center = map.getCenter();
   let url = serverApi + snapPoint + "?x=" + center.lng + "&y=" + center.lat;
   let response = await fetch(url);
-  mapLoader = L.control.loader().addTo(map);
+ 
   let result = await response.json();
   if (result.estado) {
     let x = result.resultado.x_snap;
@@ -12,7 +12,7 @@ async function validateCoordinateWithApi(e) {
 
     if (!snapMarker) {
       snapMarker = L.marker(null, {});
-      snapMarkerMapDelimit= L.marker(null, {});
+      snapMarkerMapDelimit = L.marker(null, {});
     }
     var ll = new L.LatLng(y, x);
     snapMarker.setLatLng(ll);
@@ -33,8 +33,9 @@ async function validateCoordinateWithApi(e) {
         catchmentPolyDelimit = L.geoJSON().addTo(mapDelimit);
       }
 
-      catchmentPoly.addData(resultCatchment.resultado.features);
-      catchmentPolyDelimit.addData(resultCatchment.resultado.features);
+      catchmentPoly.addData(resultCatchment.resultado.geometry.features);
+      catchmentPolyDelimit.addData(resultCatchment.resultado.geometry.features);
+      basinId=resultCatchment.resultado.basin;
       map.fitBounds(catchmentPoly.getBounds());
       mapDelimit.fitBounds(catchmentPoly.getBounds());
       mapLoader.hide();

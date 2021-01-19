@@ -1,0 +1,54 @@
+{% extends "geonode_base.html" %} {% load i18n %} {% block title %}{% trans "Waterproof NBS CA" %}{% endblock %} {% block main %}
+<h1>{% trans "Waterproof NBS CA" %}</h1>
+
+{% endblock %} {% block body_outer %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<div class="row">
+  
+</div>
+<div class="page-header">
+    <h1>{% trans "Permission denied" %}</h1>
+    
+</div>
+<div class="table-responsive">
+    
+</div>
+
+{% block body %}{% endblock body %} {% block sidebar %}{% endblock sidebar %} {% endblock body_outer %} {% block extra_script %}
+<script>
+    var sbnId='{{idx}}';
+     Swal.fire({
+  title: 'Are you sure?',
+  text: "You won't be able to revert this!",
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  confirmButtonText: 'Yes, delete it!'
+}).then((result) => {
+  if (result.isConfirmed) {
+    $.ajax({
+        type: 'POST',
+        url: '/waterproof_nbs_ca/delete/' + sbnId,
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function () {
+            Swal.fire(
+                'Deleted!',
+                'Your file has been deleted.',
+                'success'
+                )
+            setTimeout(function () { location.href = "/waterproof_nbs_ca/"; }, 1000);
+        },
+        error: function (xhr, errmsg, err) {
+            console.log(xhr.status + ":" + xhr.responseText)
+        }
+    });
+  }
+  else{
+    setTimeout(function () { location.href = "/waterproof_nbs_ca/"; }, 10);
+  }
+})
+</script>
+{% endblock %}

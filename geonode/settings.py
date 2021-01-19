@@ -19,6 +19,8 @@
 #########################################################################
 
 # Django settings for the GeoNode project.
+from kombu.serialization import register
+from . import serializer
 import os
 import re
 import ast
@@ -108,7 +110,7 @@ if not SITEURL.endswith('/'):
 #      )
 # )
 
-DATABASE_URL = 'postgresql://geonode:geonode_data@dev.skaphe.com:5432/geonode'
+#DATABASE_URL = 'postgresql://geonode:geonode_data@dev.skaphe.com:5432/geonode'
 
 if DATABASE_URL.startswith("spatialite"):
     try:
@@ -221,6 +223,12 @@ _DEFAULT_LANGUAGES = """(
     ('ko', '한국어'),
 )"""
 
+_DEFAULT_LANGUAGES = """(
+    ('en', 'English'),
+    ('es', 'Español'),    
+)"""
+
+
 LANGUAGES = ast.literal_eval(os.getenv('LANGUAGES', _DEFAULT_LANGUAGES))
 
 EXTRA_LANG_INFO = {
@@ -270,7 +278,14 @@ _DEFAULT_LOCALE_PATHS = (
     os.path.join(PROJECT_ROOT, "locale"),
 )
 
-LOCALE_PATHS = os.getenv('LOCALE_PATHS', _DEFAULT_LOCALE_PATHS)
+#LOCALE_PATHS = os.getenv('LOCALE_PATHS', _DEFAULT_LOCALE_PATHS)
+
+LOCALE_PATHS = [
+    os.path.join(PROJECT_ROOT, "locale"),
+    os.path.join(PROJECT_ROOT, "waterproof_intake/locale"),
+    os.path.join(PROJECT_ROOT, "waterproof_nbs_ca/locale"),
+    os.path.join(PROJECT_ROOT, "waterproof_study_cases/locale")
+]
 
 # Location of url mappings
 ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'geonode.urls')
@@ -451,7 +466,7 @@ GEONODE_INTERNAL_APPS = (
     'geonode.messaging',
     'geonode.monitoring',
     'geonode.frequently',
-    'geonode.study_cases',
+    'geonode.waterproof_study_cases',
     'geonode.waterproof_nbs_ca',
     'geonode.waterproof_intake',
 )
@@ -528,13 +543,16 @@ INSTALLED_APPS = (
 
     # GeoNode
     'geonode',
-    
+
     # FAQ
     'ckeditor',
 
     # Documentation
     'django_extensions',
-    
+
+    # translation flags
+    'django_translation_flags',
+
 )
 
 INSTALLED_APPS += ('markdownify',)
@@ -580,7 +598,7 @@ DYNAMIC_REST = {
     # ENABLE_SERIALIZER_OPTIMIZATIONS: enable/disable representation speedups
     'ENABLE_SERIALIZER_OPTIMIZATIONS': True,
 
-    # DEFER_MANY_RELATIONS: automatically defer many-relations, unless 
+    # DEFER_MANY_RELATIONS: automatically defer many-relations, unless
     # `deferred=False` is explicitly set on the field.
     'DEFER_MANY_RELATIONS': False,
 
@@ -784,7 +802,7 @@ if SESSION_EXPIRED_CONTROL_ENABLED:
     # This middleware checks for ACCESS_TOKEN validity and if expired forces
     # user logout
     MIDDLEWARE += \
-            ('geonode.security.middleware.SessionControlMiddleware',)
+        ('geonode.security.middleware.SessionControlMiddleware',)
 
 SESSION_COOKIE_SECURE = ast.literal_eval(os.environ.get('SESSION_COOKIE_SECURE', 'False'))
 CSRF_COOKIE_SECURE = ast.literal_eval(os.environ.get('CSRF_COOKIE_SECURE', 'False'))
@@ -998,7 +1016,8 @@ OGC_SERVER_DEFAULT_PASSWORD = os.getenv(
     'GEOSERVER_ADMIN_PASSWORD', 'geoserver'
 )
 
-GEOFENCE_SECURITY_ENABLED = False if TEST and not INTEGRATION else ast.literal_eval(os.getenv('GEOFENCE_SECURITY_ENABLED', 'True'))
+GEOFENCE_SECURITY_ENABLED = False if TEST and not INTEGRATION else ast.literal_eval(
+    os.getenv('GEOFENCE_SECURITY_ENABLED', 'True'))
 
 # OGC (WMS/WFS/WCS) Server Settings
 # OGC (WMS/WFS/WCS) Server Settings
@@ -1229,8 +1248,8 @@ LICENSES = {
 
 # graph models
 GRAPH_MODELS = {
-  'all_applications': True,
-  'group_models': True,
+    'all_applications': True,
+    'group_models': True,
 }
 
 SRID = {
@@ -1257,7 +1276,7 @@ except ValueError:
 #
 # AUTH_IP_WHITELIST = ['192.168.1.158', '192.168.1.159']
 AUTH_IP_WHITELIST = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('AUTH_IP_WHITELIST') is None \
-        else re.split(r' *[,|:|;] *', os.getenv('AUTH_IP_WHITELIST'))
+    else re.split(r' *[,|:|;] *', os.getenv('AUTH_IP_WHITELIST'))
 
 # A tuple of hosts the proxy can send requests to.
 try:
@@ -1346,10 +1365,10 @@ try:
 except ValueError:
     # fallback to regular list of values separated with misc chars
     AVATAR_PROVIDERS = (
-    'avatar.providers.PrimaryAvatarProvider',
-    'avatar.providers.GravatarAvatarProvider',
-    'avatar.providers.DefaultAvatarProvider'
-   ) if os.getenv('AVATAR_PROVIDERS') is None \
+        'avatar.providers.PrimaryAvatarProvider',
+        'avatar.providers.GravatarAvatarProvider',
+        'avatar.providers.DefaultAvatarProvider'
+    ) if os.getenv('AVATAR_PROVIDERS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('AVATAR_PROVIDERS'))
 
 # Number of results per page listed in the GeoNode search pages
@@ -1531,15 +1550,15 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
         if PYCSW:
             pycsw_config = PYCSW["CONFIGURATION"]
             if pycsw_config:
-                    pycsw_catalogue = {
-                        ("%s" % pycsw_config['metadata:main']['identification_title']): {
-                            "url": CATALOGUE['default']['URL'],
-                            "type": "csw",
-                            "title": pycsw_config['metadata:main']['identification_title'],
-                            "autoload": True
-                         }
+                pycsw_catalogue = {
+                    ("%s" % pycsw_config['metadata:main']['identification_title']): {
+                        "url": CATALOGUE['default']['URL'],
+                        "type": "csw",
+                        "title": pycsw_config['metadata:main']['identification_title'],
+                        "autoload": True
                     }
-                    return pycsw_catalogue
+                }
+                return pycsw_catalogue
         return None
 
     GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
@@ -1550,7 +1569,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "type": "wms",
             "title": "Demo WMS Service",
             "autoload": False
-         },
+        },
         "Demo WMTS Service": {
             "url": "https://demo.geo-solutions.it/geoserver/gwc/service/wmts",
             "type": "wmts",
@@ -1562,7 +1581,8 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     MAPSTORE_CATALOGUE_SELECTED_SERVICE = "Demo WMS Service"
 
     if GEONODE_CATALOGUE_SERVICE:
-        MAPSTORE_CATALOGUE_SERVICES[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]] = GEONODE_CATALOGUE_SERVICE[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]]
+        MAPSTORE_CATALOGUE_SERVICES[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]
+                                    ] = GEONODE_CATALOGUE_SERVICE[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]]
         MAPSTORE_CATALOGUE_SELECTED_SERVICE = list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]
 
     DEFAULT_MS2_BACKGROUNDS = [
@@ -1591,7 +1611,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "group": "background",
             "thumbURL": "%sstatic/mapstorestyle/img/s2cloudless-s2cloudless.png" % SITEURL,
             "visibility": False
-       }, {
+        }, {
             "source": "ol",
             "group": "background",
             "id": "none",
@@ -1600,8 +1620,8 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "type": "empty",
             "visibility": False,
             "args": ["Empty Background", {"visibility": False}]
-       }
-       # Custom XYZ Tile Provider
+        }
+        # Custom XYZ Tile Provider
         # {
         #     "type": "tileprovider",
         #     "title": "Title",
@@ -1628,7 +1648,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "group": "background",
             "visibility": True
         }
-        DEFAULT_MS2_BACKGROUNDS = [BASEMAP,] + DEFAULT_MS2_BACKGROUNDS
+        DEFAULT_MS2_BACKGROUNDS = [BASEMAP, ] + DEFAULT_MS2_BACKGROUNDS
 
     if BING_API_KEY:
         BASEMAP = {
@@ -1640,7 +1660,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "apiKey": "{{apiKey}}",
             "visibility": False
         }
-        DEFAULT_MS2_BACKGROUNDS = [BASEMAP,] + DEFAULT_MS2_BACKGROUNDS
+        DEFAULT_MS2_BACKGROUNDS = [BASEMAP, ] + DEFAULT_MS2_BACKGROUNDS
 
     MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
 
@@ -1740,6 +1760,8 @@ BROKER_TRANSPORT_OPTIONS = {
     'visibility_timeout': 86400
 }
 
+CELERY_LOADER = os.environ.get('CELERY_LOADER', 'geonode.loaders.GeoNodeCeleryTaksLoader')
+
 ASYNC_SIGNALS = ast.literal_eval(os.environ.get('ASYNC_SIGNALS', 'False'))
 RABBITMQ_SIGNALS_BROKER_URL = 'amqp://localhost:5672'
 # REDIS_SIGNALS_BROKER_URL = 'redis://localhost:6379/0'
@@ -1770,8 +1792,6 @@ CELERY_TASK_EAGER_PROPAGATES = ast.literal_eval(os.environ.get('CELERY_TASK_EAGE
 CELERY_TASK_IGNORE_RESULT = ast.literal_eval(os.environ.get('CELERY_TASK_IGNORE_RESULT', 'True'))
 
 
-from . import serializer
-from kombu.serialization import register
 register('geonode_json', serializer.dumps, serializer.loads, content_type='application/json', content_encoding='utf-8')
 
 # I use these to debug kombu crashes; we get a more informative message.
@@ -1785,23 +1805,25 @@ CELERY_ACCEPT_CONTENT = [CELERY_RESULT_SERIALIZER, ]
 # CELERY_TASK_DEFAULT_EXCHANGE_TYPE = "direct"
 # CELERY_TASK_DEFAULT_ROUTING_KEY = "default"
 CELERY_TASK_CREATE_MISSING_QUEUES = ast.literal_eval(os.environ.get('CELERY_TASK_CREATE_MISSING_QUEUES', 'True'))
-GEONODE_EXCHANGE = Exchange("default", type="direct", durable=True)
-GEOSERVER_EXCHANGE = Exchange("geonode", type="topic", durable=False)
+GEONODE_EXCHANGE = Exchange("default", type="topic", durable=True)
 CELERY_TASK_QUEUES = (
     Queue('default', GEONODE_EXCHANGE, routing_key='default', priority=0),
     Queue('geonode', GEONODE_EXCHANGE, routing_key='geonode', priority=0),
     Queue('update', GEONODE_EXCHANGE, routing_key='update', priority=0),
+    Queue('upload', GEONODE_EXCHANGE, routing_key='upload', priority=0),
     Queue('cleanup', GEONODE_EXCHANGE, routing_key='cleanup', priority=0),
     Queue('email', GEONODE_EXCHANGE, routing_key='email', priority=0),
+    Queue('security', GEONODE_EXCHANGE, routing_key='security', priority=0),
 )
 
 if USE_GEOSERVER:
+    GEOSERVER_EXCHANGE = Exchange("geonode", type="topic", durable=True)
     CELERY_TASK_QUEUES += (
         Queue("broadcast", GEOSERVER_EXCHANGE, routing_key="#"),
-        Queue("email.events", GEOSERVER_EXCHANGE, routing_key="email"),
+        Queue("email.events", GEOSERVER_EXCHANGE, routing_key="geoserver.email"),
         Queue("all.geoserver", GEOSERVER_EXCHANGE, routing_key="geoserver.#"),
         Queue("geoserver.catalog", GEOSERVER_EXCHANGE, routing_key="geoserver.catalog"),
-        Queue("geoserver.data", GEOSERVER_EXCHANGE, routing_key="geoserver.catalog"),
+        Queue("geoserver.data", GEOSERVER_EXCHANGE, routing_key="geoserver.data"),
         Queue("geoserver.events", GEOSERVER_EXCHANGE, routing_key="geonode.geoserver"),
         Queue("notifications.events", GEOSERVER_EXCHANGE, routing_key="notifications"),
         Queue("geonode.layer.viewer", GEOSERVER_EXCHANGE, routing_key="geonode.viewer"),
@@ -2001,7 +2023,7 @@ ACCOUNT_MAX_EMAIL_ADDRESSES = int(os.getenv('ACCOUNT_MAX_EMAIL_ADDRESSES', '2'))
 
 SOCIALACCOUNT_ADAPTER = 'geonode.people.adapters.SocialAccountAdapter'
 SOCIALACCOUNT_AUTO_SIGNUP = ast.literal_eval(os.environ.get('SOCIALACCOUNT_AUTO_SIGNUP', 'True'))
-#This will hide or show local registration form in allauth view. True will show form
+# This will hide or show local registration form in allauth view. True will show form
 SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP = strtobool(os.environ.get('SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP', 'True'))
 
 # Uncomment this to enable Linkedin and Facebook login
@@ -2137,19 +2159,19 @@ USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'F
 USER_ANALYTICS_GZIP = ast.literal_eval(os.getenv('USER_ANALYTICS_GZIP', 'False'))
 
 GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat'))
-#This controls if tastypie search on resourches is performed only with titles
+# This controls if tastypie search on resourches is performed only with titles
 SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'True'))
 # -- END Settings for MONITORING plugin
 
 FREQUENTLY_READY_FOR_V1 = True
 FREQUENTLY_ALLOW_ANONYMOUS = True
 
-STUDY_CASES_ALLOW_ANONYMOUS = True
+WATERPROOF_STUDY_CASES_ALLOW_ANONYMOUS = True
 
 WATERPROOF_NBS_CA_ALLOW_ANONYMOUS = True
 
-WATERPROOF_API_SERVER = "http://dev.skaphe.com:8000/"
+WATERPROOF_API_SERVER = "http://apps.skaphe.com/DotNetSINCHI3/proxy.ashx?http://dev.skaphe.com:8000/"
 
-#WATERPROOF_API_METHODS = {
+# WATERPROOF_API_METHODS = {
 #
-#}
+# }
