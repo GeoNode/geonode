@@ -581,53 +581,61 @@ def map_view_js(request, mapid):
         content_type="application/javascript")
 
 
-def map_json(request, mapid):
-    if request.method == 'GET':
-        try:
-            map_obj = _resolve_map(
-                request,
-                mapid,
-                'base.view_resourcebase',
-                _PERMISSION_MSG_VIEW)
-        except PermissionDenied:
-            return HttpResponse(_("Not allowed"), status=403)
-        except Exception:
-            raise Http404(_("Not found"))
-        if not map_obj:
-            raise Http404(_("Not found"))
+def map_json_handle_get(request, mapid):
+    try:
+        map_obj = _resolve_map(
+            request,
+            mapid,
+            'base.view_resourcebase',
+            _PERMISSION_MSG_VIEW)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not map_obj:
+        raise Http404(_("Not found"))
 
+    return HttpResponse(
+        json.dumps(
+            map_obj.viewer_json(request)))
+
+
+def map_json_handle_put(request, mapid):
+    if not request.user.is_authenticated:
+        return HttpResponse(
+            _PERMISSION_MSG_LOGIN,
+            status=401,
+            content_type="text/plain"
+        )
+
+    map_obj = Map.objects.get(id=mapid)
+    if not request.user.has_perm(
+        'change_resourcebase',
+            map_obj.get_self_resource()):
+        return HttpResponse(
+            _PERMISSION_MSG_SAVE,
+            status=401,
+            content_type="text/plain"
+        )
+    try:
+        map_obj.update_from_viewer(request.body, context={'request': request, 'mapId': mapid, 'map': map_obj})
+        register_event(request, EventType.EVENT_CHANGE, map_obj)
         return HttpResponse(
             json.dumps(
                 map_obj.viewer_json(request)))
-    elif request.method == 'PUT':
-        if not request.user.is_authenticated:
-            return HttpResponse(
-                _PERMISSION_MSG_LOGIN,
-                status=401,
-                content_type="text/plain"
-            )
+    except ValueError as e:
+        return HttpResponse(
+            "The server could not understand the request." + str(e),
+            content_type="text/plain",
+            status=400
+        )
 
-        map_obj = Map.objects.get(id=mapid)
-        if not request.user.has_perm(
-            'change_resourcebase',
-                map_obj.get_self_resource()):
-            return HttpResponse(
-                _PERMISSION_MSG_SAVE,
-                status=401,
-                content_type="text/plain"
-            )
-        try:
-            map_obj.update_from_viewer(request.body, context={'request': request, 'mapId': mapid, 'map': map_obj})
-            register_event(request, EventType.EVENT_CHANGE, map_obj)
-            return HttpResponse(
-                json.dumps(
-                    map_obj.viewer_json(request)))
-        except ValueError as e:
-            return HttpResponse(
-                "The server could not understand the request." + str(e),
-                content_type="text/plain",
-                status=400
-            )
+
+def map_json(request, mapid):
+    if request.method == 'GET':
+        return map_json_handle_get(request, mapid)
+    elif request.method == 'PUT':
+        return map_json_handle_put(request, mapid)
 
 
 @xframe_options_sameorigin
