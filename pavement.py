@@ -95,18 +95,18 @@ def grab(src, dest, name):
     print(f" src, dest, name --> {src} {dest} {name}")
 
     if not os.path.exists(dest):
-        print("Downloading {}".format(name))
+        print(f"Downloading {name}")
     elif not zipfile.is_zipfile(dest):
-        print("Downloading {} (corrupt file)".format(name))
+        print(f"Downloading {name} (corrupt file)")
     else:
         return
 
     if src.startswith("file://"):
         src2 = src.replace("file://", '')
         if not os.path.exists(src2):
-            print("Source location ({}) does not exist".format(src2))
+            print(f"Source location ({src2}) does not exist")
         else:
-            print("Copying local file from {}".format(src2))
+            print(f"Copying local file from {src2}")
             shutil.copyfile(src2, dest)
     else:
         # urlretrieve(str(src), str(dest))
@@ -114,7 +114,7 @@ def grab(src, dest, name):
         r = requests.get(src, stream=True, timeout=10, verify=False)
         # Total size in bytes.
         total_size = int(r.headers.get('content-length', 0))
-        print("Requesting {}".format(src))
+        print(f"Requesting {src}")
         block_size = 1024
         wrote = 0
         with open("output.bin", 'wb') as f:
@@ -125,7 +125,7 @@ def grab(src, dest, name):
                     unit_scale=False):
                 wrote += len(data)
                 f.write(data)
-        print(" total_size [{}] / wrote [{}] ".format(total_size, wrote))
+        print(f" total_size [{total_size}] / wrote [{wrote}] ")
         if total_size != 0 and wrote != total_size:
             print("ERROR, something went wrong")
         else:
@@ -390,7 +390,7 @@ def upgradedb(options):
     elif version is None:
         print("Please specify your GeoNode version")
     else:
-        print("Upgrades from version {} are not yet supported.".format(version))
+        print(f"Upgrades from version {version} are not yet supported.")
 
 
 @task
@@ -547,7 +547,7 @@ def stop_geoserver(options):
             shell=True,
             stdout=subprocess.PIPE)
         for pid in map(int, proc.stdout):
-            info('Stopping geoserver (process number {})'.format(pid))
+            info(f'Stopping geoserver (process number {pid})')
             os.kill(pid, signal.SIGKILL)
 
             # Check if the process that we killed is alive.
@@ -612,18 +612,11 @@ def start_django(options):
     sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
 
     if 'django_celery_beat' not in INSTALLED_APPS:
-        sh("{} celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E \
+        sh(f"{settings} celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E \
 --statedb=worker.state -s celerybeat-schedule --loglevel=DEBUG \
---concurrency=10 -n worker1@%h -f celery.log {}".format(  # noqa
-            settings,
-            foreground
-        ))
+--concurrency=10 -n worker1@%h -f celery.log {foreground}")
     else:
-        sh("{} celery -A geonode.celery_app:app worker -l DEBUG {} {}".format(
-            settings,
-            "-s django_celery_beat.schedulers:DatabaseScheduler",
-            foreground
-        ))
+        sh(f"{settings} celery -A geonode.celery_app:app worker -l DEBUG -s django_celery_beat.schedulers:DatabaseScheduler {foreground}")
 
     if ASYNC_SIGNALS:
         sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
@@ -900,16 +893,16 @@ def test_integration(options):
             if local:
                 sh("cp geonode/upload/tests/test_settings.py geonode/")
                 settings = 'geonode.test_settings'
-                sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
-                   "makemigrations --noinput".format(settings))
-                sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
-                   "migrate --noinput".format(settings))
-                sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
-                   "loaddata sample_admin.json".format(settings))
-                sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
-                   "loaddata geonode/base/fixtures/default_oauth_apps.json".format(settings))
-                sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
-                   "loaddata geonode/base/fixtures/initial_data.json".format(settings))
+                sh(f"DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py "
+                   "makemigrations --noinput")
+                sh(f"DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py "
+                   "migrate --noinput")
+                sh(f"DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py "
+                   "loaddata sample_admin.json")
+                sh(f"DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py "
+                   "loaddata geonode/base/fixtures/default_oauth_apps.json")
+                sh(f"DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py "
+                   "loaddata geonode/base/fixtures/initial_data.json")
                 call_task('start_geoserver')
                 bind = options.get('bind', '0.0.0.0:8000')
                 foreground = '' if options.get('foreground', False) else '&'
@@ -1082,7 +1075,7 @@ def deb(options):
         deb_changelog = path('debian') / 'changelog'
         for idx, line in enumerate(fileinput.input([deb_changelog], inplace=True)):
             if idx == 0:
-                print("geonode ({}) {}; urgency=high".format(simple_version, distribution), end='')
+                print(f"geonode ({simple_version}) {distribution}; urgency=high", end='')
             else:
                 print(line.replace("urgency=medium", "urgency=high"), end='')
 
