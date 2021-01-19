@@ -190,6 +190,19 @@ def create(request):
                     print("Connection")
                     print(elementsCreated[0]['xmlId'])
                     print(element['source'])
+                    parameter = json.loads(element['resultdb'])
+                    if (len(parameter) > 0):
+                        element_system = ElementSystem.objects.create(
+                            graphId=element['id'],
+                            name=element['name'],
+                            normalized_category=parameter[0]['fields']['normalized_category'],
+                            transported_water=parameter[0]['fields']['maximal_transp_water_perc'],
+                            sediment=parameter[0]['fields']['maximal_sediment_perc'],
+                            nitrogen=parameter[0]['fields']['maximal_nitrogen_perc'],
+                            phosphorus=parameter[0]['fields']['maximal_phosphorus_perc'],
+                            is_external=False,
+                            intake=intakeCreated
+                        )
                     for e in elementsCreated:
                         connection = {}
                         elementConnection = []
@@ -234,6 +247,118 @@ def listIntake(request):
                 )
 
             if (request.user.professional_role == 'ANALYS'):
+                intake = Intake.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                city = City.objects.all()
+                return render(
+                    request,
+                    'waterproof_intake/intake_list.html',
+                    {
+                        'intakeList': intake,
+                        'city': city,
+                        'userCountry': userCountry,
+                        'region': region
+                    }
+                )
+        
+            if (request.user.professional_role == 'COPART'):
+                intake = Intake.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                city = City.objects.all()
+                return render(
+                    request,
+                    'waterproof_intake/intake_list.html',
+                    {
+                        'intakeList': intake,
+                        'city': city,
+                        'userCountry': userCountry,
+                        'region': region
+                    }
+                )
+        
+            if (request.user.professional_role == 'ACDMC'):
+                intake = Intake.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                city = City.objects.all()
+                return render(
+                    request,
+                    'waterproof_intake/intake_list.html',
+                    {
+                        'intakeList': intake,
+                        'city': city,
+                        'userCountry': userCountry,
+                        'region': region
+                    }
+                )
+        
+            if (request.user.professional_role == 'SCADM'):
+                intake = Intake.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                city = City.objects.all()
+                return render(
+                    request,
+                    'waterproof_intake/intake_list.html',
+                    {
+                        'intakeList': intake,
+                        'city': city,
+                        'userCountry': userCountry,
+                        'region': region
+                    }
+                )
+        
+            if (request.user.professional_role == 'MCOMC'):
+                intake = Intake.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                city = City.objects.all()
+                return render(
+                    request,
+                    'waterproof_intake/intake_list.html',
+                    {
+                        'intakeList': intake,
+                        'city': city,
+                        'userCountry': userCountry,
+                        'region': region
+                    }
+                )
+        
+            if (request.user.professional_role == 'CITIZN'):
+                intake = Intake.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                city = City.objects.all()
+                return render(
+                    request,
+                    'waterproof_intake/intake_list.html',
+                    {
+                        'intakeList': intake,
+                        'city': city,
+                        'userCountry': userCountry,
+                        'region': region
+                    }
+                )
+        
+            if (request.user.professional_role == 'REPECS'):
+                intake = Intake.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                city = City.objects.all()
+                return render(
+                    request,
+                    'waterproof_intake/intake_list.html',
+                    {
+                        'intakeList': intake,
+                        'city': city,
+                        'userCountry': userCountry,
+                        'region': region
+                    }
+                )
+        
+            if (request.user.professional_role == 'OTHER'):
                 intake = Intake.objects.all()
                 userCountry = Countries.objects.get(code=request.user.country)
                 region = Region.objects.get(id=userCountry.region_id)
