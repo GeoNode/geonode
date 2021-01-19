@@ -261,6 +261,118 @@ def listIntake(request):
                         'region': region
                     }
                 )
+        
+            if (request.user.professional_role == 'COPART'):
+                intake = Intake.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                city = City.objects.all()
+                return render(
+                    request,
+                    'waterproof_intake/intake_list.html',
+                    {
+                        'intakeList': intake,
+                        'city': city,
+                        'userCountry': userCountry,
+                        'region': region
+                    }
+                )
+        
+            if (request.user.professional_role == 'ACDMC'):
+                intake = Intake.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                city = City.objects.all()
+                return render(
+                    request,
+                    'waterproof_intake/intake_list.html',
+                    {
+                        'intakeList': intake,
+                        'city': city,
+                        'userCountry': userCountry,
+                        'region': region
+                    }
+                )
+        
+            if (request.user.professional_role == 'SCADM'):
+                intake = Intake.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                city = City.objects.all()
+                return render(
+                    request,
+                    'waterproof_intake/intake_list.html',
+                    {
+                        'intakeList': intake,
+                        'city': city,
+                        'userCountry': userCountry,
+                        'region': region
+                    }
+                )
+        
+            if (request.user.professional_role == 'MCOMC'):
+                intake = Intake.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                city = City.objects.all()
+                return render(
+                    request,
+                    'waterproof_intake/intake_list.html',
+                    {
+                        'intakeList': intake,
+                        'city': city,
+                        'userCountry': userCountry,
+                        'region': region
+                    }
+                )
+        
+            if (request.user.professional_role == 'CITIZN'):
+                intake = Intake.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                city = City.objects.all()
+                return render(
+                    request,
+                    'waterproof_intake/intake_list.html',
+                    {
+                        'intakeList': intake,
+                        'city': city,
+                        'userCountry': userCountry,
+                        'region': region
+                    }
+                )
+        
+            if (request.user.professional_role == 'REPECS'):
+                intake = Intake.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                city = City.objects.all()
+                return render(
+                    request,
+                    'waterproof_intake/intake_list.html',
+                    {
+                        'intakeList': intake,
+                        'city': city,
+                        'userCountry': userCountry,
+                        'region': region
+                    }
+                )
+        
+            if (request.user.professional_role == 'OTHER'):
+                intake = Intake.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                city = City.objects.all()
+                return render(
+                    request,
+                    'waterproof_intake/intake_list.html',
+                    {
+                        'intakeList': intake,
+                        'city': city,
+                        'userCountry': userCountry,
+                        'region': region
+                    }
+                )
         else:
             intake = Intake.objects.all()
             userCountry = Countries.objects.get(code='COL')
