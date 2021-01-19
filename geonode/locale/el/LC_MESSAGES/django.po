@@ -722,7 +722,7 @@ msgstr "Δημιουργία Χάρτη"
 #: geonode/base/templates/base/_resourcebase_info_panel.html:37
 #, fuzzy
 #| msgid "Julian Date End"
-msgid "Pubblication Date"
+msgid "Publication Date"
 msgstr "Ιουλιανή Ημερομηνία Λήξης"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:39
