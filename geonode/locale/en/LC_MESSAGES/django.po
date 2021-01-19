@@ -662,8 +662,8 @@ msgid "Creation Date"
 msgstr "Creation Date"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:37
-msgid "Pubblication Date"
-msgstr "Pubblication Date"
+msgid "Publication Date"
+msgstr "Publication Date"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:39
 msgid "Revision Date"
