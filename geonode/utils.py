@@ -1412,15 +1412,13 @@ class HttpClient(object):
         self.password = 'admin'
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             ogc_server_settings = settings.OGC_SERVER['default']
-            self.timeout = ogc_server_settings['TIMEOUT'] if 'TIMEOUT' in ogc_server_settings else 60
-            self.retries = ogc_server_settings['MAX_RETRIES'] if 'MAX_RETRIES' in ogc_server_settings else 5
-            self.backoff_factor = ogc_server_settings['BACKOFF_FACTOR'] if \
-            'BACKOFF_FACTOR' in ogc_server_settings else 0.3
-            self.pool_maxsize = ogc_server_settings['POOL_MAXSIZE'] if 'POOL_MAXSIZE' in ogc_server_settings else 10
-            self.pool_connections = ogc_server_settings['POOL_CONNECTIONS'] if \
-            'POOL_CONNECTIONS' in ogc_server_settings else 10
-            self.username = ogc_server_settings['USER'] if 'USER' in ogc_server_settings else 'admin'
-            self.password = ogc_server_settings['PASSWORD'] if 'PASSWORD' in ogc_server_settings else 'geoserver'
+            self.timeout = ogc_server_settings.get('TIMEOUT', 60)
+            self.retries = ogc_server_settings.get('MAX_RETRIES', 5)
+            self.backoff_factor = ogc_server_settings.get('BACKOFF_FACTOR', 0.3)
+            self.pool_maxsize = ogc_server_settings.get('POOL_MAXSIZE', 10)
+            self.pool_connections = ogc_server_settings.get('POOL_CONNECTIONS', 10)
+            self.username = ogc_server_settings.get('USER', 'admin')
+            self.password = ogc_server_settings.get('PASSWORD', 'geoserver')
 
     def request(self, url, method='GET', data=None, headers={}, stream=False, timeout=None, retries=None, user=None):
         if (user or self.username != 'admin') and \
