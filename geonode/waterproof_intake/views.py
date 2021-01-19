@@ -11,7 +11,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext as _
 from .models import ValuesTime, City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction, ElementSystem, ValuesTime, CostFunctionsProcess, Polygon, Basins, ElementConnections
-from geonode.waterproof_nbs_ca.models import Countries, Region
+from geonode.waterproof_nbs_ca.models import Countries, Region, Currency
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from django.core import serializers
 from django.http import JsonResponse
@@ -189,7 +189,20 @@ def create(request):
                 else:
                     print("Connection")
                     print(elementsCreated[0]['xmlId'])
-                    print(element['source'])
+                    parameter = json.loads(element['resultdb'])
+                    print(parameter[0]['fields']['normalized_category'])
+                    if (len(parameter) > 0):
+                        element_system = ElementSystem.objects.create(
+                            graphId=element['id'],
+                            name=element['name'],
+                            normalized_category=parameter[0]['fields']['normalized_category'],
+                            transported_water=parameter[0]['fields']['maximal_transp_water_perc'],
+                            sediment=parameter[0]['fields']['maximal_sediment_perc'],
+                            nitrogen=parameter[0]['fields']['maximal_nitrogen_perc'],
+                            phosphorus=parameter[0]['fields']['maximal_phosphorus_perc'],
+                            is_external=False,
+                            intake=intakeCreated
+                        )
                     for e in elementsCreated:
                         connection = {}
                         elementConnection = []
@@ -248,7 +261,7 @@ def listIntake(request):
                         'region': region
                     }
                 )
-        
+
             if (request.user.professional_role == 'COPART'):
                 intake = Intake.objects.all()
                 userCountry = Countries.objects.get(code=request.user.country)
@@ -264,7 +277,7 @@ def listIntake(request):
                         'region': region
                     }
                 )
-        
+
             if (request.user.professional_role == 'ACDMC'):
                 intake = Intake.objects.all()
                 userCountry = Countries.objects.get(code=request.user.country)
@@ -280,7 +293,7 @@ def listIntake(request):
                         'region': region
                     }
                 )
-        
+
             if (request.user.professional_role == 'SCADM'):
                 intake = Intake.objects.all()
                 userCountry = Countries.objects.get(code=request.user.country)
@@ -296,7 +309,7 @@ def listIntake(request):
                         'region': region
                     }
                 )
-        
+
             if (request.user.professional_role == 'MCOMC'):
                 intake = Intake.objects.all()
                 userCountry = Countries.objects.get(code=request.user.country)
@@ -312,7 +325,7 @@ def listIntake(request):
                         'region': region
                     }
                 )
-        
+
             if (request.user.professional_role == 'CITIZN'):
                 intake = Intake.objects.all()
                 userCountry = Countries.objects.get(code=request.user.country)
@@ -328,7 +341,7 @@ def listIntake(request):
                         'region': region
                     }
                 )
-        
+
             if (request.user.professional_role == 'REPECS'):
                 intake = Intake.objects.all()
                 userCountry = Countries.objects.get(code=request.user.country)
@@ -344,7 +357,7 @@ def listIntake(request):
                         'region': region
                     }
                 )
-        
+
             if (request.user.professional_role == 'OTHER'):
                 intake = Intake.objects.all()
                 userCountry = Countries.objects.get(code=request.user.country)
@@ -373,6 +386,27 @@ def listIntake(request):
                     'city': city,
                 }
             )
+
+
+def editIntake(request, idx):
+    if not request.user.is_authenticated:
+        return render(request, 'waterproof_intake/intake_login_error.html')
+    else:
+        if request.method == 'GET':
+            countries = Countries.objects.all()
+            currencies = Currency.objects.all()
+            filterIntake = Intake.objects.get(id=idx)
+            city = City.objects.all()
+            return render(
+                request, 'waterproof_intake/intake_edit.html',
+                {
+                    'intake': filterIntake,
+                    'countries': countries,
+                    'city': city,
+                }
+            )
+        else:
+            print("Proceso de guardado")
 
 
 """
