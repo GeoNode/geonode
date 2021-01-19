@@ -124,6 +124,7 @@ function clearDataHtml(cell, evt) {
     cell = evt.getProperty("cell");
     var show = false;
     if (cell != undefined && cell.getAttribute('name') == 'River') show = true;
+    if (cell != undefined && cell.getAttribute('name') == 'External Input') show = true;
     $('#aguaDiagram').prop('disabled', show);
     $('#sedimentosDiagram').prop('disabled', show);
     $('#nitrogenoDiagram').prop('disabled', show);
@@ -279,3 +280,25 @@ function validationTransportedWater(editor, cell) {
 $(document).on('click', '#helpgraph', function() {
     $('#HelpModal').modal('show');
 });
+
+var validateinput = function(e) {
+    var t = e.value;
+    e.value = (t.indexOf(".") >= 0) ? (t.substr(0, t.indexOf(".")) + t.substr(t.indexOf("."), 3)) : t;
+}
+
+function validations(valida) {
+    message = [];
+    let symbols = [];
+    let mxcell = [];
+    valida.querySelectorAll('Symbol').forEach((node) => symbols.push(node.getAttribute('name')));
+    if (symbols.includes("CSINFRA") == false) message.push('(Study Infrastructure)');
+    valida.querySelectorAll('mxCell').forEach((node) => mxcell.push(node.getAttribute('style')));
+    if (mxcell.includes("EXTRACTIONCONNECTION") == false) message.push('(Extraction Connection)');
+    if (message[0] == undefined) return;
+    if (message[1] == undefined) message[1] = "";
+    Swal.fire({
+        icon: 'warning',
+        title: `Missing elements`,
+        text: `No exist ${message[0]} ${message[1]} in a diagram`
+    })
+}
