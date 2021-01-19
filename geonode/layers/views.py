@@ -380,7 +380,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
         for _k in _keys:
             if _k in out:
                 if isinstance(out[_k], string_types):
-                    out[_k] = surrogate_escape_string(out[_k], layer_charset)                
+                    out[_k] = surrogate_escape_string(out[_k], layer_charset)
                 elif isinstance(out[_k], dict):
                     for key, value in out[_k].items():
                         try:
