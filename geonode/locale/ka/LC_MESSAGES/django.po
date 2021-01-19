@@ -725,7 +725,7 @@ msgstr "რუკის შექმნა"
 #: geonode/base/templates/base/_resourcebase_info_panel.html:37
 #, fuzzy
 #| msgid "Position Name"
-msgid "Pubblication Date"
+msgid "Publication Date"
 msgstr "თანამდებობდა"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:39
