@@ -39,7 +39,7 @@ from six import (
 )
 from PIL import Image
 from io import BytesIO
-from resizeimage import resizeimage
+
 from itertools import cycle
 from collections import namedtuple, defaultdict
 from os.path import basename, splitext, isfile
@@ -2076,9 +2076,7 @@ def _render_thumbnail(req_body, width=240, height=200):
         im.thumbnail(
             (_default_thumb_size['width'], _default_thumb_size['height']),
             resample=Image.ANTIALIAS)
-        cover = resizeimage.resize_cover(
-            im,
-            [_default_thumb_size['width'], _default_thumb_size['height']])
+        cover = im.resize((_default_thumb_size['width'], _default_thumb_size['height']))
         imgByteArr = BytesIO()
         cover.save(imgByteArr, format='JPEG')
         content = imgByteArr.getvalue()

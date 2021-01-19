@@ -47,7 +47,6 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 from PIL import Image
 from io import BytesIO
-from resizeimage import resizeimage
 
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
@@ -1490,9 +1489,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     im.thumbnail(
                         (_default_thumb_size['width'], _default_thumb_size['height']),
                         resample=Image.ANTIALIAS)
-                    cover = resizeimage.resize_cover(
-                        im,
-                        [_default_thumb_size['width'], _default_thumb_size['height']])
+                    cover = im.resize((_default_thumb_size['width'], _default_thumb_size['height']))
                     cover.save(storage.path(_upload_path), format='JPEG')
                 except Exception as e:
                     logger.debug(e)
