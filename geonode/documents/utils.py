@@ -50,6 +50,6 @@ def delete_orphaned_document_files():
                 deleted.append(filename)
             except NotImplementedError as e:
                 logger.error(
-                    "Failed to delete orphaned document '{}': {}".format(filename, e))
+                    f"Failed to delete orphaned document '{filename}': {e}")
 
     return deleted

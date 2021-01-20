@@ -99,13 +99,11 @@ HOSTNAME = _surl.hostname
 
 # add trailing slash to site url. geoserver url will be relative to this
 if not SITEURL.endswith('/'):
-    SITEURL = '{}/'.format(SITEURL)
+    SITEURL = f'{SITEURL}/')
 
 DATABASE_URL = os.getenv(
     'DATABASE_URL',
-    'spatialite:///{path}'.format(
-        path=os.path.join(PROJECT_ROOT, 'development.db')
-    )
+    'spatialite:///{os.path.join(PROJECT_ROOT, 'development.db'}')
 )
 
 if DATABASE_URL.startswith("spatialite"):
@@ -923,8 +921,8 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 # per-deployment settings should go here
 
 # Login and logout urls override
-LOGIN_URL = os.getenv('LOGIN_URL', '{}account/login/'.format(SITEURL))
-LOGOUT_URL = os.getenv('LOGOUT_URL', '{}account/logout/'.format(SITEURL))
+LOGIN_URL = os.getenv(f'LOGIN_URL', '{SITEURL}account/login/')
+LOGOUT_URL = os.getenv(f'LOGOUT_URL', '{SITEURL}account/logout/')
 
 ACCOUNT_LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', SITEURL)
 ACCOUNT_LOGOUT_REDIRECT_URL = os.getenv('LOGOUT_REDIRECT_URL', SITEURL)
@@ -963,10 +961,8 @@ GEOSERVER_PUBLIC_PORT = os.getenv(
     'GEOSERVER_PUBLIC_PORT', 8080
 )
 
-_default_public_location = '{}://{}:{}/geoserver/'.format(
-    GEOSERVER_PUBLIC_SCHEMA,
-    GEOSERVER_PUBLIC_HOST,
-    GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else '{}://{}/geoserver/'.format(GEOSERVER_PUBLIC_SCHEMA, GEOSERVER_PUBLIC_HOST)
+_default_public_location = f'{GEOSERVER_PUBLIC_SCHEMA}://{GEOSERVER_PUBLIC_HOST}:{GEOSERVER_PUBLIC_PORT}/geoserver/'
+    if GEOSERVER_PUBLIC_PORT else f'{GEOSERVER_PUBLIC_SCHEMA}://{GEOSERVER_PUBLIC_HOST}/geoserver/'
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
     'GEOSERVER_PUBLIC_LOCATION', _default_public_location

@@ -34,7 +34,7 @@ def group_profile_image(group_profile, css_classes="", size=None):
     """
 
     if isinstance(css_classes, string_types):
-        class_attr = 'class="{}" '.format(css_classes)
+        class_attr = f'class="{css_classes}" '
     else:
         try:
             class_attr = 'class="{}" '.format(

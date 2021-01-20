@@ -140,17 +140,16 @@ class Command(BaseCommand):
                                                   dict_['traceback'])
 
         if verbosity > 0:
-            print("\n\nFinished processing {} layers in {} seconds.\n".format(
-                len(output['layers']), round(output['stats']['duration_sec'], 2)))
-            print("{} Created layers".format(output['stats']['created']))
-            print("{} Updated layers".format(output['stats']['updated']))
-            print("{} Failed layers".format(output['stats']['failed']))
+            print(f"\n\nFinished processing {len(output['layers'])} layers in {round(output['stats']['duration_sec'], 2)} seconds.\n")
+            print(f"{output['stats']['created']} Created layers")
+            print(f"{output['stats']['updated']} Updated layers")
+            print(f"{output['stats']['failed']} Failed layers")
             try:
                 duration_layer = round(
                     output['stats']['duration_sec'] * 1.0 / len(output['layers']), 2)
             except ZeroDivisionError:
                 duration_layer = 0
             if len(output) > 0:
-                print("{} seconds per layer".format(duration_layer))
+                print(f"{duration_layer} seconds per layer")
             if remove_deleted:
-                print("\n{} Deleted layers".format(output['stats']['deleted']))
+                print(f"\n{output['stats']['deleted']} Deleted layers")

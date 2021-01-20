@@ -341,7 +341,7 @@ def get_context_resourcetype(context):
     resource_types = ['layers', 'maps', 'geoapps', 'documents', 'search', 'people',
                       'groups/categories', 'groups']
     for resource_type in resource_types:
-        if "/{0}/".format(resource_type) in c_path:
+        if f"/{resource_type}/" in c_path:
             return resource_type
     return 'error'
 

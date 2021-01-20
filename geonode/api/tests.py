@@ -208,7 +208,7 @@ class OAuthApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.passwd = 'admin'
         self._user = get_user_model().objects.get(username=self.user)
         self.token = get_or_create_token(self._user)
-        self.auth_header = 'Bearer {}'.format(self.token)
+        self.auth_header = f'Bearer {self.token}'
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
@@ -401,21 +401,21 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             return val.date().strftime(fstring)
 
         d1 = to_date(now - step)
-        filter_url = self.list_url + '?date__exact={}'.format(d1)
+        filter_url = self.list_url + f'?date__exact={d1}'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
         d3 = to_date(now - (3 * step))
-        filter_url = self.list_url + '?date__gte={}'.format(d3)
+        filter_url = self.list_url + f'?date__gte={d3}'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
         d4 = to_date(now - (4 * step))
-        filter_url = self.list_url + '?date__range={},{}'.format(d4, to_date(now))
+        filter_url = self.list_url + f'?date__range={d4},{to_date(now)}'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)

@@ -387,7 +387,7 @@ def geoserver_finalize_upload(
             else:
                 geoserver_create_style(instance.id, instance.name, sld_file, tempdir)
 
-            logger.debug('Finalizing (permissions and notifications) Layer {0}'.format(instance))
+            logger.debug(f'Finalizing (permissions and notifications) Layer {instance}')
             instance.handle_moderated_uploads()
 
             if permissions is not None:

@@ -188,7 +188,7 @@ def layer_style_upload(request, layername):
         sld_name = extract_name_from_sld(
             gs_catalog, sld, sld_file=request.FILES['sld'])
     except Exception as e:
-        respond(errors="The uploaded SLD file is not valid XML: {}".format(e))
+        respond(errors=f"The uploaded SLD file is not valid XML: {e}")
 
     name = data.get('name') or sld_name
 

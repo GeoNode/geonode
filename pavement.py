@@ -985,10 +985,7 @@ def reset(options):
 
 def _reset():
     from geonode import settings
-    sh("rm -rf {path}".format(
-        path=os.path.join(settings.PROJECT_ROOT, 'development.db')
-    )
-    )
+    sh(f"rm -rf {os.path.join(settings.PROJECT_ROOT, 'development.db')}")
     sh("rm -rf geonode/development.db")
     sh("rm -rf geonode/uploaded/*")
     _install_data_dir()

@@ -78,7 +78,7 @@ def delete_orphaned_thumbs():
             remove_thumb(filename)
             deleted.append(filename)
         except NotImplementedError as e:
-            logger.error("Failed to delete orphaned thumbnail '{}': {}".format(filename, e))
+            logger.error(f"Failed to delete orphaned thumbnail '{filename}': {e}")
 
     return deleted
 

@@ -694,7 +694,7 @@ def gs_slurp(
                     storeType=the_store.resource_type,
                     alternate="%s:%s" % (workspace.name, resource.name),
                     title=resource.title or 'No title provided',
-                    abstract=resource.abstract or "{}".format(_('No abstract provided')),
+                    abstract=resource.abstract or f"{_('No abstract provided')}",
                     owner=owner,
                     uuid=str(uuid.uuid4())
                 )
@@ -735,7 +735,7 @@ def gs_slurp(
                     print(msg, file=sys.stderr)
                 raise_(
                     Exception,
-                    Exception("Failed to process {}".format(resource.name), e),
+                    Exception(f"Failed to process {resource.name}", e),
                     sys.exc_info()[2]
                 )
         else:
@@ -1575,7 +1575,7 @@ class OGC_Server(object):
         return urlsplit(self.LOCATION).netloc
 
     def __str__(self):
-        return "{0}".format(self.alias)
+        return f"{self.alias}"
 
 
 class OGC_Servers_Handler(object):
@@ -1759,9 +1759,7 @@ def _stylefilterparams_geowebcache_layer(layer_name):
         headers=headers,
         user=_user)
     if req.status_code != 200:
-        line = "Error {0} reading Style Filter Params GeoWebCache at {1}".format(
-            req.status_code, url
-        )
+        line = f"Error {req.status_code} reading Style Filter Params GeoWebCache at {url}"
         logger.error(line)
         return
 
@@ -1783,9 +1781,7 @@ def _stylefilterparams_geowebcache_layer(layer_name):
             headers=headers,
             user=_user)
         if req.status_code != 200:
-            line = "Error {0} writing Style Filter Params GeoWebCache at {1}".format(
-                req.status_code, url
-            )
+            line = f"Error {req.status_code} writing Style Filter Params GeoWebCache at {url}"
             logger.error(line)
 
 
@@ -1794,9 +1790,9 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
     headers = {
         "Content-Type": "text/xml",
     }
-    body = """
-        <truncateLayer><layerName>{0}</layerName></truncateLayer>
-        """.strip().format(layer_name)
+    body = f"""
+        <truncateLayer><layerName>{layer_name}</layerName></truncateLayer>
+        """.strip()
     if not url:
         url = '%sgwc/rest/masstruncate' % ogc_server_settings.LOCATION
     req, content = http_client.post(
@@ -1806,9 +1802,7 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
         user=_user)
 
     if req.status_code != 200:
-        line = "Error {0} invalidating GeoWebCache at {1}".format(
-            req.status_code, url
-        )
+        line = f"Error {req.status_code} invalidating GeoWebCache at {url}"
         logger.debug(line)
 
 
@@ -2276,10 +2270,10 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             width_acc += thumbnail_tile_size
             _n_step = _n_step + 1
         # Build Image Request Template
-        _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
+        _img_request_template = f"<div style='height:{height}px; width:{width}px;'>\
             <div style='position: absolute; top:{top}px; left:{left}px; z-index: 749; \
             transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);'> \
-            \n".format(height=height, width=width, top=top, left=left)
+            \n"
 
         for row in range(0, numberOfRows):
             for col in range(0, len(first_row)):

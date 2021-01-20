@@ -67,7 +67,7 @@ def render_document(document_path, extension="png"):
     output_path = None
     if settings.UNOCONV_ENABLE:
         timeout = None
-        _, output_path = tempfile.mkstemp(suffix=".{}".format(extension))
+        _, output_path = tempfile.mkstemp(suffix=f".{extension}")
         try:
             unoconv = subprocess.Popen(
                 [settings.UNOCONV_EXECUTABLE, "-v", "-e", "PageRange=1-2",

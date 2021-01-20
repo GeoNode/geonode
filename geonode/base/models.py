@@ -183,7 +183,7 @@ class SpatialRepresentationType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __str__(self):
-        return "{0}".format(self.gn_description)
+        return f"{self.gn_description}"
 
     class Meta:
         ordering = ("identifier",)
@@ -230,7 +230,7 @@ class Region(MPTTModel):
         default='EPSG:4326')
 
     def __str__(self):
-        return "{0}".format(self.name)
+        return f"{self.name}"
 
     @property
     def bbox(self):
@@ -279,7 +279,7 @@ class RestrictionCodeType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __str__(self):
-        return "{0}".format(self.gn_description)
+        return f"{self.gn_description}"
 
     class Meta:
         ordering = ("identifier",)
@@ -295,7 +295,7 @@ class License(models.Model):
     license_text = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return "{0}".format(self.name)
+        return f"{self.name}"
 
     @property
     def name_long(self):
@@ -472,7 +472,7 @@ class Thesaurus(models.Model):
     slug = models.CharField(max_length=64, default='')
 
     def __str__(self):
-        return "{0}".format(self.identifier)
+        return f"{self.identifier}"
 
     class Meta:
         ordering = ("identifier",)
@@ -493,7 +493,7 @@ class ThesaurusKeywordLabel(models.Model):
     keyword = models.ForeignKey('ThesaurusKeyword', related_name='keyword', on_delete=models.CASCADE)
 
     def __str__(self):
-        return "{0}".format(self.label)
+        return f"{self.label}"
 
     class Meta:
         ordering = ("keyword", "lang")
@@ -517,7 +517,7 @@ class ThesaurusKeyword(models.Model):
     thesaurus = models.ForeignKey('Thesaurus', related_name='thesaurus', on_delete=models.CASCADE)
 
     def __str__(self):
-        return "{0}".format(self.alt_label)
+        return f"{self.alt_label}"
 
     @property
     def labels(self):
@@ -881,7 +881,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         super(ResourceBase, self).__init__(*args, **kwargs)
 
     def __str__(self):
-        return "{0}".format(self.title)
+        return f"{self.title}"
 
     def _remove_html_tags(self, attribute_str):
         try:
@@ -1028,7 +1028,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 except Exception:
                     bbox.srid = srid
             bbox = BBOXHelper(bbox.extent)
-            return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(srid)]
+            return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, f"EPSG:{srid}"]
         bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
@@ -1052,11 +1052,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if self.bbox_polygon:
             bbox = BBOXHelper.from_xy(self.ll_bbox[:4])
 
-            return "{x0:.7f},{y0:.7f},{x1:.7f},{y1:.7f}".format(
-                x0=bbox.xmin,
-                y0=bbox.ymin,
-                x1=bbox.xmax,
-                y1=bbox.ymax)
+            return f"{bbox.xmin:.7f},{bbox.ymin:.7f},{bbox.xmax:.7f},{bbox.ymax:.7f}"
         bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
@@ -1067,11 +1063,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if self.bbox_polygon:
             bbox = BBOXHelper.from_xy(self.bbox[:4])
 
-            return "{x0:.7f},{y0:.7f},{x1:.7f},{y1:.7f}".format(
-                x0=bbox.xmin,
-                y0=bbox.ymin,
-                x1=bbox.xmax,
-                y1=bbox.ymax)
+            return "{bbox.xmin:.7f},{bbox.ymin:.7f},{bbox.xmax:.7f},{bbox.ymax:.7f}"
         bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
@@ -1177,7 +1169,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     if not field.identifier:
                         continue
                 filled_fields.append(field)
-        return '{}%'.format(len(filled_fields) * 100 / len(required_fields))
+        return f'{len(filled_fields) * 100 / len(required_fields)}%'
 
     @property
     def instance_is_processed(self):
@@ -1710,7 +1702,7 @@ class Link(models.Model):
     objects = LinkManager()
 
     def __str__(self):
-        return "{0} link".format(self.link_type)
+        return f"{self.link_type} link"
 
 
 class MenuPlaceholder(models.Model):
@@ -1722,7 +1714,7 @@ class MenuPlaceholder(models.Model):
     )
 
     def __str__(self):
-        return "{0}".format(self.name)
+        return f"{self.name}"
 
 
 class Menu(models.Model):
@@ -1741,7 +1733,7 @@ class Menu(models.Model):
     )
 
     def __str__(self):
-        return "{0}".format(self.title)
+        return f"{self.title}"
 
     class Meta:
         unique_together = (
@@ -1794,7 +1786,7 @@ class MenuItem(models.Model):
         return hash(self.url)
 
     def __str__(self):
-        return "{0}".format(self.title)
+        return f"{self.title}"
 
     class Meta:
         unique_together = (

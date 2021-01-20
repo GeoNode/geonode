@@ -226,7 +226,7 @@ class Command(BaseCommand):
             # otherwise default tmp directory is chosen
             temp_dir_path = backup_files_dir if os.path.exists(backup_files_dir) else None
 
-            restore_folder = os.path.join(temp_dir_path, '{}{}'.format('tmp', str(uuid.uuid4())[:4]))
+            restore_folder = os.path.join(temp_dir_path, f'{'tmp'}{str(uuid.uuid4())[:4]}')
             try:
                 os.makedirs(restore_folder)
             except Exception as e:
@@ -255,20 +255,20 @@ class Command(BaseCommand):
                 locale_files_folders = os.path.join(target_folder, utils.LOCALE_PATHS)
 
                 try:
-                    print(("[Sanity Check] Full Write Access to '{}' ...".format(restore_folder)))
+                    print((f"[Sanity Check] Full Write Access to '{restore_folder}' ..."))
                     chmod_tree(restore_folder)
-                    print(("[Sanity Check] Full Write Access to '{}' ...".format(media_root)))
+                    print((f"[Sanity Check] Full Write Access to '{media_root}' ..."))
                     chmod_tree(media_root)
-                    print(("[Sanity Check] Full Write Access to '{}' ...".format(static_root)))
+                    print((f"[Sanity Check] Full Write Access to '{static_root}' ..."))
                     chmod_tree(static_root)
                     for static_files_folder in static_folders:
-                        print(("[Sanity Check] Full Write Access to '{}' ...".format(static_files_folder)))
+                        print((f"[Sanity Check] Full Write Access to '{static_files_folder}' ..."))
                         chmod_tree(static_files_folder)
                     for template_files_folder in template_folders:
-                        print(("[Sanity Check] Full Write Access to '{}' ...".format(template_files_folder)))
+                        print((f"[Sanity Check] Full Write Access to '{template_files_folder}' ..."))
                         chmod_tree(template_files_folder)
                     for locale_files_folder in locale_folders:
-                        print(("[Sanity Check] Full Write Access to '{}' ...".format(locale_files_folder)))
+                        print((f"[Sanity Check] Full Write Access to '{locale_files_folder}' ..."))
                         chmod_tree(locale_files_folder)
                 except Exception as exception:
                     if notify:
@@ -281,7 +281,7 @@ class Command(BaseCommand):
 
                 if not skip_geoserver:
                     try:
-                        print(("[Sanity Check] Full Write Access to '{}' ...".format(target_folder)))
+                        print((f"[Sanity Check] Full Write Access to '{target_folder}' ..."))
                         chmod_tree(target_folder)
                         self.restore_geoserver_backup(config, settings, target_folder,
                                                       skip_geoserver_info, skip_geoserver_security, ignore_errors)
@@ -618,17 +618,17 @@ class Command(BaseCommand):
 
         if not os.path.exists(geoserver_bk_file) or not os.access(geoserver_bk_file, os.R_OK):
             raise Exception(('ERROR: geoserver restore: ' +
-                  'file "{}" not found.'.format(geoserver_bk_file)))
+                  f'file "{geoserver_bk_file}" not found.'))
 
         print("Restoring 'GeoServer Catalog ["+url+"]' from '"+geoserver_bk_file+"'.")
 
         # Best Effort Restore: 'options': {'option': ['BK_BEST_EFFORT=true']}
         _options = [
             'BK_CLEANUP_TEMP=true',
-            'BK_SKIP_SETTINGS={}'.format('true' if skip_geoserver_info else 'false'),
-            'BK_SKIP_SECURITY={}'.format('true' if skip_geoserver_security else 'false'),
-            'BK_BEST_EFFORT={}'.format('true' if ignore_errors else 'false'),
-            'exclude.file.path={}'.format(config.gs_exclude_file_path)
+            f'BK_SKIP_SETTINGS={'true' if skip_geoserver_info else 'false'}',
+            f'BK_SKIP_SECURITY={'true' if skip_geoserver_security else 'false'}',
+            f'BK_BEST_EFFORT={'true' if ignore_errors else 'false'}',
+            f'exclude.file.path={config.gs_exclude_file_path}'
         ]
         data = {'restore': {'archiveFile': geoserver_bk_file,
                             'options': {'option': _options}}}
@@ -651,7 +651,7 @@ class Command(BaseCommand):
                 if (r.status_code == 200):
                     gs_backup = r.json()
                     _url = urlparse(gs_backup['restores']['restore'][len(gs_backup['restores']['restore']) - 1]['href'])
-                    _url = '{}?{}'.format(urljoin(url, _url.path), _url.query)
+                    _url = f'{urljoin(url, _url.path)}?{_url.query}'
                     r = requests.get(_url,
                                      headers=headers,
                                      auth=HTTPBasicAuth(user, passwd),
@@ -737,7 +737,7 @@ class Command(BaseCommand):
                     print("GeoServer Uploaded Raster Data Restored to '" + gs_data_root + "'.")
                 else:
                     print(('Skipping geoserver raster data restore: ' +
-                          'directory "{}" not found.'.format(gs_data_folder)))
+                          f'directory "{gs_data_folder}" not found.'))
 
                 # Restore '$config.gs_data_dir/data/geonode'
                 gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
@@ -753,7 +753,7 @@ class Command(BaseCommand):
                     print("GeoServer Uploaded Data Restored to '" + gs_data_root + "'.")
                 else:
                     print(('Skipping geoserver raster data restore: ' +
-                           'directory "{}" not found.'.format(gs_data_folder)))
+                           f'directory "{gs_data_folder}" not found.'))
 
     def restore_geoserver_vector_data(self, config, settings, target_folder):
         """Restore Vectorial Data from DB"""
@@ -762,7 +762,7 @@ class Command(BaseCommand):
             gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'geonode')
             if not os.path.exists(gs_data_folder):
                 print(('Skipping geoserver vector data restore: ' +
-                      'directory "{}" not found.'.format(gs_data_folder)))
+                      f'directory "{gs_data_folder}" not found.'))
                 return
 
             datastore = settings.OGC_SERVER['default']['DATASTORE']

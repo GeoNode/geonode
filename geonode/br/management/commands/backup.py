@@ -306,8 +306,8 @@ class Command(BaseCommand):
             'BK_CLEANUP_TEMP=true',
             'BK_SKIP_SETTINGS=false',
             'BK_SKIP_SECURITY=false',
-            'BK_BEST_EFFORT={}'.format('true' if ignore_errors else 'false'),
-            'exclude.file.path={}'.format(config.gs_exclude_file_path)
+            f'BK_BEST_EFFORT={'true' if ignore_errors else 'false'}',
+            f'exclude.file.path={config.gs_exclude_file_path}'
         ]
         data = {'backup': {'archiveFile': geoserver_bk_file, 'overwrite': 'true',
                            'options': {'option': _options}}}
@@ -327,7 +327,7 @@ class Command(BaseCommand):
                 if (r.status_code == 200):
                     gs_backup = r.json()
                     _url = urlparse(gs_backup['backups']['backup'][len(gs_backup['backups']['backup']) - 1]['href'])
-                    _url = '{}?{}'.format(urljoin(url, _url.path), _url.query)
+                    _url = f'{urljoin(url, _url.path)}?{_url.query}'
                     r = requests.get(_url,
                                      headers=headers,
                                      auth=HTTPBasicAuth(user, passwd),
@@ -376,7 +376,7 @@ class Command(BaseCommand):
                 os.chmod(geoserver_bk_file, _permissions)
                 status = os.stat(geoserver_bk_file)
                 if oct(status.st_mode & 0o777) != str(oct(_permissions)):
-                    raise Exception("Could not update permissions of {}".format(geoserver_bk_file))
+                    raise Exception(f"Could not update permissions of {geoserver_bk_file}")
             else:
                 raise ValueError(error_backup.format(url, r.status_code, r.text))
 
@@ -452,7 +452,7 @@ class Command(BaseCommand):
                 if not os.path.isdir(external_path) and os.path.exists(external_path):
                     shutil.copy2(abspath, external_path)
             except shutil.SameFileError:
-                print("WARNING: {} and {} are the same file!".format(abspath, external_path))
+                print(f"WARNING: {abspath} and {external_path} are the same file!")
 
         def match_filename(key, text, regexp=re.compile("^(.+)$")):
             if key in ('filename', ):
@@ -466,7 +466,7 @@ class Command(BaseCommand):
                         if os.path.exists(abspath):
                             return abspath
                     except Exception:
-                        print("WARNING: Error while trying to dump {}".format(text))
+                        print(f"WARNING: Error while trying to dump {text}")
                         return
 
         def match_fileurl(key, text, regexp=re.compile("^file:(.+)$")):
@@ -481,7 +481,7 @@ class Command(BaseCommand):
                         if os.path.exists(abspath):
                             return abspath
                     except Exception:
-                        print("WARNING: Error while trying to dump {}".format(text))
+                        print(f"WARNING: Error while trying to dump {text}")
                         return
 
         def dump_external_resources_from_xml(path):

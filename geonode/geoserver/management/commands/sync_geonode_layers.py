@@ -51,7 +51,7 @@ def sync_geonode_layers(ignore_errors,
     for layer in layers:
         try:
             count += 1
-            print("Syncing layer {}/{}: {}".format(count, layers_count, layer.name))
+            print(f"Syncing layer {count}/{layers_count}: {layer.name}")
             if updatepermissions:
                 print("Syncing permissions...")
                 # sync permissions in GeoFence
@@ -79,7 +79,7 @@ def sync_geonode_layers(ignore_errors,
                 traceback.print_exc()
                 print("Stopping process because --ignore-errors was not set and an error was found.")
                 return
-    print("There are {} layers which could not be updated because of errors".format(len(layer_errors)))
+    print(f"There are {len(layer_errors)} layers which could not be updated because of errors")
     for layer_error in layer_errors:
         print(layer_error)
 
