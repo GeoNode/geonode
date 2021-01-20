@@ -6,8 +6,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin=""/>
-    <link rel="stylesheet" href="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.css" />    
-    <link rel="stylesheet" href="{% static "geonode/css/leaflet/L.Control.MapCenterCoord.css" %}"/>
+    <link rel="stylesheet" href="{% static "geonode/css/leaflet/Control.Coordinates.css" %}"/>
     <link rel="stylesheet" href="https://photon.komoot.io/static/leaflet.photon/leaflet.photon.css"></link>
 {% endblock %}
 
@@ -23,9 +22,8 @@
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
    crossorigin=""></script>
-  <script src="https://www.zimmi.cz/Leaflet-Coordinates-Control/Control.Coordinates.js"></script>
   <script src="{% static "geonode/js/leaflet/photon/leaflet.photon.js" %}"></script>
-  <script src="{% static "geonode/js/leaflet/L.Control.MapCenterCoord.js" %}"></script>
+  <script src="{% static "geonode/js/leaflet/Leaflet.Coordinates.js" %}"></script>
   <script src="https://leaflet-extras.github.io/leaflet-providers/leaflet-providers.js"></script>
   <!-- <script src="https://unpkg.com/esri-leaflet@2.5.3/dist/esri-leaflet.js"
     integrity="sha512-K0Vddb4QdnVOAuPJBHkgrua+/A9Moyv8AQEWi0xndQ+fqbRfAFd47z4A9u1AW/spLO0gEaiE1z98PK1gl5mC5Q=="
@@ -84,10 +82,13 @@
 
         map.setView([4.5, -74.4],5);
         searchPoints.addTo(map);
+        
+        
+        var c = new L.Control.Coordinates();
+        c.addTo(map);    
+
+        L.control.layers(baseLayers,overlays,{position: 'topleft'}).addTo(map);
         var zoomControl = new L.Control.Zoom({position: 'topright'}).addTo(map);
-        L.control.layers(baseLayers,overlays).addTo(map);
-        // var c = new L.Control.Coordinates();
-        // c.addTo(map);    
         //L.control.mapCenterCoord().addTo(map); 
 		
 

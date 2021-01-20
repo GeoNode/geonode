@@ -66,6 +66,8 @@ $(function() {
      */
     API_URL = '/proxy/?url=https://photon.komoot.de/api/?';
     TILELAYER = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
+    IMAGE_LYR_URL = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}";
+    HYDRO_LYR_URL = "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}";
     CENTER = [-74.4879, 4.582];
     MAXZOOM = 11;
 
@@ -77,15 +79,31 @@ $(function() {
         searchPoints.addTo(map);
 
         var tilelayer = L.tileLayer(TILELAYER, { maxZoom: MAXZOOM, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 Komoot' }).addTo(map);
-        var zoomControl = new L.Control.Zoom({ position: 'topright' }).addTo(map);
+        var images = L.tileLayer(IMAGE_LYR_URL);
+        
+        
+        var hydroLyr = L.tileLayer(HYDRO_LYR_URL);
 
-        var c = new L.Control.Coordinates();
-        L.control.mapCenterCoord().addTo(map);
+        var baseLayers = {
+            OpenStreetMap: tilelayer,
+            Images: images,
+            /* Grayscale: gray,   */          
+        };
+
+        var overlays = {
+            "Hydro (esri)": hydroLyr,
+        };
+
+
+        var zoomControl = new L.Control.Zoom({ position: 'topright' }).addTo(map);
+        L.control.layers(baseLayers,overlays,{position: 'topleft'}).addTo(map);
+
+        var c = new L.Control.Coordinates();        
         c.addTo(map);
 
 
         function onMapClick(e) {
-            c.setCoordinates(e);
+            // c.setCoordinates(e);
         }
         map.on('click', onMapClick);
     }
