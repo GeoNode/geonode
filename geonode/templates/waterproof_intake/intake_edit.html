@@ -7,8 +7,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin="" />
-<link rel="stylesheet" href="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Coordinates.css" %}" />
+<link rel="stylesheet" href="{% static "geonode/css/leaflet/Control.Coordinates.css" %}"/>
 <link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Loader.css" %}" />
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/mathquill/mathquill.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/css/intake.css" />
@@ -103,7 +102,7 @@
                 <!-- Map -->
                 <div id="map">
                     <div id="analysisOptions">
-                        <button type="button" id="validateBtn">Validate</button>
+                        <button type="button" id="validateBtn">Draw Basin</button>
                     </div>
                 </div>
             </div>
@@ -477,11 +476,10 @@
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
     crossorigin=""></script>
 <script src="{{ STATIC_URL }}geonode/js/leaflet/Leaflet.Editable.js"></script>
-<script src="{{ STATIC_URL }}geonode/js/leaflet/coordinates/Control.Coordinates.js"></script>
-<script src="{{ STATIC_URL }}geonode/js/leaflet/coordinates/util/NumberFormatter.js"></script>
+<script src="{{ STATIC_URL }}geonode/js/leaflet/Leaflet.Coordinates.js"></script>
 <script src="{{ STATIC_URL }}geonode/js/leaflet/Control.Loader.js"></script>
 <script src="{{ STATIC_URL }}geonode/js/waterproof/waterIntake.js"></script>
-<script src="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.js"></script>
+
 <!--ZIP reader library-->
 <script src="{{ STATIC_URL }}geonode/js/jszip/jszip.min.js"></script>
 <!--Shapefile reader library -->
