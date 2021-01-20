@@ -272,8 +272,8 @@ community."
         wmc = dlxml.fromstring(response.content)
 
         namespace = '{http://www.opengis.net/context}'
-        title = '{ns}General/{ns}Title'.format(ns=namespace)
-        abstract = '{ns}General/{ns}Abstract'.format(ns=namespace)
+        title = f'{namespace}General/{namespace}Title'
+        abstract = f'{namespace}General/{namespace}Abstract'
 
         self.assertIsNotNone(wmc.attrib.get('id'))
         self.assertEqual(wmc.find(title).text, 'GeoNode Default Map')

@@ -1068,7 +1068,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                             import base64
                             valid_uname_pw = base64.b64encode(
                                 ("%s:%s" % (_user, _pwd)).encode("UTF-8")).decode("ascii")
-                            headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
+                            headers['Authorization'] = f'Basic {valid_uname_pw}'
                         resp, image = ogc_client.request(
                             thumbnail_create_url,
                             headers=headers,
@@ -1220,7 +1220,7 @@ def delete_orphaned_layers():
                 deleted.append(filename)
             except NotImplementedError as e:
                 logger.error(
-                    "Failed to delete orphaned layer file '{}': {}".format(filename, e))
+                    f"Failed to delete orphaned layer file '{filename}': {e}")
 
     return deleted
 
@@ -1291,8 +1291,8 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                 users.append(user)
                             except User.DoesNotExist:
                                 logger.warning(
-                                    'The user {} does not exists. '
-                                    'It has been skipped.'.format(username)
+                                    f'The user {username} does not exists. '
+                                    'It has been skipped.'
                                 )
                     # GROUPS
                     groups = []
@@ -1303,8 +1303,8 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                 groups.append(group)
                             except Group.DoesNotExist:
                                 logger.warning(
-                                    'The group {} does not exists. '
-                                    'It has been skipped.'.format(group_name)
+                                    f'The group {group_name} does not exists. '
+                                    'It has been skipped.'
                                 )
                     if not users and not groups:
                         logger.error(

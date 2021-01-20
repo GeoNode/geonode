@@ -157,9 +157,9 @@ class Consumer(ConsumerMixin):
     def on_consume_ready(self, connection, channel, consumers, **kwargs):
         logger.debug(">>> Ready:")
         logger.debug(connection)
-        logger.debug("{} consumers:".format(len(consumers)))
+        logger.debug(f"{len(consumers)} consumers:")
         for i, consumer in enumerate(consumers, start=1):
-            logger.debug("{0} {1}".format(i, consumer))
+            logger.debug(f"{i} {consumer}")
         super(Consumer, self).on_consume_ready(connection, channel, consumers,
                                                **kwargs)
 
@@ -217,13 +217,13 @@ def _wait_for_layer(layer_id, num_attempts=5, wait_seconds=1):
     for current in range(1, num_attempts + 1):
         try:
             instance = Layer.objects.get(id=layer_id)
-            logger.debug("Attempt {}/{} - Found layer in the "
-                         "database".format(current, num_attempts))
+            logger.debug(f"Attempt {current}/{num_attempts} - Found layer in the "
+                         "database")
             break
         except Layer.DoesNotExist:
             time.sleep(wait_seconds)
-            logger.debug("Attempt {}/{} - Could not find layer "
-                         "instance".format(current, num_attempts))
+            logger.debug(f"Attempt {current}/{num_attempts} - Could not find layer "
+                         "instance")
     else:
         logger.debug("Reached maximum attempts and layer {!r} is still not "
                      "saved. Exiting...".format(layer_id))

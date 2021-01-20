@@ -48,7 +48,7 @@ class MonitoringMiddleware(MiddlewareMixin):
         self.setup_logging()
 
     def setup_logging(self):
-        self.log = logging.getLogger('{}.catcher'.format(__name__))
+        self.log = logging.getLogger(f'{__name__}.catcher')
         self.log.propagate = False
         self.log.setLevel(logging.DEBUG)
         self.log.handlers = []

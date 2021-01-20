@@ -1109,7 +1109,7 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
         base_name = 'single_point'
         suffixes = 'shp shx dbf prj'.split(' ')
         base_path = gisdata.GOOD_DATA
-        paths = [os.path.join(base_path, 'vector', '{}.{}'.format(base_name, suffix)) for suffix in suffixes]
+        paths = [os.path.join(base_path, 'vector', f'{base_name}.{suffix}') for suffix in suffixes]
         return paths, suffixes,
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -1130,7 +1130,7 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
             with contextlib.ExitStack() as stack:
                 input_files = [
                     stack.enter_context(_fp) for _fp in input_files]
-                files = dict(zip(['{}_file'.format(s) for s in suffixes], input_files))
+                files = dict(zip([f'{s}_file' for s in suffixes], input_files))
                 files['base_file'] = files.pop('shp_file')
                 files['permissions'] = '{}'
                 files['charset'] = 'utf-8'
@@ -1162,7 +1162,7 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
             with contextlib.ExitStack() as stack:
                 input_files = [
                     stack.enter_context(_fp) for _fp in input_files]
-                files = dict(zip(['{}_file'.format(s) for s in suffixes], input_files))
+                files = dict(zip([f'{s}_file' for s in suffixes], input_files))
                 files['base_file'] = files.pop('shp_file')
                 files['permissions'] = '{}'
                 files['charset'] = 'utf-8'
@@ -1360,7 +1360,7 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
             )
             files['permissions'] = '{}'
             files['charset'] = 'windows-1258'
-            files['layer_title'] = 'test layer_{}'.format('windows-1258')
+            files['layer_title'] = f'test layer_{'windows-1258'}'
             resp = self.client.post(layer_upload_url, data=files)
             # Check response status code
             if resp.status_code == 200:

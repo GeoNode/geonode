@@ -37,13 +37,11 @@ def group_profile_image(group_profile, css_classes="", size=None):
         class_attr = f'class="{css_classes}" '
     else:
         try:
-            class_attr = 'class="{}" '.format(
-                " ".join(str(i) for i in css_classes))
+            class_attr = f'class="{" ".join(str(i) for i in css_classes)}" '
         except Exception:
             class_attr = ""
     if size is not None:
-        style_attr = 'style="width: {size}px; height: {size}px" '.format(
-            size=size)
+        style_attr = f'style="width: {size}px; height: {size}px" '
     else:
         style_attr = ""
 
@@ -51,10 +49,5 @@ def group_profile_image(group_profile, css_classes="", size=None):
         url = group_profile.logo_url
     else:
         url = staticfiles_storage.url("geonode/img/default-avatar.jpg")
-    img_tag = '<img {css}{style}src="{url}" alt="{alt}">'.format(
-        css=class_attr,
-        style=style_attr,
-        url=url,
-        alt=group_profile.title,
-    )
+    img_tag = f'<img {class_attr}{style_attr}src="{url}" alt="{group_profile.title}">'
     return img_tag

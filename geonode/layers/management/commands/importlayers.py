@@ -239,12 +239,11 @@ class Command(BaseCommand):
                                               dict_['traceback'])
 
         if verbosity > 0:
-            print("\n\nFinished processing {} layers in {} seconds.\n".format(
-                len(output), duration_rounded))
-            print("{} Created layers".format(len(created)))
-            print("{} Updated layers".format(len(updated)))
-            print("{} Skipped layers".format(len(skipped)))
-            print("{} Failed layers".format(len(failed)))
+            print(f"\n\nFinished processing {len(output)} layers in {duration_rounded} seconds.\n")
+            print(f"{len(created)} Created layers")
+            print(f"{len(updated)} Updated layers")
+            print(f"{len(skipped)} Skipped layers")
+            print(f"{len(failed)} Failed layers")
 
             if len(output) > 0:
-                print("{} seconds per layer".format(duration * 1.0 / len(output)))
+                print(f"{duration * 1.0 / len(output)} seconds per layer")

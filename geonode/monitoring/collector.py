@@ -107,7 +107,7 @@ class CollectorAPI(object):
                      'value_raw': rate,
                      'value_num': rate,
                      'label': iface_label,
-                     'metric': '{}.rate'.format(metric_name)}
+                     'metric': f'{metric_name}.rate'}
             mdata.update(metric_defaults)
             log.debug(MetricValue.add(**mdata))
 
@@ -208,13 +208,13 @@ class CollectorAPI(object):
                          'value_raw': tx_value,
                          'value_num': tx_value,
                          'label': ifname,
-                         'metric': 'network.{}'.format(tx_label)}
+                         'metric': f'network.{tx_label}'}
                 mdata.update(mdefaults)
                 rate = self._calculate_rate(
                     mdata['metric'], ifname, tx_value, valid_to)
                 log.debug(MetricValue.add(**mdata))
                 if rate:
-                    mdata['metric'] = '{}.rate'.format(mdata['metric'])
+                    mdata['metric'] = f'{mdata['metric']}.rate'
                     mdata['value'] = rate
                     mdata['value_num'] = rate
                     mdata['value_raw'] = rate
@@ -233,7 +233,7 @@ class CollectorAPI(object):
             mdata = {'value': mdata,
                      'value_raw': mdata,
                      'value_num': mdata,
-                     'metric': 'mem.{}'.format(mkey),
+                     'metric': f'mem.{mkey}',
                      'label': 'B',
                      }
             mdata.update(mdefaults)
@@ -276,7 +276,7 @@ class CollectorAPI(object):
                 mdata = {'value': l,
                          'value_raw': l,
                          'value_num': l,
-                         'metric': 'load.{}m'.format(llabel[lidx]),
+                         'metric': f'load.{llabel[lidx]}m',
                          'label': 'Value',
                          }
 
@@ -330,7 +330,7 @@ class CollectorAPI(object):
                 mdata['valid_to'])
             if rate:
                 rate_data = mdata.copy()
-                rate_data['metric'] = '{}.rate'.format(mdata['metric'])
+                rate_data['metric'] = f'{mdata['metric']}.rate'
                 rate_data['value'] = rate
                 rate_data['value_num'] = rate
                 rate_data['value_raw'] = rate
@@ -343,7 +343,7 @@ class CollectorAPI(object):
                 mdata['valid_to'])
             if percent:
                 percent_data = mdata.copy()
-                percent_data['metric'] = '{}.percent'.format(mdata['metric'])
+                percent_data['metric'] = f'{mdata['metric']}.percent'
                 percent_data['value'] = percent
                 percent_data['value_num'] = percent
                 percent_data['value_raw'] = percent
@@ -441,7 +441,7 @@ class CollectorAPI(object):
             row['label'] = Metric.TYPE_VALUE_NUMERIC
             q.append(row)
         else:
-            raise ValueError("Unsupported metric type: {}".format(metric.type))
+            raise ValueError(f"Unsupported metric type: {metric.type}")
         rows = q[:100]
         metric_values.update({'metric': metric_name, 'service': service})
         for row in rows:
@@ -661,7 +661,7 @@ class CollectorAPI(object):
         """
         metric = Metric.get_for(metric_name, service=service)
         if not metric:
-            raise ValueError("Invalid metric {}".format(metric_name))
+            raise ValueError(f"Invalid metric {metric_name}")
         f = metric.get_aggregate_name()
         return f or column_name
 
@@ -832,9 +832,9 @@ class CollectorAPI(object):
 
         q_order_by = ['val desc']
 
-        q_select = [('select ml.name as label, {} as val, '
+        q_select = [(f'select ml.name as label, {agg_f} as val, '
                      'count(1) as metric_count, sum(samples_count) as samples_count, '
-                     'sum(mv.value_num), min(mv.value_num), max(mv.value_num)').format(agg_f)]
+                     'sum(mv.value_num), min(mv.value_num), max(mv.value_num)')]
         if service and service_type:
             raise ValueError(
                 "Cannot use service and service type in the same query")
@@ -877,11 +877,11 @@ class CollectorAPI(object):
             group_by_cfg = group_by_map[group_by]
             g_sel = group_by_cfg.get('select')
             if g_sel:
-                q_select.append(', {}'.format(', '.join(g_sel)))
+                q_select.append(f', {', '.join(g_sel)}')
 
             g_sel = group_by_cfg.get('select_only')
             if g_sel:
-                q_select = ['select {}'.format(', '.join(g_sel))]
+                q_select = [f'select {', '.join(g_sel)}']
 
             q_from.extend(group_by_cfg['from'])
             q_where.extend(group_by_cfg['where'])
@@ -917,7 +917,7 @@ class CollectorAPI(object):
         if q_group:
             q_group = [' group by ', ','.join(q_group)]
         if q_order_by:
-            q_order_by = 'order by {}'.format(','.join(q_order_by))
+            q_order_by = f'order by {','.join(q_order_by)}'
 
         q = ' '.join(chain(q_select, q_from, q_where, q_group, [q_order_by]))
 
@@ -969,7 +969,7 @@ class CollectorAPI(object):
         threshold = settings.MONITORING_DATA_TTL
         if not isinstance(threshold, timedelta):
             raise TypeError("MONITORING_DATA_TTL should be an instance of "
-                            "datatime.timedelta, not {}".format(threshold.__class__))
+                            f"datatime.timedelta, not {threshold.__class__}")
         cutoff = datetime.utcnow().replace(tzinfo=utc) - threshold
         ExceptionEvent.objects.filter(created__lte=cutoff).delete()
         RequestEvent.objects.filter(created__lte=cutoff).delete()
@@ -1000,8 +1000,7 @@ class CollectorAPI(object):
 
     def send_mails(self, notification, emails, ndata, when=None):
         base_ctx = self.compose_notifications(ndata, when=when)
-        subject = _("GeoNode Monitoring on {} reports errors: {}").format(base_ctx['host'],
-                                                                          notification.notification_subject)
+        subject = _(f"GeoNode Monitoring on {base_ctx['host']} reports errors: {notification.notification_subject}")
         for email in emails:
             ctx = {'recipient': {'username': email}}
             ctx.update(base_ctx)

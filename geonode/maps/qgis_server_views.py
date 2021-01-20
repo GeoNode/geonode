@@ -575,7 +575,7 @@ def set_thumbnail_map(request, mapid):
             _l = Layer.objects.get(typename=layer.name)
             layers[_l.name] = _l
         except Layer.DoesNotExist:
-            msg = 'No Layer found for typename: {0}'.format(layer.name)
+            msg = f'No Layer found for typename: {layer.name}'
             logger.debug(msg)
 
     if not layers:
