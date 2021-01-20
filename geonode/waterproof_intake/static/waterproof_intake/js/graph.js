@@ -488,20 +488,27 @@ function onInit(editor) {
 
         //Load data from figure to html
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
-            selectedCell = evt.getProperty("cell");
+            var mouseEvent = evt.getProperty('event');
+            var selectedCell = evt.getProperty('cell');
             // Clear Inputs
             if (selectedCell != undefined) clearDataHtml(selectedCell, evt);
             //console.log(selectedCell)
             if (selectedCell != undefined) { addData(selectedCell); } else { clearDataHtml(selectedCell, evt); }
         });
 
+
+
         //Button for valide graph
         $('#saveGraph').click(function() {
+            //$('#xml').val(xmldata)
             var enc = new mxCodec();
             var node = enc.encode(editor.graph.getModel());
             var textxml = mxUtils.getPrettyXml(node)
             graphData = [];
-            validations(node);
+            //validations(node);
+            //console.log(node);
+            //createArray(editor);
+
             node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
                     'id': node.id,
@@ -514,6 +521,7 @@ function onInit(editor) {
                 })
             });
 
+            let temp = [];
             node.querySelectorAll('mxCell').forEach(function(node) {
                 if (node.id != "") {
                     let value = Object.values(JSON.parse(node.getAttribute('value')));
@@ -525,16 +533,34 @@ function onInit(editor) {
                         'funcost': JSON.stringify(value[5]),
                         'name': JSON.stringify(value[4]),
                         'varcost': JSON.stringify(value[1])
+                    });
+                    temp.push({
+                        'id': node.id,
+                        'source': node.getAttribute('source'),
+                        'target': node.getAttribute('target'),
                     })
                 }
             });
+            let connection = [];
+            for (let index = 0; index < temp.length; index++) {
+                connection.push({
+                    "source": temp[index].source,
+                    "target": temp[index].id
+                })
+                connection.push({
+                    "source": temp[index].id,
+                    "target": temp[index].target
+                })
+            }
+            console.log(connection)
             $('#xmlGraph').val(textxml);
             $('#graphElements').val(JSON.stringify(graphData));
+
         });
 
         //Set var into calculator
         $(document).on('click', '.list-group-item', function() {
-            addInfo(mathField.write(`\\mathit{${$(this).attr('value')}}`));
+            addInfo(`\\mathit{${$(this).attr('value')}}`);
         });
 
         //Edit funcion cost 
