@@ -43,7 +43,7 @@ services:
     environment:
       - IS_CELERY=True
     entrypoint: ["/usr/src/geonode/entrypoint.sh"]
-    command: "celery -A geonode.celery_app:app worker -B -E --statedb=/mnt/volumes/statics/worker.state -s /mnt/volumes/statics/celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h -f /var/log/celery.log"
+    command: "celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E --statedb=/mnt/volumes/statics/worker.state -s /mnt/volumes/statics/celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h -f /var/log/celery.log"
 
   # Nginx is serving django static and media files and proxies to django and geonode
   geonode:

@@ -707,7 +707,7 @@ msgstr "Lag et kart"
 #: geonode/base/templates/base/_resourcebase_info_panel.html:37
 #, fuzzy
 #| msgid "Position Name"
-msgid "Pubblication Date"
+msgid "Publication Date"
 msgstr "Stilling"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:39
