@@ -772,6 +772,10 @@ def file_upload(filename,
     else:
         try:
             with transaction.atomic():
+                if 'spatial_representation_type' in defaults:
+                    _spatial_ref_type = defaults.pop('spatial_representation_type')
+                    _spatial_ref_type.save()
+                    defaults['spatial_representation_type'] = _spatial_ref_type
                 ResourceBase.objects.filter(
                     id=layer.resourcebase_ptr.id).update(
                     **defaults)
@@ -950,6 +954,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                      check_bbox=False, ogc_client=None, overwrite=False,
                      width=240, height=200):
     thumbnail_name = None
+    instance.refresh_from_db()
     if isinstance(instance, Layer):
         thumbnail_name = 'layer-%s-thumb.png' % instance.uuid
     elif isinstance(instance, Map):
@@ -970,14 +975,14 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
         image = None
 
         if valid:
-            Link.objects.get_or_create(resource=instance.get_self_resource(),
-                                       url=thumbnail_remote_url,
-                                       defaults=dict(
-                                           extension='png',
-                                           name="Remote Thumbnail",
-                                           mime='image/png',
-                                           link_type='image',
-            )
+            Link.objects.get_or_create(
+                resource=instance.get_self_resource(),
+                url=thumbnail_remote_url,
+                defaults=dict(
+                    extension='png',
+                    name="Remote Thumbnail",
+                    mime='image/png',
+                    link_type='image')
             )
             ResourceBase.objects.filter(id=instance.id) \
                 .update(thumbnail_url=thumbnail_remote_url)
@@ -991,10 +996,11 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                     if is_remote and thumbnail_remote_url:
                         try:
+                            _ogc_server_settings = settings.OGC_SERVER['default']
                             resp, image = ogc_client.request(
                                 thumbnail_remote_url,
                                 headers=headers,
-                                timeout=600)
+                                timeout=_ogc_server_settings.get('TIMEOUT', 60))
                             if 'ServiceException' in image or \
                                     resp.status_code < 200 or resp.status_code > 299:
                                 msg = 'Unable to obtain thumbnail: %s' % image
@@ -1054,8 +1060,8 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                         for _p in params.keys():
                             if _p.lower() not in thumbnail_create_url.lower():
                                 thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (str(_p), str(params[_p]))
+                        _ogc_server_settings = settings.OGC_SERVER['default']
                         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                            _ogc_server_settings = settings.OGC_SERVER['default']
                             _user = _ogc_server_settings['USER'] if 'USER' in _ogc_server_settings else 'admin'
                             _pwd = _ogc_server_settings['PASSWORD'] if \
                                 'PASSWORD' in _ogc_server_settings else 'geoserver'
@@ -1063,7 +1069,10 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                             valid_uname_pw = base64.b64encode(
                                 ("%s:%s" % (_user, _pwd)).encode("UTF-8")).decode("ascii")
                             headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
-                        resp, image = ogc_client.request(thumbnail_create_url, headers=headers)
+                        resp, image = ogc_client.request(
+                            thumbnail_create_url,
+                            headers=headers,
+                            timeout=_ogc_server_settings.get('TIMEOUT', 60))
                         if 'ServiceException' in str(image) or \
                         resp.status_code < 200 or resp.status_code > 299:
                             msg = 'Unable to obtain thumbnail: %s' % image
@@ -1153,7 +1162,7 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
                     bbox[3] = float(_bbox[3])
 
     wms_endpoint = getattr(ogc_server_settings, 'WMS_ENDPOINT') or 'ows'
-    wms_version = getattr(ogc_server_settings, 'WMS_VERSION') or '1.3.0'
+    wms_version = getattr(ogc_server_settings, 'WMS_VERSION') or '1.1.0'
     wms_format = getattr(ogc_server_settings, 'WMS_FORMAT') or 'image/png'
 
     params = {
@@ -1308,10 +1317,12 @@ def set_layers_permissions(permissions_name, resources_names=None,
                             # Existing permissions on the resource
                             perm_spec = resource.get_all_level_info()
                             if verbose:
-                                print(
-                                    "Initial permissions info for the resource %s:" % resource.title
+                                logger.info(
+                                    f"Initial permissions info for the resource {resource.title}: {perm_spec}"
                                 )
-                                print(perm_spec)
+                                print(
+                                    f"Initial permissions info for the resource {resource.title}: {perm_spec}"
+                                )
                             for u in users:
                                 _user = u
                                 # Add permissions
@@ -1392,9 +1403,12 @@ def set_layers_permissions(permissions_name, resources_names=None,
                             # Set final permissions
                             resource.set_permissions(perm_spec)
                             if verbose:
-                                print(
-                                    "Final permissions info for the resource %s:" % resource.title
+                                logger.info(
+                                    f"Final permissions info for the resource {resource.title}: {perm_spec}"
                                 )
-                                print(perm_spec)
+                                print(
+                                    f"Final permissions info for the resource {resource.title}: {perm_spec}"
+                                )
                         if verbose:
+                            logger.info("Permissions successfully updated!")
                             print("Permissions successfully updated!")

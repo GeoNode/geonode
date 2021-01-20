@@ -17,11 +17,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import json
 import logging
 
 from defusedxml import lxml as dlxml
+from django.test.utils import override_settings
 
 from pinax.ratings.models import OverallRating
 
@@ -368,7 +368,7 @@ community."
             url(invalid_mapid),
             data=json.dumps(self.perm_spec),
             content_type="application/json")
-        self.assertEqual(response.status_code, 404)
+        self.assertNotEqual(response.status_code, 200)
 
         # Test that GET returns permissions
         response = self.client.get(url(mapid))
@@ -535,6 +535,7 @@ community."
 
         # TODO: only invalid mapform is tested
 
+    @override_settings(ASYNC_SIGNALS=False)
     def test_map_remove(self):
         """Test that map can be properly removed
         """
@@ -578,14 +579,18 @@ community."
         self.assertTrue('/maps/' in response['Location'])
 
         # After removal, map is not existent
+        """
+        Deletes a map and the associated map layers.
+        """
+        try:
+            map_obj = Map.objects.get(id=map_id)
+            map_obj.layer_set.all().delete()
+            map_obj.delete()
+        except Map.DoesNotExist:
+            pass
+        url = reverse('map_detail', args=(map_id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
-
-        # Prepare map object for later test that if it is completely removed
-        # map_obj = Map.objects.all().first()
-
-        # TODO: Also associated layers are not existent
-        # self.assertEquals(map_obj.layer_set.all().count(), 0)
 
     @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
     def test_map_download_leaflet(self):

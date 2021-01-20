@@ -612,7 +612,9 @@ def start_django(options):
     sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
 
     if 'django_celery_beat' not in INSTALLED_APPS:
-        sh("{} celery -A geonode.celery_app:app worker -B -E --statedb=worker.state -s celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h {}".format(  # noqa
+        sh("{} celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E \
+--statedb=worker.state -s celerybeat-schedule --loglevel=DEBUG \
+--concurrency=10 -n worker1@%h -f celery.log {}".format(  # noqa
             settings,
             foreground
         ))
@@ -840,17 +842,14 @@ def test_bdd(options):
     local = str2bool(options.get('local', 'false'))
     if local:
         call_task('reset_hard')
-    else:
-        call_task('reset')
+
     call_task('setup')
     call_task('sync')
-    sh('sleep 30')
-    info("GeoNode is now available, running the bdd tests now.")
-
-    sh('py.test')
-
     if local:
-        call_task('reset_hard')
+        sh('sleep 30')
+
+    info("GeoNode is now available, running the bdd tests now.")
+    sh('py.test')
 
 
 @task
@@ -872,10 +871,10 @@ def test_integration(options):
     prefix = options.get('prefix')
     local = str2bool(options.get('local', 'false'))
     _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
-    if local and _backend == 'geonode.geoserver' or 'geonode.qgis_server' not in INSTALLED_APPS:
+    if local and (_backend == 'geonode.geoserver' or 'geonode.qgis_server' not in INSTALLED_APPS):
         call_task('stop_geoserver')
         _reset()
-    else:
+    elif _backend == 'geonode.qgis_server':
         call_task('stop_qgis_server')
         _reset()
 
@@ -885,10 +884,11 @@ def test_integration(options):
     try:
         call_task('setup', options={'settings': settings, 'force_exec': True})
 
+        if not settings:
+            settings = 'geonode.local_settings' if _backend == 'geonode.qgis_server' else 'geonode.settings'
+            settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
+
         if name and name in ('geonode.tests.csw', 'geonode.tests.integration', 'geonode.geoserver.tests.integration'):
-            if not settings:
-                settings = 'geonode.local_settings' if _backend == 'geonode.qgis_server' else 'geonode.settings'
-                settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
             call_task('sync', options={'settings': settings})
             if local:
                 if _backend == 'geonode.geoserver':
@@ -897,27 +897,30 @@ def test_integration(options):
             if integration_server_tests:
                 call_task('setup_data', options={'settings': settings})
         elif _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
-            sh("cp geonode/upload/tests/test_settings.py geonode/")
-            settings = 'geonode.test_settings'
-            sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
-               "makemigrations --noinput".format(settings))
-            sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
-               "migrate --noinput".format(settings))
-            sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
-               "loaddata sample_admin.json".format(settings))
-            sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
-               "loaddata geonode/base/fixtures/default_oauth_apps.json".format(settings))
-            sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
-               "loaddata geonode/base/fixtures/initial_data.json".format(settings))
-            call_task('start_geoserver')
-            bind = options.get('bind', '0.0.0.0:8000')
-            foreground = '' if options.get('foreground', False) else '&'
-            sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runmessaging %s' %
-               (settings, foreground))
-            sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runserver %s %s' %
-               (settings, bind, foreground))
-            sh('sleep 30')
-            settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
+            if local:
+                sh("cp geonode/upload/tests/test_settings.py geonode/")
+                settings = 'geonode.test_settings'
+                sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
+                   "makemigrations --noinput".format(settings))
+                sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
+                   "migrate --noinput".format(settings))
+                sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
+                   "loaddata sample_admin.json".format(settings))
+                sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
+                   "loaddata geonode/base/fixtures/default_oauth_apps.json".format(settings))
+                sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
+                   "loaddata geonode/base/fixtures/initial_data.json".format(settings))
+                call_task('start_geoserver')
+                bind = options.get('bind', '0.0.0.0:8000')
+                foreground = '' if options.get('foreground', False) else '&'
+                sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runmessaging %s' %
+                (settings, foreground))
+                sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runserver %s %s' %
+                (settings, bind, foreground))
+                sh('sleep 30')
+                settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
+            else:
+                call_task('sync', options={'settings': settings})
 
         live_server_option = ''
         info("Running the tests now...")
@@ -933,8 +936,9 @@ def test_integration(options):
     else:
         success = True
     finally:
-        stop(options)
-        _reset()
+        if local:
+            stop(options)
+            _reset()
 
     if not success:
         sys.exit(1)
@@ -962,18 +966,18 @@ def run_tests(options):
     if not integration_tests and not integration_csw_tests and not integration_bdd_tests:
         call_task('test', options={'prefix': prefix})
     elif integration_tests:
-        if integration_server_tests:
-            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.geoserver.tests.integration'})
-        elif integration_upload_tests:
-            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.upload.tests.integration'})
+        if integration_upload_tests:
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.upload.tests.integration', 'local': local})
         elif integration_monitoring_tests:
-            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.monitoring.tests.integration'})
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.monitoring.tests.integration', 'local': local})
         elif integration_csw_tests:
             call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.csw', 'local': local})
         elif integration_bdd_tests:
             call_task('test_bdd', options={'local': local})
+        elif integration_server_tests:
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.geoserver.tests.integration', 'local': local})
         else:
-            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.integration'})
+            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.integration', 'local': local})
     sh('flake8 geonode')
 
 

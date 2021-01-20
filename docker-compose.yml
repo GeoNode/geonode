@@ -43,7 +43,7 @@ services:
     environment:
       - IS_CELERY=True
     entrypoint: ["/usr/src/geonode/entrypoint.sh"]
-    command: "celery -A geonode.celery_app:app worker -B -E --statedb=/mnt/volumes/statics/worker.state -s /mnt/volumes/statics/celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h -f /var/log/celery.log"
+    command: "celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E --statedb=/mnt/volumes/statics/worker.state -s /mnt/volumes/statics/celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h -f /var/log/celery.log"
 
   # Nginx is serving django static and media files and proxies to django and geonode
   geonode:
@@ -82,7 +82,7 @@ services:
 
   # Geoserver backend
   geoserver:
-    image: geonode/geoserver:2.17.2
+    image: geonode/geoserver:2.17.4
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8080/geoserver/rest/workspaces/geonode.html"
@@ -101,7 +101,7 @@ services:
     restart: on-failure
 
   data-dir-conf:
-    image: geonode/geoserver_data:2.17.2
+    image: geonode/geoserver_data:2.17.4
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     command: /bin/true
     volumes:

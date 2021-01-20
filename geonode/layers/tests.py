@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import io
@@ -50,8 +49,11 @@ from guardian.shortcuts import assign_perm, remove_perm
 from geonode import GeoNodeException, geoserver, qgis_server
 from geonode.decorators import on_ogc_backend
 from geonode.layers.models import Layer, Style, Attribute
-from geonode.layers.utils import layer_type, get_files, get_valid_name, \
-    get_valid_layer_name
+from geonode.layers.utils import (
+    layer_type,
+    get_files,
+    get_valid_name,
+    get_valid_layer_name)
 from geonode.people.utils import get_valid_user
 from geonode.base.populate_test_data import all_public
 from geonode.base.models import TopicCategory, License, Region, Link
@@ -66,6 +68,7 @@ from geonode.maps.models import Map, MapLayer
 from geonode.utils import DisableDjangoSignals
 from geonode.maps.tests_populate_maplayers import maplayers as ml
 from geonode.security.utils import remove_object_permissions
+from geonode.base.forms import BatchPermissionsForm
 
 logger = logging.getLogger(__name__)
 
@@ -224,6 +227,7 @@ class LayersTest(GeoNodeBaseTestSupport):
     def test_layer_attributes_feature_catalogue(self):
         """ Test layer feature catalogue functionality
         """
+        self.assertTrue(self.client.login(username='admin', password='admin'))
         # test a non-existing layer
         url = reverse('layer_feature_catalogue', args=('bad_layer',))
         response = self.client.get(url)
@@ -233,7 +237,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         layer = Layer.objects.all()[3]
         url = reverse('layer_feature_catalogue', args=(layer.alternate,))
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.status_code, 404)
 
     def test_layer_attribute_config(self):
         lyr = Layer.objects.all().first()
@@ -943,46 +947,78 @@ class LayersTest(GeoNodeBaseTestSupport):
         """
         Test batch editing of test_batch_permissions.
         """
+        group = Group.objects.first()
         Model = Layer
         view = 'layer_batch_permissions'
         resources = Model.objects.all()[:3]
         ids = ','.join([str(element.pk) for element in resources])
         # test non-admin access
-        self.client.login(username="bobby", password="bob")
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
         response = self.client.get(reverse(view), data={"ids": ids})
         self.assertTrue(response.status_code in (401, 403))
         # test group permissions
-        group = Group.objects.first()
-        self.client.login(username='admin', password='admin')
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        data = {
+            'group': group.id,
+            'permission_type': ['r', ],
+            'mode': 'set',
+            'ids': ids
+        }
+        form = BatchPermissionsForm(data=data)
+        logger.debug(f" -- perm_spec[groups] --> BatchPermissionsForm errors: {form.errors}")
+        self.assertTrue(form.is_valid())
+        self.assertEqual(len(form.errors), 0)
         response = self.client.post(
             reverse(view),
-            data={
-                'group': group.pk,
-                'permission_type': ('r', ),
-                'mode': 'set',
-                'ids': ids
-            },
+            data=data,
         )
         self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        utils.set_layers_permissions(
+            'r',
+            [resource.name for resource in Model.objects.filter(
+                id__in=[int(_id) for _id in ids.split(",")])],
+            [],
+            [group.name, ],
+            False,
+            verbose=True
+        )
+        resources = Model.objects.filter(id__in=[int(_id) for _id in ids.split(",")])
+        logger.debug(f" -- perm_spec[groups] --> Testing group {group}")
         for resource in resources:
             perm_spec = resource.get_all_level_info()
+            logger.debug(f" -- perm_spec[groups] --> {perm_spec['groups']}")
             self.assertTrue(group in perm_spec["groups"])
         # test user permissions
         user = get_user_model().objects.first()
+        data = {
+            'user': user.id,
+            'permission_type': ['r', ],
+            'mode': 'set',
+            'ids': ids
+        }
+        form = BatchPermissionsForm(data=data)
+        logger.debug(f" -- perm_spec[users] --> BatchPermissionsForm errors: {form.errors}")
+        self.assertTrue(form.is_valid())
+        self.assertEqual(len(form.errors), 0)
         response = self.client.post(
             reverse(view),
-            data={
-                'user': user.pk,
-                'permission_type': ('r', ),
-                'mode': 'set',
-                'ids': ids
-            },
+            data=data,
         )
         self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
+        utils.set_layers_permissions(
+            'r',
+            [resource.name for resource in Model.objects.filter(
+                id__in=[int(_id) for _id in ids.split(",")])],
+            [user.username, ],
+            [],
+            False,
+            verbose=True
+        )
+        resources = Model.objects.filter(id__in=[int(_id) for _id in ids.split(",")])
+        logger.debug(f" -- perm_spec[users] --> Testing user {user}")
         for resource in resources:
             perm_spec = resource.get_all_level_info()
+            logger.debug(f" -- perm_spec[users] --> {perm_spec['users']}")
             self.assertTrue(user in perm_spec["users"])
 
 
@@ -1192,12 +1228,13 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             self.clear_notifications_queue()
             from dialogos.models import Comment
             lct = ContentType.objects.get_for_model(_l)
-            comment = Comment(author=self.norman,
-                              name=self.u.username,
-                              content_type=lct,
-                              object_id=_l.id,
-                              content_object=_l,
-                              comment='test comment')
+            comment = Comment(
+                author=self.norman,
+                name=self.u.username,
+                content_type=lct,
+                object_id=_l.id,
+                content_object=_l,
+                comment='test comment')
             comment.save()
             self.assertTrue(self.check_notification_out('layer_comment', self.u))
 
@@ -1205,11 +1242,12 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             if "pinax.ratings" in settings.INSTALLED_APPS:
                 self.clear_notifications_queue()
                 from pinax.ratings.models import Rating
-                rating = Rating(user=self.norman,
-                                content_type=lct,
-                                object_id=_l.id,
-                                content_object=_l,
-                                rating=5)
+                rating = Rating(
+                    user=self.norman,
+                    content_type=lct,
+                    object_id=_l.id,
+                    content_object=_l,
+                    rating=5)
                 rating.save()
                 self.assertTrue(self.check_notification_out('layer_rated', self.u))
 

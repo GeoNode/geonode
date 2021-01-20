@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-28 18:12+0000\n"
+"POT-Creation-Date: 2020-12-23 15:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -344,6 +344,10 @@ msgstr ""
 msgid ""
 " Error Code. Contact the system administrator for more information regarding "
 "this error message."
+msgstr ""
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:406
+msgid "Finalizing"
 msgstr ""
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:421

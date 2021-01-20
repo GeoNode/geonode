@@ -29,13 +29,17 @@ from geonode.celery_app import app
     bind=True,
     name='geonode.br.tasks.restore_notification',
     queue='email',
+    expires=600,
+    acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 180})
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def restore_notification(recipients: List, backup_file: str, backup_md5: str, exception: str = None):
     """
     Function sending a CC email report of the restore procedure to a provided emails.
     """
-
     if exception:
         subject = 'Geonode restore procedure FAILED.'
         message = f'Restoration of the backup file: "{backup_file}" (MD5 hash: {backup_md5}) on the ' \
