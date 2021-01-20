@@ -240,7 +240,7 @@ def _robust_rmtree(path, logger=None, max_retries=5):
         except OSError:
             if logger:
                 info('Unable to remove path: %s' % path)
-                info('Retrying after %d seconds' % i)
+                info(f'Retrying after {i} seconds')
             time.sleep(i)
 
     # Final attempt, pass any Exceptions up to caller.

@@ -39,15 +39,15 @@ class Partner(models.Model):
     @property
     def logo_class(self):
         _logo_class = slugify("logo_%s" % self.name)
-        return "{0}".format(_logo_class)
+        return f"{_logo_class}"
 
     @property
     def partner_link(self):
         _href = self.href if self.href.startswith('http') else 'http://%s' % self.href
-        return "{0}".format(_href)
+        return f"{_href}"
 
     def __str__(self):
-        return "{0}".format(self.title)
+        return f"{self.title}"
 
     class Meta:
         ordering = ("name", )
@@ -72,8 +72,7 @@ class JumbotronThemeSlide(models.Model):
 
     def __str__(self):
         get_icon = (lambda arg: '[✓]' if arg else '[✗]')
-        return '{} | <Enabled: {} -- Hide Text: {}>'.format(
-            self.slide_name, get_icon(self.is_enabled), get_icon(self.hide_jumbotron_slide_content))
+        return f'{self.slide_name} | <Enabled: {get_icon(self.is_enabled)} -- Hide Text: {get_icon(self.hide_jumbotron_slide_content)}>'
 
 
 class GeoNodeThemeCustomization(models.Model):
@@ -216,10 +215,10 @@ class GeoNodeThemeCustomization(models.Model):
     def theme_uuid(self):
         if not self.identifier:
             self.identifier = slugify("theme id %s %s" % (self.id, self.date))
-        return "{0}".format(self.identifier)
+        return f"{self.identifier}"
 
     def __str__(self):
-        return "{0}".format(self.name)
+        return f"{self.name}"
 
     class Meta:
         ordering = ("date", )

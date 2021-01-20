@@ -93,7 +93,7 @@ class FilesTests(GeoNodeBaseTestSupport):
         """
         exts = ('.shp', '.shx', '.sld', '.xml', '.prj', '.dbf')
 
-        with create_files(['san_andres_y_providencia_location{0}'.format(s) for s in exts]) as tests:
+        with create_files([f'san_andres_y_providencia_location{s}' for s in exts]) as tests:
             shp = [s for s in tests if s.endswith('.shp')][0]
             spatial_files = scan_file(shp)
             self.assertTrue(isinstance(spatial_files, SpatialFiles))

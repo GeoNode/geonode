@@ -624,7 +624,7 @@ def map_json(request, mapid):
                     map_obj.viewer_json(request)))
         except ValueError as e:
             return HttpResponse(
-                "The server could not understand the request." + str(e),
+                f"The server could not understand the request.{e}",
                 content_type="text/plain",
                 status=400
             )

@@ -99,10 +99,10 @@ class Command(BaseCommand):
 
             json_response = json.loads(ensure_string(response.content))
             if "id" in json_response:
-                print("Service created with id of {}".format(json_response["id"]))
+                print(f"Service created with id of {json_response["id"]}")
                 service = Service.objects.get(id=json_response["id"])
             else:
-                print("Something went wrong: {}".format(ensure_string(response.content)))
+                print(f"Something went wrong: {ensure_string(response.content)}")
                 return
 
             print(service.id)

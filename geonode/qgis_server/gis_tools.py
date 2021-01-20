@@ -66,8 +66,7 @@ def set_attributes(layer, overwrite=False):
             with open(temp_file, 'r') as wfs_file:
                 doc = dlxml.fromstring(wfs_file.read())
 
-            path = './/{xsd}extension/{xsd}sequence/{xsd}element'.format(
-                xsd='{http://www.w3.org/2001/XMLSchema}')
+            path = f'.//{'{http://www.w3.org/2001/XMLSchema}'}extension/{'{http://www.w3.org/2001/XMLSchema}'}sequence/{'{http://www.w3.org/2001/XMLSchema}'}element'
 
             attribute_map = [
                 [n.attrib['name'], n.attrib['type']] for n in doc.findall(

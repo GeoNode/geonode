@@ -19,19 +19,19 @@ class Command(BaseCommand):
 
     @staticmethod
     def _get_client_id_arg(provider):
-        return "{}-client-id".format(provider)
+        return f"{provider}-client-id"
 
     @staticmethod
     def _get_client_secret_arg(provider):
-        return "{}-secret-key".format(provider)
+        return f"{provider}-secret-key"
 
     @staticmethod
     def _get_client_id_env(provider):
-        return "{}_OAUTH2_CLIENT_ID".format(provider.upper())
+        return f"{provider.upper()}_OAUTH2_CLIENT_ID"
 
     @staticmethod
     def _get_client_secret_env(provider):
-        return "{}_OAUTH2_SECRET_KEY".format(provider.upper())
+        return f"{provider.upper()}_OAUTH2_SECRET_KEY"
 
     @staticmethod
     def get_social_providers():
@@ -48,24 +48,18 @@ class Command(BaseCommand):
         for provider_name, provider_id in self.get_social_providers():
             client_id_arg = self._get_client_id_arg(provider_name)
             parser.add_argument(
-                "--{}".format(client_id_arg),
+                f"--{client_id_arg}",
                 help=(
-                    "Specify the client id for {}. You may also specify "
-                    "the {} environment variable instead".format(
-                        provider_name,
-                        self._get_client_id_env(provider_name)
-                    )
+                    f"Specify the client id for {provider_name}. You may also specify "
+                    f"the {self._get_client_id_env(provider_name)} environment variable instead"
                 )
             )
             client_secret_arg = self._get_client_secret_arg(provider_name)
             parser.add_argument(
-                "--{}".format(client_secret_arg),
+                f"--{client_secret_arg}",
                 help=(
-                    "Specify the secret key for {}. You may also specify "
-                    "the {} environment variable instead".format(
-                        provider_name,
-                        self._get_client_secret_env(provider_name)
-                    )
+                    f"Specify the secret key for {provider_name}. You may also specify "
+                    f"the {self._get_client_secret_env(provider_name)} environment variable instead"
                 )
             )
 
@@ -87,13 +81,13 @@ class Command(BaseCommand):
                 )
                 if all((client_id, client_secret)):
                     self.stdout.write(
-                        "Configuring provider {}...".format(provider_name))
+                        f"Configuring provider {provider_name}...")
                     self._handle_provider(
                         provider_name, provider_id, client_id, client_secret)
                 else:
                     self.stdout.write(
-                        "Provider {} not all params were specified, "
-                        "skipping...".format(provider_name)
+                        f"Provider {provider_name} not all params were specified, "
+                        "skipping..."
                     )
         else:
             self.stdout.write(
@@ -116,4 +110,4 @@ class Command(BaseCommand):
             provider.save()
         else:
             self.stdout.write(
-                "Provider {} already exists, skipping...".format(name))
+                f"Provider {name} already exists, skipping...")

@@ -213,7 +213,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
     def _offers_geonode_projection(self, srs):
         geonode_projection = getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857")
-        return geonode_projection in "EPSG:{}".format(srs)
+        return geonode_projection in f"EPSG:{srs}"
 
     def _get_indexed_layer_fields(self, layer_meta):
         srs = "EPSG:%s" % layer_meta.extent.spatialReference.wkid
@@ -222,10 +222,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                                      layer_meta.extent.xmax,
                                      layer_meta.extent.ymax])
 
-        typename = slugify("{}-{}".format(
-            layer_meta.id,
-            ''.join(c for c in layer_meta.title if ord(c) < 128)
-        ))
+        typename = slugify(f"{layer_meta.id}-{''.join(c for c in layer_meta.title if ord(c) < 128)}")
 
         return {
             "name": layer_meta.title,
@@ -276,9 +273,8 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             "styles": ""
         }
         kvp = "&".join("{}={}".format(*item) for item in params.items())
-        thumbnail_remote_url = "{}?{}".format(
-            geonode_layer.remote_service.service_url, kvp)
-        logger.debug("thumbnail_remote_url: {}".format(thumbnail_remote_url))
+        thumbnail_remote_url = f"{geonode_layer.remote_service.service_url}?{kvp}"
+        logger.debug(f"thumbnail_remote_url: {thumbnail_remote_url}")
         create_thumbnail(
             instance=geonode_layer,
             thumbnail_remote_url=thumbnail_remote_url,
@@ -291,19 +287,13 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         Link.objects.get_or_create(
             resource=geonode_layer.resourcebase_ptr,
             url=geonode_layer.ows_url,
-            name="ESRI {}: {} Service".format(
-                geonode_layer.remote_service.type,
-                geonode_layer.store
-            ),
+            name=f"ESRI {geonode_layer.remote_service.type}: {geonode_layer.store} Service",
             defaults={
                 "extension": "html",
-                "name": "ESRI {}: {} Service".format(
-                    geonode_layer.remote_service.type,
-                    geonode_layer.store
-                ),
+                "name": f"ESRI {geonode_layer.remote_service.type}: {geonode_layer.store} Service",
                 "url": geonode_layer.ows_url,
                 "mime": "text/html",
-                "link_type": "ESRI:{}".format(geonode_layer.remote_service.type),
+                "link_type": f"ESRI:{geonode_layer.remote_service.type}",
             }
         )
 

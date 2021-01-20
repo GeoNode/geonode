@@ -248,7 +248,7 @@ def monitoringfixture(ctx):
         ctx.run("django-admin.py loaddata /tmp/default_monitoring_apps_docker.json \
 --settings={0}".format(_localsettings()), pty=True)
     except Exception as e:
-        print("ERROR installing monitoring fixture: " + str(e))
+        print(f"ERROR installing monitoring fixture: {e}")
 
 
 @task

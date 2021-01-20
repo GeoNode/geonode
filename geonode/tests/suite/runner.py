@@ -289,7 +289,7 @@ class ParallelTestSuiteRunner(object):
     def _exit(self, start_time, end_time, failure_count, error_count):
         time_difference = (end_time - start_time)
 
-        print("Total run time: {} seconds".format(time_difference), file=sys.stderr)
+        print(f"Total run time: {time_difference} seconds", file=sys.stderr)
         try:
             sys.exit(failure_count + error_count)
         except Exception:

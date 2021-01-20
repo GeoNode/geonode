@@ -179,8 +179,7 @@ def qgis_server_post_save(instance, sender, **kwargs):
             if srid:
                 instance.srid = srid
     except Exception as e:
-        logger.debug("Can't retrieve projection: {layer}".format(
-            layer=geonode_layer_path))
+        logger.debug(f"Can't retrieve projection: {geonode_layer_path}")
         logger.exception(e)
 
     # Refresh and create the instance default links
@@ -276,11 +275,10 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
                 raise QGISServerLayer.DoesNotExist
             layers.append(_l)
         except Layer.DoesNotExist:
-            msg = 'No Layer found for typename: {0}'.format(layer.name)
+            msg = f'No Layer found for typename: {layer.name}'
             logger.debug(msg)
         except QGISServerLayer.DoesNotExist:
-            msg = 'No QGIS Server Layer found for typename: {0}'.format(
-                layer.name)
+            msg = f'No QGIS Server Layer found for typename: {layer.name}'
             logger.debug(msg)
 
     if not layers:
@@ -377,7 +375,7 @@ def qgis_server_post_save_map(instance, sender, **kwargs):
         overwrite=overwrite,
         internal=True)
 
-    logger.debug('Create project url: {url}'.format(url=response.url))
+    logger.debug(f'Create project url: {response.url}')
     logger.debug(
         'Creating the QGIS Project : %s -> %s' % (
             qgis_map.qgis_project_path, ensure_string(response.content)))

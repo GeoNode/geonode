@@ -151,7 +151,7 @@ class SecurityTest(GeoNodeBaseTestSupport):
             response = middleware.process_request(request)
             self.assertIsNone(
                 response,
-                msg="Middleware activated for white listed path: {0}".format(path))
+                msg=f"Middleware activated for white listed path: {path}")
 
         self.client.login(username='admin', password='admin')
         admin = get_user_model().objects.get(username='admin')
@@ -966,7 +966,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # the layer must be not accessible (response is xml)
         request = Request(url)
         basic_auth = base64.b64encode(b'bobby:bob')
-        request.add_header("Authorization", "Basic {}".format(basic_auth.decode("utf-8")))
+        request.add_header("Authorization", f"Basic {basic_auth.decode("utf-8")}")
         response = urlopen(request)
         _content_type = response.getheader('Content-Type').lower()
         self.assertEqual(
@@ -986,7 +986,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
         request = Request(url)
         basic_auth = base64.b64encode(b'bobby:bob')
-        request.add_header("Authorization", "Basic {}".format(basic_auth.decode("utf-8")))
+        request.add_header("Authorization", f"Basic {basic_auth.decode("utf-8")}")
         response = urlopen(request)
         _content_type = response.getheader('Content-Type').lower()
         self.assertEqual(
@@ -1552,7 +1552,7 @@ class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         with contextlib.ExitStack() as stack:
             input_files = [
                 stack.enter_context(_fp) for _fp in input_files]
-            files = dict(zip(['{}_file'.format(s) for s in suffixes], input_files))
+            files = dict(zip([f'{s}_file' for s in suffixes], input_files))
             files['base_file'] = files.pop('shp_file')
             files['permissions'] = '{}'
             files['charset'] = 'utf-8'
@@ -1571,7 +1571,7 @@ class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         base_name = 'single_point'
         suffixes = 'shp shx dbf prj'.split(' ')
         base_path = gisdata.GOOD_DATA
-        paths = [os.path.join(base_path, 'vector', '{}.{}'.format(base_name, suffix)) for suffix in suffixes]
+        paths = [os.path.join(base_path, 'vector', f'{base_name}.{suffix}') for suffix in suffixes]
         return paths, suffixes,
 
     @dump_func_name

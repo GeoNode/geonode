@@ -97,9 +97,7 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
         extensions_list += ['.aux.xml']
         found_files = []
         for ext in extensions_list:
-            file_path = '{base}.{ext}'.format(
-                base=base_name,
-                ext=ext)
+            file_path = f'{base_name}.{ext}'
             if os.path.exists(file_path):
                 found_files.append(file_path)
         return found_files
@@ -133,7 +131,7 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
 
         QGIS Project path: /usr/src/geonode/geonode/qgis_layer/jakarta_flood.qgs
         """
-        return '{prefix}.qgs'.format(prefix=self.qgis_layer_path_prefix)
+        return f'{self.qgis_layer_path_prefix}.qgs'
 
     @property
     def cache_path(self):
@@ -159,7 +157,7 @@ class QGISServerLayer(models.Model, PermissionLevelMixin):
         :return: Base path of qml style
         :rtype: str
         """
-        return '{prefix}.qml'.format(prefix=self.qgis_layer_path_prefix)
+        return f'{self.qgis_layer_path_prefix}.qml'
 
     def delete_qgis_layer(self):
         """Delete all files related to this object from disk."""
@@ -363,7 +361,7 @@ class QGISServerMap(models.Model, PermissionLevelMixin):
         based on map_name_format
         QGIS Project path: /usr/src/geonode/geonode/qgis_layer/map_1.qgs
         """
-        return '{prefix}.qgs'.format(prefix=self.qgis_map_path_prefix)
+        return f'{self.qgis_map_path_prefix}.qgs'
 
     @property
     def cache_path(self):

@@ -47,7 +47,7 @@ HOSTNAME = _surl.hostname
 
 # add trailing slash to site url. geoserver url will be relative to this
 if not SITEURL.endswith('/'):
-    SITEURL = '{}/'.format(SITEURL)
+    SITEURL = f'{SITEURL}/'
 
 ALLOWED_HOSTS = [urlparse(SITEURL).hostname] if os.getenv('ALLOWED_HOSTS') is None \
     else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
@@ -95,7 +95,7 @@ GEOSERVER_LOCATION = os.getenv(
 )
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    'GEOSERVER_PUBLIC_LOCATION', '{}gs/'.format(SITEURL)
+    'GEOSERVER_PUBLIC_LOCATION', f'{SITEURL}gs/'
 )
 
 OGC_SERVER_DEFAULT_USER = os.getenv(

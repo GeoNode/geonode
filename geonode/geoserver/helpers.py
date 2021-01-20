@@ -666,7 +666,7 @@ def gs_slurp(
 
     number = len(resources)
     if verbosity > 0:
-        msg = "Found %d layers, starting processing" % number
+        msg = f"Found {number} layers, starting processing"
         print(msg, file=console)
     output = {
         'stats': {
@@ -814,7 +814,7 @@ def gs_slurp(
         number_deleted = len(deleted_layers)
         if verbosity > 0:
             msg = "\nFound %d layers to delete, starting processing" % number_deleted if number_deleted > 0 else \
-                "\nFound %d layers to delete" % number_deleted
+                f"\nFound {number_deleted} layers to delete"
             print(msg, file=console)
 
         for i, layer in enumerate(deleted_layers):

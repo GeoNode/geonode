@@ -260,7 +260,7 @@ def tile_404(request, layername):
 
     msg = _(
         'You should use a GIS software or a library which support TMS service '
-        'to use this URL : {url}').format(url=tile_url_format(layername))
+        f'to use this URL : {tile_url_format(layername)}')
     return TemplateResponse(
         request,
         '404.html',
@@ -467,7 +467,7 @@ def qgis_server_request(request):
     # our proxy
     if params.get('REQUEST') == 'GetCapabilities':
         qgis_server_base_url = qgis_server_endpoint(internal=True)
-        pattern = '{endpoint}'.format(endpoint=qgis_server_base_url)
+        pattern = f'{qgis_server_base_url}'
         content = re.sub(
             pattern, qgis_server_endpoint(internal=False), content)
 
@@ -528,7 +528,7 @@ def qgis_server_map_print(request):
     temp = []
     for key, value in request.POST.items():
         temp[key] = value
-        print("{}\n{}\n--------".format(key, value))
+        print(f"{key}\n{value}\n--------")
     return HttpResponse(
         json.dumps(temp), content_type="application/json")
 
@@ -797,7 +797,7 @@ def default_qml_style(request, layername, style_name=None):
         if not (response.status_code == 200 and ensure_string(response.content) == 'OK'):
             return HttpResponseServerError(
                 'Failed to change default Style.'
-                'Error: {0}'.format(ensure_string(response.content)))
+                f'Error: {ensure_string(response.content)}')
 
         # Succesfully change default style
         # Synchronize models

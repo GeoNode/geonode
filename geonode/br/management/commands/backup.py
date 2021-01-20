@@ -276,7 +276,7 @@ class Command(BaseCommand):
                 try:
                     shutil.rmtree(target_folder)
                 except Exception:
-                    print("WARNING: Could not be possible to delete the temp folder: '" + str(target_folder) + "'")
+                    print(f"WARNING: Could not be possible to delete the temp folder: '{target_folder}'")
 
                 print("Backup Finished. Archive generated.")
 

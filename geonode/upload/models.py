@@ -146,7 +146,7 @@ class UploadFile(models.Model):
     slug = models.SlugField(max_length=50, blank=True)
 
     def __str__(self):
-        return "{0}".format(self.slug)
+        return f"{self.slug}"
 
     def get_absolute_url(self):
         return reverse('data_upload_new', args=[self.slug, ])

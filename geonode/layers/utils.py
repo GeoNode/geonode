@@ -853,7 +853,7 @@ def upload(incoming, user=None, overwrite=False,
     # let's process them one by one.
     number = len(potential_files)
     if verbosity > 1:
-        msg = "Found %d potential layers." % number
+        msg = f"Found {number} potential layers."
         print(msg, file=console)
 
     if (number > 1) and (name is not None):

@@ -152,7 +152,7 @@ class Service(ResourceBase):
     # Supported Capabilities
 
     def __str__(self):
-        return "{0}".format(self.name)
+        return f"{self.name}"
 
     @property
     def service_url(self):

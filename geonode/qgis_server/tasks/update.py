@@ -98,8 +98,7 @@ def create_qgis_server_thumbnail(model_path, object_id, overwrite=False, bbox=No
     # if it is socket exception, we should raise it, because there is
     # something wrong with the url
     except socket.error as e:
-        logger.error('Thumbnail url not accessed {url}'.format(
-            url=thumbnail_remote_url))
+        logger.error(f'Thumbnail url not accessed {thumbnail_remote_url}')
         logger.exception(e)
         # reraise exception with original traceback
         raise
@@ -138,7 +137,7 @@ def cache_request(self, url, cache_file):
     :return: True if succeeded
     :rtype: bool
     """
-    logger.debug('Requesting url: {url}'.format(url=url))
+    logger.debug(f'Requesting url: {url}')
     response = requests.get(url, stream=True)
 
     if not response.status_code == 200:

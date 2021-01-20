@@ -109,12 +109,12 @@ class Client(DjangoTestClient):
         # logger.error(f" make_request ----------> url: {url}")
 
         if ajax:
-            url += "{}force_ajax=true".format('&' if '?' in url else '?')
+            url += f"{'&' if '?' in url else '?'}force_ajax=true"
             self._session.headers['X_REQUESTED_WITH'] = "XMLHttpRequest"
 
         cookie_value = self._session.cookies.get(settings.SESSION_COOKIE_NAME)
         if force_login and cookie_value:
-            self.response_cookies += "; {}={}".format(settings.SESSION_COOKIE_NAME, cookie_value)
+            self.response_cookies += f"; {settings.SESSION_COOKIE_NAME}={cookie_value}"
 
         if self.csrf_token:
             self._session.headers['X-CSRFToken'] = self.csrf_token
@@ -230,7 +230,7 @@ class Client(DjangoTestClient):
         try:
             return resp, resp.json()
         except ValueError:
-            logger.exception(ValueError("probably not json, status {}".format(resp.status_code)))
+            logger.exception(ValueError(f"probably not json, status {resp.status_code}"))
             return resp, resp.content
 
     def get_html(self, path, debug=True):

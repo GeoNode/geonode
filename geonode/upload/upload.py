@@ -258,10 +258,9 @@ def _check_geoserver_store(store_name, layer_type, overwrite):
                                 "Name already in use and overwrite is False")
                         existing_type = resource.resource_type
                         if existing_type != layer_type:
-                            msg = ("Type of uploaded file {} ({}) does not "
+                            msg = (f"Type of uploaded file {store_name} ({layer_type}) does not "
                                    "match type of existing resource type "
-                                   "{}".format(store_name, layer_type,
-                                               existing_type))
+                                   f"{existing_type}")
                             logger.error(msg)
                             raise GeoNodeException(msg)
 
@@ -299,10 +298,10 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
             FeatureType.resource_type,
             Coverage.resource_type):
         raise RuntimeError("Expected layer type to FeatureType or "
-                           "Coverage, not {}".format(the_layer_type))
+                           f"Coverage, not {the_layer_type}")
     files_to_upload = preprocess_files(spatial_files)
-    logger.debug("files_to_upload: {}".format(files_to_upload))
-    logger.debug('Uploading {}'.format(the_layer_type))
+    logger.debug(f"files_to_upload: {files_to_upload}")
+    logger.debug(f'Uploading {the_layer_type}')
     error_msg = None
     try:
         next_id = _get_next_id()

@@ -221,7 +221,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 
         """
         layer_meta = self.get_resource(resource_id)
-        logger.debug("layer_meta: {}".format(layer_meta))
+        logger.debug(f"layer_meta: {layer_meta}")
         if self.indexing_method == CASCADED:
             logger.debug("About to import cascaded layer...")
             geoserver_resource = self._import_cascaded_resource(layer_meta)
@@ -297,9 +297,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             "styles": ""
         }
         kvp = "&".join("{}={}".format(*item) for item in params.items())
-        thumbnail_remote_url = "{}{}{}".format(
-            geonode_layer.remote_service.service_url, _q_separator, kvp)
-        logger.debug("thumbnail_remote_url: {}".format(thumbnail_remote_url))
+        thumbnail_remote_url = f"{geonode_layer.remote_service.service_url}{_q_separator}{kvp}"
+        logger.debug(f"thumbnail_remote_url: {thumbnail_remote_url}")
         create_thumbnail(
             instance=geonode_layer,
             thumbnail_remote_url=thumbnail_remote_url,
@@ -329,9 +328,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                 "fontAntiAliasing:true;fontSize:12;forceLabels:on")
         }
         kvp = "&".join("{}={}".format(*item) for item in params.items())
-        legend_url = "{}{}{}".format(
-            geonode_layer.remote_service.service_url, _q_separator, kvp)
-        logger.debug("legend_url: {}".format(legend_url))
+        legend_url = f"{geonode_layer.remote_service.service_url}{_q_separator}{kvp}"
+        logger.debug(f"legend_url: {legend_url}")
         Link.objects.get_or_create(
             resource=geonode_layer.resourcebase_ptr,
             url=legend_url,
@@ -374,8 +372,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             "name": name,
             "workspace": workspace or "remoteWorkspace",
             "store": store.name if store and hasattr(store, 'name') else self.name,
-            "typename": "{}:{}".format(workspace, name) if workspace not in name else name,
-            "alternate": "{}:{}".format(workspace, name) if workspace not in name else name,
+            "typename": f"{workspace}:{name}" if workspace not in name else name,
+            "alternate": f"{workspace}:{name}" if workspace not in name else name,
             "storeType": "remoteStore",
             "title": geoserver_resource.title,
             "abstract": geoserver_resource.abstract,
@@ -410,8 +408,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         workspace = base.get_geoserver_cascading_workspace(create=create)
         cat = workspace.catalog
         store = cat.get_store(self.name, workspace=workspace)
-        logger.debug("name: {}".format(self.name))
-        logger.debug("store: {}".format(store))
+        logger.debug(f"name: {self.name}")
+        logger.debug(f"store: {store}")
         if store is None and create:  # store did not exist. Create it
             store = cat.create_wmsstore(
                 name=self.name,
@@ -445,8 +443,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                                    "geoserver".format(layer_meta))
             layer_resource = layer_resource.resource
         else:
-            logger.debug("Layer {} is already present. Skipping...".format(
-                layer_meta.id))
+            logger.debug(f"Layer {layer_meta.id} is already present. Skipping...")
         layer_resource.refresh()
         return layer_resource
 
@@ -609,8 +606,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
                             thumbnail_remote_url = _layer["thumbnail_url"]
                             _url = urlsplit(thumbnail_remote_url)
                             if not _url.scheme:
-                                thumbnail_remote_url = "{}{}".format(
-                                    geonode_layer.remote_service.service_url, _url.path)
+                                thumbnail_remote_url = f"{geonode_layer.remote_service.service_url}{_url.path}"
                             resp, image = http_client.request(
                                 thumbnail_remote_url)
                             if 'ServiceException' in str(image) or \

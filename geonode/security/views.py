@@ -89,9 +89,9 @@ def resource_permissions(request, resource_id):
                    not view_any:
 
                     success = False
-                    message = "User {} has download permissions but cannot " \
+                    message = f"User {user.username} has download permissions but cannot " \
                               "access the resource. Please update permission " \
-                              "consistently!".format(user.username)
+                              "consistently!"
 
             return HttpResponse(
                 json.dumps({'success': success, 'message': message}),
@@ -462,8 +462,8 @@ def send_email_owner_on_view(owner, viewer, layer_id, geonode_email="email@geo.n
         from django.core.mail import EmailMessage
         # TODO: Copy edit message.
         subject_email = "Your Layer has been seen."
-        msg = ("Your layer called {0} with uuid={1}"
-               " was seen by {2}").format(layer.name, layer.uuid, viewer)
+        msg = (f"Your layer called {layer.name} with uuid={layer.uuid}"
+               f" was seen by {viewer}")
         try:
             email = EmailMessage(
                 subject=subject_email,
