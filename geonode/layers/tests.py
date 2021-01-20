@@ -1022,8 +1022,6 @@ class LayersTest(GeoNodeBaseTestSupport):
             logger.debug(f" -- perm_spec[users] --> {perm_spec['users']}")
             self.assertTrue(user in perm_spec["users"])
 
-    # utils.py Tests
-
     def test_surrogate_escape_string(self):
         surrogate_escape_raw = "Zo\udcc3\udcab"
         surrogate_escape_expected = "Zoë"
