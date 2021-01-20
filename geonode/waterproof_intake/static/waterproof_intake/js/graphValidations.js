@@ -286,12 +286,12 @@ var validateinput = function(e) {
     e.value = (t.indexOf(".") >= 0) ? (t.substr(0, t.indexOf(".")) + t.substr(t.indexOf("."), 3)) : t;
 }
 
-function validations(valida) {
+function validationsCsinfraExternal(valida) {
     message = [];
     let symbols = [];
     let mxcell = [];
     valida.querySelectorAll('Symbol').forEach((node) => symbols.push(node.getAttribute('name')));
-    if (symbols.includes("CSINFRA") == false) message.push('(Study Infrastructure)');
+    if (symbols.includes("CSINFRA") == false) message.push('(Case Study Infrastructure)');
     valida.querySelectorAll('mxCell').forEach((node) => mxcell.push(node.getAttribute('style')));
     if (mxcell.includes("EXTRACTIONCONNECTION") == false) message.push('(Extraction Connection)');
     if (message[0] == undefined) return;
@@ -301,4 +301,8 @@ function validations(valida) {
         title: `Missing elements`,
         text: `No exist ${message[0]} ${message[1]} in a diagram`
     })
+}
+
+function validations(validate) {
+    validationsCsinfraExternal(validate);
 }

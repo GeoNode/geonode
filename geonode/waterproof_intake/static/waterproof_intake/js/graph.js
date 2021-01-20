@@ -257,8 +257,8 @@ function onInit(editor) {
 
     // Target needs exactly one incoming connection from Source
     editor.graph.multiplicities.push(new mxMultiplicity(
-        false, 'Symbol', 'name', 'CSINFRA', 1, 1, ['Symbol'],
-        'Target Must Have 1 Source',
+        true, 'Symbol', 'name', 'CSINFRA', 0, 0, ['Symbol'],
+        `From element CSINFRA can't connect to other element`,
         'Target Must Connect From Source'));
 
     var getdata = document.getElementById('getdata');
@@ -502,6 +502,7 @@ function onInit(editor) {
             var textxml = mxUtils.getPrettyXml(node)
             graphData = [];
             validations(node);
+            createArray(editor);
             node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
                     'id': node.id,
