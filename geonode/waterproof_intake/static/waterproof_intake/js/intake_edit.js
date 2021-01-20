@@ -254,25 +254,32 @@ $(document).ready(function () {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     });
     map.addLayer(osm);
+
+    var images = L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}");
+        
+    var esriHydroOverlayURL= "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}";
+    var hydroLyr = L.tileLayer(esriHydroOverlayURL);
+
+    var baseLayers = {
+        OpenStreetMap: osm,
+        Images: images,
+        /* Grayscale: gray,   */          
+    };
+
+    var overlays = {
+        "Hydro (esri)": hydroLyr,
+    };
+
+    var c = new L.Control.Coordinates();
+    c.addTo(map);    
+
+    L.control.layers(baseLayers,overlays,{position: 'topleft'}).addTo(map);
+        
+
+
     mapDelimit.addLayer(osmid);
 
-    L.control.mapCenterCoord().addTo(map);
-
-    L.control.coordinates({
-        position: "bottomleft", //optional default "bootomright"
-        decimals: 2, //optional default 4
-        decimalSeperator: ".", //optional default "."
-        labelTemplateLat: "Latitude: {y}", //optional default "Lat: {y}"
-        labelTemplateLng: "Longitude: {x}", //optional default "Lng: {x}"
-        enableUserInput: true, //optional default true
-        useDMS: false, //optional default false
-        useLatLngOrder: true, //ordering of labels, default false-> lng-lat
-        markerType: L.marker, //optional default L.marker
-        markerProps: {}, //optional default {},
-        centerUserCoordinates: true,
-        labelFormatterLng: function (lng) { return lng + " lng" }, //optional default none,
-        labelFormatterLat: function (lat) { return lat + " lat" }, //optional default none      
-    }).addTo(map);
+    
 
     $("#validateBtn").on("click", function () {
         Swal.fire({
