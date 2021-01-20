@@ -16,7 +16,8 @@ from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from django.core import serializers
 from django.http import JsonResponse
 from . import forms
-import json
+from types import SimpleNamespace
+import simplejson as json
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.gdal import OGRGeometry
 import datetime
@@ -396,6 +397,28 @@ def editIntake(request, idx):
             countries = Countries.objects.all()
             currencies = Currency.objects.all()
             filterIntake = Intake.objects.get(id=idx)
+            filterExternal = ElementSystem.objects.filter(intake=filterIntake.pk, is_external=True)
+            extInputs = []
+
+            for element in filterExternal:
+                filterExtraction = ValuesTime.objects.filter(element=element.pk)
+                external ={
+                    'name': element.name,
+                    'xmlId':element.graphId
+                }
+                for extraction in filterExtraction:
+                    extractionElements = []
+                    extractionObject = {
+                        'year':extraction.year,
+                        'waterVol': extraction.water_volume,
+                        'sediment': extraction.sediment,
+                        'nitrogen': extraction.nitrogen,
+                        'phosphorus':extraction.phosphorus
+                    }
+                    extractionElements.append(extractionObject)
+                external['waterExtraction']=extractionElements
+                extInputs.append(external)
+            intakeExtInputs=list(extInputs)
             city = City.objects.all()
             return render(
                 request, 'waterproof_intake/intake_edit.html',
@@ -403,6 +426,7 @@ def editIntake(request, idx):
                     'intake': filterIntake,
                     'countries': countries,
                     'city': city,
+                    'externalInputs': intakeExtInputs
                 }
             )
         else:
