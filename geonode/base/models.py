@@ -45,7 +45,7 @@ from django.core.files.storage import default_storage as storage
 
 from mptt.models import MPTTModel, TreeForeignKey
 
-from PIL import Image
+from PIL import Image, ImageOps
 from io import BytesIO
 
 from imagekit.models import ImageSpecField
@@ -1489,7 +1489,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     im.thumbnail(
                         (_default_thumb_size['width'], _default_thumb_size['height']),
                         resample=Image.ANTIALIAS)
-                    cover = im.resize((_default_thumb_size['width'], _default_thumb_size['height']))
+                    cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']))
                     cover.save(storage.path(_upload_path), format='JPEG')
                 except Exception as e:
                     logger.debug(e)

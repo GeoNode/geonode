@@ -37,7 +37,7 @@ from six import (
     string_types,
     reraise as raise_
 )
-from PIL import Image
+from PIL import Image, ImageOps
 from io import BytesIO
 
 from itertools import cycle
@@ -2076,7 +2076,7 @@ def _render_thumbnail(req_body, width=240, height=200):
         im.thumbnail(
             (_default_thumb_size['width'], _default_thumb_size['height']),
             resample=Image.ANTIALIAS)
-        cover = im.resize((_default_thumb_size['width'], _default_thumb_size['height']))
+        cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']))
         imgByteArr = BytesIO()
         cover.save(imgByteArr, format='JPEG')
         content = imgByteArr.getvalue()
