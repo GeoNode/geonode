@@ -110,7 +110,7 @@ DATABASE_URL = os.getenv(
       )
  )
 
-DATABASE_URL='postgresql://geonode:{&Uid&QXZ&6f;|F@dev.skaphe.com:5432/geonode'
+#DATABASE_URL='postgresql://geonode:{&Uid&QXZ&6f;|F@dev.skaphe.com:5432/geonode'
 
 if DATABASE_URL.startswith("spatialite"):
     try:
@@ -133,9 +133,10 @@ GEONODE_DB_CONN_TOUT = int(os.getenv('GEONODE_DB_CONN_TOUT', 5))
 
 _db_conf = dj_database_url.parse(
     DATABASE_URL,
+    'django.contrib.gis.db.backends.postgis',
     conn_max_age=GEONODE_DB_CONN_MAX_AGE)
 
-_db_conf['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
+#_db_conf['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 if 'CONN_TOUT' in _db_conf:
     _db_conf['CONN_TOUT'] = GEONODE_DB_CONN_TOUT
 if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
