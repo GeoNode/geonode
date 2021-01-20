@@ -676,8 +676,8 @@ community."
             response_config_dict['about']['title'])
 
         map_obj.update_from_viewer(config_map, context={})
-        title = config_map('title', config_map['about']['title'])
-        abstract = config_map('abstract', config_map['about']['abstract'])
+        title = config_map.get('title', config_map['about']['title'])
+        abstract = config_map.get('abstract', config_map['about']['abstract'])
         center = config_map['map'].get('center', settings.DEFAULT_CONTENT_TYPE)
         zoom = config_map['map'].get('zoom', settings.DEFAULT_MAP_ZOOM)
 

@@ -1063,7 +1063,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                         _ogc_server_settings = settings.OGC_SERVER['default']
                         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                             _user = _ogc_server_settings.get('USER', 'admin')
-                            _pwd = _ogc_server_settings('PASSWORD', 'geoserver')
+                            _pwd = _ogc_server_settings.get('PASSWORD', 'geoserver')
                             import base64
                             valid_uname_pw = base64.b64encode(
                                 ("%s:%s" % (_user, _pwd)).encode("UTF-8")).decode("ascii")
