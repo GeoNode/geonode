@@ -3,13 +3,11 @@
 {% load static from staticfiles %}
 {% load bootstrap_tags %}
 {% block extra_head %}
-<link href="https://unpkg.com/smartwizard@5/dist/css/smart_wizard_all.min.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-    crossorigin="" />
-<link rel="stylesheet" href="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Coordinates.css" %}" />
-<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Loader.css" %}" />
+<link href="{{ STATIC_URL }}waterproof_intake/css/smart_wizard_all.min.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/css/leaflet.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/css/L.Control.MapCenterCoord.min.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Coordinates.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Loader.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/mathquill/mathquill.css"/>
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/css/intake.css"/>
 <script>
@@ -118,7 +116,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="panel panel-info">
-                        <h4 class="text-center"style="color: #5bc0de;">Select the elements that make up your capture system and click on the drawing area to add them.</h4>
+                        <h4 class="text-center text-intake">Select the elements that make up your capture system and click on the drawing area to add them.</h4>
                         <div class="panel-body text-center" id="toolbar"></div>
                     </div>
                 </div>
@@ -136,10 +134,13 @@
                 </div>
                 <!--Panel Information Right-->
                 <div class="col-md-4">
+                 <button type="button" class="btn btn-primary btn-block" id="saveGraph">Validate Graph</button>
+                    <div class="alert alert-info text-center" role="alert">
+                    <button type="button" class="btn btn-link btn-block" data-toggle="modal" data-target="#HelpModal" id="HelpModalBtnModal" style="outline:none; text-decoration:none;">
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> How to use the graph</button>
+                    </button>
+                    </div>
                     <div class="panel panel-info">
-                    <span class="glyphicon glyphicon-exclamation-sign text-center" id="helpgraph" style="padding-left:6rem; font-size:22px;" aria-hidden="true">
-                    <label style="font-family: 'Montserrat', sans-serif;font-size:16px; vertical-align: text-bottom;">How to use the graph</label>
-                    </span>
                         <div class="panel-body">
                             <!--Figure Name-->
                             <div class="alert alert-info" role="alert">
@@ -172,7 +173,7 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-primary btn-block" id="saveGraph">Validate Graph</button>
+                   
                 </div>
                 <div class="col-md-12">
                     <h3>Cost functions <small id="titleCostFunSmall"></small>
@@ -452,16 +453,14 @@
     {% endblock %}
 
     {% block extra_script %}
-    <script src="https://unpkg.com/smartwizard@5/dist/js/jquery.smartWizard.min.js" type="text/javascript"></script>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-        crossorigin=""></script>
+    <script src="{{ STATIC_URL }}waterproof_intake/js/jquery.smartWizard.min.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}waterproof_intake/js/leaflet.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/leaflet/Leaflet.Editable.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/leaflet/coordinates/Control.Coordinates.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/leaflet/coordinates/util/NumberFormatter.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/leaflet/Control.Loader.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/waterproof/waterIntake.js"></script>
-    <script src="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.js"></script>
+    <script src="{{ STATIC_URL }}waterproof_intake/js/L.Control.MapCenterCoord.min.js"></script>
     <!--ZIP reader library-->
     <script src="{{ STATIC_URL }}geonode/js/jszip/jszip.min.js"></script>
     <!--Shapefile reader library -->

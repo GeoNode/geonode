@@ -302,3 +302,64 @@ function validations(valida) {
         text: `No exist ${message[0]} ${message[1]} in a diagram`
     })
 }
+/*
+function createArray(data) {
+
+    let data2 = [];
+    data2 = Object.values(data.graph.model.cells);
+    data2.splice(0, 2);
+    let branch = [];
+
+
+    for (let index = 0; index < data2.length; index++) {
+        if (data2[index].edges && data2[index].edges.length == 1) {
+            console.group(data2[index].id + " - " + data2[index].style);
+            console.log(data2[index])
+                //console.log(data2[index].id);
+            valideArray(data2[index].edges[0].source.edges, data2[index].edges[0].id)
+            console.groupEnd()
+        }
+
+    }
+    console.log(branch)
+}
+
+function valideArray(elemento, padre) {
+    for (let index = 0; index < elemento.length; index++) {
+        if (elemento[index].id == padre) {;
+            console.log(elemento[index].id);
+            console.log(elemento[index].source.id)
+            temp = elemento[index].source.edges;
+            //console.log(temp)
+            for (let info = 0; info < temp.length; info++) {
+                if (temp[info].target.id == elemento[index].source.id) {
+                    console.log(temp[info].id);
+                    console.log(temp[info].source.id);
+                    temp2 = temp[info].edges;
+                    console.log(temp2)
+                    if (temp2) {
+                        for (let gap = 0; gap < temp2.length; gap++) {
+                            if (temp[gap].target.id == temp2[index].source.id) {
+                                if ((temp2[info].id)) {
+                                    console.log(temp2[info].id);
+                                }
+                                if (temp2[info].source.id) {
+                                    console.log(temp2[info].source.id);
+                                }
+                            }
+
+                        }
+                    }
+                }
+
+            }
+            /*temp.push(elemento[index].source.edges);
+            for (let info = 0; info < temp.length; info++) {
+                if (temp.id == elemento[index].id);
+                console.log(temp.id)
+            }*/
+/*
+        }
+
+    }
+}*/
