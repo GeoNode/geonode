@@ -67,7 +67,7 @@ $(function() {
 
     initMap = function() {
 
-        map = L.map('mapidcuenca', { scrollWheelZoom: false, zoomControl: false, photonControl: true, photonControlOptions: { resultsHandler: showSearchPoints, placeholder: 'Search City...', position: 'topleft', url: API_URL } });
+        map = L.map('mapidStudy', { scrollWheelZoom: false, zoomControl: false, photonControl: true, photonControlOptions: { resultsHandler: showSearchPoints, placeholder: 'Search City...', position: 'topleft', url: API_URL } });
         map.setView([4, -72], 5);
 
         searchPoints.addTo(map);
