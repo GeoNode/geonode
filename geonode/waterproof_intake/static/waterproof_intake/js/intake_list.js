@@ -4,7 +4,11 @@
  * @version 1.0
  */
 $(function() {
-    var table = $('#example').DataTable();
+    var table = $('#example').DataTable(
+        {
+            'dom': 'lrtip'
+        }
+    );
     var countryDropdown = $('#countryNBS');
     var currencyDropdown = $('#currencyCost');
     var transitionsDropdown = $('#riosTransition');
