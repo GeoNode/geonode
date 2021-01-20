@@ -23,18 +23,21 @@
     crossorigin="" />
 <div class="row">
     <div class="col-md-4">
-        <h4 class="text-center" id="countryLabel">{{intake.city.name}}</h4>
+        <h4 class="text-center" id="countryLabel">{{city.name}}</h4>
+        <p><b>País:</b> <span id="regionLabel">{{city.name}}</span> </p>
         <p><b>Region:</b> <span id="regionLabel">{{region.name}}</span> </p>
-        <p><b>Currency:</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
     </div>
     <div class="col-md-8">
-        <div id="mapidcuenca" style="width: 700px; height: 200px;"></div>
+        <div id="mapidcuenca" style="width: 700px; height: 300px;"></div>
 
     </div>
 </div>
 <div class="page-header">
    
-    <h1>{% trans "List Water Intake" %}</h1>
+    <h1>{% trans "Búsqueda de Captaciones" %}</h1>
+    <h7>{% trans "Ingrese el nombre de la ciudad de su interés. El sistema le mostrará un listado con las coincidencias a nivel mundial. Seleccione de la lista la opcion que corresponda." %}</h7>
+    <br>
+    <br>
     <a href="create/" id="createUrl">{% trans "Create new Water Intake" %}</a>
 </div>
 <div class="table-responsive">
