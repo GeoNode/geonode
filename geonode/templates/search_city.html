@@ -6,7 +6,8 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin=""/>
-    <link rel="stylesheet" href="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.css" />    <script src="{% static "geonode/css/leaflet/L.Control.MapCenterCoord.css" %}"></script>
+    <link rel="stylesheet" href="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.css" />    
+    <link rel="stylesheet" href="{% static "geonode/css/leaflet/L.Control.MapCenterCoord.css" %}"/>
     <link rel="stylesheet" href="https://photon.komoot.io/static/leaflet.photon/leaflet.photon.css"></link>
 {% endblock %}
 
@@ -25,6 +26,10 @@
   <script src="https://www.zimmi.cz/Leaflet-Coordinates-Control/Control.Coordinates.js"></script>
   <script src="{% static "geonode/js/leaflet/photon/leaflet.photon.js" %}"></script>
   <script src="{% static "geonode/js/leaflet/L.Control.MapCenterCoord.js" %}"></script>
+  <script src="https://leaflet-extras.github.io/leaflet-providers/leaflet-providers.js"></script>
+  <!-- <script src="https://unpkg.com/esri-leaflet@2.5.3/dist/esri-leaflet.js"
+    integrity="sha512-K0Vddb4QdnVOAuPJBHkgrua+/A9Moyv8AQEWi0xndQ+fqbRfAFd47z4A9u1AW/spLO0gEaiE1z98PK1gl5mC5Q=="
+    crossorigin=""></script> -->
   
   <script type="text/javascript">
     API_URL = '/proxy/?url=https://photon.komoot.io/api/?';
@@ -41,19 +46,53 @@
         //    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
         //});
         //map.addLayer(osm);
+
+        var gray = L.layerGroup();
+
+        // more than one service can be grouped together and passed to the control together
+        //L.esri.basemapLayer('Gray').addTo(gray);
+        //L.esri.basemapLayer('GrayLabels').addTo(gray);
         
-        var map = L.map('map', {scrollWheelZoom: false, zoomControl: false, photonControl: true, photonControlOptions: {resultsHandler: showSearchPoints, placeholder: 'Search City...', position: 'topleft', url: API_URL}});
+        var osm = L.tileLayer(TILELAYER, {
+            maxZoom: MAXZOOM, 
+            attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 Komoot'});
+        var images = L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}");
+        
+        var esriHydroOverlayURL= "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}";
+        var hydroLyr = L.tileLayer(esriHydroOverlayURL);
+
+        var baseLayers = {
+            OpenStreetMap: osm,
+            Images: images,
+            /* Grayscale: gray,   */          
+        };
+
+        var overlays = {
+            "Hydro (esri)": hydroLyr,
+        };
+
+        var map = L.map('map', {
+                scrollWheelZoom: false, 
+                layers: [osm],
+                zoomControl: false, 
+                photonControl: true, 
+                photonControlOptions: {
+                    resultsHandler: showSearchPoints, 
+                    placeholder: 'Search City...', 
+                    position: 'topleft', url: API_URL}
+            });        
+
         map.setView([4.5, -74.4],5);
         searchPoints.addTo(map);
-        var tilelayer = L.tileLayer(TILELAYER, {maxZoom: MAXZOOM, attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 Komoot'}).addTo(map);
         var zoomControl = new L.Control.Zoom({position: 'topright'}).addTo(map);
-
-        var c = new L.Control.Coordinates();
-        L.control.mapCenterCoord().addTo(map);
-		  c.addTo(map);
+        L.control.layers(baseLayers,overlays).addTo(map);
+        // var c = new L.Control.Coordinates();
+        // c.addTo(map);    
+        //L.control.mapCenterCoord().addTo(map); 
+		
 
         function onMapClick(e) {
-            c.setCoordinates(e);      
+            //c.setCoordinates(e);      
         }
         map.on('click', onMapClick);
       
