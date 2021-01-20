@@ -363,7 +363,7 @@
         </div>
 
         <!--Inputs hidden for save data-->
-        <input type="hidden" id="xmlGraph" name="xmlGraph">
+        <input type="hidden" id="xmlGraph" name="xmlGraph" value="{{intake.xml_graph}}">
         <input type="hidden" id="isFile" name="isFile">
         <input type="hidden" id="typeDelimit" name="typeDelimit">
         <input type="hidden" id="waterExtraction" name="waterExtraction" value="">
@@ -468,7 +468,8 @@
             </div>
         </div>
     </div>
-</div>
+</div>  
+
 {% endblock %}
 
 {% block extra_script %}
@@ -491,7 +492,18 @@
     var mxImageBasePath = '{{ STATIC_URL }}geonode/js/mxgraph/examples/images';
     var editorUrl = '{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/config/diagrameditor.xml';
     var serverApi = '{{serverApi}}';
+    var intakeInterpolationParams = {};
+    var externalWaterExtraction = [];
+    
+    intakeInterpolationParams.type = '{{ intake.demand_parameters.interpolation_type }}';
+    intakeInterpolationParams.yearsNum = '{{intake.demand_parameters.years_number}}';
+    intakeInterpolationParams.initialExtract = '{{intake.demand_parameters.initial_extraction}}';
+    intakeInterpolationParams.endingExtract = '{{intake.demand_parameters.ending_extraction}}';
+    var xmlGraph = $('#xmlGraph').val();
+    var extraction='{{externalInputs}}';
 </script>
+ 
+
 <script src="{{ STATIC_URL }}waterproof_intake/js/intake_edit.js"></script>
 <script src="{{ STATIC_URL }}waterproof_intake/js/graph.js"></script>
 <script src="{{ STATIC_URL }}waterproof_intake/js/graphValidations.js"></script>

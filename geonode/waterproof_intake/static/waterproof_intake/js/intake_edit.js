@@ -27,7 +27,6 @@ var editablepolygon;
 var validPolygon;
 var isFile;
 var delimitationFileType;
-var xmlGraph;
 var waterExtractionData = {};
 var waterExtractionValue;
 const delimitationFileEnum = {
@@ -47,8 +46,6 @@ $(document).ready(function () {
         $('#intakeECTAG tr').remove();
         $('#IntakeTDLE table').remove();
         $('#externalSelect option').remove();
-
-
         $('#autoAdjustHeightF').css("height", "auto");
         typeProcessInterpolation = Number($("#typeProcessInterpolation").val());
         numberYearsInterpolationValue = Number($("#numberYearsInterpolationValue").val());
