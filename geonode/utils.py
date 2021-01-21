@@ -82,6 +82,7 @@ from urllib.parse import (
     SplitResult
 )
 
+MaxExtent = 20037508.34;
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
 
@@ -112,6 +113,7 @@ id_none = id(None)
 
 logger = logging.getLogger("geonode.utils")
 
+FullRot = 360.0;
 
 def unzip_file(upload_file, extension='.shp', tempdir=None):
     """
@@ -333,7 +335,7 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
 
 def _v(coord, x, source_srid=4326, target_srid=3857):
     if source_srid == 4326 and x and abs(coord) != 180.0:
-        coord = coord - (round(coord / 360.0) * 360.0)
+        coord = coord - (round(coord / FullRot) * FullRot)
     if source_srid == 4326 and target_srid != 4326:
         if x and float(coord) >= 179.999:
             return 179.999
@@ -416,7 +418,7 @@ def bounds_to_zoom_level(bounds, width, height):
     sw = [float(bounds[0]), float(bounds[1])]
     latFraction = (latRad(ne[1]) - latRad(sw[1])) / pi
     lngDiff = ne[0] - sw[0]
-    lngFraction = ((lngDiff + 360.0) if (lngDiff < 0) else lngDiff) / 360.0
+    lngFraction = ((lngDiff + FullRot) if (lngDiff < 0) else lngDiff) / FullRot
     latZoom = zoom(float(height), WORLD_DIM['height'], latFraction)
     lngZoom = zoom(float(width), WORLD_DIM['width'], lngFraction)
     # ratio = float(max(width, height)) / float(min(width, height))
@@ -445,18 +447,18 @@ def forward_mercator(lonlat):
 
         If the lat value is out of range, -inf will be returned as the y value
     """
-    x = lonlat[0] * 20037508.34 / 180
+    x = lonlat[0] * MaxExtent / 180
     try:
         # With data sets that only have one point the value of this
         # expression becomes negative infinity. In order to continue,
         # we wrap this in a try catch block.
-        n = tan((90 + lonlat[1]) * pi / 360)
+        n = tan((90 + lonlat[1]) * pi / FullRot)
     except ValueError:
         n = 0
     if n <= 0:
         y = float("-inf")
     else:
-        y = log(n) / pi * 20037508.34
+        y = log(n) / pi * MaxExtent
     return (x, y)
 
 
@@ -464,8 +466,8 @@ def inverse_mercator(xy):
     """
         Given coordinates in spherical mercator, return a lon,lat tuple.
     """
-    lon = (xy[0] / 20037508.34) * 180
-    lat = (xy[1] / 20037508.34) * 180
+    lon = (xy[0] / MaxExtent) * 180
+    lat = (xy[1] / MaxExtent) * 180
     lat = 180 / pi * \
         (2 * atan(exp(lat * pi / 180)) - pi / 2)
     return (lon, lat)
@@ -850,16 +852,17 @@ def default_map_config(request):
     return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
 
 
+
 _viewer_projection_lookup = {
     "EPSG:900913": {
         "maxResolution": 156543.03390625,
         "units": "m",
-        "maxExtent": [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+        "maxExtent": [-MaxExtent, -MaxExtent, MaxExtent, MaxExtent],
     },
     "EPSG:3857": {
         "maxResolution": 156543.03390625,
         "units": "m",
-        "maxExtent": [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+        "maxExtent": [-MaxExtent, -MaxExtent, MaxExtent, MaxExtent],
     },
     "EPSG:4326": {
         "max_resolution": (180 - (-180)) / 256,

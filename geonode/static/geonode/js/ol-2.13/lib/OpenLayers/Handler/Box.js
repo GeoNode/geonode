@@ -131,10 +131,14 @@ OpenLayers.Handler.Box = OpenLayers.Class(OpenLayers.Handler, {
     /**
     * Method: endBox
     */
+
+
     endBox: function(end) {
+        var minDisplacement = 5;
+
         var result;
-        if (Math.abs(this.dragHandler.start.x - end.x) > 5 ||    
-            Math.abs(this.dragHandler.start.y - end.y) > 5) {   
+        if (Math.abs(this.dragHandler.start.x - end.x) > minDisplacement ||    
+            Math.abs(this.dragHandler.start.y - end.y) > minDisplacement) {   
             var start = this.dragHandler.start;
             var top = Math.min(start.y, end.y);
             var bottom = Math.max(start.y, end.y);
