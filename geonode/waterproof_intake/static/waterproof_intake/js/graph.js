@@ -12,6 +12,7 @@
 var resultdb = [];
 var selectedCell;
 var graphData = [];
+var connection = [];
 var funcostdb = [];
 // Program starts here. The document.onLoad executes the
 // createEditor function with a given configuration.
@@ -505,6 +506,7 @@ function onInit(editor) {
             var node = enc.encode(editor.graph.getModel());
             var textxml = mxUtils.getPrettyXml(node)
             graphData = [];
+            connection=[];
             //validations(node);
             //console.log(node);
             //createArray(editor);
@@ -541,7 +543,7 @@ function onInit(editor) {
                     })
                 }
             });
-            let connection = [];
+          
             for (let index = 0; index < temp.length; index++) {
                 connection.push({
                     "source": temp[index].source,
@@ -553,6 +555,7 @@ function onInit(editor) {
                 })
             }
             console.log(connection)
+            $('#graphConnections').val(JSON.stringify(connection));
             $('#xmlGraph').val(textxml);
             $('#graphElements').val(JSON.stringify(graphData));
 
