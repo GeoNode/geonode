@@ -30,6 +30,7 @@ var delimitationFileType;
 var xmlGraph;
 var waterExtractionData = {};
 var waterExtractionValue;
+var lyrsPolygons = [];
 const delimitationFileEnum = {
     GEOJSON: 'geojson',
     SHP: 'shapefile'
@@ -239,7 +240,7 @@ $(document).ready(function () {
     });
 
     $("#smartwizard").on("showStep", function (e, anchorObject, stepIndex, stepDirection) {
-        if (stepIndex == 3) {
+        if (stepIndex == 4) {
             if (catchmentPoly)
                 mapDelimit.fitBounds(catchmentPoly.getBounds());
             changeFileEvent();
@@ -346,7 +347,7 @@ function delimitIntakeArea() {
 function validateIntakeArea() {
     var editablePolygonJson = editablepolygon.toGeoJSON();
     var intakePolygonJson = catchmentPoly.toGeoJSON();
-    var pointIntakeJson=snapMarker.toGeoJSON();
+    var pointIntakeJson = snapMarker.toGeoJSON();
     /** 
      * Get filtered activities by transition id 
      * @param {String} url   activities URL 
@@ -565,4 +566,21 @@ function validExtension(file) {
         fileExtension.valid = false;
     }
     return fileExtension;
+}
+
+//draw polygons
+drawPolygons = function () {
+    // TODO: Next line only for test purpose
+    //intakePolygons = polygons;
+
+    lyrsPolygons.forEach(lyr => map.removeLayer(lyr));
+
+
+    intakePolygons.forEach(feature => {
+        let poly = feature.polygon;
+        if (poly.indexOf("SRID") >= 0) {
+            poly = poly.split(";")[1];
+        }
+        lyrsPolygons.push(omnivore.wkt.parse(poly).addTo(map));
+    });
 }

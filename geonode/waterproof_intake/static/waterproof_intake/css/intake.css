@@ -75,7 +75,7 @@
 
 .btn-group>button {
     height: 45px;
-    width: 50.2px;
+    width: 55.7px;
     outline: none;
 }
 
@@ -101,4 +101,20 @@
 
 .swal2-popup {
     font-size: 1.6rem !important;
+}
+
+.sw-theme-dots>.nav .nav-link.done {
+    color: #3B819B;
+}
+
+.sw-theme-dots>.nav .nav-link.done::after {
+    background-color: #3B819B;
+}
+
+.text-intake {
+    color: #3B819B;
+}
+
+#funcostgenerate>div>p>mjx-container {
+    outline: none;
 }

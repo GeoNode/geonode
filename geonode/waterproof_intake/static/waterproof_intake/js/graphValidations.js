@@ -65,16 +65,16 @@ function updateStyleLine(graph, cell, type) {
         success: function(result) {
             let idvar = cell.id;
             let varcost = [
-                `Q_${idvar}`,
-                `CSed_${idvar}`,
-                `CN_${idvar}`,
-                `CP_${idvar}`,
-                `WSed_${idvar}`,
-                `WN_${idvar}`,
-                `WP_${idvar}`,
-                `WSed_ret_${idvar}`,
-                `WN_ret_${idvar}`,
-                `WP_ret_${idvar}`
+                `Q${idvar}`,
+                `CSed${idvar}`,
+                `CN${idvar}`,
+                `CP${idvar}`,
+                `WSed${idvar}`,
+                `WN${idvar}`,
+                `WP${idvar}`,
+                `WSedRet${idvar}`,
+                `WNRet${idvar}`,
+                `WPRet${idvar}`
             ];
 
             $.ajax({
@@ -132,21 +132,20 @@ function clearDataHtml(cell, evt) {
     $('#funcostgenerate div').remove();
 }
 
-function funcost(ecuation_db, ecuation_name, index) {
-
+function funcost(ecuation_db, ecuation_name, index, MQ) {
     $('#funcostgenerate').append(
-        `
-        <div class="form-group" idvalue="fun_${index}">
-        <label>${ecuation_name}</label>
-        <div class="input-group">
-            <input type="text" class="form-control" value="$$ ${ ecuation_db } $$" disabled>
-            <span class="input-group-addon edit-group-btn" value="${index}" idvalue="${index}" name="glyphicon-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></span>
-            <span class="input-group-addon trash-group-btn" idvalue="${index}" name="glyphicon-trash"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></span>
-            </div>
-    </div>`);
+        `<div class="alert alert-info" role="alert" idvalue="fun_${index}" style="margin-bottom: 12px">
+        <a name="glyphicon-trash" idvalue="${index}" class="alert-link close" style="opacity: 1"><span class="glyphicon glyphicon-trash text-danger" aria-hidden="true"></span></a>
+        <h4>${ecuation_name}</h4><a name="glyphicon-edit" idvalue="${index}" class="alert-link close" style="opacity: 1"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+        <p name="render_ecuation">${ ecuation_db }</p>
+    </div>
+    `);
+    $('p[name=render_ecuation]').each(function() {
+        MQ.StaticMath(this);
+    });
 }
 
-function addData(element) {
+function addData(element, MQ) {
     //add data in HTML for connectors
     if (typeof(element.value) == "string" && element.value.length > 0) {
         let obj = JSON.parse(element.value);
@@ -158,7 +157,7 @@ function addData(element) {
         addData2HTML(dbfields)
         funcostdb = JSON.parse(obj.funcost);
         for (let index = 0; index < funcostdb.length; index++) {
-            funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index);
+            funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index, MQ);
         }
     } else {
         $('#titleDiagram').text(element.getAttribute('name'));
@@ -174,9 +173,10 @@ function addData(element) {
         if (resultdb.length == 0 && funcostdb.length == 0) return;
         $('#titleDiagram').text(resultdb[0].fields.categorys);
 
-        addData2HTML(resultdb)
+        addData2HTML(resultdb);
         for (let index = 0; index < funcostdb.length; index++) {
-            funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index);
+            funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index, MQ);
+
         }
     }
 
@@ -286,19 +286,58 @@ var validateinput = function(e) {
     e.value = (t.indexOf(".") >= 0) ? (t.substr(0, t.indexOf(".")) + t.substr(t.indexOf("."), 3)) : t;
 }
 
-function validations(valida) {
+function validationsCsinfraExternal(valida) {
     message = [];
     let symbols = [];
     let mxcell = [];
     valida.querySelectorAll('Symbol').forEach((node) => symbols.push(node.getAttribute('name')));
-    if (symbols.includes("CSINFRA") == false) message.push('(Study Infrastructure)');
+    if (symbols.includes("CSINFRA") == false) message.push('(Case Study Infrastructure)');
     valida.querySelectorAll('mxCell').forEach((node) => mxcell.push(node.getAttribute('style')));
     if (mxcell.includes("EXTRACTIONCONNECTION") == false) message.push('(Extraction Connection)');
-    if (message[0] == undefined) return;
     if (message[1] == undefined) message[1] = "";
+    if (message[0] == undefined) return;
+    $('#hideCostFuntion').hide();
     Swal.fire({
         icon: 'warning',
         title: `Missing elements`,
         text: `No exist ${message[0]} ${message[1]} in a diagram`
+    });
+    return true
+}
+
+function validationsNodeAlone(data) {
+    let data2 = [];
+    data2 = Object.values(data.cells);
+    data2.splice(0, 2);
+    for (const fin of data2) {
+        if (typeof(fin.value) != "string" && fin.edges == null && fin.style != 'rio') {
+            mensajeAlert(fin);
+            return true;
+        } else {
+            if (typeof(fin.value) != "string" && fin.edges.length == 0 && fin.style != 'rio') {
+                mensajeAlert(fin);
+                return true;
+            }
+
+            if (typeof(fin.value) != "string" && fin.edges.length == 1 && fin.style != 'rio') {
+                if (fin.id == fin.edges[0].source.id) {
+                    mensajeAlert(fin);
+                    return true;
+                }
+            }
+        }
+    }
+}
+
+function mensajeAlert(fin) {
+    Swal.fire({
+        icon: 'warning',
+        title: `Disconnected elements`,
+        text: `Element ${fin.id} - ${fin.getAttribute('name')} is disconnect`
     })
+}
+
+function validations(validate, editor) {
+    return validationsCsinfraExternal(validate);
+    return validationsNodeAlone(editor);
 }

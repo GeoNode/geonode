@@ -211,10 +211,6 @@ $(document).ready(function () {
         }
     });
 
-    $('#smartwizard').smartWizard("next").click(function () {
-        $('#autoAdjustHeightF').css("height", "auto");
-        map.invalidateSize();
-    });
 
     $('#smartwizard').smartWizard({
         selected: 0,
@@ -222,7 +218,7 @@ $(document).ready(function () {
         enableURLhash: false,
         autoAdjustHeight: true,
         transition: {
-            animation: 'slide-horizontal', // Effect on navigation, none/fade/slide-horizontal/slide-vertical/slide-swing
+            animation: 'fade', // Effect on navigation, none/fade/slide-horizontal/slide-vertical/slide-swing
         },
         toolbarSettings: {
             toolbarPosition: 'bottom', // both bottom
@@ -234,9 +230,11 @@ $(document).ready(function () {
     });
 
     $("#smartwizard").on("showStep", function (e, anchorObject, stepIndex, stepDirection) {
-        if (stepIndex == 3) {
-            if (catchmentPoly)
+        if (stepIndex == 4) {
+            if (catchmentPoly) {
+                mapDelimit.invalidateSize();
                 mapDelimit.fitBounds(catchmentPoly.getBounds());
+            }
             changeFileEvent();
         }
     });
@@ -262,28 +260,28 @@ $(document).ready(function () {
     });
     map.addLayer(osm);
 
-    var c = new L.Control.Coordinates().addTo(map);    
+    var c = new L.Control.Coordinates().addTo(map);
 
     var images = L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}");
-        
-    var esriHydroOverlayURL= "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}";
+
+    var esriHydroOverlayURL = "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}";
     var hydroLyr = L.tileLayer(esriHydroOverlayURL);
 
     var baseLayers = {
-         OpenStreetMap: osm,
+        OpenStreetMap: osm,
         Images: images,
-        /* Grayscale: gray,   */          
+        /* Grayscale: gray,   */
     };
 
     var overlays = {
         "Hydro (esri)": hydroLyr,
     };
-    L.control.layers(baseLayers,overlays,{position: 'topleft'}).addTo(map);
+    L.control.layers(baseLayers, overlays, { position: 'topleft' }).addTo(map);
 
 
     mapDelimit.addLayer(osmid);
 
-    
+
 
     $("#validateBtn").on("click", function () {
         Swal.fire({
@@ -350,7 +348,7 @@ function delimitIntakeArea() {
 function validateIntakeArea() {
     var editablePolygonJson = editablepolygon.toGeoJSON();
     var intakePolygonJson = catchmentPoly.toGeoJSON();
-    var pointIntakeJson=snapMarker.toGeoJSON();
+    var pointIntakeJson = snapMarker.toGeoJSON();
     /** 
      * Get filtered activities by transition id 
      * @param {String} url   activities URL 
