@@ -30,6 +30,7 @@ var delimitationFileType;
 var xmlGraph;
 var waterExtractionData = {};
 var waterExtractionValue;
+var lyrsPolygons = [];
 const delimitationFileEnum = {
     GEOJSON: 'geojson',
     SHP: 'shapefile'
@@ -239,7 +240,7 @@ $(document).ready(function () {
     });
 
     $("#smartwizard").on("showStep", function (e, anchorObject, stepIndex, stepDirection) {
-        if (stepIndex == 3) {
+        if (stepIndex == 4) {
             if (catchmentPoly)
                 mapDelimit.fitBounds(catchmentPoly.getBounds());
             changeFileEvent();
@@ -254,25 +255,32 @@ $(document).ready(function () {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     });
     map.addLayer(osm);
+
+    var images = L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}");
+        
+    var esriHydroOverlayURL= "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}";
+    var hydroLyr = L.tileLayer(esriHydroOverlayURL);
+
+    var baseLayers = {
+        OpenStreetMap: osm,
+        Images: images,
+        /* Grayscale: gray,   */          
+    };
+
+    var overlays = {
+        "Hydro (esri)": hydroLyr,
+    };
+
+    var c = new L.Control.Coordinates();
+    c.addTo(map);    
+
+    L.control.layers(baseLayers,overlays,{position: 'topleft'}).addTo(map);
+        
+
+
     mapDelimit.addLayer(osmid);
 
-    L.control.mapCenterCoord().addTo(map);
-
-    L.control.coordinates({
-        position: "bottomleft", //optional default "bootomright"
-        decimals: 2, //optional default 4
-        decimalSeperator: ".", //optional default "."
-        labelTemplateLat: "Latitude: {y}", //optional default "Lat: {y}"
-        labelTemplateLng: "Longitude: {x}", //optional default "Lng: {x}"
-        enableUserInput: true, //optional default true
-        useDMS: false, //optional default false
-        useLatLngOrder: true, //ordering of labels, default false-> lng-lat
-        markerType: L.marker, //optional default L.marker
-        markerProps: {}, //optional default {},
-        centerUserCoordinates: true,
-        labelFormatterLng: function (lng) { return lng + " lng" }, //optional default none,
-        labelFormatterLat: function (lat) { return lat + " lat" }, //optional default none      
-    }).addTo(map);
+    
 
     $("#validateBtn").on("click", function () {
         Swal.fire({
@@ -339,7 +347,7 @@ function delimitIntakeArea() {
 function validateIntakeArea() {
     var editablePolygonJson = editablepolygon.toGeoJSON();
     var intakePolygonJson = catchmentPoly.toGeoJSON();
-    var pointIntakeJson=snapMarker.toGeoJSON();
+    var pointIntakeJson = snapMarker.toGeoJSON();
     /** 
      * Get filtered activities by transition id 
      * @param {String} url   activities URL 
@@ -558,4 +566,21 @@ function validExtension(file) {
         fileExtension.valid = false;
     }
     return fileExtension;
+}
+
+//draw polygons
+drawPolygons = function () {
+    // TODO: Next line only for test purpose
+    //intakePolygons = polygons;
+
+    lyrsPolygons.forEach(lyr => map.removeLayer(lyr));
+
+
+    intakePolygons.forEach(feature => {
+        let poly = feature.polygon;
+        if (poly.indexOf("SRID") >= 0) {
+            poly = poly.split(";")[1];
+        }
+        lyrsPolygons.push(omnivore.wkt.parse(poly).addTo(map));
+    });
 }

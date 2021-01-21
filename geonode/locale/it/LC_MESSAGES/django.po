@@ -38,7 +38,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-12-23 15:32+0000\n"
-"PO-Revision-Date: 2020-12-23 16:38+0100\n"
+"PO-Revision-Date: 2021-01-20 11:37+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Italian (http://www.transifex.com/geonode/geonode/language/"
 "it/)\n"
@@ -695,7 +695,7 @@ msgid "Creation Date"
 msgstr "Data di creazione"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:37
-msgid "Pubblication Date"
+msgid "Publication Date"
 msgstr "Data di pubblicazione"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:39
@@ -8424,7 +8424,7 @@ msgstr ""
 #: geonode/templates/socialaccount/snippets/provider_list.html:19
 #: geonode/templates/socialaccount/snippets/remaining_providers_list.html:19
 msgid "Sign in with"
-msgstr "Iscriviti come"
+msgstr "Accedi con"
 
 #: geonode/templates/socialaccount/snippets/provider_list.html:21
 #: geonode/templates/socialaccount/snippets/remaining_providers_list.html:21
@@ -8434,7 +8434,7 @@ msgstr "Accedi con"
 #: geonode/templates/socialaccount/snippets/provider_list.html:23
 #: geonode/templates/socialaccount/snippets/remaining_providers_list.html:23
 msgid "Sign up with"
-msgstr "Iscriviti come"
+msgstr "Accedi con"
 
 #: geonode/templates/user_messages/inbox.html:7
 msgid "Message Inbox"

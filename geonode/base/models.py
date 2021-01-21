@@ -1116,8 +1116,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if bbox.srid != 4326:
                 bbox = bbox.transform(4326, clone=True)
             return str(bbox)
-        bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
-        return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
+        else:
+            bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
+            return bbox_to_wkt(
+                bbox.xmin,
+                bbox.xmax,
+                bbox.ymin,
+                bbox.ymax,
+                srid='EPSG:4326')
 
     @property
     def license_light(self):

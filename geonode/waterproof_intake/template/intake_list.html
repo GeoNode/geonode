@@ -119,21 +119,19 @@
 <script src="{{ STATIC_URL }}geonode/js/leaflet/leaflet.ajax.min.js"></script>
 <script src="{{ STATIC_URL }}waterproof_intake/js/intake_list.js"></script>
 
-
-
 <script src="https://vinceg.github.io/twitter-bootstrap-wizard/jquery.bootstrap.wizard.js"></script>
-  <script src="https://vinceg.github.io/twitter-bootstrap-wizard/prettify.js"></script>
-  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+<script src="https://vinceg.github.io/twitter-bootstrap-wizard/prettify.js"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
    crossorigin=""></script>
-  <script src="https://www.zimmi.cz/Leaflet-Coordinates-Control/Control.Coordinates.js"></script>
-  <script src="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.js"></script>
-  <script src="{{ STATIC_URL }}geonode/js/leaflet/photon/leaflet.photon.js"></script>
-  <script src="{{ STATIC_URL }}geonode/js/leaflet/leaflet-omnivore.min.js"></script>
-
-  <script src="{{ STATIC_URL }}geonode/sample_data/intake_polygon.js"></script>
   
-  <script type="text/javascript">
+<script src="{{ STATIC_URL }}geonode/js/leaflet/photon/leaflet.photon.js"></script>
+<script src="{% static "geonode/js/leaflet/Leaflet.Coordinates.js" %}"></script>
+<script src="{{ STATIC_URL }}geonode/js/leaflet/leaflet-omnivore.min.js"></script>
+
+<script src="{{ STATIC_URL }}geonode/sample_data/intake_polygon.js"></script>
+  
+<script type="text/javascript">
     API_URL = '/proxy/?url=https://photon.komoot.de/api/?';
     TILELAYER = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
     CENTER = [-74.4879, 4.582];

@@ -3,11 +3,12 @@
 {% load static from staticfiles %}
 {% load bootstrap_tags %}
 {% block extra_head %}
-<link href="{{ STATIC_URL }}waterproof_intake/css/smart_wizard_all.min.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/css/leaflet.css" rel="stylesheet" type="text/css"/>
-<link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/css/L.Control.MapCenterCoord.min.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Coordinates.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Loader.css" />
+<link href="https://unpkg.com/smartwizard@5/dist/css/smart_wizard_all.min.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin="" />
+<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Coordinates.css"/>
+<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Loader.css"/>
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/mathquill/mathquill.css"/>
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/css/intake.css"/>
 {% endblock %}
@@ -94,7 +95,7 @@
             <!-- Map -->
             <div id="map">
                 <div id="analysisOptions">
-                    <button type="button" id="validateBtn">Validate</button>
+                    <button type="button" id="validateBtn">Draw Basin</button>
                 </div>
             </div>
         </div>
@@ -112,12 +113,12 @@
             <div class="row">
                 <!--Graph-->
                 <div class="col-md-8">
+                    <textarea id="xml" style="height:600px;width:100%;display:none;border-style:none;"></textarea>
                     <span style="float:right;padding-right:36px;">
                             <input id="getdata" type="checkbox" />Source
                     </span>
-                    <textarea id="xml" style="height:600px;width:100%;display:none;border-style:none;"></textarea>
                     <div class="panel panel-info">
-                        <div class="panel-body" id="graph" tabindex="-1" style="height:700px;width:100%;overflow:hidden;cursor:default; outline:none;"></div>
+                        <div class="panel-body" id="graph" tabindex="-1" style="height:700px;width:100%;overflow:scroll;cursor:default; outline:none;"></div>
                     </div>
                 </div>
                 <!--Panel Information Right-->
@@ -339,6 +340,7 @@
 
   <!--Inputs hidden for save data-->
     <input type="hidden" id="xmlGraph" name="xmlGraph">
+    <input type="hidden" id="graphConnections" name="graphConnections">
     <input type="hidden" id="isFile" name="isFile">
     <input type="hidden" id="typeDelimit" name="typeDelimit">
     <input type="hidden" id="waterExtraction" name="waterExtraction" value="">
@@ -441,11 +443,10 @@
     <script src="{{ STATIC_URL }}waterproof_intake/js/jquery.smartWizard.min.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}waterproof_intake/js/leaflet.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/leaflet/Leaflet.Editable.js"></script>
-    <script src="{{ STATIC_URL }}geonode/js/leaflet/coordinates/Control.Coordinates.js"></script>
-    <script src="{{ STATIC_URL }}geonode/js/leaflet/coordinates/util/NumberFormatter.js"></script>
+    <script src="{{ STATIC_URL }}geonode/js/leaflet/Leaflet.Coordinates.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/leaflet/Control.Loader.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/waterproof/waterIntake.js"></script>
-    <script src="{{ STATIC_URL }}waterproof_intake/js/L.Control.MapCenterCoord.min.js"></script>
+    
     <!--ZIP reader library-->
     <script src="{{ STATIC_URL }}geonode/js/jszip/jszip.min.js"></script>
     <!--Shapefile reader library -->
@@ -455,6 +456,7 @@
         var mxImageBasePath = '{{ STATIC_URL }}geonode/js/mxgraph/examples/images';
         var editorUrl = '{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/config/diagrameditor.xml';
         var serverApi = '{{serverApi}}';
+        let waterproof = {};
     </script>
     <script src="{{ STATIC_URL }}waterproof_intake/js/intake_create.js"></script>
     <script src="{{ STATIC_URL }}waterproof_intake/js/graph.js"></script>

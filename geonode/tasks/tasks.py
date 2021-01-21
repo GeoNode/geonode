@@ -73,6 +73,9 @@ except Exception:
                     # don't release the lock if we didn't acquire it
                     cache.delete(self.lock_id)
 
+        def release(self):
+            pass
+
 logger = get_task_logger(__name__)
 
 
@@ -80,6 +83,33 @@ def memcache_lock(lock_id):
     logger.info(f"Using '{lock_type}' lock type.")
     lock = Lock(lock_id, client=memcache_client)
     return lock
+
+
+class AcquireLock():
+
+    def __init__(self, lock_id, blocking=False):
+        self.lock_id = lock_id
+        self.blocking = blocking
+
+    def __enter__(self):
+        self.lock = memcache_lock(self.lock_id)
+        return self
+
+    def acquire(self):
+        if settings.ASYNC_SIGNALS:
+            try:
+                return self.lock.acquire(
+                    blocking=self.blocking)
+            except Exception as e:
+                logger.warning(e)
+        return True
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        if self.lock:
+            try:
+                self.lock.release()
+            except Exception:
+                pass
 
 
 class FaultTolerantTask(celery.Task):

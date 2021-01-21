@@ -21,6 +21,9 @@ RUN echo "Updating apt-get" && \
     apt-get install -y geoip-bin geoip-database && \
     echo "Installing healthceck dependencies" && \
     apt-get install -y curl && \
+    echo "Activate memcached" && \
+    apt-get update && apt-get install -y memcached && \
+    pip install pylibmc  && pip install sherlock && \
     echo "Python server" && \
     pip install uwsgi && \
     echo "Removing build dependencies and cleaning up" && \
@@ -29,7 +32,7 @@ RUN echo "Updating apt-get" && \
     rm -rf ~/.cache/pip
 
 # Install python dependencies
-RUN echo "Geonode python dependencies"
+RUN echo "GeoNode python dependencies"
 
 # Install geonode dependencies
 ADD requirements.txt /requirements.txt

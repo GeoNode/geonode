@@ -12,6 +12,7 @@
 var resultdb = [];
 var selectedCell;
 var graphData = [];
+var connection = [];
 var funcostdb = [];
 
 // Program starts here. The document.onLoad executes the
@@ -124,17 +125,17 @@ function onInit(editor) {
 
     // Changes the zoom on mouseWheel events
     /* mxEvent.addMouseWheelListener(function (evt, up) {
-       if (!mxEvent.isConsumed(evt)) {
-         if (up) {
-           editor.execute('zoomIn');
-         }
-         else {
-           editor.execute('zoomOut');
-         }
- 
-         mxEvent.consume(evt);
-       }
-     });*/
+        if (!mxEvent.isConsumed(evt)) {
+            if (up) {
+                editor.execute('zoomIn');
+            }
+            else {
+                editor.execute('zoomOut');
+            }
+
+            mxEvent.consume(evt);
+        }
+    });*/
 
     // Defines a new action to switch between
     // XML and graphical display
@@ -258,8 +259,8 @@ function onInit(editor) {
 
     // Target needs exactly one incoming connection from Source
     editor.graph.multiplicities.push(new mxMultiplicity(
-        false, 'Symbol', 'name', 'CSINFRA', 1, 1, ['Symbol'],
-        'Target Must Have 1 Source',
+        true, 'Symbol', 'name', 'CSINFRA', 0, 0, ['Symbol'],
+        `From element CSINFRA can't connect to other element`,
         'Target Must Connect From Source'));
 
     var getdata = document.getElementById('getdata');
@@ -504,7 +505,9 @@ function onInit(editor) {
             var node = enc.encode(editor.graph.getModel());
             var textxml = mxUtils.getPrettyXml(node)
             graphData = [];
-            var bandera = validations(node);
+            connection = [];
+            var bandera = validations(node, editor.graph.getModel());
+            //validations(node);
             //console.log(node);
             //createArray(editor);
             if (!bandera) {
@@ -530,7 +533,7 @@ function onInit(editor) {
                         'id': node.id,
                         'source': node.getAttribute('source'),
                         'target': node.getAttribute('target'),
-                        'resultdb': value[3],
+                        'resultdb': JSON.stringify(value[3]),
                         'funcost': JSON.stringify(value[5]),
                         'name': JSON.stringify(value[4]),
                         'varcost': JSON.stringify(value[1])
@@ -542,7 +545,7 @@ function onInit(editor) {
                     })
                 }
             });
-            let connection = [];
+
             for (let index = 0; index < temp.length; index++) {
                 connection.push({
                     "source": temp[index].source,
@@ -553,7 +556,8 @@ function onInit(editor) {
                     "target": temp[index].target
                 })
             }
-            //console.log(connection)
+            console.log(connection)
+            $('#graphConnections').val(JSON.stringify(connection));
             $('#xmlGraph').val(textxml);
             $('#graphElements').val(JSON.stringify(graphData));
 
