@@ -1401,7 +1401,7 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
             message = '{0}: {1}.'.format(
                 _('Unable to delete layer'), layer.alternate)
 
-            if 'referenced by layer group' in getattr(e, 'message', ''):
+            if getattr(e, 'message', None) and 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _(
                     'This layer is a member of a layer group, you must remove the layer from the group '
                     'before deleting.')

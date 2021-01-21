@@ -4,7 +4,7 @@ version: '3.4'
 # Common Django template for Geonode, Celery services below
 x-common-django:
   &default-common-django
-  image: geonode/spcgeonode:django-3.1
+  image: geonode/spcgeonode:django-3.2
   environment:
     - DEBUG=True
   volumes:
@@ -18,37 +18,37 @@ services:
     command: "uwsgi --chdir=/spcgeonode --module=geonode.wsgi --socket=:8000 --http=127.0.0.1:8001 --processes=5 --py-autoreload=2"
   celery:
     << : *default-common-django
-    command: 'celery -A geonode.celery_app:app worker -B -E --statedb=worker.state -s celerybeat-schedule --loglevel=DEBUG --concurrency=10 -n worker1@%h'
+    command: 'celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E --statedb=/spcgeonode-static/worker.state -s /spcgeonode-static/celerybeat-schedule --loglevel=ERROR --concurrency=10 -n worker1@%h'
 
   nginx:
-    image: geonode/spcgeonode:nginx-3.1
+    image: geonode/spcgeonode:nginx-3.2
     volumes:
       - ./_volume_static:/spcgeonode-static/
       - ./_volume_media:/spcgeonode-media/
       - ./_volume_certificates:/spcgeonode-certificates/
 
   geoserver:
-    image: geonode/spcgeonode:geoserver-3.1
+    image: geonode/spcgeonode:geoserver-3.2
     volumes:
       - ./_volume_geodatadir:/spcgeonode-geodatadir/
 
   letsencrypt:
-    image: geonode/spcgeonode:letsencrypt-3.1
+    image: geonode/spcgeonode:letsencrypt-3.2
     volumes:
       - ./_volume_certificates:/spcgeonode-certificates/
 
   pgdumper_nogeo:
-    image: geonode/spcgeonode:pgdumper-3.1
+    image: geonode/spcgeonode:pgdumper-3.2
     volumes:
       - ./_volume_pgdumps:/spcgeonode-pgdumps/
 
   pgdumper_geo:
-    image: geonode/spcgeonode:pgdumper-3.1
+    image: geonode/spcgeonode:pgdumper-3.2
     volumes:
       - ./_volume_pgdumps:/spcgeonode-pgdumps/
 
   rclone:
-    image: geonode/spcgeonode:rclone-3.1
+    image: geonode/spcgeonode:rclone-3.2
     volumes:
       - ./_volume_pgdumps:/spcgeonode-pgdumps/
       - ./_volume_media:/spcgeonode-media/

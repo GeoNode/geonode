@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin=""/>
-    <link rel="stylesheet" href="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.css" />
+    <link rel="stylesheet" href="{% static "geonode/css/leaflet/Control.Coordinates.css" %}"/>
     <link rel="stylesheet" href="https://photon.komoot.io/static/leaflet.photon/leaflet.photon.css"></link>
 
     <script>
@@ -23,18 +23,21 @@
     crossorigin="" />
 <div class="row">
     <div class="col-md-4">
-        <h4 class="text-center" id="countryLabel">{{intake.city.name}}</h4>
+        <h4 class="text-center" id="countryLabel">{{city.name}}</h4>
+        <p><b>País:</b> <span id="regionLabel">{{city.name}}</span> </p>
         <p><b>Region:</b> <span id="regionLabel">{{region.name}}</span> </p>
-        <p><b>Currency:</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
     </div>
     <div class="col-md-8">
-        <div id="mapidcuenca" style="width: 700px; height: 200px;"></div>
+        <div id="mapidcuenca" style="width: 700px; height: 300px;"></div>
 
     </div>
 </div>
 <div class="page-header">
    
-    <h1>{% trans "List Water Intake" %}</h1>
+    <h1>{% trans "Búsqueda de Captaciones" %}</h1>
+    <h7>{% trans "Ingrese el nombre de la ciudad de su interés. El sistema le mostrará un listado con las coincidencias a nivel mundial. Seleccione de la lista la opcion que corresponda." %}</h7>
+    <br>
+    <br>
     <a href="create/" id="createUrl">{% trans "Create new Water Intake" %}</a>
 </div>
 <div class="table-responsive">
@@ -125,9 +128,8 @@
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
    crossorigin=""></script>
-  <script src="https://www.zimmi.cz/Leaflet-Coordinates-Control/Control.Coordinates.js"></script>
-  <script src="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.js"></script>
   <script src="{{ STATIC_URL }}geonode/js/leaflet/photon/leaflet.photon.js"></script>
+  <script src="{% static "geonode/js/leaflet/Leaflet.Coordinates.js" %}"></script>
   <script src="{{ STATIC_URL }}geonode/js/leaflet/leaflet-omnivore.min.js"></script>
 
   <script src="{{ STATIC_URL }}geonode/sample_data/intake_polygon.js"></script>

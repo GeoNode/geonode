@@ -20,6 +20,7 @@
 """Celery tasks for geonode.services"""
 import time
 import logging
+from hashlib import md5
 
 from . import models
 from . import enumerations
@@ -27,6 +28,7 @@ from .serviceprocessors import get_service_handler
 
 from geonode.celery_app import app
 from geonode.layers.models import Layer
+from geonode.tasks.tasks import AcquireLock
 
 logger = logging.getLogger(__name__)
 
@@ -90,19 +92,16 @@ def harvest_resource(self, harvest_job_id):
     retry_backoff_max=700,
     retry_jitter=True)
 def probe_services(self):
-    from hashlib import md5
-    from geonode.tasks.tasks import memcache_lock
-
     # The cache key consists of the task name and the MD5 digest
     # of the name.
     name = b'probe_services'
     hexdigest = md5(name).hexdigest()
     lock_id = f'{name.decode()}-lock-{hexdigest}'
-    lock = memcache_lock(lock_id)
-    if lock.acquire(blocking=False) is True:
-        for service in models.Service.objects.all():
-            try:
-                service.probe = service.probe_service()
-                service.save()
-            except Exception as e:
-                logger.error(e)
+    with AcquireLock(lock_id) as lock:
+        if lock.acquire() is True:
+            for service in models.Service.objects.all():
+                try:
+                    service.probe = service.probe_service()
+                    service.save()
+                except Exception as e:
+                    logger.error(e)

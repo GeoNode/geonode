@@ -612,7 +612,7 @@ def start_django(options):
     sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
 
     if 'django_celery_beat' not in INSTALLED_APPS:
-        sh("{} celery -A geonode.celery_app:app worker -B -E \
+        sh("{} celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E \
 --statedb=worker.state -s celerybeat-schedule --loglevel=DEBUG \
 --concurrency=10 -n worker1@%h -f celery.log {}".format(  # noqa
             settings,
@@ -842,17 +842,14 @@ def test_bdd(options):
     local = str2bool(options.get('local', 'false'))
     if local:
         call_task('reset_hard')
-    else:
-        call_task('reset')
+
     call_task('setup')
     call_task('sync')
-    sh('sleep 30')
-    info("GeoNode is now available, running the bdd tests now.")
-
-    sh('py.test')
-
     if local:
-        call_task('reset_hard')
+        sh('sleep 30')
+
+    info("GeoNode is now available, running the bdd tests now.")
+    sh('py.test')
 
 
 @task

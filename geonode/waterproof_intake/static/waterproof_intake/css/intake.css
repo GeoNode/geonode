@@ -102,3 +102,15 @@
 .swal2-popup {
     font-size: 1.6rem !important;
 }
+
+.sw-theme-dots>.nav .nav-link.done {
+    color: #3B819B;
+}
+
+.sw-theme-dots>.nav .nav-link.done::after {
+    background-color: #3B819B;
+}
+
+.text-intake {
+    color: #3B819B;
+}

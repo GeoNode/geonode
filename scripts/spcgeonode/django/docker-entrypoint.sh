@@ -8,6 +8,9 @@ echo "-----------------------------------------------------"
 echo "STARTING DJANGO ENTRYPOINT $(date)"
 echo "-----------------------------------------------------"
 
+# Start memcached service
+service memcached restart
+
 # Setting dynamic env vars (some of this could probably be put in docker-compose once
 # https://github.com/docker/compose/pull/5268 is merged, or even better hardcoded if
 # geonode supported relative site urls)

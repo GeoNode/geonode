@@ -159,10 +159,7 @@ $(document).ready(function () {
                         </table>    
                 `);
             }
-
         }
-
-
     }
 
 
@@ -182,7 +179,6 @@ $(document).ready(function () {
                 graphData[id].externaldata = JSON.stringify(graphData[id].externaldata);
             }
         }
-
 
         $('#graphElements').val(JSON.stringify(graphData));
     });
@@ -216,18 +212,13 @@ $(document).ready(function () {
     });
 
 
-    $('#smartwizard').smartWizard("next").click(function () {
-        $('#autoAdjustHeightF').css("height", "auto");
-        map.invalidateSize();
-    });
-
     $('#smartwizard').smartWizard({
         selected: 0,
         theme: 'dots',
         enableURLhash: false,
         autoAdjustHeight: true,
         transition: {
-            animation: 'slide-horizontal', // Effect on navigation, none/fade/slide-horizontal/slide-vertical/slide-swing
+            animation: 'fade', // Effect on navigation, none/fade/slide-horizontal/slide-vertical/slide-swing
         },
         toolbarSettings: {
             toolbarPosition: 'bottom', // both bottom
@@ -239,14 +230,28 @@ $(document).ready(function () {
     });
 
     $("#smartwizard").on("showStep", function (e, anchorObject, stepIndex, stepDirection) {
-        if (stepIndex == 3) {
-            if (catchmentPoly)
+        if (stepIndex == 4) {
+            if (catchmentPoly) {
+                mapDelimit.invalidateSize();
                 mapDelimit.fitBounds(catchmentPoly.getBounds());
+            }
             changeFileEvent();
         }
     });
-    map = L.map('map', {}).setView([4.1, -74.1], 5);
-    mapDelimit = L.map('mapid', { editable: true }).setView([4.1, -74.1], 5);
+
+
+    let initialCoords = [4.5, -74.4];
+    // find in localStorage if cityCoords exist
+    var cityCoords = localStorage.getItem('cityCoords');
+    if (cityCoords == undefined){
+        cityCoords = initialCoords;
+    }else{
+        initialCoords = JSON.parse(cityCoords);
+    }
+    waterproof["cityCoords"] = cityCoords;
+
+    map = L.map('map', {}).setView(initialCoords, 5);
+    mapDelimit = L.map('mapid', { editable: true }).setView(initialCoords, 5);
     var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     });
@@ -254,25 +259,29 @@ $(document).ready(function () {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     });
     map.addLayer(osm);
+
+    var c = new L.Control.Coordinates().addTo(map);
+
+    var images = L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}");
+
+    var esriHydroOverlayURL = "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}";
+    var hydroLyr = L.tileLayer(esriHydroOverlayURL);
+
+    var baseLayers = {
+        OpenStreetMap: osm,
+        Images: images,
+        /* Grayscale: gray,   */
+    };
+
+    var overlays = {
+        "Hydro (esri)": hydroLyr,
+    };
+    L.control.layers(baseLayers, overlays, { position: 'topleft' }).addTo(map);
+
+
     mapDelimit.addLayer(osmid);
 
-    L.control.mapCenterCoord().addTo(map);
 
-    L.control.coordinates({
-        position: "bottomleft", //optional default "bootomright"
-        decimals: 2, //optional default 4
-        decimalSeperator: ".", //optional default "."
-        labelTemplateLat: "Latitude: {y}", //optional default "Lat: {y}"
-        labelTemplateLng: "Longitude: {x}", //optional default "Lng: {x}"
-        enableUserInput: true, //optional default true
-        useDMS: false, //optional default false
-        useLatLngOrder: true, //ordering of labels, default false-> lng-lat
-        markerType: L.marker, //optional default L.marker
-        markerProps: {}, //optional default {},
-        centerUserCoordinates: true,
-        labelFormatterLng: function (lng) { return lng + " lng" }, //optional default none,
-        labelFormatterLat: function (lat) { return lat + " lat" }, //optional default none      
-    }).addTo(map);
 
     $("#validateBtn").on("click", function () {
         Swal.fire({
@@ -339,7 +348,7 @@ function delimitIntakeArea() {
 function validateIntakeArea() {
     var editablePolygonJson = editablepolygon.toGeoJSON();
     var intakePolygonJson = catchmentPoly.toGeoJSON();
-    var pointIntakeJson=snapMarker.toGeoJSON();
+    var pointIntakeJson = snapMarker.toGeoJSON();
     /** 
      * Get filtered activities by transition id 
      * @param {String} url   activities URL 
