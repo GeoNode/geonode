@@ -74,7 +74,16 @@ $(function() {
     initMap = function() {
 
         map = L.map('mapidcuenca', { scrollWheelZoom: false, zoomControl: false, photonControl: true, photonControlOptions: { resultsHandler: showSearchPoints, placeholder: 'Search City...', position: 'topleft', url: API_URL } });
-        map.setView([4, -72], 5);
+        let initialCoords = [4.5, -74.4];
+        // find in localStorage if cityCoords exist
+        var cityCoords = localStorage.getItem('cityCoords');
+        if (cityCoords == undefined){
+            cityCoords = initialCoords;
+        }else{
+            initialCoords = JSON.parse(cityCoords);
+        }
+        waterproof["cityCoords"] = cityCoords;
+        map.setView(initialCoords, 5);
 
         searchPoints.addTo(map);
 

@@ -159,10 +159,7 @@ $(document).ready(function () {
                         </table>    
                 `);
             }
-
         }
-
-
     }
 
 
@@ -182,7 +179,6 @@ $(document).ready(function () {
                 graphData[id].externaldata = JSON.stringify(graphData[id].externaldata);
             }
         }
-
 
         $('#graphElements').val(JSON.stringify(graphData));
     });
@@ -242,8 +238,20 @@ $(document).ready(function () {
             changeFileEvent();
         }
     });
-    map = L.map('map', {}).setView([4.1, -74.1], 5);
-    mapDelimit = L.map('mapid', { editable: true }).setView([4.1, -74.1], 5);
+
+
+    let initialCoords = [4.5, -74.4];
+    // find in localStorage if cityCoords exist
+    var cityCoords = localStorage.getItem('cityCoords');
+    if (cityCoords == undefined){
+        cityCoords = initialCoords;
+    }else{
+        initialCoords = JSON.parse(cityCoords);
+    }
+    waterproof["cityCoords"] = cityCoords;
+
+    map = L.map('map', {}).setView(initialCoords, 5);
+    mapDelimit = L.map('mapid', { editable: true }).setView(initialCoords, 5);
     var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     });

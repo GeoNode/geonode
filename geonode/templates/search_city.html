@@ -80,9 +80,18 @@
                     position: 'topleft', url: API_URL}
             });        
 
-        map.setView([4.5, -74.4],5);
-        searchPoints.addTo(map);
-        
+        let initialCoords = [4.5, -74.4];
+        // find in localStorage if cityCoords exist
+        var cityCoords = localStorage.getItem('cityCoords');
+        if (cityCoords == undefined){
+            cityCoords = initialCoords;
+        }else{
+            initialCoords = JSON.parse(cityCoords);
+        }
+        waterproof["cityCoords"] = cityCoords;
+
+        map.setView(initialCoords,5);
+        searchPoints.addTo(map);        
         
         var c = new L.Control.Coordinates();
         c.addTo(map);    
@@ -91,11 +100,12 @@
         var zoomControl = new L.Control.Zoom({position: 'topright'}).addTo(map);
         //L.control.mapCenterCoord().addTo(map); 
 		
-
         function onMapClick(e) {
             //c.setCoordinates(e);      
         }
         map.on('click', onMapClick);
+
+        
       
     });    
 

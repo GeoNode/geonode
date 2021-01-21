@@ -90,7 +90,7 @@ L.Control.Coordinates = L.Control.extend({
 		L.DomEvent.on(this._inputY, 'keyup', this._handleKeypress, this);
 
 		//connect to mouseevents
-		map.on("mousemove", this._update, this);
+		//map.on("mousemove", this._update, this);
 		map.on('dragstart', this.collapse, this);
 
 		map.whenReady(this._update, this);
@@ -172,9 +172,9 @@ L.Control.Coordinates = L.Control.extend({
 	expand: function() {
 		this._showsCoordinates = false;
 
-		this._map.off("mousemove", this._update, this);
+		//this._map.off("mousemove", this._update, this);
 
-		L.DomEvent.addListener(this._container, "mousemove", L.DomEvent.stop);
+		//L.DomEvent.addListener(this._container, "mousemove", L.DomEvent.stop);
 		L.DomEvent.removeListener(this._container, "click", this._switchUI, this);
 
 		L.DomUtil.addClass(this._labelcontainer, "uiHidden");
@@ -229,11 +229,11 @@ L.Control.Coordinates = L.Control.extend({
 	 */
 	collapse: function() {
 		if (!this._showsCoordinates) {
-			this._map.on("mousemove", this._update, this);
+			//this._map.on("mousemove", this._update, this);
 			this._showsCoordinates = true;
 			var opts = this.options;
 			L.DomEvent.addListener(this._container, "click", this._switchUI, this);
-			L.DomEvent.removeListener(this._container, "mousemove", L.DomEvent.stop);
+			//L.DomEvent.removeListener(this._container, "mousemove", L.DomEvent.stop);
 
 			L.DomUtil.addClass(this._inputcontainer, "uiHidden");
 			L.DomUtil.removeClass(this._labelcontainer, "uiHidden");
@@ -286,7 +286,7 @@ L.Control.Coordinates = L.Control.extend({
 	},
 
 	onRemove: function(map) {
-		map.off("mousemove", this._update, this);
+		//map.off("mousemove", this._update, this);
 	},
 
 	/**
@@ -301,7 +301,9 @@ L.Control.Coordinates = L.Control.extend({
 			this._currentPos = pos;
 			this._inputY.value = L.NumberFormatter.round(pos.lat, opts.decimals, opts.decimalSeperator);
             this._inputX.value = L.NumberFormatter.round(pos.lng, opts.decimals, opts.decimalSeperator);
-            waterproof["cityCoords"] = pos;
+			waterproof["cityCoords"] = [pos.lat, pos.lng];
+			// Put the object into storage
+			localStorage.setItem('cityCoords', JSON.stringify(waterproof["cityCoords"]));
 			//this._label.innerHTML = this._createCoordinateLabel(pos);
 		}
 	},
@@ -392,7 +394,10 @@ function placeMarker(obj){
         let pos = obj._map.getCenter();
         pos = pos.wrap();
         obj._currentPos = pos;
-        waterproof["cityCoords"] = pos;
+		waterproof["cityCoords"] = [pos.lat, pos.lng];
+		// Put the object into storage
+		localStorage.setItem('cityCoords', JSON.stringify(waterproof["cityCoords"]));
+
         obj._inputY.value = L.NumberFormatter.round(pos.lat, obj.options.decimals, obj.options.decimalSeperator);
         obj._inputX.value = L.NumberFormatter.round(pos.lng, obj.options.decimals, obj.options.decimalSeperator);
         
@@ -405,7 +410,7 @@ function placeMarker(obj){
     } else {
         L.Location.Marker.setLatLng( obj._map.getCenter() )
     }
-    obj._map.off("mousemove", obj._update, obj);     
+    //obj._map.off("mousemove", obj._update, obj);     
     L.Location.Marker.openPopup();
 //  }
 };
