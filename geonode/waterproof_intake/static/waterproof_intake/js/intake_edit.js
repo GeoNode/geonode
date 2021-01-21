@@ -255,55 +255,32 @@ $(document).ready(function () {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     });
     map.addLayer(osm);
+
+    var images = L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}");
+        
+    var esriHydroOverlayURL= "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}";
+    var hydroLyr = L.tileLayer(esriHydroOverlayURL);
+
+    var baseLayers = {
+        OpenStreetMap: osm,
+        Images: images,
+        /* Grayscale: gray,   */          
+    };
+
+    var overlays = {
+        "Hydro (esri)": hydroLyr,
+    };
+
+    var c = new L.Control.Coordinates();
+    c.addTo(map);    
+
+    L.control.layers(baseLayers,overlays,{position: 'topleft'}).addTo(map);
+        
+
+
     mapDelimit.addLayer(osmid);
-    catchmentPoly = L.geoJSON().addTo(map);
-    catchmentPolyDelimit = L.geoJSON().addTo(mapDelimit);
-    intakePolygons.forEach(feature => {
-        let poly = feature.polygon;
-        let point = feature.point;
-        if (poly.indexOf("SRID") >= 0) {
-            poly = poly.split(";")[1];
-        }
-        if (point.indexOf("SRID") >= 0) {
-            point = point.split(";")[1];
-        }
-        layerTransformed = omnivore.wkt.parse(poly);
-        poinTransformed=omnivore.wkt.parse(point);
-        var layerKeys = Object.keys(layerTransformed._layers);
-        var keyNamePolygon = layerKeys[0];
-        var polygonCoordinates = layerTransformed._layers[keyNamePolygon].feature;
-        var pointKeys= Object.keys(poinTransformed._layers);
-        var keyNamePoint= pointKeys;
-        var pointCoordinates=poinTransformed._layers[keyNamePoint].feature.geometry.coordinates;
-        let polygonFeatures = [polygonCoordinates];
-        var ll = new L.LatLng(pointCoordinates[1], pointCoordinates[0]);
-        snapMarker = L.marker(null, {});
-        snapMarkerMapDelimit = L.marker(null, {});
-        snapMarker.setLatLng(ll);
-        snapMarkerMapDelimit.setLatLng(ll);
-        snapMarker.addTo(map);
-        snapMarkerMapDelimit.addTo(mapDelimit);
-        catchmentPoly.addData(polygonFeatures);
-        catchmentPolyDelimit.addData(polygonFeatures);
-        map.fitBounds(catchmentPoly.getBounds());
-    });
-    L.control.mapCenterCoord().addTo(map);
-    //drawPolygons();
-    L.control.coordinates({
-        position: "bottomleft", //optional default "bootomright"
-        decimals: 2, //optional default 4
-        decimalSeperator: ".", //optional default "."
-        labelTemplateLat: "Latitude: {y}", //optional default "Lat: {y}"
-        labelTemplateLng: "Longitude: {x}", //optional default "Lng: {x}"
-        enableUserInput: true, //optional default true
-        useDMS: false, //optional default false
-        useLatLngOrder: true, //ordering of labels, default false-> lng-lat
-        markerType: L.marker, //optional default L.marker
-        markerProps: {}, //optional default {},
-        centerUserCoordinates: true,
-        labelFormatterLng: function (lng) { return lng + " lng" }, //optional default none,
-        labelFormatterLat: function (lat) { return lat + " lat" }, //optional default none      
-    }).addTo(map);
+
+    
 
     $("#validateBtn").on("click", function () {
         Swal.fire({

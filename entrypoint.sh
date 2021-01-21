@@ -75,7 +75,7 @@ else
         /usr/local/bin/invoke prepare > /usr/src/geonode/invoke.log 2>&1
         echo "prepare task done"
 
-        if [ ! -e "/mnt/volumes/statics/geonode_init.lock" ]; then
+        if [ ${FORCE_REINIT} = "true" ]  || [ ${FORCE_REINIT} = "True" ] || [ ! -e "/mnt/volumes/statics/geonode_init.lock" ]; then
             /usr/local/bin/invoke updategeoip > /usr/src/geonode/invoke.log 2>&1
             echo "updategeoip task done"
             /usr/local/bin/invoke fixtures > /usr/src/geonode/invoke.log 2>&1

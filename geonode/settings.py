@@ -103,14 +103,14 @@ HOSTNAME = _surl.hostname
 if not SITEURL.endswith('/'):
     SITEURL = '{}/'.format(SITEURL)
 
-# DATABASE_URL = os.getenv(
-#      'DATABASE_URL',
-#      'spatialite:///{path}'.format(
-#          path=os.path.join(PROJECT_ROOT, 'development.db')
-#      )
-# )
+DATABASE_URL = os.getenv(
+      'DATABASE_URL',
+      'spatialite:///{path}'.format(
+          path=os.path.join(PROJECT_ROOT, 'development.db')
+      )
+ )
 
-#DATABASE_URL = 'postgresql://geonode:geonode_data@dev.skaphe.com:5432/geonode'
+#DATABASE_URL='postgresql://geonode:{&Uid&QXZ&6f;|F@dev.skaphe.com:5432/geonode'
 
 if DATABASE_URL.startswith("spatialite"):
     try:
@@ -133,9 +133,10 @@ GEONODE_DB_CONN_TOUT = int(os.getenv('GEONODE_DB_CONN_TOUT', 5))
 
 _db_conf = dj_database_url.parse(
     DATABASE_URL,
+    'django.contrib.gis.db.backends.postgis',
     conn_max_age=GEONODE_DB_CONN_MAX_AGE)
 
-_db_conf['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
+#_db_conf['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 if 'CONN_TOUT' in _db_conf:
     _db_conf['CONN_TOUT'] = GEONODE_DB_CONN_TOUT
 if 'postgresql' in DATABASE_URL or 'postgis' in DATABASE_URL:
@@ -1784,6 +1785,9 @@ CELERY_IGNORE_RESULT = ast.literal_eval(os.environ.get('CELERY_IGNORE_RESULT', '
 
 # Allow to recover from any unknown crash.
 CELERY_ACKS_LATE = ast.literal_eval(os.environ.get('CELERY_ACKS_LATE', 'True'))
+
+# Add a ten-minutes timeout to all Celery tasks.
+CELERYD_SOFT_TIME_LIMIT = 600
 
 # Set this to False in order to run async
 _EAGER_FLAG = 'False' if ASYNC_SIGNALS else 'True'

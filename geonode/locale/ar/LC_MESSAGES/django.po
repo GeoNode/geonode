@@ -704,7 +704,7 @@ msgstr "إنشاء خريطة"
 #: geonode/base/templates/base/_resourcebase_info_panel.html:37
 #, fuzzy
 #| msgid "publication"
-msgid "Pubblication Date"
+msgid "Publication Date"
 msgstr "نشرؤولض"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:39
