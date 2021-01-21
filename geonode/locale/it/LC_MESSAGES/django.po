@@ -8286,7 +8286,7 @@ msgstr ""
 #: geonode/templates/socialaccount/snippets/provider_list.html:19
 #: geonode/templates/socialaccount/snippets/remaining_providers_list.html:19
 msgid "Sign in with"
-msgstr "Iscriviti come"
+msgstr "Accedi con"
 
 #: geonode/templates/socialaccount/snippets/provider_list.html:21
 #: geonode/templates/socialaccount/snippets/remaining_providers_list.html:21
@@ -8296,7 +8296,7 @@ msgstr "Accedi con"
 #: geonode/templates/socialaccount/snippets/provider_list.html:23
 #: geonode/templates/socialaccount/snippets/remaining_providers_list.html:23
 msgid "Sign up with"
-msgstr "Iscriviti come"
+msgstr "Accedi con"
 
 #: geonode/templates/user_messages/inbox.html:7
 msgid "Message Inbox"
