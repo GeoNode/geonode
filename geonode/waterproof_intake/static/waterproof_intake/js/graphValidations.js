@@ -303,6 +303,38 @@ function validationsCsinfraExternal(valida) {
     })
 }
 
-function validations(validate) {
+function validationsNodeAlone(data) {
+    let data2 = [];
+    data2 = Object.values(data.cells);
+    data2.splice(0, 2);
+    for (const fin of data2) {
+        if (typeof(fin.value) != "string" && fin.edges == null && fin.style != 'rio') {
+            mensajeAlert(fin);
+            return;
+        } else {
+            if (typeof(fin.value) != "string" && fin.edges.length == 0 && fin.style != 'rio') {
+                mensajeAlert(fin);
+                return;
+            }
+            if (typeof(fin.value) != "string" && fin.edges.length >= 1 && fin.style != 'rio') {
+                if (fin.id == fin.edges[0].source.id) {
+                    mensajeAlert(fin);
+                    return;
+                }
+            }
+        }
+    }
+}
+
+function mensajeAlert(fin) {
+    Swal.fire({
+        icon: 'warning',
+        title: `Disconnected elements`,
+        text: `Element ${fin.id} - ${fin.getAttribute('name')} is disconnect`
+    })
+}
+
+function validations(validate, editor) {
     validationsCsinfraExternal(validate);
+    validationsNodeAlone(editor);
 }
