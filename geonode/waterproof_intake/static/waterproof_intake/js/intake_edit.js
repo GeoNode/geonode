@@ -27,8 +27,10 @@ var editablepolygon;
 var validPolygon;
 var isFile;
 var delimitationFileType;
+var xmlGraph;
 var waterExtractionData = {};
 var waterExtractionValue;
+var lyrsPolygons = [];
 const delimitationFileEnum = {
     GEOJSON: 'geojson',
     SHP: 'shapefile'
@@ -46,6 +48,8 @@ $(document).ready(function () {
         $('#intakeECTAG tr').remove();
         $('#IntakeTDLE table').remove();
         $('#externalSelect option').remove();
+
+
         $('#autoAdjustHeightF').css("height", "auto");
         typeProcessInterpolation = Number($("#typeProcessInterpolation").val());
         numberYearsInterpolationValue = Number($("#numberYearsInterpolationValue").val());
@@ -236,7 +240,7 @@ $(document).ready(function () {
     });
 
     $("#smartwizard").on("showStep", function (e, anchorObject, stepIndex, stepDirection) {
-        if (stepIndex == 3) {
+        if (stepIndex == 4) {
             if (catchmentPoly)
                 mapDelimit.fitBounds(catchmentPoly.getBounds());
             changeFileEvent();
@@ -252,9 +256,39 @@ $(document).ready(function () {
     });
     map.addLayer(osm);
     mapDelimit.addLayer(osmid);
-
+    catchmentPoly = L.geoJSON().addTo(map);
+    catchmentPolyDelimit = L.geoJSON().addTo(mapDelimit);
+    intakePolygons.forEach(feature => {
+        let poly = feature.polygon;
+        let point = feature.point;
+        if (poly.indexOf("SRID") >= 0) {
+            poly = poly.split(";")[1];
+        }
+        if (point.indexOf("SRID") >= 0) {
+            point = point.split(";")[1];
+        }
+        layerTransformed = omnivore.wkt.parse(poly);
+        poinTransformed=omnivore.wkt.parse(point);
+        var layerKeys = Object.keys(layerTransformed._layers);
+        var keyNamePolygon = layerKeys[0];
+        var polygonCoordinates = layerTransformed._layers[keyNamePolygon].feature;
+        var pointKeys= Object.keys(poinTransformed._layers);
+        var keyNamePoint= pointKeys;
+        var pointCoordinates=poinTransformed._layers[keyNamePoint].feature.geometry.coordinates;
+        let polygonFeatures = [polygonCoordinates];
+        var ll = new L.LatLng(pointCoordinates[1], pointCoordinates[0]);
+        snapMarker = L.marker(null, {});
+        snapMarkerMapDelimit = L.marker(null, {});
+        snapMarker.setLatLng(ll);
+        snapMarkerMapDelimit.setLatLng(ll);
+        snapMarker.addTo(map);
+        snapMarkerMapDelimit.addTo(mapDelimit);
+        catchmentPoly.addData(polygonFeatures);
+        catchmentPolyDelimit.addData(polygonFeatures);
+        map.fitBounds(catchmentPoly.getBounds());
+    });
     L.control.mapCenterCoord().addTo(map);
-
+    //drawPolygons();
     L.control.coordinates({
         position: "bottomleft", //optional default "bootomright"
         decimals: 2, //optional default 4
@@ -336,7 +370,7 @@ function delimitIntakeArea() {
 function validateIntakeArea() {
     var editablePolygonJson = editablepolygon.toGeoJSON();
     var intakePolygonJson = catchmentPoly.toGeoJSON();
-    var pointIntakeJson=snapMarker.toGeoJSON();
+    var pointIntakeJson = snapMarker.toGeoJSON();
     /** 
      * Get filtered activities by transition id 
      * @param {String} url   activities URL 
@@ -555,4 +589,21 @@ function validExtension(file) {
         fileExtension.valid = false;
     }
     return fileExtension;
+}
+
+//draw polygons
+drawPolygons = function () {
+    // TODO: Next line only for test purpose
+    //intakePolygons = polygons;
+
+    lyrsPolygons.forEach(lyr => map.removeLayer(lyr));
+
+
+    intakePolygons.forEach(feature => {
+        let poly = feature.polygon;
+        if (poly.indexOf("SRID") >= 0) {
+            poly = poly.split(";")[1];
+        }
+        lyrsPolygons.push(omnivore.wkt.parse(poly).addTo(map));
+    });
 }

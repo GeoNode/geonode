@@ -51,7 +51,9 @@ def create(request):
             intakeAreaString = request.POST.get('intakeAreaPolygon')
             pointIntakeString = request.POST.get('pointIntake')
             graphElementsString = request.POST.get('graphElements')
+            connectionsElementString = request.POST.get('graphConnections')
             graphElements = json.loads(graphElementsString)
+            connectionsElements = json.loads(connectionsElementString)
             if (isFile == 'true'):
                 # Validate file's extension
                 if (typeDelimitFile == 'geojson'):
@@ -120,7 +122,7 @@ def create(request):
                 intake=intakeCreated
             )
             elementsCreated = []
-            # Loop into graph elements for persistence
+            # Save all graph elements
             for element in graphElements:
                 if ('external' in element):
                     # Regular element
@@ -188,10 +190,7 @@ def create(request):
                             )
                 # Connections
                 else:
-                    print("Connection")
-                    print(elementsCreated[0]['xmlId'])
                     parameter = json.loads(element['resultdb'])
-                    print(parameter[0]['fields']['normalized_category'])
                     if (len(parameter) > 0):
                         element_system = ElementSystem.objects.create(
                             graphId=element['id'],
@@ -204,22 +203,22 @@ def create(request):
                             is_external=False,
                             intake=intakeCreated
                         )
-                    for e in elementsCreated:
-                        connection = {}
-                        elementConnection = []
-                        if (e['xmlId'] == element['source']):
-                            sourceElement = ElementSystem.objects.get(id=e['pk'])
-                            for el in elementsCreated:
-                                if(el['xmlId'] == element['target']):
-                                    targetElement = ElementSystem.objects.get(id=el['pk'])
-                                    print(sourceElement)
-                                    print(targetElement)
-                                    ElementConnections.objects.create(
-                                        source=sourceElement,
-                                        target=targetElement
-                                    )
-
+                        elementC = {}
+                        elementC['pk'] = element_system.pk
+                        elementC['xmlId'] = element_system.graphId
+                        elementsCreated.append(elementC)
+            # Once all elements created, save the connections
+            for con in connectionsElements:
+                source = next((item for item in elementsCreated if item["xmlId"] == con['source']), None)
+                target = next((item for item in elementsCreated if item["xmlId"] == con['target']), None)
+                sourceElement = ElementSystem.objects.get(id=source['pk'])
+                targetElement = ElementSystem.objects.get(id=target['pk'])
+                ElementConnections.objects.create(
+                    source=sourceElement,
+                    target=targetElement
+                )
             messages.success(request, ("Water Intake created."))
+            return render(request, 'waterproof_intake/intake_list.html')
         else:
             messages.error(request, ("Water Intake not created."))
             return render(request, 'waterproof_intake/intake_form.html', context={"form": form, "serverApi": settings.WATERPROOF_API_SERVER})
@@ -402,31 +401,34 @@ def editIntake(request, idx):
 
             for element in filterExternal:
                 filterExtraction = ValuesTime.objects.filter(element=element.pk)
-                external ={
-                    'name': element.name,
-                    'xmlId':element.graphId
-                }
+                extractionElements = []
                 for extraction in filterExtraction:
-                    extractionElements = []
                     extractionObject = {
-                        'year':extraction.year,
+                        'year': extraction.year,
                         'waterVol': extraction.water_volume,
                         'sediment': extraction.sediment,
                         'nitrogen': extraction.nitrogen,
-                        'phosphorus':extraction.phosphorus
+                        'phosphorus': extraction.phosphorus
                     }
                     extractionElements.append(extractionObject)
-                external['waterExtraction']=extractionElements
+                external = {
+                    'name': element.name,
+                    'xmlId': element.graphId,
+                    'waterExtraction': extractionElements
+                }
+                #external['waterExtraction'] = extractionElements
                 extInputs.append(external)
-            intakeExtInputs=list(extInputs)
+            intakeExtInputs = json.dumps(extInputs)
             city = City.objects.all()
+            form = forms.IntakeForm()
             return render(
                 request, 'waterproof_intake/intake_edit.html',
                 {
                     'intake': filterIntake,
                     'countries': countries,
                     'city': city,
-                    'externalInputs': intakeExtInputs
+                    'externalInputs': intakeExtInputs,
+                    "serverApi": settings.WATERPROOF_API_SERVER
                 }
             )
         else:
