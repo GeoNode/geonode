@@ -33,10 +33,7 @@ import traceback
 
 from shutil import copyfile
 
-from six import (
-    string_types,
-    reraise as raise_
-)
+
 from PIL import Image
 from io import BytesIO
 from resizeimage import resizeimage
@@ -197,12 +194,12 @@ def extract_name_from_sld(gs_catalog, sld, sld_file=None):
         if sld:
             if isfile(sld):
                 sld = open(sld, "rb").read()
-            if isinstance(sld, string_types):
+            if isinstance(sld, str):
                 sld = sld.encode('utf-8')
             dom = etree.XML(sld)
         elif sld_file and isfile(sld_file):
             sld = open(sld_file, "rb").read()
-            if isinstance(sld, string_types):
+            if isinstance(sld, str):
                 sld = sld.encode('utf-8')
             dom = dlxml.parse(sld)
     except Exception:
@@ -356,8 +353,10 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
     try:
         if sld:
             if isfile(sld):
-                sld = open(sld, "rb").read()
-            elif isinstance(sld, string_types):
+                with open(sld, "rb") as sld_file:
+                    sld = sld_file.read()
+
+            elif isinstance(sld, str):
                 sld = sld.strip('b\'\n')
                 sld = re.sub(r'(\\r)|(\\n)', '', sld).encode("UTF-8")
             etree.XML(sld)
@@ -733,11 +732,9 @@ def gs_slurp(
                 if verbosity > 0:
                     msg = "Stopping process because --ignore-errors was not set and an error was found."
                     print(msg, file=sys.stderr)
-                raise_(
-                    Exception,
-                    Exception("Failed to process {}".format(resource.name), e),
-                    sys.exc_info()[2]
-                )
+
+                raise Exception("Failed to process {}".format(resource.name)) from e
+
         else:
             if created:
                 if not permissions:
@@ -1398,7 +1395,7 @@ def create_geoserver_db_featurestore(
              'Test while idle': 'true',
              'host': db['HOST'],
              'port': db['PORT'] if isinstance(
-                 db['PORT'], string_types) else str(db['PORT']) or '5432',
+                 db['PORT'], str) else str(db['PORT']) or '5432',
              'database': db['NAME'],
              'user': db['USER'],
              'passwd': db['PASSWORD'],
@@ -1469,7 +1466,7 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
 def get_store(cat, name, workspace=None):
     # Make sure workspace is a workspace object and not a string.
     # If the workspace does not exist, continue as if no workspace had been defined.
-    if isinstance(workspace, string_types):
+    if isinstance(workspace, str):
         workspace = cat.get_workspace(workspace)
 
     if workspace is None:
@@ -2133,7 +2130,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         width = _default_thumb_size['width']
         height = _default_thumb_size['height']
 
-        if isinstance(request_body, string_types):
+        if isinstance(request_body, str):
             try:
                 request_body = json.loads(request_body)
             except Exception as e:

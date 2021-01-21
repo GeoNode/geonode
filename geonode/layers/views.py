@@ -27,7 +27,6 @@ import traceback
 from types import TracebackType
 import decimal
 import pickle
-import six
 from django.db.models import Q
 from urllib.parse import quote
 
@@ -37,7 +36,6 @@ from django.core.exceptions import PermissionDenied
 from django.template.response import TemplateResponse
 from requests import Request
 from itertools import chain
-from six import string_types
 from owslib.wfs import WebFeatureService
 
 from guardian.shortcuts import get_perms, get_objects_for_user
@@ -378,7 +376,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
         _keys = ['info', 'errors']
         for _k in _keys:
             if _k in out:
-                if isinstance(out[_k], string_types):
+                if isinstance(out[_k], str):
                     out[_k] = out[_k].encode(layer_charset, 'surrogateescape').decode('utf-8', 'surrogateescape')
                 elif isinstance(out[_k], dict):
                     for key, value in out[_k].items():
@@ -774,7 +772,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
     data_dict = json.loads(request.POST.get('json_data'))
     layername = data_dict['layer_name']
     filtered_attributes = ''
-    if not isinstance(data_dict['filtered_attributes'], string_types):
+    if not isinstance(data_dict['filtered_attributes'], str):
         filtered_attributes = [x for x in data_dict['filtered_attributes'] if '/load_layer_data' not in x]
     name = layername if ':' not in layername else layername.split(':')[1]
     location = "{location}{service}".format(** {
@@ -809,7 +807,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
         from collections.abc import Iterable
         for i in range(len(decoded_features)):
             for key, value in decoded_features[i]['properties'].items():
-                if value != '' and isinstance(value, (string_types, int, float)) and (
+                if value != '' and isinstance(value, (str, int, float)) and (
                         (isinstance(value, Iterable) and '/load_layer_data' not in value) or value):
                     properties[key].append(value)
 
@@ -1760,7 +1758,7 @@ class LayerAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_result_label(self, result):
         """Return the label of a selected result."""
-        return six.text_type(result.title)
+        return str(result.title)
 
     def get_queryset(self):
         request = self.request

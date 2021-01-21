@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import six
 import logging
 import os.path
 
@@ -110,7 +109,7 @@ def create_fixtures():
         itinst = it()
 
         def callable():
-            return six.next(itinst)
+            return next(itinst)
         return callable
 
     next_date = get_test_date()

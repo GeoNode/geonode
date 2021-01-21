@@ -25,7 +25,6 @@ import shutil
 import requests
 import traceback
 import re
-import six
 
 from .utils import utils
 
@@ -495,7 +494,7 @@ class Command(BaseCommand):
                     for item in tree:
                         for found in find_external(item, key=key):
                             yield found
-                elif isinstance(tree, six.string_types):
+                elif isinstance(tree, str):
                     text = tree.encode('utf-8')
                     for find in (match_fileurl, match_filename):
                         found = find(key, text)

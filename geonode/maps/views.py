@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import six
 import math
 import logging
 import traceback
@@ -666,7 +665,7 @@ def map_edit(request, mapid, template='maps/map_edit.html'):
 
 
 def clean_config(conf):
-    if isinstance(conf, six.string_types):
+    if isinstance(conf, str):
         config = json.loads(conf)
         config_extras = [
             "tools",
@@ -1388,7 +1387,7 @@ class MapAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_result_label(self, result):
         """Return the label of a selected result."""
-        return six.text_type(result.title)
+        return str(result.title)
 
     def get_queryset(self):
         qs = Map.objects.all()

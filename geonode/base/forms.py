@@ -18,7 +18,6 @@
 #
 #########################################################################
 import re
-import six
 import html
 import logging
 
@@ -220,7 +219,7 @@ class RegionsSelect(forms.Select):
         # Normalize to strings.
         def _region_id_from_choice(choice):
             if isinstance(choice, int) or \
-                    (isinstance(choice, six.string_types) and choice.isdigit()):
+                    (isinstance(choice, str) and choice.isdigit()):
                 return int(choice)
             else:
                 return choice.id
@@ -232,7 +231,7 @@ class RegionsSelect(forms.Select):
         for option_value, option_label in self.choices:
             if not isinstance(
                     option_label, (list, tuple)) and isinstance(
-                        option_label, six.string_types):
+                        option_label, str):
                 output.append(
                     self.render_option_value(
                         selected_choices,
@@ -243,7 +242,7 @@ class RegionsSelect(forms.Select):
         for option_value, option_label in self.choices:
             if isinstance(
                     option_label, (list, tuple)) and not isinstance(
-                        option_label, six.string_types):
+                        option_label, str):
                 output.append(
                     format_html(
                         '<optgroup label="{}">',
@@ -251,10 +250,10 @@ class RegionsSelect(forms.Select):
                 for option in option_label:
                     if isinstance(
                             option, (list, tuple)) and not isinstance(
-                                option, six.string_types):
+                                option, str):
                         if isinstance(
                                 option[1][0], (list, tuple)) and not isinstance(
-                                    option[1][0], six.string_types):
+                                    option[1][0], str):
                             for option_child in option[1][0]:
                                 output.append(
                                     self.render_option_value(
@@ -442,7 +441,7 @@ class ResourceBaseForm(TranslationModelForm):
         _unsescaped_kwds = []
         for k in keywords:
             _k = ('%s' % re.sub(r'%([A-Z0-9]{2})', r'&#x\g<1>;', k.strip())).split(",")
-            if not isinstance(_k, six.string_types):
+            if not isinstance(_k, str):
                 for _kk in [html.unescape(x.strip()) for x in _k]:
                     # Simulate JS Unescape
                     _kk = _kk.replace('%u', r'\u').encode('unicode-escape').replace(

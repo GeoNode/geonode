@@ -21,7 +21,6 @@
 import io
 import os
 import re
-import six
 import gzip
 import json
 import shutil
@@ -217,7 +216,7 @@ def proxy(request, url=None, response_callback=None,
         'gml'
     ]
     for _ct in PLAIN_CONTENT_TYPES:
-        if content_type and _ct in content_type and not isinstance(content, six.string_types):
+        if content_type and _ct in content_type and not isinstance(content, str):
             try:
                 content = content.decode()
                 break
