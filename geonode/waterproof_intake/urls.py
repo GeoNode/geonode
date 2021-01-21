@@ -8,6 +8,8 @@ urlpatterns = [
     path('create/', views.create, name='create'),
     # Default view, list all views
     path('', views.listIntake, name='list-intake'),
+    # Edit Water Intake
+    path('edit/<int:idx>', views.editIntake, name='edit-intake'),
     # Load process effciciency by ID
     path('loadProcess/<str:category>', views.loadProcessEfficiency, name='load-process'),
     # Load function cost by symbol

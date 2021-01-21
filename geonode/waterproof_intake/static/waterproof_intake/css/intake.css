@@ -1,0 +1,104 @@
+#mainActions>button {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+    margin-right: 4px;
+}
+
+.vertical-align {
+    display: flex;
+    align-items: center;
+}
+
+.text-danger-wp {
+    color: rgb(255, 0, 0) !important;
+}
+
+.table>tbody>tr>td {
+    vertical-align: middle;
+}
+
+[title^='Empty'] {
+    display: none;
+}
+
+.table>tbody>tr>td {
+    vertical-align: middle;
+}
+
+.table>tbody>tr>th {
+    vertical-align: middle;
+}
+
+.modal {
+    text-align: center;
+}
+
+@media screen and (min-width: 768px) {
+    .modal:before {
+        display: inline-block;
+        vertical-align: middle;
+        content: " ";
+        height: 100%;
+    }
+}
+
+.modal-dialog {
+    display: inline-block;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.mxToolbarMode:hover {
+    border: 5px solid #d0d0d0;
+    border-radius: 50%;
+}
+
+.btn-group>button {
+    height: 45px;
+    width: 50.2px;
+    outline: none;
+}
+
+.btn-group>button>mjx-container {
+    outline: none;
+}
+
+.edit-group-btn {
+    background: #2C689C;
+    color: #FFF;
+}
+
+.trash-group-btn {
+    background: #AF0900;
+    color: #FFF;
+}
+
+.btn-add-cost {
+    position: absolute;
+    right: 0;
+    margin-right: 15px;
+}
+
+.swal2-popup {
+    font-size: 1.6rem !important;
+}

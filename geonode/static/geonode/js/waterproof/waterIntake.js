@@ -1,7 +1,7 @@
 async function validateCoordinateWithApi(e) {
   const snapPoint = "snapPoint";
   const delineateCatchment = "delineateCatchment";
-  let center = map.getCenter();
+  let center =  waterproof.cityCoords == undefined ? map.getCenter(): waterproof.cityCoords;
   let url = serverApi + snapPoint + "?x=" + center.lng + "&y=" + center.lat;
   let response = await fetch(url);
  
