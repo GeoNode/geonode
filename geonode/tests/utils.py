@@ -227,6 +227,16 @@ class Client(DjangoTestClient):
             data=params,
             ajax=True,
             force_login=True)
+
+        #closes the files
+        if ext.lower() == '.shp':
+            for spatial_file in spatial_files:
+                if isinstance(params[spatial_file], file):
+                    params[spatial_files].close()
+        elif isinstance(params['tif_file'], file):
+            params['tif_file'].close()
+        base_file.close()
+
         try:
             return resp, resp.json()
         except ValueError:

@@ -820,7 +820,8 @@ def upload(incoming, user=None, overwrite=False,
         print("Verifying that GeoNode is running ...", file=console)
 
     if console is None:
-        console = open(os.devnull, 'w')
+        with open(os.devnull, 'w') as console_file:
+            console = console_file.read()
 
     potential_files = []
     if os.path.isfile(incoming):

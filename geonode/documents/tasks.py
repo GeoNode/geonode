@@ -101,6 +101,7 @@ def create_document_thumbnail(self, object_id):
     except Exception as e:
         logger.error("Could not generate thumbnail: {}".format(e))
         return
+    
     finally:
         if image_file is not None:
             image_file.close()

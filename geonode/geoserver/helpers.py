@@ -196,12 +196,14 @@ def extract_name_from_sld(gs_catalog, sld, sld_file=None):
     try:
         if sld:
             if isfile(sld):
-                sld = open(sld, "rb").read()
+                with open(sld, "rb") as sld_file:
+                    sld = sld_file.read()
             if isinstance(sld, string_types):
                 sld = sld.encode('utf-8')
             dom = etree.XML(sld)
         elif sld_file and isfile(sld_file):
-            sld = open(sld_file, "rb").read()
+            with open(sld_file, "rb") as sld_file:
+                sld = sld_file.read()
             if isinstance(sld, string_types):
                 sld = sld.encode('utf-8')
             dom = dlxml.parse(sld)
@@ -356,13 +358,16 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
     try:
         if sld:
             if isfile(sld):
-                sld = open(sld, "rb").read()
+                with open(sld, "rb") as sld_file:
+                    sld = sld_file.read()
+
             elif isinstance(sld, string_types):
                 sld = sld.strip('b\'\n')
                 sld = re.sub(r'(\\r)|(\\n)', '', sld).encode("UTF-8")
             etree.XML(sld)
         elif base_file and isfile(base_file):
-            sld = open(base_file, "rb").read()
+            with open(base_file, "rb") as sld_file:
+                sld = sld_file.read()
             dlxml.parse(base_file)
     except Exception:
         logger.exception("The uploaded SLD file is not valid XML")
@@ -580,7 +585,10 @@ def gs_slurp(
        the result of the operation and the errors and traceback if it failed.
     """
     if console is None:
-        console = open(os.devnull, 'w')
+        
+        
+        with open(os.devnull, 'w') as console_file:
+            console = console_file.read()
     if verbosity > 0:
         print("Inspecting the available layers in GeoServer ...", file=console)
     cat = gs_catalog
