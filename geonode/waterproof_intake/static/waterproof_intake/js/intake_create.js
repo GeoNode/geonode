@@ -195,11 +195,9 @@ $(document).ready(function () {
         }
         $(`#table_${$('#externalSelect').val()}`).css('display', 'block');
     });
-
+    
     $('#smartwizard').smartWizard("next").click(function () {
-        $('#autoAdjustHeightF').css("height", "auto");
-        mapDelimit.invalidateSize();
-        map.invalidateSize();
+        $('#smartwizard').smartWizard("goToStep", 'step-1');
     });
 
     $('#intakeNIBYMI').click(function () {
@@ -216,10 +214,7 @@ $(document).ready(function () {
     });
 
 
-    $('#smartwizard').smartWizard("next").click(function () {
-        $('#autoAdjustHeightF').css("height", "auto");
-        map.invalidateSize();
-    });
+  
 
     $('#smartwizard').smartWizard({
         selected: 0,
