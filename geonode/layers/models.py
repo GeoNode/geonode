@@ -339,8 +339,8 @@ class Layer(ResourceBase):
         if (visible_attributes.count() > 0):
             cfg["getFeatureInfo"] = {
                 "fields": [lyr.attribute for lyr in visible_attributes],
-                "propertyNames": dict([(lyr.attribute, lyr.attribute_label) for lyr in visible_attributes]),
-                "displayTypes": dict([(lyr.attribute, lyr.featureinfo_type) for lyr in visible_attributes])
+                "propertyNames": {lyr.attribute: lyr.attribute_label for lyr in visible_attributes},
+                "displayTypes": {lyr.attribute: lyr.featureinfo_type for lyr in visible_attributes}
             }
 
         if self.use_featureinfo_custom_template:

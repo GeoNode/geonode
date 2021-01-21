@@ -89,7 +89,7 @@ INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
 
 ALPHABET = string.ascii_uppercase + string.ascii_lowercase + \
     string.digits + '-_'
-ALPHABET_REVERSE = dict((c, i) for (i, c) in enumerate(ALPHABET))
+ALPHABET_REVERSE = {c: i for (i, c) in enumerate(ALPHABET)}
 BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
 SQL_PARAMS_RE = re.compile(r'%\(([\w_\-]+)\)s')

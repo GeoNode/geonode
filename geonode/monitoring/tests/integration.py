@@ -815,10 +815,10 @@ class MonitoringChecksTestCase(MonitoringTestBase):
                 _emails = data['emails'].split('\n')[-1:]
                 _users = data['emails'].split('\n')[:-1]
                 self.assertEqual(
-                    set([u.email for u in nc.get_users()]),
+                    set(u.email for u in nc.get_users()),
                     set(_users))
                 self.assertEqual(
-                    set([email for email in nc.get_emails()]),
+                    set(email for email in nc.get_emails()),
                     set(_emails))
 
         metric_rq_count = Metric.objects.get(name='request.count')
@@ -866,7 +866,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
         self.assertIsNotNone(nresp)
         self.assertEqual(nresp.status_code, 200)
         ndata = json.loads(ensure_string(nresp.content))
-        self.assertEqual(set([n['id'] for n in ndata['data']]),
+        self.assertEqual(set(n['id'] for n in ndata['data']),
                          set(NotificationCheck.objects.all().values_list('id', flat=True)))
         mail.outbox = []
         self.assertEqual(len(mail.outbox), 0)
