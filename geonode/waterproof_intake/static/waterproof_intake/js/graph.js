@@ -13,6 +13,7 @@ var resultdb = [];
 var selectedCell;
 var graphData = [];
 var funcostdb = [];
+
 // Program starts here. The document.onLoad executes the
 // createEditor function with a given configuration.
 // In the config file, the mxEditor.onInit method is
@@ -153,16 +154,16 @@ function onInit(editor) {
     editor.graph.model.setStyle(river, 'rio');
     var temp = [];
     temp.push(
-        `Q_${river.id}`,
-        `CSed_${river.id}`,
-        `CN_${river.id}`,
-        `CP_${river.id}`,
-        `WSed_${river.id}`,
-        `WN_${river.id}`,
-        `WP_${river.id}`,
-        `WSed_ret_${river.id}`,
-        `WN_ret_${river.id}`,
-        `WP_ret_${river.id}`
+        `Q${river.id}`,
+        `CSed${river.id}`,
+        `CN${river.id}`,
+        `CP${river.id}`,
+        `WSed${river.id}`,
+        `WN${river.id}`,
+        `WP${river.id}`,
+        `WSedRet${river.id}`,
+        `WNRet${river.id}`,
+        `WPRet${river.id}`
     );
 
     $.ajax({
@@ -435,14 +436,14 @@ function onInit(editor) {
     $(document).ready(function() {
 
         var MQ = MathQuill.getInterface(2);
-
+        var CostSelected = null;
         var mathFieldSpan = document.getElementById('math-field');
-        var latexSpan = document.getElementById('latex');
+        //var latexSpan = document.getElementById('latex');
         var mathField = MQ.MathField(mathFieldSpan, {
             spaceBehavesLikeTab: true,
             handlers: {
                 edit: function() {
-                    latexSpan.textContent = mathField.latex();
+                    //latexSpan.textContent = mathField.latex();
                 }
             }
         });
@@ -455,16 +456,16 @@ function onInit(editor) {
             if (selectedCell != undefined) {
                 var varcost = [];
                 varcost.push(
-                    `Q_${idvar}`,
-                    `CSed_${idvar}`,
-                    `CN_${idvar}`,
-                    `CP_${idvar}`,
-                    `WSed_${idvar}`,
-                    `WN_${idvar}`,
-                    `WP_${idvar}`,
-                    `WSed_ret_${idvar}`,
-                    `WN_ret_${idvar}`,
-                    `WP_ret_${idvar}`
+                    `Q${idvar}`,
+                    `CSed${idvar}`,
+                    `CN${idvar}`,
+                    `CP${idvar}`,
+                    `WSed${idvar}`,
+                    `WN${idvar}`,
+                    `WP${idvar}`,
+                    `WSedRet${idvar}`,
+                    `WNRet${idvar}`,
+                    `WPRet${idvar}`
                 );
                 selectedCell[0].setAttribute('varcost', JSON.stringify(varcost));
 
@@ -488,27 +489,27 @@ function onInit(editor) {
 
         //Load data from figure to html
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
-            var mouseEvent = evt.getProperty('event');
-            var selectedCell = evt.getProperty('cell');
+            selectedCell = evt.getProperty('cell');
             // Clear Inputs
             if (selectedCell != undefined) clearDataHtml(selectedCell, evt);
             //console.log(selectedCell)
-            if (selectedCell != undefined) { addData(selectedCell); } else { clearDataHtml(selectedCell, evt); }
+            if (selectedCell != undefined) { addData(selectedCell, MQ); } else { clearDataHtml(selectedCell, evt); }
         });
-
-
 
         //Button for valide graph
         $('#saveGraph').click(function() {
+
             //$('#xml').val(xmldata)
             var enc = new mxCodec();
             var node = enc.encode(editor.graph.getModel());
             var textxml = mxUtils.getPrettyXml(node)
             graphData = [];
-            //validations(node);
+            var bandera = validations(node);
             //console.log(node);
             //createArray(editor);
-
+            if (!bandera) {
+                $('#hideCostFuntion').show();
+            }
             node.querySelectorAll('Symbol').forEach(function(node) {
                 graphData.push({
                     'id': node.id,
@@ -552,7 +553,7 @@ function onInit(editor) {
                     "target": temp[index].target
                 })
             }
-            console.log(connection)
+            //console.log(connection)
             $('#xmlGraph').val(textxml);
             $('#graphElements').val(JSON.stringify(graphData));
 
@@ -563,17 +564,34 @@ function onInit(editor) {
             addInfo(`\\mathit{${$(this).attr('value')}}`);
         });
 
+
+        $('#saveAndValideCost').click(function() {
+            funcostdb[CostSelected].fields.function_value = mathField.latex();
+            selectedCell.setAttribute('funcost', JSON.stringify(funcostdb));
+            $('#funcostgenerate div').remove();
+            for (let index = 0; index < funcostdb.length; index++) {
+                funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index, MQ);
+            }
+            $('#CalculatorModal').modal('hide');
+        });
+
+        $('button[name=mathKeyBoard]').each(function() {
+            MQ.StaticMath(this);
+        });
+
         //Edit funcion cost 
-        $(document).on('click', 'span[name=glyphicon-edit]', function() {
-            mathField.clearSelection()
-            $('#exampleModal').modal('show');
-            value = funcostdb[$(this).attr('idvalue')].fields.function_value
+        $(document).on('click', 'a[name=glyphicon-edit]', function() {
+            mathField.clearSelection();
+            $('#CalculatorModal').modal('show');
+            CostSelected = $(this).attr('idvalue');
+            setVarCost();
+            let value = funcostdb[CostSelected].fields.function_value;
             mathField.latex(value);
             mathField.focus();
         });
 
         //Delete funcion cost 
-        $(document).on('click', 'span[name=glyphicon-trash]', function() {
+        $(document).on('click', 'a[name=glyphicon-trash]', function() {
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -585,17 +603,24 @@ function onInit(editor) {
             }).then((result) => {
                 if (result.isConfirmed) {
                     var id = $(this).attr('idvalue');
-                    $(`#funcostgenerate div[idvalue='fun_${id}']`).remove();
-
+                    $(`#funcostgenerate div[idvalue = 'fun_${id}']`).remove();
                     if (typeof(selectedCell.value) == "string" && selectedCell.value.length > 0) {
                         var obj = JSON.parse(selectedCell.value);
                         let dbfields = JSON.parse(obj.funcost);
                         dbfields.splice(id, 1);
                         obj.funcost = JSON.stringify(dbfields);
                         selectedCell.setValue(JSON.stringify(obj));
+                        $('#funcostgenerate div').remove();
+                        for (let index = 0; index < funcostdb.length; index++) {
+                            funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index, MQ);
+                        }
                     } else {
                         funcostdb.splice(id, 1);
                         selectedCell.setAttribute('funcost', JSON.stringify(funcostdb));
+                        $('#funcostgenerate div').remove();
+                        for (let index = 0; index < funcostdb.length; index++) {
+                            funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index, MQ);
+                        }
                     }
 
                     Swal.fire(
@@ -606,6 +631,28 @@ function onInit(editor) {
                 }
             })
         });
+
+        function setVarCost() {
+            $('#VarCostListGroup div').remove();
+            for (const index of graphData) {
+                var costlabel = "";
+                for (const iterator of JSON.parse(index.varcost)) {
+                    costlabel += `<a value="${iterator}" class="list-group-item list-group-item-action" style="padding-top: 4px;padding-bottom: 4px;">${iterator}</a>`
+                }
+                $('#VarCostListGroup').append(`
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#VarCostListGroup" href="#VarCostListGroup_${index.id}">${index.id} - ${index.name}</a>
+                            </h4>
+                        </div>
+                        <div id="VarCostListGroup_${index.id}" class="panel-collapse collapse">
+                            ${costlabel}
+                        </div>
+                    </div>
+                `);
+            }
+        }
 
         $('#ModalAddCostBtn').click(function() {
             $('#VarCostListGroup div').remove();

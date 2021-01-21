@@ -10,18 +10,6 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Loader.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/mathquill/mathquill.css"/>
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/css/intake.css"/>
-<script>
-    MathJax = {
-        loader: {
-            load: ['input/asciimath']
-        },
-        asciimath: {
-            delimiters: [
-                ["'math'", "'math'"]
-            ]
-        }
-    };
-</script>
 {% endblock %}
 {% block body_outer %}
 <!--header-->
@@ -134,7 +122,6 @@
                 </div>
                 <!--Panel Information Right-->
                 <div class="col-md-4">
-                 <button type="button" class="btn btn-primary btn-block" id="saveGraph">Validate Graph</button>
                     <div class="alert alert-info text-center" role="alert">
                     <button type="button" class="btn btn-link btn-block" data-toggle="modal" data-target="#HelpModal" id="HelpModalBtnModal" style="outline:none; text-decoration:none;">
                         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> How to use the graph</button>
@@ -171,19 +158,17 @@
                                 <label>% Phosphorus retained:</label>
                                 <input type="number" id="fosforoDiagram" class="form-control" oninput="validateinput(this)">
                             </div>
+                            <button type="button" class="btn btn-primary btn-block" id="saveGraph">Validate Graph</button>
                         </div>
                     </div>
-                   
                 </div>
+            </div>
+            <div class="row" id="hideCostFuntion" style="display: none">
                 <div class="col-md-12">
                     <h3>Cost functions <small id="titleCostFunSmall"></small>
-                        <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal" data-target="#exampleModal" id="ModalAddCostBtn">Add Cost</button>
+                        <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal" data-target="#CalculatorModal" id="ModalAddCostBtn">Add Cost</button>
                     </h3>
-                    <div class="panel panel-info">
-                        <div class="panel-body">
-                            <div id="funcostgenerate"></div>
-                        </div>
-                    </div>
+                    <div id="funcostgenerate" style="margin-top: 12px;"></div>
                 </div>
             </div>
         </div>
@@ -364,11 +349,11 @@
     <input type="hidden" id="basinId" name="basinId" value="">
 </form>
 <!--Modal Calculator-->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="CalculatorModal" tabindex="-1" aria-labelledby="CalculatorModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Add Cost</h5>
+                <h5 class="modal-title" id="CalculatorModalLabel">Add Cost</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -389,15 +374,15 @@
                         </div>
                         <h5 class="text-primary">Syntax keyboard</h5>
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="=">'math' = 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="+">'math' + 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">'math' - 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">'math' * 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">'math' a/b 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">'math' a^b 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="\sqrt">'math' sqrt(a) 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="min">'math' min 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="max">'math' max 'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="=">=</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="+">+</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">-</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">*</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">\frac{a}{b}</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">a^b</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="\sqrt">√</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="min">min</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="max">max</button>
                         </div>
                     </div>
                 </div>
@@ -407,11 +392,11 @@
                         <span id="math-field" class="form-control" style="height: auto;"></span>
                     </div>
                 </div>
-                <div class="row">
+                <!--<div class="row">
                     <div class="col-md-12">
                         <p>LaTeX of what you typed: <span id="latex"></span></p>
                     </div>
-                </div>
+                </div>-->
                 <br>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -476,10 +461,8 @@
     <script src="{{ STATIC_URL }}waterproof_intake/js/graphValidations.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/mxgraph/mxClient.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/js/app.js"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script src="{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/js/app.js"></script>
     <script src="{{ STATIC_URL }}waterproof_intake/mathquill/mathquill.min.js"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"
     integrity="sha512-dTu0vJs5ndrd3kPwnYixvOCsvef5SGYW/zSSK4bcjRBcZHzqThq7pt7PmCv55yb8iBvni0TSeIDV8RYKjZL36A=="
