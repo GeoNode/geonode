@@ -439,12 +439,12 @@ function onInit(editor) {
         var MQ = MathQuill.getInterface(2);
         var CostSelected = null;
         var mathFieldSpan = document.getElementById('math-field');
-        //var latexSpan = document.getElementById('latex');
+        var latexSpan = document.getElementById('latex');
         var mathField = MQ.MathField(mathFieldSpan, {
             spaceBehavesLikeTab: true,
             handlers: {
                 edit: function() {
-                    //latexSpan.textContent = mathField.latex();
+                    latexSpan.textContent = mathField.latex();
                 }
             }
         });
@@ -499,69 +499,68 @@ function onInit(editor) {
 
         //Button for valide graph
         $('#saveGraph').click(function() {
+            validateGraphIntake();
+        });
 
-            //$('#xml').val(xmldata)
-            var enc = new mxCodec();
-            var node = enc.encode(editor.graph.getModel());
-            var textxml = mxUtils.getPrettyXml(node)
+        function validateGraphIntake() {
             graphData = [];
             connection = [];
+            var enc = new mxCodec();
+            var node = enc.encode(editor.graph.getModel());
+            var textxml = mxUtils.getPrettyXml(node);
             var bandera = validations(node, editor.graph.getModel());
-            //validations(node);
-            //console.log(node);
-            //createArray(editor);
             if (!bandera) {
                 $('#hideCostFuntion').show();
-            }
-            node.querySelectorAll('Symbol').forEach(function(node) {
-                graphData.push({
-                    'id': node.id,
-                    "name": node.getAttribute('name'),
-                    'resultdb': node.getAttribute('resultdb'),
-                    'varcost': node.getAttribute('varcost'),
-                    'funcost': node.getAttribute('funcost'),
-                    'external': node.getAttribute('externalData'),
-                    'externaldata': []
-                })
-            });
-
-            let temp = [];
-            node.querySelectorAll('mxCell').forEach(function(node) {
-                if (node.id != "") {
-                    let value = Object.values(JSON.parse(node.getAttribute('value')));
+                node.querySelectorAll('Symbol').forEach(function(node) {
                     graphData.push({
                         'id': node.id,
-                        'source': node.getAttribute('source'),
-                        'target': node.getAttribute('target'),
-                        'resultdb': JSON.stringify(value[3]),
-                        'funcost': JSON.stringify(value[5]),
-                        'name': JSON.stringify(value[4]),
-                        'varcost': JSON.stringify(value[1])
-                    });
-                    temp.push({
-                        'id': node.id,
-                        'source': node.getAttribute('source'),
-                        'target': node.getAttribute('target'),
+                        "name": node.getAttribute('name'),
+                        'resultdb': node.getAttribute('resultdb'),
+                        'varcost': node.getAttribute('varcost'),
+                        'funcost': node.getAttribute('funcost'),
+                        'external': node.getAttribute('externalData'),
+                        'externaldata': []
+                    })
+                });
+
+                let temp = [];
+                node.querySelectorAll('mxCell').forEach(function(node) {
+                    if (node.id != "") {
+                        let value = Object.values(JSON.parse(node.getAttribute('value')));
+                        graphData.push({
+                            'id': node.id,
+                            'source': node.getAttribute('source'),
+                            'target': node.getAttribute('target'),
+                            'resultdb': JSON.stringify(value[3]),
+                            'funcost': JSON.stringify(value[5]),
+                            'name': JSON.stringify(value[4]),
+                            'varcost': JSON.stringify(value[1])
+                        });
+                        temp.push({
+                            'id': node.id,
+                            'source': node.getAttribute('source'),
+                            'target': node.getAttribute('target'),
+                        })
+                    }
+                });
+
+                for (let index = 0; index < temp.length; index++) {
+                    connection.push({
+                        "source": temp[index].source,
+                        "target": temp[index].id
+                    })
+                    connection.push({
+                        "source": temp[index].id,
+                        "target": temp[index].target
                     })
                 }
-            });
-
-            for (let index = 0; index < temp.length; index++) {
-                connection.push({
-                    "source": temp[index].source,
-                    "target": temp[index].id
-                })
-                connection.push({
-                    "source": temp[index].id,
-                    "target": temp[index].target
-                })
+                $('#graphConnections').val(JSON.stringify(connection));
+                $('#xmlGraph').val(textxml);
+                $('#graphElements').val(JSON.stringify(graphData));
             }
-            console.log(connection)
-            $('#graphConnections').val(JSON.stringify(connection));
-            $('#xmlGraph').val(textxml);
-            $('#graphElements').val(JSON.stringify(graphData));
 
-        });
+
+        }
 
         //Set var into calculator
         $(document).on('click', '.list-group-item', function() {
@@ -577,6 +576,7 @@ function onInit(editor) {
                 funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index, MQ);
             }
             $('#CalculatorModal').modal('hide');
+            validateGraphIntake();
         });
 
         $('button[name=mathKeyBoard]').each(function() {
@@ -586,6 +586,7 @@ function onInit(editor) {
         //Edit funcion cost 
         $(document).on('click', 'a[name=glyphicon-edit]', function() {
             mathField.clearSelection();
+            console.log(mathField.latex())
             $('#CalculatorModal').modal('show');
             CostSelected = $(this).attr('idvalue');
             setVarCost();
