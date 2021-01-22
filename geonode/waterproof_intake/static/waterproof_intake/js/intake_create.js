@@ -210,7 +210,7 @@ $(document).ready(function () {
             </div>`);
         }
     });
-
+    
 
     $('#smartwizard').smartWizard({
         selected: 0,
@@ -235,7 +235,21 @@ $(document).ready(function () {
                 mapDelimit.invalidateSize();
                 mapDelimit.fitBounds(catchmentPoly.getBounds());
             }
+            else{
+                mapDelimit.invalidateSize();
+                $('#autoAdjustHeightF').css("height", "auto");
+            }
             changeFileEvent();
+        }
+        if (stepIndex == 0) {
+            if (catchmentPoly) {
+                map.invalidateSize();
+                map.fitBounds(catchmentPoly.getBounds());
+            }
+            else{
+                map.invalidateSize();
+                $('#autoAdjustHeightF').css("height", "auto");
+            }
         }
     });
 
