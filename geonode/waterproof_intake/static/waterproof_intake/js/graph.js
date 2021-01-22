@@ -14,7 +14,7 @@ var selectedCell;
 var graphData = [];
 var connection = [];
 var funcostdb = [];
-var bandera;
+var bandera = true;
 
 // Program starts here. The document.onLoad executes the
 // createEditor function with a given configuration.

@@ -306,8 +306,6 @@ $(document).ready(function() {
     });
 
     $('#step3NextBtn').click(function() {
-        console.log($('#intakeECTAG')[0].childNodes)
-        console.log($('#intakeECTAG')[0].childNodes.length)
         if ($('#intakeECTAG')[0].childNodes.length > 1) {
             $('#smartwizard').smartWizard("next");
         } else {
