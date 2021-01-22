@@ -11,18 +11,6 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Loader.css"/>
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/mathquill/mathquill.css"/>
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/css/intake.css"/>
-<script>
-    MathJax = {
-        loader: {
-            load: ['input/asciimath']
-        },
-        asciimath: {
-            delimiters: [
-                ["'math'", "'math'"]
-            ]
-        }
-    };
-</script>
 {% endblock %}
 {% block body_outer %}
 <!--header-->
@@ -34,69 +22,69 @@
     {% csrf_token %}
     <!--Start smartwizard-->
     <div id="smartwizard">
-    <!--panel of navigation-->
-    <ul class="nav">
-        <li>
-            <a class="nav-link" href="#step-1">
+        <!--panel of navigation-->
+        <ul class="nav">
+            <li>
+                <a class="nav-link" href="#step-1">
                 Define
             </a>
-        </li>
-        <li>
-            <a class="nav-link" href="#step-2">
+            </li>
+            <li>
+                <a class="nav-link" href="#step-2">
                 Configure Parameters
             </a>
-        </li>
-        <li>
-            <a class="nav-link" href="#step-3">
+            </li>
+            <li>
+                <a class="nav-link" href="#step-3">
                 Water Extraction
             </a>
-        </li>
-        <li>
-            <a class="nav-link" href="#step-4">
+            </li>
+            <li>
+                <a class="nav-link" href="#step-4">
                 External
             </a>
-        </li>
-        <li>
-            <a class="nav-link" href="#step-5">
+            </li>
+            <li>
+                <a class="nav-link" href="#step-5">
                 Sub-area
             </a>
-        </li>
-    </ul>
-    <!--Steps-->
-    <div class="tab-content" id="autoAdjustHeightF">
-        <!--Step 1-->
-        <div id="step-1" class="tab-pane" role="tabpanel">
+            </li>
+        </ul>
+        <!--Steps-->
+        <div class="tab-content" id="autoAdjustHeightF">
+            <!--Step 1-->
+            <div id="step-1" class="tab-pane" role="tabpanel">
 
-            <!--Input Name -->
-            <div id="water_intake">
-                <div id="div_id_name" class="form-group  ">
-                    <label for="id_name" class="control-label required-field ">
+                <!--Input Name -->
+                <div id="water_intake">
+                    <div id="div_id_name" class="form-group  ">
+                        <label for="id_name" class="control-label required-field ">
                         Nombre
                     </label>
-                    <div class="">
-                        <input type="text" name="name" maxlength="100" class=" form-control" id="id_name">
+                        <div class="">
+                            <input type="text" name="name" maxlength="100" class=" form-control" id="id_name">
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!--Input Desc -->
-            <div id="div_id_description" class="form-group  ">
-                <label for="id_description" class="control-label required-field ">
+                <!--Input Desc -->
+                <div id="div_id_description" class="form-group  ">
+                    <label for="id_description" class="control-label required-field ">
                     Descripción
                 </label>
-                <div class="">
-                    <input type="text" name="description" maxlength="1024" class=" form-control" id="id_description">
+                    <div class="">
+                        <input type="text" name="description" maxlength="1024" class=" form-control" id="id_description">
+                    </div>
                 </div>
-            </div>
-            <!--Input Source Name -->
-            <div id="id_water_source_name" class="form-group  ">
-                <label for="id_description" class="control-label required-field ">
+                <!--Input Source Name -->
+                <div id="id_water_source_name" class="form-group  ">
+                    <label for="id_description" class="control-label required-field ">
                     Nombre de la fuente
                 </label>
-                <div class="">
-                    <input type="text" name="water_source_name" maxlength="100" id="id_water_source_name" class=" form-control">
+                    <div class="">
+                        <input type="text" name="water_source_name" maxlength="100" id="id_water_source_name" class=" form-control">
+                    </div>
                 </div>
-            </div>
-            <!--Select City
+                <!--Select City
             <div id="div_id_city" class="form-group  ">
                 <label for="id_description" class="control-label required-field ">
                     Ciudad
@@ -104,273 +92,270 @@
                 <div class="">{{form.city}}</div>
             </div>-->
 
-            <!-- Map -->
-            <div id="map">
-                <div id="analysisOptions">
-                    <button type="button" id="validateBtn">Draw Basin</button>
-                </div>
-            </div>
-        </div>
-        <!--Step 2-->
-        <div id="step-2" class="tab-pane" role="tabpanel">
-            <!--Toolbar mxgraph-->
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="panel panel-info">
-                        <h4 class="text-center text-intake">Select the elements that make up your capture system and click on the drawing area to add them.</h4>
-                        <div class="panel-body text-center" id="toolbar"></div>
+                <!-- Map -->
+                <div id="map">
+                    <div id="analysisOptions">
+                        <button type="button" id="validateBtn">Draw Basin</button>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <!--Graph-->
-                <div class="col-md-8">
-                    <span style="float:right;padding-right:36px;">
+            <!--Step 2-->
+            <div id="step-2" class="tab-pane" role="tabpanel">
+                <!--Toolbar mxgraph-->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-info">
+                            <h4 class="text-center text-intake">Select the elements that make up your capture system and click on the drawing area to add them.</h4>
+                            <div class="panel-body text-center" id="toolbar"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <!--Graph-->
+                    <div class="col-md-8">
+                        <textarea id="xml" style="height:600px;width:100%;display:none;border-style:none;"></textarea>
+                        <span style="float:right;padding-right:36px;">
                             <input id="getdata" type="checkbox" />Source
                     </span>
-                    <textarea id="xml" style="height:600px;width:100%;display:none;border-style:none;"></textarea>
-                    <div class="panel panel-info">
-                        <div class="panel-body" id="graph" tabindex="-1" style="height:700px;width:100%;overflow:hidden;cursor:default; outline:none;"></div>
+                        <div class="panel panel-info">
+                            <div class="panel-body" id="graph" tabindex="-1" style="height:700px;width:100%;overflow:scroll;cursor:default; outline:none;"></div>
+                        </div>
                     </div>
-                </div>
-                <!--Panel Information Right-->
-                <div class="col-md-4">
-                 <button type="button" class="btn btn-primary btn-block" id="saveGraph">Validate Graph</button>
-                    <div class="alert alert-info text-center" role="alert">
-                    <button type="button" class="btn btn-link btn-block" data-toggle="modal" data-target="#HelpModal" id="HelpModalBtnModal" style="outline:none; text-decoration:none;">
+                    <!--Panel Information Right-->
+                    <div class="col-md-4">
+                        <div class="alert alert-info text-center" role="alert">
+                            <button type="button" class="btn btn-link btn-block" data-toggle="modal" data-target="#HelpModal" id="HelpModalBtnModal" style="outline:none; text-decoration:none;">
                         <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> How to use the graph</button>
-                    </button>
-                    </div>
-                    <div class="panel panel-info">
-                        <div class="panel-body">
-                            <!--Figure Name-->
-                            <div class="alert alert-info" role="alert">
-                                <h1 class="text-center" id="titleDiagram"></h1>
-                            </div>
-                            <!--ID Item-->
-                            <div class="form-group">
-                                <label>ID:</label>
-                                <input type="number" id="idDiagram" min="" max="" class="form-control" disabled>
-                            </div>
-                            <!--Water transport-->
-                            <div class="form-group">
-                                <label>% transported water:</label>
-                                <input type="number" id="aguaDiagram" min="" max="" class="form-control" oninput="validateinput(this)">
-                            </div>
-                            <!--Sediments-->
-                            <div class="form-group">
-                                <label>% Sediments retained:</label>
-                                <input type="number" id="sedimentosDiagram" min="" max="" class="form-control" oninput="validateinput(this)">
-                            </div>
-                            <!--Nitrogen-->
-                            <div class="form-group">
-                                <label>% Nitrogen retained:</label>
-                                <input type="number" id="nitrogenoDiagram" class="form-control" oninput="validateinput(this)">
-                            </div>
-                            <!--Phosphorus-->
-                            <div class="form-group">
-                                <label>% Phosphorus retained:</label>
-                                <input type="number" id="fosforoDiagram" class="form-control" oninput="validateinput(this)">
-                            </div>
+                            </button>
                         </div>
-                    </div>
-                   
-                </div>
-                <div class="col-md-12">
-                    <h3>Cost functions <small id="titleCostFunSmall"></small>
-                        <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal" data-target="#exampleModal" id="ModalAddCostBtn">Add Cost</button>
-                    </h3>
-                    <div class="panel panel-info">
-                        <div class="panel-body">
-                            <div id="funcostgenerate"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!--Step 3-->
-        <div id="step-3" class="tab-pane" role="tabpanel">
-            <!--Header-->
-            <div class="page-header">
-                <h3>Water Extraction</h3>
-                <p>Please enter the annual water extraction (l/s) associated with the Extraction Connection element x defined in the Water Intake system diagram</p>
-            </div>
-            <!--navigation-->
-            <ul class="nav nav-tabs">
-                <li data-toggle="tab" data-target="#automatic" class="active"><a href="#">Interpolation Wizard</a>
-                </li>
-                <li data-toggle="tab" data-target="#manual"><a href="#">Manual Edit</a></li>
-            </ul>
-            <!--contents tabs manual and automatic-->
-            <div class="tab-content">
-                <!--tab automatic-->
-                <div class="tab-pane fade in active" id="automatic">
-                    <br>
-                    <div class="form-group">
-                        <div class="row">
-                            <!--Data analysis Insert-->
-                            <div class="col-md-7">
-                                <h5 class="text-primary">Data Analysis</h5>
-                                <p>Please selected the method you wish to use to fill in the table associated with annual water extraction from the source.</p>
+                        <div class="panel panel-info">
+                            <div class="panel-body">
+                                <!--Figure Name-->
+                                <div class="alert alert-info" role="alert">
+                                    <h1 class="text-center" id="titleDiagram"></h1>
+                                </div>
+                                <!--ID Item-->
                                 <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label>Interpolation Method <span class="text-danger-wp">(*)</span>
+                                    <label>ID:</label>
+                                    <input type="number" id="idDiagram" min="" max="" class="form-control" disabled>
+                                </div>
+                                <!--Water transport-->
+                                <div class="form-group">
+                                    <label>% transported water:</label>
+                                    <input type="number" id="aguaDiagram" min="" max="" class="form-control" oninput="validateinput(this)">
+                                </div>
+                                <!--Sediments-->
+                                <div class="form-group">
+                                    <label>% Sediments retained:</label>
+                                    <input type="number" id="sedimentosDiagram" min="" max="" class="form-control" oninput="validateinput(this)">
+                                </div>
+                                <!--Nitrogen-->
+                                <div class="form-group">
+                                    <label>% Nitrogen retained:</label>
+                                    <input type="number" id="nitrogenoDiagram" class="form-control" oninput="validateinput(this)">
+                                </div>
+                                <!--Phosphorus-->
+                                <div class="form-group">
+                                    <label>% Phosphorus retained:</label>
+                                    <input type="number" id="fosforoDiagram" class="form-control" oninput="validateinput(this)">
+                                </div>
+                                <button type="button" class="btn btn-primary btn-block" id="saveGraph">Validate Graph</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="hideCostFuntion" style="display: none">
+                    <div class="col-md-12">
+                        <h3>Cost functions <small id="titleCostFunSmall"></small>
+                            <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal" data-target="#CalculatorModal" id="ModalAddCostBtn">Add Cost</button>
+                        </h3>
+                        <div id="funcostgenerate" style="margin-top: 12px;"></div>
+                    </div>
+                </div>
+            </div>
+            <!--Step 3-->
+            <div id="step-3" class="tab-pane" role="tabpanel">
+                <!--Header-->
+                <div class="page-header">
+                    <h3>Water Extraction</h3>
+                    <p>Please enter the annual water extraction (l/s) associated with the Extraction Connection element x defined in the Water Intake system diagram</p>
+                </div>
+                <!--navigation-->
+                <ul class="nav nav-tabs">
+                    <li data-toggle="tab" data-target="#automatic" class="active"><a href="#">Interpolation Wizard</a>
+                    </li>
+                    <li data-toggle="tab" data-target="#manual"><a href="#">Manual Edit</a></li>
+                </ul>
+                <!--contents tabs manual and automatic-->
+                <div class="tab-content">
+                    <!--tab automatic-->
+                    <div class="tab-pane fade in active" id="automatic">
+                        <br>
+                        <div class="form-group">
+                            <div class="row">
+                                <!--Data analysis Insert-->
+                                <div class="col-md-7">
+                                    <h5 class="text-primary">Data Analysis</h5>
+                                    <p>Please selected the method you wish to use to fill in the table associated with annual water extraction from the source.</p>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>Interpolation Method <span class="text-danger-wp">(*)</span>
                                             </label>
-                                            <select class="form-control" id="typeProcessInterpolation">
+                                                <select class="form-control" id="typeProcessInterpolation">
                                                 <option value="1">Linear interpolation</option>
                                                 <option value="2">Potential interpolation</option>
                                                 <option Value="3">Exponential interpolation</option>
                                                 <option Value="4">Logistics interpolation</option>
                                             </select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label>Number of years for time series <span
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label>Number of years for time series <span
                                                     class="text-danger-wp">(*)</span> </label>
-                                            <input type="text" value="2" class="form-control" id="numberYearsInterpolationValue">
+                                                <input type="text" value="2" class="form-control" id="numberYearsInterpolationValue">
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <h5 class="text-primary">Extraction</h5>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label>Initial year<span class="text-danger-wp">(*)</span> </label>
-                                            <input type="text" value="100" class="form-control" id="initialDataExtractionInterpolationValue">
-                                        </div>
-                                        <div class="col-md-6" id="finalColumnExtraction">
-                                            <label>Final year<span class="text-danger-wp">(*)</span> </label>
-                                            <input type="text" value="1000" class="form-control" id="finalDataExtractionInterpolationValue">
+                                    <h5 class="text-primary">Extraction</h5>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>Initial year<span class="text-danger-wp">(*)</span> </label>
+                                                <input type="text" value="100" class="form-control" id="initialDataExtractionInterpolationValue">
+                                            </div>
+                                            <div class="col-md-6" id="finalColumnExtraction">
+                                                <label>Final year<span class="text-danger-wp">(*)</span> </label>
+                                                <input type="text" value="1000" class="form-control" id="finalDataExtractionInterpolationValue">
+                                            </div>
                                         </div>
                                     </div>
+                                    <button type="button" class="btn btn-primary" id="intakeWECB">Generate</button>
                                 </div>
-                                <button type="button" class="btn btn-primary" id="intakeWECB">Generate</button>
-                            </div>
-                            <!--Data analysis Results-->
-                            <div class="col-md-5">
-                                <h5 class="text-primary">Results</h5>
-                                <div style="max-height: 400px; overflow-y: auto;">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th class="text-center" scope="col">Year</th>
-                                                <th class="text-center" scope="col">Extraction Value</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="intakeECTAG">
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!--tab manual-->
-                <div class="tab-pane fade" id="manual">
-                    <br>
-                    <div class="form-group">
-                        <div class="row">
-                            <!--Input number of years-->
-                            <div class="col-md-6">
-                                <h5 class="text-primary">Number of years for time series</h5>
-                                <p>You can edit the table manually by activating this option.</p>
-                                <div class="form-group">
-                                    <label>Number of years <span class="text-danger-wp">(*)</span> </label>
-                                    <input type="text" class="form-control" id="intakeNIYMI">
-                                </div>
-                                <button type="button" class="btn btn-primary" id="intakeNIBYMI">Generate</button>
-                            </div>
-                            <!--Results-->
-                            <div class="col-md-6">
-                                <h5 class="text-primary">Results</h5>
-                                <div class="panel panel-primary">
-                                    <div class="panel-body">
-                                        <div class="form-horizontal" id="intakeWEMI"></div>
+                                <!--Data analysis Results-->
+                                <div class="col-md-5">
+                                    <h5 class="text-primary">Results</h5>
+                                    <div style="max-height: 400px; overflow-y: auto;">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" scope="col">Year</th>
+                                                    <th class="text-center" scope="col">Extraction Value (l/s)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="intakeECTAG">
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <!--Step 4-->
-        <div id="step-4" class="tab-pane" role="tabpanel">
-            <!--Header-->
-            <div class="page-header">
-                <h3>External Inputs</h3>
-                <p>You define 2 external inputs. For Each of these external inputs you have to define Annual Water Volume (m3), Annual Sediment Load (Ton), Annual Nitrogen Load(kg), Annual Phosphorus Load (kg).
-                </p>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <h4 class="text-primary">Asignation</h4>
-                    <div class="form-group">
-                        <label>Type element for asignation</label>
-                        <select class="form-control" id="externalSelect"></select>
-                    </div>
-                    <div id="IntakeTDLE"></div>
-                    <button class="btn btn-primary" type="button" id="saveExternalData">Save Data</button>
-                </div>
-                
-            </div>
-        </div>
-        <!--Step 5-->
-        <div id="step-5" class="tab-pane" role="tabpanel">
-            <div class="row">
-                <!--Map-->
-                <div class="col-md-8">
-                    <div class="panel panel-danger">
-                        <div id="mapid" style="width: 100%; height: 400px;"></div>
-                    </div>
-                </div>
-                <!--Panel Information Right-->
-                <div class="col-md-4">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="alert alert-info" role="alert">
-                                <h1 class="text-center">Tools</h1>
-                            </div>
-                            <div class="form-group">
-                                <label>Load intake delimited area<span class="text-danger-wp"></span></label>
-                                <input id="intakeArea" type="file">
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-primary" id="btnDelimitArea"> Delimit
-                                    subarea</button>
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-primary" id="btnValidateArea"> Validate
-                                    area</button>
-                            </div>
-                            <div class="form-group">
-                                <input type="submit" id="submit" class="btn btn-primary" value="Submit"></input>
+                    <!--tab manual-->
+                    <div class="tab-pane fade" id="manual">
+                        <br>
+                        <div class="form-group">
+                            <div class="row">
+                                <!--Input number of years-->
+                                <div class="col-md-6">
+                                    <h5 class="text-primary">Number of years for time series</h5>
+                                    <p>You can edit the table manually by activating this option.</p>
+                                    <div class="form-group">
+                                        <label>Number of years <span class="text-danger-wp">(*)</span> </label>
+                                        <input type="text" class="form-control" id="intakeNIYMI">
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="intakeNIBYMI">Generate</button>
+                                </div>
+                                <!--Results-->
+                                <div class="col-md-6">
+                                    <h5 class="text-primary">Results</h5>
+                                    <div class="panel panel-primary">
+                                        <div class="panel-body">
+                                            <div class="form-horizontal" id="intakeWEMI"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+            <!--Step 4-->
+            <div id="step-4" class="tab-pane" role="tabpanel">
+                <!--Header-->
+                <div class="page-header">
+                    <h3>External Inputs</h3>
+                    <p>You define <span id="ExternalNumbersInputs"></span> external inputs. For Each of these external inputs you have to define Annual Water Volume (m3), Annual Sediment Load (Ton), Annual Nitrogen Load(kg), Annual Phosphorus Load (kg).
+                    </p>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="text-primary">Asignation</h4>
+                        <div class="form-group">
+                            <label>Type element for asignation</label>
+                            <select class="form-control" id="externalSelect"></select>
+                        </div>
+                        <div id="IntakeTDLE"></div>
+                        <button class="btn btn-primary" type="button" id="saveExternalData">Save Data</button>
+                    </div>
 
-  <!--Inputs hidden for save data-->
-    <input type="hidden" id="xmlGraph" name="xmlGraph">
-    <input type="hidden" id="graphConnections" name="graphConnections">
-    <input type="hidden" id="isFile" name="isFile">
-    <input type="hidden" id="typeDelimit" name="typeDelimit">
-    <input type="hidden" id="waterExtraction" name="waterExtraction" value="">
-    <input type="hidden" id="delimitArea" name="delimitArea" value="">
-    <input type="hidden" id="pointIntake" name="pointIntake" value="">
-    <input type="hidden" id="intakeAreaPolygon" name="intakeAreaPolygon" value="">
-    <input type="hidden" id="graphElements" name="graphElements" value="">
-    <input type="hidden" id="basinId" name="basinId" value="">
+                </div>
+            </div>
+            <!--Step 5-->
+            <div id="step-5" class="tab-pane" role="tabpanel">
+                <div class="row">
+                    <!--Map-->
+                    <div class="col-md-8">
+                        <div class="panel panel-danger">
+                            <div id="mapid" style="width: 100%; height: 400px;"></div>
+                        </div>
+                    </div>
+                    <!--Panel Information Right-->
+                    <div class="col-md-4">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <div class="alert alert-info" role="alert">
+                                    <h1 class="text-center">Tools</h1>
+                                </div>
+                                <div class="form-group">
+                                    <label>Load intake delimited area<span class="text-danger-wp"></span></label>
+                                    <input id="intakeArea" type="file">
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary" id="btnDelimitArea"> Delimit
+                                    subarea</button>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary" id="btnValidateArea"> Validate
+                                    area</button>
+                                </div>
+                                <div class="form-group">
+                                    <input type="submit" id="submit" class="btn btn-primary" value="Submit"></input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Inputs hidden for save data-->
+        <input type="hidden" id="xmlGraph" name="xmlGraph">
+        <input type="hidden" id="graphConnections" name="graphConnections">
+        <input type="hidden" id="isFile" name="isFile">
+        <input type="hidden" id="typeDelimit" name="typeDelimit">
+        <input type="hidden" id="waterExtraction" name="waterExtraction" value="">
+        <input type="hidden" id="delimitArea" name="delimitArea" value="">
+        <input type="hidden" id="pointIntake" name="pointIntake" value="">
+        <input type="hidden" id="intakeAreaPolygon" name="intakeAreaPolygon" value="">
+        <input type="hidden" id="graphElements" name="graphElements" value="">
+        <input type="hidden" id="basinId" name="basinId" value="">
 </form>
 <!--Modal Calculator-->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="CalculatorModal" tabindex="-1" aria-labelledby="CalculatorModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Add Cost</h5>
+                <h5 class="modal-title" id="CalculatorModalLabel">Add Cost</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -391,15 +376,15 @@
                         </div>
                         <h5 class="text-primary">Syntax keyboard</h5>
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="=">'math' = 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="+">'math' + 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">'math' - 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">'math' * 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">'math' a/b 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">'math' a^b 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="\sqrt">'math' sqrt(a) 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="min">'math' min 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="max">'math' max 'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="=">=</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="+">+</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">-</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">*</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">\frac{a}{b}</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">a^b</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="\sqrt">√</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="min">min</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="max">max</button>
                         </div>
                     </div>
                 </div>
@@ -478,10 +463,8 @@
     <script src="{{ STATIC_URL }}waterproof_intake/js/graphValidations.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/mxgraph/mxClient.js"></script>
     <script src="{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/js/app.js"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script src="{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/js/app.js"></script>
     <script src="{{ STATIC_URL }}waterproof_intake/mathquill/mathquill.min.js"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"
     integrity="sha512-dTu0vJs5ndrd3kPwnYixvOCsvef5SGYW/zSSK4bcjRBcZHzqThq7pt7PmCv55yb8iBvni0TSeIDV8RYKjZL36A=="
