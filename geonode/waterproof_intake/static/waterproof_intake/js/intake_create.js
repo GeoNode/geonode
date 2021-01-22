@@ -209,18 +209,12 @@ $(document).ready(function () {
         }
     });
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-  
-=======
     $('#smartwizard').smartWizard("next").click(function () {
         $('#autoAdjustHeightF').css("height", "auto");
         map.invalidateSize();
     });
->>>>>>> WFAppCMS
-=======
->>>>>>> water_intake_feature
+
 
     $('#smartwizard').smartWizard({
         selected: 0,
