@@ -75,7 +75,7 @@
 
 .btn-group>button {
     height: 45px;
-    width: 55.7px;
+    width: 50.2px;
     outline: none;
 }
 
@@ -113,8 +113,4 @@
 
 .text-intake {
     color: #3B819B;
-}
-
-#funcostgenerate>div>p>mjx-container {
-    outline: none;
 }

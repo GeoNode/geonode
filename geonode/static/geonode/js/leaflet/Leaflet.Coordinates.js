@@ -300,8 +300,15 @@ L.Control.Coordinates = L.Control.extend({
 			pos = pos.wrap();
 			this._currentPos = pos;
 			this._inputY.value = L.NumberFormatter.round(pos.lat, opts.decimals, opts.decimalSeperator);
-            this._inputX.value = L.NumberFormatter.round(pos.lng, opts.decimals, opts.decimalSeperator);
-			waterproof["cityCoords"] = [pos.lat, pos.lng];
+			this._inputX.value = L.NumberFormatter.round(pos.lng, opts.decimals, opts.decimalSeperator);
+			if (typeof waterproof !== 'undefined') {
+				waterproof["cityCoords"] = [pos.lat, pos.lng];
+			}
+			else {
+				waterproof = {
+					"cityCoords": [pos.lat, pos.lng]
+				}
+			}
 			// Put the object into storage
 			localStorage.setItem('cityCoords', JSON.stringify(waterproof["cityCoords"]));
 			//this._label.innerHTML = this._createCoordinateLabel(pos);

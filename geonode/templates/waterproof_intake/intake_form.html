@@ -26,28 +26,28 @@
         <ul class="nav">
             <li>
                 <a class="nav-link" href="#step-1">
-                Define
-            </a>
+                    Define
+                </a>
             </li>
             <li>
                 <a class="nav-link" href="#step-2">
-                Configure Parameters
-            </a>
+                    Configure Parameters
+                </a>
             </li>
             <li>
                 <a class="nav-link" href="#step-3">
-                Water Extraction
-            </a>
+                    Water Extraction
+                </a>
             </li>
             <li>
                 <a class="nav-link" href="#step-4">
-                External
-            </a>
+                    External
+                </a>
             </li>
             <li>
                 <a class="nav-link" href="#step-5">
-                Sub-area
-            </a>
+                    Sub-area
+                </a>
             </li>
         </ul>
         <!--Steps-->
@@ -59,8 +59,8 @@
                 <div id="water_intake">
                     <div id="div_id_name" class="form-group  ">
                         <label for="id_name" class="control-label required-field ">
-                        Nombre
-                    </label>
+                            Nombre
+                        </label>
                         <div class="">
                             <input type="text" name="name" maxlength="100" class=" form-control" id="id_name">
                         </div>
@@ -69,33 +69,39 @@
                 <!--Input Desc -->
                 <div id="div_id_description" class="form-group  ">
                     <label for="id_description" class="control-label required-field ">
-                    Descripción
-                </label>
+                        Descripción
+                    </label>
                     <div class="">
                         <input type="text" name="description" maxlength="1024" class=" form-control" id="id_description">
                     </div>
                 </div>
                 <!--Input Source Name -->
-                <div id="id_water_source_name" class="form-group  ">
+                <div id="div_id_water_source_name" class="form-group  ">
                     <label for="id_description" class="control-label required-field ">
-                    Nombre de la fuente
-                </label>
+                        Nombre de la fuente
+                    </label>
                     <div class="">
-                        <input type="text" name="water_source_name" maxlength="100" id="id_water_source_name" class=" form-control">
+                        <input type="text" name="water_source_name" maxlength="100" id="id_water_source_name" class="form-control">
                     </div>
                 </div>
                 <!--Select City
-            <div id="div_id_city" class="form-group  ">
-                <label for="id_description" class="control-label required-field ">
-                    Ciudad
-                </label>
-                <div class="">{{form.city}}</div>
-            </div>-->
+                <div id="div_id_city" class="form-group  ">
+                    <label for="id_description" class="control-label required-field ">
+                        Ciudad
+                    </label>
+                    <div class="">{{form.city}}</div>
+                </div>-->
 
                 <!-- Map -->
                 <div id="map">
                     <div id="analysisOptions">
-                        <button type="button" id="validateBtn">Draw Basin</button>
+                        <button type="button"  class="btn btn-default" id="validateBtn">Draw Basin</button>
+                    </div>
+                </div>
+                <br>
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary" id="step1NextBtn">Next</button>
                     </div>
                 </div>
             </div>
@@ -115,8 +121,8 @@
                     <div class="col-md-8">
                         <textarea id="xml" style="height:600px;width:100%;display:none;border-style:none;"></textarea>
                         <span style="float:right;padding-right:36px;">
-                            <input id="getdata" type="checkbox" />Source
-                    </span>
+                                <input id="getdata" type="checkbox" />Source
+                        </span>
                         <div class="panel panel-info">
                             <div class="panel-body" id="graph" tabindex="-1" style="height:700px;width:100%;overflow:scroll;cursor:default; outline:none;"></div>
                         </div>
@@ -124,9 +130,9 @@
                     <!--Panel Information Right-->
                     <div class="col-md-4">
                         <div class="alert alert-info text-center" role="alert">
-                            <button type="button" class="btn btn-link btn-block" data-toggle="modal" data-target="#HelpModal" id="HelpModalBtnModal" style="outline:none; text-decoration:none;">
-                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> How to use the graph</button>
-                            </button>
+                        <button type="button" class="btn btn-link btn-block" data-toggle="modal" data-target="#HelpModal" id="HelpModalBtnModal" style="outline:none; text-decoration:none;">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> How to use the graph</button>
+                        </button>
                         </div>
                         <div class="panel panel-info">
                             <div class="panel-body">
@@ -162,6 +168,7 @@
                                 <button type="button" class="btn btn-primary btn-block" id="saveGraph">Validate Graph</button>
                             </div>
                         </div>
+                    
                     </div>
                 </div>
                 <div class="row" id="hideCostFuntion" style="display: none">
@@ -170,6 +177,13 @@
                             <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal" data-target="#CalculatorModal" id="ModalAddCostBtn">Add Cost</button>
                         </h3>
                         <div id="funcostgenerate" style="margin-top: 12px;"></div>
+                    </div>
+                </div>
+                <br>
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary" id="step2PrevBtn">Previous</button>
+                        <button type="button" class="btn btn-primary" id="step2NextBtn">Next</button>
                     </div>
                 </div>
             </div>
@@ -212,7 +226,7 @@
                                             <div class="col-md-6">
                                                 <label>Number of years for time series <span
                                                     class="text-danger-wp">(*)</span> </label>
-                                                <input type="text" value="2" class="form-control" id="numberYearsInterpolationValue">
+                                                <input type="text" class="form-control" id="numberYearsInterpolationValue">
                                             </div>
                                         </div>
                                     </div>
@@ -221,11 +235,11 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <label>Initial year<span class="text-danger-wp">(*)</span> </label>
-                                                <input type="text" value="100" class="form-control" id="initialDataExtractionInterpolationValue">
+                                                <input type="text" class="form-control" id="initialDataExtractionInterpolationValue">
                                             </div>
                                             <div class="col-md-6" id="finalColumnExtraction">
                                                 <label>Final year<span class="text-danger-wp">(*)</span> </label>
-                                                <input type="text" value="1000" class="form-control" id="finalDataExtractionInterpolationValue">
+                                                <input type="text" class="form-control" id="finalDataExtractionInterpolationValue">
                                             </div>
                                         </div>
                                     </div>
@@ -268,14 +282,26 @@
                                 <!--Results-->
                                 <div class="col-md-6">
                                     <h5 class="text-primary">Results</h5>
-                                    <div class="panel panel-primary">
-                                        <div class="panel-body">
-                                            <div class="form-horizontal" id="intakeWEMI"></div>
-                                        </div>
-                                    </div>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center" scope="col">Year</th>
+                                                <th class="text-center" scope="col">Extraction Value (l/s)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="intakeWEMI">
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <br>
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary" id="step3PrevBtn">Previous</button>
+                        <button type="button" class="btn btn-primary" id="step3NextBtn">Next</button>
                     </div>
                 </div>
             </div>
@@ -297,7 +323,13 @@
                         <div id="IntakeTDLE"></div>
                         <button class="btn btn-primary" type="button" id="saveExternalData">Save Data</button>
                     </div>
-
+                </div>
+                <br>
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary" id="step4PrevBtn">Previous</button>
+                        <button type="button" class="btn btn-primary" id="step4NextBtn">Next</button>
+                    </div>
                 </div>
             </div>
             <!--Step 5-->
@@ -333,6 +365,12 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <br>
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary" id="step5PrevBtn">Previous</button>
                     </div>
                 </div>
             </div>

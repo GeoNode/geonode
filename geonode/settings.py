@@ -2174,7 +2174,7 @@ WATERPROOF_STUDY_CASES_ALLOW_ANONYMOUS = True
 
 WATERPROOF_NBS_CA_ALLOW_ANONYMOUS = True
 
-WATERPROOF_API_SERVER = "/proxy/?url=http://dev.skaphe.com:8000/"
+WATERPROOF_API_SERVER = "http://apps.skaphe.com/DotNetSINCHI3/proxy.ashx?http://dev.skaphe.com:8000/"
 
 # WATERPROOF_API_METHODS = {
 #

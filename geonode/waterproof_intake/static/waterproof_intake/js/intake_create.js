@@ -128,11 +128,9 @@ $(document).ready(function() {
 
     function externalInput(numYear) {
         var rows = "";
-        var numberExternal = 0;
         $('#externalSelect').append(`<option value="null" selected>Choose here</option>`);
         for (let p = 0; p < graphData.length; p++) {
             if (graphData[p].external == 'true') {
-                numberExternal += 1
                 $('#externalSelect').append(`
                             <option value="${graphData[p].id}">${graphData[p].id} - External Input</option>
                  `);
@@ -162,7 +160,6 @@ $(document).ready(function() {
                 `);
             }
         }
-        $('#ExternalNumbersInputs').html(numberExternal)
     }
 
 
@@ -171,13 +168,27 @@ $(document).ready(function() {
             if (graphData[id].external) {
                 graphData[id].externaldata = [];
                 $(`th[name=year_${graphData[id].id}]`).each(function() {
-                    graphData[id].externaldata.push({
-                        "year": $(this).attr('year_value'),
-                        "water": $(`input[name="waterVolume_${$(this).attr('year_value')}_${graphData[id].id}"]`).val(),
-                        "sediment": $(`input[name="sediment_${$(this).attr('year_value')}_${graphData[id].id}"]`).val(),
-                        "nitrogen": $(`input[name="nitrogen_${$(this).attr('year_value')}_${graphData[id].id}"]`).val(),
-                        "phosphorus": $(`input[name="phosphorus_${$(this).attr('year_value')}_${graphData[id].id}"]`).val()
-                    })
+                    let watersita = $(`input[name="waterVolume_${$(this).attr('year_value')}_${graphData[id].id}"]`).val();
+                    let sedimentsito = $(`input[name="sediment_${$(this).attr('year_value')}_${graphData[id].id}"]`).val();
+                    let nitrogenito = $(`input[name="nitrogen_${$(this).attr('year_value')}_${graphData[id].id}"]`).val();
+                    let phospharusito = $(`input[name="phosphorus_${$(this).attr('year_value')}_${graphData[id].id}"]`).val();
+                    if (watersita != null || sedimentsito != null || nitrogenito != null || phospharusito != null ||
+                        watersita != '' || sedimentsito != '' || nitrogenito != '' || phospharusito != '') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: `Field empty`,
+                            text: `Please full every fields`
+                        });
+                        return;
+                    } else {
+                        graphData[id].externaldata.push({
+                            "year": $(this).attr('year_value'),
+                            "water": watersita,
+                            "sediment": sedimentsito,
+                            "nitrogen": nitrogenito,
+                            "phosphorus": phospharusito
+                        });
+                    }
                 });
                 graphData[id].externaldata = JSON.stringify(graphData[id].externaldata);
             }
@@ -202,16 +213,14 @@ $(document).ready(function() {
     });
 
     $('#intakeNIBYMI').click(function() {
-        $('#intakeWEMI div').remove();
+        $('#intakeWEMI tr').remove();
         intakeNIYMI = Number($("#intakeNIYMI").val());
         for (let index = 0; index < intakeNIYMI; index++) {
             $('#intakeWEMI').append(`
-            <div class="form-group">
-                <label class="col-sm-2 control-label">${index + 1}</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control">
-                </div>
-            </div>
+            <tr>
+                <th class="text-center" scope="row">${index +1}</th>
+                <td class="text-center"> <input type="text" class="form-control"></td>
+              </tr>
             `);
         }
     });
@@ -231,6 +240,10 @@ $(document).ready(function() {
         },
         keyboardSettings: {
             keyNavigation: false
+        },
+        toolbarSettings: {
+            showNextButton: false,
+            showPreviousButton: false,
         }
     });
 
@@ -239,9 +252,83 @@ $(document).ready(function() {
             if (catchmentPoly) {
                 mapDelimit.invalidateSize();
                 mapDelimit.fitBounds(catchmentPoly.getBounds());
+            } else {
+                mapDelimit.invalidateSize();
+                $('#autoAdjustHeightF').css("height", "auto");
             }
             changeFileEvent();
         }
+        if (stepIndex == 0) {
+            if (catchmentPoly) {
+                map.invalidateSize();
+                map.fitBounds(catchmentPoly.getBounds());
+            } else {
+                map.invalidateSize();
+                $('#autoAdjustHeightF').css("height", "auto");
+            }
+        }
+    });
+
+    //Validated of steps
+
+    $('#step1NextBtn').click(function() {
+        if ($('#id_name').val() != '' && $('#id_description').val() != '' && $('#id_water_source_name').val() != '' && catchmentPoly != undefined) {
+            $('#smartwizard').smartWizard("next");
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: `Field empty`,
+                text: `Please full every fields`
+            });
+            return;
+        }
+    });
+
+    $('#step2PrevBtn').click(function() {
+        $('#smartwizard').smartWizard("prev");
+    });
+
+    $('#step2NextBtn').click(function() {
+        if (!bandera) {
+            $('#smartwizard').smartWizard("next");
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: `Validate Graph`,
+                text: `Please Validate Graph`
+            });
+            return;
+        }
+    });
+
+    $('#step3PrevBtn').click(function() {
+        $('#smartwizard').smartWizard("prev");
+    });
+
+    $('#step3NextBtn').click(function() {
+        if ($('#intakeECTAG')[0].childNodes.length > 1) {
+            $('#smartwizard').smartWizard("next");
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: `Data analisys empty`,
+                text: `Please Generate Data anlisys`
+            });
+            return;
+        }
+
+    });
+
+    $('#step4PrevBtn').click(function() {
+        $('#smartwizard').smartWizard("prev");
+    });
+
+    $('#step4NextBtn').click(function() {
+        $('#smartwizard').smartWizard("next");
+    });
+
+    $('#step5PrevBtn').click(function() {
+        $('#smartwizard').smartWizard("prev");
     });
 
 
