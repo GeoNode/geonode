@@ -275,7 +275,12 @@ $(document).ready(function() {
         if ($('#id_name').val() != '' && $('#id_description').val() != '' && $('#id_water_source_name').val() != '' && catchmentPoly != undefined) {
             $('#smartwizard').smartWizard("next");
         } else {
-            alertap();
+            Swal.fire({
+                icon: 'warning',
+                title: `Field empty`,
+                text: `Please full every fields`
+            });
+            return;
         }
     });
 
@@ -327,16 +332,6 @@ $(document).ready(function() {
     $('#step5PrevBtn').click(function() {
         $('#smartwizard').smartWizard("prev");
     });
-
-    function alertap() {
-        Swal.fire({
-            icon: 'warning',
-            title: `Field empty`,
-            text: `Please full every fields`
-        });
-        return;
-    }
-
 
 
     let initialCoords = [4.5, -74.4];
