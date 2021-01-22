@@ -363,6 +363,7 @@
 
         <!--Inputs hidden for save data-->
         <input type="hidden" id="xmlGraph" name="xmlGraph" value="{{intake.xml_graph}}">
+        <input type="hidden" id="graphConnections" name="graphConnections">
         <input type="hidden" id="isFile" name="isFile">
         <input type="hidden" id="typeDelimit" name="typeDelimit">
         <input type="hidden" id="waterExtraction" name="waterExtraction" value="">
@@ -500,6 +501,7 @@
     intakeObject.id = '{{intake.id}}'
     intakeObject.polygon = '{{intake.polygon_set.first.geom}}';
     intakeObject.point='{{intake.polygon_set.first.geomPoint}}';
+    intakeObject.delimitArea='{{intake.polygon_set.first.geomIntake}}';
     intakePolygons.push(intakeObject);
 </script>
 

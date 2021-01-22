@@ -3,15 +3,15 @@
  */
 
 var iconMarker = L.icon({
-    iconUrl: "https://raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/dist/images/IconMapSend.png",
-    iconSize:     [50, 50], // size of the icon
-    iconAnchor:   [25, 50], // point of the icon which will correspond to marker's location
-    popupAnchor:  [0, -30] // point from which the popup should open relative to the iconAnchor
-  })
+	iconUrl: "https://raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/dist/images/IconMapSend.png",
+	iconSize: [50, 50], // size of the icon
+	iconAnchor: [25, 50], // point of the icon which will correspond to marker's location
+	popupAnchor: [0, -30] // point from which the popup should open relative to the iconAnchor
+})
 
 L.Location = {};
 L.Location.Marker = {};
-L.Location.Popup = L.popup({autoPan:false,});
+L.Location.Popup = L.popup({ autoPan: false, });
 //L.Location.InputContainer = {};
 
 L.Control.Coordinates = L.Control.extend({
@@ -38,27 +38,27 @@ L.Control.Coordinates = L.Control.extend({
 		//leaflet marker type
 		markerType: L.marker,
 		//leaflet marker properties
-        markerProps: {},
-        positionButton: 'bottomright',
-        title: 'Capture Coordinate'
+		markerProps: {},
+		positionButton: 'bottomright',
+		title: 'Capture Coordinate'
 	},
 
-	onAdd: function(map) {
-        this._map = map;
-        
-        var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+	onAdd: function (map) {
+		this._map = map;
 
-        this.link = L.DomUtil.create('a', 'leaflet-bar-part', container);
-        this.link.title = this.options.title;
-        var userIcon = L.DomUtil.create('img' , 'img-responsive' , this.link);
-        userIcon.src = 'https://raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/dist/images/IconLocShare.png';
-        userIcon.alt = '';
-        userIcon.setAttribute('role', 'presentation');
-        this.link.href = '#';
-        this.link.setAttribute('role', 'button');
+		var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
 
-        L.DomEvent.on(this.link, 'click', this._click, this);
-        this._container = container;
+		this.link = L.DomUtil.create('a', 'leaflet-bar-part', container);
+		this.link.title = this.options.title;
+		var userIcon = L.DomUtil.create('img', 'img-responsive', this.link);
+		userIcon.src = 'https://raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/dist/images/IconLocShare.png';
+		userIcon.alt = '';
+		userIcon.setAttribute('role', 'presentation');
+		this.link.href = '#';
+		this.link.setAttribute('role', 'button');
+
+		L.DomEvent.on(this.link, 'click', this._click, this);
+		this._container = container;
 
 		var className = 'leaflet-control-coordinates',
 			/* container = this._container = L.DomUtil.create('div', className), */
@@ -101,36 +101,36 @@ L.Control.Coordinates = L.Control.extend({
 			L.DomEvent.addListener(this._container, "click", this._switchUI, this);
 		}
 
-        L.Location.Popup.setContent(this._inputcontainer);
-        //L.Location.InputContainer = this._inputcontainer;
+		L.Location.Popup.setContent(this._inputcontainer);
+		//L.Location.InputContainer = this._inputcontainer;
 		return container;
-    },
-    
-    _click: function (e) {
-        L.DomEvent.stopPropagation(e);
-        L.DomEvent.preventDefault(e);
-        placeMarker( this )
-      },
+	},
+
+	_click: function (e) {
+		L.DomEvent.stopPropagation(e);
+		L.DomEvent.preventDefault(e);
+		placeMarker(this)
+	},
 
 	/**
 	 *	Creates an input HTML element in given container with given classname
 	 */
-	_createInput: function(classname, container) {
+	_createInput: function (classname, container) {
 		var input = L.DomUtil.create("input", classname, container);
-        input.type = "text";
-        input.size = 12;
+		input.type = "text";
+		input.size = 12;
 		L.DomEvent.disableClickPropagation(input);
 		return input;
 	},
 
-	_clearMarker: function() {
+	_clearMarker: function () {
 		this._map.removeLayer(this._marker);
 	},
 
 	/**
 	 *	Called onkeyup of input fields
 	 */
-	_handleKeypress: function(e) {
+	_handleKeypress: function (e) {
 		switch (e.keyCode) {
 			case 27: //Esc
 				this.collapse();
@@ -148,7 +148,7 @@ L.Control.Coordinates = L.Control.extend({
 	/**
 	 *	Called on each keyup except ESC
 	 */
-	_handleSubmit: function() {
+	_handleSubmit: function () {
 		var x = L.NumberFormatter.createValidNumber(this._inputX.value, this.options.decimalSeperator);
 		var y = L.NumberFormatter.createValidNumber(this._inputY.value, this.options.decimalSeperator);
 		if (x !== undefined && y !== undefined) {
@@ -169,7 +169,7 @@ L.Control.Coordinates = L.Control.extend({
 	/**
 	 *	Shows inputs fields
 	 */
-	expand: function() {
+	expand: function () {
 		this._showsCoordinates = false;
 
 		//this._map.off("mousemove", this._update, this);
@@ -184,7 +184,7 @@ L.Control.Coordinates = L.Control.extend({
 	/**
 	 *	Creates the label according to given options and formatters
 	 */
-	_createCoordinateLabel: function(ll) {
+	_createCoordinateLabel: function (ll) {
 		var opts = this.options,
 			x, y;
 		if (opts.customLabelFcn) {
@@ -213,7 +213,7 @@ L.Control.Coordinates = L.Control.extend({
 	/**
 	 *	Returns a Number according to options (DMS or decimal)
 	 */
-	_getNumber: function(n, opts) {
+	_getNumber: function (n, opts) {
 		var res;
 		if (opts.useDMS) {
 			res = L.NumberFormatter.toDMS(n);
@@ -227,7 +227,7 @@ L.Control.Coordinates = L.Control.extend({
 	 *	Shows coordinate labels after user input has ended. Also
 	 *	displays a marker with popup at the last input position.
 	 */
-	collapse: function() {
+	collapse: function () {
 		if (!this._showsCoordinates) {
 			//this._map.on("mousemove", this._update, this);
 			this._showsCoordinates = true;
@@ -257,7 +257,7 @@ L.Control.Coordinates = L.Control.extend({
 					.on(close, 'mousedown', stop)
 					.on(close, 'dblclick', stop)
 					.on(close, 'click', L.DomEvent.preventDefault)
-					.on(close, 'click', function() {
+					.on(close, 'click', function () {
 						this._map.removeLayer(m);
 					}, this);
 
@@ -272,7 +272,7 @@ L.Control.Coordinates = L.Control.extend({
 	/**
 	 *	Click callback for UI
 	 */
-	_switchUI: function(evt) {
+	_switchUI: function (evt) {
 		L.DomEvent.stop(evt);
 		L.DomEvent.stopPropagation(evt);
 		L.DomEvent.preventDefault(evt);
@@ -285,37 +285,43 @@ L.Control.Coordinates = L.Control.extend({
 		}
 	},
 
-	onRemove: function(map) {
+	onRemove: function (map) {
 		//map.off("mousemove", this._update, this);
 	},
 
 	/**
 	 *	Mousemove callback function updating labels and input elements
 	 */
-	_update: function(evt) {
-        var pos = evt.latlng != undefined ? evt.latlng : 
-                    evt.target.getLatLng != undefined ? evt.target.getLatLng(): this._map.getCenter(),
+	_update: function (evt) {
+		var pos = evt.latlng != undefined ? evt.latlng :
+			evt.target.getLatLng != undefined ? evt.target.getLatLng() : this._map.getCenter(),
 			opts = this.options;
 		if (pos) {
 			pos = pos.wrap();
 			this._currentPos = pos;
 			this._inputY.value = L.NumberFormatter.round(pos.lat, opts.decimals, opts.decimalSeperator);
-            this._inputX.value = L.NumberFormatter.round(pos.lng, opts.decimals, opts.decimalSeperator);
-			waterproof["cityCoords"] = [pos.lat, pos.lng];
+			this._inputX.value = L.NumberFormatter.round(pos.lng, opts.decimals, opts.decimalSeperator);
+			if (typeof waterproof !== 'undefined') {
+				waterproof["cityCoords"] = [pos.lat, pos.lng];
+			}
+			else
+				waterproof = {
+					"cityCoords": [pos.lat, pos.lng]
+				}
 			// Put the object into storage
 			localStorage.setItem('cityCoords', JSON.stringify(waterproof["cityCoords"]));
 			//this._label.innerHTML = this._createCoordinateLabel(pos);
 		}
 	},
 
-	_createNewMarker: function() {
+	_createNewMarker: function () {
 		return this.options.markerType(null, this.options.markerProps);
 	}
 
 });
 
 //constructor registration
-L.control.coordinates = function(options) {
+L.control.coordinates = function (options) {
 	return new L.Control.Coordinates(options);
 };
 
@@ -324,14 +330,14 @@ L.Map.mergeOptions({
 	coordinateControl: false
 });
 
-L.Map.addInitHook(function() {
+L.Map.addInitHook(function () {
 	if (this.options.coordinateControl) {
 		this.coordinateControl = new L.Control.Coordinates();
 		this.addControl(this.coordinateControl);
 	}
 });
 L.NumberFormatter = {
-	round: function(num, dec, sep) {
+	round: function (num, dec, sep) {
 		var res = L.Util.formatNum(num, dec) + "",
 			numbers = res.split(".");
 		if (numbers[1]) {
@@ -344,7 +350,7 @@ L.NumberFormatter = {
 		return res;
 	},
 
-	toDMS: function(deg) {
+	toDMS: function (deg) {
 		var d = Math.floor(Math.abs(deg));
 		var minfloat = (Math.abs(deg) - d) * 60;
 		var m = Math.floor(minfloat);
@@ -371,7 +377,7 @@ L.NumberFormatter = {
 		return ("" + dir + d + "&deg; " + m + "' " + s + "''");
 	},
 
-	createValidNumber: function(num, sep) {
+	createValidNumber: function (num, sep) {
 		if (num && num.length > 0) {
 			var numbers = num.split(sep || ".");
 			try {
@@ -388,29 +394,29 @@ L.NumberFormatter = {
 	}
 };
 
-function placeMarker(obj){
-    if (!L.Location.Marker._latlng ) {
-        L.Location.Marker = L.marker( obj._map.getCenter() , {draggable: true,icon: iconMarker} );
-        let pos = obj._map.getCenter();
-        pos = pos.wrap();
-        obj._currentPos = pos;
+function placeMarker(obj) {
+	if (!L.Location.Marker._latlng) {
+		L.Location.Marker = L.marker(obj._map.getCenter(), { draggable: true, icon: iconMarker });
+		let pos = obj._map.getCenter();
+		pos = pos.wrap();
+		obj._currentPos = pos;
 		waterproof["cityCoords"] = [pos.lat, pos.lng];
 		// Put the object into storage
 		localStorage.setItem('cityCoords', JSON.stringify(waterproof["cityCoords"]));
 
-        obj._inputY.value = L.NumberFormatter.round(pos.lat, obj.options.decimals, obj.options.decimalSeperator);
-        obj._inputX.value = L.NumberFormatter.round(pos.lng, obj.options.decimals, obj.options.decimalSeperator);
-        
-        L.Location.Marker.on('dragend', function(event) {
-            obj._update(event);
-        L.Location.Marker.openPopup();            
-        });
-        L.Location.Marker.bindPopup(L.Location.Popup);
-        L.Location.Marker.addTo(obj._map);
-    } else {
-        L.Location.Marker.setLatLng( obj._map.getCenter() )
-    }
-    //obj._map.off("mousemove", obj._update, obj);     
-    L.Location.Marker.openPopup();
-//  }
+		obj._inputY.value = L.NumberFormatter.round(pos.lat, obj.options.decimals, obj.options.decimalSeperator);
+		obj._inputX.value = L.NumberFormatter.round(pos.lng, obj.options.decimals, obj.options.decimalSeperator);
+
+		L.Location.Marker.on('dragend', function (event) {
+			obj._update(event);
+			L.Location.Marker.openPopup();
+		});
+		L.Location.Marker.bindPopup(L.Location.Popup);
+		L.Location.Marker.addTo(obj._map);
+	} else {
+		L.Location.Marker.setLatLng(obj._map.getCenter())
+	}
+	//obj._map.off("mousemove", obj._update, obj);     
+	L.Location.Marker.openPopup();
+	//  }
 };

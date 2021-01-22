@@ -2,7 +2,7 @@ async function validateCoordinateWithApi(e) {
   const snapPoint = "snapPoint";
   const delineateCatchment = "delineateCatchment";
   let center =  waterproof.cityCoords == undefined ? map.getCenter(): waterproof.cityCoords;
-  let url = serverApi + snapPoint + "?x=" + center.lng + "&y=" + center.lat;
+  let url = serverApi + snapPoint + "?x=" + center[1] + "&y=" + center[0];
   let response = await fetch(url);
  
   let result = await response.json();
@@ -29,6 +29,8 @@ async function validateCoordinateWithApi(e) {
         catchmentPolyDelimit = L.geoJSON().addTo(mapDelimit);
       } else {
         map.removeLayer(catchmentPoly);
+        mapDelimit.removeLayer(catchmentPolyDelimit);
+        mapDelimit.removeLayer(editablepolygon);
         catchmentPoly = L.geoJSON().addTo(map);
         catchmentPolyDelimit = L.geoJSON().addTo(mapDelimit);
       }
