@@ -198,16 +198,16 @@ $(document).ready(function () {
         map.invalidateSize();
     });
 
-    $('#intakeNIBYMI').click(function () {
-        $('#intakeWEMI div').remove();
+    $('#intakeNIBYMI').click(function() {
+        $('#intakeWEMI tr').remove();
         intakeNIYMI = Number($("#intakeNIYMI").val());
         for (let index = 0; index < intakeNIYMI; index++) {
-            $('#intakeWEMI').append(`<div class="form-group">
-                <label class="col-sm-1 control-label">${index + 1}</label>
-                <div class="col-sm-11">
-                    <input type="text" class="form-control">
-                </div>
-            </div>`);
+            $('#intakeWEMI').append(`
+            <tr>
+                <th class="text-center" scope="row">${index +1}</th>
+                <td class="text-center"> <input type="text" class="form-control"></td>
+              </tr>
+            `);
         }
     });
     
@@ -226,6 +226,10 @@ $(document).ready(function () {
         },
         keyboardSettings: {
             keyNavigation: false
+        },
+        toolbarSettings: {
+            showNextButton: false,
+            showPreviousButton: false,
         }
     });
 
@@ -253,6 +257,18 @@ $(document).ready(function () {
         }
     });
 
+    $('#DefineNextBtn').click(function() {
+        $('#smartwizard').smartWizard("next");
+    });
+
+    $('#ConfigureParametersPreviousBtn').click(function() {
+        $('#smartwizard').smartWizard("prev");
+    });
+
+    $('#ConfigureParametersNextBtn').click(function() {
+        $('#smartwizard').smartWizard("next");
+    });
+
 
     let initialCoords = [4.5, -74.4];
     // find in localStorage if cityCoords exist
@@ -264,7 +280,7 @@ $(document).ready(function () {
     }
     waterproof["cityCoords"] = cityCoords;
 
-    map = L.map('map', {}).setView(initialCoords, 5);
+    map = L.map('map', {}).setView(initialCoords, 8);
     mapDelimit = L.map('mapid', { editable: true }).setView(initialCoords, 5);
     var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
