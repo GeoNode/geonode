@@ -247,18 +247,41 @@ $(document).ready(function() {
             changeFileEvent();
         }
     });
+    //Validated of steps
 
-    $('#DefineNextBtn').click(function() {
+    $('#step1NextBtn').click(function() {
+
         $('#smartwizard').smartWizard("next");
     });
 
-    $('#ConfigureParametersPreviousBtn').click(function() {
+    $('#step2PrevBtn').click(function() {
         $('#smartwizard').smartWizard("prev");
     });
 
-    $('#ConfigureParametersNextBtn').click(function() {
+    $('#step2NextBtn').click(function() {
         $('#smartwizard').smartWizard("next");
     });
+
+    $('#step3PrevBtn').click(function() {
+        $('#smartwizard').smartWizard("prev");
+    });
+
+    $('#step3NextBtn').click(function() {
+        $('#smartwizard').smartWizard("next");
+    });
+
+    $('#step4PrevBtn').click(function() {
+        $('#smartwizard').smartWizard("prev");
+    });
+
+    $('#step4NextBtn').click(function() {
+        $('#smartwizard').smartWizard("next");
+    });
+
+    $('#step5PrevBtn').click(function() {
+        $('#smartwizard').smartWizard("prev");
+    });
+
 
 
     let initialCoords = [4.5, -74.4];
