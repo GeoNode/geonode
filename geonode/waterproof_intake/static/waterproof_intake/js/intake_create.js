@@ -202,16 +202,14 @@ $(document).ready(function() {
     });
 
     $('#intakeNIBYMI').click(function() {
-        $('#intakeWEMI div').remove();
+        $('#intakeWEMI tr').remove();
         intakeNIYMI = Number($("#intakeNIYMI").val());
         for (let index = 0; index < intakeNIYMI; index++) {
             $('#intakeWEMI').append(`
-            <div class="form-group">
-                <label class="col-sm-2 control-label">${index + 1}</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control">
-                </div>
-            </div>
+            <tr>
+                <th class="text-center" scope="row">${index +1}</th>
+                <td class="text-center"> <input type="text" class="form-control"></td>
+              </tr>
             `);
         }
     });
