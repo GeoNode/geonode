@@ -168,13 +168,27 @@ $(document).ready(function() {
             if (graphData[id].external) {
                 graphData[id].externaldata = [];
                 $(`th[name=year_${graphData[id].id}]`).each(function() {
-                    graphData[id].externaldata.push({
-                        "year": $(this).attr('year_value'),
-                        "water": $(`input[name="waterVolume_${$(this).attr('year_value')}_${graphData[id].id}"]`).val(),
-                        "sediment": $(`input[name="sediment_${$(this).attr('year_value')}_${graphData[id].id}"]`).val(),
-                        "nitrogen": $(`input[name="nitrogen_${$(this).attr('year_value')}_${graphData[id].id}"]`).val(),
-                        "phosphorus": $(`input[name="phosphorus_${$(this).attr('year_value')}_${graphData[id].id}"]`).val()
-                    })
+                    let watersita = $(`input[name="waterVolume_${$(this).attr('year_value')}_${graphData[id].id}"]`).val();
+                    let sedimentsito = $(`input[name="sediment_${$(this).attr('year_value')}_${graphData[id].id}"]`).val();
+                    let nitrogenito = $(`input[name="nitrogen_${$(this).attr('year_value')}_${graphData[id].id}"]`).val();
+                    let phospharusito = $(`input[name="phosphorus_${$(this).attr('year_value')}_${graphData[id].id}"]`).val();
+                    if (watersita != null || sedimentsito != null || nitrogenito != null || phospharusito != null ||
+                        watersita != '' || sedimentsito != '' || nitrogenito != '' || phospharusito != '') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: `Field empty`,
+                            text: `Please full every fields`
+                        });
+                        return;
+                    } else {
+                        graphData[id].externaldata.push({
+                            "year": $(this).attr('year_value'),
+                            "water": watersita,
+                            "sediment": sedimentsito,
+                            "nitrogen": nitrogenito,
+                            "phosphorus": phospharusito
+                        });
+                    }
                 });
                 graphData[id].externaldata = JSON.stringify(graphData[id].externaldata);
             }
@@ -254,11 +268,15 @@ $(document).ready(function() {
             }
         }
     });
+
     //Validated of steps
 
     $('#step1NextBtn').click(function() {
-
-        $('#smartwizard').smartWizard("next");
+        if ($('#id_name').val() != '' && $('#id_description').val() != '' && $('#id_water_source_name').val() != '' && catchmentPoly != undefined) {
+            $('#smartwizard').smartWizard("next");
+        } else {
+            alertap();
+        }
     });
 
     $('#step2PrevBtn').click(function() {
@@ -266,7 +284,16 @@ $(document).ready(function() {
     });
 
     $('#step2NextBtn').click(function() {
-        $('#smartwizard').smartWizard("next");
+        if (!bandera) {
+            $('#smartwizard').smartWizard("next");
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: `Validate Graph`,
+                text: `Please Validate Graph`
+            });
+            return;
+        }
     });
 
     $('#step3PrevBtn').click(function() {
@@ -274,7 +301,19 @@ $(document).ready(function() {
     });
 
     $('#step3NextBtn').click(function() {
-        $('#smartwizard').smartWizard("next");
+        console.log($('#intakeECTAG')[0].childNodes)
+        console.log($('#intakeECTAG')[0].childNodes.length)
+        if ($('#intakeECTAG')[0].childNodes.length > 1) {
+            $('#smartwizard').smartWizard("next");
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: `Data analisys empty`,
+                text: `Please Generate Data anlisys`
+            });
+            return;
+        }
+
     });
 
     $('#step4PrevBtn').click(function() {
@@ -288,6 +327,15 @@ $(document).ready(function() {
     $('#step5PrevBtn').click(function() {
         $('#smartwizard').smartWizard("prev");
     });
+
+    function alertap() {
+        Swal.fire({
+            icon: 'warning',
+            title: `Field empty`,
+            text: `Please full every fields`
+        });
+        return;
+    }
 
 
 

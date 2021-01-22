@@ -14,6 +14,7 @@ var selectedCell;
 var graphData = [];
 var connection = [];
 var funcostdb = [];
+var bandera;
 
 // Program starts here. The document.onLoad executes the
 // createEditor function with a given configuration.
@@ -518,7 +519,7 @@ function onInit(editor) {
             var enc = new mxCodec();
             var node = enc.encode(editor.graph.getModel());
             var textxml = mxUtils.getPrettyXml(node);
-            var bandera = validations(node, editor.graph.getModel());
+            bandera = validations(node, editor.graph.getModel());
             if (!bandera) {
                 $('#hideCostFuntion').show();
                 node.querySelectorAll('Symbol').forEach(function(node) {

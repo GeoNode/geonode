@@ -302,7 +302,7 @@ function validationsCsinfraExternal(valida) {
         title: `Missing elements`,
         text: `No exist ${message[0]} ${message[1]} in a diagram`
     });
-    return true
+    return true;
 }
 
 function validationsNodeAlone(data) {
@@ -337,6 +337,5 @@ function mensajeAlert(fin) {
 }
 
 function validations(validate, editor) {
-    return validationsCsinfraExternal(validate);
-    return validationsNodeAlone(editor);
+    return (validationsCsinfraExternal(validate) == true || validationsNodeAlone(editor) == true) ? true : false;
 }
