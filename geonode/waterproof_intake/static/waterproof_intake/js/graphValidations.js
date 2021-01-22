@@ -301,6 +301,7 @@ function validationsCsinfraExternal(valida) {
         title: `Missing elements`,
         text: `No exist ${message[0]} ${message[1]} in a diagram`
     })
+    return true;
 }
 
 function validationsNodeAlone(data) {
@@ -312,11 +313,11 @@ function validationsNodeAlone(data) {
             mensajeAlert(fin);
             return;
         } else {
-            if (typeof(fin.value) != "string" && fin.edges.length == 0 && fin.style != 'rio') {
+            if (typeof(fin.value) != "string" && fin.edges.length == 0 && fin.style != 'rio' && fin.style != 'externalinput') {
                 mensajeAlert(fin);
                 return;
             }
-            if (typeof(fin.value) != "string" && fin.edges.length >= 1 && fin.style != 'rio') {
+            if (typeof(fin.value) != "string" && fin.edges.length == 1 && fin.style != 'rio' && fin.style != 'externalinput') {
                 if (fin.id == fin.edges[0].source.id) {
                     mensajeAlert(fin);
                     return;
