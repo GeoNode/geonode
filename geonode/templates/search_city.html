@@ -56,17 +56,33 @@
             attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 Komoot'});
         var images = L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}");
         
+        var grayLyrUrl = "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png";
         var esriHydroOverlayURL= "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}";
         var hydroLyr = L.tileLayer(esriHydroOverlayURL);
+
+
+        var grayLyr = L.tileLayer(grayLyrUrl, {
+                                    maxZoom: 20,
+                                        attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+                                    });
+
+        var wmsHydroNetworkLyr = L.tileLayer.wms('http://apps.skaphe.com:8080/geoserver/waterproof/wms?', {
+            layers: 'waterproof:world_hydro_network',
+            format: 'image/png',
+            transparent: 'true',
+            opacity: 0.7,
+            minZoom: 9,
+        });
 
         var baseLayers = {
             OpenStreetMap: osm,
             Images: images,
-            /* Grayscale: gray,   */          
+            Grayscale: grayLyr,
         };
 
         var overlays = {
             "Hydro (esri)": hydroLyr,
+            "Hydro Network": wmsHydroNetworkLyr,
         };
 
         var map = L.map('map', {
@@ -103,9 +119,10 @@
         function onMapClick(e) {
             //c.setCoordinates(e);      
         }
-        map.on('click', onMapClick);
-
-        
+        map.on('click', onMapClick);  
+        map.on('zoomend', function(e){
+            console.log(map.getBounds().toBBoxString());
+        });      
       
     });    
 
