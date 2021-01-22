@@ -231,6 +231,10 @@ $(document).ready(function() {
         },
         keyboardSettings: {
             keyNavigation: false
+        },
+        toolbarSettings: {
+            showNextButton: false,
+            showPreviousButton: false,
         }
     });
 
@@ -242,6 +246,18 @@ $(document).ready(function() {
             }
             changeFileEvent();
         }
+    });
+
+    $('#DefineNextBtn').click(function() {
+        $('#smartwizard').smartWizard("next");
+    });
+
+    $('#ConfigureParametersPreviousBtn').click(function() {
+        $('#smartwizard').smartWizard("prev");
+    });
+
+    $('#ConfigureParametersNextBtn').click(function() {
+        $('#smartwizard').smartWizard("next");
     });
 
 

@@ -95,7 +95,13 @@
                 <!-- Map -->
                 <div id="map">
                     <div id="analysisOptions">
-                        <button type="button" id="validateBtn">Draw Basin</button>
+                        <button type="button"  class="btn btn-default" id="validateBtn">Draw Basin</button>
+                    </div>
+                </div>
+                <br>
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary" id="DefineNextBtn">Next</button>
                     </div>
                 </div>
             </div>
@@ -172,6 +178,13 @@
                         <div id="funcostgenerate" style="margin-top: 12px;"></div>
                     </div>
                 </div>
+                <br>
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary" id="ConfigureParametersPreviousBtn">Previous</button>
+                        <button type="button" class="btn btn-primary" id="ConfigureParametersNextBtn">Next</button>
+                    </div>
+                </div>
             </div>
             <!--Step 3-->
             <div id="step-3" class="tab-pane" role="tabpanel">
@@ -212,7 +225,7 @@
                                             <div class="col-md-6">
                                                 <label>Number of years for time series <span
                                                     class="text-danger-wp">(*)</span> </label>
-                                                <input type="text" value="2" class="form-control" id="numberYearsInterpolationValue">
+                                                <input type="text" class="form-control" id="numberYearsInterpolationValue">
                                             </div>
                                         </div>
                                     </div>
@@ -221,11 +234,11 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <label>Initial year<span class="text-danger-wp">(*)</span> </label>
-                                                <input type="text" value="100" class="form-control" id="initialDataExtractionInterpolationValue">
+                                                <input type="text" class="form-control" id="initialDataExtractionInterpolationValue">
                                             </div>
                                             <div class="col-md-6" id="finalColumnExtraction">
                                                 <label>Final year<span class="text-danger-wp">(*)</span> </label>
-                                                <input type="text" value="1000" class="form-control" id="finalDataExtractionInterpolationValue">
+                                                <input type="text" class="form-control" id="finalDataExtractionInterpolationValue">
                                             </div>
                                         </div>
                                     </div>
