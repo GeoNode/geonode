@@ -60,10 +60,19 @@
         var esriHydroOverlayURL= "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}";
         var hydroLyr = L.tileLayer(esriHydroOverlayURL);
 
+
         var grayLyr = L.tileLayer(grayLyrUrl, {
                                     maxZoom: 20,
                                         attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
                                     });
+
+        var wmsHydroNetworkLyr = L.tileLayer.wms('http://apps.skaphe.com:8080/geoserver/waterproof/wms?', {
+            layers: 'waterproof:world_hydro_network',
+            format: 'image/png',
+            transparent: 'true',
+            opacity: 0.7,
+        });
+
         var baseLayers = {
             OpenStreetMap: osm,
             Images: images,
@@ -72,6 +81,7 @@
 
         var overlays = {
             "Hydro (esri)": hydroLyr,
+            "Hydro Network": wmsHydroNetworkLyr,
         };
 
         var map = L.map('map', {
