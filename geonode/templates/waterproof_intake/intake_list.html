@@ -24,9 +24,9 @@
 <div class="row">
     <div class="col-md-4">
         {% if waterproof.selectedCity == undefined %}
-            <h4 class="text-center" id="countryLabel">{{cityCoords}}</h4>
+            <h4 class="text-center" id="countryLabel">{{'undefined'}}</h4>
             <p><b>País:</b> <span id="regionLabel">{{'undefined'}}</span> </p>
-            <p><b>Region:</b> <span id="regionLabel">{{region.name}}</span> </p>
+            <p><b>Region:</b> <span id="regionLabel">{{'undefined'}}</span> </p>
         {% endif %}
         {% if waterproof.selectedCity != undefined %}
             <h4 class="text-center" id="countryLabel">{{waterproof.selectedCity.properties.name}}</h4>

@@ -192,9 +192,7 @@ $(document).ready(function () {
         $(`#table_${$('#externalSelect').val()}`).css('display', 'block');
     });
     
-    $('#smartwizard').smartWizard("next").click(function () {
-        $('#smartwizard').smartWizard("goToStep", 'step-1');
-    });
+
 
     $('#intakeNIBYMI').click(function () {
         $('#intakeWEMI div').remove();
