@@ -8797,3 +8797,8 @@ top:50px;
   z-index: 999;
   right: 1px;
 }
+
+.img-icon{
+  width: 16px;
+  height: 24px;
+}

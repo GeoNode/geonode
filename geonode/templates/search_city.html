@@ -71,6 +71,7 @@
             format: 'image/png',
             transparent: 'true',
             opacity: 0.7,
+            minZoom: 9,
         });
 
         var baseLayers = {
@@ -118,7 +119,10 @@
         function onMapClick(e) {
             //c.setCoordinates(e);      
         }
-        map.on('click', onMapClick);        
+        map.on('click', onMapClick);  
+        map.on('zoomend', function(e){
+            console.log(map.getBounds().toBBoxString());
+        });      
       
     });    
 
