@@ -277,7 +277,23 @@ def listIntake(request):
                         'region': region
                     }
                 )
-        
+
+            if (request.user.professional_role == 'ACDMC'):
+                intake = Intake.objects.all()
+                userCountry = Countries.objects.get(code=request.user.country)
+                region = Region.objects.get(id=userCountry.region_id)
+                city = City.objects.all()
+                return render(
+                    request,
+                    'waterproof_intake/intake_list.html',
+                    {
+                        'intakeList': intake,
+                        'city': city,
+                        'userCountry': userCountry,
+                        'region': region
+                    }
+                )
+
             if (request.user.professional_role == 'SCADM'):
                 intake = Intake.objects.all()
                 userCountry = Countries.objects.get(code=request.user.country)
@@ -293,7 +309,7 @@ def listIntake(request):
                         'region': region
                     }
                 )
-        
+
             if (request.user.professional_role == 'MCOMC'):
                 intake = Intake.objects.all()
                 userCountry = Countries.objects.get(code=request.user.country)
@@ -309,7 +325,7 @@ def listIntake(request):
                         'region': region
                     }
                 )
-        
+
             if (request.user.professional_role == 'CITIZN'):
                 intake = Intake.objects.all()
                 userCountry = Countries.objects.get(code=request.user.country)
@@ -417,6 +433,62 @@ def editIntake(request, idx):
             )
         else:
             print("Proceso de guardado")
+            form = forms.IntakeForm(request.POST)
+            if form.is_valid():
+                intake = form.save(commit=False)
+                xmlGraph = request.POST.get('xmlGraph')
+                # True | False
+                isFile = request.POST.get('isFile')
+                # GeoJSON | SHP
+                typeDelimitFile = request.POST.get('typeDelimit')
+                basinId = request.POST.get('basinId')
+                interpolationString = request.POST.get('waterExtraction')
+                interpolation = json.loads(interpolationString)
+                delimitAreaString = request.POST.get('delimitArea')
+                intakeAreaString = request.POST.get('intakeAreaPolygon')
+                pointIntakeString = request.POST.get('pointIntake')
+                graphElementsString = request.POST.get('graphElements')
+                connectionsElementString = request.POST.get('graphConnections')
+                graphElements = json.loads(graphElementsString)
+                print(connectionsElementString)
+                connectionsElements = json.loads(connectionsElementString)
+                if (isFile == 'true'):
+                    # Validate file's extension
+                    if (typeDelimitFile == 'geojson'):
+                        delimitAreaJson = json.loads(delimitAreaString)
+                        print(delimitAreaJson)
+                        for feature in delimitAreaJson['features']:
+                            delimitAreaGeom = GEOSGeometry(str(feature['geometry']))
+                        print('Delimitation file: geojson')
+                    # Shapefile
+                    else:
+                        delimitAreaJson = json.loads(delimitAreaString)
+                        for feature in delimitAreaJson['features']:
+                            delimitAreaGeom = GEOSGeometry(str(feature['geometry']))
+                        print('Delimitation file: shp')
+                # Manually delimit
+                else:
+                    delimitAreaJson = json.loads(delimitAreaString)
+                    delimitAreaGeom = GEOSGeometry(str(delimitAreaJson['geometry']))
+
+                intakeGeomJson = json.loads(intakeAreaString)
+                pointIntakeJson = json.loads(pointIntakeString)
+                # Get intake original area
+                for feature in intakeGeomJson['features']:
+                    intakeGeom = GEOSGeometry(str(feature['geometry']))
+                # Get the intake point geom
+                pointIntakeGeom = GEOSGeometry(str(pointIntakeJson['geometry']))
+
+                if (intakeGeom.equals(delimitAreaGeom)):
+                    delimitation_type = 'CATCHMENT'
+                else:
+                    delimitation_type = 'MANUAL'
+                existingIntake = Intake.objects.get(id=idx)
+                print(existingIntake)
+                existingIntake.name = intake.name
+                existingIntake.description = intake.description
+                existingIntake.water_source_name
+            return render(request, 'waterproof_intake/intake_list.html')
 
 
 """

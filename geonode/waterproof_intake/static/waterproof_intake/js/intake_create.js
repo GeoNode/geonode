@@ -128,11 +128,9 @@ $(document).ready(function() {
 
     function externalInput(numYear) {
         var rows = "";
-        var numberExternal = 0;
         $('#externalSelect').append(`<option value="null" selected>Choose here</option>`);
         for (let p = 0; p < graphData.length; p++) {
             if (graphData[p].external == 'true') {
-                numberExternal += 1
                 $('#externalSelect').append(`
                             <option value="${graphData[p].id}">${graphData[p].id} - External Input</option>
                  `);
@@ -162,7 +160,6 @@ $(document).ready(function() {
                 `);
             }
         }
-        $('#ExternalNumbersInputs').html(numberExternal)
     }
 
 
@@ -202,16 +199,14 @@ $(document).ready(function() {
     });
 
     $('#intakeNIBYMI').click(function() {
-        $('#intakeWEMI div').remove();
+        $('#intakeWEMI tr').remove();
         intakeNIYMI = Number($("#intakeNIYMI").val());
         for (let index = 0; index < intakeNIYMI; index++) {
             $('#intakeWEMI').append(`
-            <div class="form-group">
-                <label class="col-sm-2 control-label">${index + 1}</label>
-                <div class="col-sm-9">
-                    <input type="text" class="form-control">
-                </div>
-            </div>
+            <tr>
+                <th class="text-center" scope="row">${index +1}</th>
+                <td class="text-center"> <input type="text" class="form-control"></td>
+              </tr>
             `);
         }
     });
@@ -243,8 +238,20 @@ $(document).ready(function() {
             if (catchmentPoly) {
                 mapDelimit.invalidateSize();
                 mapDelimit.fitBounds(catchmentPoly.getBounds());
+            } else {
+                mapDelimit.invalidateSize();
+                $('#autoAdjustHeightF').css("height", "auto");
             }
             changeFileEvent();
+        }
+        if (stepIndex == 0) {
+            if (catchmentPoly) {
+                map.invalidateSize();
+                map.fitBounds(catchmentPoly.getBounds());
+            } else {
+                map.invalidateSize();
+                $('#autoAdjustHeightF').css("height", "auto");
+            }
         }
     });
     //Validated of steps
@@ -294,7 +301,7 @@ $(document).ready(function() {
     }
     waterproof["cityCoords"] = cityCoords;
 
-    map = L.map('map', {}).setView(initialCoords, 5);
+    map = L.map('map', {}).setView(initialCoords, 8);
     mapDelimit = L.map('mapid', { editable: true }).setView(initialCoords, 5);
     var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
