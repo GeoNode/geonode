@@ -70,8 +70,8 @@
             layers: 'waterproof:world_hydro_network',
             format: 'image/png',
             transparent: 'true',
-            opacity: 0.7,
-            minZoom: 9,
+            opacity: 0.35,
+            minZoom: 8,
         });
 
         var baseLayers = {
@@ -87,7 +87,7 @@
 
         var map = L.map('map', {
                 scrollWheelZoom: false, 
-                layers: [osm],
+                layers: [osm,wmsHydroNetworkLyr],
                 zoomControl: false, 
                 photonControl: true, 
                 photonControlOptions: {
@@ -121,7 +121,7 @@
         }
         map.on('click', onMapClick);  
         map.on('zoomend', function(e){
-            console.log(map.getBounds().toBBoxString());
+            console.log(map.getZoom());
         });      
       
     });    

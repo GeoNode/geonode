@@ -163,3 +163,4 @@ django-translation-flags==1.0.6
 django-ckeditor==6.0.0
 django_extensions==3.1.0
 django_libs==2.0.3
+simplejson==3.17.2
