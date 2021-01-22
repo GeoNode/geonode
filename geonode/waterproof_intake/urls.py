@@ -10,6 +10,10 @@ urlpatterns = [
     path('', views.listIntake, name='list-intake'),
     # Edit Water Intake
     path('edit/<int:idx>', views.editIntake, name='edit-intake'),
+    # Clone Water Intake
+    path('clone/<int:idx>', views.cloneIntake, name='clone-intake'),
+    # Clone Water Intake
+    path('delete/<int:idx>', views.deleteIntake, name='delete-intake'),
     # Load process effciciency by ID
     path('loadProcess/<str:category>', views.loadProcessEfficiency, name='load-process'),
     # Load function cost by symbol
