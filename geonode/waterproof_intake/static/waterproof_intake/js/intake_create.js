@@ -255,7 +255,7 @@ $(document).ready(function() {
     }
     waterproof["cityCoords"] = cityCoords;
 
-    map = L.map('map', {}).setView(initialCoords, 5);
+    map = L.map('map', {}).setView(initialCoords, 8);
     mapDelimit = L.map('mapid', { editable: true }).setView(initialCoords, 5);
     var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
