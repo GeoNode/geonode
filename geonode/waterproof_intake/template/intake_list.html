@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin=""/>
-    <link rel="stylesheet" href="http://xguaita.github.io/Leaflet.MapCenterCoord/dist/L.Control.MapCenterCoord.min.css" />
+    <link rel="stylesheet" href="{% static "geonode/css/leaflet/Control.Coordinates.css" %}"/>
     <link rel="stylesheet" href="https://photon.komoot.io/static/leaflet.photon/leaflet.photon.css"></link>
 
     <script>
@@ -24,17 +24,20 @@
 <div class="row">
     <div class="col-md-4">
         <h4 class="text-center" id="countryLabel">{{city.name}}</h4>
+        <p><b>País:</b> <span id="regionLabel">{{city.name}}</span> </p>
         <p><b>Region:</b> <span id="regionLabel">{{region.name}}</span> </p>
-        <p><b>Currency:</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
     </div>
     <div class="col-md-8">
-        <div id="mapidcuenca" style="width: 700px; height: 200px;"></div>
+        <div id="mapidcuenca" style="width: 700px; height: 300px;"></div>
 
     </div>
 </div>
 <div class="page-header">
    
-    <h1>{% trans "List Water Intake" %}</h1>
+    <h1>{% trans "Búsqueda de Captaciones" %}</h1>
+    <h7>{% trans "Ingrese el nombre de la ciudad de su interés. El sistema le mostrará un listado con las coincidencias a nivel mundial. Seleccione de la lista la opcion que corresponda." %}</h7>
+    <br>
+    <br>
     <a href="create/" id="createUrl">{% trans "Create new Water Intake" %}</a>
 </div>
 <div class="table-responsive">
@@ -45,7 +48,8 @@
                 <th scope="col" class="small text-center vat">{% trans "Description" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "User" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "Creation Date" %}</th>
-                <th scope="col" class="small text-center vat">{% trans "City" %}</th>
+                <th scope="col" class="small text-center vat" style="display: none;">{% trans "City" %}</th>
+                <th scope="col" class="small text-center vat" style="display: none;">{% trans "Region" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "Demand" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "Options" %}</th>
             </tr>
@@ -58,7 +62,8 @@
                 <td class="small text-center vat">{{intake.added_by.first_name}} {{intake.added_by.last_name}}</td>
                 <!--td>{{intake.max_benefit_req_time}}</td-->
                 <td class="small text-center vat">{{intake.creation_date | date:"d-m-Y"}}</td>
-                <td class="small text-center vat">{{intake.city.name}}</td>
+                <td class="small text-center vat" style="display: none;">{{intake.city.name}}</td>
+                <td class="small text-center vat" style="display: none;">{{intake.area}}</td>
                 <!--td>{{intake.total_profits_intake_consec_time}}</td-->
                 <!--td class="small text-center vat">{{intake.creation_date}}</td>
                 <!td class="small text-center vat">{{intake.unit_maintenance_cost|floatformat:2}}</td>
@@ -75,17 +80,17 @@
                         <a class="btn btn-primary" href="/waterproof_nbs_ca/view/{{intake.pk}}"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></a>
                         {% if user.is_authenticated %}
                             {% if user.professional_role == 'ADMIN' %}
-                            <a class="btn btn-info" href="/waterproof_nbs_ca/edit/{{intake.pk}}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>
-                            <a class="btn btn-warning" href="/waterproof_nbs_ca/clone/{{intake.pk}}"><span class="glyphicon glyphicon-copy" aria-hidden="true"></span></a>
-                            <a class="btn btn-danger" href="/waterproof_nbs_ca/delete/{{intake.pk}}"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+                            <a class="btn btn-info" href="/intake/edit/{{intake.pk}}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>
+                            <a class="btn btn-warning" href="/intake/clone/{{intake.pk}}"><span class="glyphicon glyphicon-copy" aria-hidden="true"></span></a>
+                            <a class="btn btn-danger" href="/intake/delete/{{intake.pk}}"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
                             {% endif %}
-                            {% if user.professional_role == 'ANALYS' %}
+                            {% if user.professional_role == 'ANALYS' or user.professional_role == 'COPART' or user.professional_role == 'ACDMC' or user.professional_role == 'SCADM' or user.professional_role == 'MCOMC' or user.professional_role == 'CITIZN' or user.professional_role == 'REPECS' or user.professional_role == 'OTHER' %}
                                 {% if intake.added_by.pk == user.pk %}
-                                <a class="btn btn-info" href="/waterproof_nbs_ca/edit/{{intake.pk}}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>
-                                <a class="btn btn-warning" href="/waterproof_nbs_ca/clone/{{intake.pk}}"><span class="glyphicon glyphicon-copy" aria-hidden="true"></span></a>
-                                <a class="btn btn-danger" href="/waterproof_nbs_ca/delete/{{intake.pk}}"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+                                <a class="btn btn-info" href="/intake/edit/{{intake.pk}}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>
+                                <a class="btn btn-warning" href="/intake/clone/{{intake.pk}}"><span class="glyphicon glyphicon-copy" aria-hidden="true"></span></a>
+                                <a class="btn btn-danger" href="/intake/delete/{{intake.pk}}"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
                                 {% else %}
-                                <a class="btn btn-warning" href="/waterproof_nbs_ca/clone/{{intake.pk}}"><span class="glyphicon glyphicon-copy" aria-hidden="true"></span></a>
+                                <a class="btn btn-warning" href="/intake/clone/{{intake.pk}}"><span class="glyphicon glyphicon-copy" aria-hidden="true"></span></a>
                                 {% endif %}
                             {% endif %}
                         {% endif %}
@@ -118,20 +123,18 @@
     crossorigin=""></script>
 <script src="{{ STATIC_URL }}geonode/js/leaflet/leaflet.ajax.min.js"></script>
 <script src="{{ STATIC_URL }}waterproof_intake/js/intake_list.js"></script>
-
 <script src="https://vinceg.github.io/twitter-bootstrap-wizard/jquery.bootstrap.wizard.js"></script>
-<script src="https://vinceg.github.io/twitter-bootstrap-wizard/prettify.js"></script>
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+  <script src="https://vinceg.github.io/twitter-bootstrap-wizard/prettify.js"></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
    crossorigin=""></script>
-  
-<script src="{{ STATIC_URL }}geonode/js/leaflet/photon/leaflet.photon.js"></script>
-<script src="{% static "geonode/js/leaflet/Leaflet.Coordinates.js" %}"></script>
-<script src="{{ STATIC_URL }}geonode/js/leaflet/leaflet-omnivore.min.js"></script>
+  <script src="{{ STATIC_URL }}geonode/js/leaflet/photon/leaflet.photon.js"></script>
+  <script src="{% static "geonode/js/leaflet/Leaflet.Coordinates.js" %}"></script>
+  <script src="{{ STATIC_URL }}geonode/js/leaflet/leaflet-omnivore.min.js"></script>
 
-<script src="{{ STATIC_URL }}geonode/sample_data/intake_polygon.js"></script>
+  <script src="{{ STATIC_URL }}geonode/sample_data/intake_polygon.js"></script>
   
-<script type="text/javascript">
+  <script type="text/javascript">
     API_URL = '/proxy/?url=https://photon.komoot.de/api/?';
     TILELAYER = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
     CENTER = [-74.4879, 4.582];
@@ -151,11 +154,8 @@
         }
     });
 
-    function showWaterIntakes (geojson) {
-        searchPoints.clearLayers();
-        let geojsonFilter = geojson.features.filter(feature  => feature.properties.type == "city");
-        searchPoints.addData(geojsonFilter);
-    }
+
+   
     
   </script>  
 {% endblock %}

@@ -14,6 +14,7 @@ var selectedCell;
 var graphData = [];
 var connection = [];
 var funcostdb = [];
+var bandera = true;
 
 // Program starts here. The document.onLoad executes the
 // createEditor function with a given configuration.
@@ -251,10 +252,20 @@ function onInit(editor) {
         });
     */
 
-    // Source nodes needs 1..2 connected Targets
+    // River not have a entrance connection
     editor.graph.multiplicities.push(new mxMultiplicity(
-        true, 'Symbol', 'name', 'River', 1, 2, ['Symbol'],
-        'Rio Must Have 1 or more Elements',
+        false, 'Symbol', 'name', 'River', 0, 0, ['Symbol'],
+        `No element can be connected to the River`));
+
+    // External input not have a entrance connection
+    editor.graph.multiplicities.push(new mxMultiplicity(
+        false, 'Symbol', 'name', 'External Input', 0, 0, ['Symbol'],
+        `No element can be connected to the External input`));
+
+    // Source nodes needs 1 connected Targets
+    editor.graph.multiplicities.push(new mxMultiplicity(
+        true, 'Symbol', 'name', 'River', 0, 1, ['Symbol'],
+        'River only have 1 target',
         'Source Must Connect to Target'));
 
     // Target needs exactly one incoming connection from Source
@@ -508,7 +519,7 @@ function onInit(editor) {
             var enc = new mxCodec();
             var node = enc.encode(editor.graph.getModel());
             var textxml = mxUtils.getPrettyXml(node);
-            var bandera = validations(node, editor.graph.getModel());
+            bandera = validations(node, editor.graph.getModel());
             if (!bandera) {
                 $('#hideCostFuntion').show();
                 node.querySelectorAll('Symbol').forEach(function(node) {
@@ -531,7 +542,7 @@ function onInit(editor) {
                             'id': node.id,
                             'source': node.getAttribute('source'),
                             'target': node.getAttribute('target'),
-                            'resultdb': JSON.stringify(value[3]),
+                            'resultdb': value[3],
                             'funcost': JSON.stringify(value[5]),
                             'name': JSON.stringify(value[4]),
                             'varcost': JSON.stringify(value[1])

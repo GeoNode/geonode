@@ -10,8 +10,8 @@
 <div class="row">
     <div class="col-md-4">
         <h4 class="text-center" id="countryLabel">{{country.name}}</h4>
-        <p><b>Region:</b> <span id="regionLabel">{{region.name}}</span> </p>
-        <p><b>Currency:</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
+        <p><b>{% trans "Region:" %}</b> <span id="regionLabel">{{region.name}}</span> </p>
+        <p><b>{% trans "Currency:" %}</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
     </div>
     <div class="col-md-8">
         <div id="mapid" style="width: 700px; height: 200px;"></div>
@@ -20,8 +20,8 @@
 </div>
 <div class="page-header">
    
-    <h1>{% trans "List sbn" %}</h1>
-    <a href="create/" id="createUrl">{% trans "Create new SBN" %}</a>
+    <h1>{% trans "Nature based solutions list (NBS)" %}</h1>
+    <a href="create/" id="createUrl">{% trans "Create a new NBS" %}</a>
 </div>
 <div class="table-responsive">
     <table id="example" class="table table-striped table-bordered table-condensed" style="width:100%">
@@ -29,12 +29,14 @@
             <tr class="info">
                 <th scope="col" class="small text-center vat">{% trans "Name" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "Description" %}</th>
+                <th scope="col" class="small text-center vat">{% trans "User" %}</th>                
                 <th scope="col" class="small text-center vat">{% trans "Country" %}</th>
-                <th scope="col" class="small text-center vat">Percentaje of benefit</th>
+                <th scope="col" class="small text-center vat">{% trans "Percentaje of benefit" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "Implementation cost" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "Maintenance Cost" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "Periodicity of Maintenance" %}</th>
                 <th scope="col" class="small text-center vat">{% trans "Oppotunity Cost" %}</th>
+                <th scope="col" class="small text-center vat">{% trans "Currency" %}</th> 
                 <th scope="col" class="small text-center vat">{% trans "Options" %}</th>
             </tr>
         </thead>
@@ -43,6 +45,7 @@
             <tr>
                 <td class="small text-center vat">{{sbn.name}}</td>
                 <td class="small text-center vat">{{sbn.description}}</td>
+                <td class="small text-center vat">&nbsp</td>                
                 <td class="small text-center vat">{{sbn.country}}</td>
                 <!--td>{{sbn.max_benefit_req_time}}</td-->
                 <td class="small text-center vat">{{sbn.profit_pct_time_inter_assoc}}%</td>
@@ -51,6 +54,8 @@
                 <td class="small text-center vat">{{sbn.unit_maintenance_cost|floatformat:2}}</td>
                 <td class="small text-center vat">{{sbn.periodicity_maitenance}}</td>
                 <td class="small text-center vat">{{sbn.unit_oportunity_cost|floatformat:2}}</td>
+                <td class="small text-center vat">&nbsp</td>
+
                 <!--td>{{sbn.rios_transformations.description}}</td-->
                 <td>
                     <div class="btn-group btn-group-table" role="group">

@@ -6,8 +6,8 @@
 <div class="row">
     <div class="col-md-4">
         <h4 class="text-center" id="countryLabel">{{country.name}}</h4>
-        <p><b>Region:</b> <span id="regionLabel">{{region.name}}</span> </p>
-        <p><b>Currency:</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
+        <p><b>{% trans "Region:" %}</b> <span id="regionLabel">{{region.name}}</span> </p>
+        <p><b>{% trans "Currency:" %}</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
     </div>
     <div class="col-md-8">
         <div id="mapid" style="width: 700px; height: 200px;"></div>
@@ -18,20 +18,20 @@
     <h1>{% trans "Detail sbn" %}</h1>
 </div>
 
-<h4 class="text-primary">General Settings</h4>
+<h4 class="text-primary">{% trans "General Settings" %}</h4>
 <div class="form-group">
-    <label>Name</label>
+    <label>{% trans "Name" %}</label>
     <input type="text" value="{{ sbn.name }}" class="form-control" disabled placeholder="Enter title" data-match-error="Whoops, these don't match" required>
     <div class="help-block with-errors"></div>
 </div>
 <div class="form-group">
-    <label>Description</label>
+    <label>{% trans "Description" %}</label>
     <textarea class="form-control" disabled placeholder="Enter description" rows="5" required>{{ sbn.description }}</textarea>
 </div>
 <div class="form-group">
     <div class="row">
         <div class="col-md-6">
-            <label>Currency type cost calculation</label>
+            <label>{% trans "Currency for definition of costs" %}</label>
             <select class="form-control" disabled required>
                   {% for cur in currencies %}
                   <option value="{{cur.pk}}" {% if cur.pk == sbn.currency.pk %} selected{% endif %}>{{ cur.name}}</option>
@@ -43,11 +43,11 @@
 <div class="form-group">
     <div class="row">
         <div class="col-md-6">
-            <label>Time required to generate maximun benefit (yr)</label>
+            <label>{% trans "Time required to generate maximun benefit (yr)" %}</label>
             <input value="{{sbn.total_profits_sbn_consec_time}}" type="text" disabled class="form-control" required>
         </div>
         <div class="col-md-6">
-            <label>Percentage of benefit associated with interventions at time t=0</label>
+            <label>{% trans "Percentage of benefit associated with interventions at time t=0" %}</label>
             <input value="{{sbn.profit_pct_time_inter_assoc}}" type="text" disabled class="form-control" required>
         </div>
     </div>
@@ -55,21 +55,21 @@
 <div class="form-group">
     <div class="row">
         <div class="col-md-6">
-            <label>Consecution Time Total Benefits
+            <label>{% trans "Consecution Time Total Benefits (to elimitate)" %}
               </label>
             <input value="{{ sbn.total_profits_sbn_consec_time }}" disabled type="text" class="form-control" required>
         </div>
         <div class="col-md-6">
-            <label>Maintenance Perodicity</label>
+            <label>{% trans "Periodicity of maintenance (yr)" %}</label>
             <input value="{{ sbn.periodicity_maitenance }}" disabled type="text" class="form-control" required>
         </div>
     </div>
 </div>
-<h4 class="text-primary">Unit Costs</h4>
+<h4 class="text-primary">{% trans "Unit costs" %}</h4>
 <div class="form-group">
     <div class="row">
         <div class="col-md-6">
-            <label>Currency type cost calculation</label>
+            <label>{% trans "Currency for definition of costs" %}</label>
             <select id="currenciesComapreSelect" class="form-control" required>
                 {% for cur in currencies %}
                 <option value="{{cur.factor}}">{{ cur.country.name }}</option>
@@ -77,7 +77,7 @@
               </select>
         </div>
         <div class="col-md-6">
-            <label>Multiplying factor for overrall cost</label>
+            <label>{% trans "Multiplying factor for overrall cost" %}</label>
             <input disabled id="multiplyCurrencies" type="text" class="form-control" required>
         </div>
     </div>
@@ -87,19 +87,19 @@
         <div class="col-md-6">
             <div class="panel  panel-info">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Reference cost</h3>
+                    <h3 class="panel-title">{% trans "Reference cost" %}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
-                        <label>Unit Implementation Cost (US$/ha)</label>
+                        <label>{% trans "Implementation cost (US$/ha)" %}</label>
                         <input value="{{ sbn.unit_implementation_cost|floatformat:2 }}" id="b_unit_implementation_cost" type="text" class="form-control" disabled required>
                     </div>
                     <div class="form-group">
-                        <label>Unit Maintenace Cost (US$/ha)</label>
+                        <label>{% trans "Maintenace cost (US$/ha)" %}</label>
                         <input value="{{ sbn.unit_maintenance_cost|floatformat:2 }}" id="b_unit_maintenance_cost" type="text" class="form-control" disabled required>
                     </div>
                     <div class="form-group">
-                        <label>Unit Oportunity Cost (US$/ha)</label>
+                        <label>{% trans "Oportunity cost (US$/ha)" %}</label>
                         <input value="{{ sbn.unit_oportunity_cost|floatformat:2 }}" id="b_unit_oportunity_cost" type="text" class="form-control" disabled required>
                     </div>
                 </div>
@@ -108,19 +108,19 @@
         <div class="col-md-6">
             <div class="panel  panel-danger">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Fact cost</h3>
+                    <h3 class="panel-title">{% trans "Fact cost" %}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
-                        <label>Unit Implementation Cost (US$/ha)</label>
+                        <label>{% trans "Implementation cost (US$/ha)" %}</label>
                         <input type="text" class="form-control" id="a_unit_implementation_cost" required disabled>
                     </div>
                     <div class="form-group">
-                        <label>Unit Maintenace Cost (US$/ha)</label>
+                        <label>{% trans "Maintenace cost (US$/ha)" %}</label>
                         <input type="text" class="form-control" id="a_unit_maintenance_cost" required disabled>
                     </div>
                     <div class="form-group">
-                        <label>Unit Oportunity Cost (US$/ha)</label>
+                        <label>{% trans "Oportunity cost (US$/ha)" %}</label>
                         <input id="a_unit_oportunity_cost" type="text" class="form-control" required disabled>
                     </div>
                 </div>
@@ -130,10 +130,10 @@
 </div>
 <div class="row">
     <div class="col-md-6">
-    <h4 class="text-primary text-left">LAND USE</h4>
+    <h4 class="text-primary text-left">{% trans "LAND USE" %}</h4>
     </div>
     <div class="col-md-6">
-    <h4 class="text-primary text-right">LAND COVER CHANGE DEFENITION</h4>
+    <h4 class="text-primary text-right">{% trans "LAND COVER CHANGE DEFENITION" %}</h4>
     </div>
     </div>
 <ul class="list-group">

@@ -68,11 +68,11 @@ $(document).ready(function () {
             for (let index = 0; index <= numberYearsInterpolationValue; index++) {
                 var yearData = {};
                 yearData.year = index + 1;
-                yearData.value = ((m * index) + b).toFixed(2);
+                yearData.value = ((m * index) + b);
                 waterExtractionValue.push(yearData);
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${((m * index) + b).toFixed(2)}</td>
+                <td class="text-center">${((m * index) + b)}</td>
               </tr>`);
             }
         }
