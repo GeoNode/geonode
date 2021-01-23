@@ -14,11 +14,12 @@
     <div class="row">
         <div class="col-md-4">
             <h4 class="text-center" id="countryLabel"></h4>
+            <p><b>{% trans "Selected City" %} :</b> <span id="cityLabel"></span> </p>
             <p><b>{% trans "Region" %} :</b> <span id="regionLabel"></span> </p>
             <p><b>{% trans "Currency" %}:</b><span id="currencyLabel"></span></p>
         </div>
         <div class="col-md-8">
-            <div id="map" style="width: 500px; height: 300px;"></div>
+            <div id="map" style="width: 700px; height: 300px;"></div>
     
         </div>
     </div>   
@@ -42,7 +43,7 @@
   
   <script type="text/javascript">
     API_URL = '/proxy/?url=https://photon.komoot.io/api/?';
-    TILELAYER = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
+    TILELAYER = 'https://{s}.tile.osm.org/{z}/{x}/{y}.png';
     CENTER = [-74.4879, 4.582];
     MAXZOOM = 11;
 
@@ -115,6 +116,16 @@
             cityCoords = initialCoords;
         }else{
             initialCoords = JSON.parse(cityCoords);
+            try{
+                $("#countryLabel").html(localStorage.getItem('country'));
+                $("#cityLabel").html(localStorage.getItem('city'));
+                $("#regionLabel").html(localStorage.getItem('region'));
+                $("#currencyLabel").html(localStorage.getItem('currency'));
+                $("#listIntakes").show();
+            }catch(e){
+
+            }
+
         }
         waterproof["cityCoords"] = cityCoords;
 
@@ -151,24 +162,36 @@
     }
 
     function selectedResultHandler(feat){
+
+        waterproof["cityCoords"] = [feat.geometry.coordinates[1], feat.geometry.coordinates[0]];
+        localStorage.setItem('cityCoords', JSON.stringify(waterproof["cityCoords"]));
+
+
         searchPoints.eachLayer(function(layer){
             if (layer.feature.properties.osm_id != feat.properties.osm_id){
                 layer.remove();
             }
         });
         let country = feat.properties.country;
+        let cityName = feat.properties.name;
         let countryCode = feat.properties.countrycode.toLowerCase();
 
         $("#countryLabel").html(country);
+        $("#cityLabel").html(cityName);
+        localStorage.setItem('city', cityName);
 
         let urlAPI = "https://restcountries.eu/rest/v2/alpha/" + countryCode;
 
         $.get(urlAPI, function(data){
-            console.log(data);
+            //console.log(data);
             $("#regionLabel").html(data.region);
             $("#currencyLabel").html(data.currencies[0].name + " - " + data.currencies[0].symbol);
             $("#listIntakes").show();
-        })
+            
+            localStorage.setItem('country', country);
+            localStorage.setItem('region', data.region);
+            localStorage.setItem('currency', data.currencies[0].name + " - " + data.currencies[0].symbol);
+        });
     }
     
   </script>  
