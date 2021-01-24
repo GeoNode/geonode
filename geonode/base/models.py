@@ -1169,7 +1169,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     if not field.identifier:
                         continue
                 filled_fields.append(field)
-        return f'{len(filled_fields) * 100 / len(required_fields)}%'
+        ratio = len(filled_fields) / len(required_fields)
+        return f'{ratio:.1%}'
 
     @property
     def instance_is_processed(self):

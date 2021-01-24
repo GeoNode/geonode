@@ -306,7 +306,7 @@ class Command(BaseCommand):
             'BK_CLEANUP_TEMP=true',
             'BK_SKIP_SETTINGS=false',
             'BK_SKIP_SECURITY=false',
-            f'BK_BEST_EFFORT={'true' if ignore_errors else 'false'}',
+            f'BK_BEST_EFFORT={"true" if ignore_errors else "false"}',
             f'exclude.file.path={config.gs_exclude_file_path}'
         ]
         data = {'backup': {'archiveFile': geoserver_bk_file, 'overwrite': 'true',

@@ -525,7 +525,7 @@ def _prepare_monitoring_fixture():
         {
             "fields": {
                 "name": "geoserver-hostgeoserver",
-                "url": f"{os.environ['GEOSERVER_PUBLIC_LOCATION']S}",
+                "url": f"{os.environ['GEOSERVER_PUBLIC_LOCATION']}",
                 "notes": "",
                 "last_check": d,
                 "active": True,

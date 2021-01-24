@@ -140,7 +140,7 @@ class Command(BaseCommand):
                                                   dict_['traceback'])
 
         if verbosity > 0:
-            print(f"\n\nFinished processing {len(output['layers'])} layers in {round(output['stats']['duration_sec'], 2)} seconds.\n")
+            print(f"\n\nFinished processing {len(output['layers'])} layers in {output['stats']['duration_sec']:2f} seconds.\n")
             print(f"{output['stats']['created']} Created layers")
             print(f"{output['stats']['updated']} Updated layers")
             print(f"{output['stats']['failed']} Failed layers")

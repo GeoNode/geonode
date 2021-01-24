@@ -1206,7 +1206,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
                         new_field_name += '_0'
                     if new_field_name.endswith(f'_{j}'):
                         j += 1
-                        new_field_name = new_field_name[:-2] + f'_{j}'
+                        new_field_name = f"{new_field_name[:-2]}_{j}"
                 if field_name != new_field_name:
                     list_col[field_name] = new_field_name
         except Exception as e:

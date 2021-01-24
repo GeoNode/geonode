@@ -226,7 +226,7 @@ class Command(BaseCommand):
             # otherwise default tmp directory is chosen
             temp_dir_path = backup_files_dir if os.path.exists(backup_files_dir) else None
 
-            restore_folder = os.path.join(temp_dir_path, f'{'tmp'}{str(uuid.uuid4())[:4]}')
+            restore_folder = os.path.join(temp_dir_path, f'tmp{str(uuid.uuid4())[:4]}')
             try:
                 os.makedirs(restore_folder)
             except Exception as e:
@@ -625,9 +625,9 @@ class Command(BaseCommand):
         # Best Effort Restore: 'options': {'option': ['BK_BEST_EFFORT=true']}
         _options = [
             'BK_CLEANUP_TEMP=true',
-            f'BK_SKIP_SETTINGS={'true' if skip_geoserver_info else 'false'}',
-            f'BK_SKIP_SECURITY={'true' if skip_geoserver_security else 'false'}',
-            f'BK_BEST_EFFORT={'true' if ignore_errors else 'false'}',
+            f'BK_SKIP_SETTINGS={"true" if skip_geoserver_info else "false"}',
+            f'BK_SKIP_SECURITY={"true" if skip_geoserver_security else "false"}',
+            f'BK_BEST_EFFORT={"true" if ignore_errors else "false"}',
             f'exclude.file.path={config.gs_exclude_file_path}'
         ]
         data = {'restore': {'archiveFile': geoserver_bk_file,
