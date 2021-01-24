@@ -20,7 +20,6 @@
 import json
 import logging
 
-import six
 from django.contrib.auth import get_user_model
 from dynamic_rest.fields.fields import DynamicRelationField
 from dynamic_rest.serializers import DynamicModelSerializer
@@ -83,7 +82,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
         )
 
     def to_internal_value(self, data):
-        if isinstance(data, six.string_types):
+        if isinstance(data, str):
             data = json.loads(data)
         if 'data' in data:
             _data = data.pop('data')
