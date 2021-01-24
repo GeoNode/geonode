@@ -25,9 +25,7 @@
  * @requires OpenLayers/Popup/Anchored.js
  * @requires Rico/Corner.js
  */
-const XMLisOpen = 1;
-const XMLhasReceivedHeaders = 2;
-const XMLisLoaded = 4;
+
 /**
  * About: Deprecated
  * The deprecated.js script includes all methods, properties, and constructors
@@ -303,7 +301,6 @@ OpenLayers.Ajax = {
     activeRequestCount: 0
 };
 
-
 /**
  * Namespace: OpenLayers.Ajax.Responders
  * {Object}
@@ -514,7 +511,7 @@ OpenLayers.Ajax.Request = OpenLayers.Class(OpenLayers.Ajax.Base, {
      */
     onStateChange: function() {
         var readyState = this.transport.readyState;
-        if (readyState > XMLisOpen && !((readyState == XMLisLoaded) && this._complete)) {
+        if (readyState > 1 && !((readyState == 4) && this._complete)) {
             this.respondToReadyState(this.transport.readyState);
         }
     },
@@ -729,16 +726,16 @@ OpenLayers.Ajax.Response = OpenLayers.Class({
         var transport = this.transport = request.transport,
             readyState = this.readyState = transport.readyState;
         
-        if ((readyState > XMLhasReceivedHeaders &&
+        if ((readyState > 2 &&
             !(!!(window.attachEvent && !window.opera))) ||
-            readyState == XMLisLoaded) {
+            readyState == 4) {
             this.status       = this.getStatus();
             this.statusText   = this.getStatusText();
             this.responseText = transport.responseText == null ?
                 '' : String(transport.responseText);
         }
         
-        if(readyState == XMLisLoaded) {
+        if(readyState == 4) {
             var xml = transport.responseXML;
             this.responseXML  = xml === undefined ? null : xml;
         }
@@ -1038,8 +1035,6 @@ OpenLayers.Util.extend(OpenLayers.Tile.prototype, {
      * bounds - {<OpenLayers.Bounds>} 
      */
     getBoundsFromBaseLayer: function(position) {
-        const fullRot = 360;
-
         var msg = OpenLayers.i18n('reprojectDeprecated',
                                               {'layerName':this.layer.name});
         OpenLayers.Console.warn(msg);
@@ -1053,9 +1048,9 @@ OpenLayers.Util.extend(OpenLayers.Tile.prototype, {
         // that fashion.  
         if (topLeft.lon > bottomRight.lon) {
             if (topLeft.lon < 0) {
-                topLeft.lon = -topLeft.lon - fullRot;
+                topLeft.lon = -180 - (topLeft.lon+180);
             } else {
-                bottomRight.lon = bottomRight.lon + fullRot;
+                bottomRight.lon = 180+bottomRight.lon+180;
             }        
         }
         var bounds = new OpenLayers.Bounds(topLeft.lon, 
@@ -1331,10 +1326,9 @@ OpenLayers.Control.MouseDefaults = OpenLayers.Class(OpenLayers.Control, {
      * Zoombox function. 
      */
     zoomBoxEnd: function(evt) {
-        const mouseSensitivity = 5
         if (this.mouseDragStart != null) {
-            if (Math.abs(this.mouseDragStart.x - evt.xy.x) > mouseSensitivity ||    
-                Math.abs(this.mouseDragStart.y - evt.xy.y) > mouseSensitivity) {   
+            if (Math.abs(this.mouseDragStart.x - evt.xy.x) > 5 ||    
+                Math.abs(this.mouseDragStart.y - evt.xy.y) > 5) {   
                 var start = this.map.getLonLatFromViewPortPx( this.mouseDragStart ); 
                 var end = this.map.getLonLatFromViewPortPx( evt.xy );
                 var top = Math.max(start.lat, end.lat);
@@ -1379,7 +1373,6 @@ OpenLayers.Control.MouseDefaults = OpenLayers.Class(OpenLayers.Control, {
     onWheelEvent: function(e){
     
         // first determine whether or not the wheeling was inside the map
-        const scrollSensitivity = 120;
         var inMap = false;
         var elem = OpenLayers.Event.element(e);
         while(elem != null) {
@@ -1397,7 +1390,7 @@ OpenLayers.Control.MouseDefaults = OpenLayers.Class(OpenLayers.Control, {
                 e = window.event;
             }
             if (e.wheelDelta) {
-                delta = e.wheelDelta/scrollSensitivity; 
+                delta = e.wheelDelta/120; 
                 if (window.opera && window.opera.version() < 9.2) {
                     delta = -delta;
                 }
