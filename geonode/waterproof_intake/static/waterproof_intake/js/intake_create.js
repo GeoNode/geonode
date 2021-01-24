@@ -352,7 +352,9 @@ $(document).ready(function () {
     });
     map.addLayer(osm);
 
-    var c = new L.Control.Coordinates().addTo(map);
+    var c = new L.Control.Coordinates({
+        actionAfterDragEnd : prevalidateAdjustCoordinates
+    }).addTo(map);
 
     var images = L.tileLayer(IMG_BASEMAP_URL);   
     var gray = L.tileLayer(GRAY_BASEMAP_URL, {
@@ -386,23 +388,7 @@ $(document).ready(function () {
 
 
 
-    $("#validateBtn").on("click", function () {
-        Swal.fire({
-            title: 'Delimitar punto y cuenca',
-            text: "El sistema ajustará las coordenadas del punto a la captación más cercana, ¿Desea continuar?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ajustar punto',
-            cancelButtonText: 'Cancelar',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                mapLoader = L.control.loader().addTo(map);
-                validateCoordinateWithApi();
-            }
-        })
-    });
+    $("#validateBtn").on("click", prevalidateAdjustCoordinates);
     $('#btnDelimitArea').on("click", delimitIntakeArea)
     $('#btnValidateArea').on("click", validateIntakeArea)
     if (!mapLoader) {
@@ -425,6 +411,28 @@ $(document).ready(function () {
 
 
 window.onbeforeunload = function () { return mxResources.get('changesLost'); };
+
+
+/**
+ * Info Message to validate Adjust Coordinates
+ */
+function prevalidateAdjustCoordinates(){
+    Swal.fire({
+        title: 'Delimitar punto y cuenca',
+        text: "El sistema ajustará las coordenadas del punto a la captación más cercana, ¿Desea continuar?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ajustar punto',
+        cancelButtonText: 'Cancelar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            mapLoader = L.control.loader().addTo(map);
+            validateCoordinateWithApi();
+        }
+    })
+}
 
 /** 
  * Delimit manually the intake polygon
