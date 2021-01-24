@@ -5,7 +5,7 @@ var CLI_Cookie={
 	set: function (name, value, days) {
         if (days) {
             var date = new Date();
-            date.setTime(date.getTime() + TimeUnit.DAYS.toMillis(days));
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             var expires = "; expires=" + date.toGMTString();
         } else
             var expires = "";
@@ -388,7 +388,7 @@ var CLI=
     },
     add_clear_cache_url_query:function()
     {
-    	var cli_rand=new TimeUnit.Millis.toSECONDS(Date().getTime());
+    	var cli_rand=new Date().getTime()/1000;
     	var cli_url=window.location.href;
     	var cli_hash_arr=cli_url.split('#');
     	var cli_urlparts= cli_hash_arr[0].split('?');
@@ -480,11 +480,10 @@ var CLI=
     barAsWidget:function(a)
     {
     	var cli_elm=this.bar_elm;
-		var cli_win=jQuery(window);
-		var cli_winh=cli_win.height()-40; 
+	    var cli_win=jQuery(window);
+	    var cli_winh=cli_win.height()-40;
 	    var cli_winw=cli_win.width();
-		var cli_defw=cli_winw>400 ? 300 : cli_winw-30; 
-		
+	    var cli_defw=cli_winw>400 ? 300 : cli_winw-30;
 	    cli_elm.css({
 	        'width':cli_defw,'height':'auto','max-height':cli_winh,'padding':'25px 15px','overflow':'auto','position':'fixed','box-sizing':'border-box'
 	    });
