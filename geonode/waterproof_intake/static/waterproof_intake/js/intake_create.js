@@ -347,26 +347,37 @@ $(document).ready(function () {
     var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     });
-    var osmid = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    var osmid = L.tileLayer(OSM_BASEMAP_URL, {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     });
     map.addLayer(osm);
 
     var c = new L.Control.Coordinates().addTo(map);
 
-    var images = L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}");
+    var images = L.tileLayer(IMG_BASEMAP_URL);   
+    var gray = L.tileLayer(GRAY_BASEMAP_URL, {
+        maxZoom: 20,
+            attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+        });
 
-    var esriHydroOverlayURL = "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}";
-    var hydroLyr = L.tileLayer(esriHydroOverlayURL);
+    var hydroLyr = L.tileLayer(HYDRO_BASEMAP_URL);
+    var wmsHydroNetworkLyr = L.tileLayer.wms(GEOSERVER_WMS, {
+            layers: HYDRO_NETWORK_LYR,
+            format: 'image/png',
+            transparent: 'true',
+            opacity: 0.35,
+            minZoom: 6,
+        });
 
     var baseLayers = {
         OpenStreetMap: osm,
         Images: images,
-        /* Grayscale: gray,   */
+        Grayscale: gray,   
     };
 
     var overlays = {
         "Hydro (esri)": hydroLyr,
+        "Hydro Network": wmsHydroNetworkLyr,
     };
     L.control.layers(baseLayers, overlays, { position: 'topleft' }).addTo(map);
 

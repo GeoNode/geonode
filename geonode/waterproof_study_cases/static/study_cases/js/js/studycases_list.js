@@ -60,15 +60,46 @@ $(function() {
     /** 
      * Initialize map 
      */
-    API_URL = '/proxy/?url=https://photon.komoot.de/api/?';
-    TILELAYER = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
-    CENTER = [-74.4879, 4.582];
+    
+    TILELAYER = 'https://{s}.tile.osm.org/{z}/{x}/{y}.png';
+    CENTER = [4.582, -74.487];
     MAXZOOM = 11;
 
     initMap = function() {
 
-        map = L.map('mapidStudy', { scrollWheelZoom: false, zoomControl: false, photonControl: true, photonControlOptions: { resultsHandler: showSearchPoints, placeholder: 'Search City...', position: 'topleft', url: API_URL } });
-        map.setView([4, -72], 5);
+        map = L.map('mapidStudy', { 
+            scrollWheelZoom: false, 
+            zoomControl: false, 
+            photonControl: true, 
+            photonControlOptions: { 
+                resultsHandler: showSearchPoints,
+                selectedResultHandler : selectedResultHandler,
+                placeholder: 'Search City...', 
+                position: 'topleft', 
+                url: SEARCH_CITY_API_URL 
+            } 
+        });
+        
+        let initialCoords = CENTER;
+        // find in localStorage if cityCoords exist
+        var cityCoords = localStorage.getItem('cityCoords');
+        if (cityCoords == undefined){
+            cityCoords = initialCoords;
+        }else{
+            initialCoords = JSON.parse(cityCoords);
+            try{
+                $("#countryLabel").html(localStorage.getItem('country'));
+                $("#cityLabel").html(localStorage.getItem('city'));
+                $("#regionLabel").html(localStorage.getItem('region'));
+                $("#currencyLabel").html(localStorage.getItem('currency'));
+                $("#listIntakes").show();
+            }catch(e){
+
+            }
+        }
+        waterproof["cityCoords"] = cityCoords;
+
+        map.setView(initialCoords, 5);
 
         searchPoints.addTo(map);
 
@@ -76,9 +107,8 @@ $(function() {
         var zoomControl = new L.Control.Zoom({ position: 'topright' }).addTo(map);
 
         var c = new L.Control.Coordinates();
-        L.control.mapCenterCoord().addTo(map);
+        //L.control.mapCenterCoord().addTo(map);
         c.addTo(map);
-
 
         function onMapClick(e) {
             c.setCoordinates(e);
@@ -100,6 +130,37 @@ $(function() {
         console.log(geojsonFilter[0].properties.name)
         table.search(cityName.substr(0, 2)).draw();
         drawPolygons();        
+    }
+
+    function selectedResultHandler(feat){
+
+        waterproof["cityCoords"] = [feat.geometry.coordinates[1], feat.geometry.coordinates[0]];
+        localStorage.setItem('cityCoords', JSON.stringify(waterproof["cityCoords"]));
+        searchPoints.eachLayer(function(layer){
+            if (layer.feature.properties.osm_id != feat.properties.osm_id){
+                layer.remove();
+            }
+        });
+        let country = feat.properties.country;
+        let cityName = feat.properties.name;
+        let countryCode = feat.properties.countrycode.toLowerCase();
+
+        $("#countryLabel").html(country);
+        $("#cityLabel").html(cityName);
+        localStorage.setItem('city', cityName);
+
+        let urlAPI = SEARCH_COUNTRY_API_URL + countryCode;
+
+        $.get(urlAPI, function(data){
+            //console.log(data);
+            $("#regionLabel").html(data.region);
+            $("#currencyLabel").html(data.currencies[0].name + " - " + data.currencies[0].symbol);
+            $("#listIntakes").show();
+            
+            localStorage.setItem('country', country);
+            localStorage.setItem('region', data.region);
+            localStorage.setItem('currency', data.currencies[0].name + " - " + data.currencies[0].symbol);
+        });
     }
 
     udpateCreateUrl = function(countryId) {

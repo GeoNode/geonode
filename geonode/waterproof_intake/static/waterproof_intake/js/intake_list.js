@@ -64,23 +64,42 @@ $(function() {
     /** 
      * Initialize map 
      */
-    API_URL = '/proxy/?url=https://photon.komoot.de/api/?';
+    
     TILELAYER = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
     IMAGE_LYR_URL = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}";
     HYDRO_LYR_URL = "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}";
-    CENTER = [-74.4879, 4.582];
+    CENTER = [4.582, -74.4879];
     MAXZOOM = 11;
 
     initMap = function() {
 
-        map = L.map('mapidcuenca', { scrollWheelZoom: false, zoomControl: false, photonControl: true, photonControlOptions: { resultsHandler: showSearchPoints, placeholder: 'Search City...', position: 'topleft', url: API_URL } });
-        let initialCoords = [4.5, -74.4];
+        map = L.map('mapidcuenca', { 
+            scrollWheelZoom: false, 
+            zoomControl: false, 
+            photonControl: true, 
+            photonControlOptions: { 
+                resultsHandler: showSearchPoints, 
+                placeholder: 'Search City...', 
+                position: 'topleft', 
+                url: SEARCH_CITY_API_URL 
+            } 
+        });
+        let initialCoords = CENTER;
         // find in localStorage if cityCoords exist
         var cityCoords = localStorage.getItem('cityCoords');
         if (cityCoords == undefined){
             cityCoords = initialCoords;
         }else{
             initialCoords = JSON.parse(cityCoords);
+            try{
+                $("#countryLabel").html(localStorage.getItem('country'));
+                $("#cityLabel").html(localStorage.getItem('city'));
+                $("#regionLabel").html(localStorage.getItem('region'));
+                $("#currencyLabel").html(localStorage.getItem('currency'));
+                $("#listIntakes").show();
+            }catch(e){
+
+            }
         }
         waterproof["cityCoords"] = cityCoords;
         map.setView(initialCoords, 5);

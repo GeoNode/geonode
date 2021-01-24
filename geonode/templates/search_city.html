@@ -23,9 +23,16 @@
     
         </div>
     </div>   
-    <div id="listIntakes" style="display: none;">
-        <a href="/intake">{% trans "List Intakes" %}</a>
-    </div> 
+    <div class="row">
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-8">
+            <div id="listIntakes" style="display: none;">
+                <a href="/study_cases">{% trans "List Study Cases" %}</a>
+            </div> 
+        </div>
+    </div>
+    
 {% endblock %}
 
 {% block extra_script %}
@@ -42,11 +49,14 @@
     crossorigin=""></script> -->
   
   <script type="text/javascript">
-    API_URL = '/proxy/?url=https://photon.komoot.io/api/?';
-    TILELAYER = 'https://{s}.tile.osm.org/{z}/{x}/{y}.png';
-    CENTER = [-74.4879, 4.582];
+    SEARCH_CITY_API_URL = '{{ SEARCH_CITY_API_URL }}';
+    OSM_BASEMAP_URL = '{{ OSM_BASEMAP_URL }} ';
+    IMG_BASEMAP_URL =  '{{ OSM_BASEMAP_URL }} ';
+    HYDRO_BASEMAP_URL =  '{{ HYDRO_BASEMAP_URL }} ';
+    GRAY_BASEMAP_URL = '{{ GRAY_BASEMAP_URL }} ';
+    CENTER = [4.582, -74.4879];
     MAXZOOM = 11;
-
+    COUNTRIES_API = '{{ DATABASE_URL }}';
     let waterproof = {};
 
     $(document).ready(function () {
@@ -63,17 +73,12 @@
         //L.esri.basemapLayer('Gray').addTo(gray);
         //L.esri.basemapLayer('GrayLabels').addTo(gray);
         
-        var osm = L.tileLayer(TILELAYER, {
+        var osm = L.tileLayer(OSM_BASEMAP_URL, {
             maxZoom: MAXZOOM, 
             attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 Komoot'});
-        var images = L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}");
-        
-        var grayLyrUrl = "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png";
-        var esriHydroOverlayURL= "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}";
-        var hydroLyr = L.tileLayer(esriHydroOverlayURL);
-
-
-        var grayLyr = L.tileLayer(grayLyrUrl, {
+        var images = L.tileLayer(IMG_BASEMAP_URL);        
+        //var hydroLyr = L.tileLayer(HYDRO_BASEMAP_URL);
+        var grayLyr = L.tileLayer(GRAY_BASEMAP_URL, {
                                     maxZoom: 20,
                                         attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
                                     });
@@ -106,10 +111,10 @@
                     resultsHandler: showSearchPoints, 
                     selectedResultHandler : selectedResultHandler,
                     placeholder: 'Search City...', 
-                    position: 'topleft', url: API_URL}
+                    position: 'topleft', url: SEARCH_CITY_API_URL}
             });        
 
-        let initialCoords = [4.5, -74.4];
+        let initialCoords = CENTER;
         // find in localStorage if cityCoords exist
         var cityCoords = localStorage.getItem('cityCoords');
         if (cityCoords == undefined){
@@ -125,15 +130,14 @@
             }catch(e){
 
             }
-
         }
         waterproof["cityCoords"] = cityCoords;
 
         map.setView(initialCoords,5);
         searchPoints.addTo(map);        
         
-        var c = new L.Control.Coordinates();
-        c.addTo(map);    
+        //var c = new L.Control.Coordinates();
+        //c.addTo(map);    
 
         L.control.layers(baseLayers,{},{position: 'topleft'}).addTo(map);
         var zoomControl = new L.Control.Zoom({position: 'topright'}).addTo(map);
@@ -180,7 +184,7 @@
         $("#cityLabel").html(cityName);
         localStorage.setItem('city', cityName);
 
-        let urlAPI = "https://restcountries.eu/rest/v2/alpha/" + countryCode;
+        let urlAPI = '{{ SEARCH_COUNTRY_API_URL }}' + countryCode;
 
         $.get(urlAPI, function(data){
             //console.log(data);
