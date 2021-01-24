@@ -77,7 +77,7 @@ from geonode.settings import (
 try:
     from geonode.settings import TEST_RUNNER_KEEPDB, TEST_RUNNER_PARALLEL
     _keepdb = '--keepdb' if TEST_RUNNER_KEEPDB else ''
-    _parallel = ('--parallel=%s' % TEST_RUNNER_PARALLEL) if TEST_RUNNER_PARALLEL else ''
+    _parallel = (f'--parallel={TEST_RUNNER_PARALLEL}') if TEST_RUNNER_PARALLEL else ''
 except Exception:
     _keepdb = ''
     _parallel = ''
@@ -218,10 +218,10 @@ def setup_qgis_server(options):
     all_permission = 0o777
     os.chmod('geonode/qgis_layer', all_permission)
     stat = os.stat('geonode/qgis_layer')
-    info('Mode : %o' % stat.st_mode)
+    info('Mode : {stat.st_mode:o}')
     os.chmod('geonode/qgis_tiles', all_permission)
     stat = os.stat('geonode/qgis_tiles')
-    info('Mode : %o' % stat.st_mode)
+    info('Mode : {stat.st_mode:o}')
 
     info('QGIS Server related folder successfully setup.')
 
@@ -239,7 +239,7 @@ def _robust_rmtree(path, logger=None, max_retries=5):
             return
         except OSError:
             if logger:
-                info('Unable to remove path: %s' % path)
+                info(f'Unable to remove path: {path}')
                 info(f'Retrying after {i} seconds')
             time.sleep(i)
 
@@ -403,7 +403,7 @@ def updategeoip(options):
     """
     settings = options.get('settings', '')
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
-        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
+        settings = f'DJANGO_SETTINGS_MODULE={settings}'
 
     sh("%s python -W ignore manage.py updategeoip -o" % settings)
 
@@ -418,7 +418,7 @@ def sync(options):
     """
     settings = options.get('settings', '')
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
-        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
+        settings = f'DJANGO_SETTINGS_MODULE={settings}'
 
     sh("%s python -W ignore manage.py makemigrations --noinput" % settings)
     sh("%s python -W ignore manage.py migrate --noinput" % settings)
@@ -440,11 +440,11 @@ def package(options):
 
     version = geonode.get_version()
     # Use GeoNode's version for the package name.
-    pkgname = 'GeoNode-%s-all' % version
+    pkgname = f'GeoNode-{version}-all'
 
     # Create the output directory.
     out_pkg = path(pkgname)
-    out_pkg_tar = path("%s.tar.gz" % pkgname)
+    out_pkg_tar = path(f"{pkgname}.tar.gz")
 
     # Create a distribution in zip format for the geonode python package.
     dist_dir = path('dist')
@@ -460,7 +460,7 @@ def package(options):
                 old_package.remove()
 
         if out_pkg_tar.exists():
-            info('There is already a package for version %s' % version)
+            info(f'There is already a package for version {version}')
             return
 
         # Clean anything that is in the oupout package tree.
@@ -474,7 +474,7 @@ def package(options):
         justcopy(support_folder, out_pkg / 'support')
         justcopy(install_file, out_pkg)
 
-        geonode_dist = path('..') / 'dist' / 'GeoNode-%s.zip' % version
+        geonode_dist = path('..') / 'dist' / f'GeoNode-{version}.zip'
         justcopy(geonode_dist, out_pkg)
 
         # Create a tar file with all files in the output package folder.
@@ -483,7 +483,7 @@ def package(options):
             tar.add(file)
 
         # Add the README with the license and important links to documentation.
-        tar.add('README', arcname=('%s/README.rst' % out_pkg))
+        tar.add('README', arcname=f'{out_pkg}/README.rst')
         tar.close()
 
         # Remove all the files in the temporary output package directory.
@@ -605,21 +605,21 @@ def start_django(options):
     """
     settings = options.get('settings', '')
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
-        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
+        settings = f'DJANGO_SETTINGS_MODULE={settings}'
     bind = options.get('bind', '0.0.0.0:8000')
     port = bind.split(":")[1]
     foreground = '' if options.get('foreground', False) else '&'
-    sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
+    sh(f'{settings} python -W ignore manage.py runserver {bind} {foreground}')
 
     if 'django_celery_beat' not in INSTALLED_APPS:
-        sh(f"{settings} celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E \
---statedb=worker.state -s celerybeat-schedule --loglevel=DEBUG \
---concurrency=10 -n worker1@%h -f celery.log {foreground}")
+        sh(f"{settings} celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E "
+           f"--statedb=worker.state -s celerybeat-schedule --loglevel=DEBUG "
+           f"--concurrency=10 -n worker1@%h -f celery.log {foreground}")
     else:
         sh(f"{settings} celery -A geonode.celery_app:app worker -l DEBUG -s django_celery_beat.schedulers:DatabaseScheduler {foreground}")
 
     if ASYNC_SIGNALS:
-        sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
+        sh(f'{settings} python -W ignore manage.py runmessaging {foreground}')
 
     # wait for Django to start
     started = waitfor("http://localhost:" + port)
@@ -635,9 +635,9 @@ def start_messaging(options):
     """
     settings = options.get('settings', '')
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
-        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
+        settings = f'DJANGO_SETTINGS_MODULE={settings}'
     foreground = '' if options.get('foreground', False) else '&'
-    sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
+    sh(f'{settings} python -W ignore manage.py runmessaging {foreground}')
 
 
 @task
@@ -686,7 +686,7 @@ def start_geoserver(options):
     except socket.error as e:
         socket_free = False
         if e.errno == 98:
-            info('Port %s is already in use' % jetty_port)
+            info(f'Port {jetty_port} is already in use')
         else:
             info(
                 'Something else raised the socket.error exception while checking port %s' %
@@ -760,11 +760,11 @@ def start_geoserver(options):
                 ' > %(loggernullpath)s &' % locals()
             ))
 
-        info('Starting GeoServer on %s' % url)
+        info(f'Starting GeoServer on {url}')
 
     # wait for GeoServer to start
     started = waitfor(url)
-    info('The logs are available at %s' % log_file)
+    info(f'The logs are available at {log_file}')
 
     if not started:
         # If applications did not start in time we will give the user a chance
@@ -879,7 +879,7 @@ def test_integration(options):
 
         if not settings:
             settings = 'geonode.local_settings' if _backend == 'geonode.qgis_server' else 'geonode.settings'
-            settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
+            settings = f'REUSE_DB=1 DJANGO_SETTINGS_MODULE={settings}'
 
         if name and name in ('geonode.tests.csw', 'geonode.tests.integration', 'geonode.geoserver.tests.integration'):
             call_task('sync', options={'settings': settings})
@@ -906,26 +906,19 @@ def test_integration(options):
                 call_task('start_geoserver')
                 bind = options.get('bind', '0.0.0.0:8000')
                 foreground = '' if options.get('foreground', False) else '&'
-                sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runmessaging %s' %
-                (settings, foreground))
-                sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runserver %s %s' %
-                (settings, bind, foreground))
+                sh(f'DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py runmessaging {foreground}')
+                sh(f'DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py runserver {bind} {foreground}')
                 sh('sleep 30')
-                settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
+                settings = f'REUSE_DB=1 DJANGO_SETTINGS_MODULE={settings}'
             else:
                 call_task('sync', options={'settings': settings})
 
         live_server_option = ''
         info("Running the tests now...")
-        sh(('%s %s manage.py test %s'
-            ' -v 3 %s --noinput %s' % (settings,
-                                       prefix,
-                                       name,
-                                       _keepdb,
-                                       live_server_option)))
+        sh(f'{settings} {prefix} manage.py test {name} -v 3 {_keepdb} --noinput {live_server_option}')
 
     except BuildFailure as e:
-        info('Tests failed! %s' % str(e))
+        info(f'Tests failed! {e}')
     else:
         success = True
     finally:
@@ -1019,7 +1012,7 @@ def setup_data(options):
 
     settings = options.get('settings', '')
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
-        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
+        settings = f'DJANGO_SETTINGS_MODULE={settings}'
 
     sh("%s python -W ignore manage.py importlayers %s -v2" % (settings, data_dir))
 
@@ -1043,7 +1036,7 @@ def deb(options):
 
     version, simple_version = versions()
 
-    info('Creating package for GeoNode version %s' % version)
+    info(f'Creating package for GeoNode version {version}')
 
     # Get rid of any uncommitted changes to debian/changelog
     info('Getting rid of any uncommitted changes in debian/changelog')
@@ -1051,8 +1044,8 @@ def deb(options):
 
     # Workaround for git-dch bug
     # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594580
-    sh('rm -rf %s/.git' % (os.path.realpath('package')))
-    sh('ln -s %s %s' % (os.path.realpath('.git'), os.path.realpath('package')))
+    sh(f"rm -rf {os.path.realpath('package')}.git")
+    sh(f"ln -s {os.path.realpath('.git')} {os.path.realpath('package')}")
 
     with pushd('package'):
 
@@ -1087,13 +1080,13 @@ def deb(options):
             sh('debuild -S')
         elif key is not None and ppa is None:
             print("A signed installable package")
-            sh('debuild -k%s -A' % key)
+            sh(f'debuild -k{key} -A')
         elif key is not None and ppa is not None:
             print("A signed, source package")
-            sh('debuild -k%s -S' % key)
+            sh(f'debuild -k{key} -S')
 
     if ppa is not None:
-        sh('dput ppa:%s geonode_%s_source.changes' % (ppa, simple_version))
+        sh(f'dput ppa:{ppa} geonode_{simple_version}_source.changes')
 
 
 @task
@@ -1119,11 +1112,11 @@ def publish(options):
     version, simple_version = versions()
     if ppa:
         sh('git add package/debian/changelog')
-        sh('git commit -m "Updated changelog for version %s"' % version)
-        sh('git tag -f %s' % version)
-        sh('git push origin %s' % version)
-        sh('git tag -f debian/%s' % simple_version)
-        sh('git push origin debian/%s' % simple_version)
+        sh(f'git commit -m "Updated changelog for version {version}"')
+        sh(f'git tag -f {version}')
+        sh(f'git push origin {version}')
+        sh(f'git tag -f debian/{simple_version}')
+        sh(f'git push origin debian/{simple_version}')
         # sh('git push origin master')
         sh('python setup.py sdist upload -r pypi')
 
@@ -1142,12 +1135,9 @@ def versions():
     if stage == 'final':
         stage = 'thefinal'
 
-    if stage == 'unstable':
-        tail = '%s%s' % (branch, timestamp)
-    else:
-        tail = '%s%s' % (stage, edition)
+    tail = f'{branch}{timestamp}' if stage == 'unstable' else f'{stage}{edition}'
+    simple_version = f'{major}.{minor}.{revision}+{tail}'
 
-    simple_version = '%s.%s.%s+%s' % (major, minor, revision, tail)
     return version, simple_version
 
 
@@ -1164,10 +1154,10 @@ def kill(arg1, arg2):
 
     while running and time.time() - t0 < time_out:
         if os.name == 'nt':
-            p = Popen('tasklist | find "%s"' % arg1, shell=True,
+            p = Popen(f'tasklist | find "{arg1}"', shell=True,
                       stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=False)
         else:
-            p = Popen('ps aux | grep %s' % arg1, shell=True,
+            p = Popen(f'ps aux | grep {arg1}', shell=True,
                       stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
 
         lines = p.stdout.readlines()
@@ -1175,17 +1165,15 @@ def kill(arg1, arg2):
         running = False
         for line in lines:
             # this kills all java.exe and python including self in windows
-            if ('%s' % arg2 in str(line)) or (os.name == 'nt' and '%s' % arg1 in str(line)):
+            if (f'{arg2}' in str(line)) or (os.name == 'nt' and f'{arg1}' in str(line)):
                 running = True
 
                 # Get pid
                 fields = line.strip().split()
+                proc = int(fields[1])
+                kill = f'taskkill /F /PID "{proc}"' if os.name == 'nt' else f'kill -9 {proc} 2> /dev/null'
 
-                info('Stopping %s (process number %s)' % (arg1, int(fields[1])))
-                if os.name == 'nt':
-                    kill = 'taskkill /F /PID "%s"' % int(fields[1])
-                else:
-                    kill = 'kill -9 %s 2> /dev/null' % int(fields[1])
+                info(f'Stopping {arg1} (process number {proc})')
                 os.system(kill)
 
         # Give it a little more time
