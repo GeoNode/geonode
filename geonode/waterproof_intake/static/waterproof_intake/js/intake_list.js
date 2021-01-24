@@ -79,6 +79,7 @@ $(function() {
             photonControl: true, 
             photonControlOptions: { 
                 resultsHandler: showSearchPoints, 
+                selectedResultHandler : selectedResultHandler,
                 placeholder: 'Search City...', 
                 position: 'topleft', 
                 url: SEARCH_CITY_API_URL 
@@ -150,6 +151,39 @@ $(function() {
         console.log(geojsonFilter[0].properties.name)
         table.search(cityName.substr(0, 2)).draw();
         drawPolygons();        
+    }
+
+    function selectedResultHandler(feat){
+
+        waterproof["cityCoords"] = [feat.geometry.coordinates[1], feat.geometry.coordinates[0]];
+        localStorage.setItem('cityCoords', JSON.stringify(waterproof["cityCoords"]));
+
+
+        searchPoints.eachLayer(function(layer){
+            if (layer.feature.properties.osm_id != feat.properties.osm_id){
+                layer.remove();
+            }
+        });
+        let country = feat.properties.country;
+        let cityName = feat.properties.name;
+        let countryCode = feat.properties.countrycode.toLowerCase();
+
+        $("#countryLabel").html(country);
+        $("#cityLabel").html(cityName);
+        localStorage.setItem('city', cityName);
+
+        let urlAPI = '{{ SEARCH_COUNTRY_API_URL }}' + countryCode;
+
+        $.get(urlAPI, function(data){
+            //console.log(data);
+            $("#regionLabel").html(data.region);
+            $("#currencyLabel").html(data.currencies[0].name + " - " + data.currencies[0].symbol);
+            $("#listIntakes").show();
+            
+            localStorage.setItem('country', country);
+            localStorage.setItem('region', data.region);
+            localStorage.setItem('currency', data.currencies[0].name + " - " + data.currencies[0].symbol);
+        });
     }
 
     udpateCreateUrl = function(countryId) {
