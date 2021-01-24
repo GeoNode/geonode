@@ -99,11 +99,11 @@ HOSTNAME = _surl.hostname
 
 # add trailing slash to site url. geoserver url will be relative to this
 if not SITEURL.endswith('/'):
-    SITEURL = f'{SITEURL}/')
+    SITEURL = f'{SITEURL}/'
 
 DATABASE_URL = os.getenv(
     'DATABASE_URL',
-    'spatialite:///{os.path.join(PROJECT_ROOT, 'development.db'}')
+    "spatialite:///{os.path.join(PROJECT_ROOT, 'development.db'}"
 )
 
 if DATABASE_URL.startswith("spatialite"):
@@ -961,8 +961,7 @@ GEOSERVER_PUBLIC_PORT = os.getenv(
     'GEOSERVER_PUBLIC_PORT', 8080
 )
 
-_default_public_location = f'{GEOSERVER_PUBLIC_SCHEMA}://{GEOSERVER_PUBLIC_HOST}:{GEOSERVER_PUBLIC_PORT}/geoserver/'
-    if GEOSERVER_PUBLIC_PORT else f'{GEOSERVER_PUBLIC_SCHEMA}://{GEOSERVER_PUBLIC_HOST}/geoserver/'
+_default_public_location = f'{GEOSERVER_PUBLIC_SCHEMA}://{GEOSERVER_PUBLIC_HOST}:{GEOSERVER_PUBLIC_PORT}/geoserver/' if GEOSERVER_PUBLIC_PORT else f'{GEOSERVER_PUBLIC_SCHEMA}://{GEOSERVER_PUBLIC_HOST}/geoserver/'
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
     'GEOSERVER_PUBLIC_LOCATION', _default_public_location
