@@ -82,7 +82,9 @@ from urllib.parse import (
     SplitResult
 )
 
-MaxExtent = 20037508.34;
+MAX_EXTENT = 20037508.34
+FULL_ROTATION_DEG = 360.0
+HALF_ROTATION_DEG = 180.0
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
 
@@ -113,7 +115,6 @@ id_none = id(None)
 
 logger = logging.getLogger("geonode.utils")
 
-FullRot = 360.0;
 
 def unzip_file(upload_file, extension='.shp', tempdir=None):
     """
@@ -334,8 +335,8 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
 
 
 def _v(coord, x, source_srid=4326, target_srid=3857):
-    if source_srid == 4326 and x and abs(coord) != 180.0:
-        coord = coord - (round(coord / FullRot) * FullRot)
+    if source_srid == 4326 and x and abs(coord) != HALF_ROTATION_DEG:
+        coord -= (round(coord / FULL_ROTATION_DEG) * FULL_ROTATION_DEG)
     if source_srid == 4326 and target_srid != 4326:
         if x and float(coord) >= 179.999:
             return 179.999
@@ -401,7 +402,7 @@ def bounds_to_zoom_level(bounds, width, height):
     ZOOM_MAX = 21
 
     def latRad(lat):
-        _sin = sin(lat * pi / 180.0)
+        _sin = sin(lat * pi / HALF_ROTATION_DEG)
         if abs(_sin) != 1.0:
             radX2 = log((1.0 + _sin) / (1.0 - _sin)) / 2.0
         else:
@@ -418,7 +419,7 @@ def bounds_to_zoom_level(bounds, width, height):
     sw = [float(bounds[0]), float(bounds[1])]
     latFraction = (latRad(ne[1]) - latRad(sw[1])) / pi
     lngDiff = ne[0] - sw[0]
-    lngFraction = ((lngDiff + FullRot) if (lngDiff < 0) else lngDiff) / FullRot
+    lngFraction = ((lngDiff + FULL_ROTATION_DEG) if lngDiff < 0 else lngDiff) / FULL_ROTATION_DEG
     latZoom = zoom(float(height), WORLD_DIM['height'], latFraction)
     lngZoom = zoom(float(width), WORLD_DIM['width'], lngFraction)
     # ratio = float(max(width, height)) / float(min(width, height))
@@ -447,18 +448,18 @@ def forward_mercator(lonlat):
 
         If the lat value is out of range, -inf will be returned as the y value
     """
-    x = lonlat[0] * MaxExtent / 180
+    x = lonlat[0] * MAX_EXTENT / HALF_ROTATION_DEG
     try:
         # With data sets that only have one point the value of this
         # expression becomes negative infinity. In order to continue,
         # we wrap this in a try catch block.
-        n = tan((90 + lonlat[1]) * pi / FullRot)
+        n = tan((90 + lonlat[1]) * pi / FULL_ROTATION_DEG)
     except ValueError:
         n = 0
     if n <= 0:
         y = float("-inf")
     else:
-        y = log(n) / pi * MaxExtent
+        y = log(n) / pi * MAX_EXTENT
     return (x, y)
 
 
@@ -466,10 +467,10 @@ def inverse_mercator(xy):
     """
         Given coordinates in spherical mercator, return a lon,lat tuple.
     """
-    lon = (xy[0] / MaxExtent) * 180
-    lat = (xy[1] / MaxExtent) * 180
-    lat = 180 / pi * \
-        (2 * atan(exp(lat * pi / 180)) - pi / 2)
+    lon = (xy[0] / MAX_EXTENT) * HALF_ROTATION_DEG
+    lat = (xy[1] / MAX_EXTENT) * HALF_ROTATION_DEG
+    lat = HALF_ROTATION_DEG / pi * \
+        (2 * atan(exp(lat * pi / HALF_ROTATION_DEG)) - pi / 2)
     return (lon, lat)
 
 
@@ -852,20 +853,20 @@ def default_map_config(request):
     return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
 
 
-
+max_extent = [-MAX_EXTENT, -MAX_EXTENT, MAX_EXTENT, MAX_EXTENT]
 _viewer_projection_lookup = {
     "EPSG:900913": {
         "maxResolution": 156543.03390625,
         "units": "m",
-        "maxExtent": [-MaxExtent, -MaxExtent, MaxExtent, MaxExtent],
+        "maxExtent": max_extent,
     },
     "EPSG:3857": {
         "maxResolution": 156543.03390625,
         "units": "m",
-        "maxExtent": [-MaxExtent, -MaxExtent, MaxExtent, MaxExtent],
+        "maxExtent": max_extent,
     },
     "EPSG:4326": {
-        "max_resolution": (180 - (-180)) / 256,
+        "max_resolution": FULL_ROTATION_DEG / 256,
         "units": "degrees",
         "maxExtent": [-180, -90, 180, 90]
     }
