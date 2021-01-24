@@ -188,7 +188,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             )
             if existance_test_qs.exists():
                 raise RuntimeError(
-                    "Resource {!r} has already been harvested".format(resource_id))
+                    f"Resource {repr(resource_id)} has already been harvested")
             resource_fields["keywords"] = keywords
             resource_fields["is_approved"] = True
             resource_fields["is_published"] = True
@@ -201,8 +201,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             self._create_layer_service_link(geonode_layer)
             # self._create_layer_legend_link(geonode_layer)
         else:
-            raise RuntimeError(
-                "Resource {!r} cannot be harvested".format(resource_id))
+            raise RuntimeError(f"Resource {repr(resource_id)} cannot be harvested")
 
     def has_resources(self):
         try:
@@ -272,7 +271,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             "format": "image/png",
             "styles": ""
         }
-        kvp = "&".join("{}={}".format(*item) for item in params.items())
+        kvp = "&".join(f"{k}={v}" for k, v in params.items())
         thumbnail_remote_url = f"{geonode_layer.remote_service.service_url}?{kvp}"
         logger.debug(f"thumbnail_remote_url: {thumbnail_remote_url}")
         create_thumbnail(

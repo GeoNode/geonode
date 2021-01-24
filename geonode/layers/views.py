@@ -777,10 +777,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
     if not isinstance(data_dict['filtered_attributes'], string_types):
         filtered_attributes = [x for x in data_dict['filtered_attributes'] if '/load_layer_data' not in x]
     name = layername if ':' not in layername else layername.split(':')[1]
-    location = "{location}{service}".format(** {
-        'location': settings.OGC_SERVER['default']['LOCATION'],
-        'service': 'wms',
-    })
+    location = f"{settings.OGC_SERVER['default']['LOCATION']}wms"
     access_token = None
     if request and 'access_token' in request.session:
         access_token = request.session['access_token']

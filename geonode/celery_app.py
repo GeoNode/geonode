@@ -58,5 +58,5 @@ def test(arg):
     name='{{project_name}}.debug_task',
     queue='default')
 def debug_task(self):
-    _log("Request: {!r}".format(self.request))
+    _log(f"Request: {repr(self.request)}")
 """

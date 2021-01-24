@@ -281,7 +281,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
               time_presentation_reference_value=None,
               charset_encoding="UTF-8"):
     logger.debug(
-        'Uploading layer: {}, files {!r}'.format(layer, spatial_files))
+        f'Uploading layer: {layer}, files {repr(spatial_files)}')
     if len(spatial_files) > 1:
         # we only support more than one file if they're rasters for mosaicing
         if not all(
@@ -289,7 +289,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
             raise UploadException(
                 "Please upload only one type of file at a time")
     name = get_valid_layer_name(layer, overwrite)
-    logger.debug('Name for layer: {!r}'.format(name))
+    logger.debug(f'Name for layer: {repr(name)}')
     if not any(spatial_files.all_files()):
         raise UploadException("Unable to recognize the uploaded file(s)")
     the_layer_type = _get_layer_type(spatial_files)

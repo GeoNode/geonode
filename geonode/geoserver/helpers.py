@@ -995,8 +995,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             # The code below will fail if http_client cannot be imported or WFS not supported
             req, body = http_client.get(dft_url, user=_user)
             doc = dlxml.fromstring(body.encode())
-            path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(
-                xsd="{http://www.w3.org/2001/XMLSchema}")
+            xsd = "{http://www.w3.org/2001/XMLSchema}"
+            path = f".//{xsd}extension/{xsd}sequence/{xsd}element"
             attribute_map = [[n.attrib["name"], n.attrib["type"]] for n in doc.findall(
                 path) if n.attrib.get("name") and n.attrib.get("type")]
         except Exception:
@@ -1043,8 +1043,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
         try:
             req, body = http_client.get(dc_url, user=_user)
             doc = dlxml.fromstring(body.encode())
-            path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(
-                wcs="{http://www.opengis.net/wcs/1.1.1}")
+            wcs="{http://www.opengis.net/wcs/1.1.1}"
+            path = f".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key"
             attribute_map = [[n.text, "raster"] for n in doc.findall(path)]
         except Exception:
             tb = traceback.format_exc()

@@ -237,8 +237,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             workspace=resource_fields["workspace"]
         )
         if existance_test_qs.exists():
-            raise RuntimeError(
-                "Resource {!r} has already been harvested".format(resource_id))
+            raise RuntimeError(f"Resource {repr(resource_id)} has already been harvested")
         resource_fields["keywords"] = keywords
         resource_fields["is_approved"] = True
         resource_fields["is_published"] = True
@@ -296,7 +295,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             "format": "image/png",
             "styles": ""
         }
-        kvp = "&".join("{}={}".format(*item) for item in params.items())
+        kvp = "&".join(f"{k}={v}" for k, v in params.items())
         thumbnail_remote_url = f"{geonode_layer.remote_service.service_url}{_q_separator}{kvp}"
         logger.debug(f"thumbnail_remote_url: {thumbnail_remote_url}")
         create_thumbnail(
@@ -327,7 +326,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             "legend_options": (
                 "fontAntiAliasing:true;fontSize:12;forceLabels:on")
         }
-        kvp = "&".join("{}={}".format(*item) for item in params.items())
+        kvp = "&".join(f"{k}={v}" for k, v in params.items())
         legend_url = f"{geonode_layer.remote_service.service_url}{_q_separator}{kvp}"
         logger.debug(f"legend_url: {legend_url}")
         Link.objects.get_or_create(
@@ -439,8 +438,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             layer_resource.projection_policy = "REPROJECT_TO_DECLARED"
             cat.save(layer_resource)
             if layer_resource is None:
-                raise RuntimeError("Could not cascade resource {!r} through "
-                                   "geoserver".format(layer_meta))
+                raise RuntimeError(f"Could not cascade resource {repr(layer_meta)} through geoserver")
             layer_resource = layer_resource.resource
         else:
             logger.debug(f"Layer {layer_meta.id} is already present. Skipping...")
@@ -525,8 +523,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
             workspace=resource_fields["workspace"]
         )
         if existance_test_qs.exists():
-            raise RuntimeError(
-                "Resource {!r} has already been harvested".format(resource_id))
+            raise RuntimeError(f"Resource {repr(resource_id)} has already been harvested")
         resource_fields["keywords"] = keywords
         resource_fields["is_approved"] = True
         resource_fields["is_published"] = True

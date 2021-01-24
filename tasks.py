@@ -96,7 +96,7 @@ def update(ctx):
     except ValueError:
         current_allowed = []
     current_allowed.extend([f'{pub_ip}', f'{pub_ip}:{pub_port}'])
-    allowed_hosts = ['"{}"'.format(c) for c in current_allowed] + ['"geonode"', '"django"']
+    allowed_hosts = [f'"{c}"' for c in current_allowed] + ['"geonode"', '"django"']
 
     ctx.run("echo export DJANGO_SETTINGS_MODULE=\
 {local_settings} >> {override_fn}".format(**envs), pty=True)
@@ -188,31 +188,11 @@ def prepare(ctx):
     _prepare_site_fixture()
     # Updating OAuth2 Service Config
     oauth_config = "/geoserver_data/data/security/filter/geonode-oauth2/config.xml"
-    ctx.run(
-        'sed -i "s|<cliendId>.*</cliendId>|<cliendId>{client_id}</cliendId>|g" {oauth_config}'.format(
-            client_id=os.environ['OAUTH2_CLIENT_ID'],
-            oauth_config=oauth_config
-        ), pty=True)
-    ctx.run(
-        'sed -i "s|<clientSecret>.*</clientSecret>|<clientSecret>{client_secret}</clientSecret>|g" {oauth_config}'.format(  # noqa
-            client_secret=os.environ['OAUTH2_CLIENT_SECRET'],
-            oauth_config=oauth_config
-        ), pty=True)
-    ctx.run(
-        'sed -i "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>{new_ext_ip}o/authorize/</userAuthorizationUri>|g" {oauth_config}'.format(
-            new_ext_ip=os.environ['SITEURL'],
-            oauth_config=oauth_config
-        ), pty=True)
-    ctx.run(
-        'sed -i "s|<redirectUri>.*</redirectUri>|<redirectUri>{new_ext_ip}geoserver/index.html</redirectUri>|g" {oauth_config}'.format(
-            new_ext_ip=os.environ['SITEURL'],
-            oauth_config=oauth_config
-        ), pty=True)
-    ctx.run(
-        'sed -i "s|<logoutUri>.*</logoutUri>|<logoutUri>{new_ext_ip}account/logout/</logoutUri>|g" {oauth_config}'.format(
-            new_ext_ip=os.environ['SITEURL'],
-            oauth_config=oauth_config
-        ), pty=True)
+    ctx.run(f"""sed -i "s|<cliendId>.*</cliendId>|<cliendId>{os.environ['OAUTH2_CLIENT_ID']}</cliendId>|g" {oauth_config}""", pty=True)
+    ctx.run(f"""sed -i "s|<clientSecret>.*</clientSecret>|<clientSecret>{os.environ['OAUTH2_CLIENT_SECRET']}</clientSecret>|g" {oauth_config}""", pty=True) # noqa
+    ctx.run(f"""sed -i "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>{os.environ['SITEURL']}o/authorize/</userAuthorizationUri>|g" {oauth_config}""", pty=True)
+    ctx.run(f"""sed -i "s|<redirectUri>.*</redirectUri>|<redirectUri>{os.environ['SITEURL']}geoserver/index.html</redirectUri>|g" {oauth_config}""", pty=True)
+    ctx.run(f"""sed -i "s|<logoutUri>.*</logoutUri>|<logoutUri>{os.environ['SITEURL']}account/logout/</logoutUri>|g" {oauth_config}""", pty=True)
 
 
 @task

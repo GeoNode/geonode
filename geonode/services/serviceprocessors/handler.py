@@ -59,14 +59,12 @@ def get_service_handler(base_url, proxy_base=None, service_type=enumerations.AUT
             else:
                 break
         else:
-            raise RuntimeError("Could not parse service {!r} with any of the "
-                               "available service handlers".format(base_url))
+            raise RuntimeError(f"Could not parse service {repr(base_url)} with any of the available service handlers")
     else:
         handler = handlers.get(service_type, {}).get("handler")
         try:
             service = handler(base_url)
         except Exception:
-            logger.exception(
-                msg="Could not parse service {!r}".format(base_url))
+            logger.exception(msg=f"Could not parse service {repr(base_url)}")
             raise
     return service

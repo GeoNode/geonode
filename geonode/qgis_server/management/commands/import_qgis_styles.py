@@ -37,7 +37,7 @@ class Command(BaseCommand):
                 continue
 
             if l.qgis_layer:
-                print("Fetching styles for layer %s".format(l.name))
+                print(f"Fetching styles for layer {l.name}")
 
                 try:
                     styles = style_list(l, internal=False)

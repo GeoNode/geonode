@@ -152,10 +152,7 @@ def _validate_shapefile_components(possible_filenames):
         else:
             if additional_component.mandatory:
                 raise forms.ValidationError(
-                    "Could not find {!r} file, which is mandatory for "
-                    "shapefile uploads".format(
-                        additional_component.extension)
-                )
+                    f"Could not find {repr(additional_component.extension)} file, which is mandatory for shapefile uploads")
     logger.debug(f"shapefile components: {components}")
     return components
 

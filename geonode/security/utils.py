@@ -491,7 +491,7 @@ def set_geofence_all(instance):
     resource = instance.get_self_resource()
     logger.debug(f"Inside set_geofence_all for instance {instance}")
     workspace = get_layer_workspace(resource.layer)
-    logger.debug("going to work in workspace {!r}".format(workspace))
+    logger.debug(f"going to work in workspace {repr(workspace)}")
     try:
         url = settings.OGC_SERVER['default']['LOCATION']
         user = settings.OGC_SERVER['default']['USER']
@@ -518,7 +518,7 @@ def set_geofence_all(instance):
         )
         if response.status_code not in (200, 201):
             logger.debug(
-                "Response {!r} : {}".format(response.status_code, response.text))
+                f"Response {repr(response.status_code)} : {response.text}")
             raise RuntimeError("Could not ADD GeoServer ANONYMOUS Rule "
                                f"for Layer {resource.layer.name}")
     except Exception:
@@ -790,8 +790,8 @@ def _update_geofence_rule(layer, layer_name, workspace,
     )
     logger.debug(f"response status_code: {response.status_code}")
     if response.status_code not in (200, 201):
-        msg = ("Could not ADD GeoServer User {!r} Rule for "
-               "Layer {!r}: '{!r}'".format(user, layer, response.text))
+        msg = (f"Could not ADD GeoServer User {repr(user)} Rule for "
+               f"Layer {repr(layer)}: '{repr(response.text)}'")
         if 'Duplicate Rule' in response.text:
             logger.debug(msg)
         else:
