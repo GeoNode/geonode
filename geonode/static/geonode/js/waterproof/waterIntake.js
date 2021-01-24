@@ -30,7 +30,10 @@ async function validateCoordinateWithApi(e) {
       } else {
         map.removeLayer(catchmentPoly);
         mapDelimit.removeLayer(catchmentPolyDelimit);
-        mapDelimit.removeLayer(editablepolygon);
+        if (editablepolygon != undefined){
+          mapDelimit.removeLayer(editablepolygon);
+        }
+        
         catchmentPoly = L.geoJSON().addTo(map);
         catchmentPolyDelimit = L.geoJSON().addTo(mapDelimit);
       }
