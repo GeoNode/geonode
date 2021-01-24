@@ -847,7 +847,7 @@ max\ connections={db_conn_max}"""
         # - data = abs path to the zip file
         # - configure = parameter allows for future configuration after harvesting
         name = head
-        
+
         with open(dirname + '/' + head + '.zip', 'rb') as data:
             try:
                 cat.create_imagemosaic(name, data)

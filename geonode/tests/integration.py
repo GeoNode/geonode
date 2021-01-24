@@ -1006,20 +1006,21 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 gisdata.VECTOR_DATA,
                 'san_andres_y_providencia_coastline.shp')
             layer_path, __ = os.path.splitext(new_vector_file)
-            with open(layer_path + '.shp', 'rb') as layer_base, 
-                open(layer_path + '.dbf', 'rb') as layer_dbf,
-                open(layer_path + '.shx', 'rb') as layer_shx,
-                open(layer_path + '.prj', 'rb') as layer_prj:
 
+            with open(f'{layer_path}.shp', 'rb') as layer_base, \
+                 open(f'{layer_path}.dbf', 'rb') as layer_dbf, \
+                 open(f'{layer_path}.shx', 'rb') as layer_shx, \
+                 open(f'{layer_path}.prj', 'rb') as layer_prj:
 
                 response = self.client.post(
                     vector_replace_url,
-                    {'base_file': layer_base,
-                    'dbf_file': layer_dbf,
-                    'shx_file': layer_shx,
-                    'prj_file': layer_prj,
-                    'charset': 'UTF-8',
-                    'permissions': json.dumps(post_permissions)
+                    {
+                        'base_file': layer_base,
+                        'dbf_file': layer_dbf,
+                        'shx_file': layer_shx,
+                        'prj_file': layer_prj,
+                        'charset': 'UTF-8',
+                        'permissions': json.dumps(post_permissions)
                     })
                 response_dict = json.loads(ensure_string(response.content))
 
@@ -1036,19 +1037,20 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     gisdata.VECTOR_DATA,
                     'san_andres_y_providencia_administrative.shp')
                 layer_path, __ = os.path.splitext(new_vector_file)
-                with open(layer_path + '.shp', 'rb') as layer_base, 
-                    open(layer_path + '.dbf', 'rb') as layer_dbf,
-                    open(layer_path + '.shx', 'rb') as layer_shx,
-                    open(layer_path + '.prj', 'rb') as layer_prj:
+                with open(layer_path + '.shp', 'rb') as layer_base, \
+                     open(layer_path + '.dbf', 'rb') as layer_dbf, \
+                     open(layer_path + '.shx', 'rb') as layer_shx, \
+                     open(layer_path + '.prj', 'rb') as layer_prj:
 
                     response = self.client.post(
                         vector_replace_url,
-                        {'base_file': layer_base,
-                        'dbf_file': layer_dbf,
-                        'shx_file': layer_shx,
-                        'prj_file': layer_prj,
-                        'charset': 'UTF-8',
-                        'permissions': json.dumps(post_permissions)
+                        {
+                            'base_file': layer_base,
+                            'dbf_file': layer_dbf,
+                            'shx_file': layer_shx,
+                            'prj_file': layer_prj,
+                            'charset': 'UTF-8',
+                            'permissions': json.dumps(post_permissions)
                         })
                     response_dict = json.loads(ensure_string(response.content))
 

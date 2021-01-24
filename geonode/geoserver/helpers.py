@@ -585,13 +585,14 @@ def gs_slurp(
        the result of the operation and the errors and traceback if it failed.
     """
     if console is None:
-        
-        
         with open(os.devnull, 'w') as console_file:
             console = console_file.read()
+
     if verbosity > 0:
         print("Inspecting the available layers in GeoServer ...", file=console)
+
     cat = gs_catalog
+
     if workspace is not None and workspace:
         workspace = cat.get_workspace(workspace)
         if workspace is None:

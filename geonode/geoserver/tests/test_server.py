@@ -607,7 +607,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             san_andres_y_providencia_sld_file = os.path.join(
                 d, "san_andres_y_providencia.sld")
             with open(san_andres_y_providencia_sld_file) as san_andres_y_providencia_sld_xml_file:
-              san_andres_y_providencia_sld_xml = san_andres_y_providencia_sld_xml_file.read()
+                san_andres_y_providencia_sld_xml = san_andres_y_providencia_sld_xml_file.read()
             san_andres_y_providencia_sld_name = extract_name_from_sld(
                 None, san_andres_y_providencia_sld_xml)
             self.assertEqual(
@@ -617,7 +617,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             # Test 'lac.sld'
             lac_sld_file = os.path.join(d, "lac.sld")
             with open(lac_sld_file) as lac_sld_xml_file:
-              lac_sld_xml = lac_sld_xml_file.read()
+                lac_sld_xml = lac_sld_xml_file.read()
             lac_sld_name = extract_name_from_sld(
                 None, lac_sld_xml, sld_file=lac_sld_file)
             self.assertEqual(lac_sld_name, 'LAC NonIndigenous Access to Sanitation')
@@ -625,7 +625,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             # Test 'freshgwabs2.sld'
             freshgwabs2_sld_file = os.path.join(d, "freshgwabs2.sld")
             with open(freshgwabs2_sld_file) as freshgwabs2_sld_xml_file:
-              freshgwabs2_sld_xml = freshgwabs2_sld_xml_file.read()
+                freshgwabs2_sld_xml = freshgwabs2_sld_xml_file.read()
             freshgwabs2_sld_name = extract_name_from_sld(
                 None, freshgwabs2_sld_xml, sld_file=freshgwabs2_sld_file)
             self.assertEqual(freshgwabs2_sld_name, 'freshgwabs2')
@@ -633,7 +633,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             # Test 'raster.sld'
             raster_sld_file = os.path.join(d, "raster.sld")
             with open(raster_sld_file) as raster_sld_xml_file:
-              raster_sld_xml = raster_sld_xml_file.read()
+                raster_sld_xml = raster_sld_xml_file.read()
             raster_sld_name = extract_name_from_sld(
                 None, raster_sld_xml, sld_file=raster_sld_file)
             self.assertEqual(
@@ -643,7 +643,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             # Test 'line.sld'
             line_sld_file = os.path.join(d, "line.sld")
             with open(line_sld_file) as line_sld_xml_file:
-              line_sld_xml = line_sld_xml_file.read()
+                line_sld_xml = line_sld_xml_file.read()
             line_sld_name = extract_name_from_sld(
                 None, line_sld_xml, sld_file=line_sld_file)
             self.assertEqual(line_sld_name, 'line 3')
