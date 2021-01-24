@@ -127,8 +127,8 @@ $(function() {
         var zoomControl = new L.Control.Zoom({ position: 'topright' }).addTo(map);
         L.control.layers(baseLayers,overlays,{position: 'topleft'}).addTo(map);
 
-        var c = new L.Control.Coordinates();        
-        c.addTo(map);
+        //var c = new L.Control.Coordinates();        
+        //c.addTo(map);
 
 
         function onMapClick(e) {
