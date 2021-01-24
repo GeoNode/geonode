@@ -177,7 +177,7 @@ class GroupAuthorization(ApiLockdownAuthorization):
             if not user.is_authenticated or user.is_anonymous:
                 return groups.exclude(groupprofile__access='private')
             elif not user.is_superuser:
-                return groups.filter(Q(groupprofile__in=user.group_list_all()) | ~Q(groupprofile__access='private'))        
+                return groups.filter(Q(groupprofile__in=user.group_list_all()) | ~Q(groupprofile__access='private'))
         return groups
 
 
