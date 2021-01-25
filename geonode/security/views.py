@@ -54,7 +54,7 @@ def _perms_info_json(obj):
     return json.dumps(info)
 
 
-def resource_permisions_handle_get(request):
+def resource_permisions_handle_get(request, resource):
     permission_spec = _perms_info_json(resource)
     return HttpResponse(
         json.dumps({'success': True, 'permissions': permission_spec}),
@@ -62,8 +62,8 @@ def resource_permisions_handle_get(request):
         content_type='text/plain'
     )
 
-            
-def resource_permissions_handle_post(request):
+
+def resource_permissions_handle_post(request, resource):
     success = True
     message = _("Permissions successfully updated!")
     try:
@@ -119,9 +119,9 @@ def resource_permissions(request, resource_id):
             content_type='text/plain')
 
     if request.method == 'POST':
-        return resource_permissions_handle_post(request)
+        return resource_permissions_handle_post(request, resource)
     elif request.method == 'GET':
-        return resource_permisions_handle_get(request)
+        return resource_permisions_handle_get(request, resource)
     else:
         # traceback.print_exc()
         return HttpResponse(

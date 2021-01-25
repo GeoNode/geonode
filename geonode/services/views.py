@@ -126,7 +126,10 @@ def _get_service_handler(request, service):
     return service_handler
 
 
-def harvest_resources_handle_get(request):
+def harvest_resources_handle_get(request, service, handler):
+    available_resources = handler.get_resources()
+    is_sync = getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False)
+    errored_state = False
     already_harvested = HarvestJob.objects.values_list(
         "resource_id", flat=True).filter(service=service, status=enumerations.PROCESSED)
     if available_resources:
@@ -166,7 +169,9 @@ def harvest_resources_handle_get(request):
     return result
 
 
-def harvest_resources_handle_post(request):
+def harvest_resources_handle_post(request, service, handler):
+    available_resources = handler.get_resources()
+    is_sync = getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False)
     requested = request.POST.getlist("resource_list")
     requested.extend(request.GET.getlist("resource_list"))
     # Let's remove duplicates
@@ -208,13 +213,10 @@ def harvest_resources(request, service_id):
         return redirect(
             reverse("rescan_service", kwargs={"service_id": service.id})
         )
-    available_resources = handler.get_resources()
-    is_sync = getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False)
-    errored_state = False
     if request.method == "GET":
-        return harvest_resources_handle_get(request)
+        return harvest_resources_handle_get(request, service, handler)
     elif request.method == "POST":
-        return harvest_resources_handle_post(request)
+        return harvest_resources_handle_post(request, service, handler)
 
 
 @login_required

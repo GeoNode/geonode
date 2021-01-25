@@ -215,7 +215,7 @@ def layer_upload_handle_get(request, template):
         'is_layer': True,
     }
     return render(request, template, context=ctx)
-    
+
 
 def layer_upload_handle_post(request, template):
     name = None
