@@ -11,9 +11,28 @@
 {% endblock %}
 
 {% block body_outer %}
-    <div id="map">
-        
+    <div class="row">
+        <div class="col-md-4">
+            <h4 class="text-center" id="countryLabel"></h4>
+            <p><b>{% trans "Selected City" %} :</b> <span id="cityLabel"></span> </p>
+            <p><b>{% trans "Region" %} :</b> <span id="regionLabel"></span> </p>
+            <p><b>{% trans "Currency" %}:</b><span id="currencyLabel"></span></p>
+        </div>
+        <div class="col-md-8">
+            <div id="map" style="width: 700px; height: 300px;"></div>
+    
+        </div>
+    </div>   
+    <div class="row">
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-8">
+            <div id="listIntakes" style="display: none;">
+                <a href="/study_cases">{% trans "List Study Cases" %}</a>
+            </div> 
+        </div>
     </div>
+    
 {% endblock %}
 
 {% block extra_script %}
@@ -30,11 +49,14 @@
     crossorigin=""></script> -->
   
   <script type="text/javascript">
-    API_URL = '/proxy/?url=https://photon.komoot.io/api/?';
-    TILELAYER = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png';
-    CENTER = [-74.4879, 4.582];
+    SEARCH_CITY_API_URL = '{{ SEARCH_CITY_API_URL }}';
+    OSM_BASEMAP_URL = '{{ OSM_BASEMAP_URL }} ';
+    IMG_BASEMAP_URL =  '{{ IMG_BASEMAP_URL }} ';
+    HYDRO_BASEMAP_URL =  '{{ HYDRO_BASEMAP_URL }} ';
+    GRAY_BASEMAP_URL = '{{ GRAY_BASEMAP_URL }} ';
+    CENTER = [4.582, -74.4879];
     MAXZOOM = 11;
-
+    COUNTRIES_API = '{{ DATABASE_URL }}';
     let waterproof = {};
 
     $(document).ready(function () {
@@ -51,28 +73,23 @@
         //L.esri.basemapLayer('Gray').addTo(gray);
         //L.esri.basemapLayer('GrayLabels').addTo(gray);
         
-        var osm = L.tileLayer(TILELAYER, {
+        var osm = L.tileLayer(OSM_BASEMAP_URL, {
             maxZoom: MAXZOOM, 
             attribution: 'Data \u00a9 <a href="http://www.openstreetmap.org/copyright"> OpenStreetMap Contributors </a> Tiles \u00a9 Komoot'});
-        var images = L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}");
-        
-        var grayLyrUrl = "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png";
-        var esriHydroOverlayURL= "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}";
-        var hydroLyr = L.tileLayer(esriHydroOverlayURL);
-
-
-        var grayLyr = L.tileLayer(grayLyrUrl, {
+        var images = L.tileLayer(IMG_BASEMAP_URL);        
+        //var hydroLyr = L.tileLayer(HYDRO_BASEMAP_URL);
+        var grayLyr = L.tileLayer(GRAY_BASEMAP_URL, {
                                     maxZoom: 20,
                                         attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
                                     });
 
-        var wmsHydroNetworkLyr = L.tileLayer.wms('http://apps.skaphe.com:8080/geoserver/waterproof/wms?', {
+        /* var wmsHydroNetworkLyr = L.tileLayer.wms('http://apps.skaphe.com:8080/geoserver/waterproof/wms?', {
             layers: 'waterproof:world_hydro_network',
             format: 'image/png',
             transparent: 'true',
             opacity: 0.35,
             minZoom: 6,
-        });
+        }); */
 
         var baseLayers = {
             OpenStreetMap: osm,
@@ -80,39 +97,49 @@
             Grayscale: grayLyr,
         };
 
-        var overlays = {
+        /* var overlays = {
             "Hydro (esri)": hydroLyr,
             "Hydro Network": wmsHydroNetworkLyr,
-        };
+        }; */
 
         var map = L.map('map', {
                 scrollWheelZoom: false, 
-                layers: [osm,wmsHydroNetworkLyr],
+                layers: [osm],
                 zoomControl: false, 
                 photonControl: true, 
                 photonControlOptions: {
                     resultsHandler: showSearchPoints, 
+                    selectedResultHandler : selectedResultHandler,
                     placeholder: 'Search City...', 
-                    position: 'topleft', url: API_URL}
+                    position: 'topleft', url: SEARCH_CITY_API_URL}
             });        
 
-        let initialCoords = [4.5, -74.4];
+        let initialCoords = CENTER;
         // find in localStorage if cityCoords exist
         var cityCoords = localStorage.getItem('cityCoords');
         if (cityCoords == undefined){
             cityCoords = initialCoords;
         }else{
             initialCoords = JSON.parse(cityCoords);
+            try{
+                $("#countryLabel").html(localStorage.getItem('country'));
+                $("#cityLabel").html(localStorage.getItem('city'));
+                $("#regionLabel").html(localStorage.getItem('region'));
+                $("#currencyLabel").html(localStorage.getItem('currency'));
+                $("#listIntakes").show();
+            }catch(e){
+
+            }
         }
         waterproof["cityCoords"] = cityCoords;
 
         map.setView(initialCoords,5);
         searchPoints.addTo(map);        
         
-        var c = new L.Control.Coordinates();
-        c.addTo(map);    
+        //var c = new L.Control.Coordinates();
+        //c.addTo(map);    
 
-        L.control.layers(baseLayers,overlays,{position: 'topleft'}).addTo(map);
+        L.control.layers(baseLayers,{},{position: 'topleft'}).addTo(map);
         var zoomControl = new L.Control.Zoom({position: 'topright'}).addTo(map);
         //L.control.mapCenterCoord().addTo(map); 
 		
@@ -136,6 +163,39 @@
         searchPoints.clearLayers();
         let geojsonFilter = geojson.features.filter(feature  => feature.properties.type == "city");
         searchPoints.addData(geojsonFilter);
+    }
+
+    function selectedResultHandler(feat){
+
+        waterproof["cityCoords"] = [feat.geometry.coordinates[1], feat.geometry.coordinates[0]];
+        localStorage.setItem('cityCoords', JSON.stringify(waterproof["cityCoords"]));
+
+
+        searchPoints.eachLayer(function(layer){
+            if (layer.feature.properties.osm_id != feat.properties.osm_id){
+                layer.remove();
+            }
+        });
+        let country = feat.properties.country;
+        let cityName = feat.properties.name;
+        let countryCode = feat.properties.countrycode.toLowerCase();
+
+        $("#countryLabel").html(country);
+        $("#cityLabel").html(cityName);
+        localStorage.setItem('city', cityName);
+
+        let urlAPI = '{{ SEARCH_COUNTRY_API_URL }}' + countryCode;
+
+        $.get(urlAPI, function(data){
+            //console.log(data);
+            $("#regionLabel").html(data.region);
+            $("#currencyLabel").html(data.currencies[0].name + " - " + data.currencies[0].symbol);
+            $("#listIntakes").show();
+            
+            localStorage.setItem('country', country);
+            localStorage.setItem('region', data.region);
+            localStorage.setItem('currency', data.currencies[0].name + " - " + data.currencies[0].symbol);
+        });
     }
     
   </script>  

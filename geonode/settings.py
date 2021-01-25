@@ -90,6 +90,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', _DEFAULT_SECRET_KEY)
 SITE_HOST_SCHEMA = os.getenv('SITE_HOST_SCHEMA', 'http')
 SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'apps.skaphe.com')
 SITE_HOST_PORT = os.getenv('SITE_HOST_PORT', 8000)
+SITE_HOST_API = os.getenv('SITE_HOST_API', 'http://localhost:8000/')
 _default_siteurl = "%s://%s:%s/" % (SITE_HOST_SCHEMA,
                                     SITE_HOST_NAME,
                                     SITE_HOST_PORT) if SITE_HOST_PORT else "%s://%s/" % (SITE_HOST_SCHEMA, SITE_HOST_NAME)
@@ -111,6 +112,7 @@ DATABASE_URL = os.getenv(
  )
 
 #DATABASE_URL='postgresql://geonode:{&Uid&QXZ&6f;|F@dev.skaphe.com:5432/geonode'
+#DATABASE_URL = 'postgresql://geonode:{&Uid&QXZ&6f;|F@dev.skaphe.com:5432/geonode'
 
 if DATABASE_URL.startswith("spatialite"):
     try:
@@ -470,6 +472,7 @@ GEONODE_INTERNAL_APPS = (
     'geonode.waterproof_study_cases',
     'geonode.waterproof_nbs_ca',
     'geonode.waterproof_intake',
+    'geonode.waterproof_treatment_plants',
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -1014,7 +1017,8 @@ OGC_SERVER_DEFAULT_USER = os.getenv(
 )
 
 OGC_SERVER_DEFAULT_PASSWORD = os.getenv(
-    'GEOSERVER_ADMIN_PASSWORD', 'geoserver'
+#    'GEOSERVER_ADMIN_PASSWORD', 'geoserver'
+#    'GEOSERVER_ADMIN_PASSWORD', '{&Uid&QXZ&6f;|F'
 )
 
 GEOFENCE_SECURITY_ENABLED = False if TEST and not INTEGRATION else ast.literal_eval(
@@ -2174,7 +2178,19 @@ WATERPROOF_STUDY_CASES_ALLOW_ANONYMOUS = True
 
 WATERPROOF_NBS_CA_ALLOW_ANONYMOUS = True
 
-WATERPROOF_API_SERVER = "http://apps.skaphe.com/DotNetSINCHI3/proxy.ashx?http://dev.skaphe.com:8000/"
+WATERPROOF_API_SERVER = "/proxy/?url=http://dev.skaphe.com:8000/"
+
+SEARCH_CITY_API_URL = '/proxy/?url=https://photon.komoot.io/api/?'
+
+SEARCH_COUNTRY_API_URL = "https://restcountries.eu/rest/v2/alpha/"
+
+OSM_BASEMAP_URL = 'https://{s}.tile.osm.org/{z}/{x}/{y}.png'
+IMG_BASEMAP_URL = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}"
+HYDRO_BASEMAP_URL = "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}"
+GRAY_BASEMAP_URL = "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
+GEOSERVER_WMS = 'http://apps.skaphe.com:8080/geoserver/waterproof/wms?'
+HYDRO_NETWORK_LYR = 'waterproof:world_hydro_network'
+
 
 # WATERPROOF_API_METHODS = {
 #
