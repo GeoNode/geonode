@@ -114,8 +114,8 @@ def create(request):
             intakePolygon = Polygon.objects.create(
                 area=0,
                 geom=delimitAreaGeom,
-                geomIntake=intakeGeom,
-                geomPoint=pointIntakeGeom,
+                geomIntake=intakeAreaString,
+                geomPoint=pointIntakeString,
                 delimitation_date=datetime.datetime.now(),
                 delimitation_type=delimitation_type,
                 basin=basin,
