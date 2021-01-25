@@ -26,9 +26,9 @@
 <div class="row">
     <div class="col-md-4">
         <h4 class="text-center" id="countryLabel"></h4>
-        <p><b>{% trans "Selected City" %} :</b> <span id="cityLabel"></span> </p>
-        <p><b>{% trans "Region" %} :</b> <span id="regionLabel"></span> </p>
-        <p><b>{% trans "Currency" %}:</b><span id="currencyLabel"></span></p>
+        <p><b>{% trans "Selected City" %} :</b> <span id="cityLabel">{{intake.city.name}}</span></p>
+        <p><b>{% trans "Region" %} :</b> <span id="regionLabel">{{region.name}}</span></p>
+        <p><b>{% trans "Currency" %}:</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
     </div>
     <div class="col-md-8">
         <div id="mapidStudy" style="width: 700px; height: 200px;"></div>
