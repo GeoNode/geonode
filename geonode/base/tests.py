@@ -515,7 +515,6 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
 
 class DeleteResourcesCommandTests(GeoNodeBaseTestSupport):
 
-
     def test_delete_resources_no_arguments(self):
         args = []
         kwargs = {}
