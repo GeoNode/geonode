@@ -585,8 +585,7 @@ def gs_slurp(
        the result of the operation and the errors and traceback if it failed.
     """
     if console is None:
-        with open(os.devnull, 'w') as console_file:
-            console = console_file.read()
+        console = open(os.devnull, 'w')
 
     if verbosity > 0:
         print("Inspecting the available layers in GeoServer ...", file=console)

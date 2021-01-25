@@ -230,10 +230,10 @@ class Client(DjangoTestClient):
 
         # Closes the files
         for spatial_file in spatial_files:
-            if isinstance(params[spatial_file], IOBase):
-                params[spatial_files].close()
+            if isinstance(params.get(spatial_file), IOBase):
+                params[spatial_file].close()
 
-        if isinstance(params['tif_file'], IOBase):
+        if isinstance(params.get("tif_file"), IOBase):
             params['tif_file'].close()
 
         try:

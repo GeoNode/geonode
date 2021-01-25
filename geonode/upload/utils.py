@@ -848,7 +848,7 @@ max\ connections={db_conn_max}"""
         # - configure = parameter allows for future configuration after harvesting
         name = head
 
-        with open(dirname + '/' + head + '.zip', 'rb') as data:
+        with open(f"{dirname}/{head}.zip", 'rb') as data:
             try:
                 cat.create_imagemosaic(name, data)
             except ConflictingDataError:
