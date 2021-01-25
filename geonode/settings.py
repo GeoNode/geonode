@@ -90,6 +90,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', _DEFAULT_SECRET_KEY)
 SITE_HOST_SCHEMA = os.getenv('SITE_HOST_SCHEMA', 'http')
 SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'apps.skaphe.com')
 SITE_HOST_PORT = os.getenv('SITE_HOST_PORT', 8000)
+SITE_HOST_API = os.getenv('SITE_HOST_API', 'http://localhost:8000/')
 _default_siteurl = "%s://%s:%s/" % (SITE_HOST_SCHEMA,
                                     SITE_HOST_NAME,
                                     SITE_HOST_PORT) if SITE_HOST_PORT else "%s://%s/" % (SITE_HOST_SCHEMA, SITE_HOST_NAME)
@@ -111,6 +112,7 @@ DATABASE_URL = os.getenv(
  )
 
 #DATABASE_URL='postgresql://geonode:{&Uid&QXZ&6f;|F@dev.skaphe.com:5432/geonode'
+#DATABASE_URL = 'postgresql://geonode:{&Uid&QXZ&6f;|F@dev.skaphe.com:5432/geonode'
 
 if DATABASE_URL.startswith("spatialite"):
     try:
@@ -470,6 +472,7 @@ GEONODE_INTERNAL_APPS = (
     'geonode.waterproof_study_cases',
     'geonode.waterproof_nbs_ca',
     'geonode.waterproof_intake',
+    'geonode.waterproof_treatment_plants',
 )
 
 GEONODE_CONTRIB_APPS = (
@@ -1014,7 +1017,8 @@ OGC_SERVER_DEFAULT_USER = os.getenv(
 )
 
 OGC_SERVER_DEFAULT_PASSWORD = os.getenv(
-    'GEOSERVER_ADMIN_PASSWORD', 'geoserver'
+#    'GEOSERVER_ADMIN_PASSWORD', 'geoserver'
+#    'GEOSERVER_ADMIN_PASSWORD', '{&Uid&QXZ&6f;|F'
 )
 
 GEOFENCE_SECURITY_ENABLED = False if TEST and not INTEGRATION else ast.literal_eval(

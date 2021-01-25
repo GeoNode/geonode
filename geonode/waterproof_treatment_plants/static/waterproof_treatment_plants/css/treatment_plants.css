@@ -1,0 +1,7 @@
+textarea {
+    resize: vertical;
+}
+.title-city {
+	text-align: center;
+    font-weight: bold;
+}
