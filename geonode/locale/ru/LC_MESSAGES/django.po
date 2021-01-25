@@ -731,7 +731,7 @@ msgstr "Создание карты"
 #: geonode/base/templates/base/_resourcebase_info_panel.html:37
 #, fuzzy
 #| msgid "Position Name"
-msgid "Pubblication Date"
+msgid "Publication Date"
 msgstr "Название должности"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:39
