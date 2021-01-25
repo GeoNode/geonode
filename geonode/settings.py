@@ -111,8 +111,8 @@ DATABASE_URL = os.getenv(
       )
  )
 
-#DATABASE_URL='postgresql://geonode:{&Uid&QXZ&6f;|F@dev.skaphe.com:5432/geonode'
-#DATABASE_URL = 'postgresql://geonode:{&Uid&QXZ&6f;|F@dev.skaphe.com:5432/geonode'
+DATABASE_URL='postgresql://geonode:{&Uid&QXZ&6f;|F@dev.skaphe.com:5432/geonode'
+#DATABASE_URL='postgresql://geonode:geonode@localhost:5432/geonode'
 
 if DATABASE_URL.startswith("spatialite"):
     try:
@@ -557,7 +557,28 @@ INSTALLED_APPS = (
     # translation flags
     'django_translation_flags',
 
+    # waterproof cms
+    # 'waterproof',
+    'geonode.waterproof_cms',
+
 )
+
+WAGTAIL_APP = (
+    'wagtail.contrib.forms',
+    'wagtail.contrib.redirects',
+    'wagtail.embeds',
+    'wagtail.sites',
+    'wagtail.users',
+    'wagtail.snippets',
+    'wagtail.documents',
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail.core',
+    'modelcluster',
+)
+
+INSTALLED_APPS += WAGTAIL_APP
 
 INSTALLED_APPS += ('markdownify',)
 MARKDOWNIFY_STRIP = os.getenv('MARKDOWNIFY_STRIP', False)
@@ -795,6 +816,7 @@ MIDDLEWARE = (
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'geonode.base.middleware.MaintenanceMiddleware',
     'geonode.base.middleware.ReadOnlyMiddleware',   # a Middleware enabling Read Only mode of Geonode
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 )
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
@@ -1017,7 +1039,7 @@ OGC_SERVER_DEFAULT_USER = os.getenv(
 )
 
 OGC_SERVER_DEFAULT_PASSWORD = os.getenv(
-#    'GEOSERVER_ADMIN_PASSWORD', 'geoserver'
+    'GEOSERVER_ADMIN_PASSWORD', 'geoserver',
 #    'GEOSERVER_ADMIN_PASSWORD', '{&Uid&QXZ&6f;|F'
 )
 
@@ -2191,6 +2213,7 @@ GRAY_BASEMAP_URL = "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y
 GEOSERVER_WMS = 'http://apps.skaphe.com:8080/geoserver/waterproof/wms?'
 HYDRO_NETWORK_LYR = 'waterproof:world_hydro_network'
 
+WAGTAIL_SITE_NAME = 'Waterproof CMS'
 
 # WATERPROOF_API_METHODS = {
 #
