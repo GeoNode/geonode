@@ -19,6 +19,7 @@
 #########################################################################
 
 import django
+from django.urls import path, re_path, include
 from django.conf.urls import include, url
 from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -43,6 +44,10 @@ from geonode.utils import check_ogc_backend
 from geonode.monitoring import register_url_event
 from geonode.messaging.urls import urlpatterns as msg_urls
 from .people.views import CustomSignupView
+
+from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.core import urls as wagtail_urls
+from wagtail.documents import urls as wagtaildocs_urls
 
 admin.autodiscover()
 
@@ -105,6 +110,10 @@ urlpatterns = [
 ]
 
 urlpatterns += [
+
+    path('cms/', include(wagtailadmin_urls)),
+    path('docs/', include(wagtaildocs_urls)),
+    path('pages/', include(wagtail_urls)),
 
     # ResourceBase views
     url(r'^base/', include('geonode.base.urls')),
