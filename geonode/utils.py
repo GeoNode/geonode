@@ -1084,11 +1084,8 @@ def build_caveats(resourcebase):
 
 
 def build_social_links(request, resourcebase):
-    social_url = f"{("https" if request.is_secure() else "http")}://{request.get_host()}{request.get_full_path()}"
-    # Don't use datetime strftime() because it requires year >= 1900
-    # see
-    # https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
-    date = f'{resourcebase.date.month:02d}/{resourcebase.date.day:02d}/{resourcebase.date.year:4d}' if resourcebase.date else None
+    social_url = f'{"https" if request.is_secure() else "http"}://{request.get_host()}{request.get_full_path()}'
+    date = resourcebase.date.strftime(r"%m/%d/%Y") if resourcebase.date else None
     abstract = build_abstract(resourcebase, url=social_url, includeURL=True)
     caveats = build_caveats(resourcebase)
     hashtags = ",".join(getattr(settings, 'TWITTER_HASHTAGS', []))
@@ -1324,7 +1321,7 @@ def parse_datetime(value):
             # tb = traceback.format_exc()
             # logger.error(tb)
             pass
-    raise ValueError(f"Invalid datetime input: {value}".)
+    raise ValueError(f"Invalid datetime input: {value}")
 
 
 def _convert_sql_params(cur, query):

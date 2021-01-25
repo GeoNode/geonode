@@ -74,7 +74,7 @@ class LoginRequiredMiddleware(MiddlewareMixin):
         request.user == get_anonymous_user():
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(
-                    f'{self.redirect_to}?next={request_path}')
+                    f'{self.redirect_to}?next={request.path}')
 
 
 class SessionControlMiddleware(MiddlewareMixin):
@@ -115,4 +115,4 @@ class SessionControlMiddleware(MiddlewareMixin):
 
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(
-                    f'{self.redirect_to}?next={request_path}')
+                    f'{self.redirect_to}?next={request.path}')

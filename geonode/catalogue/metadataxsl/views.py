@@ -66,7 +66,7 @@ def prefix_xsl_line(req, id):
             "Resource Metadata not available!"
         )
     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-    xsl_path = f'{siteurl}/static/metadataxsl/metadata.xsl'
+    xsl_path = f'{site_url}/static/metadataxsl/metadata.xsl'
     xsl_line = f'<?xml-stylesheet type="text/xsl" href="{xsl_path}"?>'
 
     return HttpResponse(

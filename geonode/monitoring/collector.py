@@ -214,7 +214,7 @@ class CollectorAPI(object):
                     mdata['metric'], ifname, tx_value, valid_to)
                 log.debug(MetricValue.add(**mdata))
                 if rate:
-                    mdata['metric'] = f'{mdata['metric']}.rate'
+                    mdata['metric'] = f"{mdata['metric']}.rate"
                     mdata['value'] = rate
                     mdata['value_num'] = rate
                     mdata['value_raw'] = rate
@@ -330,7 +330,7 @@ class CollectorAPI(object):
                 mdata['valid_to'])
             if rate:
                 rate_data = mdata.copy()
-                rate_data['metric'] = f'{mdata['metric']}.rate'
+                rate_data['metric'] = f"{mdata['metric']}.rate"
                 rate_data['value'] = rate
                 rate_data['value_num'] = rate
                 rate_data['value_raw'] = rate
@@ -343,7 +343,7 @@ class CollectorAPI(object):
                 mdata['valid_to'])
             if percent:
                 percent_data = mdata.copy()
-                percent_data['metric'] = f'{mdata['metric']}.percent'
+                percent_data['metric'] = f"{mdata['metric']}.percent"
                 percent_data['value'] = percent
                 percent_data['value_num'] = percent
                 percent_data['value_raw'] = percent
@@ -877,11 +877,11 @@ class CollectorAPI(object):
             group_by_cfg = group_by_map[group_by]
             g_sel = group_by_cfg.get('select')
             if g_sel:
-                q_select.append(f', {', '.join(g_sel)}')
+                q_select.append(f", {', '.join(g_sel)}")
 
             g_sel = group_by_cfg.get('select_only')
             if g_sel:
-                q_select = [f'select {', '.join(g_sel)}']
+                q_select = [f"select {', '.join(g_sel)}"]
 
             q_from.extend(group_by_cfg['from'])
             q_where.extend(group_by_cfg['where'])
@@ -917,7 +917,7 @@ class CollectorAPI(object):
         if q_group:
             q_group = [' group by ', ','.join(q_group)]
         if q_order_by:
-            q_order_by = f'order by {','.join(q_order_by)}'
+            q_order_by = f"order by {','.join(q_order_by)}"
 
         q = ' '.join(chain(q_select, q_from, q_where, q_group, [q_order_by]))
 

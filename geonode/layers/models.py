@@ -579,9 +579,9 @@ def _get_alternate_name(instance):
     if instance.remote_service is not None and instance.remote_service.method == INDEXED:
         result = instance.name
     elif instance.remote_service is not None and instance.remote_service.method == CASCADED:
-        result = f"{getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE)}:{instance.name}"
+        result = f"{getattr(settings, 'CASCADE_WORKSPACE', _DEFAULT_CASCADE_WORKSPACE)}:{instance.name}"
     else:  # we are not dealing with a service-related instance
-        result = f"{getattr(settings, "DEFAULT_WORKSPACE", _DEFAULT_WORKSPACE)}:{instance.name}"
+        result = f"{getattr(settings, 'DEFAULT_WORKSPACE', _DEFAULT_WORKSPACE)}:{instance.name}"
     return result
 
 

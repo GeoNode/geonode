@@ -477,7 +477,8 @@ class TestUpload(UploaderBase):
                 self.assertIn(
                     _link_orig.url,
                     test_layer.csw_anytext,
-                    f"The link URL {_link_orig.url} is not present in the 'csw_anytext' attribute of the layer '{test_layer.alternate}'"
+                    f"The link URL {_link_orig.url} is not present in "
+                    "the 'csw_anytext' attribute of the layer '{test_layer.alternate}'"
                 )
             # Check catalogue
             catalogue = get_catalogue()

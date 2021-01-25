@@ -966,7 +966,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # the layer must be not accessible (response is xml)
         request = Request(url)
         basic_auth = base64.b64encode(b'bobby:bob')
-        request.add_header("Authorization", f"Basic {basic_auth.decode("utf-8")}")
+        request.add_header("Authorization", f"Basic {basic_auth.decode('utf-8')}")
         response = urlopen(request)
         _content_type = response.getheader('Content-Type').lower()
         self.assertEqual(
@@ -986,7 +986,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
         request = Request(url)
         basic_auth = base64.b64encode(b'bobby:bob')
-        request.add_header("Authorization", f"Basic {basic_auth.decode("utf-8")}")
+        request.add_header("Authorization", f"Basic {basic_auth.decode('utf-8')}")
         response = urlopen(request)
         _content_type = response.getheader('Content-Type').lower()
         self.assertEqual(

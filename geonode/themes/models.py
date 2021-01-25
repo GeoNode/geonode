@@ -71,8 +71,9 @@ class JumbotronThemeSlide(models.Model):
         help_text=_("Disabling this slide will hide it from the slide show"))
 
     def __str__(self):
-        get_icon = (lambda arg: '[✓]' if arg else '[✗]')
-        return f'{self.slide_name} | <Enabled: {get_icon(self.is_enabled)} -- Hide Text: {get_icon(self.hide_jumbotron_slide_content)}>'
+        enabled_icon = '[✓]' if self.is_enabled else '[✗]'
+        hide_text_icon = '[✓]' if self.hide_jumbotron_slide_content else '[✗]'
+        return f'{self.slide_name} | <Enabled: {enabled_icon} -- Hide Text: {hide_text_icon}>'
 
 
 class GeoNodeThemeCustomization(models.Model):

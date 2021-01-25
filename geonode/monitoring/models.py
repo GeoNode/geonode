@@ -777,7 +777,7 @@ class RequestEvent(models.Model):
                 'event_type': event_type,
                 'service': service,
                 'request_path':
-                    f'{rd['path']}?{rd['queryString']}' if rd.get(
+                    f"{rd['path']}?{rd['queryString']}" if rd.get(
                         'queryString') else rd['path'],
                 'request_method': rd['httpMethod'],
                 'response_status': rd['responseStatus'],
@@ -897,7 +897,7 @@ class MetricLabel(models.Model):
         blank=True)
 
     def __unicode__(self):
-        return f'Metric Label: {self.name.encode('ascii', 'ignore')}'
+        return f"Metric Label: {self.name.encode('ascii', 'ignore')}"
 
 
 class MetricValue(models.Model):
@@ -947,7 +947,7 @@ class MetricValue(models.Model):
             _l = self.label.name
             metric = f'{metric} [{_l}]'
         if self.resource and self.resource.type:
-            metric = f'{metric} for {f'{self.resource.type}={self.resource.name}'}'
+            metric = f"{metric} for {self.resource.type}={self.resource.name}"
         return f'Metric Value: {metric}: [{self.value}] (since {self.valid_from} until {self.valid_to})'
 
     @classmethod

@@ -1395,7 +1395,7 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
             raise
         except Exception as e:
             traceback.print_exc()
-            message = f'{_('Unable to delete layer')}: {layer.alternate}.'
+            message = f"{_('Unable to delete layer')}: {layer.alternate}."
 
             if getattr(e, 'message', None) and 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _(
@@ -1446,7 +1446,7 @@ def layer_granule_remove(
                 coverages['coverages']['coverage'][0]['name'], store, granule_id)
         except Exception as e:
             traceback.print_exc()
-            message = f'{_('Unable to delete layer')}: {layer.alternate}.'
+            message = f"{_('Unable to delete layer')}: {layer.alternate}."
 
             if 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _(

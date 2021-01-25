@@ -332,7 +332,7 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
         response = self.client.get(target_url)
         self.assertRedirects(
             response,
-            f"{settings.SITEURL[:-1]}{reverse("account_login")}?next=http%3A//testserver{target_url}"
+            f"{settings.SITEURL[:-1]}{reverse('account_login')}?next=http%3A//testserver{target_url}"
         )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -353,7 +353,7 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
         response = self.client.get(target_url)
         self.assertRedirects(
             response,
-            f"{settings.SITEURL[:-1]}{reverse("account_login")}?next=http%3A//testserver{target_url}"
+            f"{settings.SITEURL[:-1]}{reverse('account_login')}?next=http%3A//testserver{target_url}"
         )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -374,5 +374,5 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
         response = self.client.get(target_url)
         self.assertRedirects(
             response,
-            f"{settings.SITEURL[:-1]}{reverse("account_login")}?next=http%3A//testserver{target_url}"
+            f"{settings.SITEURL[:-1]}{reverse('account_login')}?next=http%3A//testserver{target_url}"
         )

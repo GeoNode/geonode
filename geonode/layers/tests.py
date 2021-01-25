@@ -1360,7 +1360,7 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
             )
             files['permissions'] = '{}'
             files['charset'] = 'windows-1258'
-            files['layer_title'] = f'test layer_{'windows-1258'}'
+            files['layer_title'] = f"test layer_{files['charset']}"
             resp = self.client.post(layer_upload_url, data=files)
             # Check response status code
             if resp.status_code == 200:

@@ -1043,7 +1043,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
         try:
             req, body = http_client.get(dc_url, user=_user)
             doc = dlxml.fromstring(body.encode())
-            wcs="{http://www.opengis.net/wcs/1.1.1}"
+            wcs = "{http://www.opengis.net/wcs/1.1.1}"
             path = f".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key"
             attribute_map = [[n.text, "raster"] for n in doc.findall(path)]
         except Exception:

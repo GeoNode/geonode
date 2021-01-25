@@ -234,7 +234,7 @@ elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     ]
 
 if settings.NOTIFICATIONS_MODULE in settings.INSTALLED_APPS:
-    notifications_urls = fS'{settings.NOTIFICATIONS_MODULE}.urls'
+    notifications_urls = f'{settings.NOTIFICATIONS_MODULE}.urls'
     urlpatterns += [  # '',
         url(r'^notifications/', include(notifications_urls)),
     ]
