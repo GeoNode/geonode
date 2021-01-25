@@ -26,16 +26,16 @@
                 <th>{% trans "Notification Type" %}</th>
                 {% for header in notice_settings.column_headers %}
                     <th>
-                        {{ header.title }}
+                        {% trans header.title %}
                     </th>
                 {% endfor %}
             </tr>
             {% for row in notice_settings.rows %}
                 <tr class="notice-row">
                     <td>
-                        <strong>{{ row.notice_type.display }}</strong><br/>
+                        <strong>{% trans row.notice_type.display %}</strong><br/>
                         <span class="notice_type_description">
-                            {{ row.notice_type.description }}
+                            {% trans row.notice_type.description %}
                         </span>
                     </td>
                     {% for cell in row.cells %}
