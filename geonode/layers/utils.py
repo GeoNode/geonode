@@ -865,10 +865,7 @@ def upload(incoming, user=None, overwrite=False,
         basename, filename = file_pair
         existing_layers = Layer.objects.filter(name=basename)
 
-        if existing_layers.count() > 0:
-            existed = True
-        else:
-            existed = False
+        existed = existing_layers.count() > 0
 
         if existed and skip:
             save_it = False
