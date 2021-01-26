@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext as _
-from .models import ValuesTime, City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction, ElementSystem, ValuesTime, CostFunctionsProcess, Polygon, Basins, ElementConnections
+from .models import ValuesTime, City, ProcessEfficiencies, Intake, DemandParameters, WaterExtraction, ElementSystem, ValuesTime, CostFunctionsProcess, Polygon, Basins, ElementConnections, userCostFunctions
 from geonode.waterproof_nbs_ca.models import Countries, Region, Currency
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from django.core import serializers
@@ -81,10 +81,10 @@ def create(request):
             # Get the intake point geom
             pointIntakeGeom = GEOSGeometry(str(pointIntakeJson['geometry']))
 
-            if (intakeGeom.equals(delimitAreaGeom)):
+            if (intakeGeom.equals(delimitAreaGeom)):  # Delimit geom equal to intake geom
                 delimitation_type = 'CATCHMENT'
             else:
-                delimitation_type = 'MANUAL'
+                delimitation_type = 'SBN'
 
             demand_parameters = DemandParameters.objects.create(
                 interpolation_type=interpolation['typeInterpolation'],
@@ -143,6 +143,17 @@ def create(request):
                         elementC['pk'] = element_system.pk
                         elementC['xmlId'] = element_system.graphId
                         elementsCreated.append(elementC)
+
+                        if not (element['funcost'] == None):
+                            costFunction = json.loads(element['funcost'])
+                            if (len(costFunction) > 0):
+                                for function in costFunction:
+                                    templateFunction = CostFunctionsProcess.objects.get(id=function['pk'])
+                                    userCostFunctions.objects.create(
+                                        function=function['fields']['function_value'],
+                                        template_function=templateFunction,
+                                        user=request.user
+                                    )
                     # External element
                     else:
                         parameter = json.loads(element['resultdb'])
@@ -162,6 +173,17 @@ def create(request):
                             elementC['pk'] = element_system.pk
                             elementC['xmlId'] = element_system.graphId
                             elementsCreated.append(elementC)
+
+                            if not (element['funcost'] == None):
+                                costFunction = json.loads(element['funcost'])
+                                if (len(costFunction) > 0):
+                                    for function in costFunction:
+                                        templateFunction = CostFunctionsProcess.objects.get(id=function['pk'])
+                                        userCostFunctions.objects.create(
+                                            function=function['fields']['function_value'],
+                                            template_function=templateFunction,
+                                            user=request.user
+                                        )
                         else:
                             element_system = ElementSystem.objects.create(
                                 graphId=element['id'],
@@ -207,6 +229,16 @@ def create(request):
                         elementC['pk'] = element_system.pk
                         elementC['xmlId'] = element_system.graphId
                         elementsCreated.append(elementC)
+                        if not (element['funcost'] == None):
+                            costFunction = json.loads(element['funcost'])
+                            if (len(costFunction) > 0):
+                                for function in costFunction:
+                                    templateFunction = CostFunctionsProcess.objects.get(id=function['pk'])
+                                    userCostFunctions.objects.create(
+                                        function=function['fields']['function_value'],
+                                        template_function=templateFunction,
+                                        user=request.user
+                                    )
             # Once all elements created, save the connections
             for con in connectionsElements:
                 source = next((item for item in elementsCreated if item["xmlId"] == con['source']), None)
