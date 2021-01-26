@@ -921,7 +921,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
         is_admin = False
         is_manager = False
-        is_owner = True if user == obj_to_check.owner else False
+        is_owner = user == obj_to_check.owner
         if user and user.is_authenticated:
             is_admin = user.is_superuser if user else False
             try:

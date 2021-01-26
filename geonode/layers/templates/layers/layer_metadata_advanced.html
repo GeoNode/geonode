@@ -89,7 +89,15 @@
              Unfortunately this needs to appear at the bottom of the form since tkeywords_form is a complete other django form. 
              There might be a better way to solve this. -->
         <div class="col-md-6 form-controls">
-          {{ layer_form|as_bootstrap }}
+          {% for field in layer_form %}
+            {% if field.name != 'use_featureinfo_custom_template' and field.name != 'featureinfo_custom_template' %}
+            <div>
+              <span><label for="{{ field.id }}">{{ field.label }}</label></span>
+              {{ field }}
+            </div>
+            {% endif %}
+          {% endfor %}
+          {# layer_form|as_bootstrap #}
           {% if THESAURI_FILTERS %}
             {{ tkeywords_form }}
           {% endif %}
@@ -120,29 +128,43 @@
 
           <div class="col-md-12 grid-spacer">
             <h5>{% trans "Attributes" %}</h5>
-            {{ attribute_form.management_form }}
-            <table class="table table-striped table-bordered table-condensed">
-              <tr>
-                <th>{% trans "Attribute" %}</th>
-                <th>{% trans "Label" %}</th>
-                <th>{% trans "Description" %}</th>
-                <th>{% trans "Display Order" %}</th>
-                <th>{% trans "Display Type" %}</th>
-                <th>{% trans "Visible" %}</th>
-              </tr>
-              {% for form in attribute_form.forms %}
-              {% if form.attribute %}
-              <tr>
-                <td><div style="display:none">{{form.id}}</div>{{form.attribute}}</td>
-                <td>{{form.attribute_label}}</td>
-                <td>{{form.description}}</td>
-                <td>{{form.display_order}}</td>
-                <td>{{form.featureinfo_type}}</td>
-                <td>{{form.visible}}</td>
-              </tr>
-              {% endif %}
-              {% endfor %}
-            </table>
+            <label>{% trans "Use a custom template?" %}</label>
+            <input type="checkbox" name="resource-use_featureinfo_custom_template" class="has-external-popover"
+                data-content="specifies wether or not use a custom GetFeatureInfo template." data-placement="right"
+                data-container="body" data-html="true" data-toggle="toggle"
+                placeholder="specifies wether or not use a custom GetFeatureInfo template."
+                id="id_resource-use_featureinfo_custom_template"
+                {% if resource.use_featureinfo_custom_template %}checked{% endif %}>
+            <div id="layer-attributes-panel"
+                {% if resource.use_featureinfo_custom_template %}style="visibility: collapse;" {% endif %}>
+                {{ attribute_form.management_form }}
+                <table class="table table-striped table-bordered table-condensed">
+                <tr>
+                    <th>{% trans "Attribute" %}</th>
+                    <th>{% trans "Label" %}</th>
+                    <th>{% trans "Description" %}</th>
+                    <th>{% trans "Display Order" %}</th>
+                    <th>{% trans "Display Type" %}</th>
+                    <th>{% trans "Visible" %}</th>
+                </tr>
+                {% for form in attribute_form.forms %}
+                {% if form.attribute %}
+                <tr>
+                    <td><div style="display:none">{{form.id}}</div>{{form.attribute}}</td>
+                    <td>{{form.attribute_label}}</td>
+                    <td>{{form.description}}</td>
+                    <td>{{form.display_order}}</td>
+                    <td>{{form.featureinfo_type}}</td>
+                    <td>{{form.visible}}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                </table>
+            </div>
+            <div id="layer-attributes-custom_template"
+                  {% if not resource.use_featureinfo_custom_template %}style="visibility: collapse;" {% endif %}>
+                {{layer_form.featureinfo_custom_template}}
+            </div>
 
             <fieldset class="form-controls modal-forms modal hide fade" id="poc_form" >
               <h2>{% trans "Point of Contact" %}</h2>
@@ -166,4 +188,19 @@
       </form>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_script %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document.body).on("change", "#id_resource-use_featureinfo_custom_template", function (event) {
+            if (this.checked) {
+                $('#layer-attributes-panel').css("visibility", "collapse");
+                $('#layer-attributes-custom_template').css("visibility", "visible");
+            } else {
+                $('#layer-attributes-panel').css("visibility", "visible");
+                $('#layer-attributes-custom_template').css("visibility", "collapse");
+            }
+        });
+    </script>
 {% endblock %}
