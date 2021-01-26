@@ -1025,8 +1025,13 @@ class LayersTest(GeoNodeBaseTestSupport):
     def test_surrogate_escape_string(self):
         surrogate_escape_raw = "Zo\udcc3\udcab"
         surrogate_escape_expected = "Zoë"
-        surrogate_escape_result = surrogate_escape_string(surrogate_escape_raw, 'UTF-8') # add more test cases using different charsets?
-        self.assertEqual(surrogate_escape_result, surrogate_escape_expected, f"layers.utils.surrogate_escape_string did not produce expected result. Expected {surrogate_escape_expected}, received {surrogate_escape_result}")
+        surrogate_escape_result = surrogate_escape_string(
+            surrogate_escape_raw, 'UTF-8')  # add more test cases using different charsets?
+        self.assertEqual(
+            surrogate_escape_result,
+            surrogate_escape_expected,
+            "layers.utils.surrogate_escape_string did not produce expected result. "
+            f"Expected {surrogate_escape_expected}, received {surrogate_escape_result}")
 
 
 class UnpublishedObjectTests(GeoNodeBaseTestSupport):
