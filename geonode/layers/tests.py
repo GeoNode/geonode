@@ -768,7 +768,7 @@ class LayersTest(GeoNodeBaseTestSupport):
 
         # test a method other than POST and GET
         response = self.client.put(url)
-        content = response.content
+        content = response.content.decode('utf-8')
         self.assertEqual(response.status_code, 200)
         self.assertFalse("#modal_perms" in content)
 
