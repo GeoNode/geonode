@@ -124,20 +124,6 @@ function onInit(editor) {
         f(editor);
     }
 
-    // Changes the zoom on mouseWheel events
-    /* mxEvent.addMouseWheelListener(function (evt, up) {
-        if (!mxEvent.isConsumed(evt)) {
-            if (up) {
-                editor.execute('zoomIn');
-            }
-            else {
-                editor.execute('zoomOut');
-            }
-
-            mxEvent.consume(evt);
-        }
-    });*/
-
     // Defines a new action to switch between
     // XML and graphical display
     var textNode = document.getElementById('xml');
@@ -145,11 +131,9 @@ function onInit(editor) {
     var parent = editor.graph.getDefaultParent();
     var xmlDocument = mxUtils.createXmlDocument();
     var sourceNode = xmlDocument.createElement('Symbol');
-    var sourceNode1 = xmlDocument.createElement('Symbol');
-
 
     //Create River at the beginning of the diagram
-    var river = editor.graph.insertVertex(parent, null, sourceNode1, 40, 30, 60, 92);
+    var river = editor.graph.insertVertex(parent, null, sourceNode, 40, 30, 60, 92);
     river.setAttribute('name', 'River');
     river.setAttribute('label', 'River (2)');
     river.setAttribute('externalData', 'false');
@@ -175,82 +159,11 @@ function onInit(editor) {
             river.setAttribute('resultdb', result);
         }
     });
-    /*
-        //Create CSINFRA at the beginning of the diagram
-        var vertex = editor.graph.insertVertex(parent, null, sourceNode, 500, 30, 60, 92);
-        vertex.setAttribute('name', 'CSINFRA');
-        vertex.setAttribute('label', 'CS Infra (3)');
-        vertex.setAttribute('externalData', 'false');
-        editor.graph.model.setStyle(vertex, 'csinfra');
-        var temp2 = [];
-        temp2.push(
-            `Q_${vertex.id}`,
-            `CSed_${vertex.id}`,
-            `CN_${vertex.id}`,
-            `CP_${vertex.id}`,
-            `WSed_${vertex.id}`,
-            `WN_${vertex.id}`,
-            `WP_${vertex.id}`,
-            `WSed_ret_${vertex.id}`,
-            `WN_ret_${vertex.id}`,
-            `WP_ret_${vertex.id}`
-        );
 
-
-        $.ajax({
-            url: `/intake/loadProcess/CSINFRA`,
-            success: function(result) {
-                vertex.setAttribute('varcost', JSON.stringify(temp2));
-                vertex.setAttribute('resultdb', result);
-            }
-        });
-
-        $.ajax({
-            url: `/intake/loadFunctionBySymbol/CS`,
-            success: function(result) {
-                vertex.setAttribute('funcost', result);
-            }
-        });
-
-
-
-        var edge = editor.graph.insertEdge(parent, null, '', parent.children[0], parent.children[1]);
-
-        $.ajax({
-            url: `/intake/loadProcess/${connectionsType.EC.style}`,
-            success: function(result) {
-                let idvar = edge.id;
-                let varcost = [
-                    `Q_${idvar} (m³)`,
-                    `CSed_${idvar} (mg/l)`,
-                    `CN_${idvar} (mg/l)`,
-                    `CP_${idvar} (mg/l)`,
-                    `WSed_${idvar} (Ton)`,
-                    `WN_${idvar} (Kg)`,
-                    `WP_${idvar} (Kg)`,
-                    `WSed_ret_${idvar} (Ton)`,
-                    `WN_ret_${idvar} (Kg)`,
-                    `WP_ret_${idvar} (Kg)`
-                ];
-                $.ajax({
-                    url: `/intake/loadFunctionBySymbol/${connectionsType.EC.funcionreference}`,
-                    success: function(result2) {
-                        let external = false;
-                        let value = {
-                            "connectorType": connectionsType.EC.id,
-                            "varcost": JSON.stringify(varcost),
-                            "external": external,
-                            'resultdb': result,
-                            'name': connectionsType.EC.name,
-                            "funcost": result2
-                        };
-                        edge.setValue(JSON.stringify(value));
-                        editor.graph.model.setStyle(edge, connectionsType.EC.style);
-                    }
-                });
-            }
-        });
-    */
+    //esto va para edit :v
+    xmlDoc = mxUtils.parseXml(xmlDatap)
+    var dec = new mxCodec(xmlDoc);
+    dec.decode(xmlDoc.documentElement, editor.graph.getModel());
 
     // River not have a entrance connection
     editor.graph.multiplicities.push(new mxMultiplicity(
@@ -279,7 +192,6 @@ function onInit(editor) {
 
     var funct = function(editor) {
         if (getdata.checked) {
-            //console.log(getdata.checked)
             graphNode.style.display = 'none';
             textNode.style.display = 'inline';
 
@@ -297,9 +209,7 @@ function onInit(editor) {
                 var dec = new mxCodec(doc);
                 dec.decode(doc.documentElement, editor.graph.getModel());
             }
-
             textNode.originalValue = null;
-
             // Makes sure nothing is selected in IE
             if (mxClient.IS_IE) {
                 mxUtils.clearSelection();
@@ -311,18 +221,6 @@ function onInit(editor) {
             editor.graph.container.focus();
         }
     };
-
-    /* var getd = function(editor){
-         graphNode.style.display = 'none';
-             textNode.style.display = 'inline';
-
-             var enc = new mxCodec();
-             var node = enc.encode(editor.graph.getModel());
-
-             textNode.value = mxUtils.getPrettyXml(node);
-             textNode.originalValue = textNode.value;
-             textNode.focus();
-     }*/
 
     editor.addAction('switchView', funct);
 
@@ -495,8 +393,6 @@ function onInit(editor) {
                     }
                 });
             }
-
-
         });
 
         //Load data from figure to html
@@ -504,7 +400,6 @@ function onInit(editor) {
             selectedCell = evt.getProperty('cell');
             // Clear Inputs
             if (selectedCell != undefined) clearDataHtml(selectedCell, evt);
-            //console.log(selectedCell)
             if (selectedCell != undefined) { addData(selectedCell, MQ); } else { clearDataHtml(selectedCell, evt); }
         });
 
@@ -597,7 +492,6 @@ function onInit(editor) {
         //Edit funcion cost 
         $(document).on('click', 'a[name=glyphicon-edit]', function() {
             mathField.clearSelection();
-            console.log(mathField.latex())
             $('#CalculatorModal').modal('show');
             CostSelected = $(this).attr('idvalue');
             setVarCost();
@@ -786,11 +680,6 @@ function onInit(editor) {
             mathField.focus();
         }
 
-
-
-
     });
-
-
 
 }

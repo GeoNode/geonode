@@ -86,9 +86,9 @@ function updateStyleLine(graph, cell, type) {
                         "connectorType": type.id,
                         "varcost": varcost,
                         "external": external,
-                        'resultdb': result,
+                        'resultdb': JSON.parse(result),
                         'name': type.name,
-                        "funcost": result2
+                        "funcost": JSON.parse(result2)
                     };
 
                     value = JSON.stringify(value);
@@ -149,13 +149,13 @@ function addData(element, MQ) {
     //add data in HTML for connectors
     if (typeof(element.value) == "string" && element.value.length > 0) {
         let obj = JSON.parse(element.value);
-        let dbfields = JSON.parse(obj.resultdb);
+        let dbfields = obj.resultdb;
         label = connectionsType[obj.connectorType].name;
         $('#titleDiagram').text(connectionsType[obj.connectorType].name);
         $('#titleCostFunSmall').text(`ID: ${element.id} - ${connectionsType[obj.connectorType].name}`);
         $('#idDiagram').val(element.id);
         addData2HTML(dbfields)
-        funcostdb = JSON.parse(obj.funcost);
+        funcostdb = obj.funcost;
         for (let index = 0; index < funcostdb.length; index++) {
             funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index, MQ);
         }
