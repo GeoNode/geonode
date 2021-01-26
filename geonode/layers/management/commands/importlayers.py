@@ -175,10 +175,7 @@ class Command(BaseCommand):
         else:
             console = None
 
-        if overwrite:
-            skip = False
-        else:
-            skip = True
+        skip = not overwrite
 
         keywords = options.get('keywords').split(',')
         if len(keywords) == 1 and keywords[0] == '':
