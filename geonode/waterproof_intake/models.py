@@ -343,9 +343,15 @@ class Polygon(models.Model):
 
     geom = models.PolygonField(verbose_name='geom', srid=4326, null=True, blank=True)
 
-    geomIntake = models.PolygonField(verbose_name='geomIntake', srid=4326, null=True, blank=True)
+    geomIntake = models.CharField(
+        max_length=2500,
+        verbose_name=_('Geom intake'),
+    )
 
-    geomPoint = models.PointField(verbose_name='geomPoint', srid=4326, null=True, blank=True)
+    geomPoint = models.CharField(
+        max_length=2500,
+        verbose_name=_('Geom point'),
+    )
 
     delimitation_date = models.DateField(auto_now=True)
 

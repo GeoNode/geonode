@@ -469,6 +469,7 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
 {% block extra_script %}
 <script src="https://unpkg.com/smartwizard@5/dist/js/jquery.smartWizard.min.js" type="text/javascript"></script>
@@ -499,9 +500,9 @@
     var intakeExternalInputs = JSON.parse('{{externalInputs|safe}}');
     var intakeObject = {};
     intakeObject.id = '{{intake.id}}'
-    intakeObject.polygon = '{{intake.polygon_set.first.geom}}';
-    intakeObject.point='{{intake.polygon_set.first.geomPoint}}';
-    intakeObject.delimitArea='{{intake.polygon_set.first.geomIntake}}';
+    intakeObject.polygon = '{{intake.polygon_set.first.geomIntake|safe}}';
+    intakeObject.point=JSON.parse('{{intake.polygon_set.first.geomPoint|safe}}');
+    intakeObject.delimitArea='{{intake.polygon_set.first.geom}}';
     intakePolygons.push(intakeObject);
 </script>
 
