@@ -42,7 +42,8 @@ from django.shortcuts import reverse
 
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.models import CuratedThumbnail
-from geonode.base.templatetags.base_tags import get_visibile_resources, show_notification
+from geonode.base.templatetags.base_tags import get_visibile_resources
+from geonode.base.templatetags.user_messages import show_notification
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 
