@@ -27,7 +27,7 @@
 {% block body_outer %}
 <!--header-->
 <div class="page-header">
-    <h1>Create Water Intake</h1>
+    <h1>Edit Water Intake</h1>
 </div>
 <!--Begin Form-->
 <form id="form" method="POST" action="">
@@ -363,6 +363,7 @@
 
         <!--Inputs hidden for save data-->
         <input type="hidden" id="xmlGraph" name="xmlGraph" value="{{intake.xml_graph}}">
+        <input type="hidden" id="graphConnections" name="graphConnections">
         <input type="hidden" id="isFile" name="isFile">
         <input type="hidden" id="typeDelimit" name="typeDelimit">
         <input type="hidden" id="waterExtraction" name="waterExtraction" value="">
@@ -468,6 +469,7 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
 {% block extra_script %}
 <script src="https://unpkg.com/smartwizard@5/dist/js/jquery.smartWizard.min.js" type="text/javascript"></script>
@@ -498,8 +500,9 @@
     var intakeExternalInputs = JSON.parse('{{externalInputs|safe}}');
     var intakeObject = {};
     intakeObject.id = '{{intake.id}}'
-    intakeObject.polygon = '{{intake.polygon_set.first.geom}}';
-    intakeObject.point='{{intake.polygon_set.first.geomPoint}}';
+    intakeObject.polygon = '{{intake.polygon_set.first.geomIntake|safe}}';
+    intakeObject.point=JSON.parse('{{intake.polygon_set.first.geomPoint|safe}}');
+    intakeObject.delimitArea='{{intake.polygon_set.first.geom}}';
     intakePolygons.push(intakeObject);
 </script>
 

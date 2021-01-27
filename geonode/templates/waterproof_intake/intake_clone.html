@@ -1,208 +1,522 @@
-{% extends "base.html" %} {% load i18n %} {% load l10n %}{% load bootstrap_tags %} {% block body_outer %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/bootstrap-duallistbox.min.css">
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/waterproof_nbs_ca.css">
+{% extends "base.html" %}
+{% load i18n %}
+{% load static from staticfiles %}
+{% load bootstrap_tags %}
+{% block extra_head %}
+<link href="https://unpkg.com/smartwizard@5/dist/css/smart_wizard_all.min.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin="" />
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
-
-<div class="row">
-    <div class="col-md-4">
-        <h4 class="text-center" id="countryLabel">{{country.name}}</h4>
-        <p><b>Region:</b> <span id="regionLabel">{{region.name}}</span> </p>
-        <p><b>Currency:</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
-    </div>
-    <div class="col-md-8">
-        <div id="mapid" style="width: 700px; height: 200px;"></div>
-
-    </div>
-</div>
-<div class="page-header">
-    <h1>Clone NBS</h1>
-</div>
-<form data-toggle="validator" role="form" action="#">
-    <h4 class="text-primary">General Settings</h4>
-    <div class="form-group">
-        <label>Name <span class="text-danger-wp">(*)</span> </label>
-        <input type="text" value="{{ nbs.name }}" class="form-control" id="nameNBS" name="nameNBS"
-            data-error="This field is required" placeholder="Enter title" required>
-        <div class="help-block with-errors"></div>
-    </div>
-    <div class="form-group">
-        <label>Description <span class="text-danger-wp">(*)</span> </label>
-        <textarea id="descNBS" class="form-control" placeholder="Enter description" data-error="This field is required"
-            rows="4" required>{{ nbs.description }}</textarea>
-        <div class="help-block with-errors"></div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-md-6">
-                <label>Country <span class="text-danger-wp">(*)</span> </label>
-                <select id="countryNBS" class="form-control" data-error="This field is required" required>
-                    {% for country in countries %}
-                    {% if nbs.country.pk == country.pk %}
-                    <option value="{{country.pk}}" data-value="{{country.code}}" selected>{{country.name}}</option>
-                    {% else %}
-                    <option value="{{country.pk}}" data-value="{{country.code}}">{{country.name}}</option>
-                    {% endif %}
-                    {% endfor %}
-                </select>
-                <div class="help-block with-errors"></div>
-            </div>
-            <div class="col-md-6">
-                <label>Currency type cost calculation <span class="text-danger-wp">(*)</span> </label>
-                <select id="currencyCost" class="form-control" data-error="This field is required" required>
-                    {% for currency in currencies %}
-                    {% if nbs.currency.pk == currency.pk%}
-                    <option value="{{currency.pk}}" selected>{{currency.name}}</option>
-                    {% else %}
-                    <option value="{{currency.pk}}">{{currency.name}}</option>
-                    {% endif %}
-                    {% endfor %}
-                </select>
-                <div class="help-block with-errors"></div>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-md-6">
-                <label>Time required to generate maximun benefit (yr) <span class="text-danger-wp">(*)</span> </label>
-                <input id="maxBenefitTime" value="{{nbs.total_profits_sbn_consec_time}}" type="text"
-                    class="form-control" data-error="This field is required" required>
-                <div class="help-block with-errors"></div>
-            </div>
-            <div class="col-md-6">
-                <label>Percentage of benefit associated with interventions at time t=0 <span
-                        class="text-danger-wp">(*)</span> </label>
-                <input id="benefitTimePorc" value="{{nbs.profit_pct_time_inter_assoc}}" type="text" class="form-control"
-                    data-error="This field is required" required>
-                <div class="help-block with-errors"></div>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-md-6">
-                <label>Consecution Time Total Benefits <span class="text-danger-wp">(*)</span> </label>
-                <input id="totalConsecTime" value="{{ nbs.total_profits_sbn_consec_time }}" type="text"
-                    class="form-control" data-error="This field is required" required>
-                <div class="help-block with-errors"></div>
-            </div>
-            <div class="col-md-6">
-                <label>Maintenance Perodicity <span class="text-danger-wp">(*)</span> </label>
-                <input id="maintenancePeriod" value="{{ nbs.periodicity_maitenance }}" type="text" class="form-control"
-                    data-error="This field is required" required>
-                <div class="help-block with-errors"></div>
-            </div>
-        </div>
-    </div>
-    <h4 class="text-primary">Unit Costs</h4>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-md-4">
-                <label>Unit Implementation Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
-                <input id="implementCost" value="{{ nbs.unit_implementation_cost|floatformat:2 }}" type="text"
-                    class="form-control" data-error="This field is required" required>
-                <div class="help-block with-errors"></div>
-            </div>
-            <div class="col-md-4">
-                <label>Unit Maintenace Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
-                <input id="maintenanceCost" value="{{ nbs.unit_maintenance_cost|floatformat:2 }}" type="text"
-                    class="form-control" data-error="This field is required" required>
-                <div class="help-block with-errors"></div>
-            </div>
-            <div class="col-md-4">
-                <label>Unit Oportunity Cost (US$/ha) <span class="text-danger-wp">(*)</span> </label>
-                <input id="oportunityCost" value="{{ nbs.unit_oportunity_cost|floatformat:2 }}" type="text"
-                    class="form-control" data-error="This field is required" required>
-                <div class="help-block with-errors"></div>
-            </div>
-        </div>
-    </div>
-    <h4 class="text-primary">RIOS Transition</h4>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-md-12">
-                <select id="riosTransition" class="form-control" data-error="This field is required" required>
-                    {% for transition in transitions %}
-                    {% if transition.pk == selectedTransition.pk %}
-                    <option value="{{transition.pk}}" selected>{{transition.name}}</option>
-                    {% else %}
-                    <option value="{{transition.pk}}">{{transition.name}}</option>
-                    {% endif %}
-
-                    {% endfor %}
-                </select>
-                <div class="help-block with-errors"></div>
-            </div>
-        </div>
-    </div>
-    <h4 class="text-primary">LAND USE<span style="margin-left: 40%;">LAND COVER CHANGE DEFENITION</span></h4>
-    <div class="form-group">
-        <div class="row">
-            {% for tran in transitions %}
-            <div class="col-md-12" id="selectlanduse{{tran.pk}}" name="selectlanduse" data-value="{{tran.pk}}"
-                style="display: none;">
-                {% for riosa in riosActivity %} {% if tran.pk == riosa.transition_id %}
-                <h5>{{ riosa.name }}</h5>
-                {% for riost in riosTransformation %} {% if riosa.pk == riost.activity_id %}
-                <div class="checkbox" style="margin-left: 50%;">
-                    {% if riost.pk in selectedTransf %}
-                            <label><input data-value="itemRT" name="{{riosa.name}}_{{itemRT}}" type="radio"
-                                id="itemRT{{riost.pk}}" value="{{ riost.pk }}" checked> {{riost.name}}</label>
-                            {% else %}
-                            <label><input data-value="itemRT" name="{{riosa.name}}_{{itemRT}}" type="radio"
-                                id="itemRT{{riost.pk}}" value="{{ riost.pk }}"> {{riost.name}}</label>
-                            {% endif %}
-                </div>
-
-                {% endif %} {% endfor %} {% endif %} {% endfor %}
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    <div class="form-group">
-        <!-- Rounded switch -->
-        <label>Load new restricted area</label>
-        <label class="switch">
-            <input type="checkbox" id="loadArea">
-            <span class="slider round"></span>
-        </label>
-        <div class="row" style="display:none" id="areas">
-            <div class="col-md-4">
-                <label>Restricted areas <span class="text-danger-wp">(*)</span></label>
-                <input id="restrictedArea" type="file" >
-                <div class="help-block with-errors"></div>
-            </div>
-        </div>
-    </div>
-    <br>
-    <input type="hidden" value="{{nbs.pk}}" id="sbnId">
-    <button type="button" id="submit" class="btn btn-primary ">Submit</button>
-</form>
+<link rel="stylesheet" href="{% static "geonode/css/leaflet/Control.Coordinates.css" %}"/>
+<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Loader.css" %}" />
+<link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/mathquill/mathquill.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/css/intake.css" />
 <script>
-    var token = '{{ csrf_token }}';
-    var countryNbs = '{{ sbn.country.pk }}';
-    var currencyNbs = '{{ sbn.currency.pk }}';
-    var countriesLayerUrl = '{{ STATIC_URL }}waterproof_nbs_ca/data/countries.geojson';
-    var userCountryId='{{userCountry.id}}';
-    var userCountryCode='{{userCountry.code}}';
-    var userCountryName='{{userCountry.name}}';
-    var countryId = '{{country.id}}';
+    MathJax = {
+        loader: {
+            load: ['input/asciimath']
+        },
+        asciimath: {
+            delimiters: [
+                ["'math'", "'math'"]
+            ]
+        }
+    };
 </script>
-{% endblock body_outer %} {% block extra_script %}
+{% endblock %}
+{% block body_outer %}
+<!--header-->
+<div class="page-header">
+    <h1>Clone Water Intake</h1>
+</div>
+<!--Begin Form-->
+<form id="form" method="POST" action="">
+    {% csrf_token %}
+    <!--Start smartwizard-->
+    <div id="smartwizard">
+        <!--panel of navigation-->
+        <ul class="nav">
+            <li>
+                <a class="nav-link" href="#step-1">
+                    Define
+                </a>
+            </li>
+            <li>
+                <a class="nav-link" href="#step-2">
+                    Configure Parameters
+                </a>
+            </li>
+            <li>
+                <a class="nav-link" href="#step-3">
+                    Water Extraction
+                </a>
+            </li>
+            <li>
+                <a class="nav-link" href="#step-4">
+                    External
+                </a>
+            </li>
+            <li>
+                <a class="nav-link" href="#step-5">
+                    Sub-area
+                </a>
+            </li>
+        </ul>
+        <!--Steps-->
+        <div class="tab-content" id="autoAdjustHeightF">
+            <!--Step 1-->
+            <div id="step-1" class="tab-pane" role="tabpanel">
+
+                <!--Input Name -->
+                <div id="water_intake">
+                    <div id="div_id_name" class="form-group  ">
+                        <label for="id_name" class="control-label required-field ">
+                            Nombre
+                        </label>
+                        <div class="">
+                            <input type="text" name="name" maxlength="100" class=" form-control" id="id_name"
+                                value="{{intake.name}}">
+                        </div>
+                    </div>
+                </div>
+                <!--Input Desc -->
+                <div id="div_id_description" class="form-group  ">
+                    <label for="id_description" class="control-label required-field ">
+                        Descripción
+                    </label>
+                    <div class="">
+                        <input type="text" name="description" maxlength="1024" class=" form-control" id="id_description"
+                            value="{{intake.description}}">
+                    </div>
+                </div>
+                <!--Input Source Name -->
+                <div id="id_water_source_name" class="form-group  ">
+                    <label for="id_description" class="control-label required-field ">
+                        Nombre de la fuente
+                    </label>
+                    <div class="">
+                        <input type="text" name="water_source_name" maxlength="100" id="id_water_source_name"
+                            class=" form-control" value="{{intake.water_source_name}}">
+                    </div>
+                </div>
+                <!-- Map -->
+                <div id="map">
+                    <div id="analysisOptions">
+                        <button type="button" id="validateBtn">Draw Basin</button>
+                    </div>
+                </div>
+            </div>
+            <!--Step 2-->
+            <div id="step-2" class="tab-pane" role="tabpanel">
+                <!--Toolbar mxgraph-->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-info">
+                            <h4 class="text-center" style="color: #5bc0de;">Select the elements that make up your
+                                capture system and click on the drawing area to add them.</h4>
+                            <div class="panel-body text-center" id="toolbar"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <!--Graph-->
+                    <div class="col-md-8">
+                        <span style="float:right;padding-right:36px;">
+                            <input id="getdata" type="checkbox" />Source
+                        </span>
+                        <textarea id="xml" style="height:600px;width:100%;display:none;border-style:none;"></textarea>
+                        <div class="panel panel-info">
+                            <div class="panel-body" id="graph" tabindex="-1"
+                                style="height:700px;width:100%;overflow:hidden;cursor:default; outline:none;"></div>
+                        </div>
+                    </div>
+                    <!--Panel Information Right-->
+                    <div class="col-md-4">
+                        <div class="panel panel-info">
+                            <span class="glyphicon glyphicon-exclamation-sign text-center" id="helpgraph"
+                                style="padding-left:6rem; font-size:22px;" aria-hidden="true">
+                                <label
+                                    style="font-family: 'Montserrat', sans-serif;font-size:16px; vertical-align: text-bottom;">How
+                                    to use the graph</label>
+                            </span>
+                            <div class="panel-body">
+                                <!--Figure Name-->
+                                <div class="alert alert-info" role="alert">
+                                    <h1 class="text-center" id="titleDiagram"></h1>
+                                </div>
+                                <!--ID Item-->
+                                <div class="form-group">
+                                    <label>ID:</label>
+                                    <input type="number" id="idDiagram" min="" max="" class="form-control" disabled>
+                                </div>
+                                <!--Water transport-->
+                                <div class="form-group">
+                                    <label>% transported water:</label>
+                                    <input type="number" id="aguaDiagram" min="" max="" class="form-control"
+                                        oninput="validateinput(this)">
+                                </div>
+                                <!--Sediments-->
+                                <div class="form-group">
+                                    <label>% Sediments retained:</label>
+                                    <input type="number" id="sedimentosDiagram" min="" max="" class="form-control"
+                                        oninput="validateinput(this)">
+                                </div>
+                                <!--Nitrogen-->
+                                <div class="form-group">
+                                    <label>% Nitrogen retained:</label>
+                                    <input type="number" id="nitrogenoDiagram" class="form-control"
+                                        oninput="validateinput(this)">
+                                </div>
+                                <!--Phosphorus-->
+                                <div class="form-group">
+                                    <label>% Phosphorus retained:</label>
+                                    <input type="number" id="fosforoDiagram" class="form-control"
+                                        oninput="validateinput(this)">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-block" id="saveGraph">Validate Graph</button>
+                    </div>
+                    <div class="col-md-12">
+                        <h3>Cost functions <small id="titleCostFunSmall"></small>
+                            <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal"
+                                data-target="#exampleModal" id="ModalAddCostBtn">Add Cost</button>
+                        </h3>
+                        <div class="panel panel-info">
+                            <div class="panel-body">
+                                <div id="funcostgenerate"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Step 3-->
+            <div id="step-3" class="tab-pane" role="tabpanel">
+                <!--Header-->
+                <div class="page-header">
+                    <h3>Water Extraction</h3>
+                    <p>Please enter the annual water extraction (l/s) associated with the Extraction Connection element
+                        x defined in the Water Intake system diagram</p>
+                </div>
+                <!--navigation-->
+                <ul class="nav nav-tabs">
+                    <li data-toggle="tab" data-target="#automatic" class="active"><a href="#">Interpolation Wizard</a>
+                    </li>
+                    <li data-toggle="tab" data-target="#manual"><a href="#">Manual Edit</a></li>
+                </ul>
+                <!--contents tabs manual and automatic-->
+                <div class="tab-content">
+                    <!--tab automatic-->
+                    <div class="tab-pane fade in active" id="automatic">
+                        <br>
+                        <div class="form-group">
+                            <div class="row">
+                                <!--Data analysis Insert-->
+                                <div class="col-md-7">
+                                    <h5 class="text-primary">Data Analysis</h5>
+                                    <p>Please selected the method you wish to use to fill in the table associated with
+                                        annual water extraction from the source.</p>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>Interpolation Method <span class="text-danger-wp">(*)</span>
+                                                </label>
+                                                <select class="form-control" id="typeProcessInterpolation">
+                                                    <option value="1">Linear interpolation</option>
+                                                    <option value="2">Potential interpolation</option>
+                                                    <option Value="3">Exponential interpolation</option>
+                                                    <option Value="4">Logistics interpolation</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label>Number of years for time series <span
+                                                        class="text-danger-wp">(*)</span> </label>
+                                                <input type="text" value="2" class="form-control"
+                                                    id="numberYearsInterpolationValue">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h5 class="text-primary">Extraction</h5>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>Initial year<span class="text-danger-wp">(*)</span> </label>
+                                                <input type="text" value="100" class="form-control"
+                                                    id="initialDataExtractionInterpolationValue">
+                                            </div>
+                                            <div class="col-md-6" id="finalColumnExtraction">
+                                                <label>Final year<span class="text-danger-wp">(*)</span> </label>
+                                                <input type="text" value="1000" class="form-control"
+                                                    id="finalDataExtractionInterpolationValue">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="intakeWECB">Generate</button>
+                                </div>
+                                <!--Data analysis Results-->
+                                <div class="col-md-5">
+                                    <h5 class="text-primary">Results</h5>
+                                    <div style="max-height: 400px; overflow-y: auto;">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" scope="col">Year</th>
+                                                    <th class="text-center" scope="col">Extraction Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="intakeECTAG">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--tab manual-->
+                    <div class="tab-pane fade" id="manual">
+                        <br>
+                        <div class="form-group">
+                            <div class="row">
+                                <!--Input number of years-->
+                                <div class="col-md-6">
+                                    <h5 class="text-primary">Number of years for time series</h5>
+                                    <p>You can edit the table manually by activating this option.</p>
+                                    <div class="form-group">
+                                        <label>Number of years <span class="text-danger-wp">(*)</span> </label>
+                                        <input type="text" class="form-control" id="intakeNIYMI">
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="intakeNIBYMI">Generate</button>
+                                </div>
+                                <!--Results-->
+                                <div class="col-md-6">
+                                    <h5 class="text-primary">Results</h5>
+                                    <div class="panel panel-primary">
+                                        <div class="panel-body">
+                                            <div class="form-horizontal" id="intakeWEMI"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Step 4-->
+            <div id="step-4" class="tab-pane" role="tabpanel">
+                <!--Header-->
+                <div class="page-header">
+                    <h3>External Inputs</h3>
+                    <p>You define 2 external inputs. For Each of these external inputs you have to define Annual Water
+                        Volume (m3), Annual Sediment Load (Ton), Annual Nitrogen Load(kg), Annual Phosphorus Load (kg).
+                    </p>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="text-primary">Asignation</h4>
+                        <div class="form-group">
+                            <label>Type element for asignation</label>
+                            <select class="form-control" id="externalSelect"></select>
+                        </div>
+                        <div id="IntakeTDLE"></div>
+                        <button class="btn btn-primary" type="button" id="saveExternalData">Save Data</button>
+                    </div>
+
+                </div>
+            </div>
+            <!--Step 5-->
+            <div id="step-5" class="tab-pane" role="tabpanel">
+                <div class="row">
+                    <!--Map-->
+                    <div class="col-md-8">
+                        <div class="panel panel-danger">
+                            <div id="mapid" style="width: 100%; height: 400px;"></div>
+                        </div>
+                    </div>
+                    <!--Panel Information Right-->
+                    <div class="col-md-4">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <div class="alert alert-info" role="alert">
+                                    <h1 class="text-center">Tools</h1>
+                                </div>
+                                <div class="form-group">
+                                    <label>Load intake delimited area<span class="text-danger-wp"></span></label>
+                                    <input id="intakeArea" type="file">
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary" id="btnDelimitArea"> Delimit
+                                        subarea</button>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary" id="btnValidateArea"> Validate
+                                        area</button>
+                                </div>
+                                <div class="form-group">
+                                    <input type="submit" id="submit" class="btn btn-primary" value="Submit"></input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Inputs hidden for save data-->
+        <input type="hidden" id="xmlGraph" name="xmlGraph" value="{{intake.xml_graph}}">
+        <input type="hidden" id="graphConnections" name="graphConnections">
+        <input type="hidden" id="isFile" name="isFile">
+        <input type="hidden" id="typeDelimit" name="typeDelimit">
+        <input type="hidden" id="waterExtraction" name="waterExtraction" value="">
+        <input type="hidden" id="delimitArea" name="delimitArea" value="">
+        <input type="hidden" id="pointIntake" name="pointIntake" value="">
+        <input type="hidden" id="intakeAreaPolygon" name="intakeAreaPolygon" value="">
+        <input type="hidden" id="graphElements" name="graphElements" value="">
+        <input type="hidden" id="basinId" name="basinId" value="">
+</form>
+<!--Modal Calculator-->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Cost</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="panel-group" id="VarCostListGroup"></div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="form-group">
+                            <label>Cost function name</label>
+                            <input type="text" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Cost function description</label>
+                            <textarea rows="3" class="form-control"></textarea>
+                        </div>
+                        <h5 class="text-primary">Syntax keyboard</h5>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="=">'math' =
+                                'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="+">'math' +
+                                'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">'math' -
+                                'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">'math' *
+                                'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">'math' a/b
+                                'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">'math' a^b
+                                'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="\sqrt">'math'
+                                sqrt(a) 'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="min">'math' min
+                                'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="max">'math' max
+                                'math'</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5 class="text-primary">Math expression</h5>
+                        <span id="math-field" class="form-control" style="height: auto;"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>LaTeX of what you typed: <span id="latex"></span></p>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="saveAndValideCost">Valide and add cost</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Modal Help-->
+<div class="modal fade" id="HelpModal" tabindex="-1" aria-labelledby="HelpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h3 class="modal-title text-center" id="HelpModalLabel">Help</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <ol>
+                            <li value="1">aqui va la ayuda</li>
+                            <li>con el uso de la grafica </li>
+                            <li> y sha </li>
+                        </ol>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+<script src="https://unpkg.com/smartwizard@5/dist/js/jquery.smartWizard.min.js" type="text/javascript"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+<script src="{{ STATIC_URL }}geonode/js/leaflet/Leaflet.Editable.js"></script>
+<script src="{{ STATIC_URL }}geonode/js/leaflet/Leaflet.Coordinates.js"></script>
+<script src="{{ STATIC_URL }}geonode/js/leaflet/Control.Loader.js"></script>
+<script src="{{ STATIC_URL }}geonode/js/waterproof/waterIntake.js"></script>
+
 <!--ZIP reader library-->
 <script src="{{ STATIC_URL }}geonode/js/jszip/jszip.min.js"></script>
 <!--Shapefile reader library -->
 <script src="{{ STATIC_URL }}geonode/js/shp/shp.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"
+<script type="text/javascript">
+    var intakePolygons=[];
+    var mxBasePath = '{{ STATIC_URL }}geonode/js/mxgraph/src';
+    var mxImageBasePath = '{{ STATIC_URL }}geonode/js/mxgraph/examples/images';
+    var editorUrl = '{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/config/diagrameditor.xml';
+    var serverApi = '{{serverApi}}';
+    var intakeInterpolationParams = {};
+    intakeInterpolationParams.type = '{{ intake.demand_parameters.interpolation_type }}';
+    intakeInterpolationParams.yearsNum = '{{intake.demand_parameters.years_number}}';
+    intakeInterpolationParams.initialExtract = '{{intake.demand_parameters.initial_extraction}}';
+    intakeInterpolationParams.endingExtract = '{{intake.demand_parameters.ending_extraction}}';
+    var xmlGraph = $('#xmlGraph').val();
+    var intakeExternalInputs = JSON.parse('{{externalInputs|safe}}');
+    var intakeObject = {};
+    intakeObject.id = '{{intake.id}}'
+    intakeObject.polygon = '{{intake.polygon_set.first.geomIntake|safe}}';
+    intakeObject.point=JSON.parse('{{intake.polygon_set.first.geomPoint|safe}}');
+    intakeObject.delimitArea='{{intake.polygon_set.first.geom}}';
+    intakePolygons.push(intakeObject);
+</script>
+
+<script src="{{ STATIC_URL }}geonode/js/leaflet/leaflet-omnivore.min.js"></script>
+<script src="{{ STATIC_URL }}waterproof_intake/js/intake_edit.js"></script>
+<script src="{{ STATIC_URL }}waterproof_intake/js/graph.js"></script>
+<script src="{{ STATIC_URL }}waterproof_intake/js/graphValidations.js"></script>
+<script src="{{ STATIC_URL }}geonode/js/mxgraph/mxClient.js"></script>
+<script src="{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/js/app.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script src="{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/js/app.js"></script>
+<script src="{{ STATIC_URL }}waterproof_intake/mathquill/mathquill.min.js"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"
     integrity="sha512-dTu0vJs5ndrd3kPwnYixvOCsvef5SGYW/zSSK4bcjRBcZHzqThq7pt7PmCv55yb8iBvni0TSeIDV8RYKjZL36A=="
-    crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-    crossorigin=""></script>
-    <script src="{{ STATIC_URL }}geonode/js/leaflet/leaflet.ajax.min.js"></script>
-<script src="{{ STATIC_URL }}waterproof_nbs_ca/js/waterproof_nbs_ca_clone.js"></script>
+    crossorigin="anonymous"></script>-->
 {% endblock %}

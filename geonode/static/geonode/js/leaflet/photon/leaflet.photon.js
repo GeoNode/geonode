@@ -219,6 +219,10 @@ L.Control.Photon = L.Control.extend({
     _onSelected: function (feature) {
         this.map.flyTo([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], 8);
         waterproof.selectedCity = feature;
+        if (this.options.selectedResultHandler) {
+            this.options.selectedResultHandler(feature);
+        }
+        
     },
 
     onSelected: function (choice) {

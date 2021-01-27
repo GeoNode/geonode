@@ -7,7 +7,7 @@
   
 </div>
 <div class="page-header">
-    <h1>{% trans "Permission denied" %}</h1>
+    <h1>{% trans "Delete intake" %}</h1>
     
 </div>
 <div class="table-responsive">
@@ -16,7 +16,7 @@
 
 {% block body %}{% endblock body %} {% block sidebar %}{% endblock sidebar %} {% endblock body_outer %} {% block extra_script %}
 <script>
-    var sbnId='{{idx}}';
+    var intakeId='{{idx}}';
      Swal.fire({
   title: 'Are you sure?',
   text: "You won't be able to revert this!",
@@ -29,7 +29,7 @@
   if (result.isConfirmed) {
     $.ajax({
         type: 'POST',
-        url: '/waterproof_nbs_ca/delete/' + sbnId,
+        url: '/intake/delete/' + intakeId,
         cache: false,
         processData: false,
         contentType: false,
@@ -39,7 +39,7 @@
                 'Your file has been deleted.',
                 'success'
                 )
-            setTimeout(function () { location.href = "/waterproof_nbs_ca/"; }, 1000);
+            setTimeout(function () { location.href = "/intake/"; }, 1000);
         },
         error: function (xhr, errmsg, err) {
             console.log(xhr.status + ":" + xhr.responseText)
