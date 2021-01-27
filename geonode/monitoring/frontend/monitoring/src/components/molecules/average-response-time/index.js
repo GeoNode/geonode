@@ -40,7 +40,7 @@ class AverageResponseTime extends React.Component {
     if (time === undefined) {
       time = 'N/A';
     } else if (typeof time === 'number') {
-      if (time === 0) {
+      if (time < 0) {
         time = <CircularProgress size={this.context.muiTheme.spinner.size} />;
       } else {
         time += ' ms';
