@@ -40,7 +40,7 @@ class TotalRequests extends React.Component {
     if (requests === undefined) {
       requests = 'N/A';
     } else if (typeof requests === 'number') {
-      if (requests === 0) {
+      if (requests < 0) {
         requests = <CircularProgress size={this.context.muiTheme.spinner.size} />;
       }
     }
