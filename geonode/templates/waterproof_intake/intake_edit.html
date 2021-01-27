@@ -469,6 +469,7 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
 {% block extra_script %}
 <script src="https://unpkg.com/smartwizard@5/dist/js/jquery.smartWizard.min.js" type="text/javascript"></script>
@@ -499,15 +500,15 @@
     var intakeExternalInputs = JSON.parse('{{externalInputs|safe}}');
     var intakeObject = {};
     intakeObject.id = '{{intake.id}}'
-    intakeObject.polygon = '{{intake.polygon_set.first.geom}}';
-    intakeObject.point='{{intake.polygon_set.first.geomPoint}}';
-    intakeObject.delimitArea='{{intake.polygon_set.first.geomIntake}}';
+    intakeObject.polygon = '{{intake.polygon_set.first.geomIntake|safe}}';
+    intakeObject.point=JSON.parse('{{intake.polygon_set.first.geomPoint|safe}}');
+    intakeObject.delimitArea='{{intake.polygon_set.first.geom}}';
     intakePolygons.push(intakeObject);
 </script>
 
 <script src="{{ STATIC_URL }}geonode/js/leaflet/leaflet-omnivore.min.js"></script>
 <script src="{{ STATIC_URL }}waterproof_intake/js/intake_edit.js"></script>
-<script src="{{ STATIC_URL }}waterproof_intake/js/graph.js"></script>
+<script src="{{ STATIC_URL }}waterproof_intake/js/graph_edit.js"></script>
 <script src="{{ STATIC_URL }}waterproof_intake/js/graphValidations.js"></script>
 <script src="{{ STATIC_URL }}geonode/js/mxgraph/mxClient.js"></script>
 <script src="{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/js/app.js"></script>

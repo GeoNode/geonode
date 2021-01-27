@@ -279,49 +279,33 @@ $(document).ready(function () {
     c.addTo(map);
     L.control.layers(baseLayers, overlays, { position: 'topleft' }).addTo(map);
     mapDelimit.addLayer(osmid);
-    catchmentPoly = L.geoJSON().addTo(map);
-    catchmentPolyDelimit = L.geoJSON().addTo(mapDelimit);
     intakePolygons.forEach(feature => {
         let poly = feature.polygon;
         let point = feature.point;
-        let delimitPolygon = feature.polygon;
-        if (poly.indexOf("SRID") >= 0) {
-            poly = poly.split(";")[1];
-        }
+        let delimitPolygon = feature.delimitArea;
         if (delimitPolygon.indexOf("SRID") >= 0) {
             delimitPolygon = delimitPolygon.split(";")[1];
         }
-        if (point.indexOf("SRID") >= 0) {
-            point = point.split(";")[1];
-        }
-        let layerTransformed = omnivore.wkt.parse(poly);
+       
         let delimitLayerTransformed = omnivore.wkt.parse(delimitPolygon);
-        let poinTransformed = omnivore.wkt.parse(point);
-        let layerKeys = Object.keys(layerTransformed._layers);
         let delimitLayerKeys = Object.keys(delimitLayerTransformed._layers);
         let keyNameDelimitPol = delimitLayerKeys[0];
         let delimitPolyCoord = delimitLayerTransformed._layers[keyNameDelimitPol].feature.geometry.coordinates[0];
-        let keyNamePolygon = layerKeys[0];
-        let polygonCoordinates = layerTransformed._layers[keyNamePolygon].feature;
-        let pointKeys = Object.keys(poinTransformed._layers);
-        let keyNamePoint = pointKeys;
-        let pointCoordinates = poinTransformed._layers[keyNamePoint].feature.geometry.coordinates;
-        let polygonFeatures = [polygonCoordinates];
         delimitPolyCoord.forEach(function (geom) {
             var coordinates = [];
             coordinates.push(geom[1]);
             coordinates.push(geom[0]);
             copyCoordinates.push(coordinates);
         })
-        let ll = new L.LatLng(pointCoordinates[1], pointCoordinates[0]);
+        let ll = new L.LatLng(feature.point.geometry.coordinates[1], feature.point.geometry.coordinates[0]);
         snapMarker = L.marker(null, {});
         snapMarkerMapDelimit = L.marker(null, {});
         snapMarker.setLatLng(ll);
         snapMarkerMapDelimit.setLatLng(ll);
         snapMarker.addTo(map);
         snapMarkerMapDelimit.addTo(mapDelimit);
-        catchmentPoly.addData(polygonFeatures);
-        catchmentPolyDelimit.addData(polygonFeatures);
+        catchmentPoly = L.geoJSON(JSON.parse(feature.polygon)).addTo(map);
+        catchmentPolyDelimit=L.geoJSON(JSON.parse(feature.polygon)).addTo(mapDelimit);
         map.fitBounds(catchmentPoly.getBounds());
         editablepolygon = L.polygon(copyCoordinates, { color: 'red' });
         editablepolygon.addTo(mapDelimit)

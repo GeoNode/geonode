@@ -86,9 +86,9 @@ function updateStyleLine(graph, cell, type) {
                         "connectorType": type.id,
                         "varcost": varcost,
                         "external": external,
-                        'resultdb': result,
+                        'resultdb': JSON.parse(result),
                         'name': type.name,
-                        "funcost": result2
+                        "funcost": JSON.parse(result2)
                     };
 
                     value = JSON.stringify(value);
@@ -98,7 +98,7 @@ function updateStyleLine(graph, cell, type) {
                     if (typeof(cell.value) == "string" && cell.value.length > 0) {
                         try {
                             let obj = JSON.parse(cell.value);
-                            let dbfields = JSON.parse(obj.resultdb);
+                            let dbfields = obj.resultdb;
                             label = connectionsType[obj.connectorType].name;
                             $('#titleDiagram').text(connectionsType[obj.connectorType].name);
                             $('#titleCostFunSmall').text(`ID: ${cell.id} - ${connectionsType[obj.connectorType].name}`);
@@ -125,6 +125,7 @@ function clearDataHtml(cell, evt) {
     var show = false;
     if (cell != undefined && cell.getAttribute('name') == 'River') show = true;
     if (cell != undefined && cell.getAttribute('name') == 'External Input') show = true;
+    if (cell != undefined && cell.style == "EXTRACTIONCONNECTION") show = true;
     $('#aguaDiagram').prop('disabled', show);
     $('#sedimentosDiagram').prop('disabled', show);
     $('#nitrogenoDiagram').prop('disabled', show);
@@ -149,13 +150,13 @@ function addData(element, MQ) {
     //add data in HTML for connectors
     if (typeof(element.value) == "string" && element.value.length > 0) {
         let obj = JSON.parse(element.value);
-        let dbfields = JSON.parse(obj.resultdb);
+        let dbfields = obj.resultdb;
         label = connectionsType[obj.connectorType].name;
         $('#titleDiagram').text(connectionsType[obj.connectorType].name);
         $('#titleCostFunSmall').text(`ID: ${element.id} - ${connectionsType[obj.connectorType].name}`);
         $('#idDiagram').val(element.id);
         addData2HTML(dbfields)
-        funcostdb = JSON.parse(obj.funcost);
+        funcostdb = obj.funcost;
         for (let index = 0; index < funcostdb.length; index++) {
             funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index, MQ);
         }
@@ -203,12 +204,7 @@ function deleteWithValidations(editor) {
     let msg = "Selected element is connected with Extraction connection element. Can't be deleted!";
     if (editor.graph.isEnabled()) {
         let cells = editor.graph.getSelectionCells();
-        let cells2Remove = cells.filter(cell => (cell.style != "rio"
-                /* &&
-                                cell.style != "csinfra" &&
-                                cell.style != connectionsType.EC.style*/
-            ) ||
-            parseInt(cell.id) > 4);
+        let cells2Remove = cells.filter(cell => (cell.style != "rio") || parseInt(cell.id) > 4);
         if (cells2Remove.length > 0) {
             let vertexIsEC = false;
             cells2Remove.filter(cell => {
@@ -227,6 +223,8 @@ function deleteWithValidations(editor) {
                 editor.graph.removeCells(cells2Remove);
             }
 
+        } else {
+            mxUtils.alert(`The River can't be Removed`);
         }
     }
 }
