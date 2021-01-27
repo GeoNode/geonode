@@ -631,7 +631,7 @@ class GXPMapBase(object):
                     del base_source[key]
             return base_source
 
-        for idx, lyr in enumerate(settings.MAP_BASELAYERS):
+        for lyr in settings.MAP_BASELAYERS:
             if "source" in lyr and _base_source(
                     lyr["source"]) not in map(
                     _base_source,
