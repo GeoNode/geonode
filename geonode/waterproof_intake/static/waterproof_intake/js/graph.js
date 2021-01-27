@@ -450,12 +450,13 @@ function onInit(editor) {
         var MQ = MathQuill.getInterface(2);
         var CostSelected = null;
         var mathFieldSpan = document.getElementById('math-field');
-        var latexSpan = document.getElementById('latex');
+        //var latexSpan = document.getElementById('latex');
         var mathField = MQ.MathField(mathFieldSpan, {
             spaceBehavesLikeTab: true,
             handlers: {
                 edit: function() {
-                    latexSpan.textContent = mathField.latex();
+                    mathField.focus();
+                    //latexSpan.textContent = mathField.latex();
                 }
             }
         });
