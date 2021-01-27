@@ -758,6 +758,20 @@ class LayersTest(GeoNodeBaseTestSupport):
         rating = OverallRating.objects.all()
         self.assertEqual(rating.count(), 0)
 
+    def test_sld_upload(self):
+        """Test layer remove functionality
+        """
+        layer = Layer.objects.all().first()
+        url = reverse('layer_sld_upload', args=(layer.alternate,))
+        # Now test with a valid user
+        self.client.login(username='admin', password='admin')
+
+        # test a method other than POST and GET
+        response = self.client.put(url)
+        content = response.content.decode('utf-8')
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse("#modal_perms" in content)
+
     def test_layer_remove(self):
         """Test layer remove functionality
         """
