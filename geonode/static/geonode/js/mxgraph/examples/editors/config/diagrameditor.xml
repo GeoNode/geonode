@@ -19,63 +19,63 @@
 			</Connector>
 		</add>
 		<add as="embalse">
-			<Symbol name="Embalse" label="Damming" externalData="false" >
+			<Symbol name="Damming" label="Damming" externalData="false" >
 				<mxCell vertex="1" style="embalse" dbreference="EMBALSE" funcionreference="E">      
 					<mxGeometry as="geometry" width="60" height="92"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bombeo">
-			<Symbol name="Bombeo" label="Pumping" externalData="false">
+			<Symbol name="Pumping" label="Pumping" externalData="false">
 				<mxCell vertex="1" style="bombeo" dbreference="BOMBEO" funcionreference="B">      
 					<mxGeometry as="geometry" width="60" height="92"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="reservorioagua">
-			<Symbol name="Reservorio de Agua Cruda (RAC)" label="Water reservoir" externalData="false">
+			<Symbol name="Water reservoir" label="Water reservoir" externalData="false">
 				<mxCell vertex="1" style="reservorioagua" dbreference="RESERVORIOAGUACRUDA" funcionreference="">      
 					<mxGeometry as="geometry" width="60" height="92"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bocatoma">
-			<Symbol name="Bocatoma" label="Water Intake" externalData="false">
+			<Symbol name="Water Intake" label="Water Intake" externalData="false">
 				<mxCell vertex="1" style="bocatoma" dbreference="BOCATOMADEFONDO" funcionreference="BO">      
 					<mxGeometry as="geometry" width="60" height="92"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bocatomalateral">
-			<Symbol name="Bocatoma Lateral" label="Side Intake" externalData="false">
+			<Symbol name="Side Intake" label="Side Intake" externalData="false">
 				<mxCell vertex="1" style="bocatomalateral" dbreference="BOCATOMALATERAL" funcionreference="BO">      
 					<mxGeometry as="geometry" width="60" height="92"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="bocatomaflotante">
-			<Symbol name="Bocatoma Flotante" label="Floating Intake" externalData="false">
+			<Symbol name="Floating Intake" label="Floating Intake" externalData="false">
 				<mxCell vertex="1" style="bocatomaflotante" dbreference="BOCATOMAFLOTANTE" funcionreference="BO">      
 					<mxGeometry as="geometry" width="60" height="92"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="desarenador">
-			<Symbol name="Desarenador" label="Desander" externalData="false">
+			<Symbol name="Desander" label="Desander" externalData="false">
 				<mxCell vertex="1" style="desarenador" dbreference="DESARENADOR" funcionreference="D">      
 					<mxGeometry as="geometry" width="60" height="92"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="camaraquiebre">
-			<Symbol name="Camara de Quiebre" label="Break chamber" externalData="false">
+			<Symbol name="Break chamber" label="Break chamber" externalData="false">
 				<mxCell vertex="1" style="camaraquiebre" dbreference="CAMARADEQUIEBRE" funcionreference="CQ">      
 					<mxGeometry as="geometry" width="60" height="92"/>
 				</mxCell>
 			</Symbol>
 		</add>
 		<add as="csinfra">
-			<Symbol name="CSINFRA" label="CS Infra" externalData="false">
+			<Symbol name="CSINFRA" label="Case Study Infrastructure" externalData="false">
 				<mxCell vertex="1" style="csinfra" dbreference="CSINFRA" funcionreference="CS">      
 					<mxGeometry as="geometry" width="60" height="92"/>
 				</mxCell>
@@ -313,15 +313,15 @@
 		<add as="Empty" mode="connect" class="empty_icon">
 		<![CDATA[ function (editor) { if (editor.defaultEdge != null) { editor.defaultEdge.style = null; } } ]]>
 		</add>
-		<add as="Embalse" template="embalse" icon="/static/mxgraph/images/waterproof/02-embalse.png"/>
-		<add as="Bombeo" template="bombeo"  width="32" height="32" icon="/static/mxgraph/images/waterproof/03-bombeo.svg"/>
-		<add as="Reservorio Agua" template="reservorioagua" width="32" height="32" icon="/static/mxgraph/images/waterproof/04-reservorio-agua.svg"/>
-		<add as="Bocatoma" template="bocatoma" icon="/static/mxgraph/images/waterproof/05-bocatoma.svg"/>
-		<add as="Bocatoma Lateral" template="bocatomalateral" icon="/static/mxgraph/images/waterproof/06-bocatoma-lat.svg"/>
-		<add as="Bocatoma Flotante" template="bocatomaflotante" icon="/static/mxgraph/images/waterproof/07-bocatoma-flotante.svg"/>
-		<add as="Desarenador" template="desarenador" icon="/static/mxgraph/images/waterproof/08-desarenador.png"/>
-		<add as="Camara De Quiebre" template="camaraquiebre" width="32" height="32" icon="/static/mxgraph/images/waterproof/09-camara-quiebre.svg"/>
-		<add as="CSINFRA" template="csinfra" icon="/static/mxgraph/images/waterproof/13-csinfra.svg"/>
+		<add as="Damming" template="embalse" icon="/static/mxgraph/images/waterproof/02-embalse.png"/>
+		<add as="Pumping" template="bombeo"  width="32" height="32" icon="/static/mxgraph/images/waterproof/03-bombeo.svg"/>
+		<add as="Water reservoir" template="reservorioagua" width="32" height="32" icon="/static/mxgraph/images/waterproof/04-reservorio-agua.svg"/>
+		<add as="Water Intake" template="bocatoma" icon="/static/mxgraph/images/waterproof/05-bocatoma.svg"/>
+		<add as="Side Intake" template="bocatomalateral" icon="/static/mxgraph/images/waterproof/06-bocatoma-lat.svg"/>
+		<add as="Floating Intake" template="bocatomaflotante" icon="/static/mxgraph/images/waterproof/07-bocatoma-flotante.svg"/>
+		<add as="Desander" template="desarenador" icon="/static/mxgraph/images/waterproof/08-desarenador.png"/>
+		<add as="Break chamber" template="camaraquiebre" width="32" height="32" icon="/static/mxgraph/images/waterproof/09-camara-quiebre.svg"/>
+		<add as="Case Study Infrastructure" template="csinfra" icon="/static/mxgraph/images/waterproof/13-csinfra.svg"/>
 		<add as="External Input" template="externalinput" icon="/static/mxgraph/images/waterproof/12-conexion.svg"/>
 	</mxDefaultToolbar>
 </mxEditor>

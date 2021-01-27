@@ -3,9 +3,9 @@
  */
 
 var iconMarker = L.icon({
-    iconUrl: "https://raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/dist/images/IconMapSend.png",
-    iconSize:     [50, 50], // size of the icon
-    iconAnchor:   [25, 50], // point of the icon which will correspond to marker's location
+    iconUrl: location.origin + "/static/lib/img/marker-icon.png",  /* "https://raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/dist/images/IconMapSend.png", */
+    iconSize:     [20, 32], // size of the icon
+    iconAnchor:   [20, 32], // point of the icon which will correspond to marker's location
     popupAnchor:  [0, -30] // point from which the popup should open relative to the iconAnchor
   })
 
@@ -43,15 +43,15 @@ L.Control.Coordinates = L.Control.extend({
         title: 'Capture Coordinate'
 	},
 
-	onAdd: function(map) {
+	onAdd: function(map, options) {
         this._map = map;
-        
+        this.options = L.Util.extend(this.options, options);
         var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
 
         this.link = L.DomUtil.create('a', 'leaflet-bar-part', container);
         this.link.title = this.options.title;
-        var userIcon = L.DomUtil.create('img' , 'img-responsive' , this.link);
-        userIcon.src = 'https://raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/dist/images/IconLocShare.png';
+        var userIcon = L.DomUtil.create('img' , 'img-icon' , this.link);
+        userIcon.src = iconMarker.options.iconUrl;
         userIcon.alt = '';
         userIcon.setAttribute('role', 'presentation');
         this.link.href = '#';
@@ -300,11 +300,20 @@ L.Control.Coordinates = L.Control.extend({
 			pos = pos.wrap();
 			this._currentPos = pos;
 			this._inputY.value = L.NumberFormatter.round(pos.lat, opts.decimals, opts.decimalSeperator);
-            this._inputX.value = L.NumberFormatter.round(pos.lng, opts.decimals, opts.decimalSeperator);
-			waterproof["cityCoords"] = [pos.lat, pos.lng];
+			this._inputX.value = L.NumberFormatter.round(pos.lng, opts.decimals, opts.decimalSeperator);
+			if (typeof waterproof !== 'undefined') {
+				waterproof["cityCoords"] = [pos.lat, pos.lng];
+			}
+			else {
+				waterproof = {
+					"cityCoords": [pos.lat, pos.lng]
+				}
+			}
 			// Put the object into storage
 			localStorage.setItem('cityCoords', JSON.stringify(waterproof["cityCoords"]));
 			//this._label.innerHTML = this._createCoordinateLabel(pos);
+
+			
 		}
 	},
 
@@ -403,7 +412,10 @@ function placeMarker(obj){
         
         L.Location.Marker.on('dragend', function(event) {
             obj._update(event);
-        L.Location.Marker.openPopup();            
+			L.Location.Marker.openPopup();
+			if (obj.options.actionAfterDragEnd){
+				obj.options.actionAfterDragEnd();
+			}            
         });
         L.Location.Marker.bindPopup(L.Location.Popup);
         L.Location.Marker.addTo(obj._map);

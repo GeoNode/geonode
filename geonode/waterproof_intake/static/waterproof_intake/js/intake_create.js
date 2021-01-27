@@ -168,13 +168,27 @@ $(document).ready(function () {
             if (graphData[id].external) {
                 graphData[id].externaldata = [];
                 $(`th[name=year_${graphData[id].id}]`).each(function () {
-                    graphData[id].externaldata.push({
-                        "year": $(this).attr('year_value'),
-                        "water": $(`input[name="waterVolume_${$(this).attr('year_value')}_${graphData[id].id}"]`).val(),
-                        "sediment": $(`input[name="sediment_${$(this).attr('year_value')}_${graphData[id].id}"]`).val(),
-                        "nitrogen": $(`input[name="nitrogen_${$(this).attr('year_value')}_${graphData[id].id}"]`).val(),
-                        "phosphorus": $(`input[name="phosphorus_${$(this).attr('year_value')}_${graphData[id].id}"]`).val()
-                    })
+                    let watersita = $(`input[name="waterVolume_${$(this).attr('year_value')}_${graphData[id].id}"]`).val();
+                    let sedimentsito = $(`input[name="sediment_${$(this).attr('year_value')}_${graphData[id].id}"]`).val();
+                    let nitrogenito = $(`input[name="nitrogen_${$(this).attr('year_value')}_${graphData[id].id}"]`).val();
+                    let phospharusito = $(`input[name="phosphorus_${$(this).attr('year_value')}_${graphData[id].id}"]`).val();
+                    if (watersita != null || sedimentsito != null || nitrogenito != null || phospharusito != null ||
+                        watersita != '' || sedimentsito != '' || nitrogenito != '' || phospharusito != '') {
+                        graphData[id].externaldata.push({
+                            "year": $(this).attr('year_value'),
+                            "water": watersita,
+                            "sediment": sedimentsito,
+                            "nitrogen": nitrogenito,
+                            "phosphorus": phospharusito
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: `Field empty`,
+                            text: `Please full every fields`
+                        });
+                        return;
+                    }
                 });
                 graphData[id].externaldata = JSON.stringify(graphData[id].externaldata);
             }
@@ -195,15 +209,15 @@ $(document).ready(function () {
 
 
     $('#intakeNIBYMI').click(function () {
-        $('#intakeWEMI div').remove();
+        $('#intakeWEMI tr').remove();
         intakeNIYMI = Number($("#intakeNIYMI").val());
         for (let index = 0; index < intakeNIYMI; index++) {
-            $('#intakeWEMI').append(`<div class="form-group">
-                <label class="col-sm-1 control-label">${index + 1}</label>
-                <div class="col-sm-11">
-                    <input type="text" class="form-control">
-                </div>
-            </div>`);
+            $('#intakeWEMI').append(`
+            <tr>
+                <th class="text-center" scope="row">${index + 1}</th>
+                <td class="text-center"> <input type="text" class="form-control"></td>
+              </tr>
+            `);
         }
     });
 
@@ -228,6 +242,10 @@ $(document).ready(function () {
         },
         keyboardSettings: {
             keyNavigation: false
+        },
+        toolbarSettings: {
+            showNextButton: false,
+            showPreviousButton: false,
         }
     });
 
@@ -236,47 +254,134 @@ $(document).ready(function () {
             if (catchmentPoly) {
                 mapDelimit.invalidateSize();
                 mapDelimit.fitBounds(catchmentPoly.getBounds());
+            } else {
+                mapDelimit.invalidateSize();
+                $('#autoAdjustHeightF').css("height", "auto");
             }
             changeFileEvent();
         }
+        if (stepIndex == 0) {
+            if (catchmentPoly) {
+                map.invalidateSize();
+                map.fitBounds(catchmentPoly.getBounds());
+            } else {
+                map.invalidateSize();
+                $('#autoAdjustHeightF').css("height", "auto");
+            }
+        }
+    });
+
+    //Validated of steps
+
+    $('#step1NextBtn').click(function () {
+        if ($('#id_name').val() != '' && $('#id_description').val() != '' && $('#id_water_source_name').val() != '' && catchmentPoly != undefined) {
+            $('#smartwizard').smartWizard("next");
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: `Field empty`,
+                text: `Please full every fields`
+            });
+            return;
+        }
+    });
+
+    $('#step2PrevBtn').click(function () {
+        $('#smartwizard').smartWizard("prev");
+    });
+
+    $('#step2NextBtn').click(function () {
+        if (!bandera) {
+            $('#smartwizard').smartWizard("next");
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: `Validate Graph`,
+                text: `Please Validate Graph`
+            });
+            return;
+        }
+    });
+
+    $('#step3PrevBtn').click(function () {
+        $('#smartwizard').smartWizard("prev");
+    });
+
+    $('#step3NextBtn').click(function () {
+        if ($('#intakeECTAG')[0].childNodes.length > 1) {
+            $('#smartwizard').smartWizard("next");
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: `Data analisys empty`,
+                text: `Please Generate Data anlisys`
+            });
+            return;
+        }
+
+    });
+
+    $('#step4PrevBtn').click(function () {
+        $('#smartwizard').smartWizard("prev");
+    });
+
+    $('#step4NextBtn').click(function () {
+        $('#smartwizard').smartWizard("next");
+    });
+
+    $('#step5PrevBtn').click(function () {
+        $('#smartwizard').smartWizard("prev");
     });
 
 
     let initialCoords = [4.5, -74.4];
     // find in localStorage if cityCoords exist
     var cityCoords = localStorage.getItem('cityCoords');
-    if (cityCoords == undefined){
+    if (cityCoords == undefined) {
         cityCoords = initialCoords;
-    }else{
+    } else {
         initialCoords = JSON.parse(cityCoords);
     }
     waterproof["cityCoords"] = cityCoords;
 
-    map = L.map('map', {}).setView(initialCoords, 5);
+    map = L.map('map', {}).setView(initialCoords, 8);
     mapDelimit = L.map('mapid', { editable: true }).setView(initialCoords, 5);
     var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     });
-    var osmid = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    var osmid = L.tileLayer(OSM_BASEMAP_URL, {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     });
     map.addLayer(osm);
 
-    var c = new L.Control.Coordinates().addTo(map);
+    var c = new L.Control.Coordinates({
+        actionAfterDragEnd : prevalidateAdjustCoordinates
+    }).addTo(map);
 
-    var images = L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}");
+    var images = L.tileLayer(IMG_BASEMAP_URL);   
+    var gray = L.tileLayer(GRAY_BASEMAP_URL, {
+        maxZoom: 20,
+            attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+        });
 
-    var esriHydroOverlayURL = "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}";
-    var hydroLyr = L.tileLayer(esriHydroOverlayURL);
+    var hydroLyr = L.tileLayer(HYDRO_BASEMAP_URL);
+    var wmsHydroNetworkLyr = L.tileLayer.wms(GEOSERVER_WMS, {
+            layers: HYDRO_NETWORK_LYR,
+            format: 'image/png',
+            transparent: 'true',
+            opacity: 0.35,
+            minZoom: 6,
+        });
 
     var baseLayers = {
         OpenStreetMap: osm,
         Images: images,
-        /* Grayscale: gray,   */
+        Grayscale: gray,   
     };
 
     var overlays = {
         "Hydro (esri)": hydroLyr,
+        "Hydro Network": wmsHydroNetworkLyr,
     };
     L.control.layers(baseLayers, overlays, { position: 'topleft' }).addTo(map);
 
@@ -285,23 +390,7 @@ $(document).ready(function () {
 
 
 
-    $("#validateBtn").on("click", function () {
-        Swal.fire({
-            title: 'Delimitar punto y cuenca',
-            text: "El sistema ajustará las coordenadas del punto a la captación más cercana, ¿Desea continuar?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ajustar punto',
-            cancelButtonText: 'Cancelar',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                mapLoader = L.control.loader().addTo(map);
-                validateCoordinateWithApi();
-            }
-        })
-    });
+    $("#validateBtn").on("click", prevalidateAdjustCoordinates);
     $('#btnDelimitArea').on("click", delimitIntakeArea)
     $('#btnValidateArea').on("click", validateIntakeArea)
     if (!mapLoader) {
@@ -324,6 +413,28 @@ $(document).ready(function () {
 
 
 window.onbeforeunload = function () { return mxResources.get('changesLost'); };
+
+
+/**
+ * Info Message to validate Adjust Coordinates
+ */
+function prevalidateAdjustCoordinates(){
+    Swal.fire({
+        title: 'Delimitar punto y cuenca',
+        text: "El sistema ajustará las coordenadas del punto a la captación más cercana, ¿Desea continuar?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ajustar punto',
+        cancelButtonText: 'Cancelar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            mapLoader = L.control.loader().addTo(map);
+            validateCoordinateWithApi();
+        }
+    })
+}
 
 /** 
  * Delimit manually the intake polygon

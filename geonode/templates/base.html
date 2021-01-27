@@ -333,9 +333,10 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
                   <li><a href="{% url "apps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore" %} {% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a></li>
-                  <li><a href="{% url "search_city" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Search City" %} </a></li>
+                  <li><a href="{% url "search_city" %}">{% trans "Search City" %} </a></li>
                   <li><a href="{% url "list-nbs" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "List SBN" %} </a></li>
                   <li><a href="{% url "list-intake" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "List Intakes" %} </a></li>
+                  <li><a href="{% url "treatment-plants-list" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Treatment Plants List" %} </a></li>
                 </ul>
             {% else %}
               <a href="{% url "apps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a>
