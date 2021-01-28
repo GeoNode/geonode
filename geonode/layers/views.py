@@ -1497,7 +1497,11 @@ def layer_thumbnail(request, layername):
                     request.body, request=request)
             except Exception as e:
                 logger.debug(e)
-                image = _render_thumbnail(request.body)
+                try:
+                    image = _render_thumbnail(request.body)
+                except Exception as e:
+                    logger.debug(e)
+                    image = None
 
         is_image = False
         if image:
