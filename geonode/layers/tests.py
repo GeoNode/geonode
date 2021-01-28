@@ -911,7 +911,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         Model = Layer
         view = 'layer_batch_metadata'
         resources = Model.objects.all()[:3]
-        ids = ','.join([str(element.pk) for element in resources])
+        ids = ','.join(str(element.pk) for element in resources)
         # test non-admin access
         self.client.login(username="bobby", password="bob")
         response = self.client.get(reverse(view))
@@ -986,7 +986,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         Model = Layer
         view = 'layer_batch_permissions'
         resources = Model.objects.all()[:3]
-        ids = ','.join([str(element.pk) for element in resources])
+        ids = ','.join(str(element.pk) for element in resources)
         # test non-admin access
         self.assertTrue(self.client.login(username="bobby", password="bob"))
         response = self.client.get(reverse(view), data={"ids": ids})

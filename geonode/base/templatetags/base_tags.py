@@ -177,7 +177,7 @@ def facets(context):
             documents = documents.filter(id__in=authorized)
 
         counts = documents.values('doc_type').annotate(count=Count('doc_type'))
-        facets = dict([(count['doc_type'], count['count']) for count in counts])
+        facets = {count['doc_type']: count['count'] for count in counts}
 
         return facets
     else:

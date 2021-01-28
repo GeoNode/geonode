@@ -250,7 +250,7 @@ def tile_url(layer, z, x, y, style=None, internal=True):
     top = top_left_corner.y
     left = top_left_corner.x
 
-    bbox = ','.join([str(val) for val in [left, bottom, right, top]])
+    bbox = ','.join(str(val) for val in [left, bottom, right, top])
 
     if not style:
         style = 'default'

@@ -934,7 +934,7 @@ community."
         Model = Map
         view = 'map_batch_metadata'
         resources = Model.objects.all()[:3]
-        ids = ','.join([str(element.pk) for element in resources])
+        ids = ','.join(str(element.pk) for element in resources)
         # test non-admin access
         self.client.login(username="bobby", password="bob")
         response = self.client.get(reverse(view))
