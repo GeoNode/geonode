@@ -383,6 +383,27 @@ class LayersTest(GeoNodeBaseTestSupport):
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
 
+    def test_layer_thumbnail_generation_managed_errors(self):
+        """
+        Test that 'layer_thumbnail' handles correctly thumbnail generation errors
+        """
+        layer = Layer.objects.all().first()
+        url = reverse('layer_thumbnail', args=(layer.alternate,))
+        # Now test with a valid user
+        self.client.login(username='admin', password='admin')
+
+        # test a method other than POST and GET
+        request_body = {'preview': '\
+"bbox":[1331513.3064995816,1333734.7576341194,5599619.355527631,5600574.818381195],\
+"srid":"EPSG:3857",\
+"center":{"x":11.971165359906351,"y":44.863749562810995,"crs":"EPSG:4326"},\
+"zoom":16,"width":930,"height":400,\
+"layers":"' + layer.alternate + '"}'}
+        response = self.client.post(url, data=request_body)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.decode('utf-8'), 'Thumbnail saved')
+        self.assertNotEquals(layer.get_thumbnail_url(), settings.MISSING_THUMBNAIL)
+
     def test_get_valid_user(self):
         # Verify it accepts an admin user
         adminuser = get_user_model().objects.get(is_superuser=True)

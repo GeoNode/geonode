@@ -1322,8 +1322,13 @@ def map_thumbnail(request, mapid):
         try:
             image = _prepare_thumbnail_body_from_opts(
                 request.body, request=request)
-        except Exception:
-            image = _render_thumbnail(request.body)
+        except Exception as e:
+            logger.debug(e)
+            try:
+                image = _render_thumbnail(request.body)
+            except Exception as e:
+                logger.debug(e)
+                image = None
 
         if not image:
             return HttpResponse(
