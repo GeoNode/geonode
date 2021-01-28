@@ -223,10 +223,12 @@ class Layer(ResourceBase):
 
     @property
     def display_type(self):
-        return ({
-            "dataStore": "Vector Data",
-            "coverageStore": "Raster Data",
-        }).get(self.storeType, "Data")
+        if self.storeType == "dataStore":
+            return "Vector Data"
+        elif self.storeType == "coverageStore":
+            return "Raster Data"
+        else:
+            return "Data"
 
     @property
     def data_model(self):
