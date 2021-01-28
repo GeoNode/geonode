@@ -2201,8 +2201,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             if 'styles' in request_body:
                 styles = request_body['styles']
 
-            ogc_server_location = request_body["ogc_server_location"] if "ogc_server_location" \
-                in request_body else ogc_server_settings.LOCATION
+            ogc_server_location = request_body.get("ogc_server_location", ogc_server_settings.LOCATION)
             wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or 'wms'
             wms_version = getattr(ogc_server_settings, "WMS_VERSION") or '1.1.0'
             wms_format = getattr(ogc_server_settings, "WMS_FORMAT") or 'image/png'
