@@ -53,6 +53,7 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
 elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
 
+
 logger = logging.getLogger("geonode.qgis_server.helpers")
 
 
@@ -934,18 +935,18 @@ def delete_orphaned_qgis_server_layers():
     """Delete orphaned QGIS Server files."""
     layer_path = settings.QGIS_SERVER_CONFIG['layer_directory']
     if not os.path.exists(layer_path):
-        print("{path} not exists".format(path=layer_path))
+        logger.warning("{path} not exists".format(path=layer_path))
         return
     for filename in os.listdir(layer_path):
         basename, __ = os.path.splitext(filename)
         fn = os.path.join(layer_path, filename)
         if QGISServerLayer.objects.filter(
                 base_layer_path__icontains=basename).count() == 0:
-            print("Removing orphan layer file {}".format(fn))
+            logger.warning("Removing orphan layer file {}".format(fn))
             try:
                 os.remove(fn)
             except OSError:
-                print("Could not delete file {}".format(fn))
+                logger.error("Could not delete file {}".format(fn))
 
 
 def delete_orphaned_qgis_server_caches():
@@ -962,7 +963,7 @@ def delete_orphaned_qgis_server_caches():
             try:
                 shutil.rmtree(path)
             except OSError:
-                print("Could not delete file {}".format(path))
+                logger.error("Could not delete file {}".format(path))
 
 
 def get_model_path(instance):

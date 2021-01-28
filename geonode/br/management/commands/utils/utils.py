@@ -26,6 +26,7 @@ import hashlib
 import psycopg2
 import traceback
 import dateutil.parser
+import logging
 
 from configparser import ConfigParser
 
@@ -38,6 +39,7 @@ STATICFILES_DIRS = 'static_dirs'
 TEMPLATE_DIRS = 'template_dirs'
 LOCALE_PATHS = 'locale_dirs'
 EXTERNAL_ROOT = 'external'
+logger = logging.getLogger(__name__)
 
 
 def option(parser):
@@ -232,7 +234,7 @@ def flush_db(db_name, db_user, db_port, db_host, db_passwd):
         for table in pg_tables:
             if table[0] == 'br_restoredbackup':
                 continue
-            print("Flushing Data : " + table[0])
+            logger.info("Flushing Data : " + table[0])
             curs.execute("TRUNCATE " + table[0] + " CASCADE;")
 
     except Exception:
@@ -271,7 +273,7 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
             pg_tables = pg_all_tables
 
         for table in pg_tables:
-            print("Dumping GeoServer Vectorial Data : {}:{}".format(db_name, table))
+            logger.info("Dumping GeoServer Vectorial Data : {}:{}".format(db_name, table))
             os.system('PGPASSWORD="' + db_passwd + '" ' + config.pg_dump_cmd + ' -h ' + db_host +
                       ' -p ' + str(db_port) + ' -U ' + db_user + ' -F c -b' +
                       ' -t \'"' + str(table) + '"\' -f ' +
@@ -300,7 +302,7 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
         file_names = [fn for fn in os.listdir(source_folder)
                       if any(fn.endswith(ext) for ext in included_extenstions)]
         for table in file_names:
-            print("Restoring GeoServer Vectorial Data : {}:{} ".format(db_name, os.path.splitext(table)[0]))
+            logger.info("Restoring GeoServer Vectorial Data : {}:{} ".format(db_name, os.path.splitext(table)[0]))
             pg_rstcmd = 'PGPASSWORD="' + db_passwd + '" ' + config.pg_restore_cmd + ' -c -h ' + db_host + \
                         ' -p ' + str(db_port) + ' -U ' + db_user + ' --role=' + db_user + \
                         ' -F c -t "' + os.path.splitext(table)[0] + '" ' +\
