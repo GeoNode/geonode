@@ -309,7 +309,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
         for filename in os.listdir(gisdata.GOOD_DATA):
             basename, extension = os.path.splitext(filename)
-            if extension.lower() in ['.tif', '.shp', '.zip']:
+            if extension.lower() in {'.tif', '.shp', '.zip'}:
                 expected_layers.append(
                     os.path.join(
                         gisdata.GOOD_DATA,

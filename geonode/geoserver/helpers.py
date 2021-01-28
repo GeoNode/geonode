@@ -621,10 +621,10 @@ def gs_slurp(
         # disregard the filter parameter in the case of deleting layers
         try:
             resources_for_delete_compare = [
-                k for k in resources_for_delete_compare if k.enabled in ["true", True]]
+                k for k in resources_for_delete_compare if k.enabled in {"true", True}]
             if skip_unadvertised:
                 resources_for_delete_compare = [
-                    k for k in resources_for_delete_compare if k.advertised in ["true", True]]
+                    k for k in resources_for_delete_compare if k.advertised in {"true", True}]
         except Exception:
             if ignore_errors:
                 pass
@@ -638,18 +638,18 @@ def gs_slurp(
     _resources = []
     for k in resources:
         try:
-            if k.enabled in ["true", True]:
+            if k.enabled in {"true", True}:
                 _resources.append(k)
         except Exception:
             if ignore_errors:
                 continue
             else:
                 raise
-    # resources = [k for k in resources if k.enabled in ["true", True]]
+    # resources = [k for k in resources if k.enabled in {"true", True}]
     resources = _resources
     if skip_unadvertised:
         try:
-            resources = [k for k in resources if k.advertised in ["true", True]]
+            resources = [k for k in resources if k.advertised in {"true", True}]
         except Exception:
             if ignore_errors:
                 pass
@@ -990,7 +990,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             tb = traceback.format_exc()
             logger.debug(tb)
             attribute_map = []
-    elif layer.storeType in ["dataStore", "remoteStore", "wmsStore"]:
+    elif layer.storeType in {"dataStore", "remoteStore", "wmsStore"}:
         typename = layer.alternate if layer.alternate else layer.typename
         dft_url = re.sub(r"\/wms\/?$",
                          "/",
@@ -1238,7 +1238,7 @@ def is_layer_attribute_aggregable(store_type, field_name, field_type):
     if field_type not in LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES:
         return False
     # must not be an identifier type field
-    if field_name.lower() in ['id', 'identifier']:
+    if field_name.lower() in {'id', 'identifier'}:
         return False
 
     return True

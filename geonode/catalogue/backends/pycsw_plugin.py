@@ -66,7 +66,7 @@ class GeoNodeRepository(Repository):
         if self.dbtype == 'postgis':
             self.dbtype = 'postgresql+postgis+wkt'
 
-        if self.dbtype in ['sqlite', 'sqlite3']:  # load SQLite query bindings
+        if self.dbtype in {'sqlite', 'sqlite3'}:  # load SQLite query bindings
             connection.connection.create_function(
                 'query_spatial', 4, query_spatial)
             connection.connection.create_function(
