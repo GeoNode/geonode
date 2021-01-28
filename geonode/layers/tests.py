@@ -53,7 +53,8 @@ from geonode.layers.utils import (
     layer_type,
     get_files,
     get_valid_name,
-    get_valid_layer_name)
+    get_valid_layer_name,
+    surrogate_escape_string)
 from geonode.people.utils import get_valid_user
 from geonode.base.populate_test_data import all_public
 from geonode.base.models import TopicCategory, License, Region, Link
@@ -1055,6 +1056,17 @@ class LayersTest(GeoNodeBaseTestSupport):
             perm_spec = resource.get_all_level_info()
             logger.debug(f" -- perm_spec[users] --> {perm_spec['users']}")
             self.assertTrue(user in perm_spec["users"])
+
+    def test_surrogate_escape_string(self):
+        surrogate_escape_raw = "Zo\udcc3\udcab"
+        surrogate_escape_expected = "Zoë"
+        surrogate_escape_result = surrogate_escape_string(
+            surrogate_escape_raw, 'UTF-8')  # add more test cases using different charsets?
+        self.assertEqual(
+            surrogate_escape_result,
+            surrogate_escape_expected,
+            "layers.utils.surrogate_escape_string did not produce expected result. "
+            f"Expected {surrogate_escape_expected}, received {surrogate_escape_result}")
 
 
 class UnpublishedObjectTests(GeoNodeBaseTestSupport):
