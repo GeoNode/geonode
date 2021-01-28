@@ -223,6 +223,26 @@ function onInit(editor) {
         }
     });
 
+    //Validate connections between elements
+    editor.graph.getEdgeValidationError = function(edge, source, target) {
+        if (source != null && target != null &&
+            this.model.getValue(source) != null &&
+            this.model.getValue(target) != null) {
+            //water intake 
+            if (source.style != 'rio' && target.style == 'bocatoma') return 'The water intake element can only receive connection from the river element';
+            //floating intake
+            if (source.style != 'rio' && source.style != 'reservorioagua' && source.style != 'embalse' && target.style == 'bocatomaflotante')
+                return 'The floating intake element can only receive connection from the river, reservoir and water reservoir';
+            //side intake
+            if (source.style != 'rio' && source.style != 'reservorioagua' && source.style != 'embalse' && target.style == 'bocatomalateral')
+                return 'The side intake element can only receive connection from the river, reservoir and water reservoir';
+            //connection with itself
+            if (source.style == target.style) return 'No element could connect to itself';
+        }
+        // "Supercall"
+        return mxGraph.prototype.getEdgeValidationError.apply(this, arguments);
+    }
+
     // River not have a entrance connection
     editor.graph.multiplicities.push(new mxMultiplicity(
         false, 'Symbol', 'name', 'River', 0, 0, ['Symbol'],
@@ -463,8 +483,8 @@ function onInit(editor) {
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
             selectedCell = evt.getProperty('cell');
             // Clear Inputs
-            if (selectedCell != undefined) clearDataHtml(selectedCell, evt);
-            if (selectedCell != undefined) { addData(selectedCell, MQ); } else { clearDataHtml(selectedCell, evt); }
+            if (selectedCell == undefined) clearDataHtml(selectedCell, evt);
+            if (selectedCell != undefined) { addData(selectedCell, MQ); } else { clearDataHtml(); }
         });
 
         //Button for valide graph
