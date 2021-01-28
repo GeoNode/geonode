@@ -531,21 +531,30 @@ function changeFileEvent() {
                     var contents = evt.target.result;
                     try {
                         geojson = JSON.parse(contents);
-                        validateGeoJson(geojson);
-                        var source = new proj4.Proj('EPSG:3857');
-                        var dest = new proj4.Proj('EPSG:4326');
-                        delimitationFileType = delimitationFileEnum.GEOJSON;
-                        let polygonStyle = {
-                            fillColor: "red",
-                            color: "#333333",
-                            weight: 0.2,
-                            fillOpacity: 0.3
-                        };
-                        editablepolygon = L.geoJSON(geojson, { style: polygonStyle })
-                        editablepolygon.addTo(mapDelimit);
-                        mapDelimit.fitBounds(editablepolygon.getBounds())
+                        validGeojson = validateGeoJson(geojson);
+                        if (validGeojson) {
+                            delimitationFileType = delimitationFileEnum.GEOJSON;
+                            let polygonStyle = {
+                                fillColor: "red",
+                                color: "#333333",
+                                weight: 0.2,
+                                fillOpacity: 0.3
+                            };
+                            editablepolygon = L.geoJSON(geojson, { style: polygonStyle })
+                            editablepolygon.addTo(mapDelimit);
+                            mapDelimit.fitBounds(editablepolygon.getBounds())
+                        }
+                        else {
+                            $('#intakeArea').val('');
+                            return;
+                        }
                     } catch (e) {
-                        alert(e);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error en archivo GeoJSON',
+                            text: 'El archivo tiene carácteres erróneos o puede estar corrupto por favor intente con otro',
+                        })
+                        $('#intakeArea').val('');
                         return;
                     };
                 };
@@ -556,32 +565,31 @@ function changeFileEvent() {
                 readerGeoJson.readAsText(file);
             } else { //Zip
                 var reader = new FileReader();
-
                 reader.onload = function (evt) {
                     var contents = evt.target.result;
                     JSZip.loadAsync(file).then(function (zip) {
                         shapeValidation = validateShapeFile(zip);
-                        shapeValidation.then(function (valid) {
-                            // Valid shapefile with minimum files req
-                            // Shapefile válido
-                            shp(contents).then(function (shpToGeojson) {
-                                geojson = shpToGeojson;
-                                geojson.features[0].geometry.coordinates[0].forEach(function (coord, index) {
-                                    console.log(coord);
-                                    let newCoord = proj4.transform(source, dest, coord);
-                                    geojson.features[0].geometry.coordinates[0][index] = [newCoord.x, newCoord.y];
+                        shapeValidation.then(function (resultFile) {
+                            //is valid shapefile
+                            if (resultFile.valid) {
+                                shp(contents).then(function (shpToGeojson) {
+                                    geojson = shpToGeojson;
+                                    delimitationFileType = delimitationFileEnum.SHP;
+                                    let polygonStyle = {
+                                        fillColor: "#337ab7",
+                                        color: "#333333",
+                                        weight: 0.2,
+                                        fillOpacity: 0.3
+                                    };
+                                    editablepolygon = L.geoJSON(geojson, { style: polygonStyle })
+                                    editablepolygon.addTo(mapDelimit);
+                                    mapDelimit.fitBounds(editablepolygon.getBounds())
                                 });
-                                delimitationFileType = delimitationFileEnum.SHP;
-                                let polygonStyle = {
-                                    fillColor: "#337ab7",
-                                    color: "#333333",
-                                    weight: 0.2,
-                                    fillOpacity: 0.3
-                                };
-                                editablepolygon = L.geoJSON(geojson, { style: polygonStyle })
-                                editablepolygon.addTo(mapDelimit);
-                                mapDelimit.fitBounds(editablepolygon.getBounds())
-                            });
+                            }
+                            else{
+                                $('#intakeArea').val('');
+                                return;
+                            }
                         });
                         //loadShapefile(geojson, file.name);
                     }).catch(function (e) {
@@ -591,6 +599,7 @@ function changeFileEvent() {
                             text: 'Ha ocurrido un error de lectura en el shapefile',
                         })
                         console.log("Ocurrió error convirtiendo el shapefile " + e);
+                        $('#intakeArea').val('');
                     });
                 };
                 reader.onerror = function (event) {
@@ -605,6 +614,7 @@ function changeFileEvent() {
                 title: 'Error de extensión',
                 text: 'La extensión del archivo no está soportada, debe ser GeoJSON o un shapefile .zip',
             })
+            $('#intakeArea').val('');
         }
     });
 }

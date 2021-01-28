@@ -96,10 +96,9 @@ class CostFunctionsProcess(models.Model):
 
 
 class userCostFunctions(models.Model):
-    function = models.CharField(
-        null=True,
-        blank=True,
-        max_length=250,
+    function = models.TextField(
+        null=False,
+        blank=False,
         verbose_name=_('Function')
     )
 
@@ -107,9 +106,9 @@ class userCostFunctions(models.Model):
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL
+        null=False,
+        blank=False,
+        on_delete=models.CASCADE
     )
 
 
@@ -338,18 +337,16 @@ class Polygon(models.Model):
         null=True,
         blank=True,
         default=None,
-        verbose_name=_('Awy')
+        verbose_name=_('Area')
     )
 
     geom = models.PolygonField(verbose_name='geom', srid=4326, null=True, blank=True)
 
-    geomIntake = models.CharField(
-        max_length=2500,
+    geomIntake = models.TextField(
         verbose_name=_('Geom intake'),
     )
 
-    geomPoint = models.CharField(
-        max_length=2500,
+    geomPoint = models.TextField(
         verbose_name=_('Geom point'),
     )
 
