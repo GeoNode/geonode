@@ -15,7 +15,70 @@ var graphData = [];
 var connection = [];
 var funcostdb = [];
 var bandera = true;
-
+var xmlGraph = `<mxGraphModel>
+<root>
+  <Diagram label="My Diagram" href="http://www.jgraph.com/" id="0">
+    <mxCell />
+  </Diagram>
+  <Layer label="Default Layer" id="1">
+    <mxCell parent="0" />
+  </Layer>
+  <Symbol label="River (2)" name="River" externalData="false" varcost="[&quot;Q_2&quot;,&quot;CSed_2&quot;,&quot;CN_2&quot;,&quot;CP_2&quot;,&quot;WSed_2&quot;,&quot;WN_2&quot;,&quot;WP_2&quot;,&quot;WSed_ret_2&quot;,&quot;WN_ret_2&quot;,&quot;WP_ret_2&quot;]" resultdb="[{&quot;model&quot;: &quot;waterproof_intake.processefficiencies&quot;, &quot;pk&quot;: 34, &quot;fields&quot;: {&quot;name&quot;: &quot;Captaci\u00f3n&quot;, &quot;unitary_process&quot;: &quot;River&quot;, &quot;symbol&quot;: &quot;R&quot;, &quot;categorys&quot;: &quot;River&quot;, &quot;normalized_category&quot;: &quot;RIVER&quot;, &quot;id_wb&quot;: 0, &quot;minimal_sediment_perc&quot;: 0, &quot;predefined_sediment_perc&quot;: &quot;0.00&quot;, &quot;maximal_sediment_perc&quot;: 0, &quot;minimal_nitrogen_perc&quot;: 0, &quot;predefined_nitrogen_perc&quot;: &quot;0.00&quot;, &quot;maximal_nitrogen_perc&quot;: 0, &quot;minimal_phoshorus_perc&quot;: 0, &quot;predefined_phosphorus_perc&quot;: &quot;0.00&quot;, &quot;maximal_phosphorus_perc&quot;: 0, &quot;minimal_transp_water_perc&quot;: 1, &quot;predefined_transp_water_perc&quot;: &quot;100.00&quot;, &quot;maximal_transp_water_perc&quot;: 100}}]" id="2">
+    <mxCell style="rio" parent="1" vertex="1">
+      <mxGeometry x="40" y="30" width="60" height="92" as="geometry" />
+    </mxCell>
+  </Symbol>
+  <Symbol name="Bocatoma" label="Water Intake (3)" externalData="false" varcost="[&quot;Q_3&quot;,&quot;CSed_3&quot;,&quot;CN_3&quot;,&quot;CP_3&quot;,&quot;WSed_3&quot;,&quot;WN_3&quot;,&quot;WP_3&quot;,&quot;WSed_ret_3&quot;,&quot;WN_ret_3&quot;,&quot;WP_ret_3&quot;]" resultdb="[{&quot;model&quot;: &quot;waterproof_intake.processefficiencies&quot;, &quot;pk&quot;: 2, &quot;fields&quot;: {&quot;name&quot;: &quot;Captaci\u00f3n&quot;, &quot;unitary_process&quot;: &quot;Bocatoma&quot;, &quot;symbol&quot;: &quot;BO&quot;, &quot;categorys&quot;: &quot;Bocatoma de Fondo&quot;, &quot;normalized_category&quot;: &quot;BOCATOMADEFONDO&quot;, &quot;id_wb&quot;: 0, &quot;minimal_sediment_perc&quot;: 1, &quot;predefined_sediment_perc&quot;: &quot;2.50&quot;, &quot;maximal_sediment_perc&quot;: 4, &quot;minimal_nitrogen_perc&quot;: 1, &quot;predefined_nitrogen_perc&quot;: &quot;1.10&quot;, &quot;maximal_nitrogen_perc&quot;: 4, &quot;minimal_phoshorus_perc&quot;: 1, &quot;predefined_phosphorus_perc&quot;: &quot;1.42&quot;, &quot;maximal_phosphorus_perc&quot;: 4, &quot;minimal_transp_water_perc&quot;: 0, &quot;predefined_transp_water_perc&quot;: &quot;100.00&quot;, &quot;maximal_transp_water_perc&quot;: 100}}]" funcost="[{&quot;model&quot;: &quot;waterproof_intake.costfunctionsprocess&quot;, &quot;pk&quot;: 10401, &quot;fields&quot;: {&quot;symbol&quot;: &quot;BO&quot;, &quot;categorys&quot;: &quot;Bocatoma de Fondo&quot;, &quot;energy&quot;: &quot;0.0000&quot;, &quot;labour&quot;: &quot;90.0000&quot;, &quot;mater_equipment&quot;: &quot;10.0000&quot;, &quot;function_value&quot;: &quot;(4.1181*(text(Q)^(-0.344)))*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))&quot;, &quot;function_name&quot;: &quot;Bocatoma de Fondo&quot;, &quot;function_description&quot;: null}}, {&quot;model&quot;: &quot;waterproof_intake.costfunctionsprocess&quot;, &quot;pk&quot;: 10402, &quot;fields&quot;: {&quot;symbol&quot;: &quot;BO&quot;, &quot;categorys&quot;: &quot;Bocatoma Lateral&quot;, &quot;energy&quot;: &quot;0.0000&quot;, &quot;labour&quot;: &quot;90.0000&quot;, &quot;mater_equipment&quot;: &quot;10.0000&quot;, &quot;function_value&quot;: &quot;((381.44*text(Q)) + 46465.2)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))&quot;, &quot;function_name&quot;: &quot;Bocatoma Lateral&quot;, &quot;function_description&quot;: null}}]" id="3">
+    <mxCell style="bocatoma" parent="1" vertex="1" dbreference="BOCATOMADEFONDO" funcionreference="BO">
+      <mxGeometry x="250" y="30" width="60" height="92" as="geometry" />
+    </mxCell>
+  </Symbol>
+  <mxCell id="4" value="{&quot;connectorType&quot;:&quot;EC&quot;,&quot;varcost&quot;:[&quot;Q_4&quot;,&quot;CSed_4&quot;,&quot;CN_4&quot;,&quot;CP_4&quot;,&quot;WSed_4&quot;,&quot;WN_4&quot;,&quot;WP_4&quot;,&quot;WSed_ret_4&quot;,&quot;WN_ret_4&quot;,&quot;WP_ret_4&quot;],&quot;external&quot;:false,&quot;resultdb&quot;:&quot;[{\&quot;model\&quot;: \&quot;waterproof_intake.processefficiencies\&quot;, \&quot;pk\&quot;: 30, \&quot;fields\&quot;: {\&quot;name\&quot;: \&quot;Captaci\\u00f3n\&quot;, \&quot;unitary_process\&quot;: \&quot;Extraction connection\&quot;, \&quot;symbol\&quot;: \&quot;EC\&quot;, \&quot;categorys\&quot;: \&quot;Extraction connection\&quot;, \&quot;normalized_category\&quot;: \&quot;EXTRACTIONCONNECTION\&quot;, \&quot;id_wb\&quot;: 0, \&quot;minimal_sediment_perc\&quot;: 0, \&quot;predefined_sediment_perc\&quot;: \&quot;3.00\&quot;, \&quot;maximal_sediment_perc\&quot;: 99, \&quot;minimal_nitrogen_perc\&quot;: 0, \&quot;predefined_nitrogen_perc\&quot;: \&quot;6.00\&quot;, \&quot;maximal_nitrogen_perc\&quot;: 25, \&quot;minimal_phoshorus_perc\&quot;: 0, \&quot;predefined_phosphorus_perc\&quot;: \&quot;10.00\&quot;, \&quot;maximal_phosphorus_perc\&quot;: 80, \&quot;minimal_transp_water_perc\&quot;: 0, \&quot;predefined_transp_water_perc\&quot;: \&quot;100.00\&quot;, \&quot;maximal_transp_water_perc\&quot;: 100}}]&quot;,&quot;name&quot;:&quot;Extraction connection&quot;,&quot;funcost&quot;:&quot;[{\&quot;model\&quot;: \&quot;waterproof_intake.costfunctionsprocess\&quot;, \&quot;pk\&quot;: 10901, \&quot;fields\&quot;: {\&quot;symbol\&quot;: \&quot;EC\&quot;, \&quot;categorys\&quot;: \&quot;Conexion Extraccion\&quot;, \&quot;energy\&quot;: \&quot;20.0000\&quot;, \&quot;labour\&quot;: \&quot;60.0000\&quot;, \&quot;mater_equipment\&quot;: \&quot;20.0000\&quot;, \&quot;function_value\&quot;: \&quot;15.43*text(Wsed)*((1^6)/31536)\&quot;, \&quot;function_name\&quot;: \&quot;Canal\&quot;, \&quot;function_description\&quot;: null}}]&quot;}" style="EXTRACTIONCONNECTION" parent="1" source="2" target="3" edge="1">
+    <mxGeometry relative="1" as="geometry" />
+  </mxCell>
+  <Symbol name="Desarenador" label="Desander (5)" externalData="false" varcost="[&quot;Q_5&quot;,&quot;CSed_5&quot;,&quot;CN_5&quot;,&quot;CP_5&quot;,&quot;WSed_5&quot;,&quot;WN_5&quot;,&quot;WP_5&quot;,&quot;WSed_ret_5&quot;,&quot;WN_ret_5&quot;,&quot;WP_ret_5&quot;]" resultdb="[{&quot;model&quot;: &quot;waterproof_intake.processefficiencies&quot;, &quot;pk&quot;: 5, &quot;fields&quot;: {&quot;name&quot;: &quot;Captaci\u00f3n&quot;, &quot;unitary_process&quot;: &quot;Desarenador&quot;, &quot;symbol&quot;: &quot;D&quot;, &quot;categorys&quot;: &quot;Desarenador&quot;, &quot;normalized_category&quot;: &quot;DESARENADOR&quot;, &quot;id_wb&quot;: 0, &quot;minimal_sediment_perc&quot;: 2, &quot;predefined_sediment_perc&quot;: &quot;4.50&quot;, &quot;maximal_sediment_perc&quot;: 7, &quot;minimal_nitrogen_perc&quot;: 1, &quot;predefined_nitrogen_perc&quot;: &quot;1.98&quot;, &quot;maximal_nitrogen_perc&quot;: 5, &quot;minimal_phoshorus_perc&quot;: 1, &quot;predefined_phosphorus_perc&quot;: &quot;2.55&quot;, &quot;maximal_phosphorus_perc&quot;: 7, &quot;minimal_transp_water_perc&quot;: 0, &quot;predefined_transp_water_perc&quot;: &quot;100.00&quot;, &quot;maximal_transp_water_perc&quot;: 100}}]" funcost="[{&quot;model&quot;: &quot;waterproof_intake.costfunctionsprocess&quot;, &quot;pk&quot;: 10501, &quot;fields&quot;: {&quot;symbol&quot;: &quot;D&quot;, &quot;categorys&quot;: &quot;Desarenador&quot;, &quot;energy&quot;: &quot;3.0000&quot;, &quot;labour&quot;: &quot;89.0000&quot;, &quot;mater_equipment&quot;: &quot;8.0000&quot;, &quot;function_value&quot;: &quot;((16.498*text(Q)) + 10264)*((16.498*text(Q)) + 10264)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))&quot;, &quot;function_name&quot;: &quot;Desarenador&quot;, &quot;function_description&quot;: null}}]" id="5">
+    <mxCell style="desarenador" parent="1" vertex="1" dbreference="DESARENADOR" funcionreference="D">
+      <mxGeometry x="410" y="30" width="60" height="92" as="geometry" />
+    </mxCell>
+  </Symbol>
+  <mxCell id="6" value="{&quot;connectorType&quot;:&quot;CH&quot;,&quot;varcost&quot;:[&quot;Q_6&quot;,&quot;CSed_6&quot;,&quot;CN_6&quot;,&quot;CP_6&quot;,&quot;WSed_6&quot;,&quot;WN_6&quot;,&quot;WP_6&quot;,&quot;WSed_ret_6&quot;,&quot;WN_ret_6&quot;,&quot;WP_ret_6&quot;],&quot;external&quot;:false,&quot;resultdb&quot;:&quot;[{\&quot;model\&quot;: \&quot;waterproof_intake.processefficiencies\&quot;, \&quot;pk\&quot;: 8, \&quot;fields\&quot;: {\&quot;name\&quot;: \&quot;Captaci\\u00f3n\&quot;, \&quot;unitary_process\&quot;: \&quot;Canal\&quot;, \&quot;symbol\&quot;: \&quot;C\&quot;, \&quot;categorys\&quot;: \&quot;Canal\&quot;, \&quot;normalized_category\&quot;: \&quot;CHANNEL\&quot;, \&quot;id_wb\&quot;: 0, \&quot;minimal_sediment_perc\&quot;: 1, \&quot;predefined_sediment_perc\&quot;: \&quot;2.00\&quot;, \&quot;maximal_sediment_perc\&quot;: 7, \&quot;minimal_nitrogen_perc\&quot;: 1, \&quot;predefined_nitrogen_perc\&quot;: \&quot;0.88\&quot;, \&quot;maximal_nitrogen_perc\&quot;: 5, \&quot;minimal_phoshorus_perc\&quot;: 1, \&quot;predefined_phosphorus_perc\&quot;: \&quot;1.13\&quot;, \&quot;maximal_phosphorus_perc\&quot;: 7, \&quot;minimal_transp_water_perc\&quot;: 0, \&quot;predefined_transp_water_perc\&quot;: \&quot;100.00\&quot;, \&quot;maximal_transp_water_perc\&quot;: 100}}]&quot;,&quot;name&quot;:&quot;Channel&quot;,&quot;funcost&quot;:&quot;[]&quot;}" style="CHANNEL" parent="1" source="3" target="5" edge="1">
+    <mxGeometry relative="1" as="geometry" />
+  </mxCell>
+  <Symbol name="Reservorio de Agua Cruda (RAC)" label="Water reservoir (7)" externalData="false" varcost="[&quot;Q_7&quot;,&quot;CSed_7&quot;,&quot;CN_7&quot;,&quot;CP_7&quot;,&quot;WSed_7&quot;,&quot;WN_7&quot;,&quot;WP_7&quot;,&quot;WSed_ret_7&quot;,&quot;WN_ret_7&quot;,&quot;WP_ret_7&quot;]" resultdb="[{&quot;model&quot;:&quot;waterproof_intake.processefficiencies&quot;,&quot;pk&quot;:28,&quot;fields&quot;:{&quot;name&quot;:&quot;Captación&quot;,&quot;unitary_process&quot;:&quot;Reservorio Agua Cruda&quot;,&quot;symbol&quot;:&quot;RAC&quot;,&quot;categorys&quot;:&quot;No Aplica&quot;,&quot;normalized_category&quot;:&quot;RESERVORIOAGUACRUDA&quot;,&quot;id_wb&quot;:0,&quot;minimal_sediment_perc&quot;:34,&quot;predefined_sediment_perc&quot;:&quot;1&quot;,&quot;maximal_sediment_perc&quot;:99,&quot;minimal_nitrogen_perc&quot;:15,&quot;predefined_nitrogen_perc&quot;:&quot;2&quot;,&quot;maximal_nitrogen_perc&quot;:55,&quot;minimal_phoshorus_perc&quot;:20,&quot;predefined_phosphorus_perc&quot;:&quot;3&quot;,&quot;maximal_phosphorus_perc&quot;:70,&quot;minimal_transp_water_perc&quot;:0,&quot;predefined_transp_water_perc&quot;:&quot;100&quot;,&quot;maximal_transp_water_perc&quot;:100}}]" id="7">
+    <mxCell style="reservorioagua" parent="1" vertex="1" dbreference="RESERVORIOAGUACRUDA" funcionreference="">
+      <mxGeometry x="580" y="30" width="60" height="92" as="geometry" />
+    </mxCell>
+  </Symbol>
+  <mxCell id="8" value="{&quot;connectorType&quot;:&quot;CH&quot;,&quot;varcost&quot;:[&quot;Q_8&quot;,&quot;CSed_8&quot;,&quot;CN_8&quot;,&quot;CP_8&quot;,&quot;WSed_8&quot;,&quot;WN_8&quot;,&quot;WP_8&quot;,&quot;WSed_ret_8&quot;,&quot;WN_ret_8&quot;,&quot;WP_ret_8&quot;],&quot;external&quot;:false,&quot;resultdb&quot;:&quot;[{\&quot;model\&quot;: \&quot;waterproof_intake.processefficiencies\&quot;, \&quot;pk\&quot;: 8, \&quot;fields\&quot;: {\&quot;name\&quot;: \&quot;Captaci\\u00f3n\&quot;, \&quot;unitary_process\&quot;: \&quot;Canal\&quot;, \&quot;symbol\&quot;: \&quot;C\&quot;, \&quot;categorys\&quot;: \&quot;Canal\&quot;, \&quot;normalized_category\&quot;: \&quot;CHANNEL\&quot;, \&quot;id_wb\&quot;: 0, \&quot;minimal_sediment_perc\&quot;: 1, \&quot;predefined_sediment_perc\&quot;: \&quot;2.00\&quot;, \&quot;maximal_sediment_perc\&quot;: 7, \&quot;minimal_nitrogen_perc\&quot;: 1, \&quot;predefined_nitrogen_perc\&quot;: \&quot;0.88\&quot;, \&quot;maximal_nitrogen_perc\&quot;: 5, \&quot;minimal_phoshorus_perc\&quot;: 1, \&quot;predefined_phosphorus_perc\&quot;: \&quot;1.13\&quot;, \&quot;maximal_phosphorus_perc\&quot;: 7, \&quot;minimal_transp_water_perc\&quot;: 0, \&quot;predefined_transp_water_perc\&quot;: \&quot;100.00\&quot;, \&quot;maximal_transp_water_perc\&quot;: 100}}]&quot;,&quot;name&quot;:&quot;Channel&quot;,&quot;funcost&quot;:&quot;[]&quot;}" style="CHANNEL" parent="1" source="5" target="7" edge="1">
+    <mxGeometry relative="1" as="geometry" />
+  </mxCell>
+  <Symbol name="Camara de Quiebre" label="Break chamber (9)" externalData="false" varcost="[&quot;Q_9&quot;,&quot;CSed_9&quot;,&quot;CN_9&quot;,&quot;CP_9&quot;,&quot;WSed_9&quot;,&quot;WN_9&quot;,&quot;WP_9&quot;,&quot;WSed_ret_9&quot;,&quot;WN_ret_9&quot;,&quot;WP_ret_9&quot;]" resultdb="[{&quot;model&quot;: &quot;waterproof_intake.processefficiencies&quot;, &quot;pk&quot;: 6, &quot;fields&quot;: {&quot;name&quot;: &quot;Captaci\u00f3n&quot;, &quot;unitary_process&quot;: &quot;C\u00e1mara De Quiebre&quot;, &quot;symbol&quot;: &quot;CQ&quot;, &quot;categorys&quot;: &quot;C\u00e1mara de quiebre&quot;, &quot;normalized_category&quot;: &quot;CAMARADEQUIEBRE&quot;, &quot;id_wb&quot;: 0, &quot;minimal_sediment_perc&quot;: 1, &quot;predefined_sediment_perc&quot;: &quot;2.00&quot;, &quot;maximal_sediment_perc&quot;: 3, &quot;minimal_nitrogen_perc&quot;: 1, &quot;predefined_nitrogen_perc&quot;: &quot;0.88&quot;, &quot;maximal_nitrogen_perc&quot;: 3, &quot;minimal_phoshorus_perc&quot;: 1, &quot;predefined_phosphorus_perc&quot;: &quot;1.13&quot;, &quot;maximal_phosphorus_perc&quot;: 3, &quot;minimal_transp_water_perc&quot;: 0, &quot;predefined_transp_water_perc&quot;: &quot;100.00&quot;, &quot;maximal_transp_water_perc&quot;: 100}}]" funcost="[{&quot;model&quot;: &quot;waterproof_intake.costfunctionsprocess&quot;, &quot;pk&quot;: 10601, &quot;fields&quot;: {&quot;symbol&quot;: &quot;CQ&quot;, &quot;categorys&quot;: &quot;C\u00e1mara de quiebre&quot;, &quot;energy&quot;: &quot;3.0000&quot;, &quot;labour&quot;: &quot;89.0000&quot;, &quot;mater_equipment&quot;: &quot;8.0000&quot;, &quot;function_value&quot;: &quot;((164.98*text(Q)) + 10264)*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))&quot;, &quot;function_name&quot;: &quot;C\u00e1mara de quiebre&quot;, &quot;function_description&quot;: null}}]" id="9">
+    <mxCell style="camaraquiebre" parent="1" vertex="1" dbreference="CAMARADEQUIEBRE" funcionreference="CQ">
+      <mxGeometry x="580" y="220" width="60" height="92" as="geometry" />
+    </mxCell>
+  </Symbol>
+  <mxCell id="10" value="{&quot;connectorType&quot;:&quot;PL&quot;,&quot;varcost&quot;:[&quot;Q_10&quot;,&quot;CSed_10&quot;,&quot;CN_10&quot;,&quot;CP_10&quot;,&quot;WSed_10&quot;,&quot;WN_10&quot;,&quot;WP_10&quot;,&quot;WSed_ret_10&quot;,&quot;WN_ret_10&quot;,&quot;WP_ret_10&quot;],&quot;external&quot;:false,&quot;resultdb&quot;:&quot;[{\&quot;model\&quot;: \&quot;waterproof_intake.processefficiencies\&quot;, \&quot;pk\&quot;: 7, \&quot;fields\&quot;: {\&quot;name\&quot;: \&quot;Captaci\\u00f3n\&quot;, \&quot;unitary_process\&quot;: \&quot;Pipeline\&quot;, \&quot;symbol\&quot;: \&quot;P\&quot;, \&quot;categorys\&quot;: \&quot;Pipeline\&quot;, \&quot;normalized_category\&quot;: \&quot;PIPELINE\&quot;, \&quot;id_wb\&quot;: 0, \&quot;minimal_sediment_perc\&quot;: 0, \&quot;predefined_sediment_perc\&quot;: \&quot;0.50\&quot;, \&quot;maximal_sediment_perc\&quot;: 2, \&quot;minimal_nitrogen_perc\&quot;: 0, \&quot;predefined_nitrogen_perc\&quot;: \&quot;0.22\&quot;, \&quot;maximal_nitrogen_perc\&quot;: 2, \&quot;minimal_phoshorus_perc\&quot;: 0, \&quot;predefined_phosphorus_perc\&quot;: \&quot;0.28\&quot;, \&quot;maximal_phosphorus_perc\&quot;: 2, \&quot;minimal_transp_water_perc\&quot;: 0, \&quot;predefined_transp_water_perc\&quot;: \&quot;100.00\&quot;, \&quot;maximal_transp_water_perc\&quot;: 100}}]&quot;,&quot;name&quot;:&quot;Pipeline&quot;,&quot;funcost&quot;:&quot;[{\&quot;model\&quot;: \&quot;waterproof_intake.costfunctionsprocess\&quot;, \&quot;pk\&quot;: 10701, \&quot;fields\&quot;: {\&quot;symbol\&quot;: \&quot;T\&quot;, \&quot;categorys\&quot;: \&quot;Tuber\\u00eda\&quot;, \&quot;energy\&quot;: \&quot;20.0000\&quot;, \&quot;labour\&quot;: \&quot;60.0000\&quot;, \&quot;mater_equipment\&quot;: \&quot;20.0000\&quot;, \&quot;function_value\&quot;: \&quot;(0.01861*((0.763*text(Q))+(8.402*RAIZ(text(Q)))))*1 + (0.24*((text(Csed) - 56)/56)) + (0.06*((text(CN) - 20)/20))\&quot;, \&quot;function_name\&quot;: \&quot;Tuber\\u00eda\&quot;, \&quot;function_description\&quot;: null}}]&quot;}" style="PIPELINE" parent="1" source="7" target="9" edge="1">
+    <mxGeometry relative="1" as="geometry" />
+  </mxCell>
+  <Symbol name="CSINFRA" label="CS Infra (11)" externalData="false" varcost="[&quot;Q_11&quot;,&quot;CSed_11&quot;,&quot;CN_11&quot;,&quot;CP_11&quot;,&quot;WSed_11&quot;,&quot;WN_11&quot;,&quot;WP_11&quot;,&quot;WSed_ret_11&quot;,&quot;WN_ret_11&quot;,&quot;WP_ret_11&quot;]" funcost="[]" resultdb="[{&quot;model&quot;: &quot;waterproof_intake.processefficiencies&quot;, &quot;pk&quot;: 33, &quot;fields&quot;: {&quot;name&quot;: &quot;Captaci\u00f3n&quot;, &quot;unitary_process&quot;: &quot;Case Study Infrastructure&quot;, &quot;symbol&quot;: &quot;CS&quot;, &quot;categorys&quot;: &quot;Case Study Infrastructure&quot;, &quot;normalized_category&quot;: &quot;CSINFRA&quot;, &quot;id_wb&quot;: 0, &quot;minimal_sediment_perc&quot;: 0, &quot;predefined_sediment_perc&quot;: &quot;13.00&quot;, &quot;maximal_sediment_perc&quot;: 99, &quot;minimal_nitrogen_perc&quot;: 0, &quot;predefined_nitrogen_perc&quot;: &quot;15.00&quot;, &quot;maximal_nitrogen_perc&quot;: 25, &quot;minimal_phoshorus_perc&quot;: 0, &quot;predefined_phosphorus_perc&quot;: &quot;18.00&quot;, &quot;maximal_phosphorus_perc&quot;: 80, &quot;minimal_transp_water_perc&quot;: 0, &quot;predefined_transp_water_perc&quot;: &quot;100.00&quot;, &quot;maximal_transp_water_perc&quot;: 100}}]" id="11">
+    <mxCell style="csinfra" parent="1" vertex="1" dbreference="CSINFRA" funcionreference="CS">
+      <mxGeometry x="590" y="380" width="60" height="92" as="geometry" />
+    </mxCell>
+  </Symbol>
+  <mxCell id="12" value="{&quot;connectorType&quot;:&quot;CH&quot;,&quot;varcost&quot;:[&quot;Q_12&quot;,&quot;CSed_12&quot;,&quot;CN_12&quot;,&quot;CP_12&quot;,&quot;WSed_12&quot;,&quot;WN_12&quot;,&quot;WP_12&quot;,&quot;WSed_ret_12&quot;,&quot;WN_ret_12&quot;,&quot;WP_ret_12&quot;],&quot;external&quot;:false,&quot;resultdb&quot;:&quot;[{\&quot;model\&quot;: \&quot;waterproof_intake.processefficiencies\&quot;, \&quot;pk\&quot;: 8, \&quot;fields\&quot;: {\&quot;name\&quot;: \&quot;Captaci\\u00f3n\&quot;, \&quot;unitary_process\&quot;: \&quot;Canal\&quot;, \&quot;symbol\&quot;: \&quot;C\&quot;, \&quot;categorys\&quot;: \&quot;Canal\&quot;, \&quot;normalized_category\&quot;: \&quot;CHANNEL\&quot;, \&quot;id_wb\&quot;: 0, \&quot;minimal_sediment_perc\&quot;: 1, \&quot;predefined_sediment_perc\&quot;: \&quot;2.00\&quot;, \&quot;maximal_sediment_perc\&quot;: 7, \&quot;minimal_nitrogen_perc\&quot;: 1, \&quot;predefined_nitrogen_perc\&quot;: \&quot;0.88\&quot;, \&quot;maximal_nitrogen_perc\&quot;: 5, \&quot;minimal_phoshorus_perc\&quot;: 1, \&quot;predefined_phosphorus_perc\&quot;: \&quot;1.13\&quot;, \&quot;maximal_phosphorus_perc\&quot;: 7, \&quot;minimal_transp_water_perc\&quot;: 0, \&quot;predefined_transp_water_perc\&quot;: \&quot;100.00\&quot;, \&quot;maximal_transp_water_perc\&quot;: 100}}]&quot;,&quot;name&quot;:&quot;Channel&quot;,&quot;funcost&quot;:&quot;[]&quot;}" style="CHANNEL" parent="1" source="9" target="11" edge="1">
+    <mxGeometry relative="1" as="geometry" />
+  </mxCell>
+  <Symbol name="External Input" label="External Input (13)" externalData="true" varcost="[&quot;Q13&quot;,&quot;CSed13&quot;,&quot;CN13&quot;,&quot;CP13&quot;,&quot;WSed13&quot;,&quot;WN13&quot;,&quot;WP13&quot;,&quot;WSedRet13&quot;,&quot;WNRet13&quot;,&quot;WPRet13&quot;]" funcost="[]" resultdb="[{&quot;model&quot;: &quot;waterproof_intake.processefficiencies&quot;, &quot;pk&quot;: 32, &quot;fields&quot;: {&quot;name&quot;: &quot;Captaci\u00f3n&quot;, &quot;unitary_process&quot;: &quot;External input&quot;, &quot;symbol&quot;: &quot;EI&quot;, &quot;categorys&quot;: &quot;External input&quot;, &quot;normalized_category&quot;: &quot;ENTRADAEXTERNA&quot;, &quot;id_wb&quot;: 0, &quot;minimal_sediment_perc&quot;: 0, &quot;predefined_sediment_perc&quot;: &quot;11.00&quot;, &quot;maximal_sediment_perc&quot;: 99, &quot;minimal_nitrogen_perc&quot;: 0, &quot;predefined_nitrogen_perc&quot;: &quot;7.00&quot;, &quot;maximal_nitrogen_perc&quot;: 25, &quot;minimal_phoshorus_perc&quot;: 0, &quot;predefined_phosphorus_perc&quot;: &quot;17.00&quot;, &quot;maximal_phosphorus_perc&quot;: 80, &quot;minimal_transp_water_perc&quot;: 0, &quot;predefined_transp_water_perc&quot;: &quot;100.00&quot;, &quot;maximal_transp_water_perc&quot;: 100}}]" id="13">
+    <mxCell style="externalinput" vertex="1" dbreference="ENTRADAEXTERNA" funcionreference="EX" parent="1">
+      <mxGeometry x="440" y="210" width="60" height="92" as="geometry" />
+    </mxCell>
+  </Symbol>
+  <mxCell id="14" value="{&quot;connectorType&quot;:&quot;CH&quot;,&quot;varcost&quot;:[&quot;Q14&quot;,&quot;CSed14&quot;,&quot;CN14&quot;,&quot;CP14&quot;,&quot;WSed14&quot;,&quot;WN14&quot;,&quot;WP14&quot;,&quot;WSedRet14&quot;,&quot;WNRet14&quot;,&quot;WPRet14&quot;],&quot;external&quot;:false,&quot;resultdb&quot;:[{&quot;model&quot;:&quot;waterproof_intake.processefficiencies&quot;,&quot;pk&quot;:8,&quot;fields&quot;:{&quot;name&quot;:&quot;Captación&quot;,&quot;unitary_process&quot;:&quot;Canal&quot;,&quot;symbol&quot;:&quot;C&quot;,&quot;categorys&quot;:&quot;Canal&quot;,&quot;normalized_category&quot;:&quot;CHANNEL&quot;,&quot;id_wb&quot;:0,&quot;minimal_sediment_perc&quot;:1,&quot;predefined_sediment_perc&quot;:&quot;2.00&quot;,&quot;maximal_sediment_perc&quot;:7,&quot;minimal_nitrogen_perc&quot;:1,&quot;predefined_nitrogen_perc&quot;:&quot;0.88&quot;,&quot;maximal_nitrogen_perc&quot;:5,&quot;minimal_phoshorus_perc&quot;:1,&quot;predefined_phosphorus_perc&quot;:&quot;1.13&quot;,&quot;maximal_phosphorus_perc&quot;:7,&quot;minimal_transp_water_perc&quot;:0,&quot;predefined_transp_water_perc&quot;:&quot;100.00&quot;,&quot;maximal_transp_water_perc&quot;:100}}],&quot;name&quot;:&quot;Channel&quot;,&quot;funcost&quot;:[]}" style="CHANNEL" edge="1" parent="1" source="13" target="9">
+    <mxGeometry relative="1" as="geometry" />
+  </mxCell>
+</root>
+</mxGraphModel>
+`;
 // Program starts here. The document.onLoad executes the
 // createEditor function with a given configuration.
 // In the config file, the mxEditor.onInit method is
@@ -124,20 +187,6 @@ function onInit(editor) {
         f(editor);
     }
 
-    // Changes the zoom on mouseWheel events
-    /* mxEvent.addMouseWheelListener(function (evt, up) {
-        if (!mxEvent.isConsumed(evt)) {
-            if (up) {
-                editor.execute('zoomIn');
-            }
-            else {
-                editor.execute('zoomOut');
-            }
-
-            mxEvent.consume(evt);
-        }
-    });*/
-
     // Defines a new action to switch between
     // XML and graphical display
     var textNode = document.getElementById('xml');
@@ -145,11 +194,9 @@ function onInit(editor) {
     var parent = editor.graph.getDefaultParent();
     var xmlDocument = mxUtils.createXmlDocument();
     var sourceNode = xmlDocument.createElement('Symbol');
-    var sourceNode1 = xmlDocument.createElement('Symbol');
-
 
     //Create River at the beginning of the diagram
-    var river = editor.graph.insertVertex(parent, null, sourceNode1, 40, 30, 60, 92);
+    var river = editor.graph.insertVertex(parent, null, sourceNode, 40, 30, 60, 92);
     river.setAttribute('name', 'River');
     river.setAttribute('label', 'River (2)');
     river.setAttribute('externalData', 'false');
@@ -175,82 +222,26 @@ function onInit(editor) {
             river.setAttribute('resultdb', result);
         }
     });
-    /*
-        //Create CSINFRA at the beginning of the diagram
-        var vertex = editor.graph.insertVertex(parent, null, sourceNode, 500, 30, 60, 92);
-        vertex.setAttribute('name', 'CSINFRA');
-        vertex.setAttribute('label', 'CS Infra (3)');
-        vertex.setAttribute('externalData', 'false');
-        editor.graph.model.setStyle(vertex, 'csinfra');
-        var temp2 = [];
-        temp2.push(
-            `Q_${vertex.id}`,
-            `CSed_${vertex.id}`,
-            `CN_${vertex.id}`,
-            `CP_${vertex.id}`,
-            `WSed_${vertex.id}`,
-            `WN_${vertex.id}`,
-            `WP_${vertex.id}`,
-            `WSed_ret_${vertex.id}`,
-            `WN_ret_${vertex.id}`,
-            `WP_ret_${vertex.id}`
-        );
 
-
-        $.ajax({
-            url: `/intake/loadProcess/CSINFRA`,
-            success: function(result) {
-                vertex.setAttribute('varcost', JSON.stringify(temp2));
-                vertex.setAttribute('resultdb', result);
-            }
-        });
-
-        $.ajax({
-            url: `/intake/loadFunctionBySymbol/CS`,
-            success: function(result) {
-                vertex.setAttribute('funcost', result);
-            }
-        });
-
-
-
-        var edge = editor.graph.insertEdge(parent, null, '', parent.children[0], parent.children[1]);
-
-        $.ajax({
-            url: `/intake/loadProcess/${connectionsType.EC.style}`,
-            success: function(result) {
-                let idvar = edge.id;
-                let varcost = [
-                    `Q_${idvar} (m³)`,
-                    `CSed_${idvar} (mg/l)`,
-                    `CN_${idvar} (mg/l)`,
-                    `CP_${idvar} (mg/l)`,
-                    `WSed_${idvar} (Ton)`,
-                    `WN_${idvar} (Kg)`,
-                    `WP_${idvar} (Kg)`,
-                    `WSed_ret_${idvar} (Ton)`,
-                    `WN_ret_${idvar} (Kg)`,
-                    `WP_ret_${idvar} (Kg)`
-                ];
-                $.ajax({
-                    url: `/intake/loadFunctionBySymbol/${connectionsType.EC.funcionreference}`,
-                    success: function(result2) {
-                        let external = false;
-                        let value = {
-                            "connectorType": connectionsType.EC.id,
-                            "varcost": JSON.stringify(varcost),
-                            "external": external,
-                            'resultdb': result,
-                            'name': connectionsType.EC.name,
-                            "funcost": result2
-                        };
-                        edge.setValue(JSON.stringify(value));
-                        editor.graph.model.setStyle(edge, connectionsType.EC.style);
-                    }
-                });
-            }
-        });
-    */
+    //Validate connections between elements
+    editor.graph.getEdgeValidationError = function(edge, source, target) {
+        if (source != null && target != null &&
+            this.model.getValue(source) != null &&
+            this.model.getValue(target) != null) {
+            //water intake 
+            if (source.style != 'rio' && target.style == 'bocatoma') return 'The water intake element can only receive connection from the river element';
+            //floating intake
+            if (source.style != 'rio' && source.style != 'reservorioagua' && source.style != 'embalse' && target.style == 'bocatomaflotante')
+                return 'The floating intake element can only receive connection from the river, reservoir and water reservoir';
+            //side intake
+            if (source.style != 'rio' && source.style != 'reservorioagua' && source.style != 'embalse' && target.style == 'bocatomalateral')
+                return 'The side intake element can only receive connection from the river, reservoir and water reservoir';
+            //connection with itself
+            if (source.style == target.style) return 'No element could connect to itself';
+        }
+        // "Supercall"
+        return mxGraph.prototype.getEdgeValidationError.apply(this, arguments);
+    }
 
     // River not have a entrance connection
     editor.graph.multiplicities.push(new mxMultiplicity(
@@ -261,6 +252,12 @@ function onInit(editor) {
     editor.graph.multiplicities.push(new mxMultiplicity(
         false, 'Symbol', 'name', 'External Input', 0, 0, ['Symbol'],
         `No element can be connected to the External input`));
+
+    // External input needs 1 connected Targets
+    editor.graph.multiplicities.push(new mxMultiplicity(
+        true, 'Symbol', 'name', 'External Input', 0, 1, ['Symbol'],
+        'External Input only have 1 target',
+        'Source Must Connect to Target'));
 
     // Source nodes needs 1 connected Targets
     editor.graph.multiplicities.push(new mxMultiplicity(
@@ -279,7 +276,6 @@ function onInit(editor) {
 
     var funct = function(editor) {
         if (getdata.checked) {
-            //console.log(getdata.checked)
             graphNode.style.display = 'none';
             textNode.style.display = 'inline';
 
@@ -297,9 +293,7 @@ function onInit(editor) {
                 var dec = new mxCodec(doc);
                 dec.decode(doc.documentElement, editor.graph.getModel());
             }
-
             textNode.originalValue = null;
-
             // Makes sure nothing is selected in IE
             if (mxClient.IS_IE) {
                 mxUtils.clearSelection();
@@ -311,18 +305,6 @@ function onInit(editor) {
             editor.graph.container.focus();
         }
     };
-
-    /* var getd = function(editor){
-         graphNode.style.display = 'none';
-             textNode.style.display = 'inline';
-
-             var enc = new mxCodec();
-             var node = enc.encode(editor.graph.getModel());
-
-             textNode.value = mxUtils.getPrettyXml(node);
-             textNode.originalValue = textNode.value;
-             textNode.focus();
-     }*/
 
     editor.addAction('switchView', funct);
 
@@ -496,17 +478,14 @@ function onInit(editor) {
                     }
                 });
             }
-
-
         });
 
         //Load data from figure to html
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
             selectedCell = evt.getProperty('cell');
             // Clear Inputs
-            if (selectedCell != undefined) clearDataHtml(selectedCell, evt);
-            //console.log(selectedCell)
-            if (selectedCell != undefined) { addData(selectedCell, MQ); } else { clearDataHtml(selectedCell, evt); }
+            if (selectedCell == undefined) clearDataHtml(selectedCell, evt);
+            if (selectedCell != undefined) { addData(selectedCell, MQ); } else { clearDataHtml(); }
         });
 
         //Button for valide graph
@@ -544,7 +523,7 @@ function onInit(editor) {
                             'source': node.getAttribute('source'),
                             'target': node.getAttribute('target'),
                             'resultdb': value[3],
-                            'funcost': JSON.stringify(value[5]),
+                            'funcost': value[5],
                             'name': JSON.stringify(value[4]),
                             'varcost': JSON.stringify(value[1])
                         });
@@ -598,7 +577,6 @@ function onInit(editor) {
         //Edit funcion cost 
         $(document).on('click', 'a[name=glyphicon-edit]', function() {
             mathField.clearSelection();
-            console.log(mathField.latex())
             $('#CalculatorModal').modal('show');
             CostSelected = $(this).attr('idvalue');
             setVarCost();
@@ -787,11 +765,6 @@ function onInit(editor) {
             mathField.focus();
         }
 
-
-
-
     });
-
-
 
 }

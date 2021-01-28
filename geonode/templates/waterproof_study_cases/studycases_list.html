@@ -13,7 +13,9 @@
     <link rel="stylesheet" href="https://photon.komoot.io/static/leaflet.photon/leaflet.photon.css"></link>
 
     <script>
-        var intakePolygons=[];    
+        var intakePolygons=[]; 
+        SEARCH_CITY_API_URL = '{{ SEARCH_CITY_API_URL }}';
+        SEARCH_COUNTRY_API_URL = '{{ SEARCH_COUNTRY_API_URL }}';
     </script>
 {% endblock %} {% block body_outer %}
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}waterproof_nbs_ca/css/dataTables.bootstrap.min.css">
@@ -23,9 +25,10 @@
     crossorigin="" />
 <div class="row">
     <div class="col-md-4">
-        <h4 class="text-center" id="countryLabel">{{intake.city.name}}</h4>
-        <p><b>Region:</b> <span id="regionLabel">{{region.name}}</span> </p>
-        <p><b>Currency:</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
+        <h4 class="text-center" id="countryLabel"></h4>
+        <p><b>{% trans "Selected City" %} :</b> <span id="cityLabel">{{intake.city.name}}</span></p>
+        <p><b>{% trans "Region" %} :</b> <span id="regionLabel">{{region.name}}</span></p>
+        <p><b>{% trans "Currency" %}:</b><span id="currencyLabel">({{currency.code}}) - {{currency.name}}</span></p>
     </div>
     <div class="col-md-8">
         <div id="mapidStudy" style="width: 700px; height: 200px;"></div>

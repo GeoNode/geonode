@@ -43,9 +43,9 @@ L.Control.Coordinates = L.Control.extend({
         title: 'Capture Coordinate'
 	},
 
-	onAdd: function(map) {
+	onAdd: function(map, options) {
         this._map = map;
-        
+        this.options = L.Util.extend(this.options, options);
         var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
 
         this.link = L.DomUtil.create('a', 'leaflet-bar-part', container);
@@ -312,6 +312,8 @@ L.Control.Coordinates = L.Control.extend({
 			// Put the object into storage
 			localStorage.setItem('cityCoords', JSON.stringify(waterproof["cityCoords"]));
 			//this._label.innerHTML = this._createCoordinateLabel(pos);
+
+			
 		}
 	},
 
@@ -410,7 +412,10 @@ function placeMarker(obj){
         
         L.Location.Marker.on('dragend', function(event) {
             obj._update(event);
-        L.Location.Marker.openPopup();            
+			L.Location.Marker.openPopup();
+			if (obj.options.actionAfterDragEnd){
+				obj.options.actionAfterDragEnd();
+			}            
         });
         L.Location.Marker.bindPopup(L.Location.Popup);
         L.Location.Marker.addTo(obj._map);
