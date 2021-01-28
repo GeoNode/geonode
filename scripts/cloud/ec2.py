@@ -104,9 +104,8 @@ def wait_for_state(ec2, instance_id, state):
 
 def writeconfig(config):
     # Writing our configuration file to CONFIG_FILE
-    configfile = open(CONFIG_FILE, 'wb')
-    config.write(configfile)
-    configfile.close()
+    with open(CONFIG_FILE, 'wb') as configfile:
+        config.write(configfile)
 
 
 def readconfig(default_ami=None):
@@ -247,9 +246,8 @@ def terminate():
 
     config.set('ec2', 'HOST', '')
     config.set('ec2', 'INSTANCE', '')
-    configfile = open(CONFIG_FILE, 'wb')
-    config.write(configfile)
-    configfile.close()
+    with open(CONFIG_FILE, 'wb') as configfile:
+        config.write(configfile)
 
 
 if __name__ == '__main__':

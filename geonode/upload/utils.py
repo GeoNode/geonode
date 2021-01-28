@@ -847,12 +847,13 @@ max\ connections={db_conn_max}"""
         # - data = abs path to the zip file
         # - configure = parameter allows for future configuration after harvesting
         name = head
-        data = open(dirname + '/' + head + '.zip', 'rb')
-        try:
-            cat.create_imagemosaic(name, data)
-        except ConflictingDataError:
-            # Trying to append granules to an existing mosaic
-            pass
+
+        with open(f"{dirname}/{head}.zip", 'rb') as data:
+            try:
+                cat.create_imagemosaic(name, data)
+            except ConflictingDataError:
+                # Trying to append granules to an existing mosaic
+                pass
 
         # configure time as LIST
         if mosaic_time_regex:

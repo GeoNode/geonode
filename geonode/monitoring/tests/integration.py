@@ -102,8 +102,10 @@ res_dir = os.path.join(os.path.dirname(__file__), 'resources')
 req_err_path = os.path.join(res_dir, 'req_err.xml')
 req_path = os.path.join(res_dir, 'req.xml')
 
-req_err_xml = open(req_err_path, 'rt').read()
-req_xml = open(req_path, 'rt').read()
+with open(req_err_path, 'rt') as req_err_xml_file:
+    req_err_xml = req_err_xml_file.read()
+with open(req_path, 'rt') as req_xml_file:
+    req_xml = req_xml_file.read()
 
 req_big = xmljson.yahoo.data(dlxml.fromstring(req_xml))
 req_err_big = xmljson.yahoo.data(dlxml.fromstring(req_err_xml))

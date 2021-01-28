@@ -161,9 +161,9 @@ class Command(BaseCommand):
 
                     logger.info("Dumping '"+app_name+"' into '"+dump_name+".json'.")
                     # Point stdout at a file for dumping data to.
-                    output = open(os.path.join(target_folder, dump_name+'.json'), 'w')
-                    call_command('dumpdata', app_name, format='json', indent=2, stdout=output)
-                    output.close()
+                    with open(os.path.join(target_folder, dump_name+'.json'), 'w') as output:
+                        call_command('dumpdata', app_name, format='json', indent=2, stdout=output)
+                    
 
                 # Store Media Root
                 media_root = settings.MEDIA_ROOT
