@@ -111,7 +111,7 @@ DATABASE_URL = os.getenv(
       )
  )
 
-DATABASE_URL='postgresql://geonode:{&Uid&QXZ&6f;|F@dev.skaphe.com:5432/geonode'
+#DATABASE_URL='postgresql://geonode:{&Uid&QXZ&6f;|F@dev.skaphe.com:5432/geonode'
 #DATABASE_URL='postgresql://geonode:geonode@localhost:5432/geonode'
 
 if DATABASE_URL.startswith("spatialite"):
@@ -2149,8 +2149,6 @@ MONITORING_DATA_TTL = timedelta(days=int(os.getenv("MONITORING_DATA_TTL", 365)))
 # this will disable csrf check for notification config views,
 # use with caution - for dev purpose only
 MONITORING_DISABLE_CSRF = ast.literal_eval(os.environ.get('MONITORING_DISABLE_CSRF', 'False'))
-
-os.environ["PATH"] += os.pathsep + r'C:\Graphviz\bin'
 
 if MONITORING_ENABLED:
     if 'geonode.monitoring' not in INSTALLED_APPS:

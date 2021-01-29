@@ -26,7 +26,7 @@
       <p>{% trans jumbotron_welcome_content %}</p>
       {% endwith %}
       {% if not custom_theme.jumbotron_cta_hide %}
-      <p><a class="btn btn-default btn-lg" target="_blank"
+      <p><a class="btn btn-default btn-lg"
           href="{{custom_theme.jumbotron_cta_link|default:"https://docs.geonode.org/en/master/usage/index.html"}}"
           role="button">{{custom_theme.jumbotron_cta_text|default:_("Get Started &raquo;")}}</a></p>
       {% endif %}
