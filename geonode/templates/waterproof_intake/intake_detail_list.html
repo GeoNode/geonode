@@ -113,14 +113,11 @@
             <div id="step-2" class="tab-pane" role="tabpanel">
                 <div class="page-header">
                     <h3>Configure Parameters</h3>
-                    <p>Select the elements that make up your capture system and click on the drawing area to add them.</p>
                 </div>
                 <!--Toolbar mxgraph-->
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="panel panel-info">
-                            <h4 class="text-center" style="color: #5bc0de;">Select the elements that make up your
-                                capture system and click on the drawing area to add them.</h4>
+                        <div class="panel panel-info" style="display: none;">
                             <div class="panel-body text-center" id="toolbar" disabled></div>
                         </div>
                     </div>
@@ -128,9 +125,6 @@
                 <div class="row">
                     <!--Graph-->
                     <div class="col-md-8">
-                        <span style="float:right;padding-right:36px;">
-                            <input id="getdata" type="checkbox" disabled/>Source
-                        </span>
                         <textarea id="xml" style="height:600px;width:100%;display:none;border-style:none;"></textarea>
                         <div class="panel panel-info">
                             <div class="panel-body" id="graph" tabindex="-1"
@@ -140,12 +134,6 @@
                     <!--Panel Information Right-->
                     <div class="col-md-4">
                         <div class="panel panel-info">
-                            <span class="glyphicon glyphicon-exclamation-sign text-center" id="helpgraph"
-                                style="padding-left:6rem; font-size:22px;" aria-hidden="true">
-                                <label
-                                    style="font-family: 'Montserrat', sans-serif;font-size:16px; vertical-align: text-bottom;">How
-                                    to use the graph</label>
-                            </span>
                             <div class="panel-body">
                                 <!--Figure Name-->
                                 <div class="alert alert-info" role="alert">
@@ -182,12 +170,9 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-primary btn-block" id="saveGraph" disabled>Validate Graph</button>
                     </div>
                     <div class="col-md-12">
                         <h3>Cost functions <small id="titleCostFunSmall"></small>
-                            <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal"
-                                data-target="#exampleModal" id="ModalAddCostBtn" disabled>Add Cost</button>
                         </h3>
                         <div class="panel panel-info">
                             <div class="panel-body">
@@ -322,7 +307,7 @@
                             <label>Type element for asignation</label>
                             <select class="form-control" id="externalSelect"></select>
                         </div>
-
+                    </div>
                 </div>
             </div>
             <!--Step 5-->
@@ -341,11 +326,24 @@
                                 <div class="alert alert-info" role="alert">
                                     <h1 class="text-center">Tools</h1>
                                 </div>
+                                <div class="form-group">
+                                    <label>Load intake delimited area<span class="text-danger-wp"></span></label>
+                                    <input id="intakeArea" type="file" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary" id="btnDelimitArea" disabled> Delimit
+                                    subarea</button>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary" id="btnValidateArea" disabled> Validate
+                                    area</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
         </div>
 
         <!--Inputs hidden for save data-->
@@ -360,102 +358,6 @@
         <input type="hidden" id="graphElements" name="graphElements" value="" disabled>
         <input type="hidden" id="basinId" name="basinId" value="" disabled>
 </form>
-<!--Modal Calculator-->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Add Cost</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-5">
-                        <div class="panel-group" id="VarCostListGroup"></div>
-                    </div>
-                    <div class="col-md-7">
-                        <div class="form-group">
-                            <label>Cost function name</label>
-                            <input type="text" class="form-control" disabled>
-                        </div>
-                        <div class="form-group">
-                            <label>Cost function description</label>
-                            <textarea rows="3" class="form-control"></textarea>
-                        </div>
-                        <h5 class="text-primary">Syntax keyboard</h5>
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="=">'math' =
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="+">'math' +
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">'math' -
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">'math' *
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">'math' a/b
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">'math' a^b
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="\sqrt">'math'
-                                sqrt(a) 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="min">'math' min
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="max">'math' max
-                                'math'</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <h5 class="text-primary">Math expression</h5>
-                        <span id="math-field" class="form-control" style="height: auto;"></span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <p>LaTeX of what you typed: <span id="latex"></span></p>
-                    </div>
-                </div>
-                <br>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-danger" id="saveAndValideCost">Valide and add cost</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!--Modal Help-->
-<div class="modal fade" id="HelpModal" tabindex="-1" aria-labelledby="HelpModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <h3 class="modal-title text-center" id="HelpModalLabel">Help</h3>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <ol>
-                            <li value="1">aqui va la ayuda</li>
-                            <li>con el uso de la grafica </li>
-                            <li> y sha </li>
-                        </ol>
-                    </div>
-                </div>
-                <br>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 {% endblock %}
 {% block extra_script %}
