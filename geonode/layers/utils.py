@@ -1175,7 +1175,7 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
                     bbox[3] = float(_bbox[3])
 
     wms_endpoint = getattr(ogc_server_settings, 'WMS_ENDPOINT') or 'ows'
-    wms_version = getattr(ogc_server_settings, 'WMS_VERSION') or '1.3.0'
+    wms_version = getattr(ogc_server_settings, 'WMS_VERSION') or '1.1.1'
     wms_format = getattr(ogc_server_settings, 'WMS_FORMAT') or 'image/png'
 
     params = {

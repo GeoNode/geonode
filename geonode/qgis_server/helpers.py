@@ -260,7 +260,7 @@ def tile_url(layer, z, x, y, style=None, internal=True):
 
     query_string = {
         'SERVICE': 'WMS',
-        'VERSION': '1.3.0',
+        'VERSION': '1.1.1',
         'REQUEST': 'GetMap',
         'BBOX': bbox,
         'CRS': 'EPSG:3857',
@@ -406,7 +406,7 @@ def thumbnail_url(bbox, layers, qgis_project, style=None, internal=True):
     bbox = ','.join([str(val) for val in margin])
     query_string = {
         'SERVICE': 'WMS',
-        'VERSION': '1.3.0',
+        'VERSION': '1.1.1',
         'REQUEST': 'GetMap',
         'BBOX': bbox,
         'SRS': 'EPSG:4326',
@@ -464,7 +464,7 @@ def legend_url(layer, layertitle=False, style=None, internal=True):
     query_string = {
         'MAP': qgis_project_path,
         'SERVICE': 'WMS',
-        'VERSION': '1.3.0',
+        'VERSION': '1.1.1',
         'REQUEST': 'GetLegendGraphic',
         'LAYER': layer.name,
         'LAYERTITLE': str(layertitle).lower(),
@@ -599,7 +599,7 @@ def wms_get_capabilities_url(layer=None, internal=True):
     query_string = {
         'MAP': qgis_project_path,
         'SERVICE': 'WMS',
-        'VERSION': '1.3.0',
+        'VERSION': '1.1.1',
         'REQUEST': 'GetCapabilities',
         'LAYER': layer.name
     }

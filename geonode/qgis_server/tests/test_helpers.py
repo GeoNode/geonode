@@ -118,7 +118,7 @@ class HelperTest(GeoNodeBaseTestSupport):
 
         expected_query_string = {
             'SERVICE': 'WMS',
-            'VERSION': '1.3.0',
+            'VERSION': '1.1.1',
             'REQUEST': 'GetMap',
             'BBOX': '10801469.341,-606604.256471,10821037.2203,-587036.37723',
             'CRS': 'EPSG:3857',

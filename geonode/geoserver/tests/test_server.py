@@ -1041,7 +1041,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertTrue(wms.startswith(wms_url))
         self.assertIn("service=WMS", wms)
         self.assertIn("request=GetCapabilities", wms)
-        self.assertIn("version=1.3.0", wms)
+        self.assertIn("version=1.1.1", wms)
 
         # Test OWS Download Links
         from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
