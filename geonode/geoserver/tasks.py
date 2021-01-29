@@ -336,12 +336,39 @@ def geoserver_post_save_layers(
         if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
                 'thumbnail_url' in kwargs['update_fields']:
             logger.debug("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
-            create_gs_thumbnail(instance, overwrite=True)
+            # create_gs_thumbnail(instance, overwrite=True)
+            geoserver_create_thumbnail.apply_async(((instance.id, True, )))
 
     # Updating HAYSTACK Indexes if needed
     if settings.HAYSTACK_SEARCH:
         from django.core.management import call_command
         call_command('update_index')
+
+
+@app.task(
+    bind=True,
+    name='geonode.geoserver.tasks.geoserver_create_thumbnail',
+    queue='update',
+    expires=30,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
+def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=True):
+    """
+    Runs create_gs_thumbnail.
+    """
+    instance = None
+    try:
+        instance = ResourceBase.objects.get(id=instance_id).get_real_instance()
+    except Exception:
+        logger.error(f"Resource id {instance_id} does not exist yet!")
+        raise
+
+    create_gs_thumbnail(instance, overwrite=overwrite, check_bbox=check_bbox)
+    logger.debug(f"... Created Thumbnail for Layer {instance.title}")
 
 
 @app.task(

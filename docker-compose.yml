@@ -91,7 +91,7 @@ services:
       - ./scripts/docker/env/${SET_DOCKER_ENV}/django.env
     environment:
       - IS_CELERY=true
-      - CELERY_CMD=celery -A geonode.celery_app:app worker -B -E --statedb=/mnt/volumes/statics/worker.state -s /mnt/volumes/statics/celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h -f /var/log/celery.log
+      - CELERY_CMD=celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E --statedb=/mnt/volumes/statics/worker.state -s /mnt/volumes/statics/celerybeat-schedule --loglevel=INFO --concurrency=10 -n worker1@%h -f /var/log/celery.log
 
   geonode:
     image: geonode/nginx:${SET_DOCKER_ENV}
