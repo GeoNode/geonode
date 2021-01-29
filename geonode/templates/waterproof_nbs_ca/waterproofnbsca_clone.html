@@ -193,6 +193,7 @@
     var countryId = '{{country.id}}';
 </script>
 {% endblock body_outer %} {% block extra_script %}
+<script src="{{ STATIC_URL }}geonode/js/waterproof/geomFile_validate.js"></script>
 <!--ZIP reader library-->
 <script src="{{ STATIC_URL }}geonode/js/jszip/jszip.min.js"></script>
 <!--Shapefile reader library -->

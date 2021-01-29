@@ -86,9 +86,9 @@ function updateStyleLine(graph, cell, type) {
                         "connectorType": type.id,
                         "varcost": varcost,
                         "external": external,
-                        'resultdb': result,
+                        'resultdb': JSON.parse(result),
                         'name': type.name,
-                        "funcost": result2
+                        "funcost": JSON.parse(result2)
                     };
 
                     value = JSON.stringify(value);
@@ -98,11 +98,11 @@ function updateStyleLine(graph, cell, type) {
                     if (typeof(cell.value) == "string" && cell.value.length > 0) {
                         try {
                             let obj = JSON.parse(cell.value);
-                            let dbfields = JSON.parse(obj.resultdb);
+                            let dbfields = obj.resultdb;
                             label = connectionsType[obj.connectorType].name;
                             $('#titleDiagram').text(connectionsType[obj.connectorType].name);
                             $('#titleCostFunSmall').text(`ID: ${cell.id} - ${connectionsType[obj.connectorType].name}`);
-                            addData2HTML(dbfields)
+                            addData2HTML(dbfields, cell)
                         } catch (e) {
                             label = "";
                         }
@@ -113,7 +113,11 @@ function updateStyleLine(graph, cell, type) {
     });
 }
 
-function clearDataHtml(cell, evt) {
+function clearDataHtml() {
+    $('#aguaDiagram').prop('disabled', true);
+    $('#sedimentosDiagram').prop('disabled', true);
+    $('#nitrogenoDiagram').prop('disabled', true);
+    $('#fosforoDiagram').prop('disabled', true);
     $('#idDiagram').val('');
     $('#titleDiagram').empty();
     $('#aguaDiagram').val('');
@@ -121,14 +125,6 @@ function clearDataHtml(cell, evt) {
     $('#sedimentosDiagram').val('');
     $('#nitrogenoDiagram').val('');
     $('#fosforoDiagram').val('');
-    cell = evt.getProperty("cell");
-    var show = false;
-    if (cell != undefined && cell.getAttribute('name') == 'River') show = true;
-    if (cell != undefined && cell.getAttribute('name') == 'External Input') show = true;
-    $('#aguaDiagram').prop('disabled', show);
-    $('#sedimentosDiagram').prop('disabled', show);
-    $('#nitrogenoDiagram').prop('disabled', show);
-    $('#fosforoDiagram').prop('disabled', show);
     $('#funcostgenerate div').remove();
 }
 
@@ -149,13 +145,13 @@ function addData(element, MQ) {
     //add data in HTML for connectors
     if (typeof(element.value) == "string" && element.value.length > 0) {
         let obj = JSON.parse(element.value);
-        let dbfields = JSON.parse(obj.resultdb);
+        let dbfields = obj.resultdb;
         label = connectionsType[obj.connectorType].name;
         $('#titleDiagram').text(connectionsType[obj.connectorType].name);
         $('#titleCostFunSmall').text(`ID: ${element.id} - ${connectionsType[obj.connectorType].name}`);
         $('#idDiagram').val(element.id);
-        addData2HTML(dbfields)
-        funcostdb = JSON.parse(obj.funcost);
+        addData2HTML(dbfields, element)
+        funcostdb = obj.funcost;
         for (let index = 0; index < funcostdb.length; index++) {
             funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index, MQ);
         }
@@ -166,14 +162,13 @@ function addData(element, MQ) {
         if (element.getAttribute('resultdb') == undefined && element.getAttribute('funcost') == undefined) return;
         resultdb = JSON.parse(element.getAttribute('resultdb'));
         if (element.getAttribute('name') == 'River') {
-            addData2HTML(resultdb);
-            return;
+            return addData2HTML(resultdb, element);
         }
+        if (element.getAttribute('funcost') == undefined) return addData2HTML(resultdb, element);
         funcostdb = JSON.parse(element.getAttribute('funcost'));
         if (resultdb.length == 0 && funcostdb.length == 0) return;
         $('#titleDiagram').text(resultdb[0].fields.categorys);
-
-        addData2HTML(resultdb);
+        addData2HTML(resultdb, element);
         for (let index = 0; index < funcostdb.length; index++) {
             funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index, MQ);
 
@@ -182,7 +177,17 @@ function addData(element, MQ) {
 
 }
 
-function addData2HTML(resultdb) {
+function addData2HTML(resultdb, cell) {
+    var show = false;
+    if (cell != undefined && cell.getAttribute('name') == 'River') show = true;
+    if (cell != undefined && cell.getAttribute('name') == 'External Input') show = true;
+    if (cell != undefined && cell.style == "EXTRACTIONCONNECTION") show = true;
+    $('#aguaDiagram').prop('disabled', show);
+    if (cell != undefined && cell.style == "CONNECTION") show = true;
+    $('#sedimentosDiagram').prop('disabled', show);
+    $('#nitrogenoDiagram').prop('disabled', show);
+    $('#fosforoDiagram').prop('disabled', show);
+    $('#funcostgenerate div').remove();
     // Add Value to Panel Information Right on HTML
     $('#aguaDiagram').val(resultdb[0].fields.predefined_transp_water_perc);
     $('#sedimentosDiagram').val(resultdb[0].fields.predefined_sediment_perc);
@@ -203,12 +208,7 @@ function deleteWithValidations(editor) {
     let msg = "Selected element is connected with Extraction connection element. Can't be deleted!";
     if (editor.graph.isEnabled()) {
         let cells = editor.graph.getSelectionCells();
-        let cells2Remove = cells.filter(cell => (cell.style != "rio"
-                /* &&
-                                cell.style != "csinfra" &&
-                                cell.style != connectionsType.EC.style*/
-            ) ||
-            parseInt(cell.id) > 4);
+        let cells2Remove = cells.filter(cell => (cell.style != "rio") || parseInt(cell.id) > 4);
         if (cells2Remove.length > 0) {
             let vertexIsEC = false;
             cells2Remove.filter(cell => {
@@ -227,6 +227,8 @@ function deleteWithValidations(editor) {
                 editor.graph.removeCells(cells2Remove);
             }
 
+        } else {
+            mxUtils.alert(`The River can't be Removed`);
         }
     }
 }
@@ -284,6 +286,22 @@ $(document).on('click', '#helpgraph', function() {
 var validateinput = function(e) {
     var t = e.value;
     e.value = (t.indexOf(".") >= 0) ? (t.substr(0, t.indexOf(".")) + t.substr(t.indexOf("."), 3)) : t;
+    if (parseFloat(e.value) < parseFloat(e.getAttribute('min'))) {
+        e.value = e.getAttribute('min');
+        Swal.fire({
+            icon: 'warning',
+            title: `The value must be between ${e.getAttribute('min')} and ${e.getAttribute('max')}`,
+            text: `The minimun value is ${e.getAttribute('min')} please use the arrows`
+        });
+    }
+    if (parseFloat(e.value) > parseFloat(e.getAttribute('max'))) {
+        e.value = e.getAttribute('max');
+        Swal.fire({
+            icon: 'warning',
+            title: `The value must be between ${e.getAttribute('min')} and ${e.getAttribute('max')}`,
+            text: `The maximum value is ${e.getAttribute('max')} please use the arrows`
+        });
+    }
 }
 
 function validationsCsinfraExternal(valida) {
