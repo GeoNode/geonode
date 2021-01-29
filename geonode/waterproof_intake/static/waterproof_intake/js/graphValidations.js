@@ -126,6 +126,7 @@ function clearDataHtml() {
     $('#nitrogenoDiagram').val('');
     $('#fosforoDiagram').val('');
     $('#funcostgenerate div').remove();
+    $('#funcostgenerate').empty();
 }
 
 function funcost(ecuation_db, ecuation_name, index, MQ) {
@@ -188,6 +189,7 @@ function addData2HTML(resultdb, cell) {
     $('#nitrogenoDiagram').prop('disabled', show);
     $('#fosforoDiagram').prop('disabled', show);
     $('#funcostgenerate div').remove();
+    $('#funcostgenerate').empty();
     // Add Value to Panel Information Right on HTML
     $('#aguaDiagram').val(resultdb[0].fields.predefined_transp_water_perc);
     $('#sedimentosDiagram').val(resultdb[0].fields.predefined_sediment_perc);
