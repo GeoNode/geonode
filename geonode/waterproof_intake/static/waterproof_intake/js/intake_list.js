@@ -93,6 +93,7 @@ $(function() {
         var cityCoords = localStorage.getItem('cityCoords');
         if (cityCoords == undefined){
             cityCoords = initialCoords;
+            table.search('').draw();
         }else{
             initialCoords = JSON.parse(cityCoords);
             table.search(localStorage.getItem('city').substr(0, 5)).draw();
