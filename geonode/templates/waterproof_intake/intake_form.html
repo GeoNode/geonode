@@ -54,7 +54,10 @@
         <div class="tab-content" id="autoAdjustHeightF">
             <!--Step 1-->
             <div id="step-1" class="tab-pane" role="tabpanel">
-
+                <div class="page-header">
+                    <h3>Define Water Intake</h3>
+                    <p>Please complete the fields to define your Water Intake</p>
+                </div>
                 <!--Input Name -->
                 <div id="water_intake">
                     <div id="div_id_name" class="form-group  ">
@@ -108,10 +111,13 @@
             <!--Step 2-->
             <div id="step-2" class="tab-pane" role="tabpanel">
                 <!--Toolbar mxgraph-->
+                <div class="page-header">
+                    <h3>Configure Parameters</h3>
+                    <p>Select the elements that make up your capture system and click on the drawing area to add them.</p>
+                </div>
                 <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-info">
-                            <h4 class="text-center text-intake">Select the elements that make up your capture system and click on the drawing area to add them.</h4>
                             <div class="panel-body text-center" id="toolbar"></div>
                         </div>
                     </div>
@@ -195,10 +201,9 @@
                     <p>Please enter the annual water extraction (l/s) associated with the Extraction Connection element x defined in the Water Intake system diagram</p>
                 </div>
                 <!--navigation-->
-                <ul class="nav nav-tabs">
-                    <li data-toggle="tab" data-target="#automatic" class="active"><a href="#">Interpolation Wizard</a>
-                    </li>
-                    <li data-toggle="tab" data-target="#manual"><a href="#">Manual Edit</a></li>
+                <ul class="nav nav-tabs" id="minitabsInportalion">
+                    <li class="active"><a data-toggle="tab" href="#automatic" id="btnAutomaticTab">Interpolation Wizard</a></li>
+                    <li><a data-toggle="tab" href="#manual" id="btnManualTab" >Manual Edit</a></li>
                 </ul>
                 <!--contents tabs manual and automatic-->
                 <div class="tab-content">
@@ -208,7 +213,7 @@
                         <div class="form-group">
                             <div class="row">
                                 <!--Data analysis Insert-->
-                                <div class="col-md-7">
+                                <div class="col-md-8">
                                     <h5 class="text-primary">Data Analysis</h5>
                                     <p>Please selected the method you wish to use to fill in the table associated with annual water extraction from the source.</p>
                                     <div class="form-group">
@@ -246,7 +251,7 @@
                                     <button type="button" class="btn btn-primary" id="intakeWECB">Generate</button>
                                 </div>
                                 <!--Data analysis Results-->
-                                <div class="col-md-5">
+                                <div class="col-md-4">
                                     <h5 class="text-primary">Results</h5>
                                     <div style="max-height: 400px; overflow-y: auto;">
                                         <table class="table">
@@ -282,16 +287,18 @@
                                 <!--Results-->
                                 <div class="col-md-6">
                                     <h5 class="text-primary">Results</h5>
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th class="text-center" scope="col">Year</th>
-                                                <th class="text-center" scope="col">Extraction Value (l/s)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="intakeWEMI">
-                                        </tbody>
-                                    </table>
+                                    <div style="max-height: 400px; overflow-y: auto;">
+                                        <table class="table" >
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" scope="col">Year</th>
+                                                    <th class="text-center" scope="col">Extraction Value (l/s)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="intakeWEMI">
+                                            </tbody>
+                                        </table>
+                                    </div> 
                                 </div>
                             </div>
                         </div>

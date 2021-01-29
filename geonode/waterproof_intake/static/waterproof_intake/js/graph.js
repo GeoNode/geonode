@@ -549,6 +549,7 @@ function onInit(editor) {
                         for (let index = 0; index < funcostdb.length; index++) {
                             funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index, MQ);
                         }
+
                     } else {
                         funcostdb.splice(id, 1);
                         selectedCell.setAttribute('funcost', JSON.stringify(funcostdb));

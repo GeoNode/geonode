@@ -38,16 +38,27 @@ const interpolationType = {
     LINEAR: 'LINEAR',
     POTENTIAL: 'POTENTIAL',
     EXPONENTIAL: 'EXPONENTIAL',
-    LOGISTICS: 'LOGISTICS'
+    LOGISTICS: 'LOGISTICS',
+    MANUAL: 'MANUAL'
 }
 
 var mapLoader;
 $(document).ready(function() {
     $("#intakeWECB").click(function() {
+        if ($("#numberYearsInterpolationValue").val() == '' || $("#initialDataExtractionInterpolationValue").val() == '' || $("#finalDataExtractionInterpolationValue").val() == '') {
+            Swal.fire({
+                icon: 'warning',
+                title: `Data analisys empty`,
+                text: `Please Generate Data anlisys`
+            });
+            return
+        }
         $('#intakeECTAG tr').remove();
         $('#IntakeTDLE table').remove();
         $('#externalSelect option').remove();
-
+        $('#intakeECTAG').empty();
+        $('#IntakeTDLE').empty();
+        $('#externalSelect').empty();
 
         $('#autoAdjustHeightF').css("height", "auto");
         typeProcessInterpolation = Number($("#typeProcessInterpolation").val());
@@ -69,36 +80,45 @@ $(document).ready(function() {
                 waterExtractionValue.push(yearData);
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${((m * index) + b).toFixed(2)}</td>
+                <td class="text-center"><input type="text" class="form-control" value="${((m * index) + b).toFixed(2)}" disabled></td>
               </tr>`);
             }
         }
 
         // Potencial interpolation
         if (typeProcessInterpolation == 2) {
+            waterExtractionValue = [];
             waterExtractionData.typeInterpolation = interpolationType.POTENTIAL;
             m = (Math.log(finalDataExtractionInterpolationValue) - Math.log(initialDataExtractionInterpolationValue)) / ((Math.log(numberYearsInterpolationValue + 1) - Math.log(1)));
             b = Math.exp((-1 * m * Math.log(1)) + Math.log(initialDataExtractionInterpolationValue));
+
             for (let index = 1; index <= numberYearsInterpolationValue + 1; index++) {
+                var yearData = {};
+                yearData.year = index;
+                yearData.value = (b * (Math.pow(index, m))).toFixed(2);
+                waterExtractionValue.push(yearData);
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index - 1}</th>
-                <td class="text-center">${(b * (Math.pow(index, m))).toFixed(2)}</td>
+                <td class="text-center"><input type="text" class="form-control" value="${(b * (Math.pow(index, m))).toFixed(2)}" disabled></td>
               </tr>`);
             }
         }
 
         // Exponential interpolation
         if (typeProcessInterpolation == 3) {
+            waterExtractionValue = [];
             waterExtractionData.typeInterpolation = interpolationType.EXPONENTIAL;
             m = (Math.log(finalDataExtractionInterpolationValue) - Math.log(initialDataExtractionInterpolationValue)) / (numberYearsInterpolationValue - 0)
             b = Math.exp((-1 * m * 0) + Math.log(initialDataExtractionInterpolationValue));
+
             for (let index = 0; index <= numberYearsInterpolationValue; index++) {
                 var yearData = {};
                 yearData.year = index + 1;
-                yearData.value = (b * (Math.exp(m * index)));
+                yearData.value = (b * (Math.exp(m * index))).toFixed(2);
+                waterExtractionValue.push(yearData);
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${(b * (Math.exp(m * index))).toFixed(2)}</td>
+                <td class="text-center"><input type="text" class="form-control" value="${(b * (Math.exp(m * index))).toFixed(2)}" disabled></td>
               </tr>`);
             }
 
@@ -106,12 +126,18 @@ $(document).ready(function() {
 
         // Interpolación Logistica
         if (typeProcessInterpolation == 4) {
+            waterExtractionValue = [];
             waterExtractionData.typeInterpolation = interpolationType.LOGISTICS;
             r = (-Math.log(0.000000001) / initialDataExtractionInterpolationValue);
+
             for (let index = 0; index <= numberYearsInterpolationValue; index++) {
+                var yearData = {};
+                yearData.year = index + 1;
+                yearData.value = ((finalDataExtractionInterpolationValue) / (1 + ((finalDataExtractionInterpolationValue / initialDataExtractionInterpolationValue) - 1) * Math.exp(-r * index))).toFixed(2);
+                waterExtractionValue.push(yearData);
                 $('#intakeECTAG').append(`<tr>
                 <th class="text-center" scope="row">${index}</th>
-                <td class="text-center">${((finalDataExtractionInterpolationValue) / (1 + ((finalDataExtractionInterpolationValue / initialDataExtractionInterpolationValue) - 1) * Math.exp(-r * index))).toFixed(2)}</td>
+                <td class="text-center"><input type="text" class="form-control" value="${((finalDataExtractionInterpolationValue) / (1 + ((finalDataExtractionInterpolationValue / initialDataExtractionInterpolationValue) - 1) * Math.exp(-r * index))).toFixed(2)}" disabled></td>
               </tr>`);
             }
         }
@@ -124,6 +150,68 @@ $(document).ready(function() {
         waterExtractionData.yearValues = waterExtractionValue;
         $('#waterExtraction').val(JSON.stringify(waterExtractionData));
 
+    });
+
+    $('#btnManualTab').click(function() {
+        if ($('#initialDataExtractionInterpolationValue').val() != '' || $('#finalDataExtractionInterpolationValue').val() != '' || $('#numberYearsInterpolationValue').val() != '') {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: false,
+                showDenyButton: true,
+                confirmButtonColor: '#d33',
+                denyButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, change it!',
+                denyButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#intakeECTAG tr').remove();
+                    $('#IntakeTDLE table').remove();
+                    $('#externalSelect option').remove();
+                    $('#intakeECTAG').empty();
+                    $('#IntakeTDLE').empty();
+                    $('#externalSelect').empty();
+                    waterExtractionData = [];
+                    $('#waterExtraction').val(JSON.stringify(waterExtractionData));
+                    $('#initialDataExtractionInterpolationValue').val('');
+                    $('#finalDataExtractionInterpolationValue').val('');
+                    $('#numberYearsInterpolationValue').val('');
+                } else if (result.isDenied) {
+                    $('[href="#automatic"]').tab('show');
+                }
+            })
+        }
+    });
+
+    $('#btnAutomaticTab').click(function() {
+        if ($('#intakeNIYMI').val() != '') {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: false,
+                showDenyButton: true,
+                confirmButtonColor: '#d33',
+                denyButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, change it!',
+                denyButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#intakeWEMI tr').remove();
+                    $('#IntakeTDLE table').remove();
+                    $('#externalSelect option').remove();
+                    $('#intakeWEMI').empty();
+                    $('#IntakeTDLE').empty();
+                    $('#externalSelect').empty();
+                    waterExtractionData = [];
+                    $('#waterExtraction').val(JSON.stringify(waterExtractionData));
+                    $('#intakeNIYMI').val('');
+                } else if (result.isDenied) {
+                    $('[href="#manual"]').tab('show');
+                }
+            })
+        }
     });
 
     function externalInput(numYear) {
@@ -165,7 +253,6 @@ $(document).ready(function() {
         $('#ExternalNumbersInputs').html(numberExternal)
     }
 
-
     $('#saveExternalData').click(function() {
         for (let id = 0; id < graphData.length; id++) {
             if (graphData[id].external) {
@@ -175,15 +262,7 @@ $(document).ready(function() {
                     let sedimentsito = $(`input[name="sediment_${$(this).attr('year_value')}_${graphData[id].id}"]`).val();
                     let nitrogenito = $(`input[name="nitrogen_${$(this).attr('year_value')}_${graphData[id].id}"]`).val();
                     let phospharusito = $(`input[name="phosphorus_${$(this).attr('year_value')}_${graphData[id].id}"]`).val();
-                    if (watersita != null || sedimentsito != null || nitrogenito != null || phospharusito != null ||
-                        watersita != '' || sedimentsito != '' || nitrogenito != '' || phospharusito != '') {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: `Field empty`,
-                            text: `Please full every fields`
-                        });
-                        return;
-                    } else {
+                    if (watersita != '' || sedimentsito != '' || nitrogenito != '' || phospharusito != '') {
                         graphData[id].externaldata.push({
                             "year": $(this).attr('year_value'),
                             "water": watersita,
@@ -191,7 +270,13 @@ $(document).ready(function() {
                             "nitrogen": nitrogenito,
                             "phosphorus": phospharusito
                         });
-
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: `Field empty`,
+                            text: `Please full every fields`
+                        });
+                        return;
                     }
                 });
                 graphData[id].externaldata = JSON.stringify(graphData[id].externaldata);
@@ -218,12 +303,20 @@ $(document).ready(function() {
 
     $('#intakeNIBYMI').click(function() {
         $('#intakeWEMI tr').remove();
+        $('#intakeWEMI').empty();
         intakeNIYMI = Number($("#intakeNIYMI").val());
+        waterExtractionData.typeInterpolation = interpolationType.MANUAL;
+        waterExtractionData.yearCount = intakeNIYMI;
+        $('#IntakeTDLE table').remove();
+        $('#IntakeTDLE').empty();
+        $('#externalSelect option').remove();
+        $('#externalSelect').empty();
+        externalInput(intakeNIYMI - 1);
         for (let index = 0; index < intakeNIYMI; index++) {
             $('#intakeWEMI').append(`
             <tr>
                 <th class="text-center" scope="row">${index + 1}</th>
-                <td class="text-center"> <input type="text" class="form-control"></td>
+                <td class="text-center"><input name="manualInputData" yearValue="${index+1}" type="text" class="form-control"></td>
               </tr>
             `);
         }
@@ -231,7 +324,7 @@ $(document).ready(function() {
 
 
     $('#smartwizard').smartWizard({
-        selected: 0,
+        selected: 2,
         theme: 'dots',
         enableURLhash: false,
         autoAdjustHeight: true,
@@ -310,8 +403,40 @@ $(document).ready(function() {
     });
 
     $('#step3NextBtn').click(function() {
-        if ($('#intakeECTAG')[0].childNodes.length > 1) {
-            $('#smartwizard').smartWizard("next");
+        if ($('#intakeECTAG')[0].childNodes.length > 1 || $('#intakeWEMI')[0].childNodes.length > 1) {
+            if (waterExtractionData.typeInterpolation == interpolationType.MANUAL) {
+                waterExtractionValue = [];
+                $(`input[name=manualInputData]`).each(function() {
+                    if ($(this).val() == '' || $('#intakeNIYMI').val() == '') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: `Data analisys empty`,
+                            text: `Please Generate Data anlisys`
+                        });
+                        return;
+                    } else {
+                        var yearData = {};
+                        yearData.year = $(this).attr('yearValue');
+                        yearData.value = $(this).val();
+                        waterExtractionValue.push(yearData);
+                    }
+
+                });
+                waterExtractionData.yearValues = waterExtractionValue;
+                $('#waterExtraction').val(JSON.stringify(waterExtractionData));
+                if (waterExtractionData.yearCount == waterExtractionData.yearValues.length) {
+                    $('#smartwizard').smartWizard("next");
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: `Data analisys empty`,
+                        text: `Please Generate Data anlisys`
+                    });
+                    return;
+                }
+            } else {
+                $('#smartwizard').smartWizard("next");
+            }
         } else {
             Swal.fire({
                 icon: 'warning',
@@ -357,28 +482,28 @@ $(document).ready(function() {
     map.addLayer(osm);
 
     var c = new L.Control.Coordinates({
-        actionAfterDragEnd : prevalidateAdjustCoordinates
+        actionAfterDragEnd: prevalidateAdjustCoordinates
     }).addTo(map);
 
-    var images = L.tileLayer(IMG_BASEMAP_URL);   
+    var images = L.tileLayer(IMG_BASEMAP_URL);
     var gray = L.tileLayer(GRAY_BASEMAP_URL, {
         maxZoom: 20,
-            attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-        });
+        attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+    });
 
     var hydroLyr = L.tileLayer(HYDRO_BASEMAP_URL);
     var wmsHydroNetworkLyr = L.tileLayer.wms(GEOSERVER_WMS, {
-            layers: HYDRO_NETWORK_LYR,
-            format: 'image/png',
-            transparent: 'true',
-            opacity: 0.35,
-            minZoom: 6,
-        });
+        layers: HYDRO_NETWORK_LYR,
+        format: 'image/png',
+        transparent: 'true',
+        opacity: 0.35,
+        minZoom: 6,
+    });
 
     var baseLayers = {
         OpenStreetMap: osm,
         Images: images,
-        Grayscale: gray,   
+        Grayscale: gray,
     };
 
     var overlays = {
@@ -420,7 +545,7 @@ window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 /**
  * Info Message to validate Adjust Coordinates
  */
-function prevalidateAdjustCoordinates(){
+function prevalidateAdjustCoordinates() {
     Swal.fire({
         title: 'Delimitar punto y cuenca',
         text: "El sistema ajustará las coordenadas del punto a la captación más cercana, ¿Desea continuar?",
