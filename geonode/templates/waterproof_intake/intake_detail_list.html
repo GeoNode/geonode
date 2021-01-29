@@ -7,8 +7,8 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin="" />
-<link rel="stylesheet" href="{% static "geonode/css/leaflet/Control.Coordinates.css" %}"/>
-<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Loader.css" %}" />
+<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Coordinates.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Loader.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/mathquill/mathquill.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/css/intake.css" />
 <script>
@@ -27,7 +27,7 @@
 {% block body_outer %}
 <!--header-->
 <div class="page-header">
-    <h1>Edit Water Intake</h1>
+    <h1>View Water Intake</h1>
 </div>
 <!--Begin Form-->
 <form id="form" method="POST" action="">
@@ -66,7 +66,10 @@
         <div class="tab-content" id="autoAdjustHeightF">
             <!--Step 1-->
             <div id="step-1" class="tab-pane" role="tabpanel">
-
+                <div class="page-header">
+                    <h3>Define Water Intake</h3>
+                    <p>Please complete the fields to define your Water Intake</p>
+                </div>
                 <!--Input Name -->
                 <div id="water_intake">
                     <div id="div_id_name" class="form-group  ">
@@ -108,6 +111,10 @@
             </div>
             <!--Step 2-->
             <div id="step-2" class="tab-pane" role="tabpanel">
+                <div class="page-header">
+                    <h3>Configure Parameters</h3>
+                    <p>Select the elements that make up your capture system and click on the drawing area to add them.</p>
+                </div>
                 <!--Toolbar mxgraph-->
                 <div class="row">
                     <div class="col-md-12">
@@ -251,7 +258,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <button type="button" class="btn btn-primary" id="intakeWECB">Generate</button>
                                 </div>
                                 <!--Data analysis Results-->
                                 <div class="col-md-5">
@@ -285,7 +291,6 @@
                                         <label>Number of years <span class="text-danger-wp">(*)</span> </label>
                                         <input type="text" class="form-control" id="intakeNIYMI" disabled>
                                     </div>
-                                    <button type="button" class="btn btn-primary" id="intakeNIBYMI">Generate</button>
                                 </div>
                                 <!--Results-->
                                 <div class="col-md-6">
@@ -317,9 +322,6 @@
                             <label>Type element for asignation</label>
                             <select class="form-control" id="externalSelect"></select>
                         </div>
-                        <div id="IntakeTDLE"></div>
-                        <button class="btn btn-primary" type="button" id="saveExternalData">Save Data</button>
-                    </div>
 
                 </div>
             </div>
@@ -338,21 +340,6 @@
                             <div class="panel-body">
                                 <div class="alert alert-info" role="alert">
                                     <h1 class="text-center">Tools</h1>
-                                </div>
-                                <div class="form-group">
-                                    <label>Load intake delimited area<span class="text-danger-wp"></span></label>
-                                    <input id="intakeArea" type="file" disabled>
-                                </div>
-                                <div class="form-group">
-                                    <button type="button" class="btn btn-primary" id="btnDelimitArea" disabled> Delimit
-                                        subarea</button>
-                                </div>
-                                <div class="form-group">
-                                    <button type="button" class="btn btn-primary" id="btnValidateArea" disabled> Validate
-                                        area</button>
-                                </div>
-                                <div class="form-group">
-                                    <input type="submit" id="submit" class="btn btn-primary" value="Submit" disabled></input>
                                 </div>
                             </div>
                         </div>
@@ -507,8 +494,8 @@
 </script>
 
 <script src="{{ STATIC_URL }}geonode/js/leaflet/leaflet-omnivore.min.js"></script>
-<script src="{{ STATIC_URL }}waterproof_intake/js/intake_edit.js"></script>
-<script src="{{ STATIC_URL }}waterproof_intake/js/graph.js"></script>
+<script src="{{ STATIC_URL }}waterproof_intake/js/intake_view.js"></script>
+<script src="{{ STATIC_URL }}waterproof_intake/js/graph_view.js"></script>
 <script src="{{ STATIC_URL }}waterproof_intake/js/graphValidations.js"></script>
 <script src="{{ STATIC_URL }}geonode/js/mxgraph/mxClient.js"></script>
 <script src="{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/js/app.js"></script>
