@@ -267,7 +267,7 @@ class Intake(models.Model):
         verbose_name=_('Graph')
     )
 
-    creation_date = models.DateField(auto_now=True)
+    creation_date = models.DateField()
 
     updated_date = models.DateField(auto_now=True)
 

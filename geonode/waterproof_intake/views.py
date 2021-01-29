@@ -482,7 +482,6 @@ def editIntake(request, idx):
                 graphElementsString = request.POST.get('graphElements')
                 connectionsElementString = request.POST.get('graphConnections')
                 graphElements = json.loads(graphElementsString)
-                print(connectionsElementString)
                 connectionsElements = json.loads(connectionsElementString)
                 if (isFile == 'true'):
                     # Validate file's extension
@@ -516,10 +515,31 @@ def editIntake(request, idx):
                 else:
                     delimitation_type = 'MANUAL'
                 existingIntake = Intake.objects.get(id=idx)
-                print(existingIntake)
                 existingIntake.name = intake.name
                 existingIntake.description = intake.description
-                existingIntake.water_source_name
+                existingIntake.water_source_name = intake.water_source_name
+                existingIntake.xml_graph = xmlGraph
+                existingIntake.added_by = request.user
+                existingIntake.city = City.objects.get(id=1)
+                existingIntake.save()
+                demandParameter = DemandParameters.objects.get(id=existingIntake.demand_parameters.pk)
+                demandParameter.interpolation_type = interpolation['typeInterpolation']
+                demandParameter.initial_extraction = interpolation['initialValue']
+                demandParameter.ending_extraction = interpolation['finalValue']
+                demandParameter.years_number = interpolation['yearCount']
+                actualWaterExtraction = list(WaterExtraction.objects.filter(
+                    demand_id=demandParameter.pk).values_list('id', flat=True))
+                print(actualWaterExtraction)
+                for extraction in actualWaterExtraction:
+                    ext=WaterExtraction.objects.get(id=extraction)
+                    ext.delete()
+                for extraction in interpolation['yearValues']:
+                    water_extraction = WaterExtraction.objects.create(
+                        year=extraction['year'],
+                        value=extraction['value'],
+                        demand=demandParameter
+                    )
+
             return render(request, 'waterproof_intake/intake_list.html')
 
 
@@ -563,6 +583,7 @@ def viewIntake(request, idx):
                 "serverApi": settings.WATERPROOF_API_SERVER
             }
         )
+
 
 def cloneIntake(request, idx):
     if not request.user.is_authenticated:
