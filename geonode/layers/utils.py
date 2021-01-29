@@ -1087,6 +1087,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                     msg = 'Unable to obtain thumbnail for: %s' % instance
                     logger.debug(msg)
                     instance.save_thumbnail(thumbnail_name, image=None)
+                    raise Exception(msg)
 
 
 # this is the original implementation of create_gs_thumbnail()
