@@ -433,7 +433,7 @@ function onInit(editor) {
                             'id': node.id,
                             'source': node.getAttribute('source'),
                             'target': node.getAttribute('target'),
-                            'resultdb': value[3],
+                            'resultdb': JSON.stringify(value[3]),
                             'funcost': JSON.stringify(value[5]),
                             'name': JSON.stringify(value[4]),
                             'varcost': JSON.stringify(value[1])
