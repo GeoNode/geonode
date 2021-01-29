@@ -1121,11 +1121,14 @@ class UtilsTests(GeoNodeBaseTestSupport):
             self.assertTrue(identifier in _link[3])
 
         # Thumbnails Generation Default
-        create_gs_thumbnail(instance, overwrite=True)
+        with self.assertRaises(Exception):
+            create_gs_thumbnail(instance, overwrite=True)
         self.assertIsNotNone(instance.get_thumbnail_url())
 
         # Thumbnails Generation Through "remote url"
-        create_gs_thumbnail_geonode(instance, overwrite=True, check_bbox=True)
+        with self.assertRaises(Exception):
+            create_gs_thumbnail_geonode(instance, overwrite=True, check_bbox=True)
+        self.assertIsNotNone(instance.get_thumbnail_url())
 
         # Thumbnails Generation Through "image"
         time.sleep(10)
