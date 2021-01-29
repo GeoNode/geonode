@@ -479,4 +479,11 @@ $(function() {
         });
     }
 
+    menu = function(){
+        $('.topnav a').click(function(){
+            $('#sideNavigation').style.width = "250px";
+            $("#main").style.marginLeft = "250px";
+          });
+    }
+
 });
