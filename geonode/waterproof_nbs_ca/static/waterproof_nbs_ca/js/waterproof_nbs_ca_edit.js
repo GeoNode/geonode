@@ -231,102 +231,58 @@ $(function () {
             // Validate file's extension
             if (extension.valid) { //Valid
                 console.log('Extension valid!');
+                isFile = true;
                 // Validate file's extension
                 if (extension.extension == 'geojson') { //GeoJSON
                     var readerGeoJson = new FileReader();
                     readerGeoJson.onload = function (evt) {
                         var contents = evt.target.result;
-                        geojson = JSON.parse(contents);
-                        loadFile(geojson, file.name);
-                    }
+                        try {
+                            geojson = JSON.parse(contents);
+                            validGeojson = validateGeoJson(geojson);
+                            if (!validGeojson) {
+                                $('#restrictedArea').val('');
+                                return;
+                            }
+                        } catch (e) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error en archivo GeoJSON',
+                                text: 'El archivo tiene carácteres erróneos o puede estar corrupto por favor intente con otro',
+                            })
+                            $('#restrictedArea').val('');
+                            return;
+                        };
+                    };
+                    readerGeoJson.onerror = function () {
+                        console.log(readerGeoJson.error);
+                    };
                     readerGeoJson.readAsText(file);
                 } else { //Zip
                     var reader = new FileReader();
-                    var filename, readShp = false,
-                        readDbf = false,
-                        readShx = false,
-                        readPrj = false,
-                        prj, coord = true;
-                    var prjName;
                     reader.onload = function (evt) {
                         var contents = evt.target.result;
                         JSZip.loadAsync(file).then(function (zip) {
-                            zip.forEach(function (relativePath, zipEntry) {
-                                filename = zipEntry.name.toLocaleLowerCase();
-                                if (filename.indexOf(".shp") != -1) {
-                                    readShp = true;
+                            shapeValidation = validateShapeFile(zip);
+                            shapeValidation.then(function (resultFile) {
+                                //is valid shapefile
+                                if (!resultFile.valid) {
+                                    $('#restrictedArea').val('');
+                                    return;
                                 }
-                                if (filename.indexOf(".dbf") != -1) {
-                                    readDbf = true;
-                                }
-                                if (filename.indexOf(".shx") != -1) {
-                                    readShx = true;
-                                }
-                                if (filename.indexOf(".prj") != -1) {
-                                    readPrj = true;
-                                    prjName = zipEntry.name;
+                                else {
+
                                 }
                             });
-                            // Valid shapefile with minimum files req
-                            if (readShp && readDbf && readPrj && readShx) {
-                                zip.file(prjName).async("string").then(function (data) {
-                                    prj = data;
-                                    // Validar sistema de referencia
-                                    if (prj.toLocaleLowerCase().indexOf("gcs_wgs_1984") == -1) {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Error en shapefile',
-                                            text: 'Sistema de proyección incorrecto',
-                                        })
-                                    }
-                                    // Shapefile válido
-                                    else {
-                                        shp(contents).then(function (shpToGeojson) {
-                                            geojson = shpToGeojson;
-                                        }).catch(function (e) {
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Error en shapefile',
-                                                text: 'Ha ocurrido un error de lectura en el shapefile',
-                                            })
-                                            console.log("Ocurrió error convirtiendo el shapefile " + e);
-                                        });
-                                    }
-                                });
-                            } else { // Missing req files
-                                // Miss .shp
-                                if (!readShp) {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Error en shapefile',
-                                        text: 'Falta el archivo .shp requerido',
-                                    })
-                                }
-                                // Miss .dbf
-                                if (!readDbf) {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Error en shapefile',
-                                        text: 'Falta el archivo .dbf requerido',
-                                    })
-                                }
-                                // Miss .shx
-                                if (!readShx) {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Error en shapefile',
-                                        text: 'Falta el archivo .shx requerido',
-                                    })
-                                }
-                                // Miss .prj
-                                if (!readPrj) {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Error en shapefile',
-                                        text: 'Falta el archivo .prj requerido',
-                                    })
-                                }
-                            }
+                            //loadShapefile(geojson, file.name);
+                        }).catch(function (e) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error en shapefile',
+                                text: 'Ha ocurrido un error de lectura en el shapefile',
+                            })
+                            console.log("Ocurrió error convirtiendo el shapefile " + e);
+                            $('#restrictedArea').val('');
                         });
                     };
                     reader.onerror = function (event) {
@@ -341,11 +297,9 @@ $(function () {
                     title: 'Error de extensión',
                     text: 'La extensión del archivo no está soportada, debe ser GeoJSON o un shapefile .zip',
                 })
+                $('#intakeArea').val('');
             }
         });
-    };
-    checkEmptyFile = function () {
-
     };
     /** 
    * Initialize map 
@@ -562,33 +516,7 @@ $(function () {
      *
      */
     fillTransitionsDropdown = function (dropdown) {
-
         dropdown.change();
-
-    };
-    /** 
-     * Get if file has a valid shape or GeoJSON extension 
-     * @param {StriFileng} file   zip or GeoJSON file
-     *
-     * @return {Object} extension Object contain extension and is valid
-     */
-    validExtension = function (file) {
-        var fileExtension = {};
-        if (file.name.lastIndexOf(".") > 0) {
-            var extension = file.name.substring(file.name.lastIndexOf(".") + 1, file.name.length);
-            fileExtension.extension = extension;
-        }
-        if (file.type == 'application/x-zip-compressed' || file.type == 'application/zip') {
-            fileExtension.valid = true;
-        } else if (file.type == 'application/geo+json') {
-            fileExtension.valid = true;
-        } else {
-            fileExtension.valid = false;
-        }
-        return fileExtension;
-    };
-    loadFile = function (file, name) {
-        console.log('Start loading file function!');
     };
     // Init 
     initialize();
