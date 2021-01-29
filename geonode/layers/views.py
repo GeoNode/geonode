@@ -82,7 +82,8 @@ from geonode.layers.models import (
 from geonode.layers.utils import (
     file_upload,
     is_raster,
-    is_vector)
+    is_vector,
+    surrogate_escape_string)
 
 from geonode.maps.models import Map
 from geonode.services.models import Service
@@ -270,7 +271,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     if not saved_layer:
                         msg = 'Failed to process. Could not find matching layer.'
                         raise Exception(msg)
-                    sld = open(base_file).read()
+                    with open(base_file) as sld_file:
+                        sld = sld_file.read()
                     set_layer_style(saved_layer, title, base_file, sld)
                 out['success'] = True
             except Exception as e:
@@ -379,7 +381,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
         for _k in _keys:
             if _k in out:
                 if isinstance(out[_k], string_types):
-                    out[_k] = out[_k].encode(layer_charset, 'surrogateescape').decode('utf-8', 'surrogateescape')
+                    out[_k] = surrogate_escape_string(out[_k], layer_charset)
                 elif isinstance(out[_k], dict):
                     for key, value in out[_k].items():
                         try:
@@ -389,10 +391,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                                 out[_k][key] = item.as_text().encode(
                                     layer_charset, 'surrogateescape').decode('utf-8', 'surrogateescape')
                             else:
-                                out[_k][key] = item.encode(layer_charset, 'surrogateescape').decode(
-                                    'utf-8', 'surrogateescape')
-                            out[_k][key.encode(layer_charset, 'surrogateescape').decode(
-                                'utf-8', 'surrogateescape')] = out[_k].pop(key)
+                                out[_k][key] = surrogate_escape_string(item, layer_charset)
+                            out[_k][surrogate_escape_string(key, layer_charset)] = out[_k].pop(key)
                         except Exception as e:
                             logger.exception(e)
 
@@ -713,10 +713,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         links = layer.link_set.download().filter(
             Q(name__in=settings.DOWNLOAD_FORMATS_RASTER) |
             Q(link_type='original'))
-    links_view = [item for idx, item in enumerate(links) if
+    links_view = [item for item in links if
                   item.link_type == 'image']
-    links_download = [item for idx, item in enumerate(
-        links) if item.link_type in ('data', 'original')]
+    links_download = [item for item in links if item.link_type in ('data', 'original')]
     for item in links_view:
         if item.url and access_token and 'access_token' not in item.url:
             params = {'access_token': access_token}
@@ -1498,7 +1497,11 @@ def layer_thumbnail(request, layername):
                     request.body, request=request)
             except Exception as e:
                 logger.debug(e)
-                image = _render_thumbnail(request.body)
+                try:
+                    image = _render_thumbnail(request.body)
+                except Exception as e:
+                    logger.debug(e)
+                    image = None
 
         is_image = False
         if image:

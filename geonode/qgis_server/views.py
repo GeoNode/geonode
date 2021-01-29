@@ -210,7 +210,7 @@ def legend(request, layername, layertitle=False, style=None):
             try:
                 style_list(layer, internal=False)
             except Exception:
-                print("Failed to fetch styles")
+                logger.warning("Failed to fetch styles")
 
             # refresh values
             qgis_layer.refresh_from_db()
@@ -304,7 +304,7 @@ def tile(request, layername, z, x, y, style=None):
             try:
                 style_list(layer, internal=False)
             except Exception:
-                print("Failed to fetch styles")
+                logger.warning("Failed to fetch styles")
 
             # refresh values
             qgis_layer.refresh_from_db()
@@ -528,7 +528,7 @@ def qgis_server_map_print(request):
     temp = []
     for key, value in request.POST.items():
         temp[key] = value
-        print("{}\n{}\n--------".format(key, value))
+        logger.info("{}\n{}\n--------".format(key, value))
     return HttpResponse(
         json.dumps(temp), content_type="application/json")
 
@@ -553,7 +553,7 @@ def qml_style(request, layername, style_name=None):
             try:
                 styles_obj = style_list(layer, internal=False)
             except Exception:
-                print("Failed to fetch styles")
+                logger.info("Failed to fetch styles")
 
             styles_dict = []
             if styles_obj:
@@ -652,7 +652,7 @@ def qml_style(request, layername, style_name=None):
                 try:
                     style_list(layer, internal=False)
                 except Exception:
-                    print("Failed to fetch styles")
+                    logger.info("Failed to fetch styles")
 
                 return TemplateResponse(
                     request,

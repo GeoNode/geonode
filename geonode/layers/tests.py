@@ -53,7 +53,8 @@ from geonode.layers.utils import (
     layer_type,
     get_files,
     get_valid_name,
-    get_valid_layer_name)
+    get_valid_layer_name,
+    surrogate_escape_string)
 from geonode.people.utils import get_valid_user
 from geonode.base.populate_test_data import all_public
 from geonode.base.models import TopicCategory, License, Region, Link
@@ -382,6 +383,27 @@ class LayersTest(GeoNodeBaseTestSupport):
 
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
+
+    def test_layer_thumbnail_generation_managed_errors(self):
+        """
+        Test that 'layer_thumbnail' handles correctly thumbnail generation errors
+        """
+        layer = Layer.objects.all().first()
+        url = reverse('layer_thumbnail', args=(layer.alternate,))
+        # Now test with a valid user
+        self.client.login(username='admin', password='admin')
+
+        # test a method other than POST and GET
+        request_body = {'preview': '\
+"bbox":[1331513.3064995816,1333734.7576341194,5599619.355527631,5600574.818381195],\
+"srid":"EPSG:3857",\
+"center":{"x":11.971165359906351,"y":44.863749562810995,"crs":"EPSG:4326"},\
+"zoom":16,"width":930,"height":400,\
+"layers":"' + layer.alternate + '"}'}
+        response = self.client.post(url, data=request_body)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.decode('utf-8'), 'Thumbnail saved')
+        self.assertNotEquals(layer.get_thumbnail_url(), settings.MISSING_THUMBNAIL)
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
@@ -758,6 +780,20 @@ class LayersTest(GeoNodeBaseTestSupport):
         rating = OverallRating.objects.all()
         self.assertEqual(rating.count(), 0)
 
+    def test_sld_upload(self):
+        """Test layer remove functionality
+        """
+        layer = Layer.objects.all().first()
+        url = reverse('layer_sld_upload', args=(layer.alternate,))
+        # Now test with a valid user
+        self.client.login(username='admin', password='admin')
+
+        # test a method other than POST and GET
+        response = self.client.put(url)
+        content = response.content.decode('utf-8')
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse("#modal_perms" in content)
+
     def test_layer_remove(self):
         """Test layer remove functionality
         """
@@ -876,7 +912,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         Model = Layer
         view = 'layer_batch_metadata'
         resources = Model.objects.all()[:3]
-        ids = ','.join([str(element.pk) for element in resources])
+        ids = ','.join(str(element.pk) for element in resources)
         # test non-admin access
         self.client.login(username="bobby", password="bob")
         response = self.client.get(reverse(view))
@@ -951,7 +987,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         Model = Layer
         view = 'layer_batch_permissions'
         resources = Model.objects.all()[:3]
-        ids = ','.join([str(element.pk) for element in resources])
+        ids = ','.join(str(element.pk) for element in resources)
         # test non-admin access
         self.assertTrue(self.client.login(username="bobby", password="bob"))
         response = self.client.get(reverse(view), data={"ids": ids})
@@ -1020,6 +1056,17 @@ class LayersTest(GeoNodeBaseTestSupport):
             perm_spec = resource.get_all_level_info()
             logger.debug(f" -- perm_spec[users] --> {perm_spec['users']}")
             self.assertTrue(user in perm_spec["users"])
+
+    def test_surrogate_escape_string(self):
+        surrogate_escape_raw = "Zo\udcc3\udcab"
+        surrogate_escape_expected = "Zoë"
+        surrogate_escape_result = surrogate_escape_string(
+            surrogate_escape_raw, 'UTF-8')  # add more test cases using different charsets?
+        self.assertEqual(
+            surrogate_escape_result,
+            surrogate_escape_expected,
+            "layers.utils.surrogate_escape_string did not produce expected result. "
+            f"Expected {surrogate_escape_expected}, received {surrogate_escape_result}")
 
 
 class UnpublishedObjectTests(GeoNodeBaseTestSupport):

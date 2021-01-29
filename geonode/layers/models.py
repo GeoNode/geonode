@@ -223,10 +223,12 @@ class Layer(ResourceBase):
 
     @property
     def display_type(self):
-        return ({
-            "dataStore": "Vector Data",
-            "coverageStore": "Raster Data",
-        }).get(self.storeType, "Data")
+        if self.storeType == "dataStore":
+            return "Vector Data"
+        elif self.storeType == "coverageStore":
+            return "Raster Data"
+        else:
+            return "Data"
 
     @property
     def data_model(self):
@@ -339,8 +341,8 @@ class Layer(ResourceBase):
         if (visible_attributes.count() > 0):
             cfg["getFeatureInfo"] = {
                 "fields": [lyr.attribute for lyr in visible_attributes],
-                "propertyNames": dict([(lyr.attribute, lyr.attribute_label) for lyr in visible_attributes]),
-                "displayTypes": dict([(lyr.attribute, lyr.featureinfo_type) for lyr in visible_attributes])
+                "propertyNames": {lyr.attribute: lyr.attribute_label for lyr in visible_attributes},
+                "displayTypes": {lyr.attribute: lyr.featureinfo_type for lyr in visible_attributes}
             }
 
         if self.use_featureinfo_custom_template:

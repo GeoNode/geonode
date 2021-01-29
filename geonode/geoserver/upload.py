@@ -200,9 +200,9 @@ def geoserver_upload(
     publishing = cat.get_layer(name) or gs_resource
     sld = None
     if 'sld' in files:
-        f = open(files['sld'], 'rb')
-        sld = f.read()
-        f.close()
+        with open(files['sld'], 'rb') as f:
+            sld = f.read()
+
     else:
         sld = get_sld_for(cat, publishing)
 

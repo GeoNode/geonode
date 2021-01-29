@@ -40,7 +40,7 @@ class AverageCPU extends React.Component {
     if (cpu === undefined) {
       cpu = 'N/A';
     } else if (typeof cpu === 'number') {
-      if (cpu === 0) {
+      if (cpu < 0) {
         cpu = <CircularProgress size={this.context.muiTheme.spinner.size} />;
       } else {
         cpu += '%';

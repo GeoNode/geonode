@@ -298,6 +298,27 @@ community."
         response = self.client.get(reverse('map_detail', args=(map_obj.id,)))
         self.assertEqual(response.status_code, 200)
 
+    def test_map_thumbnail_generation_managed_errors(self):
+        """
+        Test that 'map_thumbnail' handles correctly thumbnail generation errors
+        """
+        map_obj = Map.objects.all().first()
+        url = reverse('map_thumbnail', args=(map_obj.id,))
+        # Now test with a valid user
+        self.client.login(username='admin', password='admin')
+
+        # test a method other than POST and GET
+        request_body = {'preview': '\
+"bbox":[1331513.3064995816,1333734.7576341194,5599619.355527631,5600574.818381195],\
+"srid":"EPSG:3857",\
+"center":{"x":11.971165359906351,"y":44.863749562810995,"crs":"EPSG:4326"},\
+"zoom":16,"width":930,"height":400,\
+"layers":"geonode:foo_bar"}'}
+        response = self.client.post(url, data=request_body)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.decode('utf-8'), 'Thumbnail saved')
+        self.assertNotEquals(map_obj.get_thumbnail_url(), settings.MISSING_THUMBNAIL)
+
     def test_describe_map(self):
         map_obj = Map.objects.all().first()
         map_obj.set_default_permissions()
@@ -676,10 +697,11 @@ community."
             response_config_dict['about']['title'])
 
         map_obj.update_from_viewer(config_map, context={})
-        title = config_map['title'] if 'title' in config_map else config_map['about']['title']
-        abstract = config_map['abstract'] if 'abstract' in config_map else config_map['about']['abstract']
-        center = config_map['map']['center'] if 'center' in config_map['map'] else settings.DEFAULT_MAP_CENTER
-        zoom = config_map['map']['zoom'] if 'zoom' in config_map['map'] else settings.DEFAULT_MAP_ZOOM
+        title = config_map.get('title', config_map['about']['title'])
+        abstract = config_map.get('abstract', config_map['about']['abstract'])
+        center = config_map['map'].get('center', settings.DEFAULT_CONTENT_TYPE)
+        zoom = config_map['map'].get('zoom', settings.DEFAULT_MAP_ZOOM)
+
         projection = config_map['map']['projection']
 
         self.assertEqual(map_obj.title, title)
@@ -740,10 +762,10 @@ community."
             response_config_dict['about']['title'])
 
         map_obj.update_from_viewer(config_map, context={})
-        title = config_map['title'] if 'title' in config_map else config_map['about']['title']
-        abstract = config_map['abstract'] if 'abstract' in config_map else config_map['about']['abstract']
-        center = config_map['map']['center'] if 'center' in config_map['map'] else settings.DEFAULT_MAP_CENTER
-        zoom = config_map['map']['zoom'] if 'zoom' in config_map['map'] else settings.DEFAULT_MAP_ZOOM
+        title = config_map.get('title', config_map['about']['title'])
+        abstract = config_map.get('abstract', config_map['about']['abstract'])
+        center = config_map['map'].get('center', settings.DEFAULT_MAP_CENTER)
+        zoom = config_map['map'].get('zoom', settings.DEFAULT_MAP_ZOOM)
         projection = config_map['map']['projection']
 
         self.assertEqual(map_obj.title, title)
@@ -913,7 +935,7 @@ community."
         Model = Map
         view = 'map_batch_metadata'
         resources = Model.objects.all()[:3]
-        ids = ','.join([str(element.pk) for element in resources])
+        ids = ','.join(str(element.pk) for element in resources)
         # test non-admin access
         self.client.login(username="bobby", password="bob")
         response = self.client.get(reverse(view))
