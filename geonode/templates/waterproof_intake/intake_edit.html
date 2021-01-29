@@ -558,6 +558,7 @@
     intakeObject.polygon = '{{intake.polygon_set.first.geomIntake|safe}}';
     intakeObject.point=JSON.parse('{{intake.polygon_set.first.geomPoint|safe}}');
     intakeObject.delimitArea='{{intake.polygon_set.first.geom}}';
+    intakeObject.basin='{{intake.polygon_set.first.basin.pk}}';
     intakePolygons.push(intakeObject);
 </script>
 
