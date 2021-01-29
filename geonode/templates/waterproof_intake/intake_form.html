@@ -420,16 +420,48 @@
                             <textarea rows="3" class="form-control"></textarea>
                         </div>
                         <h5 class="text-primary">Syntax keyboard</h5>
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="=">=</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="+">+</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">-</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">*</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">\frac{a}{b}</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">a^b</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="\sqrt">√</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="min">min</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="max">max</button>
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#mathBasic_tab" data-toggle="tab">Basic</a></li>
+                            <li><a href="#mathAdvanced_tab" data-toggle="tab" >Advanced</a></li>
+                            <li><a href="#mathTrigonometry_tab" data-toggle="tab" >Trigonometry</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="mathBasic_tab" class="tab-pane fade in active">
+                                <br>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="=">=</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="+">+</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">-</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">x</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">\frac{a}{b}</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">a^b</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="\sqrt">√</button>
+                                    
+                                </div>
+                            </div>
+                            
+                            <div id="mathAdvanced_tab" class="tab-pane fade in">
+                                <br>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="\pi">π</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="\\log">\log</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="\log_">\log_a</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">-</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">x</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">\frac{a}{b}</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">a^b</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="\sqrt">√</button>
+                                </div>
+                            </div>
+
+                            <div id="mathTrigonometry_tab" class="tab-pane fade in">
+                                <br>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="sin()">sin</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="cos()">cos</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="tan()">tan</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -44,6 +44,8 @@ const interpolationType = {
 
 var mapLoader;
 $(document).ready(function() {
+
+    // Interpolation with Wizard
     $("#intakeWECB").click(function() {
         if ($("#numberYearsInterpolationValue").val() == '' || $("#initialDataExtractionInterpolationValue").val() == '' || $("#finalDataExtractionInterpolationValue").val() == '') {
             Swal.fire({
@@ -152,6 +154,7 @@ $(document).ready(function() {
 
     });
 
+    // Change Option Manual Tab
     $('#btnManualTab').click(function() {
         if ($('#initialDataExtractionInterpolationValue').val() != '' || $('#finalDataExtractionInterpolationValue').val() != '' || $('#numberYearsInterpolationValue').val() != '') {
             Swal.fire({
@@ -184,6 +187,7 @@ $(document).ready(function() {
         }
     });
 
+    // Change Option Automatic with Wizard Tab
     $('#btnAutomaticTab').click(function() {
         if ($('#intakeNIYMI').val() != '') {
             Swal.fire({
@@ -214,45 +218,7 @@ $(document).ready(function() {
         }
     });
 
-    function externalInput(numYear) {
-        var rows = "";
-        var numberExternal = 0;
-        $('#externalSelect').append(`<option value="null" selected>Choose here</option>`);
-        for (let p = 0; p < graphData.length; p++) {
-            if (graphData[p].external == 'true') {
-                numberExternal += 1
-                $('#externalSelect').append(`
-                            <option value="${graphData[p].id}">${graphData[p].id} - External Input</option>
-                 `);
-                rows = "";
-                for (let index = 0; index <= numYear; index++) {
-                    rows += (`<tr>
-                                <th class="text-center" scope="col" name="year_${graphData[p].id}" year_value="${index + 1}">${index + 1}</th>
-                                <td class="text-center" scope="col"><input type="text" class="form-control" name="waterVolume_${index + 1}_${graphData[p].id}"></td>
-                                <td class="text-center" scope="col"><input type="text" class="form-control" name="sediment_${index + 1}_${graphData[p].id}"></td>
-                                <td class="text-center" scope="col"><input type="text" class="form-control" name="nitrogen_${index + 1}_${graphData[p].id}" ></td>
-                                <td class="text-center" scope="col"><input type="text" class="form-control" name="phosphorus_${index + 1}_${graphData[p].id}"></td>
-                          </tr>`);
-                }
-                $('#IntakeTDLE').append(`
-                        <table class="table" id="table_${graphData[p].id}" style="display: none">
-                            <thead>
-                                <tr>
-                                    <th class="text-center" scope="col">Year</th>
-                                    <th class="text-center" scope="col">Water Volume (m3)</th>
-                                    <th class="text-center" scope="col">Sediment (Ton)</th>
-                                    <th class="text-center" scope="col">Nitrogen (Kg)</th>
-                                    <th class="text-center" scope="col">Phosphorus (Kg)</th>
-                                </tr>
-                            </thead>
-                            <tbody>${rows}</tbody>
-                        </table>    
-                `);
-            }
-        }
-        $('#ExternalNumbersInputs').html(numberExternal)
-    }
-
+    // Sabe External Input Data
     $('#saveExternalData').click(function() {
         for (let id = 0; id < graphData.length; id++) {
             if (graphData[id].external) {
@@ -286,6 +252,7 @@ $(document).ready(function() {
         $('#graphElements').val(JSON.stringify(graphData));
     });
 
+    // Change Table external input
     $('#externalSelect').change(function() {
         for (let t = 0; t < graphData.length; t++) {
             if (graphData[t].external == 'true') {
@@ -295,12 +262,14 @@ $(document).ready(function() {
         $(`#table_${$('#externalSelect').val()}`).css('display', 'block');
     });
 
+    // Automatic height on clic next btn wizard
     $('#smartwizard').smartWizard("next").click(function() {
         $('#autoAdjustHeightF').css("height", "auto");
         mapDelimit.invalidateSize();
         map.invalidateSize();
     });
 
+    // Generate Input Manual Interpolation
     $('#intakeNIBYMI').click(function() {
         $('#intakeWEMI tr').remove();
         $('#intakeWEMI').empty();
@@ -322,9 +291,48 @@ $(document).ready(function() {
         }
     });
 
+    // Generate table external Input
+    function externalInput(numYear) {
+        var rows = "";
+        var numberExternal = 0;
+        $('#externalSelect').append(`<option value="null" selected>Choose here</option>`);
+        for (let p = 0; p < graphData.length; p++) {
+            if (graphData[p].external == 'true') {
+                numberExternal += 1
+                $('#externalSelect').append(`
+                            <option value="${graphData[p].id}">${graphData[p].id} - External Input</option>
+                    `);
+                rows = "";
+                for (let index = 0; index <= numYear; index++) {
+                    rows += (`<tr>
+                                <th class="text-center" scope="col" name="year_${graphData[p].id}" year_value="${index + 1}">${index + 1}</th>
+                                <td class="text-center" scope="col"><input type="text" class="form-control" name="waterVolume_${index + 1}_${graphData[p].id}"></td>
+                                <td class="text-center" scope="col"><input type="text" class="form-control" name="sediment_${index + 1}_${graphData[p].id}"></td>
+                                <td class="text-center" scope="col"><input type="text" class="form-control" name="nitrogen_${index + 1}_${graphData[p].id}" ></td>
+                                <td class="text-center" scope="col"><input type="text" class="form-control" name="phosphorus_${index + 1}_${graphData[p].id}"></td>
+                            </tr>`);
+                }
+                $('#IntakeTDLE').append(`
+                        <table class="table" id="table_${graphData[p].id}" style="display: none">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" scope="col">Year</th>
+                                    <th class="text-center" scope="col">Water Volume (m3)</th>
+                                    <th class="text-center" scope="col">Sediment (Ton)</th>
+                                    <th class="text-center" scope="col">Nitrogen (Kg)</th>
+                                    <th class="text-center" scope="col">Phosphorus (Kg)</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>    
+                `);
+            }
+        }
+        $('#ExternalNumbersInputs').html(numberExternal)
+    }
 
     $('#smartwizard').smartWizard({
-        selected: 2,
+        selected: 0,
         theme: 'dots',
         enableURLhash: false,
         autoAdjustHeight: true,
@@ -417,7 +425,7 @@ $(document).ready(function() {
                     } else {
                         var yearData = {};
                         yearData.year = $(this).attr('yearValue');
-                        yearData.value = $(this).val();
+                        yearData.value = Number($(this).val());
                         waterExtractionValue.push(yearData);
                     }
 

@@ -380,6 +380,10 @@ function onInit(editor) {
             }
         });
 
+        $('button[name=mathKeyBoard]').each(function() {
+            MQ.StaticMath(this);
+        });
+
         //load data when add an object in a diagram
         editor.graph.addListener(mxEvent.ADD_CELLS, function(sender, evt) {
             var selectedCell = evt.getProperty("cells");
@@ -503,6 +507,7 @@ function onInit(editor) {
             funcostdb[CostSelected].fields.function_value = mathField.latex();
             selectedCell.setAttribute('funcost', JSON.stringify(funcostdb));
             $('#funcostgenerate div').remove();
+            $('#funcostgenerate').empty();
             for (let index = 0; index < funcostdb.length; index++) {
                 funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index, MQ);
             }
@@ -546,6 +551,7 @@ function onInit(editor) {
                         obj.funcost = JSON.stringify(dbfields);
                         selectedCell.setValue(JSON.stringify(obj));
                         $('#funcostgenerate div').remove();
+                        $('#funcostgenerate').empty();
                         for (let index = 0; index < funcostdb.length; index++) {
                             funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index, MQ);
                         }
@@ -554,6 +560,7 @@ function onInit(editor) {
                         funcostdb.splice(id, 1);
                         selectedCell.setAttribute('funcost', JSON.stringify(funcostdb));
                         $('#funcostgenerate div').remove();
+                        $('#funcostgenerate').empty();
                         for (let index = 0; index < funcostdb.length; index++) {
                             funcost(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index, MQ);
                         }
@@ -570,6 +577,7 @@ function onInit(editor) {
 
         function setVarCost() {
             $('#VarCostListGroup div').remove();
+            $('#VarCostListGroup').empty();
             for (const index of graphData) {
                 var costlabel = "";
                 for (const iterator of JSON.parse(index.varcost)) {
@@ -592,6 +600,7 @@ function onInit(editor) {
 
         $('#ModalAddCostBtn').click(function() {
             $('#VarCostListGroup div').remove();
+            $('#VarCostListGroup').empty();
             for (const index of graphData) {
                 var costlabel = "";
                 for (const iterator of JSON.parse(index.varcost)) {
@@ -614,7 +623,9 @@ function onInit(editor) {
 
         //KeyBoard calculator funcion cost
         $('button[name=mathKeyBoard]').click(function() {
-            addInfo($(this).attr('value'));
+            mathField.latex($(this).attr('value'));
+            mathField.focus();
+            //addInfo(`\\${}`);
         });
 
         //Add value entered in sediments in the field resultdb
