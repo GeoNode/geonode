@@ -496,6 +496,7 @@ $(document).ready(function () {
         var editablePolygonJson = editablepolygon.toGeoJSON();
         var intakePolygonJson = catchmentPoly.toGeoJSON();
         var pointIntakeJson = snapMarker.toGeoJSON();
+        basinId=feature.basin;
         $('#intakeAreaPolygon').val(JSON.stringify(intakePolygonJson));
         $('#basinId').val(basinId);
         // Set delimited area geom in hidden input for posterior reading
