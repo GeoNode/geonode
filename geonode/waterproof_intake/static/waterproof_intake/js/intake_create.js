@@ -261,6 +261,7 @@ $(document).ready(function() {
         }
         $(`#table_${$('#externalSelect').val()}`).css('display', 'block');
     });
+    
 
     // Automatic height on clic next btn wizard
     $('#smartwizard').smartWizard("next").click(function() {
@@ -330,6 +331,12 @@ $(document).ready(function() {
         }
         $('#ExternalNumbersInputs').html(numberExternal)
     }
+
+    $('#smartwizard').smartWizard("next").click(function () {
+        $('#autoAdjustHeightF').css("height", "auto");
+        map.invalidateSize();
+    });
+
 
     $('#smartwizard').smartWizard({
         selected: 0,

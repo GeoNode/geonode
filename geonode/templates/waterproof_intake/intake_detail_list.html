@@ -75,7 +75,7 @@
                         </label>
                         <div class="">
                             <input type="text" name="name" maxlength="100" class=" form-control" id="id_name"
-                                value="{{intake.name}}">
+                                value="{{intake.name}}" disabled>
                         </div>
                     </div>
                 </div>
@@ -86,7 +86,7 @@
                     </label>
                     <div class="">
                         <input type="text" name="description" maxlength="1024" class=" form-control" id="id_description"
-                            value="{{intake.description}}">
+                            value="{{intake.description}}" disabled>
                     </div>
                 </div>
                 <!--Input Source Name -->
@@ -96,7 +96,7 @@
                     </label>
                     <div class="">
                         <input type="text" name="water_source_name" maxlength="100" id="id_water_source_name"
-                            class=" form-control" value="{{intake.water_source_name}}">
+                            class=" form-control" value="{{intake.water_source_name}}" disabled>
                     </div>
                 </div>
                 <!-- Map -->
@@ -114,7 +114,7 @@
                         <div class="panel panel-info">
                             <h4 class="text-center" style="color: #5bc0de;">Select the elements that make up your
                                 capture system and click on the drawing area to add them.</h4>
-                            <div class="panel-body text-center" id="toolbar"></div>
+                            <div class="panel-body text-center" id="toolbar" disabled></div>
                         </div>
                     </div>
                 </div>
@@ -122,7 +122,7 @@
                     <!--Graph-->
                     <div class="col-md-8">
                         <span style="float:right;padding-right:36px;">
-                            <input id="getdata" type="checkbox" />Source
+                            <input id="getdata" type="checkbox" disabled/>Source
                         </span>
                         <textarea id="xml" style="height:600px;width:100%;display:none;border-style:none;"></textarea>
                         <div class="panel panel-info">
@@ -153,34 +153,34 @@
                                 <div class="form-group">
                                     <label>% transported water:</label>
                                     <input type="number" id="aguaDiagram" min="" max="" class="form-control"
-                                        oninput="validateinput(this)">
+                                        oninput="validateinput(this)" disabled>
                                 </div>
                                 <!--Sediments-->
                                 <div class="form-group">
                                     <label>% Sediments retained:</label>
                                     <input type="number" id="sedimentosDiagram" min="" max="" class="form-control"
-                                        oninput="validateinput(this)">
+                                        oninput="validateinput(this)" disabled>
                                 </div>
                                 <!--Nitrogen-->
                                 <div class="form-group">
                                     <label>% Nitrogen retained:</label>
                                     <input type="number" id="nitrogenoDiagram" class="form-control"
-                                        oninput="validateinput(this)">
+                                        oninput="validateinput(this)" disabled>
                                 </div>
                                 <!--Phosphorus-->
                                 <div class="form-group">
                                     <label>% Phosphorus retained:</label>
                                     <input type="number" id="fosforoDiagram" class="form-control"
-                                        oninput="validateinput(this)">
+                                        oninput="validateinput(this)" disabled>
                                 </div>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-primary btn-block" id="saveGraph">Validate Graph</button>
+                        <button type="button" class="btn btn-primary btn-block" id="saveGraph" disabled>Validate Graph</button>
                     </div>
                     <div class="col-md-12">
                         <h3>Cost functions <small id="titleCostFunSmall"></small>
                             <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal"
-                                data-target="#exampleModal" id="ModalAddCostBtn">Add Cost</button>
+                                data-target="#exampleModal" id="ModalAddCostBtn" disabled>Add Cost</button>
                         </h3>
                         <div class="panel panel-info">
                             <div class="panel-body">
@@ -232,7 +232,7 @@
                                                 <label>Number of years for time series <span
                                                         class="text-danger-wp">(*)</span> </label>
                                                 <input type="text" value="2" class="form-control"
-                                                    id="numberYearsInterpolationValue">
+                                                    id="numberYearsInterpolationValue" disabled>
                                             </div>
                                         </div>
                                     </div>
@@ -242,12 +242,12 @@
                                             <div class="col-md-6">
                                                 <label>Initial year<span class="text-danger-wp">(*)</span> </label>
                                                 <input type="text" value="100" class="form-control"
-                                                    id="initialDataExtractionInterpolationValue">
+                                                    id="initialDataExtractionInterpolationValue" disabled>
                                             </div>
                                             <div class="col-md-6" id="finalColumnExtraction">
                                                 <label>Final year<span class="text-danger-wp">(*)</span> </label>
                                                 <input type="text" value="1000" class="form-control"
-                                                    id="finalDataExtractionInterpolationValue">
+                                                    id="finalDataExtractionInterpolationValue" disabled>
                                             </div>
                                         </div>
                                     </div>
@@ -283,7 +283,7 @@
                                     <p>You can edit the table manually by activating this option.</p>
                                     <div class="form-group">
                                         <label>Number of years <span class="text-danger-wp">(*)</span> </label>
-                                        <input type="text" class="form-control" id="intakeNIYMI">
+                                        <input type="text" class="form-control" id="intakeNIYMI" disabled>
                                     </div>
                                     <button type="button" class="btn btn-primary" id="intakeNIBYMI">Generate</button>
                                 </div>
@@ -341,18 +341,18 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Load intake delimited area<span class="text-danger-wp"></span></label>
-                                    <input id="intakeArea" type="file">
+                                    <input id="intakeArea" type="file" disabled>
                                 </div>
                                 <div class="form-group">
-                                    <button type="button" class="btn btn-primary" id="btnDelimitArea"> Delimit
+                                    <button type="button" class="btn btn-primary" id="btnDelimitArea" disabled> Delimit
                                         subarea</button>
                                 </div>
                                 <div class="form-group">
-                                    <button type="button" class="btn btn-primary" id="btnValidateArea"> Validate
+                                    <button type="button" class="btn btn-primary" id="btnValidateArea" disabled> Validate
                                         area</button>
                                 </div>
                                 <div class="form-group">
-                                    <input type="submit" id="submit" class="btn btn-primary" value="Submit"></input>
+                                    <input type="submit" id="submit" class="btn btn-primary" value="Submit" disabled></input>
                                 </div>
                             </div>
                         </div>
@@ -362,16 +362,16 @@
         </div>
 
         <!--Inputs hidden for save data-->
-        <input type="hidden" id="xmlGraph" name="xmlGraph" value="{{intake.xml_graph}}">
-        <input type="hidden" id="graphConnections" name="graphConnections">
-        <input type="hidden" id="isFile" name="isFile">
-        <input type="hidden" id="typeDelimit" name="typeDelimit">
-        <input type="hidden" id="waterExtraction" name="waterExtraction" value="">
-        <input type="hidden" id="delimitArea" name="delimitArea" value="">
-        <input type="hidden" id="pointIntake" name="pointIntake" value="">
-        <input type="hidden" id="intakeAreaPolygon" name="intakeAreaPolygon" value="">
-        <input type="hidden" id="graphElements" name="graphElements" value="">
-        <input type="hidden" id="basinId" name="basinId" value="">
+        <input type="hidden" id="xmlGraph" name="xmlGraph" value="{{intake.xml_graph}}" disabled>
+        <input type="hidden" id="graphConnections" name="graphConnections" disabled>
+        <input type="hidden" id="isFile" name="isFile" disabled>
+        <input type="hidden" id="typeDelimit" name="typeDelimit" disabled>
+        <input type="hidden" id="waterExtraction" name="waterExtraction" value="" disabled>
+        <input type="hidden" id="delimitArea" name="delimitArea" value="" disabled>
+        <input type="hidden" id="pointIntake" name="pointIntake" value="" disabled>
+        <input type="hidden" id="intakeAreaPolygon" name="intakeAreaPolygon" value="" disabled>
+        <input type="hidden" id="graphElements" name="graphElements" value="" disabled>
+        <input type="hidden" id="basinId" name="basinId" value="" disabled>
 </form>
 <!--Modal Calculator-->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -391,7 +391,7 @@
                     <div class="col-md-7">
                         <div class="form-group">
                             <label>Cost function name</label>
-                            <input type="text" class="form-control">
+                            <input type="text" class="form-control" disabled>
                         </div>
                         <div class="form-group">
                             <label>Cost function description</label>
@@ -508,7 +508,7 @@
 
 <script src="{{ STATIC_URL }}geonode/js/leaflet/leaflet-omnivore.min.js"></script>
 <script src="{{ STATIC_URL }}waterproof_intake/js/intake_edit.js"></script>
-<script src="{{ STATIC_URL }}waterproof_intake/js/graph_edit.js"></script>
+<script src="{{ STATIC_URL }}waterproof_intake/js/graph.js"></script>
 <script src="{{ STATIC_URL }}waterproof_intake/js/graphValidations.js"></script>
 <script src="{{ STATIC_URL }}geonode/js/mxgraph/mxClient.js"></script>
 <script src="{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/js/app.js"></script>
