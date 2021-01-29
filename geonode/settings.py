@@ -2121,3 +2121,4 @@ GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat
 SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'True'))
 # -- END Settings for MONITORING plugin
 
+CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
