@@ -87,14 +87,6 @@
                         <input type="text" name="water_source_name" maxlength="100" id="id_water_source_name" class="form-control">
                     </div>
                 </div>
-                <!--Select City
-                <div id="div_id_city" class="form-group  ">
-                    <label for="id_description" class="control-label required-field ">
-                        Ciudad
-                    </label>
-                    <div class="">{{form.city}}</div>
-                </div>-->
-
                 <!-- Map -->
                 <div id="map">
                     <div id="analysisOptions">
@@ -110,11 +102,11 @@
             </div>
             <!--Step 2-->
             <div id="step-2" class="tab-pane" role="tabpanel">
-                <!--Toolbar mxgraph-->
                 <div class="page-header">
                     <h3>Configure Parameters</h3>
                     <p>Select the elements that make up your capture system and click on the drawing area to add them.</p>
                 </div>
+                <!--Toolbar mxgraph-->
                 <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-info">
@@ -136,9 +128,9 @@
                     <!--Panel Information Right-->
                     <div class="col-md-4">
                         <div class="alert alert-info text-center" role="alert">
-                        <button type="button" class="btn btn-link btn-block" data-toggle="modal" data-target="#HelpModal" id="HelpModalBtnModal" style="outline:none; text-decoration:none;">
-                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> How to use the graph</button>
-                        </button>
+                            <button type="button" class="btn btn-link btn-block" data-toggle="modal" data-target="#HelpModal" id="HelpModalBtnModal" style="outline:none; text-decoration:none;">
+                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> How to use the graph</button>
+                            </button>
                         </div>
                         <div class="panel panel-info">
                             <div class="panel-body">
@@ -179,10 +171,10 @@
                 </div>
                 <div class="row" id="hideCostFuntion" style="display: none">
                     <div class="col-md-12">
-                        <h3>Cost functions <small id="titleCostFunSmall"></small>
+                        <h3 style="padding:1rem;">Cost functions <small id="titleCostFunSmall"></small>
                             <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal" data-target="#CalculatorModal" id="ModalAddCostBtn">Add Cost</button>
                         </h3>
-                        <div id="funcostgenerate" style="margin-top: 12px;"></div>
+                        <div id="funcostgenerate" style="padding:1rem;"></div>
                     </div>
                 </div>
                 <br>
