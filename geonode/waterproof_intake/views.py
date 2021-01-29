@@ -523,6 +523,47 @@ def editIntake(request, idx):
             return render(request, 'waterproof_intake/intake_list.html')
 
 
+def viewIntake(request, idx):
+    if request.method == 'GET':
+        countries = Countries.objects.all()
+        currencies = Currency.objects.all()
+        filterIntake = Intake.objects.get(id=idx)
+        filterExternal = ElementSystem.objects.filter(intake=filterIntake.pk, is_external=True)
+        extInputs = []
+
+        for element in filterExternal:
+            filterExtraction = ValuesTime.objects.filter(element=element.pk)
+            extractionElements = []
+            for extraction in filterExtraction:
+                extractionObject = {
+                    'year': extraction.year,
+                    'waterVol': extraction.water_volume,
+                    'sediment': extraction.sediment,
+                    'nitrogen': extraction.nitrogen,
+                    'phosphorus': extraction.phosphorus
+                }
+                extractionElements.append(extractionObject)
+            external = {
+                'name': element.name,
+                'xmlId': element.graphId,
+                'waterExtraction': extractionElements
+            }
+            #external['waterExtraction'] = extractionElements
+            extInputs.append(external)
+        intakeExtInputs = json.dumps(extInputs)
+        city = City.objects.all()
+        form = forms.IntakeForm()
+        return render(
+            request, 'waterproof_intake/intake_detail_list.html',
+            {
+                'intake': filterIntake,
+                'countries': countries,
+                'city': city,
+                'externalInputs': intakeExtInputs,
+                "serverApi": settings.WATERPROOF_API_SERVER
+            }
+        )
+
 def cloneIntake(request, idx):
     if not request.user.is_authenticated:
         return render(request, 'waterproof_intake/intake_login_error.html')

@@ -22,7 +22,8 @@ var bandera = true;
 // overridden to invoke this global function as the
 // last step in the editor constructor.
 function onInit(editor) {
-    // Enables rotation handle
+    console.log('holis')
+        // Enables rotation handle
     mxVertexHandler.prototype.rotationEnabled = false;
 
     // Enables guides
@@ -124,42 +125,6 @@ function onInit(editor) {
         f(editor);
     }
 
-    // Defines a new action to switch between
-    // XML and graphical display
-    var textNode = document.getElementById('xml');
-    var graphNode = editor.graph.container;
-    var parent = editor.graph.getDefaultParent();
-    var xmlDocument = mxUtils.createXmlDocument();
-    var sourceNode = xmlDocument.createElement('Symbol');
-
-    //Create River at the beginning of the diagram
-    var river = editor.graph.insertVertex(parent, null, sourceNode, 40, 30, 60, 92);
-    river.setAttribute('name', 'River');
-    river.setAttribute('label', 'River (2)');
-    river.setAttribute('externalData', 'false');
-    editor.graph.model.setStyle(river, 'rio');
-    var temp = [];
-    temp.push(
-        `Q${river.id}`,
-        `CSed${river.id}`,
-        `CN${river.id}`,
-        `CP${river.id}`,
-        `WSed${river.id}`,
-        `WN${river.id}`,
-        `WP${river.id}`,
-        `WSedRet${river.id}`,
-        `WNRet${river.id}`,
-        `WPRet${river.id}`
-    );
-
-    $.ajax({
-        url: `/intake/loadProcess/RIVER`,
-        success: function(result) {
-            river.setAttribute('varcost', JSON.stringify(temp));
-            river.setAttribute('resultdb', result);
-        }
-    });
-
     //Validate connections between elements
     editor.graph.getEdgeValidationError = function(edge, source, target) {
         if (source != null && target != null &&
@@ -180,6 +145,17 @@ function onInit(editor) {
         return mxGraph.prototype.getEdgeValidationError.apply(this, arguments);
     }
 
+    // Defines a new action to switch between
+    // XML and graphical display
+    var textNode = document.getElementById('xml');
+    var graphNode = editor.graph.container;
+
+    //esto va para edit :v
+    xmlDoc = mxUtils.parseXml(xmlGraph)
+    var dec = new mxCodec(xmlDoc);
+    dec.decode(xmlDoc.documentElement, editor.graph.getModel());
+
+
     // River not have a entrance connection
     editor.graph.multiplicities.push(new mxMultiplicity(
         false, 'Symbol', 'name', 'River', 0, 0, ['Symbol'],
@@ -190,7 +166,7 @@ function onInit(editor) {
         false, 'Symbol', 'name', 'External Input', 0, 0, ['Symbol'],
         `No element can be connected to the External input`));
 
-    // External input needs 1 connected Targets
+    // External input not have a entrance connection
     editor.graph.multiplicities.push(new mxMultiplicity(
         true, 'Symbol', 'name', 'External Input', 0, 1, ['Symbol'],
         'External Input only have 1 target',
@@ -381,50 +357,47 @@ function onInit(editor) {
 
         //load data when add an object in a diagram
         editor.graph.addListener(mxEvent.ADD_CELLS, function(sender, evt) {
+
             var selectedCell = evt.getProperty("cells");
             var idvar = selectedCell[0].id;
-            try {
-                if (selectedCell != undefined) {
-                    var varcost = [];
-                    varcost.push(
-                        `Q${idvar}`,
-                        `CSed${idvar}`,
-                        `CN${idvar}`,
-                        `CP${idvar}`,
-                        `WSed${idvar}`,
-                        `WN${idvar}`,
-                        `WP${idvar}`,
-                        `WSedRet${idvar}`,
-                        `WNRet${idvar}`,
-                        `WPRet${idvar}`
-                    );
-                    selectedCell[0].setAttribute('varcost', JSON.stringify(varcost));
+            if (selectedCell != undefined) {
+                var varcost = [];
+                varcost.push(
+                    `Q${idvar}`,
+                    `CSed${idvar}`,
+                    `CN${idvar}`,
+                    `CP${idvar}`,
+                    `WSed${idvar}`,
+                    `WN${idvar}`,
+                    `WP${idvar}`,
+                    `WSedRet${idvar}`,
+                    `WNRet${idvar}`,
+                    `WPRet${idvar}`
+                );
+                selectedCell[0].setAttribute('varcost', JSON.stringify(varcost));
 
-                    $.ajax({
-                        url: `/intake/loadProcess/${selectedCell[0].dbreference}`,
-                        success: function(result) {
-                            selectedCell[0].setAttribute("resultdb", result);
-                        }
-                    });
+                $.ajax({
+                    url: `/intake/loadProcess/${selectedCell[0].dbreference}`,
+                    success: function(result) {
+                        selectedCell[0].setAttribute("resultdb", result);
+                    }
+                });
 
-                    $.ajax({
-                        url: `/intake/loadFunctionBySymbol/${selectedCell[0].funcionreference}`,
-                        success: function(result) {
-                            selectedCell[0].setAttribute("funcost", result);
-                        }
-                    });
-                }
-            } catch (error) {
-                console.log(error)
+                $.ajax({
+                    url: `/intake/loadFunctionBySymbol/${selectedCell[0].funcionreference}`,
+                    success: function(result) {
+                        selectedCell[0].setAttribute("funcost", result);
+                    }
+                });
             }
-
         });
 
         //Load data from figure to html
         editor.graph.addListener(mxEvent.CLICK, function(sender, evt) {
             selectedCell = evt.getProperty('cell');
             // Clear Inputs
-            if (selectedCell != undefined) { addData(selectedCell, MQ); } else { clearDataHtml(); }
+            if (selectedCell != undefined) clearDataHtml(selectedCell, evt);
+            if (selectedCell != undefined) { addData(selectedCell, MQ); } else { clearDataHtml(selectedCell, evt); }
         });
 
         //Button for valide graph
@@ -461,7 +434,7 @@ function onInit(editor) {
                             'id': node.id,
                             'source': node.getAttribute('source'),
                             'target': node.getAttribute('target'),
-                            'resultdb': JSON.stringify(value[3]),
+                            'resultdb': value[3],
                             'funcost': JSON.stringify(value[5]),
                             'name': JSON.stringify(value[4]),
                             'varcost': JSON.stringify(value[1])
@@ -616,7 +589,7 @@ function onInit(editor) {
         });
 
         //Add value entered in sediments in the field resultdb
-        $('#sedimentosDiagram').change(function() {
+        $('#sedimentosDiagram').keyup(function() {
             if (typeof(selectedCell.value) == "string" && selectedCell.value.length > 0) {
                 var obj = JSON.parse(selectedCell.value);
                 let dbfields = JSON.parse(obj.resultdb);
@@ -628,10 +601,11 @@ function onInit(editor) {
                 resultdb[0].fields.predefined_sediment_perc = $('#sedimentosDiagram').val();
                 selectedCell.setAttribute('resultdb', JSON.stringify(resultdb));
             }
+
         });
 
         //Add value entered in nitrogen in the field resultdb
-        $('#nitrogenoDiagram').change(function() {
+        $('#nitrogenoDiagram').keyup(function() {
             if (typeof(selectedCell.value) == "string" && selectedCell.value.length > 0) {
                 var obj = JSON.parse(selectedCell.value);
                 let dbfields = JSON.parse(obj.resultdb);
@@ -646,7 +620,7 @@ function onInit(editor) {
         });
 
         //Add value entered in phosphorus in the field resultdb
-        $('#fosforoDiagram').change(function() {
+        $('#fosforoDiagram').keyup(function() {
             if (typeof(selectedCell.value) == "string" && selectedCell.value.length > 0) {
                 var obj = JSON.parse(selectedCell.value);
                 let dbfields = JSON.parse(obj.resultdb);
@@ -661,7 +635,7 @@ function onInit(editor) {
         });
 
         //Add value entered in aguaDiagram in the field resultdb
-        $('#aguaDiagram').change(function() {
+        $('#aguaDiagram').keyup(function() {
             if (typeof(selectedCell.value) == "string" && selectedCell.value.length > 0) {
                 var obj = JSON.parse(selectedCell.value);
                 let dbfields = JSON.parse(obj.resultdb);

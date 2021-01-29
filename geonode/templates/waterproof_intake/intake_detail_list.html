@@ -75,7 +75,11 @@
                         </label>
                         <div class="">
                             <input type="text" name="name" maxlength="100" class=" form-control" id="id_name"
+<<<<<<< HEAD
                                 value="{{intake.name}}" disabled>
+=======
+                                value="{{intake.name}}">
+>>>>>>> water_intake_feature
                         </div>
                     </div>
                 </div>
@@ -86,7 +90,11 @@
                     </label>
                     <div class="">
                         <input type="text" name="description" maxlength="1024" class=" form-control" id="id_description"
+<<<<<<< HEAD
                             value="{{intake.description}}" disabled>
+=======
+                            value="{{intake.description}}">
+>>>>>>> water_intake_feature
                     </div>
                 </div>
                 <!--Input Source Name -->
@@ -96,7 +104,11 @@
                     </label>
                     <div class="">
                         <input type="text" name="water_source_name" maxlength="100" id="id_water_source_name"
+<<<<<<< HEAD
                             class=" form-control" value="{{intake.water_source_name}}" disabled>
+=======
+                            class=" form-control" value="{{intake.water_source_name}}">
+>>>>>>> water_intake_feature
                     </div>
                 </div>
                 <!-- Map -->
@@ -122,7 +134,11 @@
                     <!--Graph-->
                     <div class="col-md-8">
                         <span style="float:right;padding-right:36px;">
+<<<<<<< HEAD
                             <input id="getdata" type="checkbox" disabled/>Source
+=======
+                            <input id="getdata" type="checkbox" />Source
+>>>>>>> water_intake_feature
                         </span>
                         <textarea id="xml" style="height:600px;width:100%;display:none;border-style:none;"></textarea>
                         <div class="panel panel-info">
@@ -153,25 +169,41 @@
                                 <div class="form-group">
                                     <label>% transported water:</label>
                                     <input type="number" id="aguaDiagram" min="" max="" class="form-control"
+<<<<<<< HEAD
                                         oninput="validateinput(this)" disabled>
+=======
+                                        oninput="validateinput(this)">
+>>>>>>> water_intake_feature
                                 </div>
                                 <!--Sediments-->
                                 <div class="form-group">
                                     <label>% Sediments retained:</label>
                                     <input type="number" id="sedimentosDiagram" min="" max="" class="form-control"
+<<<<<<< HEAD
                                         oninput="validateinput(this)" disabled>
+=======
+                                        oninput="validateinput(this)">
+>>>>>>> water_intake_feature
                                 </div>
                                 <!--Nitrogen-->
                                 <div class="form-group">
                                     <label>% Nitrogen retained:</label>
                                     <input type="number" id="nitrogenoDiagram" class="form-control"
+<<<<<<< HEAD
                                         oninput="validateinput(this)" disabled>
+=======
+                                        oninput="validateinput(this)">
+>>>>>>> water_intake_feature
                                 </div>
                                 <!--Phosphorus-->
                                 <div class="form-group">
                                     <label>% Phosphorus retained:</label>
                                     <input type="number" id="fosforoDiagram" class="form-control"
+<<<<<<< HEAD
                                         oninput="validateinput(this)" disabled>
+=======
+                                        oninput="validateinput(this)">
+>>>>>>> water_intake_feature
                                 </div>
                             </div>
                         </div>
@@ -232,7 +264,11 @@
                                                 <label>Number of years for time series <span
                                                         class="text-danger-wp">(*)</span> </label>
                                                 <input type="text" value="2" class="form-control"
+<<<<<<< HEAD
                                                     id="numberYearsInterpolationValue" disabled>
+=======
+                                                    id="numberYearsInterpolationValue">
+>>>>>>> water_intake_feature
                                             </div>
                                         </div>
                                     </div>
@@ -242,12 +278,20 @@
                                             <div class="col-md-6">
                                                 <label>Initial year<span class="text-danger-wp">(*)</span> </label>
                                                 <input type="text" value="100" class="form-control"
+<<<<<<< HEAD
                                                     id="initialDataExtractionInterpolationValue" disabled>
+=======
+                                                    id="initialDataExtractionInterpolationValue">
+>>>>>>> water_intake_feature
                                             </div>
                                             <div class="col-md-6" id="finalColumnExtraction">
                                                 <label>Final year<span class="text-danger-wp">(*)</span> </label>
                                                 <input type="text" value="1000" class="form-control"
+<<<<<<< HEAD
                                                     id="finalDataExtractionInterpolationValue" disabled>
+=======
+                                                    id="finalDataExtractionInterpolationValue">
+>>>>>>> water_intake_feature
                                             </div>
                                         </div>
                                     </div>
@@ -283,7 +327,11 @@
                                     <p>You can edit the table manually by activating this option.</p>
                                     <div class="form-group">
                                         <label>Number of years <span class="text-danger-wp">(*)</span> </label>
+<<<<<<< HEAD
                                         <input type="text" class="form-control" id="intakeNIYMI" disabled>
+=======
+                                        <input type="text" class="form-control" id="intakeNIYMI">
+>>>>>>> water_intake_feature
                                     </div>
                                     <button type="button" class="btn btn-primary" id="intakeNIBYMI">Generate</button>
                                 </div>
@@ -341,7 +389,11 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Load intake delimited area<span class="text-danger-wp"></span></label>
+<<<<<<< HEAD
                                     <input id="intakeArea" type="file" disabled>
+=======
+                                    <input id="intakeArea" type="file">
+>>>>>>> water_intake_feature
                                 </div>
                                 <div class="form-group">
                                     <button type="button" class="btn btn-primary" id="btnDelimitArea"> Delimit
@@ -352,7 +404,11 @@
                                         area</button>
                                 </div>
                                 <div class="form-group">
+<<<<<<< HEAD
                                     <input type="submit" id="submit" class="btn btn-primary" value="Submit" disabled></input>
+=======
+                                    <input type="submit" id="submit" class="btn btn-primary" value="Submit"></input>
+>>>>>>> water_intake_feature
                                 </div>
                             </div>
                         </div>
@@ -362,6 +418,7 @@
         </div>
 
         <!--Inputs hidden for save data-->
+<<<<<<< HEAD
         <input type="hidden" id="xmlGraph" name="xmlGraph" value="{{intake.xml_graph}}" disabled>
         <input type="hidden" id="graphConnections" name="graphConnections" disabled>
         <input type="hidden" id="isFile" name="isFile" disabled>
@@ -372,6 +429,18 @@
         <input type="hidden" id="intakeAreaPolygon" name="intakeAreaPolygon" value="" disabled>
         <input type="hidden" id="graphElements" name="graphElements" value="" disabled>
         <input type="hidden" id="basinId" name="basinId" value="" disabled>
+=======
+        <input type="hidden" id="xmlGraph" name="xmlGraph" value="{{intake.xml_graph}}">
+        <input type="hidden" id="graphConnections" name="graphConnections">
+        <input type="hidden" id="isFile" name="isFile">
+        <input type="hidden" id="typeDelimit" name="typeDelimit">
+        <input type="hidden" id="waterExtraction" name="waterExtraction" value="">
+        <input type="hidden" id="delimitArea" name="delimitArea" value="">
+        <input type="hidden" id="pointIntake" name="pointIntake" value="">
+        <input type="hidden" id="intakeAreaPolygon" name="intakeAreaPolygon" value="">
+        <input type="hidden" id="graphElements" name="graphElements" value="">
+        <input type="hidden" id="basinId" name="basinId" value="">
+>>>>>>> water_intake_feature
 </form>
 <!--Modal Calculator-->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -391,7 +460,11 @@
                     <div class="col-md-7">
                         <div class="form-group">
                             <label>Cost function name</label>
+<<<<<<< HEAD
                             <input type="text" class="form-control" disabled>
+=======
+                            <input type="text" class="form-control">
+>>>>>>> water_intake_feature
                         </div>
                         <div class="form-group">
                             <label>Cost function description</label>
@@ -508,7 +581,11 @@
 
 <script src="{{ STATIC_URL }}geonode/js/leaflet/leaflet-omnivore.min.js"></script>
 <script src="{{ STATIC_URL }}waterproof_intake/js/intake_edit.js"></script>
+<<<<<<< HEAD
 <script src="{{ STATIC_URL }}waterproof_intake/js/graph.js"></script>
+=======
+<script src="{{ STATIC_URL }}waterproof_intake/js/graph_edit.js"></script>
+>>>>>>> water_intake_feature
 <script src="{{ STATIC_URL }}waterproof_intake/js/graphValidations.js"></script>
 <script src="{{ STATIC_URL }}geonode/js/mxgraph/mxClient.js"></script>
 <script src="{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/js/app.js"></script>
