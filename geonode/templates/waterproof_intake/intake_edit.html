@@ -7,8 +7,8 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin="" />
-<link rel="stylesheet" href="{% static "geonode/css/leaflet/Control.Coordinates.css" %}"/>
-<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Loader.css" %}" />
+<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Coordinates.css"/>
+<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Loader.css"/>
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/mathquill/mathquill.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/css/intake.css" />
 <script>
@@ -90,7 +90,7 @@
                     </div>
                 </div>
                 <!--Input Source Name -->
-                <div id="id_water_source_name" class="form-group  ">
+                <div id="div_id_water_source_name" class="form-group  ">
                     <label for="id_description" class="control-label required-field ">
                         Nombre de la fuente
                     </label>
@@ -105,6 +105,12 @@
                         <button type="button" id="validateBtn">Draw Basin</button>
                     </div>
                 </div>
+                <br>
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary" id="step1NextBtn">Next</button>
+                    </div>
+                </div>
             </div>
             <!--Step 2-->
             <div id="step-2" class="tab-pane" role="tabpanel">
@@ -112,7 +118,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-info">
-                            <h4 class="text-center" style="color: #5bc0de;">Select the elements that make up your
+                            <h4 class="text-intake">Select the elements that make up your
                                 capture system and click on the drawing area to add them.</h4>
                             <div class="panel-body text-center" id="toolbar"></div>
                         </div>
@@ -177,15 +183,19 @@
                         </div>
                         <button type="button" class="btn btn-primary btn-block" id="saveGraph">Validate Graph</button>
                     </div>
-                    <div class="col-md-12">
-                        <h3>Cost functions <small id="titleCostFunSmall"></small>
-                            <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal"
-                                data-target="#exampleModal" id="ModalAddCostBtn">Add Cost</button>
-                        </h3>
-                        <div class="panel panel-info">
-                            <div class="panel-body">
-                                <div id="funcostgenerate"></div>
-                            </div>
+                    <div class="row" id="hideCostFuntion" style="display: none">
+                        <div class="col-md-12">
+                            <h3>Cost functions <small id="titleCostFunSmall"></small>
+                                <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal" data-target="#CalculatorModal" id="ModalAddCostBtn">Add Cost</button>
+                            </h3>
+                            <div id="funcostgenerate" style="margin-top: 12px;"></div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row text-center">
+                        <div class="col-md-12">
+                            <button type="button" class="btn btn-primary" id="step2PrevBtn">Previous</button>
+                            <button type="button" class="btn btn-primary" id="step2NextBtn">Next</button>
                         </div>
                     </div>
                 </div>
@@ -300,6 +310,13 @@
                         </div>
                     </div>
                 </div>
+                <br>
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary" id="step3PrevBtn">Previous</button>
+                        <button type="button" class="btn btn-primary" id="step3NextBtn">Next</button>
+                    </div>
+                </div>
             </div>
             <!--Step 4-->
             <div id="step-4" class="tab-pane" role="tabpanel">
@@ -320,7 +337,13 @@
                         <div id="IntakeTDLE"></div>
                         <button class="btn btn-primary" type="button" id="saveExternalData">Save Data</button>
                     </div>
-
+                </div>
+                <br>
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary" id="step4PrevBtn">Previous</button>
+                        <button type="button" class="btn btn-primary" id="step4NextBtn">Next</button>
+                    </div>
                 </div>
             </div>
             <!--Step 5-->
@@ -351,11 +374,15 @@
                                     <button type="button" class="btn btn-primary" id="btnValidateArea"> Validate
                                         area</button>
                                 </div>
-                                <div class="form-group">
-                                    <input type="submit" id="submit" class="btn btn-primary" value="Submit"></input>
-                                </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <br> 
+                <div class="row text-center">
+                    <div class="col-md-12 form-group">
+                        <button type="button" class="btn btn-primary" id="step5PrevBtn">Previous</button>
+                        <input type="submit" id="submit" class="btn btn-primary" value="Submit"></input>
                     </div>
                 </div>
             </div>
@@ -374,11 +401,11 @@
         <input type="hidden" id="basinId" name="basinId" value="">
 </form>
 <!--Modal Calculator-->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="CalculatorModal" tabindex="-1" aria-labelledby="CalculatorModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Add Cost</h5>
+                <h5 class="modal-title" id="CalculatorModalLabel">Add Cost</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -399,24 +426,15 @@
                         </div>
                         <h5 class="text-primary">Syntax keyboard</h5>
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="=">'math' =
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="+">'math' +
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">'math' -
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">'math' *
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">'math' a/b
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">'math' a^b
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="\sqrt">'math'
-                                sqrt(a) 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="min">'math' min
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="max">'math' max
-                                'math'</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="=">=</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="+">+</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">-</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">*</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">\frac{a}{b}</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">a^b</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="\sqrt">√</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="min">min</button>
+                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="max">max</button>
                         </div>
                     </div>
                 </div>

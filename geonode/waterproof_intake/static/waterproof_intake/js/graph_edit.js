@@ -22,8 +22,7 @@ var bandera = true;
 // overridden to invoke this global function as the
 // last step in the editor constructor.
 function onInit(editor) {
-    console.log('holis')
-        // Enables rotation handle
+    // Enables rotation handle
     mxVertexHandler.prototype.rotationEnabled = false;
 
     // Enables guides
