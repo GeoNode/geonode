@@ -94,7 +94,7 @@ def catalogue_post_save(instance, sender, **kwargs):
     if instance.metadata_uploaded and instance.metadata_uploaded_preserve:
         md_doc = etree.tostring(dlxml.fromstring(instance.metadata_xml))
     else:
-        md_doc = catalogue.catalogue.csw_gen_xml(instance, 'catalogue/full_metadata.xml')
+        md_doc = catalogue.catalogue.csw_gen_xml(instance, settings.CATALOG_METADATA_TEMPLATE)
     try:
         csw_anytext = catalogue.catalogue.csw_gen_anytext(md_doc)
     except Exception as e:
