@@ -471,6 +471,8 @@ class Thesaurus(models.Model):
 
     slug = models.CharField(max_length=64, default='')
 
+    about = models.CharField(max_length=255, null=True, blank=True)
+
     def __str__(self):
         return "{0}".format(self.identifier)
 
@@ -527,6 +529,26 @@ class ThesaurusKeyword(models.Model):
         ordering = ("alt_label",)
         verbose_name_plural = 'Thesaurus Keywords'
         unique_together = (("thesaurus", "alt_label"),)
+
+ 
+class ThesaurusLabel(models.Model):
+    """
+    Contains localized version of the thesaurus title
+    """
+    # read from the RDF file
+    lang = models.CharField(max_length=3)
+    # read from the RDF file
+    label = models.CharField(max_length=255)
+
+    thesaurus = models.ForeignKey('Thesaurus', related_name='rel_thesaurus', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "{0}".format(self.label)
+
+    class Meta:
+        ordering = ("lang",)
+        verbose_name_plural = 'Thesaurus Labels'
+        unique_together = (("thesaurus", "lang"),)
 
 
 class ResourceBaseManager(PolymorphicManager):
