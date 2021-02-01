@@ -29,6 +29,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import loader
 from django.utils.translation import ugettext as _
+from django.utils.text import slugify
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.urls import reverse
@@ -193,7 +194,8 @@ def document_download(request, docid):
                 '401.html', context={
                     'error_message': _("You are not allowed to view this document.")}, request=request), status=401)
     register_event(request, EventType.EVENT_DOWNLOAD, document)
-    return DownloadResponse(document.doc_file)
+    filename = slugify(document.title) + "." + document.extension
+    return DownloadResponse(document.doc_file, basename=filename)
 
 
 class DocumentUploadView(CreateView):
