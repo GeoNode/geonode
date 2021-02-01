@@ -1,6 +1,7 @@
 {% extends "pinax/notifications/base.html" %}
 
 {% load i18n %}
+{% load user_messages %}
 
 {% block body_id %}notification-settings{% endblock %}
 
@@ -26,21 +27,22 @@
                 <th>{% trans "Notification Type" %}</th>
                 {% for header in notice_settings.column_headers %}
                     <th>
-                        {{ header.title }}
+                        {% trans header.title %}
                     </th>
                 {% endfor %}
             </tr>
             {% for row in notice_settings.rows %}
-                <tr class="notice-row">
+                {% show_notification row.notice_type.label request.user as notice_enabled %}
+                <tr class="notice-row" {% if not notice_enabled %}style="visibility:collapse"{% endif %}>
                     <td>
-                        <strong>{{ row.notice_type.display }}</strong><br/>
+                        <strong>{% trans row.notice_type.display %}</strong><br/>
                         <span class="notice_type_description">
-                            {{ row.notice_type.description }}
+                            {% trans row.notice_type.description %}
                         </span>
                     </td>
                     {% for cell in row.cells %}
                         <td>
-                            <input type="checkbox" name="{{ cell.0 }}" {% if cell.1 %}checked="yes"{% endif %} />
+                            <input type="checkbox" name="{{ cell.0 }}" {% if not notice_enabled %}disabled="true"{% else %}{% if cell.1 %}checked="yes"{% endif %}{% endif %} />
                         </td>
                     {% endfor %}
                 </tr>

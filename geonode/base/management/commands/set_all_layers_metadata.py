@@ -24,6 +24,11 @@ from geonode.layers.models import Layer
 from geonode import geoserver, qgis_server  # noqa
 from geonode.catalogue.models import catalogue_post_save
 from geonode.geoserver.helpers import ogc_server_settings
+import logging
+
+
+logger = logging.getLogger(__name__)
+
 
 from geonode.utils import (
     check_ogc_backend,
@@ -125,7 +130,7 @@ class Command(BaseCommand):
                 import traceback
                 traceback.print_exc()
                 if ignore_errors:
-                    print("[ERROR] Layer [%s] couldn't be updated" % (layer.name))
+                    logger.error("[ERROR] Layer [%s] couldn't be updated" % (layer.name))
                 else:
                     raise e
 

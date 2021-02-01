@@ -34,7 +34,7 @@ geonode/local_settings.py
 geonode/uploaded
 geonode/qgis_layer
 geonode/qgis_tiles
-geonode/settings.py
+
 #Testing output
 .coverage
 .noseids

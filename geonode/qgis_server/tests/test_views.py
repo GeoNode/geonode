@@ -450,7 +450,7 @@ class QGISServerStyleManagerTest(GeoNodeBaseTestSupport):
         if actual_list_style:
             self.assertEqual(
                 set(expected_list_style),
-                set([style.name for style in actual_list_style]))
+                set(style.name for style in actual_list_style))
 
             style_list_url = reverse(
                 'qgis_server:download-qml',
@@ -467,7 +467,7 @@ class QGISServerStyleManagerTest(GeoNodeBaseTestSupport):
             # There will be a default style
             self.assertEqual(
                 set(expected_list_style),
-                set([style['name'] for style in actual_list_style]))
+                set(style['name'] for style in actual_list_style))
 
         layer.delete()
 
@@ -503,7 +503,7 @@ class QGISServerStyleManagerTest(GeoNodeBaseTestSupport):
             expected_list_style = ['default', 'new_style']
             self.assertEqual(
                 set(expected_list_style),
-                set([style.name for style in actual_list_style]))
+                set(style.name for style in actual_list_style))
 
         # Test delete request
         delete_style_url = reverse(
@@ -520,7 +520,7 @@ class QGISServerStyleManagerTest(GeoNodeBaseTestSupport):
             expected_list_style = ['new_style']
             self.assertEqual(
                 set(expected_list_style),
-                set([style.name for style in actual_list_style]))
+                set(style.name for style in actual_list_style))
 
         # Check new default
         default_style_url = reverse(

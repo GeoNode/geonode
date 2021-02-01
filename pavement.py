@@ -27,6 +27,7 @@ import subprocess
 import signal
 import sys
 import time
+import logging
 
 from urllib.parse import urlparse
 from urllib.request import urlopen, Request
@@ -90,23 +91,26 @@ with open("dev_config.yml", 'r') as f:
     dev_config = yaml.load(f, Loader=yaml.Loader)
 
 
+logger = logging.getLogger(__name__)
+
+
 def grab(src, dest, name):
     src, dest, name = map(str, (src, dest, name))
-    print(f" src, dest, name --> {src} {dest} {name}")
+    logger.info(f" src, dest, name --> {src} {dest} {name}")
 
     if not os.path.exists(dest):
-        print("Downloading {}".format(name))
+        logger.info("Downloading {}".format(name))
     elif not zipfile.is_zipfile(dest):
-        print("Downloading {} (corrupt file)".format(name))
+        logger.info("Downloading {} (corrupt file)".format(name))
     else:
         return
 
     if src.startswith("file://"):
         src2 = src.replace("file://", '')
         if not os.path.exists(src2):
-            print("Source location ({}) does not exist".format(src2))
+            logger.info("Source location ({}) does not exist".format(src2))
         else:
-            print("Copying local file from {}".format(src2))
+            logger.info("Copying local file from {}".format(src2))
             shutil.copyfile(src2, dest)
     else:
         # urlretrieve(str(src), str(dest))
@@ -114,7 +118,7 @@ def grab(src, dest, name):
         r = requests.get(src, stream=True, timeout=10, verify=False)
         # Total size in bytes.
         total_size = int(r.headers.get('content-length', 0))
-        print("Requesting {}".format(src))
+        logger.info("Requesting {}".format(src))
         block_size = 1024
         wrote = 0
         with open("output.bin", 'wb') as f:
@@ -125,9 +129,10 @@ def grab(src, dest, name):
                     unit_scale=False):
                 wrote += len(data)
                 f.write(data)
-        print(" total_size [{}] / wrote [{}] ".format(total_size, wrote))
+        logger.info(" total_size [{}] / wrote [{}] ".format(total_size, wrote))
         if total_size != 0 and wrote != total_size:
-            print("ERROR, something went wrong")
+            logger.error("ERROR, something went wrong. Data could not be written. Expected to write " + wrote +
+                         " but wrote " + total_size + " instead")
         else:
             shutil.move("output.bin", dest)
         try:
@@ -180,7 +185,7 @@ def setup_geoserver(options):
             if not webapp_dir:
                 webapp_dir.makedirs()
 
-            print("extracting geoserver")
+            logger.info("extracting geoserver")
             z = zipfile.ZipFile(geoserver_bin, "r")
             z.extractall(webapp_dir)
         _install_data_dir()
@@ -358,19 +363,19 @@ def win_install_deps(options):
     failed = False
     for package, url in win_packages.items():
         tempfile = download_dir / os.path.basename(url)
-        print("Installing file ... " + tempfile)
+        logger.info("Installing file ... " + tempfile)
         grab_winfiles(url, tempfile, package)
         try:
             easy_install.main([tempfile])
         except Exception as e:
             failed = True
-            print("install failed with error: ", e)
+            logger.error("install failed with error: ", e)
         os.remove(tempfile)
     if failed and sys.maxsize > 2**32:
-        print("64bit architecture is not currently supported")
-        print("try finding the 64 binaries for py2exe, and pyproj")
+        logger.error("64bit architecture is not currently supported")
+        logger.error("try finding the 64 binaries for py2exe, and pyproj")
     elif failed:
-        print("install failed for py2exe, and/or pyproj")
+        logger.error("install failed for py2exe, and/or pyproj")
     else:
         print("Windows dependencies now complete.  Run pip install -e geonode --use-mirrors")
 
@@ -384,7 +389,7 @@ def upgradedb(options):
     Add 'fake' data migrations for existing tables from legacy GeoNode versions
     """
     version = options.get('version')
-    if version in ['1.1', '1.2']:
+    if version in {'1.1', '1.2'}:
         sh("python -W ignore manage.py migrate maps 0001 --fake")
         sh("python -W ignore manage.py migrate avatar 0001 --fake")
     elif version is None:
@@ -515,7 +520,8 @@ def stop_django(options):
     """
     Stop the GeoNode Django application
     """
-    kill('python', 'celery')
+    if ASYNC_SIGNALS:
+        kill('python', 'celery')
     kill('python', 'runserver')
     kill('python', 'runmessaging')
 
@@ -611,21 +617,20 @@ def start_django(options):
     foreground = '' if options.get('foreground', False) else '&'
     sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
 
-    if 'django_celery_beat' not in INSTALLED_APPS:
-        sh("{} celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E \
---statedb=worker.state -s celerybeat-schedule --loglevel=DEBUG \
---concurrency=10 -n worker1@%h -f celery.log {}".format(  # noqa
-            settings,
-            foreground
-        ))
-    else:
-        sh("{} celery -A geonode.celery_app:app worker -l DEBUG {} {}".format(
-            settings,
-            "-s django_celery_beat.schedulers:DatabaseScheduler",
-            foreground
-        ))
-
     if ASYNC_SIGNALS:
+        if 'django_celery_beat' not in INSTALLED_APPS:
+            sh("{} celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E \
+    --statedb=worker.state -s celerybeat-schedule --loglevel=DEBUG \
+    --concurrency=10 -n worker1@%h -f celery.log {}".format(  # noqa
+                settings,
+                foreground
+            ))
+        else:
+            sh("{} celery -A geonode.celery_app:app worker -l DEBUG {} {}".format(
+                settings,
+                "-s django_celery_beat.schedulers:DatabaseScheduler",
+                foreground
+            ))
         sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
 
     # wait for Django to start
@@ -669,10 +674,10 @@ def start_geoserver(options):
     url = GEOSERVER_BASE_URL
 
     if urlparse(GEOSERVER_BASE_URL).hostname != 'localhost':
-        print("Warning: OGC_SERVER['default']['LOCATION'] hostname is not equal to 'localhost'")
+        logger.warning("Warning: OGC_SERVER['default']['LOCATION'] hostname is not equal to 'localhost'")
 
     if not GEOSERVER_BASE_URL.endswith('/'):
-        print("Error: OGC_SERVER['default']['LOCATION'] does not end with a '/'")
+        logger.error("Error: OGC_SERVER['default']['LOCATION'] does not end with a '/'")
         sys.exit(1)
 
     download_dir = path('downloaded').abspath()
@@ -735,18 +740,18 @@ def start_geoserver(options):
             try:
                 sh(('%(javapath)s -version') % locals())
             except Exception:
-                print("Java was not found in your path.  Trying some other options: ")
+                logger.warning("Java was not found in your path.  Trying some other options: ")
                 javapath_opt = None
                 if os.environ.get('JAVA_HOME', None):
-                    print("Using the JAVA_HOME environment variable")
+                    logger.info("Using the JAVA_HOME environment variable")
                     javapath_opt = os.path.join(os.path.abspath(
                         os.environ['JAVA_HOME']), "bin", "java.exe")
                 elif options.get('java_path'):
                     javapath_opt = options.get('java_path')
                 else:
-                    print("Paver cannot find java in the Windows Environment. "
-                          "Please provide the --java_path flag with your full path to "
-                          "java.exe e.g. --java_path=C:/path/to/java/bin/java.exe")
+                    logger.critical("Paver cannot find java in the Windows Environment. "
+                                    "Please provide the --java_path flag with your full path to "
+                                    "java.exe e.g. --java_path=C:/path/to/java/bin/java.exe")
                     sys.exit(1)
                 # if there are spaces
                 javapath = 'START /B "" "' + javapath_opt + '"'
@@ -1024,7 +1029,7 @@ def setup_data(options):
 
     data_dir = gisdata.GOOD_DATA
 
-    if ctype in ['vector', 'raster', 'time']:
+    if ctype in {'vector', 'raster', 'time'}:
         data_dir = os.path.join(gisdata.GOOD_DATA, ctype)
 
     settings = options.get('settings', '')
@@ -1082,7 +1087,7 @@ def deb(options):
         deb_changelog = path('debian') / 'changelog'
         for idx, line in enumerate(fileinput.input([deb_changelog], inplace=True)):
             if idx == 0:
-                print("geonode ({}) {}; urgency=high".format(simple_version, distribution), end='')
+                logger.info("geonode ({}) {}; urgency=high".format(simple_version, distribution), end='')
             else:
                 print(line.replace("urgency=medium", "urgency=high"), end='')
 

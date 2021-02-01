@@ -186,6 +186,7 @@ def resource_urls(request):
         GEONODE_APPS_ENABLE=getattr(settings, 'GEONODE_APPS_ENABLE', False),
         GEONODE_APPS_NAME=getattr(settings, 'GEONODE_APPS_NAME', 'Apps'),
         GEONODE_APPS_NAV_MENU_ENABLE=getattr(settings, 'GEONODE_APPS_NAV_MENU_ENABLE', False),
+<<<<<<< HEAD
         # Waterproof
         SEARCH_CITY_API_URL= settings.SEARCH_CITY_API_URL,
         SEARCH_COUNTRY_API_URL = settings.SEARCH_COUNTRY_API_URL,
@@ -196,6 +197,8 @@ def resource_urls(request):
         GEOSERVER_WMS = settings.GEOSERVER_WMS,
         HYDRO_NETWORK_LYR = settings.HYDRO_NETWORK_LYR,
 
+=======
+        CATALOG_METADATA_TEMPLATE=getattr(settings, "CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
+>>>>>>> master-github
     )
-
     return defaults

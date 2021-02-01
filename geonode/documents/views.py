@@ -303,7 +303,7 @@ class DocumentUploadView(CreateView):
         else:
             return HttpResponseRedirect(
                 reverse(
-                    'document_metadata',
+                    'document_detail',
                     args=(
                         self.object.id,
                     )))
@@ -329,7 +329,7 @@ class DocumentUpdateView(UpdateView):
         register_event(self.request, EventType.EVENT_CHANGE, self.object)
         return HttpResponseRedirect(
             reverse(
-                'document_metadata',
+                'document_detail',
                 args=(
                     self.object.id,
                 )))
