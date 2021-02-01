@@ -98,8 +98,8 @@ def resource_permissions(request, resource_id):
                 status=200,
                 content_type='text/plain'
             )
-        except Exception:
-            # traceback.print_exc()
+        except Exception as e:
+            logger.exception(e)
             success = False
             message = _("Error updating permissions :(")
             return HttpResponse(
@@ -116,7 +116,6 @@ def resource_permissions(request, resource_id):
             content_type='text/plain'
         )
     else:
-        # traceback.print_exc()
         return HttpResponse(
             'No methods other than get and post are allowed',
             status=401,
