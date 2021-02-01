@@ -623,9 +623,7 @@ function onInit(editor) {
 
         //KeyBoard calculator funcion cost
         $('button[name=mathKeyBoard]').click(function() {
-            mathField.latex($(this).attr('value'));
-            mathField.focus();
-            //addInfo(`\\${}`);
+            addInfo($(this).attr('value'));
         });
 
         //Add value entered in sediments in the field resultdb
