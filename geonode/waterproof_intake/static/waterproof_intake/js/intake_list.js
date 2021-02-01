@@ -73,6 +73,9 @@ $(function() {
 
     initMap = function() {
 
+        //drawPolygons();        
+
+
         map = L.map('mapidcuenca', { 
             scrollWheelZoom: false, 
             zoomControl: false, 
@@ -90,8 +93,10 @@ $(function() {
         var cityCoords = localStorage.getItem('cityCoords');
         if (cityCoords == undefined){
             cityCoords = initialCoords;
+            table.search('').draw();
         }else{
             initialCoords = JSON.parse(cityCoords);
+            table.search(localStorage.getItem('city').substr(0, 5)).draw();
             try{
                 $("#countryLabel").html(localStorage.getItem('country'));
                 $("#cityLabel").html(localStorage.getItem('city'));
@@ -101,8 +106,10 @@ $(function() {
             }catch(e){
 
             }
+
         }
         waterproof["cityCoords"] = cityCoords;
+
         map.setView(initialCoords, 5);
 
         searchPoints.addTo(map);
@@ -144,12 +151,21 @@ $(function() {
     });
 
     function showSearchPoints(geojson) {
+        console.log(localStorage.getItem('city'))
+        //searchPoints.writeLayers('Bogotá');
         searchPoints.clearLayers();
         let geojsonFilter = geojson.features.filter(feature => feature.properties.type == "city");
         searchPoints.addData(geojsonFilter);
+        //let cityName = null
+        /*if (cityCoords == undefined){
+             cityName = geojsonFilter[0].properties.name;
+        }else{
+            cityName = localStorage.getItem('city')
+        }*/
         let cityName = geojsonFilter[0].properties.name;
         console.log(geojsonFilter[0].properties.name)
-        table.search(cityName.substr(0, 2)).draw();
+        //table.search(localStorage.getItem('city').substr(0, 2)).draw();
+        table.search(cityName.substr(0, 5)).draw();
         drawPolygons();        
     }
 
@@ -462,6 +478,13 @@ $(function() {
             }
             lyrsPolygons.push(omnivore.wkt.parse(poly).addTo(map));
         });
+    }
+
+    menu = function(){
+        $('.topnav a').click(function(){
+            $('#sideNavigation').style.width = "250px";
+            $("#main").style.marginLeft = "250px";
+          });
     }
 
 });

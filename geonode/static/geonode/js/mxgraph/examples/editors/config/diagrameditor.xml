@@ -34,7 +34,7 @@
 		</add>
 		<add as="reservorioagua">
 			<Symbol name="Water reservoir" label="Water reservoir" externalData="false">
-				<mxCell vertex="1" style="reservorioagua" dbreference="RESERVORIOAGUACRUDA" funcionreference="">      
+				<mxCell vertex="1" style="reservorioagua" dbreference="RESERVORIOAGUACRUDA" funcionreference="RA">      
 					<mxGeometry as="geometry" width="60" height="92"/>
 				</mxCell>
 			</Symbol>

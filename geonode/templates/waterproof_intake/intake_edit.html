@@ -7,22 +7,10 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin="" />
-<link rel="stylesheet" href="{% static "geonode/css/leaflet/Control.Coordinates.css" %}"/>
-<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Loader.css" %}" />
+<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Coordinates.css"/>
+<link rel="stylesheet" href="{{ STATIC_URL }}geonode/css/leaflet/Control.Loader.css"/>
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/mathquill/mathquill.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}waterproof_intake/css/intake.css" />
-<script>
-    MathJax = {
-        loader: {
-            load: ['input/asciimath']
-        },
-        asciimath: {
-            delimiters: [
-                ["'math'", "'math'"]
-            ]
-        }
-    };
-</script>
 {% endblock %}
 {% block body_outer %}
 <!--header-->
@@ -66,7 +54,10 @@
         <div class="tab-content" id="autoAdjustHeightF">
             <!--Step 1-->
             <div id="step-1" class="tab-pane" role="tabpanel">
-
+                <div class="page-header">
+                    <h3>Define Water Intake</h3>
+                    <p>Please complete the fields to define your Water Intake</p>
+                </div>
                 <!--Input Name -->
                 <div id="water_intake">
                     <div id="div_id_name" class="form-group  ">
@@ -90,7 +81,7 @@
                     </div>
                 </div>
                 <!--Input Source Name -->
-                <div id="id_water_source_name" class="form-group  ">
+                <div id="div_id_water_source_name" class="form-group  ">
                     <label for="id_description" class="control-label required-field ">
                         Nombre de la fuente
                     </label>
@@ -105,15 +96,23 @@
                         <button type="button" id="validateBtn">Draw Basin</button>
                     </div>
                 </div>
+                <br>
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary" id="step1NextBtn">Next</button>
+                    </div>
+                </div>
             </div>
             <!--Step 2-->
             <div id="step-2" class="tab-pane" role="tabpanel">
+                <div class="page-header">
+                    <h3>Configure Parameters</h3>
+                    <p>Select the elements that make up your capture system and click on the drawing area to add them.</p>
+                </div>
                 <!--Toolbar mxgraph-->
                 <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-info">
-                            <h4 class="text-center" style="color: #5bc0de;">Select the elements that make up your
-                                capture system and click on the drawing area to add them.</h4>
                             <div class="panel-body text-center" id="toolbar"></div>
                         </div>
                     </div>
@@ -127,18 +126,17 @@
                         <textarea id="xml" style="height:600px;width:100%;display:none;border-style:none;"></textarea>
                         <div class="panel panel-info">
                             <div class="panel-body" id="graph" tabindex="-1"
-                                style="height:700px;width:100%;overflow:hidden;cursor:default; outline:none;"></div>
+                                style="height:700px;width:100%;overflow:scroll;cursor:default; outline:none;"></div>
                         </div>
                     </div>
                     <!--Panel Information Right-->
                     <div class="col-md-4">
+                        <div class="alert alert-info text-center" role="alert">
+                            <button type="button" class="btn btn-link btn-block" data-toggle="modal" data-target="#HelpModal" id="HelpModalBtnModal" style="outline:none; text-decoration:none;">
+                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> How to use the graph</button>
+                            </button>
+                        </div>
                         <div class="panel panel-info">
-                            <span class="glyphicon glyphicon-exclamation-sign text-center" id="helpgraph"
-                                style="padding-left:6rem; font-size:22px;" aria-hidden="true">
-                                <label
-                                    style="font-family: 'Montserrat', sans-serif;font-size:16px; vertical-align: text-bottom;">How
-                                    to use the graph</label>
-                            </span>
                             <div class="panel-body">
                                 <!--Figure Name-->
                                 <div class="alert alert-info" role="alert">
@@ -173,19 +171,23 @@
                                     <input type="number" id="fosforoDiagram" class="form-control"
                                         oninput="validateinput(this)">
                                 </div>
+                                <button type="button" class="btn btn-primary btn-block" id="saveGraph">Validate Graph</button>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-primary btn-block" id="saveGraph">Validate Graph</button>
                     </div>
-                    <div class="col-md-12">
-                        <h3>Cost functions <small id="titleCostFunSmall"></small>
-                            <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal"
-                                data-target="#exampleModal" id="ModalAddCostBtn">Add Cost</button>
-                        </h3>
-                        <div class="panel panel-info">
-                            <div class="panel-body">
-                                <div id="funcostgenerate"></div>
-                            </div>
+                    <div class="row" id="hideCostFuntion" style="display: none">
+                        <div class="col-md-12">
+                            <h3 style="padding:1rem;">Cost functions <small id="titleCostFunSmall"></small>
+                                <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal" data-target="#CalculatorModal" id="ModalAddCostBtn">Add Cost</button>
+                            </h3>
+                            <div id="funcostgenerate" style="padding:1rem;"></div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row text-center">
+                        <div class="col-md-12">
+                            <button type="button" class="btn btn-primary" id="step2PrevBtn">Previous</button>
+                            <button type="button" class="btn btn-primary" id="step2NextBtn">Next</button>
                         </div>
                     </div>
                 </div>
@@ -195,14 +197,12 @@
                 <!--Header-->
                 <div class="page-header">
                     <h3>Water Extraction</h3>
-                    <p>Please enter the annual water extraction (l/s) associated with the Extraction Connection element
-                        x defined in the Water Intake system diagram</p>
+                    <p>Please enter the annual water extraction (l/s) associated with the Extraction Connection element x defined in the Water Intake system diagram</p>
                 </div>
                 <!--navigation-->
-                <ul class="nav nav-tabs">
-                    <li data-toggle="tab" data-target="#automatic" class="active"><a href="#">Interpolation Wizard</a>
-                    </li>
-                    <li data-toggle="tab" data-target="#manual"><a href="#">Manual Edit</a></li>
+                <ul class="nav nav-tabs" id="minitabsInportalion">
+                    <li class="active"><a data-toggle="tab" href="#automatic" id="btnAutomaticTab">Interpolation Wizard</a></li>
+                    <li><a data-toggle="tab" href="#manual" id="btnManualTab" >Manual Edit</a></li>
                 </ul>
                 <!--contents tabs manual and automatic-->
                 <div class="tab-content">
@@ -212,27 +212,25 @@
                         <div class="form-group">
                             <div class="row">
                                 <!--Data analysis Insert-->
-                                <div class="col-md-7">
+                                <div class="col-md-8">
                                     <h5 class="text-primary">Data Analysis</h5>
-                                    <p>Please selected the method you wish to use to fill in the table associated with
-                                        annual water extraction from the source.</p>
+                                    <p>Please selected the method you wish to use to fill in the table associated with annual water extraction from the source.</p>
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <label>Interpolation Method <span class="text-danger-wp">(*)</span>
-                                                </label>
+                                            </label>
                                                 <select class="form-control" id="typeProcessInterpolation">
-                                                    <option value="1">Linear interpolation</option>
-                                                    <option value="2">Potential interpolation</option>
-                                                    <option Value="3">Exponential interpolation</option>
-                                                    <option Value="4">Logistics interpolation</option>
-                                                </select>
+                                                <option value="1">Linear interpolation</option>
+                                                <option value="2">Potential interpolation</option>
+                                                <option Value="3">Exponential interpolation</option>
+                                                <option Value="4">Logistics interpolation</option>
+                                            </select>
                                             </div>
                                             <div class="col-md-6">
                                                 <label>Number of years for time series <span
-                                                        class="text-danger-wp">(*)</span> </label>
-                                                <input type="text" value="2" class="form-control"
-                                                    id="numberYearsInterpolationValue">
+                                                    class="text-danger-wp">(*)</span> </label>
+                                                <input type="text" class="form-control" id="numberYearsInterpolationValue">
                                             </div>
                                         </div>
                                     </div>
@@ -241,27 +239,25 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <label>Initial year<span class="text-danger-wp">(*)</span> </label>
-                                                <input type="text" value="100" class="form-control"
-                                                    id="initialDataExtractionInterpolationValue">
+                                                <input type="text" class="form-control" id="initialDataExtractionInterpolationValue">
                                             </div>
                                             <div class="col-md-6" id="finalColumnExtraction">
                                                 <label>Final year<span class="text-danger-wp">(*)</span> </label>
-                                                <input type="text" value="1000" class="form-control"
-                                                    id="finalDataExtractionInterpolationValue">
+                                                <input type="text" class="form-control" id="finalDataExtractionInterpolationValue">
                                             </div>
                                         </div>
                                     </div>
                                     <button type="button" class="btn btn-primary" id="intakeWECB">Generate</button>
                                 </div>
                                 <!--Data analysis Results-->
-                                <div class="col-md-5">
+                                <div class="col-md-4">
                                     <h5 class="text-primary">Results</h5>
                                     <div style="max-height: 400px; overflow-y: auto;">
                                         <table class="table">
                                             <thead>
                                                 <tr>
                                                     <th class="text-center" scope="col">Year</th>
-                                                    <th class="text-center" scope="col">Extraction Value</th>
+                                                    <th class="text-center" scope="col">Extraction Value (l/s)</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="intakeECTAG">
@@ -290,14 +286,28 @@
                                 <!--Results-->
                                 <div class="col-md-6">
                                     <h5 class="text-primary">Results</h5>
-                                    <div class="panel panel-primary">
-                                        <div class="panel-body">
-                                            <div class="form-horizontal" id="intakeWEMI"></div>
-                                        </div>
-                                    </div>
+                                    <div style="max-height: 400px; overflow-y: auto;">
+                                        <table class="table" >
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" scope="col">Year</th>
+                                                    <th class="text-center" scope="col">Extraction Value (l/s)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="intakeWEMI">
+                                            </tbody>
+                                        </table>
+                                    </div> 
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <br>
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary" id="step3PrevBtn">Previous</button>
+                        <button type="button" class="btn btn-primary" id="step3NextBtn">Next</button>
                     </div>
                 </div>
             </div>
@@ -306,7 +316,7 @@
                 <!--Header-->
                 <div class="page-header">
                     <h3>External Inputs</h3>
-                    <p>You define 2 external inputs. For Each of these external inputs you have to define Annual Water
+                    <p>You define <span id="ExternalNumbersInputs"></span> external inputs. For Each of these external inputs you have to define Annual Water
                         Volume (m3), Annual Sediment Load (Ton), Annual Nitrogen Load(kg), Annual Phosphorus Load (kg).
                     </p>
                 </div>
@@ -320,7 +330,13 @@
                         <div id="IntakeTDLE"></div>
                         <button class="btn btn-primary" type="button" id="saveExternalData">Save Data</button>
                     </div>
-
+                </div>
+                <br>
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary" id="step4PrevBtn">Previous</button>
+                        <button type="button" class="btn btn-primary" id="step4NextBtn">Next</button>
+                    </div>
                 </div>
             </div>
             <!--Step 5-->
@@ -351,11 +367,15 @@
                                     <button type="button" class="btn btn-primary" id="btnValidateArea"> Validate
                                         area</button>
                                 </div>
-                                <div class="form-group">
-                                    <input type="submit" id="submit" class="btn btn-primary" value="Submit"></input>
-                                </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <br> 
+                <div class="row text-center">
+                    <div class="col-md-12 form-group">
+                        <button type="button" class="btn btn-primary" id="step5PrevBtn">Previous</button>
+                        <input type="submit" id="submit" class="btn btn-primary" value="Submit"></input>
                     </div>
                 </div>
             </div>
@@ -374,11 +394,11 @@
         <input type="hidden" id="basinId" name="basinId" value="">
 </form>
 <!--Modal Calculator-->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="CalculatorModal" tabindex="-1" aria-labelledby="CalculatorModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Add Cost</h5>
+                <h5 class="modal-title" id="CalculatorModalLabel">Add Cost</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -398,25 +418,48 @@
                             <textarea rows="3" class="form-control"></textarea>
                         </div>
                         <h5 class="text-primary">Syntax keyboard</h5>
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="=">'math' =
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="+">'math' +
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">'math' -
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">'math' *
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">'math' a/b
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">'math' a^b
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="\sqrt">'math'
-                                sqrt(a) 'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="min">'math' min
-                                'math'</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="max">'math' max
-                                'math'</button>
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#mathBasic_tab" data-toggle="tab">Basic</a></li>
+                            <li><a href="#mathAdvanced_tab" data-toggle="tab" >Advanced</a></li>
+                            <li><a href="#mathTrigonometry_tab" data-toggle="tab" >Trigonometry</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="mathBasic_tab" class="tab-pane fade in active">
+                                <br>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="=">=</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="+">+</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">-</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">x</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">\frac{a}{b}</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">a^b</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="\sqrt">√</button>
+                                    
+                                </div>
+                            </div>
+                            
+                            <div id="mathAdvanced_tab" class="tab-pane fade in">
+                                <br>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="\pi">π</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="\\log">\log</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="\log_">\log_a</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">-</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">x</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">\frac{a}{b}</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">a^b</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="\sqrt">√</button>
+                                </div>
+                            </div>
+
+                            <div id="mathTrigonometry_tab" class="tab-pane fade in">
+                                <br>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="sin()">sin</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="cos()">cos</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="tan()">tan</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -426,11 +469,11 @@
                         <span id="math-field" class="form-control" style="height: auto;"></span>
                     </div>
                 </div>
-                <div class="row">
+                <!--<div class="row">
                     <div class="col-md-12">
                         <p>LaTeX of what you typed: <span id="latex"></span></p>
                     </div>
-                </div>
+                </div>-->
                 <br>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -503,6 +546,7 @@
     intakeObject.polygon = '{{intake.polygon_set.first.geomIntake|safe}}';
     intakeObject.point=JSON.parse('{{intake.polygon_set.first.geomPoint|safe}}');
     intakeObject.delimitArea='{{intake.polygon_set.first.geom}}';
+    intakeObject.basin='{{intake.polygon_set.first.basin.pk}}';
     intakePolygons.push(intakeObject);
 </script>
 
@@ -515,7 +559,6 @@
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script src="{{ STATIC_URL }}geonode/js/mxgraph/examples/editors/js/app.js"></script>
 <script src="{{ STATIC_URL }}waterproof_intake/mathquill/mathquill.min.js"></script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"
     integrity="sha512-dTu0vJs5ndrd3kPwnYixvOCsvef5SGYW/zSSK4bcjRBcZHzqThq7pt7PmCv55yb8iBvni0TSeIDV8RYKjZL36A=="

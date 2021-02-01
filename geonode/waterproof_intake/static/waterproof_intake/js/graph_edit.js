@@ -22,8 +22,7 @@ var bandera = true;
 // overridden to invoke this global function as the
 // last step in the editor constructor.
 function onInit(editor) {
-    console.log('holis')
-        // Enables rotation handle
+    // Enables rotation handle
     mxVertexHandler.prototype.rotationEnabled = false;
 
     // Enables guides
@@ -355,6 +354,8 @@ function onInit(editor) {
             }
         });
 
+        validateGraphIntake();
+
         //load data when add an object in a diagram
         editor.graph.addListener(mxEvent.ADD_CELLS, function(sender, evt) {
 
@@ -434,7 +435,7 @@ function onInit(editor) {
                             'id': node.id,
                             'source': node.getAttribute('source'),
                             'target': node.getAttribute('target'),
-                            'resultdb': value[3],
+                            'resultdb': JSON.stringify(value[3]),
                             'funcost': JSON.stringify(value[5]),
                             'name': JSON.stringify(value[4]),
                             'varcost': JSON.stringify(value[1])

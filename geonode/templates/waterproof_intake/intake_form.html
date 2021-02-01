@@ -54,7 +54,10 @@
         <div class="tab-content" id="autoAdjustHeightF">
             <!--Step 1-->
             <div id="step-1" class="tab-pane" role="tabpanel">
-
+                <div class="page-header">
+                    <h3>Define Water Intake</h3>
+                    <p>Please complete the fields to define your Water Intake</p>
+                </div>
                 <!--Input Name -->
                 <div id="water_intake">
                     <div id="div_id_name" class="form-group  ">
@@ -84,14 +87,6 @@
                         <input type="text" name="water_source_name" maxlength="100" id="id_water_source_name" class="form-control">
                     </div>
                 </div>
-                <!--Select City
-                <div id="div_id_city" class="form-group  ">
-                    <label for="id_description" class="control-label required-field ">
-                        Ciudad
-                    </label>
-                    <div class="">{{form.city}}</div>
-                </div>-->
-
                 <!-- Map -->
                 <div id="map">
                     <div id="analysisOptions">
@@ -107,11 +102,14 @@
             </div>
             <!--Step 2-->
             <div id="step-2" class="tab-pane" role="tabpanel">
+                <div class="page-header">
+                    <h3>Configure Parameters</h3>
+                    <p>Select the elements that make up your capture system and click on the drawing area to add them.</p>
+                </div>
                 <!--Toolbar mxgraph-->
                 <div class="row">
                     <div class="col-md-12">
                         <div class="panel panel-info">
-                            <h4 class="text-center text-intake">Select the elements that make up your capture system and click on the drawing area to add them.</h4>
                             <div class="panel-body text-center" id="toolbar"></div>
                         </div>
                     </div>
@@ -130,9 +128,9 @@
                     <!--Panel Information Right-->
                     <div class="col-md-4">
                         <div class="alert alert-info text-center" role="alert">
-                        <button type="button" class="btn btn-link btn-block" data-toggle="modal" data-target="#HelpModal" id="HelpModalBtnModal" style="outline:none; text-decoration:none;">
-                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> How to use the graph</button>
-                        </button>
+                            <button type="button" class="btn btn-link btn-block" data-toggle="modal" data-target="#HelpModal" id="HelpModalBtnModal" style="outline:none; text-decoration:none;">
+                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> How to use the graph</button>
+                            </button>
                         </div>
                         <div class="panel panel-info">
                             <div class="panel-body">
@@ -173,10 +171,10 @@
                 </div>
                 <div class="row" id="hideCostFuntion" style="display: none">
                     <div class="col-md-12">
-                        <h3>Cost functions <small id="titleCostFunSmall"></small>
+                        <h3 style="padding:1rem;">Cost functions <small id="titleCostFunSmall"></small>
                             <button type="button" class="btn btn-primary btn-add-cost" data-toggle="modal" data-target="#CalculatorModal" id="ModalAddCostBtn">Add Cost</button>
                         </h3>
-                        <div id="funcostgenerate" style="margin-top: 12px;"></div>
+                        <div id="funcostgenerate" style="padding:1rem;"></div>
                     </div>
                 </div>
                 <br>
@@ -195,10 +193,9 @@
                     <p>Please enter the annual water extraction (l/s) associated with the Extraction Connection element x defined in the Water Intake system diagram</p>
                 </div>
                 <!--navigation-->
-                <ul class="nav nav-tabs">
-                    <li data-toggle="tab" data-target="#automatic" class="active"><a href="#">Interpolation Wizard</a>
-                    </li>
-                    <li data-toggle="tab" data-target="#manual"><a href="#">Manual Edit</a></li>
+                <ul class="nav nav-tabs" id="minitabsInportalion">
+                    <li class="active"><a data-toggle="tab" href="#automatic" id="btnAutomaticTab">Interpolation Wizard</a></li>
+                    <li><a data-toggle="tab" href="#manual" id="btnManualTab" >Manual Edit</a></li>
                 </ul>
                 <!--contents tabs manual and automatic-->
                 <div class="tab-content">
@@ -208,7 +205,7 @@
                         <div class="form-group">
                             <div class="row">
                                 <!--Data analysis Insert-->
-                                <div class="col-md-7">
+                                <div class="col-md-8">
                                     <h5 class="text-primary">Data Analysis</h5>
                                     <p>Please selected the method you wish to use to fill in the table associated with annual water extraction from the source.</p>
                                     <div class="form-group">
@@ -246,7 +243,7 @@
                                     <button type="button" class="btn btn-primary" id="intakeWECB">Generate</button>
                                 </div>
                                 <!--Data analysis Results-->
-                                <div class="col-md-5">
+                                <div class="col-md-4">
                                     <h5 class="text-primary">Results</h5>
                                     <div style="max-height: 400px; overflow-y: auto;">
                                         <table class="table">
@@ -282,16 +279,18 @@
                                 <!--Results-->
                                 <div class="col-md-6">
                                     <h5 class="text-primary">Results</h5>
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th class="text-center" scope="col">Year</th>
-                                                <th class="text-center" scope="col">Extraction Value (l/s)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="intakeWEMI">
-                                        </tbody>
-                                    </table>
+                                    <div style="max-height: 400px; overflow-y: auto;">
+                                        <table class="table" >
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" scope="col">Year</th>
+                                                    <th class="text-center" scope="col">Extraction Value (l/s)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="intakeWEMI">
+                                            </tbody>
+                                        </table>
+                                    </div> 
                                 </div>
                             </div>
                         </div>
@@ -360,17 +359,15 @@
                                     <button type="button" class="btn btn-primary" id="btnValidateArea"> Validate
                                     area</button>
                                 </div>
-                                <div class="form-group">
-                                    <input type="submit" id="submit" class="btn btn-primary" value="Submit"></input>
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <br>
                 <div class="row text-center">
-                    <div class="col-md-12">
+                    <div class="col-md-12 form-group">
                         <button type="button" class="btn btn-primary" id="step5PrevBtn">Previous</button>
+                        <input type="submit" id="submit" class="btn btn-primary" value="Submit"></input>
                     </div>
                 </div>
             </div>
@@ -413,16 +410,43 @@
                             <textarea rows="3" class="form-control"></textarea>
                         </div>
                         <h5 class="text-primary">Syntax keyboard</h5>
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="=">=</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="+">+</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">-</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">*</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">\frac{a}{b}</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">a^b</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="\sqrt">√</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="min">min</button>
-                            <button type="button" class="btn btn-default" name="mathKeyBoard" value="max">max</button>
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#mathBasic_tab" data-toggle="tab">Basic</a></li>
+                            <li><a href="#mathAdvanced_tab" data-toggle="tab" >Advanced</a></li>
+                            <li><a href="#mathTrigonometry_tab" data-toggle="tab" >Trigonometry</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="mathBasic_tab" class="tab-pane fade in active">
+                                <br>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="=">=</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="+">+</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="-">-</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="*">x</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="/">\frac{a}{b}</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="^">a^b</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="\sqrt">√</button>
+                                    
+                                </div>
+                            </div>
+                            
+                            <div id="mathAdvanced_tab" class="tab-pane fade in">
+                                <br>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="\pi">π</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="\\log">\log</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="\log_">\log_a</button>
+                                </div>
+                            </div>
+
+                            <div id="mathTrigonometry_tab" class="tab-pane fade in">
+                                <br>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="sin()">sin</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="cos()">cos</button>
+                                    <button type="button" class="btn btn-default" name="mathKeyBoard" value="tan()">tan</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -432,11 +456,11 @@
                         <span id="math-field" class="form-control" style="height: auto;"></span>
                     </div>
                 </div>
-                <div class="row">
+                <!--<div class="row">
                     <div class="col-md-12">
                         <p>LaTeX of what you typed: <span id="latex"></span></p>
                     </div>
-                </div>
+                </div>-->
                 <br>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

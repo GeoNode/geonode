@@ -23,6 +23,7 @@ var snapMarker;
 var snapMarkerMapDelimit;
 var catchmentPoly;
 var catchmentPolyDelimit;
+var copyCoordinates = [];
 var editablepolygon;
 var validPolygon;
 var isFile;
@@ -30,21 +31,24 @@ var delimitationFileType;
 var xmlGraph;
 var waterExtractionData = {};
 var waterExtractionValue;
+var lyrsPolygons = [];
 const delimitationFileEnum = {
     GEOJSON: 'geojson',
     SHP: 'shapefile'
 }
+const interpMethodInput = $('#typeProcessInterpolation');
+const numYearsInput = $('#numberYearsInterpolationValue');
+const initialExtraction = $('#initialDataExtractionInterpolationValue');
+const finalExtraction = $('#finalDataExtractionInterpolationValue');
 const interpolationType = {
     LINEAR: 'LINEAR',
     POTENTIAL: 'POTENTIAL',
     EXPONENTIAL: 'EXPONENTIAL',
-    LOGISTICS: 'LOGISTICS',
-    MANUAL: 'MANUAL'
+    LOGISTICS: 'LOGISTICS'
 }
 
 var mapLoader;
 $(document).ready(function() {
-
     // Interpolation with Wizard
     $("#intakeWECB").click(function() {
         if ($("#numberYearsInterpolationValue").val() == '' || $("#initialDataExtractionInterpolationValue").val() == '' || $("#finalDataExtractionInterpolationValue").val() == '') {
@@ -261,7 +265,6 @@ $(document).ready(function() {
         }
         $(`#table_${$('#externalSelect').val()}`).css('display', 'block');
     });
-    
 
     // Automatic height on clic next btn wizard
     $('#smartwizard').smartWizard("next").click(function() {
@@ -332,19 +335,13 @@ $(document).ready(function() {
         $('#ExternalNumbersInputs').html(numberExternal)
     }
 
-    $('#smartwizard').smartWizard("next").click(function () {
-        $('#autoAdjustHeightF').css("height", "auto");
-        map.invalidateSize();
-    });
-
-
     $('#smartwizard').smartWizard({
         selected: 0,
         theme: 'dots',
         enableURLhash: false,
         autoAdjustHeight: true,
         transition: {
-            animation: 'fade', // Effect on navigation, none/fade/slide-horizontal/slide-vertical/slide-swing
+            animation: 'slide-horizontal', // Effect on navigation, none/fade/slide-horizontal/slide-vertical/slide-swing
         },
         toolbarSettings: {
             toolbarPosition: 'bottom', // both bottom
@@ -352,13 +349,8 @@ $(document).ready(function() {
         },
         keyboardSettings: {
             keyNavigation: false
-        },
-        toolbarSettings: {
-            showNextButton: false,
-            showPreviousButton: false,
         }
     });
-
     $("#smartwizard").on("showStep", function(e, anchorObject, stepIndex, stepDirection) {
         if (stepIndex == 4) {
             if (catchmentPoly) {
@@ -381,160 +373,79 @@ $(document).ready(function() {
         }
     });
 
-    //Validated of steps
-
-    $('#step1NextBtn').click(function() {
-        if ($('#id_name').val() != '' && $('#id_description').val() != '' && $('#id_water_source_name').val() != '' && catchmentPoly != undefined) {
-            $('#smartwizard').smartWizard("next");
-        } else {
-            Swal.fire({
-                icon: 'warning',
-                title: `Field empty`,
-                text: `Please full every fields`
-            });
-            return;
-        }
-    });
-
-    $('#step2PrevBtn').click(function() {
-        $('#smartwizard').smartWizard("prev");
-    });
-
-    $('#step2NextBtn').click(function() {
-        if (!bandera) {
-            $('#smartwizard').smartWizard("next");
-        } else {
-            Swal.fire({
-                icon: 'warning',
-                title: `Validate Graph`,
-                text: `Please Validate Graph`
-            });
-            return;
-        }
-    });
-
-    $('#step3PrevBtn').click(function() {
-        $('#smartwizard').smartWizard("prev");
-    });
-
-    $('#step3NextBtn').click(function() {
-        if ($('#intakeECTAG')[0].childNodes.length > 1 || $('#intakeWEMI')[0].childNodes.length > 1) {
-            if (waterExtractionData.typeInterpolation == interpolationType.MANUAL) {
-                waterExtractionValue = [];
-                $(`input[name=manualInputData]`).each(function() {
-                    if ($(this).val() == '' || $('#intakeNIYMI').val() == '') {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: `Data analisys empty`,
-                            text: `Please Generate Data anlisys`
-                        });
-                        return;
-                    } else {
-                        var yearData = {};
-                        yearData.year = Number($(this).attr('yearValue'));
-                        yearData.value = $(this).val();
-                        waterExtractionValue.push(yearData);
-                    }
-
-                });
-                waterExtractionData.yearValues = waterExtractionValue;
-                $('#waterExtraction').val(JSON.stringify(waterExtractionData));
-                if (waterExtractionData.yearCount == waterExtractionData.yearValues.length) {
-                    $('#smartwizard').smartWizard("next");
-                } else {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: `Data analisys empty`,
-                        text: `Please Generate Data anlisys`
-                    });
-                    return;
-                }
-            } else {
-                $('#smartwizard').smartWizard("next");
-            }
-        } else {
-            Swal.fire({
-                icon: 'warning',
-                title: `Data analisys empty`,
-                text: `Please Generate Data anlisys`
-            });
-            return;
-        }
-
-    });
-
-    $('#step4PrevBtn').click(function() {
-        $('#smartwizard').smartWizard("prev");
-    });
-
-    $('#step4NextBtn').click(function() {
-        $('#smartwizard').smartWizard("next");
-    });
-
-    $('#step5PrevBtn').click(function() {
-        $('#smartwizard').smartWizard("prev");
-    });
-
-
-
-
-    let initialCoords = [4.5, -74.4];
-    // find in localStorage if cityCoords exist
-    var cityCoords = localStorage.getItem('cityCoords');
-    if (cityCoords == undefined) {
-        cityCoords = initialCoords;
-    } else {
-        initialCoords = JSON.parse(cityCoords);
-    }
-    waterproof["cityCoords"] = cityCoords;
-
-    map = L.map('map', {}).setView(initialCoords, 8);
-    mapDelimit = L.map('mapid', { editable: true }).setView(initialCoords, 5);
+    map = L.map('map', {}).setView([4.1, -74.1], 5);
+    mapDelimit = L.map('mapid', { editable: true }).setView([4.1, -74.1], 5);
     var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     });
-    var osmid = L.tileLayer(OSM_BASEMAP_URL, {
+    var osmid = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     });
     map.addLayer(osm);
-
-    var c = new L.Control.Coordinates({
-        actionAfterDragEnd: prevalidateAdjustCoordinates
-    }).addTo(map);
-
-    var images = L.tileLayer(IMG_BASEMAP_URL);
-    var gray = L.tileLayer(GRAY_BASEMAP_URL, {
-        maxZoom: 20,
-        attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-    });
-
-    var hydroLyr = L.tileLayer(HYDRO_BASEMAP_URL);
-    var wmsHydroNetworkLyr = L.tileLayer.wms(GEOSERVER_WMS, {
-        layers: HYDRO_NETWORK_LYR,
-        format: 'image/png',
-        transparent: 'true',
-        opacity: 0.35,
-        minZoom: 6,
-    });
-
+    var images = L.tileLayer("https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}");
+    var esriHydroOverlayURL = "https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Esri_Hydro_Reference_Overlay/MapServer/tile/{z}/{y}/{x}";
+    var hydroLyr = L.tileLayer(esriHydroOverlayURL);
     var baseLayers = {
         OpenStreetMap: osm,
         Images: images,
-        Grayscale: gray,
+        /* Grayscale: gray,   */
     };
-
     var overlays = {
         "Hydro (esri)": hydroLyr,
-        "Hydro Network": wmsHydroNetworkLyr,
     };
+    var c = new L.Control.Coordinates();
+    c.addTo(map);
     L.control.layers(baseLayers, overlays, { position: 'topleft' }).addTo(map);
-
-
     mapDelimit.addLayer(osmid);
+    intakePolygons.forEach(feature => {
+        let poly = feature.polygon;
+        let point = feature.point;
+        let delimitPolygon = feature.delimitArea;
+        if (delimitPolygon.indexOf("SRID") >= 0) {
+            delimitPolygon = delimitPolygon.split(";")[1];
+        }
 
+        let delimitLayerTransformed = omnivore.wkt.parse(delimitPolygon);
+        let delimitLayerKeys = Object.keys(delimitLayerTransformed._layers);
+        let keyNameDelimitPol = delimitLayerKeys[0];
+        let delimitPolyCoord = delimitLayerTransformed._layers[keyNameDelimitPol].feature.geometry.coordinates[0];
+        delimitPolyCoord.forEach(function(geom) {
+            var coordinates = [];
+            coordinates.push(geom[1]);
+            coordinates.push(geom[0]);
+            copyCoordinates.push(coordinates);
+        })
+        let ll = new L.LatLng(feature.point.geometry.coordinates[1], feature.point.geometry.coordinates[0]);
+        snapMarker = L.marker(null, {});
+        snapMarkerMapDelimit = L.marker(null, {});
+        snapMarker.setLatLng(ll);
+        snapMarkerMapDelimit.setLatLng(ll);
+        snapMarker.addTo(map);
+        snapMarkerMapDelimit.addTo(mapDelimit);
+        catchmentPoly = L.geoJSON(JSON.parse(feature.polygon)).addTo(map);
+        catchmentPolyDelimit = L.geoJSON(JSON.parse(feature.polygon)).addTo(mapDelimit);
+        map.fitBounds(catchmentPoly.getBounds());
+        editablepolygon = L.polygon(copyCoordinates, { color: 'red' });
+        editablepolygon.addTo(mapDelimit)
+    });
 
-
-    $("#validateBtn").on("click", prevalidateAdjustCoordinates);
+    $("#validateBtn").on("click", function() {
+        Swal.fire({
+            title: 'Delimitar punto y cuenca',
+            text: "El sistema ajustará las coordenadas del punto a la captación más cercana, ¿Desea continuar?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ajustar punto',
+            cancelButtonText: 'Cancelar',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                mapLoader = L.control.loader().addTo(map);
+                validateCoordinateWithApi();
+            }
+        })
+    });
     $('#btnDelimitArea').on("click", delimitIntakeArea)
     $('#btnValidateArea').on("click", validateIntakeArea)
     if (!mapLoader) {
@@ -554,38 +465,66 @@ $(document).ready(function() {
     observer2.observe(menu1Tab, { attributes: true });
 
 });
-
-
 window.onbeforeunload = function() { return mxResources.get('changesLost'); };
 
+/*Set values for interpolation
+parameters*/
+function setInterpolationParams() {
+    switch (intakeInterpolationParams.type) {
+        // LINEAR INTERPOLATION
+        case interpolationType.LINEAR:
+            // Method interpolation select
+            interpMethodInput.val(1);
+            // Years number for time series
+            numYearsInput.val(intakeInterpolationParams.yearsNum);
+            // Initial extraction value
+            initialExtraction.val(intakeInterpolationParams.initialExtract);
+            // Final extraction value
+            finalExtraction.val(intakeInterpolationParams.endingExtract);
+            $("#intakeWECB").click();
+            break;
+            // POTENTIAL INTERPOLATION
+        case interpolationType.POTENTIAL:
+            interpMethodInput.val(2);
+            // Years number for time series
+            numYearsInput.val(intakeInterpolationParams.yearsNum);
+            // Initial extraction value
+            initialExtraction.val(intakeInterpolationParams.initialExtract);
+            // Final extraction value
+            finalExtraction.val(intakeInterpolationParams.endingExtract);
+            $("#intakeWECB").click();
+            break;
+            // EXPONENTIAL INTERPOLATION
+        case interpolationType.EXPONENTIAL:
+            interpMethodInput.val(3);
+            // Years number for time series
+            numYearsInput.val(intakeInterpolationParams.yearsNum);
+            // Initial extraction value
+            initialExtraction.val(intakeInterpolationParams.initialExtract);
+            // Final extraction value
+            finalExtraction.val(intakeInterpolationParams.endingExtract);
+            $("#intakeWECB").click();
+            break;
 
-/**
- * Info Message to validate Adjust Coordinates
- */
-function prevalidateAdjustCoordinates() {
-    Swal.fire({
-        title: 'Delimitar punto y cuenca',
-        text: "El sistema ajustará las coordenadas del punto a la captación más cercana, ¿Desea continuar?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Ajustar punto',
-        cancelButtonText: 'Cancelar',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            mapLoader = L.control.loader().addTo(map);
-            validateCoordinateWithApi();
-        }
-    })
+            // LOGISTICS INTERPLATION
+        case interpolationType.LOGISTICS:
+            interpMethodInput.val(4);
+            // Years number for time series
+            numYearsInput.val(intakeInterpolationParams.yearsNum);
+            // Initial extraction value
+            initialExtraction.val(intakeInterpolationParams.initialExtract);
+            // Final extraction value
+            finalExtraction.val(intakeInterpolationParams.endingExtract);
+            $("#intakeWECB").click();
+            break;
+    }
 }
-
 /** 
  * Delimit manually the intake polygon
  */
 function delimitIntakeArea() {
     isFile = false;
-    var copyCoordinates = [];
+    copyCoordinates = [];
     console.log('Delimiting');
     var polygonKeys = Object.keys(catchmentPoly._layers);
     var keyNamePolygon = polygonKeys[0];
@@ -596,6 +535,7 @@ function delimitIntakeArea() {
         coordinates.push(geom[0]);
         copyCoordinates.push(coordinates);
     })
+    mapDelimit.removeLayer(editablepolygon);
     editablepolygon = L.polygon(copyCoordinates, { color: 'red' });
     editablepolygon.addTo(mapDelimit)
     editablepolygon.enableEdit();
@@ -675,75 +615,118 @@ function changeFileEvent() {
                 var readerGeoJson = new FileReader();
                 readerGeoJson.onload = function(evt) {
                     var contents = evt.target.result;
-                    try {
-                        geojson = JSON.parse(contents);
-                        validGeojson = validateGeoJson(geojson);
-                        if (validGeojson) {
-                            delimitationFileType = delimitationFileEnum.GEOJSON;
-                            let polygonStyle = {
-                                fillColor: "red",
-                                color: "#333333",
-                                weight: 0.2,
-                                fillOpacity: 0.3
-                            };
-                            editablepolygon = L.geoJSON(geojson, { style: polygonStyle })
-                            editablepolygon.addTo(mapDelimit);
-                            mapDelimit.fitBounds(editablepolygon.getBounds())
-                        } else {
-                            $('#intakeArea').val('');
-                            return;
-                        }
-                    } catch (e) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error en archivo GeoJSON',
-                            text: 'El archivo tiene carácteres erróneos o puede estar corrupto por favor intente con otro',
-                        })
-                        $('#intakeArea').val('');
-                        return;
+                    geojson = JSON.parse(contents);
+                    delimitationFileType = delimitationFileEnum.GEOJSON;
+                    let polygonStyle = {
+                        fillColor: "red",
+                        color: "#333333",
+                        weight: 0.2,
+                        fillOpacity: 0.3
                     };
-                };
-
-                readerGeoJson.onerror = function() {
-                    console.log(readerGeoJson.error);
-                };
+                    editablepolygon = L.geoJSON(geojson, { style: polygonStyle })
+                    editablepolygon.addTo(mapDelimit);
+                    mapDelimit.fitBounds(editablepolygon.getBounds())
+                        //loadShapefile(geojson, file.name);
+                }
                 readerGeoJson.readAsText(file);
             } else { //Zip
                 var reader = new FileReader();
+                var filename, readShp = false,
+                    readDbf = false,
+                    readShx = false,
+                    readPrj = false,
+                    prj, coord = true;
+                var prjName;
                 reader.onload = function(evt) {
                     var contents = evt.target.result;
                     JSZip.loadAsync(file).then(function(zip) {
-                        shapeValidation = validateShapeFile(zip);
-                        shapeValidation.then(function(resultFile) {
-                            //is valid shapefile
-                            if (resultFile.valid) {
-                                shp(contents).then(function(shpToGeojson) {
-                                    geojson = shpToGeojson;
-                                    delimitationFileType = delimitationFileEnum.SHP;
-                                    let polygonStyle = {
-                                        fillColor: "#337ab7",
-                                        color: "#333333",
-                                        weight: 0.2,
-                                        fillOpacity: 0.3
-                                    };
-                                    editablepolygon = L.geoJSON(geojson, { style: polygonStyle })
-                                    editablepolygon.addTo(mapDelimit);
-                                    mapDelimit.fitBounds(editablepolygon.getBounds())
-                                });
-                            } else {
-                                $('#intakeArea').val('');
-                                return;
+                        zip.forEach(function(relativePath, zipEntry) {
+                            filename = zipEntry.name.toLocaleLowerCase();
+                            if (filename.indexOf(".shp") != -1) {
+                                readShp = true;
+                            }
+                            if (filename.indexOf(".dbf") != -1) {
+                                readDbf = true;
+                            }
+                            if (filename.indexOf(".shx") != -1) {
+                                readShx = true;
+                            }
+                            if (filename.indexOf(".prj") != -1) {
+                                readPrj = true;
+                                prjName = zipEntry.name;
                             }
                         });
-                        //loadShapefile(geojson, file.name);
-                    }).catch(function(e) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error en shapefile',
-                            text: 'Ha ocurrido un error de lectura en el shapefile',
-                        })
-                        console.log("Ocurrió error convirtiendo el shapefile " + e);
-                        $('#intakeArea').val('');
+                        // Valid shapefile with minimum files req
+                        if (readShp && readDbf && readPrj && readShx) {
+                            zip.file(prjName).async("string").then(function(data) {
+                                prj = data;
+                                // Validar sistema de referencia
+                                if (!prj) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error en shapefile',
+                                        text: 'Sistema de proyección incorrecto',
+                                    })
+                                }
+                                // Shapefile válido
+                                else {
+                                    shp(contents).then(function(shpToGeojson) {
+                                        geojson = shpToGeojson;
+                                        delimitationFileType = delimitationFileEnum.SHP;
+                                        let polygonStyle = {
+                                            fillColor: "#337ab7",
+                                            color: "#333333",
+                                            weight: 0.2,
+                                            fillOpacity: 0.3
+                                        };
+                                        editablepolygon = L.geoJSON(geojson, { style: polygonStyle })
+                                        editablepolygon.addTo(mapDelimit);
+                                        mapDelimit.fitBounds(editablepolygon.getBounds())
+                                            //loadShapefile(geojson, file.name);
+                                    }).catch(function(e) {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error en shapefile',
+                                            text: 'Ha ocurrido un error de lectura en el shapefile',
+                                        })
+                                        console.log("Ocurrió error convirtiendo el shapefile " + e);
+                                    });
+                                }
+                            });
+                        } else { // Missing req files
+                            // Miss .shp
+                            if (!readShp) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error en shapefile',
+                                    text: 'Falta el archivo .shp requerido',
+                                })
+                            }
+                            // Miss .dbf
+                            if (!readDbf) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error en shapefile',
+                                    text: 'Falta el archivo .dbf requerido',
+                                })
+                            }
+                            // Miss .shx
+                            if (!readShx) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error en shapefile',
+                                    text: 'Falta el archivo .shx requerido',
+                                })
+                            }
+                            // Miss .prj
+                            if (!readPrj) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error en shapefile',
+                                    text: 'Falta el archivo .prj requerido',
+                                })
+                            }
+                        }
                     });
                 };
                 reader.onerror = function(event) {
@@ -758,7 +741,44 @@ function changeFileEvent() {
                 title: 'Error de extensión',
                 text: 'La extensión del archivo no está soportada, debe ser GeoJSON o un shapefile .zip',
             })
-            $('#intakeArea').val('');
         }
+    });
+}
+/** 
+ * Get if file has a valid shape or GeoJSON extension 
+ * @param {StriFileng} file   zip or GeoJSON file
+ *
+ * @return {Object} extension Object contain extension and is valid
+ */
+function validExtension(file) {
+    var fileExtension = {};
+    if (file.name.lastIndexOf(".") > 0) {
+        var extension = file.name.substring(file.name.lastIndexOf(".") + 1, file.name.length);
+        fileExtension.extension = extension;
+    }
+    if (file.type == 'application/x-zip-compressed' || file.type == 'application/zip') {
+        fileExtension.valid = true;
+    } else if (file.type == 'application/geo+json') {
+        fileExtension.valid = true;
+    } else {
+        fileExtension.valid = false;
+    }
+    return fileExtension;
+}
+
+//draw polygons
+drawPolygons = function() {
+    // TODO: Next line only for test purpose
+    //intakePolygons = polygons;
+
+    lyrsPolygons.forEach(lyr => map.removeLayer(lyr));
+
+
+    intakePolygons.forEach(feature => {
+        let poly = feature.polygon;
+        if (poly.indexOf("SRID") >= 0) {
+            poly = poly.split(";")[1];
+        }
+        lyrsPolygons.push(omnivore.wkt.parse(poly).addTo(map));
     });
 }

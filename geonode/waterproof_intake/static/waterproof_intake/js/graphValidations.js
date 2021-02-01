@@ -126,6 +126,7 @@ function clearDataHtml() {
     $('#nitrogenoDiagram').val('');
     $('#fosforoDiagram').val('');
     $('#funcostgenerate div').remove();
+    $('#funcostgenerate').empty();
 }
 
 function funcost(ecuation_db, ecuation_name, index, MQ) {
@@ -188,6 +189,7 @@ function addData2HTML(resultdb, cell) {
     $('#nitrogenoDiagram').prop('disabled', show);
     $('#fosforoDiagram').prop('disabled', show);
     $('#funcostgenerate div').remove();
+    $('#funcostgenerate').empty();
     // Add Value to Panel Information Right on HTML
     $('#aguaDiagram').val(resultdb[0].fields.predefined_transp_water_perc);
     $('#sedimentosDiagram').val(resultdb[0].fields.predefined_sediment_perc);
@@ -356,4 +358,105 @@ function mensajeAlert(fin) {
 
 function validations(validate, editor) {
     return (validationsCsinfraExternal(validate) == true || validationsNodeAlone(editor) == true) ? true : false;
+}
+
+
+// View Intake
+
+function addDataView(element, MQ) {
+    //add data in HTML for connectors
+    if (typeof(element.value) == "string" && element.value.length > 0) {
+        let obj = JSON.parse(element.value);
+        let dbfields = obj.resultdb;
+        label = connectionsType[obj.connectorType].name;
+        $('#titleDiagram').text(connectionsType[obj.connectorType].name);
+        $('#titleCostFunSmall').text(`ID: ${element.id} - ${connectionsType[obj.connectorType].name}`);
+        $('#idDiagram').val(element.id);
+        addData2HTMLView(dbfields)
+        funcostdb = obj.funcost;
+        for (let index = 0; index < funcostdb.length; index++) {
+            funcostView(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index, MQ);
+        }
+    } else {
+        $('#titleDiagram').text(element.getAttribute('name'));
+        $('#titleCostFunSmall').text(`ID: ${element.id} - ${element.getAttribute('name')}`);
+        $('#idDiagram').val(element.id);
+        if (element.getAttribute('resultdb') == undefined && element.getAttribute('funcost') == undefined) return;
+        resultdb = JSON.parse(element.getAttribute('resultdb'));
+        if (element.getAttribute('name') == 'River') {
+            return addData2HTMLView(resultdb);
+        }
+        if (element.getAttribute('funcost') == undefined) return addData2HTMLView(resultdb);
+        funcostdb = JSON.parse(element.getAttribute('funcost'));
+        if (resultdb.length == 0 && funcostdb.length == 0) return;
+        $('#titleDiagram').text(resultdb[0].fields.categorys);
+        addData2HTMLView(resultdb);
+        for (let index = 0; index < funcostdb.length; index++) {
+            funcostView(funcostdb[index].fields.function_value, funcostdb[index].fields.function_name, index, MQ);
+
+        }
+    }
+
+}
+
+function funcostView(ecuation_db, ecuation_name, index, MQ) {
+    $('#funcostgenerate').append(
+        `<div class="alert alert-info" role="alert" idvalue="fun_${index}" style="margin-bottom: 12px">
+        <h4>${ecuation_name}</h4>
+        <p name="render_ecuation">${ ecuation_db }</p>
+    </div>
+    `);
+    $('p[name=render_ecuation]').each(function() {
+        MQ.StaticMath(this);
+    });
+}
+
+function clearDataHtmlView() {
+    $('#aguaDiagram').prop('disabled', true);
+    $('#sedimentosDiagram').prop('disabled', true);
+    $('#nitrogenoDiagram').prop('disabled', true);
+    $('#fosforoDiagram').prop('disabled', true);
+    $('#idDiagram').val('');
+    $('#titleDiagram').empty();
+    $('#aguaDiagram').val('');
+    $('#titleCostFunSmall').empty();
+    $('#sedimentosDiagram').val('');
+    $('#nitrogenoDiagram').val('');
+    $('#fosforoDiagram').val('');
+    $('#funcostgenerate div').remove();
+    $('#funcostgenerate').empty();
+}
+
+function addData2HTMLView(resultdb) {
+    var show = true;
+    $('#aguaDiagram').prop('disabled', show);
+    $('#sedimentosDiagram').prop('disabled', show);
+    $('#nitrogenoDiagram').prop('disabled', show);
+    $('#fosforoDiagram').prop('disabled', show);
+    $('#funcostgenerate div').remove();
+    $('#funcostgenerate').empty();
+    // Add Value to Panel Information Right on HTML
+    $('#aguaDiagram').val(resultdb[0].fields.predefined_transp_water_perc);
+    $('#sedimentosDiagram').val(resultdb[0].fields.predefined_sediment_perc);
+    $('#nitrogenoDiagram').val(resultdb[0].fields.predefined_nitrogen_perc);
+    $('#fosforoDiagram').val(resultdb[0].fields.predefined_phosphorus_perc);
+    // Add Validator 
+    $('#aguaDiagram').attr('min', resultdb[0].fields.minimal_transp_water_perc);
+    $('#aguaDiagram').attr('max', resultdb[0].fields.maximal_transp_water_perc);
+    $('#sedimentosDiagram').attr('min', resultdb[0].fields.minimal_sediment_perc);
+    $('#sedimentosDiagram').attr('max', resultdb[0].fields.maximal_sediment_perc);
+    $('#nitrogenoDiagram').attr('min', resultdb[0].fields.minimal_nitrogen_perc);
+    $('#nitrogenoDiagram').attr('max', resultdb[0].fields.maximal_nitrogen_perc);
+    $('#fosforoDiagram').attr('min', resultdb[0].fields.minimal_phosphorus_perc);
+    $('#fosforoDiagram').attr('max', resultdb[0].fields.maximal_phosphorus_perc);
+}
+
+function deleteWithValidationsView(editor) {
+    if (editor.graph.isEnabled()) {
+        let cells = editor.graph.getSelectionCells();
+        let cells2Remove = cells.filter(cell => (cell.style != "rio") || parseInt(cell.id) > 400);
+        if (cells2Remove.length >= 0) {
+            mxUtils.alert(`Isn't Editable`);
+        }
+    }
 }
