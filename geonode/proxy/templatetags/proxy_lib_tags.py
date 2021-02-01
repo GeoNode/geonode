@@ -58,7 +58,7 @@ def original_link_available(context, resourceid, url):
             upload_session = instance.get_upload_session()
             if upload_session:
                 layer_files = [
-                    item for idx, item in enumerate(LayerFile.objects.filter(upload_session=upload_session))]
+                    item for item in LayerFile.objects.filter(upload_session=upload_session)]
                 if layer_files:
                     for lyr in layer_files:
                         if not storage.exists(str(lyr.file)):

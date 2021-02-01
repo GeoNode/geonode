@@ -43,6 +43,7 @@ from django.shortcuts import reverse
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.models import CuratedThumbnail
 from geonode.base.templatetags.base_tags import get_visibile_resources
+from geonode.base.templatetags.user_messages import show_notification
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 
@@ -515,9 +516,6 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
 
 class DeleteResourcesCommandTests(GeoNodeBaseTestSupport):
 
-    def setUp(self):
-        super().setUp()
-
     def test_delete_resources_no_arguments(self):
         args = []
         kwargs = {}
@@ -804,6 +802,13 @@ class TestGetVisibleResource(TestCase):
         assign_perm('view_resourcebase', self.user, self.rb)
         categories = get_visibile_resources(self.user)
         self.assertEqual(categories['iso_formats'].count(), 1)
+
+    def test_visible_notifications(self):
+        """
+        Test that a standard user won't be able to show ADMINS_ONLY_NOTICE_TYPES
+        """
+        self.assertFalse(show_notification('monitoring_alert', self.user))
+        self.assertTrue(show_notification('request_download_resourcebase', self.user))
 
 
 class TestHtmlTagRemoval(SimpleTestCase):

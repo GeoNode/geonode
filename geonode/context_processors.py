@@ -186,6 +186,6 @@ def resource_urls(request):
         GEONODE_APPS_ENABLE=getattr(settings, 'GEONODE_APPS_ENABLE', False),
         GEONODE_APPS_NAME=getattr(settings, 'GEONODE_APPS_NAME', 'Apps'),
         GEONODE_APPS_NAV_MENU_ENABLE=getattr(settings, 'GEONODE_APPS_NAV_MENU_ENABLE', False),
+        CATALOG_METADATA_TEMPLATE=getattr(settings, "CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
     )
-
     return defaults

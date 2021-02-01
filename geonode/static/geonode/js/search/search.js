@@ -642,11 +642,26 @@
                 } else {
                     var query_key = $('#text_search_input').data('query-key') || 'title__icontains';
                 }
-                $scope.query[query_key] = $('#text_search_input').val();
+                if ($('#text_search_input').val()) {
+                    $scope.query[query_key] = $('#text_search_input').val();
+                } else {
+                    // Reset query context
+                    var limit = $scope.query['limit'];
+                    var offset = $scope.query['offset'];
+                    var order_by = $scope.query['order_by'];
+                    $scope.query = {};
+                    $scope.query['limit'] = limit;
+                    $scope.query['offset'] = offset;
+                    if (order_by) {
+                        $scope.query['order_by'] = order_by;
+                    }
+                }
             }
-            $scope.query['abstract__icontains'] = $('#text_search_input').val();
-            $scope.query['purpose__icontains'] = $('#text_search_input').val();
-            $scope.query['f_method'] = 'or';
+            if ($('#text_search_input').val() || $('#text_search_input').val()) {
+                $scope.query['abstract__icontains'] = $('#text_search_input').val();
+                $scope.query['purpose__icontains'] = $('#text_search_input').val();
+                $scope.query['f_method'] = 'or';
+            }
             query_api($scope.query);
         });
 

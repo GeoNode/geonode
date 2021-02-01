@@ -6,11 +6,15 @@ import time
 import datetime
 import docker
 import socket
+import logging
 
 from urllib.parse import urlparse
 from invoke import task
 
+
 BOOTSTRAP_IMAGE_CHEIP = 'codenvy/che-ip:nightly'
+
+logger = logging.getLogger(__name__)
 
 
 @task
@@ -264,7 +268,7 @@ def monitoringfixture(ctx):
         ctx.run("django-admin.py loaddata /tmp/default_monitoring_apps_docker.json \
 --settings={0}".format(_localsettings()), pty=True)
     except Exception as e:
-        print("ERROR installing monitoring fixture: " + str(e))
+        logger.error("ERROR installing monitoring fixture: " + str(e))
 
 
 @task
@@ -375,13 +379,13 @@ def _rest_api_availability(url):
         r = requests.request('get', url, verify=False)
         r.raise_for_status()  # Raises a HTTPError if the status is 4xx, 5xxx
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
-        print("GeoServer connection error is {0}".format(e))
+        logger.error("GeoServer connection error is {0}".format(e))
         return False
     except requests.exceptions.HTTPError as er:
-        print("GeoServer HTTP error is {0}".format(er))
+        logger.error("GeoServer HTTP error is {0}".format(er))
         return False
     else:
-        print("GeoServer API are available!")
+        logger.info("GeoServer API are available!")
         return True
 
 
@@ -427,7 +431,7 @@ def _geoserver_info_provision(url):
     if response.status_code == 200:
         print("GeoServer admin password updated SUCCESSFULLY!")
     else:
-        print("WARNING: GeoServer admin password *NOT* updated: code [%s]" % response.status_code)
+        logger.warning("WARNING: GeoServer admin password *NOT* updated: code [%s]" % response.status_code)
 
 
 def _prepare_oauth_fixture():
@@ -499,7 +503,7 @@ def _prepare_monitoring_fixture():
         geoserver_ip = socket.gethostbyname('geoserver')
     except Exception:
         pass
-    #d = str(datetime.datetime.now())
+    # d = str(datetime.datetime.now())
     d = '1970-01-01 00:00:00'
     default_fixture = [
         {
