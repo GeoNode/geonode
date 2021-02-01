@@ -530,7 +530,7 @@ class ThesaurusKeyword(models.Model):
         verbose_name_plural = 'Thesaurus Keywords'
         unique_together = (("thesaurus", "alt_label"),)
 
- 
+
 class ThesaurusLabel(models.Model):
     """
     Contains localized version of the thesaurus title
