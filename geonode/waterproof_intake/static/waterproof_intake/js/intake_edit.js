@@ -336,7 +336,7 @@ $(document).ready(function () {
     }
 
     $('#smartwizard').smartWizard({
-        selected: 0,
+        selected: 2,
         theme: 'dots',
         enableURLhash: false,
         autoAdjustHeight: true,
@@ -416,6 +416,20 @@ $(document).ready(function () {
     $('#step3NextBtn').click(function () {
         if ($('#intakeECTAG')[0].childNodes.length > 1) {
             $('#smartwizard').smartWizard("next");
+            var tempNum = 0;
+            for (let index = 0; index < graphData.length; index++) {
+                if (graphData[index].external == "true") {
+                    tempNum += 1;
+                }
+            }
+            if (tempNum == intakeExternalInputs.length) {
+                loadExternalInput();
+            } else {
+                $('#IntakeTDLE table').remove();
+                $('#IntakeTDLE').empty();
+                $('#externalSelect option').remove();
+                $('#externalSelect').empty();
+            }
         } else {
             Swal.fire({
                 icon: 'warning',
@@ -427,10 +441,45 @@ $(document).ready(function () {
 
     });
 
+    function loadExternalInput() {
+
+        for (const extractionData of intakeExternalInputs) {
+            $('#externalSelect').append(`
+                <option value="${extractionData.xmlId}">${extractionData.xmlId} - External Input</option>
+            `);
+            rows = "";
+            for (let index = 0; index < extractionData.waterExtraction.length; index++) {
+                rows += (`<tr>
+                        <th class="text-center" scope="col" name="year_${extractionData.waterExtraction[index].year}" year_value="${index + 1}">${index + 1}</th>
+                        <td class="text-center" scope="col"><input type="text" value="${extractionData.waterExtraction[index].waterVol}" class="form-control" name="waterVolume__${extractionData.xmlId}"></td>
+                        <td class="text-center" scope="col"><input type="text" value="${extractionData.waterExtraction[index].sediment}" class="form-control" name="sediment__${extractionData.xmlId}"></td>
+                        <td class="text-center" scope="col"><input type="text" value="${extractionData.waterExtraction[index].nitrogen}" class="form-control" name="nitrogen__${extractionData.xmlId}" ></td>
+                        <td class="text-center" scope="col"><input type="text" value="${extractionData.waterExtraction[index].phosphorus}" class="form-control" name="phosphorus__${extractionData.xmlId}"></td>
+                  </tr>`);
+
+            }
+            $('#IntakeTDLE').append(`
+                  <table class="table" id="table_${extractionData.xmlId}" style="display: none;">
+                      <thead>
+                          <tr>
+                              <th class="text-center" scope="col">Year</th>
+                              <th class="text-center" scope="col">Water Volume (m3)</th>
+                              <th class="text-center" scope="col">Sediment (Ton)</th>
+                              <th class="text-center" scope="col">Nitrogen (Kg)</th>
+                              <th class="text-center" scope="col">Phosphorus (Kg)</th>
+                          </tr>
+                      </thead>
+                      <tbody>${rows}</tbody>
+                  </table>    
+          `);
+        }
+
+    }
+
     $('#step4PrevBtn').click(function () {
         $('#smartwizard').smartWizard("prev");
     });
-
+    
     $('#step4NextBtn').click(function () {
         $('#smartwizard').smartWizard("next");
     });

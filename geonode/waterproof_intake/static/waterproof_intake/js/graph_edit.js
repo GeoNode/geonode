@@ -354,6 +354,8 @@ function onInit(editor) {
             }
         });
 
+        validateGraphIntake();
+
         //load data when add an object in a diagram
         editor.graph.addListener(mxEvent.ADD_CELLS, function(sender, evt) {
 
