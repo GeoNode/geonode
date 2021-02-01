@@ -46,6 +46,37 @@ def treatmentPlantsList(request):
 			}
 		)
 
+def editTreatmentPlants(request):
+	if request.method == 'GET':
+		global countryPlant
+		global region
+		global currency
+		global city
+		countryPlant = Countries.objects.get(code=request.user.country)
+		region = Region.objects.get(id=countryPlant.region_id)
+		currency = Currency.objects.get(id=countryPlant.id)
+		city = City.objects.get(id=1)
+
+
+def newTreatmentPlants(request, userCountryId):
+	if request.method == 'GET':
+		global countryPlant
+		global region
+		global currency
+		global city
+
+		loadGlobalVariable(request)
+		return render(
+			request,
+			'waterproof_treatment_plants/treatment_plans_edit.html',
+			{
+				'city': city,
+				'countryPlant': countryPlant,
+				'region': region,
+				'currency': currency,
+			}
+		)
+
 @api_view(['GET'])
 def getTreatmentPlantsList(request):
 	if request.method == 'GET':

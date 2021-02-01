@@ -5,3 +5,369 @@ textarea {
 	text-align: center;
     font-weight: bold;
 }
+.center-button {
+    width: 134px;
+    left: 50%;
+    margin-left: -67px;
+}
+.container-intake {
+	margin: 30px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 10px;
+    padding: 30px;
+    border-color: #cccccc;
+}
+.delete-intake {
+	color: red;
+    font-family: sans-serif;
+    font-weight: bold;
+    float: left;
+    padding: 5px;
+    margin-right: 30px;
+    cursor: pointer;
+}
+.name-intake {
+    padding: 5px;
+}
+.container-config {
+	margin: 30px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 10px;
+    border-color: #cccccc;
+    height: 500px;
+    position: relative;
+    overflow-x: scroll;
+    overflow-y: hidden;
+}
+.div-scroll {
+    height: 100%;
+    width: 1300px;
+}
+.arrow-right {
+	position: relative;
+    height: 30px;
+    width: 35px;
+}
+.line-right {
+    width: 20px;
+    height: 15px;
+    background-color: #afafaf;
+    top: 7.5px;
+    position: absolute;
+}
+.point-right {
+	width: 0px;
+    height: 0px;
+    border-style: solid;
+    border-width: 15px;
+    border-color: #ffffff #ffffff #ffffff #afafaf;
+    position: absolute;
+    top: 0px;
+    left: 20px;
+}
+.point-right-one {
+	width: 0px;
+    height: 0px;
+    border-style: solid;
+    border-width: 15px;
+    position: absolute;
+    border-color: #afafaf #ffffff #ffffff #ffffff;
+    left: 0px;
+    top: 88px;
+}
+.positon-arrow {
+    top: 250px;
+    margin-top: -15px;
+    left: 20px;
+	position: absolute;
+}
+.container-element {
+    background: #3bda3b;
+    height: 75px;
+    width: 110px;
+    border-radius: 5px;
+    left: 57px;
+    position: absolute;
+    top: 250px;
+    margin-top: -37.5px;
+}
+.position-arrow-two {
+	left: 170px;
+}
+.position-arrow-two-one {
+	top: 110px;
+    left: 245px;
+}
+.line-right-one {
+	width: 15px;
+    height: 100px;
+    top: 0px;
+    left: 7.5px;
+    background-color: #afafaf;
+    position: absolute;
+}
+.container-element-two {
+	left: 207px;
+}
+.container-element-two-top {
+	top: 45px;
+	left: 210px;
+}
+.container-element-two-bottom {
+    left: 210px;
+    top: 440px;
+    height: 87px;
+}
+.position-arrow-three {
+	left: 320px;
+}
+.container-element-three {
+	left: 357px;
+}
+.position-arrow-four {
+	left: 470px;
+}
+.container-element-four {
+	left: 507px;
+}
+.position-arrow-five {
+	left: 620px;
+}
+.container-element-five {
+	left: 657px;
+}
+.position-arrow-six {
+	top: 210px;
+	left: 770px;
+}
+.container-element-six {
+	top: 210px;
+	left: 807px;
+}
+.position-arrow-six-left {
+	top: 290px;
+	left: 770px;
+}
+.container-element-six-left {
+	top: 290px;
+	left: 807px;
+}
+.position-arrow-seven {
+	left: 920px;
+}
+.container-element-seven {
+	left: 957px;
+    height: 87px;
+}
+.container-element-seven-top {
+    left: 960px;
+    top: 41px;
+    height: 87px;
+}
+.container-element-seven-bottom {
+	left: 960px;
+	top: 450px;
+}
+.position-arrow-eight {
+	left: 1070px;
+}
+.container-element-eight {
+	left: 1110px;
+}
+.position-arrow-two-two {
+	left: 995px;
+	top: 110px;
+}
+.position-arrow-two-three {
+	top: 315px;
+    left: 245px;
+}
+.point-right-three {
+    width: 0px;
+    height: 0px;
+    border-style: solid;
+    border-width: 15px;
+    position: absolute;
+    border-color: #ffffff #ffffff #afafaf #ffffff;
+    left: 0px;
+    top: -10px;
+}
+.position-arrow-two-four {
+	top: 315px;
+    left: 545px;
+}
+.position-arrow-two-five {
+	top: 315px;
+    left: 695px;
+}
+.position-arrow-two-six {
+	top: 355px;
+    left: 845px;
+}
+.position-arrow-two-seven {
+	top: 453px;
+    left: 549px;
+}
+.line-right-seven {
+    width: 400px;
+    height: 15px;
+    background-color: #afafaf;
+    top: 7.5px;
+    position: absolute;
+}
+.point-right-seven {
+	width: 0px;
+    height: 0px;
+    border-style: solid;
+    border-width: 15px;
+    border-color: #ffffff #ffffff #ffffff #afafaf;
+    position: absolute;
+    top: 0px;
+    left: 387px;
+}
+.line-right-four {
+	width: 15px;
+    height: 135px;
+    top: 0px;
+    left: 7.5px;
+    background-color: #afafaf;
+    position: absolute;
+}
+.point-right-four {
+	width: 0px;
+    height: 0px;
+    border-style: solid;
+    border-width: 15px;
+    position: absolute;
+    border-color: #afafaf #ffffff #ffffff #ffffff;
+    left: 0px;
+    top: 128px;
+}
+.text-container {
+	position: absolute;
+    bottom: 0px;
+    font-size:11px;
+    width: 110px;
+    text-align: center;
+    color: #ffffff;
+}
+.img-color-container {
+    width: 100px;
+    height: 50px;
+    background-color: #ffffff;
+    margin: 5px;
+    background-size: auto 56px;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 5px;
+}
+.img-container {
+    background-image: url(../img/dosificacion-azul.png);
+}
+.img-container-two {
+    background-image: url(../img/mezcla-rapida-azul.png);
+}
+.img-container-three {
+    background-image: url(../img/mezcla-lenta-azul.png);
+}
+.img-container-four {
+    background-image: url(../img/sedimentacion-azul.png);
+}
+.img-container-five {
+    background-image: url(../img/fibracion-azul.png);
+}
+.img-container-six {
+    background-image: url(../img/fibracion-tres-azul.png);
+}
+.img-container-seven {
+    background-image: url(../img/fibracion-dos-azul.png);
+}
+.img-container-eight {
+    background-image: url(../img/tratamiento-azul.png);
+}
+.img-container-nine {
+    background-image: url(../img/filtracion-cinco-azul.png);
+}
+.img-container-ten {
+    background-image: url(../img/desinfeccion-azul.png);
+}
+.main-point {
+    width: 25px;
+    height: 25px;
+    background: #07248c;
+    border-radius: 50%;
+    float: left;
+}
+.text-point-main {
+    height: 25px;
+    margin-left: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #07248c;
+    padding-top: 3px;
+}
+.margin-main {
+    margin-left: 50px;
+    margin-top: 20px;
+}
+.title-tree {
+    width: 100%;
+    height: 25px;
+    margin: 5px;
+}
+.point-tree {
+    height: 25px;
+    width: 25px;
+    border-width: 2px;
+    border-color: #07248c;
+    border-style: solid;
+    border-radius: 50%;
+    padding-left: 8px;
+    font-size: 15px;
+    color: #07248c;
+    float: left;
+}
+.text-tree {
+    height: 25px;
+    margin-left: 50px;
+    font-size: 16px;
+    color: #07248c;
+    padding-top: 3px;
+    float: left;
+    width: 300px;
+}
+.detail-tree {
+    height: 25px;
+    margin-left: 50px;
+    font-size: 16px;
+    color: #07248c;
+    padding-top: 3px;
+    float: left;
+}
+.point-check {
+    height: 25px;
+    width: 25px;
+    border-width: 2px;
+    border-color: #07248c;
+    border-style: solid;
+    padding-left: 6px;
+    font-size: 15px;
+    color: #07248c;
+    float: left;
+    margin-left: 30px;
+}
+.text-chech {
+    padding: 0px;
+    margin-left: 50px;
+    width: 300px;
+    font-size: 15px;
+    height: 25px;
+    text-align: center;
+    border-color: #07248c;
+    color: #07248c;
+}
+.main-tree-content {
+    margin: 50px;
+}
