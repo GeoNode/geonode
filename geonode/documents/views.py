@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import os
 import json
 import logging
 import traceback
@@ -194,8 +194,8 @@ def document_download(request, docid):
                 '401.html', context={
                     'error_message': _("You are not allowed to view this document.")}, request=request), status=401)
     register_event(request, EventType.EVENT_DOWNLOAD, document)
-    filename = slugify(document.title) + "." + document.extension
-    return DownloadResponse(document.doc_file, basename=filename)
+    filename = slugify(os.path.splitext(os.path.basename(document.title))[0])
+    return DownloadResponse(document.doc_file, basename=f"{filename}.{document.extension}")
 
 
 class DocumentUploadView(CreateView):
