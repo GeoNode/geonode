@@ -828,7 +828,7 @@ def upload(incoming, user=None, overwrite=False,
         basename, extension = os.path.splitext(short_filename)
         filename = incoming
 
-        if extension in ['.tif', '.shp', '.tar', '.zip']:
+        if extension in {'.tif', '.shp', '.tar', '.zip'}:
             potential_files.append((basename, filename))
         elif short_filename.endswith('.tar.gz'):
             potential_files.append((basename, filename))
@@ -844,7 +844,7 @@ def upload(incoming, user=None, overwrite=False,
             for short_filename in files:
                 basename, extension = os.path.splitext(short_filename)
                 filename = os.path.join(root, short_filename)
-                if extension in ['.tif', '.shp', '.tar', '.zip']:
+                if extension in {'.tif', '.shp', '.tar', '.zip'}:
                     potential_files.append((basename, filename))
                 elif short_filename.endswith('.tar.gz'):
                     potential_files.append((basename, filename))
@@ -865,10 +865,7 @@ def upload(incoming, user=None, overwrite=False,
         basename, filename = file_pair
         existing_layers = Layer.objects.filter(name=basename)
 
-        if existing_layers.count() > 0:
-            existed = True
-        else:
-            existed = False
+        existed = existing_layers.count() > 0
 
         if existed and skip:
             save_it = False
@@ -1062,9 +1059,8 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                                 thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (str(_p), str(params[_p]))
                         _ogc_server_settings = settings.OGC_SERVER['default']
                         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                            _user = _ogc_server_settings['USER'] if 'USER' in _ogc_server_settings else 'admin'
-                            _pwd = _ogc_server_settings['PASSWORD'] if \
-                                'PASSWORD' in _ogc_server_settings else 'geoserver'
+                            _user = _ogc_server_settings.get('USER', 'admin')
+                            _pwd = _ogc_server_settings.get('PASSWORD', 'geoserver')
                             import base64
                             valid_uname_pw = base64.b64encode(
                                 ("%s:%s" % (_user, _pwd)).encode("UTF-8")).decode("ascii")
@@ -1091,6 +1087,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                     msg = 'Unable to obtain thumbnail for: %s' % instance
                     logger.debug(msg)
                     instance.save_thumbnail(thumbnail_name, image=None)
+                    raise Exception(msg)
 
 
 # this is the original implementation of create_gs_thumbnail()
@@ -1223,6 +1220,15 @@ def delete_orphaned_layers():
                     "Failed to delete orphaned layer file '{}': {}".format(filename, e))
 
     return deleted
+
+
+def surrogate_escape_string(input_string, source_character_set):
+    """
+    Escapes a given input string using the provided source character set,
+    using the `surrogateescape` codec error handler.
+    """
+
+    return input_string.encode(source_character_set, "surrogateescape").decode("utf-8", "surrogateescape")
 
 
 def set_layers_permissions(permissions_name, resources_names=None,

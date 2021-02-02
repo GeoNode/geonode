@@ -126,7 +126,7 @@ DOCUMENT_MIMETYPE_MAP = {
     'aifc': 'audio/aiff',
     'aiff': 'audio/aiff',
     'au': 'audio/basic',
-    'mp3': 'audio/mpeg3',
+    'mp3': 'audio/mp3',
     'mpga': 'audio/mpeg',
     'wav': 'audio/wav',
 

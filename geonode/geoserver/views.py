@@ -178,7 +178,8 @@ def layer_style_upload(request, layername):
         try:
             if sld:
                 if isfile(sld):
-                    sld = open(sld, "r").read()
+                    with open(sld, "r") as sld_file:
+                        sld = sld_file.read()
                 etree.XML(sld)
         except Exception:
             logger.exception("The uploaded SLD file is not valid XML")

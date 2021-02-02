@@ -96,7 +96,7 @@ def geoserver_update_layers(self, *args, **kwargs):
     expires=30,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5, 'countdown': 10},
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -133,7 +133,7 @@ def geoserver_set_style(
     expires=30,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5, 'countdown': 10},
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -230,7 +230,7 @@ def geoserver_create_style(
     expires=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5, 'countdown': 10},
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -425,7 +425,7 @@ def geoserver_finalize_upload(
     expires=3600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5, 'countdown': 10},
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -669,7 +669,7 @@ def geoserver_post_save_layers(
     expires=30,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 2, 'countdown': 10},
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -687,8 +687,11 @@ def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=Tru
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
-            create_gs_thumbnail(instance, overwrite=overwrite, check_bbox=check_bbox)
-            logger.debug(f"... Created Thumbnail for Layer {instance.title}")
+            try:
+                create_gs_thumbnail(instance, overwrite=overwrite, check_bbox=check_bbox)
+                logger.debug(f"... Created Thumbnail for Layer {instance.title}")
+            except Exception as e:
+                geoserver_create_thumbnail.retry(exc=e)
 
 
 @app.task(

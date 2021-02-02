@@ -102,8 +102,10 @@ res_dir = os.path.join(os.path.dirname(__file__), 'resources')
 req_err_path = os.path.join(res_dir, 'req_err.xml')
 req_path = os.path.join(res_dir, 'req.xml')
 
-req_err_xml = open(req_err_path, 'rt').read()
-req_xml = open(req_path, 'rt').read()
+with open(req_err_path, 'rt') as req_err_xml_file:
+    req_err_xml = req_err_xml_file.read()
+with open(req_path, 'rt') as req_xml_file:
+    req_xml = req_xml_file.read()
 
 req_big = xmljson.yahoo.data(dlxml.fromstring(req_xml))
 req_err_big = xmljson.yahoo.data(dlxml.fromstring(req_err_xml))
@@ -815,10 +817,10 @@ class MonitoringChecksTestCase(MonitoringTestBase):
                 _emails = data['emails'].split('\n')[-1:]
                 _users = data['emails'].split('\n')[:-1]
                 self.assertEqual(
-                    set([u.email for u in nc.get_users()]),
+                    set(u.email for u in nc.get_users()),
                     set(_users))
                 self.assertEqual(
-                    set([email for email in nc.get_emails()]),
+                    set(email for email in nc.get_emails()),
                     set(_emails))
 
         metric_rq_count = Metric.objects.get(name='request.count')
@@ -866,7 +868,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
         self.assertIsNotNone(nresp)
         self.assertEqual(nresp.status_code, 200)
         ndata = json.loads(ensure_string(nresp.content))
-        self.assertEqual(set([n['id'] for n in ndata['data']]),
+        self.assertEqual(set(n['id'] for n in ndata['data']),
                          set(NotificationCheck.objects.all().values_list('id', flat=True)))
         mail.outbox = []
         self.assertEqual(len(mail.outbox), 0)

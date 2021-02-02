@@ -21,6 +21,10 @@
 from django.core.management.base import BaseCommand
 from geonode.layers.models import Layer
 from geonode.qgis_server.helpers import style_list
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -33,7 +37,7 @@ class Command(BaseCommand):
             try:
                 l.qgis_layer
             except Exception:
-                print("Layer {} has no associated qgis_layer".format(l.name))
+                logger.warning("Layer {} has no associated qgis_layer".format(l.name))
                 continue
 
             if l.qgis_layer:
@@ -42,7 +46,7 @@ class Command(BaseCommand):
                 try:
                     styles = style_list(l, internal=False)
                 except Exception:
-                    print("Failed to fetch styles")
+                    logger.warning("Failed to fetch styles")
                     continue
 
                 print("Successfully fetch %d style(s)\n".format(len(styles)))
