@@ -17,7 +17,8 @@
 #
 #########################################################################
 
-from geonode.base.models import Thesaurus
+from django.test.testcases import SimpleTestCase
+from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel
 from django.test import TestCase
 from django.core import management
 from defusedxml import lxml as dlxml
@@ -26,6 +27,15 @@ import os
 
 
 class TestLoadThesaurus(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        management.call_command(
+            "load_thesaurus",
+            file=f"{os.path.dirname(os.path.abspath(__file__))}/data/thesaurus.rdf",
+            name="foo_name",
+            stdout="out",
+        )
+
     def setUp(self) -> None:
         self.rdf_path = f"{os.path.dirname(os.path.abspath(__file__))}/data/thesaurus.rdf"
         self.Thesaurus = Thesaurus(
@@ -41,15 +51,38 @@ class TestLoadThesaurus(TestCase):
         with self.assertRaises(OSError):
             management.call_command("load_thesaurus", file="abc", name="foo_name", stdout="out")
 
-    def test_give_a_valid_name_should_return_the_expected_Thesaurus_as_output(self):
-        management.call_command("load_thesaurus", file=self.rdf_path, name="foo_name", stdout="out")
-        actual = Thesaurus.objects.all().order_by("-id")[0]
+    def test_give_a_valid_name_should_save_the_expected_Thesaurus(self):
+        actual = self.__get_last_thesaurus()
         self.assertEqual(self.Thesaurus.identifier, actual.identifier)
         self.assertEqual(self.Thesaurus.title, actual.title)
         self.assertEqual(self.Thesaurus.date, actual.date)
         self.assertEqual(self.Thesaurus.description, actual.description)
         self.assertEqual(self.Thesaurus.slug, actual.slug)
         self.assertEqual(self.Thesaurus.about, actual.about)
+
+    def test_give_a_valid_name_should_save_the_expected_ThesaurusKeyword(self):
+        tid = self.__get_last_thesaurus()
+        actual = ThesaurusKeyword.objects.filter(thesaurus=tid)
+        self.assertEqual(2, len(actual))
+
+    def test_give_a_valid_name_should_save_the_expected_ThesaurusKeywordLabel(self):
+        tkey = ThesaurusKeyword.objects.filter(thesaurus=self.__get_last_thesaurus())[0]
+        actual = ThesaurusKeywordLabel.objects.filter(keyword=tkey)
+        self.assertEqual(2, len(actual))
+
+    def test_give_a_valid_name_should_save_the_expected_ThesaurusLabel(self):
+        tid = self.__get_last_thesaurus()
+        actual = ThesaurusLabel.objects.all().filter(thesaurus=tid)
+        self.assertEqual(2, len(actual))
+
+    @staticmethod
+    def __get_last_thesaurus():
+        return Thesaurus.objects.all().order_by("-id")[0]
+
+
+class TestExtractLanguages(SimpleTestCase):
+    def setUp(self):
+        self.rdf_path = f"{os.path.dirname(os.path.abspath(__file__))}/data/thesaurus.rdf"
 
     def test_get_all_lang_available_should_return_all_the_lang_available_int_the_file(self):
         titles = self.__load_titles()
