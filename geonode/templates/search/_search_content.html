@@ -1,18 +1,23 @@
 {% load i18n %}
 <div class="row" ng-controller="CartList">
   <div class="col-md-3">
-    <resource-cart data-facet-type="{{ facet_type }}" selectedString='{% trans "Selection" %}' emptyString="{% trans "No list items selected. Use the selection fields to add." %}" ></resource-cart>
+
+    {% if facet_type == 'layers' %}
+    <resource-cart data-facet-type="{{ facet_type }}" selectedString='{% trans "Selection" %}' emptyString="{% trans "No list items selected. Use the selection fields to add." %}" >
+    </resource-cart>
+    {% endif %}
     <div class="row">
       <div class="col-xs-12">
-        {% block bulk_perms_button %}
-        <div class="btn-group btn-group-justified" role="group" aria-label="tools">
-          {% if facet_type == 'layers' %}
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default" ng-disabled="!cart.getCart().items.length" ng-click="newMap()">{% trans "Create a Map" %}</button>
+
+        {% if facet_type == 'layers' %}
+          {% block bulk_perms_button %}
+          <div class="btn-group btn-group-justified" role="group" aria-label="tools">
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-default" ng-disabled="!cart.getCart().items.length" ng-click="newMap()">{% trans "Create a Map" %}</button>
+            </div>
           </div>
-          {% endif %}
-        </div>
-        {% endblock %}
+          {% endblock %}
+        {% endif %}
 
         <div class="selections">
             {% trans "Filters" %}
