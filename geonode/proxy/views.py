@@ -318,9 +318,8 @@ def download(request, resourceid, sender=Layer):
             try:
                 for s in instance.styles.all():
                     sld_file_path = os.path.join(target_folder, "".join([s.name, ".sld"]))
-                    sld_file = open(sld_file_path, "w")
-                    sld_file.write(s.sld_body.strip())
-                    sld_file.close()
+                    with open(sld_file_path, "w") as sld_file:
+                        sld_file.write(s.sld_body.strip())
                     try:
                         # Collecting headers and cookies
                         headers, access_token = get_headers(request, urlsplit(s.sld_url), s.sld_url)
@@ -332,9 +331,8 @@ def download(request, resourceid, sender=Layer):
                             user=request.user)
                         sld_remote_content = response.text
                         sld_file_path = os.path.join(target_folder, "".join([s.name, "_remote.sld"]))
-                        sld_file = open(sld_file_path, "w")
-                        sld_file.write(sld_remote_content.strip())
-                        sld_file.close()
+                        with open(sld_file_path, "w") as sld_file:
+                            sld_file.write(sld_remote_content.strip())
                     except Exception:
                         traceback.print_exc()
                         tb = traceback.format_exc()
@@ -364,30 +362,27 @@ def download(request, resourceid, sender=Layer):
                         continue
                     elif link.link_type in ('metadata', 'image'):
                         # Dumping metadata files and images
-                        link_file = open(link_file, "wb")
-                        try:
-                            # Collecting headers and cookies
-                            headers, access_token = get_headers(request, urlsplit(link.url), link.url)
+                        with open(link_file, "wb"):
+                            try:
+                                # Collecting headers and cookies
+                                headers, access_token = get_headers(request, urlsplit(link.url), link.url)
 
-                            response, raw = http_client.get(
-                                link.url,
-                                stream=True,
-                                headers=headers,
-                                timeout=TIMEOUT,
-                                user=request.user)
-                            raw.decode_content = True
-                            shutil.copyfileobj(raw, link_file)
-                        except Exception:
-                            traceback.print_exc()
-                            tb = traceback.format_exc()
-                            logger.debug(tb)
-                        finally:
-                            link_file.close()
+                                response, raw = http_client.get(
+                                    link.url,
+                                    stream=True,
+                                    headers=headers,
+                                    timeout=TIMEOUT,
+                                    user=request.user)
+                                raw.decode_content = True
+                                shutil.copyfileobj(raw, link_file)
+                            except Exception:
+                                traceback.print_exc()
+                                tb = traceback.format_exc()
+                                logger.debug(tb)
                     elif link.link_type.startswith('OGC'):
                         # Dumping OGC/OWS links
-                        link_file = open(link_file, "w")
-                        link_file.write(link.url.strip())
-                        link_file.close()
+                        with open(link_file, "w") as link_file:
+                            link_file.write(link.url.strip())
             except Exception:
                 traceback.print_exc()
                 tb = traceback.format_exc()

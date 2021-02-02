@@ -22,6 +22,10 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from geonode.layers.models import Layer
 from geonode.security.utils import set_geofence_all
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -49,4 +53,4 @@ class Command(BaseCommand):
                 perm_spec["users"]["AnonymousUser"] = ['view_resourcebase', 'download_resourcebase']
                 layer.set_permissions(perm_spec)
             except Exception:
-                print("[ERROR] Layer [%s] couldn't be updated" % (layer.name))
+                logger.error("[ERROR] Layer [%s] couldn't be updated" % (layer.name))

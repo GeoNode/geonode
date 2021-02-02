@@ -75,7 +75,7 @@ class Command(BaseCommand):
         config_path = options.get('config_path')
 
         # check argument set
-        if all(config is None for config in [layer_filters, map_filters, document_filters, config_path]):
+        if all(config is None for config in {layer_filters, map_filters, document_filters, config_path}):
             raise CommandError("No configuration provided. Please specify any of the following arguments: '-l', '-m', '-d', '-c'.")
 
         if any([layer_filters, map_filters, document_filters]) and config_path:
