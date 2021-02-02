@@ -136,6 +136,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
 
     def setUp(self):
         # await startup
+        self.wait_for_progress_cnt = 0
         cl = Client(
             GEONODE_URL, GEONODE_USER, GEONODE_PASSWD
         )
@@ -169,6 +170,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
         pass
 
     def tearDown(self):
+        self.wait_for_progress_cnt = 0
         connections.databases['default']['ATOMIC_REQUESTS'] = False
 
         for temp_file in self._tempfiles:
@@ -423,9 +425,12 @@ class UploaderBase(GeoNodeBaseTestSupport):
             resp = self.client.get(progress_url)
             json_data = resp.json()
             # "COMPLETE" state means done
-            if json_data.get('state', '') == 'RUNNING':
-                time.sleep(0.1)
+            if json_data.get('state', '') == 'RUNNING' and self.wait_for_progress_cnt < 300:
+                time.sleep(1.0)
+                self.wait_for_progress_cnt += 1
                 self.wait_for_progress(progress_url)
+            else:
+                self.wait_for_progress_cnt = 0
 
     def temp_file(self, ext):
         fd, abspath = tempfile.mkstemp(ext)
