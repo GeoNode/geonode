@@ -19,7 +19,6 @@ export ASYNC_SIGNALS=False
 export DATABASE_URL=postgis://geonode:geonode@db:5432/geonode
 export GEODATABASE_URL=postgis://geonode:geonode@db:5432/geonode_data
 export DEFAULT_BACKEND_DATASTORE=datastore
-export DEFAULT_BACKEND_UPLOADER=geonode.rest
 
 # echo "Initialize DB";
 # chmod +x scripts/misc/create_dbs_travis.sh;
