@@ -36,23 +36,25 @@
                   <a href="{{ item.detail_url }}">{{ item.title }}</a>
               </h4>
             </div>
+            {% endverbatim %}
+
+            {% if facet_type == 'layers' %}
             <div class="col-xs-2">
-              <h4>{% endverbatim %}
+              <h4>
                 <button
                   class="btn btn-default btn-xs pull-right"
                   ng-if="cart"
                   ng-click="cart.toggleItem(item)"
                   data-toggle="tooltip"
                   data-placement="bottom"
-                  title="{% trans "Select" %}"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>{% verbatim %}
+                  title="{% trans "Select" %}"><i ng-class="cart.getFaClass(item.id)" class="fa fa-lg"></i></button>
               </h4>
             </div>
+            {% endif %}
           </div>
           <em ng-if="item.store_type == 'remoteStore'">
-            {% endverbatim %}
             <span ng-if="item.online == true"><i class="fa fa-power-off text-success"></i> {% trans "Service is" %} {% trans "online" %}</span>
             <span ng-if="item.online == false"><i class="fa fa-power-off text-danger"></i> {% trans "Service is" %} {% trans "offline" %}</span>
-            {% verbatim %}
           </em>
 		  {% endverbatim %}
           <div class="alert alert-danger" ng-if="item.dirty_state == true">{% trans "SECURITY NOT YET SYNCHRONIZED" %}
@@ -60,8 +62,8 @@
           </div>
           <div class="alert alert-warning" ng-if="item.dirty_state == false && item.is_approved == false">{% trans "PENDING APPROVAL" %}</div>
           <div class="alert alert-danger" ng-if="item.dirty_state == false && item.is_approved == true && item.is_published == false">{% trans "UNPUBLISHED" %}</div>
-          {% verbatim %}
 
+          {% verbatim %}
           <div class="abstract" ng-bind-html="item.abstract | limitTo: 300"></div>
           <p class="abstract">{{ item.abstract.length  > 300 ? '...' : ''}}</p>
           <div class="row">
