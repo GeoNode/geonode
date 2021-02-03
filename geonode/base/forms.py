@@ -17,46 +17,40 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import re
-import six
 import html
 import logging
+import re
 
-from tinymce.widgets import TinyMCE
-
-from .fields import MultiThesauriField
-
+import six
+from bootstrap3_datetime.widgets import DateTimePicker
 from dal import autocomplete
-from taggit.forms import TagField
-
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core import validators
 from django.db.models import Prefetch, Q
-from django.forms import models
-from django.forms import ModelForm
+from django.forms import ModelForm, models
 from django.forms.fields import ChoiceField
 from django.forms.utils import flatatt
+from django.utils.encoding import force_text
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
-
-from django.utils.encoding import (
-    force_text,
-)
-
-from bootstrap3_datetime.widgets import DateTimePicker
 from modeltranslation.forms import TranslationModelForm
+from taggit.forms import TagField
+from tinymce.widgets import TinyMCE
 
-from geonode.base.models import HierarchicalKeyword, TopicCategory, Region, License, CuratedThumbnail, \
-    ResourceBase
-from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel
-from geonode.documents.models import Document
 from geonode.base.enumerations import ALL_LANGUAGES
+from geonode.base.models import (CuratedThumbnail, HierarchicalKeyword,
+                                 License, Region, ResourceBase, Thesaurus,
+                                 ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel,
+                                 TopicCategory)
 from geonode.base.widgets import TaggitSelect2Custom
+from geonode.documents.models import Document
 from geonode.layers.models import Layer
+
+from .fields import MultiThesauriField
 
 logger = logging.getLogger(__name__)
 
@@ -320,6 +314,49 @@ class TKeywordForm(forms.ModelForm):
         help_text=_("List of keywords from Thesaurus", ),
     )
 
+
+
+class ThesaurusAvailableForm(forms.Form): 
+    def __init__(self, *args, **kwargs):
+        super(ThesaurusAvailableForm, self).__init__(*args, **kwargs)
+        lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, 'THESAURUS_DEFAULT_LANG') else 'en'
+        for item in Thesaurus.objects.all():
+            tname = ThesaurusLabel.objects.values_list('label', flat=True).filter(id=item.id).filter(lang=lang)
+            if item.card_max == 0:
+                continue
+            elif item.card_max == 1 and item.card_min==0:
+                print("1 single option optional")
+                self.fields['opt-' + str(item.id)] = self._define_choicefield(item, False, tname, lang)
+            elif item.card_max == 1 and item.card_min==1:
+                print("2 single option required")
+                self.fields['opt-' + str(item.id)] = self._define_choicefield(item, True, tname, lang)
+            elif item.card_max == -1 and item.card_min==0:
+                print("3 multi option optional")
+                self.fields['opt-' + str(item.id)] = self._define_multifield(item, False, tname, lang)
+            elif item.card_max == -1 and item.card_min==1:
+                print("4 multi option req")
+                self.fields['opt-' + str(item.id)] = self._define_multifield(item, True, tname, lang)
+
+    @staticmethod
+    def _define_multifield(item, required, tname, lang):
+        return MultiThesauriField(
+                ThesaurusKeyword.objects.prefetch_related(
+                    Prefetch('keyword', queryset=ThesaurusKeywordLabel.objects.filter(keyword__thesaurus_id=item.id).filter(lang=lang)
+                )),
+                widget=autocomplete.ModelSelect2Multiple(
+                    url=f'/base/thesaurus_available/?sysid={item.id}&lang={lang}'
+                ),
+                label=_(f"{tname[0] if len(tname) > 0 else item.title}"),
+                required=required
+            )
+
+    @staticmethod
+    def _define_choicefield(item, required, tname, lang):
+        return models.ModelChoiceField(
+                label=f"{tname[0] if len(tname) > 0 else item.title}",
+                required=required,
+                queryset=ThesaurusKeywordLabel.objects.filter(keyword__thesaurus_id=item.id).filter(lang=lang)
+            )
 
 class ResourceBaseDateTimePicker(DateTimePicker):
 

@@ -25,8 +25,10 @@ import shutil
 import base64
 import traceback
 from types import TracebackType
+import warnings
 import decimal
 import pickle
+from django.forms.fields import ChoiceField
 import six
 from django.db.models import Q
 from urllib.parse import quote
@@ -62,10 +64,10 @@ from django.db.models import F
 from django.forms.utils import ErrorList
 
 from geonode.base.auth import get_or_create_token
-from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm
+from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
 from geonode.base.views import batch_modify
 from geonode.base.models import (
-    Thesaurus,
+    Thesaurus, ThesaurusKeyword,
     TopicCategory)
 from geonode.base.enumerations import CHARSETS
 from geonode.decorators import check_keyword_write_perms
@@ -1035,29 +1037,40 @@ def layer_metadata(
             prefix="category_choice_field",
             initial=topic_category.id if topic_category else None)
 
+
+        # Create THESAURUS widgets
+        lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, 'THESAURUS_DEFAULT_LANG') else 'en'
+        tkeywords_form = []
+        if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
+            warnings.warn('The settings for Thesaurus has been moved to Model, this feature will be removed in next releases', DeprecationWarning)
+            tkeywords_form = [TKeywordForm(instance=layer)]
+        else:
+            tkeywords_form = ThesaurusAvailableForm()
+        
         # Keywords from THESAURUS management
-        layer_tkeywords = layer.tkeywords.all()
-        tkeywords_list = ''
-        lang = 'en'  # TODO: use user's language
-        if layer_tkeywords and len(layer_tkeywords) > 0:
-            tkeywords_ids = layer_tkeywords.values_list('id', flat=True)
-            if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
-                el = settings.THESAURUS
-                thesaurus_name = el['name']
-                try:
-                    t = Thesaurus.objects.get(identifier=thesaurus_name)
-                    for tk in t.thesaurus.filter(pk__in=tkeywords_ids):
-                        tkl = tk.keyword.filter(lang=lang)
-                        if len(tkl) > 0:
-                            tkl_ids = ",".join(
-                                map(str, tkl.values_list('id', flat=True)))
-                            tkeywords_list += "," + \
-                                tkl_ids if len(
-                                    tkeywords_list) > 0 else tkl_ids
-                except Exception:
-                    tb = traceback.format_exc()
-                    logger.error(tb)
-        tkeywords_form = TKeywordForm(instance=layer)
+        #layer_tkeywords = layer.tkeywords.all()
+        #tkeywords_list = ''
+        #lang = 'en'  # TODO: use user's language
+        #if layer_tkeywords and len(layer_tkeywords) > 0:
+        #    tkeywords_ids = layer_tkeywords.values_list('id', flat=True)
+        #    if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
+        #        el = settings.THESAURUS
+        #        thesaurus_name = el['name']
+        #        try:
+        #            t = Thesaurus.objects.get(identifier=thesaurus_name)
+        #            for tk in t.thesaurus.filter(pk__in=tkeywords_ids):
+        #                tkl = tk.keyword.filter(lang=lang)
+        #                if len(tkl) > 0:
+        #                    tkl_ids = ",".join(
+        #                        map(str, tkl.values_list('id', flat=True)))
+        #                    tkeywords_list += "," + \
+        #                        tkl_ids if len(
+        #                            tkeywords_list) > 0 else tkl_ids
+        #        except Exception:
+        #            tb = traceback.format_exc()
+        #            logger.error(tb)
+        #tkeywords_form = TKeywordForm(instance=layer)
+
     if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid(
     ) and category_form.is_valid():
         new_poc = layer_form.cleaned_data['poc']

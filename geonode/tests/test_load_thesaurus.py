@@ -36,7 +36,7 @@ class TestLoadThesaurus(TestCase):
             stdout="out",
         )
 
-    def setUp(self) -> None:
+    def setUp(self):
         self.rdf_path = f"{os.path.dirname(os.path.abspath(__file__))}/data/thesaurus.rdf"
         self.Thesaurus = Thesaurus(
             identifier="foo_name",

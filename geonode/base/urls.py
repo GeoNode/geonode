@@ -21,7 +21,7 @@ from django.conf.urls import url, include
 
 from .views import (
     ResourceBaseAutocomplete, RegionAutocomplete,
-    HierarchicalKeywordAutocomplete, ThesaurusKeywordLabelAutocomplete, OwnerRightsRequestView)
+    HierarchicalKeywordAutocomplete, ThesaurusKeywordLabelAutocomplete, OwnerRightsRequestView, ThesaurusAvailable)
 
 
 urlpatterns = [
@@ -43,6 +43,11 @@ urlpatterns = [
         name='autocomplete_hierachical_keyword',
     ),
 
+    url(
+        r'^thesaurus_available',
+        ThesaurusAvailable.as_view(),
+        name='thesaurus_available',
+    ),
     url(
         r'^thesaurus_autocomplete/$',
         ThesaurusKeywordLabelAutocomplete.as_view(),

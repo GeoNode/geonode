@@ -24,13 +24,13 @@ from geonode.catalogue import default_catalogue_backend
 from django.contrib.sites.models import Site
 
 from geonode.notifications_helper import has_notifications
-from geonode.base.models import Configuration
+from geonode.base.models import Configuration, Thesaurus
 
 
 def resource_urls(request):
     """Global values to pass to templates"""
     site = Site.objects.get_current()
-
+    thesaurus = Thesaurus.objects.all().exists()
     defaults = dict(
         STATIC_URL=settings.STATIC_URL,
         CATALOGUE_BASE_URL=default_catalogue_backend()['URL'],
@@ -170,7 +170,7 @@ def resource_urls(request):
             False
         ),
         THESAURI_FILTERS=[t['name'] for t in [settings.THESAURUS, ] if
-                          t.get('filter')] if hasattr(settings, 'THESAURUS') else None,
+                          t.get('filter')] if hasattr(settings, 'THESAURUS') else [thesaurus],
         MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS=getattr(
             settings, 'MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS', False
         ),

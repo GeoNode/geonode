@@ -302,15 +302,6 @@ span.grippy::after {
                                     </div>
                                 </div>
                                 <div class="col-lg-5">
-                                    <div class="col-lg-12">
-                                        <span><label for="{{ layer_form.date_type|id }}">{{ layer_form.keywords.label }}</label></span>
-                                        {{ layer_form.keywords }}
-                                    </div>
-                                    {% if THESAURI_FILTERS %}
-                                    <div class="col-lg-12 thesauri_keywords">
-                                        {{ tkeywords_form }}
-                                    </div>
-                                    {% endif %}
                                     <div class="col-lg-6 col-xs-12">
                                         <span><label for="{{ layer_form.date_type|id }}">{{ layer_form.date_type.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
@@ -362,6 +353,15 @@ span.grippy::after {
                                             {% endfor %}
                                         </select>
                                     </div>
+                                    <div class="col-lg-12">
+                                        <span><label for="{{ layer_form.date_type|id }}">{{ layer_form.keywords.label }}</label></span>
+                                        {{ layer_form.keywords }}
+                                    </div>
+                                    {% if THESAURI_FILTERS %}
+                                    <div class="col-lg-12 thesauri_keywords">
+                                      {{tkeywords_form.as_p}}
+                                    </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
