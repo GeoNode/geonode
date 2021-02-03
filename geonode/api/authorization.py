@@ -28,7 +28,7 @@ from tastypie.http import HttpUnauthorized
 
 from django.conf import settings
 
-from geonode import geoserver, qgis_server
+from geonode import geoserver
 from geonode.utils import check_ogc_backend
 
 
@@ -133,9 +133,6 @@ class GeoNodeStyleAuthorization(GeoNodeAuthorization):
         """Filter Style queryset by permitted resource ids."""
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             return object_list.filter(layer_styles__id__in=permitted_ids)
-        elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-            return object_list.filter(
-                layer_styles__layer__id__in=permitted_ids)
 
     def read_list(self, object_list, bundle):
         permitted_ids = get_objects_for_user(

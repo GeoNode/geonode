@@ -35,7 +35,7 @@ except Exception:
             self.fget = method
             return self
 
-from geonode import geoserver, qgis_server  # noqa
+from geonode import geoserver  # noqa
 from geonode.utils import check_ogc_backend
 from geonode.base.populate_test_data import create_models, remove_models
 
