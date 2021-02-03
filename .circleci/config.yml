@@ -132,6 +132,13 @@ workflows:
           requires:
             - geonode_test_suite_smoke
       - build:
+          name: geonode_test_rest_apis
+          load_docker_cache: true
+          save_docker_cache: false
+          test_suite: coverage run --branch --source=geonode manage.py test -v 3 --keepdb geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests
+          requires:
+            - geonode_test_suite_smoke
+      - build:
           name: geonode_test_integration_csw
           load_docker_cache: true
           save_docker_cache: false
