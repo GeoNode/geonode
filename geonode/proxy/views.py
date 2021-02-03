@@ -57,7 +57,7 @@ from geonode.utils import (
     json_serializer_producer)
 from geonode.base.enumerations import LINK_TYPES as _LT
 
-from geonode import geoserver, qgis_server  # noqa
+from geonode import geoserver  # noqa
 from geonode.monitoring import register_event
 
 TIMEOUT = 300

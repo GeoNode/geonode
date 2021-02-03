@@ -32,8 +32,6 @@ geonode/local_settings.py
 
 # Uploaded files
 geonode/uploaded
-geonode/qgis_layer
-geonode/qgis_tiles
 
 #Testing output
 .coverage

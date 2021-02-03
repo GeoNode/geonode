@@ -36,7 +36,7 @@ from geonode.settings import on_travis
 from geonode.maps import MapsAppConfig
 from geonode.layers.models import Layer
 from geonode.compat import ensure_string
-from geonode import geoserver, qgis_server
+from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 from geonode.maps.utils import fix_baselayers
 from geonode.base.models import License, Region
@@ -613,32 +613,6 @@ community."
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
-    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
-    def test_map_download_leaflet(self):
-        """ Test that a map can be downloaded as leaflet"""
-        # first, get a new map: user needs to login
-        self.client.login(username='admin', password='admin')
-        new_map = reverse('new_map_json')
-        response = self.client.post(
-            new_map,
-            data=self.viewer_config,
-            content_type="text/json")
-        self.assertEqual(response.status_code, 200)
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        map_id = int(json.loads(content)['id'])
-        self.client.logout()
-
-        # then, obtain the map using leaflet
-        response = self.client.get(
-            reverse(
-                'map_download_leaflet', args=(map_id, )))
-
-        # download map leafleT should return OK
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get('Content-Type'), 'html')
-
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_map_embed(self):
         """Test that map can be properly embedded
@@ -922,14 +896,10 @@ community."
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # number of base layers (we remove the local geoserver entry from the total)
             n_baselayers = len(settings.MAP_BASELAYERS) - 1
-        elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-            # QGIS Server backend already excluded local geoserver entry
-            n_baselayers = len(settings.MAP_BASELAYERS)
-
-        # number of local layers
-        n_locallayers = map_obj.layer_set.filter(local=True).count()
-        fix_baselayers(map_id)
-        self.assertEqual(1, n_baselayers + n_locallayers)
+            # number of local layers
+            n_locallayers = map_obj.layer_set.filter(local=True).count()
+            fix_baselayers(map_id)
+            self.assertEqual(1, n_baselayers + n_locallayers)
 
     def test_batch_edit(self):
         Model = Map

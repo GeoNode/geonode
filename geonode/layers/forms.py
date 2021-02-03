@@ -25,7 +25,7 @@ import zipfile
 
 from django import forms
 
-from geonode import geoserver, qgis_server
+from geonode import geoserver
 from geonode.utils import check_ogc_backend
 
 import json
@@ -85,8 +85,6 @@ class LayerUploadForm(forms.Form):
     xml_file = forms.FileField(required=False)
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         sld_file = forms.FileField(required=False)
-    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-        qml_file = forms.FileField(required=False)
 
     charset = forms.CharField(required=False)
     metadata_uploaded_preserve = forms.BooleanField(required=False)
@@ -102,8 +100,6 @@ class LayerUploadForm(forms.Form):
     # Adding style file based on the backend
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         spatial_files.append('sld_file')
-    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-        spatial_files.append('qml_file')
 
     spatial_files = tuple(spatial_files)
 
@@ -218,8 +214,6 @@ class LayerUploadForm(forms.Form):
 class NewLayerUploadForm(LayerUploadForm):
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         sld_file = forms.FileField(required=False)
-    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-        qml_file = forms.FileField(required=False)
     xml_file = forms.FileField(required=False)
 
     abstract = forms.CharField(required=False)
@@ -238,8 +232,6 @@ class NewLayerUploadForm(LayerUploadForm):
     # Adding style file based on the backend
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         spatial_files.append('sld_file')
-    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-        spatial_files.append('qml_file')
 
     spatial_files = tuple(spatial_files)
 

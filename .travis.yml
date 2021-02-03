@@ -71,40 +71,6 @@ jobs:
           - MONITORING_ENABLED: 'False'
           - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
 
-    - stage: unit-tests
-      name: "QGis Server-backend Core Modules Smoke Tests"
-      virtualenv:
-          system_site_packages: false
-      env:
-          - BACKEND: 'geonode.qgis_server'
-          - DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
-          - DOCKER_COMPOSE_VERSION: 1.19.0
-          - QGIS_SERVER_URL: http://localhost:9000/
-          - SITEURL: http://localhost:8000/
-          - QGIS_SERVER_PORT: 9000
-          - ON_TRAVIS: 'True'
-          - TEST_RUN_CORE: 'True'
-          - MONITORING_ENABLED: 'False'
-          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
-          - CELERY_ALWAYS_EAGER: 'True'
-
-    - stage: unit-tests
-      name: "QGis Server-backend Contrib Apps Smoke Tests"
-      virtualenv:
-          system_site_packages: false
-      env:
-          - BACKEND: 'geonode.qgis_server'
-          - DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
-          - DOCKER_COMPOSE_VERSION: 1.19.0
-          - QGIS_SERVER_URL: http://localhost:9000/
-          - SITEURL: http://localhost:8000/
-          - QGIS_SERVER_PORT: 9000
-          - ON_TRAVIS: 'True'
-          - TEST_RUN_INTERNAL_APPS: 'True'
-          - MONITORING_ENABLED: 'False'
-          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
-          - CELERY_ALWAYS_EAGER: 'True'
-
     - stage: integration-tests
       name: "Backend Integration Tests"
       virtualenv:
@@ -150,27 +116,6 @@ jobs:
           - GEODATABASE_URL: 'postgis://geonode:geonode@localhost:5432/upload_test'
           - DEFAULT_BACKEND_DATASTORE: 'datastore'
 
-    - stage: integration-tests
-      name: "QGis Server Integration Tests"
-      virtualenv:
-          system_site_packages: false
-      env:
-          - BACKEND: 'geonode.qgis_server'
-          - DJANGO_SETTINGS_MODULE: 'geonode.local_settings'
-          - DOCKER_COMPOSE_VERSION: 1.19.0
-          - QGIS_SERVER_URL: http://localhost:9000/
-          - SITEURL: http://localhost:8000/
-          - QGIS_SERVER_PORT: 9000
-          - ON_TRAVIS: 'True'
-          - TEST_RUNNER_KEEPDB: 'True'
-          - TEST_RUN_INTEGRATION: 'True'
-          - TEST_RUN_INTEGRATION_SERVER: 'True'
-          - MONITORING_ENABLED: 'False'
-          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
-          - CELERY_ALWAYS_EAGER: 'True'
-          - DATABASE_URL: 'postgis://geonode:geonode@localhost:5432/upload_test'
-          - GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY: 'leaflet'
-
     - stage: frontend-tests
       name: "BDD Tests"
       virtualenv:
@@ -215,7 +160,6 @@ before_install:
       sudo apt-get update;
       mkdir -p $HOME/buildout-cache/{eggs,downloads};
       scripts/misc/geoserver_server_setup.sh before_install;
-      scripts/misc/qgis_server_setup.sh before_install;
       sudo apt-get autoremove sqlite3;
       sudo sed -i 's/port = 5433/port = 5432/' /etc/postgresql/12/main/postgresql.conf;
       sudo sed -i 's/peer/trust/' /etc/postgresql/12/main/pg_hba.conf;
@@ -268,8 +212,6 @@ before_script:
       scripts/misc/create_dbs_travis.sh before_script;
       echo "For GeoServer Server Travis steps";
       scripts/misc/geoserver_server_setup.sh before_script;
-      echo "For QGIS Server Travis steps";
-      scripts/misc/qgis_server_setup.sh before_script;
       echo "Start NGINX server";
       sudo nginx -s stop;
       sudo nginx -c `pwd`/scripts/misc/nginx_integration.conf;
@@ -296,8 +238,6 @@ after_script:
     else
       echo "For GeoServer Server Travis steps";
       scripts/misc/geoserver_server_setup.sh after_script;
-      echo "For QGIS Server Travis steps";
-      scripts/misc/qgis_server_setup.sh after_script;
       echo "Stop NGINX server";
       sudo nginx -c `pwd`/scripts/misc/nginx_integration.conf -s stop;
       echo "Cleanup";

@@ -31,7 +31,7 @@ from defusedxml import lxml as dlxml
 
 from django.conf import settings
 
-from geonode import geoserver, qgis_server
+from geonode import geoserver
 from geonode.utils import check_ogc_backend
 from geonode.catalogue import get_catalogue
 
@@ -148,19 +148,6 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
                     self.assertEqual(link['url'], "{}ows".format(settings.GEOSERVER_PUBLIC_LOCATION))
                 elif link['scheme'] == 'OGC:WCS':
                     self.assertEqual(link['url'], "{}ows".format(settings.GEOSERVER_PUBLIC_LOCATION))
-            elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-                if link['scheme'] == 'OGC:WMS':
-                    self.assertEqual(
-                        link['url'],
-                        f'{settings.SITEURL}qgis-server/ogc/'
-                        'san_andres_y_providencia_location',
-                        'Expected a specific OGC:WMS URL')
-                elif link['scheme'] == 'OGC:WFS':
-                    self.assertEqual(
-                        link['url'],
-                        f'{settings.SITEURL}qgis-server/ogc/'
-                        'san_andres_y_providencia_location',
-                        'Expected a specific OGC:WFS URL')
 
     def test_csw_outputschema_iso(self):
         """Verify that GeoNode CSW can handle ISO metadata with ISO outputSchema"""
@@ -201,19 +188,6 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
                     self.assertEqual(
                         link.url,
                         '{}wfs'.format(settings.GEOSERVER_PUBLIC_LOCATION),
-                        'Expected a specific OGC:WFS URL')
-            if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-                if link.protocol == 'OGC:WMS':
-                    self.assertEqual(
-                        link.url,
-                        'http://localhost:8000/qgis-server/ogc/'
-                        'san_andres_y_providencia_location',
-                        'Expected a specific OGC:WMS URL')
-                elif link.protocol == 'OGC:WFS':
-                    self.assertEqual(
-                        link.url,
-                        'http://localhost:8000/qgis-server/ogc/'
-                        'san_andres_y_providencia_location',
                         'Expected a specific OGC:WFS URL')
 
     def test_csw_outputschema_dc_bbox(self):

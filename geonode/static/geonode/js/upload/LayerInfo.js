@@ -467,8 +467,8 @@ define(function (require, exports) {
             d = '';
             e = '';
         }
-        if(resp.ogc_backend == 'geonode.qgis_server'){
-            // QGIS Server has no manage style interaction.
+        if(resp.ogc_backend != 'geonode.geoserver'){
+            // Server has no manage style interaction.
             d = '';
         }
         var msg_col = "";
