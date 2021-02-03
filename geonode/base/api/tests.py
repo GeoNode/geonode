@@ -18,24 +18,33 @@
 #
 #########################################################################
 import logging
-
+from PIL import Image
+from io import BytesIO
+from unittest.mock import patch
 from urllib.parse import urljoin
 
+import django
 from django.urls import reverse
+from django.core.files import File
 from django.conf.urls import url, include
 from django.views.generic import TemplateView
+from django.views.i18n import JavaScriptCatalog
 from rest_framework.test import APITestCase, URLPatternsTestCase
 
 from guardian.shortcuts import get_anonymous_user
 
 from geonode.api.urls import router
 from geonode.base.models import ResourceBase
+from geonode.base.models import CuratedThumbnail
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
+from geonode.services.views import services
 from geonode.base.populate_test_data import create_models
 
 logger = logging.getLogger(__name__)
+
+test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
 
 
 class BaseApiTests(APITestCase, URLPatternsTestCase):
@@ -58,6 +67,29 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         url(r'^api/v2/', include(router.urls)),
         url(r'^api/v2/', include('geonode.api.urls')),
         url(r'^api/v2/api-auth/', include('rest_framework.urls', namespace='geonode_rest_framework')),
+        url(r'^$',
+            TemplateView.as_view(template_name='layers/layer_list.html'),
+            {'facet_type': 'layers', 'is_layer': True},
+            name='layer_browse'),
+        url(r'^$',
+            TemplateView.as_view(template_name='maps/map_list.html'),
+            {'facet_type': 'maps', 'is_map': True},
+            name='maps_browse'),
+        url(r'^$',
+            TemplateView.as_view(template_name='documents/document_list.html'),
+            {'facet_type': 'documents', 'is_document': True},
+            name='document_browse'),
+        url(r'^$',
+            TemplateView.as_view(template_name='groups/group_list.html'),
+            name='group_list'),
+        url(r'^search/$',
+            TemplateView.as_view(template_name='search/search.html'),
+            name='search'),
+        url(r'^$', services, name='services'),
+        url(r'^invitations/', include(
+            'geonode.invitations.urls', namespace='geonode.invitations')),
+        url(r'^i18n/', include(django.conf.urls.i18n), name="i18n"),
+        url(r'^jsi18n/$', JavaScriptCatalog.as_view(), {}, name='javascript-catalog')
     ]
 
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -427,3 +459,30 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertTrue('map' in response.data['resource_types'])
         self.assertTrue('document' in response.data['resource_types'])
         self.assertTrue('service' in response.data['resource_types'])
+
+    @patch('PIL.Image.open', return_value=test_image)
+    def test_thumbnail_urls(self, img):
+        """
+        Ensure the thumbnail url reflects the current active Thumb on the resource.
+        """
+        # Admin
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+
+        resource = ResourceBase.objects.filter(owner__username='bobby').first()
+        url = reverse('base-resources-detail', kwargs={'pk': resource.pk})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(int(response.data['resource']['pk']), int(resource.pk))
+        thumbnail_url = response.data['resource']['thumbnail_url']
+        self.assertIsNone(thumbnail_url)
+
+        f = BytesIO(test_image.tobytes())
+        f.name = 'test_image.jpeg'
+        curated_thumbnail = CuratedThumbnail.objects.create(resource=resource, img=File(f))
+
+        url = reverse('base-resources-detail', kwargs={'pk': resource.pk})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(int(response.data['resource']['pk']), int(resource.pk))
+        thumbnail_url = response.data['resource']['thumbnail_url']
+        self.assertTrue(curated_thumbnail.thumbnail_url in thumbnail_url)
