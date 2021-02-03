@@ -1014,7 +1014,13 @@ def layer_metadata(
                 json.dumps(out),
                 content_type='application/json',
                 status=400)
-        tkeywords_form = TKeywordForm(request.POST)
+        if hasattr(settings, 'THESAURUS'):
+            tkeywords_form = TKeywordForm(request.POST)
+        else:
+            tkeywords_form = ThesaurusAvailableForm(request.POST, prefix="tkeywords", initial=int(
+            request.POST["tkeywords"]) if "tkeywords" in request.POST and
+            request.POST["tkeywords"] else None)
+
         if not tkeywords_form.is_valid():
             logger.error(f"Layer Thesauri Keywords form is not valid: {tkeywords_form.errors}")
             out = {
@@ -1040,12 +1046,11 @@ def layer_metadata(
 
         # Create THESAURUS widgets
         lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, 'THESAURUS_DEFAULT_LANG') else 'en'
-        tkeywords_form = []
         if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
             warnings.warn('The settings for Thesaurus has been moved to Model, this feature will be removed in next releases', DeprecationWarning)
-            tkeywords_form = [TKeywordForm(instance=layer)]
+            tkeywords_form = TKeywordForm(instance=layer)
         else:
-            tkeywords_form = ThesaurusAvailableForm()
+            tkeywords_form = ThesaurusAvailableForm(prefix='tkeywords')
         
         # Keywords from THESAURUS management
         #layer_tkeywords = layer.tkeywords.all()
@@ -1163,14 +1168,17 @@ def layer_metadata(
             if not tkeywords_form.is_valid():
                 return HttpResponse(json.dumps({'message': "Invalid thesaurus keywords"}, status_code=400))
 
-            tkeywords_data = tkeywords_form.cleaned_data['tkeywords']
-
             thesaurus_setting = getattr(settings, 'THESAURUS', None)
             if thesaurus_setting:
+                tkeywords_data = tkeywords_form.cleaned_data['tkeywords']
                 tkeywords_data = tkeywords_data.filter(
                     thesaurus__identifier=thesaurus_setting['name']
                 )
                 layer.tkeywords.set(tkeywords_data)
+            elif Thesaurus.objects.all().exists():
+                tkeywords_data = tkeywords_form.clean()
+                layer.tkeywords.set(tkeywords_data)
+
         except Exception:
             tb = traceback.format_exc()
             logger.error(tb)

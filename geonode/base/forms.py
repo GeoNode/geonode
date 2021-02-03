@@ -325,17 +325,21 @@ class ThesaurusAvailableForm(forms.Form):
             if item.card_max == 0:
                 continue
             elif item.card_max == 1 and item.card_min==0:
-                print("1 single option optional")
-                self.fields['opt-' + str(item.id)] = self._define_choicefield(item, False, tname, lang)
+                self.fields[f'{item.id}'] = self._define_choicefield(item, False, tname, lang)
             elif item.card_max == 1 and item.card_min==1:
-                print("2 single option required")
-                self.fields['opt-' + str(item.id)] = self._define_choicefield(item, True, tname, lang)
+                self.fields[f'{item.id}'] = self._define_choicefield(item, True, tname, lang)
             elif item.card_max == -1 and item.card_min==0:
-                print("3 multi option optional")
-                self.fields['opt-' + str(item.id)] = self._define_multifield(item, False, tname, lang)
+                self.fields[f'{item.id}'] = self._define_multifield(item, False, tname, lang)
             elif item.card_max == -1 and item.card_min==1:
-                print("4 multi option req")
-                self.fields['opt-' + str(item.id)] = self._define_multifield(item, True, tname, lang)
+                self.fields[f'{item.id}'] = self._define_multifield(item, True, tname, lang)
+
+    def clean(self):
+        cleaned_data = self.data
+        cleaned_values = []
+        for key, value in cleaned_data.items():
+            if key.startswith('tkeywords') and len(value) > 0:
+                cleaned_values.append(value)
+        return ThesaurusKeyword.objects.filter(id__in=cleaned_values)
 
     @staticmethod
     def _define_multifield(item, required, tname, lang):
