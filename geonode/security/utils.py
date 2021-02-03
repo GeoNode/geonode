@@ -243,7 +243,7 @@ def purge_geofence_all():
                     if rules_count > 0:
                         # Delete GeoFence Rules associated to the Layer
                         # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
-                        for i, rule in enumerate(rules):
+                        for rule in rules:
                             r = requests.delete(url + 'rest/geofence/rules/id/' + str(rule['id']),
                                                 headers=headers,
                                                 auth=HTTPBasicAuth(user, passwd))
@@ -291,7 +291,7 @@ def purge_geofence_layer_rules(resource):
 
             # Delete GeoFence Rules associated to the Layer
             # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
-            for i, r_id in enumerate(r_ids):
+            for r_id in r_ids:
                 r = requests.delete(
                     url + 'rest/geofence/rules/id/' + str(r_id),
                     headers=headers,
@@ -673,7 +673,7 @@ def set_owner_permissions(resource, members=None):
         for perm in admin_perms:
             if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
                 assign_perm(perm, resource.owner, resource.get_self_resource())
-            elif perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
+            elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:
                 assign_perm(perm, resource.owner, resource.get_self_resource())
             if members:
                 for user in members:

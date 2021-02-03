@@ -733,7 +733,7 @@ msgstr "Skep van 'n kaart"
 #: geonode/base/templates/base/_resourcebase_info_panel.html:37
 #, fuzzy
 #| msgid "Position Name"
-msgid "Pubblication Date"
+msgid "Publication Date"
 msgstr "Posisie Naam"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:39

@@ -1,5 +1,7 @@
 #!/bin/bash
 set -e
-. $HOME/.override_env
+set -a
+. ./.env_dev
+set +a
 
 coverage run --branch --source=geonode manage.py test -v 3 --keepdb  $@

@@ -1223,7 +1223,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         try:
             keywords_qs = self.get_real_instance().keywords.all()
             if keywords_qs:
-                return ','.join([kw.name for kw in keywords_qs])
+                return ','.join(kw.name for kw in keywords_qs)
             else:
                 return ''
         except Exception:
@@ -1588,12 +1588,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 self.metadata_author = user
 
     def maintenance_frequency_title(self):
-        return [v for i, v in enumerate(
-            UPDATE_FREQUENCIES) if v[0] == self.maintenance_frequency][0][1].title()
+        return [v for v in UPDATE_FREQUENCIES if v[0] == self.maintenance_frequency][0][1].title()
 
     def language_title(self):
-        return [v for i, v in enumerate(
-            ALL_LANGUAGES) if v[0] == self.language][0][1].title()
+        return [v for v in ALL_LANGUAGES if v[0] == self.language][0][1].title()
 
     def _set_poc(self, poc):
         # reset any poc assignation to this resource
