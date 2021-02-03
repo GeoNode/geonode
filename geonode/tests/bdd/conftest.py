@@ -22,9 +22,8 @@ import os
 # import sys
 from urllib.parse import urlparse
 
-import django
 import pytest
-from django.conf import settings
+from pytest import fixture
 from django.core.management import call_command
 from geonode import settings as gn_settings
 # from geonode.tests.bdd.e2e.factories.profile import SuperAdminProfileFactory
@@ -35,18 +34,9 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'geonode.settings')
 # sys.path.append(os.path.dirname(__file__))
 
 
-def pytest_configure():
-    settings.DEBUG = False
-    # If you have any test specific settings, you can declare them here
-    TEST_DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': ':memory:',
-        }
-    }
-    settings.DATABASES = TEST_DATABASES
-
-    django.setup()
+@fixture
+def http_port():
+    return 9000
 
 
 @pytest.fixture(scope='function', autouse=True)
@@ -55,7 +45,6 @@ def bdd_server(request, live_server):
         Workaround inspired by
         https://github.com/mozilla/addons-server/pull/4875/files#diff-0223c02758be2ac7967ea22c6fa4b361R96
     """
-
     siteurl_fqdn = urlparse(gn_settings.SITEURL).netloc
     livesrv = request.config.getvalue('liveserver')
     livetestsrv = os.getenv('DJANGO_LIVE_TEST_SERVER_ADDRESS')

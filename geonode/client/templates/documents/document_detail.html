@@ -103,7 +103,7 @@
       {% endif %}
 
       {% if EXIF_ENABLED and exif_data %}
-        {% with "exif/_exif_document_detail.html" as exif_template %}
+        {% with "documents/exif/_exif_document_detail.html" as exif_template %}
             {% include exif_template %}
         {% endwith %}
       {% endif %}

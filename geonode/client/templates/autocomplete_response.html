@@ -1,0 +1,9 @@
+{% if choice.detail_url %}
+<span class="div" data-value="{{choice.pk}}" style="cursor:pointer;font-size:14px;" onclick="window.location.href='{{choice.detail_url}}'">
+{{ choice.title }}
+</span>
+{% else %}
+<span class="div" data-value="{{choice.pk}}" style="cursor:pointer;font-size:14px;">
+{{ choice.title }}
+</span>
+{% endif %}
