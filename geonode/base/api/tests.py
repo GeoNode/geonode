@@ -18,10 +18,12 @@
 #
 #########################################################################
 import logging
-
+from PIL import Image
+from io import BytesIO
 from urllib.parse import urljoin
 
 from django.urls import reverse
+from django.core.files import File
 from django.conf.urls import url, include
 from django.views.generic import TemplateView
 from rest_framework.test import APITestCase, URLPatternsTestCase
@@ -30,6 +32,7 @@ from guardian.shortcuts import get_anonymous_user
 
 from geonode.api.urls import router
 from geonode.base.models import ResourceBase
+from geonode.base.models import CuratedThumbnail
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -427,3 +430,30 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertTrue('map' in response.data['resource_types'])
         self.assertTrue('document' in response.data['resource_types'])
         self.assertTrue('service' in response.data['resource_types'])
+
+    def test_thumbnail_urls(self):
+        """
+        Ensure the thumbnail url reflects the current active Thumb on the resource.
+        """
+        # Admin
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+
+        resource = ResourceBase.objects.filter(owner__username='bobby').first()
+        url = reverse('base-resources-detail', kwargs={'pk': resource.pk})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(int(response.data['resource']['pk']), int(resource.pk))
+        thumbnail_url = response.data['resource']['thumbnail_url']
+        self.assertIsNotNone(thumbnail_url)
+
+        test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
+        f = BytesIO(test_image.tobytes())
+        f.name = 'test_image.jpeg'
+        curated_thumbnail = CuratedThumbnail.objects.create(resource=resource, img=File(f))
+
+        url = reverse('base-resources-detail', kwargs={'pk': resource.pk})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(int(response.data['resource']['pk']), int(resource.pk))
+        thumbnail_url = response.data['resource']['thumbnail_url']
+        self.assertTrue(curated_thumbnail.thumbnail_url in thumbnail_url)
