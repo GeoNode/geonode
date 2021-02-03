@@ -951,6 +951,10 @@ GEOSERVER_LOCATION = os.getenv(
     'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
 )
 
+# add trailing slash to geoserver location url.
+if not GEOSERVER_LOCATION.endswith('/'):
+    GEOSERVER_LOCATION = '{}/'.format(GEOSERVER_LOCATION)
+    
 GEOSERVER_PUBLIC_SCHEMA = os.getenv(
     'GEOSERVER_PUBLIC_SCHEMA', SITE_HOST_SCHEMA
 )
