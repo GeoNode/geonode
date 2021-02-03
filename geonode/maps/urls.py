@@ -20,6 +20,9 @@
 
 from django.conf.urls import url, include
 from django.views.generic import TemplateView
+
+from geonode import geoserver
+from geonode.utils import check_ogc_backend
 from geonode.monitoring import register_url_event
 
 from . import views
@@ -30,10 +33,15 @@ js_info_dict = {
 
 new_map_view = views.new_map
 existing_map_view = views.map_view
-map_embed = views.map_embed
-map_edit = views.map_edit
-map_json = views.map_json
-map_thumbnail = views.map_thumbnail
+
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    new_map_view = views.new_map
+    existing_map_view = views.map_view
+    map_embed = views.map_embed
+    map_edit = views.map_edit
+    map_json = views.map_json
+    map_thumbnail = views.map_thumbnail
+
 maps_list = register_url_event()(TemplateView.as_view(template_name='maps/map_list.html'))
 
 urlpatterns = [
