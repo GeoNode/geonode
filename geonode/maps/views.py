@@ -1106,7 +1106,7 @@ def map_download(request, mapid, template='maps/map_download.html'):
         # the path to geoserver backend continue here
         url = urljoin(settings.SITEURL,
                       reverse("download-map", kwargs={'mapid': mapid}))
-        resp, content = http_client.request(url, 'POST', body=mapJson)
+        resp, content = http_client.request(url, 'POST', data=mapJson)
 
         status = int(resp.status_code)
 

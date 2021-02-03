@@ -151,7 +151,6 @@ def grab(src, dest, name):
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     # only start if using Geoserver backend
-    _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
     if 'geonode.geoserver' not in INSTALLED_APPS:
         return
     if on_travis and not options.get('force_exec', False):
@@ -497,7 +496,6 @@ def stop_geoserver(options):
         return
 
     # only start if using Geoserver backend
-    _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
     if 'geonode.geoserver' not in INSTALLED_APPS:
         return
     kill('java', 'geoserver')
@@ -601,7 +599,6 @@ def start_geoserver(options):
         return
 
     # only start if using Geoserver backend
-    _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
     if 'geonode.geoserver' not in INSTALLED_APPS:
         return
 
@@ -787,8 +784,7 @@ def test_integration(options):
     """
     prefix = options.get('prefix')
     local = str2bool(options.get('local', 'false'))
-    _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
-    if local and _backend == 'geonode.geoserver':
+    if local:
         call_task('stop_geoserver')
         _reset()
 
@@ -804,12 +800,11 @@ def test_integration(options):
         if name and name in ('geonode.tests.csw', 'geonode.tests.integration', 'geonode.geoserver.tests.integration'):
             call_task('sync', options={'settings': settings})
             if local:
-                if _backend == 'geonode.geoserver':
-                    call_task('start_geoserver', options={'settings': settings, 'force_exec': True})
+                call_task('start_geoserver', options={'settings': settings, 'force_exec': True})
                 call_task('start', options={'settings': settings})
             if integration_server_tests:
                 call_task('setup_data', options={'settings': settings})
-        elif _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
+        elif 'geonode.geoserver' in INSTALLED_APPS:
             if local:
                 sh("cp geonode/upload/tests/test_settings.py geonode/")
                 settings = 'geonode.test_settings'
