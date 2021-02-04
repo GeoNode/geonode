@@ -56,7 +56,7 @@
             <span ng-if="item.online == true"><i class="fa fa-power-off text-success"></i> {% trans "Service is" %} {% trans "online" %}</span>
             <span ng-if="item.online == false"><i class="fa fa-power-off text-danger"></i> {% trans "Service is" %} {% trans "offline" %}</span>
           </em>
-		  {% endverbatim %}
+
           <div class="alert alert-danger" ng-if="item.dirty_state == true">{% trans "SECURITY NOT YET SYNCHRONIZED" %}
               {% verbatim %}<a href="{{ item.detail_url }}" class="btn btn-primary btn-block" data-dismiss="modal" ng-click="securityRefreshButton($event)">{% endverbatim %}{% trans "Sync permissions immediately" %}</a>
           </div>
