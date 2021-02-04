@@ -18,6 +18,7 @@
 #
 #########################################################################
 
+import warnings
 from django.conf import settings
 from geonode import get_version
 from geonode.catalogue import default_catalogue_backend
@@ -31,6 +32,11 @@ def resource_urls(request):
     """Global values to pass to templates"""
     site = Site.objects.get_current()
     thesaurus = Thesaurus.objects.all().exists()
+    if hasattr(settings, 'THESAURUS'):
+        warnings.warn(
+            'Thesaurus settings is going to be'
+            'deprecated in the future versions, please move the settings to '
+            'the new configuration ', FutureWarning)
     defaults = dict(
         STATIC_URL=settings.STATIC_URL,
         CATALOGUE_BASE_URL=default_catalogue_backend()['URL'],
