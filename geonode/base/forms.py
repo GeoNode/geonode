@@ -20,6 +20,7 @@
 import html
 import logging
 import re
+from django.db.models.query import QuerySet
 
 import six
 from bootstrap3_datetime.widgets import DateTimePicker
@@ -333,12 +334,14 @@ class ThesaurusAvailableForm(forms.Form):
             elif item.card_max == -1 and item.card_min==1:
                 self.fields[f'{item.id}'] = self._define_multifield(item, True, tname, lang)
 
-    def clean(self):
-        cleaned_data = self.data
+    def cleanx(self, x):
         cleaned_values = []
-        for key, value in cleaned_data.items():
-            if key.startswith('tkeywords') and len(value) > 0:
-                cleaned_values.append(value)
+        for key, value in x.items():
+            if isinstance(value, QuerySet):
+                for y in value:
+                    cleaned_values.append(y.id)
+            elif value:
+                cleaned_values.append(value.id)
         return ThesaurusKeyword.objects.filter(id__in=cleaned_values)
 
     @staticmethod
