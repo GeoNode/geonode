@@ -95,7 +95,7 @@ from geonode.groups.models import GroupProfile
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.documents.models import get_related_documents
-from geonode import geoserver, qgis_server
+from geonode import geoserver
 from geonode.security.utils import get_visible_resources
 
 from geonode.utils import (
@@ -116,11 +116,10 @@ from geonode.tasks.tasks import set_permissions
 from celery.utils.log import get_logger
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    from geonode.geoserver.helpers import (_render_thumbnail,
-                                           _prepare_thumbnail_body_from_opts,
-                                           gs_catalog)
-if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-    from geonode.qgis_server.models import QGISServerLayer
+    from geonode.geoserver.helpers import (
+        _render_thumbnail,
+        _prepare_thumbnail_body_from_opts,
+        gs_catalog)
 
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
@@ -615,7 +614,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             group = GroupProfile.objects.get(slug=layer.group.name)
         except GroupProfile.DoesNotExist:
             group = None
-    # a flag to be used for qgis server
+
     show_popup = False
     if 'show_popup' in request.GET and request.GET["show_popup"]:
         show_popup = True
@@ -1340,14 +1339,6 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 else:
                     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                         out['ogc_backend'] = geoserver.BACKEND_PACKAGE
-                    elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-                        try:
-                            qgis_layer = QGISServerLayer.objects.get(
-                                layer=layer)
-                            qgis_layer.delete()
-                        except QGISServerLayer.DoesNotExist:
-                            pass
-                        out['ogc_backend'] = qgis_server.BACKEND_PACKAGE
 
                     saved_layer = file_upload(
                         base_file,

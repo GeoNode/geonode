@@ -18,7 +18,7 @@
 #
 # ##############################################################################
 
-from geonode import geoserver, qgis_server  # noqa
+from geonode import geoserver  # noqa
 from geonode.utils import check_ogc_backend
 from django.conf.urls import url, include
 from django.views.generic import TemplateView
