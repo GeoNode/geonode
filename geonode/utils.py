@@ -2014,11 +2014,13 @@ def is_monochromatic_image(image_url, image_data=None):
         if image_data:
             logger.debug("...Checking if image is a blank image")
             stream = BytesIO(image_data)
-        else:
+        elif image_url:
             logger.debug(f"...Checking if '{image_url}' is a blank image")
             url = image_url if is_absolute(image_url) else urljoin(settings.SITEURL, image_url)
             response = requests.get(url, verify=False)
             stream = BytesIO(response.content)
+        else:
+            return True
         img = Image.open(stream).convert("L")
         stream.close()
         img.verify()  # verify that it is, in fact an image

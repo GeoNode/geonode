@@ -1461,7 +1461,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         try:
             # Check that the image is valid
             if is_monochromatic_image(None, image):
-                if not self.thumbnail_url:
+                if not self.thumbnail_url and not image:
                     raise Exception("Generated thumbnail image is blank")
                 else:
                     # Skip Image creation
@@ -1507,7 +1507,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
                     url = urljoin(site_url, url)
 
-                if thumb_size(name) == 0:
+                if thumb_size(filename) == 0:
                     raise Exception("Generated thumbnail image is zero size")
 
                 # should only have one 'Thumbnail' link
