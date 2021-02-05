@@ -33,7 +33,7 @@ from geonode.maps.models import Map
 from geonode.services.models import Service
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.models import (
-    ResourceBase, MenuPlaceholder, Menu, MenuItem, Configuration, TopicCategory
+    ResourceBase, MenuPlaceholder, Menu, MenuItem, Configuration, Thesaurus, ThesaurusKeyword, TopicCategory
 )
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
@@ -43,6 +43,8 @@ from django.shortcuts import reverse
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.models import CuratedThumbnail
 from geonode.base.templatetags.base_tags import get_visibile_resources
+from geonode.base.templatetags.thesaurus import get_unique_thesaurus_set, get_keyword_label, \
+    get_thesaurus_title, get_thesaurus_date 
 from geonode.base.templatetags.user_messages import show_notification
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
@@ -50,6 +52,7 @@ from geonode.decorators import on_ogc_backend
 from django.core.files import File
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from unittest.mock import patch
 
 test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
 
@@ -834,3 +837,53 @@ class TestHtmlTagRemoval(SimpleTestCase):
         r = ResourceBase()
         filtered_value = r._remove_html_tags(tagged_value)
         self.assertEqual(filtered_value, attribute_target_value)
+
+
+class TestTagThesaurus(TestCase):
+    # loading test thesausurs   
+    @classmethod
+    def setUpTestData(cls):
+        from django.core import management
+        from os.path import dirname, abspath
+        management.call_command(
+            "load_thesaurus",
+            file=f"{dirname(dirname(abspath(__file__)))}/tests/data/thesaurus.rdf",
+            name="foo_name",
+            stdout="out",
+        )
+
+    def setUp(self):
+        self.sut = Thesaurus(
+            identifier="foo_name",
+            title="Mocked Title",
+            date="2018-05-23T10:25:56",
+            description="Mocked Title",
+            slug="",
+            about="http://inspire.ec.europa.eu/theme",
+        )
+        self.tkeywords = ThesaurusKeyword.objects.all()
+
+
+    def test_get_unique_thesaurus_list(self):
+        tid = self.__get_last_thesaurus().id
+        actual = get_unique_thesaurus_set(self.tkeywords)
+        self.assertSetEqual({tid}, actual)
+
+    @patch.dict('os.environ', {"THESAURUS_DEFAULT_LANG": "en"})
+    def test_get_keyword_label(self):
+        actual = get_keyword_label(self.tkeywords[0])
+        self.assertEqual("Addresses", actual)
+
+    def test_get_thesaurus_title(self):
+        tid = self.__get_last_thesaurus().id
+        actual = get_thesaurus_title(tid)
+        self.assertEqual(self.sut.title, actual)
+
+    def test_get_thesaurus_date(self):
+        tid = self.__get_last_thesaurus().id
+        actual = get_thesaurus_date(tid)
+        self.assertEqual(self.sut.date, actual)
+
+    @staticmethod
+    def __get_last_thesaurus():
+        return Thesaurus.objects.all().order_by("-id")[0]
