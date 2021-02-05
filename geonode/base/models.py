@@ -1512,7 +1512,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
                 # should only have one 'Thumbnail' link
                 Link.objects.filter(resource=self, name='Thumbnail').delete()
-                obj = Link.objects.create(
+                obj, _created = Link.objects.get_or_create(
                     resource=self,
                     name='Thumbnail',
                     defaults=dict(
@@ -1536,7 +1536,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             try:
                 Link.objects.filter(resource=self, name='Thumbnail').delete()
                 _thumbnail_url = staticfiles.static(settings.MISSING_THUMBNAIL)
-                obj = Link.objects.create(
+                obj, _created = Link.objects.get_or_create(
                     resource=self,
                     name='Thumbnail',
                     defaults=dict(
