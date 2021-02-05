@@ -19,15 +19,15 @@
 #########################################################################
 
 import datetime
-import base64
 import logging
 import traceback
 
 from django.utils import timezone
 from django.conf import settings
-from django.contrib.auth import authenticate
 from oauth2_provider.models import AccessToken, get_application_model
 from oauthlib.common import generate_token
+
+from geonode.base.utils import basic_auth_authenticate_user
 
 logger = logging.getLogger(__name__)
 
@@ -153,12 +153,7 @@ def delete_old_tokens(user, client='GeoServer'):
 
 def get_token_from_auth_header(auth_header, create_if_not_exists=False):
     if 'Basic' in auth_header:
-        encoded_credentials = auth_header.split(' ')[1]  # Removes "Basic " to isolate credentials
-        decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8").split(':')
-        username = decoded_credentials[0]
-        password = decoded_credentials[1]
-        # if the credentials are correct, then the feed_bot is not None, but is a User object.
-        user = authenticate(username=username, password=password)
+        user = basic_auth_authenticate_user(auth_header)
         return get_auth_token(user) if not create_if_not_exists else get_or_create_token(user)
     elif 'Bearer' in auth_header:
         return auth_header.replace('Bearer ', '')
