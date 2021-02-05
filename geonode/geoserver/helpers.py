@@ -22,12 +22,10 @@ import re
 import sys
 import time
 import uuid
-# import base64
 import json
 import errno
 import logging
 import datetime
-import requests
 import tempfile
 import traceback
 import mercantile
@@ -2034,33 +2032,6 @@ _esri_types = {
     "esriFieldTypeGUID": "xsd:string",
     "esriFieldTypeGlobalID": "xsd:string",
     "esriFieldTypeXML": "xsd:anyType"}
-
-
-def is_monochromatic_image(image_url):
-
-    def is_absolute(url):
-        return bool(urlparse(url).netloc)
-
-    try:
-        logger.debug(f"...Checking if '{image_url}' is a blank image")
-        url = image_url if is_absolute(image_url) else urljoin(settings.SITEURL, image_url)
-        response = requests.get(url, verify=False)
-        stream = BytesIO(response.content)
-        img = Image.open(stream).convert("L")
-        stream.close()
-        img.verify()  # verify that it is, in fact an image
-        extr = img.getextrema()
-        a = 0
-        for i in extr:
-            if isinstance(i, tuple):
-                a += abs(i[0] - i[1])
-            else:
-                a = abs(extr[0] - extr[1])
-                break
-        return a == 0
-    except Exception as e:
-        logger.exception(e)
-        return False
 
 
 def _render_thumbnail(req_body, width=240, height=200):

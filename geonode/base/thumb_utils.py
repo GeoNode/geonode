@@ -15,6 +15,11 @@ def thumb_exists(filename):
     return storage.exists(thumb_path(filename))
 
 
+def thumb_size(filename):
+    """Determine if a thumbnail file exists in storage"""
+    return storage.size(thumb_path(filename))
+
+
 def get_thumbs():
     """Fetches a list of all stored thumbnails"""
     if not storage.exists(settings.THUMBNAIL_LOCATION):

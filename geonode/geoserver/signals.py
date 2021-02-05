@@ -28,12 +28,13 @@ from django.forms.models import model_to_dict
 from django.contrib.staticfiles.templatetags import staticfiles
 
 # use different name to avoid module clash
-from geonode.utils import json_serializer_producer
+from geonode.utils import (
+    is_monochromatic_image,
+    json_serializer_producer)
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.helpers import (
     gs_catalog,
-    ogc_server_settings,
-    is_monochromatic_image)
+    ogc_server_settings)
 from geonode.geoserver.tasks import geoserver_create_thumbnail
 from geonode.layers.models import Layer
 from geonode.services.enumerations import CASCADED
