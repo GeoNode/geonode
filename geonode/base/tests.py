@@ -20,6 +20,7 @@
 
 import os
 from unittest.mock import patch
+from urllib.parse import urlparse
 
 from guardian.shortcuts import assign_perm, get_perms
 from imagekit.cachefiles.backends import Simple
@@ -32,11 +33,18 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.services.models import Service
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.base import thumb_utils
 from geonode.base.models import (
-    ResourceBase, MenuPlaceholder, Menu, MenuItem, Configuration, TopicCategory
-)
+    ResourceBase,
+    MenuPlaceholder,
+    Menu,
+    MenuItem,
+    Configuration,
+    TopicCategory)
+from django.conf import settings
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
+from django.core.files.storage import default_storage as storage
 from django.test import Client, TestCase, override_settings, SimpleTestCase
 from django.shortcuts import reverse
 
@@ -61,12 +69,49 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         self.rb = ResourceBase.objects.create()
 
     def test_initial_behavior(self):
+        """
+        Tests that an empty resource has a missing image as default thumbnail.
+        """
         self.assertFalse(self.rb.has_thumbnail())
         missing = self.rb.get_thumbnail_url()
         self.assertTrue('missing_thumb' in os.path.splitext(missing)[0])
 
+    def test_empty_image(self):
+        """
+        Tests that an empty image does not change the current resource thumbnail.
+        """
+        current = self.rb.get_thumbnail_url()
+        self.rb.save_thumbnail('test-thumb', None)
+        self.assertEqual(current, urlparse(self.rb.get_thumbnail_url()).path)
+
+    @patch('PIL.Image.open', return_value=test_image)
+    def test_monochromatic_image(self, image):
+        """
+        Tests that an monochromatic image does not change the current resource thumbnail.
+        """
+        current = self.rb.get_thumbnail_url()
+        self.rb.save_thumbnail('test-thumb', image)
+        self.assertEqual(current, urlparse(self.rb.get_thumbnail_url()).path)
+
+    @patch('PIL.Image.open', return_value=test_image)
+    def test_thumb_utils_methods(self, image):
+        """
+        Bunch of tests on thumb_utils helpers.
+        """
+        filename = 'test-thumb'
+        upload_path = thumb_utils.thumb_path(filename)
+        self.assertEqual(upload_path, os.path.join(settings.THUMBNAIL_LOCATION, filename))
+        thumb_utils.remove_thumbs(filename)
+        self.assertFalse(thumb_utils.thumb_exists(filename))
+        f = BytesIO(test_image.tobytes())
+        f.name = filename
+        storage.save(upload_path, File(f))
+        self.assertTrue(thumb_utils.thumb_exists(filename))
+        self.assertEqual(thumb_utils.thumb_size(upload_path), 10000)
+
 
 class TestThumbnailUrl(GeoNodeBaseTestSupport):
+
     def setUp(self):
         super(TestThumbnailUrl, self).setUp()
         rb = ResourceBase.objects.create()
