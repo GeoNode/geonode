@@ -44,7 +44,9 @@ from geonode.base.models import (
     ResourceBase,
     TopicCategory,
     SpatialRepresentationType)
-from geonode.utils import set_resource_default_links
+from geonode.utils import (
+    is_monochromatic_image,
+    set_resource_default_links)
 from geonode.geoserver.upload import geoserver_upload
 from geonode.catalogue.models import catalogue_post_save
 
@@ -58,7 +60,6 @@ from .helpers import (
     cascading_delete,
     fetch_gs_resource,
     create_gs_thumbnail,
-    is_monochromatic_image,
     set_attributes_from_geoserver,
     _invalidate_geowebcache_layer,
     _stylefilterparams_geowebcache_layer)

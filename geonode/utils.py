@@ -38,7 +38,8 @@ import traceback
 import subprocess
 
 from osgeo import ogr
-from io import StringIO
+from PIL import Image
+from io import BytesIO, StringIO
 from decimal import Decimal
 from slugify import slugify
 from contextlib import closing
@@ -2002,3 +2003,37 @@ def json_serializer_producer(dictionary):
                     y = model_to_dict(_obj)
             output[x] = to_json(y)
     return output
+
+
+def is_monochromatic_image(image_url, image_data=None):
+
+    def is_absolute(url):
+        return bool(urlparse(url).netloc)
+
+    try:
+        if image_data:
+            logger.debug("...Checking if image is a blank image")
+            stream_content = image_data
+        elif image_url:
+            logger.debug(f"...Checking if '{image_url}' is a blank image")
+            url = image_url if is_absolute(image_url) else urljoin(settings.SITEURL, image_url)
+            response = requests.get(url, verify=False)
+            stream_content = response.content
+        else:
+            return True
+        with BytesIO(stream_content) as stream:
+            img = Image.open(stream).convert("L")
+            stream.close()
+            img.verify()  # verify that it is, in fact an image
+            extr = img.getextrema()
+            a = 0
+            for i in extr:
+                if isinstance(i, tuple):
+                    a += abs(i[0] - i[1])
+                else:
+                    a = abs(extr[0] - extr[1])
+                    break
+            return a == 0
+    except Exception as e:
+        logger.exception(e)
+        return False

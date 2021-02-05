@@ -205,8 +205,9 @@ def proxy(request, url=None, response_callback=None,
     # if content and response and response.getheader('Content-Encoding') == 'gzip':
     if content and content_type and content_type == 'gzip':
         buf = io.BytesIO(content)
-        f = gzip.GzipFile(fileobj=buf)
-        content = f.read()
+        with gzip.GzipFile(fileobj=buf) as f:
+            content = f.read()
+        buf.close()
 
     PLAIN_CONTENT_TYPES = [
         'text',
