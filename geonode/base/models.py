@@ -44,7 +44,6 @@ from django.core.files.storage import default_storage as storage
 from mptt.models import MPTTModel, TreeForeignKey
 
 from PIL import Image
-from io import BytesIO
 from resizeimage import resizeimage
 
 from imagekit.models import ImageSpecField
@@ -68,6 +67,7 @@ from geonode.base.enumerations import (
     UPDATE_FREQUENCIES,
     DEFAULT_SUPPLEMENTAL_INFORMATION)
 from geonode.utils import (
+    is_monochromatic_image,
     add_url_params,
     bbox_to_wkt,
     forward_mercator)
@@ -81,6 +81,7 @@ from geonode.notifications_helper import (
 from geonode.people.enumerations import ROLE_VALUES
 from geonode.base.thumb_utils import (
     thumb_path,
+    thumb_size,
     remove_thumbs)
 
 from pyproj import transform, Proj
@@ -890,8 +891,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return "{0}".format(self.title)
 
     def _remove_html_tags(self, attribute_str):
-        pattern = re.compile('<.*?>')
-        return re.sub(pattern, '', attribute_str)
+        try:
+            pattern = re.compile('<.*?>')
+            return re.sub(pattern, '', attribute_str)
+        except Exception:
+            return attribute_str
 
     @property
     def raw_abstract(self):
@@ -1154,7 +1158,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         try:
             keywords_qs = self.get_real_instance().keywords.all()
             if keywords_qs:
-                return ','.join([kw.name for kw in keywords_qs])
+                return ','.join(kw.name for kw in keywords_qs)
             else:
                 return ''
         except Exception:
@@ -1358,14 +1362,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         try:
             # Check that the image is valid
-            content_data = BytesIO(image)
-            im = Image.open(content_data)
-            im.verify()  # verify that it is, in fact an image
-
-            name, ext = os.path.splitext(filename)
-            remove_thumbs(name)
+            if is_monochromatic_image(None, image):
+                if not self.thumbnail_url and not image:
+                    raise Exception("Generated thumbnail image is blank")
+                else:
+                    # Skip Image creation
+                    image = None
 
             if upload_path and image:
+                name, ext = os.path.splitext(filename)
+                remove_thumbs(name)
                 actual_name = storage.save(upload_path, ContentFile(image))
                 url = storage.url(actual_name)
                 _url = urlparse(url)
@@ -1403,11 +1409,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
                     url = urljoin(site_url, url)
 
+                if thumb_size(_upload_path) == 0:
+                    raise Exception("Generated thumbnail image is zero size")
+
                 # should only have one 'Thumbnail' link
-                _links = Link.objects.filter(resource=self, name='Thumbnail')
-                if _links and _links.count() > 1:
-                    _links.delete()
-                obj, created = Link.objects.get_or_create(
+                Link.objects.filter(resource=self, name='Thumbnail').delete()
+                obj, _created = Link.objects.get_or_create(
                     resource=self,
                     name='Thumbnail',
                     defaults=dict(
@@ -1431,7 +1438,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             try:
                 Link.objects.filter(resource=self, name='Thumbnail').delete()
                 _thumbnail_url = staticfiles.static(settings.MISSING_THUMBNAIL)
-                obj, created = Link.objects.get_or_create(
+                obj, _created = Link.objects.get_or_create(
                     resource=self,
                     name='Thumbnail',
                     defaults=dict(
@@ -1487,12 +1494,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 self.metadata_author = user
 
     def maintenance_frequency_title(self):
-        return [v for i, v in enumerate(
-            UPDATE_FREQUENCIES) if v[0] == self.maintenance_frequency][0][1].title()
+        return [v for v in UPDATE_FREQUENCIES if v[0] == self.maintenance_frequency][0][1].title()
 
     def language_title(self):
-        return [v for i, v in enumerate(
-            ALL_LANGUAGES) if v[0] == self.language][0][1].title()
+        return [v for v in ALL_LANGUAGES if v[0] == self.language][0][1].title()
 
     def _set_poc(self, poc):
         # reset any poc assignation to this resource

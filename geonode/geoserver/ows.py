@@ -131,7 +131,7 @@ def _wms_get_capabilities():
     return wms_url + urlencode({
         'service': 'WMS',
         'request': 'GetCapabilities',
-        'version': '1.1.1',
+        'version': '1.3.0',
     })
 
 

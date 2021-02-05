@@ -38,7 +38,8 @@ import traceback
 import subprocess
 
 from osgeo import ogr
-from io import StringIO
+from PIL import Image
+from io import BytesIO, StringIO
 from decimal import Decimal
 from slugify import slugify
 from contextlib import closing
@@ -82,6 +83,9 @@ from urllib.parse import (
     SplitResult
 )
 
+MAX_EXTENT = 20037508.34
+FULL_ROTATION_DEG = 360.0
+HALF_ROTATION_DEG = 180.0
 DEFAULT_TITLE = ""
 DEFAULT_ABSTRACT = ""
 
@@ -89,7 +93,7 @@ INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
 
 ALPHABET = string.ascii_uppercase + string.ascii_lowercase + \
     string.digits + '-_'
-ALPHABET_REVERSE = dict((c, i) for (i, c) in enumerate(ALPHABET))
+ALPHABET_REVERSE = {c: i for (i, c) in enumerate(ALPHABET)}
 BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
 SQL_PARAMS_RE = re.compile(r'%\(([\w_\-]+)\)s')
@@ -315,7 +319,7 @@ def _split_query(query):
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
     if srid and str(srid).startswith('EPSG:'):
         srid = srid[5:]
-    if None not in [x0, x1, y0, y1]:
+    if None not in {x0, x1, y0, y1}:
         wkt = 'POLYGON((%f %f,%f %f,%f %f,%f %f,%f %f))' % (
             float(x0), float(y0),
             float(x0), float(y1),
@@ -332,8 +336,8 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
 
 
 def _v(coord, x, source_srid=4326, target_srid=3857):
-    if source_srid == 4326 and x and abs(coord) != 180.0:
-        coord = coord - (round(coord / 360.0) * 360.0)
+    if source_srid == 4326 and x and abs(coord) != HALF_ROTATION_DEG:
+        coord -= (round(coord / FULL_ROTATION_DEG) * FULL_ROTATION_DEG)
     if source_srid == 4326 and target_srid != 4326:
         if x and float(coord) >= 179.999:
             return 179.999
@@ -399,7 +403,7 @@ def bounds_to_zoom_level(bounds, width, height):
     ZOOM_MAX = 21
 
     def latRad(lat):
-        _sin = sin(lat * pi / 180.0)
+        _sin = sin(lat * pi / HALF_ROTATION_DEG)
         if abs(_sin) != 1.0:
             radX2 = log((1.0 + _sin) / (1.0 - _sin)) / 2.0
         else:
@@ -416,7 +420,7 @@ def bounds_to_zoom_level(bounds, width, height):
     sw = [float(bounds[0]), float(bounds[1])]
     latFraction = (latRad(ne[1]) - latRad(sw[1])) / pi
     lngDiff = ne[0] - sw[0]
-    lngFraction = ((lngDiff + 360.0) if (lngDiff < 0) else lngDiff) / 360.0
+    lngFraction = ((lngDiff + FULL_ROTATION_DEG) if lngDiff < 0 else lngDiff) / FULL_ROTATION_DEG
     latZoom = zoom(float(height), WORLD_DIM['height'], latFraction)
     lngZoom = zoom(float(width), WORLD_DIM['width'], lngFraction)
     # ratio = float(max(width, height)) / float(min(width, height))
@@ -445,18 +449,18 @@ def forward_mercator(lonlat):
 
         If the lat value is out of range, -inf will be returned as the y value
     """
-    x = lonlat[0] * 20037508.34 / 180
+    x = lonlat[0] * MAX_EXTENT / HALF_ROTATION_DEG
     try:
         # With data sets that only have one point the value of this
         # expression becomes negative infinity. In order to continue,
         # we wrap this in a try catch block.
-        n = tan((90 + lonlat[1]) * pi / 360)
+        n = tan((90 + lonlat[1]) * pi / FULL_ROTATION_DEG)
     except ValueError:
         n = 0
     if n <= 0:
         y = float("-inf")
     else:
-        y = log(n) / pi * 20037508.34
+        y = log(n) / pi * MAX_EXTENT
     return (x, y)
 
 
@@ -464,10 +468,10 @@ def inverse_mercator(xy):
     """
         Given coordinates in spherical mercator, return a lon,lat tuple.
     """
-    lon = (xy[0] / 20037508.34) * 180
-    lat = (xy[1] / 20037508.34) * 180
-    lat = 180 / pi * \
-        (2 * atan(exp(lat * pi / 180)) - pi / 2)
+    lon = (xy[0] / MAX_EXTENT) * HALF_ROTATION_DEG
+    lat = (xy[1] / MAX_EXTENT) * HALF_ROTATION_DEG
+    lat = HALF_ROTATION_DEG / pi * \
+        (2 * atan(exp(lat * pi / HALF_ROTATION_DEG)) - pi / 2)
     return (lon, lat)
 
 
@@ -628,7 +632,7 @@ class GXPMapBase(object):
                     del base_source[key]
             return base_source
 
-        for idx, lyr in enumerate(settings.MAP_BASELAYERS):
+        for lyr in settings.MAP_BASELAYERS:
             if "source" in lyr and _base_source(
                     lyr["source"]) not in map(
                     _base_source,
@@ -677,7 +681,6 @@ class GXPMapBase(object):
         else:
             (def_map_config, def_map_layers) = default_map_config(None)
             config = def_map_config
-            layers = def_map_layers
 
         config["map"].update(_get_viewer_projection_info(self.projection))
 
@@ -851,19 +854,20 @@ def default_map_config(request):
     return DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS
 
 
+max_extent = [-MAX_EXTENT, -MAX_EXTENT, MAX_EXTENT, MAX_EXTENT]
 _viewer_projection_lookup = {
     "EPSG:900913": {
         "maxResolution": 156543.03390625,
         "units": "m",
-        "maxExtent": [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+        "maxExtent": max_extent,
     },
     "EPSG:3857": {
         "maxResolution": 156543.03390625,
         "units": "m",
-        "maxExtent": [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
+        "maxExtent": max_extent,
     },
     "EPSG:4326": {
-        "max_resolution": (180 - (-180)) / 256,
+        "max_resolution": FULL_ROTATION_DEG / 256,
         "units": "degrees",
         "maxExtent": [-180, -90, 180, 90]
     }
@@ -918,7 +922,7 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
         is_admin = False
         is_manager = False
-        is_owner = True if user == obj_to_check.owner else False
+        is_owner = user == obj_to_check.owner
         if user and user.is_authenticated:
             is_admin = user.is_superuser if user else False
             try:
@@ -1413,15 +1417,13 @@ class HttpClient(object):
         self.password = 'admin'
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             ogc_server_settings = settings.OGC_SERVER['default']
-            self.timeout = ogc_server_settings['TIMEOUT'] if 'TIMEOUT' in ogc_server_settings else 60
-            self.retries = ogc_server_settings['MAX_RETRIES'] if 'MAX_RETRIES' in ogc_server_settings else 5
-            self.backoff_factor = ogc_server_settings['BACKOFF_FACTOR'] if \
-            'BACKOFF_FACTOR' in ogc_server_settings else 0.3
-            self.pool_maxsize = ogc_server_settings['POOL_MAXSIZE'] if 'POOL_MAXSIZE' in ogc_server_settings else 10
-            self.pool_connections = ogc_server_settings['POOL_CONNECTIONS'] if \
-            'POOL_CONNECTIONS' in ogc_server_settings else 10
-            self.username = ogc_server_settings['USER'] if 'USER' in ogc_server_settings else 'admin'
-            self.password = ogc_server_settings['PASSWORD'] if 'PASSWORD' in ogc_server_settings else 'geoserver'
+            self.timeout = ogc_server_settings.get('TIMEOUT', 60)
+            self.retries = ogc_server_settings.get('MAX_RETRIES', 5)
+            self.backoff_factor = ogc_server_settings.get('BACKOFF_FACTOR', 0.3)
+            self.pool_maxsize = ogc_server_settings.get('POOL_MAXSIZE', 10)
+            self.pool_connections = ogc_server_settings.get('POOL_CONNECTIONS', 10)
+            self.username = ogc_server_settings.get('USER', 'admin')
+            self.password = ogc_server_settings.get('PASSWORD', 'geoserver')
 
     def request(self, url, method='GET', data=None, headers={}, stream=False, timeout=None, retries=None, user=None):
         if (user or self.username != 'admin') and \
@@ -1461,12 +1463,18 @@ class HttpClient(object):
         session.verify = False
         action = getattr(session, method.lower(), None)
         if action:
-            response = action(
-                url=url,
-                data=data,
-                headers=headers,
-                timeout=timeout or self.timeout,
-                stream=stream)
+            _req_tout = timeout or self.timeout
+            try:
+                response = action(
+                    url=url,
+                    data=data,
+                    headers=headers,
+                    timeout=_req_tout,
+                    stream=stream)
+            except (requests.exceptions.RequestException, ValueError) as e:
+                msg = f"Request exception [{e}] - TOUT [{_req_tout}] to URL: {url} - headers: {headers}"
+                logger.exception(Exception(msg))
+                response = None
         else:
             response = session.get(url, headers=headers, timeout=self.timeout)
 
@@ -1730,7 +1738,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     name = 'Zipped Shapefile'
                 if (Link.objects.filter(resource=instance.resourcebase_ptr,
                                         url=wfs_url,
-                                        name=name).count() < 2):
+                                        name=name,
+                                        link_type='data').count() < 2):
                     Link.objects.update_or_create(
                         resource=instance.resourcebase_ptr,
                         url=wfs_url,
@@ -1751,7 +1760,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         for ext, name, mime, wcs_url in links:
             if (Link.objects.filter(resource=instance.resourcebase_ptr,
                                     url=wcs_url,
-                                    name=name).count() < 2):
+                                    name=name,
+                                    link_type='data').count() < 2):
                 Link.objects.update_or_create(
                     resource=instance.resourcebase_ptr,
                     url=wcs_url,
@@ -1769,7 +1779,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
         if (Link.objects.filter(resource=instance.resourcebase_ptr,
                                 url=html_link_url,
-                                name=instance.alternate).count() < 2):
+                                name=instance.alternate,
+                                link_type='html').count() < 2):
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
                 url=html_link_url,
@@ -1812,14 +1823,13 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
         # Thumbnail link
         logger.debug(" -- Resource Links[Thumbnail link]...")
-        if os.path.splitext(settings.MISSING_THUMBNAIL)[0] in instance.get_thumbnail_url():
-            from geonode.geoserver.helpers import create_gs_thumbnail
-            create_gs_thumbnail(instance, overwrite=True, check_bbox=True)
-        else:
+        if (Link.objects.filter(resource=instance.resourcebase_ptr,
+                                url=instance.get_thumbnail_url(),
+                                name='Thumbnail').count() < 2):
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
-                name='Thumbnail',
                 url=instance.get_thumbnail_url(),
+                name='Thumbnail',
                 defaults=dict(
                     extension='png',
                     mime='image/png',
@@ -2179,3 +2189,36 @@ def json_serializer_producer(dictionary):
                     y = model_to_dict(_obj)
             output[x] = to_json(y)
     return output
+
+
+def is_monochromatic_image(image_url, image_data=None):
+
+    def is_absolute(url):
+        return bool(urlparse(url).netloc)
+
+    try:
+        if image_data:
+            logger.debug("...Checking if image is a blank image")
+            stream = BytesIO(image_data)
+        elif image_url:
+            logger.debug(f"...Checking if '{image_url}' is a blank image")
+            url = image_url if is_absolute(image_url) else urljoin(settings.SITEURL, image_url)
+            response = requests.get(url, verify=False)
+            stream = BytesIO(response.content)
+        else:
+            return True
+        img = Image.open(stream).convert("L")
+        stream.close()
+        img.verify()  # verify that it is, in fact an image
+        extr = img.getextrema()
+        a = 0
+        for i in extr:
+            if isinstance(i, tuple):
+                a += abs(i[0] - i[1])
+            else:
+                a = abs(extr[0] - extr[1])
+                break
+        return a == 0
+    except Exception as e:
+        logger.exception(e)
+        return False
