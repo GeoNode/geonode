@@ -333,11 +333,10 @@ def geoserver_post_save_layers(
         logger.debug("... Creating Default Resource Links for Layer [%s]" % (instance.alternate))
         set_resource_default_links(instance, instance, prune=True)
 
-        if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
-                'thumbnail_url' in kwargs['update_fields']:
-            logger.debug("... Creating Thumbnail for Layer [%s]" % (instance.alternate))
-            # create_gs_thumbnail(instance, overwrite=True)
-            geoserver_create_thumbnail.apply_async(((instance.id, True, )))
+        # Creating Layer Thumbnail by sending a signal
+        from geonode.geoserver.signals import geoserver_post_save_complete
+        geoserver_post_save_complete.send(
+            sender=instance.__class__, instance=instance)
 
     # Updating HAYSTACK Indexes if needed
     if settings.HAYSTACK_SEARCH:
