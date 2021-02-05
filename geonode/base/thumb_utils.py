@@ -15,9 +15,13 @@ def thumb_exists(filename):
     return storage.exists(thumb_path(filename))
 
 
-def thumb_size(filename):
-    """Determine if a thumbnail file exists in storage"""
-    return storage.size(thumb_path(filename))
+def thumb_size(filepath):
+    """Determine if a thumbnail file size in storage"""
+    if storage.exists(filepath):
+        return storage.size(filepath)
+    elif os.path.exists(filepath):
+        return os.path.getsize(filepath)
+    return 0
 
 
 def get_thumbs():

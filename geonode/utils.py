@@ -2013,26 +2013,27 @@ def is_monochromatic_image(image_url, image_data=None):
     try:
         if image_data:
             logger.debug("...Checking if image is a blank image")
-            stream = BytesIO(image_data)
+            stream_content = image_data
         elif image_url:
             logger.debug(f"...Checking if '{image_url}' is a blank image")
             url = image_url if is_absolute(image_url) else urljoin(settings.SITEURL, image_url)
             response = requests.get(url, verify=False)
-            stream = BytesIO(response.content)
+            stream_content = response.content
         else:
             return True
-        img = Image.open(stream).convert("L")
-        stream.close()
-        img.verify()  # verify that it is, in fact an image
-        extr = img.getextrema()
-        a = 0
-        for i in extr:
-            if isinstance(i, tuple):
-                a += abs(i[0] - i[1])
-            else:
-                a = abs(extr[0] - extr[1])
-                break
-        return a == 0
+        with BytesIO(stream_content) as stream:
+            img = Image.open(stream).convert("L")
+            stream.close()
+            img.verify()  # verify that it is, in fact an image
+            extr = img.getextrema()
+            a = 0
+            for i in extr:
+                if isinstance(i, tuple):
+                    a += abs(i[0] - i[1])
+                else:
+                    a = abs(extr[0] - extr[1])
+                    break
+            return a == 0
     except Exception as e:
         logger.exception(e)
         return False

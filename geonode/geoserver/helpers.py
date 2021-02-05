@@ -2055,17 +2055,18 @@ def _render_thumbnail(req_body, width=240, height=200):
             raise Exception(content)
 
         # Optimize the Thumbnail size and resolution
-        content_data = BytesIO(content)
-        im = Image.open(content_data)
-        im.thumbnail(
-            (_default_thumb_size['width'], _default_thumb_size['height']),
-            resample=Image.ANTIALIAS)
-        cover = resizeimage.resize_cover(
-            im,
-            [_default_thumb_size['width'], _default_thumb_size['height']])
-        imgByteArr = BytesIO()
-        cover.save(imgByteArr, format='JPEG')
-        content = imgByteArr.getvalue()
+        with BytesIO(content) as content_data:
+            im = Image.open(content_data)
+            im.thumbnail(
+                (_default_thumb_size['width'], _default_thumb_size['height']),
+                resample=Image.ANTIALIAS)
+            cover = resizeimage.resize_cover(
+                im,
+                [_default_thumb_size['width'], _default_thumb_size['height']])
+            imgByteArr = BytesIO()
+            cover.save(imgByteArr, format='JPEG')
+            content = imgByteArr.getvalue()
+            imgByteArr.close()
     except Exception as e:
         logger.debug(f"Could not sucesfully send data to {url}")
         logger.debug(f" - user: [{_user}]")
