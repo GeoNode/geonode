@@ -28,8 +28,7 @@ from django.utils.deprecation import MiddlewareMixin
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
-from geonode.base.auth import get_token_object_from_session
-from geonode.base.utils import basic_auth_authenticate_user
+from geonode.base.auth import get_token_object_from_session, basic_auth_authenticate_user
 
 from guardian.shortcuts import get_anonymous_user
 

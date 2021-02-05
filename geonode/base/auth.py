@@ -18,16 +18,16 @@
 #
 #########################################################################
 
+import base64
 import datetime
 import logging
 import traceback
 
 from django.utils import timezone
 from django.conf import settings
+from django.contrib.auth import authenticate
 from oauth2_provider.models import AccessToken, get_application_model
 from oauthlib.common import generate_token
-
-from geonode.base.utils import basic_auth_authenticate_user
 
 logger = logging.getLogger(__name__)
 
@@ -185,3 +185,17 @@ def get_token_object_from_session(session):
 def remove_session_token(session):
     if 'access_token' in session:
         del session['access_token']
+
+
+def basic_auth_authenticate_user(auth_header: str):
+    """
+    Function performing user authentication based on BasicAuth Authorization header
+
+    :param auth_header: Authorization header of the request
+    """
+    encoded_credentials = auth_header.split(' ')[1]  # Removes "Basic " to isolate credentials
+    decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8").split(':')
+    username = decoded_credentials[0]
+    password = decoded_credentials[1]
+
+    return authenticate(username=username, password=password)
