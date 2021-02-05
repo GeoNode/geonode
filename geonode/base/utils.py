@@ -23,14 +23,13 @@
 
 # Standard Modules
 import re
-import base64
 import logging
 from dateutil.parser import isoparse
 from datetime import datetime, timedelta
 
 # Django functionality
 from django.conf import settings
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import get_user_model
 
 # Geonode functionality
 from guardian.shortcuts import get_perms, remove_perm, assign_perm
@@ -218,17 +217,3 @@ class ManageResourceOwnerPermissions:
                     assign_perm(perm, self.resource.owner, self.resource)
                 elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:
                     assign_perm(perm, self.resource.owner, self.resource)
-
-
-def basic_auth_authenticate_user(auth_header: str) -> get_user_model():
-    """
-    Function performing user authentication based on BasicAuth Authorization header
-
-    :param auth_header: Authorization header of the request
-    """
-    encoded_credentials = auth_header.split(' ')[1]  # Removes "Basic " to isolate credentials
-    decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8").split(':')
-    username = decoded_credentials[0]
-    password = decoded_credentials[1]
-
-    return authenticate(username=username, password=password)
