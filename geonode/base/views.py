@@ -325,7 +325,6 @@ class ThesaurusAvailable(autocomplete.Select2QuerySetView):
         lang = self.request.GET.get("lang")
 
         qs = ThesaurusKeywordLabel.objects.filter(keyword__thesaurus__id=tid).filter(lang=lang).order_by('id')
-        print(qs.query)
         return qs
 
     def get_results(self, context):

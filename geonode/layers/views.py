@@ -1016,9 +1016,12 @@ def layer_metadata(
         if hasattr(settings, 'THESAURUS'):
             tkeywords_form = TKeywordForm(request.POST)
         else:
-            tkeywords_form = ThesaurusAvailableForm(request.POST, prefix="tkeywords", initial=int(
-            request.POST["tkeywords"]) if "tkeywords" in request.POST and
-            request.POST["tkeywords"] else None)
+            tkeywords_form = ThesaurusAvailableForm(request.POST)
+            #  set initial values for thesaurus form
+            for tid in tkeywords_form.fields:
+                values = []
+                values = [keyword.id for keyword in topic_thesaurus if int(tid) == keyword.thesaurus.id]
+                tkeywords_form.fields[tid].initial = values
 
         if not tkeywords_form.is_valid():
             logger.error(f"Layer Thesauri Keywords form is not valid: {tkeywords_form.errors}")
@@ -1177,8 +1180,8 @@ def layer_metadata(
                 )
                 layer.tkeywords.set(tkeywords_data)
             elif Thesaurus.objects.all().exists():
-                x = tkeywords_form.cleaned_data
-                layer.tkeywords.set(tkeywords_form.cleanx(x))
+                fields = tkeywords_form.cleaned_data
+                layer.tkeywords.set(tkeywords_form.cleanx(fields))
 
         except Exception:
             tb = traceback.format_exc()

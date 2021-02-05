@@ -33,7 +33,7 @@ from geonode.maps.models import Map
 from geonode.services.models import Service
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.models import (
-    ResourceBase, MenuPlaceholder, Menu, MenuItem, Configuration, Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel, TopicCategory
+    ResourceBase, MenuPlaceholder, Menu, MenuItem, Configuration, Thesaurus, ThesaurusKeyword, TopicCategory
 )
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
@@ -903,7 +903,7 @@ class TestThesaurusAvailableForm(GeoNodeBaseTestSupport):
         self.assertFalse(actual.is_valid())
 
     def test_form_is_invalid_if_fileds_send_unexpected_values(self):
-        actual = self.sut(data={"8": [1,2], "6": 1234})
+        actual = self.sut(data={"8": [1, 2], "6": 1234})
         self.assertFalse(actual.is_valid())
 
     def test_form_is_valid_if_fileds_send_expected_values(self):
