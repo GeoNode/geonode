@@ -33,7 +33,7 @@ from geonode.maps.models import Map
 from geonode.services.models import Service
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.models import (
-    ResourceBase, MenuPlaceholder, Menu, MenuItem, Configuration, Thesaurus, ThesaurusKeyword, TopicCategory
+    ResourceBase, MenuPlaceholder, Menu, MenuItem, Configuration, Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel, TopicCategory
 )
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
@@ -56,6 +56,7 @@ from geonode.decorators import on_ogc_backend
 from django.core.files import File
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from geonode.base.forms import ThesaurusAvailableForm
 
 
 test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
@@ -891,3 +892,20 @@ class TestTagThesaurus(TestCase):
     @staticmethod
     def __get_last_thesaurus():
         return Thesaurus.objects.all().order_by("-id")[0]
+
+
+class TestThesaurusAvailableForm(GeoNodeBaseTestSupport):
+    def setUp(self):
+        self.sut = ThesaurusAvailableForm
+
+    def test_form_is_invalid_if_required_fields_are_missing(self):
+        actual = self.sut(data={})
+        self.assertFalse(actual.is_valid())
+
+    def test_form_is_invalid_if_fileds_send_unexpected_values(self):
+        actual = self.sut(data={"8": [1,2], "6": 1234})
+        self.assertFalse(actual.is_valid())
+
+    def test_form_is_valid_if_fileds_send_expected_values(self):
+        actual = self.sut(data={"8": [1, 2], "6": 36})
+        self.assertTrue(actual.is_valid())
