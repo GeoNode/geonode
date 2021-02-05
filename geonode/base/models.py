@@ -1507,7 +1507,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
                     url = urljoin(site_url, url)
 
-                if thumb_size(filename) == 0:
+                if thumb_size(_upload_path) == 0:
                     raise Exception("Generated thumbnail image is zero size")
 
                 # should only have one 'Thumbnail' link
