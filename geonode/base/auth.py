@@ -18,8 +18,8 @@
 #
 #########################################################################
 
-import datetime
 import base64
+import datetime
 import logging
 import traceback
 
@@ -153,12 +153,7 @@ def delete_old_tokens(user, client='GeoServer'):
 
 def get_token_from_auth_header(auth_header, create_if_not_exists=False):
     if 'Basic' in auth_header:
-        encoded_credentials = auth_header.split(' ')[1]  # Removes "Basic " to isolate credentials
-        decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8").split(':')
-        username = decoded_credentials[0]
-        password = decoded_credentials[1]
-        # if the credentials are correct, then the feed_bot is not None, but is a User object.
-        user = authenticate(username=username, password=password)
+        user = basic_auth_authenticate_user(auth_header)
         return get_auth_token(user) if not create_if_not_exists else get_or_create_token(user)
     elif 'Bearer' in auth_header:
         return auth_header.replace('Bearer ', '')
@@ -190,3 +185,17 @@ def get_token_object_from_session(session):
 def remove_session_token(session):
     if 'access_token' in session:
         del session['access_token']
+
+
+def basic_auth_authenticate_user(auth_header: str):
+    """
+    Function performing user authentication based on BasicAuth Authorization header
+
+    :param auth_header: Authorization header of the request
+    """
+    encoded_credentials = auth_header.split(' ')[1]  # Removes "Basic " to isolate credentials
+    decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8").split(':')
+    username = decoded_credentials[0]
+    password = decoded_credentials[1]
+
+    return authenticate(username=username, password=password)
