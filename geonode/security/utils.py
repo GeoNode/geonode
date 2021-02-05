@@ -841,4 +841,3 @@ def sync_resources_with_guardian(resource=None):
                 except Exception as e:
                     logger.exception(e)
                     logger.warn("!WARNING! - Failure Synching-up Security Rules for Resource [%s]" % (r))
-
