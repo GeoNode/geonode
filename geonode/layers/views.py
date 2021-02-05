@@ -1047,9 +1047,6 @@ def layer_metadata(
         if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
             warnings.warn('The settings for Thesaurus has been moved to Model, \
             this feature will be removed in next releases', DeprecationWarning)
-            tkeywords_form = TKeywordForm(instance=layer)
-        else:
-            #  Keywords from THESAURUS management
             layer_tkeywords = layer.tkeywords.all()
             tkeywords_list = ''
             lang = 'en'  # TODO: use user's language
@@ -1071,18 +1068,14 @@ def layer_metadata(
                     except Exception:
                         tb = traceback.format_exc()
                         logger.error(tb)
-            #  tkeywords_form = TKeywordForm(instance=layer)
-
-            tkeywords_form = ThesaurusAvailableForm(
-                prefix='tkeywords',
-            )
+            tkeywords_form = TKeywordForm(instance=layer)
+        else:
+            tkeywords_form = ThesaurusAvailableForm(prefix='tkeywords')
             #  set initial values for thesaurus form
-            for x in tkeywords_form.fields:
+            for tid in tkeywords_form.fields:
                 values = []
-                for y in topic_thesaurus:
-                    if int(x) == y.thesaurus.id:
-                        values.append(y.id)
-                tkeywords_form.fields[x].initial = values
+                values = [keyword.id for keyword in topic_thesaurus if int(tid) == keyword.thesaurus.id]
+                tkeywords_form.fields[tid].initial = values
 
     if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid(
     ) and category_form.is_valid() and tkeywords_form.is_valid():
