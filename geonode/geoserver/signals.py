@@ -153,7 +153,7 @@ def geoserver_post_save_thumbnail(sender, instance, **kwargs):
         is_monochromatic_image(instance.thumbnail_url):
             _recreate_thumbnail = True
         if _recreate_thumbnail:
-            geoserver_create_thumbnail.apply_async(((instance.id, )))
+            geoserver_create_thumbnail.apply_async(((instance.id, False, True, )))
         else:
             logger.debug(f"... Thumbnail for Layer {instance.title} already exists: {instance.thumbnail_url}")
     except Exception as e:
