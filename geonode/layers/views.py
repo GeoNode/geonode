@@ -28,7 +28,6 @@ from types import TracebackType
 import warnings
 import decimal
 import pickle
-from django.forms.fields import ChoiceField
 import six
 from django.db.models import Q
 from urllib.parse import quote
@@ -67,7 +66,7 @@ from geonode.base.auth import get_or_create_token
 from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
 from geonode.base.views import batch_modify
 from geonode.base.models import (
-    Thesaurus, ThesaurusKeyword,
+    Thesaurus,
     TopicCategory)
 from geonode.base.enumerations import CHARSETS
 from geonode.decorators import check_keyword_write_perms
@@ -1046,10 +1045,11 @@ def layer_metadata(
         # Create THESAURUS widgets
         lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, 'THESAURUS_DEFAULT_LANG') else 'en'
         if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
-            warnings.warn('The settings for Thesaurus has been moved to Model, this feature will be removed in next releases', DeprecationWarning)
+            warnings.warn('The settings for Thesaurus has been moved to Model, \
+            this feature will be removed in next releases', DeprecationWarning)
             tkeywords_form = TKeywordForm(instance=layer)
         else:
-        # Keywords from THESAURUS management
+            #  Keywords from THESAURUS management
             layer_tkeywords = layer.tkeywords.all()
             tkeywords_list = ''
             lang = 'en'  # TODO: use user's language
@@ -1071,19 +1071,19 @@ def layer_metadata(
                     except Exception:
                         tb = traceback.format_exc()
                         logger.error(tb)
-            #tkeywords_form = TKeywordForm(instance=layer)
+            #  tkeywords_form = TKeywordForm(instance=layer)
 
             tkeywords_form = ThesaurusAvailableForm(
                 prefix='tkeywords',
             )
-            # set initial values for thesaurus form
+            #  set initial values for thesaurus form
             for x in tkeywords_form.fields:
                 values = []
                 for y in topic_thesaurus:
                     if int(x) == y.thesaurus.id:
                         values.append(y.id)
                 tkeywords_form.fields[x].initial = values
-                
+
     if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid(
     ) and category_form.is_valid() and tkeywords_form.is_valid():
         new_poc = layer_form.cleaned_data['poc']

@@ -43,8 +43,12 @@ from django.shortcuts import reverse
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.models import CuratedThumbnail
 from geonode.base.templatetags.base_tags import get_visibile_resources
-from geonode.base.templatetags.thesaurus import get_unique_thesaurus_set, get_keyword_label, \
-    get_thesaurus_title, get_thesaurus_date 
+from geonode.base.templatetags.thesaurus import (
+    get_unique_thesaurus_set,
+    get_keyword_label,
+    get_thesaurus_title,
+    get_thesaurus_date,
+)
 from geonode.base.templatetags.user_messages import show_notification
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
@@ -52,7 +56,7 @@ from geonode.decorators import on_ogc_backend
 from django.core.files import File
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from unittest.mock import patch
+
 
 test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
 
@@ -840,11 +844,12 @@ class TestHtmlTagRemoval(SimpleTestCase):
 
 
 class TestTagThesaurus(TestCase):
-    # loading test thesausurs   
+    #  loading test thesausurs
     @classmethod
     def setUpTestData(cls):
         from django.core import management
         from os.path import dirname, abspath
+
         management.call_command(
             "load_thesaurus",
             file=f"{dirname(dirname(abspath(__file__)))}/tests/data/thesaurus.rdf",
@@ -863,13 +868,12 @@ class TestTagThesaurus(TestCase):
         )
         self.tkeywords = ThesaurusKeyword.objects.all()
 
-
     def test_get_unique_thesaurus_list(self):
         tid = self.__get_last_thesaurus().id
         actual = get_unique_thesaurus_set(self.tkeywords)
         self.assertSetEqual({tid}, actual)
 
-    @patch.dict('os.environ', {"THESAURUS_DEFAULT_LANG": "en"})
+    @patch.dict("os.environ", {"THESAURUS_DEFAULT_LANG": "en"})
     def test_get_keyword_label(self):
         actual = get_keyword_label(self.tkeywords[0])
         self.assertEqual("Addresses", actual)

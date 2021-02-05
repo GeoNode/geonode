@@ -53,7 +53,7 @@ from geonode.base.forms import (
 from geonode.base.models import (
     Region,
     ResourceBase,
-    HierarchicalKeyword, Thesaurus,
+    HierarchicalKeyword,
     ThesaurusKeywordLabel
 )
 
@@ -318,7 +318,7 @@ class ThesaurusKeywordLabelAutocomplete(autocomplete.Select2QuerySetView):
             } for result in context['object_list']
         ]
 
-       
+
 class ThesaurusAvailable(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         tid = self.request.GET.get("sysid")
@@ -336,6 +336,7 @@ class ThesaurusAvailable(autocomplete.Select2QuerySetView):
                 'selected_text': self.get_selected_result_label(result),
             } for result in context['object_list']
         ]
+
 
 class OwnerRightsRequestView(LoginRequiredMixin, FormView):
     template_name = 'owner_rights_request.html'

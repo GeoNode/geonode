@@ -316,23 +316,22 @@ class TKeywordForm(forms.ModelForm):
     )
 
 
-
-class ThesaurusAvailableForm(forms.Form): 
+class ThesaurusAvailableForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ThesaurusAvailableForm, self).__init__(*args, **kwargs)
-        lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, 'THESAURUS_DEFAULT_LANG') else 'en'
+        lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, "THESAURUS_DEFAULT_LANG") else "en"
         for item in Thesaurus.objects.all():
-            tname = ThesaurusLabel.objects.values_list('label', flat=True).filter(id=item.id).filter(lang=lang)
+            tname = ThesaurusLabel.objects.values_list("label", flat=True).filter(id=item.id).filter(lang=lang)
             if item.card_max == 0:
                 continue
-            elif item.card_max == 1 and item.card_min==0:
-                self.fields[f'{item.id}'] = self._define_choicefield(item, False, tname, lang)
-            elif item.card_max == 1 and item.card_min==1:
-                self.fields[f'{item.id}'] = self._define_choicefield(item, True, tname, lang)
-            elif item.card_max == -1 and item.card_min==0:
-                self.fields[f'{item.id}'] = self._define_multifield(item, False, tname, lang)
-            elif item.card_max == -1 and item.card_min==1:
-                self.fields[f'{item.id}'] = self._define_multifield(item, True, tname, lang)
+            elif item.card_max == 1 and item.card_min == 0:
+                self.fields[f"{item.id}"] = self._define_choicefield(item, False, tname, lang)
+            elif item.card_max == 1 and item.card_min == 1:
+                self.fields[f"{item.id}"] = self._define_choicefield(item, True, tname, lang)
+            elif item.card_max == -1 and item.card_min == 0:
+                self.fields[f"{item.id}"] = self._define_multifield(item, False, tname, lang)
+            elif item.card_max == -1 and item.card_min == 1:
+                self.fields[f"{item.id}"] = self._define_multifield(item, True, tname, lang)
 
     def cleanx(self, x):
         cleaned_values = []
@@ -347,23 +346,25 @@ class ThesaurusAvailableForm(forms.Form):
     @staticmethod
     def _define_multifield(item, required, tname, lang):
         return MultiThesauriField(
-                ThesaurusKeyword.objects.prefetch_related(
-                    Prefetch('keyword', queryset=ThesaurusKeywordLabel.objects.filter(keyword__thesaurus_id=item.id).filter(lang=lang)
-                )),
-                widget=autocomplete.ModelSelect2Multiple(
-                    url=f'/base/thesaurus_available/?sysid={item.id}&lang={lang}'
-                ),
-                label=_(f"{tname[0] if len(tname) > 0 else item.title}"),
-                required=required
-            )
+            ThesaurusKeyword.objects.prefetch_related(
+                Prefetch(
+                    "keyword",
+                    queryset=ThesaurusKeywordLabel.objects.filter(keyword__thesaurus_id=item.id).filter(lang=lang),
+                )
+            ),
+            widget=autocomplete.ModelSelect2Multiple(url=f"/base/thesaurus_available/?sysid={item.id}&lang={lang}"),
+            label=_(f"{tname[0] if len(tname) > 0 else item.title}"),
+            required=required,
+        )
 
     @staticmethod
     def _define_choicefield(item, required, tname, lang):
         return models.ModelChoiceField(
-                label=f"{tname[0] if len(tname) > 0 else item.title}",
-                required=required,
-                queryset=ThesaurusKeywordLabel.objects.filter(keyword__thesaurus_id=item.id).filter(lang=lang)
-            )
+            label=f"{tname[0] if len(tname) > 0 else item.title}",
+            required=required,
+            queryset=ThesaurusKeywordLabel.objects.filter(keyword__thesaurus_id=item.id).filter(lang=lang),
+        )
+
 
 class ResourceBaseDateTimePicker(DateTimePicker):
 
