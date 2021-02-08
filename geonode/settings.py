@@ -463,6 +463,7 @@ INSTALLED_APPS = (
     # Apps bundled with Django
     'modeltranslation',
     'dal',
+    'rndt',
     'dal_select2',
     'grappelli',
     'django.contrib.auth',
@@ -2122,3 +2123,6 @@ SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'Tr
 # -- END Settings for MONITORING plugin
 
 CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
+
+UUID_HANDLER = os.environ.get(
+    'UUID_HANDLER', 'rndt.uuidhandler.UUIDHandler')
