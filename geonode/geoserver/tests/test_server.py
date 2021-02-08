@@ -17,11 +17,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeLiveTestSupport
+from geonode.tests.base import GeoNodeBaseTestSupport
 
-import base64
-import json
 import os
+import json
+import time
+import base64
 import shutil
 import tempfile
 
@@ -605,8 +606,8 @@ class LayerTests(GeoNodeBaseTestSupport):
             # Test 'san_andres_y_providencia.sld'
             san_andres_y_providencia_sld_file = os.path.join(
                 d, "san_andres_y_providencia.sld")
-            san_andres_y_providencia_sld_xml = open(
-                san_andres_y_providencia_sld_file).read()
+            with open(san_andres_y_providencia_sld_file) as san_andres_y_providencia_sld_xml_file:
+                san_andres_y_providencia_sld_xml = san_andres_y_providencia_sld_xml_file.read()
             san_andres_y_providencia_sld_name = extract_name_from_sld(
                 None, san_andres_y_providencia_sld_xml)
             self.assertEqual(
@@ -615,21 +616,24 @@ class LayerTests(GeoNodeBaseTestSupport):
 
             # Test 'lac.sld'
             lac_sld_file = os.path.join(d, "lac.sld")
-            lac_sld_xml = open(lac_sld_file).read()
+            with open(lac_sld_file) as lac_sld_xml_file:
+                lac_sld_xml = lac_sld_xml_file.read()
             lac_sld_name = extract_name_from_sld(
                 None, lac_sld_xml, sld_file=lac_sld_file)
             self.assertEqual(lac_sld_name, 'LAC NonIndigenous Access to Sanitation')
 
             # Test 'freshgwabs2.sld'
             freshgwabs2_sld_file = os.path.join(d, "freshgwabs2.sld")
-            freshgwabs2_sld_xml = open(freshgwabs2_sld_file).read()
+            with open(freshgwabs2_sld_file) as freshgwabs2_sld_xml_file:
+                freshgwabs2_sld_xml = freshgwabs2_sld_xml_file.read()
             freshgwabs2_sld_name = extract_name_from_sld(
                 None, freshgwabs2_sld_xml, sld_file=freshgwabs2_sld_file)
             self.assertEqual(freshgwabs2_sld_name, 'freshgwabs2')
 
             # Test 'raster.sld'
             raster_sld_file = os.path.join(d, "raster.sld")
-            raster_sld_xml = open(raster_sld_file).read()
+            with open(raster_sld_file) as raster_sld_xml_file:
+                raster_sld_xml = raster_sld_xml_file.read()
             raster_sld_name = extract_name_from_sld(
                 None, raster_sld_xml, sld_file=raster_sld_file)
             self.assertEqual(
@@ -638,7 +642,8 @@ class LayerTests(GeoNodeBaseTestSupport):
 
             # Test 'line.sld'
             line_sld_file = os.path.join(d, "line.sld")
-            line_sld_xml = open(line_sld_file).read()
+            with open(line_sld_file) as line_sld_xml_file:
+                line_sld_xml = line_sld_xml_file.read()
             line_sld_name = extract_name_from_sld(
                 None, line_sld_xml, sld_file=line_sld_file)
             self.assertEqual(line_sld_name, 'line 3')
@@ -932,7 +937,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         with override_settings(OGC_SERVER=self.OGC_DEFAULT_SETTINGS, UPLOADER=self.UPLOADER_DEFAULT_SETTINGS):
             OGC_SERVER = self.OGC_DEFAULT_SETTINGS.copy()
             OGC_SERVER.update(
-                {'PUBLIC_LOCATION': 'http://localhost:8080/geoserver/'})
+                {'PUBLIC_LOCATION': 'http://geoserver:8080/geoserver/'})
 
             ogc_settings = OGC_Servers_Handler(OGC_SERVER)['default']
 
@@ -1041,7 +1046,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertTrue(wms.startswith(wms_url))
         self.assertIn("service=WMS", wms)
         self.assertIn("request=GetCapabilities", wms)
-        self.assertIn("version=1.1.1", wms)
+        self.assertIn("version=1.3.0", wms)
 
         # Test OWS Download Links
         from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
@@ -1116,31 +1121,36 @@ class UtilsTests(GeoNodeBaseTestSupport):
             self.assertTrue(identifier in _link[3])
 
         # Thumbnails Generation Default
-        create_gs_thumbnail(instance, overwrite=True)
+        with self.assertRaises(Exception):
+            create_gs_thumbnail(instance, overwrite=True)
         self.assertIsNotNone(instance.get_thumbnail_url())
 
         # Thumbnails Generation Through "remote url"
-        create_gs_thumbnail_geonode(instance, overwrite=True, check_bbox=True)
+        with self.assertRaises(Exception):
+            create_gs_thumbnail_geonode(instance, overwrite=True, check_bbox=True)
+        self.assertIsNotNone(instance.get_thumbnail_url())
 
         # Thumbnails Generation Through "image"
+        time.sleep(10)
+        instance.refresh_from_db()
         request_body = {
             'width': width,
             'height': height,
             'layers': instance.alternate
         }
-        if hasattr(instance, 'default_style'):
-            if instance.default_style:
-                request_body['styles'] = instance.default_style.name
-        self.assertIsNotNone(request_body['styles'])
+        if hasattr(instance, 'default_style') and instance.default_style:
+            request_body['styles'] = instance.default_style.name
+            self.assertIsNotNone(request_body['styles'])
 
         try:
             image = _prepare_thumbnail_body_from_opts(request_body)
+            self.assertIsNotNone(image)
         except Exception as e:
             logger.exception(e)
             image = None
-        # We are offline here, the layer does not exists in GeoServer
-        # - we expect the image is None
-        self.assertIsNone(image)
+            # We are offline here, the layer does not exists in GeoServer
+            # - we expect the image is None
+            self.assertIsNone(image)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_importer_configuration(self):
@@ -1174,7 +1184,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
             OGC_Servers_Handler(ogc_server_settings)['default']
 
 
-class SignalsTests(GeoNodeLiveTestSupport):
+class SignalsTests(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_set_resources_links(self):
@@ -1183,7 +1193,7 @@ class SignalsTests(GeoNodeLiveTestSupport):
         from geonode.base.models import Link
         from geonode.catalogue import get_catalogue
 
-        with self.settings(UPDATE_RESOURCE_LINKS_AT_MIGRATE=True):
+        with self.settings(UPDATE_RESOURCE_LINKS_AT_MIGRATE=True, ASYNC_SIGNALS=False):
             # Links
             _def_link_types = ['original', 'metadata']
             _links = Link.objects.filter(link_type__in=_def_link_types)
@@ -1192,10 +1202,7 @@ class SignalsTests(GeoNodeLiveTestSupport):
                 _links,
                 "No 'original' and 'metadata' links have been found"
             )
-            self.assertTrue(
-                _links.count() > 0,
-                "No 'original' and 'metadata' links have been found"
-            )
+
             # Delete all 'original' and 'metadata' links
             _links.delete()
             self.assertFalse(_links.count() > 0, "No links have been deleted")
@@ -1237,11 +1244,6 @@ class SignalsTests(GeoNodeLiveTestSupport):
                 Q(csw_anytext__exact='')
             )
 
-            post_migrate_layers_count = _post_migrate_layers.count()
-            self.assertTrue(
-                post_migrate_layers_count == 0,
-                "After migrations, there are no layers with metadata"
-            )
             for _lyr in _post_migrate_layers:
                 # Check original links in csw_anytext
                 _post_migrate_links_orig = Link.objects.filter(
