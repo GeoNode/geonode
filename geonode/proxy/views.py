@@ -57,7 +57,7 @@ from geonode.utils import (
     json_serializer_producer)
 from geonode.base.enumerations import LINK_TYPES as _LT
 
-from geonode import geoserver, qgis_server  # noqa
+from geonode import geoserver  # noqa
 from geonode.monitoring import register_event
 
 TIMEOUT = 300
@@ -205,8 +205,9 @@ def proxy(request, url=None, response_callback=None,
     # if content and response and response.getheader('Content-Encoding') == 'gzip':
     if content and content_type and content_type == 'gzip':
         buf = io.BytesIO(content)
-        f = gzip.GzipFile(fileobj=buf)
-        content = f.read()
+        with gzip.GzipFile(fileobj=buf) as f:
+            content = f.read()
+        buf.close()
 
     PLAIN_CONTENT_TYPES = [
         'text',

@@ -55,7 +55,7 @@ from django.utils.translation import ugettext as _
 from geonode.maps.models import Map
 from geonode.base.auth import get_or_create_token
 from geonode.base.bbox_utils import BBOXHelper
-from geonode import GeoNodeException, geoserver, qgis_server
+from geonode import GeoNodeException, geoserver
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import UploadSession, LayerFile
 from geonode.base.thumb_utils import thumb_exists
@@ -98,8 +98,6 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # Use the http_client with one that knows the username
     # and password for GeoServer's management user.
     from geonode.geoserver.helpers import _prepare_thumbnail_body_from_opts
-elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-    from geonode.qgis_server.helpers import ogc_server_settings
 
 logger = logging.getLogger('geonode.layers.utils')
 
@@ -240,32 +238,6 @@ def get_files(filename):
                'distinct by spelling and not just case.') % filename
         raise GeoNodeException(msg)
 
-    # Only for QGIS Server
-    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-        matches = glob.glob(glob_name + ".[qQ][mM][lL]")
-        logger.debug('Checking QML file')
-        logger.debug('Number of matches QML file : %s' % len(matches))
-        logger.debug('glob name: %s' % glob_name)
-        if len(matches) == 1:
-            files['qml'] = matches[0]
-        elif len(matches) > 1:
-            msg = ('Multiple style files (qml) for %s exist; they need to be '
-                   'distinct by spelling and not just case.') % filename
-            raise GeoNodeException(msg)
-
-        # Provides json files for additional extra data
-        matches = glob.glob(glob_name + ".[jJ][sS][oO][nN]")
-        logger.debug('Checking JSON File')
-        logger.debug(
-            'Number of matches JSON file : %s' % len(matches))
-        logger.debug('glob name: %s' % glob)
-
-        if len(matches) == 1:
-            files['json'] = matches[0]
-        elif len(matches) > 1:
-            msg = ('Multiple json files (json) for %s exist; they need to be '
-                   'distinct by spelling and not just case.') % filename
-            raise GeoNodeException(msg)
     return files
 
 

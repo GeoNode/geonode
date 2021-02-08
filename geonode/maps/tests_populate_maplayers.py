@@ -18,7 +18,7 @@
 #
 #########################################################################
 
-from geonode import geoserver, qgis_server  # noqa
+from geonode import geoserver  # noqa
 from geonode.maps.models import Map, MapLayer
 
 maplayers = [{"fixed": False,

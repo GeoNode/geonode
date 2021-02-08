@@ -39,7 +39,7 @@ from guardian.shortcuts import (
     assign_perm,
     remove_perm
 )
-from geonode import qgis_server, geoserver
+from geonode import geoserver
 from geonode.base.models import (
     UserGeoLimit,
     GroupGeoLimit
@@ -349,11 +349,6 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertEqual(geofence_rules_count, 15)
 
         self.client.logout()
-
-        if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-            self.client.login(username='bobby', password='bob')
-            resp = self.client.get(self.list_url)
-            self.assertEqual(len(self.deserialize(resp)['objects']), 2)
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             self.client.login(username='bobby', password='bob')

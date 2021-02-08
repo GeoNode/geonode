@@ -18,17 +18,13 @@
 #
 #########################################################################
 import re
-import json
 import logging
 
-from django.urls import resolve
 from django.db.models import Q
 from django.http import HttpResponse
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
 from tastypie.authentication import MultiAuthentication, SessionAuthentication
-from django.template.response import TemplateResponse
-from tastypie import http
 from tastypie.bundle import Bundle
 
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
@@ -46,7 +42,7 @@ from django.forms.models import model_to_dict
 
 from tastypie.utils.mime import build_content_type
 
-from geonode import get_version, qgis_server, geoserver
+from geonode import get_version, geoserver
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.geoapps.models import GeoApp
@@ -714,17 +710,7 @@ class LayerResource(CommonModelApi):
         null=True,
         use_in='all',
         default=[])
-    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-        default_style = fields.ForeignKey(
-            'geonode.api.api.StyleResource',
-            attribute='qgis_default_style',
-            null=True)
-        styles = fields.ManyToManyField(
-            'geonode.api.api.StyleResource',
-            attribute='qgis_styles',
-            null=True,
-            use_in='detail')
-    elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         default_style = fields.ForeignKey(
             'geonode.api.api.StyleResource',
             attribute='default_style',
@@ -830,35 +816,12 @@ class LayerResource(CommonModelApi):
     def dehydrate_gtype(self, bundle):
         return bundle.obj.gtype
 
-    def populate_object(self, obj):
-        """Populate results with necessary fields
-
-        :param obj: Layer obj
-        :type obj: Layer
-        :return:
-        """
-        if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-            # Provides custom links for QGIS Server styles info
-            # Default style
-            try:
-                obj.qgis_default_style = obj.qgis_layer.default_style
-            except Exception:
-                obj.qgis_default_style = None
-
-            # Styles
-            try:
-                obj.qgis_styles = obj.qgis_layer.styles
-            except Exception:
-                obj.qgis_styles = []
-        return obj
-
     def build_bundle(
             self, obj=None, data=None, request=None, **kwargs):
         """Override build_bundle method to add additional info."""
 
         if obj is None and self._meta.object_class:
             obj = self._meta.object_class()
-
         elif obj:
             obj = self.populate_object(obj)
 
@@ -867,50 +830,14 @@ class LayerResource(CommonModelApi):
             data=data,
             request=request, **kwargs)
 
-    def patch_detail(self, request, **kwargs):
-        """Allow patch request to update default_style.
+    def populate_object(self, obj):
+        """Populate results with necessary fields
 
-        Request body must match this:
-
-        {
-            'default_style': <resource_uri_to_style>
-        }
-
+        :param obj: Layer obj
+        :type obj: Layer
+        :return:
         """
-        reason = 'Can only patch "default_style" field.'
-        try:
-            body = json.loads(request.body)
-            if 'default_style' not in body:
-                return http.HttpBadRequest(reason=reason)
-            match = resolve(body['default_style'])
-            style_id = match.kwargs['id']
-            api_name = match.kwargs['api_name']
-            resource_name = match.kwargs['resource_name']
-            if not (resource_name == 'styles' and api_name == 'api'):
-                raise Exception()
-
-            from geonode.qgis_server.models import QGISServerStyle
-
-            style = QGISServerStyle.objects.get(id=style_id)
-
-            layer_id = kwargs['id']
-            layer = Layer.objects.get(id=layer_id)
-        except Exception:
-            return http.HttpBadRequest(reason=reason)
-
-        from geonode.qgis_server.views import default_qml_style
-
-        request.method = 'POST'
-        response = default_qml_style(
-            request,
-            layername=layer.name,
-            style_name=style.name)
-
-        if isinstance(response, TemplateResponse):
-            if response.status_code == 200:
-                return HttpResponse(status=200)
-
-        return self.error_response(request, response.content)
+        return obj
 
     # copy parent attribute before modifying
     VALUES = CommonModelApi.VALUES[:]
