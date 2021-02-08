@@ -51,9 +51,9 @@ def convertExifLocationToDecimalDegrees(location, direction):
     if location:
         dd = 0.0
         d, m, s = location
-        dd += float(d[0]) / float(d[1])
-        dd += (float(m[0]) / float(m[1])) / 60.0
-        dd += (float(s[0]) / float(s[1])) / 3600.0
+        dd += float(d)
+        dd += float(m) / 60.0
+        dd += float(s) / 3600.0
 
         if direction:
             if direction.lower() == 's' or direction.lower() == 'w':
@@ -71,7 +71,7 @@ def exif_extract_dict(doc):
     if not doc.doc_file:
         return None
 
-    if os.path.splitext(doc.doc_file.name)[1].lower()[1:] in ["jpg", "jpeg"]:
+    if os.path.splitext(doc.doc_file.name)[1].lower()[1:] in {"jpg", "jpeg"}:
         from PIL import Image, ExifTags
         img = Image.open(doc.doc_file.path)
         exif_data = {
@@ -134,7 +134,7 @@ def exif_extract_metadata_doc(doc):
     if not doc.doc_file:
         return None
 
-    if os.path.splitext(doc.doc_file.name)[1].lower()[1:] in ["jpg", "jpeg"]:
+    if os.path.splitext(doc.doc_file.name)[1].lower()[1:] in {"jpg", "jpeg"}:
         from PIL import Image, ExifTags
         img = Image.open(doc.doc_file.path)
         exif_data = {
@@ -179,7 +179,7 @@ def exif_extract_metadata_doc(doc):
             if "GPSLatitude" in gpsinfo and "GPSLongitude" in gpsinfo:
                 lat = convertExifLocationToDecimalDegrees(gpsinfo["GPSLatitude"], gpsinfo.get('GPSLatitudeRef', 'N'))
                 lon = convertExifLocationToDecimalDegrees(gpsinfo["GPSLongitude"], gpsinfo.get('GPSLongitudeRef', 'E'))
-                bbox = (lon, lon, lat, lat)
+                bbox = [lon, lon, lat, lat]
 
         abstract = exif_build_abstract(model=model, date=date, lat=lat, lon=lon)
 

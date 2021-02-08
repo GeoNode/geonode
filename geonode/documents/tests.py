@@ -380,7 +380,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         Model = Document
         view = 'document_batch_metadata'
         resources = Model.objects.all()[:3]
-        ids = ','.join([str(element.pk) for element in resources])
+        ids = ','.join(str(element.pk) for element in resources)
         # test non-admin access
         self.client.login(username="bobby", password="bob")
         response = self.client.get(reverse(view))
@@ -468,6 +468,23 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
     def _get_input_path(self):
         base_path = gisdata.GOOD_DATA
         return os.path.join(base_path, 'vector', 'readme.txt')
+
+    def test_document_upload_redirect(self):
+        with self.settings(ADMIN_MODERATE_UPLOADS=False):
+            self.client.login(username=self.user, password=self.passwd)
+            input_path = self._get_input_path()
+            document_upload_url = "{}".format(reverse('document_upload'))
+            with open(input_path, 'rb') as f:
+                data = {'title': 'document title',
+                        'doc_file': f,
+                        'resource': '',
+                        'extension': 'txt',
+                        'permissions': '{}',
+                        }
+                resp = self.client.post(document_upload_url, data=data)
+                if resp.status_code == 200:
+                    content = resp.content.decode('utf-8')
+                    self.asserTrue("document title" in content)
 
     def test_moderated_upload(self):
         """

@@ -17,11 +17,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import json
 import logging
 
 from defusedxml import lxml as dlxml
+from django.test.utils import override_settings
 
 from pinax.ratings.models import OverallRating
 
@@ -36,7 +36,7 @@ from geonode.settings import on_travis
 from geonode.maps import MapsAppConfig
 from geonode.layers.models import Layer
 from geonode.compat import ensure_string
-from geonode import geoserver, qgis_server
+from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 from geonode.maps.utils import fix_baselayers
 from geonode.base.models import License, Region
@@ -389,7 +389,7 @@ community."
             url(invalid_mapid),
             data=json.dumps(self.perm_spec),
             content_type="application/json")
-        self.assertEqual(response.status_code, 404)
+        self.assertNotEqual(response.status_code, 200)
 
         # Test that GET returns permissions
         response = self.client.get(url(mapid))
@@ -556,6 +556,7 @@ community."
 
         # TODO: only invalid mapform is tested
 
+    @override_settings(ASYNC_SIGNALS=False)
     def test_map_remove(self):
         """Test that map can be properly removed
         """
@@ -599,40 +600,18 @@ community."
         self.assertTrue('/maps/' in response['Location'])
 
         # After removal, map is not existent
+        """
+        Deletes a map and the associated map layers.
+        """
+        try:
+            map_obj = Map.objects.get(id=map_id)
+            map_obj.layer_set.all().delete()
+            map_obj.delete()
+        except Map.DoesNotExist:
+            pass
+        url = reverse('map_detail', args=(map_id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
-
-        # Prepare map object for later test that if it is completely removed
-        # map_obj = Map.objects.all().first()
-
-        # TODO: Also associated layers are not existent
-        # self.assertEquals(map_obj.layer_set.all().count(), 0)
-
-    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
-    def test_map_download_leaflet(self):
-        """ Test that a map can be downloaded as leaflet"""
-        # first, get a new map: user needs to login
-        self.client.login(username='admin', password='admin')
-        new_map = reverse('new_map_json')
-        response = self.client.post(
-            new_map,
-            data=self.viewer_config,
-            content_type="text/json")
-        self.assertEqual(response.status_code, 200)
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        map_id = int(json.loads(content)['id'])
-        self.client.logout()
-
-        # then, obtain the map using leaflet
-        response = self.client.get(
-            reverse(
-                'map_download_leaflet', args=(map_id, )))
-
-        # download map leafleT should return OK
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get('Content-Type'), 'html')
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_map_embed(self):
@@ -692,10 +671,11 @@ community."
             response_config_dict['about']['title'])
 
         map_obj.update_from_viewer(config_map, context={})
-        title = config_map['title'] if 'title' in config_map else config_map['about']['title']
-        abstract = config_map['abstract'] if 'abstract' in config_map else config_map['about']['abstract']
-        center = config_map['map']['center'] if 'center' in config_map['map'] else settings.DEFAULT_MAP_CENTER
-        zoom = config_map['map']['zoom'] if 'zoom' in config_map['map'] else settings.DEFAULT_MAP_ZOOM
+        title = config_map.get('title', config_map['about']['title'])
+        abstract = config_map.get('abstract', config_map['about']['abstract'])
+        center = config_map['map'].get('center', settings.DEFAULT_CONTENT_TYPE)
+        zoom = config_map['map'].get('zoom', settings.DEFAULT_MAP_ZOOM)
+
         projection = config_map['map']['projection']
 
         self.assertEqual(map_obj.title, title)
@@ -756,10 +736,10 @@ community."
             response_config_dict['about']['title'])
 
         map_obj.update_from_viewer(config_map, context={})
-        title = config_map['title'] if 'title' in config_map else config_map['about']['title']
-        abstract = config_map['abstract'] if 'abstract' in config_map else config_map['about']['abstract']
-        center = config_map['map']['center'] if 'center' in config_map['map'] else settings.DEFAULT_MAP_CENTER
-        zoom = config_map['map']['zoom'] if 'zoom' in config_map['map'] else settings.DEFAULT_MAP_ZOOM
+        title = config_map.get('title', config_map['about']['title'])
+        abstract = config_map.get('abstract', config_map['about']['abstract'])
+        center = config_map['map'].get('center', settings.DEFAULT_MAP_CENTER)
+        zoom = config_map['map'].get('zoom', settings.DEFAULT_MAP_ZOOM)
         projection = config_map['map']['projection']
 
         self.assertEqual(map_obj.title, title)
@@ -916,20 +896,16 @@ community."
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # number of base layers (we remove the local geoserver entry from the total)
             n_baselayers = len(settings.MAP_BASELAYERS) - 1
-        elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-            # QGIS Server backend already excluded local geoserver entry
-            n_baselayers = len(settings.MAP_BASELAYERS)
-
-        # number of local layers
-        n_locallayers = map_obj.layer_set.filter(local=True).count()
-        fix_baselayers(map_id)
-        self.assertEqual(1, n_baselayers + n_locallayers)
+            # number of local layers
+            n_locallayers = map_obj.layer_set.filter(local=True).count()
+            fix_baselayers(map_id)
+            self.assertEqual(1, n_baselayers + n_locallayers)
 
     def test_batch_edit(self):
         Model = Map
         view = 'map_batch_metadata'
         resources = Model.objects.all()[:3]
-        ids = ','.join([str(element.pk) for element in resources])
+        ids = ','.join(str(element.pk) for element in resources)
         # test non-admin access
         self.client.login(username="bobby", password="bob")
         response = self.client.get(reverse(view))
