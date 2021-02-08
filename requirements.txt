@@ -19,7 +19,7 @@ decorator==4.4.2
 celery==5.0.5
 kombu==5.0.2
 vine==5.0.0
-boto3==1.16.60
+boto3==1.17.3
 six==1.15.0
 tqdm==4.56.0
 Deprecated==1.2.11
