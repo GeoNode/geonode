@@ -167,6 +167,8 @@ class CommonModelApi(ModelResource):
             filters=filters, ignore_bad_filters=ignore_bad_filters, **kwargs)
         if 'type__in' in filters and filters['type__in'] in FILTER_TYPES.keys():
             orm_filters.update({'type': filters.getlist('type__in')})
+        if 'app_type__in' in filters:
+            orm_filters.update({'polymorphic_ctype__model': filters['app_type__in'].lower()})
         if 'extent' in filters:
             orm_filters.update({'extent': filters['extent']})
         orm_filters['f_method'] = filters['f_method'] if 'f_method' in filters else 'and'
@@ -350,7 +352,7 @@ class CommonModelApi(ModelResource):
             subtypes = []
 
             for type in type_facets:
-                if type in ["map", "layer", "document", "user"]:
+                if type in {"map", "layer", "document", "user"}:
                     # Type is one of our Major Types (not a sub type)
                     types.append(type)
                 elif type in LAYER_SUBTYPES.keys():
@@ -394,7 +396,7 @@ class CommonModelApi(ModelResource):
                             SQ(description=Raw(search_word)) |
                             SQ(content=Raw(search_word))
                         )
-                    elif search_word in ["AND", "OR"]:
+                    elif search_word in {"AND", "OR"}:
                         pass
                     elif words[i - 1] == "OR":  # previous word OR this word
                         sqs = sqs.filter_or(
@@ -812,6 +814,7 @@ class LayerResource(CommonModelApi):
             if hasattr(obj, 'curatedthumbnail'):
                 formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
 
+            formatted_obj['processed'] = obj.instance_is_processed
             # put the object on the response stack
             formatted_objects.append(formatted_obj)
         return formatted_objects

@@ -56,7 +56,7 @@ from geonode.base.widgets import TaggitSelect2Custom
 
 
 def metadata_batch_edit(modeladmin, request, queryset):
-    ids = ','.join([str(element.pk) for element in queryset])
+    ids = ','.join(str(element.pk) for element in queryset)
     resource = queryset[0].class_name.lower()
     form = BatchEditForm({
         'ids': ids
@@ -111,7 +111,7 @@ set_batch_permissions.short_description = 'Set permissions'
 
 
 def set_user_and_group_layer_permission(modeladmin, request, queryset):
-    ids = ','.join([str(element.pk) for element in queryset])
+    ids = ','.join(str(element.pk) for element in queryset)
     resource = queryset[0].__class__.__name__.lower()
 
     model_mapper = {

@@ -610,8 +610,6 @@ def file_upload(filename,
 
     # Get a bounding box
     bbox_x0, bbox_x1, bbox_y0, bbox_y1, srid = get_bbox(filename)
-    if srid:
-        srid_url = "http://www.spatialreference.org/ref/" + srid.replace(':', '/').lower() + "/"  # noqa
 
     # by default, if RESOURCE_PUBLISHING=True then layer.is_published
     # must be set to False
