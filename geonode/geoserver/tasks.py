@@ -118,12 +118,15 @@ def geoserver_set_style(
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
-            sld = open(base_file, "rb").read()
-            set_layer_style(
-                instance,
-                instance.alternate,
-                sld,
-                base_file=base_file)
+            try:
+                sld = open(base_file, "rb").read()
+                set_layer_style(
+                    instance,
+                    instance.alternate,
+                    sld,
+                    base_file=base_file)
+            except Exception as e:
+                logger.exception(e)
 
 
 @app.task(
