@@ -82,7 +82,8 @@ from geonode.layers.models import (
 from geonode.layers.utils import (
     file_upload,
     is_raster,
-    is_vector)
+    is_vector,
+    surrogate_escape_string)
 
 from geonode.maps.models import Map
 from geonode.services.models import Service
@@ -270,7 +271,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                     if not saved_layer:
                         msg = 'Failed to process. Could not find matching layer.'
                         raise Exception(msg)
-                    sld = open(base_file).read()
+                    with open(base_file) as sld_file:
+                        sld = sld_file.read()
                     set_layer_style(saved_layer, title, base_file, sld)
                 out['success'] = True
             except Exception as e:
@@ -379,7 +381,7 @@ def layer_upload(request, template='upload/layer_upload.html'):
         for _k in _keys:
             if _k in out:
                 if isinstance(out[_k], string_types):
-                    out[_k] = out[_k].encode(layer_charset, 'surrogateescape').decode('utf-8', 'surrogateescape')
+                    out[_k] = surrogate_escape_string(out[_k], layer_charset)
                 elif isinstance(out[_k], dict):
                     for key, value in out[_k].items():
                         try:
@@ -389,10 +391,8 @@ def layer_upload(request, template='upload/layer_upload.html'):
                                 out[_k][key] = item.as_text().encode(
                                     layer_charset, 'surrogateescape').decode('utf-8', 'surrogateescape')
                             else:
-                                out[_k][key] = item.encode(layer_charset, 'surrogateescape').decode(
-                                    'utf-8', 'surrogateescape')
-                            out[_k][key.encode(layer_charset, 'surrogateescape').decode(
-                                'utf-8', 'surrogateescape')] = out[_k].pop(key)
+                                out[_k][key] = surrogate_escape_string(item, layer_charset)
+                            out[_k][surrogate_escape_string(key, layer_charset)] = out[_k].pop(key)
                         except Exception as e:
                             logger.exception(e)
 
@@ -423,7 +423,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer.add_missing_metadata_author_or_poc()
 
     def decimal_encode(bbox):
-        import decimal
         _bbox = []
         for o in [float(coord) for coord in bbox]:
             if isinstance(o, decimal.Decimal):
@@ -540,8 +539,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         if layer.has_time:
             from geonode.geoserver.views import get_capabilities
-            workspace, layername = layer.alternate.split(
-                ":") if ":" in layer.alternate else (None, layer.alternate)
             # WARNING Please make sure to have enabled DJANGO CACHE as per
             # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
             wms_capabilities_resp = get_capabilities(
@@ -616,7 +613,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             group = GroupProfile.objects.get(slug=layer.group.name)
         except GroupProfile.DoesNotExist:
             group = None
-    # a flag to be used for qgis server
+
     show_popup = False
     if 'show_popup' in request.GET and request.GET["show_popup"]:
         show_popup = True
@@ -683,7 +680,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "show_popup": show_popup,
         "filter": filter,
         "storeType": layer.storeType,
-        "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True
+        "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True,
+        "processed": layer.processed
     }
 
     context_dict["viewer"] = json.dumps(map_obj.viewer_json(
@@ -715,10 +713,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         links = layer.link_set.download().filter(
             Q(name__in=settings.DOWNLOAD_FORMATS_RASTER) |
             Q(link_type='original'))
-    links_view = [item for idx, item in enumerate(links) if
+    links_view = [item for item in links if
                   item.link_type == 'image']
-    links_download = [item for idx, item in enumerate(
-        links) if item.link_type in ('data', 'original')]
+    links_download = [item for item in links if item.link_type in ('data', 'original')]
     for item in links_view:
         if item.url and access_token and 'access_token' not in item.url:
             params = {'access_token': access_token}
@@ -729,15 +726,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             item.url = Request('GET', item.url, params=params).prepare().url
     if request.user.has_perm('view_resourcebase', layer.get_self_resource()):
         context_dict["links"] = links_view
-    if request.user.has_perm(
-        'download_resourcebase',
-            layer.get_self_resource()):
-        if layer.storeType == 'dataStore':
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_VECTOR)
-        else:
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_RASTER)
+    if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
         context_dict["links_download"] = links_download
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
@@ -829,7 +818,6 @@ def load_layer_data(request, template='layers/layer_detail.html'):
 
         context_dict["feature_properties"] = properties
     except Exception:
-        import traceback
         traceback.print_exc()
         logger.error("Possible error with OWSLib.")
     return HttpResponse(json.dumps(context_dict),
@@ -984,9 +972,11 @@ def layer_metadata(
 
         layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
         if not layer_form.is_valid():
+            logger.error(f"Layer Metadata form is not valid: {layer_form.errors}")
             out = {
                 'success': False,
-                'errors': layer_form.errors
+                'errors': [
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in layer_form.errors]
             }
             return HttpResponse(
                 json.dumps(out),
@@ -997,10 +987,43 @@ def layer_metadata(
             instance=layer,
             prefix="layer_attribute_set",
             queryset=Attribute.objects.order_by('display_order'))
+        if not attribute_form.is_valid():
+            logger.error(f"Layer Attributes form is not valid: {attribute_form.errors}")
+            out = {
+                'success': False,
+                'errors': [
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in attribute_form.errors]
+            }
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
             request.POST["category_choice_field"] else None)
+        if not category_form.is_valid():
+            logger.error(f"Layer Category form is not valid: {category_form.errors}")
+            out = {
+                'success': False,
+                'errors': [
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in category_form.errors]
+            }
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
         tkeywords_form = TKeywordForm(request.POST)
+        if not tkeywords_form.is_valid():
+            logger.error(f"Layer Thesauri Keywords form is not valid: {tkeywords_form.errors}")
+            out = {
+                'success': False,
+                'errors': [
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in tkeywords_form.errors]
+            }
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
         layer_form.disable_keywords_widget_for_non_superuser(request.user)
@@ -1369,7 +1392,7 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
         try:
             logger.debug('Deleting Layer {0}'.format(layer))
             with transaction.atomic():
-                layer.delete()
+                Layer.objects.filter(id=layer.id).delete()
         except IntegrityError:
             raise
         except Exception as e:
@@ -1377,7 +1400,7 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
             message = '{0}: {1}.'.format(
                 _('Unable to delete layer'), layer.alternate)
 
-            if 'referenced by layer group' in getattr(e, 'message', ''):
+            if getattr(e, 'message', None) and 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _(
                     'This layer is a member of a layer group, you must remove the layer from the group '
                     'before deleting.')
