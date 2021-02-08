@@ -55,7 +55,7 @@ def confirm(prompt=None, resp=False):
         ans = six.moves.input(prompt)
         if not ans:
             return resp
-        if ans not in ['y', 'Y', 'n', 'N']:
+        if ans not in {'y', 'Y', 'n', 'N'}:
             print('please enter y or n.')
             continue
         if ans == 'y' or ans == 'Y':

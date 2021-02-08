@@ -79,7 +79,7 @@ def facets(context):
     date_lte_filter = request.GET.get('date__lte', None)
     date_range_filter = request.GET.get('date__range', None)
 
-    facet_type = context['facet_type'] if 'facet_type' in context else 'all'
+    facet_type = context.get('facet_type', 'all')
 
     if not settings.SKIP_PERMS_FILTER:
         authorized = []

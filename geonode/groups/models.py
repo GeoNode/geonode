@@ -197,14 +197,14 @@ class GroupProfile(models.Model):
             return True
 
     def join(self, user, **kwargs):
-        if user == user.get_anonymous():
+        if not user or user.is_anonymous or user == user.get_anonymous():
             raise ValueError("The invited user cannot be anonymous")
         member, created = GroupMember.objects.get_or_create(group=self, user=user, defaults=kwargs)
         if not created:
             logger.warning("The invited user \"{0}\" is already a member".format(user.username))
 
     def leave(self, user, **kwargs):
-        if user == user.get_anonymous():
+        if not user or user.is_anonymous or user == user.get_anonymous():
             raise ValueError("The invited user cannot be anonymous")
         member, created = GroupMember.objects.get_or_create(group=self, user=user, defaults=kwargs)
         if not created:
