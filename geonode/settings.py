@@ -23,12 +23,13 @@ import os
 import re
 import ast
 import sys
+import subprocess
+import dj_database_url
+
 from datetime import timedelta
 from distutils.util import strtobool  # noqa
-from urllib.parse import urlparse, urlunparse, urljoin
+from urllib.parse import urlparse, urljoin
 
-import django
-import dj_database_url
 #
 # General Django development settings
 #
@@ -1796,6 +1797,7 @@ PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT = os.environ.get('NOTIFICATIONS_LOCK_WAIT_
 # pinax.notifications
 # or notification
 NOTIFICATIONS_MODULE = 'pinax.notifications'
+ADMINS_ONLY_NOTICE_TYPES = ast.literal_eval(os.getenv('ADMINS_ONLY_NOTICE_TYPES', "['monitoring_alert',]"))
 
 # set to true to have multiple recipients in /message/create/
 USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = ast.literal_eval(

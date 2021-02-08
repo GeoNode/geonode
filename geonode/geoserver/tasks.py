@@ -35,6 +35,7 @@ from geonode.celery_app import app
 from geonode.tasks.tasks import (
     AcquireLock,
     FaultTolerantTask)
+from geonode import GeoNodeException
 from geonode.upload import signals
 from geonode.layers.models import (
     Layer, UploadSession)
@@ -545,6 +546,11 @@ def geoserver_post_save_layers(
                     instance.srid = gs_resource.projection
                 except Exception as e:
                     logger.exception(e)
+                if instance.bbox_x0 and not instance.srid:
+                    # Guessing 'EPSG:4326' by default
+                    instance.srid = 'EPSG:4326'
+                elif not instance.bbox_x0:
+                    raise GeoNodeException("Invalid Projection. Layer is missing CRS!")
 
                 # Iterate over values from geoserver.
                 for key in ['alternate', 'store', 'storeType']:
@@ -587,7 +593,7 @@ def geoserver_post_save_layers(
                     'bbox_x1': instance.bbox_x1,
                     'bbox_y0': instance.bbox_y0,
                     'bbox_y1': instance.bbox_y1,
-                    'srid': 'EPSG:4326'
+                    'srid': instance.srid
                 }
 
                 if is_monochromatic_image(instance.thumbnail_url):
