@@ -35,6 +35,7 @@ from django.http import Http404
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
 from django.template.response import TemplateResponse
+from django.views.decorators.clickjacking import xframe_options_exempt
 from requests import Request
 from itertools import chain
 from six import string_types
@@ -1552,11 +1553,12 @@ def get_layer(request, layername):
             'bbox_y0': layer_obj.bbox_helper.ymin,
             'bbox_y1': layer_obj.bbox_helper.ymax,
         }
-        return HttpResponse(json.dumps(
-            response,
-            ensure_ascii=False,
-            default=decimal_default
-        ),
+        return HttpResponse(
+            json.dumps(
+                response,
+                ensure_ascii=False,
+                default=decimal_default
+            ),
             content_type='application/javascript')
 
 
@@ -1651,6 +1653,14 @@ def layer_sld_edit(
         request,
         layername,
         template='layers/layer_style_edit.html'):
+    return layer_detail(request, layername, template)
+
+
+@xframe_options_exempt
+def layer_embed(
+        request,
+        layername,
+        template='layers/layer_embed.html'):
     return layer_detail(request, layername, template)
 
 
