@@ -22,6 +22,8 @@ import pytz
 import logging
 import timeout_decorator
 
+from datetime import timedelta
+
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext_noop as _
 
