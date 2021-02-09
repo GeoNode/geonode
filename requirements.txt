@@ -152,7 +152,7 @@ pytest-bdd==4.0.2
 splinter==0.14.0
 pytest-splinter==3.3.1
 pytest-django==4.1.0
-setuptools==52.0.0
+setuptools==53.0.0
 pip==21.0.1
 Twisted==20.3.0
 factory-boy==3.2.0
