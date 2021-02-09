@@ -17,14 +17,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import six
 import math
 import logging
-import six
-from urllib.parse import quote, urlsplit
 import traceback
+from urllib.parse import quote, urlsplit, urljoin
 from itertools import chain
-from six import string_types
 
 from guardian.shortcuts import get_perms
 
@@ -76,7 +74,6 @@ from geonode.base.views import batch_modify
 from .tasks import delete_map
 from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
-from requests.compat import urljoin
 from deprecated import deprecated
 
 from dal import autocomplete
@@ -87,8 +84,9 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
     from geonode.geoserver.helpers import ogc_server_settings
-    from geonode.geoserver.helpers import (_render_thumbnail,
-                                           _prepare_thumbnail_body_from_opts)
+    from geonode.geoserver.helpers import (
+        _render_thumbnail,
+        _prepare_thumbnail_body_from_opts)
 elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
     from geonode.qgis_server.helpers import ogc_server_settings
 
@@ -668,7 +666,7 @@ def map_edit(request, mapid, template='maps/map_edit.html'):
 
 
 def clean_config(conf):
-    if isinstance(conf, string_types):
+    if isinstance(conf, six.string_types):
         config = json.loads(conf)
         config_extras = [
             "tools",
@@ -942,8 +940,6 @@ def add_layers_to_map_config(
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             if layer.has_time:
                 from geonode.geoserver.views import get_capabilities
-                workspace, layername = layer.alternate.split(
-                    ":") if ":" in layer.alternate else (None, layer.alternate)
                 # WARNING Please make sure to have enabled DJANGO CACHE as per
                 # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
                 wms_capabilities_resp = get_capabilities(
@@ -1116,7 +1112,9 @@ def map_download(request, mapid, template='maps/map_download.html'):
             return redirect(url)
 
         # the path to geoserver backend continue here
-        resp, content = http_client.request(url, 'POST', body=mapJson)
+        url = urljoin(settings.SITEURL,
+                      reverse("download-map", kwargs={'mapid': mapid}))
+        resp, content = http_client.request(url, 'POST', data=mapJson)
 
         status = int(resp.status_code)
 

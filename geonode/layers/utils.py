@@ -152,9 +152,8 @@ def get_files(filename):
 
     # Let's unzip the filname in case it is a ZIP file
     import tempfile
-    import zipfile
     from geonode.utils import unzip_file
-    if zipfile.is_zipfile(filename):
+    if is_zipfile(filename):
         tempdir = tempfile.mkdtemp()
         _filename = unzip_file(filename,
                                '.shp', tempdir=tempdir)
@@ -279,24 +278,20 @@ def layer_type(filename):
     if extension.lower() == '.zip':
         zf = ZipFile(filename, allowZip64=True)
         # ZipFile doesn't support with statement in 2.6, so don't do it
-        try:
+        with zf:
             for n in zf.namelist():
                 b, e = os.path.splitext(n.lower())
                 if e in shp_exts or e in cov_exts or e in csv_exts:
                     extension = e
-        finally:
-            zf.close()
 
     if extension.lower() == '.tar' or filename.endswith('.tar.gz'):
         tf = tarfile.open(filename)
         # TarFile doesn't support with statement in 2.6, so don't do it
-        try:
+        with tf:
             for n in tf.getnames():
                 b, e = os.path.splitext(n.lower())
                 if e in shp_exts or e in cov_exts or e in csv_exts:
                     extension = e
-        finally:
-            tf.close()
 
     if extension.lower() in vec_exts:
         return 'vector'
@@ -610,8 +605,6 @@ def file_upload(filename,
 
     # Get a bounding box
     bbox_x0, bbox_x1, bbox_y0, bbox_y1, srid = get_bbox(filename)
-    if srid:
-        srid_url = "http://www.spatialreference.org/ref/" + srid.replace(':', '/').lower() + "/"  # noqa
 
     # by default, if RESOURCE_PUBLISHING=True then layer.is_published
     # must be set to False
@@ -661,9 +654,7 @@ def file_upload(filename,
                     identifier=value.lower(),
                     defaults={'description': '', 'gn_description': value})
                 key = 'category'
-                defaults[key] = value
-            else:
-                defaults[key] = value
+            defaults[key] = value
 
     regions_resolved, regions_unresolved = resolve_regions(regions)
     keywords.extend(regions_unresolved)
@@ -781,6 +772,10 @@ def file_upload(filename,
     else:
         try:
             with transaction.atomic():
+                if 'spatial_representation_type' in defaults:
+                    _spatial_ref_type = defaults.pop('spatial_representation_type')
+                    _spatial_ref_type.save()
+                    defaults['spatial_representation_type'] = _spatial_ref_type
                 ResourceBase.objects.filter(
                     id=layer.resourcebase_ptr.id).update(
                     **defaults)
@@ -833,7 +828,7 @@ def upload(incoming, user=None, overwrite=False,
         basename, extension = os.path.splitext(short_filename)
         filename = incoming
 
-        if extension in ['.tif', '.shp', '.tar', '.zip']:
+        if extension in {'.tif', '.shp', '.tar', '.zip'}:
             potential_files.append((basename, filename))
         elif short_filename.endswith('.tar.gz'):
             potential_files.append((basename, filename))
@@ -849,7 +844,7 @@ def upload(incoming, user=None, overwrite=False,
             for short_filename in files:
                 basename, extension = os.path.splitext(short_filename)
                 filename = os.path.join(root, short_filename)
-                if extension in ['.tif', '.shp', '.tar', '.zip']:
+                if extension in {'.tif', '.shp', '.tar', '.zip'}:
                     potential_files.append((basename, filename))
                 elif short_filename.endswith('.tar.gz'):
                     potential_files.append((basename, filename))
@@ -870,10 +865,7 @@ def upload(incoming, user=None, overwrite=False,
         basename, filename = file_pair
         existing_layers = Layer.objects.filter(name=basename)
 
-        if existing_layers.count() > 0:
-            existed = True
-        else:
-            existed = False
+        existed = existing_layers.count() > 0
 
         if existed and skip:
             save_it = False
@@ -959,6 +951,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                      check_bbox=False, ogc_client=None, overwrite=False,
                      width=240, height=200):
     thumbnail_name = None
+    instance.refresh_from_db()
     if isinstance(instance, Layer):
         thumbnail_name = 'layer-%s-thumb.png' % instance.uuid
     elif isinstance(instance, Map):
@@ -992,14 +985,14 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
         image = None
 
         if valid_x and valid_y:
-            Link.objects.get_or_create(resource=instance.get_self_resource(),
-                                       url=thumbnail_remote_url,
-                                       defaults=dict(
-                                           extension='png',
-                                           name="Remote Thumbnail",
-                                           mime='image/png',
-                                           link_type='image',
-            )
+            Link.objects.get_or_create(
+                resource=instance.get_self_resource(),
+                url=thumbnail_remote_url,
+                defaults=dict(
+                    extension='png',
+                    name="Remote Thumbnail",
+                    mime='image/png',
+                    link_type='image')
             )
             ResourceBase.objects.filter(id=instance.id) \
                 .update(thumbnail_url=thumbnail_remote_url)
@@ -1013,10 +1006,11 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                     if is_remote and thumbnail_remote_url:
                         try:
+                            _ogc_server_settings = settings.OGC_SERVER['default']
                             resp, image = ogc_client.request(
                                 thumbnail_remote_url,
                                 headers=headers,
-                                timeout=600)
+                                timeout=_ogc_server_settings.get('TIMEOUT', 60))
                             if 'ServiceException' in image or \
                                     resp.status_code < 200 or resp.status_code > 299:
                                 msg = 'Unable to obtain thumbnail: %s' % image
@@ -1076,16 +1070,18 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                         for _p in params.keys():
                             if _p.lower() not in thumbnail_create_url.lower():
                                 thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (str(_p), str(params[_p]))
+                        _ogc_server_settings = settings.OGC_SERVER['default']
                         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                            _ogc_server_settings = settings.OGC_SERVER['default']
-                            _user = _ogc_server_settings['USER'] if 'USER' in _ogc_server_settings else 'admin'
-                            _pwd = _ogc_server_settings['PASSWORD'] if \
-                                'PASSWORD' in _ogc_server_settings else 'geoserver'
+                            _user = _ogc_server_settings.get('USER', 'admin')
+                            _pwd = _ogc_server_settings.get('PASSWORD', 'geoserver')
                             import base64
                             valid_uname_pw = base64.b64encode(
                                 ("%s:%s" % (_user, _pwd)).encode("UTF-8")).decode("ascii")
                             headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
-                        resp, image = ogc_client.request(thumbnail_create_url, headers=headers)
+                        resp, image = ogc_client.request(
+                            thumbnail_create_url,
+                            headers=headers,
+                            timeout=_ogc_server_settings.get('TIMEOUT', 60))
                         if 'ServiceException' in str(image) or \
                         resp.status_code < 200 or resp.status_code > 299:
                             msg = 'Unable to obtain thumbnail: %s' % image
@@ -1104,6 +1100,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                     msg = 'Unable to obtain thumbnail for: %s' % instance
                     logger.debug(msg)
                     instance.save_thumbnail(thumbnail_name, image=None)
+                    raise Exception(msg)
 
 
 # this is the original implementation of create_gs_thumbnail()
@@ -1175,7 +1172,7 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
                     bbox[3] = float(_bbox[3])
 
     wms_endpoint = getattr(ogc_server_settings, 'WMS_ENDPOINT') or 'ows'
-    wms_version = getattr(ogc_server_settings, 'WMS_VERSION') or '1.1.1'
+    wms_version = getattr(ogc_server_settings, 'WMS_VERSION') or '1.1.0'
     wms_format = getattr(ogc_server_settings, 'WMS_FORMAT') or 'image/png'
 
     params = {
@@ -1236,6 +1233,15 @@ def delete_orphaned_layers():
                     "Failed to delete orphaned layer file '{}': {}".format(filename, e))
 
     return deleted
+
+
+def surrogate_escape_string(input_string, source_character_set):
+    """
+    Escapes a given input string using the provided source character set,
+    using the `surrogateescape` codec error handler.
+    """
+
+    return input_string.encode(source_character_set, "surrogateescape").decode("utf-8", "surrogateescape")
 
 
 def set_layers_permissions(permissions_name, resources_names=None,
@@ -1330,10 +1336,12 @@ def set_layers_permissions(permissions_name, resources_names=None,
                             # Existing permissions on the resource
                             perm_spec = resource.get_all_level_info()
                             if verbose:
-                                print(
-                                    "Initial permissions info for the resource %s:" % resource.title
+                                logger.info(
+                                    f"Initial permissions info for the resource {resource.title}: {perm_spec}"
                                 )
-                                print(perm_spec)
+                                print(
+                                    f"Initial permissions info for the resource {resource.title}: {perm_spec}"
+                                )
                             for u in users:
                                 _user = u
                                 # Add permissions
@@ -1414,9 +1422,12 @@ def set_layers_permissions(permissions_name, resources_names=None,
                             # Set final permissions
                             resource.set_permissions(perm_spec)
                             if verbose:
-                                print(
-                                    "Final permissions info for the resource %s:" % resource.title
+                                logger.info(
+                                    f"Final permissions info for the resource {resource.title}: {perm_spec}"
                                 )
-                                print(perm_spec)
+                                print(
+                                    f"Final permissions info for the resource {resource.title}: {perm_spec}"
+                                )
                         if verbose:
+                            logger.info("Permissions successfully updated!")
                             print("Permissions successfully updated!")

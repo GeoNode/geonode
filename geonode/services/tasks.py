@@ -20,6 +20,7 @@
 """Celery tasks for geonode.services"""
 import time
 import logging
+from hashlib import md5
 
 from . import models
 from . import enumerations
@@ -27,6 +28,7 @@ from .serviceprocessors import get_service_handler
 
 from geonode.celery_app import app
 from geonode.layers.models import Layer
+from geonode.tasks.tasks import AcquireLock
 
 logger = logging.getLogger(__name__)
 
@@ -34,17 +36,14 @@ logger = logging.getLogger(__name__)
 @app.task(
     bind=True,
     name='geonode.services.tasks.harvest_resource',
-    queue='update',
-    countdown=60,
-    # expires=120,
-    acks_late=True,
-    retry=True,
-    retry_policy={
-        'max_retries': 10,
-        'interval_start': 0,
-        'interval_step': 0.2,
-        'interval_max': 0.2,
-    })
+    queue='upload',
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def harvest_resource(self, harvest_job_id):
     harvest_job = models.HarvestJob.objects.get(pk=harvest_job_id)
     harvest_job.update_status(
@@ -84,31 +83,25 @@ def harvest_resource(self, harvest_job_id):
 @app.task(
     bind=True,
     name='geonode.services.tasks.probe_services',
-    queue='update',
-    countdown=60,
-    # expires=120,
-    acks_late=True,
-    retry=True,
-    retry_policy={
-        'max_retries': 10,
-        'interval_start': 0,
-        'interval_step': 0.2,
-        'interval_max': 0.2,
-    })
+    queue='geonode',
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 1, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def probe_services(self):
-    from hashlib import md5
-    from geonode.tasks.tasks import memcache_lock
-
     # The cache key consists of the task name and the MD5 digest
     # of the name.
     name = b'probe_services'
     hexdigest = md5(name).hexdigest()
     lock_id = f'{name.decode()}-lock-{hexdigest}'
-    lock = memcache_lock(lock_id)
-    if lock.acquire(blocking=False) is True:
-        for service in models.Service.objects.all():
-            try:
-                service.probe = service.probe_service()
-                service.save()
-            except Exception as e:
-                logger.error(e)
+    with AcquireLock(lock_id) as lock:
+        if lock.acquire() is True:
+            for service in models.Service.objects.all():
+                try:
+                    service.probe = service.probe_service()
+                    service.save()
+                except Exception as e:
+                    logger.error(e)

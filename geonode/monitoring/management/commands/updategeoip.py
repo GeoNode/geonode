@@ -52,7 +52,6 @@ class Command(BaseCommand):
             return
 
         fname = options['file']
-        fbase = '.'.join(os.path.basename(options['url']).split('.')[:-1])
         if not options['overwrite'] and os.path.exists(fname):
             logger.warning("File exists, won't overwrite %s", fname)
             return

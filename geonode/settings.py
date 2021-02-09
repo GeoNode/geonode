@@ -23,12 +23,13 @@ import os
 import re
 import ast
 import sys
+import subprocess
+import dj_database_url
+
 from datetime import timedelta
 from distutils.util import strtobool  # noqa
-from urllib.parse import urlparse, urlunparse, urljoin
+from urllib.parse import urlparse, urljoin
 
-import django
-import dj_database_url
 #
 # General Django development settings
 #
@@ -874,6 +875,10 @@ GEOSERVER_LOCATION = os.getenv(
     'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
 )
 
+# add trailing slash to geoserver location url.
+if not GEOSERVER_LOCATION.endswith('/'):
+    GEOSERVER_LOCATION = '{}/'.format(GEOSERVER_LOCATION)
+    
 GEOSERVER_PUBLIC_SCHEMA = os.getenv(
     'GEOSERVER_PUBLIC_SCHEMA', SITE_HOST_SCHEMA
 )
@@ -1641,6 +1646,8 @@ BROKER_TRANSPORT_OPTIONS = {
     'visibility_timeout': 86400
 }
 
+CELERY_LOADER = os.environ.get('CELERY_LOADER', 'geonode.loaders.GeoNodeCeleryTaksLoader')
+
 ASYNC_SIGNALS = ast.literal_eval(os.environ.get('ASYNC_SIGNALS', 'False'))
 RABBITMQ_SIGNALS_BROKER_URL = 'amqp://localhost:5672'
 # REDIS_SIGNALS_BROKER_URL = 'redis://localhost:6379/0'
@@ -1663,6 +1670,9 @@ CELERY_IGNORE_RESULT = ast.literal_eval(os.environ.get('CELERY_IGNORE_RESULT', '
 
 # Allow to recover from any unknown crash.
 CELERY_ACKS_LATE = ast.literal_eval(os.environ.get('CELERY_ACKS_LATE', 'True'))
+
+# Add a ten-minutes timeout to all Celery tasks.
+CELERYD_SOFT_TIME_LIMIT = 600
 
 # Set this to False in order to run async
 _EAGER_FLAG = 'False' if ASYNC_SIGNALS else 'True'
@@ -1687,17 +1697,19 @@ CELERY_TASK_QUEUES = (
     Queue('default', GEONODE_EXCHANGE, routing_key='default', priority=0),
     Queue('geonode', GEONODE_EXCHANGE, routing_key='geonode', priority=0),
     Queue('update', GEONODE_EXCHANGE, routing_key='update', priority=0),
+    Queue('upload', GEONODE_EXCHANGE, routing_key='upload', priority=0),
     Queue('cleanup', GEONODE_EXCHANGE, routing_key='cleanup', priority=0),
     Queue('email', GEONODE_EXCHANGE, routing_key='email', priority=0),
+    Queue('security', GEONODE_EXCHANGE, routing_key='security', priority=0),
 )
 
 if USE_GEOSERVER:
     CELERY_TASK_QUEUES += (
         Queue("broadcast", GEOSERVER_EXCHANGE, routing_key="#"),
-        Queue("email.events", GEOSERVER_EXCHANGE, routing_key="email"),
+        Queue("email.events", GEOSERVER_EXCHANGE, routing_key="geoserver.email"),
         Queue("all.geoserver", GEOSERVER_EXCHANGE, routing_key="geoserver.#"),
         Queue("geoserver.catalog", GEOSERVER_EXCHANGE, routing_key="geoserver.catalog"),
-        Queue("geoserver.data", GEOSERVER_EXCHANGE, routing_key="geoserver.catalog"),
+        Queue("geoserver.data", GEOSERVER_EXCHANGE, routing_key="geoserver.data"),
         Queue("geoserver.events", GEOSERVER_EXCHANGE, routing_key="geonode.geoserver"),
         Queue("notifications.events", GEOSERVER_EXCHANGE, routing_key="notifications"),
         Queue("geonode.layer.viewer", GEOSERVER_EXCHANGE, routing_key="geonode.viewer"),
@@ -1785,6 +1797,7 @@ PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT = os.environ.get('NOTIFICATIONS_LOCK_WAIT_
 # pinax.notifications
 # or notification
 NOTIFICATIONS_MODULE = 'pinax.notifications'
+ADMINS_ONLY_NOTICE_TYPES = ast.literal_eval(os.getenv('ADMINS_ONLY_NOTICE_TYPES', "['monitoring_alert',]"))
 
 # set to true to have multiple recipients in /message/create/
 USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = ast.literal_eval(
