@@ -37,10 +37,10 @@ class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
         super(TestSetUnsetUserLayerPermissions, self).setUp()
         self.layers = Layer.objects.all()[:3]
         self.layer_ids = [layer.pk for layer in self.layers]
-        self.user_ids = ','.join([str(element.pk) for element in get_user_model().objects.all()[:3]])
+        self.user_ids = ','.join(str(element.pk) for element in get_user_model().objects.all()[:3])
         self.permission_type = ('r', 'w', 'd')
         self.groups = Group.objects.all()[:3]
-        self.group_ids = ','.join([str(element.pk) for element in self.groups])
+        self.group_ids = ','.join(str(element.pk) for element in self.groups)
 
     def test_redirect_on_get_request(self):
         """

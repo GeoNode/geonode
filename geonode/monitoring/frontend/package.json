@@ -1,6 +1,6 @@
 {
   "name": "geonode-monitoring",
-  "version": "1.0.0",
+  "version": "3.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -37,10 +37,11 @@
     "webpack-parallel-uglify-plugin": "1.1.1"
   },
   "dependencies": {
-    "@material-ui/core": "4.3.1",
-    "@material-ui/icons": "4.2.1",
-    "@material-ui/lab": "4.0.0-alpha.22",
-    "axios": "0.19.0",
+    "@material-ui/core": "4.11.3",
+    "@material-ui/icons": "4.11.2",
+    "@material-ui/lab": "4.0.0-alpha.57",
+    "@material-ui/styles": "4.11.3",
+    "axios": "0.21.1",
     "babel-polyfill": "6.26.0",
     "chroma-js": "2.0.4",
     "clsx": "1.0.4",

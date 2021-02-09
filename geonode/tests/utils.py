@@ -220,13 +220,22 @@ class Client(DjangoTestClient):
             file_path = base + ext
             params['tif_file'] = open(file_path, 'rb')
 
-        base_file = open(_file, 'rb')
-        params['base_file'] = base_file
-        resp = self.make_request(
-            upload_step(),
-            data=params,
-            ajax=True,
-            force_login=True)
+        with open(_file, 'rb') as base_file:
+            params['base_file'] = base_file
+            resp = self.make_request(
+                upload_step(),
+                data=params,
+                ajax=True,
+                force_login=True)
+
+        # Closes the files
+        for spatial_file in spatial_files:
+            if isinstance(params.get(spatial_file), IOBase):
+                params[spatial_file].close()
+
+        if isinstance(params.get("tif_file"), IOBase):
+            params['tif_file'].close()
+
         try:
             return resp, resp.json()
         except ValueError:

@@ -128,6 +128,12 @@ class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
         response = self.client.get(reverse('opensearch_dispatch'))
         self.assertEqual(response.status_code, 200)
 
+    # Settings Tests #
+
+    def test_settings_geoserver_location(self):
+        '''Ensure GEOSERVER_LOCATION variable ends with /'''
+        self.assertTrue(settings.GEOSERVER_LOCATION.endswith('/'))
+
 
 class GeoNodeUtilsTests(GeoNodeBaseTestSupport):
 

@@ -43,7 +43,9 @@ from geonode.base.models import (
     ResourceBase,
     TopicCategory,
     SpatialRepresentationType)
-from geonode.utils import set_resource_default_links
+from geonode.utils import (
+    is_monochromatic_image,
+    set_resource_default_links)
 from geonode.geoserver.upload import geoserver_upload
 from geonode.catalogue.models import catalogue_post_save
 
@@ -57,7 +59,6 @@ from .helpers import (
     cascading_delete,
     fetch_gs_resource,
     create_gs_thumbnail,
-    is_monochromatic_image,
     set_attributes_from_geoserver,
     _invalidate_geowebcache_layer,
     _stylefilterparams_geowebcache_layer)
@@ -95,7 +96,7 @@ def geoserver_update_layers(self, *args, **kwargs):
     expires=30,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5, 'countdown': 10},
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -116,12 +117,15 @@ def geoserver_set_style(
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
-            sld = open(base_file, "rb").read()
-            set_layer_style(
-                instance,
-                instance.alternate,
-                sld,
-                base_file=base_file)
+            try:
+                sld = open(base_file, "rb").read()
+                set_layer_style(
+                    instance,
+                    instance.alternate,
+                    sld,
+                    base_file=base_file)
+            except Exception as e:
+                logger.exception(e)
 
 
 @app.task(
@@ -132,7 +136,7 @@ def geoserver_set_style(
     expires=30,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5, 'countdown': 10},
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -229,7 +233,7 @@ def geoserver_create_style(
     expires=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5, 'countdown': 10},
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -424,7 +428,7 @@ def geoserver_finalize_upload(
     expires=3600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5, 'countdown': 10},
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -668,7 +672,7 @@ def geoserver_post_save_layers(
     expires=30,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 2, 'countdown': 10},
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -686,8 +690,11 @@ def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=Tru
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
-            create_gs_thumbnail(instance, overwrite=overwrite, check_bbox=check_bbox)
-            logger.debug(f"... Created Thumbnail for Layer {instance.title}")
+            try:
+                create_gs_thumbnail(instance, overwrite=overwrite, check_bbox=check_bbox)
+                logger.debug(f"... Created Thumbnail for Layer {instance.title}")
+            except Exception as e:
+                geoserver_create_thumbnail.retry(exc=e)
 
 
 @app.task(

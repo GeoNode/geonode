@@ -440,10 +440,6 @@
       {% get_obj_perms request.user for resource.layer as "layer_perms" %}
     {% endif %}
 
-    {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
-      {% get_obj_perms request.user for resource.layer as "layer_perms" %}
-    {% endif %}
-
     <li class="list-group-item">
       <a href="{% url "layer_metadata_detail" resource.alternate %}">
         <button class="btn btn-primary btn-md btn-block">{% trans "Metadata Detail" %}</button>
@@ -495,14 +491,6 @@
                       <a class="btn btn-default btn-block btn-xs" href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage" %}</a>
                     </div>
                     {% endif %}
-                  {% endif %}
-                {% elif OGC_SERVER.default.BACKEND == 'geonode.qgis_server' and not resource.service %}
-                  {% if "change_layer_style" in layer_perms and preview == 'leaflet' %}
-                  <div class="col-sm-3">
-                    <i class="fa fa-tint fa-3x"></i>
-                    <h4>{% trans "Styles" %}</h4>
-                    <a class="btn btn-default btn-block btn-xs style-edit" data-dismiss="modal" href="#">{% trans "Edit" %}</a>
-                  </div>
                   {% endif %}
                 {% endif %}
                 {% if "change_resourcebase" in perms_list %}
@@ -559,24 +547,24 @@
             <h4 class="modal-title" id="myModalLabel">{% trans "Download Metadata" %}</h4>
           </div>
           <div class="modal-body">
-		    <div style="margin-bottom:20px">
-				 <h5 class="modal-title" id="myModalLabel">
-				{% trans "Full metadata" %}
-				 </h5>
-                 <ul>
- 					<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.txt"> {% trans "Text format" %} </a></li>
- 					<li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.html"> {% trans "HTML format" %} </a></li>
- 				</ul>
-			</div>
-		    <div style="margin-bottom:20px">
-			<h5 class="modal-title" id="myModalLabel">
-			{% trans "Standard Metadata - XML format" %}
-			</h5>
-            <ul>
-              {% for link in metadata %}
-                <li><a href="{{ link.url }}" target="_blank">{{ link.name }}</a></li>
-              {% endfor %}
-            <ul>
+            <div style="margin-bottom:20px">
+                <h5 class="modal-title" id="myModalLabel">
+                {% trans "Full metadata" %}
+                </h5>
+                <ul>
+                    <li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.txt"> {% trans "Text format" %} </a></li>
+                    <li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.html"> {% trans "HTML format" %} </a></li>
+                </ul>
+            </div>
+            <div style="margin-bottom:20px">
+                <h5 class="modal-title" id="myModalLabel">
+                {% trans "Standard Metadata - XML format" %}
+                </h5>
+                <ul>
+                   {% for link in metadata %}
+                   <li><a href="{{ link.url }}" target="_blank">{{ link.name }}</a></li>
+                   {% endfor %}
+                <ul>
             </div>
             {% if resource.storeType == 'dataStore' %}
             <h5 class="modal-title" id="myModalLabel">{% trans "Attribute Information" %}</h5>
@@ -625,7 +613,7 @@
     {% endif %}
     <li class="list-group-item">
       <h4>{% trans "Maps using this layer" %}</h4>
-      {% if map_layers %}
+        {% if map_layers %}
         <p>{% trans "List of maps using this layer:" %}</p>
         {% endif %}
         <ul class="list-unstyled">
@@ -650,7 +638,7 @@
                 {% csrf_token %}
                 <select name="map_id">
                 {% for map in maps %}
-                    <option value="{{ map.id }}">{{ map.title|truncatechars:40 }}</option>
+                <option value="{{ map.id }}">{{ map.title|truncatechars:40 }}</option>
                 {% endfor %}
                 </select>
                 <p>{% trans "Click the button below to add the layer to the selected map." %}</p>
@@ -682,26 +670,12 @@
             {% for style in resource_styles_all %}
             <li>
               {% if resource.default_style == style %}
-              <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.sld_title|default_if_none:style.name }}"/>
+               <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.sld_title|default_if_none:style.name }}"/>
               {% trans "(default style)" %}
               {% else %}
               <input type="radio" name="style" id="{{ style.name }}" value="{{ style.sld_title|default_if_none:style.name }}"/>
               {% endif %}
               <a href="{{ GEOSERVER_BASE_URL }}{{ style.absolute_url }}" >{{ style.sld_title|default_if_none:style.name }}</a>
-            </li>
-            {% empty %}
-            <li>{% trans "No styles associated with this layer" %}</li>
-            {% endfor %}
-        {% elif OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
-            {% for style in resource.qgis_layer.styles.all %}
-            <li>
-              {% if resource.qgis_layer.default_style == style %}
-              <input type="radio" checked name="style" id="{{ style.name }}" value="{{ style.title }}"/>
-              {% trans "(default style)" %}
-              {% else %}
-              <input type="radio" name="style" id="{{ style.name }}" value="{{ style.title }}"/>
-              {% endif %}
-              <a href="{{ style.style_url }}" >{{ style.title }}</a>
             </li>
             {% empty %}
             <li>{% trans "No styles associated with this layer" %}</li>

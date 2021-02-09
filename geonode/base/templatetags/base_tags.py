@@ -80,7 +80,7 @@ def facets(context):
     date_lte_filter = request.GET.get('date__lte', None)
     date_range_filter = request.GET.get('date__range', None)
 
-    facet_type = context['facet_type'] if 'facet_type' in context else 'all'
+    facet_type = context.get('facet_type', 'all')
 
     if not settings.SKIP_PERMS_FILTER:
         authorized = []
@@ -177,7 +177,7 @@ def facets(context):
             documents = documents.filter(id__in=authorized)
 
         counts = documents.values('doc_type').annotate(count=Count('doc_type'))
-        facets = dict([(count['doc_type'], count['count']) for count in counts])
+        facets = {count['doc_type']: count['count'] for count in counts}
 
         return facets
     else:

@@ -20,7 +20,7 @@
 import math
 import logging
 import traceback
-from urllib.parse import quote, urlsplit
+from urllib.parse import quote, urlsplit, urljoin
 from itertools import chain
 
 from guardian.shortcuts import get_perms
@@ -28,7 +28,7 @@ from guardian.shortcuts import get_perms
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import (
@@ -64,7 +64,7 @@ from geonode.base.forms import CategoryForm, TKeywordForm
 from geonode.base.models import (
     Thesaurus,
     TopicCategory)
-from geonode import geoserver, qgis_server
+from geonode import geoserver
 from geonode.groups.models import GroupProfile
 from geonode.base.auth import get_or_create_token
 from geonode.documents.models import get_related_documents
@@ -73,7 +73,6 @@ from geonode.base.views import batch_modify
 from .tasks import delete_map
 from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
-from requests.compat import urljoin
 from deprecated import deprecated
 
 from dal import autocomplete
@@ -84,10 +83,9 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
     from geonode.geoserver.helpers import ogc_server_settings
-    from geonode.geoserver.helpers import (_render_thumbnail,
-                                           _prepare_thumbnail_body_from_opts)
-elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-    from geonode.qgis_server.helpers import ogc_server_settings
+    from geonode.geoserver.helpers import (
+        _render_thumbnail,
+        _prepare_thumbnail_body_from_opts)
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -1104,14 +1102,10 @@ def map_download(request, mapid, template='maps/map_download.html'):
                 j_layers.remove(j_layer)
         mapJson = json.dumps(j_map)
 
-        if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-            url = urljoin(settings.SITEURL,
-                          reverse("qgis_server:download-map", kwargs={'mapid': mapid}))
-            # qgis-server backend stop here, continue on qgis_server/views.py
-            return redirect(url)
-
         # the path to geoserver backend continue here
-        resp, content = http_client.request(url, 'POST', body=mapJson)
+        url = urljoin(settings.SITEURL,
+                      reverse("download-map", kwargs={'mapid': mapid}))
+        resp, content = http_client.request(url, 'POST', data=mapJson)
 
         status = int(resp.status_code)
 
@@ -1321,8 +1315,13 @@ def map_thumbnail(request, mapid):
         try:
             image = _prepare_thumbnail_body_from_opts(
                 request.body, request=request)
-        except Exception:
-            image = _render_thumbnail(request.body)
+        except Exception as e:
+            logger.debug(e)
+            try:
+                image = _render_thumbnail(request.body)
+            except Exception as e:
+                logger.debug(e)
+                image = None
 
         if not image:
             return HttpResponse(

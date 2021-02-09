@@ -58,7 +58,7 @@ def prefix_xsl_line(req, id):
         if resource.metadata_uploaded and resource.metadata_uploaded_preserve:
             md_doc = etree.tostring(dlxml.fromstring(resource.metadata_xml))
         else:
-            md_doc = catalogue.catalogue.csw_gen_xml(resource, 'catalogue/full_metadata.xml')
+            md_doc = catalogue.catalogue.csw_gen_xml(resource, settings.CATALOG_METADATA_TEMPLATE)
         xml = md_doc
     except Exception:
         logger.debug(traceback.format_exc())

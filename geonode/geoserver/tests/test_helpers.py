@@ -21,6 +21,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
 import re
+import json
 import gisdata
 from urllib.parse import urljoin
 
@@ -34,6 +35,7 @@ from geonode.layers.utils import file_upload
 from geonode.layers.populate_layers_data import create_layer_data
 
 from geonode.geoserver.views import _response_callback
+from geonode.geoserver.helpers import _compute_number_of_tiles
 
 import logging
 logger = logging.getLogger(__name__)
@@ -194,3 +196,23 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         }
         _content = _response_callback(**kwargs).content
         self.assertTrue(re.findall(f'{urljoin(settings.SITEURL, "/gs/")}ows', str(_content)))
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_compute_number_of_tiles(self):
+        data = {"preview": '{"bbox":[1331513.3064995816,1333734.7576341194,5599619.355527631,5600574.818381195],\
+"srid":"EPSG:3857","center":{"x":11.971165359906351,"y":44.863749562810995,"crs":"EPSG:4326"},\
+"zoom":16,"width":930,"height":400,"layers":"geonode:presc_N_0405_riso_2020_jol0"}'}
+        top, left, first_row, numberOfRows = _compute_number_of_tiles(json.loads(data['preview']), 400, 500, 256)
+        self.assertEqual(top, -50)
+        self.assertEqual(left, -120)
+        self.assertEqual(numberOfRows, 2)
+        self.assertEqual(numberOfRows * len(first_row), 6)
+        self.assertEqual(first_row[0].x, 34945)
+        self.assertEqual(first_row[0].y, 23609)
+        self.assertEqual(first_row[0].z, 16)
+        self.assertEqual(first_row[1].x, 34946)
+        self.assertEqual(first_row[1].y, first_row[0].y)
+        self.assertEqual(first_row[1].z, first_row[0].z)
+        self.assertEqual(first_row[2].x, 34947)
+        self.assertEqual(first_row[2].y, first_row[0].y)
+        self.assertEqual(first_row[2].z, first_row[0].z)
