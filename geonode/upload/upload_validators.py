@@ -57,7 +57,7 @@ def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types):
             "%(supported)s files are supported. You uploaded a "
             "%(uploaded)s file",
             params={
-                "supported": " , ".join([t.name for t in types]),
+                "supported": " , ".join(t.name for t in types),
                 "uploaded": base_ext
             }
         )
@@ -255,7 +255,7 @@ def validate_shapefile(zip_django_file):
 
 def validate_raster(contents, allow_multiple=False):
     def dupes(_a):
-        return set([x for x in _a if _a.count(x) > 1])
+        return set(x for x in _a if _a.count(x) > 1)
 
     valid_extensions = None
     raster_types = [t for t in files.types if t.layer_type == files.raster]
@@ -271,7 +271,7 @@ def validate_raster(contents, allow_multiple=False):
         f for f in contents if os.path.splitext(str(f).lower())[1] not in raster_exts]
 
     all_extensions = [os.path.splitext(str(f))[1][1:] for f in raster_files]
-    other_extensions = tuple(set([os.path.splitext(str(f))[1][1:] for f in other_files]))
+    other_extensions = tuple(set(os.path.splitext(str(f))[1][1:] for f in other_files))
     valid_extensions = tuple(set(all_extensions))
     dup_extensions = tuple(dupes(all_extensions))
     if dup_extensions:

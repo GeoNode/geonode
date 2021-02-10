@@ -28,9 +28,13 @@ from geonode.services.views import (
     _register_indexed_layers,
 )
 import json
+import logging
 from geonode.compat import ensure_string
 from geonode.people.utils import get_valid_user
 import sys
+
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -74,7 +78,7 @@ class Command(BaseCommand):
         except Service.DoesNotExist:
             service = None
         if service is not None:
-            print("This is an existing Service")
+            logger.info("This is an existing Service")
             register_service = False
             # Then Check that the name is Unique
         try:
@@ -102,7 +106,7 @@ class Command(BaseCommand):
                 print("Service created with id of {}".format(json_response["id"]))
                 service = Service.objects.get(id=json_response["id"])
             else:
-                print("Something went wrong: {}".format(ensure_string(response.content)))
+                logger.error("Something went wrong: {}".format(ensure_string(response.content)))
                 return
 
             print(service.id)

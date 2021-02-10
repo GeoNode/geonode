@@ -22,21 +22,17 @@ import re
 import sys
 import time
 import uuid
-# import base64
 import json
 import errno
 import logging
 import datetime
-import requests
 import tempfile
 import traceback
+import mercantile
 
 from shutil import copyfile
 
-from six import (
-    string_types,
-    reraise as raise_
-)
+
 from PIL import Image, ImageOps
 from io import BytesIO
 
@@ -68,7 +64,11 @@ from owslib.wcs import WebCoverageService
 from owslib.wms import WebMapService
 from geonode import GeoNodeException
 from geonode.base.auth import get_or_create_token
-from geonode.utils import http_client
+from geonode.utils import (
+    _v,
+    http_client,
+    bbox_to_projection,
+    bounds_to_zoom_level)
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.security.views import _perms_info_json
@@ -196,13 +196,15 @@ def extract_name_from_sld(gs_catalog, sld, sld_file=None):
     try:
         if sld:
             if isfile(sld):
-                sld = open(sld, "rb").read()
-            if isinstance(sld, string_types):
+                with open(sld, "rb") as sld_file:
+                    sld = sld_file.read()
+            if isinstance(sld, str):
                 sld = sld.encode('utf-8')
             dom = etree.XML(sld)
         elif sld_file and isfile(sld_file):
-            sld = open(sld_file, "rb").read()
-            if isinstance(sld, string_types):
+            with open(sld_file, "rb") as sld_file:
+                sld = sld_file.read()
+            if isinstance(sld, str):
                 sld = sld.encode('utf-8')
             dom = dlxml.parse(sld)
     except Exception:
@@ -356,13 +358,16 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
     try:
         if sld:
             if isfile(sld):
-                sld = open(sld, "rb").read()
-            elif isinstance(sld, string_types):
+                with open(sld, "rb") as sld_file:
+                    sld = sld_file.read()
+
+            elif isinstance(sld, str):
                 sld = sld.strip('b\'\n')
                 sld = re.sub(r'(\\r)|(\\n)', '', sld).encode("UTF-8")
             etree.XML(sld)
         elif base_file and isfile(base_file):
-            sld = open(base_file, "rb").read()
+            with open(base_file, "rb") as sld_file:
+                sld = sld_file.read()
             dlxml.parse(base_file)
     except Exception:
         logger.exception("The uploaded SLD file is not valid XML")
@@ -581,9 +586,12 @@ def gs_slurp(
     """
     if console is None:
         console = open(os.devnull, 'w')
+
     if verbosity > 0:
         print("Inspecting the available layers in GeoServer ...", file=console)
+
     cat = gs_catalog
+
     if workspace is not None and workspace:
         workspace = cat.get_workspace(workspace)
         if workspace is None:
@@ -613,10 +621,10 @@ def gs_slurp(
         # disregard the filter parameter in the case of deleting layers
         try:
             resources_for_delete_compare = [
-                k for k in resources_for_delete_compare if k.enabled in ["true", True]]
+                k for k in resources_for_delete_compare if k.enabled in {"true", True}]
             if skip_unadvertised:
                 resources_for_delete_compare = [
-                    k for k in resources_for_delete_compare if k.advertised in ["true", True]]
+                    k for k in resources_for_delete_compare if k.advertised in {"true", True}]
         except Exception:
             if ignore_errors:
                 pass
@@ -630,18 +638,18 @@ def gs_slurp(
     _resources = []
     for k in resources:
         try:
-            if k.enabled in ["true", True]:
+            if k.enabled in {"true", True}:
                 _resources.append(k)
         except Exception:
             if ignore_errors:
                 continue
             else:
                 raise
-    # resources = [k for k in resources if k.enabled in ["true", True]]
+    # resources = [k for k in resources if k.enabled in {"true", True}]
     resources = _resources
     if skip_unadvertised:
         try:
-            resources = [k for k in resources if k.advertised in ["true", True]]
+            resources = [k for k in resources if k.advertised in {"true", True}]
         except Exception:
             if ignore_errors:
                 pass
@@ -733,11 +741,9 @@ def gs_slurp(
                 if verbosity > 0:
                     msg = "Stopping process because --ignore-errors was not set and an error was found."
                     print(msg, file=sys.stderr)
-                raise_(
-                    Exception,
-                    Exception("Failed to process {}".format(resource.name), e),
-                    sys.exc_info()[2]
-                )
+
+                raise Exception("Failed to process {}".format(resource.name)) from e
+
         else:
             if created:
                 if not permissions:
@@ -982,7 +988,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             tb = traceback.format_exc()
             logger.debug(tb)
             attribute_map = []
-    elif layer.storeType in ["dataStore", "remoteStore", "wmsStore"]:
+    elif layer.storeType in {"dataStore", "remoteStore", "wmsStore"}:
         typename = layer.alternate if layer.alternate else layer.typename
         dft_url = re.sub(r"\/wms\/?$",
                          "/",
@@ -1230,7 +1236,7 @@ def is_layer_attribute_aggregable(store_type, field_name, field_type):
     if field_type not in LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES:
         return False
     # must not be an identifier type field
-    if field_name.lower() in ['id', 'identifier']:
+    if field_name.lower() in {'id', 'identifier'}:
         return False
 
     return True
@@ -1398,7 +1404,7 @@ def create_geoserver_db_featurestore(
              'Test while idle': 'true',
              'host': db['HOST'],
              'port': db['PORT'] if isinstance(
-                 db['PORT'], string_types) else str(db['PORT']) or '5432',
+                 db['PORT'], str) else str(db['PORT']) or '5432',
              'database': db['NAME'],
              'user': db['USER'],
              'passwd': db['PASSWORD'],
@@ -1469,7 +1475,7 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
 def get_store(cat, name, workspace=None):
     # Make sure workspace is a workspace object and not a string.
     # If the workspace does not exist, continue as if no workspace had been defined.
-    if isinstance(workspace, string_types):
+    if isinstance(workspace, str):
         workspace = cat.get_workspace(workspace)
 
     if workspace is None:
@@ -2023,33 +2029,6 @@ _esri_types = {
     "esriFieldTypeXML": "xsd:anyType"}
 
 
-def is_monochromatic_image(image_url):
-
-    def is_absolute(url):
-        return bool(urlparse(url).netloc)
-
-    try:
-        logger.debug(f"...Checking if '{image_url}' is a blank image")
-        url = image_url if is_absolute(image_url) else urljoin(settings.SITEURL, image_url)
-        response = requests.get(url, verify=False)
-        stream = BytesIO(response.content)
-        img = Image.open(stream).convert("L")
-        stream.close()
-        img.verify()  # verify that it is, in fact an image
-        extr = img.getextrema()
-        a = 0
-        for i in extr:
-            if isinstance(i, tuple):
-                a += abs(i[0] - i[1])
-            else:
-                a = abs(extr[0] - extr[1])
-                break
-        return a == 0
-    except Exception as e:
-        logger.exception(e)
-        return False
-
-
 def _render_thumbnail(req_body, width=240, height=200):
     spec = _fixup_ows_url(req_body)
     url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
@@ -2071,18 +2050,17 @@ def _render_thumbnail(req_body, width=240, height=200):
             raise Exception(content)
 
         # Optimize the Thumbnail size and resolution
-        content_data = BytesIO(content)
-        im = Image.open(content_data)
-        im.thumbnail(
-            (_default_thumb_size['width'], _default_thumb_size['height']),
-            resample=Image.ANTIALIAS)
-        cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']))
-        imgByteArr = BytesIO()
-        cover.save(imgByteArr, format='JPEG')
-        content = imgByteArr.getvalue()
+        with BytesIO(content) as content_data:
+            im = Image.open(content_data)
+            im.thumbnail(
+                (_default_thumb_size['width'], _default_thumb_size['height']),
+                resample=Image.ANTIALIAS)
+            cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']))
+            with BytesIO() as imgByteArr:
+                cover.save(imgByteArr, format='JPEG')
+                content = imgByteArr.getvalue()
     except Exception as e:
         logger.debug(f"Could not sucesfully send data to {url}")
-        logger.debug(f" - user: [{_user}]")
         logger.debug(f" - headers: [{headers}]")
         logger.debug(f" - data: [{spec}]")
         logger.exception(e)
@@ -2117,21 +2095,79 @@ def _dump_image_spec(request_body, image_spec):
         return f"Unable to dump image_spec for request: {request_body}"
 
 
+def _compute_number_of_tiles(request_body, width, height, thumbnail_tile_size):
+
+    def decimal_encode(bbox):
+        import decimal
+        _bbox = []
+        for o in [float(coord) for coord in bbox]:
+            if isinstance(o, decimal.Decimal):
+                o = (str(o) for o in [o])
+            _bbox.append(o)
+        # Must be in the form : [x0, x1, y0, y1]
+        return [_bbox[0], _bbox[1], _bbox[2], _bbox[3]]
+
+    # Compute Bounds
+    wgs84_bbox = decimal_encode(
+        bbox_to_projection([float(coord) for coord in request_body['bbox']] + [request_body['srid'], ],
+                           target_srid=4326)[:4])
+
+    # Fetch XYZ tiles - we are assuming Mercatore here
+    bounds = wgs84_bbox[0:4]
+    # Fixes bounds to tiles system
+    bounds[0] = _v(bounds[0], x=True, target_srid=4326)
+    bounds[1] = _v(bounds[1], x=True, target_srid=4326)
+    if bounds[3] > 85.051:
+        bounds[3] = 85.0
+    if bounds[2] < -85.051:
+        bounds[2] = -85.0
+    if 'zoom' in request_body:
+        zoom = int(request_body['zoom'])
+    else:
+        zoom = bounds_to_zoom_level(bounds, width, height)
+
+    t_ll = mercantile.tile(bounds[0], bounds[2], zoom)
+    t_ur = mercantile.tile(bounds[1], bounds[3], zoom)
+
+    numberOfRows = t_ll.y - t_ur.y + 1
+
+    bounds_ll = mercantile.bounds(t_ll)
+    bounds_ur = mercantile.bounds(t_ur)
+
+    lat_res = abs(thumbnail_tile_size / (bounds_ur.north - bounds_ur.south))
+    lng_res = abs(thumbnail_tile_size / (bounds_ll.east - bounds_ll.west))
+    top = round(abs(bounds_ur.north - bounds[3]) * -lat_res)
+    left = round(abs(bounds_ll.west - bounds[0]) * -lng_res)
+
+    tmp_tile = mercantile.tile(bounds[0], bounds[3], zoom)
+    width_acc = thumbnail_tile_size + int(left)
+    first_row = [tmp_tile]
+    # Add tiles to fill image width
+    _n_step = 0
+    while int(width) > int(width_acc):
+        c = mercantile.ul(tmp_tile.x + 1, tmp_tile.y, zoom)
+        lng = _v(c.lng, x=True, target_srid=4326)
+        if lng == 180.0:
+            lng = -180.0
+        tmp_tile = mercantile.tile(lng, bounds[3], zoom)
+        first_row.append(tmp_tile)
+        width_acc += thumbnail_tile_size
+        _n_step = _n_step + 1
+
+    return top, left, first_row, numberOfRows
+
+
 def _prepare_thumbnail_body_from_opts(request_body, request=None):
     if isinstance(request_body, bytes):
         request_body = request_body.decode("UTF-8")
     try:
-        import mercantile
-        from geonode.utils import (_v,
-                                   bbox_to_projection,
-                                   bounds_to_zoom_level)
         image = None
         _default_thumb_size = getattr(
             settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
         width = _default_thumb_size['width']
         height = _default_thumb_size['height']
 
-        if isinstance(request_body, string_types):
+        if isinstance(request_body, str):
             try:
                 request_body = json.loads(request_body)
             except Exception as e:
@@ -2151,16 +2187,6 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         style='width: {width}px; height: {height}px;
         left: {left}px; top: {top}px;
         opacity: 1; visibility: inherit; position: absolute;'/>\n"""
-
-        def decimal_encode(bbox):
-            import decimal
-            _bbox = []
-            for o in [float(coord) for coord in bbox]:
-                if isinstance(o, decimal.Decimal):
-                    o = (str(o) for o in [o])
-                _bbox.append(o)
-            # Must be in the form : [x0, x1, y0, y1]
-            return [_bbox[0], _bbox[1], _bbox[2], _bbox[3]]
 
         # Sanity Checks
         if 'bbox' not in request_body:
@@ -2191,8 +2217,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
             if 'styles' in request_body:
                 styles = request_body['styles']
 
-            ogc_server_location = request_body["ogc_server_location"] if "ogc_server_location" \
-                in request_body else ogc_server_settings.LOCATION
+            ogc_server_location = request_body.get("ogc_server_location", ogc_server_settings.LOCATION)
             wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or 'wms'
             wms_version = getattr(ogc_server_settings, "WMS_VERSION") or '1.1.0'
             wms_format = getattr(ogc_server_settings, "WMS_FORMAT") or 'image/png'
@@ -2227,52 +2252,9 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
                 ogc_server_location,
                 wms_endpoint) + "?" + _p
 
-        # Compute Bounds
-        wgs84_bbox = decimal_encode(
-            bbox_to_projection([float(coord) for coord in request_body['bbox']] + [request_body['srid'], ],
-                               target_srid=4326)[:4])
+        top, left, first_row, numberOfRows = _compute_number_of_tiles(
+            request_body, width, height, thumbnail_tile_size)
 
-        # Fetch XYZ tiles - we are assuming Mercatore here
-        bounds = wgs84_bbox[0:4]
-        # Fixes bounds to tiles system
-        bounds[0] = _v(bounds[0], x=True, target_srid=4326)
-        bounds[1] = _v(bounds[1], x=True, target_srid=4326)
-        if bounds[3] > 85.051:
-            bounds[3] = 85.0
-        if bounds[2] < -85.051:
-            bounds[2] = -85.0
-        if 'zoom' in request_body:
-            zoom = int(request_body['zoom'])
-        else:
-            zoom = bounds_to_zoom_level(bounds, width, height)
-
-        t_ll = mercantile.tile(bounds[0], bounds[2], zoom)
-        t_ur = mercantile.tile(bounds[1], bounds[3], zoom)
-
-        numberOfRows = t_ll.y - t_ur.y + 1
-
-        bounds_ll = mercantile.bounds(t_ll)
-        bounds_ur = mercantile.bounds(t_ur)
-
-        lat_res = abs(thumbnail_tile_size / (bounds_ur.north - bounds_ur.south))
-        lng_res = abs(thumbnail_tile_size / (bounds_ll.east - bounds_ll.west))
-        top = round(abs(bounds_ur.north - bounds[3]) * -lat_res)
-        left = round(abs(bounds_ll.west - bounds[0]) * -lng_res)
-
-        tmp_tile = mercantile.tile(bounds[0], bounds[3], zoom)
-        width_acc = thumbnail_tile_size + int(left)
-        first_row = [tmp_tile]
-        # Add tiles to fill image width
-        _n_step = 0
-        while int(width) > int(width_acc):
-            c = mercantile.ul(tmp_tile.x + 1, tmp_tile.y, zoom)
-            lng = _v(c.lng, x=True, target_srid=4326)
-            if lng == 180.0:
-                lng = -180.0
-            tmp_tile = mercantile.tile(lng, bounds[3], zoom)
-            first_row.append(tmp_tile)
-            width_acc += thumbnail_tile_size
-            _n_step = _n_step + 1
         # Build Image Request Template
         _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
             <div style='position: absolute; top:{top}px; left:{left}px; z-index: 749; \

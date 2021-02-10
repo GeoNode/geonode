@@ -39,7 +39,6 @@ import logging
 import os.path
 import zipfile
 import traceback
-from six import string_types
 
 from django.conf import settings
 from django.db.models import Max
@@ -181,7 +180,7 @@ def upload(
 
     if user is None:
         user = get_default_user()
-    if isinstance(user, string_types):
+    if isinstance(user, str):
         user = get_user_model().objects.get(username=user)
     import_session = save_step(
         user,
@@ -669,7 +668,7 @@ def final_step(upload_session, user, charset="UTF-8"):
         saved_layer = None
         try:
             with transaction.atomic():
-                saved_layer = Layer.objects.create(uuid=layer_uuid)
+                saved_layer = Layer.objects.create(uuid=layer_uuid, owner=user)
                 assert saved_layer is not None
                 created = Layer.objects.filter(id=saved_layer.id).exists()
                 if created:
@@ -681,7 +680,6 @@ def final_step(upload_session, user, charset="UTF-8"):
                         "workspace": target.workspace_name,
                         "title": title,
                         "abstract": abstract or '',
-                        "owner": user,
                         "has_time": _has_time
                     }
                     Layer.objects.filter(id=saved_layer.id).update(**to_update)

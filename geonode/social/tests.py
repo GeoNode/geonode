@@ -24,7 +24,6 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
-import six
 import json
 
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -68,7 +67,7 @@ class SimpleTest(GeoNodeBaseTestSupport):
         # layer.owner (actor) 'uploaded' (verb) layer (object)
         self.assertEqual(action.actor, action.action_object.owner)
         data = action.data
-        if isinstance(data, six.string_types) or isinstance(data, bytes):
+        if isinstance(data, (str, bytes)):
             data = json.loads(data)
         self.assertEqual(data.get('raw_action'), 'created')
         self.assertEqual(data.get('object_name'), layer.name)
@@ -91,7 +90,7 @@ class SimpleTest(GeoNodeBaseTestSupport):
         # <user> deleted <object_name>
         action = Action.objects.all()[0]
         data = action.data
-        if isinstance(data, six.string_types) or isinstance(data, bytes):
+        if isinstance(data, (str, bytes)):
             data = json.loads(data)
         self.assertEqual(data.get('raw_action'), 'deleted')
         self.assertEqual(data.get('object_name'), layer_name)
@@ -122,7 +121,7 @@ class SimpleTest(GeoNodeBaseTestSupport):
 
         action = Action.objects.all()[0]
         data = action.data
-        if isinstance(data, six.string_types) or isinstance(data, bytes):
+        if isinstance(data, (str, bytes)):
             data = json.loads(data)
         self.assertEqual(action.actor, self.user)
         self.assertEqual(data.get('raw_action'), 'created')

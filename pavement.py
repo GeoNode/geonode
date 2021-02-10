@@ -27,6 +27,7 @@ import subprocess
 import signal
 import sys
 import time
+import logging
 
 from urllib.parse import urlparse
 from urllib.request import urlopen, Request
@@ -90,23 +91,26 @@ with open("dev_config.yml", 'r') as f:
     dev_config = yaml.load(f, Loader=yaml.Loader)
 
 
+logger = logging.getLogger(__name__)
+
+
 def grab(src, dest, name):
     src, dest, name = map(str, (src, dest, name))
-    print(f" src, dest, name --> {src} {dest} {name}")
+    logger.info(f" src, dest, name --> {src} {dest} {name}")
 
     if not os.path.exists(dest):
-        print("Downloading {}".format(name))
+        logger.info("Downloading {}".format(name))
     elif not zipfile.is_zipfile(dest):
-        print("Downloading {} (corrupt file)".format(name))
+        logger.info("Downloading {} (corrupt file)".format(name))
     else:
         return
 
     if src.startswith("file://"):
         src2 = src.replace("file://", '')
         if not os.path.exists(src2):
-            print("Source location ({}) does not exist".format(src2))
+            logger.info("Source location ({}) does not exist".format(src2))
         else:
-            print("Copying local file from {}".format(src2))
+            logger.info("Copying local file from {}".format(src2))
             shutil.copyfile(src2, dest)
     else:
         # urlretrieve(str(src), str(dest))
@@ -114,7 +118,7 @@ def grab(src, dest, name):
         r = requests.get(src, stream=True, timeout=10, verify=False)
         # Total size in bytes.
         total_size = int(r.headers.get('content-length', 0))
-        print("Requesting {}".format(src))
+        logger.info("Requesting {}".format(src))
         block_size = 1024
         wrote = 0
         with open("output.bin", 'wb') as f:
@@ -125,9 +129,10 @@ def grab(src, dest, name):
                     unit_scale=False):
                 wrote += len(data)
                 f.write(data)
-        print(" total_size [{}] / wrote [{}] ".format(total_size, wrote))
+        logger.info(" total_size [{}] / wrote [{}] ".format(total_size, wrote))
         if total_size != 0 and wrote != total_size:
-            print("ERROR, something went wrong")
+            logger.error("ERROR, something went wrong. Data could not be written. Expected to write " + wrote +
+                         " but wrote " + total_size + " instead")
         else:
             shutil.move("output.bin", dest)
         try:
@@ -146,8 +151,7 @@ def grab(src, dest, name):
 def setup_geoserver(options):
     """Prepare a testing instance of GeoServer."""
     # only start if using Geoserver backend
-    _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
-    if _backend == 'geonode.qgis_server' or 'geonode.geoserver' not in INSTALLED_APPS:
+    if 'geonode.geoserver' not in INSTALLED_APPS:
         return
     if on_travis and not options.get('force_exec', False):
         """Will make use of the docker container for the Integration Tests"""
@@ -180,50 +184,10 @@ def setup_geoserver(options):
             if not webapp_dir:
                 webapp_dir.makedirs()
 
-            print("extracting geoserver")
+            logger.info("extracting geoserver")
             z = zipfile.ZipFile(geoserver_bin, "r")
             z.extractall(webapp_dir)
         _install_data_dir()
-
-
-@task
-def setup_qgis_server(options):
-    """Prepare a testing instance of QGIS Server."""
-    # only start if using QGIS Server backend
-    _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
-    if _backend == 'geonode.geoserver' or 'geonode.qgis_server' not in INSTALLED_APPS:
-        return
-
-    # QGIS Server testing instance run on top of docker
-    try:
-        sh('scripts/misc/docker_check.sh')
-    except Exception:
-        info("You need to have docker and docker-compose installed.")
-        return
-
-    info('Docker and docker-compose were installed.')
-    info('Proceeded to setup QGIS Server.')
-    info('Create QGIS Server related folder.')
-
-    try:
-        os.makedirs('geonode/qgis_layer')
-    except Exception:
-        pass
-
-    try:
-        os.makedirs('geonode/qgis_tiles')
-    except Exception:
-        pass
-
-    all_permission = 0o777
-    os.chmod('geonode/qgis_layer', all_permission)
-    stat = os.stat('geonode/qgis_layer')
-    info('Mode : %o' % stat.st_mode)
-    os.chmod('geonode/qgis_tiles', all_permission)
-    stat = os.stat('geonode/qgis_tiles')
-    info('Mode : %o' % stat.st_mode)
-
-    info('QGIS Server related folder successfully setup.')
 
 
 def _robust_rmtree(path, logger=None, max_retries=5):
@@ -318,7 +282,6 @@ def static(options):
 @task
 @needs([
     'setup_geoserver',
-    'setup_qgis_server',
 ])
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
@@ -358,19 +321,19 @@ def win_install_deps(options):
     failed = False
     for package, url in win_packages.items():
         tempfile = download_dir / os.path.basename(url)
-        print("Installing file ... " + tempfile)
+        logger.info("Installing file ... " + tempfile)
         grab_winfiles(url, tempfile, package)
         try:
             easy_install.main([tempfile])
         except Exception as e:
             failed = True
-            print("install failed with error: ", e)
+            logger.error("install failed with error: ", e)
         os.remove(tempfile)
     if failed and sys.maxsize > 2**32:
-        print("64bit architecture is not currently supported")
-        print("try finding the 64 binaries for py2exe, and pyproj")
+        logger.error("64bit architecture is not currently supported")
+        logger.error("try finding the 64 binaries for py2exe, and pyproj")
     elif failed:
-        print("install failed for py2exe, and/or pyproj")
+        logger.error("install failed for py2exe, and/or pyproj")
     else:
         print("Windows dependencies now complete.  Run pip install -e geonode --use-mirrors")
 
@@ -384,7 +347,7 @@ def upgradedb(options):
     Add 'fake' data migrations for existing tables from legacy GeoNode versions
     """
     version = options.get('version')
-    if version in ['1.1', '1.2']:
+    if version in {'1.1', '1.2'}:
         sh("python -W ignore manage.py migrate maps 0001 --fake")
         sh("python -W ignore manage.py migrate avatar 0001 --fake")
     elif version is None:
@@ -495,7 +458,6 @@ def package(options):
 
 @task
 @needs(['start_geoserver',
-        'start_qgis_server',
         'start_django'])
 @cmdopts([
     ('bind=', 'b', 'Bind server to provided IP address and port number.'),
@@ -534,8 +496,7 @@ def stop_geoserver(options):
         return
 
     # only start if using Geoserver backend
-    _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
-    if _backend == 'geonode.qgis_server' or 'geonode.geoserver' not in INSTALLED_APPS:
+    if 'geonode.geoserver' not in INSTALLED_APPS:
         return
     kill('java', 'geoserver')
 
@@ -560,31 +521,8 @@ def stop_geoserver(options):
 
 
 @task
-@cmdopts([
-    ('qgis_server_port=', 'p', 'The port of the QGIS Server instance.')
-])
-def stop_qgis_server(options):
-    """
-    Stop QGIS Server Backend.
-    """
-    # only start if using QGIS Server backend
-    _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
-    if _backend == 'geonode.geoserver' or 'geonode.qgis_server' not in INSTALLED_APPS:
-        return
-    port = options.get('qgis_server_port', '9000')
-
-    sh(
-        'docker-compose -f docker-compose-qgis-server.yml down',
-        env={
-            'GEONODE_PROJECT_PATH': os.getcwd(),
-            'QGIS_SERVER_PORT': port
-        })
-
-
-@task
 @needs([
     'stop_geoserver',
-    'stop_qgis_server'
 ])
 def stop(options):
     """
@@ -661,18 +599,17 @@ def start_geoserver(options):
         return
 
     # only start if using Geoserver backend
-    _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
-    if _backend == 'geonode.qgis_server' or 'geonode.geoserver' not in INSTALLED_APPS:
+    if 'geonode.geoserver' not in INSTALLED_APPS:
         return
 
     GEOSERVER_BASE_URL = OGC_SERVER['default']['LOCATION']
     url = GEOSERVER_BASE_URL
 
     if urlparse(GEOSERVER_BASE_URL).hostname != 'localhost':
-        print("Warning: OGC_SERVER['default']['LOCATION'] hostname is not equal to 'localhost'")
+        logger.warning("Warning: OGC_SERVER['default']['LOCATION'] hostname is not equal to 'localhost'")
 
     if not GEOSERVER_BASE_URL.endswith('/'):
-        print("Error: OGC_SERVER['default']['LOCATION'] does not end with a '/'")
+        logger.error("Error: OGC_SERVER['default']['LOCATION'] does not end with a '/'")
         sys.exit(1)
 
     download_dir = path('downloaded').abspath()
@@ -735,18 +672,18 @@ def start_geoserver(options):
             try:
                 sh(('%(javapath)s -version') % locals())
             except Exception:
-                print("Java was not found in your path.  Trying some other options: ")
+                logger.warning("Java was not found in your path.  Trying some other options: ")
                 javapath_opt = None
                 if os.environ.get('JAVA_HOME', None):
-                    print("Using the JAVA_HOME environment variable")
+                    logger.info("Using the JAVA_HOME environment variable")
                     javapath_opt = os.path.join(os.path.abspath(
                         os.environ['JAVA_HOME']), "bin", "java.exe")
                 elif options.get('java_path'):
                     javapath_opt = options.get('java_path')
                 else:
-                    print("Paver cannot find java in the Windows Environment. "
-                          "Please provide the --java_path flag with your full path to "
-                          "java.exe e.g. --java_path=C:/path/to/java/bin/java.exe")
+                    logger.critical("Paver cannot find java in the Windows Environment. "
+                                    "Please provide the --java_path flag with your full path to "
+                                    "java.exe e.g. --java_path=C:/path/to/java/bin/java.exe")
                     sys.exit(1)
                 # if there are spaces
                 javapath = 'START /B "" "' + javapath_opt + '"'
@@ -779,29 +716,6 @@ def start_geoserver(options):
         info(('GeoServer never started properly or timed out.'
               'It may still be running in the background.'))
         sys.exit(1)
-
-
-@task
-@cmdopts([
-    ('qgis_server_port=', 'p', 'The port of the QGIS Server instance.')
-])
-def start_qgis_server(options):
-    """Start QGIS Server instance with GeoNode related plugins."""
-    # only start if using QGIS Serrver backend
-    _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
-    if _backend == 'geonode.geoserver' or 'geonode.qgis_server' not in INSTALLED_APPS:
-        return
-    info('Starting up QGIS Server...')
-
-    port = options.get('qgis_server_port', '9000')
-
-    sh(
-        'docker-compose -f docker-compose-qgis-server.yml up -d qgis-server',
-        env={
-            'GEONODE_PROJECT_PATH': os.getcwd(),
-            'QGIS_SERVER_PORT': port
-        })
-    info('QGIS Server is up.')
 
 
 @task
@@ -870,12 +784,8 @@ def test_integration(options):
     """
     prefix = options.get('prefix')
     local = str2bool(options.get('local', 'false'))
-    _backend = os.environ.get('BACKEND', OGC_SERVER['default']['BACKEND'])
-    if local and (_backend == 'geonode.geoserver' or 'geonode.qgis_server' not in INSTALLED_APPS):
+    if local:
         call_task('stop_geoserver')
-        _reset()
-    elif _backend == 'geonode.qgis_server':
-        call_task('stop_qgis_server')
         _reset()
 
     name = options.get('name', None)
@@ -885,18 +795,16 @@ def test_integration(options):
         call_task('setup', options={'settings': settings, 'force_exec': True})
 
         if not settings:
-            settings = 'geonode.local_settings' if _backend == 'geonode.qgis_server' else 'geonode.settings'
-            settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
+            settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=geonode.settings'
 
         if name and name in ('geonode.tests.csw', 'geonode.tests.integration', 'geonode.geoserver.tests.integration'):
             call_task('sync', options={'settings': settings})
             if local:
-                if _backend == 'geonode.geoserver':
-                    call_task('start_geoserver', options={'settings': settings, 'force_exec': True})
+                call_task('start_geoserver', options={'settings': settings, 'force_exec': True})
                 call_task('start', options={'settings': settings})
             if integration_server_tests:
                 call_task('setup_data', options={'settings': settings})
-        elif _backend == 'geonode.geoserver' and 'geonode.geoserver' in INSTALLED_APPS:
+        elif 'geonode.geoserver' in INSTALLED_APPS:
             if local:
                 sh("cp geonode/upload/tests/test_settings.py geonode/")
                 settings = 'geonode.test_settings'
@@ -945,8 +853,9 @@ def test_integration(options):
 
 
 @task
-@needs(['start_geoserver',
-        'start_qgis_server'])
+@needs([
+    'start_geoserver',
+])
 @cmdopts([
     ('coverage', 'c', 'use this flag to generate coverage during test runs'),
     ('local=', 'l', 'Set to True if running tests locally')
@@ -958,7 +867,7 @@ def run_tests(options):
     if options.get('coverage'):
         prefix = 'coverage run --branch --source=geonode \
 --omit="*/__init__*,*/test*,*/wsgi*,*/version*,*/migrations*,\
-*/search_indexes*,*/management/*,*/context_processors*,*/upload/*,*/qgis_server/*"'
+*/search_indexes*,*/management/*,*/context_processors*,*/upload/*"'
     else:
         prefix = 'python'
     local = options.get('local', 'false')  # travis uses default to false
@@ -1024,7 +933,7 @@ def setup_data(options):
 
     data_dir = gisdata.GOOD_DATA
 
-    if ctype in ['vector', 'raster', 'time']:
+    if ctype in {'vector', 'raster', 'time'}:
         data_dir = os.path.join(gisdata.GOOD_DATA, ctype)
 
     settings = options.get('settings', '')
@@ -1082,7 +991,7 @@ def deb(options):
         deb_changelog = path('debian') / 'changelog'
         for idx, line in enumerate(fileinput.input([deb_changelog], inplace=True)):
             if idx == 0:
-                print("geonode ({}) {}; urgency=high".format(simple_version, distribution), end='')
+                logger.info("geonode ({}) {}; urgency=high".format(simple_version, distribution), end='')
             else:
                 print(line.replace("urgency=medium", "urgency=high"), end='')
 

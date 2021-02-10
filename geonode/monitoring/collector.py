@@ -23,7 +23,6 @@ import pytz
 from datetime import datetime, timedelta
 from decimal import Decimal
 from itertools import chain
-from six import string_types, integer_types
 
 from django.conf import settings
 from django.db import models
@@ -162,7 +161,7 @@ class CollectorAPI(object):
             if metric_name is None:
                 continue
             value = metric_data['value']
-            if isinstance(value, string_types):
+            if isinstance(value, str):
                 value = value.replace(',', '.')
             mdata = {'value': value,
                      'value_raw': value,
@@ -452,7 +451,7 @@ class CollectorAPI(object):
                                   'label': label,
                                   'samples_count': samples,
                                   'value_raw': value or 0,
-                                  'value_num': value if isinstance(value, integer_types + (float, Decimal,)) else None})
+                                  'value_num': value if isinstance(value, (float, Decimal, int)) else None})
             log.debug(MetricValue.add(**metric_values))
 
     def process(self, service, data, valid_from, valid_to, *args, **kwargs):

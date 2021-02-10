@@ -39,7 +39,7 @@ from guardian.shortcuts import (
     assign_perm,
     remove_perm
 )
-from geonode import qgis_server, geoserver
+from geonode import geoserver
 from geonode.base.models import (
     UserGeoLimit,
     GroupGeoLimit
@@ -164,6 +164,45 @@ class SecurityTest(GeoNodeBaseTestSupport):
             request.path = path
             response = middleware.process_request(request)
             self.assertIsNone(response)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @dump_func_name
+    def test_login_middleware_with_basic_auth(self):
+        """
+        Tests the Geonode login required authentication middleware with Basic authenticated queries
+        """
+        from geonode.security.middleware import LoginRequiredMiddleware
+        middleware = LoginRequiredMiddleware(None)
+
+        black_listed_url = reverse('maps_browse')
+        white_listed_url = reverse('account_login')
+
+        # unauthorized request to black listed URL should be redirected to `redirect_to` URL
+        request = HttpRequest()
+        request.user = get_anonymous_user()
+
+        request.path = black_listed_url
+        response = middleware.process_request(request)
+        if response:
+            self.assertEqual(response.status_code, 302)
+            self.assertTrue(
+                response.get('Location').startswith(
+                    middleware.redirect_to))
+
+        # unauthorized request to white listed URL should be allowed
+        request.path = white_listed_url
+        response = middleware.process_request(request)
+        self.assertIsNone(
+            response,
+            msg="Middleware activated for white listed path: {0}".format(black_listed_url))
+
+        # Basic authorized request to black listed URL should be allowed
+        request.path = black_listed_url
+        request.META["HTTP_AUTHORIZATION"] = f'Basic {base64.b64encode(b"bobby:bob").decode("utf-8")}'
+        response = middleware.process_request(request)
+        self.assertIsNone(
+            response,
+            msg="Middleware activated for white listed path: {0}".format(black_listed_url))
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @dump_func_name
@@ -310,11 +349,6 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertEqual(geofence_rules_count, 15)
 
         self.client.logout()
-
-        if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-            self.client.login(username='bobby', password='bob')
-            resp = self.client.get(self.list_url)
-            self.assertEqual(len(self.deserialize(resp)['objects']), 2)
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             self.client.login(username='bobby', password='bob')

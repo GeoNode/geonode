@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from six import string_types
 from django import template
 from django.contrib.staticfiles.storage import staticfiles_storage
 
@@ -33,7 +32,7 @@ def group_profile_image(group_profile, css_classes="", size=None):
 
     """
 
-    if isinstance(css_classes, string_types):
+    if isinstance(css_classes, str):
         class_attr = 'class="{}" '.format(css_classes)
     else:
         try:

@@ -28,7 +28,6 @@ import logging
 import traceback
 import requests
 
-from six import string_types
 from requests.auth import HTTPBasicAuth
 from django.conf import settings
 from django.db.models import Q
@@ -243,7 +242,7 @@ def purge_geofence_all():
                     if rules_count > 0:
                         # Delete GeoFence Rules associated to the Layer
                         # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
-                        for i, rule in enumerate(rules):
+                        for rule in rules:
                             r = requests.delete(url + 'rest/geofence/rules/id/' + str(rule['id']),
                                                 headers=headers,
                                                 auth=HTTPBasicAuth(user, passwd))
@@ -291,7 +290,7 @@ def purge_geofence_layer_rules(resource):
 
             # Delete GeoFence Rules associated to the Layer
             # curl -X DELETE -u admin:geoserver http://<host>:<port>/geoserver/rest/geofence/rules/id/{r_id}
-            for i, r_id in enumerate(r_ids):
+            for r_id in r_ids:
                 r = requests.delete(
                     url + 'rest/geofence/rules/id/' + str(r_id),
                     headers=headers,
@@ -555,7 +554,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
     if 'change_layer_data' not in perms:
         _skip_perm = False
         if user and group_perms:
-            if isinstance(user, string_types):
+            if isinstance(user, str):
                 user = get_user_model().objects.get(username=user)
             user_groups = list(user.groups.all().values_list('name', flat=True))
             for _group, _perm in group_perms.items():
@@ -576,13 +575,13 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
     anonymous_geolimits = None
 
     if user:
-        _user = user if isinstance(user, string_types) else user.username
+        _user = user if isinstance(user, str) else user.username
         users_geolimits = layer.users_geolimits.filter(user=get_user_model().objects.get(username=_user))
         gf_services["*"] = users_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
         _disable_layer_cache = users_geolimits.count() > 0
 
     if group:
-        _group = group if isinstance(group, string_types) else group.name
+        _group = group if isinstance(group, str) else group.name
         if GroupProfile.objects.filter(group__name=_group).count() == 1:
             groups_geolimits = layer.groups_geolimits.filter(group=GroupProfile.objects.get(group__name=_group))
             gf_services["*"] = groups_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
@@ -673,7 +672,7 @@ def set_owner_permissions(resource, members=None):
         for perm in admin_perms:
             if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
                 assign_perm(perm, resource.owner, resource.get_self_resource())
-            elif perm not in ['change_resourcebase_permissions', 'publish_resourcebase']:
+            elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:
                 assign_perm(perm, resource.owner, resource.get_self_resource())
             if members:
                 for user in members:
@@ -841,3 +840,19 @@ def sync_resources_with_guardian(resource=None):
                 except Exception as e:
                     logger.exception(e)
                     logger.warn("!WARNING! - Failure Synching-up Security Rules for Resource [%s]" % (r))
+
+
+def spec_perms_is_empty(perm_spec):
+    _user_empty = True
+    if 'users' in perm_spec and len(perm_spec['users']) > 0:
+        for user, perms in perm_spec['users'].items():
+            if perms and len(perms) > 0:
+                _user_empty = False
+
+    _group_empty = True
+    if 'groups' in perm_spec and len(perm_spec['groups']) > 0:
+        for group, perms in perm_spec['groups'].items():
+            if perms and len(perms) > 0:
+                _group_empty = False
+
+    return (_user_empty and _group_empty)

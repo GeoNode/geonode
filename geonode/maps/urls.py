@@ -20,9 +20,6 @@
 
 from django.conf.urls import url, include
 from django.views.generic import TemplateView
-
-from geonode import geoserver, qgis_server
-from geonode.utils import check_ogc_backend
 from geonode.monitoring import register_url_event
 
 from . import views
@@ -33,30 +30,10 @@ js_info_dict = {
 
 new_map_view = views.new_map
 existing_map_view = views.map_view
-
-if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    new_map_view = views.new_map
-    existing_map_view = views.map_view
-    map_embed = views.map_embed
-    map_edit = views.map_edit
-    map_json = views.map_json
-    map_thumbnail = views.map_thumbnail
-
-elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-    from geonode.maps.qgis_server_views import MapCreateView, \
-        MapDetailView, MapEmbedView, MapEditView, MapUpdateView
-
-    new_map_view = MapCreateView.as_view()
-    existing_map_view = MapDetailView.as_view()
-    map_embed = MapEmbedView.as_view()
-
-    from geonode.maps.qgis_server_views import map_download_qlr, \
-        map_download_leaflet, set_thumbnail_map
-
-    map_edit = MapEditView.as_view()
-    map_json = MapUpdateView.as_view()
-    map_thumbnail = set_thumbnail_map
-
+map_embed = views.map_embed
+map_edit = views.map_edit
+map_json = views.map_json
+map_thumbnail = views.map_thumbnail
 maps_list = register_url_event()(TemplateView.as_view(template_name='maps/map_list.html'))
 
 urlpatterns = [
@@ -91,17 +68,3 @@ urlpatterns = [
         views.MapAutocomplete.as_view(), name='autocomplete_map'),
     url(r'^', include('geonode.maps.api.urls')),
 ]
-
-if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-    # Add QLR url specific for QGIS Server
-    urlpatterns += [
-        url(r'^(?P<mapid>[^/]+)/download$',
-            views.map_download,
-            name='map_download'),
-        url(r'^(?P<mapid>[^/]+)/qlr$',
-            map_download_qlr,
-            name='map_download_qlr'),
-        url(r'^(?P<mapid>[^/]+)/download_leaflet',
-            map_download_leaflet,
-            name='map_download_leaflet'),
-    ]
