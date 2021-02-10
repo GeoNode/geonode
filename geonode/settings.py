@@ -463,7 +463,6 @@ INSTALLED_APPS = (
     # Apps bundled with Django
     'modeltranslation',
     'dal',
-    'rndt',
     'dal_select2',
     'grappelli',
     'django.contrib.auth',
