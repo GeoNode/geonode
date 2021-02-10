@@ -2124,5 +2124,3 @@ SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'Tr
 
 CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
 
-UUID_HANDLER = os.environ.get(
-    'UUID_HANDLER', 'rndt.uuidhandler.UUIDHandler')

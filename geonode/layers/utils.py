@@ -1390,3 +1390,7 @@ def set_layers_permissions(permissions_name, resources_names=None,
                         if verbose:
                             logger.info("Permissions successfully updated!")
                             print("Permissions successfully updated!")
+
+def get_uuid_handler():
+    from django.utils.module_loading import import_string
+    return import_string(settings.LAYER_UUID_HANDLER)
