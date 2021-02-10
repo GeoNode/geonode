@@ -39,7 +39,6 @@ import logging
 import os.path
 import zipfile
 import traceback
-from six import string_types
 
 from django.conf import settings
 from django.db.models import Max
@@ -181,7 +180,7 @@ def upload(
 
     if user is None:
         user = get_default_user()
-    if isinstance(user, string_types):
+    if isinstance(user, str):
         user = get_user_model().objects.get(username=user)
     import_session = save_step(
         user,

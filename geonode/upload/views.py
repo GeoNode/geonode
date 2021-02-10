@@ -42,7 +42,6 @@ import traceback
 import gsimporter
 import tempfile
 
-from six import string_types
 from http.client import BadStatusLine
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -351,7 +350,7 @@ def csv_step_view(request, upload_session):
         lng_candidate = None
         non_str_in_headers = []
         for candidate in attributes:
-            if not isinstance(candidate.name, string_types):
+            if not isinstance(candidate.name, str):
                 non_str_in_headers.append(str(candidate.name))
             if is_latitude(candidate.name):
                 lat_candidate = candidate.name
