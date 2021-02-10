@@ -1484,19 +1484,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
            It is mandatory to call it from descendant classes
            but hard to enforce technically via signals or save overriding.
         """
-        from guardian.models import UserObjectPermission
-        logger.debug('Checking for permissions.')
-        #  True if every key in the get_all_level_info dict is empty.
-        no_custom_permissions = UserObjectPermission.objects.filter(
-            content_type=ContentType.objects.get_for_model(
-                self.get_self_resource()), object_pk=str(
-                self.pk)).exists()
-
-        if not no_custom_permissions:
-            logger.debug(
-                'There are no permissions for this object, setting default perms.')
-            self.set_default_permissions()
-
         user = None
         if self.owner:
             user = self.owner
@@ -1511,6 +1498,19 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 self.poc = user
             if self.metadata_author is None:
                 self.metadata_author = user
+
+        from guardian.models import UserObjectPermission
+        logger.debug('Checking for permissions.')
+        #  True if every key in the get_all_level_info dict is empty.
+        no_custom_permissions = UserObjectPermission.objects.filter(
+            content_type=ContentType.objects.get_for_model(
+                self.get_self_resource()), object_pk=str(
+                self.pk)).exists()
+
+        if not no_custom_permissions:
+            logger.debug(
+                'There are no permissions for this object, setting default perms.')
+            self.set_default_permissions(owner=user)
 
     def maintenance_frequency_title(self):
         return [v for v in UPDATE_FREQUENCIES if v[0] == self.maintenance_frequency][0][1].title()
