@@ -35,7 +35,6 @@ from shutil import copyfile
 
 from PIL import Image, ImageOps
 from io import BytesIO
-
 from itertools import cycle
 from collections import namedtuple, defaultdict
 from os.path import basename, splitext, isfile
@@ -2061,6 +2060,7 @@ def _render_thumbnail(req_body, width=240, height=200):
                 content = imgByteArr.getvalue()
     except Exception as e:
         logger.debug(f"Could not sucesfully send data to {url}")
+        logger.debug(f" - user: [{_user}]")
         logger.debug(f" - headers: [{headers}]")
         logger.debug(f" - data: [{spec}]")
         logger.exception(e)
