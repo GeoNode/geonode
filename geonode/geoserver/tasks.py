@@ -18,7 +18,6 @@
 #
 #########################################################################
 import os
-import six
 import shutil
 import geoserver
 
@@ -277,7 +276,7 @@ def geoserver_finalize_upload(
                     xml_file = xml_file[0]
                 else:
                     xml_file = None
-            elif not isinstance(xml_file, six.string_types):
+            elif not isinstance(xml_file, str):
                 xml_file = None
 
             if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):

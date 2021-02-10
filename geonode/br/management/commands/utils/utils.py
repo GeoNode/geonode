@@ -20,7 +20,6 @@
 
 import os
 import re
-import six
 import sys
 import hashlib
 import psycopg2
@@ -347,7 +346,7 @@ def confirm(prompt=None, resp=False):
         prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
 
     while True:
-        ans = six.moves.input(prompt)
+        ans = input(prompt)
         if not ans:
             return resp
         if ans not in {'y', 'Y', 'n', 'N'}:
