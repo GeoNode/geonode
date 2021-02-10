@@ -42,6 +42,11 @@ from fabric.api import settings as fab_settings
 from fabric.context_managers import settings, hide
 from fabric.contrib.files import sed
 import datetime
+import logging
+
+
+logger = logging.getLogger(__name__)
+
 
 INSTALLDIR = '/var/lib'
 POSTGIS_VER = "1.5.3-2"
@@ -309,7 +314,7 @@ def build_geonode_ami():
     ami_id = output.split('\t')[1]
     if MAKE_PUBLIC:
         sudo("ec2-modify-image-attribute -l -a all -K ~/.ssh/pk-*.pem -C ~/.ssh/cert-*.pem %s" % ami_id)
-    print("AMI %s Ready for Use" % ami_id)
+    logger.info("AMI %s Ready for Use" % ami_id)
 
 
 def install_sample_data():

@@ -437,10 +437,6 @@ GEONODE_INTERNAL_APPS = (
     'geonode.groups',
     'geonode.services',
 
-    # QGIS Server Apps
-    # Only enable this if using QGIS Server
-    # 'geonode.qgis_server',
-
     # GeoServer Apps
     # Geoserver needs to come last because
     # it's signals may rely on other apps' signals.
@@ -663,8 +659,6 @@ LOGGING = {
         "django": {
             "handlers": ["console"], "level": "ERROR", },
         "geonode": {
-            "handlers": ["console"], "level": "ERROR", },
-        "geonode.qgis_server": {
             "handlers": ["console"], "level": "ERROR", },
         "geoserver-restconfig.catalog": {
             "handlers": ["console"], "level": "ERROR", },
@@ -951,6 +945,10 @@ GEOSERVER_LOCATION = os.getenv(
     'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
 )
 
+# add trailing slash to geoserver location url.
+if not GEOSERVER_LOCATION.endswith('/'):
+    GEOSERVER_LOCATION = '{}/'.format(GEOSERVER_LOCATION)
+    
 GEOSERVER_PUBLIC_SCHEMA = os.getenv(
     'GEOSERVER_PUBLIC_SCHEMA', SITE_HOST_SCHEMA
 )
@@ -1282,8 +1280,6 @@ DOWNLOAD_FORMATS_METADATA = [
 DOWNLOAD_FORMATS_VECTOR = [
     'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV',
     'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
-    'QGIS layer file (.qlr)',
-    'QGIS project file (.qgs)',
 ]
 DOWNLOAD_FORMATS_RASTER = [
     'JPEG',
@@ -1298,8 +1294,6 @@ DOWNLOAD_FORMATS_RASTER = [
     'Tiles',
     'GML',
     'GZIP',
-    'QGIS layer file (.qlr)',
-    'QGIS project file (.qgs)',
     'Zipped All Files'
 ]
 
@@ -1876,6 +1870,7 @@ PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT = os.environ.get('NOTIFICATIONS_LOCK_WAIT_
 # pinax.notifications
 # or notification
 NOTIFICATIONS_MODULE = 'pinax.notifications'
+ADMINS_ONLY_NOTICE_TYPES = ast.literal_eval(os.getenv('ADMINS_ONLY_NOTICE_TYPES', "['monitoring_alert',]"))
 
 # set to true to have multiple recipients in /message/create/
 USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = ast.literal_eval(
@@ -2036,10 +2031,15 @@ SOCIALACCOUNT_PROFILE_EXTRACTORS = {
 INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
 
 # Choose thumbnail generator -- this is the default generator
-THUMBNAIL_GENERATOR = "geonode.layers.utils.create_gs_thumbnail_geonode"
-#THUMBNAIL_GENERATOR_DEFAULT_BG = r"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
-THUMBNAIL_GENERATOR_DEFAULT_BG = r"https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"
-THUMBNAIL_GENERATOR_DEFAULT_SIZE = {'width': 240, 'height': 200}
+THUMBNAIL_GENERATOR = os.environ.get(
+    'THUMBNAIL_GENERATOR', 'geonode.layers.utils.create_gs_thumbnail_geonode')
+THUMBNAIL_GENERATOR_DEFAULT_BG = os.environ.get(
+    'THUMBNAIL_GENERATOR_DEFAULT_BG',
+    'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png')
+THUMBNAIL_GENERATOR_DEFAULT_SIZE = {
+    'width': int(os.environ.get('THUMBNAIL_GENERATOR_DEFAULT_SIZE_WIDTH', 240)),
+    'height': int(os.environ.get('THUMBNAIL_GENERATOR_DEFAULT_SIZE_HEIGHT', 200))
+}
 
 # define the urls after the settings are overridden
 if USE_GEOSERVER:
@@ -2121,3 +2121,4 @@ GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat
 SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'True'))
 # -- END Settings for MONITORING plugin
 
+CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")

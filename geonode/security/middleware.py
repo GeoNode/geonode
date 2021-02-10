@@ -28,7 +28,7 @@ from django.utils.deprecation import MiddlewareMixin
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
-from geonode.base.auth import get_token_object_from_session
+from geonode.base.auth import get_token_object_from_session, basic_auth_authenticate_user
 
 from guardian.shortcuts import get_anonymous_user
 
@@ -62,21 +62,39 @@ class LoginRequiredMiddleware(MiddlewareMixin):
 
     """
     Requires a user to be logged in to access any page that is not white-listed.
+
+    This middleware simply checks user property of a request, to determine whether the query is authenticated or not,
+    but since DRF assumes correlation between session authentication and presence of user property in the request,
+    an additional check was introduced in the middleware, to allow Basic authenticated requests without additional
+    middleware setting this property (otherwise, all DRF views configured with:
+    `authentication_classes = [SessionAuthentication,]`
+    would accept Basic authenticated requests (regardless of presence of `BasicAuthentication` in view's
+    authentication_classes).
     """
 
-    redirect_to = getattr(settings, 'LOGIN_URL', reverse('account_login'))
+    redirect_to = getattr(settings, "LOGIN_URL", reverse("account_login"))
 
     def __init__(self, get_response):
         self.get_response = get_response
 
     def process_request(self, request):
-        if not request.user.is_authenticated or \
-        request.user == get_anonymous_user():
+
+        if not request.user.is_authenticated or request.user == get_anonymous_user():
+
+            if "HTTP_AUTHORIZATION" in request.META:
+                auth_header = request.META.get("HTTP_AUTHORIZATION", request.META.get("HTTP_AUTHORIZATION2"))
+
+                if auth_header and "Basic" in auth_header:
+                    user = basic_auth_authenticate_user(auth_header)
+
+                    if user:
+                        # allow Basic Auth authenticated requests with valid credentials
+                        return
+
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(
-                    '{login_path}?next={request_path}'.format(
-                        login_path=self.redirect_to,
-                        request_path=request.path))
+                    "{login_path}?next={request_path}".format(login_path=self.redirect_to, request_path=request.path)
+                )
 
 
 class SessionControlMiddleware(MiddlewareMixin):

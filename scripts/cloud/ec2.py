@@ -34,12 +34,15 @@ import configparser
 import os
 import sys
 import time
-
+import logging
 import botocore
 
 import boto3
 
+
 CONFIG_FILE = ".gnec2.cfg"
+logger = logging.getLogger(__name__)
+
 
 # Ubuntu
 # https://help.ubuntu.com/community/EC2StartersGuide
@@ -101,9 +104,8 @@ def wait_for_state(ec2, instance_id, state):
 
 def writeconfig(config):
     # Writing our configuration file to CONFIG_FILE
-    configfile = open(CONFIG_FILE, 'wb')
-    config.write(configfile)
-    configfile.close()
+    with open(CONFIG_FILE, 'wb') as configfile:
+        config.write(configfile)
 
 
 def readconfig(default_ami=None):
@@ -199,7 +201,7 @@ def launch():
         key_pairs = ec2.describe_key_pairs(KeyNames=[key_name])['KeyPairs']
     except botocore.exceptions.ClientError:
         # Key is not likely not defined
-        print("GeoNode file not found in server.")
+        logger.warning("GeoNode file not found in server.")
         key_pairs = ec2.describe_key_pairs()['KeyPairs']
 
     key = key_pairs[0] if len(
@@ -244,9 +246,8 @@ def terminate():
 
     config.set('ec2', 'HOST', '')
     config.set('ec2', 'INSTANCE', '')
-    configfile = open(CONFIG_FILE, 'wb')
-    config.write(configfile)
-    configfile.close()
+    with open(CONFIG_FILE, 'wb') as configfile:
+        config.write(configfile)
 
 
 if __name__ == '__main__':

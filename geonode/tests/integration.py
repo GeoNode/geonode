@@ -29,7 +29,6 @@ import gisdata
 import logging
 import datetime
 
-from io import BytesIO
 from decimal import Decimal
 from tastypie.test import ResourceTestCaseMixin
 
@@ -51,11 +50,10 @@ from geonode.compat import ensure_string
 from geonode.utils import check_ogc_backend
 from geonode.decorators import on_ogc_backend
 from geonode.base.populate_test_data import all_public
-from geonode.qgis_server.models import QGISServerLayer
 from geonode.geoserver.signals import gs_catalog
 from geonode.geoserver.helpers import cascading_delete
 from geonode.tests.utils import check_layer, get_web_page
-from geonode import GeoNodeException, geoserver, qgis_server
+from geonode import GeoNodeException, geoserver
 
 from contextlib import closing
 from zipfile import ZipFile, ZIP_DEFLATED
@@ -239,22 +237,6 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             # Clean up and completely delete the layer
             uploaded.delete()
 
-    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
-    @timeout_decorator.timeout(LOCAL_TIMEOUT)
-    def test_zipped_files(self):
-        """Test that the zipped files is created for raster."""
-        filename = os.path.join(gisdata.GOOD_DATA, 'raster/test_grid.tif')
-        uploaded = file_upload(filename)
-        try:
-            zip_link = False
-            for link in uploaded.link_set.all():
-                if link.mime == 'ZIP':
-                    zip_link = True
-            self.assertTrue(zip_link)
-        finally:
-            # Clean up and completely delete the layer
-            uploaded.delete()
-
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_layer_upload_bbox(self):
         """Test that the bbox format is correct
@@ -309,7 +291,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
 
         for filename in os.listdir(gisdata.GOOD_DATA):
             basename, extension = os.path.splitext(filename)
-            if extension.lower() in ['.tif', '.shp', '.zip']:
+            if extension.lower() in {'.tif', '.shp', '.zip'}:
                 expected_layers.append(
                     os.path.join(
                         gisdata.GOOD_DATA,
@@ -435,11 +417,6 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     self.assertEqual(
                         len(uploaded.keyword_list()), 5,
                         'Expected specific number of keywords from uploaded layer XML metadata')
-                elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-                    # QGIS Server backend doesn't have GeoServer assigned keywords.
-                    self.assertEqual(
-                        len(uploaded.keyword_list()), 5,
-                        'Expected specific number of keywords from uploaded layer XML metadata')
 
                 self.assertTrue(
                     'Airport,Airports,Landing Strips,Runway,Runways' in uploaded.keyword_csv,
@@ -529,11 +506,6 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                                      'from uploaded layer XML metadata')
 
                     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                        self.assertEqual(
-                            len(uploaded.keyword_list()), 5,
-                            'Expected specific number of keywords from uploaded layer XML metadata')
-                    elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-                        # QGIS Server backend doesn't have GeoServer assigned keywords.
                         self.assertEqual(
                             len(uploaded.keyword_list()), 5,
                             'Expected specific number of keywords from uploaded layer XML metadata')
@@ -855,59 +827,6 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             # Clean up and completely delete the layers
             shp_layer.delete()
 
-    @on_ogc_backend(qgis_server.BACKEND_PACKAGE)
-    @timeout_decorator.timeout(LOCAL_TIMEOUT)
-    def test_qgis_server_cascading_delete(self):
-        """Verify that QGIS Server layer deleted and cascaded."""
-        # Upload a Shapefile
-        shp_file = os.path.join(
-            gisdata.VECTOR_DATA,
-            'san_andres_y_providencia_poi.shp')
-        shp_layer = file_upload(shp_file)
-        try:
-            # get layer and QGIS Server Layer object
-            qgis_layer = shp_layer.qgis_layer
-            base_path = qgis_layer.base_layer_path
-            base_name, _ = os.path.splitext(base_path)
-
-            # get existing files
-            file_paths = qgis_layer.files
-
-            for path in file_paths:
-                self.assertTrue(os.path.exists(path))
-
-            # try to access a tile to trigger tile cache
-            tile_url = reverse(
-                'qgis_server:tile',
-                kwargs={
-                    'layername': shp_layer.name,
-                    'z': 9,
-                    'x': 139,
-                    'y': 238
-                })
-            response = self.client.get(tile_url)
-
-            self.assertTrue(response.status_code, 200)
-
-            self.assertTrue(os.path.exists(qgis_layer.cache_path))
-        finally:
-            # delete layer
-            shp_layer.delete()
-
-        # verify that qgis server layer no longer exists
-        with self.assertRaises(QGISServerLayer.DoesNotExist):
-            QGISServerLayer.objects.get(pk=qgis_layer.pk)
-
-        with self.assertRaises(QGISServerLayer.DoesNotExist):
-            QGISServerLayer.objects.get(layer__id=shp_layer.id)
-
-        # verify that related files in QGIS Server object gets deleted.
-        for path in file_paths:
-            self.assertFalse(os.path.exists(path))
-
-        # verify that cache path gets deleted
-        self.assertFalse(os.path.exists(qgis_layer.cache_path))
-
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_keywords_upload(self):
         """Check that keywords can be passed to file_upload
@@ -1006,21 +925,23 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 gisdata.VECTOR_DATA,
                 'san_andres_y_providencia_coastline.shp')
             layer_path, __ = os.path.splitext(new_vector_file)
-            layer_base = open(layer_path + '.shp', 'rb')
-            layer_dbf = open(layer_path + '.dbf', 'rb')
-            layer_shx = open(layer_path + '.shx', 'rb')
-            layer_prj = open(layer_path + '.prj', 'rb')
 
-            response = self.client.post(
-                vector_replace_url,
-                {'base_file': layer_base,
-                 'dbf_file': layer_dbf,
-                 'shx_file': layer_shx,
-                 'prj_file': layer_prj,
-                 'charset': 'UTF-8',
-                 'permissions': json.dumps(post_permissions)
-                 })
-            response_dict = json.loads(ensure_string(response.content))
+            with open(f'{layer_path}.shp', 'rb') as layer_base, \
+                 open(f'{layer_path}.dbf', 'rb') as layer_dbf, \
+                 open(f'{layer_path}.shx', 'rb') as layer_shx, \
+                 open(f'{layer_path}.prj', 'rb') as layer_prj:
+
+                response = self.client.post(
+                    vector_replace_url,
+                    {
+                        'base_file': layer_base,
+                        'dbf_file': layer_dbf,
+                        'shx_file': layer_shx,
+                        'prj_file': layer_prj,
+                        'charset': 'UTF-8',
+                        'permissions': json.dumps(post_permissions)
+                    })
+                response_dict = json.loads(ensure_string(response.content))
 
             if not response_dict['success'] and 'unknown encoding' in \
                     response_dict['errors']:
@@ -1035,21 +956,22 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     gisdata.VECTOR_DATA,
                     'san_andres_y_providencia_administrative.shp')
                 layer_path, __ = os.path.splitext(new_vector_file)
-                layer_base = open(layer_path + '.shp', 'rb')
-                layer_dbf = open(layer_path + '.dbf', 'rb')
-                layer_shx = open(layer_path + '.shx', 'rb')
-                layer_prj = open(layer_path + '.prj', 'rb')
+                with open(layer_path + '.shp', 'rb') as layer_base, \
+                     open(layer_path + '.dbf', 'rb') as layer_dbf, \
+                     open(layer_path + '.shx', 'rb') as layer_shx, \
+                     open(layer_path + '.prj', 'rb') as layer_prj:
 
-                response = self.client.post(
-                    vector_replace_url,
-                    {'base_file': layer_base,
-                     'dbf_file': layer_dbf,
-                     'shx_file': layer_shx,
-                     'prj_file': layer_prj,
-                     'charset': 'UTF-8',
-                     'permissions': json.dumps(post_permissions)
-                     })
-                response_dict = json.loads(ensure_string(response.content))
+                    response = self.client.post(
+                        vector_replace_url,
+                        {
+                            'base_file': layer_base,
+                            'dbf_file': layer_dbf,
+                            'shx_file': layer_shx,
+                            'prj_file': layer_prj,
+                            'charset': 'UTF-8',
+                            'permissions': json.dumps(post_permissions)
+                        })
+                    response_dict = json.loads(ensure_string(response.content))
 
                 if response_dict['success']:
                     # Get a Layer object for the newly created layer.
@@ -1125,10 +1047,6 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 self.assertEqual(
                     set(lyr.keyword_list()),
                     set(default_keywords))
-            elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-                self.assertEqual(
-                    set(lyr.keyword_list()),
-                    set(default_keywords))
         finally:
             # Clean up and completely delete the layer
             lyr.delete()
@@ -1187,8 +1105,7 @@ class GeoNodeThumbnailTest(GeoNodeLiveTestSupport):
                           center_x=0, center_y=0)
             map_obj.create_from_layer_list(norman, [saved_layer], 'title', '')
             thumbnail_url = map_obj.get_thumbnail_url()
-            if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-                self.assertEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
+            self.assertEqual(thumbnail_url, staticfiles.static(settings.MISSING_THUMBNAIL))
         finally:
             # Cleanup
             saved_layer.delete()
@@ -1305,17 +1222,11 @@ class LayersStylesApiInteractionTests(
                 'version',
                 'workspace'
             ]
-        elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-            field_list += [
-                'style_legend_url'
-            ]
         for f in field_list:
             self.assertTrue(f in obj)
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             self.assertEqual(obj['type'], 'sld')
-        elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-            self.assertEqual(obj['type'], 'qml')
 
         # Check style detail
         detail_url = obj['resource_uri']
@@ -1367,36 +1278,7 @@ class LayersStylesApiInteractionTests(
         self.assertValidJSONResponse(resp)
         obj = self.deserialize(resp)
         style_body = obj['body']
-
-        if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-            style_stream = BytesIO(style_body)
-            # Add virtual filename
-            style_stream.name = 'style.qml'
-            data = {
-                'layer__id': self.layer.id,
-                'name': 'new_style',
-                'title': 'New Style',
-                'style': style_stream
-            }
-            # Use default client to request
-            resp = self.client.post(style_list_url, data=data)
-
-            # Should not be able to add style without authentication
-            self.assertTrue(resp.status_code in [403, 405])
-
-            # Login using anonymous user
-            self.client.login(username='AnonymousUser')
-            style_stream.seek(0)
-            resp = self.client.post(style_list_url, data=data)
-            # Should not be able to add style without correct permission
-            self.assertTrue(resp.status_code in [403, 405])
-            self.client.logout()
-
-            # Use admin credentials
-            self.client.login(username='admin', password='admin')
-            style_stream.seek(0)
-            resp = self.client.post(style_list_url, data=data)
-            self.assertEqual(resp.status_code, 201)
+        self.assertIsNotNone(style_body)
 
         # Check styles count
         filter_url = style_list_url + '?layer__name=' + self.layer.name
@@ -1432,21 +1314,3 @@ class LayersStylesApiInteractionTests(
         self.assertValidJSONResponse(resp)
         obj = self.deserialize(resp)
         self.assertIsNotNone(obj['default_style'])
-
-        if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-            # Attempt to delete style
-            filter_url = style_list_url + '?layer__id=%d&name=%s' % (
-                self.layer.id, data['name'])
-            resp = self.api_client.get(filter_url)
-            self.assertValidJSONResponse(resp)
-            objects = self.deserialize(resp)['objects']
-
-            resource_uri = objects[0]['resource_uri']
-
-            resp = self.client.delete(resource_uri)
-            self.assertEqual(resp.status_code, 204)
-
-            resp = self.api_client.get(filter_url)
-            meta = self.deserialize(resp)['meta']
-
-            self.assertEqual(meta['total_count'], 0)

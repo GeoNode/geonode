@@ -24,7 +24,6 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from .. import geoserver
-from .. import qgis_server
 from ..utils import check_ogc_backend
 from ..layers.forms import JSONField
 
@@ -51,8 +50,6 @@ class LayerUploadForm(forms.Form):
 
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         sld_file = forms.FileField(required=False)
-    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-        qml_file = forms.FileField(required=False)
 
     time = forms.BooleanField(required=False)
 
@@ -84,8 +81,6 @@ class LayerUploadForm(forms.Form):
     # Adding style file based on the backend
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         spatial_files.append('sld_file')
-    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-        spatial_files.append('qml_file')
 
     spatial_files = tuple(spatial_files)
 

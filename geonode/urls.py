@@ -38,7 +38,7 @@ from geonode.api.urls import api, router
 from geonode.api.views import verify_token, user_info, roles, users, admin_role
 from geonode.base.views import thumbnail_upload
 
-from geonode import geoserver, qgis_server  # noqa
+from geonode import geoserver
 from geonode.utils import check_ogc_backend
 from geonode.monitoring import register_url_event
 from geonode.messaging.urls import urlpatterns as msg_urls
@@ -224,13 +224,6 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         url(r'^capabilities/category/(?P<category>\w+)/$',
             get_capabilities, name='capabilities_category'),
         url(r'^gs/', include('geonode.geoserver.urls')),
-    ]
-elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-    # QGIS Server's urls
-    urlpatterns += [  # '',
-        url(r'^qgis-server/',
-            include(('geonode.qgis_server.urls', 'geonode.qgis_server'),
-                    namespace='qgis_server')),
     ]
 
 if settings.NOTIFICATIONS_MODULE in settings.INSTALLED_APPS:

@@ -255,24 +255,6 @@
           </li>
         {% endif %}
 
-        {% if OGC_SERVER.default.BACKEND == 'geonode.qgis_server' %}
-          <li class="list-group-item">
-              <h4>{% trans "Embed this map" %}</h4>
-              <p>{% trans "Embed this map to your own sites" %}</p>
-              <div class="btn-group btn-block">
-                  <button type="button" class="btn btn-default btn-block dropdown-toggle"
-                          data-toggle="dropdown"
-                          aria-haspopup="true" aria-expanded="false">{% trans "Embed Map" %}<span class="caret"></span></button>
-                  <ul class="dropdown-menu btn-block" id="embed-map-list">
-                      <li id="embed-iframe-link">
-                          <a href="#">{% trans "Embed Iframe Link" %}</a></li>
-                      <li>
-                          <a href="{% url 'map_download_leaflet' resource.id %}">{% trans "Download Leaflet page" %}</a></li>
-                  </ul>
-              </div>
-          </li>
-        {% endif %}
-
         {% include "base/_resourcebase_contact_snippet.html" %}
 
       </ul>

@@ -28,6 +28,7 @@ import zipfile
 import requests
 import tempfile
 import warnings
+import logging
 from typing import Union
 from datetime import datetime
 
@@ -50,6 +51,9 @@ from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db.utils import IntegrityError
+
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -349,11 +353,11 @@ class Command(BaseCommand):
                                 call_command('loaddata', fixture_file, app_label=app_name)
                             except IntegrityError as e:
                                 traceback.print_exc()
-                                print("WARNING: The fixture '"+dump_name+"' fails on integrity check and import is aborted after all fixtures have been checked.")
+                                logger.warning("WARNING: The fixture '"+dump_name+"' fails on integrity check and import is aborted after all fixtures have been checked.")
                                 abortlater = True
                             except Exception:
                                 traceback.print_exc()
-                                print("WARNING: No valid fixture data found for '"+dump_name+"'.")
+                                logger.warning("WARNING: No valid fixture data found for '"+dump_name+"'.")
                                 # helpers.load_fixture(app_name, fixture_file)
                                 raise
                         try: 

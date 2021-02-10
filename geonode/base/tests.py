@@ -20,6 +20,7 @@
 
 import os
 from unittest.mock import patch
+from urllib.parse import urlparse
 
 from guardian.shortcuts import assign_perm, get_perms
 from imagekit.cachefiles.backends import Simple
@@ -32,17 +33,25 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.services.models import Service
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.base import thumb_utils
 from geonode.base.models import (
-    ResourceBase, MenuPlaceholder, Menu, MenuItem, Configuration, TopicCategory
-)
+    ResourceBase,
+    MenuPlaceholder,
+    Menu,
+    MenuItem,
+    Configuration,
+    TopicCategory)
+from django.conf import settings
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
+from django.core.files.storage import default_storage as storage
 from django.test import Client, TestCase, override_settings, SimpleTestCase
 from django.shortcuts import reverse
 
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.models import CuratedThumbnail
 from geonode.base.templatetags.base_tags import get_visibile_resources
+from geonode.base.templatetags.user_messages import show_notification
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 
@@ -60,12 +69,49 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         self.rb = ResourceBase.objects.create()
 
     def test_initial_behavior(self):
+        """
+        Tests that an empty resource has a missing image as default thumbnail.
+        """
         self.assertFalse(self.rb.has_thumbnail())
         missing = self.rb.get_thumbnail_url()
         self.assertTrue('missing_thumb' in os.path.splitext(missing)[0])
 
+    def test_empty_image(self):
+        """
+        Tests that an empty image does not change the current resource thumbnail.
+        """
+        current = self.rb.get_thumbnail_url()
+        self.rb.save_thumbnail('test-thumb', None)
+        self.assertEqual(current, urlparse(self.rb.get_thumbnail_url()).path)
+
+    @patch('PIL.Image.open', return_value=test_image)
+    def test_monochromatic_image(self, image):
+        """
+        Tests that an monochromatic image does not change the current resource thumbnail.
+        """
+        current = self.rb.get_thumbnail_url()
+        self.rb.save_thumbnail('test-thumb', image)
+        self.assertEqual(current, urlparse(self.rb.get_thumbnail_url()).path)
+
+    @patch('PIL.Image.open', return_value=test_image)
+    def test_thumb_utils_methods(self, image):
+        """
+        Bunch of tests on thumb_utils helpers.
+        """
+        filename = 'test-thumb'
+        upload_path = thumb_utils.thumb_path(filename)
+        self.assertEqual(upload_path, os.path.join(settings.THUMBNAIL_LOCATION, filename))
+        thumb_utils.remove_thumbs(filename)
+        self.assertFalse(thumb_utils.thumb_exists(filename))
+        f = BytesIO(test_image.tobytes())
+        f.name = filename
+        storage.save(upload_path, File(f))
+        self.assertTrue(thumb_utils.thumb_exists(filename))
+        self.assertEqual(thumb_utils.thumb_size(upload_path), 10000)
+
 
 class TestThumbnailUrl(GeoNodeBaseTestSupport):
+
     def setUp(self):
         super(TestThumbnailUrl, self).setUp()
         rb = ResourceBase.objects.create()
@@ -515,9 +561,6 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
 
 class DeleteResourcesCommandTests(GeoNodeBaseTestSupport):
 
-    def setUp(self):
-        super().setUp()
-
     def test_delete_resources_no_arguments(self):
         args = []
         kwargs = {}
@@ -804,6 +847,13 @@ class TestGetVisibleResource(TestCase):
         assign_perm('view_resourcebase', self.user, self.rb)
         categories = get_visibile_resources(self.user)
         self.assertEqual(categories['iso_formats'].count(), 1)
+
+    def test_visible_notifications(self):
+        """
+        Test that a standard user won't be able to show ADMINS_ONLY_NOTICE_TYPES
+        """
+        self.assertFalse(show_notification('monitoring_alert', self.user))
+        self.assertTrue(show_notification('request_download_resourcebase', self.user))
 
 
 class TestHtmlTagRemoval(SimpleTestCase):

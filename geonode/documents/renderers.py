@@ -110,10 +110,10 @@ def generate_thumbnail_content(image_path, size=(200, 150)):
         if source_width != target_width or source_width != target_height:
             image = ImageOps.fit(image, size, Image.ANTIALIAS)
 
-        output = io.BytesIO()
-        image.save(output, format='PNG')
-        content = output.getvalue()
-        output.close()
+        with io.BytesIO() as output:
+            image.save(output, format='PNG')
+            content = output.getvalue()
+            output.close()
         return content
     except Exception as e:
         raise e
