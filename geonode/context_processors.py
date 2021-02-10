@@ -31,7 +31,7 @@ from geonode.base.models import Configuration, Thesaurus
 def resource_urls(request):
     """Global values to pass to templates"""
     site = Site.objects.get_current()
-    thesaurus = Thesaurus.objects.all().exists()
+    thesaurus = Thesaurus.objects.filter(facet=True).all()
     if hasattr(settings, 'THESAURUS'):
         warnings.warn(
             'Thesaurus settings is going to be'
@@ -176,7 +176,7 @@ def resource_urls(request):
             False
         ),
         THESAURI_FILTERS=[t['name'] for t in [settings.THESAURUS, ] if
-                          t.get('filter')] if hasattr(settings, 'THESAURUS') else [thesaurus],
+                          t.get('filter')] if hasattr(settings, 'THESAURUS') else [t.identifier for t in thesaurus],
         MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS=getattr(
             settings, 'MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS', False
         ),
