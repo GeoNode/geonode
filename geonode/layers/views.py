@@ -383,16 +383,15 @@ def layer_upload(request, template='upload/layer_upload.html'):
                 if isinstance(out[_k], string_types):
                     out[_k] = surrogate_escape_string(out[_k], layer_charset)
                 elif isinstance(out[_k], dict):
-                    for key, value in out[_k].items():
+                    keys = tuple(out[_k].keys())
+                    for key in keys:
                         try:
-                            item = out[_k][key]
+                            value = out[_k][key].as_text() if isinstance(out[_k][key], ErrorList) else out[_k][key]
                             # Ref issue #4241
-                            if isinstance(item, ErrorList):
-                                out[_k][key] = item.as_text().encode(
-                                    layer_charset, 'surrogateescape').decode('utf-8', 'surrogateescape')
-                            else:
-                                out[_k][key] = surrogate_escape_string(item, layer_charset)
-                            out[_k][surrogate_escape_string(key, layer_charset)] = out[_k].pop(key)
+                            clean_key = surrogate_escape_string(key, layer_charset)
+                            clean_value = surrogate_escape_string(value, layer_charset)
+                            out[_k][clean_key] = clean_value  # add new key
+                            out[_k].pop(key)  # remove old key
                         except Exception as e:
                             logger.exception(e)
 
