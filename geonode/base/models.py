@@ -45,8 +45,7 @@ from django.core.files.storage import default_storage as storage
 
 from mptt.models import MPTTModel, TreeForeignKey
 
-from PIL import Image
-from resizeimage import resizeimage
+from PIL import Image, ImageOps
 
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
@@ -931,28 +930,28 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 _notification_sent = False
 
                 # Approval Notifications Here
-                if not _notification_sent and settings.ADMIN_MODERATE_UPLOADS:
-                    if not self.__is_approved and self.is_approved:
-                        # Set "approved" workflow permissions
-                        self.set_workflow_perms(approved=True)
+                if not _notification_sent and settings.ADMIN_MODERATE_UPLOADS and \
+                   not self.__is_approved and self.is_approved:
+                    # Set "approved" workflow permissions
+                    self.set_workflow_perms(approved=True)
 
-                        # Send "approved" notification
-                        notice_type_label = '%s_approved' % self.class_name.lower()
-                        recipients = get_notification_recipients(notice_type_label, resource=self)
-                        send_notification(recipients, notice_type_label, {'resource': self})
-                        _notification_sent = True
+                    # Send "approved" notification
+                    notice_type_label = '%s_approved' % self.class_name.lower()
+                    recipients = get_notification_recipients(notice_type_label, resource=self)
+                    send_notification(recipients, notice_type_label, {'resource': self})
+                    _notification_sent = True
 
                 # Publishing Notifications Here
-                if not _notification_sent and settings.RESOURCE_PUBLISHING:
-                    if not self.__is_published and self.is_published:
-                        # Set "published" workflow permissions
-                        self.set_workflow_perms(published=True)
+                if not _notification_sent and settings.RESOURCE_PUBLISHING and \
+                   not self.__is_published and self.is_published:
+                    # Set "published" workflow permissions
+                    self.set_workflow_perms(published=True)
 
-                        # Send "published" notification
-                        notice_type_label = '%s_published' % self.class_name.lower()
-                        recipients = get_notification_recipients(notice_type_label, resource=self)
-                        send_notification(recipients, notice_type_label, {'resource': self})
-                        _notification_sent = True
+                    # Send "published" notification
+                    notice_type_label = '%s_published' % self.class_name.lower()
+                    recipients = get_notification_recipients(notice_type_label, resource=self)
+                    send_notification(recipients, notice_type_label, {'resource': self})
+                    _notification_sent = True
 
                 # Updated Notifications Here
                 if not _notification_sent:
@@ -1131,22 +1130,22 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         a = []
         if not self.license:
             return ''
-        if (not (self.license.name is None)) and (len(self.license.name) > 0):
+        if self.license.name is not None and (len(self.license.name) > 0):
             a.append(self.license.name)
-        if (not (self.license.url is None)) and (len(self.license.url) > 0):
+        if self.license.url is not None and (len(self.license.url) > 0):
             a.append("(" + self.license.url + ")")
         return " ".join(a)
 
     @property
     def license_verbose(self):
         a = []
-        if (not (self.license.name_long is None)) and (
+        if self.license.name_long is not None and (
                 len(self.license.name_long) > 0):
             a.append(self.license.name_long + ":")
-        if (not (self.license.description is None)) and (
+        if self.license.description is not None and (
                 len(self.license.description) > 0):
             a.append(self.license.description)
-        if (not (self.license.url is None)) and (len(self.license.url) > 0):
+        if self.license.url is not None and (len(self.license.url) > 0):
             a.append("(" + self.license.url + ")")
         return " ".join(a)
 
@@ -1493,9 +1492,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     im.thumbnail(
                         (_default_thumb_size['width'], _default_thumb_size['height']),
                         resample=Image.ANTIALIAS)
-                    cover = resizeimage.resize_cover(
-                        im,
-                        [_default_thumb_size['width'], _default_thumb_size['height']])
+                    cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']))
                     cover.save(storage.path(_upload_path), format='JPEG')
                 except Exception as e:
                     logger.debug(e)
