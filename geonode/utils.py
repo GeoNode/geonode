@@ -20,7 +20,6 @@
 import os
 import gc
 import re
-import six
 import ast
 import copy
 import json
@@ -38,7 +37,8 @@ import traceback
 import subprocess
 
 from osgeo import ogr
-from io import StringIO
+from PIL import Image
+from io import BytesIO, StringIO
 from decimal import Decimal
 from slugify import slugify
 from contextlib import closing
@@ -781,7 +781,7 @@ class GXPLayerBase(object):
         if self.styles:
             try:
                 cfg['styles'] = ast.literal_eval(self.styles) \
-                    if isinstance(self.styles, six.string_types) else self.styles
+                    if isinstance(self.styles, str) else self.styles
             except Exception:
                 pass
         if self.transparent:
@@ -993,7 +993,7 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
     if content_type is None:
         content_type = "application/json"
     if errors:
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         body = {
             'success': False,
@@ -1026,7 +1026,7 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
     if status is None:
         status = 200
 
-    if not isinstance(body, six.string_types):
+    if not isinstance(body, str):
         try:
             body = json.dumps(body, cls=DjangoJSONEncoder)
         except Exception:
@@ -1429,7 +1429,7 @@ class HttpClient(object):
         check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
             if connection.cursor().db.vendor not in ('sqlite', 'sqlite3', 'spatialite'):
                 try:
-                    if user and isinstance(user, six.string_types):
+                    if user and isinstance(user, str):
                         user = get_user_model().objects.get(username=user)
                     _u = user or get_user_model().objects.get(username=self.username)
                     access_token = get_or_create_token(_u)
@@ -1965,7 +1965,7 @@ def json_serializer_producer(dictionary):
     def to_json(keys):
         if isinstance(keys, datetime.datetime):
             return str(keys)
-        elif isinstance(keys, six.string_types) or isinstance(keys, int):
+        elif isinstance(keys, str) or isinstance(keys, int):
             return keys
         elif isinstance(keys, dict):
             return json_serializer_producer(keys)
@@ -2002,3 +2002,37 @@ def json_serializer_producer(dictionary):
                     y = model_to_dict(_obj)
             output[x] = to_json(y)
     return output
+
+
+def is_monochromatic_image(image_url, image_data=None):
+
+    def is_absolute(url):
+        return bool(urlparse(url).netloc)
+
+    try:
+        if image_data:
+            logger.debug("...Checking if image is a blank image")
+            stream_content = image_data
+        elif image_url:
+            logger.debug(f"...Checking if '{image_url}' is a blank image")
+            url = image_url if is_absolute(image_url) else urljoin(settings.SITEURL, image_url)
+            response = requests.get(url, verify=False)
+            stream_content = response.content
+        else:
+            return True
+        with BytesIO(stream_content) as stream:
+            img = Image.open(stream).convert("L")
+            stream.close()
+            img.verify()  # verify that it is, in fact an image
+            extr = img.getextrema()
+            a = 0
+            for i in extr:
+                if isinstance(i, tuple):
+                    a += abs(i[0] - i[1])
+                else:
+                    a = abs(extr[0] - extr[1])
+                    break
+            return a == 0
+    except Exception as e:
+        logger.exception(e)
+        return False

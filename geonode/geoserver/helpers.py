@@ -22,25 +22,19 @@ import re
 import sys
 import time
 import uuid
-# import base64
 import json
 import errno
 import logging
 import datetime
-import requests
 import tempfile
 import traceback
 import mercantile
 
 from shutil import copyfile
 
-from six import (
-    string_types,
-    reraise as raise_
-)
-from PIL import Image
+
+from PIL import Image, ImageOps
 from io import BytesIO
-from resizeimage import resizeimage
 from itertools import cycle
 from collections import namedtuple, defaultdict
 from os.path import basename, splitext, isfile
@@ -203,13 +197,13 @@ def extract_name_from_sld(gs_catalog, sld, sld_file=None):
             if isfile(sld):
                 with open(sld, "rb") as sld_file:
                     sld = sld_file.read()
-            if isinstance(sld, string_types):
+            if isinstance(sld, str):
                 sld = sld.encode('utf-8')
             dom = etree.XML(sld)
         elif sld_file and isfile(sld_file):
             with open(sld_file, "rb") as sld_file:
                 sld = sld_file.read()
-            if isinstance(sld, string_types):
+            if isinstance(sld, str):
                 sld = sld.encode('utf-8')
             dom = dlxml.parse(sld)
     except Exception:
@@ -366,7 +360,7 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
                 with open(sld, "rb") as sld_file:
                     sld = sld_file.read()
 
-            elif isinstance(sld, string_types):
+            elif isinstance(sld, str):
                 sld = sld.strip('b\'\n')
                 sld = re.sub(r'(\\r)|(\\n)', '', sld).encode("UTF-8")
             etree.XML(sld)
@@ -746,11 +740,9 @@ def gs_slurp(
                 if verbosity > 0:
                     msg = "Stopping process because --ignore-errors was not set and an error was found."
                     print(msg, file=sys.stderr)
-                raise_(
-                    Exception,
-                    Exception("Failed to process {}".format(resource.name), e),
-                    sys.exc_info()[2]
-                )
+
+                raise Exception("Failed to process {}".format(resource.name)) from e
+
         else:
             if created:
                 if not permissions:
@@ -1411,7 +1403,7 @@ def create_geoserver_db_featurestore(
              'Test while idle': 'true',
              'host': db['HOST'],
              'port': db['PORT'] if isinstance(
-                 db['PORT'], string_types) else str(db['PORT']) or '5432',
+                 db['PORT'], str) else str(db['PORT']) or '5432',
              'database': db['NAME'],
              'user': db['USER'],
              'passwd': db['PASSWORD'],
@@ -1482,7 +1474,7 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
 def get_store(cat, name, workspace=None):
     # Make sure workspace is a workspace object and not a string.
     # If the workspace does not exist, continue as if no workspace had been defined.
-    if isinstance(workspace, string_types):
+    if isinstance(workspace, str):
         workspace = cat.get_workspace(workspace)
 
     if workspace is None:
@@ -2036,33 +2028,6 @@ _esri_types = {
     "esriFieldTypeXML": "xsd:anyType"}
 
 
-def is_monochromatic_image(image_url):
-
-    def is_absolute(url):
-        return bool(urlparse(url).netloc)
-
-    try:
-        logger.debug(f"...Checking if '{image_url}' is a blank image")
-        url = image_url if is_absolute(image_url) else urljoin(settings.SITEURL, image_url)
-        response = requests.get(url, verify=False)
-        stream = BytesIO(response.content)
-        img = Image.open(stream).convert("L")
-        stream.close()
-        img.verify()  # verify that it is, in fact an image
-        extr = img.getextrema()
-        a = 0
-        for i in extr:
-            if isinstance(i, tuple):
-                a += abs(i[0] - i[1])
-            else:
-                a = abs(extr[0] - extr[1])
-                break
-        return a == 0
-    except Exception as e:
-        logger.exception(e)
-        return False
-
-
 def _render_thumbnail(req_body, width=240, height=200):
     spec = _fixup_ows_url(req_body)
     url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
@@ -2084,17 +2049,15 @@ def _render_thumbnail(req_body, width=240, height=200):
             raise Exception(content)
 
         # Optimize the Thumbnail size and resolution
-        content_data = BytesIO(content)
-        im = Image.open(content_data)
-        im.thumbnail(
-            (_default_thumb_size['width'], _default_thumb_size['height']),
-            resample=Image.ANTIALIAS)
-        cover = resizeimage.resize_cover(
-            im,
-            [_default_thumb_size['width'], _default_thumb_size['height']])
-        imgByteArr = BytesIO()
-        cover.save(imgByteArr, format='JPEG')
-        content = imgByteArr.getvalue()
+        with BytesIO(content) as content_data:
+            im = Image.open(content_data)
+            im.thumbnail(
+                (_default_thumb_size['width'], _default_thumb_size['height']),
+                resample=Image.ANTIALIAS)
+            cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']))
+            with BytesIO() as imgByteArr:
+                cover.save(imgByteArr, format='JPEG')
+                content = imgByteArr.getvalue()
     except Exception as e:
         logger.debug(f"Could not sucesfully send data to {url}")
         logger.debug(f" - user: [{_user}]")
@@ -2204,7 +2167,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         width = _default_thumb_size['width']
         height = _default_thumb_size['height']
 
-        if isinstance(request_body, string_types):
+        if isinstance(request_body, str):
             try:
                 request_body = json.loads(request_body)
             except Exception as e:
