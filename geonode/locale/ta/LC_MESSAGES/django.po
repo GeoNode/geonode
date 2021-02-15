@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-28 17:58+0000\n"
+"POT-Creation-Date: 2020-12-23 15:35+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Tamil (http://www.transifex.com/geonode/geonode/language/"
@@ -177,7 +177,7 @@ msgstr "தரவுகள்  ஒவ்வொரு மூன்று மா�
 msgid "No information provided"
 msgstr "தகவல் தரப்படவில்லை"
 
-#: geonode/base/forms.py:286 geonode/base/forms.py:535
+#: geonode/base/forms.py:286 geonode/base/forms.py:518
 #: geonode/base/templates/base/_resourcebase_info_panel.html:85
 #: geonode/catalogue/templates/geonode_metadata_full.html:145
 #: geonode/documents/templates/documents/document_metadata_advanced.html:76
@@ -240,11 +240,11 @@ msgid "Data quality statement"
 msgstr "தரவத் தர விபரம்"
 
 #: geonode/base/forms.py:358 geonode/base/forms.py:359
-#: geonode/base/forms.py:531 geonode/base/models.py:629
+#: geonode/base/forms.py:514 geonode/base/models.py:633
 msgid "Owner"
 msgstr "உரிமையாளர்"
 
-#: geonode/base/forms.py:365 geonode/base/forms.py:547
+#: geonode/base/forms.py:365 geonode/base/forms.py:530
 #: geonode/base/templates/base/_resourcebase_info_panel.html:41
 #: geonode/catalogue/templates/geonode_metadata_full.html:58
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:13
@@ -253,11 +253,11 @@ msgstr "உரிமையாளர்"
 msgid "Date"
 msgstr "திகதி "
 
-#: geonode/base/forms.py:371 geonode/base/models.py:733
+#: geonode/base/forms.py:371 geonode/base/models.py:737
 msgid "temporal extent start"
 msgstr "உலகலாவிய விரிவாக்க ஆரம்பம் "
 
-#: geonode/base/forms.py:378 geonode/base/models.py:738
+#: geonode/base/forms.py:378 geonode/base/models.py:742
 msgid "temporal extent end"
 msgstr "உலகலாவிய விரிவாக்க முடிவ "
 
@@ -308,7 +308,7 @@ msgid ""
 "Hierarchical tree."
 msgstr "ஒரு இடம் அல்லது அரைப்புள்ளி-  பிரிக்கப்பட்ட முக்கிய வார்த்தைகள் பட்டியலில்"
 
-#: geonode/base/forms.py:416 geonode/base/forms.py:543
+#: geonode/base/forms.py:416 geonode/base/forms.py:526
 #: geonode/base/templates/base/_resourcebase_info_panel.html:95
 #: geonode/catalogue/templates/geonode_metadata_full.html:149
 #: geonode/templates/metadata_detail.html:100
@@ -316,7 +316,7 @@ msgstr "ஒரு இடம் அல்லது அரைப்புள்ள
 msgid "Regions"
 msgstr "பிராந்தியங்களில்"
 
-#: geonode/base/forms.py:527 geonode/base/forms.py:560
+#: geonode/base/forms.py:510 geonode/base/forms.py:543
 #: geonode/base/templates/base/_resourcebase_info_panel.html:117
 #: geonode/documents/templates/layouts/doc_panels.html:340
 #: geonode/geoapps/templates/layouts/app_panels.html:337
@@ -328,7 +328,7 @@ msgstr "பிராந்தியங்களில்"
 msgid "Group"
 msgstr "குழுக்கள்"
 
-#: geonode/base/forms.py:539 geonode/base/models.py:706
+#: geonode/base/forms.py:522 geonode/base/models.py:710
 #: geonode/base/templates/base/_resourcebase_info_panel.html:16
 #: geonode/base/templates/base/_resourcebase_info_panel.html:147
 #: geonode/catalogue/templates/geonode_metadata_full.html:98
@@ -337,7 +337,7 @@ msgstr "குழுக்கள்"
 msgid "License"
 msgstr "உரிமம்"
 
-#: geonode/base/forms.py:550
+#: geonode/base/forms.py:533
 #: geonode/base/templates/base/_resourcebase_info_panel.html:184
 #: geonode/catalogue/templates/geonode_metadata_full.html:101
 #: geonode/templates/500.html:211 geonode/templates/base.html:548
@@ -345,64 +345,64 @@ msgstr "உரிமம்"
 msgid "Language"
 msgstr "மொழி "
 
-#: geonode/base/forms.py:564 geonode/templates/index.html:158
+#: geonode/base/forms.py:547 geonode/templates/index.html:158
 #: geonode/templates/pinax/notifications/account_approve/full.txt:1
 msgid "User"
 msgid_plural "Users"
 msgstr[0] ""
 msgstr[1] ""
 
-#: geonode/base/forms.py:568
+#: geonode/base/forms.py:551
 #, fuzzy
 #| msgid "Permissions"
 msgid "Permission Type"
 msgstr "அனுமதி"
 
-#: geonode/base/forms.py:578
+#: geonode/base/forms.py:561
 #, fuzzy
 #| msgid "Model"
 msgid "Mode"
 msgstr "மாதிரி"
 
-#: geonode/base/forms.py:629
+#: geonode/base/forms.py:612
 #, fuzzy
 #| msgid "Resources"
 msgid "Resource"
 msgstr "வளங்கள்"
 
-#: geonode/base/forms.py:633
+#: geonode/base/forms.py:616
 msgid "Reason"
 msgstr ""
 
-#: geonode/base/forms.py:635
+#: geonode/base/forms.py:618
 msgid "Short reasoning behind the request"
 msgstr ""
 
-#: geonode/base/models.py:102 geonode/services/models.py:193
+#: geonode/base/models.py:106 geonode/services/models.py:193
 msgid "function performed by the responsible party"
 msgstr "பொறுப்புடைய தரப்பினரால் மேற்கொள்ளப்பட்ட செயற்பாடு"
 
-#: geonode/base/models.py:570
+#: geonode/base/models.py:574
 msgid "reference date for the cited resource"
 msgstr "குறிப்பிடப்பட்டுள்ள மூலவளத்தின் தொடர்புத் திகதி "
 
-#: geonode/base/models.py:571
+#: geonode/base/models.py:575
 msgid "identification of when a given event occurred"
 msgstr "குறித்த நிகழ்வு இடம்பெற்றதன் அடையாளம்  "
 
-#: geonode/base/models.py:572
+#: geonode/base/models.py:576
 msgid "version of the cited resource"
 msgstr "குறிப்பிடப்பட்டுள்ள மூலவளத்தின் பதிப்பு"
 
-#: geonode/base/models.py:574
+#: geonode/base/models.py:578
 msgid "brief narrative summary of the content of the resource(s)"
 msgstr "மூலவளத்தின் (வளங்களின்) உள்ளடக்கம் தொடர்பான குறுகிய சராம்சம் "
 
-#: geonode/base/models.py:576
+#: geonode/base/models.py:580
 msgid "summary of the intentions with which the resource(s) was developed"
 msgstr "மூலவளத்தின் (வளங்களின்) காணப்பட்ட நோக்கங்களின் சாராம்சம்"
 
-#: geonode/base/models.py:578
+#: geonode/base/models.py:582
 msgid ""
 "frequency with which modifications and deletions are made to the data after "
 "it is first produced"
@@ -410,7 +410,7 @@ msgstr ""
 "முதலில் தயார் செய்த பின்னர் தரவுகளில் மாற்றங்கள் மற்றும் அழித்தல்கள் ஏற்படுத்தப்பட்ட "
 "காலஇடைவெளி "
 
-#: geonode/base/models.py:581
+#: geonode/base/models.py:585
 #, fuzzy
 #| msgid ""
 #| "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
@@ -422,7 +422,7 @@ msgstr ""
 "விடயத்தை (இடைவெளி அல்லது கொமா வேறுபடுத்தல்) விளக்குவதற்கு பொதுவாக பயன்படுத்தப்பட்ட சொல் "
 "(சொற்கள்) அல்லது உருவாக்கப்பட்ட சொல் (சொற்கள்) அல்லது வசனம் (வசனங்கள்) "
 
-#: geonode/base/models.py:584
+#: geonode/base/models.py:588
 #, fuzzy
 #| msgid ""
 #| "commonly used word(s) or formalised word(s) or phrase(s) used to describe "
@@ -434,15 +434,15 @@ msgstr ""
 "விடயத்தை (இடைவெளி அல்லது கொமா வேறுபடுத்தல்) விளக்குவதற்கு பொதுவாக பயன்படுத்தப்பட்ட சொல் "
 "(சொற்கள்) அல்லது உருவாக்கப்பட்ட சொல் (சொற்கள்) அல்லது வசனம் (வசனங்கள்) "
 
-#: geonode/base/models.py:586
+#: geonode/base/models.py:590
 msgid "keyword identifies a location"
 msgstr "பிரதான சொற்கள் இடத்தை அடையாளங் காண்கின்றது"
 
-#: geonode/base/models.py:588
+#: geonode/base/models.py:592
 msgid "limitation(s) placed upon the access or use of the data."
 msgstr "வரையறை (ங்கள்) தரவு அணுகல் அல்லது பயன்பாடு மீது வைக்கப்படும்."
 
-#: geonode/base/models.py:590
+#: geonode/base/models.py:594
 msgid ""
 "other restrictions and legal prerequisites for accessing and using the "
 "resource or metadata"
@@ -450,15 +450,15 @@ msgstr ""
 "மூலவளங்களை அல்லது நுண்தரவுகளை அடைவதற்கு மற்றும் பயன்படுத்துவதற்குரிய ஏனைய தடைகள் மற்றும் "
 "சட்டத் தேவைகள்"
 
-#: geonode/base/models.py:592
+#: geonode/base/models.py:596
 msgid "license of the dataset"
 msgstr "தரவுத்தொகுப்பின் உரிமம்"
 
-#: geonode/base/models.py:593
+#: geonode/base/models.py:597
 msgid "language used within the dataset"
 msgstr "தரவுத் தொகுதிக்குள் பயன்படுத்தப்பட்ட மொழி  "
 
-#: geonode/base/models.py:595
+#: geonode/base/models.py:599
 msgid ""
 "high-level geographic data thematic classification to assist in the grouping "
 "and search of available geographic data sets."
@@ -466,42 +466,42 @@ msgstr ""
 "காணப்படுகின்ற புவியியல் தரவுத் தொகுதிகளை குழுவாக்குவதற்கும் தேடுவதற்கும் உதவும் "
 "விதத்தில் உயர் மட்ட புவியியல் தரவு தலைப்பு வகைப்படுத்தல்கள்"
 
-#: geonode/base/models.py:598
+#: geonode/base/models.py:602
 msgid "method used to represent geographic information in the dataset."
 msgstr "முறை வகை புவியியல் தகவல் பிரதிநிதித்துவம் பயன்படுத்தப்படுகிறது."
 
-#: geonode/base/models.py:600
+#: geonode/base/models.py:604
 msgid "time period covered by the content of the dataset (start)"
 msgstr "தரவுத் தொகுதியின் உள்ளடக்கம் வெளிப்படுத்தும் கால எல்லை (ஆரம்பம்)  "
 
-#: geonode/base/models.py:602
+#: geonode/base/models.py:606
 msgid "time period covered by the content of the dataset (end)"
 msgstr "தரவுத் தொகுதியின் உள்ளடக்கம் வெளிப்படுத்தும் கால எல்லை (இறுதி)  "
 
-#: geonode/base/models.py:604
+#: geonode/base/models.py:608
 msgid ""
 "general explanation of the data producer's knowledge about the lineage of a "
 "dataset"
 msgstr ""
 "தரவுத் தொகுதியின் வழிமரபு தொடர்பாக தரவு உருவாக்குனரின் அறிவு பற்றிய பொது விளக்கம் "
 
-#: geonode/base/models.py:607
+#: geonode/base/models.py:611
 msgid "a DOI will be added by Admin before publication."
 msgstr ""
 
-#: geonode/base/models.py:609
+#: geonode/base/models.py:613
 #: geonode/base/templates/base/_resourcebase_info_panel.html:122
 #: geonode/templates/metadata_detail.html:118
 msgid "DOI"
 msgstr ""
 
-#: geonode/base/models.py:615
+#: geonode/base/models.py:619
 msgid ""
 "authority or function assigned, as to a ruler, legislative assembly, "
 "delegate, or the like."
 msgstr ""
 
-#: geonode/base/models.py:617
+#: geonode/base/models.py:621
 #: geonode/base/templates/base/_resourcebase_info_panel.html:127
 #: geonode/templates/metadata_detail.html:121
 #, fuzzy
@@ -509,158 +509,164 @@ msgstr ""
 msgid "Attribution"
 msgstr " பண்பியல்பு "
 
-#: geonode/base/models.py:634
+#: geonode/base/models.py:638
 msgid "title"
 msgstr "தலைப்பு "
 
-#: geonode/base/models.py:635
+#: geonode/base/models.py:639
 msgid "name by which the cited resource is known"
 msgstr "குறிப்பிடப்பட்டுள்ள மூலவளம் அறியப்படும் பெயர்  "
 
-#: geonode/base/models.py:638
+#: geonode/base/models.py:642
 msgid "date"
 msgstr "திகதி"
 
-#: geonode/base/models.py:642
+#: geonode/base/models.py:646
 msgid "date type"
 msgstr "திகதி வகை"
 
-#: geonode/base/models.py:648
+#: geonode/base/models.py:652
 msgid "edition"
 msgstr "பதிப்பு"
 
-#: geonode/base/models.py:654
+#: geonode/base/models.py:658
 msgid "abstract"
 msgstr "சுருக்கம்"
 
-#: geonode/base/models.py:659
+#: geonode/base/models.py:663
 msgid "purpose"
 msgstr "நோக்கம்"
 
-#: geonode/base/models.py:665
+#: geonode/base/models.py:669
 msgid "maintenance frequency"
 msgstr " பராமரித்தல் இடைவெளி "
 
-#: geonode/base/models.py:672 geonode/base/models.py:679
+#: geonode/base/models.py:676 geonode/base/models.py:683
 #: geonode/people/models.py:117
 msgid "keywords"
 msgstr "சிறப்பு சொற்கள்"
 
-#: geonode/base/models.py:685
+#: geonode/base/models.py:689
 msgid "keywords region"
 msgstr "குறியிட்டுப் பிராந்தியம் "
 
-#: geonode/base/models.py:691
+#: geonode/base/models.py:695
 msgid "restrictions"
 msgstr "கட்டுப்பாடுகள்"
 
-#: geonode/base/models.py:698
+#: geonode/base/models.py:702
 msgid "restrictions other"
 msgstr "மற்ற கட்டுப்பாடுகள்"
 
-#: geonode/base/models.py:710 geonode/people/models.py:121
+#: geonode/base/models.py:714 geonode/people/models.py:121
 msgid "language"
 msgstr "மொழி "
 
-#: geonode/base/models.py:728
+#: geonode/base/models.py:732
 msgid "spatial representation type"
 msgstr "புவியியல் பிரதிநிதித்துவ வகை"
 
-#: geonode/base/models.py:743
+#: geonode/base/models.py:747
 msgid "supplemental information"
 msgstr "மேலதிக தகவல்கள் "
 
-#: geonode/base/models.py:746
+#: geonode/base/models.py:750
 msgid "any other descriptive information about the dataset"
 msgstr "தரவுத் தொகுதியின் விரிவான ஏனைய தகவல்கள்  "
 
-#: geonode/base/models.py:750
+#: geonode/base/models.py:754
 msgid "data quality statement"
 msgstr "தரவத் தர விபரம்"
 
-#: geonode/base/models.py:777
+#: geonode/base/models.py:781
 msgid "CSW typename"
 msgstr "CSW பெயரை தட்டச்சிடல்"
 
-#: geonode/base/models.py:782
+#: geonode/base/models.py:786
 msgid "CSW schema"
 msgstr "CSW பொழிப்பு "
 
-#: geonode/base/models.py:787
+#: geonode/base/models.py:791
 msgid "CSW source"
 msgstr "CSW மூலவளம்"
 
-#: geonode/base/models.py:792
+#: geonode/base/models.py:796
 msgid "CSW insert date"
 msgstr "CSW உட்செலுத்திய திகதி"
 
-#: geonode/base/models.py:794
+#: geonode/base/models.py:798
 msgid "CSW type"
 msgstr "CSW வகை "
 
-#: geonode/base/models.py:799
+#: geonode/base/models.py:803
 msgid "CSW anytext"
 msgstr "CSW  எந்த அகரமும்"
 
-#: geonode/base/models.py:801
+#: geonode/base/models.py:805
 msgid "CSW WKT geometry"
 msgstr "CSW WKT ஜியோமெட்ரி "
 
-#: geonode/base/models.py:807
+#: geonode/base/models.py:811
 #, fuzzy
 #| msgid "Metadata Provider"
 msgid "Metadata uploaded preserve"
 msgstr "நுண் தரவ வழங்கல் "
 
-#: geonode/base/models.py:814 geonode/templates/metadata_detail.html:110
+#: geonode/base/models.py:818 geonode/templates/metadata_detail.html:110
 msgid "Featured"
 msgstr "முனைப்பு "
 
-#: geonode/base/models.py:815
+#: geonode/base/models.py:819
 msgid "Should this resource be advertised in home page?"
 msgstr "இந்த வள வீட்டில் பக்கம் விளம்பரப்படுத்தப்பட்டது?"
 
-#: geonode/base/models.py:817
+#: geonode/base/models.py:821
 msgid "Is Published"
 msgstr "பதிப்பிடப்பட்டுள்ளது "
 
-#: geonode/base/models.py:819
+#: geonode/base/models.py:823
 msgid "Should this resource be published and searchable?"
 msgstr "இந்த வள வெளியிடப்பட்ட, மற்றும் தேடப்படும்?"
 
-#: geonode/base/models.py:821 geonode/templates/metadata_detail.html:104
+#: geonode/base/models.py:825 geonode/templates/metadata_detail.html:104
 #, fuzzy
 #| msgid "Not provided"
 msgid "Approved"
 msgstr "வழங்கப்படவில்லை"
 
-#: geonode/base/models.py:823
+#: geonode/base/models.py:827
 msgid "Is this resource validated from a publisher or editor?"
 msgstr ""
 
-#: geonode/base/models.py:826
+#: geonode/base/models.py:830
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Thumbnail url"
 msgstr "Thumbnail"
 
-#: geonode/base/models.py:834
+#: geonode/base/models.py:838
 msgid "Dirty State"
 msgstr ""
 
-#: geonode/base/models.py:836
+#: geonode/base/models.py:840
 msgid "Security Rules Are Not Synched with GeoServer!"
 msgstr ""
 
-#: geonode/base/models.py:1667
+#: geonode/base/models.py:855
+#, fuzzy
+#| msgid "Resources"
+msgid "Resource Type"
+msgstr "வளங்கள்"
+
+#: geonode/base/models.py:1694
 msgid "For example \"kml\""
 msgstr "உதாரணமாக \"kml\""
 
-#: geonode/base/models.py:1672
+#: geonode/base/models.py:1699
 msgid "For example \"View in Google Earth\""
 msgstr "உதாரணமாக \"குகல் ஏத் இல் காண்க\" "
 
-#: geonode/base/models.py:1674
+#: geonode/base/models.py:1701
 msgid "For example \"text/xml\""
 msgstr "உதாரணமாக \"text/xml\""
 
@@ -720,7 +726,7 @@ msgstr "வரைபடங்களை உருவாக்குதல்  "
 #: geonode/base/templates/base/_resourcebase_info_panel.html:37
 #, fuzzy
 #| msgid "Position Name"
-msgid "Pubblication Date"
+msgid "Publication Date"
 msgstr "தொழில் பெயர்"
 
 #: geonode/base/templates/base/_resourcebase_info_panel.html:39
@@ -732,7 +738,7 @@ msgstr "அனுமதி மறுக்கப்பட்டுள்ளத�
 #: geonode/base/templates/base/_resourcebase_info_panel.html:53
 #: geonode/catalogue/templates/geonode_metadata_full.html:91
 #: geonode/favorite/templates/favorite/favorite_list.html:17
-#: geonode/layers/templates/layers/layer_detail.html:710
+#: geonode/layers/templates/layers/layer_detail.html:719
 #: geonode/services/templates/services/service_detail.html:8
 #: geonode/services/templates/services/service_list.html:19
 #: geonode/templates/metadata_detail.html:78
@@ -815,48 +821,53 @@ msgstr ""
 
 #: geonode/base/templates/base/_resourcebase_snippet.html:54
 #: geonode/base/templates/base/_resourcebase_snippet.html:55
-#: geonode/layers/templates/layers/layer_detail.html:44
+#: geonode/layers/templates/layers/layer_detail.html:51
 #, fuzzy
 #| msgid "Services"
 msgid "Service is"
 msgstr "சேவைகள்"
 
 #: geonode/base/templates/base/_resourcebase_snippet.html:54
-#: geonode/layers/templates/layers/layer_detail.html:44
+#: geonode/layers/templates/layers/layer_detail.html:51
 msgid "online"
 msgstr ""
 
 #: geonode/base/templates/base/_resourcebase_snippet.html:55
-#: geonode/layers/templates/layers/layer_detail.html:44
+#: geonode/layers/templates/layers/layer_detail.html:51
 msgid "offline"
 msgstr ""
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:59
+#: geonode/base/templates/base/_resourcebase_snippet.html:60
+#: geonode/layers/templates/layers/layer_detail.html:46
+msgid "Layer not ready yet. Still finalizing layer ingestion..."
+msgstr ""
+
+#: geonode/base/templates/base/_resourcebase_snippet.html:64
 msgid "SECURITY NOT YET SYNCHRONIZED"
 msgstr ""
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:60
-#: geonode/layers/templates/layers/layer_detail.html:739
+#: geonode/base/templates/base/_resourcebase_snippet.html:65
+#: geonode/layers/templates/layers/layer_detail.html:748
 #, fuzzy
 #| msgid "Set permissions"
 msgid "Sync permissions immediately"
 msgstr "அமை அனுமதிகள்"
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:62
+#: geonode/base/templates/base/_resourcebase_snippet.html:67
 msgid "PENDING APPROVAL"
 msgstr ""
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:63
+#: geonode/base/templates/base/_resourcebase_snippet.html:68
 msgid "UNPUBLISHED"
 msgstr ""
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:81
-#: geonode/layers/templates/layers/layer_detail.html:634
+#: geonode/base/templates/base/_resourcebase_snippet.html:86
+#: geonode/layers/templates/layers/layer_detail.html:643
 #: geonode/templates/search/_search_content.html:11
 msgid "Create a Map"
 msgstr "வரைபடத்தை உருவாக்குதல்"
 
-#: geonode/base/templates/base/_resourcebase_snippet.html:87
+#: geonode/base/templates/base/_resourcebase_snippet.html:92
 #: geonode/client/templates/leaflet/maps/map_view.html:8
 #: geonode/maps/templates/maps/map_detail.html:198
 #: geonode/maps/templates/maps/map_detail.html:200
@@ -936,8 +947,8 @@ msgstr ""
 #: geonode/base/templates/base/thumbnail_upload.html:35
 #: geonode/documents/templates/documents/document_detail.html:181
 #: geonode/documents/templates/documents/document_upload.html:15
-#: geonode/layers/templates/layers/layer_detail.html:485
-#: geonode/layers/templates/layers/layer_detail.html:506
+#: geonode/layers/templates/layers/layer_detail.html:494
+#: geonode/layers/templates/layers/layer_detail.html:515
 #: geonode/maps/templates/maps/map_detail.html:167
 #: geonode/monitoring/models.py:355
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:58
@@ -1024,7 +1035,7 @@ msgstr "திருத்த சேவை மெட்டாடேட்டா"
 #: geonode/catalogue/templates/geonode_metadata_full.html:49
 #: geonode/documents/templates/documents/document_detail.html:180
 #: geonode/geoapps/templates/apps/app_detail.html:120
-#: geonode/layers/templates/layers/layer_detail.html:502
+#: geonode/layers/templates/layers/layer_detail.html:511
 #: geonode/layers/templates/layouts/panels.html:275
 #: geonode/maps/templates/layouts/map_panels.html:271
 #: geonode/maps/templates/maps/map_detail.html:165
@@ -1072,7 +1083,7 @@ msgstr "பண்பியல்பின் பெயர்"
 
 #: geonode/catalogue/templates/geonode_metadata_full.html:167
 #: geonode/groups/models.py:51 geonode/groups/models.py:89
-#: geonode/layers/templates/layers/layer_detail.html:179
+#: geonode/layers/templates/layers/layer_detail.html:188
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:128
 #: geonode/layers/templates/layouts/panels.html:553
 #: geonode/people/templates/people/profile_detail.html:101
@@ -1160,9 +1171,9 @@ msgstr "வரைபடத்தை நீக்குக"
 #: geonode/documents/templates/documents/document_detail.html:235
 #: geonode/geoapps/templates/apps/app_detail.html:135
 #: geonode/geoapps/templates/apps/app_detail.html:195
-#: geonode/layers/templates/layers/layer_detail.html:424
-#: geonode/layers/templates/layers/layer_detail.html:529
-#: geonode/layers/templates/layers/layer_detail.html:580
+#: geonode/layers/templates/layers/layer_detail.html:433
+#: geonode/layers/templates/layers/layer_detail.html:538
+#: geonode/layers/templates/layers/layer_detail.html:589
 #: geonode/layers/templates/upload/layer_upload_time.html:282
 #: geonode/layers/templates/upload/layer_upload_time.html:302
 #: geonode/maps/templates/maps/map_detail.html:134
@@ -1278,14 +1289,14 @@ msgid "Flash"
 msgstr "பதிவு"
 
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:20
-#: geonode/layers/templates/layers/layer_detail.html:162
-#: geonode/layers/templates/layers/layer_detail.html:167
+#: geonode/layers/templates/layers/layer_detail.html:171
+#: geonode/layers/templates/layers/layer_detail.html:176
 msgid "True"
 msgstr "சரி"
 
 #: geonode/documents/exif/templates/exif/_exif_document_detail.html:20
-#: geonode/layers/templates/layers/layer_detail.html:162
-#: geonode/layers/templates/layers/layer_detail.html:167
+#: geonode/layers/templates/layers/layer_detail.html:171
+#: geonode/layers/templates/layers/layer_detail.html:176
 msgid "False"
 msgstr "பிழை"
 
@@ -1321,7 +1332,7 @@ msgstr "கோப்பு"
 msgid "The URL of the document if it is external."
 msgstr "ஆவணத்தின் URL அதை வெளி ஆகிறது என்றால்."
 
-#: geonode/documents/models.py:70 geonode/layers/models.py:481
+#: geonode/documents/models.py:70 geonode/layers/models.py:489
 #: geonode/monitoring/models.py:179
 #: geonode/services/templates/services/service_detail.html:9
 #: geonode/services/templates/services/service_list.html:18
@@ -1366,14 +1377,14 @@ msgstr "இந்த ஆவணம் மதிப்பிடு"
 
 #: geonode/documents/templates/documents/document_detail.html:97
 #: geonode/geoapps/templates/apps/app_detail.html:75
-#: geonode/layers/templates/layers/layer_detail.html:239
+#: geonode/layers/templates/layers/layer_detail.html:248
 #: geonode/maps/templates/maps/map_detail.html:86
 msgid "Average Rating"
 msgstr "சராசரி தரப்படுத்தல் "
 
 #: geonode/documents/templates/documents/document_detail.html:124
 #: geonode/geoapps/templates/apps/app_detail.html:91
-#: geonode/layers/templates/layers/layer_detail.html:440
+#: geonode/layers/templates/layers/layer_detail.html:449
 #: geonode/maps/templates/maps/map_detail.html:113
 msgid "Metadata Detail"
 msgstr "நுண்தரவு விபரம் "
@@ -1385,7 +1396,7 @@ msgid "Download Document"
 msgstr "பதிவிறக்க ஆவண"
 
 #: geonode/documents/templates/documents/document_detail.html:140
-#: geonode/layers/templates/layers/layer_detail.html:268
+#: geonode/layers/templates/layers/layer_detail.html:277
 msgid "Request Download"
 msgstr "தரவிறக்க வேண்டுதல்"
 
@@ -1396,7 +1407,7 @@ msgstr "திருத்த ஆவண"
 
 #: geonode/documents/templates/documents/document_detail.html:155
 #: geonode/geoapps/templates/apps/app_detail.html:146
-#: geonode/layers/templates/layers/layer_detail.html:447
+#: geonode/layers/templates/layers/layer_detail.html:456
 #: geonode/maps/templates/maps/map_detail.html:192
 #, fuzzy
 #| msgid "Request Download"
@@ -1407,7 +1418,7 @@ msgstr "தரவிறக்க வேண்டுதல்"
 #: geonode/documents/templates/documents/document_metadata.html:17
 #: geonode/geoapps/templates/apps/app_detail.html:112
 #: geonode/geoapps/templates/apps/app_metadata.html:15
-#: geonode/layers/templates/layers/layer_detail.html:468
+#: geonode/layers/templates/layers/layer_detail.html:477
 #: geonode/layers/templates/layers/layer_metadata.html:19
 #: geonode/maps/templates/maps/map_detail.html:157
 #: geonode/maps/templates/maps/map_metadata.html:20
@@ -1417,14 +1428,14 @@ msgstr "நுண்தரவு"
 
 #: geonode/documents/templates/documents/document_detail.html:173
 #: geonode/geoapps/templates/apps/app_detail.html:113
-#: geonode/layers/templates/layers/layer_detail.html:469
+#: geonode/layers/templates/layers/layer_detail.html:478
 #: geonode/maps/templates/maps/map_detail.html:158
 msgid "Wizard"
 msgstr ""
 
 #: geonode/documents/templates/documents/document_detail.html:174
 #: geonode/geoapps/templates/apps/app_detail.html:114
-#: geonode/layers/templates/layers/layer_detail.html:470
+#: geonode/layers/templates/layers/layer_detail.html:479
 #: geonode/maps/templates/maps/map_detail.html:159
 msgid "Advanced Edit"
 msgstr ""
@@ -1440,7 +1451,7 @@ msgstr[0] "ஆவணம் "
 msgstr[1] "ஆவணம் "
 
 #: geonode/documents/templates/documents/document_detail.html:189
-#: geonode/layers/templates/layers/layer_detail.html:514
+#: geonode/layers/templates/layers/layer_detail.html:523
 msgid "Replace"
 msgstr "பதிலீடு "
 
@@ -1450,7 +1461,7 @@ msgstr "பதிலீடு "
 #: geonode/groups/templates/groups/group_members.html:42
 #: geonode/groups/templates/groups/group_members.html:82
 #: geonode/groups/templates/groups/group_members.html:114
-#: geonode/layers/templates/layers/layer_detail.html:522
+#: geonode/layers/templates/layers/layer_detail.html:531
 #: geonode/maps/templates/maps/map_detail.html:175
 #: geonode/monitoring/models.py:362 geonode/templates/account/email.html:36
 #: geonode/templates/socialaccount/connections.html:33
@@ -1459,34 +1470,34 @@ msgstr "அகற்று"
 
 #: geonode/documents/templates/documents/document_detail.html:206
 #: geonode/documents/templates/documents/document_detail.html:213
-#: geonode/layers/templates/layers/layer_detail.html:542
-#: geonode/layers/templates/layers/layer_detail.html:550
+#: geonode/layers/templates/layers/layer_detail.html:551
+#: geonode/layers/templates/layers/layer_detail.html:559
 msgid "Download Metadata"
 msgstr "நுண் தரவகளை பதிவிரக்கம் செய்க "
 
 #: geonode/documents/templates/documents/document_detail.html:218
-#: geonode/layers/templates/layers/layer_detail.html:555
+#: geonode/layers/templates/layers/layer_detail.html:564
 #, fuzzy
 #| msgid "Metadata"
 msgid "Full metadata"
 msgstr "நுண்தரவு"
 
 #: geonode/documents/templates/documents/document_detail.html:221
-#: geonode/layers/templates/layers/layer_detail.html:558
+#: geonode/layers/templates/layers/layer_detail.html:567
 #, fuzzy
 #| msgid "format"
 msgid "Text format"
 msgstr "ஒருங்கமைத்தல் "
 
 #: geonode/documents/templates/documents/document_detail.html:222
-#: geonode/layers/templates/layers/layer_detail.html:559
+#: geonode/layers/templates/layers/layer_detail.html:568
 #, fuzzy
 #| msgid "format"
 msgid "HTML format"
 msgstr "ஒருங்கமைத்தல் "
 
 #: geonode/documents/templates/documents/document_detail.html:226
-#: geonode/layers/templates/layers/layer_detail.html:564
+#: geonode/layers/templates/layers/layer_detail.html:573
 msgid "Standard Metadata - XML format"
 msgstr ""
 
@@ -1510,7 +1521,7 @@ msgstr "இந்த ஆவணம் எந்தவொரு வரைபடத
 #: geonode/geoapps/templates/apps/app_detail.html:162
 #: geonode/geoserver/createlayer/templates/createlayer/layer_create.html:50
 #: geonode/groups/templates/groups/group_detail.html:73
-#: geonode/layers/templates/layers/layer_detail.html:735
+#: geonode/layers/templates/layers/layer_detail.html:744
 #: geonode/layers/templates/layers/layer_metadata_upload.html:101
 #: geonode/layers/templates/layers/layer_metadata_upload.html:111
 #: geonode/layers/templates/layers/layer_replace.html:111
@@ -1718,7 +1729,7 @@ msgstr "மாற்றவும்"
 
 #: geonode/documents/templates/documents/document_replace.html:26
 #: geonode/documents/templates/documents/document_thumb_upload.html:55
-#: geonode/layers/templates/layers/layer_detail.html:395
+#: geonode/layers/templates/layers/layer_detail.html:404
 #: geonode/layers/templates/layers/layer_metadata_upload.html:88
 #: geonode/layers/templates/layers/layer_replace.html:98
 #: geonode/layers/templates/layers/layer_style_upload.html:89
@@ -1806,9 +1817,9 @@ msgstr ""
 #: geonode/geoapps/templates/apps/app_detail.html:128
 #: geonode/geoapps/templates/apps/app_edit.html:7
 #: geonode/geoapps/templates/layouts/app_panels.html:220
-#: geonode/layers/templates/layers/layer_detail.html:481
-#: geonode/layers/templates/layers/layer_detail.html:483
-#: geonode/layers/templates/layers/layer_detail.html:495
+#: geonode/layers/templates/layers/layer_detail.html:490
+#: geonode/layers/templates/layers/layer_detail.html:492
+#: geonode/layers/templates/layers/layer_detail.html:504
 #: geonode/layers/templates/layouts/panels.html:221
 #: geonode/layers/templates/layouts/panels.html:290
 #: geonode/maps/templates/layouts/map_panels.html:220
@@ -1963,23 +1974,23 @@ msgid "You are not permitted to view this document"
 msgstr "இந்த ஆவணத்தை பார்க்க உங்களுக்கு அனுமதியில்லை"
 
 #: geonode/documents/views.py:96 geonode/documents/views.py:355
-#: geonode/documents/views.py:592 geonode/documents/views.py:607
-#: geonode/documents/views.py:621 geonode/geoapps/views.py:121
+#: geonode/documents/views.py:589 geonode/documents/views.py:604
+#: geonode/documents/views.py:618 geonode/geoapps/views.py:121
 #: geonode/geoapps/views.py:203 geonode/geoapps/views.py:261
 #: geonode/geoapps/views.py:287 geonode/geoapps/views.py:319
-#: geonode/layers/views.py:413 geonode/layers/views.py:846
-#: geonode/layers/views.py:898 geonode/layers/views.py:1257
-#: geonode/layers/views.py:1358 geonode/layers/views.py:1408
-#: geonode/layers/views.py:1453 geonode/layers/views.py:1519
-#: geonode/layers/views.py:1556 geonode/layers/views.py:1593
-#: geonode/layers/views.py:1618 geonode/maps/views.py:136
-#: geonode/maps/views.py:232 geonode/maps/views.py:450
-#: geonode/maps/views.py:521 geonode/maps/views.py:544
-#: geonode/maps/views.py:574 geonode/maps/views.py:595
-#: geonode/maps/views.py:648 geonode/maps/views.py:774
-#: geonode/maps/views.py:1085 geonode/maps/views.py:1174
-#: geonode/maps/views.py:1204 geonode/maps/views.py:1318
-#: geonode/maps/views.py:1360
+#: geonode/layers/views.py:413 geonode/layers/views.py:835
+#: geonode/layers/views.py:887 geonode/layers/views.py:1281
+#: geonode/layers/views.py:1382 geonode/layers/views.py:1432
+#: geonode/layers/views.py:1477 geonode/layers/views.py:1543
+#: geonode/layers/views.py:1580 geonode/layers/views.py:1617
+#: geonode/layers/views.py:1642 geonode/maps/views.py:134
+#: geonode/maps/views.py:230 geonode/maps/views.py:448
+#: geonode/maps/views.py:519 geonode/maps/views.py:542
+#: geonode/maps/views.py:572 geonode/maps/views.py:593
+#: geonode/maps/views.py:646 geonode/maps/views.py:772
+#: geonode/maps/views.py:1081 geonode/maps/views.py:1170
+#: geonode/maps/views.py:1200 geonode/maps/views.py:1314
+#: geonode/maps/views.py:1356
 #, fuzzy
 #| msgid "Not provided"
 msgid "Not allowed"
@@ -1987,38 +1998,38 @@ msgstr "வழங்கப்படவில்லை"
 
 #: geonode/documents/views.py:98 geonode/documents/views.py:100
 #: geonode/documents/views.py:357 geonode/documents/views.py:359
-#: geonode/documents/views.py:594 geonode/documents/views.py:596
-#: geonode/documents/views.py:623 geonode/documents/views.py:625
+#: geonode/documents/views.py:591 geonode/documents/views.py:593
+#: geonode/documents/views.py:620 geonode/documents/views.py:622
 #: geonode/geoapps/views.py:123 geonode/geoapps/views.py:125
 #: geonode/geoapps/views.py:205 geonode/geoapps/views.py:207
 #: geonode/geoapps/views.py:263 geonode/geoapps/views.py:265
 #: geonode/geoapps/views.py:289 geonode/geoapps/views.py:291
 #: geonode/geoapps/views.py:321 geonode/geoapps/views.py:323
 #: geonode/layers/views.py:415 geonode/layers/views.py:417
-#: geonode/layers/views.py:848 geonode/layers/views.py:850
-#: geonode/layers/views.py:900 geonode/layers/views.py:902
-#: geonode/layers/views.py:1259 geonode/layers/views.py:1261
-#: geonode/layers/views.py:1360 geonode/layers/views.py:1362
-#: geonode/layers/views.py:1410 geonode/layers/views.py:1412
-#: geonode/layers/views.py:1455 geonode/layers/views.py:1457
-#: geonode/layers/views.py:1521 geonode/layers/views.py:1523
-#: geonode/layers/views.py:1558 geonode/layers/views.py:1560
-#: geonode/layers/views.py:1595 geonode/layers/views.py:1597
-#: geonode/layers/views.py:1620 geonode/layers/views.py:1622
-#: geonode/maps/views.py:138 geonode/maps/views.py:140
-#: geonode/maps/views.py:234 geonode/maps/views.py:236
-#: geonode/maps/views.py:452 geonode/maps/views.py:454
-#: geonode/maps/views.py:523 geonode/maps/views.py:525
-#: geonode/maps/views.py:546 geonode/maps/views.py:548
-#: geonode/maps/views.py:576 geonode/maps/views.py:578
-#: geonode/maps/views.py:597 geonode/maps/views.py:599
-#: geonode/maps/views.py:650 geonode/maps/views.py:652
-#: geonode/maps/views.py:776 geonode/maps/views.py:778
-#: geonode/maps/views.py:1087 geonode/maps/views.py:1089
-#: geonode/maps/views.py:1176 geonode/maps/views.py:1178
-#: geonode/maps/views.py:1206 geonode/maps/views.py:1208
-#: geonode/maps/views.py:1320 geonode/maps/views.py:1322
-#: geonode/maps/views.py:1362 geonode/maps/views.py:1364
+#: geonode/layers/views.py:837 geonode/layers/views.py:839
+#: geonode/layers/views.py:889 geonode/layers/views.py:891
+#: geonode/layers/views.py:1283 geonode/layers/views.py:1285
+#: geonode/layers/views.py:1384 geonode/layers/views.py:1386
+#: geonode/layers/views.py:1434 geonode/layers/views.py:1436
+#: geonode/layers/views.py:1479 geonode/layers/views.py:1481
+#: geonode/layers/views.py:1545 geonode/layers/views.py:1547
+#: geonode/layers/views.py:1582 geonode/layers/views.py:1584
+#: geonode/layers/views.py:1619 geonode/layers/views.py:1621
+#: geonode/layers/views.py:1644 geonode/layers/views.py:1646
+#: geonode/maps/views.py:136 geonode/maps/views.py:138
+#: geonode/maps/views.py:232 geonode/maps/views.py:234
+#: geonode/maps/views.py:450 geonode/maps/views.py:452
+#: geonode/maps/views.py:521 geonode/maps/views.py:523
+#: geonode/maps/views.py:544 geonode/maps/views.py:546
+#: geonode/maps/views.py:574 geonode/maps/views.py:576
+#: geonode/maps/views.py:595 geonode/maps/views.py:597
+#: geonode/maps/views.py:648 geonode/maps/views.py:650
+#: geonode/maps/views.py:774 geonode/maps/views.py:776
+#: geonode/maps/views.py:1083 geonode/maps/views.py:1085
+#: geonode/maps/views.py:1172 geonode/maps/views.py:1174
+#: geonode/maps/views.py:1202 geonode/maps/views.py:1204
+#: geonode/maps/views.py:1316 geonode/maps/views.py:1318
+#: geonode/maps/views.py:1358 geonode/maps/views.py:1360
 #, fuzzy
 #| msgid "Page Not Found"
 msgid "Not found"
@@ -2029,12 +2040,12 @@ msgid "You are not allowed to view this document."
 msgstr "இந்த ஆவணத்தை பார்ப்பதற்கு உங்களுக்கு அனுமதியில்லை"
 
 #: geonode/documents/views.py:436 geonode/geoapps/views.py:400
-#: geonode/layers/views.py:1057
+#: geonode/layers/views.py:1081
 msgid "You must set a point of contact for this resource"
 msgstr "இவ் வளத்திற்காக தொடர்பு விபரம் ஒன்றை நீங்கள் வழங்க வேண்டும்"
 
-#: geonode/documents/views.py:453 geonode/geoapps/views.py:417
-#: geonode/layers/views.py:1074
+#: geonode/documents/views.py:452 geonode/geoapps/views.py:417
+#: geonode/layers/views.py:1098
 msgid "You must set an author for this resource"
 msgstr "இவ் வளத்திற்காக படைப்பாளி ஒருவரைநீங்கள் வழங்க வேண்டும்"
 
@@ -2205,7 +2216,7 @@ msgstr "இந்த வரைபடத்தை தரப்படுத்த�
 
 #: geonode/geoapps/templates/apps/app_detail.html:98
 #: geonode/geoapps/templates/apps/app_detail.html:105
-#: geonode/layers/templates/layers/layer_detail.html:454
+#: geonode/layers/templates/layers/layer_detail.html:463
 #: geonode/maps/templates/maps/map_detail.html:143
 #: geonode/maps/templates/maps/map_detail.html:150
 #, fuzzy
@@ -2214,7 +2225,7 @@ msgid "Editing Tools"
 msgstr "தரவுகளை சரிசெய்தல்"
 
 #: geonode/geoapps/templates/apps/app_detail.html:121
-#: geonode/layers/templates/layers/layer_detail.html:504
+#: geonode/layers/templates/layers/layer_detail.html:513
 #: geonode/maps/templates/maps/map_detail.html:166
 msgid "Set"
 msgstr "தொகுதி"
@@ -2392,7 +2403,7 @@ msgstr "இந்த வரைபடத்தின் நுண்தரவூ�
 msgid "You are not allowed to view this app."
 msgstr "இந்த வரைபடத்தை பார்வையிடுவதற்கு உங்களுக்கு அனுமதி இல்லை "
 
-#: geonode/geoapps/views.py:71 geonode/maps/views.py:107
+#: geonode/geoapps/views.py:71 geonode/maps/views.py:105
 msgid "An unknown error has occured."
 msgstr "ஓர் அறியப்படாத பிழை ஏற்பட்டது."
 
@@ -2481,15 +2492,15 @@ msgstr " பண்பியல்பு "
 msgid "Create"
 msgstr "உருவாக்கவும்"
 
-#: geonode/geoserver/helpers.py:690
+#: geonode/geoserver/helpers.py:694
 msgid "No abstract provided"
 msgstr "சுருக்கம் வழங்கப்படவில்லை "
 
-#: geonode/geoserver/helpers.py:1444
+#: geonode/geoserver/helpers.py:1449
 msgid "An exception occurred loading data to PostGIS"
 msgstr "PostGIS இற்கு தரவுகளை உட்செலுத்தும் போது விதிவிலக்கொன்று ஏற்பட்டுள்ளது "
 
-#: geonode/geoserver/helpers.py:1449
+#: geonode/geoserver/helpers.py:1454
 msgid " Additionally an error occured during database cleanup"
 msgstr "தரவுத்தள சுத்திகரிப்பின்போது மேலதிகமாக தவரொன்று ஏற்பட்டுள்ளது"
 
@@ -3102,59 +3113,59 @@ msgstr ""
 msgid "the custom GetFeatureInfo template HTML contents."
 msgstr ""
 
-#: geonode/layers/models.py:313
+#: geonode/layers/models.py:321
 msgid "File cannot be opened, maybe check the encoding"
 msgstr "கோப்பை திறக்க முடியவில்லை குறியீட்டு தொகுப்பை அவதானிக்கவும்"
 
-#: geonode/layers/models.py:429
+#: geonode/layers/models.py:437
 #, fuzzy
 #| msgid "attribute name"
 msgid "attribute name"
 msgstr "பண்பியல்பின் பெயர்"
 
-#: geonode/layers/models.py:430
+#: geonode/layers/models.py:438
 msgid "name of attribute as stored in shapefile/spatial database"
 msgstr "வடிவக் கோப்பில் /புவியியல் தரவில் களஞ்சியப்படுத்தியதாக பண்பியல்பை பெயரிடுக"
 
-#: geonode/layers/models.py:436
+#: geonode/layers/models.py:444
 #, fuzzy
 #| msgid "distribution description"
 msgid "attribute description"
 msgstr "distribution description"
 
-#: geonode/layers/models.py:437
+#: geonode/layers/models.py:445
 msgid "description of attribute to be used in metadata"
 msgstr "பண்பு விளக்கம் மெட்டா பயன்படுத்தப்படும்"
 
-#: geonode/layers/models.py:442
+#: geonode/layers/models.py:450
 msgid "attribute label"
 msgstr "பண்பியல்பை அடையாளமிடுக"
 
-#: geonode/layers/models.py:443
+#: geonode/layers/models.py:451
 msgid "title of attribute as displayed in GeoNode"
 msgstr "ஜியோநோட் இல் வெளிப்படும் பண்பியல்பின் தலைப்பு "
 
-#: geonode/layers/models.py:449
+#: geonode/layers/models.py:457
 msgid "attribute type"
 msgstr "பண்பு வகை"
 
-#: geonode/layers/models.py:450
+#: geonode/layers/models.py:458
 msgid "the data type of the attribute (integer, string, geometry, etc)"
 msgstr " பண்பியல்பின் தரவூ வகை (இன்டஐர் ஸ்ரிங் ஐயோமெட்ரி போன்றன)"
 
-#: geonode/layers/models.py:457
+#: geonode/layers/models.py:465
 msgid "visible?"
 msgstr "தென்படுகின்றதா?  "
 
-#: geonode/layers/models.py:458
+#: geonode/layers/models.py:466
 msgid "specifies if the attribute should be displayed in identify results"
 msgstr "அடையாளங் காணப்பட்ட பெறுபேறுகளில் பண்பியல்புகளை காண்பிக்க வேண்டுமா என்பதை விளக்குக"
 
-#: geonode/layers/models.py:461
+#: geonode/layers/models.py:469
 msgid "display order"
 msgstr "காட்சி பொருட்டு"
 
-#: geonode/layers/models.py:462
+#: geonode/layers/models.py:470
 msgid ""
 "specifies the order in which attribute should be displayed in identify "
 "results"
@@ -3162,56 +3173,56 @@ msgstr ""
 "அடையாளங் காணப்பட்ட பெறுபேறுகளில் பண்பியல்புகள் எந்த ஒழுங்கில் முன்வைக்கப்பட வேண்டும் என்பதை "
 "விளக்குக "
 
-#: geonode/layers/models.py:480
-#: geonode/layers/templates/layers/layer_detail.html:178
+#: geonode/layers/models.py:488
+#: geonode/layers/templates/layers/layer_detail.html:187
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:127
 #: geonode/layers/templates/layouts/panels.html:552
 msgid "Label"
 msgstr "லேபிள்"
 
-#: geonode/layers/models.py:482
+#: geonode/layers/models.py:490
 msgid "Image"
 msgstr ""
 
-#: geonode/layers/models.py:483
+#: geonode/layers/models.py:491
 msgid "Video (mp4)"
 msgstr ""
 
-#: geonode/layers/models.py:484
+#: geonode/layers/models.py:492
 msgid "Video (ogg)"
 msgstr ""
 
-#: geonode/layers/models.py:485
+#: geonode/layers/models.py:493
 msgid "Video (webm)"
 msgstr ""
 
-#: geonode/layers/models.py:486
+#: geonode/layers/models.py:494
 msgid "Video (3gp)"
 msgstr ""
 
-#: geonode/layers/models.py:487
+#: geonode/layers/models.py:495
 msgid "Video (flv)"
 msgstr ""
 
-#: geonode/layers/models.py:488
+#: geonode/layers/models.py:496
 msgid "Video (YouTube/VIMEO - embedded)"
 msgstr ""
 
-#: geonode/layers/models.py:489
+#: geonode/layers/models.py:497
 msgid "Audio"
 msgstr ""
 
-#: geonode/layers/models.py:490
+#: geonode/layers/models.py:498
 msgid "IFRAME"
 msgstr ""
 
-#: geonode/layers/models.py:493
+#: geonode/layers/models.py:501
 #, fuzzy
 #| msgid "feature type"
 msgid "featureinfo type"
 msgstr "தோற்ற வகை  "
 
-#: geonode/layers/models.py:494
+#: geonode/layers/models.py:502
 #, fuzzy
 #| msgid "specifies if the attribute should be displayed in identify results"
 msgid ""
@@ -3219,75 +3230,75 @@ msgid ""
 "GetFeatureInfo template."
 msgstr "அடையாளங் காணப்பட்ட பெறுபேறுகளில் பண்பியல்புகளை காண்பிக்க வேண்டுமா என்பதை விளக்குக"
 
-#: geonode/layers/models.py:504
+#: geonode/layers/models.py:512
 #, fuzzy
 #| msgid "count"
 msgid "count"
 msgstr "எண்ண"
 
-#: geonode/layers/models.py:505
+#: geonode/layers/models.py:513
 msgid "count value for this field"
 msgstr "இந்த துறையில் மதிப்பு எண்ண"
 
-#: geonode/layers/models.py:508
+#: geonode/layers/models.py:516
 msgid "min"
 msgstr "நிமிடம்"
 
-#: geonode/layers/models.py:509
+#: geonode/layers/models.py:517
 msgid "minimum value for this field"
 msgstr "இந்த துறையில் குறைந்தபட்ச மதிப்பு"
 
-#: geonode/layers/models.py:516
+#: geonode/layers/models.py:524
 msgid "max"
 msgstr "அதிகபட்சம்"
 
-#: geonode/layers/models.py:517
+#: geonode/layers/models.py:525
 msgid "maximum value for this field"
 msgstr "இந்த துறையில் அதிகபட்ச மதிப்பு"
 
-#: geonode/layers/models.py:524
+#: geonode/layers/models.py:532
 msgid "average"
 msgstr "சராசரி"
 
-#: geonode/layers/models.py:525
+#: geonode/layers/models.py:533
 msgid "average value for this field"
 msgstr "இந்த துறையில் சராசரி மதிப்பு"
 
-#: geonode/layers/models.py:532
+#: geonode/layers/models.py:540
 msgid "median"
 msgstr "சராசரி"
 
-#: geonode/layers/models.py:533
+#: geonode/layers/models.py:541
 msgid "median value for this field"
 msgstr "இந்த துறையில் சராசரி மதிப்பு"
 
-#: geonode/layers/models.py:540
+#: geonode/layers/models.py:548
 msgid "standard deviation"
 msgstr "நியமச்சாய்வு"
 
-#: geonode/layers/models.py:541
+#: geonode/layers/models.py:549
 msgid "standard deviation for this field"
 msgstr "இந்த துறையில் நியமச்சாய்வு"
 
-#: geonode/layers/models.py:548
+#: geonode/layers/models.py:556
 msgid "sum"
 msgstr "தொகை"
 
-#: geonode/layers/models.py:549
+#: geonode/layers/models.py:557
 msgid "sum value for this field"
 msgstr "இந்த துறையில் தொகை மதிப்பு"
 
-#: geonode/layers/models.py:556
+#: geonode/layers/models.py:564
 msgid "unique values for this field"
 msgstr "இந்த துறையில் தனிப்பட்ட மதிப்புகள்"
 
-#: geonode/layers/models.py:560
+#: geonode/layers/models.py:568
 #, fuzzy
 #| msgid "last modified"
 msgid "last modified"
 msgstr "கடைசியாக மாற்றப்பட்ட"
 
-#: geonode/layers/models.py:561
+#: geonode/layers/models.py:569
 msgid "date when attribute statistics were last updated"
 msgstr "பண்பு புள்ளிவிவரங்கள் கடந்த போது தேதி மேம்படுத்தப்பட்டது"
 
@@ -3312,209 +3323,209 @@ msgstr "கீழுள்ள படுகைக்கு புதிய தொ
 msgid "layers"
 msgstr "படுகை  "
 
-#: geonode/layers/templates/layers/layer_detail.html:69
+#: geonode/layers/templates/layers/layer_detail.html:78
 msgid "Layer WMS GetCapabilities document"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:79
+#: geonode/layers/templates/layers/layer_detail.html:88
 msgid "Filter Granules"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:82
+#: geonode/layers/templates/layers/layer_detail.html:91
 msgid "Active Filter:"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:88
+#: geonode/layers/templates/layers/layer_detail.html:97
 msgid "Granule ID"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:89
+#: geonode/layers/templates/layers/layer_detail.html:98
 msgid "Bounding Box"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:90
+#: geonode/layers/templates/layers/layer_detail.html:99
 msgid "Time"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:91
+#: geonode/layers/templates/layers/layer_detail.html:100
 msgid "Elevation"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:92
+#: geonode/layers/templates/layers/layer_detail.html:101
 msgid "Actions"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:104
+#: geonode/layers/templates/layers/layer_detail.html:113
 #, fuzzy
 #| msgid "Preview"
 msgid "Granule Preview"
 msgstr "முன்காட்சி  "
 
-#: geonode/layers/templates/layers/layer_detail.html:105
+#: geonode/layers/templates/layers/layer_detail.html:114
 #, fuzzy
 #| msgid "Remove"
 msgid "Granule Remove"
 msgstr "அகற்று"
 
-#: geonode/layers/templates/layers/layer_detail.html:154
+#: geonode/layers/templates/layers/layer_detail.html:163
 msgid "Dimension"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:155
+#: geonode/layers/templates/layers/layer_detail.html:164
 msgid "Enabled"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:156
+#: geonode/layers/templates/layers/layer_detail.html:165
 msgid "Regex"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:161
+#: geonode/layers/templates/layers/layer_detail.html:170
 msgid "TIME"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:166
+#: geonode/layers/templates/layers/layer_detail.html:175
 msgid "ELEVATION"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:177
+#: geonode/layers/templates/layers/layer_detail.html:186
 msgid "Attribute Name"
 msgstr "பண்பியல்பின் பெயர் "
 
-#: geonode/layers/templates/layers/layer_detail.html:181
+#: geonode/layers/templates/layers/layer_detail.html:190
 msgid "Range"
 msgstr "பரம்பல் "
 
-#: geonode/layers/templates/layers/layer_detail.html:182
+#: geonode/layers/templates/layers/layer_detail.html:191
 msgid "Average"
 msgstr "சராசரி"
 
-#: geonode/layers/templates/layers/layer_detail.html:183
+#: geonode/layers/templates/layers/layer_detail.html:192
 msgid "Median"
 msgstr "மையம் "
 
-#: geonode/layers/templates/layers/layer_detail.html:184
+#: geonode/layers/templates/layers/layer_detail.html:193
 msgid "Standard Deviation"
 msgstr "நியமச்சாய்வு"
 
-#: geonode/layers/templates/layers/layer_detail.html:235
+#: geonode/layers/templates/layers/layer_detail.html:244
 msgid "Rate this layer"
 msgstr "இந்த படுகையை தரப்படுத்துக"
 
-#: geonode/layers/templates/layers/layer_detail.html:260
+#: geonode/layers/templates/layers/layer_detail.html:269
 msgid "Analyze with"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:265
-#: geonode/layers/templates/layers/layer_detail.html:278
+#: geonode/layers/templates/layers/layer_detail.html:274
+#: geonode/layers/templates/layers/layer_detail.html:287
 msgid "Download Layer"
 msgstr "பதிவிரக்க படுகை "
 
-#: geonode/layers/templates/layers/layer_detail.html:284
+#: geonode/layers/templates/layers/layer_detail.html:293
 msgid "Images"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:287
+#: geonode/layers/templates/layers/layer_detail.html:296
 #: geonode/templates/500.html:158 geonode/templates/base.html:292
 #: geonode/templates/base.html:479
 msgid "Data"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:314
+#: geonode/layers/templates/layers/layer_detail.html:323
 #, fuzzy
 #| msgid "Unable to delete layer"
 msgid "Click to filter the layer"
 msgstr "படுகையை நீக்க முடியாது"
 
-#: geonode/layers/templates/layers/layer_detail.html:315
+#: geonode/layers/templates/layers/layer_detail.html:324
 #, fuzzy
 #| msgid "Are you sure you want to log out?"
 msgid "Do you want to filter it?"
 msgstr "நீங்கள் வெளியேற்றுவோம் என்பதில் உறுதியாக இருக்கிறீர்களா?"
 
-#: geonode/layers/templates/layers/layer_detail.html:318
+#: geonode/layers/templates/layers/layer_detail.html:327
 msgid "Loading..."
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:322
+#: geonode/layers/templates/layers/layer_detail.html:331
 #, fuzzy
 #| msgid "Select an attribute"
 msgid "Filter by attributes"
 msgstr "இயற்பண்பு ஒன்றை தெரிக"
 
-#: geonode/layers/templates/layers/layer_detail.html:329
+#: geonode/layers/templates/layers/layer_detail.html:338
 msgid "Match"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:337
+#: geonode/layers/templates/layers/layer_detail.html:346
 #, fuzzy
 #| msgid "All"
 msgid "all"
 msgstr "அனைத்து"
 
-#: geonode/layers/templates/layers/layer_detail.html:338
+#: geonode/layers/templates/layers/layer_detail.html:347
 msgid "any"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:344
+#: geonode/layers/templates/layers/layer_detail.html:353
 #, fuzzy
 #| msgid "the following map"
 msgid "of the following:"
 msgstr "பின்வரும் குறித்த வரைபடம் "
 
-#: geonode/layers/templates/layers/layer_detail.html:351
+#: geonode/layers/templates/layers/layer_detail.html:360
 #: geonode/layers/templates/layers/layer_metadata_advanced.html:126
 #: geonode/layers/templates/layouts/panels.html:551
 msgid "Attribute"
 msgstr " பண்பியல்பு "
 
-#: geonode/layers/templates/layers/layer_detail.html:367
+#: geonode/layers/templates/layers/layer_detail.html:376
 msgid "Operator"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:393
+#: geonode/layers/templates/layers/layer_detail.html:402
 #, fuzzy
 #| msgid "Featured"
 msgid "Feature limit"
 msgstr "முனைப்பு "
 
-#: geonode/layers/templates/layers/layer_detail.html:402
+#: geonode/layers/templates/layers/layer_detail.html:411
 msgid "Pick your download format:"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:411
+#: geonode/layers/templates/layers/layer_detail.html:420
 msgid ""
 "No data available for this resource. Please contact a system administrator "
 "or a manager."
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:411
+#: geonode/layers/templates/layers/layer_detail.html:420
 #: geonode/monitoring/models.py:1083
 msgid "Warning"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:461
+#: geonode/layers/templates/layers/layer_detail.html:470
 msgid "Edit Layer"
 msgstr "படுகையை திருத்தம் செய்தல் "
 
-#: geonode/layers/templates/layers/layer_detail.html:471
+#: geonode/layers/templates/layers/layer_detail.html:480
 #, fuzzy
 #| msgid "Download Metadata"
 msgid "Upload Metadata"
 msgstr "நுண் தரவகளை பதிவிரக்கம் செய்க "
 
-#: geonode/layers/templates/layers/layer_detail.html:479
-#: geonode/layers/templates/layers/layer_detail.html:494
-#: geonode/layers/templates/layers/layer_detail.html:668
+#: geonode/layers/templates/layers/layer_detail.html:488
+#: geonode/layers/templates/layers/layer_detail.html:503
+#: geonode/layers/templates/layers/layer_detail.html:677
 msgid "Styles"
 msgstr "வடிவம் "
 
-#: geonode/layers/templates/layers/layer_detail.html:486
+#: geonode/layers/templates/layers/layer_detail.html:495
 #: geonode/services/templates/services/service_detail.html:105
 #: geonode/services/templates/services/service_resources_harvest.html:153
 msgid "Manage"
 msgstr "நிர்வகிக்கவும்"
 
-#: geonode/layers/templates/layers/layer_detail.html:512
+#: geonode/layers/templates/layers/layer_detail.html:521
 #: geonode/monitoring/models.py:173 geonode/templates/index.html:128
 #: geonode/templates/pinax/notifications/request_download_resourcebase/full.txt:5
 msgid "Layer"
@@ -3522,76 +3533,76 @@ msgid_plural "Layers"
 msgstr[0] ""
 msgstr[1] ""
 
-#: geonode/layers/templates/layers/layer_detail.html:518
+#: geonode/layers/templates/layers/layer_detail.html:527
 msgid "Edit data"
 msgstr "தரவுகளை சரிசெய்"
 
-#: geonode/layers/templates/layers/layer_detail.html:538
+#: geonode/layers/templates/layers/layer_detail.html:547
 #, fuzzy
 #| msgid "Edit Layer"
 msgid "View Layer"
 msgstr "படுகையை திருத்தம் செய்தல் "
 
-#: geonode/layers/templates/layers/layer_detail.html:573
+#: geonode/layers/templates/layers/layer_detail.html:582
 #, fuzzy
 #| msgid "Information of Layer"
 msgid "Attribute Information"
 msgstr "தகவல் படுகை "
 
-#: geonode/layers/templates/layers/layer_detail.html:575
+#: geonode/layers/templates/layers/layer_detail.html:584
 msgid "ISO Feature Catalogue"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:588
+#: geonode/layers/templates/layers/layer_detail.html:597
 msgid "Legend"
 msgstr "விளக்கம்"
 
-#: geonode/layers/templates/layers/layer_detail.html:618
+#: geonode/layers/templates/layers/layer_detail.html:627
 msgid "Maps using this layer"
 msgstr "இந்த படுகையை பயன்படுத்தும் வரைபடங்கள் "
 
-#: geonode/layers/templates/layers/layer_detail.html:620
+#: geonode/layers/templates/layers/layer_detail.html:629
 msgid "List of maps using this layer:"
 msgstr "இந்த படுகையை பயன்படுத்தும் வரைபடங்களின் பட்டியல் "
 
-#: geonode/layers/templates/layers/layer_detail.html:626
+#: geonode/layers/templates/layers/layer_detail.html:635
 msgid "This layer is not currently used in any maps."
 msgstr "எந்தவொரு வரைபடத்திலும் இந்த படுகை பயன்படுத்தப்படவில்லை "
 
-#: geonode/layers/templates/layers/layer_detail.html:632
+#: geonode/layers/templates/layers/layer_detail.html:641
 msgid "Create a map using this layer"
 msgstr "இந்த படுகையை பயன்படுத்தும் வரைபடத்தை உருவாக்குதல்"
 
-#: geonode/layers/templates/layers/layer_detail.html:633
+#: geonode/layers/templates/layers/layer_detail.html:642
 msgid "Click the button below to generate a new map based on this layer."
 msgstr ""
 "இந்த படுகையின் அடிப்படையில் புதிய வரைபடத்தை உருவாக்குவதற்கு  கீழுள்ள ஆழியை அழுத்துக  "
 
-#: geonode/layers/templates/layers/layer_detail.html:639
+#: geonode/layers/templates/layers/layer_detail.html:648
 msgid "Add the layer to an existing map"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:647
+#: geonode/layers/templates/layers/layer_detail.html:656
 #, fuzzy
 #| msgid "Click the button below to change the permissions of this layer."
 msgid "Click the button below to add the layer to the selected map."
 msgstr "இந்த படுகைக்கான அனுமதியை மாற்றுவதற்கு கீழுள்ள ஆழியை அழுத்தவம் "
 
-#: geonode/layers/templates/layers/layer_detail.html:649
+#: geonode/layers/templates/layers/layer_detail.html:658
 #, fuzzy
 #| msgid "Edit Map"
 msgid "Add to Map"
 msgstr "திருத்தவும்"
 
-#: geonode/layers/templates/layers/layer_detail.html:656
+#: geonode/layers/templates/layers/layer_detail.html:665
 msgid "Documents related to this layer"
 msgstr "இந்த அடுக்கு ஆவணங்கள்"
 
-#: geonode/layers/templates/layers/layer_detail.html:657
+#: geonode/layers/templates/layers/layer_detail.html:666
 msgid "List of documents related to this layer:"
 msgstr "இந்த அடுக்கு தொடர்பான ஆவணங்களை பெற:"
 
-#: geonode/layers/templates/layers/layer_detail.html:669
+#: geonode/layers/templates/layers/layer_detail.html:678
 msgid ""
 "The following styles are associated with this layer. Choose a style to view "
 "it in the preview map."
@@ -3599,78 +3610,78 @@ msgstr ""
 "இந்த வடிவத்துடன் பின்வரும் படிவங்கள் தொடர்புபட்டுள்ளன. முன்கூட்டிய வரைபடத்தில் இதனை "
 "காண்பதற்கு வடிவம் ஒன்றை தெரிக"
 
-#: geonode/layers/templates/layers/layer_detail.html:677
-#: geonode/layers/templates/layers/layer_detail.html:691
+#: geonode/layers/templates/layers/layer_detail.html:686
+#: geonode/layers/templates/layers/layer_detail.html:700
 #: geonode/qgis_server/templates/qgis_server/forms/qml_style.html:30
 #, fuzzy
 #| msgid "Layer Default Style"
 msgid "(default style)"
 msgstr " படுகை முன்னிருப்பு வடிவம்"
 
-#: geonode/layers/templates/layers/layer_detail.html:684
-#: geonode/layers/templates/layers/layer_detail.html:698
+#: geonode/layers/templates/layers/layer_detail.html:693
+#: geonode/layers/templates/layers/layer_detail.html:707
 msgid "No styles associated with this layer"
 msgstr "இப்படிமத்துடன் வடிவங்கள் தொடர்புபடவில்லை "
 
-#: geonode/layers/templates/layers/layer_detail.html:707
+#: geonode/layers/templates/layers/layer_detail.html:716
 msgid "External service layer"
 msgstr "வெளி சேவை அடுக்கு"
 
-#: geonode/layers/templates/layers/layer_detail.html:708
+#: geonode/layers/templates/layers/layer_detail.html:717
 msgid "Source"
 msgstr "மூல"
 
-#: geonode/layers/templates/layers/layer_detail.html:718
+#: geonode/layers/templates/layers/layer_detail.html:727
 msgid "Refresh Attributes and Statistics of this layer"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:719
+#: geonode/layers/templates/layers/layer_detail.html:728
 msgid ""
 "Click the button below to allow GeoNode refreshing the list of available "
 "Layer Attributes. If the option 'WPS_ENABLED' has been also set on the "
 "backend, it will recalculate their statistics too."
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:720
+#: geonode/layers/templates/layers/layer_detail.html:729
 msgid "Refresh Attributes and Statistics"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:724
+#: geonode/layers/templates/layers/layer_detail.html:733
 #, fuzzy
 #| msgid "Create a map using this layer"
 msgid "Clear the Server Cache of this layer"
 msgstr "இந்த படுகையை பயன்படுத்தும் வரைபடத்தை உருவாக்குதல்"
 
-#: geonode/layers/templates/layers/layer_detail.html:725
+#: geonode/layers/templates/layers/layer_detail.html:734
 #, fuzzy
 #| msgid "Click the button below to change the permissions of this layer."
 msgid "Click the button below to wipe the tile-cache of this layer."
 msgstr "இந்த படுகைக்கான அனுமதியை மாற்றுவதற்கு கீழுள்ள ஆழியை அழுத்தவம் "
 
-#: geonode/layers/templates/layers/layer_detail.html:726
+#: geonode/layers/templates/layers/layer_detail.html:735
 msgid "Empty Tiled-Layer Cache"
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:736
+#: geonode/layers/templates/layers/layer_detail.html:745
 #: geonode/layers/templates/layers/layer_metadata_upload.html:102
 #: geonode/layers/templates/layers/layer_replace.html:112
 #: geonode/layers/templates/layers/layer_style_upload.html:103
 msgid "Click the button below to change the permissions of this layer."
 msgstr "இந்த படுகைக்கான அனுமதியை மாற்றுவதற்கு கீழுள்ள ஆழியை அழுத்தவம் "
 
-#: geonode/layers/templates/layers/layer_detail.html:737
+#: geonode/layers/templates/layers/layer_detail.html:746
 #: geonode/layers/templates/layers/layer_metadata_upload.html:103
 #: geonode/layers/templates/layers/layer_replace.html:113
 #: geonode/layers/templates/layers/layer_style_upload.html:104
 msgid "Change Layer Permissions"
 msgstr " படுகை மாற்றத்திற்கான அனுமதி "
 
-#: geonode/layers/templates/layers/layer_detail.html:753
+#: geonode/layers/templates/layers/layer_detail.html:762
 #: geonode/templates/base.html:704 geonode/templates/metadata_base.html:147
 msgid "Processing..."
 msgstr ""
 
-#: geonode/layers/templates/layers/layer_detail.html:758
+#: geonode/layers/templates/layers/layer_detail.html:767
 #, fuzzy
 #| msgid "Permissions"
 msgid "Updating Permissions..."
@@ -4575,40 +4586,40 @@ msgstr "அல்லது செல்லுங்கள்"
 msgid "now"
 msgstr "தற்போது"
 
-#: geonode/layers/utils.py:511 geonode/layers/utils.py:535
+#: geonode/layers/utils.py:506 geonode/layers/utils.py:530
 #, fuzzy
 #| msgid "You are attempting to replace a vector layer with a raster."
 msgid "You are attempting to replace a vector layer with an unknown format."
 msgstr ""
 "நெறியப் படுகை ஒன்றை பரவுப் படுகை ஒன்றினால் மாற்றீடு செய்வதற்கு நீங்கள் முயற்சிக்கின்றீர்கள் "
 
-#: geonode/layers/utils.py:517 geonode/layers/views.py:1282
+#: geonode/layers/utils.py:512 geonode/layers/views.py:1306
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr ""
 "நெறியப் படுகை ஒன்றை பரவுப் படுகை ஒன்றினால் மாற்றீடு செய்வதற்கு நீங்கள் முயற்சிக்கின்றீர்கள் "
 
-#: geonode/layers/utils.py:520 geonode/layers/views.py:1286
+#: geonode/layers/utils.py:515 geonode/layers/views.py:1310
 msgid "You are attempting to replace a raster layer with a vector."
 msgstr ""
 "பரவுப் படுகை ஒன்றை  நெறியப் படுகை ஒன்றினால் மாற்றீடு செய்வதற்கு நீங்கள் முயற்சிக்கின்றீர்கள் "
 
-#: geonode/layers/utils.py:543
+#: geonode/layers/utils.py:538
 msgid ""
 "Please ensure the name is consistent with the file you are trying to replace."
 msgstr ""
 
-#: geonode/layers/utils.py:548
+#: geonode/layers/utils.py:543
 msgid "Local GeoNode layer has no geometry type."
 msgstr ""
 
-#: geonode/layers/utils.py:556
+#: geonode/layers/utils.py:551
 msgid ""
 "Please ensure there is at least one geometry "
 "type                                 that is consistent with the file you "
 "are trying to replace."
 msgstr ""
 
-#: geonode/layers/utils.py:560
+#: geonode/layers/utils.py:555
 #, python-format
 msgid "Some error occurred while trying to access the uploaded schema: %s"
 msgstr ""
@@ -4655,13 +4666,13 @@ msgstr "இந்த படுகையை பார்வையிட உங்
 msgid "Failed to upload the layer"
 msgstr "கோப்புகள் பதிவேற்றம் செய்வதற்கு"
 
-#: geonode/layers/views.py:1378 geonode/layers/views.py:1430
+#: geonode/layers/views.py:1402 geonode/layers/views.py:1454
 #, fuzzy
 #| msgid "Unable to delete layer"
 msgid "Unable to delete layer"
 msgstr "படுகையை நீக்க முடியாது"
 
-#: geonode/layers/views.py:1382 geonode/layers/views.py:1434
+#: geonode/layers/views.py:1406 geonode/layers/views.py:1458
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -4669,7 +4680,7 @@ msgstr ""
 "படுகை குழு ஒன்றின் அங்கத்துவமுடையதாக இப் படுகை காணப்படுகின்றது, இதனை நீக்குவதற்கு "
 "முன்னர் குழுவில் இருந்து படுகையை நீக்குதல் வேண்டும்"
 
-#: geonode/layers/views.py:1489 geonode/maps/views.py:1334
+#: geonode/layers/views.py:1513 geonode/maps/views.py:1330
 msgid "couldn't generate thumbnail"
 msgstr ""
 
@@ -4979,37 +4990,37 @@ msgid ""
 "        "
 msgstr ""
 
-#: geonode/maps/views.py:100
+#: geonode/maps/views.py:98
 msgid "You are not permitted to delete this map."
 msgstr "இந்த வரைபடத்தை அழிப்பதற்கு உங்களுக்கு அனுமதி இல்லை "
 
-#: geonode/maps/views.py:101
+#: geonode/maps/views.py:99
 msgid "You do not have permissions for this map."
 msgstr "இந்த வரைபடத்திற்கு உங்களுக்கு அனுமதியில்லை "
 
-#: geonode/maps/views.py:102
+#: geonode/maps/views.py:100
 msgid "You must be logged in to save this map"
 msgstr "வரைபடத்தை சேமிப்பதற்கு நீங்கள் உள்நுழைய வேண்டும்  "
 
-#: geonode/maps/views.py:103
+#: geonode/maps/views.py:101
 msgid "You are not permitted to save or edit this map."
 msgstr "நீங்கள் சேமிக்க அல்லது இந்த வரைபடத்தைத் திருத்த அனுமதி இல்லை."
 
-#: geonode/maps/views.py:105
+#: geonode/maps/views.py:103
 msgid "You are not allowed to modify this map's metadata."
 msgstr "இந்த வரைபடத்தின் நுண்தரவூகளை மாற்றியமைப்பதற்கு உங்களுக்கு அனுமதியில்லை "
 
-#: geonode/maps/views.py:106
+#: geonode/maps/views.py:104
 msgid "You are not allowed to view this map."
 msgstr "இந்த வரைபடத்தை பார்வையிடுவதற்கு உங்களுக்கு அனுமதி இல்லை "
 
-#: geonode/maps/views.py:1341
+#: geonode/maps/views.py:1337
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "Thumbnail saved"
 msgstr "Thumbnail"
 
-#: geonode/maps/views.py:1344
+#: geonode/maps/views.py:1340
 #, fuzzy
 #| msgid "Thumbnail"
 msgid "error saving thumbnail"
@@ -5838,7 +5849,7 @@ msgstr "உங்களின் பயன்பாட்டுப் பெய�
 msgid "No user could be found with that email address."
 msgstr "அந்த மின்அஞ்சல் முகவரிக்குரிய பயன்படுத்துனர் ஒருரையேனும் கண்டறிய முடியவில்லை"
 
-#: geonode/proxy/templatetags/proxy_lib_tags.py:42 geonode/proxy/views.py:267
+#: geonode/proxy/templatetags/proxy_lib_tags.py:41 geonode/proxy/views.py:267
 #, fuzzy
 #| msgid "You are not permitted to save or edit this map."
 msgid "You are not permitted to save or edit this resource."
@@ -5856,14 +5867,14 @@ msgid ""
 "administrator."
 msgstr ""
 
-#: geonode/proxy/views.py:302 geonode/proxy/views.py:313
-#: geonode/proxy/views.py:416
+#: geonode/proxy/views.py:301 geonode/proxy/views.py:312
+#: geonode/proxy/views.py:415
 #, fuzzy
 #| msgid "Documents"
 msgid "No files found."
 msgstr "ஆவணங்கள் "
 
-#: geonode/proxy/views.py:424
+#: geonode/proxy/views.py:423
 #, fuzzy
 #| msgid "Not provided"
 msgid "Not Authorized"
@@ -5923,7 +5934,7 @@ msgstr "படுகைகளை நீக்கு "
 msgid "Reload to see changes"
 msgstr ""
 
-#: geonode/qgis_server/views.py:263
+#: geonode/qgis_server/views.py:262
 #, python-brace-format
 msgid ""
 "You should use a GIS software or a library which support TMS service to use "
@@ -6335,7 +6346,7 @@ msgstr "சேவை உருவாக்கப்பட்ட:"
 msgid "created"
 msgstr "உருவாக்கப்பட்டுள்ளது"
 
-#: geonode/social/signals.py:81 geonode/social/tests.py:104
+#: geonode/social/signals.py:81 geonode/social/tests.py:112
 msgid "deleted"
 msgstr "அழிக்கப்பட்டுள்ளது"
 
@@ -6343,7 +6354,7 @@ msgstr "அழிக்கப்பட்டுள்ளது"
 msgid "updated"
 msgstr "இயல்நிலைப்படுத்தப்பட்டுள்ளது"
 
-#: geonode/social/signals.py:95 geonode/social/tests.py:124
+#: geonode/social/signals.py:95 geonode/social/tests.py:135
 msgid "added a comment"
 msgstr "குறிப்பொன்று சேர்க்கப்பட்டுள்ளது"
 
@@ -6352,7 +6363,7 @@ msgid "updated a comment"
 msgstr "குறிப்பொன்று இயல்நிலைப்படுத்தப்பட்டுள்ளது"
 
 #: geonode/social/signals.py:103 geonode/social/signals.py:108
-#: geonode/social/tests.py:78
+#: geonode/social/tests.py:84
 msgid "uploaded"
 msgstr "உட்செலுத்தப்பட்டுள்ளது"
 
@@ -6365,7 +6376,7 @@ msgstr "அண்மைய செயற்பாடு"
 msgid "to"
 msgstr "இற்கு"
 
-#: geonode/social/templatetags/social_tags.py:68 geonode/social/tests.py:127
+#: geonode/social/templatetags/social_tags.py:68 geonode/social/tests.py:138
 #: geonode/templates/_comments.html:31
 msgid "on"
 msgstr "ஆரம்பம் "
@@ -8938,7 +8949,7 @@ msgstr ""
 msgid "Invalid permission level."
 msgstr "பெறுமதியற்ற அனுமதி மட்டம்"
 
-#: geonode/utils.py:974
+#: geonode/utils.py:973
 msgid "Permission Denied"
 msgstr "அனுமதி மறுக்கப்பட்டுள்ளது "
 

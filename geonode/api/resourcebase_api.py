@@ -18,17 +18,13 @@
 #
 #########################################################################
 import re
-import json
 import logging
 
-from django.urls import resolve
 from django.db.models import Q
 from django.http import HttpResponse
 from django.conf import settings
 from django.contrib.staticfiles.templatetags import staticfiles
 from tastypie.authentication import MultiAuthentication, SessionAuthentication
-from django.template.response import TemplateResponse
-from tastypie import http
 from tastypie.bundle import Bundle
 
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
@@ -46,9 +42,10 @@ from django.forms.models import model_to_dict
 
 from tastypie.utils.mime import build_content_type
 
-from geonode import get_version, qgis_server, geoserver
+from geonode import get_version, geoserver
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
+from geonode.geoapps.models import GeoApp
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase
 from geonode.base.models import HierarchicalKeyword
@@ -165,6 +162,8 @@ class CommonModelApi(ModelResource):
             filters=filters, ignore_bad_filters=ignore_bad_filters, **kwargs)
         if 'type__in' in filters and filters['type__in'] in FILTER_TYPES.keys():
             orm_filters.update({'type': filters.getlist('type__in')})
+        if 'app_type__in' in filters:
+            orm_filters.update({'polymorphic_ctype__model': filters['app_type__in'].lower()})
         if 'extent' in filters:
             orm_filters.update({'extent': filters['extent']})
         orm_filters['f_method'] = filters['f_method'] if 'f_method' in filters else 'and'
@@ -266,7 +265,6 @@ class CommonModelApi(ModelResource):
         return filter_set
 
     def filter_h_keywords(self, queryset, keywords):
-        filtered = queryset
         treeqs = HierarchicalKeyword.objects.none()
         if keywords and len(keywords) > 0:
             for keyword in keywords:
@@ -278,8 +276,9 @@ class CommonModelApi(ModelResource):
                 except ObjectDoesNotExist:
                     # Ignore keywords not actually used?
                     pass
-
-        filtered = queryset.filter(Q(keywords__in=treeqs))
+            filtered = queryset.filter(Q(keywords__in=treeqs))
+        else:
+            filtered = queryset
         return filtered
 
     def build_haystack_filters(self, parameters):
@@ -329,7 +328,7 @@ class CommonModelApi(ModelResource):
             subtypes = []
 
             for type in type_facets:
-                if type in ["map", "layer", "document", "user"]:
+                if type in {"map", "layer", "document", "user"}:
                     # Type is one of our Major Types (not a sub type)
                     types.append(type)
                 elif type in LAYER_SUBTYPES.keys():
@@ -373,7 +372,7 @@ class CommonModelApi(ModelResource):
                             SQ(description=Raw(search_word)) |
                             SQ(content=Raw(search_word))
                         )
-                    elif search_word in ["AND", "OR"]:
+                    elif search_word in {"AND", "OR"}:
                         pass
                     elif words[i - 1] == "OR":  # previous word OR this word
                         sqs = sqs.filter_or(
@@ -711,17 +710,7 @@ class LayerResource(CommonModelApi):
         null=True,
         use_in='all',
         default=[])
-    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-        default_style = fields.ForeignKey(
-            'geonode.api.api.StyleResource',
-            attribute='qgis_default_style',
-            null=True)
-        styles = fields.ManyToManyField(
-            'geonode.api.api.StyleResource',
-            attribute='qgis_styles',
-            null=True,
-            use_in='detail')
-    elif check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         default_style = fields.ForeignKey(
             'geonode.api.api.StyleResource',
             attribute='default_style',
@@ -791,6 +780,7 @@ class LayerResource(CommonModelApi):
             if hasattr(obj, 'curatedthumbnail'):
                 formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
 
+            formatted_obj['processed'] = obj.instance_is_processed
             # put the object on the response stack
             formatted_objects.append(formatted_obj)
         return formatted_objects
@@ -826,35 +816,12 @@ class LayerResource(CommonModelApi):
     def dehydrate_gtype(self, bundle):
         return bundle.obj.gtype
 
-    def populate_object(self, obj):
-        """Populate results with necessary fields
-
-        :param obj: Layer obj
-        :type obj: Layer
-        :return:
-        """
-        if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-            # Provides custom links for QGIS Server styles info
-            # Default style
-            try:
-                obj.qgis_default_style = obj.qgis_layer.default_style
-            except Exception:
-                obj.qgis_default_style = None
-
-            # Styles
-            try:
-                obj.qgis_styles = obj.qgis_layer.styles
-            except Exception:
-                obj.qgis_styles = []
-        return obj
-
     def build_bundle(
             self, obj=None, data=None, request=None, **kwargs):
         """Override build_bundle method to add additional info."""
 
         if obj is None and self._meta.object_class:
             obj = self._meta.object_class()
-
         elif obj:
             obj = self.populate_object(obj)
 
@@ -863,50 +830,14 @@ class LayerResource(CommonModelApi):
             data=data,
             request=request, **kwargs)
 
-    def patch_detail(self, request, **kwargs):
-        """Allow patch request to update default_style.
+    def populate_object(self, obj):
+        """Populate results with necessary fields
 
-        Request body must match this:
-
-        {
-            'default_style': <resource_uri_to_style>
-        }
-
+        :param obj: Layer obj
+        :type obj: Layer
+        :return:
         """
-        reason = 'Can only patch "default_style" field.'
-        try:
-            body = json.loads(request.body)
-            if 'default_style' not in body:
-                return http.HttpBadRequest(reason=reason)
-            match = resolve(body['default_style'])
-            style_id = match.kwargs['id']
-            api_name = match.kwargs['api_name']
-            resource_name = match.kwargs['resource_name']
-            if not (resource_name == 'styles' and api_name == 'api'):
-                raise Exception()
-
-            from geonode.qgis_server.models import QGISServerStyle
-
-            style = QGISServerStyle.objects.get(id=style_id)
-
-            layer_id = kwargs['id']
-            layer = Layer.objects.get(id=layer_id)
-        except Exception:
-            return http.HttpBadRequest(reason=reason)
-
-        from geonode.qgis_server.views import default_qml_style
-
-        request.method = 'POST'
-        response = default_qml_style(
-            request,
-            layername=layer.name,
-            style_name=style.name)
-
-        if isinstance(response, TemplateResponse):
-            if response.status_code == 200:
-                return HttpResponse(status=200)
-
-        return self.error_response(request, response.content)
+        return obj
 
     # copy parent attribute before modifying
     VALUES = CommonModelApi.VALUES[:]
@@ -1011,6 +942,69 @@ class MapResource(CommonModelApi):
         paginator_class = CrossSiteXHRPaginator
         queryset = Map.objects.distinct().order_by('-date')
         resource_name = 'maps'
+        authentication = MultiAuthentication(SessionAuthentication(),
+                                             OAuthAuthentication(),
+                                             GeonodeApiKeyAuthentication())
+
+
+class GeoAppResource(CommonModelApi):
+
+    """GeoApps API"""
+
+    def format_objects(self, objects):
+        """
+        Formats the objects and provides reference to list of layers in GeoApp
+        resources.
+
+        :param objects: GeoApp objects
+        """
+        formatted_objects = []
+        for obj in objects:
+            # convert the object to a dict using the standard values.
+            formatted_obj = model_to_dict(obj, fields=self.VALUES)
+            username = obj.owner.get_username()
+            full_name = (obj.owner.get_full_name() or username)
+            formatted_obj['owner__username'] = username
+            formatted_obj['owner_name'] = full_name
+            if obj.category:
+                formatted_obj['category__gn_description'] = obj.category.gn_description
+            if obj.group:
+                formatted_obj['group'] = obj.group
+                try:
+                    formatted_obj['group_name'] = GroupProfile.objects.get(slug=obj.group.name)
+                except GroupProfile.DoesNotExist:
+                    formatted_obj['group_name'] = obj.group
+
+            formatted_obj['keywords'] = [k.name for k in obj.keywords.all()] if obj.keywords else []
+            formatted_obj['regions'] = [r.name for r in obj.regions.all()] if obj.regions else []
+
+            if 'site_url' not in formatted_obj or len(formatted_obj['site_url']) == 0:
+                formatted_obj['site_url'] = settings.SITEURL
+
+            # Probe Remote Services
+            formatted_obj['store_type'] = 'geoapp'
+            formatted_obj['online'] = True
+
+            # replace thumbnail_url with curated_thumbs
+            try:
+                if hasattr(obj, 'curatedthumbnail'):
+                    if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
+                        formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
+                    else:
+                        formatted_obj['thumbnail_url'] = ''
+            except Exception as e:
+                formatted_obj['thumbnail_url'] = ''
+                logger.exception(e)
+
+            formatted_objects.append(formatted_obj)
+        return formatted_objects
+
+    class Meta(CommonMetaApi):
+        paginator_class = CrossSiteXHRPaginator
+        filtering = CommonMetaApi.filtering
+        filtering.update({'app_type': ALL})
+        queryset = GeoApp.objects.distinct().order_by('-date')
+        resource_name = 'geoapps'
         authentication = MultiAuthentication(SessionAuthentication(),
                                              OAuthAuthentication(),
                                              GeonodeApiKeyAuthentication())

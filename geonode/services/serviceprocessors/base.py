@@ -25,7 +25,7 @@ from urllib.parse import quote
 
 from django.conf import settings
 from django.urls import reverse
-from six.moves.urllib.parse import urlencode, urlparse, urljoin, parse_qs, urlunparse
+from urllib.parse import urlencode, urlparse, urljoin, parse_qs, urlunparse
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend

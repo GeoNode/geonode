@@ -16,7 +16,10 @@
       <link href="{% static "lib/css/jquery-ui.structure.css" %}" rel="stylesheet"/>
       <link href="{% static "lib/css/bootstrap-datetimepicker.css" %}" rel="stylesheet" />
       {% else %}
-      <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet"/>
+      <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet" media="none" onload="if(media!='all')media='all'"/>
+      <noscript>
+        <link rel="stylesheet" href="{% static "lib/css/assets.min.css" %}">
+      </noscript>
       {% endif %}
       <link href="{% static "geonode/css/base.css" %}" rel="stylesheet" />
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
@@ -61,6 +64,11 @@
             <li id="nav_documents">
               <a href="{% url "document_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Documents" %}</a>
             </li>
+            {% if GEONODE_APPS_ENABLE and GEONODE_APPS_NAV_MENU_ENABLE %}
+            <li id="nav_maps">
+              <a href="{% url "apps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a>
+            </li>
+            {% endif %}
            {% block extra_tab %}
            {% endblock %}
             <li id="nav_people">

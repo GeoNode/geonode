@@ -17,17 +17,19 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+from django.test.utils import override_settings
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-from django.contrib.auth import get_user_model
-from django.urls import reverse
 from django.core import mail
+from django.urls import reverse
+from django.db import transaction
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
 
-from geonode.people import profileextractors
+from geonode.layers import utils
 from geonode.layers.models import Layer
-from django.contrib.auth.models import Group
+from geonode.people import profileextractors
 
 
 class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
@@ -35,10 +37,10 @@ class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
         super(TestSetUnsetUserLayerPermissions, self).setUp()
         self.layers = Layer.objects.all()[:3]
         self.layer_ids = [layer.pk for layer in self.layers]
-        self.user_ids = ','.join([str(element.pk) for element in get_user_model().objects.all()[:3]])
+        self.user_ids = ','.join(str(element.pk) for element in get_user_model().objects.all()[:3])
         self.permission_type = ('r', 'w', 'd')
         self.groups = Group.objects.all()[:3]
-        self.group_ids = ','.join([str(element.pk) for element in self.groups])
+        self.group_ids = ','.join(str(element.pk) for element in self.groups)
 
     def test_redirect_on_get_request(self):
         """
@@ -57,34 +59,63 @@ class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
         response = self.client.get(reverse('set_user_layer_permissions'))
         self.assertEqual(response.status_code, 401)
 
+    @override_settings(ASYNC_SIGNALS=False)
     def test_set_unset_user_layer_permissions(self):
         """
         Test that user permissions are set for layers
         """
         self.client.login(username="admin", password="admin")
         response = self.client.post(reverse('set_user_layer_permissions'), data={
-            'ids': self.user_ids, 'layers': self.layer_ids,
-            'permission_type': self.permission_type, 'mode': 'set'
+            'ids': self.user_ids,
+            'layers': self.layer_ids,
+            'permission_type': self.permission_type,
+            'mode': 'set'
         })
         self.assertEqual(response.status_code, 302)
+        with transaction.atomic():
+            for permissions_name in self.permission_type:
+                utils.set_layers_permissions(
+                    permissions_name,
+                    [resource.name for resource in Layer.objects.filter(
+                        id__in=[int(_id) for _id in self.layer_ids])],
+                    [user.username for user in get_user_model().objects.filter(id__in=self.user_ids.split(","))],
+                    [],
+                    False,
+                    verbose=True
+                )
         for layer in self.layers:
             perm_spec = layer.get_all_level_info()
             self.assertTrue(get_user_model().objects.all()[0] in perm_spec["users"])
 
+    @override_settings(ASYNC_SIGNALS=False)
     def test_set_unset_group_layer_permissions(self):
         """
         Test that group permissions are set for layers
         """
         self.client.login(username="admin", password="admin")
         response = self.client.post(reverse('set_group_layer_permissions'), data={
-            'ids': self.group_ids, 'layers': self.layer_ids,
-            'permission_type': self.permission_type, 'mode': 'set'
+            'ids': self.group_ids,
+            'layers': self.layer_ids,
+            'permission_type': self.permission_type,
+            'mode': 'set'
         })
         self.assertEqual(response.status_code, 302)
+        with transaction.atomic():
+            for permissions_name in self.permission_type:
+                utils.set_layers_permissions(
+                    permissions_name,
+                    [resource.name for resource in Layer.objects.filter(
+                        id__in=[int(_id) for _id in self.layer_ids])],
+                    [],
+                    [group.name for group in Group.objects.filter(id__in=self.group_ids.split(","))],
+                    False,
+                    verbose=True
+                )
         for layer in self.layers:
             perm_spec = layer.get_all_level_info()
             self.assertTrue(self.groups[0] in perm_spec["groups"])
 
+    @override_settings(ASYNC_SIGNALS=False)
     def test_unset_group_layer_perms(self):
         """
         Test that group permissions are unset for layers
@@ -97,11 +128,23 @@ class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
 
         self.client.login(username="admin", password="admin")
         response = self.client.post(reverse('set_user_layer_permissions'), data={
-            'ids': self.user_ids, 'layers': self.layer_ids,
-            'permission_type': self.permission_type, 'mode': 'unset'
+            'ids': self.user_ids,
+            'layers': self.layer_ids,
+            'permission_type': self.permission_type,
+            'mode': 'unset'
         })
-
         self.assertEqual(response.status_code, 302)
+        with transaction.atomic():
+            for permissions_name in self.permission_type:
+                utils.set_layers_permissions(
+                    permissions_name,
+                    [resource.name for resource in Layer.objects.filter(
+                        id__in=[int(_id) for _id in self.layer_ids])],
+                    [user.username for user in get_user_model().objects.filter(id__in=self.user_ids.split(","))],
+                    [],
+                    True,
+                    verbose=True
+                )
         for layer in self.layers:
             perm_spec = layer.get_all_level_info()
             self.assertTrue(user not in perm_spec["users"])

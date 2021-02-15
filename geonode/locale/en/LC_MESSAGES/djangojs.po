@@ -23,8 +23,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-28 18:12+0000\n"
-"PO-Revision-Date: 2020-11-28 19:14+0100\n"
+"POT-Creation-Date: 2020-12-23 15:40+0000\n"
+"PO-Revision-Date: 2020-12-23 16:22+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: English (http://www.transifex.com/geonode/geonode/language/"
 "en/)\n"
@@ -443,16 +443,16 @@ msgstr ""
 "may need to update the server."
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:383
-#| msgid ""
-#| " - 403 Forbidden. This is generally related to permission rules on your "
-#| "server. Contact the system administrator for more information regarding "
-#| "this error message."
 msgid ""
 " Error Code. Contact the system administrator for more information regarding "
 "this error message."
 msgstr ""
 " Error Code. Contact the system administrator for more information regarding "
 "this error message."
+
+#: geonode/static/geonode/js/upload/LayerInfo.js:406
+msgid "Finalizing"
+msgstr ""
 
 #: geonode/static/geonode/js/upload/LayerInfo.js:421
 #: geonode/static/geonode/js/upload/LayerInfo.js:592

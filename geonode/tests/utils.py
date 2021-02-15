@@ -22,11 +22,13 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
 import copy
+import time
 import base64
 import pickle
 import requests
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 from urllib.request import (
+    urljoin,
     urlopen,
     build_opener,
     install_opener,
@@ -40,6 +42,7 @@ import contextlib
 
 from io import IOBase
 from bs4 import BeautifulSoup
+from requests.packages.urllib3.util.retry import Retry
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from django.core import mail
@@ -60,7 +63,10 @@ logger = logging.getLogger(__name__)
 
 
 def upload_step(step=None):
-    step = reverse('data_upload', args=[step] if step else [])
+    step = urljoin(
+        settings.SITEURL,
+        reverse('data_upload', args=[step] if step else [])
+    )
     return step
 
 
@@ -77,6 +83,17 @@ class Client(DjangoTestClient):
         self.csrf_token = None
         self.response_cookies = None
         self._session = requests.Session()
+        self._retry = Retry(
+            total=3,
+            read=3,
+            connect=3,
+            backoff_factor=0.3,
+            status_forcelist=(104, 500, 502, 503, 504),
+        )
+        self._adapter = requests.adapters.HTTPAdapter(
+            max_retries=self._retry,
+            pool_maxsize=10,
+            pool_connections=10)
 
         self._register_user()
 
@@ -89,6 +106,7 @@ class Client(DjangoTestClient):
 
     def make_request(self, path, data=None, ajax=False, debug=True, force_login=False):
         url = path if path.startswith("http") else self.url + path
+        # logger.error(f" make_request ----------> url: {url}")
 
         if ajax:
             url += "{}force_ajax=true".format('&' if '?' in url else '?')
@@ -104,6 +122,7 @@ class Client(DjangoTestClient):
         if self.response_cookies:
             self._session.headers['cookie'] = self.response_cookies
 
+        time.sleep(1.0)
         if data:
             for name, value in data.items():
                 if isinstance(value, IOBase):
@@ -111,9 +130,29 @@ class Client(DjangoTestClient):
 
             encoder = MultipartEncoder(fields=data)
             self._session.headers['Content-Type'] = encoder.content_type
-            response = self._session.post(url, data=encoder)
+            self._session.mount(f"{urlsplit(url).scheme}://", self._adapter)
+            self._session.verify = False
+            self._action = getattr(self._session, 'post', None)
+
+            # response = self._session.post(url, data=encoder)
+            response = self._action(
+                url=url,
+                data=encoder,
+                headers=self._session.headers,
+                timeout=30,
+                stream=False)
         else:
-            response = self._session.get(url)
+            self._session.mount(f"{urlsplit(url).scheme}://", self._adapter)
+            self._session.verify = False
+            self._action = getattr(self._session, 'get', None)
+
+            # response = self._session.get(url)
+            response = self._action(
+                url=url,
+                data=None,
+                headers=self._session.headers,
+                timeout=30,
+                stream=False)
 
         try:
             response.raise_for_status()
@@ -137,14 +176,17 @@ class Client(DjangoTestClient):
         """ Method to login the GeoNode site"""
         from django.contrib.auth import authenticate
         assert authenticate(username=self.user, password=self.passwd)
-
         self.csrf_token = self.get_csrf_token()
-        params = {'csrfmiddlewaretoken': self.csrf_token,
-                  'login': self.user,
-                  'next': '/',
-                  'password': self.passwd}
+        params = {
+            'csrfmiddlewaretoken': self.csrf_token,
+            'login': self.user,
+            'next': '/',
+            'password': self.passwd}
         response = self.make_request(
-            reverse('account_login'),
+            urljoin(
+                settings.SITEURL,
+                reverse('account_login')
+            ),
             data=params
         )
         self.csrf_token = self.get_csrf_token()
@@ -178,13 +220,22 @@ class Client(DjangoTestClient):
             file_path = base + ext
             params['tif_file'] = open(file_path, 'rb')
 
-        base_file = open(_file, 'rb')
-        params['base_file'] = base_file
-        resp = self.make_request(
-            upload_step(),
-            data=params,
-            ajax=True,
-            force_login=True)
+        with open(_file, 'rb') as base_file:
+            params['base_file'] = base_file
+            resp = self.make_request(
+                upload_step(),
+                data=params,
+                ajax=True,
+                force_login=True)
+
+        # Closes the files
+        for spatial_file in spatial_files:
+            if isinstance(params.get(spatial_file), IOBase):
+                params[spatial_file].close()
+
+        if isinstance(params.get("tif_file"), IOBase):
+            params['tif_file'].close()
+
         try:
             return resp, resp.json()
         except ValueError:

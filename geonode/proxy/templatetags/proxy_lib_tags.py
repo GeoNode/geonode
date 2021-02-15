@@ -38,15 +38,14 @@ storage = FileSystemStorage()
 
 @register.simple_tag(takes_context=True)
 def original_link_available(context, resourceid, url):
-
     _not_permitted = _("You are not permitted to save or edit this resource.")
-
     request = context['request']
-    instance = resolve_object(request,
-                              Layer,
-                              {'pk': resourceid},
-                              permission='base.download_resourcebase',
-                              permission_msg=_not_permitted)
+    instance = resolve_object(
+        request,
+        Layer,
+        {'pk': resourceid},
+        permission='base.download_resourcebase',
+        permission_msg=_not_permitted)
 
     download_url = urljoin(settings.SITEURL, reverse("download", args={resourceid}))
     if urlsplit(url).netloc != urlsplit(download_url).netloc or \
@@ -59,7 +58,7 @@ def original_link_available(context, resourceid, url):
             upload_session = instance.get_upload_session()
             if upload_session:
                 layer_files = [
-                    item for idx, item in enumerate(LayerFile.objects.filter(upload_session=upload_session))]
+                    item for item in LayerFile.objects.filter(upload_session=upload_session)]
                 if layer_files:
                     for lyr in layer_files:
                         if not storage.exists(str(lyr.file)):

@@ -18,7 +18,6 @@
 #
 #########################################################################
 
-import six
 
 from django.db import models
 
@@ -41,7 +40,7 @@ class MultiEmailField(models.Field):
         return value.splitlines()
 
     def get_db_prep_value(self, value, connection, prepared=False):
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             return value
         elif isinstance(value, list):
             return "\n".join(value)

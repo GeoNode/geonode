@@ -242,7 +242,7 @@ def get_for_service(sname):
     return services[sname]
 
 
-exposes = dict((c.get_name(), c) for c in (GeoNodeServiceExpose, HostGeoNodeServiceExpose,))
+exposes = {c.get_name(): c for c in (GeoNodeServiceExpose, HostGeoNodeServiceExpose,)}
 
 
 def exposes_for_service(sname):

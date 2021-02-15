@@ -24,12 +24,12 @@ import re
 import ast
 import sys
 import subprocess
+import dj_database_url
+
 from datetime import timedelta
 from distutils.util import strtobool  # noqa
-from urllib.parse import urlparse, urlunparse, urljoin
+from urllib.parse import urlparse, urljoin
 
-import django
-import dj_database_url
 #
 # General Django development settings
 #
@@ -415,11 +415,17 @@ GEONODE_CORE_APPS = (
     'geonode.br',
     'geonode.layers',
     'geonode.maps',
+    'geonode.geoapps',
     'geonode.documents',
     'geonode.security',
     'geonode.catalogue',
     'geonode.catalogue.metadataxsl',
 )
+
+# GeoNode Apps
+GEONODE_APPS_ENABLE = ast.literal_eval(os.getenv("GEONODE_APPS_ENABLE", "True"))
+GEONODE_APPS_NAME = os.getenv("GEONODE_APPS_NAME", "Apps")
+GEONODE_APPS_NAV_MENU_ENABLE = ast.literal_eval(os.getenv("GEONODE_APPS_NAV_MENU_ENABLE", "True"))
 
 GEONODE_INTERNAL_APPS = (
     # GeoNode internal apps
@@ -430,10 +436,6 @@ GEONODE_INTERNAL_APPS = (
     'geonode.social',
     'geonode.groups',
     'geonode.services',
-
-    # QGIS Server Apps
-    # Only enable this if using QGIS Server
-    # 'geonode.qgis_server',
 
     # GeoServer Apps
     # Geoserver needs to come last because
@@ -657,8 +659,6 @@ LOGGING = {
         "django": {
             "handlers": ["console"], "level": "ERROR", },
         "geonode": {
-            "handlers": ["console"], "level": "ERROR", },
-        "geonode.qgis_server": {
             "handlers": ["console"], "level": "ERROR", },
         "geoserver-restconfig.catalog": {
             "handlers": ["console"], "level": "ERROR", },
@@ -945,6 +945,10 @@ GEOSERVER_LOCATION = os.getenv(
     'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
 )
 
+# add trailing slash to geoserver location url.
+if not GEOSERVER_LOCATION.endswith('/'):
+    GEOSERVER_LOCATION = '{}/'.format(GEOSERVER_LOCATION)
+    
 GEOSERVER_PUBLIC_SCHEMA = os.getenv(
     'GEOSERVER_PUBLIC_SCHEMA', SITE_HOST_SCHEMA
 )
@@ -1276,8 +1280,6 @@ DOWNLOAD_FORMATS_METADATA = [
 DOWNLOAD_FORMATS_VECTOR = [
     'JPEG', 'PDF', 'PNG', 'Zipped Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV',
     'Excel', 'GeoJSON', 'KML', 'View in Google Earth', 'Tiles',
-    'QGIS layer file (.qlr)',
-    'QGIS project file (.qgs)',
 ]
 DOWNLOAD_FORMATS_RASTER = [
     'JPEG',
@@ -1292,8 +1294,6 @@ DOWNLOAD_FORMATS_RASTER = [
     'Tiles',
     'GML',
     'GZIP',
-    'QGIS layer file (.qlr)',
-    'QGIS project file (.qgs)',
     'Zipped All Files'
 ]
 
@@ -1497,6 +1497,8 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     if 'geonode_mapstore_client' not in INSTALLED_APPS:
         INSTALLED_APPS += (
             'mapstore2_adapter',
+            'mapstore2_adapter.geoapps',
+            'mapstore2_adapter.geoapps.geostories',
             'geonode_mapstore_client',)
 
     def get_geonode_catalogue_service():
@@ -1712,6 +1714,8 @@ BROKER_TRANSPORT_OPTIONS = {
     'visibility_timeout': 86400
 }
 
+CELERY_LOADER = os.environ.get('CELERY_LOADER', 'geonode.loaders.GeoNodeCeleryTaksLoader')
+
 ASYNC_SIGNALS = ast.literal_eval(os.environ.get('ASYNC_SIGNALS', 'False'))
 RABBITMQ_SIGNALS_BROKER_URL = 'amqp://localhost:5672'
 # REDIS_SIGNALS_BROKER_URL = 'redis://localhost:6379/0'
@@ -1735,6 +1739,9 @@ CELERY_IGNORE_RESULT = ast.literal_eval(os.environ.get('CELERY_IGNORE_RESULT', '
 # Allow to recover from any unknown crash.
 CELERY_ACKS_LATE = ast.literal_eval(os.environ.get('CELERY_ACKS_LATE', 'True'))
 
+# Add a ten-minutes timeout to all Celery tasks.
+CELERYD_SOFT_TIME_LIMIT = 600
+
 # Set this to False in order to run async
 _EAGER_FLAG = 'False' if ASYNC_SIGNALS else 'True'
 CELERY_TASK_ALWAYS_EAGER = ast.literal_eval(os.environ.get('CELERY_TASK_ALWAYS_EAGER', _EAGER_FLAG))
@@ -1757,23 +1764,25 @@ CELERY_ACCEPT_CONTENT = [CELERY_RESULT_SERIALIZER, ]
 # CELERY_TASK_DEFAULT_EXCHANGE_TYPE = "direct"
 # CELERY_TASK_DEFAULT_ROUTING_KEY = "default"
 CELERY_TASK_CREATE_MISSING_QUEUES = ast.literal_eval(os.environ.get('CELERY_TASK_CREATE_MISSING_QUEUES', 'True'))
-GEONODE_EXCHANGE = Exchange("default", type="direct", durable=True)
-GEOSERVER_EXCHANGE = Exchange("geonode", type="topic", durable=False)
+GEONODE_EXCHANGE = Exchange("default", type="topic", durable=True)
 CELERY_TASK_QUEUES = (
     Queue('default', GEONODE_EXCHANGE, routing_key='default', priority=0),
     Queue('geonode', GEONODE_EXCHANGE, routing_key='geonode', priority=0),
     Queue('update', GEONODE_EXCHANGE, routing_key='update', priority=0),
+    Queue('upload', GEONODE_EXCHANGE, routing_key='upload', priority=0),
     Queue('cleanup', GEONODE_EXCHANGE, routing_key='cleanup', priority=0),
     Queue('email', GEONODE_EXCHANGE, routing_key='email', priority=0),
+    Queue('security', GEONODE_EXCHANGE, routing_key='security', priority=0),
 )
 
 if USE_GEOSERVER:
+    GEOSERVER_EXCHANGE = Exchange("geonode", type="topic", durable=True)
     CELERY_TASK_QUEUES += (
         Queue("broadcast", GEOSERVER_EXCHANGE, routing_key="#"),
-        Queue("email.events", GEOSERVER_EXCHANGE, routing_key="email"),
+        Queue("email.events", GEOSERVER_EXCHANGE, routing_key="geoserver.email"),
         Queue("all.geoserver", GEOSERVER_EXCHANGE, routing_key="geoserver.#"),
         Queue("geoserver.catalog", GEOSERVER_EXCHANGE, routing_key="geoserver.catalog"),
-        Queue("geoserver.data", GEOSERVER_EXCHANGE, routing_key="geoserver.catalog"),
+        Queue("geoserver.data", GEOSERVER_EXCHANGE, routing_key="geoserver.data"),
         Queue("geoserver.events", GEOSERVER_EXCHANGE, routing_key="geonode.geoserver"),
         Queue("notifications.events", GEOSERVER_EXCHANGE, routing_key="notifications"),
         Queue("geonode.layer.viewer", GEOSERVER_EXCHANGE, routing_key="geonode.viewer"),
@@ -1861,6 +1870,7 @@ PINAX_NOTIFICATIONS_LOCK_WAIT_TIMEOUT = os.environ.get('NOTIFICATIONS_LOCK_WAIT_
 # pinax.notifications
 # or notification
 NOTIFICATIONS_MODULE = 'pinax.notifications'
+ADMINS_ONLY_NOTICE_TYPES = ast.literal_eval(os.getenv('ADMINS_ONLY_NOTICE_TYPES', "['monitoring_alert',]"))
 
 # set to true to have multiple recipients in /message/create/
 USER_MESSAGES_ALLOW_MULTIPLE_RECIPIENTS = ast.literal_eval(
@@ -2021,10 +2031,15 @@ SOCIALACCOUNT_PROFILE_EXTRACTORS = {
 INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
 
 # Choose thumbnail generator -- this is the default generator
-THUMBNAIL_GENERATOR = "geonode.layers.utils.create_gs_thumbnail_geonode"
-#THUMBNAIL_GENERATOR_DEFAULT_BG = r"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
-THUMBNAIL_GENERATOR_DEFAULT_BG = r"https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"
-THUMBNAIL_GENERATOR_DEFAULT_SIZE = {'width': 240, 'height': 200}
+THUMBNAIL_GENERATOR = os.environ.get(
+    'THUMBNAIL_GENERATOR', 'geonode.layers.utils.create_gs_thumbnail_geonode')
+THUMBNAIL_GENERATOR_DEFAULT_BG = os.environ.get(
+    'THUMBNAIL_GENERATOR_DEFAULT_BG',
+    'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png')
+THUMBNAIL_GENERATOR_DEFAULT_SIZE = {
+    'width': int(os.environ.get('THUMBNAIL_GENERATOR_DEFAULT_SIZE_WIDTH', 240)),
+    'height': int(os.environ.get('THUMBNAIL_GENERATOR_DEFAULT_SIZE_HEIGHT', 200))
+}
 
 # define the urls after the settings are overridden
 if USE_GEOSERVER:
@@ -2106,3 +2121,4 @@ GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat
 SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'True'))
 # -- END Settings for MONITORING plugin
 
+CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")

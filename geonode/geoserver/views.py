@@ -58,7 +58,11 @@ from geonode.layers.views import _resolve_layer, _PERMISSION_MSG_MODIFY
 from geonode.maps.models import Map
 from geonode.proxy.views import proxy
 from .tasks import geoserver_update_layers
-from geonode.utils import json_response, _get_basic_auth_info, http_client
+from geonode.utils import (
+    json_response,
+    _get_basic_auth_info,
+    http_client,
+    get_layer_workspace)
 from geoserver.catalog import FailedRequestError
 from geonode.geoserver.signals import (
     gs_catalog,
@@ -174,7 +178,8 @@ def layer_style_upload(request, layername):
         try:
             if sld:
                 if isfile(sld):
-                    sld = open(sld, "r").read()
+                    with open(sld, "r") as sld_file:
+                        sld = sld_file.read()
                 etree.XML(sld)
         except Exception:
             logger.exception("The uploaded SLD file is not valid XML")
@@ -278,23 +283,36 @@ def layer_style_manage(request, layername):
             )
     elif request.method in ('POST', 'PUT', 'DELETE'):
         try:
+            workspace = get_layer_workspace(layer) or settings.DEFAULT_WORKSPACE
             selected_styles = request.POST.getlist('style-select')
             default_style = request.POST['default_style']
 
             # Save to GeoServer
             cat = gs_catalog
-            gs_layer = cat.get_layer(layer.name)
+            try:
+                gs_layer = cat.get_layer(layer.name)
+            except Exception:
+                gs_layer = None
+
             if not gs_layer:
                 gs_layer = cat.get_layer(layer.alternate)
 
             if gs_layer:
-                gs_layer.default_style = cat.get_style(default_style, workspace=settings.DEFAULT_WORKSPACE) or \
-                    cat.get_style(default_style)
+                _default_style = cat.get_style(default_style) or \
+                    cat.get_style(default_style, workspace=workspace)
+                if _default_style:
+                    gs_layer.default_style = _default_style
+                elif cat.get_style(default_style, workspace=settings.DEFAULT_WORKSPACE):
+                    gs_layer.default_style = cat.get_style(default_style, workspace=settings.DEFAULT_WORKSPACE)
                 styles = []
                 for style in selected_styles:
-                    gs_sld = cat.get_style(style, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(style)
-                    if gs_sld:
-                        styles.append(gs_sld)
+                    _gs_sld = cat.get_style(style) or cat.get_style(style, workspace=workspace)
+                    if _gs_sld:
+                        styles.append(_gs_sld)
+                    elif cat.get_style(style, workspace=settings.DEFAULT_WORKSPACE):
+                        styles.append(cat.get_style(style, workspace=settings.DEFAULT_WORKSPACE))
+                    else:
+                        Style.objects.filter(name=style).delete()
                 gs_layer.styles = styles
                 cat.save(gs_layer)
 

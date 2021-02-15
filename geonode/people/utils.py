@@ -20,7 +20,6 @@
 
 from django.contrib.auth import get_user_model
 
-from six import string_types
 
 from geonode import GeoNodeException
 
@@ -44,7 +43,7 @@ def get_valid_user(user=None):
     """
     if user is None:
         theuser = get_default_user()
-    elif isinstance(user, string_types):
+    elif isinstance(user, str):
         theuser = get_user_model().objects.get(username=user)
     elif user == user.get_anonymous():
         raise GeoNodeException('The user uploading files must not '

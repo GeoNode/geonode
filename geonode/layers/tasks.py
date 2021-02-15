@@ -30,17 +30,15 @@ logger = get_task_logger(__name__)
 
 @app.task(
     bind=True,
+    name='geonode.layers.tasks.delete_layer',
     queue='cleanup',
-    countdown=60,
-    # expires=120,
-    acks_late=True,
-    retry=True,
-    retry_policy={
-        'max_retries': 10,
-        'interval_start': 0,
-        'interval_step': 0.2,
-        'interval_max': 0.2,
-    })
+    expires=600,
+    acks_late=False,
+    autoretry_for=(Exception, ),
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_backoff=True,
+    retry_backoff_max=700,
+    retry_jitter=True)
 def delete_layer(self, layer_id):
     """
     Deletes a layer.
@@ -48,6 +46,7 @@ def delete_layer(self, layer_id):
     try:
         layer = Layer.objects.get(id=layer_id)
     except Layer.DoesNotExist:
+        logger.warning(f"Layers {layer_id} does not exist!")
         return
     logger.debug('Deleting Layer {0}'.format(layer))
     try:

@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import os
 import json
 import logging
 import traceback
@@ -29,6 +29,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import loader
 from django.utils.translation import ugettext as _
+from django.utils.text import slugify
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.urls import reverse
@@ -193,7 +194,8 @@ def document_download(request, docid):
                 '401.html', context={
                     'error_message': _("You are not allowed to view this document.")}, request=request), status=401)
     register_event(request, EventType.EVENT_DOWNLOAD, document)
-    return DownloadResponse(document.doc_file)
+    filename = slugify(os.path.splitext(os.path.basename(document.title))[0])
+    return DownloadResponse(document.doc_file, basename=f"{filename}.{document.extension}")
 
 
 class DocumentUploadView(CreateView):
@@ -271,9 +273,7 @@ class DocumentUploadView(CreateView):
 
         if bbox:
             bbox = BBOXHelper.from_xy(bbox)
-            Document.objects.filter(id=self.object.pk).update(
-                bbox_polygon=bbox.as_polygon()
-            )
+            self.object.bbox_polygon = bbox.as_polygon()
 
         if getattr(settings, 'SLACK_ENABLED', False):
             try:
@@ -305,7 +305,7 @@ class DocumentUploadView(CreateView):
         else:
             return HttpResponseRedirect(
                 reverse(
-                    'document_metadata',
+                    'document_detail',
                     args=(
                         self.object.id,
                     )))
@@ -331,7 +331,7 @@ class DocumentUpdateView(UpdateView):
         register_event(self.request, EventType.EVENT_CHANGE, self.object)
         return HttpResponseRedirect(
             reverse(
-                'document_metadata',
+                'document_detail',
                 args=(
                     self.object.id,
                 )))
@@ -434,7 +434,6 @@ def document_metadata(
                         'profile', ErrorList())
                     errors.append(
                         _('You must set a point of contact for this resource'))
-                    poc = None
             if poc_form.has_changed and poc_form.is_valid():
                 new_poc = poc_form.save()
 
@@ -451,7 +450,6 @@ def document_metadata(
                         'profile', ErrorList())
                     errors.append(
                         _('You must set an author for this resource'))
-                    metadata_author = None
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
 
@@ -475,7 +473,6 @@ def document_metadata(
                     args=(
                         document.id,
                     )))
-
         message = document.id
 
         try:

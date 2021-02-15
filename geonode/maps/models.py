@@ -43,7 +43,7 @@ from geonode.utils import (GXPMapBase,
                            layer_from_viewer_config,
                            default_map_config)
 
-from geonode import geoserver, qgis_server  # noqa
+from geonode import geoserver  # noqa
 from geonode.utils import check_ogc_backend
 
 from deprecated import deprecated
@@ -146,7 +146,7 @@ class Map(ResourceBase, GXPMapBase):
         def layer_json(lyr):
             return {
                 "name": lyr.alternate,
-                "service": lyr.service_type if hasattr(lyr, 'service_type') else "QGIS Server",
+                "service": lyr.service_type if hasattr(lyr, 'service_type') else "",
                 "serviceURL": "",
                 "metadataURL": ""
             }
@@ -235,7 +235,7 @@ class Map(ResourceBase, GXPMapBase):
 
         self.save(notify=True)
 
-        if layer_names != set([lyr.alternate for lyr in self.local_layers]):
+        if layer_names != set(lyr.alternate for lyr in self.local_layers):
             map_changed_signal.send_robust(sender=self, what_changed='layers')
 
         return template_name

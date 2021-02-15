@@ -27,7 +27,6 @@ import traceback
 from types import TracebackType
 import decimal
 import pickle
-import six
 from django.db.models import Q
 from urllib.parse import quote
 
@@ -35,9 +34,9 @@ from django.http import Http404
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
 from django.template.response import TemplateResponse
+from django.views.decorators.clickjacking import xframe_options_exempt
 from requests import Request
 from itertools import chain
-from six import string_types
 from owslib.wfs import WebFeatureService
 
 from guardian.shortcuts import get_perms, get_objects_for_user
@@ -82,7 +81,8 @@ from geonode.layers.models import (
 from geonode.layers.utils import (
     file_upload,
     is_raster,
-    is_vector)
+    is_vector,
+    surrogate_escape_string)
 
 from geonode.maps.models import Map
 from geonode.services.models import Service
@@ -92,7 +92,7 @@ from geonode.groups.models import GroupProfile
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.documents.models import get_related_documents
-from geonode import geoserver, qgis_server
+from geonode import geoserver
 from geonode.security.utils import get_visible_resources
 
 from geonode.utils import (
@@ -113,11 +113,10 @@ from geonode.tasks.tasks import set_permissions
 from celery.utils.log import get_logger
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    from geonode.geoserver.helpers import (_render_thumbnail,
-                                           _prepare_thumbnail_body_from_opts,
-                                           gs_catalog)
-if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-    from geonode.qgis_server.models import QGISServerLayer
+    from geonode.geoserver.helpers import (
+        _render_thumbnail,
+        _prepare_thumbnail_body_from_opts,
+        gs_catalog)
 
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
@@ -207,199 +206,206 @@ def _resolve_layer(request, alternate, permission='base.view_resourcebase',
 # Basic Layer Views #
 
 
-@login_required
-def layer_upload(request, template='upload/layer_upload.html'):
-    if request.method == 'GET':
-        mosaics = Layer.objects.filter(is_mosaic=True).order_by('name')
-        ctx = {
-            'mosaics': mosaics,
-            'charsets': CHARSETS,
-            'is_layer': True,
-        }
-        return render(request, template, context=ctx)
-    elif request.method == 'POST':
-        name = None
-        form = NewLayerUploadForm(request.POST, request.FILES)
-        tempdir = None
-        saved_layer = None
-        errormsgs = []
-        input_charset = None
-        out = {'success': False}
-        if form.is_valid():
-            title = form.cleaned_data["layer_title"]
+def layer_upload_handle_get(request, template):
+    mosaics = Layer.objects.filter(is_mosaic=True).order_by('name')
+    ctx = {
+        'mosaics': mosaics,
+        'charsets': CHARSETS,
+        'is_layer': True,
+    }
+    return render(request, template, context=ctx)
 
-            # Replace dots in filename - GeoServer REST API upload bug
-            # and avoid any other invalid characters.
-            # Use the title if possible, otherwise default to the filename
-            if title is not None and len(title) > 0:
-                name_base = title
+
+def layer_upload_handle_post(request, template):
+    name = None
+    form = NewLayerUploadForm(request.POST, request.FILES)
+    tempdir = None
+    saved_layer = None
+    errormsgs = []
+    input_charset = None
+    out = {'success': False}
+    if form.is_valid():
+        title = form.cleaned_data["layer_title"]
+
+        # Replace dots in filename - GeoServer REST API upload bug
+        # and avoid any other invalid characters.
+        # Use the title if possible, otherwise default to the filename
+        if title is not None and len(title) > 0:
+            name_base = title
+        else:
+            name_base, __ = os.path.splitext(
+                form.cleaned_data["base_file"].name)
+            title = slugify(name_base.replace(".", "_"))
+        name = slugify(name_base.replace(".", "_"))
+
+        if form.cleaned_data["abstract"] is not None and len(
+                form.cleaned_data["abstract"]) > 0:
+            abstract = form.cleaned_data["abstract"]
+        else:
+            abstract = "No abstract provided."
+
+        # charset
+        input_charset = form.cleaned_data["charset"]
+
+        try:
+            # Moved this inside the try/except block because it can raise
+            # exceptions when unicode characters are present.
+            # This should be followed up in upstream Django.
+            tempdir, base_file = form.write_files()
+            if not form.cleaned_data["style_upload_form"]:
+                saved_layer = file_upload(
+                    base_file,
+                    name=name,
+                    user=request.user,
+                    overwrite=False,
+                    charset=input_charset,
+                    abstract=abstract,
+                    title=title,
+                    metadata_uploaded_preserve=form.cleaned_data[
+                        "metadata_uploaded_preserve"],
+                    metadata_upload_form=form.cleaned_data["metadata_upload_form"])
             else:
-                name_base, __ = os.path.splitext(
-                    form.cleaned_data["base_file"].name)
-                title = slugify(name_base.replace(".", "_"))
-            name = slugify(name_base.replace(".", "_"))
-
-            if form.cleaned_data["abstract"] is not None and len(
-                    form.cleaned_data["abstract"]) > 0:
-                abstract = form.cleaned_data["abstract"]
-            else:
-                abstract = "No abstract provided."
-
-            # charset
-            input_charset = form.cleaned_data["charset"]
-
+                saved_layer = Layer.objects.get(alternate=title)
+                if not saved_layer:
+                    msg = 'Failed to process. Could not find matching layer.'
+                    raise Exception(msg)
+                with open(base_file) as sld_file:
+                    sld = sld_file.read()
+                set_layer_style(saved_layer, title, base_file, sld)
+            out['success'] = True
+        except Exception as e:
+            exception_type, error, tb = sys.exc_info()
+            logger.exception(e)
+            out['success'] = False
+            out['errormsgs'] = _('Failed to upload the layer')
             try:
-                # Moved this inside the try/except block because it can raise
-                # exceptions when unicode characters are present.
-                # This should be followed up in upstream Django.
-                tempdir, base_file = form.write_files()
-                if not form.cleaned_data["style_upload_form"]:
-                    saved_layer = file_upload(
-                        base_file,
-                        name=name,
-                        user=request.user,
-                        overwrite=False,
-                        charset=input_charset,
-                        abstract=abstract,
-                        title=title,
-                        metadata_uploaded_preserve=form.cleaned_data[
-                            "metadata_uploaded_preserve"],
-                        metadata_upload_form=form.cleaned_data["metadata_upload_form"])
-                else:
-                    saved_layer = Layer.objects.get(alternate=title)
-                    if not saved_layer:
-                        msg = 'Failed to process. Could not find matching layer.'
-                        raise Exception(msg)
-                    sld = open(base_file).read()
-                    set_layer_style(saved_layer, title, base_file, sld)
-                out['success'] = True
-            except Exception as e:
-                exception_type, error, tb = sys.exc_info()
-                logger.exception(e)
-                out['success'] = False
-                out['errormsgs'] = _('Failed to upload the layer')
+                out['errors'] = ''.join(error)
+            except Exception:
                 try:
-                    out['errors'] = ''.join(error)
+                    out['errors'] = str(error)
                 except Exception:
                     try:
-                        out['errors'] = str(error)
+                        tb = traceback.format_exc()
+                        out['errors'] = tb
                     except Exception:
-                        try:
-                            tb = traceback.format_exc()
-                            out['errors'] = tb
-                        except Exception:
-                            pass
+                        pass
 
-                # Assign the error message to the latest UploadSession from
-                # that user.
-                latest_uploads = UploadSession.objects.filter(
-                    user=request.user).order_by('-date')
-                if latest_uploads.count() > 0:
-                    upload_session = latest_uploads.first()
-                    # Ref issue #4232
-                    if not isinstance(error, TracebackType):
-                        try:
-                            upload_session.error = pickle.dumps(error).decode("utf-8", "replace")
-                        except Exception:
-                            err_msg = 'The error could not be parsed'
-                            upload_session.error = err_msg
-                            logger.error("TypeError: can't pickle traceback objects")
-                    else:
+            # Assign the error message to the latest UploadSession from
+            # that user.
+            latest_uploads = UploadSession.objects.filter(
+                user=request.user).order_by('-date')
+            if latest_uploads.count() > 0:
+                upload_session = latest_uploads.first()
+                # Ref issue #4232
+                if not isinstance(error, TracebackType):
+                    try:
+                        upload_session.error = pickle.dumps(error).decode("utf-8", "replace")
+                    except Exception:
                         err_msg = 'The error could not be parsed'
                         upload_session.error = err_msg
                         logger.error("TypeError: can't pickle traceback objects")
-                    try:
-                        upload_session.traceback = traceback.format_exc(tb)
-                    except TypeError:
-                        upload_session.traceback = traceback.format_tb(tb)
-                    upload_session.context = log_snippet(CONTEXT_LOG_FILE)
-                    upload_session.save()
-                    out['traceback'] = upload_session.traceback
-                    out['context'] = upload_session.context
-                    out['upload_session'] = upload_session.id
                 else:
-                    # Prevent calls to None
-                    if saved_layer:
-                        out['success'] = True
-                        if hasattr(saved_layer, 'info'):
-                            out['info'] = saved_layer.info
-                        out['url'] = reverse(
-                            'layer_detail', args=[
-                                saved_layer.service_typename])
-                        if hasattr(saved_layer, 'bbox_string'):
-                            out['bbox'] = saved_layer.bbox_string
-                        if hasattr(saved_layer, 'srid'):
-                            out['crs'] = {
-                                'type': 'name',
-                                'properties': saved_layer.srid
-                            }
-                        out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
-                        upload_session = saved_layer.upload_session
-                        if upload_session:
-                            upload_session.processed = True
-                            upload_session.save()
-                        permissions = form.cleaned_data["permissions"]
-                        if permissions is not None and len(permissions.keys()) > 0:
-                            saved_layer.set_permissions(permissions)
-                        saved_layer.handle_moderated_uploads()
-            finally:
-                if tempdir is not None:
-                    shutil.rmtree(tempdir)
-        else:
-            for e in form.errors.values():
-                errormsgs.extend([escape(v) for v in e])
-            out['errors'] = form.errors
-            out['errormsgs'] = errormsgs
-        if out['success']:
-            out['status'] = 'finished'
-            out['url'] = saved_layer.get_absolute_url()
-            out['bbox'] = saved_layer.bbox_string
-            out['crs'] = {
-                'type': 'name',
-                'properties': saved_layer.srid
-            }
-            out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
-            upload_session = saved_layer.upload_session
-            if upload_session:
-                upload_session.processed = True
+                    err_msg = 'The error could not be parsed'
+                    upload_session.error = err_msg
+                    logger.error("TypeError: can't pickle traceback objects")
+                try:
+                    upload_session.traceback = traceback.format_exc(tb)
+                except TypeError:
+                    upload_session.traceback = traceback.format_tb(tb)
+                upload_session.context = log_snippet(CONTEXT_LOG_FILE)
                 upload_session.save()
-            status_code = 200
-            register_event(request, 'upload', saved_layer)
-        else:
-            status_code = 400
+                out['traceback'] = upload_session.traceback
+                out['context'] = upload_session.context
+                out['upload_session'] = upload_session.id
+            else:
+                # Prevent calls to None
+                if saved_layer:
+                    out['success'] = True
+                    if hasattr(saved_layer, 'info'):
+                        out['info'] = saved_layer.info
+                    out['url'] = reverse(
+                        'layer_detail', args=[
+                            saved_layer.service_typename])
+                    if hasattr(saved_layer, 'bbox_string'):
+                        out['bbox'] = saved_layer.bbox_string
+                    if hasattr(saved_layer, 'srid'):
+                        out['crs'] = {
+                            'type': 'name',
+                            'properties': saved_layer.srid
+                        }
+                    out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
+                    upload_session = saved_layer.upload_session
+                    if upload_session:
+                        upload_session.processed = True
+                        upload_session.save()
+                    permissions = form.cleaned_data["permissions"]
+                    if permissions is not None and len(permissions.keys()) > 0:
+                        saved_layer.set_permissions(permissions)
+                    saved_layer.handle_moderated_uploads()
+        finally:
+            if tempdir is not None:
+                shutil.rmtree(tempdir)
+    else:
+        for e in form.errors.values():
+            errormsgs.extend([escape(v) for v in e])
+        out['errors'] = form.errors
+        out['errormsgs'] = errormsgs
+    if out['success']:
+        out['status'] = 'finished'
+        out['url'] = saved_layer.get_absolute_url()
+        out['bbox'] = saved_layer.bbox_string
+        out['crs'] = {
+            'type': 'name',
+            'properties': saved_layer.srid
+        }
+        out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
+        upload_session = saved_layer.upload_session
+        if upload_session:
+            upload_session.processed = True
+            upload_session.save()
+        status_code = 200
+        register_event(request, 'upload', saved_layer)
+    else:
+        status_code = 400
 
-        # null-safe charset
-        layer_charset = 'UTF-8'
-        if saved_layer:
-            layer_charset = getattr(saved_layer, 'charset', layer_charset)
-        elif input_charset and 'undefined' not in input_charset:
-            layer_charset = input_charset
+    # null-safe charset
+    layer_charset = 'UTF-8'
+    if saved_layer:
+        layer_charset = getattr(saved_layer, 'charset', layer_charset)
+    elif input_charset and 'undefined' not in input_charset:
+        layer_charset = input_charset
 
-        _keys = ['info', 'errors']
-        for _k in _keys:
-            if _k in out:
-                if isinstance(out[_k], string_types):
-                    out[_k] = out[_k].encode(layer_charset, 'surrogateescape').decode('utf-8', 'surrogateescape')
-                elif isinstance(out[_k], dict):
-                    for key, value in out[_k].items():
-                        try:
-                            item = out[_k][key]
-                            # Ref issue #4241
-                            if isinstance(item, ErrorList):
-                                out[_k][key] = item.as_text().encode(
-                                    layer_charset, 'surrogateescape').decode('utf-8', 'surrogateescape')
-                            else:
-                                out[_k][key] = item.encode(layer_charset, 'surrogateescape').decode(
-                                    'utf-8', 'surrogateescape')
-                            out[_k][key.encode(layer_charset, 'surrogateescape').decode(
-                                'utf-8', 'surrogateescape')] = out[_k].pop(key)
-                        except Exception as e:
-                            logger.exception(e)
+    _keys = ['info', 'errors']
+    for _k in _keys:
+        if _k in out:
+            if isinstance(out[_k], str):
+                out[_k] = surrogate_escape_string(out[_k], layer_charset)
+            elif isinstance(out[_k], dict):
+                for key, value in out[_k].items():
+                    try:
+                        item = out[_k][key]
+                        # Ref issue #4241
+                        if isinstance(item, ErrorList):
+                            out[_k][key] = item.as_text().encode(
+                                layer_charset, 'surrogateescape').decode('utf-8', 'surrogateescape')
+                        else:
+                            out[_k][key] = surrogate_escape_string(item, layer_charset)
+                        out[_k][surrogate_escape_string(key, layer_charset)] = out[_k].pop(key)
+                    except Exception as e:
+                        logger.exception(e)
 
-        return HttpResponse(
-            json.dumps(out),
-            content_type='application/json',
-            status=status_code)
+    return HttpResponse(
+        json.dumps(out),
+        content_type='application/json',
+        status=status_code)
+
+
+@login_required
+def layer_upload(request, template='upload/layer_upload.html'):
+    if request.method == 'GET':
+        return layer_upload_handle_get(request, template)
+    elif request.method == 'POST':
+        return layer_upload_handle_post(request, template)
 
 
 def layer_detail(request, layername, template='layers/layer_detail.html'):
@@ -423,7 +429,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     layer.add_missing_metadata_author_or_poc()
 
     def decimal_encode(bbox):
-        import decimal
         _bbox = []
         for o in [float(coord) for coord in bbox]:
             if isinstance(o, decimal.Decimal):
@@ -540,8 +545,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         if layer.has_time:
             from geonode.geoserver.views import get_capabilities
-            workspace, layername = layer.alternate.split(
-                ":") if ":" in layer.alternate else (None, layer.alternate)
             # WARNING Please make sure to have enabled DJANGO CACHE as per
             # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
             wms_capabilities_resp = get_capabilities(
@@ -616,7 +619,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             group = GroupProfile.objects.get(slug=layer.group.name)
         except GroupProfile.DoesNotExist:
             group = None
-    # a flag to be used for qgis server
+
     show_popup = False
     if 'show_popup' in request.GET and request.GET["show_popup"]:
         show_popup = True
@@ -683,7 +686,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "show_popup": show_popup,
         "filter": filter,
         "storeType": layer.storeType,
-        "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True
+        "online": (layer.remote_service.probe == 200) if layer.storeType == "remoteStore" else True,
+        "processed": layer.processed
     }
 
     context_dict["viewer"] = json.dumps(map_obj.viewer_json(
@@ -715,10 +719,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         links = layer.link_set.download().filter(
             Q(name__in=settings.DOWNLOAD_FORMATS_RASTER) |
             Q(link_type='original'))
-    links_view = [item for idx, item in enumerate(links) if
+    links_view = [item for item in links if
                   item.link_type == 'image']
-    links_download = [item for idx, item in enumerate(
-        links) if item.link_type in ('data', 'original')]
+    links_download = [item for item in links if item.link_type in ('data', 'original')]
     for item in links_view:
         if item.url and access_token and 'access_token' not in item.url:
             params = {'access_token': access_token}
@@ -729,15 +732,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             item.url = Request('GET', item.url, params=params).prepare().url
     if request.user.has_perm('view_resourcebase', layer.get_self_resource()):
         context_dict["links"] = links_view
-    if request.user.has_perm(
-        'download_resourcebase',
-            layer.get_self_resource()):
-        if layer.storeType == 'dataStore':
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_VECTOR)
-        else:
-            links = layer.link_set.download().filter(
-                name__in=settings.DOWNLOAD_FORMATS_RASTER)
+    if request.user.has_perm('download_resourcebase', layer.get_self_resource()):
         context_dict["links_download"] = links_download
     if settings.SOCIAL_ORIGINS:
         context_dict["social_links"] = build_social_links(request, layer)
@@ -784,7 +779,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
     data_dict = json.loads(request.POST.get('json_data'))
     layername = data_dict['layer_name']
     filtered_attributes = ''
-    if not isinstance(data_dict['filtered_attributes'], string_types):
+    if not isinstance(data_dict['filtered_attributes'], str):
         filtered_attributes = [x for x in data_dict['filtered_attributes'] if '/load_layer_data' not in x]
     name = layername if ':' not in layername else layername.split(':')[1]
     location = "{location}{service}".format(** {
@@ -819,7 +814,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
         from collections.abc import Iterable
         for i in range(len(decoded_features)):
             for key, value in decoded_features[i]['properties'].items():
-                if value != '' and isinstance(value, (string_types, int, float)) and (
+                if value != '' and isinstance(value, (str, int, float)) and (
                         (isinstance(value, Iterable) and '/load_layer_data' not in value) or value):
                     properties[key].append(value)
 
@@ -829,7 +824,6 @@ def load_layer_data(request, template='layers/layer_detail.html'):
 
         context_dict["feature_properties"] = properties
     except Exception:
-        import traceback
         traceback.print_exc()
         logger.error("Possible error with OWSLib.")
     return HttpResponse(json.dumps(context_dict),
@@ -984,9 +978,11 @@ def layer_metadata(
 
         layer_form = LayerForm(request.POST, instance=layer, prefix="resource")
         if not layer_form.is_valid():
+            logger.error(f"Layer Metadata form is not valid: {layer_form.errors}")
             out = {
                 'success': False,
-                'errors': layer_form.errors
+                'errors': [
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in layer_form.errors]
             }
             return HttpResponse(
                 json.dumps(out),
@@ -997,10 +993,43 @@ def layer_metadata(
             instance=layer,
             prefix="layer_attribute_set",
             queryset=Attribute.objects.order_by('display_order'))
+        if not attribute_form.is_valid():
+            logger.error(f"Layer Attributes form is not valid: {attribute_form.errors}")
+            out = {
+                'success': False,
+                'errors': [
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in attribute_form.errors]
+            }
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
             request.POST["category_choice_field"] else None)
+        if not category_form.is_valid():
+            logger.error(f"Layer Category form is not valid: {category_form.errors}")
+            out = {
+                'success': False,
+                'errors': [
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in category_form.errors]
+            }
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
         tkeywords_form = TKeywordForm(request.POST)
+        if not tkeywords_form.is_valid():
+            logger.error(f"Layer Thesauri Keywords form is not valid: {tkeywords_form.errors}")
+            out = {
+                'success': False,
+                'errors': [
+                    re.sub(re.compile('<.*?>'), '', str(err)) for err in tkeywords_form.errors]
+            }
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
     else:
         layer_form = LayerForm(instance=layer, prefix="resource")
         layer_form.disable_keywords_widget_for_non_superuser(request.user)
@@ -1287,14 +1316,6 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 else:
                     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                         out['ogc_backend'] = geoserver.BACKEND_PACKAGE
-                    elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-                        try:
-                            qgis_layer = QGISServerLayer.objects.get(
-                                layer=layer)
-                            qgis_layer.delete()
-                        except QGISServerLayer.DoesNotExist:
-                            pass
-                        out['ogc_backend'] = qgis_server.BACKEND_PACKAGE
 
                     saved_layer = file_upload(
                         base_file,
@@ -1369,7 +1390,7 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
         try:
             logger.debug('Deleting Layer {0}'.format(layer))
             with transaction.atomic():
-                layer.delete()
+                Layer.objects.filter(id=layer.id).delete()
         except IntegrityError:
             raise
         except Exception as e:
@@ -1377,7 +1398,7 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
             message = '{0}: {1}.'.format(
                 _('Unable to delete layer'), layer.alternate)
 
-            if 'referenced by layer group' in getattr(e, 'message', ''):
+            if getattr(e, 'message', None) and 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _(
                     'This layer is a member of a layer group, you must remove the layer from the group '
                     'before deleting.')
@@ -1474,7 +1495,11 @@ def layer_thumbnail(request, layername):
                     request.body, request=request)
             except Exception as e:
                 logger.debug(e)
-                image = _render_thumbnail(request.body)
+                try:
+                    image = _render_thumbnail(request.body)
+                except Exception as e:
+                    logger.debug(e)
+                    image = None
 
         is_image = False
         if image:
@@ -1534,11 +1559,12 @@ def get_layer(request, layername):
             'bbox_y0': layer_obj.bbox_helper.ymin,
             'bbox_y1': layer_obj.bbox_helper.ymax,
         }
-        return HttpResponse(json.dumps(
-            response,
-            ensure_ascii=False,
-            default=decimal_default
-        ),
+        return HttpResponse(
+            json.dumps(
+                response,
+                ensure_ascii=False,
+                default=decimal_default
+            ),
             content_type='application/javascript')
 
 
@@ -1633,6 +1659,14 @@ def layer_sld_edit(
         request,
         layername,
         template='layers/layer_style_edit.html'):
+    return layer_detail(request, layername, template)
+
+
+@xframe_options_exempt
+def layer_embed(
+        request,
+        layername,
+        template='layers/layer_embed.html'):
     return layer_detail(request, layername, template)
 
 
@@ -1736,7 +1770,7 @@ class LayerAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_result_label(self, result):
         """Return the label of a selected result."""
-        return six.text_type(result.title)
+        return str(result.title)
 
     def get_queryset(self):
         request = self.request

@@ -29,7 +29,6 @@ from osgeo import ogr
 from lxml import etree
 from itertools import islice
 from defusedxml import lxml as dlxml
-from six import string_types, text_type
 
 from django.conf import settings
 from django.urls import reverse
@@ -90,7 +89,7 @@ if _ALLOW_MOSAIC_STEP:
         'MOSAIC_ENABLED',
         False)
 
-_ASYNC_UPLOAD = True if ogc_server_settings and ogc_server_settings.DATASTORE else False
+_ASYNC_UPLOAD = ogc_server_settings and ogc_server_settings.DATASTORE
 
 # at the moment, the various time support transformations require the database
 if _ALLOW_TIME_STEP and not _ASYNC_UPLOAD:
@@ -166,7 +165,7 @@ def json_loads_byteified(json_text, charset):
 
 def _byteify(data, ignore_dicts=False):
     # if this is a unicode string, return its string representation
-    if isinstance(data, text_type):
+    if isinstance(data, str):
         return data
     # if this is a list of values, return list of byteified values
     if isinstance(data, list):
@@ -750,7 +749,7 @@ def import_imagemosaic_granules(
              'fetch size': '1000',
              'host': db['HOST'],
              'port': db['PORT'] if isinstance(
-                 db['PORT'], string_types) else str(db['PORT']) or '5432',
+                 db['PORT'], str) else str(db['PORT']) or '5432',
              'database': db['NAME'],
              'user': db['USER'],
              'passwd': db['PASSWORD'],
@@ -843,17 +842,17 @@ max\ connections={db_conn_max}"""
         z.close()
 
         # 2. Send a "create ImageMosaic" request to GeoServer through gs_config
-        cat._cache.clear()
         # - name = name of the ImageMosaic (equal to the base_name)
         # - data = abs path to the zip file
         # - configure = parameter allows for future configuration after harvesting
         name = head
-        data = open(dirname + '/' + head + '.zip', 'rb')
-        try:
-            cat.create_imagemosaic(name, data)
-        except ConflictingDataError:
-            # Trying to append granules to an existing mosaic
-            pass
+
+        with open(f"{dirname}/{head}.zip", 'rb') as data:
+            try:
+                cat.create_imagemosaic(name, data)
+            except ConflictingDataError:
+                # Trying to append granules to an existing mosaic
+                pass
 
         # configure time as LIST
         if mosaic_time_regex:

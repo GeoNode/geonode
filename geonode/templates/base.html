@@ -36,8 +36,12 @@
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
 
     <link rel="shortcut icon" href="{% static 'geonode/img/favicon.ico' %}" />
-    <link href="{% static "lib/css/ol.css" %}" rel="stylesheet" />
-    <script src="{% static "lib/js/ol.js" %}"></script>
+    <link rel="defer" as="style" href="{% static "lib/css/ol.css" %}" />
+    <link rel="defer" as="script" href="{% static "lib/js/ol.js" %}" />
+    <link rel="preload" as="style" href="{% static "geonode/css/font-awesome.min.css" %}" />
+    <link rel="preload" as="font" href="{% static "geonode/fonts/lato_regular.ttf" %}" crossorigin="" />
+    <link rel="preload" as="font" href="{% static "geonode/fonts/lato_bold.ttf" %}" crossorigin="" />
+    <link rel="preload" as="font" href="{% static "geonode/fonts/lato_light.ttf" %}" crossorigin="" />
 
     {% block head %}
 
@@ -50,10 +54,16 @@
           <link href="{% static "lib/css/jquery-ui.structure.min.css" %}" rel="stylesheet"/>
           <link href="{% static "lib/css/bootstrap-treeview.css" %}" rel="stylesheet"/>
       {% else %}
-      <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet"/>
+      <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet" media="none" onload="if(media!='all')media='all'"/>
+      <noscript>
+        <link rel="stylesheet" href="{% static "lib/css/assets.min.css" %}">
+      </noscript>
       {% endif %}
 
-      <link href="{% static "geonode/css/base.css" %}" rel="stylesheet" />
+      <link href="{% static "geonode/css/base.css" %}" rel="stylesheet" media="none" onload="if(media!='all')media='all'">
+      <noscript>
+        <link rel="stylesheet" href="{% static "geonode/css/base.css" %}">
+      </noscript>
 
       <link rel='stylesheet' id='cookie-law-info-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-public.css" %}" type='text/css' media='all' />
       <link rel='stylesheet' id='cookie-law-info-gdpr-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-gdpr.css" %}" type='text/css' media='all' />
@@ -244,7 +254,7 @@
     </script>
 
     <!-- Autocomplete script for input boxes -->
-    <script src="{% static "geonode/js/search/autocomplete.js" %}"></script>
+    <link rel="defer" as="script" href="{% static "geonode/js/search/autocomplete.js" %}" />
 
     <script type="text/javascript">
       function thumbnailFeedbacks(data, status) {
@@ -322,6 +332,18 @@
                 <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Maps" %}</a>
               {% endif %}
           </li>
+          {% if GEONODE_APPS_ENABLE and GEONODE_APPS_NAV_MENU_ENABLE %}
+          <li id="nav_maps">
+            {% if user.is_authenticated %}
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}<i class="fa fa-angle-down fa-lg"></i></a>
+              <ul class="dropdown-menu">
+                  <li><a href="{% url "apps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore" %} {% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a></li>
+                </ul>
+            {% else %}
+              <a href="{% url "apps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a>
+            {% endif %}
+          </li>
+          {% endif %}
           <li>
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "About" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">

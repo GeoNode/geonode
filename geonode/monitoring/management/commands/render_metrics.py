@@ -22,8 +22,7 @@ import pytz
 import logging
 import timeout_decorator
 
-from datetime import datetime, timedelta
-from six import string_types
+from datetime import timedelta
 
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext_noop as _
@@ -82,11 +81,11 @@ class Command(BaseCommand):
         interval = timedelta(seconds=options['interval'])
         metric_names = options['metric_name']
         resource = options['resource']
-        service = options['service']
+        # service = options['service']
         label = options['label']
         if not metric_names:
             raise CommandError("No metric name")
-        if isinstance(metric_names, string_types):
+        if isinstance(metric_names, str):
             metric_names = [metric_names]
         for m in metric_names:
             #def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None, label=None, resource=None):
@@ -122,7 +121,6 @@ class Command(BaseCommand):
             print(' for label: {} label'.format(label.name))
 
         utc = pytz.utc
-        now = datetime.utcnow().replace(tzinfo=utc)
         since = since.replace(tzinfo=utc) if since else None
         until = until.replace(tzinfo=utc) if until else None
 

@@ -17,21 +17,18 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import math
 import logging
-import six
-from urllib.parse import quote, urlsplit
 import traceback
+from urllib.parse import quote, urlsplit, urljoin
 from itertools import chain
-from six import string_types
 
 from guardian.shortcuts import get_perms
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import (
@@ -67,7 +64,7 @@ from geonode.base.forms import CategoryForm, TKeywordForm
 from geonode.base.models import (
     Thesaurus,
     TopicCategory)
-from geonode import geoserver, qgis_server
+from geonode import geoserver
 from geonode.groups.models import GroupProfile
 from geonode.base.auth import get_or_create_token
 from geonode.documents.models import get_related_documents
@@ -76,7 +73,6 @@ from geonode.base.views import batch_modify
 from .tasks import delete_map
 from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
-from requests.compat import urljoin
 from deprecated import deprecated
 
 from dal import autocomplete
@@ -87,10 +83,9 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
     from geonode.geoserver.helpers import ogc_server_settings
-    from geonode.geoserver.helpers import (_render_thumbnail,
-                                           _prepare_thumbnail_body_from_opts)
-elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-    from geonode.qgis_server.helpers import ogc_server_settings
+    from geonode.geoserver.helpers import (
+        _render_thumbnail,
+        _prepare_thumbnail_body_from_opts)
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -583,53 +578,61 @@ def map_view_js(request, mapid):
         content_type="application/javascript")
 
 
-def map_json(request, mapid):
-    if request.method == 'GET':
-        try:
-            map_obj = _resolve_map(
-                request,
-                mapid,
-                'base.view_resourcebase',
-                _PERMISSION_MSG_VIEW)
-        except PermissionDenied:
-            return HttpResponse(_("Not allowed"), status=403)
-        except Exception:
-            raise Http404(_("Not found"))
-        if not map_obj:
-            raise Http404(_("Not found"))
+def map_json_handle_get(request, mapid):
+    try:
+        map_obj = _resolve_map(
+            request,
+            mapid,
+            'base.view_resourcebase',
+            _PERMISSION_MSG_VIEW)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not map_obj:
+        raise Http404(_("Not found"))
 
+    return HttpResponse(
+        json.dumps(
+            map_obj.viewer_json(request)))
+
+
+def map_json_handle_put(request, mapid):
+    if not request.user.is_authenticated:
+        return HttpResponse(
+            _PERMISSION_MSG_LOGIN,
+            status=401,
+            content_type="text/plain"
+        )
+
+    map_obj = Map.objects.get(id=mapid)
+    if not request.user.has_perm(
+        'change_resourcebase',
+            map_obj.get_self_resource()):
+        return HttpResponse(
+            _PERMISSION_MSG_SAVE,
+            status=401,
+            content_type="text/plain"
+        )
+    try:
+        map_obj.update_from_viewer(request.body, context={'request': request, 'mapId': mapid, 'map': map_obj})
+        register_event(request, EventType.EVENT_CHANGE, map_obj)
         return HttpResponse(
             json.dumps(
                 map_obj.viewer_json(request)))
-    elif request.method == 'PUT':
-        if not request.user.is_authenticated:
-            return HttpResponse(
-                _PERMISSION_MSG_LOGIN,
-                status=401,
-                content_type="text/plain"
-            )
+    except ValueError as e:
+        return HttpResponse(
+            "The server could not understand the request." + str(e),
+            content_type="text/plain",
+            status=400
+        )
 
-        map_obj = Map.objects.get(id=mapid)
-        if not request.user.has_perm(
-            'change_resourcebase',
-                map_obj.get_self_resource()):
-            return HttpResponse(
-                _PERMISSION_MSG_SAVE,
-                status=401,
-                content_type="text/plain"
-            )
-        try:
-            map_obj.update_from_viewer(request.body, context={'request': request, 'mapId': mapid, 'map': map_obj})
-            register_event(request, EventType.EVENT_CHANGE, map_obj)
-            return HttpResponse(
-                json.dumps(
-                    map_obj.viewer_json(request)))
-        except ValueError as e:
-            return HttpResponse(
-                "The server could not understand the request." + str(e),
-                content_type="text/plain",
-                status=400
-            )
+
+def map_json(request, mapid):
+    if request.method == 'GET':
+        return map_json_handle_get(request, mapid)
+    elif request.method == 'PUT':
+        return map_json_handle_put(request, mapid)
 
 
 @xframe_options_sameorigin
@@ -668,7 +671,7 @@ def map_edit(request, mapid, template='maps/map_edit.html'):
 
 
 def clean_config(conf):
-    if isinstance(conf, string_types):
+    if isinstance(conf, str):
         config = json.loads(conf)
         config_extras = [
             "tools",
@@ -942,8 +945,6 @@ def add_layers_to_map_config(
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             if layer.has_time:
                 from geonode.geoserver.views import get_capabilities
-                workspace, layername = layer.alternate.split(
-                    ":") if ":" in layer.alternate else (None, layer.alternate)
                 # WARNING Please make sure to have enabled DJANGO CACHE as per
                 # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
                 wms_capabilities_resp = get_capabilities(
@@ -1109,14 +1110,10 @@ def map_download(request, mapid, template='maps/map_download.html'):
                 j_layers.remove(j_layer)
         mapJson = json.dumps(j_map)
 
-        if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-            url = urljoin(settings.SITEURL,
-                          reverse("qgis_server:download-map", kwargs={'mapid': mapid}))
-            # qgis-server backend stop here, continue on qgis_server/views.py
-            return redirect(url)
-
         # the path to geoserver backend continue here
-        resp, content = http_client.request(url, 'POST', body=mapJson)
+        url = urljoin(settings.SITEURL,
+                      reverse("download-map", kwargs={'mapid': mapid}))
+        resp, content = http_client.request(url, 'POST', data=mapJson)
 
         status = int(resp.status_code)
 
@@ -1326,8 +1323,13 @@ def map_thumbnail(request, mapid):
         try:
             image = _prepare_thumbnail_body_from_opts(
                 request.body, request=request)
-        except Exception:
-            image = _render_thumbnail(request.body)
+        except Exception as e:
+            logger.debug(e)
+            try:
+                image = _render_thumbnail(request.body)
+            except Exception as e:
+                logger.debug(e)
+                image = None
 
         if not image:
             return HttpResponse(
@@ -1392,7 +1394,7 @@ class MapAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_result_label(self, result):
         """Return the label of a selected result."""
-        return six.text_type(result.title)
+        return str(result.title)
 
     def get_queryset(self):
         qs = Map.objects.all()

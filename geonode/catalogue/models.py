@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import errno
 import logging
 
@@ -51,7 +50,7 @@ def catalogue_post_save(instance, sender, **kwargs):
         record = catalogue.get_record(instance.uuid)
     except EnvironmentError as err:
         msg = 'Could not connect to catalogue to save information for layer "%s"' % instance.name
-        if err.reason.errno == errno.ECONNREFUSED:
+        if err.errno == errno.ECONNREFUSED:
             LOGGER.warn(msg, err)
             return
         else:
@@ -95,13 +94,16 @@ def catalogue_post_save(instance, sender, **kwargs):
     if instance.metadata_uploaded and instance.metadata_uploaded_preserve:
         md_doc = etree.tostring(dlxml.fromstring(instance.metadata_xml))
     else:
-        md_doc = catalogue.catalogue.csw_gen_xml(instance, 'catalogue/full_metadata.xml')
-    csw_anytext = catalogue.catalogue.csw_gen_anytext(md_doc)
-    csw_wkt_geometry = instance.geographic_bounding_box.split(';')[-1]
+        md_doc = catalogue.catalogue.csw_gen_xml(instance, settings.CATALOG_METADATA_TEMPLATE)
+    try:
+        csw_anytext = catalogue.catalogue.csw_gen_anytext(md_doc)
+    except Exception as e:
+        LOGGER.exception(e)
+        csw_anytext = ''
 
     resources.update(
         metadata_xml=md_doc,
-        csw_wkt_geometry=csw_wkt_geometry,
+        csw_wkt_geometry=instance.geographic_bounding_box,
         csw_anytext=csw_anytext)
 
 

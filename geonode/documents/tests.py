@@ -54,6 +54,7 @@ from geonode.documents import DocumentsAppConfig
 from geonode.documents.forms import DocumentFormMixin
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.base.populate_test_data import create_models
+from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
 from geonode.documents.models import Document, DocumentResourceLink
 
 
@@ -75,6 +76,23 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
             b'\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
         self.anonymous_user = get_anonymous_user()
+
+    def test_document_mimetypes_rendering(self):
+        ARCHIVETYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'archive']
+        AUDIOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'audio']
+        IMGTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'image']
+        VIDEOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'video']
+        self.assertIsNotNone(ARCHIVETYPES)
+        self.assertIsNotNone(AUDIOTYPES)
+        self.assertIsNotNone(IMGTYPES)
+        self.assertIsNotNone(VIDEOTYPES)
+
+        # Make sure we won't have template rendering issues
+        self.assertTrue('dwg' in ARCHIVETYPES)
+        self.assertTrue('dxf' in ARCHIVETYPES)
+        self.assertTrue('tif' in ARCHIVETYPES)
+        self.assertTrue('tiff' in ARCHIVETYPES)
+        self.assertTrue('pbm' in ARCHIVETYPES)
 
     def test_create_document_with_no_rel(self):
         """Tests the creation of a document with no relations"""
@@ -362,7 +380,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         Model = Document
         view = 'document_batch_metadata'
         resources = Model.objects.all()[:3]
-        ids = ','.join([str(element.pk) for element in resources])
+        ids = ','.join(str(element.pk) for element in resources)
         # test non-admin access
         self.client.login(username="bobby", password="bob")
         response = self.client.get(reverse(view))
@@ -451,6 +469,23 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
         base_path = gisdata.GOOD_DATA
         return os.path.join(base_path, 'vector', 'readme.txt')
 
+    def test_document_upload_redirect(self):
+        with self.settings(ADMIN_MODERATE_UPLOADS=False):
+            self.client.login(username=self.user, password=self.passwd)
+            input_path = self._get_input_path()
+            document_upload_url = "{}".format(reverse('document_upload'))
+            with open(input_path, 'rb') as f:
+                data = {'title': 'document title',
+                        'doc_file': f,
+                        'resource': '',
+                        'extension': 'txt',
+                        'permissions': '{}',
+                        }
+                resp = self.client.post(document_upload_url, data=data)
+                if resp.status_code == 200:
+                    content = resp.content.decode('utf-8')
+                    self.asserTrue("document title" in content)
+
     def test_moderated_upload(self):
         """
         Test if moderation flag works
@@ -489,8 +524,13 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             thumb_files_before = get_thumbs()
             deleted = delete_orphaned_thumbs()
             thumb_files_after = get_thumbs()
-            self.assertTrue(len(deleted) > 0)
-            self.assertEqual(set(deleted), set(thumb_files_before) - set(thumb_files_after))
+            if len(thumb_files_before):
+                self.assertTrue(
+                    len(deleted) > 0,
+                    f"before: {thumb_files_before} - deleted: {deleted} - after: {thumb_files_after}")
+                self.assertEqual(
+                    set(deleted), set(thumb_files_before) - set(thumb_files_after),
+                    f"deleted: {deleted} vs {set(thumb_files_before) - set(thumb_files_after)}")
 
             fn = os.path.join(
                 os.path.join("documents", "document"), os.path.basename(input_path))

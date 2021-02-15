@@ -21,7 +21,6 @@
 import logging
 import pytz
 import hashlib
-from six import string_types
 
 from datetime import datetime
 from django.conf import settings
@@ -67,16 +66,16 @@ class MonitoringMiddleware(MiddlewareMixin):
         if host:
             try:
                 service = Service.objects.get(host=host, name=sname)
-                return service
             except Service.DoesNotExist:
                 service = None
+            return service
 
     @staticmethod
     def should_process(request):
         current = request.path
 
         for skip_url in settings.MONITORING_SKIP_PATHS:
-            if isinstance(skip_url, string_types):
+            if isinstance(skip_url, str):
                 if current.startswith(skip_url):
                     return False
             elif hasattr(skip_url, 'match'):

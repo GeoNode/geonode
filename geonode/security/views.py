@@ -22,7 +22,6 @@ import json
 import logging
 import traceback
 
-from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
@@ -38,8 +37,7 @@ from geonode.base.models import (
 from geonode.layers.models import Layer
 from geonode.groups.models import GroupProfile
 
-if "notification" in settings.INSTALLED_APPS:
-    from notification import models as notification
+from geonode.notifications_helper import send_notification
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +54,57 @@ def _perms_info_json(obj):
     return json.dumps(info)
 
 
+def resource_permisions_handle_get(request, resource):
+    permission_spec = _perms_info_json(resource)
+    return HttpResponse(
+        json.dumps({'success': True, 'permissions': permission_spec}),
+        status=200,
+        content_type='text/plain'
+    )
+
+
+def resource_permissions_handle_post(request, resource):
+    success = True
+    message = _("Permissions successfully updated!")
+    try:
+        permission_spec = json.loads(request.body.decode('UTF-8'))
+        resource.set_permissions(permission_spec)
+
+        # Check Users Permissions Consistency
+        view_any = False
+        info = _perms_info(resource)
+
+        for user, perms in info['users'].items():
+            if user.username == "AnonymousUser":
+                view_any = "view_resourcebase" in perms
+                break
+
+        for user, perms in info['users'].items():
+            if "download_resourcebase" in perms and \
+               "view_resourcebase" not in perms and \
+               not view_any:
+
+                success = False
+                message = "User {} has download permissions but cannot " \
+                          "access the resource. Please update permission " \
+                          "consistently!".format(user.username)
+
+        return HttpResponse(
+            json.dumps({'success': success, 'message': message}),
+            status=200,
+            content_type='text/plain'
+        )
+    except Exception as e:
+        logger.exception(e)
+        success = False
+        message = _("Error updating permissions :(")
+        return HttpResponse(
+            json.dumps({'success': success, 'message': message}),
+            status=500,
+            content_type='text/plain'
+        )
+
+
 def resource_permissions(request, resource_id):
     try:
         resource = resolve_object(
@@ -70,55 +119,10 @@ def resource_permissions(request, resource_id):
             content_type='text/plain')
 
     if request.method == 'POST':
-        success = True
-        message = _("Permissions successfully updated!")
-        try:
-            permission_spec = json.loads(request.body.decode('UTF-8'))
-            resource.set_permissions(permission_spec)
-
-            # Check Users Permissions Consistency
-            view_any = False
-            info = _perms_info(resource)
-
-            for user, perms in info['users'].items():
-                if user.username == "AnonymousUser":
-                    view_any = "view_resourcebase" in perms
-                    break
-
-            for user, perms in info['users'].items():
-                if "download_resourcebase" in perms and \
-                   "view_resourcebase" not in perms and \
-                   not view_any:
-
-                    success = False
-                    message = "User {} has download permissions but cannot " \
-                              "access the resource. Please update permission " \
-                              "consistently!".format(user.username)
-
-            return HttpResponse(
-                json.dumps({'success': success, 'message': message}),
-                status=200,
-                content_type='text/plain'
-            )
-        except Exception:
-            # traceback.print_exc()
-            success = False
-            message = _("Error updating permissions :(")
-            return HttpResponse(
-                json.dumps({'success': success, 'message': message}),
-                status=500,
-                content_type='text/plain'
-            )
-
+        return resource_permissions_handle_post(request, resource)
     elif request.method == 'GET':
-        permission_spec = _perms_info_json(resource)
-        return HttpResponse(
-            json.dumps({'success': True, 'permissions': permission_spec}),
-            status=200,
-            content_type='text/plain'
-        )
+        return resource_permisions_handle_get(request, resource)
     else:
-        # traceback.print_exc()
         return HttpResponse(
             'No methods other than get and post are allowed',
             status=401,
@@ -432,11 +436,9 @@ def request_permissions(request):
     uuid = request.POST['uuid']
     resource = get_object_or_404(ResourceBase, uuid=uuid)
     try:
-        notification.send(
-            [resource.owner],
-            'request_download_resourcebase',
-            {'from_user': request.user, 'resource': resource}
-        )
+        send_notification([resource.owner],
+                          'request_download_resourcebase',
+                          {'resource': resource, 'from_user': request.user})
         return HttpResponse(
             json.dumps({'success': 'ok', }),
             status=200,
@@ -452,11 +454,9 @@ def request_permissions(request):
 def send_email_consumer(layer_uuid, user_id):
     resource = get_object_or_404(ResourceBase, uuid=layer_uuid)
     user = get_user_model().objects.get(id=user_id)
-    notification.send(
-        [resource.owner],
-        'request_download_resourcebase',
-        {'from_user': user, 'resource': resource}
-    )
+    send_notification([resource.owner],
+                      'request_download_resourcebase',
+                      {'resource': resource, 'from_user': user})
 
 
 def send_email_owner_on_view(owner, viewer, layer_id, geonode_email="email@geo.node"):

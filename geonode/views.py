@@ -20,17 +20,19 @@
 import json
 
 from django import forms
+from django.apps import apps
 from django.db.models import Q
 from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template.response import TemplateResponse
+from geonode.base.templatetags.base_tags import facets
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, get_user_model
 
 from geonode import get_version
 from geonode.groups.models import GroupProfile
-from geonode.base.templatetags.base_tags import facets
+from geonode.geoapps.models import GeoApp
 
 
 class AjaxLoginForm(forms.Form):
@@ -163,8 +165,27 @@ def ident_json(request):
 
 def h_keywords(request):
     from geonode.base.models import HierarchicalKeyword as hk
-    keywords = json.dumps(hk.dump_bulk_tree(request.user, type=request.GET.get('type', None)))
-    return HttpResponse(content=keywords)
+    p_type = request.GET.get('type', None)
+    keywords = hk.dump_bulk_tree(request.user, type=p_type)
+
+    subtypes = []
+    if p_type == 'geoapp':
+        for label, app in apps.app_configs.items():
+            if hasattr(app, 'type') and app.type == 'GEONODE_APP':
+                if hasattr(app, 'default_model'):
+                    _model = apps.get_model(label, app.default_model)
+                    if issubclass(_model, GeoApp):
+                        subtypes.append(_model.__name__.lower())
+
+    for _type in subtypes:
+        _bulk_tree = hk.dump_bulk_tree(request.user, type=_type)
+        if isinstance(_bulk_tree, list):
+            for _elem in _bulk_tree:
+                keywords.append(_elem)
+        else:
+            keywords.append(_bulk_tree)
+
+    return HttpResponse(content=json.dumps(keywords))
 
 
 def moderator_contacted(request, inactive_user=None):

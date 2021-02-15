@@ -23,6 +23,13 @@
         <a href="{{ layer.get_absolute_url }}" class="btn btn-default">{% trans "No, don't remove it" %}</a>
       </div>
     </form>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
   </div>
   {% if layer.maps %}
     <div class="col-md-4">

@@ -22,7 +22,6 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 import json
 import logging
-from six import string_types
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -436,7 +435,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
             js = json.loads(content)
             permissions = js.get('permissions', dict())
 
-            if isinstance(permissions, string_types):
+            if isinstance(permissions, str):
                 permissions = json.loads(permissions)
 
             # Ensure the groups value is empty by default
@@ -481,7 +480,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
             js = json.loads(content)
             permissions = js.get('permissions', dict())
 
-            if isinstance(permissions, string_types):
+            if isinstance(permissions, str):
                 permissions = json.loads(permissions)
 
             # Make sure the bar group now has write permissions
@@ -514,7 +513,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
             js = json.loads(content)
             permissions = js.get('permissions', dict())
 
-            if isinstance(permissions, string_types):
+            if isinstance(permissions, str):
                 permissions = json.loads(permissions)
 
             # Assert the bar group no longer has permissions
