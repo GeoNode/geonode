@@ -21,7 +21,6 @@
 import io
 import os
 import re
-import six
 import gzip
 import json
 import shutil
@@ -205,8 +204,9 @@ def proxy(request, url=None, response_callback=None,
     # if content and response and response.getheader('Content-Encoding') == 'gzip':
     if content and content_type and content_type == 'gzip':
         buf = io.BytesIO(content)
-        f = gzip.GzipFile(fileobj=buf)
-        content = f.read()
+        with gzip.GzipFile(fileobj=buf) as f:
+            content = f.read()
+        buf.close()
 
     PLAIN_CONTENT_TYPES = [
         'text',
@@ -217,7 +217,7 @@ def proxy(request, url=None, response_callback=None,
         'gml'
     ]
     for _ct in PLAIN_CONTENT_TYPES:
-        if content_type and _ct in content_type and not isinstance(content, six.string_types):
+        if content_type and _ct in content_type and not isinstance(content, str):
             try:
                 content = content.decode()
                 break
