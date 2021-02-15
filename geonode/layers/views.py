@@ -1059,7 +1059,6 @@ def layer_metadata(
             this feature will be removed in next releases', DeprecationWarning)
             layer_tkeywords = layer.tkeywords.all()
             tkeywords_list = ''
-            lang = 'en'  # TODO: use user's language
             if layer_tkeywords and len(layer_tkeywords) > 0:
                 tkeywords_ids = layer_tkeywords.values_list('id', flat=True)
                 if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
