@@ -20,10 +20,7 @@
 import re
 import html
 import logging
-import re
 from django.db.models.query import QuerySet
-
-import six
 from bootstrap3_datetime.widgets import DateTimePicker
 from dal import autocomplete
 from django import forms

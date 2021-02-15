@@ -40,10 +40,10 @@ from geonode.base.models import (
     Menu,
     MenuItem,
     Configuration,
-    TopicCategory, 
-    Thesaurus, 
+    TopicCategory,
+    Thesaurus,
     ThesaurusKeyword
-    )
+)
 from django.conf import settings
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
