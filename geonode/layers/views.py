@@ -1023,13 +1023,8 @@ def layer_metadata(
         if hasattr(settings, 'THESAURUS'):
             tkeywords_form = TKeywordForm(request.POST)
         else:
-            tkeywords_form = ThesaurusAvailableForm(request.POST)
+            tkeywords_form = ThesaurusAvailableForm(request.POST, prefix='tkeywords')
             #  set initial values for thesaurus form
-            for tid in tkeywords_form.fields:
-                values = []
-                values = [keyword.id for keyword in topic_thesaurus if int(tid) == keyword.thesaurus.id]
-                tkeywords_form.fields[tid].initial = values
-
         if not tkeywords_form.is_valid():
             logger.error(f"Layer Thesauri Keywords form is not valid: {tkeywords_form.errors}")
             out = {
