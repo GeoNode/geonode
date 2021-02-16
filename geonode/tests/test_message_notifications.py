@@ -16,13 +16,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
-from user_messages.models import Thread, Message, GroupMemberThread
-from geonode.messaging.notifications import message_received_notification
-from geonode.people.models import Profile
-from geonode.tests.base import GeoNodeBaseTestSupport
 from unittest.mock import patch
 from django.contrib.auth.models import Group
+
+from user_messages.models import Thread, Message, GroupMemberThread
+from geonode.people.models import Profile
+from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.messaging.notifications import message_received_notification
 
 
 class TestSendEmail(GeoNodeBaseTestSupport):
@@ -48,24 +48,40 @@ class TestSendEmail(GeoNodeBaseTestSupport):
 
     @patch('geonode.notifications_backend.EmailBackend.deliver')
     def test_email_sent(self, email_message):
-        message_received_notification(message=self.m)
-        email_message.assert_called_once()
+        with self.settings(ASYNC_SIGNALS=False,
+                           NOTIFICATION_ENABLED=True,
+                           NOTIFICATIONS_MODULE='pinax.notifications',
+                           PINAX_NOTIFICATIONS_QUEUE_ALL=False):
+            message_received_notification(message=self.m)
+            email_message.assert_called_once()
 
     @patch('geonode.notifications_backend.EmailBackend.deliver')
     def test_email_sent_many(self, email_message):
-        self.p1.email = 'test@test.test'
-        self.p1.save()
-        message_received_notification(message=self.m)
-        self.assertEqual(email_message.call_count, 2)
+        with self.settings(ASYNC_SIGNALS=False,
+                           NOTIFICATION_ENABLED=True,
+                           NOTIFICATIONS_MODULE='pinax.notifications',
+                           PINAX_NOTIFICATIONS_QUEUE_ALL=False):
+            self.p1.email = 'test@test.test'
+            self.p1.save()
+            message_received_notification(message=self.m)
+            self.assertEqual(email_message.call_count, 2)
 
     @patch('geonode.notifications_backend.EmailBackend.deliver')
     def test_email_sent_to_group(self, email_message):
-        self.p1.email = 'test@test.test'
-        self.p1.save()
-        message_received_notification(message=self.m2)
-        self.assertEqual(email_message.call_count, 2)
+        with self.settings(ASYNC_SIGNALS=False,
+                           NOTIFICATION_ENABLED=True,
+                           NOTIFICATIONS_MODULE='pinax.notifications',
+                           PINAX_NOTIFICATIONS_QUEUE_ALL=False):
+            self.p1.email = 'test@test.test'
+            self.p1.save()
+            message_received_notification(message=self.m2)
+            self.assertEqual(email_message.call_count, 2)
 
     @patch('geonode.notifications_backend.EmailBackend.deliver')
     def test_email_sent_to_group_single(self, email_message):
-        message_received_notification(message=self.m2)
-        self.assertEqual(email_message.call_count, 1)
+        with self.settings(ASYNC_SIGNALS=False,
+                           NOTIFICATION_ENABLED=True,
+                           NOTIFICATIONS_MODULE='pinax.notifications',
+                           PINAX_NOTIFICATIONS_QUEUE_ALL=False):
+            message_received_notification(message=self.m2)
+            self.assertEqual(email_message.call_count, 1)
