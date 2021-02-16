@@ -1375,6 +1375,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                      link.url))
         return links
 
+    @property
+    def embed_url(self):
+        return NotImplemented
+
     def get_tiles_url(self):
         """Return URL for Z/Y/X mapping clients or None if it does not exist.
         """
