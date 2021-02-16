@@ -90,7 +90,7 @@ class TestExtractLanguages(SimpleTestCase):
         LANG_ATTRIB = "{" + XML_URI + "}lang"
         actual = get_all_lang_available_with_title(titles, LANG_ATTRIB)
         expected = [
-            ("it", "Registro dei dati di interesse generale"),
+            ("it", "Italian register of the reference data sets"),
             ("en", "Register of the reference data sets"),
             (None, "Mocked Title"),
         ]
@@ -98,7 +98,7 @@ class TestExtractLanguages(SimpleTestCase):
 
     def test_determinate_title_should_return_the_title_without_lang_if_available(self):
         titles = [
-            ("it", "Registro dei dati di interesse generale"),
+            ("it", "Italian register of the reference data sets"),
             ("en", "Register of the reference data sets"),
             (None, "Mocked Title"),
         ]
@@ -107,15 +107,15 @@ class TestExtractLanguages(SimpleTestCase):
 
     def test_determinate_title_should_return_the_italian_lang_if_none_is_not_available(self):
         titles = [
-            ("it", "Registro dei dati di interesse generale"),
+            ("it", "Italian register of the reference data sets"),
             ("en", "Register of the reference data sets"),
         ]
         actual = determinate_value(titles, "it")
-        self.assertEqual("Registro dei dati di interesse generale", actual)
+        self.assertEqual("Italian register of the reference data sets", actual)
 
     def test_determinate_title_should_return_the_title_whithout_lang_even_if_localized_is_available(self):
         titles = [
-            ("it", "Registro dei dati di interesse generale"),
+            ("it", "Italian register of the reference data sets"),
             ("en", "Register of the reference data sets"),
             (None, "Mocked Title"),
         ]
@@ -124,11 +124,11 @@ class TestExtractLanguages(SimpleTestCase):
 
     def test_determinate_title_should_take_the_first_localized_title_when_default_one_is_not_available(self):
         titles = [
-            ("it", "Registro dei dati di interesse generale"),
+            ("it", "Italian register of the reference data sets"),
             ("en", "Register of the reference data sets"),
         ]
         actual = determinate_value(titles, "not-existing")
-        self.assertEqual("Registro dei dati di interesse generale", actual)
+        self.assertEqual("Italian register of the reference data sets", actual)
 
     def __load_titles(self):
         RDF_URI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"

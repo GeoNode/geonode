@@ -4873,9 +4873,9 @@
         "pk": 4,
         "fields": {
             "identifier": "abc-all1",
-            "title": "Registro dei dati di interesse generale",
+            "title": "Register of data of general interest",
             "date": "2018-06-25",
-            "description": "Registro dei dati di interesse generale",
+            "description": "Register of data of general interest",
             "slug": "",
             "about": "https://registry.geodati.gov.it/abc-all1",
             "card_min": 0,
@@ -4969,7 +4969,7 @@
       "pk": 44,
       "fields": {
           "about": "http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply",
-          "alt_label": "Nessuna condizione applicabile",
+          "alt_label": "No condition applicable",
           "thesaurus": 7
       }
     },
@@ -4978,7 +4978,7 @@
         "pk": 45,
         "fields": {
             "about": "http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/conditionsUnknown",
-            "alt_label": "Condizioni sconosciute",
+            "alt_label": "Unknown Conditions",
             "thesaurus": 7
         }
     },
@@ -4987,7 +4987,7 @@
       "pk": 100,
       "fields": {
           "about": "http://test.com",
-          "alt_label": "Siti protetti",
+          "alt_label": "Protected sites",
           "thesaurus": 8
       }
     },
@@ -5059,7 +5059,7 @@
         "pk": 102,
         "fields": {
             "lang": "en",
-            "label": "Siti protetti",
+            "label": "Protected sites",
             "keyword": 100
         }
     },
