@@ -18,7 +18,7 @@
 #
 #########################################################################
 from geonode.tests.base import GeoNodeBaseTestSupport
-
+from django.test import TestCase
 import io
 import os
 import json
@@ -1544,3 +1544,39 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
         self.assertEqual(response.context['map_layers'], [self.map_layer])
+
+
+'''
+Smoke test to explain how the uuidhandler will override the uuid for the layers
+Documentation of the handler is available here:
+https://github.com/GeoNode/documentation/blob/703cc6ba92b7b7a83637a874fb449420a9f8b78a/basic/settings/index.rst#uuid-handler
+'''
+
+
+class DummyUUIDHandler():
+    def __init__(self, instance):
+        self.instance = instance
+
+    def create_uuid(self):
+        return f'abc:{self.instance.uuid}'
+
+
+class TestCustomUUidHandler(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create(username='test', email='test@test.com')
+        self.sut = Layer.objects.create(
+            name="testLayer", owner=self.user, title='test', is_approved=True, uuid='abc-1234-abc'
+        )
+
+    def test_layer_will_maintain_his_uud_if_no_handler_is_definded(self):
+        expected = "abc-1234-abc"
+        self.assertEqual(expected, self.sut.uuid)
+
+    @override_settings(LAYER_UUID_HANDLER="geonode.layers.tests.DummyUUIDHandler")
+    def test_layer_will_override_the_uuid_if_handler_is_defined(self):
+        self.sut.keywords.add(*["updating", "values"])
+        self.sut.save()
+        expected = "abc:abc-1234-abc"
+        actual = Layer.objects.get(id=self.sut.id)
+        self.assertEqual(expected, actual.uuid)
