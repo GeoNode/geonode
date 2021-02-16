@@ -19,8 +19,8 @@ decorator==4.4.2
 celery==5.0.5
 kombu==5.0.2
 vine==5.0.0
-boto3==1.17.4
-tqdm==4.56.0
+boto3==1.17.7
+tqdm==4.56.2
 Deprecated==1.2.11
 wrapt==1.12.1
 jsonfield==3.1.0
@@ -75,9 +75,9 @@ django-recaptcha==2.0.6
 djangorestframework==3.11.2
 djangorestframework-gis==0.17
 djangorestframework-guardian==0.3.0
-drf-extensions==0.6.0
+drf-extensions==0.7.0
 drf-writable-nested==0.6.2
-drf-spectacular==0.13.1
+drf-spectacular==0.13.2
 dynamic-rest==2.0.0
 Markdown==3.3.3
 
