@@ -4872,12 +4872,12 @@
         "model": "base.thesaurus",
         "pk": 4,
         "fields": {
-            "identifier": "rndt-all1",
-            "title": "Registro dei dati di interesse generale per il RNDT",
+            "identifier": "abc-all1",
+            "title": "Registro dei dati di interesse generale",
             "date": "2018-06-25",
-            "description": "Registro dei dati di interesse generale per il RNDT",
+            "description": "Registro dei dati di interesse generale",
             "slug": "",
-            "about": "https://registry.geodati.gov.it/rndt-all1",
+            "about": "https://registry.geodati.gov.it/abc-all1",
             "card_min": 0,
             "card_max": 1,
             "facet": true
@@ -5086,7 +5086,7 @@
       "pk": 4,
       "fields": {
           "lang": "en",
-          "label": "Register of the reference data sets for RNDT",
+          "label": "Register of the reference data sets",
           "thesaurus": 4
       }
     },
@@ -5113,7 +5113,7 @@
       "pk": 9,
       "fields": {
           "lang": "en",
-          "label": "Register of the reference data sets for RNDT",
+          "label": "Register of the reference data sets",
           "thesaurus": 8
       }
   }

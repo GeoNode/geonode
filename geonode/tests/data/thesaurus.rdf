@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
   <skos:ConceptScheme xmlns:skos="http://www.w3.org/2004/02/skos/core#" rdf:about="http://inspire.ec.europa.eu/theme">
-    <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="it">Registro dei dati di interesse generale per il RNDT</dc:title>
-    <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="en">Register of the reference data sets for RNDT</dc:title>
+    <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="it">Registro dei dati di interesse generale</dc:title>
+    <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="en">Register of the reference data sets</dc:title>
     <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Mocked Title</dc:title>
     <dcterms:issued xmlns:dcterms="http://purl.org/dc/terms/">2018-05-23T10:25:56</dcterms:issued>
     <dcterms:modified xmlns:dcterms="http://purl.org/dc/terms/">2018-05-23T10:25:56</dcterms:modified>
