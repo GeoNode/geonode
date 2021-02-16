@@ -424,8 +424,9 @@ class UploaderBase(GeoNodeBaseTestSupport):
             # "COMPLETE" state means done
             if json_data and json_data.get('state', '') == 'RUNNING' and \
             wait_for_progress_cnt < 30:
-                wait_for_progress_cnt += 1
-                self.wait_for_progress(progress_url, wait_for_progress_cnt)
+                logger.error(f"[{wait_for_progress_cnt}] ... wait_for_progress @ {progress_url}")
+                time.sleep(10.0)
+                self.wait_for_progress(progress_url, wait_for_progress_cnt=wait_for_progress_cnt + 1)
 
     def temp_file(self, ext):
         fd, abspath = tempfile.mkstemp(ext)
@@ -594,7 +595,7 @@ class TestUpload(UploaderBase):
             self.check_invalid_projection,
             session_ids=session_ids)
 
-        # Finally try to upload a good file anc check the session IDs
+        # Finally try to upload a good file and check the session IDs
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
         self.upload_file(
             fname,
