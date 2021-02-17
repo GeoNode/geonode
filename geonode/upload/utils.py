@@ -29,7 +29,6 @@ from osgeo import ogr
 from lxml import etree
 from itertools import islice
 from defusedxml import lxml as dlxml
-from six import string_types, text_type
 
 from django.conf import settings
 from django.urls import reverse
@@ -166,7 +165,7 @@ def json_loads_byteified(json_text, charset):
 
 def _byteify(data, ignore_dicts=False):
     # if this is a unicode string, return its string representation
-    if isinstance(data, text_type):
+    if isinstance(data, str):
         return data
     # if this is a list of values, return list of byteified values
     if isinstance(data, list):
@@ -750,7 +749,7 @@ def import_imagemosaic_granules(
              'fetch size': '1000',
              'host': db['HOST'],
              'port': db['PORT'] if isinstance(
-                 db['PORT'], string_types) else str(db['PORT']) or '5432',
+                 db['PORT'], str) else str(db['PORT']) or '5432',
              'database': db['NAME'],
              'user': db['USER'],
              'passwd': db['PASSWORD'],

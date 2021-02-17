@@ -22,7 +22,7 @@ import json
 import jenkins
 import sys
 from optparse import OptionParser
-from six.moves.urllib.request import Request
+from urllib.request import Request
 
 
 JENKINS_IP = 'http://52.7.139.177/'

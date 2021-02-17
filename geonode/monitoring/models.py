@@ -26,7 +26,6 @@ from urllib.parse import urlparse
 from socket import gethostbyname
 from datetime import datetime, timedelta
 from decimal import Decimal
-from six import string_types
 
 from django import forms
 from django.db import models
@@ -828,7 +827,7 @@ class ExceptionEvent(models.Model):
     def add_error(cls, from_service, error_type, stack_trace,
                   request=None, created=None, message=None):
         received = datetime.utcnow().replace(tzinfo=pytz.utc)
-        if not isinstance(error_type, string_types):
+        if not isinstance(error_type, str):
             _cls = error_type.__class__
             error_type = '{}.{}'.format(_cls.__module__, _cls.__name__)
         if not message:

@@ -170,10 +170,11 @@ class GroupAuthorization(ApiLockdownAuthorization):
     def read_list(self, object_list, bundle):
         groups = super(GroupAuthorization, self).read_list(object_list, bundle)
         user = bundle.request.user
-        if groups and (not user.is_authenticated or user.is_anonymous):
-            return groups.exclude(groupprofile__access='private')
-        elif groups and not user.is_superuser:
-            return groups.filter(Q(groupprofile__in=user.group_list_all()) | ~Q(groupprofile__access='private'))
+        if groups:
+            if not user.is_authenticated or user.is_anonymous:
+                return groups.exclude(groupprofile__access='private')
+            elif not user.is_superuser:
+                return groups.filter(Q(groupprofile__in=user.group_list_all()) | ~Q(groupprofile__access='private'))
         return groups
 
 
@@ -182,8 +183,9 @@ class GroupProfileAuthorization(ApiLockdownAuthorization):
     def read_list(self, object_list, bundle):
         groups = super(GroupProfileAuthorization, self).read_list(object_list, bundle)
         user = bundle.request.user
-        if groups and (not user.is_authenticated or user.is_anonymous):
-            return groups.exclude(access='private')
-        elif groups and not user.is_superuser:
-            return groups.filter(Q(pk__in=user.group_list_all()) | ~Q(access='private'))
+        if groups:
+            if not user.is_authenticated or user.is_anonymous:
+                return groups.exclude(access='private')
+            elif not user.is_superuser:
+                return groups.filter(Q(pk__in=user.group_list_all()) | ~Q(access='private'))
         return groups

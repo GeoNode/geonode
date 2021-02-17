@@ -28,12 +28,13 @@ from django.forms.models import model_to_dict
 from django.contrib.staticfiles.templatetags import staticfiles
 
 # use different name to avoid module clash
-from geonode.utils import json_serializer_producer
+from geonode.utils import (
+    is_monochromatic_image,
+    json_serializer_producer)
 from geonode.decorators import on_ogc_backend
 from geonode.geoserver.helpers import (
     gs_catalog,
-    ogc_server_settings,
-    is_monochromatic_image)
+    ogc_server_settings)
 from geonode.geoserver.tasks import geoserver_create_thumbnail
 from geonode.layers.models import Layer
 from geonode.services.enumerations import CASCADED
@@ -152,7 +153,7 @@ def geoserver_post_save_thumbnail(sender, instance, **kwargs):
         is_monochromatic_image(instance.thumbnail_url):
             _recreate_thumbnail = True
         if _recreate_thumbnail:
-            geoserver_create_thumbnail.apply_async(((instance.id, )))
+            geoserver_create_thumbnail.apply_async(((instance.id, False, True, )))
         else:
             logger.debug(f"... Thumbnail for Layer {instance.title} already exists: {instance.thumbnail_url}")
     except Exception as e:
