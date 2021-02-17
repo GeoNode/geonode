@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <skos:ConceptScheme xmlns:skos="http://www.w3.org/2004/02/skos/core#" rdf:about="http://inspire.ec.europa.eu/theme">
+    <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="it">Italian register of the reference data sets</dc:title>
+    <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="en">Register of the reference data sets</dc:title>
+    <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Mocked Title</dc:title>
+    <dcterms:issued xmlns:dcterms="http://purl.org/dc/terms/">2018-05-23T10:25:56</dcterms:issued>
+    <dcterms:modified xmlns:dcterms="http://purl.org/dc/terms/">2018-05-23T10:25:56</dcterms:modified>
+  </skos:ConceptScheme>
+  <skos:Concept xmlns:skos="http://www.w3.org/2004/02/skos/core#" rdf:about="http://inspire.ec.europa.eu/theme/ad">
+    <skos:prefLabel xml:lang="en">Addresses</skos:prefLabel>
+    <skos:prefLabel xml:lang="de">Adressen</skos:prefLabel>
+    <skos:scopeNote xml:lang="en">Location of properties based on address identifiers, usually by road name, house number, postal code.</skos:scopeNote>
+    <skos:inScheme rdf:resource="http://inspire.ec.europa.eu/theme" />
+  </skos:Concept>
+  <skos:Concept xmlns:skos="http://www.w3.org/2004/02/skos/core#" rdf:about="http://inspire.ec.europa.eu/theme/au">
+    <skos:prefLabel xml:lang="en">Administrative units</skos:prefLabel>
+    <skos:scopeNote xml:lang="en">Units of administration, dividing areas where Member States have and/or exercise jurisdictional rights, for local, regional and national governance, separated by administrative boundaries.</skos:scopeNote>
+    <skos:altLabel>au</skos:altLabel>
+    <skos:inScheme rdf:resource="http://inspire.ec.europa.eu/theme" />
+  </skos:Concept>
+</rdf:RDF>

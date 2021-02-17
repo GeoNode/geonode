@@ -25,6 +25,7 @@ import shutil
 import base64
 import traceback
 from types import TracebackType
+import warnings
 import decimal
 import pickle
 from django.db.models import Q
@@ -61,7 +62,7 @@ from django.db.models import F
 from django.forms.utils import ErrorList
 
 from geonode.base.auth import get_or_create_token
-from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm
+from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
 from geonode.base.views import batch_modify
 from geonode.base.models import (
     Thesaurus,
@@ -904,6 +905,7 @@ def layer_metadata(
     current_keywords = [keyword.name for keyword in layer.keywords.all()]
     topic_category = layer.category
 
+    topic_thesaurus = layer.tkeywords.all()
     # Add metadata_author or poc if missing
     layer.add_missing_metadata_author_or_poc()
 
@@ -1018,7 +1020,11 @@ def layer_metadata(
                 json.dumps(out),
                 content_type='application/json',
                 status=400)
-        tkeywords_form = TKeywordForm(request.POST)
+        if hasattr(settings, 'THESAURUS'):
+            tkeywords_form = TKeywordForm(request.POST)
+        else:
+            tkeywords_form = ThesaurusAvailableForm(request.POST, prefix='tkeywords')
+            #  set initial values for thesaurus form
         if not tkeywords_form.is_valid():
             logger.error(f"Layer Thesauri Keywords form is not valid: {tkeywords_form.errors}")
             out = {
@@ -1041,31 +1047,42 @@ def layer_metadata(
             prefix="category_choice_field",
             initial=topic_category.id if topic_category else None)
 
-        # Keywords from THESAURUS management
-        layer_tkeywords = layer.tkeywords.all()
-        tkeywords_list = ''
-        lang = 'en'  # TODO: use user's language
-        if layer_tkeywords and len(layer_tkeywords) > 0:
-            tkeywords_ids = layer_tkeywords.values_list('id', flat=True)
-            if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
-                el = settings.THESAURUS
-                thesaurus_name = el['name']
-                try:
-                    t = Thesaurus.objects.get(identifier=thesaurus_name)
-                    for tk in t.thesaurus.filter(pk__in=tkeywords_ids):
-                        tkl = tk.keyword.filter(lang=lang)
-                        if len(tkl) > 0:
-                            tkl_ids = ",".join(
-                                map(str, tkl.values_list('id', flat=True)))
-                            tkeywords_list += "," + \
-                                tkl_ids if len(
-                                    tkeywords_list) > 0 else tkl_ids
-                except Exception:
-                    tb = traceback.format_exc()
-                    logger.error(tb)
-        tkeywords_form = TKeywordForm(instance=layer)
+        # Create THESAURUS widgets
+        lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, 'THESAURUS_DEFAULT_LANG') else 'en'
+        if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
+            warnings.warn('The settings for Thesaurus has been moved to Model, \
+            this feature will be removed in next releases', DeprecationWarning)
+            layer_tkeywords = layer.tkeywords.all()
+            tkeywords_list = ''
+            if layer_tkeywords and len(layer_tkeywords) > 0:
+                tkeywords_ids = layer_tkeywords.values_list('id', flat=True)
+                if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
+                    el = settings.THESAURUS
+                    thesaurus_name = el['name']
+                    try:
+                        t = Thesaurus.objects.get(identifier=thesaurus_name)
+                        for tk in t.thesaurus.filter(pk__in=tkeywords_ids):
+                            tkl = tk.keyword.filter(lang=lang)
+                            if len(tkl) > 0:
+                                tkl_ids = ",".join(
+                                    map(str, tkl.values_list('id', flat=True)))
+                                tkeywords_list += "," + \
+                                    tkl_ids if len(
+                                        tkeywords_list) > 0 else tkl_ids
+                    except Exception:
+                        tb = traceback.format_exc()
+                        logger.error(tb)
+            tkeywords_form = TKeywordForm(instance=layer)
+        else:
+            tkeywords_form = ThesaurusAvailableForm(prefix='tkeywords')
+            #  set initial values for thesaurus form
+            for tid in tkeywords_form.fields:
+                values = []
+                values = [keyword.id for keyword in topic_thesaurus if int(tid) == keyword.thesaurus.id]
+                tkeywords_form.fields[tid].initial = values
+
     if request.method == "POST" and layer_form.is_valid() and attribute_form.is_valid(
-    ) and category_form.is_valid():
+    ) and category_form.is_valid() and tkeywords_form.is_valid():
         new_poc = layer_form.cleaned_data['poc']
         new_author = layer_form.cleaned_data['metadata_author']
 
@@ -1156,14 +1173,17 @@ def layer_metadata(
             if not tkeywords_form.is_valid():
                 return HttpResponse(json.dumps({'message': "Invalid thesaurus keywords"}, status_code=400))
 
-            tkeywords_data = tkeywords_form.cleaned_data['tkeywords']
-
             thesaurus_setting = getattr(settings, 'THESAURUS', None)
             if thesaurus_setting:
+                tkeywords_data = tkeywords_form.cleaned_data['tkeywords']
                 tkeywords_data = tkeywords_data.filter(
                     thesaurus__identifier=thesaurus_setting['name']
                 )
                 layer.tkeywords.set(tkeywords_data)
+            elif Thesaurus.objects.all().exists():
+                fields = tkeywords_form.cleaned_data
+                layer.tkeywords.set(tkeywords_form.cleanx(fields))
+
         except Exception:
             tb = traceback.format_exc()
             logger.error(tb)

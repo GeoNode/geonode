@@ -1,3 +1,4 @@
+{% load thesaurus %}
 <gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gco="http://www.isotc211.org/2005/gco" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd">
    <gmd:fileIdentifier>
      <gco:CharacterString>{{layer.uuid}}</gco:CharacterString>
@@ -349,6 +350,40 @@
             </gmd:type>
          </gmd:MD_Keywords>
        </gmd:descriptiveKeywords>
+       {% endif %}
+       {% if layer.tkeywords %}
+       {% for thesaurus_id in layer.tkeywords|get_unique_thesaurus_set %}
+        <gmd:descriptiveKeywords>
+          <gmd:MD_Keywords>
+              {% for keyword in layer.tkeywords.all %}
+              {% if keyword.thesaurus.id == thesaurus_id %}
+              <gmd:keyword>
+                <gco:CharacterString>{{keyword|get_keyword_label}}</gco:CharacterString>
+              </gmd:keyword>
+              {% endif %}
+              {% endfor %}
+              <gmd:thesaurusName>
+                <gmd:CI_Citation>
+                    <gmd:title>
+                      <gco:CharacterString>{{thesaurus_id|get_thesaurus_title}}</gco:CharacterString>
+                    </gmd:title>
+                    <gmd:date>
+                      <gmd:CI_Date>
+                          <gmd:date>
+                            <gco:Date>{{thesaurus_id|get_thesaurus_date}}</gco:Date>
+                          </gmd:date>
+                          <gmd:dateType>
+                            <gmd:CI_DateTypeCode
+                                  codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode"
+                                  codeListValue="publication">pubblicazione</gmd:CI_DateTypeCode>
+                          </gmd:dateType>
+                      </gmd:CI_Date>
+                    </gmd:date>
+                </gmd:CI_Citation>
+              </gmd:thesaurusName>
+          </gmd:MD_Keywords>
+        </gmd:descriptiveKeywords>
+        {% endfor %}
        {% endif %}
        {% for region in layer.regions.all %}
        <gmd:descriptiveKeywords>

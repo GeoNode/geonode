@@ -29,7 +29,7 @@ from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.models import LayerFile, UploadSession
 
 from geonode.base.fields import MultiThesauriField
-from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel
+from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel, Thesaurus
 
 from dal import autocomplete
 
@@ -98,6 +98,10 @@ class AttributeAdmin(admin.ModelAdmin):
     search_fields = ('attribute', 'attribute_label',)
 
 
+class ThesaurusAdmin(admin.ModelAdmin):
+    model = Thesaurus
+
+
 class StyleAdmin(admin.ModelAdmin):
     model = Style
     list_display_links = ('sld_title',)
@@ -120,3 +124,4 @@ admin.site.register(Layer, LayerAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(Style, StyleAdmin)
 admin.site.register(UploadSession, UploadSessionAdmin)
+admin.site.register(Thesaurus, ThesaurusAdmin)
