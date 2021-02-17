@@ -334,6 +334,10 @@ class Layer(ResourceBase):
             args=("%s:%s" % (self.store, self.alternate),)
         )
 
+    @property
+    def embed_url(self):
+        return reverse('layer_embed', kwargs={'layername': self.service_typename})
+
     def attribute_config(self):
         # Get custom attribute sort order and labels if any
         cfg = {}

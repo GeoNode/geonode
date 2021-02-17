@@ -149,6 +149,19 @@ class AvatarUrlField(DynamicComputedField):
         return avatar_url(instance, self.avatar_size)
 
 
+class EmbedUrlField(DynamicComputedField):
+
+    def __init__(self, **kwargs):
+        super(EmbedUrlField, self).__init__(**kwargs)
+
+    def get_attribute(self, instance):
+        _instance = instance.get_real_instance()
+        if hasattr(_instance, 'embed_url') and _instance.embed_url != NotImplemented:
+            return _instance.embed_url
+        else:
+            return ""
+
+
 class ThumbnailUrlField(DynamicComputedField):
 
     def __init__(self, **kwargs):
@@ -237,6 +250,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         self.fields['created'] = serializers.DateTimeField(read_only=True)
         self.fields['last_updated'] = serializers.DateTimeField(read_only=True)
 
+        self.fields['embed_url'] = EmbedUrlField()
         self.fields['thumbnail_url'] = ThumbnailUrlField()
         self.fields['keywords'] = DynamicRelationField(
             HierarchicalKeywordSerializer, embed=False, many=True)
@@ -264,7 +278,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             'spatial_representation_type', 'temporal_extent_start', 'temporal_extent_end',
             'supplemental_information', 'data_quality_statement', 'group',
             'popular_count', 'share_count', 'rating', 'featured', 'is_published', 'is_approved',
-            'detail_url', 'created', 'last_updated'
+            'detail_url', 'embed_url', 'created', 'last_updated'
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
