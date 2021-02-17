@@ -1,14 +1,43 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2020 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
 import os
+import copy
 import shutil
 import zipfile
 import tempfile
 
 from osgeo import ogr
-from datetime import datetime, timedelta
 from unittest.mock import patch
+from datetime import datetime, timedelta
 
-from geonode.br.management.commands.utils.utils import ignore_time
+from django.db.models import signals
+from django.contrib.gis.geos import Polygon
+from django.core.management import call_command
+
 from geonode.tests.base import GeoNodeBaseTestSupport
+
+from geonode.maps.models import Layer
+from geonode.layers.models import Attribute
+from geonode.geoserver.helpers import set_attributes
+from geonode.geoserver.signals import geoserver_post_save
+from geonode.br.management.commands.utils.utils import ignore_time
 from geonode.utils import copy_tree, fixup_shp_columnnames, unzip_file
 
 
@@ -109,3 +138,94 @@ class TestFixupShp(GeoNodeBaseTestSupport):
         shp_parent = os.path.dirname(layer_shp)
         if shp_parent.startswith(tempfile.gettempdir()):
             shutil.rmtree(shp_parent)
+
+
+class TestSetAttributes(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super(TestSetAttributes, self).setUp()
+        # Load users to log in as
+        call_command('loaddata', 'people_data', verbosity=0)
+
+    def test_set_attributes_creates_attributes(self):
+        """ Test utility function set_attributes() which creates Attribute instances attached
+            to a Layer instance.
+        """
+        # Creating a layer requires being logged in
+        self.client.login(username='norman', password='norman')
+
+        # Disconnect the geoserver-specific post_save signal attached to Layer creation.
+        # The geoserver signal handler assumes things about the store where the Layer is placed.
+        # this is a workaround.
+        disconnected_post_save = signals.post_save.disconnect(geoserver_post_save, sender=Layer)
+
+        # Create dummy layer to attach attributes to
+        _l = Layer.objects.create(
+            name='dummy_layer',
+            bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
+            srid='EPSG:4326')
+
+        # Reconnect the signal if it was disconnected
+        if disconnected_post_save:
+            signals.post_save.connect(geoserver_post_save, sender=Layer)
+
+        attribute_map = [
+            ['id', 'Integer'],
+            ['date', 'IntegerList'],
+            ['enddate', 'Real'],
+            ['date_as_date', 'xsd:dateTime'],
+        ]
+
+        # attribute_map gets modified as a side-effect of the call to set_attributes()
+        expected_results = copy.deepcopy(attribute_map)
+
+        # set attributes for resource
+        set_attributes(_l, attribute_map.copy())
+
+        # 2 items in attribute_map should translate into 2 Attribute instances
+        self.assertEqual(_l.attributes.count(), len(expected_results))
+
+        # The name and type should be set as provided by attribute map
+        for a in _l.attributes:
+            self.assertIn([a.attribute, a.attribute_type], expected_results)
+
+        # GeoNode cleans up local duplicated attributes
+        for attribute in attribute_map:
+            field = attribute[0]
+            ftype = attribute[1]
+            if field:
+                la = Attribute.objects.create(layer=_l, attribute=field)
+                la.visible = ftype.find("gml:") != 0
+                la.attribute_type = ftype
+                la.description = None
+                la.attribute_label = None
+                la.display_order = 0
+
+        # set attributes for resource
+        set_attributes(_l, attribute_map.copy())
+
+        # 2 items in attribute_map should translate into 2 Attribute instances
+        self.assertEqual(_l.attributes.count(), len(expected_results))
+
+        # The name and type should be set as provided by attribute map
+        for a in _l.attributes:
+            self.assertIn([a.attribute, a.attribute_type], expected_results)
+
+        # Test that deleted attributes from GeoServer gets deleted on GeoNode too
+        attribute_map = [
+            ['id', 'Integer'],
+            ['date_as_date', 'xsd:dateTime'],
+        ]
+
+        # attribute_map gets modified as a side-effect of the call to set_attributes()
+        expected_results = copy.deepcopy(attribute_map)
+
+        # set attributes for resource
+        set_attributes(_l, attribute_map.copy())
+
+        # 2 items in attribute_map should translate into 2 Attribute instances
+        self.assertEqual(_l.attributes.count(), len(expected_results))
+
+        # The name and type should be set as provided by attribute map
+        for a in _l.attributes:
+            self.assertIn([a.attribute, a.attribute_type], expected_results)
