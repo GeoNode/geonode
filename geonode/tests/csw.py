@@ -34,6 +34,7 @@ from django.conf import settings
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
 from geonode.catalogue import get_catalogue
+from geonode.base.models import ResourceBase
 
 logger = logging.getLogger(__name__)
 
@@ -118,6 +119,18 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             csw.catalogue.results['matches'],
             16,
             'Expected 16 records against ISO typename')
+
+        # Make sure it currently counts both published and unpublished ones too
+        try:
+            ResourceBase.objects.filter(is_published=True).update(is_published=False)
+            # get all ISO records, test for numberOfRecordsMatched
+            csw.catalogue.getrecords(typenames='gmd:MD_Metadata')
+            self.assertEqual(
+                csw.catalogue.results['matches'],
+                16,
+                'Expected 16 records against ISO typename')
+        finally:
+            ResourceBase.objects.filter(is_published=False).update(is_published=True)
 
     def test_csw_outputschema_dc(self):
         """Verify that GeoNode CSW can handle ISO metadata with Dublin Core outputSchema"""
