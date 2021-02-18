@@ -205,40 +205,30 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
 
     def test_csw_outputschema_dc_bbox(self):
         """Verify that GeoNode CSW can handle ISO metadata BBOX model with Dublin Core outputSchema"""
-
-        # GeoNetwork is not to spec for DC BBOX output
-        # once ticket http://trac.osgeo.org/geonetwork/ticket/730 is fixed
-        # we can remove this condition
-
         csw = get_catalogue()
-        if csw.catalogue.type != 'geonetwork':
-            # search for 'san_andres_y_providencia_location', output as Dublin
-            # Core
-            csw.catalogue.getrecords(
-                typenames='gmd:MD_Metadata',
-                keywords=['san_andres_y_providencia_location'],
-                outputschema='http://www.opengis.net/cat/csw/2.0.2',
-                esn='full')
+        # search for 'san_andres_y_providencia_location', output as Dublin
+        # Core
+        csw.catalogue.getrecords(
+            typenames='gmd:MD_Metadata',
+            keywords=['san_andres_y_providencia_location'],
+            outputschema='http://www.opengis.net/cat/csw/2.0.2',
+            esn='full')
 
-            record = list(csw.catalogue.records.values())[0]
+        record = list(csw.catalogue.records.values())[0]
 
-            # test CRS constructs in Dublin Core
-            self.assertEqual(record.bbox.crs.code, 4326)
-            # test BBOX properties in Dublin Core
-            from decimal import Decimal
-            logger.debug([Decimal(record.bbox.minx), Decimal(record.bbox.miny),
-                          Decimal(record.bbox.maxx), Decimal(record.bbox.maxy)])
-            self.assertAlmostEqual(Decimal(record.bbox.minx), Decimal('-81.859356'), places=3)
-            self.assertAlmostEqual(Decimal(record.bbox.miny), Decimal('12.166532'), places=3)
-            self.assertAlmostEqual(Decimal(record.bbox.maxx), Decimal('-81.356409'), places=3)
-            self.assertAlmostEqual(Decimal(record.bbox.maxy), Decimal('13.396306'), places=3)
+        # test CRS constructs in Dublin Core
+        self.assertEqual(record.bbox.crs.code, 4326)
+        # test BBOX properties in Dublin Core
+        from decimal import Decimal
+        logger.debug([Decimal(record.bbox.minx), Decimal(record.bbox.miny),
+                        Decimal(record.bbox.maxx), Decimal(record.bbox.maxy)])
+        self.assertAlmostEqual(Decimal(record.bbox.minx), Decimal('-81.859356'), places=3)
+        self.assertAlmostEqual(Decimal(record.bbox.miny), Decimal('12.166532'), places=3)
+        self.assertAlmostEqual(Decimal(record.bbox.maxx), Decimal('-81.356409'), places=3)
+        self.assertAlmostEqual(Decimal(record.bbox.maxy), Decimal('13.396306'), places=3)
 
     def test_csw_outputschema_fgdc(self):
         """Verify that GeoNode CSW can handle ISO metadata with FGDC outputSchema"""
-
-        # GeoNetwork and deegree do not transform ISO <-> FGDC
-        # once this is implemented we can remove this condition
-
         csw = get_catalogue()
         if csw.catalogue.type in {'pycsw_http', 'pycsw_local'}:
             # get all ISO records in FGDC schema
@@ -270,10 +260,6 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
 
     def test_csw_upload_fgdc(self):
         """Verify that GeoNode CSW can handle FGDC metadata upload"""
-
-        # GeoNetwork and deegree do not transform ISO <-> FGDC
-        # once this is implemented we can remove this condition
-
         csw = get_catalogue()
         if csw.catalogue.type == 'pycsw_http':
             # upload a native FGDC metadata document
@@ -336,10 +322,6 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
 
     def test_csw_bulk_upload(self):
         """Verify that GeoNode CSW can handle bulk upload of ISO and FGDC metadata"""
-
-        # GeoNetwork and deegree do not transform ISO <-> FGDC
-        # once this is implemented we can remove this condition
-
         csw = get_catalogue()
         if csw.catalogue.type == 'pycsw_http':
 
