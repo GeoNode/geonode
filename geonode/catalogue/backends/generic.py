@@ -20,12 +20,6 @@
 import re
 import logging
 
-from urllib.request import (
-    build_opener,
-    Request,
-    HTTPCookieProcessor,
-    HTTPRedirectHandler
-)
 from urllib.parse import urlparse, urlencode
 
 from django.conf import settings
@@ -167,7 +161,7 @@ class Catalogue(CatalogueServiceWeb):
         return response
 
     def create_from_layer(self, layer):
-        response = self.csw_request(layer, "catalogue/transaction_insert.xml")
+        response = self.csw_request(layer, "catalogue/transaction_insert.xml")  # noqa
         # TODO: Parse response, check for error report
         return self.url_for_uuid(layer.uuid, namespaces['gmd'])
 
