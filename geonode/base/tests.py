@@ -947,6 +947,7 @@ class TestThesaurusAvailableForm(TestCase):
     fixtures = [
         "test_thesaurus.json"
     ]
+
     def setUp(self):
         self.sut = ThesaurusAvailableForm
 

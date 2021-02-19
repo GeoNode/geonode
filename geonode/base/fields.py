@@ -22,11 +22,12 @@ from django import forms
 
 from django.conf import settings
 
+
 class MultiThesauriField(forms.ModelMultipleChoiceField):
 
     def label_from_instance(self, obj):
         # Note: Not using .get() because filter()[0] is used in original
         # code. The hard-coded language is currently used throughout
         # geonode.
-        lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, "THESAURUS_DEFAULT_LANG") else "en" 
+        lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, "THESAURUS_DEFAULT_LANG") else "en"
         return obj.keyword.filter(lang=lang).first().label
