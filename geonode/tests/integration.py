@@ -785,7 +785,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             from geonode.catalogue import get_catalogue
             catalogue = get_catalogue()
 
-            # Verify that it no longer exists in GeoNetwork
+            # Verify that it no longer exists in Catalogue
             shp_layer_gn_info = catalogue.get_record(uuid)
             assert shp_layer_gn_info is None
 
