@@ -787,16 +787,17 @@ def load_layer_data(request, template='layers/layer_detail.html'):
         'location': settings.OGC_SERVER['default']['LOCATION'],
         'service': 'wms',
     })
-    access_token = None
+    headers = {}
     if request and 'access_token' in request.session:
         access_token = request.session['access_token']
-    if access_token and 'access_token' not in location:
-        location = '%s?access_token=%s' % (location, access_token)
+        headers['Authorization'] = f'Bearer {access_token}'
 
     try:
         wfs = WebFeatureService(
             location,
-            version='1.1.0')
+            version='1.1.0',
+            headers=headers
+        )
         response = wfs.getfeature(
             typename=name,
             propertyname=filtered_attributes,
