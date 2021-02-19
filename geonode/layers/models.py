@@ -334,6 +334,10 @@ class Layer(ResourceBase):
             args=("%s:%s" % (self.store, self.alternate),)
         )
 
+    @property
+    def embed_url(self):
+        return reverse('layer_embed', kwargs={'layername': self.service_typename})
+
     def attribute_config(self):
         # Get custom attribute sort order and labels if any
         cfg = {}
@@ -616,8 +620,14 @@ def pre_save_layer(instance, sender, **kwargs):
     if instance.owner is None:
         instance.owner = get_valid_user()
 
-    if instance.uuid == '':
-        instance.uuid = str(uuid.uuid1())
+    logger.debug("handling UUID In pre_save_layer")
+    if hasattr(settings, 'LAYER_UUID_HANDLER') and settings.LAYER_UUID_HANDLER != '':
+        logger.debug("using custom uuid handler In pre_save_layer")
+        from geonode.layers.utils import get_uuid_handler
+        instance.uuid = get_uuid_handler()(instance).create_uuid()
+    else:
+        if instance.uuid == '':
+            instance.uuid = str(uuid.uuid1())
 
     logger.debug("In pre_save_layer")
     if instance.alternate is None:

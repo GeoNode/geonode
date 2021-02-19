@@ -904,7 +904,8 @@ def set_attributes(
         'display_order': 4,
     }
     for attribute in attribute_map:
-        attribute.extend((None, None, 0))
+        if len(attribute) == 2:
+            attribute.extend((None, None, 0))
 
     attributes = layer.attribute_set.all()
     # Delete existing attributes if they no longer exist in an updated layer
@@ -934,7 +935,9 @@ def set_attributes(
                 _gs_attrs = Attribute.objects.filter(layer=layer, attribute=field)
                 if _gs_attrs.count() == 1:
                     la = _gs_attrs.get()
-                elif _gs_attrs.count() == 0:
+                else:
+                    if _gs_attrs.count() > 0:
+                        _gs_attrs.delete()
                     la = Attribute.objects.create(layer=layer, attribute=field)
                     la.visible = ftype.find("gml:") != 0
                     la.attribute_type = ftype
@@ -942,8 +945,6 @@ def set_attributes(
                     la.attribute_label = label
                     la.display_order = iter
                     iter += 1
-                else:
-                    la = _gs_attrs.last()
                 if (not attribute_stats or layer.name not in attribute_stats or
                         field not in attribute_stats[layer.name]):
                     result = None

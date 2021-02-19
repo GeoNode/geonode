@@ -4852,5 +4852,269 @@
       "fields": {
         "name": "TOPBAR_MENU"
       }
-    }
+    },
+    {
+      "model": "base.thesaurus",
+      "pk": 1,
+      "fields": {
+          "identifier": "inspire_themes",
+          "title": "GEMET - INSPIRE themes, version 1.0",
+          "date": "2018-05-23T10:25:56",
+          "description": "GEMET - INSPIRE themes, version 1.0",
+          "slug": "",
+          "about": "http://inspire.ec.europa.eu/theme",
+          "card_min": 1,
+          "card_max": 0,
+          "facet": true
+      }
+    },
+    {
+        "model": "base.thesaurus",
+        "pk": 4,
+        "fields": {
+            "identifier": "abc-all1",
+            "title": "Register of data of general interest",
+            "date": "2018-06-25",
+            "description": "Register of data of general interest",
+            "slug": "",
+            "about": "https://registry.geodati.gov.it/abc-all1",
+            "card_min": 0,
+            "card_max": 1,
+            "facet": true
+        }
+    },
+    {
+        "model": "base.thesaurus",
+        "pk": 6,
+        "fields": {
+            "identifier": "limitation_on_public_access",
+            "title": "Limitations on public access",
+            "date": "2020-10-22T13:21:33",
+            "description": "Limitations on public access",
+            "slug": "",
+            "about": "http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess",
+            "card_min": 1,
+            "card_max": 1,
+            "facet": true
+        }
+    },
+    {
+        "model": "base.thesaurus",
+        "pk": 7,
+        "fields": {
+            "identifier": "limitation_on_public_access-2",
+            "title": "Conditions Applying To Access and Use",
+            "date": "2020-10-30T16:58:34",
+            "description": "Conditions Applying To Access and Use",
+            "slug": "",
+            "about": "http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse",
+            "card_min": 0,
+            "card_max": -1,
+            "facet": true
+        }
+    },
+    {
+        "model": "base.thesaurus",
+        "pk": 8,
+        "fields": {
+            "identifier": "foo_name",
+            "title": "Mocked Title",
+            "date": "2018-05-23T10:25:56",
+            "description": "Mocked Title",
+            "slug": "abc",
+            "about": "http://inspire.ec.europa.eu/theme",
+            "card_min": 1,
+            "card_max": -1,
+            "facet": true
+        }
+    },
+    {
+      "model": "base.thesauruskeyword",
+      "pk": 1,
+      "fields": {
+          "about": "http://inspire.ec.europa.eu/theme/ad",
+          "alt_label": "ad",
+          "thesaurus": 1
+      }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 2,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/au",
+            "alt_label": "au",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 3,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/rs",
+            "alt_label": "rs",
+            "thesaurus": 1
+        }
+    },
+    {
+      "model": "base.thesauruskeyword",
+      "pk": 35,
+      "fields": {
+          "about": "http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1a",
+          "alt_label": "public access limited according to Article 13(1)(a) of the INSPIRE Directive [ITA]",
+          "thesaurus": 6
+      }
+    },
+    {
+      "model": "base.thesauruskeyword",
+      "pk": 44,
+      "fields": {
+          "about": "http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/noConditionsApply",
+          "alt_label": "No condition applicable",
+          "thesaurus": 7
+      }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 45,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse/conditionsUnknown",
+            "alt_label": "Unknown Conditions",
+            "thesaurus": 7
+        }
+    },
+    {
+      "model": "base.thesauruskeyword",
+      "pk": 100,
+      "fields": {
+          "about": "http://test.com",
+          "alt_label": "Protected sites",
+          "thesaurus": 8
+      }
+    },
+    {
+      "model": "base.thesauruskeywordlabel",
+      "pk": 1,
+      "fields": {
+          "lang": "en",
+          "label": "Addresses",
+          "keyword": 1
+      }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 2,
+        "fields": {
+            "lang": "de",
+            "label": "Adressen",
+            "keyword": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 3,
+        "fields": {
+            "lang": "en",
+            "label": "Administrative units",
+            "keyword": 2
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 4,
+        "fields": {
+            "lang": "en",
+            "label": "Coordinate reference systems",
+            "keyword": 3
+        }
+    },
+    {
+      "model": "base.thesauruskeywordlabel",
+      "pk": 36,
+      "fields": {
+          "lang": "en",
+          "label": "public access limited according to Article 13(1)(a) of the INSPIRE Directive",
+          "keyword": 35
+      }
+    },
+    {
+      "model": "base.thesauruskeywordlabel",
+      "pk": 54,
+      "fields": {
+          "lang": "en",
+          "label": "no conditions to access and use",
+          "keyword": 44
+      }
+    },
+    {
+      "model": "base.thesauruskeywordlabel",
+      "pk": 56,
+      "fields": {
+          "lang": "en",
+          "label": "conditions to access and use unknown",
+          "keyword": 45
+      }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 102,
+        "fields": {
+            "lang": "en",
+            "label": "Protected sites",
+            "keyword": 100
+        }
+    },
+    {
+      "model": "base.thesauruslabel",
+      "pk": 1,
+      "fields": {
+          "lang": "en",
+          "label": "Addresses",
+          "thesaurus": 1
+      }
+    },
+    {
+      "model": "base.thesauruslabel",
+      "pk": 2,
+      "fields": {
+          "lang": "de",
+          "label": "Adressen",
+          "thesaurus": 1
+      }
+    },
+    {
+      "model": "base.thesauruslabel",
+      "pk": 4,
+      "fields": {
+          "lang": "en",
+          "label": "Register of the reference data sets",
+          "thesaurus": 4
+      }
+    },
+    {
+      "model": "base.thesauruslabel",
+      "pk": 5,
+      "fields": {
+          "lang": "en",
+          "label": "Limitations on public access",
+          "thesaurus": 6
+      }
+    },
+    {
+      "model": "base.thesauruslabel",
+      "pk": 7,
+      "fields": {
+          "lang": "en",
+          "label": "Conditions Applying To Access and Use",
+          "thesaurus": 7
+      }
+    },
+    {
+      "model": "base.thesauruslabel",
+      "pk": 9,
+      "fields": {
+          "lang": "en",
+          "label": "Register of the reference data sets",
+          "thesaurus": 8
+      }
+  }
 ]

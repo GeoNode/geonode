@@ -42,7 +42,7 @@
           Some of your original metadata may have been lost.{% endblocktrans %}</p>
       {% endif %}
 
-      {% if layer_form.errors or attribute_form.errors or category_form.errors or author_form.errors or poc.errors %}
+      {% if layer_form.errors or attribute_form.errors or category_form.errors or author_form.errors or poc.errors or tkeywords_form.errors %}
     	  <p class="bg-danger">{% blocktrans %}Error updating metadata.  Please check the following fields: {% endblocktrans %}</p>
           <ul class="bg-danger">
           {% if author_form.errors %}
@@ -68,6 +68,9 @@
           {% endif %}
           {% if category_form.errors %}
             <li>{{ category_form.errors.as_ul }}</li>
+          {% endif %}
+          {% if tkeywords_form.errors %}
+            <li>{{ tkeywords_form.errors.as_ul }}</li>
           {% endif %}
           </ul>
         {% endif %}

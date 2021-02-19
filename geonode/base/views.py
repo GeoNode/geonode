@@ -319,6 +319,24 @@ class ThesaurusKeywordLabelAutocomplete(autocomplete.Select2QuerySetView):
         ]
 
 
+class ThesaurusAvailable(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        tid = self.request.GET.get("sysid")
+        lang = self.request.GET.get("lang")
+
+        qs = ThesaurusKeywordLabel.objects.filter(keyword__thesaurus__id=tid).filter(lang=lang).order_by('id')
+        return qs
+
+    def get_results(self, context):
+        return [
+            {
+                'id': self.get_result_value(result.keyword),
+                'text': self.get_result_label(result),
+                'selected_text': self.get_selected_result_label(result),
+            } for result in context['object_list']
+        ]
+
+
 class OwnerRightsRequestView(LoginRequiredMixin, FormView):
     template_name = 'owner_rights_request.html'
     form_class = OwnerRightsRequestForm
