@@ -942,7 +942,12 @@ class TestTagThesaurus(TestCase):
         return Thesaurus.objects.all().order_by("-id")[0]
 
 
-class TestThesaurusAvailableForm(GeoNodeBaseTestSupport):
+@override_settings(THESAURUS_DEFAULT_LANG="en")
+class TestThesaurusAvailableForm(TestCase):
+    fixtures = [
+        "test_thesaurus.json"
+    ]
+
     def setUp(self):
         self.sut = ThesaurusAvailableForm
 
@@ -951,9 +956,9 @@ class TestThesaurusAvailableForm(GeoNodeBaseTestSupport):
         self.assertFalse(actual.is_valid())
 
     def test_form_is_invalid_if_fileds_send_unexpected_values(self):
-        actual = self.sut(data={"8": [1, 2], "6": 1234})
+        actual = self.sut(data={"1": [1, 2]})
         self.assertFalse(actual.is_valid())
 
     def test_form_is_valid_if_fileds_send_expected_values(self):
-        actual = self.sut(data={"8": [1, 2], "6": 36})
+        actual = self.sut(data={"1": 1})
         self.assertTrue(actual.is_valid())
