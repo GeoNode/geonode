@@ -2297,7 +2297,10 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
     except Exception as e:
         logger.warning('Error generating thumbnail')
         logger.exception(e)
-        raise e
+        if settings.ASYNC_SIGNALS:
+            raise e
+        else:
+            image = None
 
     return image
 
