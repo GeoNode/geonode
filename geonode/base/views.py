@@ -20,7 +20,6 @@
 
 
 # Geonode functionality
-from django.db.models.query import Prefetch
 from django.shortcuts import render
 from django.conf import settings
 from django.http import HttpResponse
@@ -344,7 +343,6 @@ class ThesaurusAvailable(autocomplete.Select2QuerySetView):
                 'selected_text': self.get_selected_result_label(result),
             } for result in context['object_list']
         ]
-
 
 
 class OwnerRightsRequestView(LoginRequiredMixin, FormView):

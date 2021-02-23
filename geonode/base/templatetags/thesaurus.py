@@ -1,6 +1,5 @@
 from django import template
-from geonode.base.models import Thesaurus, ThesaurusKeyword
-from django.conf import settings
+from geonode.base.models import Thesaurus
 
 register = template.Library()
 
