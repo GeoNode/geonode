@@ -20,6 +20,7 @@
 
 
 # Geonode functionality
+from django.db.models.query import Prefetch
 from django.shortcuts import render
 from django.conf import settings
 from django.http import HttpResponse
@@ -53,7 +54,7 @@ from geonode.base.forms import (
 from geonode.base.models import (
     Region,
     ResourceBase,
-    HierarchicalKeyword,
+    HierarchicalKeyword, ThesaurusKeyword,
     ThesaurusKeywordLabel
 )
 
@@ -324,17 +325,26 @@ class ThesaurusAvailable(autocomplete.Select2QuerySetView):
         tid = self.request.GET.get("sysid")
         lang = self.request.GET.get("lang")
 
-        qs = ThesaurusKeywordLabel.objects.filter(keyword__thesaurus__id=tid).filter(lang=lang).order_by('id')
-        return qs
+        qs_local = []
+        qs_non_local = []
+        for key in ThesaurusKeyword.objects.filter(thesaurus_id=tid):
+            label = ThesaurusKeywordLabel.objects.filter(keyword=key).filter(lang=lang)
+            if label.exists():
+                qs_local.append(label.get())
+            else:
+                qs_non_local.append(key)
+
+        return qs_non_local + qs_local
 
     def get_results(self, context):
         return [
             {
-                'id': self.get_result_value(result.keyword),
+                'id': str(result.keyword.pk) if isinstance(result, ThesaurusKeywordLabel) else str(result.pk),
                 'text': self.get_result_label(result),
                 'selected_text': self.get_selected_result_label(result),
             } for result in context['object_list']
         ]
+
 
 
 class OwnerRightsRequestView(LoginRequiredMixin, FormView):

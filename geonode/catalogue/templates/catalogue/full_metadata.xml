@@ -358,7 +358,7 @@
               {% for keyword in layer.tkeywords.all %}
               {% if keyword.thesaurus.id == thesaurus_id %}
               <gmd:keyword>
-                <gco:CharacterString>{{keyword|get_keyword_label}}</gco:CharacterString>
+                <gco:CharacterString>{{keyword.alt_label}}</gco:CharacterString>
               </gmd:keyword>
               {% endif %}
               {% endfor %}

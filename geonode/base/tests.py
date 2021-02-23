@@ -56,7 +56,6 @@ from geonode.base.models import CuratedThumbnail
 from geonode.base.templatetags.base_tags import get_visibile_resources
 from geonode.base.templatetags.thesaurus import (
     get_unique_thesaurus_set,
-    get_keyword_label,
     get_thesaurus_title,
     get_thesaurus_date,
 )
@@ -893,24 +892,16 @@ class TestHtmlTagRemoval(SimpleTestCase):
 
 class TestTagThesaurus(TestCase):
     #  loading test thesausurs
-    @classmethod
-    def setUpTestData(cls):
-        from django.core import management
-        from os.path import dirname, abspath
-
-        management.call_command(
-            "load_thesaurus",
-            file=f"{dirname(dirname(abspath(__file__)))}/tests/data/thesaurus.rdf",
-            name="foo_name",
-            stdout="out",
-        )
+    fixtures = [
+        "test_thesaurus.json"
+    ]
 
     def setUp(self):
         self.sut = Thesaurus(
             identifier="foo_name",
-            title="Mocked Title",
+            title="GEMET - INSPIRE themes, version 1.0",
             date="2018-05-23T10:25:56",
-            description="Mocked Title",
+            description="GEMET - INSPIRE themes, version 1.0",
             slug="",
             about="http://inspire.ec.europa.eu/theme",
         )
@@ -920,11 +911,6 @@ class TestTagThesaurus(TestCase):
         tid = self.__get_last_thesaurus().id
         actual = get_unique_thesaurus_set(self.tkeywords)
         self.assertSetEqual({tid}, actual)
-
-    @patch.dict("os.environ", {"THESAURUS_DEFAULT_LANG": "en"})
-    def test_get_keyword_label(self):
-        actual = get_keyword_label(self.tkeywords[0])
-        self.assertEqual("Addresses", actual)
 
     def test_get_thesaurus_title(self):
         tid = self.__get_last_thesaurus().id
