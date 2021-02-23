@@ -42,7 +42,7 @@ def remove_harvest_job(sender, **kwargs):
     if layer.remote_service is not None:
         workspace = base.get_geoserver_cascading_workspace(create=False)
         resource_id = layer.alternate.split("-")[0] if re.match(r'^[0-9]+-', layer.alternate) else layer.alternate
-        resource_id = layer.alternate.split(":")[0] if re.match(f'^{workspace.name}:', resource_id) else layer.alternate
+        resource_id = layer.alternate.split(":")[1] if re.match(f'^{workspace.name}:', resource_id) else layer.alternate
         if HarvestJob.objects.filter(resource_id=resource_id):
             for job in HarvestJob.objects.filter(resource_id=resource_id, service=layer.remote_service):
                 logger.debug("job: {}".format(job.id))
