@@ -232,7 +232,7 @@ def harvest_single_resource(request, service_id, resource_id):
         resource_id=resource_id,
     )
     if not created and harvest_job.status == enumerations.IN_PROCESS:
-        raise HttpResponse(
+        return HttpResponse(
             _("Resource is already being processed"), status=409)
     else:
         tasks.harvest_resource.apply_async((harvest_job.id,))
