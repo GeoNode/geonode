@@ -295,7 +295,7 @@ def _layers_locations(
     :param target_srid: valid only when compute_bbox is True - SRID of the returned BBOX
     :return: a tuple with a dict, which maps layers to their locations
              (e.g. {"'http://localhost:8080/geoserver/'": ["geonode:nyc"]}),
-             and a list of 4 elements containing (west, east, south, north) instance's boundaries
+             and a list of 5 elements containing (west, east, south, north) instance's boundaries and CRS
     """
     locations = {}
     bbox = []
@@ -358,6 +358,9 @@ def _layers_locations(
                         min(bbox[2], layer_bbox[2]),
                         max(bbox[3], layer_bbox[3]),
                     ]
+
+    if bbox:
+        bbox += [f"EPSG:{target_srid}"]
 
     return locations, bbox
 
