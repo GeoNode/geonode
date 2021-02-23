@@ -456,6 +456,12 @@ class Thesaurus(models.Model):
     """
     Loadable thesaurus containing keywords in different languages
     """
+    id = models.PositiveIntegerField(
+        null=False,
+        blank=False,
+        unique=True,
+        primary_key=True)
+
     identifier = models.CharField(
         max_length=255,
         null=False,
