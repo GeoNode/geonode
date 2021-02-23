@@ -1493,7 +1493,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     cover = resizeimage.resize_cover(
                         im,
                         [_default_thumb_size['width'], _default_thumb_size['height']])
-                    cover.save(storage.path(_upload_path), format='JPEG')
+                    cover.save(storage.path(_upload_path), format='PNG')
                 except Exception as e:
                     logger.debug(e)
 
