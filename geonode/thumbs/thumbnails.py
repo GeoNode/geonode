@@ -217,7 +217,7 @@ def thumbnail_construct_wms_url(
         "version": wms_version,
         "request": "GetMap",
         "layers": ",".join(layers),
-        "bbox": ",".join([bbox[0], bbox[2], bbox[1], bbox[3]]),
+        "bbox": ",".join([str(bbox[0]), str(bbox[2]), str(bbox[1]), str(bbox[3])]),
         "crs": bbox[-1],
         'width': width,
         'height': height,
