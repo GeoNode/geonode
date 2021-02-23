@@ -51,6 +51,8 @@ from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_http_methods
 
+from geonode.thumbs.thumbnails import create_thumbnail
+
 from dal import autocomplete
 
 import json
@@ -1481,35 +1483,52 @@ def layer_thumbnail(request, layername):
             format, image = json.loads(
                 request.body)['image'].split(';base64,')
             image = base64.b64decode(image)
+
+            is_image = False
+            if image:
+                import imghdr
+                for th in imghdr.tests:
+                    is_image = th(image, None)
+                    if is_image:
+                        break
+
+            if not is_image:
+                return HttpResponse(
+                    content=_('couldn\'t generate thumbnail'),
+                    status=500,
+                    content_type='text/plain'
+                )
+
+            filename = "layer-%s-thumb.png" % layer_obj.uuid
+            layer_obj.save_thumbnail(filename, image)
+
         else:
-            image = None
             try:
-                image = _prepare_thumbnail_body_from_opts(
-                    request.body, request=request)
+                image = _render_thumbnail(request.body)
             except Exception as e:
                 logger.debug(e)
+                image = None
+
+            if image is not None:
+                filename = "layer-%s-thumb.png" % layer_obj.uuid
+                layer_obj.save_thumbnail(filename, image)
+            else:
                 try:
-                    image = _render_thumbnail(request.body)
+                    request_body = json.loads(request.body)
+
+                    bbox = request_body['bbox'] + [request_body['srid']]
+                    zoom = request_body.get('zoom', None)
+                    width = request_body.get('width', settings.THUMBNAIL_GENERATOR_DEFAULT_SIZE['width'])
+                    height = request_body.get('height', settings.THUMBNAIL_GENERATOR_DEFAULT_SIZE['height'])
+
+                    create_thumbnail(layer_obj, bbox=bbox, background_zoom=zoom, width=width, height=height, overwrite=True)
                 except Exception as e:
-                    logger.debug(e)
-                    image = None
-
-        is_image = False
-        if image:
-            import imghdr
-            for th in imghdr.tests:
-                is_image = th(image, None)
-                if is_image:
-                    break
-
-        if not is_image:
-            return HttpResponse(
-                content=_('couldn\'t generate thumbnail'),
-                status=500,
-                content_type='text/plain'
-            )
-        filename = "layer-%s-thumb.png" % layer_obj.uuid
-        layer_obj.save_thumbnail(filename, image)
+                    logger.exception(e)
+                    return HttpResponse(
+                        content=_('couldn\'t generate thumbnail'),
+                        status=500,
+                        content_type='text/plain'
+                    )
 
         return HttpResponse('Thumbnail saved')
     except Exception as e:
