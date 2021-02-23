@@ -20,6 +20,7 @@
 
 import os
 from unittest.mock import patch
+from urllib.parse import urlparse
 
 from guardian.shortcuts import assign_perm, get_perms
 from imagekit.cachefiles.backends import Simple
@@ -32,17 +33,33 @@ from geonode.layers.models import Layer
 from geonode.maps.models import Map
 from geonode.services.models import Service
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.base import thumb_utils
 from geonode.base.models import (
-    ResourceBase, MenuPlaceholder, Menu, MenuItem, Configuration, TopicCategory
+    ResourceBase,
+    MenuPlaceholder,
+    Menu,
+    MenuItem,
+    Configuration,
+    TopicCategory,
+    Thesaurus,
+    ThesaurusKeyword
 )
+from django.conf import settings
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
+from django.core.files.storage import default_storage as storage
 from django.test import Client, TestCase, override_settings, SimpleTestCase
 from django.shortcuts import reverse
 
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.models import CuratedThumbnail
 from geonode.base.templatetags.base_tags import get_visibile_resources
+from geonode.base.templatetags.thesaurus import (
+    get_unique_thesaurus_set,
+    get_keyword_label,
+    get_thesaurus_title,
+    get_thesaurus_date,
+)
 from geonode.base.templatetags.user_messages import show_notification
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
@@ -50,6 +67,8 @@ from geonode.decorators import on_ogc_backend
 from django.core.files import File
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from geonode.base.forms import ThesaurusAvailableForm
+
 
 test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
 
@@ -61,12 +80,49 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         self.rb = ResourceBase.objects.create()
 
     def test_initial_behavior(self):
+        """
+        Tests that an empty resource has a missing image as default thumbnail.
+        """
         self.assertFalse(self.rb.has_thumbnail())
         missing = self.rb.get_thumbnail_url()
         self.assertTrue('missing_thumb' in os.path.splitext(missing)[0])
 
+    def test_empty_image(self):
+        """
+        Tests that an empty image does not change the current resource thumbnail.
+        """
+        current = self.rb.get_thumbnail_url()
+        self.rb.save_thumbnail('test-thumb', None)
+        self.assertEqual(current, urlparse(self.rb.get_thumbnail_url()).path)
+
+    @patch('PIL.Image.open', return_value=test_image)
+    def test_monochromatic_image(self, image):
+        """
+        Tests that an monochromatic image does not change the current resource thumbnail.
+        """
+        current = self.rb.get_thumbnail_url()
+        self.rb.save_thumbnail('test-thumb', image)
+        self.assertEqual(current, urlparse(self.rb.get_thumbnail_url()).path)
+
+    @patch('PIL.Image.open', return_value=test_image)
+    def test_thumb_utils_methods(self, image):
+        """
+        Bunch of tests on thumb_utils helpers.
+        """
+        filename = 'test-thumb'
+        upload_path = thumb_utils.thumb_path(filename)
+        self.assertEqual(upload_path, os.path.join(settings.THUMBNAIL_LOCATION, filename))
+        thumb_utils.remove_thumbs(filename)
+        self.assertFalse(thumb_utils.thumb_exists(filename))
+        f = BytesIO(test_image.tobytes())
+        f.name = filename
+        storage.save(upload_path, File(f))
+        self.assertTrue(thumb_utils.thumb_exists(filename))
+        self.assertEqual(thumb_utils.thumb_size(upload_path), 10000)
+
 
 class TestThumbnailUrl(GeoNodeBaseTestSupport):
+
     def setUp(self):
         super(TestThumbnailUrl, self).setUp()
         rb = ResourceBase.objects.create()
@@ -834,3 +890,75 @@ class TestHtmlTagRemoval(SimpleTestCase):
         r = ResourceBase()
         filtered_value = r._remove_html_tags(tagged_value)
         self.assertEqual(filtered_value, attribute_target_value)
+
+
+class TestTagThesaurus(TestCase):
+    #  loading test thesausurs
+    @classmethod
+    def setUpTestData(cls):
+        from django.core import management
+        from os.path import dirname, abspath
+
+        management.call_command(
+            "load_thesaurus",
+            file=f"{dirname(dirname(abspath(__file__)))}/tests/data/thesaurus.rdf",
+            name="foo_name",
+            stdout="out",
+        )
+
+    def setUp(self):
+        self.sut = Thesaurus(
+            identifier="foo_name",
+            title="Mocked Title",
+            date="2018-05-23T10:25:56",
+            description="Mocked Title",
+            slug="",
+            about="http://inspire.ec.europa.eu/theme",
+        )
+        self.tkeywords = ThesaurusKeyword.objects.all()
+
+    def test_get_unique_thesaurus_list(self):
+        tid = self.__get_last_thesaurus().id
+        actual = get_unique_thesaurus_set(self.tkeywords)
+        self.assertSetEqual({tid}, actual)
+
+    @patch.dict("os.environ", {"THESAURUS_DEFAULT_LANG": "en"})
+    def test_get_keyword_label(self):
+        actual = get_keyword_label(self.tkeywords[0])
+        self.assertEqual("Addresses", actual)
+
+    def test_get_thesaurus_title(self):
+        tid = self.__get_last_thesaurus().id
+        actual = get_thesaurus_title(tid)
+        self.assertEqual(self.sut.title, actual)
+
+    def test_get_thesaurus_date(self):
+        tid = self.__get_last_thesaurus().id
+        actual = get_thesaurus_date(tid)
+        self.assertEqual(self.sut.date, actual)
+
+    @staticmethod
+    def __get_last_thesaurus():
+        return Thesaurus.objects.all().order_by("-id")[0]
+
+
+@override_settings(THESAURUS_DEFAULT_LANG="en")
+class TestThesaurusAvailableForm(TestCase):
+    fixtures = [
+        "test_thesaurus.json"
+    ]
+
+    def setUp(self):
+        self.sut = ThesaurusAvailableForm
+
+    def test_form_is_invalid_if_required_fields_are_missing(self):
+        actual = self.sut(data={})
+        self.assertFalse(actual.is_valid())
+
+    def test_form_is_invalid_if_fileds_send_unexpected_values(self):
+        actual = self.sut(data={"1": [1, 2]})
+        self.assertFalse(actual.is_valid())
+
+    def test_form_is_valid_if_fileds_send_expected_values(self):
+        actual = self.sut(data={"1": 1})
+        self.assertTrue(actual.is_valid())

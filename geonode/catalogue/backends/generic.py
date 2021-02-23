@@ -20,12 +20,6 @@
 import re
 import logging
 
-from urllib.request import (
-    build_opener,
-    Request,
-    HTTPCookieProcessor,
-    HTTPRedirectHandler
-)
 from urllib.parse import urlparse, urlencode
 
 from django.conf import settings
@@ -90,31 +84,10 @@ class Catalogue(CatalogueServiceWeb):
         self.logout()
 
     def login(self):
-        if self.type == 'geonetwork':
-            url = "%sgeonetwork/srv/en/xml.user.login" % self.base
-            headers = {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Accept": "text/plain"
-            }
-            post = urlencode({
-                "username": self.user,
-                "password": self.password
-            })
-            request = Request(url, post, headers)
-            self.opener = build_opener(
-                HTTPCookieProcessor(),
-                HTTPRedirectHandler())
-            response = self.opener.open(request)
-            doc = dlxml.fromstring(response.read())
-            assert doc.tag == 'ok', "GeoNetwork login failed!"
-            self.connected = True
+        NotImplemented
 
     def logout(self):
-        if self.type == 'geonetwork':
-            url = "%sgeonetwork/srv/en/xml.user.logout" % self.base
-            request = Request(url)
-            response = self.opener.open(request)  # noqa
-            self.connected = False
+        NotImplemented
 
     def get_by_uuid(self, uuid):
         try:
@@ -183,42 +156,13 @@ class Catalogue(CatalogueServiceWeb):
         return ' '.join([value.strip() for value in xml.xpath('//text()')])
 
     def csw_request(self, layer, template):
-
         md_doc = self.csw_gen_xml(layer, template)
-
-        if self.type == 'geonetwork':
-            headers = {
-                "Content-Type": "application/xml; charset=UTF-8",
-                "Accept": "text/plain"
-            }
-            request = Request(self.url, md_doc, headers)
-            response = self.urlopen(request)
-        else:
-            response = http_post(self.url, md_doc, timeout=TIMEOUT)
+        response = http_post(self.url, md_doc, timeout=TIMEOUT)
         return response
 
     def create_from_layer(self, layer):
-        response = self.csw_request(layer, "catalogue/transaction_insert.xml")
+        response = self.csw_request(layer, "catalogue/transaction_insert.xml")  # noqa
         # TODO: Parse response, check for error report
-
-        if self.type == 'geonetwork':
-
-            # set layer.uuid based on what GeoNetwork returns
-            # this is needed for inserting FGDC metadata in GN
-
-            exml = dlxml.fromstring(response.read())
-            identifier = exml.find(
-                '{%s}InsertResult/{%s}BriefRecord/identifier' %
-                (namespaces['csw'], namespaces['csw'])).text
-            layer.uuid = identifier
-
-            # Turn on the "view" permission (aka publish) for
-            # the "all" group in GeoNetwork so that the layer
-            # will be searchable via CSW without admin login.
-            # all other privileges are set to False for all
-            # groups.
-            self.set_metadata_privs(layer.uuid, {"all": {"view": True}})
-
         return self.url_for_uuid(layer.uuid, namespaces['gmd'])
 
     def delete_layer(self, layer):
@@ -227,107 +171,8 @@ class Catalogue(CatalogueServiceWeb):
 
     def update_layer(self, layer):
         tmpl = 'catalogue/transaction_update.xml'
-
-        if self.type == 'geonetwork':
-            tmpl = 'catalogue/transaction_update_gn.xml'
-
         response = self.csw_request(layer, tmpl)  # noqa
-
         # TODO: Parse response, check for error report
-
-    def set_metadata_privs(self, uuid, privileges):
-        """
-        set the full set of geonetwork privileges on the item with the
-        specified uuid based on the dictionary given of the form:
-        {
-          'group_name1': {'operation1': True, 'operation2': True, ...},
-          'group_name2': ...
-        }
-
-        all unspecified operations and operations for unspecified groups
-        are set to False.
-        """
-
-        # XXX This is a fairly ugly workaround that makes
-        # requests similar to those made by the GeoNetwork
-        # admin based on the recommendation here:
-        # http://bit.ly/ccVEU7
-
-        if self.type == 'geonetwork':
-            get_dbid_url = '%sgeonetwork/srv/en/portal.search.present?%s' % \
-                           (self.base, urlencode({'uuid': uuid}))
-
-            # get the id of the data.
-            request = Request(get_dbid_url)
-            response = self.urlopen(request)
-            doc = dlxml.fromstring(response.read())
-            data_dbid = doc.find(
-                'metadata/{http://www.fao.org/geonetwork}info/id').text
-
-            # update group and operation info if needed
-            if len(self._group_ids) == 0:
-                self._group_ids = self._geonetwork_get_group_ids()
-            if len(self._operation_ids) == 0:
-                self._operation_ids = self._geonetwork_get_operation_ids()
-
-            #  build params that represent the privilege configuration
-            priv_params = {
-                "id": data_dbid,  # "uuid": layer.uuid, # you can say this instead in newer versions of GN
-            }
-
-            for group, privs in privileges.items():
-                group_id = self._group_ids[group.lower()]
-                for op, state in privs.items():
-                    if state is not True:
-                        continue
-                    op_id = self._operation_ids[op.lower()]
-                    priv_params['_%s_%s' % (group_id, op_id)] = 'on'
-
-            # update all privileges
-            update_privs_url = "%sgeonetwork/srv/en/metadata.admin?%s" % (
-                self.base, urlencode(priv_params))
-            request = Request(update_privs_url)
-            response = self.urlopen(request)
-
-            # TODO: check for error report
-
-    def _geonetwork_get_group_ids(self):
-        """
-        helper to fetch the set of geonetwork
-        groups.
-        """
-        # get the ids of the groups.
-        get_groups_url = "%sgeonetwork/srv/en/xml.info?%s" % (
-            self.base, urlencode({'type': 'groups'}))
-        request = Request(get_groups_url)
-        response = self.urlopen(request)
-        doc = dlxml.fromstring(response.read())
-        groups = {}
-        for gp in doc.findall('groups/group'):
-            groups[gp.find('name').text.lower()] = gp.attrib['id']
-        return groups
-
-    def _geonetwork_get_operation_ids(self):
-        """
-        helper to fetch the set of geonetwork
-        'operations' (privileges)
-        """
-        # get the ids of the operations
-        get_ops_url = "%sgeonetwork/srv/en/xml.info?%s" % (
-            self.base, urlencode({'type': 'operations'}))
-        request = Request(get_ops_url)
-        response = self.urlopen(request)
-        doc = dlxml.fromstring(response.read())
-        ops = {}
-        for op in doc.findall('operations/operation'):
-            ops[op.find('name').text.lower()] = op.attrib['id']
-        return ops
-
-    def urlopen(self, request):
-        if self.opener is None:
-            raise Exception("No URL opener defined in geonetwork module!!")
-        else:
-            return self.opener.open(request)
 
     def search(self, keywords, startposition, maxrecords, bbox):
         """CSW search wrapper"""
@@ -344,16 +189,7 @@ class Catalogue(CatalogueServiceWeb):
                                esn='full')
 
     def normalize_bbox(self, bbox):
-        """
-        fix bbox axis order
-        GeoNetwork accepts x/y
-        pycsw accepts y/x
-        """
-
-        if self.type == 'geonetwork':
-            return bbox
-        else:  # swap coords per standard
-            return [bbox[1], bbox[0], bbox[3], bbox[2]]
+        return [bbox[1], bbox[0], bbox[3], bbox[2]]
 
     def metadatarecord2dict(self, rec):
         """

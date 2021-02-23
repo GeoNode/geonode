@@ -129,6 +129,10 @@ class GeoApp(ResourceBase):
     def get_absolute_url(self):
         return reverse('geoapp_detail', None, [str(self.id)])
 
+    @property
+    def embed_url(self):
+        return reverse('geoapp_embed', kwargs={'geoappid': self.pk})
+
     class Meta(ResourceBase.Meta):
         pass
 

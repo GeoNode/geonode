@@ -40,6 +40,9 @@ from geonode.base.models import CuratedThumbnail
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
 from geonode.services.views import services
+from geonode.maps.views import map_embed
+from geonode.layers.views import layer_embed
+from geonode.geoapps.views import geoapp_edit
 from geonode.base.populate_test_data import create_models
 
 logger = logging.getLogger(__name__)
@@ -89,7 +92,10 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         url(r'^invitations/', include(
             'geonode.invitations.urls', namespace='geonode.invitations')),
         url(r'^i18n/', include(django.conf.urls.i18n), name="i18n"),
-        url(r'^jsi18n/$', JavaScriptCatalog.as_view(), {}, name='javascript-catalog')
+        url(r'^jsi18n/$', JavaScriptCatalog.as_view(), {}, name='javascript-catalog'),
+        url(r'^(?P<mapid>[^/]+)/embed$', map_embed, name='map_embed'),
+        url(r'^(?P<layername>[^/]+)/embed$', layer_embed, name='layer_embed'),
+        url(r'^(?P<geoappid>[^/]+)/embed$', geoapp_edit, {'template': 'apps/app_embed.html'}, name='geoapp_embed'),
     ]
 
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -486,3 +492,26 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(int(response.data['resource']['pk']), int(resource.pk))
         thumbnail_url = response.data['resource']['thumbnail_url']
         self.assertTrue(curated_thumbnail.thumbnail_url in thumbnail_url)
+
+    def test_embed_urls(self):
+        """
+        Ensure the embed urls reflect the concrete instance ones.
+        """
+        # Admin
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+
+        resources = ResourceBase.objects.all()
+        for resource in resources:
+            url = reverse('base-resources-detail', kwargs={'pk': resource.pk})
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(int(response.data['resource']['pk']), int(resource.pk))
+            embed_url = response.data['resource']['embed_url']
+            self.assertIsNotNone(embed_url)
+
+            instance = resource.get_real_instance()
+            if hasattr(instance, 'embed_url'):
+                if instance.embed_url != NotImplemented:
+                    self.assertEqual(instance.embed_url, embed_url)
+                else:
+                    self.assertEqual("", embed_url)

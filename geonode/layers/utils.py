@@ -37,7 +37,6 @@ from urllib.parse import urlparse
 from osgeo import gdal, osr, ogr
 from zipfile import ZipFile, is_zipfile
 from random import choice
-from six import string_types, reraise as raise_
 
 # Django functionality
 from django.conf import settings
@@ -297,7 +296,7 @@ def get_valid_layer_name(layer, overwrite):
     # The first thing we do is get the layer name string
     if isinstance(layer, Layer):
         layer_name = layer.name
-    elif isinstance(layer, string_types):
+    elif isinstance(layer, str):
         layer_name = str(layer)
     else:
         msg = ('You must pass either a filename or a GeoNode layer object')
@@ -901,8 +900,7 @@ def upload(incoming, user=None, overwrite=False,
                                '--ignore-errors was not set '
                                'and an error was found.')
                         print(msg, file=sys.stderr)
-                        msg = 'Failed to process %s' % filename
-                        raise_(Exception, e, sys.exc_info()[2])
+                        raise Exception from e
 
         msg = "[%s] Layer for '%s' (%d/%d)" % (status, filename, i + 1, number)
         info = {'file': filename, 'status': status}
@@ -993,7 +991,7 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
                             params = urlparse(thumbnail_create_url).query.split('&')
                             request_body = {key: value for (key, value) in
                                             [(lambda p: (p.split("=")[0], p.split("=")[1]))(p) for p in params]}
-                            if 'bbox' in request_body and isinstance(request_body['bbox'], string_types):
+                            if 'bbox' in request_body and isinstance(request_body['bbox'], str):
                                 request_body['bbox'] = [str(coord) for coord in request_body['bbox'].split(",")]
                             if 'crs' in request_body and 'srid' not in request_body:
                                 request_body['srid'] = request_body['crs']
@@ -1390,3 +1388,8 @@ def set_layers_permissions(permissions_name, resources_names=None,
                         if verbose:
                             logger.info("Permissions successfully updated!")
                             print("Permissions successfully updated!")
+
+
+def get_uuid_handler():
+    from django.utils.module_loading import import_string
+    return import_string(settings.LAYER_UUID_HANDLER)

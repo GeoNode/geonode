@@ -18,7 +18,6 @@
 #
 #########################################################################
 
-import six
 
 from django.forms.widgets import Textarea
 from django.core.exceptions import ValidationError
@@ -35,7 +34,7 @@ class MultiEmailWidget(Textarea):
         """ Prepare value before effectively render widget """
         if value in MULTI_EMAIL_FIELD_EMPTY_VALUES:
             return ""
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             return value
         elif isinstance(value, list):
             return "\n".join(value)

@@ -19,8 +19,6 @@
 #########################################################################
 import json
 
-from six import string_types
-
 
 class BaseHookSet(object):
 
@@ -104,7 +102,7 @@ class BaseHookSet(object):
 
     # Map Persisting
     def viewer_json(self, conf, context=None):
-        if isinstance(conf, string_types):
+        if isinstance(conf, str):
             conf = json.loads(conf)
         return conf
 
