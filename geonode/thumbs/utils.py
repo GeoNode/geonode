@@ -15,7 +15,7 @@ def make_bbox_to_pixels_transf(src_bbox: Union[List, Tuple], dest_bbox: Union[Li
 
     return lambda x, y: (
         dest_bbox[0] + (x - src_bbox[0]) * (dest_bbox[2] - dest_bbox[0]) / (src_bbox[2] - src_bbox[0]),
-        dest_bbox[1] + (src_bbox[3] - y) * (dest_bbox[3] - dest_bbox[1]) / (src_bbox[3] - src_bbox[1])
+        dest_bbox[1] + (src_bbox[3] - y) * (dest_bbox[3] - dest_bbox[1]) / (src_bbox[3] - src_bbox[1]),
     )
 
 
@@ -25,4 +25,4 @@ def assign_missing_thumbnail(instance: Union[Layer, Map]) -> None:
 
     :param instance: instance of Layer or Map models
     """
-    instance.save_thumbnail('', image=None)
+    instance.save_thumbnail("", image=None)

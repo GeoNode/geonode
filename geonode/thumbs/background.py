@@ -16,14 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseThumbBackground(ABC):
-
-    def __init__(
-            self,
-            thumbnail_width: int,
-            thumbnail_height: int,
-            max_retries: int = 3,
-            retry_delay: int = 1
-    ):
+    def __init__(self, thumbnail_width: int, thumbnail_height: int, max_retries: int = 3, retry_delay: int = 1):
         """
         Base class for thumbnails background retrieval.
 
@@ -48,16 +41,9 @@ class BaseThumbBackground(ABC):
 
 
 class TileThumbBackground(BaseThumbBackground):
-
-    def __init__(
-            self,
-            thumbnail_width: int,
-            thumbnail_height: int,
-            max_retries: int = 3,
-            retry_delay: int = 1
-    ):
+    def __init__(self, thumbnail_width: int, thumbnail_height: int, max_retries: int = 3, retry_delay: int = 1):
         super().__init__(thumbnail_width, thumbnail_height, max_retries, retry_delay)
-        self.mercantile_bbox = None     # BBOX compliant with mercantile lib: [west, south, east, north] bounds list
+        self.mercantile_bbox = None  # BBOX compliant with mercantile lib: [west, south, east, north] bounds list
 
     @property
     @abstractmethod
@@ -81,7 +67,7 @@ class TileThumbBackground(BaseThumbBackground):
         """
         The CRS of the retrieved tiles in format 'EPSG:xxxx', e.g.: EPSG:3857
         """
-        return 'EPSG:3857'
+        return "EPSG:3857"
 
     def fetch(self, bbox: typing.List, zoom: int = None, *args, **kwargs):
         """
@@ -97,7 +83,7 @@ class TileThumbBackground(BaseThumbBackground):
         if bbox[-1] != self.tiles_crs:
             # background service is not available the requested CRS CRS
             logger.debug(
-                f'Thumbnail background generation skipped. Clashing CRSs: requested {bbox[-1]}, supported {self.tiles_crs}'
+                f"Thumbnail background generation skipped. Clashing CRSs: requested {bbox[-1]}, supported {self.tiles_crs}"
             )
             return
 
@@ -118,7 +104,7 @@ class TileThumbBackground(BaseThumbBackground):
         tiles_y = [t.y for t in tiles]
         width = max(tiles_x) - min(tiles_x) + 1
         height = max(tiles_y) - min(tiles_y) + 1
-        background = Image.new('RGB', (width*self.tile_size, height*self.tile_size), (250, 250, 250))
+        background = Image.new("RGB", (width * self.tile_size, height * self.tile_size), (250, 250, 250))
 
         # fetch tiles and merge them into a single image
         offset_x = tiles[0].x  # x coordinate in the background image
@@ -126,10 +112,10 @@ class TileThumbBackground(BaseThumbBackground):
 
         # background coordinates
         tiles_bbox4326 = [
-            getattr(mercantile.bounds(tiles[0]), 'west'),
-            getattr(mercantile.bounds(tiles[0]), 'south'),
-            getattr(mercantile.bounds(tiles[0]), 'east'),
-            getattr(mercantile.bounds(tiles[0]), 'north')
+            getattr(mercantile.bounds(tiles[0]), "west"),
+            getattr(mercantile.bounds(tiles[0]), "south"),
+            getattr(mercantile.bounds(tiles[0]), "east"),
+            getattr(mercantile.bounds(tiles[0]), "north"),
         ]
 
         for tile in tiles:
@@ -150,23 +136,29 @@ class TileThumbBackground(BaseThumbBackground):
                 else:
                     # update background corners coords
                     tiles_bbox4326 = [
-                        min(getattr(mercantile.bounds(tile), 'west'), tiles_bbox4326[0]),
-                        min(getattr(mercantile.bounds(tile), 'south'), tiles_bbox4326[1]),
-                        max(getattr(mercantile.bounds(tile), 'east'), tiles_bbox4326[2]),
-                        max(getattr(mercantile.bounds(tile), 'north'), tiles_bbox4326[3]),
+                        min(getattr(mercantile.bounds(tile), "west"), tiles_bbox4326[0]),
+                        min(getattr(mercantile.bounds(tile), "south"), tiles_bbox4326[1]),
+                        max(getattr(mercantile.bounds(tile), "east"), tiles_bbox4326[2]),
+                        max(getattr(mercantile.bounds(tile), "north"), tiles_bbox4326[3]),
                     ]
                     break
 
             image = Image.open(im)  # "re-open" the file (required after running verify method)
 
             # add the fetched tile to the background image, placing it under proper coordinates
-            background.paste(image,
-                             ((tile.x - offset_x) * self.tile_size, (tile.y - offset_y) * self.tile_size))
+            background.paste(image, ((tile.x - offset_x) * self.tile_size, (tile.y - offset_y) * self.tile_size))
 
         # convert tiles BBOX to EPSG:3857 (required for the proper cropping) and make sure bbox coords are number
-        tiles_bbox3857 = bbox_to_projection([tiles_bbox4326[0], tiles_bbox4326[2], tiles_bbox4326[1], tiles_bbox4326[3], 'EPSG:4326'], target_srid=3857)
+        tiles_bbox3857 = bbox_to_projection(
+            [tiles_bbox4326[0], tiles_bbox4326[2], tiles_bbox4326[1], tiles_bbox4326[3], "EPSG:4326"], target_srid=3857
+        )
         # rearrange coords to match mercantile notation
-        tiles_bbox3857 = [float(tiles_bbox3857[0]), float(tiles_bbox3857[2]), float(tiles_bbox3857[1]), float(tiles_bbox3857[3])]
+        tiles_bbox3857 = [
+            float(tiles_bbox3857[0]),
+            float(tiles_bbox3857[2]),
+            float(tiles_bbox3857[1]),
+            float(tiles_bbox3857[3]),
+        ]
 
         # prepare translating function from received BBOX to pixel values of the background image
         src_quad = (0, 0, background.size[0], background.size[1])
@@ -187,7 +179,8 @@ class TileThumbBackground(BaseThumbBackground):
     def calculate_zoom(self):
         # maximum number of needed tiles for thumbnail of given width and height
         max_tiles = (ceil(self.thumbnail_width / self.tile_size) + 1) * (
-                ceil(self.thumbnail_height / self.tile_size) + 1)
+            ceil(self.thumbnail_height / self.tile_size) + 1
+        )
 
         # zoom for which there are less needed tiles than max_tiles
         zoom = 0
@@ -201,12 +194,10 @@ class TileThumbBackground(BaseThumbBackground):
 
 
 class WikimediaTileBackground(TileThumbBackground):
-
     @property
     def tile_size(self) -> int:
         return 256
 
     @property
     def url_template(self) -> str:
-        # return 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png'
-        return 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+        return "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"

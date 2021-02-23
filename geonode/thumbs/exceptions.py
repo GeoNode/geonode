@@ -5,4 +5,5 @@ class ThumbnailError(GeoNodeException):
     """
     Thumbnail generation error Exception
     """
+
     pass

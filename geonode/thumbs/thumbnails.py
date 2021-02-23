@@ -18,11 +18,7 @@ from geonode.layers.models import Layer
 from geonode.base.auth import get_or_create_token
 from geonode.base.thumb_utils import thumb_exists
 from geonode.geoserver.helpers import OGC_Servers_Handler
-from geonode.utils import (http_client,
-                           check_ogc_backend,
-                           get_layer_name,
-                           get_layer_workspace,
-                           bbox_to_projection)
+from geonode.utils import http_client, check_ogc_backend, get_layer_name, get_layer_workspace, bbox_to_projection
 from geonode.thumbs import utils
 from geonode.thumbs.exceptions import ThumbnailError
 
@@ -35,41 +31,41 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     """
     Create a thumbnail with a GeoServer request.
     """
-    ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
-    wms_version = getattr(ogc_server_settings, 'WMS_VERSION') or '1.1.0'
-    default_thumb_size = getattr(settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
+    ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
+    wms_version = getattr(ogc_server_settings, "WMS_VERSION") or "1.1.0"
+    default_thumb_size = getattr(settings, "THUMBNAIL_GENERATOR_DEFAULT_SIZE", {"width": 240, "height": 200})
 
     create_thumbnail(
         instance,
         wms_version=wms_version,
         overwrite=overwrite,
-        width=default_thumb_size['width'],
-        height=default_thumb_size['height'],
+        width=default_thumb_size["width"],
+        height=default_thumb_size["height"],
     )
 
 
 def create_thumbnail(
-        instance: Union[Layer, Map],
-        wms_version: str = settings.OGC_SERVER['default'].get('WMS_VERSION', '1.1.0'),
-        bbox: Optional[Union[List, Tuple]] = None,
-        forced_crs: Optional[str] = None,
-        styles: Optional[str] = None,
-        overwrite: bool = False,
-        width: int = 240,
-        height: int = 200,
-        background_zoom: Optional[int] = None,
+    instance: Union[Layer, Map],
+    wms_version: str = settings.OGC_SERVER["default"].get("WMS_VERSION", "1.1.0"),
+    bbox: Optional[Union[List, Tuple]] = None,
+    forced_crs: Optional[str] = None,
+    styles: Optional[str] = None,
+    overwrite: bool = False,
+    width: int = 240,
+    height: int = 200,
+    background_zoom: Optional[int] = None,
 ) -> None:
     """
     Function generating and saving a thumbnail of the given instance (Layer or Map), which is composed of
-    outcomes of WMS GetMap queries to the instance's layers providers, and an outcome of querying Slippy Map
-    provider for the thumbnail's background.
+    outcomes of WMS GetMap queries to the instance's layers providers, and an outcome of querying background
+    provider for thumbnail's background (by default Slippy Map provider).
 
     :param instance: instance of Layer or Map models
     :param wms_version: WMS version of the query
     :param bbox: bounding box of the thumbnail in format: (west, east, south, north, CRS), where CRS is in format "EPSG:XXXX"
     :param forced_crs: CRS which should be used to fetch data from WMS services in format "EPSG:XXXX". By default
                        all data is translated and retrieved in EPSG:3857, since this enables background fetching from
-                       Slippy Maps providers. Forcing another CRS will cause skipping background generation in the thumbnail
+                       Slippy Maps providers. Forcing another CRS can cause skipping background generation in the thumbnail
     :param styles: styles, which OGC server should use for rendering an image
     :param overwrite: overwrite existing thumbnail
     :param width: target width of a thumbnail in pixels
@@ -80,7 +76,7 @@ def create_thumbnail(
     instance.refresh_from_db()
 
     thumbnail_name = _generate_thumbnail_name(instance)
-    mime_type = 'image/png'
+    mime_type = "image/png"
 
     if thumbnail_name is None:
         # instance is Map and has no layers defined
@@ -103,13 +99,13 @@ def create_thumbnail(
             logger.error(f"Thumbnail bbox is in a wrong format: {bbox}")
             raise ThumbnailError("Wrong BBOX format")
 
-        bbox = bbox_to_projection(bbox, target_srid=int(target_crs.split(':')[1]))
+        bbox = bbox_to_projection(bbox, target_srid=int(target_crs.split(":")[1]))
     else:
         compute_bbox_from_layers = True
 
     # --- define layer locations ---
     locations, layers_bbox = _layers_locations(
-        instance, compute_bbox=compute_bbox_from_layers, target_srid=int(target_crs.split(':')[1])
+        instance, compute_bbox=compute_bbox_from_layers, target_srid=int(target_crs.split(":")[1])
     )
 
     if compute_bbox_from_layers:
@@ -119,7 +115,7 @@ def create_thumbnail(
             bbox = layers_bbox
 
     # --- add default style ---
-    if not styles and hasattr(instance, 'default_style'):
+    if not styles and hasattr(instance, "default_style"):
         if instance.default_style:
             styles = instance.default_style.name
 
@@ -130,7 +126,8 @@ def create_thumbnail(
         try:
             # construct WMS url for the thumbnail
             thumbnail_url = thumbnail_construct_wms_url(
-                ogc_server, layers,
+                ogc_server,
+                layers,
                 wms_version=wms_version,
                 bbox=bbox,
                 mime_type=mime_type,
@@ -139,9 +136,7 @@ def create_thumbnail(
                 height=height,
             )
 
-            partial_thumbs.append(
-                fetch_wms_thumb(thumbnail_url)
-            )
+            partial_thumbs.append(fetch_wms_thumb(thumbnail_url))
 
         except Exception as e:
             logger.error(f"Exception occurred while fetching partial thumbnail for {instance.name}.")
@@ -152,7 +147,7 @@ def create_thumbnail(
         raise ThumbnailError(f"Thumbnail generation failed - no image retrieved from WMS services.")
 
     # --- merge retrieved WMS images ---
-    merged_partial_thumbs = Image.new('RGBA', (width, height), (0, 0, 0))
+    merged_partial_thumbs = Image.new("RGBA", (width, height), (0, 0, 0))
 
     for image in partial_thumbs:
         content = BytesIO(image)
@@ -171,7 +166,7 @@ def create_thumbnail(
         background = None
 
     # --- overlay image with background ---
-    thumbnail = Image.new('RGB', (width, height), (250, 250, 250))
+    thumbnail = Image.new("RGB", (width, height), (250, 250, 250))
 
     if background is not None:
         thumbnail.paste(background, (0, 0))
@@ -188,14 +183,14 @@ def create_thumbnail(
 
 
 def thumbnail_construct_wms_url(
-        ogc_server_location: str,
-        layers: List,
-        bbox: List,
-        wms_version: str = settings.OGC_SERVER['default'].get('WMS_VERSION', '1.1.0'),
-        mime_type: str = 'image/png',
-        styles: str = None,
-        width: int = 240,
-        height: int = 200,
+    ogc_server_location: str,
+    layers: List,
+    bbox: List,
+    wms_version: str = settings.OGC_SERVER["default"].get("WMS_VERSION", "1.1.0"),
+    mime_type: str = "image/png",
+    styles: str = None,
+    width: int = 240,
+    height: int = 200,
 ) -> str:
     """
     Method constructing a GetMap URL to the OGC server.
@@ -219,8 +214,8 @@ def thumbnail_construct_wms_url(
         "layers": ",".join(layers),
         "bbox": ",".join([str(bbox[0]), str(bbox[2]), str(bbox[1]), str(bbox[3])]),
         "crs": bbox[-1],
-        'width': width,
-        'height': height,
+        "width": width,
+        "height": height,
         "format": mime_type,
         "transparent": True,
     }
@@ -229,14 +224,14 @@ def thumbnail_construct_wms_url(
         params["styles"] = styles
 
     # create GetMap request
-    ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)['default']
+    ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
 
     if ogc_server_location is not None:
         thumbnail_url = ogc_server_location
     else:
         thumbnail_url = ogc_server_settings.LOCATION
 
-    wms_endpoint = ''
+    wms_endpoint = ""
     if thumbnail_url == ogc_server_settings.LOCATION:
         # add access token to requests to Geoserver (logic based on the previous implementation)
         username = ogc_server_settings.credentials.username
@@ -244,10 +239,10 @@ def thumbnail_construct_wms_url(
         if user:
             access_token = get_or_create_token(user)
             if access_token and not access_token.is_expired():
-                params['access_token'] = access_token.token
+                params["access_token"] = access_token.token
 
         # add WMS endpoint to requests to Geoserver
-        wms_endpoint = getattr(ogc_server_settings, 'WMS_ENDPOINT') or 'ows'
+        wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or "ows"
 
     thumbnail_url = thumbnail_url + f"{wms_endpoint}?" + "&".join(f"{key}={val}" for key, val in params.items())
 
@@ -265,7 +260,7 @@ def _generate_thumbnail_name(instance: Union[Layer, Map]) -> Optional[str]:
     """
 
     if isinstance(instance, Layer):
-        file_name = 'layer-%s-thumb.png' % instance.uuid
+        file_name = "layer-%s-thumb.png" % instance.uuid
 
     elif isinstance(instance, Map):
         # if a Map is empty - nothing to do here
@@ -273,17 +268,17 @@ def _generate_thumbnail_name(instance: Union[Layer, Map]) -> Optional[str]:
             logger.debug(f"Thumbnail generation skipped - Map {instance.name} has no defined layers")
             return None
 
-        file_name = 'map-%s-thumb.png' % instance.uuid
+        file_name = "map-%s-thumb.png" % instance.uuid
     else:
-        raise ThumbnailError("Thumbnail generation didn't recognize the provided instance: it's neither a Layer nor a Map.")
+        raise ThumbnailError(
+            "Thumbnail generation didn't recognize the provided instance: it's neither a Layer nor a Map."
+        )
 
     return file_name
 
 
 def _layers_locations(
-        instance: Union[Layer, Map],
-        compute_bbox: bool = False,
-        target_srid: int = 3857
+    instance: Union[Layer, Map], compute_bbox: bool = False, target_srid: int = 3857
 ) -> Tuple[Dict, List]:
     """
     Function returning a dict mapping instance's layers to their locations, enabling to construct a single
@@ -304,7 +299,7 @@ def _layers_locations(
 
         # for local layers
         if instance.remote_service is None:
-            locations[settings.OGC_SERVER['default']['LOCATION']] = [instance.alternate]
+            locations[settings.OGC_SERVER["default"]["LOCATION"]] = [instance.alternate]
         # for remote layers
         else:
             locations[instance.remote_service.service_url] = [instance.alternate]
@@ -321,7 +316,9 @@ def _layers_locations(
                 continue
 
             if not map_layer.local and not map_layer.ows_url:
-                logger.warning(f"Incorrectly defined remote layer encountered (no OWS URL defined). Skipping it in the thumbnail generation.")
+                logger.warning(
+                    f"Incorrectly defined remote layer encountered (no OWS URL defined). Skipping it in the thumbnail generation."
+                )
                 continue
 
             name = get_layer_name(map_layer)
@@ -344,7 +341,7 @@ def _layers_locations(
             if layer.storeType == "remoteStore":
                 locations.setdefault(layer.remote_service.service_url, []).append(layer.alternate)
             else:
-                locations.setdefault(settings.OGC_SERVER['default']['LOCATION'], []).append(layer.alternate)
+                locations.setdefault(settings.OGC_SERVER["default"]["LOCATION"], []).append(layer.alternate)
 
             if compute_bbox:
                 if not bbox:
@@ -380,13 +377,13 @@ def fetch_wms_thumb(thumbnail_url: str, max_retries: int = 3, retry_delay: int =
 
     # prepare authorization for WMS service
     headers = {}
-    if 'access_token' not in thumbnail_url:
+    if "access_token" not in thumbnail_url:
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # for the Geoserver backend, use Basic Auth, if access_token is not provided
-            _user = settings.OGC_SERVER['default'].get('USER')
-            _pwd = settings.OGC_SERVER['default'].get('PASSWORD')
+            _user = settings.OGC_SERVER["default"].get("USER")
+            _pwd = settings.OGC_SERVER["default"].get("PASSWORD")
             encoded_credentials = base64.b64encode(f"{_user}:{_pwd}".encode("UTF-8")).decode("ascii")
-            headers['Authorization'] = f'Basic {encoded_credentials}'
+            headers["Authorization"] = f"Basic {encoded_credentials}"
 
     image = None
 
@@ -394,14 +391,14 @@ def fetch_wms_thumb(thumbnail_url: str, max_retries: int = 3, retry_delay: int =
         try:
             # fetch WMS data
             resp, image = http_client.request(
-                thumbnail_url,
-                headers=headers,
-                timeout=settings.OGC_SERVER['default'].get('TIMEOUT', 60)
+                thumbnail_url, headers=headers, timeout=settings.OGC_SERVER["default"].get("TIMEOUT", 60)
             )
 
             # validate response
-            if resp.status_code < 200 or resp.status_code > 299 or 'ServiceException' in str(image):
-                logger.debug(f"Fetching partial thumbnail from {thumbnail_url} failed with status code: {resp.status_code} and response: {str(image)}")
+            if resp.status_code < 200 or resp.status_code > 299 or "ServiceException" in str(image):
+                logger.debug(
+                    f"Fetching partial thumbnail from {thumbnail_url} failed with status code: {resp.status_code} and response: {str(image)}"
+                )
                 image = None
                 time.sleep(retry_delay)
                 continue
