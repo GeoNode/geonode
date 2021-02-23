@@ -62,15 +62,18 @@ def create_thumbnail(
 
     :param instance: instance of Layer or Map models
     :param wms_version: WMS version of the query
-    :param bbox: bounding box of the thumbnail in format: (west, east, south, north, CRS), where CRS is in format "EPSG:XXXX"
+    :param bbox: bounding box of the thumbnail in format: (west, east, south, north, CRS), where CRS is in format
+                 "EPSG:XXXX"
     :param forced_crs: CRS which should be used to fetch data from WMS services in format "EPSG:XXXX". By default
                        all data is translated and retrieved in EPSG:3857, since this enables background fetching from
-                       Slippy Maps providers. Forcing another CRS can cause skipping background generation in the thumbnail
+                       Slippy Maps providers. Forcing another CRS can cause skipping background generation in
+                       the thumbnail
     :param styles: styles, which OGC server should use for rendering an image
     :param overwrite: overwrite existing thumbnail
     :param width: target width of a thumbnail in pixels
     :param height: target height of a thumbnail in pixels
-    :param background_zoom: zoom of the XYZ Slippy Map used to retrieve background image, if Slippy Map is used as background
+    :param background_zoom: zoom of the XYZ Slippy Map used to retrieve background image,
+                            if Slippy Map is used as background
     """
 
     instance.refresh_from_db()
@@ -94,7 +97,7 @@ def create_thumbnail(
     if bbox:
         source_crs = bbox[-1]
 
-        srid_regex = re.match("EPSG:\d{4}", source_crs)
+        srid_regex = re.match(r"EPSG:\d{4}", source_crs)
         if not srid_regex:
             logger.error(f"Thumbnail bbox is in a wrong format: {bbox}")
             raise ThumbnailError("Wrong BBOX format")
@@ -144,7 +147,7 @@ def create_thumbnail(
 
     if not partial_thumbs:
         utils.assign_missing_thumbnail(instance)
-        raise ThumbnailError(f"Thumbnail generation failed - no image retrieved from WMS services.")
+        raise ThumbnailError("Thumbnail generation failed - no image retrieved from WMS services.")
 
     # --- merge retrieved WMS images ---
     merged_partial_thumbs = Image.new("RGBA", (width, height), (0, 0, 0))
@@ -317,7 +320,8 @@ def _layers_locations(
 
             if not map_layer.local and not map_layer.ows_url:
                 logger.warning(
-                    f"Incorrectly defined remote layer encountered (no OWS URL defined). Skipping it in the thumbnail generation."
+                    "Incorrectly defined remote layer encountered (no OWS URL defined)."
+                    "Skipping it in the thumbnail generation."
                 )
                 continue
 
@@ -397,7 +401,8 @@ def fetch_wms_thumb(thumbnail_url: str, max_retries: int = 3, retry_delay: int =
             # validate response
             if resp.status_code < 200 or resp.status_code > 299 or "ServiceException" in str(image):
                 logger.debug(
-                    f"Fetching partial thumbnail from {thumbnail_url} failed with status code: {resp.status_code} and response: {str(image)}"
+                    f"Fetching partial thumbnail from {thumbnail_url} failed with status code: "
+                    f"{resp.status_code} and response: {str(image)}"
                 )
                 image = None
                 time.sleep(retry_delay)

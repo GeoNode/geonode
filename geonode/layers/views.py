@@ -118,7 +118,6 @@ from celery.utils.log import get_logger
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import (
         _render_thumbnail,
-        _prepare_thumbnail_body_from_opts,
         gs_catalog)
 
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
@@ -1521,7 +1520,15 @@ def layer_thumbnail(request, layername):
                     width = request_body.get('width', settings.THUMBNAIL_GENERATOR_DEFAULT_SIZE['width'])
                     height = request_body.get('height', settings.THUMBNAIL_GENERATOR_DEFAULT_SIZE['height'])
 
-                    create_thumbnail(layer_obj, bbox=bbox, background_zoom=zoom, width=width, height=height, overwrite=True)
+                    create_thumbnail(
+                        layer_obj,
+                        bbox=bbox,
+                        background_zoom=zoom,
+                        width=width,
+                        height=height,
+                        overwrite=True
+                    )
+
                 except Exception as e:
                     logger.exception(e)
                     return HttpResponse(

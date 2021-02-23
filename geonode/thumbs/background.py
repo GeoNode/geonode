@@ -83,7 +83,8 @@ class TileThumbBackground(BaseThumbBackground):
         if bbox[-1] != self.tiles_crs:
             # background service is not available the requested CRS CRS
             logger.debug(
-                f"Thumbnail background generation skipped. Clashing CRSs: requested {bbox[-1]}, supported {self.tiles_crs}"
+                f"Thumbnail background generation skipped. "
+                f"Clashing CRSs: requested {bbox[-1]}, supported {self.tiles_crs}"
             )
             return
 
