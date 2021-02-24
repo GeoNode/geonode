@@ -4,13 +4,14 @@ import logging
 import mercantile
 
 from PIL import Image
-from math import ceil
+from math import ceil, copysign
 from io import BytesIO
 from abc import ABC, abstractmethod
+from pyproj import Transformer
 
 from geonode.utils import http_client
 from geonode.thumbs.utils import make_bbox_to_pixels_transf
-from geonode.utils import bbox_to_projection
+from geonode.thumbs.exceptions import ThumbnailError
 
 logger = logging.getLogger(__name__)
 
@@ -69,6 +70,30 @@ class TileThumbBackground(BaseThumbBackground):
         """
         return "EPSG:3857"
 
+    def bbox3857to4326(self, x_min, x_max, y_min, y_max):
+        """
+        Function converting BBOX from EPSG:3857 to EPSG:4326, keeping the order of the coordinates.
+        To ensure no additional change is performed, conversion is based on top-left and bottom-right
+        points conversion.
+        """
+        transformer = Transformer.from_crs("epsg:3857", "epsg:4326", always_xy=True)
+        left, top = transformer.transform(x_min, y_max)
+        right, bottom = transformer.transform(x_max, y_min)
+
+        return [left, right, bottom, top]
+
+    def bbox4326to3857(self, x_min, x_max, y_min, y_max):
+        """
+        Function converting BBOX from EPSG:4326 to EPSG:3857, keeping the order of the coordinates.
+        To ensure no additional change is performed, conversion is based on top-left and bottom-right
+        points conversion.
+        """
+        transformer = Transformer.from_crs("epsg:4326", "epsg:3857", always_xy=True)
+        left, top = transformer.transform(x_min, y_max)
+        right, bottom = transformer.transform(x_max, y_min)
+
+        return [left, right, bottom, top]
+
     def fetch(self, bbox: typing.List, zoom: int = None, *args, **kwargs):
         """
         The function fetching tiles from a Slippy Map provider, composing them into a single image, and cropping it
@@ -88,8 +113,8 @@ class TileThumbBackground(BaseThumbBackground):
             )
             return
 
-        # convert to EPSG:4326 used by mercantile & make sure bbox coords are numbers
-        bbox4326 = [float(coord) for coord in bbox_to_projection(bbox, target_srid=4326)[0:4]]
+        bbox = [float(coord) for coord in bbox[0:4]]
+        bbox4326 = self.bbox3857to4326(*bbox)
 
         # change bbox from layer (left, right, bottom, top) to mercantile (left, bottom, right, top)
         self.mercantile_bbox = [bbox4326[0], bbox4326[2], bbox4326[1], bbox4326[3]]
@@ -98,78 +123,85 @@ class TileThumbBackground(BaseThumbBackground):
         if zoom is None:
             zoom = self.calculate_zoom()
 
-        tiles = list(mercantile.tiles(*self.mercantile_bbox, zoom))
+        top_left_tile = mercantile.tile(bbox4326[0], bbox4326[3], zoom)
+        bottom_right_tile = mercantile.tile(bbox4326[1], bbox4326[2], zoom)
 
-        # create image of the desired size
-        tiles_x = [t.x for t in tiles]
-        tiles_y = [t.y for t in tiles]
-        width = max(tiles_x) - min(tiles_x) + 1
-        height = max(tiles_y) - min(tiles_y) + 1
-        background = Image.new("RGB", (width * self.tile_size, height * self.tile_size), (250, 250, 250))
+        map_row_number = 2**zoom - 1  # number of tiles in the Map's row for a certain zoom level
 
-        # fetch tiles and merge them into a single image
-        offset_x = tiles[0].x  # x coordinate in the background image
-        offset_y = tiles[0].y  # y coordinate in the background image
+        if top_left_tile.x > bottom_right_tile.x:
+            # BBOX crosses Slippy Map's border
+            tiles_rows = list(range(top_left_tile.x, map_row_number + 1)) + list(range(bottom_right_tile.x + 1))
+        else:
+            # BBOx is contained by the Slippy Map
+            tiles_rows = list(range(top_left_tile.x, bottom_right_tile.x + 1))
 
-        # background coordinates
-        tiles_bbox4326 = [
-            getattr(mercantile.bounds(tiles[0]), "west"),
-            getattr(mercantile.bounds(tiles[0]), "south"),
-            getattr(mercantile.bounds(tiles[0]), "east"),
-            getattr(mercantile.bounds(tiles[0]), "north"),
-        ]
+        tiles_cols = list(range(top_left_tile.y, bottom_right_tile.y + 1))
 
-        for tile in tiles:
-            imgurl = self.url_template.format(x=tile.x, y=tile.y, z=tile.z)
-
-            for retries in range(self.max_retries):
-                try:
-                    resp, content = http_client.request(imgurl)
-                    im = BytesIO(content)
-                    Image.open(im).verify()  # verify that it is, in fact an image
-                except Exception as e:
-                    logger.debug(f"Thumbnail background fetching from {imgurl} failed {retries} time(s) with: {e}")
-                    if retries + 1 == self.max_retries:
-                        logger.exception(e)
-                        raise
-                    time.sleep(self.retry_delay)
-                    continue
-                else:
-                    # update background corners coords
-                    tiles_bbox4326 = [
-                        min(getattr(mercantile.bounds(tile), "west"), tiles_bbox4326[0]),
-                        min(getattr(mercantile.bounds(tile), "south"), tiles_bbox4326[1]),
-                        max(getattr(mercantile.bounds(tile), "east"), tiles_bbox4326[2]),
-                        max(getattr(mercantile.bounds(tile), "north"), tiles_bbox4326[3]),
-                    ]
-                    break
-
-            image = Image.open(im)  # "re-open" the file (required after running verify method)
-
-            # add the fetched tile to the background image, placing it under proper coordinates
-            background.paste(image, ((tile.x - offset_x) * self.tile_size, (tile.y - offset_y) * self.tile_size))
-
-        # convert tiles BBOX to EPSG:3857 (required for the proper cropping) and make sure bbox coords are number
-        tiles_bbox3857 = bbox_to_projection(
-            [tiles_bbox4326[0], tiles_bbox4326[2], tiles_bbox4326[1], tiles_bbox4326[3], "EPSG:4326"], target_srid=3857
+        background = Image.new(
+            "RGB", (len(tiles_rows) * self.tile_size, len(tiles_cols) * self.tile_size), (250, 250, 250)
         )
-        # rearrange coords to match mercantile notation
-        tiles_bbox3857 = [
-            float(tiles_bbox3857[0]),
-            float(tiles_bbox3857[2]),
-            float(tiles_bbox3857[1]),
-            float(tiles_bbox3857[3]),
-        ]
+
+        for offset_x, x in enumerate(tiles_rows):
+            for offset_y, y in enumerate(tiles_cols):
+                imgurl = self.url_template.format(x=x, y=y, z=zoom)
+
+                for retries in range(self.max_retries):
+                    try:
+                        resp, content = http_client.request(imgurl)
+                        im = BytesIO(content)
+                        Image.open(im).verify()  # verify that it is, in fact an image
+                    except Exception as e:
+                        logger.debug(f"Thumbnail background fetching from {imgurl} failed {retries} time(s) with: {e}")
+                        if retries + 1 == self.max_retries:
+                            logger.exception(e)
+                            raise
+                        time.sleep(self.retry_delay)
+                        continue
+                    else:
+                        break
+
+                image = Image.open(im)  # "re-open" the file (required after running verify method)
+
+                # add the fetched tile to the background image, placing it under proper coordinates
+                background.paste(image, (offset_x * self.tile_size, offset_y * self.tile_size))
+
+        # get BBOX of the tiles
+        top_left_bounds = mercantile.bounds(top_left_tile)
+        bottom_right_bounds = mercantile.bounds(bottom_right_tile)
+
+        tiles_bbox3857 = self.bbox4326to3857(
+            getattr(top_left_bounds, 'west'),
+            getattr(bottom_right_bounds, 'east'),
+            getattr(bottom_right_bounds, 'south'),
+            getattr(top_left_bounds, 'north')
+        )
+
+        # rescale tiles' boundaries - if space covered by the input BBOX is greater than the width of the world,
+        # (e.g. two "worlds" are present on the map), translation between tiles' BBOX and image's pixel requires
+        # additional rescaling, for tiles' BBOX coordinates to match input BBOX coordinates
+        epsg3857_max_x = 20026376.39
+        epsg3857_world_width = 2 * epsg3857_max_x
+
+        west_rescaling_factor = abs(bbox[0]) // epsg3857_max_x * copysign(1, bbox[0])
+        east_rescaling_factor = abs(bbox[1]) // epsg3857_max_x * copysign(1, bbox[0])
+        west_coord = tiles_bbox3857[0] + west_rescaling_factor * epsg3857_world_width
+        east_coord = tiles_bbox3857[1] + east_rescaling_factor * epsg3857_world_width
 
         # prepare translating function from received BBOX to pixel values of the background image
         src_quad = (0, 0, background.size[0], background.size[1])
-        to_src_px = make_bbox_to_pixels_transf(tiles_bbox3857, src_quad)
+        to_src_px = make_bbox_to_pixels_transf(
+            [west_coord, tiles_bbox3857[2], east_coord, tiles_bbox3857[3]],
+            src_quad
+        )
 
         # translate received BBOX to pixel values
-        minx, miny = to_src_px(float(bbox[0]), float(bbox[2]))
-        maxx, maxy = to_src_px(float(bbox[1]), float(bbox[3]))
+        minx, miny = to_src_px(bbox[0], bbox[2])
+        maxx, maxy = to_src_px(bbox[1], bbox[3])
 
         crop_box = (round(minx), round(maxy), round(maxx), round(miny))
+
+        if not all([crop_edge > 0 for crop_edge in crop_box]):
+            raise ThumbnailError('Background cropping error. Boundaries outside of the image.')
 
         # crop background image to the desired bbox and resize it
         background = background.crop(box=crop_box)

@@ -1,3 +1,4 @@
+import math
 from typing import List, Tuple, Callable, Union
 
 from geonode.maps.models import Map
@@ -14,8 +15,8 @@ def make_bbox_to_pixels_transf(src_bbox: Union[List, Tuple], dest_bbox: Union[Li
     """
 
     return lambda x, y: (
-        dest_bbox[0] + (x - src_bbox[0]) * (dest_bbox[2] - dest_bbox[0]) / (src_bbox[2] - src_bbox[0]),
-        dest_bbox[1] + (src_bbox[3] - y) * (dest_bbox[3] - dest_bbox[1]) / (src_bbox[3] - src_bbox[1]),
+        (x - src_bbox[0]) * (dest_bbox[2] - dest_bbox[0]) / (src_bbox[2] - src_bbox[0]) + dest_bbox[0],
+        dest_bbox[3] - dest_bbox[1] - (y - src_bbox[1]) * (dest_bbox[3] - dest_bbox[1]) / (src_bbox[3] - src_bbox[1]),
     )
 
 
