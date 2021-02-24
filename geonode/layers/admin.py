@@ -98,10 +98,6 @@ class AttributeAdmin(admin.ModelAdmin):
     search_fields = ('attribute', 'attribute_label',)
 
 
-class ThesaurusAdmin(admin.ModelAdmin):
-    model = Thesaurus
-
-
 class StyleAdmin(admin.ModelAdmin):
     model = Style
     list_display_links = ('sld_title',)
@@ -124,4 +120,4 @@ admin.site.register(Layer, LayerAdmin)
 admin.site.register(Attribute, AttributeAdmin)
 admin.site.register(Style, StyleAdmin)
 admin.site.register(UploadSession, UploadSessionAdmin)
-admin.site.register(Thesaurus, ThesaurusAdmin)
+
