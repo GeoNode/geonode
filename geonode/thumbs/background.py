@@ -200,7 +200,10 @@ class TileThumbBackground(BaseThumbBackground):
 
         crop_box = (round(minx), round(maxy), round(maxx), round(miny))
 
-        if not all([crop_edge > 0 for crop_edge in crop_box]):
+        if not all([0 < crop_x < background.size[0] for crop_x in [crop_box[0], crop_box[2]]]):
+            raise ThumbnailError('Background cropping error. Boundaries outside of the image.')
+
+        if not all([0 < crop_x < background.size[0] for crop_x in [crop_box[1], crop_box[3]]]):
             raise ThumbnailError('Background cropping error. Boundaries outside of the image.')
 
         # crop background image to the desired bbox and resize it

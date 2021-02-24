@@ -7,9 +7,24 @@ from geonode.layers.models import Layer
 
 def make_bbox_to_pixels_transf(src_bbox: Union[List, Tuple], dest_bbox: Union[List, Tuple]) -> Callable:
     """
-    Linear transformation of bbox between CRS and pixel values
+    Linear transformation of bbox between CRS and pixel values:
 
-    :param src_bbox: image's BBOX in a certain CRS, in (west_bound, south_bound, east_bound, north_bound) order
+    (xmin, ymax)          (xmax, ymax)                      (0, 0)          (width, 0)
+         -------------------                                     -------------------
+        |  x                |                                   |    | y'           |
+        |----* (x, y)       |               ->                  |----* (x', y')     |
+        |    | y            |                                   |  x'               |
+         -------------------                                     -------------------
+    (xmin, ymin)          (xmin, ymax)                      (0, height)    (width, height)
+
+    based on linear proportions:
+          x - xmin      x'                        y - ymin    height - y'
+        ----------- = -----                     ----------- = -----------
+        xmax - xmin   width                     ymax - ymin      height
+
+    Note: Y axis have opposite directions
+
+    :param src_bbox: image's BBOX in a certain CRS, in (xmin, ymin, xmax, ymax) order
     :param dest_bbox: image's BBOX in pixels: (0,0,PIL.Image().size[0], PIL.Image().size[1])
     :return: function translating X, Y coordinates in CRS to (x, y) coordinates in pixels
     """
