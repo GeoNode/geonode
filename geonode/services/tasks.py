@@ -24,7 +24,7 @@ from hashlib import md5
 
 from . import models
 from . import enumerations
-from .serviceprocessors import get_service_handler
+from .serviceprocessors import base, get_service_handler
 
 from geonode.celery_app import app
 from geonode.layers.models import Layer
@@ -60,20 +60,26 @@ def harvest_resource(self, harvest_job_id):
         handler.harvest_resource(
             harvest_job.resource_id, harvest_job.service)
         logger.debug("Resource harvested successfully")
+        workspace = base.get_geoserver_cascading_workspace(create=False)
         _cnt = 0
         while _cnt < 5 and not result:
             try:
-                layer = Layer.objects.get(alternate=harvest_job.resource_id)
+                layer = Layer.objects.get(
+                    alternate=f"{workspace.name}:{harvest_job.resource_id}")
                 layer.save(notify=True)
                 result = True
-            except Exception:
+            except Exception as e:
                 _cnt += 1
-                time.sleep(3)
+                logger.error(
+                    f"Notfiy resource {workspace.name}:{harvest_job.resource_id} tentative {_cnt}: {e}")
+                time.sleep(10)
     except Exception as err:
         logger.exception(msg="An error has occurred while harvesting "
                              "resource {!r}".format(harvest_job.resource_id))
         details = str(err)  # TODO: pass more context about the error
     finally:
+        if not details:
+            result = True
         harvest_job.update_status(
             status=enumerations.PROCESSED if result else enumerations.FAILED,
             details=details
