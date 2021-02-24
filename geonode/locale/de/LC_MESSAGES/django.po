@@ -28,7 +28,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-12-23 15:35+0000\n"
-"PO-Revision-Date: 2021-02-24 07:49+0000\n"
+"PO-Revision-Date: 2021-02-24 09:35+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/"
 "de/)\n"
@@ -788,7 +788,7 @@ msgstr "Offline"
 #: geonode/base/templates/base/_resourcebase_snippet.html:60
 #: geonode/layers/templates/layers/layer_detail.html:46
 msgid "Layer not ready yet. Still finalizing layer ingestion..."
-msgstr "Ebene noch nicht fertig. Ebene wird noch eingeladen..."
+msgstr "Ebene wird noch verarbeitet ...."
 
 #: geonode/base/templates/base/_resourcebase_snippet.html:64
 msgid "SECURITY NOT YET SYNCHRONIZED"
