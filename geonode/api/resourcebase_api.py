@@ -606,7 +606,6 @@ class CommonModelApi(ModelResource):
 
             # replace thumbnail_url with curated_thumbs
             if hasattr(obj, 'curatedthumbnail'):
-                formatted_obj['thumbnail_url'] = ''
                 try:
                     if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
                         formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
@@ -781,7 +780,11 @@ class LayerResource(CommonModelApi):
 
             # replace thumbnail_url with curated_thumbs
             if hasattr(obj, 'curatedthumbnail'):
-                formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
+                try:
+                    if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
+                        formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
+                except Exception as e:
+                    logger.exception(e)
 
             formatted_obj['processed'] = obj.instance_is_processed
             # put the object on the response stack
@@ -928,12 +931,12 @@ class MapResource(CommonModelApi):
             formatted_obj['layers'] = formatted_layers
 
             # replace thumbnail_url with curated_thumbs
-            formatted_obj['thumbnail_url'] = ''
-            try:
-                if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
-                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
-            except Exception as e:
-                logger.exception(e)
+            if hasattr(obj, 'curatedthumbnail'):
+                try:
+                    if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
+                        formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
+                except Exception as e:
+                    logger.exception(e)
 
             formatted_objects.append(formatted_obj)
         return formatted_objects
@@ -986,12 +989,12 @@ class GeoAppResource(CommonModelApi):
             formatted_obj['online'] = True
 
             # replace thumbnail_url with curated_thumbs
-            formatted_obj['thumbnail_url'] = ''
-            try:
-                if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
-                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
-            except Exception as e:
-                logger.exception(e)
+            if hasattr(obj, 'curatedthumbnail'):
+                try:
+                    if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
+                        formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
+                except Exception as e:
+                    logger.exception(e)
 
             formatted_objects.append(formatted_obj)
         return formatted_objects
@@ -1046,12 +1049,12 @@ class DocumentResource(CommonModelApi):
             formatted_obj['online'] = True
 
             # replace thumbnail_url with curated_thumbs
-            formatted_obj['thumbnail_url'] = ''
-            try:
-                if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
-                    formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
-            except Exception as e:
-                logger.exception(e)
+            if hasattr(obj, 'curatedthumbnail'):
+                try:
+                    if hasattr(obj.curatedthumbnail.img_thumbnail, 'url'):
+                        formatted_obj['thumbnail_url'] = obj.curatedthumbnail.thumbnail_url
+                except Exception as e:
+                    logger.exception(e)
 
             formatted_objects.append(formatted_obj)
         return formatted_objects
