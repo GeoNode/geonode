@@ -30,6 +30,7 @@ from ..layers.models import Layer
 
 from .models import Service
 from .models import HarvestJob
+from .serviceprocessors import base
 
 logger = logging.getLogger(__name__)
 
@@ -39,12 +40,13 @@ def remove_harvest_job(sender, **kwargs):
     """Remove a Layer's harvest job so that it may be re-imported later."""
     layer = kwargs["instance"]
     if layer.remote_service is not None:
+        workspace = base.get_geoserver_cascading_workspace(create=False)
         resource_id = layer.alternate.split("-")[0] if re.match(r'^[0-9]+-', layer.alternate) else layer.alternate
+        resource_id = layer.alternate.split(":")[1] if re.match(f'^{workspace.name}:', resource_id) else layer.alternate
         if HarvestJob.objects.filter(resource_id=resource_id):
-            job = HarvestJob.objects.filter(resource_id=resource_id).get(
-                service=layer.remote_service)
-            logger.debug("job: {}".format(job.id))
-            job.delete()
+            for job in HarvestJob.objects.filter(resource_id=resource_id, service=layer.remote_service):
+                logger.debug("job: {}".format(job.id))
+                job.delete()
     else:
         pass  # layer was not harvested from a service, we've nothing to do
 
