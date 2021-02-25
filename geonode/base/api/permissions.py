@@ -19,10 +19,85 @@
 #########################################################################
 import logging
 from django.conf import settings
+from django.contrib.auth import get_user_model
+
 from rest_framework import permissions
 from rest_framework.filters import BaseFilterBackend
 
 logger = logging.getLogger(__name__)
+
+
+class IsSelf(permissions.BasePermission):
+
+    """ Grant permission only if the current instance is the request user.
+    Used to allow users to edit their own account, nothing to others (even
+    superusers).
+    """
+
+    def has_permission(self, request, view):
+        """ Always return True here.
+        The fine-grained permissions are handled in has_object_permission().
+        """
+
+        return True
+
+    def has_object_permission(self, request, view, obj):
+        return obj.id == request.user.id
+
+
+class IsSelfOrReadOnly(IsSelf):
+
+    """ Grant permissions if instance *IS* the request user, or read-only.
+    Used to allow users to edit their own account, and others to read.
+    """
+
+    def has_object_permission(self, request, view, obj):
+
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return IsSelf.has_object_permission(self, request, view, obj)
+
+
+class IsSelfOrAdmin(IsSelf):
+
+    """ Grant R/W to self and superusers/staff members. Deny others. """
+
+    def has_object_permission(self, request, view, obj):
+
+        user = request.user
+
+        if user.is_superuser or user.is_staff:
+            return True
+
+        return IsSelf.has_object_permission(self, request, view, obj)
+
+
+class IsSelfOrAdminOrReadOnly(IsSelfOrAdmin):
+
+    """ Grant R/W to self and superusers/staff members, R/O to others. """
+
+    def has_object_permission(self, request, view, obj):
+
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return IsSelfOrAdmin.has_object_permission(self, request, view, obj)
+
+
+class IsSelfOrAdminOrAuthenticatedReadOnly(IsSelfOrAdmin):
+
+    """ Grant R/W to self and superusers/staff members, R/O to auth. """
+
+    def has_object_permission(self, request, view, obj):
+
+        user = request.user
+
+        if request.method in permissions.SAFE_METHODS:
+            if user.is_authenticated():
+                return True
+
+        return IsSelfOrAdmin.has_object_permission(self, request, view, obj)
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -39,13 +114,15 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 
         # Read permissions are allowed to any request,
         # so we'll always allow GET, HEAD or OPTIONS requests.
-        if request.method in permissions.SAFE_METHODS:
+        if request.method in permissions.SAFE_METHODS and not isinstance(obj, get_user_model()):
             return True
 
         # Instance must have an attribute named `owner`.
-        if hasattr(obj, 'owner'):
+        if isinstance(obj, get_user_model()) and obj == request.user:
+            return True
+        elif hasattr(obj, 'owner'):
             return obj.owner == request.user
-        if hasattr(obj, 'user'):
+        elif hasattr(obj, 'user'):
             return obj.user == request.user
         else:
             return False
