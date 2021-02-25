@@ -163,7 +163,7 @@ def save_step_view(req, session):
         )
     form = LayerUploadForm(req.POST, req.FILES)
     if form.is_valid():
-        tempdir = tempfile.mkdtemp(dir=settings.FILE_UPLOAD_TEMP_DIR)
+        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
         logger.debug("valid_extensions: {}".format(form.cleaned_data["valid_extensions"]))
         relevant_files = _select_relevant_files(
             form.cleaned_data["valid_extensions"],
