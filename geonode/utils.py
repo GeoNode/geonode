@@ -20,7 +20,6 @@
 import os
 import gc
 import re
-import six
 import ast
 import copy
 import json
@@ -783,7 +782,7 @@ class GXPLayerBase(object):
         if self.styles:
             try:
                 cfg['styles'] = ast.literal_eval(self.styles) \
-                    if isinstance(self.styles, six.string_types) else self.styles
+                    if isinstance(self.styles, str) else self.styles
             except Exception:
                 pass
         if self.transparent:
@@ -995,7 +994,7 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
     if content_type is None:
         content_type = "application/json"
     if errors:
-        if isinstance(errors, six.string_types):
+        if isinstance(errors, str):
             errors = [errors]
         body = {
             'success': False,
@@ -1028,7 +1027,7 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
     if status is None:
         status = 200
 
-    if not isinstance(body, six.string_types):
+    if not isinstance(body, str):
         try:
             body = json.dumps(body, cls=DjangoJSONEncoder)
         except Exception:
@@ -1432,7 +1431,7 @@ class HttpClient(object):
         check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
             if connection.cursor().db.vendor not in ('sqlite', 'sqlite3', 'spatialite'):
                 try:
-                    if user and isinstance(user, six.string_types):
+                    if user and isinstance(user, str):
                         user = get_user_model().objects.get(username=user)
                     _u = user or get_user_model().objects.get(username=self.username)
                     access_token = get_or_create_token(_u)
@@ -2157,7 +2156,7 @@ def json_serializer_producer(dictionary):
     def to_json(keys):
         if isinstance(keys, datetime.datetime):
             return str(keys)
-        elif isinstance(keys, six.string_types) or isinstance(keys, int):
+        elif isinstance(keys, str) or isinstance(keys, int):
             return keys
         elif isinstance(keys, dict):
             return json_serializer_producer(keys)
