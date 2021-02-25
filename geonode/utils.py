@@ -59,6 +59,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 from django.core.serializers.json import DjangoJSONEncoder
+from django.core.files.storage import default_storage as storage
 from django.db import models, connection, transaction
 from django.utils.translation import ugettext_lazy as _
 
@@ -1424,7 +1425,8 @@ class HttpClient(object):
             self.username = ogc_server_settings.get('USER', 'admin')
             self.password = ogc_server_settings.get('PASSWORD', 'geoserver')
 
-    def request(self, url, method='GET', data=None, headers={}, stream=False, timeout=None, retries=None, user=None):
+    def request(self, url, method='GET', data=None, headers={}, stream=False,
+                timeout=None, retries=None, user=None, verify=False):
         if (user or self.username != 'admin') and \
         check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
             if connection.cursor().db.vendor not in ('sqlite', 'sqlite3', 'spatialite'):
@@ -1469,7 +1471,8 @@ class HttpClient(object):
                     data=data,
                     headers=headers,
                     timeout=_req_tout,
-                    stream=stream)
+                    stream=stream,
+                    verify=verify)
             except (requests.exceptions.RequestException, ValueError) as e:
                 msg = f"Request exception [{e}] - TOUT [{_req_tout}] to URL: {url} - headers: {headers}"
                 logger.exception(Exception(msg))
@@ -1484,23 +1487,25 @@ class HttpClient(object):
 
         return (response, content)
 
-    def get(self, url, data=None, headers={}, stream=False, timeout=None, user=None):
+    def get(self, url, data=None, headers={}, stream=False, timeout=None, user=None, verify=False):
         return self.request(url,
                             method='GET',
                             data=data,
                             headers=headers,
                             timeout=timeout or self.timeout,
                             stream=stream,
-                            user=user)
+                            user=user,
+                            verify=verify)
 
-    def post(self, url, data=None, headers={}, stream=False, timeout=None, user=None):
+    def post(self, url, data=None, headers={}, stream=False, timeout=None, user=None, verify=False):
         return self.request(url,
                             method='POST',
                             data=data,
                             headers=headers,
                             timeout=timeout or self.timeout,
                             stream=stream,
-                            user=user)
+                            user=user,
+                            verify=verify)
 
 
 http_client = HttpClient()
@@ -2006,23 +2011,25 @@ def json_serializer_producer(dictionary):
 
 def is_monochromatic_image(image_url, image_data=None):
 
+    def is_local_static(url):
+        if url.startswith(settings.STATIC_URL) or \
+        (url.startswith(settings.SITEURL) and settings.STATIC_URL in url):
+            return True
+        return False
+
     def is_absolute(url):
         return bool(urlparse(url).netloc)
 
-    try:
-        if image_data:
-            logger.debug("...Checking if image is a blank image")
-            stream_content = image_data
-        elif image_url:
-            logger.debug(f"...Checking if '{image_url}' is a blank image")
-            url = image_url if is_absolute(image_url) else urljoin(settings.SITEURL, image_url)
-            response = requests.get(url, verify=False)
-            stream_content = response.content
-        else:
-            return True
-        with BytesIO(stream_content) as stream:
-            img = Image.open(stream).convert("L")
-            stream.close()
+    def get_thumb_handler(url):
+        _index = url.find(settings.STATIC_URL)
+        _thumb_path = urlparse(url[_index + len(settings.STATIC_URL):]).path
+        if storage.exists(_thumb_path):
+            return storage.open(_thumb_path)
+        return None
+
+    def verify_image(stream):
+        with Image.open(stream) as _stream:
+            img = _stream.convert("L")
             img.verify()  # verify that it is, in fact an image
             extr = img.getextrema()
             a = 0
@@ -2033,6 +2040,23 @@ def is_monochromatic_image(image_url, image_data=None):
                     a = abs(extr[0] - extr[1])
                     break
             return a == 0
+
+    try:
+        if image_data:
+            logger.debug("...Checking if image is a blank image")
+            with BytesIO(image_data) as stream:
+                return verify_image(stream)
+        elif image_url:
+            logger.debug(f"...Checking if '{image_url}' is a blank image")
+            url = image_url if is_absolute(image_url) else urljoin(settings.SITEURL, image_url)
+            if not is_local_static(url):
+                req, stream_content = http_client.get(url, timeout=5)
+                with BytesIO(stream_content) as stream:
+                    return verify_image(stream)
+            else:
+                with get_thumb_handler(url) as stream:
+                    return verify_image(stream)
+        return True
     except Exception as e:
         logger.exception(e)
         return False
