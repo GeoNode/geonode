@@ -18,7 +18,6 @@
 #
 #########################################################################
 import os
-import six
 import shutil
 import geoserver
 from decimal import Decimal
@@ -49,6 +48,7 @@ from geonode.utils import (
     is_monochromatic_image,
     set_resource_default_links)
 from geonode.geoserver.upload import geoserver_upload
+from geonode.security.utils import spec_perms_is_empty
 from geonode.catalogue.models import catalogue_post_save
 
 from .helpers import (
@@ -261,6 +261,8 @@ def geoserver_finalize_upload(
         logger.debug(f"Layer id {instance_id} does not exist yet!")
         raise
 
+    title = None
+    abstract = None
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
@@ -275,7 +277,7 @@ def geoserver_finalize_upload(
                     xml_file = xml_file[0]
                 else:
                     xml_file = None
-            elif not isinstance(xml_file, six.string_types):
+            elif not isinstance(xml_file, str):
                 xml_file = None
 
             if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
@@ -395,12 +397,10 @@ def geoserver_finalize_upload(
             logger.debug('Finalizing (permissions and notifications) Layer {0}'.format(instance))
             instance.handle_moderated_uploads()
 
-            if permissions is not None:
+            if permissions is not None and not spec_perms_is_empty(permissions):
                 logger.debug(f'Setting permissions {permissions} for {instance.name}')
                 instance.set_permissions(permissions, created=created)
-            elif created:
-                logger.debug(f'Setting default permissions for {instance.name}')
-                instance.set_default_permissions()
+
             try:
                 # Update the upload sessions
                 geonode_upload_sessions = UploadSession.objects.filter(resource=instance)

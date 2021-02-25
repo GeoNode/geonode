@@ -32,13 +32,9 @@ import mercantile
 
 from shutil import copyfile
 
-from six import (
-    string_types,
-    reraise as raise_
-)
-from PIL import Image
+
+from PIL import Image, ImageOps
 from io import BytesIO
-from resizeimage import resizeimage
 from itertools import cycle
 from decimal import Decimal
 from collections import namedtuple, defaultdict
@@ -202,13 +198,13 @@ def extract_name_from_sld(gs_catalog, sld, sld_file=None):
             if isfile(sld):
                 with open(sld, "rb") as sld_file:
                     sld = sld_file.read()
-            if isinstance(sld, string_types):
+            if isinstance(sld, str):
                 sld = sld.encode('utf-8')
             dom = etree.XML(sld)
         elif sld_file and isfile(sld_file):
             with open(sld_file, "rb") as sld_file:
                 sld = sld_file.read()
-            if isinstance(sld, string_types):
+            if isinstance(sld, str):
                 sld = sld.encode('utf-8')
             dom = dlxml.parse(sld)
     except Exception:
@@ -365,7 +361,7 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
                 with open(sld, "rb") as sld_file:
                     sld = sld_file.read()
 
-            elif isinstance(sld, string_types):
+            elif isinstance(sld, str):
                 sld = sld.strip('b\'\n')
                 sld = re.sub(r'(\\r)|(\\n)', '', sld).encode("UTF-8")
             etree.XML(sld)
@@ -748,11 +744,9 @@ def gs_slurp(
                 if verbosity > 0:
                     msg = "Stopping process because --ignore-errors was not set and an error was found."
                     print(msg, file=sys.stderr)
-                raise_(
-                    Exception,
-                    Exception("Failed to process {}".format(resource.name), e),
-                    sys.exc_info()[2]
-                )
+
+                raise Exception("Failed to process {}".format(resource.name)) from e
+
         else:
             if created:
                 if not permissions:
@@ -914,7 +908,8 @@ def set_attributes(
         'display_order': 4,
     }
     for attribute in attribute_map:
-        attribute.extend((None, None, 0))
+        if len(attribute) == 2:
+            attribute.extend((None, None, 0))
 
     attributes = layer.attribute_set.all()
     # Delete existing attributes if they no longer exist in an updated layer
@@ -944,7 +939,9 @@ def set_attributes(
                 _gs_attrs = Attribute.objects.filter(layer=layer, attribute=field)
                 if _gs_attrs.count() == 1:
                     la = _gs_attrs.get()
-                elif _gs_attrs.count() == 0:
+                else:
+                    if _gs_attrs.count() > 0:
+                        _gs_attrs.delete()
                     la = Attribute.objects.create(layer=layer, attribute=field)
                     la.visible = ftype.find("gml:") != 0
                     la.attribute_type = ftype
@@ -952,8 +949,6 @@ def set_attributes(
                     la.attribute_label = label
                     la.display_order = iter
                     iter += 1
-                else:
-                    la = _gs_attrs.last()
                 if (not attribute_stats or layer.name not in attribute_stats or
                         field not in attribute_stats[layer.name]):
                     result = None
@@ -1413,7 +1408,7 @@ def create_geoserver_db_featurestore(
              'Test while idle': 'true',
              'host': db['HOST'],
              'port': db['PORT'] if isinstance(
-                 db['PORT'], string_types) else str(db['PORT']) or '5432',
+                 db['PORT'], str) else str(db['PORT']) or '5432',
              'database': db['NAME'],
              'user': db['USER'],
              'passwd': db['PASSWORD'],
@@ -1484,7 +1479,7 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
 def get_store(cat, name, workspace=None):
     # Make sure workspace is a workspace object and not a string.
     # If the workspace does not exist, continue as if no workspace had been defined.
-    if isinstance(workspace, string_types):
+    if isinstance(workspace, str):
         workspace = cat.get_workspace(workspace)
 
     if workspace is None:
@@ -2064,13 +2059,10 @@ def _render_thumbnail(req_body, width=240, height=200):
             im.thumbnail(
                 (_default_thumb_size['width'], _default_thumb_size['height']),
                 resample=Image.ANTIALIAS)
-            cover = resizeimage.resize_cover(
-                im,
-                [_default_thumb_size['width'], _default_thumb_size['height']])
-            imgByteArr = BytesIO()
-            cover.save(imgByteArr, format='JPEG')
-            content = imgByteArr.getvalue()
-            imgByteArr.close()
+            cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']))
+            with BytesIO() as imgByteArr:
+                cover.save(imgByteArr, format='JPEG')
+                content = imgByteArr.getvalue()
     except Exception as e:
         logger.debug(f"Could not sucesfully send data to {url}")
         logger.debug(f" - user: [{_user}]")
@@ -2180,7 +2172,7 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
         width = _default_thumb_size['width']
         height = _default_thumb_size['height']
 
-        if isinstance(request_body, string_types):
+        if isinstance(request_body, str):
             try:
                 request_body = json.loads(request_body)
             except Exception as e:
@@ -2309,7 +2301,10 @@ def _prepare_thumbnail_body_from_opts(request_body, request=None):
     except Exception as e:
         logger.warning('Error generating thumbnail')
         logger.exception(e)
-        raise e
+        if settings.ASYNC_SIGNALS:
+            raise e
+        else:
+            image = None
 
     return image
 
