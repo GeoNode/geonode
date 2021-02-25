@@ -1056,7 +1056,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if self.bbox_polygon:
             bbox = self.bbox_polygon
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', self.srid)
-            srid = int(match.group('srid'))
+            srid = int(match.group('srid')) if match else 4326
             if bbox.srid is not None and bbox.srid != srid:
                 try:
                     bbox = bbox.transform(srid, clone=True)
@@ -1276,8 +1276,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         bbox_polygon = Polygon.from_bbox(bbox)
 
         try:
-            match = re.match(r'^(EPSG:)?(?P<srid>\d{4,5})$', str(srid))
-            bbox_polygon.srid = int(match.group('srid'))
+            match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
+            bbox_polygon.srid = int(match.group('srid')) if match else 4326
         except AttributeError:
             logger.warning("No srid found for layer %s bounding box", self)
 
