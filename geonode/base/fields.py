@@ -20,8 +20,6 @@
 
 from django import forms
 
-from django.conf import settings
-
 
 class MultiThesauriField(forms.ModelMultipleChoiceField):
 
@@ -29,5 +27,4 @@ class MultiThesauriField(forms.ModelMultipleChoiceField):
         # Note: Not using .get() because filter()[0] is used in original
         # code. The hard-coded language is currently used throughout
         # geonode.
-        lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, "THESAURUS_DEFAULT_LANG") else "en"
-        return obj.keyword.filter(lang=lang).first().label
+        return obj.keyword.first().label
