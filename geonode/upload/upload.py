@@ -45,6 +45,7 @@ from django.db.models import Max
 from django.core.files import File
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError, transaction
+from django.utils.translation import ugettext_lazy as _
 
 import geoserver
 from geoserver.resource import Coverage
@@ -55,8 +56,9 @@ from geonode import GeoNodeException
 from geonode.upload import UploadException, LayerNotReady
 
 from ..people.utils import get_default_user
-from ..layers.models import Layer, UploadSession
+from ..layers.metadata import set_metadata
 from ..layers.utils import get_valid_layer_name
+from ..layers.models import Layer, UploadSession
 from ..geoserver.tasks import (
     # geoserver_set_style,
     # geoserver_create_style,
@@ -248,13 +250,13 @@ def _check_geoserver_store(store_name, layer_type, overwrite):
                     logger.debug("Deleting previously existing store")
                     store.delete()
                 else:
-                    raise GeoNodeException("Layer already exists")
+                    raise GeoNodeException(_("Layer already exists"))
             else:
                 for resource in resources:
                     if resource.name == store_name:
                         if not overwrite:
                             raise GeoNodeException(
-                                "Name already in use and overwrite is False")
+                                _("Name already in use and overwrite is False"))
                         existing_type = resource.resource_type
                         if existing_type != layer_type:
                             msg = ("Type of uploaded file {} ({}) does not "
@@ -596,6 +598,39 @@ def final_step(upload_session, user, charset="UTF-8"):
     title = upload_session.layer_title
     abstract = upload_session.layer_abstract
 
+    # look for xml and finalize Layer metadata
+    metadata_uploaded = False
+    xml_file = upload_session.base_file[0].xml_files
+    if xml_file:
+        # get model properties from XML
+        # If it's contained within a zip, need to extract it
+        if upload_session.base_file.archive:
+            archive = upload_session.base_file.archive
+            zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
+            zf.extract(xml_file[0], os.path.dirname(archive))
+            # Assign the absolute path to this file
+            xml_file = os.path.dirname(archive) + '/' + xml_file[0]
+
+        # Sanity checks
+        if isinstance(xml_file, list):
+            if len(xml_file) > 0:
+                xml_file = xml_file[0]
+            else:
+                xml_file = None
+        elif not isinstance(xml_file, str):
+            xml_file = None
+
+        if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
+            metadata_uploaded = True
+            layer_uuid, vals, regions, keywords = set_metadata(
+                open(xml_file).read())
+
+    # Make sure the layer does not exists already
+    if Layer.objects.filter(uuid=layer_uuid).count():
+        logger.error("The UUID identifier from the XML Metadata is already in use in this system.")
+        raise GeoNodeException(
+            _("The UUID identifier from the XML Metadata is already in use in this system."))
+
     # Is it a regular file or an ImageMosaic?
     # if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
     if upload_session.mosaic:
@@ -761,6 +796,7 @@ def final_step(upload_session, user, charset="UTF-8"):
     _log(f'Creating points of contact records for {name}')
     saved_layer.poc = user
     saved_layer.metadata_author = user
+    saved_layer.metadata_uploaded = metadata_uploaded
 
     _log('Creating style for [%s]', name)
     # look for SLD
@@ -786,18 +822,6 @@ def final_step(upload_session, user, charset="UTF-8"):
             sld_file = base_file[0].sld_files[0]
         sld_uploaded = False
         # geoserver_create_style.apply_async((saved_layer.id, name, sld_file, upload_session.tempdir))
-
-    # look for xml and finalize Layer metadata
-    xml_file = upload_session.base_file[0].xml_files
-    if xml_file:
-        # get model properties from XML
-        # If it's contained within a zip, need to extract it
-        if upload_session.base_file.archive:
-            archive = upload_session.base_file.archive
-            zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
-            zf.extract(xml_file[0], os.path.dirname(archive))
-            # Assign the absolute path to this file
-            xml_file = os.path.dirname(archive) + '/' + xml_file[0]
 
     if upload_session.time_info:
         set_time_info(saved_layer, **upload_session.time_info)
