@@ -9,6 +9,8 @@ from io import BytesIO
 from abc import ABC, abstractmethod
 from pyproj import Transformer
 
+from django.conf import settings
+
 from geonode.utils import http_client
 from geonode.thumbs.utils import make_bbox_to_pixels_transf
 from geonode.thumbs.exceptions import ThumbnailError
@@ -42,36 +44,25 @@ class BaseThumbBackground(ABC):
 
 
 class TileThumbBackground(BaseThumbBackground):
-    def __init__(self, thumbnail_width: int, thumbnail_height: int, max_retries: int = 3, retry_delay: int = 1):
+    def __init__(
+            self,
+            thumbnail_width: int,
+            thumbnail_height: int,
+            max_retries: int = 3,
+            retry_delay: int = 1,
+            url_template: str = settings.THUMBNAIL_TILE_BACKGROUND_DEFAULT_URL,
+            tiles_crs: str = "EPSG:3857",
+            tile_size: int = 256,
+    ):
         super().__init__(thumbnail_width, thumbnail_height, max_retries, retry_delay)
-        self.mercantile_bbox = None  # BBOX compliant with mercantile lib: [west, south, east, north] bounds list
+
+        self.url_template = url_template
+        self.tile_size = tile_size
+        self.tiles_crs = tiles_crs
 
         self.epsg3857_max_x = 20026376.39
         self.epsg3857_max_y = 20048966.10
-
-    @property
-    @abstractmethod
-    def url_template(self) -> str:
-        """
-        URL template from where to fetch tiles, with x, y, z parameters, e.g.:
-        'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png'
-        """
-        pass
-
-    @property
-    @abstractmethod
-    def tile_size(self) -> int:
-        """
-        A size of tiles retrieved from url_template URL in pixels
-        """
-        pass
-
-    @property
-    def tiles_crs(self) -> str:
-        """
-        The CRS of the retrieved tiles in format 'EPSG:xxxx', e.g.: EPSG:3857
-        """
-        return "EPSG:3857"
+        self.mercantile_bbox = None  # BBOX compliant with mercantile lib: [west, south, east, north] bounds list
 
     def point3857to4326(self, x, y):
         transformer = Transformer.from_crs("epsg:3857", "epsg:4326", always_xy=True)
@@ -288,13 +279,3 @@ class TileThumbBackground(BaseThumbBackground):
                 zoom = max(zoom, z)
 
         return zoom
-
-
-class WikimediaTileBackground(TileThumbBackground):
-    @property
-    def tile_size(self) -> int:
-        return 256
-
-    @property
-    def url_template(self) -> str:
-        return "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"

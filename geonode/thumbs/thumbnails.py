@@ -162,7 +162,7 @@ def create_thumbnail(
 
     # --- fetch background image ---
     try:
-        BackgroundGenerator = import_string(settings.THUMBNAIL_GENERATOR_BACKGROUND_GENERATOR)
+        BackgroundGenerator = import_string(settings.THUMBNAIL_BACKGROUND_GENERATOR)
         background = BackgroundGenerator(width, height).fetch(bbox, background_zoom)
     except Exception as e:
         logger.error(f"Thumbnail generation. Error occurred while fetching background image: {e}")
