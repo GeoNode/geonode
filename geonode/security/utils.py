@@ -28,7 +28,6 @@ import logging
 import traceback
 import requests
 
-from six import string_types
 from requests.auth import HTTPBasicAuth
 from django.conf import settings
 from django.db.models import Q
@@ -555,7 +554,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
     if 'change_layer_data' not in perms:
         _skip_perm = False
         if user and group_perms:
-            if isinstance(user, string_types):
+            if isinstance(user, str):
                 user = get_user_model().objects.get(username=user)
             user_groups = list(user.groups.all().values_list('name', flat=True))
             for _group, _perm in group_perms.items():
@@ -576,13 +575,13 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
     anonymous_geolimits = None
 
     if user:
-        _user = user if isinstance(user, string_types) else user.username
+        _user = user if isinstance(user, str) else user.username
         users_geolimits = layer.users_geolimits.filter(user=get_user_model().objects.get(username=_user))
         gf_services["*"] = users_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
         _disable_layer_cache = users_geolimits.count() > 0
 
     if group:
-        _group = group if isinstance(group, string_types) else group.name
+        _group = group if isinstance(group, str) else group.name
         if GroupProfile.objects.filter(group__name=_group).count() == 1:
             groups_geolimits = layer.groups_geolimits.filter(group=GroupProfile.objects.get(group__name=_group))
             gf_services["*"] = groups_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]

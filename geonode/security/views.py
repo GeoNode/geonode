@@ -54,6 +54,57 @@ def _perms_info_json(obj):
     return json.dumps(info)
 
 
+def resource_permisions_handle_get(request, resource):
+    permission_spec = _perms_info_json(resource)
+    return HttpResponse(
+        json.dumps({'success': True, 'permissions': permission_spec}),
+        status=200,
+        content_type='text/plain'
+    )
+
+
+def resource_permissions_handle_post(request, resource):
+    success = True
+    message = _("Permissions successfully updated!")
+    try:
+        permission_spec = json.loads(request.body.decode('UTF-8'))
+        resource.set_permissions(permission_spec)
+
+        # Check Users Permissions Consistency
+        view_any = False
+        info = _perms_info(resource)
+
+        for user, perms in info['users'].items():
+            if user.username == "AnonymousUser":
+                view_any = "view_resourcebase" in perms
+                break
+
+        for user, perms in info['users'].items():
+            if "download_resourcebase" in perms and \
+               "view_resourcebase" not in perms and \
+               not view_any:
+
+                success = False
+                message = "User {} has download permissions but cannot " \
+                          "access the resource. Please update permission " \
+                          "consistently!".format(user.username)
+
+        return HttpResponse(
+            json.dumps({'success': success, 'message': message}),
+            status=200,
+            content_type='text/plain'
+        )
+    except Exception as e:
+        logger.exception(e)
+        success = False
+        message = _("Error updating permissions :(")
+        return HttpResponse(
+            json.dumps({'success': success, 'message': message}),
+            status=500,
+            content_type='text/plain'
+        )
+
+
 def resource_permissions(request, resource_id):
     try:
         resource = resolve_object(
@@ -68,53 +119,9 @@ def resource_permissions(request, resource_id):
             content_type='text/plain')
 
     if request.method == 'POST':
-        success = True
-        message = _("Permissions successfully updated!")
-        try:
-            permission_spec = json.loads(request.body.decode('UTF-8'))
-            resource.set_permissions(permission_spec)
-
-            # Check Users Permissions Consistency
-            view_any = False
-            info = _perms_info(resource)
-
-            for user, perms in info['users'].items():
-                if user.username == "AnonymousUser":
-                    view_any = "view_resourcebase" in perms
-                    break
-
-            for user, perms in info['users'].items():
-                if "download_resourcebase" in perms and \
-                   "view_resourcebase" not in perms and \
-                   not view_any:
-
-                    success = False
-                    message = "User {} has download permissions but cannot " \
-                              "access the resource. Please update permission " \
-                              "consistently!".format(user.username)
-
-            return HttpResponse(
-                json.dumps({'success': success, 'message': message}),
-                status=200,
-                content_type='text/plain'
-            )
-        except Exception as e:
-            logger.exception(e)
-            success = False
-            message = _("Error updating permissions :(")
-            return HttpResponse(
-                json.dumps({'success': success, 'message': message}),
-                status=500,
-                content_type='text/plain'
-            )
-
+        return resource_permissions_handle_post(request, resource)
     elif request.method == 'GET':
-        permission_spec = _perms_info_json(resource)
-        return HttpResponse(
-            json.dumps({'success': True, 'permissions': permission_spec}),
-            status=200,
-            content_type='text/plain'
-        )
+        return resource_permisions_handle_get(request, resource)
     else:
         return HttpResponse(
             'No methods other than get and post are allowed',
