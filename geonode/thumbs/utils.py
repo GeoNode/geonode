@@ -18,9 +18,9 @@ def make_bbox_to_pixels_transf(src_bbox: Union[List, Tuple], dest_bbox: Union[Li
     (xmin, ymin)          (xmin, ymax)                      (0, height)    (width, height)
 
     based on linear proportions:
-          x - xmin      x'                        y - ymin    height - y'
-        ----------- = -----                     ----------- = -----------
-        xmax - xmin   width                     ymax - ymin      height
+              x - xmin      x'                        y - ymin    height - y'
+            ----------- = -----                     ----------- = -----------
+            xmax - xmin   width                     ymax - ymin      height
 
     Note: Y axis have opposite directions
 

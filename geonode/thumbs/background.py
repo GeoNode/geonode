@@ -46,6 +46,9 @@ class TileThumbBackground(BaseThumbBackground):
         super().__init__(thumbnail_width, thumbnail_height, max_retries, retry_delay)
         self.mercantile_bbox = None  # BBOX compliant with mercantile lib: [west, south, east, north] bounds list
 
+        self.epsg3857_max_x = 20026376.39
+        self.epsg3857_max_y = 20048966.10
+
     @property
     @abstractmethod
     def url_template(self) -> str:
@@ -70,15 +73,22 @@ class TileThumbBackground(BaseThumbBackground):
         """
         return "EPSG:3857"
 
+    def point3857to4326(self, x, y):
+        transformer = Transformer.from_crs("epsg:3857", "epsg:4326", always_xy=True)
+        return transformer.transform(x, y)
+
+    def point4326to3857(self, x, y):
+        transformer = Transformer.from_crs("epsg:4326", "epsg:3857", always_xy=True)
+        return transformer.transform(x, y)
+
     def bbox3857to4326(self, x_min, x_max, y_min, y_max):
         """
         Function converting BBOX from EPSG:3857 to EPSG:4326, keeping the order of the coordinates.
         To ensure no additional change is performed, conversion is based on top-left and bottom-right
         points conversion.
         """
-        transformer = Transformer.from_crs("epsg:3857", "epsg:4326", always_xy=True)
-        left, top = transformer.transform(x_min, y_max)
-        right, bottom = transformer.transform(x_max, y_min)
+        left, top = self.point3857to4326(x_min, y_max)
+        right, bottom = self.point3857to4326(x_max, y_min)
 
         return [left, right, bottom, top]
 
@@ -88,9 +98,8 @@ class TileThumbBackground(BaseThumbBackground):
         To ensure no additional change is performed, conversion is based on top-left and bottom-right
         points conversion.
         """
-        transformer = Transformer.from_crs("epsg:4326", "epsg:3857", always_xy=True)
-        left, top = transformer.transform(x_min, y_max)
-        right, bottom = transformer.transform(x_max, y_min)
+        left, top = self.point4326to3857(x_min, y_max)
+        right, bottom = self.point4326to3857(x_max, y_min)
 
         return [left, right, bottom, top]
 
@@ -114,6 +123,11 @@ class TileThumbBackground(BaseThumbBackground):
             return
 
         bbox = [float(coord) for coord in bbox[0:4]]
+
+        # check if BBOX fits within the EPSG:3857 map, if not - return an empty background
+        if bbox[2] > self.epsg3857_max_y or bbox[3] < -self.epsg3857_max_y:
+            return Image.new("RGB", (self.thumbnail_width, self.thumbnail_height), (250, 250, 250))
+
         bbox4326 = self.bbox3857to4326(*bbox)
 
         # change bbox from layer (left, right, bottom, top) to mercantile (left, bottom, right, top)
@@ -126,19 +140,71 @@ class TileThumbBackground(BaseThumbBackground):
         top_left_tile = mercantile.tile(bbox4326[0], bbox4326[3], zoom)
         bottom_right_tile = mercantile.tile(bbox4326[1], bbox4326[2], zoom)
 
-        map_row_number = 2**zoom - 1  # number of tiles in the Map's row for a certain zoom level
+        # rescaling factors - indicators of how west and east BBOX boundaries are offset in respect to the world's map;
+        # east and west boundaries may exceed the maximum coordinate of the world in EPSG:3857. In such case additinal
+        # number of tiles need to be fetched to compose the image and the boundary tiles' coordinates need to be
+        # rescaled to ensure the proper image cropping.
+        epsg3857_world_width = 2 * self.epsg3857_max_x
 
-        if top_left_tile.x > bottom_right_tile.x:
+        west_rescaling_factor = 0
+        if abs(bbox[0]) > self.epsg3857_max_x:
+            west_rescaling_factor = ceil((abs(bbox[0])-self.epsg3857_max_x) / epsg3857_world_width) * copysign(1, bbox[0])
+
+        east_rescaling_factor = 0
+        if abs(bbox[1]) > self.epsg3857_max_x:
+            east_rescaling_factor = ceil((abs(bbox[1])-self.epsg3857_max_x) / epsg3857_world_width) * copysign(1, bbox[1])
+
+        map_row_tiles = 2**zoom - 1  # number of tiles in the Map's row for a certain zoom level
+
+        worlds_between = int(east_rescaling_factor - west_rescaling_factor) - 1     # number of full maps in an image
+        if top_left_tile.x > bottom_right_tile.x or bbox[1] - bbox[0] > epsg3857_world_width:
             # BBOX crosses Slippy Map's border
-            tiles_rows = list(range(top_left_tile.x, map_row_number + 1)) + list(range(bottom_right_tile.x + 1))
+            if worlds_between > 0:
+                tiles_rows = (
+                        list(range(top_left_tile.x, map_row_tiles + 1))
+                        + worlds_between * list(range(map_row_tiles + 1))
+                        + list(range(bottom_right_tile.x + 1))
+                )
+            else:
+                tiles_rows = list(range(top_left_tile.x, map_row_tiles + 1)) + list(range(bottom_right_tile.x + 1))
         else:
             # BBOx is contained by the Slippy Map
-            tiles_rows = list(range(top_left_tile.x, bottom_right_tile.x + 1))
+            if worlds_between > 0:
+                tiles_rows = (
+                        list(range(top_left_tile.x, bottom_right_tile.x + 1))
+                        + worlds_between * list(range(map_row_tiles + 1))
+                )
+            else:
+                tiles_rows = list(range(top_left_tile.x, bottom_right_tile.x + 1))
 
         tiles_cols = list(range(top_left_tile.y, bottom_right_tile.y + 1))
 
+        # if latitude boundaries extend world's height - add background's height, and set constant Y offset for tiles
+        additional_height = 0
+        fixed_top_offset = 0
+        fixed_bottom_offset = 0
+
+        north_extension3857 = max(0, bbox[3] - self.epsg3857_max_y)
+        south_extension3857 = abs(min(0, bbox[2] + self.epsg3857_max_y))
+        extension3857 = north_extension3857 + south_extension3857
+
+        if extension3857:
+            # single tile's height in ESPG:3857
+            tile_bounds = mercantile.bounds(tiles_rows[0], tiles_cols[0], zoom)
+            _, south = self.point4326to3857(getattr(tile_bounds, 'west'), getattr(tile_bounds, 'south'))
+            _, north = self.point4326to3857(getattr(tile_bounds, 'west'), getattr(tile_bounds, 'north'))
+            tile_hight3857 = north - south
+
+            additional_height = round(self.tile_size * extension3857 / tile_hight3857)     # based on linear proportion
+
+            if north_extension3857:
+                fixed_top_offset = round(self.tile_size * north_extension3857 / tile_hight3857)
+
+            if south_extension3857:
+                fixed_bottom_offset = round(self.tile_size * south_extension3857 / tile_hight3857)
+
         background = Image.new(
-            "RGB", (len(tiles_rows) * self.tile_size, len(tiles_cols) * self.tile_size), (250, 250, 250)
+            "RGB", (len(tiles_rows) * self.tile_size, len(tiles_cols) * self.tile_size + additional_height), (250, 250, 250)
         )
 
         for offset_x, x in enumerate(tiles_rows):
@@ -163,7 +229,7 @@ class TileThumbBackground(BaseThumbBackground):
                 image = Image.open(im)  # "re-open" the file (required after running verify method)
 
                 # add the fetched tile to the background image, placing it under proper coordinates
-                background.paste(image, (offset_x * self.tile_size, offset_y * self.tile_size))
+                background.paste(image, (offset_x * self.tile_size, offset_y * self.tile_size + fixed_top_offset))
 
         # get BBOX of the tiles
         top_left_bounds = mercantile.bounds(top_left_tile)
@@ -176,19 +242,14 @@ class TileThumbBackground(BaseThumbBackground):
             getattr(top_left_bounds, 'north')
         )
 
-        # rescale tiles' boundaries - if space covered by the input BBOX is greater than the width of the world,
+        # rescale tiles' boundaries - if space covered by the input BBOX extends the width of the world,
         # (e.g. two "worlds" are present on the map), translation between tiles' BBOX and image's pixel requires
         # additional rescaling, for tiles' BBOX coordinates to match input BBOX coordinates
-        epsg3857_max_x = 20026376.39
-        epsg3857_world_width = 2 * epsg3857_max_x
-
-        west_rescaling_factor = abs(bbox[0]) // epsg3857_max_x * copysign(1, bbox[0])
-        east_rescaling_factor = abs(bbox[1]) // epsg3857_max_x * copysign(1, bbox[0])
         west_coord = tiles_bbox3857[0] + west_rescaling_factor * epsg3857_world_width
         east_coord = tiles_bbox3857[1] + east_rescaling_factor * epsg3857_world_width
 
         # prepare translating function from received BBOX to pixel values of the background image
-        src_quad = (0, 0, background.size[0], background.size[1])
+        src_quad = (0, fixed_top_offset, background.size[0], background.size[1] - fixed_bottom_offset)
         to_src_px = make_bbox_to_pixels_transf(
             [west_coord, tiles_bbox3857[2], east_coord, tiles_bbox3857[3]],
             src_quad
@@ -198,12 +259,12 @@ class TileThumbBackground(BaseThumbBackground):
         minx, miny = to_src_px(bbox[0], bbox[2])
         maxx, maxy = to_src_px(bbox[1], bbox[3])
 
-        crop_box = (round(minx), round(maxy), round(maxx), round(miny))
+        crop_box = (round(minx), round(maxy) + fixed_top_offset, round(maxx), round(miny))
 
-        if not all([0 < crop_x < background.size[0] for crop_x in [crop_box[0], crop_box[2]]]):
+        if not all([0 <= crop_x <= background.size[0] for crop_x in [crop_box[0], crop_box[2]]]):
             raise ThumbnailError('Background cropping error. Boundaries outside of the image.')
 
-        if not all([0 < crop_x < background.size[0] for crop_x in [crop_box[1], crop_box[3]]]):
+        if not all([0 <= crop_y <= background.size[1] for crop_y in [crop_box[1], crop_box[3]]]):
             raise ThumbnailError('Background cropping error. Boundaries outside of the image.')
 
         # crop background image to the desired bbox and resize it
