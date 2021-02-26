@@ -653,7 +653,7 @@ def geoserver_post_save_layers(
                 # Creating Layer Thumbnail by sending a signal
                 from geonode.geoserver.signals import geoserver_post_save_complete
                 geoserver_post_save_complete.send(
-                    sender=instance.__class__, instance=instance)
+                    sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
             try:
                 geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
                 geonode_upload_sessions.update(processed=True)
