@@ -509,7 +509,7 @@ class ThesaurusKeywordLabel(models.Model):
 
     class Meta:
         ordering = ("keyword", "lang")
-        verbose_name_plural = 'Labels'
+        verbose_name_plural = 'Thesaurus Keyword Labels'
         unique_together = (("keyword", "lang"),)
 
 
