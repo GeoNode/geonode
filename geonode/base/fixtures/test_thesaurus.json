@@ -1,0 +1,647 @@
+[
+    {
+        "model": "base.thesaurus",
+        "pk": 1,
+        "fields": {
+            "identifier": "inspire-theme",
+            "title": "GEMET - INSPIRE themes, version 1.0",
+            "date": "2018-05-23T10:25:56",
+            "description": "GEMET - INSPIRE themes, version 1.0",
+            "slug": "",
+            "about": "http://inspire.ec.europa.eu/theme",
+            "card_min": 1,
+            "card_max": 1,
+            "facet": true
+        }
+      },
+      {
+        "model": "base.thesauruskeyword",
+        "pk": 1,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/ad",
+            "alt_label": "ad",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 2,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/au",
+            "alt_label": "au",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 3,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/rs",
+            "alt_label": "rs",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 4,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/gg",
+            "alt_label": "gg",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 5,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/cp",
+            "alt_label": "cp",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 6,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/gn",
+            "alt_label": "gn",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 7,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/hy",
+            "alt_label": "hy",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 8,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/ps",
+            "alt_label": "ps",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 9,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/tn",
+            "alt_label": "tn",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 10,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/el",
+            "alt_label": "el",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 11,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/ge",
+            "alt_label": "ge",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 12,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/lc",
+            "alt_label": "lc",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 13,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/oi",
+            "alt_label": "oi",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 14,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/af",
+            "alt_label": "af",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 15,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/am",
+            "alt_label": "am",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 16,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/ac",
+            "alt_label": "ac",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 17,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/br",
+            "alt_label": "br",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 18,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/bu",
+            "alt_label": "bu",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 19,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/er",
+            "alt_label": "er",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 20,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/ef",
+            "alt_label": "ef",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 21,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/hb",
+            "alt_label": "hb",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 22,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/hh",
+            "alt_label": "hh",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 23,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/lu",
+            "alt_label": "lu",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 24,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/mr",
+            "alt_label": "mr",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 25,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/nz",
+            "alt_label": "nz",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 26,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/of",
+            "alt_label": "of",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 27,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/pd",
+            "alt_label": "pd",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 28,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/pf",
+            "alt_label": "pf",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 29,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/sr",
+            "alt_label": "sr",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 30,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/so",
+            "alt_label": "so",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 31,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/sd",
+            "alt_label": "sd",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 32,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/su",
+            "alt_label": "su",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 34,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/us",
+            "alt_label": "us",
+            "thesaurus": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeyword",
+        "pk": 35,
+        "fields": {
+            "about": "http://inspire.ec.europa.eu/theme/mf",
+            "alt_label": "mf",
+            "thesaurus": 1
+        }
+    },
+    {
+      "model": "base.thesauruskeywordlabel",
+      "pk": 1,
+      "fields": {
+          "lang": "en",
+          "label": "Addresses",
+          "keyword": 1
+      }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 2,
+        "fields": {
+            "lang": "de",
+            "label": "Adressen",
+            "keyword": 1
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 3,
+        "fields": {
+            "lang": "en",
+            "label": "Administrative units",
+            "keyword": 2
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 4,
+        "fields": {
+            "lang": "en",
+            "label": "Coordinate reference systems",
+            "keyword": 3
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 5,
+        "fields": {
+            "lang": "en",
+            "label": "Geographical grid systems",
+            "keyword": 4
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 6,
+        "fields": {
+            "lang": "en",
+            "label": "Cadastral parcels",
+            "keyword": 5
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 7,
+        "fields": {
+            "lang": "en",
+            "label": "Geographical names",
+            "keyword": 6
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 8,
+        "fields": {
+            "lang": "en",
+            "label": "Hydrography",
+            "keyword": 7
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 9,
+        "fields": {
+            "lang": "en",
+            "label": "Protected sites",
+            "keyword": 8
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 10,
+        "fields": {
+            "lang": "en",
+            "label": "Transport networks",
+            "keyword": 9
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 11,
+        "fields": {
+            "lang": "en",
+            "label": "Elevation",
+            "keyword": 10
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 12,
+        "fields": {
+            "lang": "en",
+            "label": "Geology",
+            "keyword": 11
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 13,
+        "fields": {
+            "lang": "en",
+            "label": "Land cover",
+            "keyword": 12
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 14,
+        "fields": {
+            "lang": "en",
+            "label": "Orthoimagery",
+            "keyword": 13
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 15,
+        "fields": {
+            "lang": "en",
+            "label": "Agricultural and aquaculture facilities",
+            "keyword": 14
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 16,
+        "fields": {
+            "lang": "en",
+            "label": "Area management/restriction/regulation zones and reporting units",
+            "keyword": 15
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 17,
+        "fields": {
+            "lang": "en",
+            "label": "Atmospheric conditions",
+            "keyword": 16
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 18,
+        "fields": {
+            "lang": "en",
+            "label": "Bio-geographical regions",
+            "keyword": 17
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 19,
+        "fields": {
+            "lang": "en",
+            "label": "Buildings",
+            "keyword": 18
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 20,
+        "fields": {
+            "lang": "en",
+            "label": "Energy resources",
+            "keyword": 19
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 21,
+        "fields": {
+            "lang": "en",
+            "label": "Environmental monitoring facilities",
+            "keyword": 20
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 22,
+        "fields": {
+            "lang": "en",
+            "label": "Habitats and biotopes",
+            "keyword": 21
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 23,
+        "fields": {
+            "lang": "en",
+            "label": "Human health and safety",
+            "keyword": 22
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 24,
+        "fields": {
+            "lang": "en",
+            "label": "Land use",
+            "keyword": 23
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 25,
+        "fields": {
+            "lang": "en",
+            "label": "Mineral resources",
+            "keyword": 24
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 26,
+        "fields": {
+            "lang": "en",
+            "label": "Natural risk zones",
+            "keyword": 25
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 27,
+        "fields": {
+            "lang": "en",
+            "label": "Oceanographic geographical features",
+            "keyword": 26
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 28,
+        "fields": {
+            "lang": "en",
+            "label": "Population distribution - demography",
+            "keyword": 27
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 29,
+        "fields": {
+            "lang": "en",
+            "label": "Production and industrial facilities",
+            "keyword": 28
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 30,
+        "fields": {
+            "lang": "en",
+            "label": "Sea regions",
+            "keyword": 29
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 31,
+        "fields": {
+            "lang": "en",
+            "label": "Soil",
+            "keyword": 30
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 32,
+        "fields": {
+            "lang": "en",
+            "label": "Species distribution",
+            "keyword": 31
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 33,
+        "fields": {
+            "lang": "en",
+            "label": "Statistical units",
+            "keyword": 32
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 34,
+        "fields": {
+            "lang": "en",
+            "label": "Utility and governmental services",
+            "keyword": 34
+        }
+    },
+    {
+        "model": "base.thesauruskeywordlabel",
+        "pk": 35,
+        "fields": {
+            "lang": "en",
+            "label": "Meteorological geographical features",
+            "keyword": 35
+        }
+    },
+    {
+        "model": "base.thesauruslabel",
+        "pk": 1,
+        "fields": {
+            "lang": "it",
+            "label": "Tema GEMET - INSPIRE, versione 1.0",
+            "thesaurus": 1
+        }
+    }  
+]

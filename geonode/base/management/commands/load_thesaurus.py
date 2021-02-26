@@ -18,11 +18,13 @@
 #
 #########################################################################
 
+from typing import List
 from defusedxml import lxml as dlxml
+from django.conf import settings
 
 from django.core.management.base import BaseCommand, CommandError
 
-from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel
+from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel
 
 
 class Command(BaseCommand):
@@ -90,25 +92,46 @@ class Command(BaseCommand):
         if not scheme:
             raise CommandError("ConceptScheme not found in file")
 
-        title = scheme.find('dc:title', ns).text
-        descr = scheme.find('dc:description', ns).text if scheme.find('dc:description', ns) else title
-        date_issued = scheme.find('dcterms:issued', ns).text
+        titles = scheme.findall('dc:title', ns)
+        
+        default_lang = getattr(settings, 'THESAURUS_DEFAULT_LANG', None)
+        available_lang = get_all_lang_available_with_title(titles, LANG_ATTRIB)
+        thesaurus_title = determinate_value(available_lang, default_lang)
 
-        print('Thesaurus "{}" issued on {}'.format(title, date_issued))
+        descr = scheme.find('dc:description', ns).text if scheme.find('dc:description', ns) else thesaurus_title
+        date_issued = scheme.find('dcterms:issued', ns).text
+        about = scheme.attrib.get(ABOUT_ATTRIB)
+
+        print('Thesaurus "{}" issued on {}'.format(thesaurus_title, date_issued))
 
         thesaurus = Thesaurus()
         thesaurus.identifier = name
 
-        thesaurus.title = title
+        thesaurus.title = thesaurus_title
         thesaurus.description = descr
+        thesaurus.about = about
         thesaurus.date = date_issued
 
         if store:
             thesaurus.save()
 
+        for lang in available_lang:
+            if lang[0] is not None:
+                thesaurus_label = ThesaurusLabel()
+                thesaurus_label.lang = lang[0]
+                thesaurus_label.label = lang[1]
+                thesaurus_label.thesaurus = thesaurus
+                thesaurus_label.save()
+
         for concept in root.findall('skos:Concept', ns):
             about = concept.attrib.get(ABOUT_ATTRIB)
-            alt_label = concept.find('skos:altLabel', ns).text
+            alt_label = concept.find('skos:altLabel', ns)
+            if alt_label is not None:
+                alt_label = alt_label.text
+            else:
+                concepts = concept.findall('skos:prefLabel', ns)
+                available_lang = get_all_lang_available_with_title(concepts, LANG_ATTRIB)
+                alt_label = determinate_value(available_lang, default_lang)
 
             print('Concept {} ({})'.format(alt_label, about))
 
@@ -157,3 +180,15 @@ class Command(BaseCommand):
                 tkl.lang = l
                 tkl.label = keyword + "_l_" + l + "_t_" + name
                 tkl.save()
+
+def get_all_lang_available_with_title(items: List, LANG_ATTRIB: str):
+    return [(item.attrib.get(LANG_ATTRIB), item.text) for item in items]
+
+def determinate_value(available_lang: List, default_lang: str):
+    sorted_lang = sorted(available_lang, key= lambda lang: '' if lang[0] is None else lang[0])
+    for item in sorted_lang:
+        if item[0] is None:
+            return item[1]
+        elif item[0] == default_lang:
+            return item[1]
+    return available_lang[0][1]

@@ -275,7 +275,7 @@ def download(request, resourceid, sender=Layer):
 
     if isinstance(instance, Layer):
         # Create Target Folder
-        dirpath = tempfile.mkdtemp()
+        dirpath = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
         dir_time_suffix = get_dir_time_suffix()
         target_folder = os.path.join(dirpath, dir_time_suffix)
         if not os.path.exists(target_folder):

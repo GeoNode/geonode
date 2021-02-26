@@ -36,8 +36,8 @@
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
 
     <link rel="shortcut icon" href="{% static 'geonode/img/favicon.ico' %}" />
-    <link rel="defer" as="style" href="{% static "lib/css/ol.css" %}" />
-    <link rel="defer" as="script" href="{% static "lib/js/ol.js" %}" />
+    <link href="{% static "lib/css/ol.css" %}" rel="stylesheet" />
+    <script src="{% static "lib/js/ol.js" %}"></script>
     <link rel="preload" as="style" href="{% static "geonode/css/font-awesome.min.css" %}" />
     <link rel="preload" as="font" href="{% static "geonode/fonts/lato_regular.ttf" %}" crossorigin="" />
     <link rel="preload" as="font" href="{% static "geonode/fonts/lato_bold.ttf" %}" crossorigin="" />
@@ -54,20 +54,11 @@
           <link href="{% static "lib/css/jquery-ui.structure.min.css" %}" rel="stylesheet"/>
           <link href="{% static "lib/css/bootstrap-treeview.css" %}" rel="stylesheet"/>
       {% else %}
-      <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet" media="none" onload="if(media!='all')media='all'"/>
-      <noscript>
-        <link rel="stylesheet" href="{% static "lib/css/assets.min.css" %}">
-      </noscript>
+      <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet"/>
       {% endif %}
-
-      <link href="{% static "geonode/css/base.css" %}" rel="stylesheet" media="none" onload="if(media!='all')media='all'">
-      <noscript>
-        <link rel="stylesheet" href="{% static "geonode/css/base.css" %}">
-      </noscript>
-
+      <link href="{% static "geonode/css/base.css" %}" rel="stylesheet"/>
       <link rel='stylesheet' id='cookie-law-info-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-public.css" %}" type='text/css' media='all' />
       <link rel='stylesheet' id='cookie-law-info-gdpr-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-gdpr.css" %}" type='text/css' media='all' />
-
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
       <style type="text/css">
         /* Additional styles by custom themes */
@@ -254,7 +245,7 @@
     </script>
 
     <!-- Autocomplete script for input boxes -->
-    <link rel="defer" as="script" href="{% static "geonode/js/search/autocomplete.js" %}" />
+    <script src="{% static "geonode/js/search/autocomplete.js" %}"></script>
 
     <script type="text/javascript">
       function thumbnailFeedbacks(data, status) {

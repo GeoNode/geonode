@@ -24,6 +24,7 @@ import tempfile
 import zipfile
 
 from django import forms
+from django.conf import settings
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -194,7 +195,7 @@ class LayerUploadForm(forms.Form):
 
     def write_files(self):
         absolute_base_file = None
-        tempdir = tempfile.mkdtemp()
+        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
         if zipfile.is_zipfile(self.cleaned_data['base_file']):
             absolute_base_file = unzip_file(self.cleaned_data['base_file'],
                                             '.shp', tempdir=tempdir)

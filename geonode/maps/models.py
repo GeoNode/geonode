@@ -250,6 +250,10 @@ class Map(ResourceBase, GXPMapBase):
     def get_absolute_url(self):
         return reverse('map_detail', None, [str(self.id)])
 
+    @property
+    def embed_url(self):
+        return reverse('map_embed', kwargs={'mapid': self.pk})
+
     def get_bbox_from_layers(self, layers):
         """
         Calculate the bbox from a given list of Layer objects

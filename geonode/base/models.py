@@ -20,6 +20,7 @@
 
 import os
 import re
+import html
 import math
 import uuid
 import logging
@@ -456,6 +457,12 @@ class Thesaurus(models.Model):
     """
     Loadable thesaurus containing keywords in different languages
     """
+    id = models.AutoField(
+        null=False,
+        blank=False,
+        unique=True,
+        primary_key=True)
+
     identifier = models.CharField(
         max_length=255,
         null=False,
@@ -470,6 +477,12 @@ class Thesaurus(models.Model):
     description = models.TextField(max_length=255, default='')
 
     slug = models.CharField(max_length=64, default='')
+
+    about = models.CharField(max_length=255, null=True, blank=True)
+
+    card_min = models.IntegerField(default=0)
+    card_max = models.IntegerField(default=-1)
+    facet = models.BooleanField(default=True)
 
     def __str__(self):
         return "{0}".format(self.identifier)
@@ -497,7 +510,7 @@ class ThesaurusKeywordLabel(models.Model):
 
     class Meta:
         ordering = ("keyword", "lang")
-        verbose_name_plural = 'Labels'
+        verbose_name_plural = 'Thesaurus Keyword Labels'
         unique_together = (("keyword", "lang"),)
 
 
@@ -527,6 +540,26 @@ class ThesaurusKeyword(models.Model):
         ordering = ("alt_label",)
         verbose_name_plural = 'Thesaurus Keywords'
         unique_together = (("thesaurus", "alt_label"),)
+
+
+class ThesaurusLabel(models.Model):
+    """
+    Contains localized version of the thesaurus title
+    """
+    # read from the RDF file
+    lang = models.CharField(max_length=3)
+    # read from the RDF file
+    label = models.CharField(max_length=255)
+
+    thesaurus = models.ForeignKey('Thesaurus', related_name='rel_thesaurus', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "{0}".format(self.label)
+
+    class Meta:
+        ordering = ("lang",)
+        verbose_name_plural = 'Thesaurus Labels'
+        unique_together = (("thesaurus", "lang"),)
 
 
 class ResourceBaseManager(PolymorphicManager):
@@ -884,11 +917,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return "{0}".format(self.title)
 
     def _remove_html_tags(self, attribute_str):
+        _attribute_str = attribute_str
         try:
             pattern = re.compile('<.*?>')
-            return re.sub(pattern, '', attribute_str)
+            _attribute_str = html.unescape(
+                re.sub(pattern, '', attribute_str).replace('\n', ' ').replace('\r', '').strip())
         except Exception:
-            return attribute_str
+            if attribute_str:
+                _attribute_str = html.unescape(
+                    attribute_str.replace('\n', ' ').replace('\r', '').strip())
+        return _attribute_str
 
     @property
     def raw_abstract(self):
@@ -1021,7 +1059,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if self.bbox_polygon:
             bbox = self.bbox_polygon
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', self.srid)
-            srid = int(match.group('srid'))
+            srid = int(match.group('srid')) if match else 4326
             if bbox.srid is not None and bbox.srid != srid:
                 try:
                     bbox = bbox.transform(srid, clone=True)
@@ -1241,8 +1279,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         bbox_polygon = Polygon.from_bbox(bbox)
 
         try:
-            match = re.match(r'^(EPSG:)?(?P<srid>\d{4,5})$', str(srid))
-            bbox_polygon.srid = int(match.group('srid'))
+            match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
+            bbox_polygon.srid = int(match.group('srid')) if match else 4326
         except AttributeError:
             logger.warning("No srid found for layer %s bounding box", self)
 
@@ -1374,6 +1412,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                      _link_type,
                      link.url))
         return links
+
+    @property
+    def embed_url(self):
+        return NotImplemented
 
     def get_tiles_url(self):
         """Return URL for Z/Y/X mapping clients or None if it does not exist.
