@@ -1,6 +1,6 @@
 ---
-GEOSERVER_URL: "https://www.dropbox.com/s/a0m1ugxtso8xtyf/geoserver-2.17.4.war?dl=1"
-DATA_DIR_URL: "https://www.dropbox.com/s/sebw3h90mtvnzwe/data-2.17.4.zip?dl=1"
+GEOSERVER_URL: "https://www.dropbox.com/s/xlich7pmneaupqp/geoserver-2.18.2.war?dl=1"
+DATA_DIR_URL: "https://www.dropbox.com/s/q0qc2t7d9alo9fk/data-2.18.2.zip?dl=1"
 JETTY_RUNNER_URL: "https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.4.31.v20200723/jetty-runner-9.4.31.v20200723.jar"
 WINDOWS:
   py2exe: "http://downloads.sourceforge.net/project/py2exe/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe"
