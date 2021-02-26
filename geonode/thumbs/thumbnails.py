@@ -360,8 +360,8 @@ def _layers_locations(
                         max(bbox[3], layer_bbox[3]),
                     ]
 
-    if bbox:
-        bbox += [f"EPSG:{target_srid}"]
+    if len(bbox) < 5:
+        bbox = list(bbox) + [f"EPSG:{target_srid}"]     # convert bbox to list, if it's tuple from bbox_to_projection
 
     return locations, bbox
 
