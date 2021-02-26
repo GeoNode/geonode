@@ -20,6 +20,7 @@
 
 import os
 import re
+import html
 import math
 import uuid
 import logging
@@ -916,14 +917,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return "{0}".format(self.title)
 
     def _remove_html_tags(self, attribute_str):
+        _attribute_str = attribute_str
         try:
             pattern = re.compile('<.*?>')
-            return re.sub(pattern, '', attribute_str).replace('\n', ' ').replace('\r', '').strip()
+            _attribute_str = html.unescape(
+                re.sub(pattern, '', attribute_str).replace('\n', ' ').replace('\r', '').strip())
         except Exception:
             if attribute_str:
-                return attribute_str.replace('\n', ' ').replace('\r', '').strip()
-            else:
-                return attribute_str
+                _attribute_str = html.unescape(
+                    attribute_str.replace('\n', ' ').replace('\r', '').strip())
+        return _attribute_str
 
     @property
     def raw_abstract(self):

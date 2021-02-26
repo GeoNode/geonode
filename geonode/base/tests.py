@@ -884,8 +884,8 @@ class TestHtmlTagRemoval(SimpleTestCase):
 
     def test_complex_tags_in_attribute(self):
         tagged_value = """<p style="display:none;" id="test">This is not a templated text<p>
-        <div class="test_css">Something in container</div>"""
-        attribute_target_value = """This is not a templated text         Something in container"""
+        <div class="test_css">Something in &iacute;container</div> <p>&pound;682m</p>"""
+        attribute_target_value = """This is not a templated text         Something in ícontainer £682m"""
         r = ResourceBase()
         filtered_value = r._remove_html_tags(tagged_value)
         self.assertEqual(filtered_value, attribute_target_value)
