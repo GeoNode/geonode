@@ -165,6 +165,8 @@ def setup_geoserver(options):
             os.path.basename(urlparse(dev_config['GEOSERVER_URL']).path)
         jetty_runner = download_dir / \
             os.path.basename(urlparse(dev_config['JETTY_RUNNER_URL']).path)
+        geoserver_data = download_dir / \
+                       os.path.basename(urlparse(dev_config['DATA_DIR_URL']).path)
         grab(
             options.get(
                 'geoserver',
@@ -177,6 +179,13 @@ def setup_geoserver(options):
                 dev_config['JETTY_RUNNER_URL']),
             jetty_runner,
             "jetty runner")
+        grab(
+            options.get(
+                'geoserver data',
+                dev_config['DATA_DIR_URL']),
+            geoserver_data,
+            "geoserver data-dir")
+
         if not geoserver_dir.exists():
             geoserver_dir.makedirs()
 
@@ -187,7 +196,12 @@ def setup_geoserver(options):
             logger.info("extracting geoserver")
             z = zipfile.ZipFile(geoserver_bin, "r")
             z.extractall(webapp_dir)
-        _install_data_dir()
+
+            logger.info("extracting geoserver data dir")
+            z = zipfile.ZipFile(geoserver_data, "r")
+            z.extractall(geoserver_dir)
+
+        _configure_data_dir()
 
 
 def _robust_rmtree(path, logger=None, max_retries=5):
@@ -211,17 +225,7 @@ def _robust_rmtree(path, logger=None, max_retries=5):
     shutil.rmtree(path)
 
 
-def _install_data_dir():
-    target_data_dir = path('geoserver/data')
-    if target_data_dir.exists():
-        try:
-            target_data_dir.rmtree()
-        except OSError:
-            _robust_rmtree(target_data_dir, logger=True)
-
-    original_data_dir = path('geoserver/geoserver/data')
-    justcopy(original_data_dir, target_data_dir)
-
+def _configure_data_dir():
     try:
         config = path(
             'geoserver/data/global.xml')
@@ -907,7 +911,7 @@ def _reset():
     )
     sh("rm -rf geonode/development.db")
     sh("rm -rf geonode/uploaded/*")
-    _install_data_dir()
+    _configure_data_dir()
 
 
 @needs(['reset'])
