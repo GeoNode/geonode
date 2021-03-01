@@ -46,7 +46,7 @@
         layers.push(source);
         {% endif %}
     {% endfor %}
-    var map = new OpenLayers.Map({
+    window.olMap = new OpenLayers.Map({
         div: 'preview_map',
         projection: new OpenLayers.Projection('EPSG:900913'),
         layers: layers,
