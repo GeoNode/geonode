@@ -1,6 +1,4 @@
 import re
-import time
-import base64
 import logging
 
 from PIL import Image
@@ -8,17 +6,13 @@ from io import BytesIO
 from typing import List, Union, Optional, Dict, Tuple
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.utils.module_loading import import_string
-
-from geonode import geoserver
 
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
-from geonode.base.auth import get_or_create_token
 from geonode.base.thumb_utils import thumb_exists
 from geonode.geoserver.helpers import OGC_Servers_Handler
-from geonode.utils import http_client, check_ogc_backend, get_layer_name, get_layer_workspace, bbox_to_projection
+from geonode.utils import get_layer_name, get_layer_workspace, bbox_to_projection
 from geonode.thumbs import utils
 from geonode.thumbs.exceptions import ThumbnailError
 
@@ -97,7 +91,7 @@ def create_thumbnail(
     if bbox:
         source_crs = bbox[-1]
 
-        srid_regex = re.match(r"EPSG:\d{4}", source_crs)
+        srid_regex = re.match(r"EPSG:\d+", source_crs)
         if not srid_regex:
             logger.error(f"Thumbnail bbox is in a wrong format: {bbox}")
             raise ThumbnailError("Wrong BBOX format")
@@ -128,7 +122,7 @@ def create_thumbnail(
     for ogc_server, layers in locations.items():
         try:
             # construct WMS url for the thumbnail
-            thumbnail_url = thumbnail_construct_wms_url(
+            thumbnail_url = utils.construct_wms_url(
                 ogc_server,
                 layers,
                 wms_version=wms_version,
@@ -139,7 +133,7 @@ def create_thumbnail(
                 height=height,
             )
 
-            partial_thumbs.append(fetch_wms_thumb(thumbnail_url))
+            partial_thumbs.append(utils.fetch_wms(thumbnail_url))
 
         except Exception as e:
             logger.error(f"Exception occurred while fetching partial thumbnail for {instance.name}.")
@@ -162,7 +156,7 @@ def create_thumbnail(
 
     # --- fetch background image ---
     try:
-        BackgroundGenerator = import_string(settings.THUMBNAIL_BACKGROUND_GENERATOR)
+        BackgroundGenerator = import_string(settings.THUMBNAIL_BACKGROUND['class'])
         background = BackgroundGenerator(width, height).fetch(bbox, background_zoom)
     except Exception as e:
         logger.error(f"Thumbnail generation. Error occurred while fetching background image: {e}")
@@ -183,73 +177,6 @@ def create_thumbnail(
 
     # save thumbnail
     instance.save_thumbnail(thumbnail_name, image=content)
-
-
-def thumbnail_construct_wms_url(
-    ogc_server_location: str,
-    layers: List,
-    bbox: List,
-    wms_version: str = settings.OGC_SERVER["default"].get("WMS_VERSION", "1.1.0"),
-    mime_type: str = "image/png",
-    styles: str = None,
-    width: int = 240,
-    height: int = 200,
-) -> str:
-    """
-    Method constructing a GetMap URL to the OGC server.
-
-    :param ogc_server_location: OGC server URL
-    :param layers: layers which should be fetched from the OGC server
-    :param bbox: area's bounding box in format: [west, east, south, north, CRS]
-    :param wms_version: WMS version of the query
-    :param mime_type: mime type of the returned image
-    :param styles: styles, which OGC server should use for rendering an image
-    :param width: width of the returned image
-    :param height: height of the returned image
-
-    :return: GetMap URL
-    """
-    # create GetMap query parameters
-    params = {
-        "service": "WMS",
-        "version": wms_version,
-        "request": "GetMap",
-        "layers": ",".join(layers),
-        "bbox": ",".join([str(bbox[0]), str(bbox[2]), str(bbox[1]), str(bbox[3])]),
-        "crs": bbox[-1],
-        "width": width,
-        "height": height,
-        "format": mime_type,
-        "transparent": True,
-    }
-
-    if styles is not None:
-        params["styles"] = styles
-
-    # create GetMap request
-    ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
-
-    if ogc_server_location is not None:
-        thumbnail_url = ogc_server_location
-    else:
-        thumbnail_url = ogc_server_settings.LOCATION
-
-    wms_endpoint = ""
-    if thumbnail_url == ogc_server_settings.LOCATION:
-        # add access token to requests to Geoserver (logic based on the previous implementation)
-        username = ogc_server_settings.credentials.username
-        user = get_user_model().objects.filter(username=username).first()
-        if user:
-            access_token = get_or_create_token(user)
-            if access_token and not access_token.is_expired():
-                params["access_token"] = access_token.token
-
-        # add WMS endpoint to requests to Geoserver
-        wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or "ows"
-
-    thumbnail_url = thumbnail_url + f"{wms_endpoint}?" + "&".join(f"{key}={val}" for key, val in params.items())
-
-    return thumbnail_url
 
 
 def _generate_thumbnail_name(instance: Union[Layer, Map]) -> Optional[str]:
@@ -364,57 +291,3 @@ def _layers_locations(
         bbox = list(bbox) + [f"EPSG:{target_srid}"]     # convert bbox to list, if it's tuple from bbox_to_projection
 
     return locations, bbox
-
-
-def fetch_wms_thumb(thumbnail_url: str, max_retries: int = 3, retry_delay: int = 1):
-    """
-    Function fetching an image from OGC server. The request is performed based on the WMS URL.
-    In case access_token in not present in the URL , and Geoserver is used and the OGC backend, Basic Authentication
-    is used instead. If image retrieval fails, function retries to fetch the image max_retries times, waiting
-    retry_delay seconds between consecutive requests.
-
-    :param thumbnail_url: WMS URL of the thumbnail
-    :param max_retries: maximum number of retries before skipping retrieval
-    :param retry_delay: number of seconds waited between retries
-    :returns: retrieved image
-    """
-
-    # prepare authorization for WMS service
-    headers = {}
-    if "access_token" not in thumbnail_url:
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            # for the Geoserver backend, use Basic Auth, if access_token is not provided
-            _user = settings.OGC_SERVER["default"].get("USER")
-            _pwd = settings.OGC_SERVER["default"].get("PASSWORD")
-            encoded_credentials = base64.b64encode(f"{_user}:{_pwd}".encode("UTF-8")).decode("ascii")
-            headers["Authorization"] = f"Basic {encoded_credentials}"
-
-    image = None
-
-    for retry in range(max_retries):
-        try:
-            # fetch WMS data
-            resp, image = http_client.request(
-                thumbnail_url, headers=headers, timeout=settings.OGC_SERVER["default"].get("TIMEOUT", 60)
-            )
-
-            # validate response
-            if resp.status_code < 200 or resp.status_code > 299 or "ServiceException" in str(image):
-                logger.debug(
-                    f"Fetching partial thumbnail from {thumbnail_url} failed with status code: "
-                    f"{resp.status_code} and response: {str(image)}"
-                )
-                image = None
-                time.sleep(retry_delay)
-                continue
-
-        except Exception as e:
-            if retry + 1 >= max_retries:
-                logger.exception(e)
-
-            time.sleep(retry_delay)
-            continue
-        else:
-            break
-
-    return image

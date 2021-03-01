@@ -1517,8 +1517,8 @@ def layer_thumbnail(request, layername):
 
                     bbox = request_body['bbox'] + [request_body['srid']]
                     zoom = request_body.get('zoom', None)
-                    width = request_body.get('width', settings.THUMBNAIL_GENERATOR_DEFAULT_SIZE['width'])
-                    height = request_body.get('height', settings.THUMBNAIL_GENERATOR_DEFAULT_SIZE['height'])
+                    width = request_body.get('width', settings.THUMBNAIL_SIZE['width'])
+                    height = request_body.get('height', settings.THUMBNAIL_SIZE['height'])
 
                     create_thumbnail(
                         layer_obj,
