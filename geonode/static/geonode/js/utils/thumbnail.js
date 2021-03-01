@@ -20,7 +20,7 @@ var createMapThumbnail = function(obj_id) {
     // (west, east, south, north, CRS)
     var bbox = olMap.getExtent();
     var body = {
-        srid: '3857',
+        srid: 'EPSG:3857',
         height: height,
         width: width,
         bbox: [bbox.left, bbox.right, bbox.bottom, bbox.top]
