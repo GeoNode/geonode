@@ -28,6 +28,7 @@ from django.urls import reverse
 from django.core.files import File
 from django.conf.urls import url, include
 from django.views.generic import TemplateView
+from django.contrib.auth import get_user_model
 from django.views.i18n import JavaScriptCatalog
 from rest_framework.test import APITestCase, URLPatternsTestCase
 
@@ -144,9 +145,13 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         Ensure we can access the users list.
         """
         url = reverse('users-list')
-        # Unauhtorized
+        # Anonymous
         response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        logger.debug(response.data)
+        self.assertEqual(response.data['total'], 0)
+        self.assertEqual(len(response.data['users']), 0)
 
         # Auhtorized
         self.assertTrue(self.client.login(username='admin', password='admin'))
@@ -162,6 +167,30 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.status_code, 200)
         logger.debug(response.data)
         self.assertEqual(response.data['user']['username'], 'admin')
+        self.assertIsNotNone(response.data['user']['avatar'])
+
+        # Bobby
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        # Bobby cannot access other users' details
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 404)
+
+        # Bobby can see himself in the list
+        url = reverse('users-list')
+        self.assertEqual(len(response.data), 1)
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        logger.debug(response.data)
+        self.assertEqual(response.data['total'], 1)
+        self.assertEqual(len(response.data['users']), 1)
+
+        # Bobby can access its own details
+        bobby = get_user_model().objects.filter(username='bobby').get()
+        url = reverse('users-detail', kwargs={'pk': bobby.id})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        logger.debug(response.data)
+        self.assertEqual(response.data['user']['username'], 'bobby')
         self.assertIsNotNone(response.data['user']['avatar'])
 
     def test_base_resources(self):

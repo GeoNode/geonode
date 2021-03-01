@@ -30,7 +30,7 @@ from django.contrib.auth.models import Group
 from django.core import validators
 from django.db.models import Prefetch, Q
 from django.forms import ModelForm, models
-from django.forms.fields import ChoiceField
+from django.forms.fields import ChoiceField, MultipleChoiceField
 from django.forms.utils import flatatt
 from django.utils.encoding import force_text
 from django.utils.html import format_html
@@ -39,7 +39,7 @@ from django.utils.translation import ugettext as _
 from modeltranslation.forms import TranslationModelForm
 from taggit.forms import TagField
 from tinymce.widgets import TinyMCE
-
+from django.contrib.admin.utils import flatten
 from geonode.base.enumerations import ALL_LANGUAGES
 from geonode.base.models import (CuratedThumbnail, HierarchicalKeyword,
                                  License, Region, ResourceBase, Thesaurus,
@@ -48,7 +48,7 @@ from geonode.base.models import (CuratedThumbnail, HierarchicalKeyword,
 from geonode.base.widgets import TaggitSelect2Custom
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
-
+from django.utils.translation import get_language
 from .fields import MultiThesauriField
 
 logger = logging.getLogger(__name__)
@@ -317,9 +317,9 @@ class TKeywordForm(forms.ModelForm):
 class ThesaurusAvailableForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ThesaurusAvailableForm, self).__init__(*args, **kwargs)
-        lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, "THESAURUS_DEFAULT_LANG") else "en"
+        lang = get_language()
         for item in Thesaurus.objects.all():
-            tname = ThesaurusLabel.objects.values_list("label", flat=True).filter(id=item.id).filter(lang=lang)
+            tname = self._get_thesauro_title_label(item, lang)
             if item.card_max == 0:
                 continue
             elif item.card_max == 1 and item.card_min == 0:
@@ -338,30 +338,42 @@ class ThesaurusAvailableForm(forms.Form):
                 for y in value:
                     cleaned_values.append(y.id)
             elif value:
-                cleaned_values.append(value.id)
-        return ThesaurusKeyword.objects.filter(id__in=cleaned_values)
+                cleaned_values.append(value)
+        return ThesaurusKeyword.objects.filter(id__in=flatten(cleaned_values))
 
-    @staticmethod
-    def _define_multifield(item, required, tname, lang):
-        return MultiThesauriField(
-            ThesaurusKeyword.objects.prefetch_related(
-                Prefetch(
-                    "keyword",
-                    queryset=ThesaurusKeywordLabel.objects.filter(keyword__thesaurus_id=item.id).filter(lang=lang),
-                )
-            ),
-            widget=autocomplete.ModelSelect2Multiple(url=f"/base/thesaurus_available/?sysid={item.id}&lang={lang}"),
-            label=_(f"{tname[0] if len(tname) > 0 else item.title}"),
+    def _define_multifield(self, item, required, tname, lang):
+        return MultipleChoiceField(
+            choices=self._get_thesauro_keyword_label(item, lang),
+            widget=autocomplete.Select2Multiple(url=f"/base/thesaurus_available/?sysid={item.id}&lang={lang}"),
+            label=f"{tname}",
             required=required,
         )
 
-    @staticmethod
-    def _define_choicefield(item, required, tname, lang):
-        return models.ModelChoiceField(
-            label=f"{tname[0] if len(tname) > 0 else item.title}",
+    def _define_choicefield(self, item, required, tname, lang):
+        return models.ChoiceField(
+            label=f"{tname}",
             required=required,
-            queryset=ThesaurusKeywordLabel.objects.filter(keyword__thesaurus_id=item.id).filter(lang=lang),
-        )
+            choices=self._get_thesauro_keyword_label(item, lang))
+
+    @staticmethod
+    def _get_thesauro_keyword_label(item, lang):
+        qs_local = []
+        qs_non_local = []
+        for key in ThesaurusKeyword.objects.filter(thesaurus_id=item.id):
+            label = ThesaurusKeywordLabel.objects.filter(keyword=key).filter(lang=lang)
+            if label.exists():
+                qs_local.append((label.get().keyword.id, label.get().label))
+            else:
+                qs_non_local.append((key.id, key.alt_label))
+
+        return qs_non_local + qs_local
+
+    @staticmethod
+    def _get_thesauro_title_label(item, lang):
+        tname = ThesaurusLabel.objects.values_list("label", flat=True).filter(thesaurus=item).filter(lang=lang)
+        if not tname:
+            return Thesaurus.objects.get(id=item.id).title
+        return tname.first()
 
 
 class ResourceBaseDateTimePicker(DateTimePicker):

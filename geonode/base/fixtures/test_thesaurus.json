@@ -634,5 +634,14 @@
             "label": "Meteorological geographical features",
             "keyword": 35
         }
+    },
+    {
+        "model": "base.thesauruslabel",
+        "pk": 1,
+        "fields": {
+            "lang": "it",
+            "label": "Tema GEMET - INSPIRE, versione 1.0",
+            "thesaurus": 1
+        }
     }  
 ]

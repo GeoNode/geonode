@@ -506,7 +506,7 @@ def _get_time_dimensions(layer, upload_session):
 
 def _fixup_base_file(absolute_base_file, tempdir=None):
     if not tempdir:
-        tempdir = tempfile.mkdtemp()
+        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
     if not os.path.isfile(absolute_base_file):
         tmp_files = [f for f in os.listdir(tempdir) if os.path.isfile(os.path.join(tempdir, f))]
         for f in tmp_files:

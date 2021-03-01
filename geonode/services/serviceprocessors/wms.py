@@ -424,6 +424,10 @@ class WmsServiceHandler(base.ServiceHandlerBase,
     def _import_cascaded_resource(self, layer_meta):
         """Import a layer into geoserver in order to enable cascading."""
         store = self._get_store(create=False)
+        if not store:
+            store = self.create_cascaded_store()
+        if not store:
+            raise RuntimeError("Could not create WMS CASCADE store.")
         cat = store.catalog
         workspace = store.workspace
         layer_resource = cat.get_resource(

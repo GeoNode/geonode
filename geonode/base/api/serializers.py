@@ -170,8 +170,11 @@ class ThumbnailUrlField(DynamicComputedField):
     def get_attribute(self, instance):
         thumbnail_url = instance.thumbnail_url
         if hasattr(instance, 'curatedthumbnail'):
-            if hasattr(instance.curatedthumbnail.img_thumbnail, 'url'):
-                thumbnail_url = instance.curatedthumbnail.thumbnail_url
+            try:
+                if hasattr(instance.curatedthumbnail.img_thumbnail, 'url'):
+                    thumbnail_url = instance.curatedthumbnail.thumbnail_url
+            except Exception as e:
+                logger.exception(e)
 
         if thumbnail_url and 'http' not in thumbnail_url:
             thumbnail_url = urljoin(settings.SITEURL, thumbnail_url)
@@ -249,6 +252,11 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         self.fields['detail_url'] = serializers.CharField(read_only=True)
         self.fields['created'] = serializers.DateTimeField(read_only=True)
         self.fields['last_updated'] = serializers.DateTimeField(read_only=True)
+        self.fields['raw_abstract'] = serializers.CharField(read_only=True)
+        self.fields['raw_purpose'] = serializers.CharField(read_only=True)
+        self.fields['raw_constraints_other'] = serializers.CharField(read_only=True)
+        self.fields['raw_supplemental_information'] = serializers.CharField(read_only=True)
+        self.fields['raw_data_quality_statement'] = serializers.CharField(read_only=True)
 
         self.fields['embed_url'] = EmbedUrlField()
         self.fields['thumbnail_url'] = ThumbnailUrlField()
@@ -278,7 +286,9 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             'spatial_representation_type', 'temporal_extent_start', 'temporal_extent_end',
             'supplemental_information', 'data_quality_statement', 'group',
             'popular_count', 'share_count', 'rating', 'featured', 'is_published', 'is_approved',
-            'detail_url', 'embed_url', 'created', 'last_updated'
+            'detail_url', 'embed_url', 'created', 'last_updated',
+            'raw_abstract', 'raw_purpose', 'raw_constraints_other',
+            'raw_supplemental_information', 'raw_data_quality_statement'
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
