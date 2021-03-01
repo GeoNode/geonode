@@ -62,7 +62,7 @@
           	source
     	];
 
-    	var map = new OpenLayers.Map({
+    	var map = window.olMap = new OpenLayers.Map({
             div: 'preview_map',
             projection: new OpenLayers.Projection('EPSG:900913'),
             layers: layers,
