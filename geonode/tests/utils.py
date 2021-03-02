@@ -35,6 +35,8 @@ from urllib.request import (
     HTTPBasicAuthHandler,
 )
 from urllib.error import HTTPError, URLError
+from urllib3.exceptions import ProtocolError
+from requests.exceptions import ConnectionError
 import logging
 import contextlib
 
@@ -99,7 +101,7 @@ class Client(DjangoTestClient):
 
     def make_request(self, path, data=None, ajax=False, debug=True, force_login=False):
         url = path if path.startswith("http") else self.url + path
-        # logger.error(f" make_request ----------> url: {url}")
+        logger.error(f" make_request ----------> url: {url}")
 
         if ajax:
             url += "{}force_ajax=true".format('&' if '?' in url else '?')
@@ -115,7 +117,6 @@ class Client(DjangoTestClient):
         if self.response_cookies:
             self._session.headers['cookie'] = self.response_cookies
 
-        time.sleep(1.0)
         if data:
             for name, value in data.items():
                 if isinstance(value, IOBase):
@@ -127,25 +128,43 @@ class Client(DjangoTestClient):
             self._session.verify = False
             self._action = getattr(self._session, 'post', None)
 
-            # response = self._session.post(url, data=encoder)
-            response = self._action(
-                url=url,
-                data=encoder,
-                headers=self._session.headers,
-                timeout=30,
-                stream=False)
+            _retry = 0
+            _not_done = True
+            while _not_done and _retry < 3:
+                try:
+                    response = self._action(
+                        url=url,
+                        data=encoder,
+                        headers=self._session.headers,
+                        timeout=10,
+                        stream=False)
+                    _not_done = False
+                except (ProtocolError, ConnectionError, ConnectionResetError):
+                    time.sleep(1.0)
+                    _not_done = True
+                finally:
+                    _retry += 1
         else:
             self._session.mount(f"{urlsplit(url).scheme}://", self._adapter)
             self._session.verify = False
             self._action = getattr(self._session, 'get', None)
 
-            # response = self._session.get(url)
-            response = self._action(
-                url=url,
-                data=None,
-                headers=self._session.headers,
-                timeout=30,
-                stream=False)
+            _retry = 0
+            _not_done = True
+            while _not_done and _retry < 3:
+                try:
+                    response = self._action(
+                        url=url,
+                        data=None,
+                        headers=self._session.headers,
+                        timeout=10,
+                        stream=False)
+                    _not_done = False
+                except (ProtocolError, ConnectionError, ConnectionResetError):
+                    time.sleep(1.0)
+                    _not_done = True
+                finally:
+                    _retry += 1
 
         try:
             response.raise_for_status()
@@ -160,6 +179,7 @@ class Client(DjangoTestClient):
                 message = str(ex)
             raise HTTPError(url, response.status_code, message, response.headers, None)
 
+        logger.error(f" make_request ----------> response: {response}")
         return response
 
     def get(self, path, debug=True):
