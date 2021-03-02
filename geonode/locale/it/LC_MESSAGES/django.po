@@ -280,7 +280,7 @@ msgstr "Persona esterna a GeoNode (compilare il modulo)"
 #: geonode/maps/templates/maps/map_metadata.html:67
 #: geonode/maps/templates/maps/map_metadata_advanced.html:101
 msgid "Point of Contact"
-msgstr "Punto di ontatto"
+msgstr "Punto di contatto"
 
 #: geonode/base/forms.py:395
 #: geonode/base/templates/base/_resourcebase_contact_snippet.html:18

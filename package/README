@@ -55,7 +55,7 @@ Note for packagers
 There is an advanced flag for the install script called 'step'.
 There are two main steps to install GeoNode,
 the first one is to place the required files in the right places (referred to as pre-install) and
-the other to create the postgis database and edit the required Django, GeoServer and Geonetwork config files (referred to as post-install).
+the other to create the postgis database and edit the required Django and GeoServer config files (referred to as post-install).
 
 By default the install script does both, but usually it is appropriate to perform the first of these steps during package creation and the second one at install time.
 

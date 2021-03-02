@@ -16,12 +16,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
 
 from django.conf import settings
 from user_messages.models import Message
 from user_messages.signals import message_sent
 
 from geonode.notifications_helper import send_notification
+
+logger = logging.getLogger(__name__)
 
 
 def message_received_notification(**kwargs):
@@ -41,6 +44,7 @@ def message_received_notification(**kwargs):
         'thread_url': settings.SITEURL + thread.get_absolute_url()[1:],
         'site_url': settings.SITEURL
     }
+    logger.debug(f"message_received_notification to: {recipients}")
     send_notification(recipients, notice_type_label, ctx)
 
 

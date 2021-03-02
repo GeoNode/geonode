@@ -18,7 +18,6 @@
 #
 #########################################################################
 import os
-import six
 import shutil
 import geoserver
 
@@ -44,8 +43,11 @@ from geonode.base.models import (
     ResourceBase,
     TopicCategory,
     SpatialRepresentationType)
-from geonode.utils import set_resource_default_links
+from geonode.utils import (
+    is_monochromatic_image,
+    set_resource_default_links)
 from geonode.geoserver.upload import geoserver_upload
+from geonode.security.utils import spec_perms_is_empty
 from geonode.catalogue.models import catalogue_post_save
 
 from .helpers import (
@@ -58,7 +60,6 @@ from .helpers import (
     cascading_delete,
     fetch_gs_resource,
     create_gs_thumbnail,
-    is_monochromatic_image,
     set_attributes_from_geoserver,
     _invalidate_geowebcache_layer,
     _stylefilterparams_geowebcache_layer)
@@ -117,12 +118,15 @@ def geoserver_set_style(
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
-            sld = open(base_file, "rb").read()
-            set_layer_style(
-                instance,
-                instance.alternate,
-                sld,
-                base_file=base_file)
+            try:
+                sld = open(base_file, "rb").read()
+                set_layer_style(
+                    instance,
+                    instance.alternate,
+                    sld,
+                    base_file=base_file)
+            except Exception as e:
+                logger.exception(e)
 
 
 @app.task(
@@ -256,6 +260,8 @@ def geoserver_finalize_upload(
         logger.debug(f"Layer id {instance_id} does not exist yet!")
         raise
 
+    title = None
+    abstract = None
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
@@ -270,7 +276,7 @@ def geoserver_finalize_upload(
                     xml_file = xml_file[0]
                 else:
                     xml_file = None
-            elif not isinstance(xml_file, six.string_types):
+            elif not isinstance(xml_file, str):
                 xml_file = None
 
             if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
@@ -390,12 +396,10 @@ def geoserver_finalize_upload(
             logger.debug('Finalizing (permissions and notifications) Layer {0}'.format(instance))
             instance.handle_moderated_uploads()
 
-            if permissions is not None:
+            if permissions is not None and not spec_perms_is_empty(permissions):
                 logger.debug(f'Setting permissions {permissions} for {instance.name}')
                 instance.set_permissions(permissions, created=created)
-            elif created:
-                logger.debug(f'Setting default permissions for {instance.name}')
-                instance.set_default_permissions()
+
             try:
                 # Update the upload sessions
                 geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
@@ -649,7 +653,7 @@ def geoserver_post_save_layers(
                 # Creating Layer Thumbnail by sending a signal
                 from geonode.geoserver.signals import geoserver_post_save_complete
                 geoserver_post_save_complete.send(
-                    sender=instance.__class__, instance=instance)
+                    sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
             try:
                 geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
                 geonode_upload_sessions.update(processed=True)

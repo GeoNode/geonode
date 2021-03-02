@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 from geonode.documents.models import Document
 from geonode.people.models import Profile
 from geonode.tests.base import GeoNodeBaseTestSupport

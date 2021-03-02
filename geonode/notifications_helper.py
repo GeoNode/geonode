@@ -91,8 +91,7 @@ def send_notification(*args, **kwargs):
     Simple wrapper around notifications.model send().
     This can be called safely if notifications are not installed.
     """
-    resource = args[2]['resource'] if len(args) > 1 and 'resource' in args[2] else None
-    if has_notifications and resource and resource.title:
+    if has_notifications:
         # queue for further processing if required
         if settings.PINAX_NOTIFICATIONS_QUEUE_ALL:
             return queue_notification(*args, **kwargs)

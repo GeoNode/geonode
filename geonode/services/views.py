@@ -126,6 +126,84 @@ def _get_service_handler(request, service):
     return service_handler
 
 
+def harvest_resources_handle_get(request, service, handler):
+    available_resources = handler.get_resources()
+    is_sync = getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False)
+    errored_state = False
+    already_harvested = HarvestJob.objects.values_list(
+        "resource_id", flat=True).filter(service=service, status=enumerations.PROCESSED)
+    if available_resources:
+        not_yet_harvested = [
+            r for r in available_resources if str(r.id) not in already_harvested]
+        not_yet_harvested.sort(key=lambda resource: resource.id)
+    else:
+        not_yet_harvested = ['Cannot parse any resource at this time!']
+        errored_state = True
+    paginator = Paginator(
+        not_yet_harvested, getattr(settings, "CLIENT_RESULTS_LIMIT", 100))
+    page = request.GET.get('page')
+    try:
+        harvestable_resources = paginator.page(page)
+    except PageNotAnInteger:
+        harvestable_resources = paginator.page(1)
+    except EmptyPage:
+        harvestable_resources = paginator.page(paginator.num_pages)
+
+    filter_row = [{}, {"id": 'id-filter', "data_key": "id"},
+                  {"id": 'name-filter', "data_key": "title"},
+                  {"id": 'desc-filter', "data_key": "abstract"}]
+    result = render(
+        request,
+        "services/service_resources_harvest.html",
+        {
+            "service_handler": handler,
+            "service": service,
+            "importable": not_yet_harvested,
+            "resources": harvestable_resources,
+            "requested": request.GET.getlist("resource_list"),
+            "is_sync": is_sync,
+            "errored_state": errored_state,
+            "filter_row": filter_row,
+        }
+    )
+    return result
+
+
+def harvest_resources_handle_post(request, service, handler):
+    available_resources = handler.get_resources()
+    is_sync = getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False)
+    requested = request.POST.getlist("resource_list")
+    requested.extend(request.GET.getlist("resource_list"))
+    # Let's remove duplicates
+    requested = list(set(requested))
+    resources_to_harvest = []
+    for id in _gen_harvestable_ids(requested, available_resources):
+        logger.debug("id: {}".format(id))
+        harvest_job, created = HarvestJob.objects.get_or_create(
+            service=service,
+            resource_id=id
+        )
+        if created or harvest_job.status != enumerations.PROCESSED:
+            resources_to_harvest.append(id)
+            tasks.harvest_resource.apply_async((harvest_job.id,))
+        else:
+            logger.warning(
+                "resource {} already has a harvest job".format(id))
+    msg_async = _("The selected resources are being imported")
+    msg_sync = _("The selected resources have been imported")
+    messages.add_message(
+        request,
+        messages.SUCCESS,
+        msg_sync if is_sync else msg_async
+    )
+    go_to = (
+        "harvest_resources" if handler.has_unharvested_resources(
+            service) else "service_detail"
+    )
+    result = redirect(reverse(go_to, kwargs={"service_id": service.id}))
+    return result
+
+
 @login_required
 def harvest_resources(request, service_id):
     service = get_object_or_404(Service, pk=service_id)
@@ -135,79 +213,10 @@ def harvest_resources(request, service_id):
         return redirect(
             reverse("rescan_service", kwargs={"service_id": service.id})
         )
-    available_resources = handler.get_resources()
-    is_sync = getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False)
-    errored_state = False
     if request.method == "GET":
-        already_harvested = HarvestJob.objects.values_list(
-            "resource_id", flat=True).filter(service=service, status=enumerations.PROCESSED)
-        if available_resources:
-            not_yet_harvested = [
-                r for r in available_resources if str(r.id) not in already_harvested]
-            not_yet_harvested.sort(key=lambda resource: resource.id)
-        else:
-            not_yet_harvested = ['Cannot parse any resource at this time!']
-            errored_state = True
-        paginator = Paginator(
-            not_yet_harvested, getattr(settings, "CLIENT_RESULTS_LIMIT", 100))
-        page = request.GET.get('page')
-        try:
-            harvestable_resources = paginator.page(page)
-        except PageNotAnInteger:
-            harvestable_resources = paginator.page(1)
-        except EmptyPage:
-            harvestable_resources = paginator.page(paginator.num_pages)
-
-        filter_row = [{}, {"id": 'id-filter', "data_key": "id"},
-                      {"id": 'name-filter', "data_key": "title"},
-                      {"id": 'desc-filter', "data_key": "abstract"}]
-        result = render(
-            request,
-            "services/service_resources_harvest.html",
-            {
-                "service_handler": handler,
-                "service": service,
-                "importable": not_yet_harvested,
-                "resources": harvestable_resources,
-                "requested": request.GET.getlist("resource_list"),
-                "is_sync": is_sync,
-                "errored_state": errored_state,
-                "filter_row": filter_row,
-            }
-        )
+        return harvest_resources_handle_get(request, service, handler)
     elif request.method == "POST":
-        requested = request.POST.getlist("resource_list")
-        requested.extend(request.GET.getlist("resource_list"))
-        # Let's remove duplicates
-        requested = list(set(requested))
-        resources_to_harvest = []
-        for id in _gen_harvestable_ids(requested, available_resources):
-            logger.debug("id: {}".format(id))
-            harvest_job, created = HarvestJob.objects.get_or_create(
-                service=service,
-                resource_id=id
-            )
-            if created or harvest_job.status != enumerations.PROCESSED:
-                resources_to_harvest.append(id)
-                tasks.harvest_resource.apply_async((harvest_job.id,))
-            else:
-                logger.warning(
-                    "resource {} already has a harvest job".format(id))
-        msg_async = _("The selected resources are being imported")
-        msg_sync = _("The selected resources have been imported")
-        messages.add_message(
-            request,
-            messages.SUCCESS,
-            msg_sync if is_sync else msg_async
-        )
-        go_to = (
-            "harvest_resources" if handler.has_unharvested_resources(
-                service) else "service_detail"
-        )
-        result = redirect(reverse(go_to, kwargs={"service_id": service.id}))
-    else:
-        result = None
-    return result
+        return harvest_resources_handle_post(request, service, handler)
 
 
 @login_required
@@ -223,7 +232,7 @@ def harvest_single_resource(request, service_id, resource_id):
         resource_id=resource_id,
     )
     if not created and harvest_job.status == enumerations.IN_PROCESS:
-        raise HttpResponse(
+        return HttpResponse(
             _("Resource is already being processed"), status=409)
     else:
         tasks.harvest_resource.apply_async((harvest_job.id,))

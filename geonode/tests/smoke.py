@@ -43,7 +43,7 @@ class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
     def setUp(self):
         super(GeoNodeSmokeTests, self).setUp()
 
-        # If Geoserver and GeoNetwork are not running
+        # If Geoserver is not running
         # avoid running tests that call those views.
         if "GEOSERVER" in os.environ.keys():
             self.GEOSERVER = True
@@ -144,35 +144,6 @@ class GeoNodeUtilsTests(GeoNodeBaseTestSupport):
         pass
 
     # Some other Stuff
-
-    """
-    def test_check_geonode_is_up(self):
-        from contextlib import nested
-        from geonode.utils import check_geonode_is_up
-
-        def blowup():
-            raise Exception("BOOM")
-
-        with patch('geonode.maps.models.gs_catalog') as mock_gs:
-            mock_gs.get_workspaces.side_effect = blowup
-
-            self.assertRaises(GeoNodeException, check_geonode_is_up)
-
-        with nested(
-            patch('geonode.maps.models.gs_catalog'),
-            patch('geonode.maps.models.Layer.objects.geonetwork')
-        ) as (mock_gs, mock_gn):
-            mock_gn.login.side_effect = blowup
-            self.assertRaises(GeoNodeException, check_geonode_is_up)
-            self.assertTrue(mock_gs.get_workspaces.called)
-
-        with nested(
-            patch('geonode.maps.models.gs_catalog'),
-            patch('geonode.maps.models.Layer.objects.geonetwork')
-        ) as (mock_gs, mock_gn):
-            # no assertion, this should just run without error
-            check_geonode_is_up()
-    """
 
     def test_forward_mercator(self):
         arctic = forward_mercator((0, 85))

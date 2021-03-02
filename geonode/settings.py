@@ -1072,20 +1072,12 @@ CATALOGUE = {
         'ENGINE': 'geonode.catalogue.backends.pycsw_local',
         # pycsw in non-local mode
         # 'ENGINE': 'geonode.catalogue.backends.pycsw_http',
-        # GeoNetwork opensource
-        # 'ENGINE': 'geonode.catalogue.backends.geonetwork',
         # deegree and others
         # 'ENGINE': 'geonode.catalogue.backends.generic',
-
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
         'URL': urljoin(SITEURL, '/catalogue/csw'),
         # 'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
         # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
-
-        # login credentials (for GeoNetwork)
-        # 'USER': 'admin',
-        # 'PASSWORD': 'admin',
-
         # 'ALTERNATES_ONLY': True,
     }
 }
@@ -2128,3 +2120,4 @@ SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'Tr
 # -- END Settings for MONITORING plugin
 
 CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
+

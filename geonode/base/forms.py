@@ -18,45 +18,38 @@
 #
 #########################################################################
 import re
-import six
 import html
 import logging
-
-from tinymce.widgets import TinyMCE
-
-from .fields import MultiThesauriField
-
+from django.db.models.query import QuerySet
+from bootstrap3_datetime.widgets import DateTimePicker
 from dal import autocomplete
-from taggit.forms import TagField
-
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core import validators
 from django.db.models import Prefetch, Q
-from django.forms import models
-from django.forms import ModelForm
-from django.forms.fields import ChoiceField
+from django.forms import ModelForm, models
+from django.forms.fields import ChoiceField, MultipleChoiceField
 from django.forms.utils import flatatt
+from django.utils.encoding import force_text
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
-
-from django.utils.encoding import (
-    force_text,
-)
-
-from bootstrap3_datetime.widgets import DateTimePicker
 from modeltranslation.forms import TranslationModelForm
-
-from geonode.base.models import HierarchicalKeyword, TopicCategory, Region, License, CuratedThumbnail, \
-    ResourceBase
-from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel
-from geonode.documents.models import Document
+from taggit.forms import TagField
+from tinymce.widgets import TinyMCE
+from django.contrib.admin.utils import flatten
 from geonode.base.enumerations import ALL_LANGUAGES
+from geonode.base.models import (CuratedThumbnail, HierarchicalKeyword,
+                                 License, Region, ResourceBase, Thesaurus,
+                                 ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel,
+                                 TopicCategory)
 from geonode.base.widgets import TaggitSelect2Custom
+from geonode.documents.models import Document
 from geonode.layers.models import Layer
+from django.utils.translation import get_language
+from .fields import MultiThesauriField
 
 logger = logging.getLogger(__name__)
 
@@ -220,7 +213,7 @@ class RegionsSelect(forms.Select):
         # Normalize to strings.
         def _region_id_from_choice(choice):
             if isinstance(choice, int) or \
-                    (isinstance(choice, six.string_types) and choice.isdigit()):
+                    (isinstance(choice, str) and choice.isdigit()):
                 return int(choice)
             else:
                 return choice.id
@@ -232,7 +225,7 @@ class RegionsSelect(forms.Select):
         for option_value, option_label in self.choices:
             if not isinstance(
                     option_label, (list, tuple)) and isinstance(
-                        option_label, six.string_types):
+                        option_label, str):
                 output.append(
                     self.render_option_value(
                         selected_choices,
@@ -243,7 +236,7 @@ class RegionsSelect(forms.Select):
         for option_value, option_label in self.choices:
             if isinstance(
                     option_label, (list, tuple)) and not isinstance(
-                        option_label, six.string_types):
+                        option_label, str):
                 output.append(
                     format_html(
                         '<optgroup label="{}">',
@@ -251,10 +244,10 @@ class RegionsSelect(forms.Select):
                 for option in option_label:
                     if isinstance(
                             option, (list, tuple)) and not isinstance(
-                                option, six.string_types):
+                                option, str):
                         if isinstance(
                                 option[1][0], (list, tuple)) and not isinstance(
-                                    option[1][0], six.string_types):
+                                    option[1][0], str):
                             for option_child in option[1][0]:
                                 output.append(
                                     self.render_option_value(
@@ -319,6 +312,68 @@ class TKeywordForm(forms.ModelForm):
         required=False,
         help_text=_("List of keywords from Thesaurus", ),
     )
+
+
+class ThesaurusAvailableForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(ThesaurusAvailableForm, self).__init__(*args, **kwargs)
+        lang = get_language()
+        for item in Thesaurus.objects.all():
+            tname = self._get_thesauro_title_label(item, lang)
+            if item.card_max == 0:
+                continue
+            elif item.card_max == 1 and item.card_min == 0:
+                self.fields[f"{item.id}"] = self._define_choicefield(item, False, tname, lang)
+            elif item.card_max == 1 and item.card_min == 1:
+                self.fields[f"{item.id}"] = self._define_choicefield(item, True, tname, lang)
+            elif item.card_max == -1 and item.card_min == 0:
+                self.fields[f"{item.id}"] = self._define_multifield(item, False, tname, lang)
+            elif item.card_max == -1 and item.card_min == 1:
+                self.fields[f"{item.id}"] = self._define_multifield(item, True, tname, lang)
+
+    def cleanx(self, x):
+        cleaned_values = []
+        for key, value in x.items():
+            if isinstance(value, QuerySet):
+                for y in value:
+                    cleaned_values.append(y.id)
+            elif value:
+                cleaned_values.append(value)
+        return ThesaurusKeyword.objects.filter(id__in=flatten(cleaned_values))
+
+    def _define_multifield(self, item, required, tname, lang):
+        return MultipleChoiceField(
+            choices=self._get_thesauro_keyword_label(item, lang),
+            widget=autocomplete.Select2Multiple(url=f"/base/thesaurus_available/?sysid={item.id}&lang={lang}"),
+            label=f"{tname}",
+            required=required,
+        )
+
+    def _define_choicefield(self, item, required, tname, lang):
+        return models.ChoiceField(
+            label=f"{tname}",
+            required=required,
+            choices=self._get_thesauro_keyword_label(item, lang))
+
+    @staticmethod
+    def _get_thesauro_keyword_label(item, lang):
+        qs_local = []
+        qs_non_local = []
+        for key in ThesaurusKeyword.objects.filter(thesaurus_id=item.id):
+            label = ThesaurusKeywordLabel.objects.filter(keyword=key).filter(lang=lang)
+            if label.exists():
+                qs_local.append((label.get().keyword.id, label.get().label))
+            else:
+                qs_non_local.append((key.id, key.alt_label))
+
+        return qs_non_local + qs_local
+
+    @staticmethod
+    def _get_thesauro_title_label(item, lang):
+        tname = ThesaurusLabel.objects.values_list("label", flat=True).filter(thesaurus=item).filter(lang=lang)
+        if not tname:
+            return Thesaurus.objects.get(id=item.id).title
+        return tname.first()
 
 
 class ResourceBaseDateTimePicker(DateTimePicker):
@@ -442,7 +497,7 @@ class ResourceBaseForm(TranslationModelForm):
         _unsescaped_kwds = []
         for k in keywords:
             _k = ('%s' % re.sub(r'%([A-Z0-9]{2})', r'&#x\g<1>;', k.strip())).split(",")
-            if not isinstance(_k, six.string_types):
+            if not isinstance(_k, str):
                 for _kk in [html.unescape(x.strip()) for x in _k]:
                     # Simulate JS Unescape
                     _kk = _kk.replace('%u', r'\u').encode('unicode-escape').replace(

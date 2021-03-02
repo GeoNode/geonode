@@ -61,6 +61,8 @@ urlpatterns = [
         views.layer_metadata_detail, name='layer_metadata_detail'),
     url(r'^(?P<layername>[^/]*)/metadata_upload$',
         views.layer_metadata_upload, name='layer_metadata_upload'),
+    url(r'^(?P<layername>[^/]+)/embed$',
+        views.layer_embed, name='layer_embed'),
     url(r'^(?P<layername>[^/]*)/style_upload$',
         views.layer_sld_upload, name='layer_sld_upload'),
     url(r'^(?P<layername>[^/]*)/style_edit$',
