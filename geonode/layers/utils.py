@@ -618,7 +618,14 @@ def file_upload(filename,
 
         if defaults['metadata_uploaded_preserve']:
             defaults['metadata_xml'] = xml_file
-            defaults['uuid'] = identifier
+
+        if identifier:
+            if ResourceBase.objects.filter(uuid=identifier).count():
+                logger.error("The UUID identifier from the XML Metadata is already in use in this system.")
+                raise GeoNodeException(
+                    _("The UUID identifier from the XML Metadata is already in use in this system."))
+            else:
+                defaults['uuid'] = identifier
 
         for key, value in vals.items():
             if key == 'spatial_representation_type':

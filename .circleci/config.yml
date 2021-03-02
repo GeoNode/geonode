@@ -107,7 +107,7 @@ jobs:
                   docker-compose -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
                   docker-compose -f docker-compose-test.yml exec django bash -c '<<parameters.test_suite>>'
                 working_directory: ./
-                no_output_timeout: 5m
+                no_output_timeout: 10m
             - run:
                 name: Run pep8 checks
                 command: |

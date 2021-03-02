@@ -25,6 +25,7 @@ from django.conf import settings
 from django.db import IntegrityError, transaction
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.staticfiles.templatetags import staticfiles
 
 from celery.utils.log import get_task_logger
@@ -549,7 +550,7 @@ def geoserver_post_save_layers(
                     # Guessing 'EPSG:4326' by default
                     instance.srid = 'EPSG:4326'
                 else:
-                    raise GeoNodeException("Invalid Projection. Layer is missing CRS!")
+                    raise GeoNodeException(_("Invalid Projection. Layer is missing CRS!"))
 
                 # Iterate over values from geoserver.
                 for key in ['alternate', 'store', 'storeType']:
