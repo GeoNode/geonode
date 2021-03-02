@@ -139,7 +139,7 @@ def fetch_wms(url: str, max_retries: int = 3, retry_delay: int = 1):
     # prepare authorization for WMS service
     headers = {}
     if "access_token" not in url:
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+        if url.startswith(settings.OGC_SERVER["default"]["LOCATION"]):
             # for the Geoserver backend, use Basic Auth, if access_token is not provided
             _user = settings.OGC_SERVER["default"].get("USER")
             _pwd = settings.OGC_SERVER["default"].get("PASSWORD")
