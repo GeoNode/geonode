@@ -119,7 +119,7 @@ def create_thumbnail(
     # --- fetch WMS layers ---
     partial_thumbs = []
 
-    for ogc_server, layers in locations.items():
+    for ogc_server, layers in locations:
         try:
             # construct WMS url for the thumbnail
             thumbnail_url = utils.construct_wms_url(
@@ -209,37 +209,45 @@ def _generate_thumbnail_name(instance: Union[Layer, Map]) -> Optional[str]:
 
 def _layers_locations(
     instance: Union[Layer, Map], compute_bbox: bool = False, target_srid: int = 3857
-) -> Tuple[Dict, List]:
+) -> Tuple[List[List], List]:
     """
-    Function returning a dict mapping instance's layers to their locations, enabling to construct a single
-    WMS request for multiple layers of the same OGC source.
+    Function returning a list mapping instance's layers to their locations, enabling to construct a minimum
+    number of  WMS request for multiple layers of the same OGC source (ensuring layers order for Maps)
 
     :param instance: instance of Layer or Map models
     :param compute_bbox: flag determining whether a BBOX containing the instance should be computed,
                          based on instance's layers
     :param target_srid: valid only when compute_bbox is True - SRID of the returned BBOX
-    :return: a tuple with a dict, which maps layers to their locations
-             (e.g. {"'http://localhost:8080/geoserver/'": ["geonode:nyc"]}),
-             and a list of 5 elements containing (west, east, south, north) instance's boundaries and CRS
+    :return: a tuple with a list, which maps layers to their locations in a correct layers order
+             e.g.
+                [
+                    ["http://localhost:8080/geoserver/": ["geonode:layer1", "geonode:layer2]]
+                ]
+             and a list optionally consisting of 5 elements containing west, east, south, north
+             instance's boundaries and CRS
     """
-    locations = {}
+    locations = []
     bbox = []
 
     if isinstance(instance, Layer):
 
         # for local layers
         if instance.remote_service is None:
-            locations[settings.OGC_SERVER["default"]["LOCATION"]] = [instance.alternate]
+            locations.append([settings.OGC_SERVER["default"]["LOCATION"], [instance.alternate]])
         # for remote layers
         else:
-            locations[instance.remote_service.service_url] = [instance.alternate]
+            locations.append([instance.remote_service.service_url, [instance.alternate]])
 
         if compute_bbox:
             bbox = bbox_to_projection(instance.bbox, target_srid)
 
     elif isinstance(instance, Map):
 
-        for map_layer in instance.layers:
+        map_layers = instance.layers.copy()
+        # ensure correct order of layers in the map (higher stack_order are printed on top of lower)
+        map_layers.sort(key=lambda l: l.stack_order)
+
+        for map_layer in map_layers:
 
             if not map_layer.visibility:
                 logger.debug("Skipping not visible layer in the thumbnail generation.")
@@ -270,9 +278,19 @@ def _layers_locations(
                 continue
 
             if layer.storeType == "remoteStore":
-                locations.setdefault(layer.remote_service.service_url, []).append(layer.alternate)
+                # limit number of locations, ensuring layer order
+                if len(locations) and locations[-1][0] == layer.remote_service.service_url:
+                    # if previous layer's location is the same as the current one - append current layer there
+                    locations[-1][1].append(layer.alternate)
+                else:
+                    locations.append([layer.remote_service.service_url, [layer.alternate]])
             else:
-                locations.setdefault(settings.OGC_SERVER["default"]["LOCATION"], []).append(layer.alternate)
+                # limit number of locations, ensuring layer order
+                if len(locations) and locations[-1][0] == settings.OGC_SERVER["default"]["LOCATION"]:
+                    # if previous layer's location is the same as the current one - append current layer there
+                    locations[-1][1].append(layer.alternate)
+                else:
+                    locations.append([settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate]])
 
             if compute_bbox:
                 if not bbox:
