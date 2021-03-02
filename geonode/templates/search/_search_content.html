@@ -27,6 +27,7 @@
               {% include "search/_text_filter.html" %}
             {% endif  %}
         <div id="slide-pane">
+          {% block search_facet_lists %}
             {% if SEARCH_FILTERS.H_KEYWORDS_ENABLED %}
               {% include "search/_h_keywords_filter.html" %}
             {% endif %}
@@ -43,6 +44,7 @@
             {% if SEARCH_FILTERS.EXTENT_ENABLED %}
               {% include "search/_extent_filter.html" %}
             {% endif %}
+          {% endblock search_facet_lists %}
         </div>
       </div>
     </div>
