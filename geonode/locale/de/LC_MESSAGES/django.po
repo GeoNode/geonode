@@ -3075,7 +3075,7 @@ msgstr "Fehler beim Aufrufen des hochgeladenen Schemas: %s"
 
 msgid ""
 "The UUID identifier from the XML Metadata is already in use in this system."
-msgstr ""
+msgstr "Die in den XML Metadaten genannte UUID ist in diesem System bereits registriert."
 
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
