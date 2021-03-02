@@ -169,7 +169,7 @@
        <gmd:referenceSystemIdentifier>
          <gmd:RS_Identifier>
            <gmd:code>
-             <gco:CharacterString>4326</gco:CharacterString>
+             <gco:CharacterString>{{layer.srid}}</gco:CharacterString>
            </gmd:code>
            <gmd:codeSpace>
              <gco:CharacterString>EPSG</gco:CharacterString>
