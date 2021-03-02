@@ -17,8 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from unittest.case import SkipTest
-
 from django.contrib.auth import get_user_model
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.catalogue.views import csw_global_dispatch
@@ -97,14 +95,14 @@ class TestCswGlobalDispatch(GeoNodeBaseTestSupport):
         request = self.__request_factory_multiple()
         response = csw_global_dispatch(request, self.layer_filter)
         root = ET.fromstring(response.content)
-        actual = root.find('{http://www.opengis.net/cat/csw/2.0.2}SearchResults').attrib['numberOfRecordsReturned']
+        actual = root.find("{http://www.opengis.net/cat/csw/2.0.2}SearchResults").attrib["numberOfRecordsReturned"]
         self.assertEqual(0, int(actual))
 
     def test_given_a_request_for_multiple_layer_should_return_multiple_value_in_xml_with_layer_filter(self):
         request = self.__request_factory_multiple()
         response = csw_global_dispatch(request, self.layer_filter_multiple)
         root = ET.fromstring(response.content)
-        actual = root.find('{http://www.opengis.net/cat/csw/2.0.2}SearchResults').attrib['numberOfRecordsReturned']
+        actual = root.find("{http://www.opengis.net/cat/csw/2.0.2}SearchResults").attrib["numberOfRecordsReturned"]
         self.assertEqual(2, int(actual))
 
     @staticmethod
@@ -113,13 +111,15 @@ class TestCswGlobalDispatch(GeoNodeBaseTestSupport):
 
     @staticmethod
     def layer_filter_multiple(layer):
-        return layer.filter(Q(title='CA') | Q(title='uniquetitle'))
+        return layer.filter(Q(title="CA") | Q(title="uniquetitle"))
 
     @staticmethod
     def __request_factory_single(uuid):
         factory = RequestFactory()
         request = factory.get(
-            f"http://localhost:8000/catalogue/csw?request=GetRecordById&service=CSW&version=2.0.2&id={uuid}&outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&elementsetname=full"
+            f"http://localhost:8000/catalogue/csw?request=GetRecordById&service=CSW\
+                &version=2.0.2&id={uuid}&outputschema=http%3A%2F%2F\
+                www.isotc211.org%2F2005%2Fgmd&elementsetname=full"
         )
         request.user = AnonymousUser()
         return request
@@ -128,7 +128,9 @@ class TestCswGlobalDispatch(GeoNodeBaseTestSupport):
     def __request_factory_multiple():
         factory = RequestFactory()
         request = factory.get(
-            f"http://localhost:8000/catalogue/csw/c_c525/?request=GetRecords&service=CSW&version=2.0.2&outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&elementsetname=full&typenames=gmd:MD_Metadata"
+            "http://localhost:8000/catalogue/csw/?request=GetRecords&service=CSW\
+            &version=2.0.2&outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd\
+                &elementsetname=full&typenames=gmd:MD_Metadata"
         )
         request.user = get_user_model().objects.first()
         return request
