@@ -17,11 +17,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from unittest.case import SkipTest
+from geonode.layers.populate_layers_data import create_layer_data
+from geonode.catalogue.views import csw_global_dispatch
 import logging
+from django.contrib.auth.models import AnonymousUser
+from guardian.shortcuts import get_anonymous_user
+import xml.etree.ElementTree as ET
 
 from geonode.layers.models import Layer
 from geonode.tests.base import GeoNodeBaseTestSupport
-
+from django.test import RequestFactory
 from geonode.catalogue import get_catalogue
 from geonode.catalogue.models import catalogue_post_save
 
@@ -29,7 +35,6 @@ logger = logging.getLogger(__name__)
 
 
 class CatalogueTest(GeoNodeBaseTestSupport):
-
     def setUp(self):
         super(CatalogueTest, self).setUp()
 
@@ -55,6 +60,45 @@ class CatalogueTest(GeoNodeBaseTestSupport):
         self.assertEqual(record.identification.title, layer.title)
         self.assertEqual(record.identification.abstract, layer.raw_abstract)
         if len(record.identification.otherconstraints) > 0:
-            self.assertEqual(
-                record.identification.otherconstraints[0],
-                layer.raw_constraints_other)
+            self.assertEqual(record.identification.otherconstraints[0], layer.raw_constraints_other)
+
+
+class TestCswGlobalDispatch(GeoNodeBaseTestSupport):
+    def setUp(self):
+        super(TestCswGlobalDispatch, self).setUp()
+        self.request = self.__request_factory_single(123)
+        create_layer_data()
+        self.user = 'admin'
+        self.passwd = 'admin'
+        self.anonymous_user = get_anonymous_user()
+
+    @SkipTest
+    def test_given_a_simple_request_should_return_200(self):
+        actual = csw_global_dispatch(self.request)
+        self.assertEqual(200, actual.status_code)
+
+    def test_given_a_request_for_a_single_uuid_should_return_single_value_in_xml(self):
+        layer = Layer.objects.first()
+        request = self.__request_factory_single(layer.uuid)
+        response = csw_global_dispatch(request)
+        root = ET.fromstring(response.content)
+        actual = len(root.getchildren())
+        self.assertEqual(1, actual)
+
+    @staticmethod
+    def __request_factory_single(uuid):
+        factory = RequestFactory()
+        request = factory.get(
+            f"http://localhost:8000/catalogue/csw?request=GetRecordById&service=CSW&version=2.0.2&id={uuid}&outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&elementsetname=full"
+        )
+        request.user = AnonymousUser()
+        return request
+
+    @staticmethod
+    def __request_factory_multiple(uuid):
+        factory = RequestFactory()
+        request = factory.get(
+            f"http://localhost:8000/catalogue/csw?request=GetRecordById&service=CSW&version=2.0.2&id={uuid}&outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&elementsetname=full"
+        )
+        request.user = AnonymousUser()
+        return request
