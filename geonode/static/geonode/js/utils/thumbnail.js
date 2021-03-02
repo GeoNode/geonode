@@ -1,5 +1,5 @@
 var createMapThumbnail = function(obj_id) {
-    if (typeof(thumbnailUrl) == 'undefined' || typeof(olMap) == 'undefined') {
+    if (typeof(thumbnailUpdateUrl) == 'undefined' || typeof(olMap) == 'undefined') {
         console.error("Missing required variables");
         return true;
     }
@@ -11,7 +11,7 @@ var createMapThumbnail = function(obj_id) {
     };
     $.ajax({
         type: "POST",
-        url: thumbnailUrl,
+        url: thumbnailUpdateUrl,
         data: JSON.stringify(body),
         async: true,
         cache: false,

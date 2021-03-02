@@ -2,7 +2,8 @@
 {% load static %}
 {% load floppyforms %}
 <script type="text/javascript">
-    window.thumbnailUrl = '{% url 'layer_thumbnail' resource.alternate %}';
+    // this is used by thumbnail.js to POST to the thumbnail update view
+    window.thumbnailUpdateUrl = '{% url 'map_thumbnail' resource.id %}';
 </script>
 <!--<link href="{% static "lib/css/bootstrap-select.css" %}" rel="stylesheet" />-->
 <script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
