@@ -1,7 +1,9 @@
 {% load i18n %}
 {% load static %}
 {% load floppyforms %}
-
+<script type="text/javascript">
+    window.thumbnailUrl = '{% url 'layer_thumbnail' resource.alternate %}';
+</script>
 <!--<link href="{% static "lib/css/bootstrap-select.css" %}" rel="stylesheet" />-->
 <script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
 
