@@ -4,7 +4,7 @@ import logging
 import mercantile
 
 from PIL import Image
-from math import ceil, copysign
+from math import ceil, floor, copysign
 from io import BytesIO
 from abc import ABC, abstractmethod
 from pyproj import Transformer
@@ -228,8 +228,9 @@ class GenericXYZBackground(BaseThumbBackground):
 
         map_row_tiles = 2**zoom - 1  # number of tiles in the Map's row for a certain zoom level
 
-        worlds_between = int(east_rescaling_factor - west_rescaling_factor) - 1     # number of full maps in an image
-        if top_left_tile.x > bottom_right_tile.x or bbox[1] - bbox[0] > epsg3857_world_width:
+        map_worlds = int(east_rescaling_factor - west_rescaling_factor)     # number maps in an image
+        worlds_between = map_worlds - 1     # number of full maps in an image
+        if top_left_tile.x > bottom_right_tile.x or bbox[1] - bbox[0] > epsg3857_world_width or map_worlds > 0:
             # BBOX crosses Slippy Map's border
             if worlds_between > 0:
                 tiles_rows = (
@@ -331,7 +332,7 @@ class GenericXYZBackground(BaseThumbBackground):
         minx, miny = to_src_px(bbox[0], bbox[2])
         maxx, maxy = to_src_px(bbox[1], bbox[3])
 
-        crop_box = (round(minx), round(maxy) + fixed_top_offset, round(maxx), round(miny) + fixed_top_offset)
+        crop_box = (ceil(minx), ceil(maxy) + fixed_top_offset, floor(maxx), floor(miny) + fixed_top_offset)
 
         if not all([0 <= crop_x <= background.size[0] for crop_x in [crop_box[0], crop_box[2]]]):
             raise ThumbnailError('Tiled background cropping error. Boundaries outside of the image.')
