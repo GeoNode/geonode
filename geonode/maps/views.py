@@ -284,7 +284,7 @@ def map_metadata(
         new_keywords = current_keywords if request.keyword_readonly else map_form.cleaned_data['keywords']
         new_regions = map_form.cleaned_data['regions']
         new_title = strip_tags(map_form.cleaned_data['title'])
-        new_abstract = strip_tags(map_form.cleaned_data['abstract'])
+        new_abstract = map_form.cleaned_data['abstract']
 
         new_category = None
         if category_form and 'category_choice_field' in category_form.cleaned_data and\
