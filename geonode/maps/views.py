@@ -1335,10 +1335,8 @@ def map_thumbnail(request, mapid):
 
                 bbox = request_body['bbox'] + [request_body['srid']]
                 zoom = request_body.get('zoom', None)
-                width = request_body.get('width', settings.THUMBNAIL_SIZE['width'])
-                height = request_body.get('height', settings.THUMBNAIL_SIZE['height'])
 
-                create_thumbnail(map_obj, bbox=bbox, background_zoom=zoom, width=width, height=height, overwrite=True)
+                create_thumbnail(map_obj, bbox=bbox, background_zoom=zoom, overwrite=True)
             except Exception as e:
                 logger.exception(e)
                 return HttpResponse(

@@ -332,13 +332,16 @@ class GenericXYZBackground(BaseThumbBackground):
         minx, miny = to_src_px(bbox[0], bbox[2])
         maxx, maxy = to_src_px(bbox[1], bbox[3])
 
-        crop_box = (ceil(minx), ceil(maxy) + fixed_top_offset, floor(maxx), floor(miny) + fixed_top_offset)
+        # max and min function for Y axis were introduced to mitigate rounding errors
+        crop_box = (
+            ceil(minx),
+            max(ceil(maxy) + fixed_top_offset, 0),
+            floor(maxx),
+            min(floor(miny) + fixed_top_offset, background.size[1])
+        )
 
         if not all([0 <= crop_x <= background.size[0] for crop_x in [crop_box[0], crop_box[2]]]):
-            raise ThumbnailError('Tiled background cropping error. Boundaries outside of the image.')
-
-        if not all([0 <= crop_y <= background.size[1] for crop_y in [crop_box[1], crop_box[3]]]):
-            raise ThumbnailError('Tiled background cropping error. Boundaries outside of the image.')
+            raise ThumbnailError(f'Tiled background cropping error. Boundaries outside of the image: {crop_box}')
 
         # crop background image to the desired bbox and resize it
         background = background.crop(box=crop_box)

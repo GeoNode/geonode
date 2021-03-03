@@ -27,14 +27,11 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     """
     ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
     wms_version = getattr(ogc_server_settings, "WMS_VERSION") or "1.1.0"
-    default_thumb_size = getattr(settings, "THUMBNAIL_GENERATOR_DEFAULT_SIZE", {"width": 240, "height": 200})
 
     create_thumbnail(
         instance,
         wms_version=wms_version,
         overwrite=overwrite,
-        width=default_thumb_size["width"],
-        height=default_thumb_size["height"],
     )
 
 
@@ -45,8 +42,6 @@ def create_thumbnail(
     forced_crs: Optional[str] = None,
     styles: Optional[str] = None,
     overwrite: bool = False,
-    width: int = 240,
-    height: int = 200,
     background_zoom: Optional[int] = None,
 ) -> None:
     """
@@ -74,6 +69,8 @@ def create_thumbnail(
 
     thumbnail_name = _generate_thumbnail_name(instance)
     mime_type = "image/png"
+    width = settings.THUMBNAIL_SIZE['width']
+    height = settings.THUMBNAIL_SIZE['height']
 
     if thumbnail_name is None:
         # instance is Map and has no layers defined
@@ -99,6 +96,9 @@ def create_thumbnail(
         bbox = bbox_to_projection(bbox, target_srid=int(target_crs.split(":")[1]))
     else:
         compute_bbox_from_layers = True
+
+    # expand the BBOX to match the set thumbnail's ratio (prevent thumbnail's distortions)
+    bbox = utils.expand_bbox_to_ratio(bbox)
 
     # --- define layer locations ---
     locations, layers_bbox = _layers_locations(

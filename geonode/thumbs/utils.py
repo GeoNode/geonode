@@ -2,16 +2,16 @@ import time
 import base64
 import logging
 
+from pyproj import Transformer
 from typing import List, Tuple, Callable, Union
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from geonode import geoserver
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.base.auth import get_or_create_token
-from geonode.utils import http_client, check_ogc_backend
+from geonode.utils import http_client
 from geonode.geoserver.helpers import OGC_Servers_Handler
 
 logger = logging.getLogger(__name__)
@@ -45,6 +45,56 @@ def make_bbox_to_pixels_transf(src_bbox: Union[List, Tuple], dest_bbox: Union[Li
         (x - src_bbox[0]) * (dest_bbox[2] - dest_bbox[0]) / (src_bbox[2] - src_bbox[0]) + dest_bbox[0],
         dest_bbox[3] - dest_bbox[1] - (y - src_bbox[1]) * (dest_bbox[3] - dest_bbox[1]) / (src_bbox[3] - src_bbox[1]),
     )
+
+
+def expand_bbox_to_ratio(
+        bbox,
+        target_width=settings.THUMBNAIL_SIZE['width'],
+        target_height=settings.THUMBNAIL_SIZE['height']
+):
+    """
+    Function returning an expanded BBOX, ensuring it's ratio, based on the provided BBOX, and width and height
+    of the target image.
+
+    :param bbox: a layer compliant BBOX in a certain CRS, in (xmin, xmax, ymin, ymax, 'EPSG:xxxx') order
+    :param target_width: width of the target image in pixels
+    :param target_height: height of the target image in pixels
+    :return: BBOX (in input's format) with provided height/width ratio, and unchanged center point
+             (in regard to the input BBOX)
+    """
+    # convert bbox to EPSG:3857
+    transformer = Transformer.from_crs(bbox[-1].lower(), "epsg:3857", always_xy=True)
+    x_min, y_min = transformer.transform(bbox[0], bbox[2])
+    x_max, y_max = transformer.transform(bbox[1], bbox[3])
+    # scale up to ratio
+    ratio = target_height/target_width
+
+    bbox_width = abs(x_max - x_min)
+    bbox_height = abs(y_max - y_min)
+
+    if bbox_width > bbox_height:
+        new_height = ratio * bbox_width
+        new_width = bbox_width
+    else:
+        new_height = bbox_height
+        new_width = bbox_height / ratio
+
+    x_mid = (x_min + x_max) / 2
+    y_mid = (y_min + y_max) / 2
+
+    new_bbox = [
+        x_mid - new_width / 2,
+        x_mid + new_width / 2,
+        y_mid - new_height / 2,
+        y_mid + new_height / 2,
+    ]
+
+    # convert bbox to target_crs
+    transformer = Transformer.from_crs("epsg:3857", bbox[-1].lower(), always_xy=True)
+    new_x_min, new_y_min = transformer.transform(new_bbox[0], new_bbox[2])
+    new_x_max, new_y_max = transformer.transform(new_bbox[1], new_bbox[3])
+
+    return [new_x_min, new_x_max, new_y_min, new_y_max, bbox[-1]]
 
 
 def assign_missing_thumbnail(instance: Union[Layer, Map]) -> None:

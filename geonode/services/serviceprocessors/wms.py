@@ -289,8 +289,6 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             bbox=geonode_layer.bbox,
             forced_crs=geonode_layer.srid,
             overwrite=True,
-            width=200,
-            height=150,
         )
 
     def _create_layer_legend_link(self, geonode_layer):
