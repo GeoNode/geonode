@@ -97,9 +97,6 @@ def create_thumbnail(
     else:
         compute_bbox_from_layers = True
 
-    # expand the BBOX to match the set thumbnail's ratio (prevent thumbnail's distortions)
-    bbox = utils.expand_bbox_to_ratio(bbox)
-
     # --- define layer locations ---
     locations, layers_bbox = _layers_locations(
         instance, compute_bbox=compute_bbox_from_layers, target_srid=int(target_crs.split(":")[1])
@@ -110,6 +107,9 @@ def create_thumbnail(
             raise ThumbnailError(f"Thumbnail generation couldn't determine a BBOX for {instance.name}.")
         else:
             bbox = layers_bbox
+
+    # --- expand the BBOX to match the set thumbnail's ratio (prevent thumbnail's distortions) ---
+    bbox = utils.expand_bbox_to_ratio(bbox)
 
     # --- add default style ---
     if not styles and hasattr(instance, "default_style"):
