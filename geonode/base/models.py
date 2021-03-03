@@ -1271,6 +1271,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             bbox_polygon.srid = int(match.group('srid')) if match else 4326
             self.bbox_polygon = bbox_polygon
             self.srid = srid
+            if srid == 4326:
+                self.ll_bbox_polygon = bbox_polygon
+            else:
+                self.ll_bbox_polygon = bbox_polygon.transform(4326, clone=True)
         except AttributeError:
             logger.warning("No srid found for layer %s bounding box", self)
 
@@ -1354,20 +1358,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         Sets the center coordinates and zoom level in EPSG:4326
         """
-        bbox = self.bbox_polygon
-        center_x, center_y = self.bbox_polygon.centroid.coords
-        try:
-            center = Point(center_x, center_y, srid=self.srid)
-            center = center.transform(self.srid, clone=True)
-        except Exception:
-            center = Point(center_x, center_y, srid=self.srid)
-
-        if center.srid != 4326:
-            bbox = bbox.transform(4326, clone=True)
-            center = center.transform(4326, clone=True)
-
+        bbox = self.ll_bbox_polygon
+        center_x, center_y = self.ll_bbox_polygon.centroid.coords
+        center = Point(center_x, center_y, srid=4326)
         self.center_x, self.center_y = center.coords
-
         try:
             ext = bbox.extent
             width_zoom = math.log(360 / (ext[2] - ext[0]), 2)
