@@ -20,7 +20,7 @@ celery==5.0.5
 kombu==5.0.2
 vine==5.0.0
 boto3==1.17.12
-tqdm==4.57.0
+tqdm==4.58.0
 Deprecated==1.2.11
 wrapt==1.12.1
 jsonfield==3.1.0
