@@ -67,7 +67,6 @@ dj-pagination==2.5.0
 django-floppyforms<1.10.0
 django-forms-bootstrap<=3.1.0
 django-autocomplete-light==3.5.1
-django-leaflet==0.27.1
 django-invitations<1.9.4
 django-recaptcha==2.0.6
 
@@ -88,7 +87,6 @@ pinax-ratings==4.0.0
 # django-geonode-mapstore-client>=2.1.0
 -e git+https://github.com/GeoNode/geonode-mapstore-client.git@master#egg=django_geonode_mapstore_client
 geonode-avatar==5.0.7
-django-geonode-client==1.0.9
 geonode-oauth-toolkit==2.1.1
 geonode-user-messages==2.0.2
 geonode-announcements==2.0.2
