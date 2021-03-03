@@ -314,10 +314,13 @@ def layer_upload_handle_post(request, template):
                 except TypeError:
                     upload_session.traceback = traceback.format_tb(tb)
                 upload_session.context = log_snippet(CONTEXT_LOG_FILE)
-                upload_session.save()
-                out['traceback'] = upload_session.traceback
-                out['context'] = upload_session.context
-                out['upload_session'] = upload_session.id
+                try:
+                    upload_session.save()
+                    out['traceback'] = upload_session.traceback
+                    out['context'] = upload_session.context
+                    out['upload_session'] = upload_session.id
+                except Exception as e:
+                    logger.debug(e)
             else:
                 # Prevent calls to None
                 if saved_layer:
@@ -382,7 +385,7 @@ def layer_upload_handle_post(request, template):
             if isinstance(out[_k], str):
                 out[_k] = surrogate_escape_string(out[_k], layer_charset)
             elif isinstance(out[_k], dict):
-                for key, value in out[_k].items():
+                for key, value in out[_k].copy().items():
                     try:
                         item = out[_k][key]
                         # Ref issue #4241

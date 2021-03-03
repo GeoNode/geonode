@@ -44,6 +44,7 @@ import tempfile
 
 from http.client import BadStatusLine
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse
@@ -590,19 +591,34 @@ def final_step_view(req, upload_session):
                 return _json_response
             except LayerNotReady:
                 force_ajax = '&force_ajax=true' if 'force_ajax' in req.GET and req.GET['force_ajax'] == 'true' else ''
-                return json_response({'status': 'pending',
-                                      'success': True,
-                                      'id': req.GET['id'],
-                                      'redirect_to': '/upload/final' + "?id=%s%s" % (req.GET['id'], force_ajax)})
+                return json_response(
+                    {
+                        'status': 'pending',
+                        'success': True,
+                        'id': req.GET['id'],
+                        'redirect_to': '/upload/final' + "?id=%s%s" % (req.GET['id'], force_ajax)
+                    }
+                )
+            except Exception as e:
+                url = "upload/layer_upload_invalid.html"
+                _json_response = json_response(
+                    {
+                        'status': 'error',
+                        'url': url,
+                        'error_msg': str(e),
+                        'success': True
+                    }
+                )
+                return _json_response
     else:
-        # url = reverse('layer_browse') + '?limit={}'.format(settings.CLIENT_RESULTS_LIMIT)
         url = "upload/layer_upload_invalid.html"
         _json_response = json_response(
-            {'status': 'error',
-             'url': url,
-             'error_msg': 'Upload Session invalid or no more accessible!',
-             'success': True
-             }
+            {
+                'status': 'error',
+                'url': url,
+                'error_msg': _('Upload Session invalid or no more accessible!'),
+                'success': True
+            }
         )
         return _json_response
 
