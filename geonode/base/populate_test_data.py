@@ -198,6 +198,7 @@ def create_models(type=None, integration=False):
                     center_y=-73,
                     owner=user,
                     bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+                    ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                     srid='EPSG:4326',
                     category=category
                 )
@@ -217,6 +218,7 @@ def create_models(type=None, integration=False):
                     abstract=abstract,
                     owner=user,
                     bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+                    ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                     srid='EPSG:4326',
                     category=category,
                     doc_file=f
@@ -239,6 +241,7 @@ def create_models(type=None, integration=False):
                     name=name,
                     alternate=alternate,
                     bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+                    ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                     srid='EPSG:4326',
                     uuid=str(uuid4()),
                     owner=owner,

@@ -93,12 +93,11 @@ def filter_bbox(queryset, bbox):
             left_polygon = polygon_from_bbox((-180, _bbox[1], x_max, _bbox[3]))
             right_polygon = polygon_from_bbox((x_min, _bbox[1], 180, _bbox[3]))
             queryset = queryset.filter(
-                Q(bbox_polygon__intersects=left_polygon) |
-                Q(bbox_polygon__intersects=right_polygon)
+                Q(ll_bbox_polygon__intersects=left_polygon) |
+                Q(ll_bbox_polygon__intersects=right_polygon)
             )
-
         # Otherwise, we do a simple polygon-based search
         else:
             search_polygon = polygon_from_bbox((x_min, _bbox[1], x_max, _bbox[3]))
-            queryset = queryset.filter(bbox_polygon__intersects=search_polygon)
+            queryset = queryset.filter(ll_bbox_polygon__intersects=search_polygon)
     return queryset
