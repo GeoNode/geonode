@@ -39,7 +39,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 @csrf_exempt
-def csw_global_dispatch(request):
+def csw_global_dispatch(request, layer_filter=None):
     """pycsw wrapper"""
 
     # this view should only operate if pycsw_local is the backend
@@ -84,10 +84,15 @@ def csw_global_dispatch(request):
                 get_objects_for_user(
                     profiles[0],
                     'base.view_resourcebase').values('id'))
+
             layers = ResourceBase.objects.filter(
                 id__in=[d['id'] for d in authorized])
+
+            if layer_filter and layers:
+                layers = layer_filter(layers)
+
             if layers:
-                authorized_ids = [d['id'] for d in authorized]
+                authorized_ids = [d.id for d in layers]
 
         if len(authorized_ids) > 0:
             authorized_layers = "(" + (", ".join(str(e)
