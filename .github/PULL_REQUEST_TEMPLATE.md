@@ -19,5 +19,6 @@ The following are required only for core and extension modules (they are welcome
 - [ ] This PR passes all existing unit tests (test results will be reported by travis-ci after opening this PR)
 - [ ] This PR passes the QA checks: flake8 geonode
 - [ ] Commits changing the **settings**, **UI**, **existing user workflows**, or adding **new functionality**, need to include documentation updates
+- [ ] Commits adding **new texts** do use gettext and have updated .po / .mo files (without location infos)
 
 **Submitting the PR does not require you to check all items, but by the time it gets merged, they should be either satisfied or inapplicable.**
