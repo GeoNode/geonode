@@ -27,7 +27,10 @@ import subprocess
 import signal
 import sys
 import time
+import pytz
 import logging
+import datetime
+from dateutil.parser import parse as parsedate
 
 from urllib.parse import urlparse
 from urllib.request import urlopen, Request
@@ -102,9 +105,23 @@ def grab(src, dest, name):
         logger.info("Downloading {}".format(name))
     elif not zipfile.is_zipfile(dest):
         logger.info("Downloading {} (corrupt file)".format(name))
-    else:
-        return
+    elif not src.startswith("file://"):
+        r = requests.head(src)
+        file_time = datetime.datetime.fromtimestamp(os.path.getmtime(dest))
+        url_time = file_time
+        for _k in ['last-modified', 'Date']:
+            if _k in r.headers:
+                url_time = r.headers[_k]
+        url_date = parsedate(url_time)
+        utc = pytz.utc
+        url_date = url_date.replace(tzinfo=utc)
+        file_time = file_time.replace(tzinfo=utc)
+        if url_date < file_time :
+            # Do not download if older than the local one
+            return
+        logger.info("Downloading updated {}".format(name))
 
+    # Local file does not exist or remote one is newer
     if src.startswith("file://"):
         src2 = src.replace("file://", '')
         if not os.path.exists(src2):
@@ -395,6 +412,7 @@ def sync(options):
     if 'django_celery_beat' in INSTALLED_APPS:
         sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/django_celery_beat.json" % settings)
     sh("%s python -W ignore manage.py set_all_layers_alternate" % settings)
+    sh("%s python -W ignore manage.py collectstatic --noinput" % settings)
 
 
 @task
