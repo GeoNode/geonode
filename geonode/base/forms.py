@@ -522,6 +522,7 @@ class ResourceBaseForm(TranslationModelForm):
             'name',
             'uuid',
             'bbox_polygon',
+            'll_bbox_polygon',
             'srid',
             'category',
             'csw_typename',
@@ -539,6 +540,9 @@ class ResourceBaseForm(TranslationModelForm):
             'rating',
             'detail_url',
             'tkeywords',
+            'users_geolimits',
+            'groups_geolimits',
+            'dirty_state'
         )
 
 
