@@ -18,6 +18,7 @@
 #
 #########################################################################
 import os
+import re
 import shutil
 import geoserver
 
@@ -525,33 +526,6 @@ def geoserver_post_save_layers(
                     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
                     gs_resource.attribution_link = site_url + profile.get_absolute_url()
 
-                """Get information from geoserver.
-
-                The attributes retrieved include:
-
-                * Bounding Box
-                * SRID
-                * Download links (WMS, WCS or WFS and KML)
-                * Styles (SLD)
-                """
-                try:
-                    # This is usually done in Layer.pre_save, however if the hooks
-                    # are bypassed by custom create/updates we need to ensure the
-                    # bbox is calculated properly.
-                    bbox = gs_resource.native_bbox
-                    instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], gs_resource.projection)
-                except Exception as e:
-                    logger.exception(e)
-
-                if instance.srid:
-                    instance.srid_url = "http://www.spatialreference.org/ref/" + \
-                        instance.srid.replace(':', '/').lower() + "/"
-                elif instance.bbox_polygon is not None:
-                    # Guessing 'EPSG:4326' by default
-                    instance.srid = 'EPSG:4326'
-                else:
-                    raise GeoNodeException(_("Invalid Projection. Layer is missing CRS!"))
-
                 # Iterate over values from geoserver.
                 for key in ['alternate', 'store', 'storeType']:
                     # attr_name = key if 'typename' not in key else 'alternate'
@@ -585,12 +559,38 @@ def geoserver_post_save_layers(
                     logger.exception(e)
 
                 # store the resource to avoid another geoserver call in the post_save
+                """Get information from geoserver.
+
+                The attributes retrieved include:
+
+                * Bounding Box
+                * SRID
+                """
+                try:
+                    # This is usually done in Layer.pre_save, however if the hooks
+                    # are bypassed by custom create/updates we need to ensure the
+                    # bbox is calculated properly.
+                    srid = gs_resource.projection
+                    bbox = gs_resource.native_bbox
+                    instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
+                except Exception as e:
+                    logger.exception(e)
+                    srid = instance.srid
+                    bbox = instance.bbox
+
+                if instance.srid:
+                    instance.srid_url = "http://www.spatialreference.org/ref/" + \
+                        instance.srid.replace(':', '/').lower() + "/"
+                elif instance.bbox_polygon is not None:
+                    # Guessing 'EPSG:4326' by default
+                    instance.srid = 'EPSG:4326'
+                else:
+                    raise GeoNodeException(_("Invalid Projection. Layer is missing CRS!"))
+
                 to_update = {
                     'title': instance.title or instance.name,
                     'abstract': instance.abstract or "",
-                    'alternate': instance.alternate,
-                    'bbox_polygon': instance.bbox_polygon,
-                    'srid': 'EPSG:4326'
+                    'alternate': instance.alternate
                 }
 
                 if is_monochromatic_image(instance.thumbnail_url):
@@ -610,6 +610,15 @@ def geoserver_post_save_layers(
                         to_update['typename'] = instance.alternate
 
                         Layer.objects.filter(id=instance.id).update(**to_update)
+
+                        # Dealing with the BBOX: this is a trick to let GeoDjango storing original coordinates
+                        instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], 'EPSG:4326')
+                        Layer.objects.filter(id=instance.id).update(
+                            bbox_polygon=instance.bbox_polygon, srid='EPSG:4326')
+                        match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
+                        instance.bbox_polygon.srid = int(match.group('srid')) if match else 4326
+                        Layer.objects.filter(id=instance.id).update(
+                            ll_bbox_polygon=instance.bbox_polygon, srid=srid)
 
                         # Refresh from DB
                         instance.refresh_from_db()
