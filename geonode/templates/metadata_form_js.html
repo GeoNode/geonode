@@ -63,8 +63,9 @@
         animation: true,
         content: tooltipContent
       });
-
+    {% block completeness  %}
     var updateCompleteness = function(completeness) {
+        {% block extendcompleteness %}{% endblock extendcompleteness %}
       $('#profileCompleteness .progress-bar').html(parseFloat(((completeness)*100).toFixed(0)) + ' %').width(parseFloat(((completeness)*100).toFixed(2)) + '%');
       $('#profileCompleteness .completed').toggle(completeness === 1);
       $('#profileCompleteness .not-completed').toggle(completeness !== 1);
@@ -100,7 +101,6 @@
         .toggleClass('progress-bar-success', !advancedMissing)
         .attr('title', advancedMissing ? gettext("some schema mandatory fields are missing") : gettext("Metadata Schema mandatory fields completed") )
         .tooltip('fixTitle');
-
         //done button tooltip
         if(completeness === 1 && $('.metadata-edit-done').css('opacity')+"" === "0" && !tooltipShown && !gotIt) {
           tooltipShown = true;
@@ -118,6 +118,7 @@
         // show/hide done button
         $('.metadata-edit-done').animate(completeness === 1 ? {width: '100px', opacity: 1} : {width: 0, opacity: 0});
     }
+    {% endblock completeness  %}
 
     function getTab(number) {
       var activeTab = $("#edit-metadata .wizard--progress li.is-active");
@@ -199,8 +200,11 @@
     $(document).ready(function() {
         var prevNum = 0, totalNum = 0;
         var empty = 0;
+        {% block hints %}
+
         $('#completeness-hints .mandatory-hint').click(getTab.bind(null, 1));
         $('#completeness-hints .advanced-hint').click(getTab.bind(null, 2));
+        {% endblock hints %}
 
         // set proper classes to count empty fields and display them
         var setInputEmpty = function( target, empty ) {
@@ -217,7 +221,7 @@
             $(target).siblings('span').toggleClass('has-error', empty);
             $(target).toggleClass("input-empty", empty);
           }
-
+        {% block target %}
           if(target.id === 'category_form' ||
              target.id === 'id_resource-regions' ||
              target.id === 'id_resource-group'
@@ -233,6 +237,7 @@
               $(target).toggleClass("input-empty", empty);
           }
 
+        {% endblock target %}
           // bootstrap-select copies the select's classes, so it have to be removed
           if( $( '.bootstrap-select' ).hasClass("input-empty") ) {
             $( '.bootstrap-select' ).toggleClass("input-empty");
@@ -294,10 +299,10 @@
                         el.type !== 'button');
             return is_mandatory;
         }
-
+        
+        {% block onInputChange %}
         var onInputChange = function(e){
             toggleRestrictionsConstraints(e);
-
             if(e.target.value !== undefined && e.target.value.trim() === ''){
                 if(!$(e.target).hasClass("input-empty")){
                     if(isMandatoryField(this)) {
@@ -330,7 +335,8 @@
                 }
             }
         };
-
+        {% endblock onInputChange %}
+        {% block trigger_onInputChange %}
         $('#category_form').change(onInputChange).change();
         $('#id_resource-group').change(onInputChange).change();
         document.querySelector('select[name="resource-keywords"]').onchange=onInputChange
@@ -365,6 +371,7 @@ $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(on
             }
         });
 
+        {% endblock trigger_onInputChange %}
         // Dataset attributes sorting
         $(document).ready(function() {
             //Helper function to keep table row from collapsing when being sorted
@@ -665,7 +672,6 @@ $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(on
             success: function(data) {
                 data = JSON.parse(data)
                 var kws = parseKeywords(data);
-
                 {% if freetext_readonly %}
                     $('#id_resource-keywords').tokenfield({
                         createTokensOnBlur: true,
@@ -684,7 +690,6 @@ $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(on
                         if(!exists) {
                             event.preventDefault(); //prevents creation of token
                         }
-
                         var existingTokens = $(this).tokenfield('getTokens');
                         $.each(existingTokens, function(index, token) {
                             if (token.value === event.attrs.value)
@@ -714,7 +719,6 @@ $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(on
                         });
                     });
                 {% endif %}
-
                 if (window.location.href.match('/metadata_advanced$')) {
                     if (!select_button_active) {
                         const select_button = $('<button id="id_freetext_keyword_select" class="btn btn-primary">Select</button>');
@@ -725,7 +729,6 @@ $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(on
                     $('#id_freetext_keyword_select').click(function() {
                         $('#id_resource-keywords-tokenfield').blur().focus();
                     });
-
                     const resource_group = $('#id_resource-group');
                     resource_group.empty();
                     resource_group.append('<option value="">-----</option>');
@@ -741,7 +744,6 @@ $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(on
                         {% endif %}
                     {% endfor %}
                 }
-
                 $('#treeview').treeview({
                     color: "#428bca",
                     expandIcon: "fa fa-folder",
@@ -767,7 +769,6 @@ $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(on
                         // $('#treeview-toggle').click();
                     }
                 });
-
                 $('#treeview-toggle').click((e, value) => {
                 $('#treeview').toggle();
                 var icon = $(this).find('i');
