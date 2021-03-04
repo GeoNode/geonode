@@ -12,7 +12,7 @@ from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.base.thumb_utils import thumb_exists
 from geonode.geoserver.helpers import OGC_Servers_Handler
-from geonode.utils import get_layer_name, get_layer_workspace, bbox_to_projection
+from geonode.utils import get_layer_name, get_layer_workspace
 from geonode.thumbs import utils
 from geonode.thumbs.exceptions import ThumbnailError
 
@@ -93,13 +93,13 @@ def create_thumbnail(
             logger.error(f"Thumbnail bbox is in a wrong format: {bbox}")
             raise ThumbnailError("Wrong BBOX format")
 
-        bbox = bbox_to_projection(bbox, target_srid=int(target_crs.split(":")[1]))
+        bbox = utils.transform_bbox(bbox, target_crs=target_crs)
     else:
         compute_bbox_from_layers = True
 
     # --- define layer locations ---
     locations, layers_bbox = _layers_locations(
-        instance, compute_bbox=compute_bbox_from_layers, target_srid=int(target_crs.split(":")[1])
+        instance, compute_bbox=compute_bbox_from_layers, target_crs=target_crs
     )
 
     if compute_bbox_from_layers:
@@ -208,7 +208,7 @@ def _generate_thumbnail_name(instance: Union[Layer, Map]) -> Optional[str]:
 
 
 def _layers_locations(
-    instance: Union[Layer, Map], compute_bbox: bool = False, target_srid: int = 3857
+    instance: Union[Layer, Map], compute_bbox: bool = False, target_crs: str = "EPSG:3857"
 ) -> Tuple[List[List], List]:
     """
     Function returning a list mapping instance's layers to their locations, enabling to construct a minimum
@@ -217,7 +217,7 @@ def _layers_locations(
     :param instance: instance of Layer or Map models
     :param compute_bbox: flag determining whether a BBOX containing the instance should be computed,
                          based on instance's layers
-    :param target_srid: valid only when compute_bbox is True - SRID of the returned BBOX
+    :param target_crs: valid only when compute_bbox is True - CRS of the returned BBOX
     :return: a tuple with a list, which maps layers to their locations in a correct layers order
              e.g.
                 [
@@ -239,7 +239,7 @@ def _layers_locations(
             locations.append([instance.remote_service.service_url, [instance.alternate]])
 
         if compute_bbox:
-            bbox = bbox_to_projection(instance.bbox, target_srid)
+            bbox = utils.transform_bbox(instance.bbox, target_crs.lower())
 
     elif isinstance(instance, Map):
 
@@ -294,9 +294,9 @@ def _layers_locations(
 
             if compute_bbox:
                 if not bbox:
-                    bbox = bbox_to_projection(layer.bbox, target_srid)
+                    bbox = utils.transform_bbox(layer.bbox, target_crs.lower())
                 else:
-                    layer_bbox = bbox_to_projection(layer.bbox, target_srid)
+                    layer_bbox = utils.transform_bbox(layer.bbox, target_crs.lower())
                     # layer's BBOX: (left, right, bottom, top)
                     bbox = [
                         min(bbox[0], layer_bbox[0]),
@@ -306,6 +306,6 @@ def _layers_locations(
                     ]
 
     if len(bbox) < 5:
-        bbox = list(bbox) + [f"EPSG:{target_srid}"]     # convert bbox to list, if it's tuple from bbox_to_projection
+        bbox = list(bbox) + [target_crs]     # convert bbox to list, if it's tuple
 
     return locations, bbox

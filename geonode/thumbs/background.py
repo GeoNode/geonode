@@ -184,7 +184,7 @@ class GenericXYZBackground(BaseThumbBackground):
             logger.error(f"Thumbnail background requires url to be configured.")
             raise ThumbnailError('Tiled background improperly configured.')
 
-        if bbox[-1] != self.crs:
+        if bbox[-1].lower() != self.crs.lower():
             # background service is not available the requested CRS CRS
             logger.debug(
                 f"Thumbnail background generation skipped. "

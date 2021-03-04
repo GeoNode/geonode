@@ -47,10 +47,22 @@ def make_bbox_to_pixels_transf(src_bbox: Union[List, Tuple], dest_bbox: Union[Li
     )
 
 
+def transform_bbox(bbox: List, target_crs: str = "epsg:3857"):
+    """
+    Function transforming BBOX in layer compliant format (xmin, xmax, ymin, ymax, 'EPSG:xxxx') to another CRS,
+    preserving overflow values.
+    """
+    transformer = Transformer.from_crs(bbox[-1].lower(), target_crs.lower(), always_xy=True)
+    x_min, y_min = transformer.transform(bbox[0], bbox[2])
+    x_max, y_max = transformer.transform(bbox[1], bbox[3])
+
+    return [x_min, x_max, y_min, y_max, target_crs]
+
+
 def expand_bbox_to_ratio(
-        bbox,
-        target_width=settings.THUMBNAIL_SIZE['width'],
-        target_height=settings.THUMBNAIL_SIZE['height']
+        bbox: List,
+        target_width: int = settings.THUMBNAIL_SIZE['width'],
+        target_height: int =settings.THUMBNAIL_SIZE['height']
 ):
     """
     Function returning an expanded BBOX, ensuring it's ratio, based on the provided BBOX, and width and height
@@ -63,9 +75,8 @@ def expand_bbox_to_ratio(
              (in regard to the input BBOX)
     """
     # convert bbox to EPSG:3857
-    transformer = Transformer.from_crs(bbox[-1].lower(), "epsg:3857", always_xy=True)
-    x_min, y_min = transformer.transform(bbox[0], bbox[2])
-    x_max, y_max = transformer.transform(bbox[1], bbox[3])
+    x_min, x_max, y_min, y_max, _ = transform_bbox(bbox)
+
     # scale up to ratio
     ratio = target_height/target_width
 
@@ -87,14 +98,11 @@ def expand_bbox_to_ratio(
         x_mid + new_width / 2,
         y_mid - new_height / 2,
         y_mid + new_height / 2,
+        'epsg:3857',
     ]
 
     # convert bbox to target_crs
-    transformer = Transformer.from_crs("epsg:3857", bbox[-1].lower(), always_xy=True)
-    new_x_min, new_y_min = transformer.transform(new_bbox[0], new_bbox[2])
-    new_x_max, new_y_max = transformer.transform(new_bbox[1], new_bbox[3])
-
-    return [new_x_min, new_x_max, new_y_min, new_y_max, bbox[-1]]
+    return transform_bbox(new_bbox, target_crs=bbox[-1].lower())
 
 
 def assign_missing_thumbnail(instance: Union[Layer, Map]) -> None:
