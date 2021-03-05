@@ -17,15 +17,6 @@
     "cropperjs/dist/cropper.css",
     "@yaireo/tagify/dist/tagify.css"
   ],
-  "leaflet.plugins.min.css": [
-    "leaflet/dist/leaflet.css",
-    "leaflet-easybutton/src/easy-button.css",
-    "leaflet.pancontrol/src/L.Control.Pan.css",
-    "leaflet-fullscreen/dist/leaflet.fullscreen.css",
-    "leaflet.control.opacity/dist/L.Control.Opacity.css",
-    "leaflet-measure/dist/leaflet-measure.css",
-    "leaflet-navbar/Leaflet.NavBar.css"
-  ],
   "openlayers.plugins.min.css": [
     "openlayers/dist/ol.css"
   ],
@@ -57,7 +48,6 @@
     "angular/angular.min.js",
     "angular-cookies/angular-cookies.js",
     "angular-sanitize/angular-sanitize.min.js",
-    "angular-leaflet-directive/dist/angular-leaflet-directive.min.js",
     "angular-openlayers-directive/dist/angular-openlayers-directive.min.js",
 
     "eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js",
@@ -89,16 +79,6 @@
 
     "tinymce/tinymce.min.js"
   ],
-  "leaflet-plugins.min.js": [
-    "leaflet/dist/leaflet.js",
-    "leaflet-fullscreen/dist/Leaflet.fullscreen.min.js",
-    "leaflet-measure/dist/leaflet-measure.js",
-    "leaflet-navbar/index.js",
-    "leaflet-easybutton/src/easy-button.js",
-    "leaflet.control.opacity/dist/L.Control.Opacity.js",
-    "leaflet.locatecontrol/dist/L.Control.Locate.min.js",
-    "leaflet.pancontrol/src/L.Control.Pan.js"
-  ],
   "openlayers-plugins.min.js": [
     "openlayers/dist/ol.js"
   ],
@@ -119,12 +99,6 @@
   "images": [
     "raty-js/lib/images/*.png",
     "jquery-ui-dist/images/*",
-    "leaflet/dist/images/*.png",
-    "leaflet-fullscreen/dist/*.png",
-    "leaflet.control.opacity/img/*",
-    "leaflet-measure/dist/assets/*",
-    "leaflet-navbar/img/*",
-    "leaflet.pancontrol/src/images/*",
     "datatables/media/images/*.png",
     "timeago/*.png",
     "timeago/*.png",
@@ -137,9 +111,7 @@
       "raty-js/lib/fonts/*"
   ],
   "lib_css_assets": [
-    "leaflet-measure/assets/*"
   ],
   "lib_css_png": [
-    "leaflet-fullscreen/dist/*.png"
   ]
 }

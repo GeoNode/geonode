@@ -22,7 +22,6 @@ import os
 import sys
 import logging
 import shutil
-import base64
 import traceback
 from types import TracebackType
 import warnings
@@ -32,7 +31,6 @@ from django.db.models import Q
 from urllib.parse import quote
 
 from django.http import Http404
-from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
 from django.template.response import TemplateResponse
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -705,16 +703,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'DEFAULT_MAP_CRS',
         'EPSG:3857')
 
-    # provide bbox in EPSG:4326 for leaflet
-    if context_dict["preview"] == 'leaflet':
-        try:
-            srid, wkt = layer.geographic_bounding_box.split(';')
-            srid = re.findall(r'\d+', srid)
-            geom = GEOSGeometry(wkt, srid=int(srid[0]))
-            geom.transform(4326)
-            context_dict["layer_bbox"] = ','.join([str(c) for c in geom.extent])
-        except Exception:
-            pass
     if layer.storeType == 'dataStore':
         links = layer.link_set.download().filter(
             Q(name__in=settings.DOWNLOAD_FORMATS_VECTOR) |
@@ -1502,28 +1490,23 @@ def layer_thumbnail(request, layername):
         raise Http404(_("Not found"))
 
     try:
+        # try:
+        #     preview = json.loads(request.body).get('preview', None)
+        # except Exception as e:
+        #     logger.debug(e)
+        #     preview = None
+
+        image = None
         try:
-            preview = json.loads(request.body).get('preview', None)
+            image = _prepare_thumbnail_body_from_opts(
+                request.body, request=request)
         except Exception as e:
             logger.debug(e)
-            preview = None
-
-        if preview and preview == 'react':
-            format, image = json.loads(
-                request.body)['image'].split(';base64,')
-            image = base64.b64decode(image)
-        else:
-            image = None
             try:
-                image = _prepare_thumbnail_body_from_opts(
-                    request.body, request=request)
+                image = _render_thumbnail(request.body)
             except Exception as e:
                 logger.debug(e)
-                try:
-                    image = _render_thumbnail(request.body)
-                except Exception as e:
-                    logger.debug(e)
-                    image = None
+                image = None
 
         is_image = False
         if image:
