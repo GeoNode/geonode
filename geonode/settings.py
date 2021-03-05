@@ -1397,9 +1397,7 @@ GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = os.getenv('GEONODE_CLIENT_LAYER_PREVIEW_L
 MAP_BASELAYERS = [{}]
 
 """
-To enable the MapStore2 REACT based Client:
-1. pip install pip install django-geonode-mapstore-client==1.0
-2. enable those:
+MapStore2 REACT based Client parameters
 """
 if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     GEONODE_CLIENT_HOOKSET = os.getenv('GEONODE_CLIENT_HOOKSET', 'geonode_mapstore_client.hooksets.MapStoreHookSet')
