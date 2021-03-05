@@ -71,7 +71,7 @@ django-invitations<1.9.4
 django-recaptcha==2.0.6
 
 # REST
-djangorestframework>=3.1.0,<3.12.3
+djangorestframework>=3.8.2,<=3.12.1
 djangorestframework-gis>=0.16
 djangorestframework_guardian==0.3.0
 drf-extensions==0.6.0
