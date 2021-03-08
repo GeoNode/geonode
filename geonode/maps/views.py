@@ -260,7 +260,7 @@ def map_metadata(
         map_tkeywords = map_obj.tkeywords.all()
         tkeywords_list = ''
         # Create THESAURUS widgets
-        lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, 'THESAURUS_DEFAULT_LANG') else 'en'
+        lang = 'en'
         if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
             warnings.warn('The settings for Thesaurus has been moved to Model, \
             this feature will be removed in next releases', DeprecationWarning)
@@ -298,6 +298,7 @@ def map_metadata(
     
         new_poc = map_form.cleaned_data['poc']
         new_author = map_form.cleaned_data['metadata_author']
+        new_keywords = current_keywords if request.keyword_readonly else map_form.cleaned_data['keywords']
         new_regions = map_form.cleaned_data['regions']
         new_title = map_form.cleaned_data['title']
         new_abstract = map_form.cleaned_data['abstract']
@@ -334,6 +335,7 @@ def map_metadata(
         map_obj.title = new_title
         map_obj.abstract = new_abstract
         map_obj.keywords.clear()
+        map_obj.keywords.add(*new_keywords)
         map_obj.regions.clear()
         map_obj.regions.add(*new_regions)
         map_obj.category = new_category
