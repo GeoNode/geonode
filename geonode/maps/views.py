@@ -39,7 +39,6 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_http_methods
 
 import json
-from django.utils.html import strip_tags
 from django.db.models import F
 from django.views.decorators.clickjacking import (
     xframe_options_exempt,
@@ -284,8 +283,8 @@ def map_metadata(
         new_author = map_form.cleaned_data['metadata_author']
         new_keywords = current_keywords if request.keyword_readonly else map_form.cleaned_data['keywords']
         new_regions = map_form.cleaned_data['regions']
-        new_title = strip_tags(map_form.cleaned_data['title'])
-        new_abstract = strip_tags(map_form.cleaned_data['abstract'])
+        new_title = map_form.cleaned_data['title']
+        new_abstract = map_form.cleaned_data['abstract']
 
         new_category = None
         if category_form and 'category_choice_field' in category_form.cleaned_data and\

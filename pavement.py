@@ -27,7 +27,10 @@ import subprocess
 import signal
 import sys
 import time
+import pytz
 import logging
+import datetime
+from dateutil.parser import parse as parsedate
 
 from urllib.parse import urlparse
 from urllib.request import urlopen, Request
@@ -102,9 +105,23 @@ def grab(src, dest, name):
         logger.info("Downloading {}".format(name))
     elif not zipfile.is_zipfile(dest):
         logger.info("Downloading {} (corrupt file)".format(name))
-    else:
-        return
+    elif not src.startswith("file://"):
+        r = requests.head(src)
+        file_time = datetime.datetime.fromtimestamp(os.path.getmtime(dest))
+        url_time = file_time
+        for _k in ['last-modified', 'Date']:
+            if _k in r.headers:
+                url_time = r.headers[_k]
+        url_date = parsedate(url_time)
+        utc = pytz.utc
+        url_date = url_date.replace(tzinfo=utc)
+        file_time = file_time.replace(tzinfo=utc)
+        if url_date < file_time :
+            # Do not download if older than the local one
+            return
+        logger.info("Downloading updated {}".format(name))
 
+    # Local file does not exist or remote one is newer
     if src.startswith("file://"):
         src2 = src.replace("file://", '')
         if not os.path.exists(src2):
@@ -165,6 +182,8 @@ def setup_geoserver(options):
             os.path.basename(urlparse(dev_config['GEOSERVER_URL']).path)
         jetty_runner = download_dir / \
             os.path.basename(urlparse(dev_config['JETTY_RUNNER_URL']).path)
+        geoserver_data = download_dir / \
+                       os.path.basename(urlparse(dev_config['DATA_DIR_URL']).path)
         grab(
             options.get(
                 'geoserver',
@@ -177,6 +196,13 @@ def setup_geoserver(options):
                 dev_config['JETTY_RUNNER_URL']),
             jetty_runner,
             "jetty runner")
+        grab(
+            options.get(
+                'geoserver data',
+                dev_config['DATA_DIR_URL']),
+            geoserver_data,
+            "geoserver data-dir")
+
         if not geoserver_dir.exists():
             geoserver_dir.makedirs()
 
@@ -187,7 +213,12 @@ def setup_geoserver(options):
             logger.info("extracting geoserver")
             z = zipfile.ZipFile(geoserver_bin, "r")
             z.extractall(webapp_dir)
-        _install_data_dir()
+
+            logger.info("extracting geoserver data dir")
+            z = zipfile.ZipFile(geoserver_data, "r")
+            z.extractall(geoserver_dir)
+
+        _configure_data_dir()
 
 
 def _robust_rmtree(path, logger=None, max_retries=5):
@@ -211,17 +242,7 @@ def _robust_rmtree(path, logger=None, max_retries=5):
     shutil.rmtree(path)
 
 
-def _install_data_dir():
-    target_data_dir = path('geoserver/data')
-    if target_data_dir.exists():
-        try:
-            target_data_dir.rmtree()
-        except OSError:
-            _robust_rmtree(target_data_dir, logger=True)
-
-    original_data_dir = path('geoserver/geoserver/data')
-    justcopy(original_data_dir, target_data_dir)
-
+def _configure_data_dir():
     try:
         config = path(
             'geoserver/data/global.xml')
@@ -391,6 +412,7 @@ def sync(options):
     if 'django_celery_beat' in INSTALLED_APPS:
         sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/django_celery_beat.json" % settings)
     sh("%s python -W ignore manage.py set_all_layers_alternate" % settings)
+    sh("%s python -W ignore manage.py collectstatic --noinput" % settings)
 
 
 @task
@@ -907,7 +929,7 @@ def _reset():
     )
     sh("rm -rf geonode/development.db")
     sh("rm -rf geonode/uploaded/*")
-    _install_data_dir()
+    _configure_data_dir()
 
 
 @needs(['reset'])

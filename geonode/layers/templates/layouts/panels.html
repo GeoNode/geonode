@@ -232,6 +232,8 @@ span.grippy::after {
 
 <div class="tab-content">
 <div id="edit-metadata" class="tab-content tab-pane fade in active">
+{% block edit_progress %}
+
   <div id="completeness-hints" class="progress">
 
   <div class="mandatory-hint progress-bar" role="progressbar" style="width:25%">
@@ -244,6 +246,8 @@ span.grippy::after {
     {% trans "Optional" %}
   </div>
 </div>
+{% endblock edit_progress %}
+ {% block breadcrumbs %}
   <ul class="wizard--progress wizard--progress--medium">
       <li data-step="1" id="first" class="is-active" data-toggle="tab" href="#mandatory">
           <a>{% trans "Basic Metadata" %}</a>
@@ -258,6 +262,8 @@ span.grippy::after {
           <a>{% trans "Dataset Attributes" %}</a>
       </li>
   </ul>
+  {% endblock breadcrumbs %}
+  {% block mandatory %}
     <div id="mandatory" class="tab-pane fade in active">
         <!--<br />-->
         <div class="panel-group">
@@ -373,7 +379,8 @@ span.grippy::after {
             </div>
         </div>
     </div>
-
+    {% endblock %}
+    {% block advanced %}
     <div id="advanced" class="tab-pane fade">
         <div class="panel-group">
                 <div class="panel panel-default">
@@ -381,6 +388,7 @@ span.grippy::after {
                     <div class="panel-body">
                         <div class="" id="mdinfo">
                             <div class="">
+                            {% block layer_attributes %}
                                 <div class="col-lg-4">
                                     <div>
                                         <span><label for="{{ layer_form.language|id }}">{{ layer_form.language.label }}</label></span>
@@ -401,6 +409,8 @@ span.grippy::after {
                                         {{ layer_form.attribution }}
                                     </div>
                                 </div>
+                                {% endblock layer_attributes %}
+                                {% block layer_regions %}
                                 <div class="col-lg-4">
                                       <div id="regions_multiselect_container">
                                           <span><label for="{{ layer_form.regions|id }}">{{ layer_form.regions.label }}</label></span>
@@ -412,6 +422,8 @@ span.grippy::after {
                                           {{ layer_form.data_quality_statement }}
                                       </div>
                                 </div>
+                                {% endblock layer_regions %}
+                                {% block layer_constraints %}
                                 <div class="col-lg-4">
                                     <div>
                                         <span><label for="{{ layer_form.restriction_code_type|id }}">{{ layer_form.restriction_code_type.label }}</label></span>
@@ -424,6 +436,7 @@ span.grippy::after {
                                         {{ layer_form.constraints_other }}
                                     </div>
                                 </div>
+                                {% endblock layer_constraints %}
                             </div>
                             <div class="row">
 
@@ -433,7 +446,9 @@ span.grippy::after {
                 </div>
         </div>
     </div>
-
+    {% endblock %}
+    {% block other_tab %}{% endblock other_tab %}
+    {% block ownership %}
     <div id="ownership" class="tab-pane fade">
         <div class="panel-group"><div class="panel panel-default"><div class="panel-body">
         <div>
@@ -532,6 +547,8 @@ span.grippy::after {
         </div>
       </div></div></div>
     </div>
+    {% endblock %}
+    {% block dataset %}
     <div id="dataset" class="tab-pane fade">
       <div class="panel-group"><div class="panel panel-default"><div class="panel-body">
         <div>
@@ -582,6 +599,7 @@ span.grippy::after {
         </div>
       </div>
     </div>
+    {% endblock %}
   </div>
 </div>
 <div id="preview" class="tab-pane fade" style="overflow: hidden;">

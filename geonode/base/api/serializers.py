@@ -241,6 +241,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         self.fields['supplemental_information'] = serializers.CharField()
         self.fields['data_quality_statement'] = serializers.CharField()
         self.fields['bbox_polygon'] = fields.GeometryField()
+        self.fields['ll_bbox_polygon'] = fields.GeometryField()
         self.fields['srid'] = serializers.CharField()
         self.fields['group'] = DynamicRelationField(GroupSerializer, embed=True, many=False)
         self.fields['popular_count'] = serializers.CharField()
@@ -280,7 +281,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             'pk', 'uuid', 'resource_type', 'polymorphic_ctype_id',
             'owner', 'poc', 'metadata_author',
             'keywords', 'regions', 'category',
-            'title', 'abstract', 'attribution', 'doi', 'alternate', 'bbox_polygon', 'srid',
+            'title', 'abstract', 'attribution', 'doi', 'alternate', 'bbox_polygon', 'll_bbox_polygon', 'srid',
             'date', 'date_type', 'edition', 'purpose', 'maintenance_frequency',
             'restriction_code_type', 'constraints_other', 'license', 'language',
             'spatial_representation_type', 'temporal_extent_start', 'temporal_extent_end',

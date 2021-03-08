@@ -55,7 +55,6 @@ import re
 import os
 import csv
 import glob
-import time
 from urllib.parse import unquote, urlsplit
 from urllib.error import HTTPError
 import logging
@@ -139,7 +138,6 @@ class UploaderBase(GeoNodeBaseTestSupport):
             GEONODE_URL, GEONODE_USER, GEONODE_PASSWD
         )
         for i in range(10):
-            time.sleep(.2)
             try:
                 cl.get_html('/', debug=False)
                 break
@@ -279,7 +277,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
                         data)
                     self.assertTrue('redirect_to' in data)
                     current_step = data['redirect_to']
-                    self.wait_for_progress(data.get('progress'))
+                    # self.wait_for_progress(data.get('progress'))
 
         if not is_raster and not skip_srs:
             self.assertTrue(upload_step('srs') in current_step)
@@ -340,7 +338,6 @@ class UploaderBase(GeoNodeBaseTestSupport):
         # work around acl caching on geoserver side of things
         caps_found = False
         for i in range(10):
-            time.sleep(.5)
             try:
                 self.check_layer_geoserver_caps(type_name)
                 self.check_layer_geoserver_rest(layer_name)
@@ -370,13 +367,18 @@ class UploaderBase(GeoNodeBaseTestSupport):
 
     def check_upload_complete(self, layer_name, resp, data):
         """ Makes sure that we got the correct response from an layer
-        that can't be uploaded"""
+        that has been uploaded"""
         self.assertTrue(resp.status_code, 200)
         if not isinstance(data, str):
             self.assertTrue(data['success'])
             final_step = upload_step("final")
             if "final" in data['redirect_to']:
                 self.assertTrue(final_step in data['redirect_to'])
+
+    def check_upload_failed(self, layer_name, resp, data):
+        """ Makes sure that we got the correct response from an layer
+        that can't be uploaded"""
+        self.assertTrue(resp.status_code, 400)
 
     def upload_folder_of_files(self, folder, final_check, session_ids=None):
 
@@ -405,6 +407,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
                     check_name=None, session_ids=None):
         if not check_name:
             check_name, _ = os.path.splitext(fname)
+        logger.error(f" debug CircleCI...........upload_file: {fname}")
         resp, data = self.client.upload_file(fname)
         if session_ids is not None:
             if not isinstance(data, str):
@@ -414,6 +417,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
                     if session_id:
                         session_ids += [session_id]
         if not isinstance(data, str):
+            logger.error(f" debug CircleCI...........wait_for_progress: {data.get('progress')}")
             self.wait_for_progress(data.get('progress'))
         final_check(check_name, resp, data)
 
@@ -421,12 +425,15 @@ class UploaderBase(GeoNodeBaseTestSupport):
         if progress_url:
             resp = self.client.get(progress_url)
             json_data = resp.json()
+            logger.error(f" [{wait_for_progress_cnt}] debug CircleCI...........json_data: {json_data}")
             # "COMPLETE" state means done
-            if json_data and json_data.get('state', '') == 'RUNNING' and \
+            if json_data and json_data.get('state', '') == 'COMPLETE':
+                return json_data
+            elif json_data and json_data.get('state', '') == 'RUNNING' and \
             wait_for_progress_cnt < 30:
                 logger.error(f"[{wait_for_progress_cnt}] ... wait_for_progress @ {progress_url}")
-                time.sleep(10.0)
-                self.wait_for_progress(progress_url, wait_for_progress_cnt=wait_for_progress_cnt + 1)
+                json_data = self.wait_for_progress(progress_url, wait_for_progress_cnt=wait_for_progress_cnt + 1)
+            return json_data
 
     def temp_file(self, ext):
         fd, abspath = tempfile.mkstemp(ext)
@@ -551,6 +558,29 @@ class TestUpload(UploaderBase):
             self.complete_upload,
             check_name='san_andres_y_providencia_poi')
 
+    def test_geonode_same_UUID_error(self):
+        """
+        Ensure a new layer with same UUID metadata cannot be uploaded
+        """
+        PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+
+        # Uploading the first one should be OK
+        same_uuid_a = os.path.join(
+            PROJECT_ROOT,
+            'data/same_uuid_a.zip')
+        self.upload_file(
+            same_uuid_a,
+            self.complete_upload,
+            check_name='same_uuid_a')
+
+        # Uploading the second one should give an ERROR
+        same_uuid_b = os.path.join(
+            PROJECT_ROOT,
+            'data/same_uuid_b.zip')
+        self.upload_file(
+            same_uuid_b,
+            self.check_upload_failed)
+
     def test_ascii_grid_upload(self):
         """ Tests the layers that ASCII grid files are uploaded along with aux"""
         session_ids = []
@@ -582,6 +612,7 @@ class TestUpload(UploaderBase):
 
         # First of all lets upload a raster
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+        logger.error(f" debug CircleCI...........fname: {fname}")
         self.assertTrue(os.path.isfile(fname))
         self.upload_file(
             fname,
@@ -590,6 +621,7 @@ class TestUpload(UploaderBase):
 
         # Next force an invalid session
         invalid_path = os.path.join(BAD_DATA)
+        logger.error(f" debug CircleCI...........invalid_path: {invalid_path}")
         self.upload_folder_of_files(
             invalid_path,
             self.check_invalid_projection,
@@ -597,6 +629,7 @@ class TestUpload(UploaderBase):
 
         # Finally try to upload a good file and check the session IDs
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+        logger.error(f" debug CircleCI...........fname: {fname}")
         self.upload_file(
             fname,
             self.complete_raster_upload,
@@ -669,7 +702,7 @@ class TestUploadDBDataStore(UploaderBase):
         resp, data = self.client.upload_file(shp)
         self.assertEqual(resp.status_code, 200)
         if not isinstance(data, str):
-            self.wait_for_progress(data.get('progress'))
+            # self.wait_for_progress(data.get('progress'))
             self.assertTrue(data['success'])
             self.assertTrue(data['redirect_to'], upload_step('time'))
             redirect_to = data['redirect_to']
@@ -730,7 +763,7 @@ class TestUploadDBDataStore(UploaderBase):
 
         # enable using interval and single attribute
         if not isinstance(data, str):
-            self.wait_for_progress(data.get('progress'))
+            # self.wait_for_progress(data.get('progress'))
             self.assertTrue(data['success'])
             self.assertTrue(data['redirect_to'], upload_step('time'))
             redirect_to = data['redirect_to']

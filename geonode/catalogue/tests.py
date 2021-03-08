@@ -17,19 +17,24 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.contrib.auth import get_user_model
+from geonode.layers.populate_layers_data import create_layer_data
+from geonode.catalogue.views import csw_global_dispatch
 import logging
+from django.contrib.auth.models import AnonymousUser
+import xml.etree.ElementTree as ET
 
 from geonode.layers.models import Layer
 from geonode.tests.base import GeoNodeBaseTestSupport
-
+from django.test import RequestFactory
 from geonode.catalogue import get_catalogue
 from geonode.catalogue.models import catalogue_post_save
+from django.db.models import Q
 
 logger = logging.getLogger(__name__)
 
 
 class CatalogueTest(GeoNodeBaseTestSupport):
-
     def setUp(self):
         super(CatalogueTest, self).setUp()
 
@@ -55,6 +60,76 @@ class CatalogueTest(GeoNodeBaseTestSupport):
         self.assertEqual(record.identification.title, layer.title)
         self.assertEqual(record.identification.abstract, layer.raw_abstract)
         if len(record.identification.otherconstraints) > 0:
-            self.assertEqual(
-                record.identification.otherconstraints[0],
-                layer.raw_constraints_other)
+            self.assertEqual(record.identification.otherconstraints[0], layer.raw_constraints_other)
+
+
+class TestCswGlobalDispatch(GeoNodeBaseTestSupport):
+    def setUp(self):
+        super(TestCswGlobalDispatch, self).setUp()
+        self.request = self.__request_factory_single(123)
+        create_layer_data()
+        self.user = "admin"
+        self.passwd = "admin"
+
+    def test_given_a_simple_request_should_return_200(self):
+        actual = csw_global_dispatch(self.request)
+        self.assertEqual(200, actual.status_code)
+
+    def test_given_a_request_for_a_single_layer_should_return_single_value_in_xml_without_layer_filter(self):
+        layer = Layer.objects.first()
+        request = self.__request_factory_single(layer.uuid)
+        response = csw_global_dispatch(request)
+        root = ET.fromstring(response.content)
+        actual = len(list(root))
+        self.assertEqual(1, actual)
+
+    def test_given_a_request_for_a_single_layer_should_return_empty_value_in_xml_with_layer_filter(self):
+        layer = Layer.objects.first()
+        request = self.__request_factory_single(layer.uuid)
+        response = csw_global_dispatch(request, self.layer_filter)
+        root = ET.fromstring(response.content)
+        actual = len(list(root))
+        self.assertEqual(0, actual)
+
+    def test_given_a_request_for_multiple_layer_should_return_empty_value_in_xml_with_layer_filter(self):
+        request = self.__request_factory_multiple()
+        response = csw_global_dispatch(request, self.layer_filter)
+        root = ET.fromstring(response.content)
+        actual = root.find("{http://www.opengis.net/cat/csw/2.0.2}SearchResults").attrib["numberOfRecordsReturned"]
+        self.assertEqual(0, int(actual))
+
+    def test_given_a_request_for_multiple_layer_should_return_multiple_value_in_xml_with_layer_filter(self):
+        request = self.__request_factory_multiple()
+        response = csw_global_dispatch(request, self.layer_filter_multiple)
+        root = ET.fromstring(response.content)
+        actual = root.find("{http://www.opengis.net/cat/csw/2.0.2}SearchResults").attrib["numberOfRecordsReturned"]
+        self.assertEqual(2, int(actual))
+
+    @staticmethod
+    def layer_filter(layer):
+        return layer.filter(uuid__startswith="foo_uuid")
+
+    @staticmethod
+    def layer_filter_multiple(layer):
+        return layer.filter(Q(title="CA") | Q(title="uniquetitle"))
+
+    @staticmethod
+    def __request_factory_single(uuid):
+        factory = RequestFactory()
+        url = "http://localhost:8000/catalogue/csw?request=GetRecordById"
+        url += f"&service=CSW&version=2.0.2&id={uuid}"
+        url += "&outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&elementsetname=full"
+        request = factory.get(url)
+
+        request.user = AnonymousUser()
+        return request
+
+    @staticmethod
+    def __request_factory_multiple():
+        factory = RequestFactory()
+        url = "http://localhost:8000/catalogue/csw/?request=GetRecords&service=CSW&version=2.0.2"
+        url += "&outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd&elementsetname=full"
+        url += "&typenames=gmd:MD_Metadata"
+        request = factory.get(url)
+        request.user = get_user_model().objects.first()
+        return request
