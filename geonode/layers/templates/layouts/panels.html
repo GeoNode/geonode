@@ -239,9 +239,19 @@ span.grippy::after {
   <div class="advanced-hint progress-bar" role="progressbar" style="width:25%">
     {% trans "Mandatory" %}
   </div>
-  <div class="progress-bar" role="progressbar" style="width:50%">
-    {% trans "Optional" %}
-  </div>
+  {% if UI_REQUIRED_FIELDS %}
+      <div class="metadata-hint progress-bar" role="progressbar" style="width:25%">
+        {% trans "Mandatory" %}
+      </div>
+      <div class="progress-bar" role="progressbar" style="width:25%">
+        {% trans "Optional" %}
+      </div>
+  {% else %}
+      <div class="progress-bar" role="progressbar" style="width:50%">
+        {% trans "Optional" %}
+      </div>
+  {% endif %}
+  
 </div>
 {% endblock edit_progress %}
  {% block breadcrumbs %}
@@ -253,7 +263,11 @@ span.grippy::after {
           <a>{% trans "Location and Licenses" %}</a>
       </li>
       <li data-step="3" data-toggle="tab" href="#ownership">
-          <a>{% trans "Optional Metadata" %}</a>
+        {% if UI_REQUIRED_FIELDS %}
+            <a>{% trans "Required Metadata" %}</a>
+        {% else %}
+            <a>{% trans "Optional Metadata" %}</a>
+        {% endif %}
       </li>
       <li data-step="4"  data-toggle="tab" href="#dataset">
           <a>{% trans "Dataset Attributes" %}</a>
@@ -448,7 +462,7 @@ span.grippy::after {
     {% block ownership %}
     <div id="ownership" class="tab-pane fade">
         <div class="panel-group"><div class="panel panel-default"><div class="panel-body">
-        <div>
+        <div id="mdinfo">
             <div class="col-xs-12 col-lg-4">
               <p>{% trans "Other, Optional, Metadata" %}</p>
                 <div>
@@ -468,14 +482,14 @@ span.grippy::after {
                 </div>
             </div>
             <div class="col-xs-12 col-lg-5">
-                    <div class="col-xs-12 col-lg-6">
+                    <div class="col-xs-12 col-lg-6 check-select">
                       <div class="input-group date">
                         <span><label for="{{ layer_form.temporal_extent_start|id }}">{{ layer_form.temporal_extent_start.label }}</label></span>
                         <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
                         {{ layer_form.temporal_extent_start }}
                         </div>
                     </div>
-                    <div class="col-xs-12 col-lg-6">
+                    <div class="col-xs-12 col-lg-6 check-select">
                         <div class="input-group date">
                         <span><label for="{{ layer_form.temporal_extent_end|id }}">{{ layer_form.temporal_extent_end.label }}</label></span>
                         <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
@@ -498,7 +512,7 @@ span.grippy::after {
             <div class="col-xs-12 col-lg-3">
               <div class="panel panel-default" style="margin-top: 5px">
                   <div class="panel-heading">{% trans "Responsible Parties" %}</div>
-                  <div class="panel-body">
+                  <div class="panel-body check-select">
                       <span><label for="{{ layer_form.poc|id }}">{{ layer_form.poc.label }}</label></span>
                       {{ layer_form.poc }}
                   </div>
