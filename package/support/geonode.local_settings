@@ -271,13 +271,6 @@ DEFAULT_MAP_CENTER = (0, 0)
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
 DEFAULT_MAP_ZOOM = 0
 
-# To enable the REACT based Client enable those
-# INSTALLED_APPS += ('geonode-client', )
-# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.ReactHookSet"
-
-# To enable the Leaflet based Client enable those
-# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.LeafletHookSet"
-
 # To enable the MapStore2 based Client enable those
 INSTALLED_APPS += ('geonode_mapstore_client', )
 GEONODE_CLIENT_HOOKSET = "geonode_mapstore_client.hooksets.MapStoreHookSet"
@@ -297,15 +290,6 @@ if 'geonode.geoserver' in INSTALLED_APPS:
     baselayers = MAP_BASELAYERS
     MAP_BASELAYERS = [LOCAL_GEOSERVER]
     MAP_BASELAYERS.extend(baselayers)
-
-# To enable the REACT based Client enable those
-# INSTALLED_APPS += ('geonode-client', )
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'react'  # DEPRECATED use HOOKSET instead
-# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.ReactHookSet"
-
-# To enable the Leaflet based Client enable those
-# GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = 'leaflet'  # DEPRECATED use HOOKSET instead
-# GEONODE_CLIENT_HOOKSET = "geonode.client.hooksets.LeafletHookSet"
 
 # To enable the MapStore2 based Client enable those
 # if 'geonode_mapstore_client' not in INSTALLED_APPS:

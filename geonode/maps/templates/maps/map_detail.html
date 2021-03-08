@@ -352,17 +352,10 @@
 
     {% block thumbnail_script %}
         <script type="text/javascript">
-            {% if preview == 'react' %}
-            $('#set_thumbnail').click(function(){
-              window.setThumbnail({{resource.id}})
-              $('#edit-layer').modal('toggle');
-            });
-            {% else %}
-            $('#set_thumbnail').click(function(){
-              createMapThumbnail();
-              $('#edit-layer').modal('toggle');
-            });
-            {% endif %}
+          $('#set_thumbnail').click(function(){
+            createMapThumbnail();
+            $('#edit-layer').modal('toggle');
+          });
         </script>
     {% endblock thumbnail_script %}
 

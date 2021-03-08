@@ -39,6 +39,7 @@ from geonode.security.utils import get_visible_resources
 from guardian.shortcuts import get_objects_for_user
 
 from .permissions import (
+    IsSelfOrAdmin,
     IsOwnerOrReadOnly,
     ResourceBasePermissionsFilter
 )
@@ -60,14 +61,21 @@ class UserViewSet(DynamicModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    authentication_classes = (SessionAuthentication, BasicAuthentication, OAuth2Authentication)
-    permission_classes = (IsAdminUser,)
+    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
+    permission_classes = [IsSelfOrAdmin, ]
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     pagination_class = GeoNodeApiPagination
 
     def get_queryset(self):
-        queryset = get_user_model().objects.all()
+        """
+        Filter objects so a user only sees his own stuff.
+        If user is admin, let him see all.
+        """
+        if self.request.user.is_superuser or self.request.user.is_staff:
+            queryset = get_user_model().objects.all()
+        else:
+            queryset = get_user_model().objects.filter(id=self.request.user.id)
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset
@@ -102,8 +110,8 @@ class GroupViewSet(DynamicModelViewSet):
     """
     API endpoint that allows gropus to be viewed or edited.
     """
-    authentication_classes = (SessionAuthentication, BasicAuthentication, OAuth2Authentication)
-    permission_classes = (IsAdminUser,)
+    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
+    permission_classes = [IsAuthenticated, ]
     queryset = GroupProfile.objects.all()
     serializer_class = GroupProfileSerializer
     pagination_class = GeoNodeApiPagination
@@ -202,8 +210,9 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             if _model.__name__ == "ResourceBase":
                 resource_types = [_m.__name__.lower() for _m in _model.__subclasses__()]
         if "geoapp" in resource_types:
-            from geonode.geoapps.models import GeoApp
             resource_types.remove("geoapp")
+        if settings.GEONODE_APPS_ENABLE:
+            from geonode.geoapps.models import GeoApp
             for label, app in apps.app_configs.items():
                 if hasattr(app, 'type') and app.type == 'GEONODE_APP':
                     if hasattr(app, 'default_model'):

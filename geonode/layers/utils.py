@@ -152,7 +152,7 @@ def get_files(filename):
     import tempfile
     from geonode.utils import unzip_file
     if is_zipfile(filename):
-        tempdir = tempfile.mkdtemp()
+        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
         _filename = unzip_file(filename,
                                '.shp', tempdir=tempdir)
         if not _filename:
@@ -618,7 +618,14 @@ def file_upload(filename,
 
         if defaults['metadata_uploaded_preserve']:
             defaults['metadata_xml'] = xml_file
-            defaults['uuid'] = identifier
+
+        if identifier:
+            if ResourceBase.objects.filter(uuid=identifier).count():
+                logger.error("The UUID identifier from the XML Metadata is already in use in this system.")
+                raise GeoNodeException(
+                    _("The UUID identifier from the XML Metadata is already in use in this system."))
+            else:
+                defaults['uuid'] = identifier
 
         for key, value in vals.items():
             if key == 'spatial_representation_type':
@@ -677,6 +684,7 @@ def file_upload(filename,
         defaults['title'] = defaults.get('title', None) or layer.title
         defaults['abstract'] = defaults.get('abstract', None) or layer.abstract
         defaults['bbox_polygon'] = defaults.get('bbox_polygon', None) or layer.bbox_polygon
+        defaults['ll_bbox_polygon'] = defaults.get('ll_bbox_polygon', None) or layer.ll_bbox_polygon
         defaults['is_approved'] = defaults.get(
             'is_approved', is_approved) or layer.is_approved
         defaults['is_published'] = defaults.get(
