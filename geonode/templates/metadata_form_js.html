@@ -341,6 +341,10 @@
         $('#id_resource-group').change(onInputChange).change();
         document.querySelector('select[name="resource-keywords"]').onchange=onInputChange
 
+        $( ':input[id*="id_tkeywords"][required]:visible').each( function () {
+            $('#' + this.id).change(onInputChange).change();
+        });
+
         $('#id_resource-regions').change(onInputChange).change();
 $('#id_resource-temporal_extent_end').on('blur', function() {$(this).change(onInputChange).change();})
 $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(onInputChange).change();})
@@ -445,7 +449,7 @@ $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(on
               ) {
                 $('#group_mandatoryDialog').modal();
             } else {
-                $('#preview_pleaseWaitDialog').modal();
+               validateRequiredInput()
             }
         });
 
@@ -467,9 +471,26 @@ $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(on
               ) {
                 $('#group_mandatoryDialog').modal();
             } else {
-                $('#preview_pleaseWaitDialog').modal();
+                validateRequiredInput()
             }
         });
+
+        function validateRequiredInput() {
+            const required_inputs = $(':input[required]:visible')
+            var errors = []
+            $( ':input[required]:visible').each( function () {
+                if ( this.value.trim() == '' ) {
+                    errors.push(this.id)
+                }
+            });
+            if (errors.length > 0) {
+                console.error("Following items are required: " + errors)
+                $(".general_errors").find("p").html(errors.join('<br>'));
+                $('#error_mandatoryDialog').modal();
+            } else {
+                $('#preview_pleaseWaitDialog').modal();
+            }
+        }
 
         $('#btn_upd_md_done').click(function(){
             if
