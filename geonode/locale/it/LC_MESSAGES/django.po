@@ -6276,6 +6276,9 @@ msgstr "stato dell'elemento sconosciuto: %s"
 msgid "error during import: %s"
 msgstr "errore durante l'importazione: %s"
 
+msgid "Following items are required:"
+msgstr "I seguenti elementi sono obbligatori:"
+
 msgid "Could not find any valid Time Regex for the Mosaic files."
 msgstr "Impossibile trovare file kml all'interno del kmz caricato."
 
