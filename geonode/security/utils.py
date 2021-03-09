@@ -618,7 +618,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
     toggle_layer_cache('{}:{}'.format(_layer_workspace, _layer_name), enable=True, filters=filters, formats=formats)
 
     for service, allowed in gf_services.items():
-        if allowed:
+        if layer and layer.name and allowed:
             if _user:
                 logger.debug("Adding 'user' to geofence the rule: %s %s %s" % (layer, service, _user))
                 _wkt = None
