@@ -79,7 +79,30 @@ class GenericWMSBackground(BaseThumbBackground):
         self.srid = srid if 'EPSG:' in srid else f'EPSG:{srid}'
         # ---
 
+    def bbox_to_projection(self, bbox: typing.List):
+        """
+        Function converting BBOX to target projection system, keeping the order of the coordinates.
+        To ensure no additional change is performed, conversion is based on top-left and bottom-right
+        points conversion.
+
+        :param bbox: a layer compliant BBOX: [west, east, south, north, CRS]
+        """
+        transformer = Transformer.from_crs(bbox[-1].lower(), self.srid.lower(), always_xy=True)
+
+        left, top = transformer.transform(bbox[0], bbox[3])
+        right, bottom = transformer.transform(bbox[1], bbox[2])
+
+        return [left, right, bottom, top]
+
     def fetch(self, bbox: typing.List, *args, **kwargs):
+        """
+        Function fetching background image, based on the given BBOX.
+        On error should raise an exception or return None.
+
+        :param bbox: a layer compliant BBOX: [west, east, south, north, CRS]
+        :param *args: not used, kept for API compatibility
+        :param **kargs: not used, kept for API compatibility
+        """
 
         if not self.service_url or not self.layer_name:
             logger.error(f"Thumbnail background configured improperly: service URL and layer name may not be empty")
@@ -88,7 +111,7 @@ class GenericWMSBackground(BaseThumbBackground):
         background_url = utils.construct_wms_url(
             self.service_url,
             [self.layer_name],
-            bbox,
+            self.bbox_to_projection(bbox) + [self.srid],
             wms_version=self.version,
             mime_type=self.format,
             styles=self.style,
@@ -96,7 +119,7 @@ class GenericWMSBackground(BaseThumbBackground):
             height=self.thumbnail_height,
         )
 
-        img = utils.fetch_wms(background_url)
+        img = utils.fetch_wms(background_url, self.max_retries, self.retry_delay)
 
         content = BytesIO(img)
         Image.open(content).verify()  # verify that it is, in fact an image
@@ -262,7 +285,7 @@ class GenericXYZBackground(BaseThumbBackground):
         extension3857 = north_extension3857 + south_extension3857
 
         if extension3857:
-            # single tile's height in ESPG:3857
+            # get single tile's height in ESPG:3857
             tile_bounds = mercantile.bounds(tiles_rows[0], tiles_cols[0], zoom)
             _, south = self.point4326to3857(getattr(tile_bounds, 'west'), getattr(tile_bounds, 'south'))
             _, north = self.point4326to3857(getattr(tile_bounds, 'west'), getattr(tile_bounds, 'north'))

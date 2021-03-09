@@ -62,7 +62,7 @@ def transform_bbox(bbox: List, target_crs: str = "epsg:3857"):
 def expand_bbox_to_ratio(
         bbox: List,
         target_width: int = settings.THUMBNAIL_SIZE['width'],
-        target_height: int =settings.THUMBNAIL_SIZE['height']
+        target_height: int = settings.THUMBNAIL_SIZE['height']
 ):
     """
     Function returning an expanded BBOX, ensuring it's ratio, based on the provided BBOX, and width and height

@@ -195,7 +195,7 @@ def _generate_thumbnail_name(instance: Union[Layer, Map]) -> Optional[str]:
     elif isinstance(instance, Map):
         # if a Map is empty - nothing to do here
         if not instance.layers:
-            logger.debug(f"Thumbnail generation skipped - Map {instance.name} has no defined layers")
+            logger.debug(f"Thumbnail generation skipped - Map {instance.title} has no defined layers")
             return None
 
         file_name = "map-%s-thumb.png" % instance.uuid
@@ -305,7 +305,7 @@ def _layers_locations(
                         max(bbox[3], layer_bbox[3]),
                     ]
 
-    if len(bbox) < 5:
+    if bbox and len(bbox) < 5:
         bbox = list(bbox) + [target_crs]     # convert bbox to list, if it's tuple
 
     return locations, bbox
