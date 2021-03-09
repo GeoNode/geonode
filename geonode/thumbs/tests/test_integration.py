@@ -10,7 +10,7 @@ from lxml import etree
 from defusedxml import lxml as dlxml
 from urllib.request import urlopen, Request
 from urllib.parse import urljoin
-
+from io import BytesIO
 from django.conf import settings
 from django.test.utils import override_settings
 from django.urls import reverse
@@ -27,8 +27,9 @@ from geonode.base.models import TopicCategory, Link
 from geonode.geoserver.helpers import set_attributes_from_geoserver
 from geonode.utils import HttpClient
 from geonode.thumbs.background import OSMTileBackground, WikiMediaTileBackground, GenericXYZBackground, GenericWMSBackground
-from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, _generate_thumbnail_name
+from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, create_thumbnail
 from geonode.base.thumb_utils import thumb_path
+from geonode.utils import http_client
 from unittest.mock import patch
 from PIL import UnidentifiedImageError, Image
 from datetime import datetime
@@ -358,15 +359,130 @@ class GeoNodeThumbnailsIntegration(GeoNodeLiveTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
+    @override_settings(THUMBNAIL_BACKGROUND={
+        'class': 'geonode.thumbs.background.WikiMediaTileBackground',
+    })
     def test_layer_default_thumb(self):
-        create_gs_thumbnail_geonode(self.layer_coast_line)
-        self.assertTrue(self.layer_coast_line.has_thumbnail())
+        expected_thumb = Image.open(
+            'geonode/thumbs/tests/expected_results/thumbnails/default_layer_coast_line_thumb.png'
+        )
 
-        self.client.get(self.layer_coast_line.thumbnail_url)
-        thumb = Image.open(thumb_path(_generate_thumbnail_name(self.layer_coast_line)))
+        create_gs_thumbnail_geonode(self.layer_coast_line, overwrite=True)
 
-        expected_thumb = Image.open('geonode/thumbs/tests/expected_results/thumbnails/default_layer_coast_line_thumb.png')
+        _, img = http_client.request(self.layer_coast_line.thumbnail_url)
+        content = BytesIO(img)
+        Image.open(content).verify()  # verify that it is, in fact an image
+        thumb = Image.open(content)
+
         diff = Image.new("RGB", thumb.size)
 
         mismatch = pixelmatch(thumb, expected_thumb, diff)
         self.assertEqual(mismatch, 0, "Expected test and pre-generated thumbnails to be identical")
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
+    @override_settings(THUMBNAIL_BACKGROUND={
+        'class': 'geonode.thumbs.background.WikiMediaTileBackground',
+    })
+    def test_layer_custom_thumbs(self):
+
+        bboxes = [
+            [-9072629.904175375, -9043966.018568434, 1491839.8773032012, 1507127.2829602365, 'EPSG:3857'],
+            [-9701812.234583871, -8784567.895161757, 1183222.3819935687, 1672419.363018697, 'EPSG:3857'],
+            [-84665859.2306568, 32741416.215373922, -33346586.656875588, 29270626.9143408, 'EPSG:3857'],
+            [-72434308.4190976, -43082489.55758992, -7279981.1852046205, 8374322.207599477, 'EPSG:3857'],
+            [-77007211.63038959, -18303573.90737422, 781254.9545387309, 32089861.740146928, 'EPSG:3857'],
+        ]
+
+        expected_results_dir = 'geonode/thumbs/tests/expected_results/thumbnails/'
+        expected_thumbs_paths = [
+            expected_results_dir + 'thumb1.png',
+            expected_results_dir + 'thumb2.png',
+            expected_results_dir + 'thumb3.png',
+            expected_results_dir + 'thumb4.png',
+            expected_results_dir + 'thumb5.png',
+        ]
+
+        for bbox, expected_thumb_path in zip(bboxes, expected_thumbs_paths):
+            create_thumbnail(
+                self.layer_coast_line,
+                bbox=bbox,
+                overwrite=True
+            )
+
+            _, img = http_client.request(self.layer_coast_line.thumbnail_url)
+            content = BytesIO(img)
+            Image.open(content).verify()  # verify that it is, in fact an image
+            thumb = Image.open(content)
+
+            expected_thumb = Image.open(expected_thumb_path)
+            diff = Image.new("RGB", thumb.size)
+
+            mismatch = pixelmatch(thumb, expected_thumb, diff)
+            self.assertEqual(mismatch, 0, "Expected test and pre-generated thumbnails to be identical")
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
+    @override_settings(THUMBNAIL_BACKGROUND={
+        'class': 'geonode.thumbs.background.WikiMediaTileBackground',
+    })
+    def test_map_default_thumb(self):
+        # TODO
+        expected_thumb = Image.open(
+            'geonode/thumbs/tests/expected_results/thumbnails/default_layer_coast_line_thumb.png'
+        )
+
+        create_gs_thumbnail_geonode(self.layer_coast_line, overwrite=True)
+        self.assertTrue(self.layer_coast_line.has_thumbnail())
+
+        _, img = http_client.request(self.layer_coast_line.thumbnail_url)
+        content = BytesIO(img)
+        Image.open(content).verify()  # verify that it is, in fact an image
+        thumb = Image.open(content)
+
+        diff = Image.new("RGB", thumb.size)
+
+        mismatch = pixelmatch(thumb, expected_thumb, diff)
+        self.assertEqual(mismatch, 0, "Expected test and pre-generated thumbnails to be identical")
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
+    @override_settings(THUMBNAIL_BACKGROUND={
+        'class': 'geonode.thumbs.background.WikiMediaTileBackground',
+    })
+    def test_map_custom_thumbs(self):
+        # TODO
+        bboxes = [
+            [-9072629.904175375, -9043966.018568434, 1491839.8773032012, 1507127.2829602365, 'EPSG:3857'],
+            [-9701812.234583871, -8784567.895161757, 1183222.3819935687, 1672419.363018697, 'EPSG:3857'],
+            [-84665859.2306568, 32741416.215373922, -33346586.656875588, 29270626.9143408, 'EPSG:3857'],
+            [-72434308.4190976, -43082489.55758992, -7279981.1852046205, 8374322.207599477, 'EPSG:3857'],
+            [-77007211.63038959, -18303573.90737422, 781254.9545387309, 32089861.740146928, 'EPSG:3857'],
+        ]
+
+        expected_results_dir = 'geonode/thumbs/tests/expected_results/thumbnails/'
+        expected_thumbs_paths = [
+            expected_results_dir + 'thumb1.png',
+            expected_results_dir + 'thumb2.png',
+            expected_results_dir + 'thumb3.png',
+            expected_results_dir + 'thumb4.png',
+            expected_results_dir + 'thumb5.png',
+        ]
+
+        for bbox, expected_thumb_path in zip(bboxes, expected_thumbs_paths):
+            create_thumbnail(
+                self.layer_coast_line,
+                bbox=bbox,
+                overwrite=True
+            )
+
+            _, img = http_client.request(self.layer_coast_line.thumbnail_url)
+            content = BytesIO(img)
+            Image.open(content).verify()  # verify that it is, in fact an image
+            thumb = Image.open(content)
+
+            expected_thumb = Image.open(expected_thumb_path)
+            diff = Image.new("RGB", thumb.size)
+
+            mismatch = pixelmatch(thumb, expected_thumb, diff)
+            self.assertEqual(mismatch, 0, "Expected test and pre-generated thumbnails to be identical")
