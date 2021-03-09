@@ -1,5 +1,5 @@
 # native dependencies
-Pillow==8.1.0
+Pillow==8.1.2
 lxml==4.6.2
 defusedxml==0.6.0
 psycopg2==2.8.6
