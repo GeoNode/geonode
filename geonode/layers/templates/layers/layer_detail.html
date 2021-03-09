@@ -548,8 +548,8 @@
                 {% trans "Full metadata" %}
                 </h5>
                 <ul>
-                    <li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.txt"> {% trans "Text format" %} </a></li>
-                    <li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title}}.html"> {% trans "HTML format" %} </a></li>
+                    <li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title | slugify }}.txt"> {% trans "Text format" %} </a></li>
+                    <li><a target="_blank" href="../catalogue/csw_to_extra_format/{{resource.uuid}}/{{resource.title | slugify }}.html"> {% trans "HTML format" %} </a></li>
                 </ul>
             </div>
             <div style="margin-bottom:20px">
