@@ -482,11 +482,7 @@
                     <div class="col-sm-3">
                       <i class="fa fa-tint fa-3x"></i>
                       <h4>{% trans "Styles" %}</h4>
-                      {% if preview == 'react' or preview == 'leaflet' %}
-                        <a class="btn btn-default btn-block btn-xs style-edit" data-dismiss="modal" href="#">{% trans "Edit" %}</a>
-                      {% else %}
-                        <a class="btn btn-default btn-block btn-xs style-edit" href="{% url "layer_sld_edit" resource.service_typename %}">{% trans "Edit" %}</a>
-                      {% endif %}
+                      <a class="btn btn-default btn-block btn-xs style-edit" href="{% url "layer_sld_edit" resource.service_typename %}">{% trans "Edit" %}</a>
                       <a class="btn btn-default btn-block btn-xs" href="{% url "layer_sld_upload" resource.service_typename %}">{% trans "Upload" %}</a>
                       <a class="btn btn-default btn-block btn-xs" href="{% url "layer_style_manage" resource.service_typename %}">{% trans "Manage" %}</a>
                     </div>
@@ -799,17 +795,10 @@
 
     {% block thumbnail_script %}
       <script type="text/javascript">
-            {% if preview == 'react' %}
-            $('#set_thumbnail').click(function(){
-              window.setThumbnail({{resource.id}})
-              $('#edit-layer').modal('toggle');
-            });
-            {% else %}
-            $('#set_thumbnail').click(function(){
-              createMapThumbnail();
-              $('#edit-layer').modal('toggle');
-            });
-            {% endif %}
+        $('#set_thumbnail').click(function(){
+          createMapThumbnail();
+          $('#edit-layer').modal('toggle');
+        });
       </script>
     {% endblock thumbnail_script %}
 

@@ -68,7 +68,7 @@ from geonode.base.enumerations import (
     HIERARCHY_LEVELS,
     UPDATE_FREQUENCIES,
     DEFAULT_SUPPLEMENTAL_INFORMATION)
-from geonode.base.bbox_utils import BBOXHelper
+from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
 from geonode.utils import (
     is_monochromatic_image,
     add_url_params,
@@ -802,6 +802,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # This is useful for spatial searches and for generating thumbnail images
     # and metadata records.
     bbox_polygon = PolygonField(null=True, blank=True)
+    ll_bbox_polygon = PolygonField(null=True, blank=True)
 
     srid = models.CharField(
         max_length=30,
@@ -911,6 +912,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         bbox = [kwargs.pop(key, None) for key in ('bbox_x0', 'bbox_y0', 'bbox_x1', 'bbox_y1')]
         if all(bbox):
             kwargs['bbox_polygon'] = Polygon.from_bbox(bbox)
+            kwargs['ll_bbox_polygon'] = Polygon.from_bbox(bbox)
         super(ResourceBase, self).__init__(*args, **kwargs)
 
     def __str__(self):
@@ -1045,7 +1047,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def csw_crs(self):
-        return self.srid
+        return 'EPSG:4326'
 
     @property
     def group_name(self):
@@ -1057,15 +1059,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def bbox(self):
         """BBOX is in the format: [x0, x1, y0, y1, srid]."""
         if self.bbox_polygon:
-            bbox = self.bbox_polygon
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', self.srid)
             srid = int(match.group('srid')) if match else 4326
-            if bbox.srid is not None and bbox.srid != srid:
-                try:
-                    bbox = bbox.transform(srid, clone=True)
-                except Exception:
-                    bbox.srid = srid
-            bbox = BBOXHelper(bbox.extent)
+            bbox = BBOXHelper(self.bbox_polygon.extent)
             return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(srid)]
         bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
@@ -1074,12 +1070,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def ll_bbox(self):
         """BBOX is in the format [x0, x1, y0, y1, "EPSG:srid"]. Provides backwards
         compatibility after transition to polygons."""
-        if self.bbox_polygon:
-            bbox = self.bbox_polygon
-            if bbox.srid is not None and bbox.srid != 4326:
-                bbox = bbox.transform(4326, clone=True)
-
-            bbox = BBOXHelper(bbox.extent)
+        if self.ll_bbox_polygon:
+            bbox = BBOXHelper(self.ll_bbox_polygon.extent)
             return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
         bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
@@ -1149,10 +1141,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         Returns an EWKT representation of the bounding box in EPSG:4326
         """
-        if self.bbox_polygon:
-            bbox = self.bbox_polygon
-            if bbox.srid != 4326:
-                bbox = bbox.transform(4326, clone=True)
+        if self.ll_bbox_polygon:
+            bbox = polygon_from_bbox(self.ll_bbox_polygon.extent, 4326)
             return str(bbox)
         else:
             bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
@@ -1275,16 +1265,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             [xmin, ymin, xmax, ymax]
         :param srid: srid as string (e.g. 'EPSG:4326' or '4326')
         """
-
-        bbox_polygon = Polygon.from_bbox(bbox)
-
         try:
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
+            bbox_polygon = Polygon.from_bbox(bbox)
             bbox_polygon.srid = int(match.group('srid')) if match else 4326
+            self.bbox_polygon = bbox_polygon
+            self.srid = srid
+            if srid == 4326:
+                self.ll_bbox_polygon = bbox_polygon
+            else:
+                self.ll_bbox_polygon = bbox_polygon.transform(4326, clone=True)
         except AttributeError:
             logger.warning("No srid found for layer %s bounding box", self)
-
-        self.bbox_polygon = bbox_polygon
 
     def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
         """
@@ -1364,21 +1356,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     def set_center_zoom(self):
         """
-        Sets the center coordinates and zoom level in EPSG4326
+        Sets the center coordinates and zoom level in EPSG:4326
         """
-        bbox = self.bbox_polygon
-        center_x, center_y = self.bbox_polygon.centroid.coords
-        try:
-            center = Point(center_x, center_y, srid=self.bbox_polygon.srid)
-            center.transform(self.srid)
-        except Exception:
-            center = Point(center_x, center_y, srid=self.srid)
-
-        if bbox.srid != 4326:
-            bbox = bbox.transform(4326, clone=True)
-
+        bbox = self.ll_bbox_polygon
+        center_x, center_y = self.ll_bbox_polygon.centroid.coords
+        center = Point(center_x, center_y, srid=4326)
         self.center_x, self.center_y = center.coords
-
         try:
             ext = bbox.extent
             width_zoom = math.log(360 / (ext[2] - ext[0]), 2)

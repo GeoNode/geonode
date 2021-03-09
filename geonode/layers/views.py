@@ -22,7 +22,6 @@ import os
 import sys
 import logging
 import shutil
-import base64
 import traceback
 from types import TracebackType
 import warnings
@@ -32,7 +31,6 @@ from django.db.models import Q
 from urllib.parse import quote
 
 from django.http import Http404
-from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
 from django.template.response import TemplateResponse
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -315,10 +313,13 @@ def layer_upload_handle_post(request, template):
                 except TypeError:
                     upload_session.traceback = traceback.format_tb(tb)
                 upload_session.context = log_snippet(CONTEXT_LOG_FILE)
-                upload_session.save()
-                out['traceback'] = upload_session.traceback
-                out['context'] = upload_session.context
-                out['upload_session'] = upload_session.id
+                try:
+                    upload_session.save()
+                    out['traceback'] = upload_session.traceback
+                    out['context'] = upload_session.context
+                    out['upload_session'] = upload_session.id
+                except Exception as e:
+                    logger.debug(e)
             else:
                 # Prevent calls to None
                 if saved_layer:
@@ -383,7 +384,7 @@ def layer_upload_handle_post(request, template):
             if isinstance(out[_k], str):
                 out[_k] = surrogate_escape_string(out[_k], layer_charset)
             elif isinstance(out[_k], dict):
-                for key, value in out[_k].items():
+                for key, value in out[_k].copy().items():
                     try:
                         item = out[_k][key]
                         # Ref issue #4241
@@ -703,16 +704,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'DEFAULT_MAP_CRS',
         'EPSG:3857')
 
-    # provide bbox in EPSG:4326 for leaflet
-    if context_dict["preview"] == 'leaflet':
-        try:
-            srid, wkt = layer.geographic_bounding_box.split(';')
-            srid = re.findall(r'\d+', srid)
-            geom = GEOSGeometry(wkt, srid=int(srid[0]))
-            geom.transform(4326)
-            context_dict["layer_bbox"] = ','.join([str(c) for c in geom.extent])
-        except Exception:
-            pass
     if layer.storeType == 'dataStore':
         links = layer.link_set.download().filter(
             Q(name__in=settings.DOWNLOAD_FORMATS_VECTOR) |
@@ -1500,74 +1491,37 @@ def layer_thumbnail(request, layername):
         raise Http404(_("Not found"))
 
     try:
-        try:
-            preview = json.loads(request.body).get('preview', None)
-        except Exception as e:
-            logger.debug(e)
-            preview = None
+        image = _render_thumbnail(request.body)
+    except Exception as e:
+        logger.debug(e)
+        image = None
 
-        if preview and preview == 'react':
-            format, image = json.loads(
-                request.body)['image'].split(';base64,')
-            image = base64.b64decode(image)
-
-            is_image = False
-            if image:
-                import imghdr
-                for th in imghdr.tests:
-                    is_image = th(image, None)
-                    if is_image:
-                        break
-
-            if not is_image:
-                return HttpResponse(
-                    content=_('couldn\'t generate thumbnail'),
-                    status=500,
-                    content_type='text/plain'
-                )
-
+    try:
+        if image is not None:
             filename = "layer-%s-thumb.png" % layer_obj.uuid
             layer_obj.save_thumbnail(filename, image)
-
         else:
-            try:
-                image = _render_thumbnail(request.body)
-            except Exception as e:
-                logger.debug(e)
-                image = None
+            request_body = json.loads(request.body)
 
-            if image is not None:
-                filename = "layer-%s-thumb.png" % layer_obj.uuid
-                layer_obj.save_thumbnail(filename, image)
-            else:
-                try:
-                    request_body = json.loads(request.body)
+            bbox = request_body['bbox'] + [request_body['srid']]
+            zoom = request_body.get('zoom', None)
 
-                    bbox = request_body['bbox'] + [request_body['srid']]
-                    zoom = request_body.get('zoom', None)
+            create_thumbnail(
+                layer_obj,
+                bbox=bbox,
+                background_zoom=zoom,
+                overwrite=True
+            )
 
-                    create_thumbnail(
-                        layer_obj,
-                        bbox=bbox,
-                        background_zoom=zoom,
-                        overwrite=True
-                    )
-
-                except Exception as e:
-                    logger.exception(e)
-                    return HttpResponse(
-                        content=_('couldn\'t generate thumbnail'),
-                        status=500,
-                        content_type='text/plain'
-                    )
-
-        return HttpResponse('Thumbnail saved')
     except Exception as e:
+        logger.exception(e)
         return HttpResponse(
-            content='error saving thumbnail: %s' % str(e),
+            content=_('couldn\'t generate thumbnail: %s' % str(e)),
             status=500,
             content_type='text/plain'
         )
+
+    return HttpResponse('Thumbnail saved')
 
 
 def get_layer(request, layername):

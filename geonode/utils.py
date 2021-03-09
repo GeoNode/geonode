@@ -2058,5 +2058,5 @@ def is_monochromatic_image(image_url, image_data=None):
                     return verify_image(stream)
         return True
     except Exception as e:
-        logger.exception(e)
+        logger.debug(e)
         return False

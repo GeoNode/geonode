@@ -16,11 +16,14 @@
 </style>
 
 {% endif %}
+{% block search_script_loading %}
 <script src="{% static "geonode/js/search/explore.js" %}"></script>
 <script src="{% static "geonode/js/search/search.js" %}"></script>
 <script src="{% static "geonode/js/search/cart.js" %}"></script>
+{% endblock search_script_loading %}
 <script type="text/javascript">
   $("body").attr('ng-controller', 'geonode_search_controller');
+  {% block search_scripts_endpoints %}
   CATEGORIES_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='categories' %}';
   GROUP_CATEGORIES_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='groupcategory' %}';
   KEYWORDS_ENDPOINT = '{% url 'api_dispatch_list' api_name='api' resource_name='keywords' %}';
@@ -36,7 +39,7 @@
   HAYSTACK_SEARCH = "{{ HAYSTACK_SEARCH }}".toLowerCase() === "true";
   HAYSTACK_FACET_COUNTS = "{{ HAYSTACK_FACET_COUNTS }}".toLowerCase() === "true";
   CLIENT_RESULTS_LIMIT = {{ CLIENT_RESULTS_LIMIT }};
-
+ {% endblock %}
   // Register autocomplete for text filters
   $(document).ready(function() {
     window.autocomplete = new Autocomplete({
