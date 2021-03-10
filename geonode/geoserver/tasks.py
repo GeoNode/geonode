@@ -20,7 +20,6 @@
 import os
 import re
 import shutil
-import geoserver
 
 from django.conf import settings
 from django.db import IntegrityError, transaction
@@ -162,7 +161,6 @@ def geoserver_create_style(
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True and instance:
-            publishing = gs_catalog.get_layer(name)
             if sld_file and os.path.exists(sld_file) and os.access(sld_file, os.R_OK):
                 f = None
                 if os.path.isfile(sld_file):
@@ -176,56 +174,28 @@ def geoserver_create_style(
                             f = open(os.path.join(tempdir, sld_file), 'r')
                         except Exception:
                             pass
-
                 if f:
                     sld = f.read()
                     f.close()
-                else:
-                    sld = get_sld_for(gs_catalog, publishing)
-            else:
-                sld = get_sld_for(gs_catalog, publishing)
-
-            style = None
-            if sld is not None:
-                try:
-                    gs_catalog.create_style(
-                        name,
-                        sld,
-                        raw=True,
-                        workspace=settings.DEFAULT_WORKSPACE)
-                    gs_catalog.reset()
-                except geoserver.catalog.ConflictingDataError:
-                    try:
-                        gs_catalog.create_style(
-                            name + '_layer',
+                    if not gs_catalog.get_style(name=name, workspace=settings.DEFAULT_WORKSPACE):
+                        style = gs_catalog.create_style(
+                            name,
                             sld,
                             raw=True,
                             workspace=settings.DEFAULT_WORKSPACE)
-                        gs_catalog.reset()
-                    except geoserver.catalog.ConflictingDataError as e:
-                        msg = 'There was already a style named %s in GeoServer, cannot overwrite: "%s"' % (
-                            name, str(e))
-                        logger.error(msg)
-                        e.args = (msg,)
-
-                if style is None:
-                    try:
-                        style = gs_catalog.get_style(
-                            name, workspace=settings.DEFAULT_WORKSPACE) or gs_catalog.get_style(name)
-                    except Exception:
-                        logger.warn('Could not retreive the Layer default Style name')
+                        gs_layer = gs_catalog.get_layer(name)
+                        _default_style = gs_layer.default_style
+                        gs_layer.default_style = style
+                        gs_catalog.save(gs_layer)
+                        set_styles(instance, gs_catalog)
                         try:
-                            style = gs_catalog.get_style(name + '_layer', workspace=settings.DEFAULT_WORKSPACE) or \
-                                gs_catalog.get_style(name + '_layer')
-                            logger.warn(
-                                'No style could be created for the layer, falling back to POINT default one')
+                            gs_catalog.delete(_default_style)
                         except Exception as e:
-                            style = gs_catalog.get_style('point')
-                            logger.warn(str(e))
-                if style:
-                    publishing.default_style = style
-                    logger.debug('default style set to %s', name)
-                    gs_catalog.save(publishing)
+                            logger.exception(e)
+                else:
+                    get_sld_for(gs_catalog, instance)
+            else:
+                get_sld_for(gs_catalog, instance)
 
 
 @app.task(
