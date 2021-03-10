@@ -513,7 +513,21 @@ class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
         self.api_client.client.login(username='bobby', password='bob')
-        resp = self.api_clientclass
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertTrue(len(self.deserialize(resp)['objects']) >= 200)
+
+    def test_tags_lockdown(self):
+        filter_url = self.tag_list_url
+
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
+
+        self.api_client.client.login(username='bobby', password='bob')
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 5)
 
 
 class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, TestCase):
