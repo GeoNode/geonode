@@ -17,6 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from unittest.case import TestCase
+from unittest.mock import patch
 from django.conf import settings
 
 from datetime import datetime, timedelta
@@ -511,18 +513,81 @@ class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
         self.api_client.client.login(username='bobby', password='bob')
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertTrue(len(self.deserialize(resp)['objects']) >= 200)
+        resp = self.api_clientclass
 
-    def test_tags_lockdown(self):
-        filter_url = self.tag_list_url
 
-        resp = self.api_client.get(filter_url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
+class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, TestCase):
+    #  loading test thesausurs
+    fixtures = ["test_thesaurus.json"]
 
-        self.api_client.client.login(username='bobby', password='bob')
-        resp = self.api_client.get(filter_url)
+    def setUp(self):
+        super(ThesaurusKeywordResourceTests, self).setUp()
+
+        self.list_url = reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "thesaurus/keywords"})
+
+    def test_api_will_return_a_valid_json_response(self):
+        resp = self.api_client.get(self.list_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 5)
+
+    def test_will_return_empty_if_the_thesaurus_does_not_exists(self):
+        url = f"{self.list_url}?thesaurus=invalid-identifier"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 0)
+
+    def test_will_return_keywords_for_the_selected_thesaurus_if_exists(self):
+        url = f"{self.list_url}?thesaurus=inspire-theme"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 34)
+
+    def test_will_return_empty_if_the_alt_label_does_not_exists(self):
+        url = f"{self.list_url}?alt_label=invalid-alt_label"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 0)
+
+    def test_will_return_keywords_for_the_selected_alt_label_if_exists(self):
+        url = f"{self.list_url}?alt_label=ac"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 1)
+
+    def test_will_return_empty_if_the_kaywordId_does_not_exists(self):
+        url = f"{self.list_url}?id=12365478954862"
+        resp = self.api_client.get(url)
+        print(self.deserialize(resp))
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 0)
+
+    @patch("geonode.api.api.get_language")
+    def test_will_return_expected_keyword_label_for_existing_lang(self, lang):
+        lang.return_value = "de"
+        url = f"{self.list_url}?thesaurus=inspire-theme"
+        resp = self.api_client.get(url)
+        # the german translations exists, for the other labels, the alt_label will be used
+        expected_labels = [
+            "ac", "Adressen", "af", "am", "au", "br", "bu",
+            "cp", "ef", "el", "er", "ge", "gg", "gn", "hb", "hh",
+            "hy", "lc", "lu", "mf", "mr", "nz", "of", "oi", "pd",
+            "pf", "ps", "rs", "sd", "so", "sr", "su", "tn", "us"
+        ]
+        actual_labels = [x["alt_label"] for x in self.deserialize(resp)["objects"]]
+        self.assertValidJSONResponse(resp)
+        self.assertListEqual(expected_labels, actual_labels)
+
+    @patch("geonode.api.api.get_language")
+    def test_will_return_default_keyword_label_for_not_existing_lang(self, lang):
+        lang.return_value = "ke"
+        url = f"{self.list_url}?thesaurus=inspire-theme"
+        resp = self.api_client.get(url)
+        # no translations exists, the alt_label will be used for all keywords
+        expected_labels = [
+            "ac", "ad", "af", "am", "au", "br", "bu",
+            "cp", "ef", "el", "er", "ge", "gg", "gn", "hb", "hh",
+            "hy", "lc", "lu", "mf", "mr", "nz", "of", "oi", "pd",
+            "pf", "ps", "rs", "sd", "so", "sr", "su", "tn", "us"
+        ]
+        actual_labels = [x["alt_label"] for x in self.deserialize(resp)["objects"]]
+        self.assertValidJSONResponse(resp)
+        self.assertListEqual(expected_labels, actual_labels)
