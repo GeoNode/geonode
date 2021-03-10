@@ -154,6 +154,7 @@ class CommonModelApi(ModelResource):
         'is_approved',
         'is_published',
         'dirty_state',
+        'metadata_only'
     ]
 
     def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
@@ -722,6 +723,13 @@ class LayerResource(CommonModelApi):
             attribute='styles',
             null=True,
             use_in='detail')
+    
+    def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
+        _filters = filters.copy()
+        metadata_only = _filters.pop('metadata_only', False)
+        orm_filters = super(LayerResource, self).build_filters(_filters)
+        orm_filters['metadata_only'] = False if not metadata_only else metadata_only[0]
+        return orm_filters
 
     def format_objects(self, objects):
         """
@@ -866,6 +874,7 @@ class LayerResource(CommonModelApi):
             'id': ALL,
             'name': ALL,
             'alternate': ALL,
+            'metadata_only': ALL
         })
 
 
