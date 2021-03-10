@@ -1,9 +1,29 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2021 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import re
 import logging
 
 from PIL import Image
 from io import BytesIO
-from typing import List, Union, Optional, Dict, Tuple
+from typing import List, Union, Optional, Tuple
 
 from django.conf import settings
 from django.utils.module_loading import import_string
@@ -69,8 +89,8 @@ def create_thumbnail(
 
     thumbnail_name = _generate_thumbnail_name(instance)
     mime_type = "image/png"
-    width = settings.THUMBNAIL_SIZE['width']
-    height = settings.THUMBNAIL_SIZE['height']
+    width = settings.THUMBNAIL_SIZE["width"]
+    height = settings.THUMBNAIL_SIZE["height"]
 
     if thumbnail_name is None:
         # instance is Map and has no layers defined
@@ -98,13 +118,11 @@ def create_thumbnail(
         compute_bbox_from_layers = True
 
     # --- define layer locations ---
-    locations, layers_bbox = _layers_locations(
-        instance, compute_bbox=compute_bbox_from_layers, target_crs=target_crs
-    )
+    locations, layers_bbox = _layers_locations(instance, compute_bbox=compute_bbox_from_layers, target_crs=target_crs)
 
     if compute_bbox_from_layers:
         if not layers_bbox:
-            raise ThumbnailError(f"Thumbnail generation couldn't determine a BBOX for {instance.name}.")
+            raise ThumbnailError(f"Thumbnail generation couldn't determine a BBOX for: {instance}.")
         else:
             bbox = layers_bbox
 
@@ -156,7 +174,7 @@ def create_thumbnail(
 
     # --- fetch background image ---
     try:
-        BackgroundGenerator = import_string(settings.THUMBNAIL_BACKGROUND['class'])
+        BackgroundGenerator = import_string(settings.THUMBNAIL_BACKGROUND["class"])
         background = BackgroundGenerator(width, height).fetch(bbox, background_zoom)
     except Exception as e:
         logger.error(f"Thumbnail generation. Error occurred while fetching background image: {e}")
@@ -306,6 +324,6 @@ def _layers_locations(
                     ]
 
     if bbox and len(bbox) < 5:
-        bbox = list(bbox) + [target_crs]     # convert bbox to list, if it's tuple
+        bbox = list(bbox) + [target_crs]  # convert bbox to list, if it's tuple
 
     return locations, bbox

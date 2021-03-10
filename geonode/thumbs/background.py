@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2021 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import time
 import typing
 import logging
@@ -45,13 +65,12 @@ class BaseThumbBackground(ABC):
 
 
 class GenericWMSBackground(BaseThumbBackground):
-
     def __init__(
-            self,
-            thumbnail_width: int,
-            thumbnail_height: int,
-            max_retries: int = 3,
-            retry_delay: int = 1,
+        self,
+        thumbnail_width: int,
+        thumbnail_height: int,
+        max_retries: int = 3,
+        retry_delay: int = 1,
     ):
         """
         Generic WMS background generation class.
@@ -66,17 +85,17 @@ class GenericWMSBackground(BaseThumbBackground):
         """
         super().__init__(thumbnail_width, thumbnail_height, max_retries, retry_delay)
 
-        options = settings.THUMBNAIL_BACKGROUND.get('options', {})
+        options = settings.THUMBNAIL_BACKGROUND.get("options", {})
 
         # WMS specific attributes (to be overwritten in specific background classes)
-        service_url = options.get('service_url', None)
-        self.service_url = service_url + '/' if service_url and not service_url.endswith('/') else service_url
-        self.layer_name = options.get('layer_name', None)
-        self.format = options.get('format', 'image/png')
-        self.version = options.get('version', '1.3.0')
-        self.style = options.get('style', None)
-        srid = options.get('srid', 'EPSG:3857')
-        self.srid = srid if 'EPSG:' in srid else f'EPSG:{srid}'
+        service_url = options.get("service_url", None)
+        self.service_url = service_url + "/" if service_url and not service_url.endswith("/") else service_url
+        self.layer_name = options.get("layer_name", None)
+        self.format = options.get("format", "image/png")
+        self.version = options.get("version", "1.3.0")
+        self.style = options.get("style", None)
+        srid = options.get("srid", "EPSG:3857")
+        self.srid = srid if "EPSG:" in srid else f"EPSG:{srid}"
         # ---
 
     def bbox_to_projection(self, bbox: typing.List):
@@ -105,7 +124,7 @@ class GenericWMSBackground(BaseThumbBackground):
         """
 
         if not self.service_url or not self.layer_name:
-            logger.error(f"Thumbnail background configured improperly: service URL and layer name may not be empty")
+            logger.error("Thumbnail background configured improperly: service URL and layer name may not be empty")
             return
 
         background_url = utils.construct_wms_url(
@@ -133,11 +152,11 @@ class GenericWMSBackground(BaseThumbBackground):
 
 class GenericXYZBackground(BaseThumbBackground):
     def __init__(
-            self,
-            thumbnail_width: int,
-            thumbnail_height: int,
-            max_retries: int = 3,
-            retry_delay: int = 1,
+        self,
+        thumbnail_width: int,
+        thumbnail_height: int,
+        max_retries: int = 3,
+        retry_delay: int = 1,
     ):
         """
         Generic Slippy Maps background generation class for services EPSG:3857 compliant.
@@ -149,11 +168,11 @@ class GenericXYZBackground(BaseThumbBackground):
 
         super().__init__(thumbnail_width, thumbnail_height, max_retries, retry_delay)
 
-        options = settings.THUMBNAIL_BACKGROUND.get('options', {})
+        options = settings.THUMBNAIL_BACKGROUND.get("options", {})
 
         # Slippy Maps specific attributes (to be overwritten in specific background classes)
-        self.url = options.get('url', None)
-        self.tile_size = options.get('tile_size', 256)
+        self.url = options.get("url", None)
+        self.tile_size = options.get("tile_size", 256)
         # ---
 
         # class's internal attributes
@@ -204,8 +223,8 @@ class GenericXYZBackground(BaseThumbBackground):
         """
 
         if not self.url:
-            logger.error(f"Thumbnail background requires url to be configured.")
-            raise ThumbnailError('Tiled background improperly configured.')
+            logger.error("Thumbnail background requires url to be configured.")
+            raise ThumbnailError("Tiled background improperly configured.")
 
         if bbox[-1].lower() != self.crs.lower():
             # background service is not available the requested CRS CRS
@@ -243,32 +262,35 @@ class GenericXYZBackground(BaseThumbBackground):
 
         west_rescaling_factor = 0
         if abs(bbox[0]) > self._epsg3857_max_x:
-            west_rescaling_factor = ceil((abs(bbox[0]) - self._epsg3857_max_x) / epsg3857_world_width) * copysign(1, bbox[0])
+            west_rescaling_factor = ceil((abs(bbox[0]) - self._epsg3857_max_x) / epsg3857_world_width) * copysign(
+                1, bbox[0]
+            )
 
         east_rescaling_factor = 0
         if abs(bbox[1]) > self._epsg3857_max_x:
-            east_rescaling_factor = ceil((abs(bbox[1]) - self._epsg3857_max_x) / epsg3857_world_width) * copysign(1, bbox[1])
+            east_rescaling_factor = ceil((abs(bbox[1]) - self._epsg3857_max_x) / epsg3857_world_width) * copysign(
+                1, bbox[1]
+            )
 
-        map_row_tiles = 2**zoom - 1  # number of tiles in the Map's row for a certain zoom level
+        map_row_tiles = 2 ** zoom - 1  # number of tiles in the Map's row for a certain zoom level
 
-        map_worlds = int(east_rescaling_factor - west_rescaling_factor)     # number maps in an image
-        worlds_between = map_worlds - 1     # number of full maps in an image
+        map_worlds = int(east_rescaling_factor - west_rescaling_factor)  # number maps in an image
+        worlds_between = map_worlds - 1  # number of full maps in an image
         if top_left_tile.x > bottom_right_tile.x or bbox[1] - bbox[0] > epsg3857_world_width or map_worlds > 0:
             # BBOX crosses Slippy Map's border
             if worlds_between > 0:
                 tiles_rows = (
-                        list(range(top_left_tile.x, map_row_tiles + 1))
-                        + worlds_between * list(range(map_row_tiles + 1))
-                        + list(range(bottom_right_tile.x + 1))
+                    list(range(top_left_tile.x, map_row_tiles + 1))
+                    + worlds_between * list(range(map_row_tiles + 1))
+                    + list(range(bottom_right_tile.x + 1))
                 )
             else:
                 tiles_rows = list(range(top_left_tile.x, map_row_tiles + 1)) + list(range(bottom_right_tile.x + 1))
         else:
             # BBOx is contained by the Slippy Map
             if worlds_between > 0:
-                tiles_rows = (
-                        list(range(top_left_tile.x, bottom_right_tile.x + 1))
-                        + worlds_between * list(range(map_row_tiles + 1))
+                tiles_rows = list(range(top_left_tile.x, bottom_right_tile.x + 1)) + worlds_between * list(
+                    range(map_row_tiles + 1)
                 )
             else:
                 tiles_rows = list(range(top_left_tile.x, bottom_right_tile.x + 1))
@@ -287,11 +309,11 @@ class GenericXYZBackground(BaseThumbBackground):
         if extension3857:
             # get single tile's height in ESPG:3857
             tile_bounds = mercantile.bounds(tiles_rows[0], tiles_cols[0], zoom)
-            _, south = self.point4326to3857(getattr(tile_bounds, 'west'), getattr(tile_bounds, 'south'))
-            _, north = self.point4326to3857(getattr(tile_bounds, 'west'), getattr(tile_bounds, 'north'))
+            _, south = self.point4326to3857(getattr(tile_bounds, "west"), getattr(tile_bounds, "south"))
+            _, north = self.point4326to3857(getattr(tile_bounds, "west"), getattr(tile_bounds, "north"))
             tile_hight3857 = north - south
 
-            additional_height = round(self.tile_size * extension3857 / tile_hight3857)     # based on linear proportion
+            additional_height = round(self.tile_size * extension3857 / tile_hight3857)  # based on linear proportion
 
             if north_extension3857:
                 fixed_top_offset = round(self.tile_size * north_extension3857 / tile_hight3857)
@@ -300,7 +322,9 @@ class GenericXYZBackground(BaseThumbBackground):
                 fixed_bottom_offset = round(self.tile_size * south_extension3857 / tile_hight3857)
 
         background = Image.new(
-            "RGB", (len(tiles_rows) * self.tile_size, len(tiles_cols) * self.tile_size + additional_height), (250, 250, 250)
+            "RGB",
+            (len(tiles_rows) * self.tile_size, len(tiles_cols) * self.tile_size + additional_height),
+            (250, 250, 250),
         )
 
         for offset_x, x in enumerate(tiles_rows):
@@ -332,10 +356,10 @@ class GenericXYZBackground(BaseThumbBackground):
         bottom_right_bounds = mercantile.bounds(bottom_right_tile)
 
         tiles_bbox3857 = self.bbox4326to3857(
-            getattr(top_left_bounds, 'west'),
-            getattr(bottom_right_bounds, 'east'),
-            getattr(bottom_right_bounds, 'south'),
-            getattr(top_left_bounds, 'north')
+            getattr(top_left_bounds, "west"),
+            getattr(bottom_right_bounds, "east"),
+            getattr(bottom_right_bounds, "south"),
+            getattr(top_left_bounds, "north"),
         )
 
         # rescale tiles' boundaries - if space covered by the input BBOX extends the width of the world,
@@ -347,8 +371,7 @@ class GenericXYZBackground(BaseThumbBackground):
         # prepare translating function from received BBOX to pixel values of the background image
         src_quad = (0, fixed_top_offset, background.size[0], background.size[1] - fixed_bottom_offset)
         to_src_px = utils.make_bbox_to_pixels_transf(
-            [west_coord, tiles_bbox3857[2], east_coord, tiles_bbox3857[3]],
-            src_quad
+            [west_coord, tiles_bbox3857[2], east_coord, tiles_bbox3857[3]], src_quad
         )
 
         # translate received BBOX to pixel values
@@ -360,11 +383,11 @@ class GenericXYZBackground(BaseThumbBackground):
             ceil(minx),
             max(ceil(maxy) + fixed_top_offset, 0),
             floor(maxx),
-            min(floor(miny) + fixed_top_offset, background.size[1])
+            min(floor(miny) + fixed_top_offset, background.size[1]),
         )
 
         if not all([0 <= crop_x <= background.size[0] for crop_x in [crop_box[0], crop_box[2]]]):
-            raise ThumbnailError(f'Tiled background cropping error. Boundaries outside of the image: {crop_box}')
+            raise ThumbnailError(f"Tiled background cropping error. Boundaries outside of the image: {crop_box}")
 
         # crop background image to the desired bbox and resize it
         background = background.crop(box=crop_box)
@@ -390,13 +413,12 @@ class GenericXYZBackground(BaseThumbBackground):
 
 
 class WikiMediaTileBackground(GenericXYZBackground):
-
     def __init__(
-            self,
-            thumbnail_width: int,
-            thumbnail_height: int,
-            max_retries: int = 3,
-            retry_delay: int = 1,
+        self,
+        thumbnail_width: int,
+        thumbnail_height: int,
+        max_retries: int = 3,
+        retry_delay: int = 1,
     ):
         """
         Specific Wikimedia background generation class for thumbnails.
@@ -408,18 +430,17 @@ class WikiMediaTileBackground(GenericXYZBackground):
 
 
 class OSMTileBackground(GenericXYZBackground):
-
     def __init__(
-            self,
-            thumbnail_width: int,
-            thumbnail_height: int,
-            max_retries: int = 3,
-            retry_delay: int = 1,
+        self,
+        thumbnail_width: int,
+        thumbnail_height: int,
+        max_retries: int = 3,
+        retry_delay: int = 1,
     ):
         """
         Specific OpenStreetMaps background generation class for thumbnails.
         """
         super().__init__(thumbnail_width, thumbnail_height, max_retries, retry_delay)
 
-        self.url = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+        self.url = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
         self.tile_size = 256

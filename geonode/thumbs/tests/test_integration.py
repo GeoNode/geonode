@@ -1,52 +1,68 @@
-from geonode.tests.base import GeoNodeLiveTestSupport, GeoNodeBaseSimpleTestSupport
-
-import timeout_decorator
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2021 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
 
 import os
-import time
+import json
 import gisdata
-import logging
-from lxml import etree
-from defusedxml import lxml as dlxml
-from urllib.request import urlopen, Request
-from urllib.parse import urljoin
+import timeout_decorator
+
 from io import BytesIO
+from datetime import datetime
+from unittest.mock import patch
+from PIL import UnidentifiedImageError, Image
+from pixelmatch.contrib.PIL import pixelmatch
+
 from django.conf import settings
 from django.test.utils import override_settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 from geonode import geoserver
-from geonode.layers.models import Layer
-from geonode.compat import ensure_string
-from geonode.tests.utils import check_layer
 from geonode.utils import check_ogc_backend
 from geonode.layers.utils import file_upload
 from geonode.decorators import on_ogc_backend
-from geonode.base.models import TopicCategory, Link
-from geonode.geoserver.helpers import set_attributes_from_geoserver
-from geonode.utils import HttpClient
-from geonode.thumbs.background import OSMTileBackground, WikiMediaTileBackground, GenericXYZBackground, GenericWMSBackground
+from geonode.maps.models import Map
+from geonode.utils import HttpClient, http_client, DisableDjangoSignals
+from geonode.tests.base import GeoNodeLiveTestSupport, GeoNodeBaseSimpleTestSupport
 from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, create_thumbnail
-from geonode.base.thumb_utils import thumb_path
-from geonode.utils import http_client
-from unittest.mock import patch
-from PIL import UnidentifiedImageError, Image
-from datetime import datetime
-from pixelmatch.contrib.PIL import pixelmatch
+from geonode.thumbs.background import (
+    OSMTileBackground,
+    WikiMediaTileBackground,
+    GenericXYZBackground,
+    GenericWMSBackground,
+)
 
 LOCAL_TIMEOUT = 300
+EXPECTED_RESULTS_DIR = "geonode/thumbs/tests/expected_results/"
 
 
 class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
-
-    @override_settings(THUMBNAIL_BACKGROUND={
-        'options': {
-            'url': 'http://some_fancy_url/',
-            'tile_size': 256,
+    @override_settings(
+        THUMBNAIL_BACKGROUND={
+            "options": {
+                "url": "http://some_fancy_url/",
+                "tile_size": 256,
+            }
         }
-    })
-    @patch.object(HttpClient, 'request')
+    )
+    @patch.object(HttpClient, "request")
     def test_tile_background_retries(self, request_mock):
         request_mock.return_value = (None, None)
 
@@ -61,19 +77,23 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
 
             GenericXYZBackground(
                 thumbnail_width=width, thumbnail_height=height, max_retries=max_retries, retry_delay=retry_delay
-            ).fetch([623869.6556559108, 2458358.334500141, 4291621.974352865, 5270015.93640312, 'EPSG:3857'])
+            ).fetch([623869.6556559108, 2458358.334500141, 4291621.974352865, 5270015.93640312, "EPSG:3857"])
 
         end = datetime.now()
 
         self.assertEqual(request_mock.call_count, max_retries, f"Expected to {max_retries} number of failing fetches")
-        self.assertGreaterEqual((end-start).seconds, max_retries*retry_delay-1, "Expected delay between consecutive failing fetches")
+        self.assertGreaterEqual(
+            (end - start).seconds, max_retries * retry_delay - 1, "Expected delay between consecutive failing fetches"
+        )
 
-    @override_settings(THUMBNAIL_BACKGROUND={
-        'options': {
-            'url': 'http://some_fancy_url/',
-            'tile_size': 256,
+    @override_settings(
+        THUMBNAIL_BACKGROUND={
+            "options": {
+                "url": "http://some_fancy_url/",
+                "tile_size": 256,
+            }
         }
-    })
+    )
     def test_tile_background_bbox_conversions(self):
         bboxes_3857 = [
             [-8252241.123663656, -8223577.238056716, 4967814.255806367, 4983101.661463401],
@@ -88,16 +108,19 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
             new_bbox_3857 = background.bbox4326to3857(*bbox4326)
 
             self.assertEqual(
-                [round(coord, 4) for coord in bbox_3857], [round(coord, 4) for coord in new_bbox_3857],
-                "Expected converted BBOXes to be equal"
+                [round(coord, 4) for coord in bbox_3857],
+                [round(coord, 4) for coord in new_bbox_3857],
+                "Expected converted BBOXes to be equal",
             )
 
-    @override_settings(THUMBNAIL_BACKGROUND={
-        'options': {
-            'url': 'http://some_fancy_url/',
-            'tile_size': 256,
+    @override_settings(
+        THUMBNAIL_BACKGROUND={
+            "options": {
+                "url": "http://some_fancy_url/",
+                "tile_size": 256,
+            }
         }
-    })
+    )
     def test_tile_background_bbox_zoom_calculation(self):
         bboxes_3857 = [
             [-8252241.123663656, -8223577.238056716, 4967814.255806367, 4983101.661463401],
@@ -124,41 +147,48 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
         diff = Image.new("RGB", image.size)
 
         mismatch = pixelmatch(image, expected_image, diff)
-        self.assertEqual(mismatch, 0, "Expected test and pre-generated backgrounds to be identical")
+        self.assertTrue(
+            mismatch < expected_image.size[0] * expected_image.size[1] * 0.01,
+            "Expected test and pre-generated backgrounds to differ up to 1%",
+        )
 
-    @override_settings(THUMBNAIL_BACKGROUND={
-        'options': {
-            'url': 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
-            'tile_size': 256,
+    @override_settings(
+        THUMBNAIL_BACKGROUND={
+            "options": {
+                "url": "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png",
+                "tile_size": 256,
+            }
         }
-    })
+    )
     def test_tile_background_generic_fetch(self):
 
         width = 240
         height = 200
 
-        bbox_3857 = [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, 'EPSG:3857']
-        expected_image_path = 'geonode/thumbs/tests/expected_results/background/wikimedia_outcome1.png'
+        bbox_3857 = [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, "EPSG:3857"]
+        expected_image_path = EXPECTED_RESULTS_DIR + "background/wikimedia_outcome1.png"
 
         background = GenericXYZBackground(thumbnail_width=width, thumbnail_height=height)
         self._fetch_and_compare_background(background, bbox_3857, expected_image_path)
 
-    @override_settings(THUMBNAIL_BACKGROUND={
-        'options': {
-            'url': 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
-            'tile_size': 256,
+    @override_settings(
+        THUMBNAIL_BACKGROUND={
+            "options": {
+                "url": "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png",
+                "tile_size": 256,
+            }
         }
-    })
+    )
     def test_tile_background_generic_fetch_zoom(self):
 
         width = 240
         height = 200
 
-        bbox_3857 = [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, 'EPSG:3857']
+        bbox_3857 = [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, "EPSG:3857"]
 
         zooms = range(6, 13)
         expected_image_paths = [
-            f'geonode/thumbs/tests/expected_results/background/wikimedia_zoom_{zoom}_outcome.png' for zoom in zooms
+            EXPECTED_RESULTS_DIR + f"background/wikimedia_zoom_{zoom}_outcome.png" for zoom in zooms
         ]
 
         background = GenericXYZBackground(thumbnail_width=width, thumbnail_height=height)
@@ -169,7 +199,9 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
             diff = Image.new("RGB", image.size)
 
             mismatch = pixelmatch(image, expected_image, diff)
-            self.assertEqual(mismatch, 0, "Expected test and pre-generated backgrounds to be identical")
+            self.assertTrue(
+                mismatch < width * height * 0.01, "Expected test and pre-generated backgrounds to differ up to 1%"
+            )
 
     def test_tile_background_wikimedia_fetch(self):
 
@@ -177,18 +209,18 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
         height = 200
 
         bboxes_3857 = [
-            [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, 'EPSG:3857'],
-            [-9990526.32372507, -6321548.96603661, 3335075.3607465066, 6392556.492153557, 'EPSG:3857'],
-            [-107776710.17911679, 9630565.26691392, -50681609.070756994, 47157787.134268604, 'EPSG:3857'],
-            [39681312.13711384, 43350289.494802296, 3596795.7455949546, 6654276.877002003, 'EPSG:3857']
+            [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, "EPSG:3857"],
+            [-9990526.32372507, -6321548.96603661, 3335075.3607465066, 6392556.492153557, "EPSG:3857"],
+            [-107776710.17911679, 9630565.26691392, -50681609.070756994, 47157787.134268604, "EPSG:3857"],
+            [39681312.13711384, 43350289.494802296, 3596795.7455949546, 6654276.877002003, "EPSG:3857"],
         ]
 
-        expected_results_dir = 'geonode/thumbs/tests/expected_results/background/'
+        expected_results_dir = EXPECTED_RESULTS_DIR + "background/"
         expected_images_paths = [
-            expected_results_dir + 'wikimedia_outcome1.png',
-            expected_results_dir + 'wikimedia_outcome2.png',
-            expected_results_dir + 'wikimedia_outcome3.png',
-            expected_results_dir + 'wikimedia_outcome4.png',
+            expected_results_dir + "wikimedia_outcome1.png",
+            expected_results_dir + "wikimedia_outcome2.png",
+            expected_results_dir + "wikimedia_outcome3.png",
+            expected_results_dir + "wikimedia_outcome4.png",
         ]
 
         background = WikiMediaTileBackground(thumbnail_width=width, thumbnail_height=height)
@@ -202,18 +234,18 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
         height = 200
 
         bboxes_3857 = [
-            [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, 'EPSG:3857'],
-            [-9990526.32372507, -6321548.96603661, 3335075.3607465066, 6392556.492153557, 'EPSG:3857'],
-            [-107776710.17911679, 9630565.26691392, -50681609.070756994, 47157787.134268604, 'EPSG:3857'],
-            [39681312.13711384, 43350289.494802296, 3596795.7455949546, 6654276.877002003, 'EPSG:3857']
+            [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, "EPSG:3857"],
+            [-9990526.32372507, -6321548.96603661, 3335075.3607465066, 6392556.492153557, "EPSG:3857"],
+            [-107776710.17911679, 9630565.26691392, -50681609.070756994, 47157787.134268604, "EPSG:3857"],
+            [39681312.13711384, 43350289.494802296, 3596795.7455949546, 6654276.877002003, "EPSG:3857"],
         ]
 
-        expected_results_dir = 'geonode/thumbs/tests/expected_results/background/'
+        expected_results_dir = EXPECTED_RESULTS_DIR + "background/"
         expected_images_paths = [
-            expected_results_dir + 'osm_outcome1.png',
-            expected_results_dir + 'osm_outcome2.png',
-            expected_results_dir + 'osm_outcome3.png',
-            expected_results_dir + 'osm_outcome4.png',
+            expected_results_dir + "osm_outcome1.png",
+            expected_results_dir + "osm_outcome2.png",
+            expected_results_dir + "osm_outcome3.png",
+            expected_results_dir + "osm_outcome4.png",
         ]
 
         background = OSMTileBackground(thumbnail_width=width, thumbnail_height=height)
@@ -232,27 +264,27 @@ class GeoNodeThumbnailWMSBackground(GeoNodeLiveTestSupport):
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # upload shape files
-            shp_file = os.path.join(
-                gisdata.VECTOR_DATA,
-                'san_andres_y_providencia_coastline.shp')
-            cls.layer_coast_line = file_upload(shp_file)
+            shp_file = os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_coastline.shp")
+            cls.layer_coast_line = file_upload(shp_file, overwrite=True)
 
     @classmethod
     def tearDownClass(cls):
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            if cls.layer_coast_line:
-                cls.layer_coast_line.delete()
+        # if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+        #     if cls.layer_coast_line:
+        #         cls.layer_coast_line.delete()
 
         super().tearDownClass()
 
-    @override_settings(THUMBNAIL_BACKGROUND={
-        'options': {
-            'service_url': settings.OGC_SERVER["default"]["LOCATION"],
-            'layer_name': 'san_andres_y_providencia_coastline',
-            'srid': 'EPSG:3857',
+    @override_settings(
+        THUMBNAIL_BACKGROUND={
+            "options": {
+                "service_url": settings.OGC_SERVER["default"]["LOCATION"],
+                "layer_name": "san_andres_y_providencia_coastline",
+                "srid": "EPSG:3857",
+            }
         }
-    })
-    @patch.object(HttpClient, 'request')
+    )
+    @patch.object(HttpClient, "request")
     def test_wms_background_retries(self, request_mock):
         request_mock.return_value = (None, None)
 
@@ -260,7 +292,7 @@ class GeoNodeThumbnailWMSBackground(GeoNodeLiveTestSupport):
         height = 200
         max_retries = 3
         retry_delay = 1
-        bbox = [-9072563.021775628, -9043899.136168687, 1492394.0457582686, 1507681.4514153039, 'EPSG:4326']
+        bbox = [-9072563.021775628, -9043899.136168687, 1492394.0457582686, 1507681.4514153039, "EPSG:4326"]
 
         start = datetime.now()
 
@@ -273,63 +305,70 @@ class GeoNodeThumbnailWMSBackground(GeoNodeLiveTestSupport):
         end = datetime.now()
 
         self.assertEqual(request_mock.call_count, max_retries, f"Expected to {max_retries} number of failing fetches")
-        self.assertGreaterEqual((end-start).seconds, max_retries*retry_delay-1, "Expected delay between consecutive failing fetches")
+        self.assertGreaterEqual(
+            (end - start).seconds, max_retries * retry_delay - 1, "Expected delay between consecutive failing fetches"
+        )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    @override_settings(THUMBNAIL_BACKGROUND={
-        'options': {
-            'service_url': settings.OGC_SERVER["default"]["LOCATION"] + 'ows/',
-            'layer_name': 'san_andres_y_providencia_coastline',
-            'srid': 'EPSG:3857',
-            'version': '1.1.0',
+    @override_settings(
+        THUMBNAIL_BACKGROUND={
+            "options": {
+                "service_url": settings.OGC_SERVER["default"]["LOCATION"] + "ows/",
+                "layer_name": "san_andres_y_providencia_coastline",
+                "srid": "EPSG:3857",
+                "version": "1.1.0",
+            }
         }
-    })
+    )
     def test_wms_background_fetch_epsg3857(self):
         width = 240
         height = 200
 
-        bbox = [-9072563.021775628, -9043899.136168687, 1492394.0457582686, 1507681.4514153039, 'EPSG:3857']
+        bbox = [-9072563.021775628, -9043899.136168687, 1492394.0457582686, 1507681.4514153039, "EPSG:3857"]
 
-        image = GenericWMSBackground(
-            thumbnail_width=width, thumbnail_height=height
-        ).fetch(bbox)
+        image = GenericWMSBackground(thumbnail_width=width, thumbnail_height=height).fetch(bbox)
 
-        expected_image = Image.open('geonode/thumbs/tests/expected_results/background/wms_3857.png')
+        expected_image = Image.open(EXPECTED_RESULTS_DIR + "background/wms_3857.png")
         diff = Image.new("RGB", image.size)
 
         mismatch = pixelmatch(image, expected_image, diff)
-        self.assertEqual(mismatch, 0, "Expected test and pre-generated backgrounds to be identical")
+        self.assertTrue(
+            mismatch < width * height * 0.01, "Expected test and pre-generated backgrounds to differ up to 1%"
+        )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    @override_settings(THUMBNAIL_BACKGROUND={
-        'options': {
-            'service_url': settings.OGC_SERVER["default"]["LOCATION"] + 'ows/',
-            'layer_name': 'san_andres_y_providencia_coastline',
-            'srid': 'EPSG:4326',
-            'version': '1.1.0',
+    @override_settings(
+        THUMBNAIL_BACKGROUND={
+            "options": {
+                "service_url": settings.OGC_SERVER["default"]["LOCATION"] + "ows/",
+                "layer_name": "san_andres_y_providencia_coastline",
+                "srid": "EPSG:4326",
+                "version": "1.1.0",
+            }
         }
-    })
+    )
     def test_wms_background_fetch_epsg4326(self):
         width = 240
         height = 200
 
-        bbox = [-9072563.021775628, -9043899.136168687, 1492394.0457582686, 1507681.4514153039, 'EPSG:3857']
+        bbox = [-9072563.021775628, -9043899.136168687, 1492394.0457582686, 1507681.4514153039, "EPSG:3857"]
 
-        image = GenericWMSBackground(
-            thumbnail_width=width, thumbnail_height=height
-        ).fetch(bbox)
+        image = GenericWMSBackground(thumbnail_width=width, thumbnail_height=height).fetch(bbox)
 
-        expected_image = Image.open('geonode/thumbs/tests/expected_results/background/wms_4326.png')
+        expected_image = Image.open(EXPECTED_RESULTS_DIR + "background/wms_4326.png")
         diff = Image.new("RGB", image.size)
 
         mismatch = pixelmatch(image, expected_image, diff)
-        self.assertEqual(mismatch, 0, "Expected test and pre-generated backgrounds to be identical")
+        self.assertTrue(
+            mismatch < width * height * 0.01, "Expected test and pre-generated backgrounds to differ up to 1%"
+        )
 
 
 class GeoNodeThumbnailsIntegration(GeoNodeLiveTestSupport):
 
     layer_coast_line = None
     layer_highway = None
+    map_composition = None
 
     @classmethod
     def setUpClass(cls):
@@ -337,152 +376,162 @@ class GeoNodeThumbnailsIntegration(GeoNodeLiveTestSupport):
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # upload shape files
-            shp_file = os.path.join(
-                gisdata.VECTOR_DATA,
-                'san_andres_y_providencia_coastline.shp')
-            cls.layer_coast_line = file_upload(shp_file)
+            shp_file = os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_coastline.shp")
+            cls.layer_coast_line = file_upload(shp_file, overwrite=True)
 
-            shp_file = os.path.join(
-                gisdata.VECTOR_DATA,
-                'san_andres_y_providencia_highway.shp')
-            cls.layer_highway = file_upload(shp_file)
+            shp_file = os.path.join(gisdata.VECTOR_DATA, "san_andres_y_providencia_highway.shp")
+            cls.layer_highway = file_upload(shp_file, overwrite=True)
+
+            # create a map from loaded layers
+            cls.map_composition = Map()
+            admin_user = get_user_model().objects.get(username="admin")
+            cls.map_composition.create_from_layer_list(
+                admin_user, [cls.layer_coast_line, cls.layer_highway], "composition", "abstract"
+            )
+
+            # update MapLayers to correctly show layers' location
+            with DisableDjangoSignals():
+                for maplayer in cls.map_composition.layers:
+                    if maplayer.name in [cls.layer_coast_line.alternate, cls.layer_highway.alternate]:
+                        maplayer.local = True
+                        maplayer.save(force_update=True)
+                        maplayer.refresh_from_db()
+
+            cls.map_composition.refresh_from_db()
 
     @classmethod
     def tearDownClass(cls):
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            if cls.layer_coast_line:
-                cls.layer_coast_line.delete()
-            if cls.layer_highway:
-                cls.layer_highway.delete()
+        # if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+        #     if cls.layer_coast_line:
+        #         cls.layer_coast_line.delete()
+        #     if cls.layer_highway:
+        #         cls.layer_highway.delete()
 
         super().tearDownClass()
 
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    @timeout_decorator.timeout(LOCAL_TIMEOUT)
-    @override_settings(THUMBNAIL_BACKGROUND={
-        'class': 'geonode.thumbs.background.WikiMediaTileBackground',
-    })
-    def test_layer_default_thumb(self):
-        expected_thumb = Image.open(
-            'geonode/thumbs/tests/expected_results/thumbnails/default_layer_coast_line_thumb.png'
-        )
-
-        create_gs_thumbnail_geonode(self.layer_coast_line, overwrite=True)
-
-        _, img = http_client.request(self.layer_coast_line.thumbnail_url)
+    def _fetch_thumb_and_compare(self, url, expected_image):
+        _, img = http_client.request(url)
         content = BytesIO(img)
         Image.open(content).verify()  # verify that it is, in fact an image
         thumb = Image.open(content)
 
         diff = Image.new("RGB", thumb.size)
 
-        mismatch = pixelmatch(thumb, expected_thumb, diff)
-        self.assertEqual(mismatch, 0, "Expected test and pre-generated thumbnails to be identical")
+        mismatch = pixelmatch(thumb, expected_image, diff)
+        self.assertTrue(
+            mismatch < expected_image.size[0] * expected_image.size[1] * 0.01,
+            "Expected test and pre-generated thumbnails to differ up to 1%",
+        )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
-    @override_settings(THUMBNAIL_BACKGROUND={
-        'class': 'geonode.thumbs.background.WikiMediaTileBackground',
-    })
+    @override_settings(
+        THUMBNAIL_BACKGROUND={
+            "class": "geonode.thumbs.background.WikiMediaTileBackground",
+        }
+    )
+    def test_layer_default_thumb(self):
+        expected_thumb = Image.open(EXPECTED_RESULTS_DIR + "thumbnails/default_layer_coast_line_thumb.png")
+
+        create_gs_thumbnail_geonode(self.layer_coast_line, overwrite=True)
+
+        self._fetch_thumb_and_compare(self.layer_coast_line.thumbnail_url, expected_thumb)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
+    @override_settings(
+        THUMBNAIL_BACKGROUND={
+            "class": "geonode.thumbs.background.WikiMediaTileBackground",
+        }
+    )
     def test_layer_custom_thumbs(self):
 
         bboxes = [
-            [-9072629.904175375, -9043966.018568434, 1491839.8773032012, 1507127.2829602365, 'EPSG:3857'],
-            [-9701812.234583871, -8784567.895161757, 1183222.3819935687, 1672419.363018697, 'EPSG:3857'],
-            [-84665859.2306568, 32741416.215373922, -33346586.656875588, 29270626.9143408, 'EPSG:3857'],
-            [-72434308.4190976, -43082489.55758992, -7279981.1852046205, 8374322.207599477, 'EPSG:3857'],
-            [-77007211.63038959, -18303573.90737422, 781254.9545387309, 32089861.740146928, 'EPSG:3857'],
+            [-9072629.904175375, -9043966.018568434, 1491839.8773032012, 1507127.2829602365, "EPSG:3857"],
+            [-9701812.234583871, -8784567.895161757, 1183222.3819935687, 1672419.363018697, "EPSG:3857"],
+            [-84665859.2306568, 32741416.215373922, -33346586.656875588, 29270626.9143408, "EPSG:3857"],
+            [-72434308.4190976, -43082489.55758992, -7279981.1852046205, 8374322.207599477, "EPSG:3857"],
+            [-77007211.63038959, -18303573.90737422, 781254.9545387309, 32089861.740146928, "EPSG:3857"],
         ]
 
-        expected_results_dir = 'geonode/thumbs/tests/expected_results/thumbnails/'
+        expected_results_dir = EXPECTED_RESULTS_DIR + "thumbnails/"
         expected_thumbs_paths = [
-            expected_results_dir + 'thumb1.png',
-            expected_results_dir + 'thumb2.png',
-            expected_results_dir + 'thumb3.png',
-            expected_results_dir + 'thumb4.png',
-            expected_results_dir + 'thumb5.png',
+            expected_results_dir + "layer_thumb1.png",
+            expected_results_dir + "layer_thumb2.png",
+            expected_results_dir + "layer_thumb3.png",
+            expected_results_dir + "layer_thumb4.png",
+            expected_results_dir + "layer_thumb5.png",
         ]
+
+        self.client.login(username="norman", password="norman")
+        thumbnail_post_url = reverse("layer_thumbnail", kwargs={"layername": self.layer_coast_line.alternate})
 
         for bbox, expected_thumb_path in zip(bboxes, expected_thumbs_paths):
-            create_thumbnail(
-                self.layer_coast_line,
-                bbox=bbox,
-                overwrite=True
+            response = self.client.post(
+                thumbnail_post_url, json.dumps({"bbox": bbox[0:4], "srid": bbox[-1]}), content_type="application/json"
             )
 
-            _, img = http_client.request(self.layer_coast_line.thumbnail_url)
-            content = BytesIO(img)
-            Image.open(content).verify()  # verify that it is, in fact an image
-            thumb = Image.open(content)
-
+            self.assertEqual(response.status_code, 200, "Expected 200 OK response")
             expected_thumb = Image.open(expected_thumb_path)
-            diff = Image.new("RGB", thumb.size)
 
-            mismatch = pixelmatch(thumb, expected_thumb, diff)
-            self.assertEqual(mismatch, 0, "Expected test and pre-generated thumbnails to be identical")
+            self.layer_coast_line.refresh_from_db()
+            self._fetch_thumb_and_compare(self.layer_coast_line.thumbnail_url, expected_thumb)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
-    @override_settings(THUMBNAIL_BACKGROUND={
-        'class': 'geonode.thumbs.background.WikiMediaTileBackground',
-    })
+    @override_settings(
+        THUMBNAIL_BACKGROUND={
+            "class": "geonode.thumbs.background.WikiMediaTileBackground",
+        }
+    )
     def test_map_default_thumb(self):
-        # TODO
-        expected_thumb = Image.open(
-            'geonode/thumbs/tests/expected_results/thumbnails/default_layer_coast_line_thumb.png'
-        )
+        create_gs_thumbnail_geonode(self.map_composition, overwrite=True)
+        self.assertTrue(self.map_composition.has_thumbnail())
 
-        create_gs_thumbnail_geonode(self.layer_coast_line, overwrite=True)
-        self.assertTrue(self.layer_coast_line.has_thumbnail())
-
-        _, img = http_client.request(self.layer_coast_line.thumbnail_url)
+        _, img = http_client.request(self.map_composition.thumbnail_url)
         content = BytesIO(img)
         Image.open(content).verify()  # verify that it is, in fact an image
         thumb = Image.open(content)
 
         diff = Image.new("RGB", thumb.size)
 
+        expected_thumb = Image.open(EXPECTED_RESULTS_DIR + "thumbnails/default_map_thumb.png")
+
         mismatch = pixelmatch(thumb, expected_thumb, diff)
-        self.assertEqual(mismatch, 0, "Expected test and pre-generated thumbnails to be identical")
+        self.assertTrue(
+            mismatch < expected_thumb.size[0] * expected_thumb.size[1] * 0.01,
+            "Expected test and pre-generated thumbnails to differ up to 1%",
+        )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
-    @override_settings(THUMBNAIL_BACKGROUND={
-        'class': 'geonode.thumbs.background.WikiMediaTileBackground',
-    })
+    @override_settings(
+        THUMBNAIL_BACKGROUND={
+            "class": "geonode.thumbs.background.WikiMediaTileBackground",
+        }
+    )
     def test_map_custom_thumbs(self):
-        # TODO
         bboxes = [
-            [-9072629.904175375, -9043966.018568434, 1491839.8773032012, 1507127.2829602365, 'EPSG:3857'],
-            [-9701812.234583871, -8784567.895161757, 1183222.3819935687, 1672419.363018697, 'EPSG:3857'],
-            [-84665859.2306568, 32741416.215373922, -33346586.656875588, 29270626.9143408, 'EPSG:3857'],
-            [-72434308.4190976, -43082489.55758992, -7279981.1852046205, 8374322.207599477, 'EPSG:3857'],
-            [-77007211.63038959, -18303573.90737422, 781254.9545387309, 32089861.740146928, 'EPSG:3857'],
+            [-9072629.904175375, -9043966.018568434, 1491839.8773032012, 1507127.2829602365, "EPSG:3857"],
+            [-9701812.234583871, -8784567.895161757, 1183222.3819935687, 1672419.363018697, "EPSG:3857"],
+            [-84665859.2306568, 32741416.215373922, -33346586.656875588, 29270626.9143408, "EPSG:3857"],
+            [-72434308.4190976, -43082489.55758992, -7279981.1852046205, 8374322.207599477, "EPSG:3857"],
+            [-77007211.63038959, -18303573.90737422, 781254.9545387309, 32089861.740146928, "EPSG:3857"],
         ]
 
-        expected_results_dir = 'geonode/thumbs/tests/expected_results/thumbnails/'
+        expected_results_dir = EXPECTED_RESULTS_DIR + "thumbnails/"
         expected_thumbs_paths = [
-            expected_results_dir + 'thumb1.png',
-            expected_results_dir + 'thumb2.png',
-            expected_results_dir + 'thumb3.png',
-            expected_results_dir + 'thumb4.png',
-            expected_results_dir + 'thumb5.png',
+            expected_results_dir + "map_thumb1.png",
+            expected_results_dir + "map_thumb2.png",
+            expected_results_dir + "map_thumb3.png",
+            expected_results_dir + "map_thumb4.png",
+            expected_results_dir + "map_thumb5.png",
         ]
 
         for bbox, expected_thumb_path in zip(bboxes, expected_thumbs_paths):
-            create_thumbnail(
-                self.layer_coast_line,
-                bbox=bbox,
-                overwrite=True
-            )
-
-            _, img = http_client.request(self.layer_coast_line.thumbnail_url)
-            content = BytesIO(img)
-            Image.open(content).verify()  # verify that it is, in fact an image
-            thumb = Image.open(content)
+            create_thumbnail(self.map_composition, bbox=bbox, overwrite=True)
 
             expected_thumb = Image.open(expected_thumb_path)
-            diff = Image.new("RGB", thumb.size)
+            self.map_composition.refresh_from_db()
 
-            mismatch = pixelmatch(thumb, expected_thumb, diff)
-            self.assertEqual(mismatch, 0, "Expected test and pre-generated thumbnails to be identical")
+            self._fetch_thumb_and_compare(self.map_composition.thumbnail_url, expected_thumb)

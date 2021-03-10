@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+#########################################################################
+#
+# Copyright (C) 2021 OSGeo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+#########################################################################
+
 import time
 import base64
 import logging
@@ -60,9 +80,9 @@ def transform_bbox(bbox: List, target_crs: str = "epsg:3857"):
 
 
 def expand_bbox_to_ratio(
-        bbox: List,
-        target_width: int = settings.THUMBNAIL_SIZE['width'],
-        target_height: int = settings.THUMBNAIL_SIZE['height']
+    bbox: List,
+    target_width: int = settings.THUMBNAIL_SIZE["width"],
+    target_height: int = settings.THUMBNAIL_SIZE["height"],
 ):
     """
     Function returning an expanded BBOX, ensuring it's ratio, based on the provided BBOX, and width and height
@@ -78,7 +98,7 @@ def expand_bbox_to_ratio(
     x_min, x_max, y_min, y_max, _ = transform_bbox(bbox)
 
     # scale up to ratio
-    ratio = target_height/target_width
+    ratio = target_height / target_width
 
     bbox_width = abs(x_max - x_min)
     bbox_height = abs(y_max - y_min)
@@ -98,7 +118,7 @@ def expand_bbox_to_ratio(
         x_mid + new_width / 2,
         y_mid - new_height / 2,
         y_mid + new_height / 2,
-        'epsg:3857',
+        "epsg:3857",
     ]
 
     # convert bbox to target_crs
