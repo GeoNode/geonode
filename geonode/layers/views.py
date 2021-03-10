@@ -114,9 +114,7 @@ from geonode.tasks.tasks import set_permissions
 from celery.utils.log import get_logger
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    from geonode.geoserver.helpers import (
-        _render_thumbnail,
-        gs_catalog)
+    from geonode.geoserver.helpers import gs_catalog
 
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
@@ -1491,27 +1489,18 @@ def layer_thumbnail(request, layername):
         raise Http404(_("Not found"))
 
     try:
-        image = _render_thumbnail(request.body)
-    except Exception as e:
-        logger.debug(e)
-        image = None
+        request_body = json.loads(request.body)
+        bbox = request_body['bbox'] + [request_body['srid']]
+        zoom = request_body.get('zoom', None)
 
-    try:
-        if image is not None:
-            filename = "layer-%s-thumb.png" % layer_obj.uuid
-            layer_obj.save_thumbnail(filename, image)
-        else:
-            request_body = json.loads(request.body)
+        create_thumbnail(
+            layer_obj,
+            bbox=bbox,
+            background_zoom=zoom,
+            overwrite=True
+        )
 
-            bbox = request_body['bbox'] + [request_body['srid']]
-            zoom = request_body.get('zoom', None)
-
-            create_thumbnail(
-                layer_obj,
-                bbox=bbox,
-                background_zoom=zoom,
-                overwrite=True
-            )
+        return HttpResponse('Thumbnail saved')
 
     except Exception as e:
         logger.exception(e)
@@ -1520,8 +1509,6 @@ def layer_thumbnail(request, layername):
             status=500,
             content_type='text/plain'
         )
-
-    return HttpResponse('Thumbnail saved')
 
 
 def get_layer(request, layername):

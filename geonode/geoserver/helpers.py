@@ -32,9 +32,6 @@ import mercantile
 
 from shutil import copyfile
 
-
-from PIL import Image, ImageOps
-from io import BytesIO
 from itertools import cycle
 from collections import namedtuple, defaultdict
 from os.path import basename, splitext, isfile
@@ -62,7 +59,6 @@ from defusedxml import lxml as dlxml
 from owslib.wcs import WebCoverageService
 from owslib.wms import WebMapService
 from geonode import GeoNodeException
-from geonode.base.auth import get_or_create_token
 from geonode.utils import (
     _v,
     http_client,
@@ -2029,47 +2025,6 @@ _esri_types = {
     "esriFieldTypeXML": "xsd:anyType"}
 
 
-def _render_thumbnail(req_body, width=240, height=200):
-    spec = _fixup_ows_url(req_body)
-    url = "%srest/printng/render.png" % ogc_server_settings.LOCATION
-    headers = {'Content-type': 'text/html'}
-    _default_thumb_size = getattr(
-        settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
-    params = dict(width=width, height=height)
-    url += "?" + urlencode(params)
-    try:
-        req, content = http_client.request(
-            url,
-            method='POST',
-            data=spec,
-            headers=headers,
-            user=_user)
-        if not content:
-            return content
-        if not isinstance(content, bytes):
-            raise Exception(content)
-
-        # Optimize the Thumbnail size and resolution
-        with BytesIO(content) as content_data:
-            im = Image.open(content_data)
-            im.thumbnail(
-                (_default_thumb_size['width'], _default_thumb_size['height']),
-                resample=Image.ANTIALIAS)
-            cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']))
-            with BytesIO() as imgByteArr:
-                cover.save(imgByteArr, format='JPEG')
-                content = imgByteArr.getvalue()
-    except Exception as e:
-        logger.debug(f"Could not sucesfully send data to {url}")
-        logger.debug(f" - user: [{_user}]")
-        logger.debug(f" - headers: [{headers}]")
-        logger.debug(f" - data: [{spec}]")
-        logger.exception(e)
-        raise e
-
-    return content
-
-
 def _dump_image_spec(request_body, image_spec):
     millis = int(round(time.time() * 1000))
     try:
@@ -2156,153 +2111,6 @@ def _compute_number_of_tiles(request_body, width, height, thumbnail_tile_size):
         _n_step = _n_step + 1
 
     return top, left, first_row, numberOfRows
-
-
-def _prepare_thumbnail_body_from_opts(request_body, request=None):
-    if isinstance(request_body, bytes):
-        request_body = request_body.decode("UTF-8")
-    try:
-        image = None
-        _default_thumb_size = getattr(
-            settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
-        width = _default_thumb_size['width']
-        height = _default_thumb_size['height']
-
-        if isinstance(request_body, str):
-            try:
-                request_body = json.loads(request_body)
-            except Exception as e:
-                logger.debug(e)
-                try:
-                    image = _render_thumbnail(
-                        request_body, width=width, height=height)
-                except Exception as e:
-                    logger.debug(e)
-                    image = None
-
-        if image is not None:
-            return image
-
-        # Defaults
-        _img_src_template = """<img src='{ogc_location}'
-        style='width: {width}px; height: {height}px;
-        left: {left}px; top: {top}px;
-        opacity: 1; visibility: inherit; position: absolute;'/>\n"""
-
-        # Sanity Checks
-        if 'bbox' not in request_body:
-            return None
-        if 'srid' not in request_body:
-            return None
-        for coord in request_body['bbox']:
-            if not coord:
-                return None
-
-        if 'width' in request_body:
-            width = int(request_body['width'])
-        if 'height' in request_body:
-            height = int(request_body['height'])
-        smurl = None
-        if 'smurl' in request_body:
-            smurl = request_body['smurl']
-        if not smurl and getattr(settings, 'THUMBNAIL_GENERATOR_DEFAULT_BG', None):
-            smurl = settings.THUMBNAIL_GENERATOR_DEFAULT_BG
-        layers = None
-        thumbnail_tile_size = 256
-        thumbnail_create_url = None
-        if 'thumbnail_create_url' in request_body:
-            thumbnail_create_url = request_body['thumbnail_create_url']
-        elif 'layers' in request_body:
-            layers = request_body['layers']
-            styles = ''
-            if 'styles' in request_body:
-                styles = request_body['styles']
-
-            ogc_server_location = request_body.get("ogc_server_location", ogc_server_settings.LOCATION)
-            wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or 'wms'
-            wms_version = getattr(ogc_server_settings, "WMS_VERSION") or '1.1.0'
-            wms_format = getattr(ogc_server_settings, "WMS_FORMAT") or 'image/png'
-
-            params = {
-                'service': 'WMS',
-                'version': wms_version,
-                'request': 'GetMap',
-                'layers': layers.replace(' ', '+'),
-                'styles': styles,
-                'format': wms_format,
-                # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
-            }
-
-            if request and request.user:
-                access_token = get_or_create_token(request.user)
-                if access_token and not access_token.is_expired():
-                    params['access_token'] = access_token.token
-            elif not request:
-                from django.contrib.auth import get_user_model
-                _user, _password = ogc_server_settings.credentials
-                _u = get_user_model().objects.filter(username=_user).first()
-                if _u:
-                    access_token = get_or_create_token(_u)
-                    if access_token and not access_token.is_expired():
-                        params['access_token'] = access_token.token
-
-            _p = "&".join("%s=%s" % item for item in params.items())
-
-            import posixpath
-            thumbnail_create_url = posixpath.join(
-                ogc_server_location,
-                wms_endpoint) + "?" + _p
-
-        top, left, first_row, numberOfRows = _compute_number_of_tiles(
-            request_body, width, height, thumbnail_tile_size)
-
-        # Build Image Request Template
-        _img_request_template = "<div style='height:{height}px; width:{width}px;'>\
-            <div style='position: absolute; top:{top}px; left:{left}px; z-index: 749; \
-            transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1);'> \
-            \n".format(height=height, width=width, top=top, left=left)
-
-        for row in range(0, numberOfRows):
-            for col in range(0, len(first_row)):
-                box = [col * thumbnail_tile_size, row * thumbnail_tile_size]
-                t = first_row[col]
-                y = t.y + row
-                if smurl:
-                    imgurl = smurl.format(z=t.z, x=t.x, y=y)
-                    _img_request_template += _img_src_template.format(
-                        ogc_location=imgurl,
-                        height=thumbnail_tile_size,
-                        width=thumbnail_tile_size,
-                        left=box[0], top=box[1])
-                xy_bounds = mercantile.xy_bounds(t.x, y, t.z)
-                bbox = ",".join([str(xy_bounds.left), str(xy_bounds.bottom),
-                                 str(xy_bounds.right), str(xy_bounds.top)])
-                params = {
-                    'width': thumbnail_tile_size,
-                    'height': thumbnail_tile_size,
-                    'transparent': True,
-                    'bbox': bbox,
-                    'crs': 'EPSG:3857',
-
-                }
-                _p = "&".join("%s=%s" % item for item in params.items())
-                _img_request_template += \
-                    _img_src_template.format(ogc_location=(thumbnail_create_url + '&' + _p),
-                                             height=thumbnail_tile_size,
-                                             width=thumbnail_tile_size,
-                                             left=box[0], top=box[1])
-        _img_request_template += "</div></div>"
-        logger.debug(_dump_image_spec(request_body, _img_request_template))
-        image = _render_thumbnail(_img_request_template, width=width, height=height)
-    except Exception as e:
-        logger.warning('Error generating thumbnail')
-        logger.exception(e)
-        if settings.ASYNC_SIGNALS:
-            raise e
-        else:
-            image = None
-
-    return image
 
 
 def _fixup_ows_url(thumb_spec):

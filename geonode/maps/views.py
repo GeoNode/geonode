@@ -83,9 +83,6 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
     from geonode.geoserver.helpers import ogc_server_settings
-    from geonode.geoserver.helpers import (
-        _render_thumbnail,
-        _prepare_thumbnail_body_from_opts)
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -1319,34 +1316,18 @@ def map_thumbnail(request, mapid):
         raise Http404(_("Not found"))
 
     try:
-        try:
-            image = _render_thumbnail(request.body)
-        except Exception as e:
-            logger.debug(e)
-            image = None
 
-        if image is not None:
-            filename = "map-%s-thumb.png" % map_obj.uuid
-            map_obj.save_thumbnail(filename, image)
-        else:
-            try:
-                request_body = json.loads(request.body)
+        request_body = json.loads(request.body)
+        bbox = request_body['bbox'] + [request_body['srid']]
+        zoom = request_body.get('zoom', None)
 
-                bbox = request_body['bbox'] + [request_body['srid']]
-                zoom = request_body.get('zoom', None)
-
-                create_thumbnail(map_obj, bbox=bbox, background_zoom=zoom, overwrite=True)
-            except Exception as e:
-                logger.exception(e)
-                return HttpResponse(
-                    content=_('couldn\'t generate thumbnail'),
-                    status=500,
-                    content_type='text/plain'
-                )
+        create_thumbnail(map_obj, bbox=bbox, background_zoom=zoom, overwrite=True)
 
         return HttpResponse('Thumbnail saved')
 
-    except Exception:
+    except Exception as e:
+        logger.exception(e)
+
         return HttpResponse(
             content=_('error saving thumbnail'),
             status=500,
