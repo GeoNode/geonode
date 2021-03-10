@@ -269,9 +269,9 @@ class GeoNodeThumbnailWMSBackground(GeoNodeLiveTestSupport):
 
     @classmethod
     def tearDownClass(cls):
-        # if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        #     if cls.layer_coast_line:
-        #         cls.layer_coast_line.delete()
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            if cls.layer_coast_line:
+                cls.layer_coast_line.delete()
 
         super().tearDownClass()
 
@@ -401,11 +401,11 @@ class GeoNodeThumbnailsIntegration(GeoNodeLiveTestSupport):
 
     @classmethod
     def tearDownClass(cls):
-        # if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        #     if cls.layer_coast_line:
-        #         cls.layer_coast_line.delete()
-        #     if cls.layer_highway:
-        #         cls.layer_highway.delete()
+        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+            if cls.layer_coast_line:
+                cls.layer_coast_line.delete()
+            if cls.layer_highway:
+                cls.layer_highway.delete()
 
         super().tearDownClass()
 
