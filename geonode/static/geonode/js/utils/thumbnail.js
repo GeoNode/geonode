@@ -1,14 +1,24 @@
-var createMapThumbnail = function(obj_id) {
-    if (typeof(thumbnailUpdateUrl) == 'undefined' || typeof(olMap) == 'undefined') {
-        console.error("Missing required variables");
-        return true;
-    }
+/*
+This is only used by metadata wizard.
+The other pages will use the implementation provided by the specific client (MapStore)
+ */
+window.getThumbnailOptions = function(){
     // (west, east, south, north, CRS)
     var bbox = olMap.getExtent();
     var body = {
         srid: 'EPSG:3857',
         bbox: [bbox.left, bbox.right, bbox.bottom, bbox.top]
     };
+    return body;
+}
+
+var createMapThumbnail = function(obj_id) {
+    if (typeof(thumbnailUpdateUrl) == 'undefined' || typeof(olMap) == 'undefined') {
+        console.error("Missing required variables");
+        return true;
+    }
+
+    var body = getThumbnailOptions()
     $.ajax({
         type: "POST",
         url: thumbnailUpdateUrl,
