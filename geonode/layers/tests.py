@@ -29,6 +29,7 @@ import zipfile
 import tempfile
 import contextlib
 
+from mock import patch
 from pinax.ratings.models import OverallRating
 
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -1125,7 +1126,8 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
         return paths, suffixes,
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_moderated_upload(self):
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_moderated_upload(self, thumbnail_mock):
         """
         Test if moderation flag works
         """
@@ -1408,7 +1410,8 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @override_settings(UPLOADER=GEONODE_REST_UPLOADER)
-    def test_geonode_same_UUID_error(self):
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_geonode_same_UUID_error(self, thumbnail_mock):
         """
         Ensure a new layer with same UUID metadata cannot be uploaded
         """
