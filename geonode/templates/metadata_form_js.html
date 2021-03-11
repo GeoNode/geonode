@@ -501,9 +501,8 @@ $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(on
         });
         
         function validateRequiredInput() {
-            const required_inputs = $(':input[required]:visible')
             var errors = []
-            $( ':input[required]:visible').each( function () {
+            $( ':input[required]').each( function () {
                 if ( this.value.trim() == '' ) {
                     errors.push(this.id)
                 }
