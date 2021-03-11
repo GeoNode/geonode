@@ -268,7 +268,8 @@ def get_sld_for(gs_catalog, layer):
                             gs_style)
         name = gs_layer.default_style.name
         _default_style = gs_layer.default_style
-    except Exception:
+    except Exception as e:
+        logger.debug(e)
         name = None
 
     while not name and _tries < _max_retries:
@@ -282,7 +283,8 @@ def get_sld_for(gs_catalog, layer):
             name = gs_layer.default_style.name
             if name:
                 break
-        except Exception:
+        except Exception as e:
+            logger.exception(e)
             name = None
         _tries += 1
         time.sleep(3)
@@ -329,29 +331,6 @@ def get_sld_for(gs_catalog, layer):
         return gs_style
 
 
-def fixup_style(cat, resource, style):
-    logger.debug("Creating styles for layers associated with [%s]", resource)
-    layers = cat.get_layers(resource=resource)
-    logger.debug("Found %d layers associated with [%s]", len(layers), resource)
-    for lyr in layers:
-        if lyr.default_style.name in _style_templates:
-            logger.debug("%s uses a default style, generating a new one", lyr)
-            name = _style_name(lyr.resource)
-            if style is None:
-                sld = get_sld_for(cat, lyr)
-            else:
-                sld = style.read()
-            logger.debug("Creating style [%s]", name)
-            style = cat.create_style(name, sld, overwrite=True, raw=True, workspace=settings.DEFAULT_WORKSPACE)
-            if not style:
-                cat.reset()
-                style = cat.get_style(name, workspace=settings.DEFAULT_WORKSPACE) or cat.get_style(name)
-            lyr.default_style = style
-            logger.debug("Saving changes to %s", lyr)
-            cat.save(lyr)
-            logger.debug("Successfully updated %s", lyr)
-
-
 def set_layer_style(saved_layer, title, sld, base_file=None):
     # Check SLD is valid
     try:
@@ -395,12 +374,7 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
         style = gs_catalog.get_style(saved_layer.name, workspace=saved_layer.workspace) or \
             gs_catalog.get_style(saved_layer.name)
         try:
-            if style:
-                style = gs_catalog.create_style(
-                    style.sld_name, sld,
-                    overwrite=True, raw=True,
-                    workspace=saved_layer.workspace)
-            else:
+            if not style:
                 style = gs_catalog.create_style(
                     saved_layer.name, sld,
                     overwrite=True, raw=True,
@@ -408,16 +382,19 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
         except Exception as e:
             logger.exception(e)
 
-    if layer and style:
-        _default_style = layer.default_style
+    if layer and style and \
+    style.name != layer.default_style.name and \
+    style.workspace != layer.default_style.workspace:
+        _default_style = gs_catalog.get_style(
+            name=layer.default_style.name,
+            workspace=layer.default_style.workspace)
+        layer.default_style = style
+        gs_catalog.save(layer)
+        set_styles(saved_layer, gs_catalog)
         try:
-            layer.default_style = style
-            gs_catalog.save(layer)
-            set_styles(saved_layer, gs_catalog)
-        except Exception:
-            layer.default_style = _default_style
-            gs_catalog.save(layer)
-            set_styles(saved_layer, gs_catalog)
+            gs_catalog.delete(_default_style)
+        except Exception as e:
+            logger.debug(e)
 
 
 def cascading_delete(layer_name=None, catalog=None):
@@ -1125,11 +1102,16 @@ def set_styles(layer, gs_catalog):
             else:
                 style = default_style
 
-            if style:
+            if style and style != gs_layer.default_style:
+                _default_style = gs_layer.default_style
                 gs_layer.default_style = style
                 gs_catalog.save(gs_layer)
                 layer.default_style = save_style(style, layer)
                 style_set.append(layer.default_style)
+                try:
+                    gs_catalog.delete(_default_style)
+                except Exception as e:
+                    logger.debug(e)
         try:
             if gs_layer.styles:
                 alt_styles = gs_layer.styles
@@ -1208,6 +1190,16 @@ def save_style(gs_style, layer):
             tb = traceback.format_exc()
             logger.debug(tb)
             raise e
+
+    try:
+        _default_style = gs_catalog.get_style(style_name) or \
+            gs_catalog.get_style(f"{layer.workspace}_{style_name}")
+        if _default_style:
+            # Let's remove any '{saved_layer.workspace}_{saved_layer.name}' temp SLD around
+            gs_catalog.delete(_default_style)
+    except Exception as e:
+        logger.exception(e)
+
     style = None
     try:
         style, created = Style.objects.get_or_create(name=style_name)

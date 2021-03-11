@@ -1,7 +1,7 @@
 # native dependencies
-Pillow==8.1.0
+Pillow==8.1.2
 lxml==4.6.2
-defusedxml==0.6.0
+defusedxml==0.7.1
 psycopg2==2.8.6
 Django==2.2.16
 
@@ -19,8 +19,8 @@ decorator==4.4.2
 celery==5.0.5
 kombu==5.0.2
 vine==5.0.0
-boto3==1.17.19
-tqdm==4.58.0
+boto3==1.17.23
+tqdm==4.59.0
 Deprecated==1.2.11
 wrapt==1.12.1
 jsonfield==3.1.0
@@ -35,8 +35,8 @@ django-imagekit==4.0.2
 django-jsonfield==1.4.1
 django-jsonfield-compat==0.4.4
 django-taggit==1.3.0
-django-markdownify==0.8.2
-django-mptt==0.11.0
+django-markdownify==0.9.0
+django-mptt==0.12.0
 django-modeltranslation>=0.11,<0.17.0
 django-treebeard==4.5.1
 django-guardian<2.3.1
@@ -50,7 +50,7 @@ oauthlib==3.1.0
 pyopenssl==20.0.1
 
 # geopython dependencies
-pyproj==3.0.0.post1
+pyproj==3.0.1
 OWSLib==0.23.0
 pycsw==2.6.0
 SQLAlchemy==1.3.23 # required by PyCSW
@@ -85,8 +85,7 @@ pinax-notifications==6.0.0
 pinax-ratings==4.0.0
 
 # GeoNode org maintained apps.
-# django-geonode-mapstore-client>=2.1.0
--e git+https://github.com/GeoNode/geonode-mapstore-client.git@2.1.x#egg=django_geonode_mapstore_client
+django-geonode-mapstore-client==2.1.1
 geonode-avatar==5.0.7
 django-geonode-client==1.0.9
 geonode-oauth-toolkit==2.1.1
@@ -148,7 +147,7 @@ pytest-bdd==4.0.2
 splinter==0.14.0
 pytest-splinter==3.3.1
 pytest-django==4.1.0
-setuptools==54.0.0
+setuptools==54.1.1
 pip==21.0.1
 Twisted==21.2.0
 factory-boy==3.2.0
