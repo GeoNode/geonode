@@ -882,6 +882,13 @@ class MapResource(CommonModelApi):
 
     """Maps API"""
 
+    def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
+        _filters = filters.copy()
+        metadata_only = _filters.pop('metadata_only', False)
+        orm_filters = super(MapResource, self).build_filters(_filters)
+        orm_filters['metadata_only'] = False if not metadata_only else metadata_only[0]
+        return orm_filters
+
     def format_objects(self, objects):
         """
         Formats the objects and provides reference to list of layers in map
@@ -1022,6 +1029,13 @@ class GeoAppResource(CommonModelApi):
 class DocumentResource(CommonModelApi):
 
     """Documents API"""
+
+    def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
+        _filters = filters.copy()
+        metadata_only = _filters.pop('metadata_only', False)
+        orm_filters = super(DocumentResource, self).build_filters(_filters)
+        orm_filters['metadata_only'] = False if not metadata_only else metadata_only[0]
+        return orm_filters
 
     def format_objects(self, objects):
         """

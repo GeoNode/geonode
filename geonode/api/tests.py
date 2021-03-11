@@ -536,7 +536,8 @@ class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, TestCase):
 
     def setUp(self):
         super(ThesaurusKeywordResourceTests, self).setUp()
-
+        self.user = 'admin'
+        self.passwd = 'admin'
         self.list_url = reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "thesaurus/keywords"})
 
     def test_api_will_return_a_valid_json_response(self):
@@ -605,3 +606,70 @@ class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, TestCase):
         actual_labels = [x["alt_label"] for x in self.deserialize(resp)["objects"]]
         self.assertValidJSONResponse(resp)
         self.assertListEqual(expected_labels, actual_labels)
+
+
+class LayerResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+    
+    def setUp(self):
+        super(LayerResourceTests, self).setUp()
+        all_public()
+        self.list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
+
+    def test_the_api_should_return_all_layers_with_metadata_false(self):
+        resp = self.api_client.get(self.list_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 8)
+
+    def test_the_api_should_return_all_layers_with_metadata_true(self):
+        url = f"{self.list_url}?metadata_only=True"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 1)
+
+class DocumentResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+    
+    def setUp(self):
+        super(DocumentResourceTests, self).setUp()
+
+        self.list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'documents'})
+
+    def test_the_api_should_return_all_documents_with_metadata_false(self):
+        resp = self.api_client.get(self.list_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 8)
+
+    def test_the_api_should_return_all_documents_with_metadata_true(self):
+        url = f"{self.list_url}?metadata_only=True"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 1)
+
+class MapResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+    
+    def setUp(self):
+        super(MapResourceTests, self).setUp()
+
+        self.list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'maps'})
+
+    def test_the_api_should_return_all_maps_with_metadata_false(self):
+        resp = self.api_client.get(self.list_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 9)
+
+    def test_the_api_should_return_all_maps_with_metadata_true(self):
+        url = f"{self.list_url}?metadata_only=True"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 1)
