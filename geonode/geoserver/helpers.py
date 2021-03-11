@@ -2051,68 +2051,6 @@ def _dump_image_spec(request_body, image_spec):
         return f"Unable to dump image_spec for request: {request_body}"
 
 
-def _compute_number_of_tiles(request_body, width, height, thumbnail_tile_size):
-
-    def decimal_encode(bbox):
-        import decimal
-        _bbox = []
-        for o in [float(coord) for coord in bbox]:
-            if isinstance(o, decimal.Decimal):
-                o = (str(o) for o in [o])
-            _bbox.append(o)
-        # Must be in the form : [x0, x1, y0, y1]
-        return [_bbox[0], _bbox[1], _bbox[2], _bbox[3]]
-
-    # Compute Bounds
-    wgs84_bbox = decimal_encode(
-        bbox_to_projection([float(coord) for coord in request_body['bbox']] + [request_body['srid'], ],
-                           target_srid=4326)[:4])
-
-    # Fetch XYZ tiles - we are assuming Mercatore here
-    bounds = wgs84_bbox[0:4]
-    # Fixes bounds to tiles system
-    bounds[0] = _v(bounds[0], x=True, target_srid=4326)
-    bounds[1] = _v(bounds[1], x=True, target_srid=4326)
-    if bounds[3] > 85.051:
-        bounds[3] = 85.0
-    if bounds[2] < -85.051:
-        bounds[2] = -85.0
-    if 'zoom' in request_body:
-        zoom = int(request_body['zoom'])
-    else:
-        zoom = bounds_to_zoom_level(bounds, width, height)
-
-    t_ll = mercantile.tile(bounds[0], bounds[2], zoom)
-    t_ur = mercantile.tile(bounds[1], bounds[3], zoom)
-
-    numberOfRows = t_ll.y - t_ur.y + 1
-
-    bounds_ll = mercantile.bounds(t_ll)
-    bounds_ur = mercantile.bounds(t_ur)
-
-    lat_res = abs(thumbnail_tile_size / (bounds_ur.north - bounds_ur.south))
-    lng_res = abs(thumbnail_tile_size / (bounds_ll.east - bounds_ll.west))
-    top = round(abs(bounds_ur.north - bounds[3]) * -lat_res)
-    left = round(abs(bounds_ll.west - bounds[0]) * -lng_res)
-
-    tmp_tile = mercantile.tile(bounds[0], bounds[3], zoom)
-    width_acc = thumbnail_tile_size + int(left)
-    first_row = [tmp_tile]
-    # Add tiles to fill image width
-    _n_step = 0
-    while int(width) > int(width_acc):
-        c = mercantile.ul(tmp_tile.x + 1, tmp_tile.y, zoom)
-        lng = _v(c.lng, x=True, target_srid=4326)
-        if lng == 180.0:
-            lng = -180.0
-        tmp_tile = mercantile.tile(lng, bounds[3], zoom)
-        first_row.append(tmp_tile)
-        width_acc += thumbnail_tile_size
-        _n_step = _n_step + 1
-
-    return top, left, first_row, numberOfRows
-
-
 def _fixup_ows_url(thumb_spec):
     # @HACK - for whatever reason, a map's maplayers ows_url contains only /geoserver/wms
     # so rendering of thumbnails fails - replace those uri's with full geoserver URL

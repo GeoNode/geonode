@@ -1555,9 +1555,6 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 self.assertIsNotNone(get_sld_for(gs_catalog, test_perm_layer))
                 _log("fixup_sld. ------------ %s " % get_sld_for(gs_catalog, test_perm_layer))
 
-            create_gs_thumbnail(test_perm_layer, overwrite=True)
-            self.assertIsNotNone(test_perm_layer.get_thumbnail_url())
-
             # Handle Layer Delete Signals
             geoserver_pre_delete(test_perm_layer, sender=Layer)
 

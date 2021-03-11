@@ -298,27 +298,6 @@ community."
         response = self.client.get(reverse('map_detail', args=(map_obj.id,)))
         self.assertEqual(response.status_code, 200)
 
-    def test_map_thumbnail_generation_managed_errors(self):
-        """
-        Test that 'map_thumbnail' handles correctly thumbnail generation errors
-        """
-        map_obj = Map.objects.all().first()
-        url = reverse('map_thumbnail', args=(map_obj.id,))
-        # Now test with a valid user
-        self.client.login(username='admin', password='admin')
-
-        # test a method other than POST and GET
-        request_body = {'preview': '\
-"bbox":[1331513.3064995816,1333734.7576341194,5599619.355527631,5600574.818381195],\
-"srid":"EPSG:3857",\
-"center":{"x":11.971165359906351,"y":44.863749562810995,"crs":"EPSG:4326"},\
-"zoom":16,"width":930,"height":400,\
-"layers":"geonode:foo_bar"}'}
-        response = self.client.post(url, data=request_body)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content.decode('utf-8'), 'Thumbnail saved')
-        self.assertNotEquals(map_obj.get_thumbnail_url(), settings.MISSING_THUMBNAIL)
-
     def test_describe_map(self):
         map_obj = Map.objects.all().first()
         map_obj.set_default_permissions()
