@@ -278,11 +278,17 @@ class TopicCategoryResource(TypeFilteredResource):
     """Category api"""
     layers_count = fields.IntegerField(default=0)
 
+    def dehydrate(self, bundle):
+        rs_base = bundle.obj.resourcebase_set
+        if rs_base.exists():
+            bundle.data['count'] = rs_base.filter(metadata_only=False).count()
+        return bundle
+
     def dehydrate_layers_count(self, bundle):
         request = bundle.request
         obj_with_perms = get_objects_for_user(request.user,
                                               'base.view_resourcebase').filter(polymorphic_ctype__model='layer')
-        filter_set = bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id'))
+        filter_set = bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).filter(metadata_only=False)
 
         if not settings.SKIP_PERMS_FILTER:
             filter_set = get_visible_resources(

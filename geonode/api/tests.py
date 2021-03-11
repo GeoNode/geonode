@@ -536,8 +536,7 @@ class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, TestCase):
 
     def setUp(self):
         super(ThesaurusKeywordResourceTests, self).setUp()
-        self.user = 'admin'
-        self.passwd = 'admin'
+        all_public()
         self.list_url = reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "thesaurus/keywords"})
 
     def test_api_will_return_a_valid_json_response(self):
@@ -673,28 +672,3 @@ class MapResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         resp = self.api_client.get(url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(resp.json()["meta"]["total_count"], 1)
-
-class TopicCategoryResourceTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-    
-    def setUp(self):
-        super(TopicCategoryResourceTest, self).setUp()
-        all_public()
-        self.list_url = reverse(
-            'api_dispatch_list',
-            kwargs={
-                'api_name': 'api',
-                'resource_name': 'categories'})
-
-    def test_the_api_should_return_all_maps_with_metadata_false(self):
-        url = f"{self.list_url}?type=layer"
-        resp = self.api_client.get(url)
-        self.assertValidJSONResponse(resp)
-        count_per_category = [x['count'] for x in resp.json()['objects']]
-        self.assertEqual(resp.json()["meta"]["total_count"], 20)
-
-    def test_the_api_should_return_all_maps_with_metadata_true(self):
-        url = f"{self.list_url}?metadata_only=True"
-        resp = self.api_client.get(url)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(resp.json()["meta"]["total_count"], 20)
-#9
