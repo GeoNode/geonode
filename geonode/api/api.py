@@ -41,7 +41,7 @@ from geonode.api.authorization import GeoNodeStyleAuthorization, ApiLockdownAuth
 from guardian.shortcuts import get_objects_for_user
 from tastypie.bundle import Bundle
 
-from geonode.base.models import ResourceBase
+from geonode.base.models import ResourceBase, ThesaurusKeyword
 from geonode.base.models import TopicCategory
 from geonode.base.models import Region
 from geonode.base.models import HierarchicalKeyword
@@ -201,12 +201,10 @@ class ThesaurusKeywordResource(TypeFilteredResource):
         orm_filters = super(ThesaurusKeywordResource, self).build_filters(_filters)
 
         if id is not None:
-            orm_filters['keyword__id'] = id
-
-        orm_filters['lang'] = _filters['lang'] if 'lang' in _filters else get_language()
+            orm_filters['id__in'] = id
 
         if 'thesaurus' in _filters:
-            orm_filters['keyword__thesaurus__identifier'] = _filters['thesaurus']
+            orm_filters['thesaurus__identifier'] = _filters['thesaurus']
 
         return orm_filters
 
@@ -216,27 +214,37 @@ class ThesaurusKeywordResource(TypeFilteredResource):
         return super(ThesaurusKeywordResource, self).serialize(request, data, format, options)
 
     def dehydrate_id(self, bundle):
-        return bundle.obj.keyword.id
+        return bundle.obj.id
 
     def dehydrate_label_id(self, bundle):
         return bundle.obj.id
 
     def dehydrate_thesaurus_identifier(self, bundle):
-        return bundle.obj.keyword.thesaurus.identifier
+        return bundle.obj.thesaurus.identifier
+
+    def dehydrate(self, bundle):
+        lang = get_language()
+        label = ThesaurusKeywordLabel.objects.filter(keyword=bundle.data['id']).filter(lang=lang)
+        if label.exists():
+            bundle.data['label_id'] = label.get().id
+            bundle.data['label'] = label.get().label
+            bundle.data['alt_label'] = label.get().label
+        else:
+            bundle.data['label'] = bundle.data['alt_label']
+
+        return bundle
 
     class Meta:
-        queryset = ThesaurusKeywordLabel.objects \
+        queryset = ThesaurusKeyword.objects \
             .all() \
-            .order_by('label') \
-            .select_related('keyword') \
-            .select_related('keyword__thesaurus')
+            .order_by('alt_label') \
+            .select_related('thesaurus')
 
         resource_name = 'thesaurus/keywords'
         allowed_methods = ['get']
         filtering = {
             'id': ALL,
-            'label': ALL,
-            'lang': ALL,
+            'alt_label': ALL,
             'thesaurus': ALL,
         }
         serializer = CountJSONSerializer()

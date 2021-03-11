@@ -1508,13 +1508,13 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
             # Layer Manipulation
             from geonode.geoserver.signals import gs_catalog
-            from geonode.geoserver.helpers import (check_geoserver_is_up,
-                                                   get_sld_for,
-                                                   fixup_style,
-                                                   set_layer_style,
-                                                   set_attributes_from_geoserver,
-                                                   set_styles,
-                                                   cleanup)
+            from geonode.geoserver.helpers import (
+                check_geoserver_is_up,
+                set_layer_style,
+                set_attributes_from_geoserver,
+                set_styles,
+                create_gs_thumbnail,
+                cleanup)
             check_geoserver_is_up()
 
             admin_user = get_user_model().objects.get(username="admin")
@@ -1549,10 +1549,8 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                     sld = sld.decode().strip('\n')
                 _log("sld. ------------ %s " % sld)
                 set_layer_style(test_perm_layer, test_perm_layer.alternate, sld)
-
-                fixup_style(gs_catalog, test_perm_layer.alternate, None)
-                self.assertIsNotNone(get_sld_for(gs_catalog, test_perm_layer))
-                _log("fixup_sld. ------------ %s " % get_sld_for(gs_catalog, test_perm_layer))
+            create_gs_thumbnail(test_perm_layer, overwrite=True)
+            self.assertIsNotNone(test_perm_layer.get_thumbnail_url())
 
             # Handle Layer Delete Signals
             geoserver_pre_delete(test_perm_layer, sender=Layer)
