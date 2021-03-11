@@ -28,7 +28,6 @@ import logging
 import datetime
 import tempfile
 import traceback
-import mercantile
 
 from shutil import copyfile
 
@@ -59,11 +58,7 @@ from defusedxml import lxml as dlxml
 from owslib.wcs import WebCoverageService
 from owslib.wms import WebMapService
 from geonode import GeoNodeException
-from geonode.utils import (
-    _v,
-    http_client,
-    bbox_to_projection,
-    bounds_to_zoom_level)
+from geonode.utils import http_client
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
 from geonode.security.views import _perms_info_json

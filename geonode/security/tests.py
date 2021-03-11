@@ -1514,7 +1514,6 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                                                    set_layer_style,
                                                    set_attributes_from_geoserver,
                                                    set_styles,
-                                                   create_gs_thumbnail,
                                                    cleanup)
             check_geoserver_is_up()
 
