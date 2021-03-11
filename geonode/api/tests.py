@@ -634,7 +634,7 @@ class DocumentResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     
     def setUp(self):
         super(DocumentResourceTests, self).setUp()
-
+        all_public()
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
@@ -644,7 +644,7 @@ class DocumentResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     def test_the_api_should_return_all_documents_with_metadata_false(self):
         resp = self.api_client.get(self.list_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(resp.json()["meta"]["total_count"], 8)
+        self.assertEqual(resp.json()["meta"]["total_count"], 9)
 
     def test_the_api_should_return_all_documents_with_metadata_true(self):
         url = f"{self.list_url}?metadata_only=True"
@@ -656,7 +656,7 @@ class MapResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     
     def setUp(self):
         super(MapResourceTests, self).setUp()
-
+        all_public()
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
@@ -673,3 +673,28 @@ class MapResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         resp = self.api_client.get(url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(resp.json()["meta"]["total_count"], 1)
+
+class TopicCategoryResourceTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+    
+    def setUp(self):
+        super(TopicCategoryResourceTest, self).setUp()
+        all_public()
+        self.list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'categories'})
+
+    def test_the_api_should_return_all_maps_with_metadata_false(self):
+        url = f"{self.list_url}?type=layer"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        count_per_category = [x['count'] for x in resp.json()['objects']]
+        self.assertEqual(resp.json()["meta"]["total_count"], 20)
+
+    def test_the_api_should_return_all_maps_with_metadata_true(self):
+        url = f"{self.list_url}?metadata_only=True"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 20)
+#9
