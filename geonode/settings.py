@@ -1951,8 +1951,13 @@ THUMBNAIL_SIZE = {
 THUMBNAIL_BACKGROUND = {
     # class generating thumbnail's background
     'class': 'geonode.thumbs.background.WikiMediaTileBackground',
+    # 'class': 'geonode.thumbs.background.OSMTileBackground',
+    # 'class': 'geonode.thumbs.background.GenericXYZBackground',
     # initialization parameters for generator instance, valid only for generic classes
-    'options': {},
+    'options': {
+        # 'url': URL for the generic xyz service
+        # 'tile_size': tile size for the generic xyz service, default is 256
+    },
 }
 
 # define the urls after the settings are overridden
