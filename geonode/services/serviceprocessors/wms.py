@@ -73,8 +73,6 @@ def WebMapService(url,
                   proxy_base=None):
     """
     API for Web Map Service (WMS) methods and metadata.
-
-    Currently supports only version 1.1.1 of the WMS protocol.
     """
     '''wms factory function, returns a version specific WebMapService object
 
@@ -98,15 +96,25 @@ def WebMapService(url,
         clean_url = proxified_url
 
     if version in ['1.1.1']:
-        return (base_ows_url, wms111.WebMapService_1_1_1(clean_url, version=version, xml=xml,
-                                                         parse_remote_metadata=parse_remote_metadata,
-                                                         username=username, password=password,
-                                                         timeout=timeout, headers=headers))
+        return (
+            base_ows_url,
+            wms111.WebMapService_1_1_1(
+                clean_url, version=version, xml=xml,
+                parse_remote_metadata=parse_remote_metadata,
+                username=username, password=password,
+                timeout=timeout, headers=headers
+            )
+        )
     elif version in ['1.3.0']:
-        return (base_ows_url, wms130.WebMapService_1_3_0(clean_url, version=version, xml=xml,
-                                                         parse_remote_metadata=parse_remote_metadata,
-                                                         username=username, password=password,
-                                                         timeout=timeout, headers=headers))
+        return (
+            base_ows_url,
+            wms130.WebMapService_1_3_0(
+                clean_url, version=version, xml=xml,
+                parse_remote_metadata=parse_remote_metadata,
+                username=username, password=password,
+                timeout=timeout, headers=headers
+            )
+        )
     raise NotImplementedError(
         'The WMS version (%s) you requested is not implemented. Please use 1.1.1 or 1.3.0.' %
         version)
@@ -481,7 +489,7 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         url = self._probe_geonode_wms(url)
         self.url, _ = WebMapService(
             url,
-            proxy_base=self.proxy_base,
+            proxy_base=None,
             timeout=ogc_server_settings.get('TIMEOUT', 60))
         self.indexing_method = (
             INDEXED if self._offers_geonode_projection() else CASCADED)
@@ -543,16 +551,19 @@ class GeoNodeServiceHandler(WmsServiceHandler):
         content_type = response.headers['Content-Type']
 
         # NEW-style OWS Enabled GeoNode
-        if status == 200 and 'application/json' == content_type:
+        if int(status) == 200 and 'application/json' == content_type:
             try:
                 _json_obj = json.loads(content)
                 if 'data' in _json_obj:
                     data = _json_obj['data']
                     for ows_endpoint in data:
-                        if 'OGC:OWS' == ows_endpoint['type']:
-                            return ows_endpoint['url'] + '?' + url.query
-            except Exception:
-                pass
+                        if ows_endpoint['type'] in ('OGC:OWS', 'OGC:WMS'):
+                            _params = url.query if url.query else ''
+                            _query_separator = '?' if '?' not in ows_endpoint['url'] else ''
+                            _url = f"{ows_endpoint['url']}{_query_separator}{_params}"
+                            return _url
+            except Exception as e:
+                logger.exception(e)
 
         # OLD-style not OWS Enabled GeoNode
         _url = "%s://%s/geoserver/ows" % (url.scheme, url.netloc)
