@@ -961,6 +961,7 @@ class TestTagThesaurus(TestCase):
 
 @override_settings(THESAURUS_DEFAULT_LANG="en")
 class TestThesaurusAvailableForm(TestCase):
+    #  loading test thesausurs
     fixtures = [
         "test_thesaurus.json"
     ]

@@ -198,11 +198,14 @@ def geoserver_upload(
     cat.save(gs_resource)
     publishing = cat.get_layer(name) or gs_resource
     sld = None
-    if 'sld' in files:
-        with open(files['sld'], 'rb') as f:
-            sld = f.read()
-    else:
-        sld = get_sld_for(cat, layer)
+    try:
+        if 'sld' in files:
+            with open(files['sld'], 'rb') as f:
+                sld = f.read()
+        else:
+            sld = get_sld_for(cat, layer)
+    except Exception as e:
+        logger.exception(e)
 
     style = None
     if sld:
