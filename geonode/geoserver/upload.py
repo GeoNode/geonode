@@ -201,9 +201,8 @@ def geoserver_upload(
     if 'sld' in files:
         with open(files['sld'], 'rb') as f:
             sld = f.read()
-
     else:
-        sld = get_sld_for(cat, publishing)
+        sld = get_sld_for(cat, layer)
 
     style = None
     if sld:
