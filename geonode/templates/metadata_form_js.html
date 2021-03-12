@@ -364,11 +364,11 @@
         $('#category_form').change(onInputChange).change();
         $('#id_resource-group').change(onInputChange).change();
 
+        document.querySelector('select[name="resource-keywords"]').onchange=onInputChange
+
         $( ':input[id*="id_tkeywords"][required]:visible').each( function () {
             $('#' + this.id).change(onInputChange).change();
         });
-
-        document.querySelector('select[name="resource-keywords"]').onchange=onInputChange
 
         $('#id_resource-regions').change(onInputChange).change();
 $('#id_resource-temporal_extent_end').on('blur', function() {$(this).change(onInputChange).change();})
@@ -501,9 +501,8 @@ $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(on
         });
         
         function validateRequiredInput() {
-            const required_inputs = $(':input[required]:visible')
             var errors = []
-            $( ':input[required]:visible').each( function () {
+            $( ':input[required]').each( function () {
                 if ( this.value.trim() == '' ) {
                     errors.push(this.id)
                 }
