@@ -164,12 +164,11 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             o = json.loads(r.text)
             self.assertTrue('long-array-array' in o)
 
-            from geonode.geoserver.helpers import (get_sld_for,
-                                                   fixup_style,
-                                                   set_layer_style,
-                                                   set_attributes_from_geoserver,
-                                                   set_styles,
-                                                   create_gs_thumbnail)
+            from geonode.geoserver.helpers import (
+                set_layer_style,
+                set_attributes_from_geoserver,
+                set_styles,
+                create_gs_thumbnail)
 
             _log("0. ------------ %s " % saved_layer)
             self.assertIsNotNone(saved_layer)
@@ -192,10 +191,6 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             self.assertIsNotNone(sld)
             _log("2. ------------ %s " % sld)
             set_layer_style(saved_layer, saved_layer.alternate, sld)
-
-            fixup_style(gs_catalog, saved_layer.alternate, None)
-            self.assertIsNotNone(get_sld_for(gs_catalog, saved_layer))
-            _log("3. ------------ %s " % get_sld_for(gs_catalog, saved_layer))
 
             create_gs_thumbnail(saved_layer, overwrite=True)
             _log(saved_layer.get_thumbnail_url())
