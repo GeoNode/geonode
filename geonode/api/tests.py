@@ -532,9 +532,14 @@ class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertEqual(len(self.deserialize(resp)['objects']), 5)
 
 
-class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, TestCase):
+class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     #  loading test thesausurs
-    fixtures = ["test_thesaurus.json"]
+    fixtures = [
+        'initial_data.json',
+        "test_thesaurus.json",
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
 
     def setUp(self):
         super(ThesaurusKeywordResourceTests, self).setUp()
@@ -610,7 +615,11 @@ class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, TestCase):
 
 
 class LayerResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
     def setUp(self):
         super(LayerResourceTests, self).setUp()
         all_public()
@@ -634,7 +643,11 @@ class LayerResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
 
 class DocumentResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
     def setUp(self):
         super(DocumentResourceTests, self).setUp()
         all_public()
@@ -658,7 +671,11 @@ class DocumentResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
 
 class MapResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
     def setUp(self):
         super(MapResourceTests, self).setUp()
         all_public()
@@ -682,7 +699,11 @@ class MapResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
 
 class TopicCategoryResourceTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
     def setUp(self):
         super(TopicCategoryResourceTest, self).setUp()
         all_public()
