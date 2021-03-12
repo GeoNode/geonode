@@ -107,7 +107,7 @@ jobs:
                   docker-compose -f docker-compose-test.yml exec db psql -U postgres -d test_geonode_data -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
                   docker-compose -f docker-compose-test.yml exec django bash -c '<<parameters.test_suite>>'
                 working_directory: ./
-                no_output_timeout: 20m
+                no_output_timeout: 10m
             - run:
                 name: Run pep8 checks
                 command: |
@@ -123,7 +123,7 @@ workflows:
           name: geonode_test_suite_smoke
           load_docker_cache: true
           save_docker_cache: true
-          test_suite: coverage run --branch --source=geonode manage.py test -v 3 --keepdb geonode.tests.smoke
+          test_suite: coverage run --branch --source=geonode manage.py test -v 3 --keepdb geonode.tests.smoke geonode.tests.test_message_notifications geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils
       - build:
           name: geonode_test_suite
           load_docker_cache: true
