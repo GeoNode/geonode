@@ -111,7 +111,7 @@ services:
   # PostGIS database.
   db:
     # use geonode official postgis 11 image
-    image: geonode/postgis:latest
+    image: geonode/postgis:13
     container_name: db4${COMPOSE_PROJECT_NAME}
     env_file:
       - ./scripts/docker/env/${DOCKER_ENV}/db.env
