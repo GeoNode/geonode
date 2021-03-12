@@ -539,7 +539,6 @@ class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, TestCase):
     def setUp(self):
         super(ThesaurusKeywordResourceTests, self).setUp()
         all_public()
-        self.user = get_user_model().objects.get(username="admin")
         self.list_url = reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "thesaurus/keywords"})
 
     def test_api_will_return_a_valid_json_response(self):

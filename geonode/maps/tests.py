@@ -202,7 +202,7 @@ community."
         self.client.logout()
 
         # We have now 10 maps and 8 layers
-        self.assertEqual(Map.objects.all().count(), 10)
+        self.assertEqual(Map.objects.all().count(), 11)
         map_obj = Map.objects.get(id=map_id)
         self.assertEqual(map_obj.title, "Title")
         self.assertEqual(map_obj.abstract, "Abstract")
