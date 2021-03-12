@@ -23,7 +23,7 @@ import typing
 import logging
 import mercantile
 
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 from math import ceil, floor, copysign
 from io import BytesIO
 from abc import ABC, abstractmethod
@@ -138,15 +138,16 @@ class GenericWMSBackground(BaseThumbBackground):
             height=self.thumbnail_height,
         )
 
-        img = utils.fetch_wms(background_url, self.max_retries, self.retry_delay)
-
-        content = BytesIO(img)
-        Image.open(content).verify()  # verify that it is, in fact an image
-
-        image = Image.open(content)  # "re-open" the file (required after running verify method)
         background = Image.new("RGB", (self.thumbnail_width, self.thumbnail_height), (250, 250, 250))
-        background.paste(image)
-
+        img = utils.fetch_wms(background_url, self.max_retries, self.retry_delay)
+        try:
+            content = BytesIO(img)
+            Image.open(content).verify()  # verify that it is, in fact an image
+            image = Image.open(content)  # "re-open" the file (required after running verify method)
+            background.paste(image)
+        except UnidentifiedImageError as e:
+            logger.error(f"Thumbnail generation. Error occurred while fetching background image: {e}")
+            logger.exception(e)
         return background
 
 
@@ -392,6 +393,11 @@ class GenericXYZBackground(BaseThumbBackground):
         # crop background image to the desired bbox and resize it
         background = background.crop(box=crop_box)
         background = background.resize((self.thumbnail_width, self.thumbnail_height))
+
+        if sum(background.convert("L").getextrema()) in (0, 2):
+            # either all black or all white
+            logger.error("Thumbnail background outside the allowed area.")
+            raise ThumbnailError("Thumbnail background outside the allowed area.")
 
         return background
 
