@@ -19,7 +19,6 @@
 #########################################################################
 from geonode.maps.models import Map
 from geonode.documents.models import Document
-from unittest.case import TestCase
 from unittest.mock import patch
 from django.conf import settings
 
@@ -620,6 +619,7 @@ class LayerResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         'group_test_data.json',
         'default_oauth_apps.json'
     ]
+
     def setUp(self):
         super(LayerResourceTests, self).setUp()
         all_public()
@@ -648,6 +648,7 @@ class DocumentResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         'group_test_data.json',
         'default_oauth_apps.json'
     ]
+
     def setUp(self):
         super(DocumentResourceTests, self).setUp()
         all_public()
@@ -676,6 +677,7 @@ class MapResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         'group_test_data.json',
         'default_oauth_apps.json'
     ]
+
     def setUp(self):
         super(MapResourceTests, self).setUp()
         all_public()
@@ -704,6 +706,7 @@ class TopicCategoryResourceTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         'group_test_data.json',
         'default_oauth_apps.json'
     ]
+
     def setUp(self):
         super(TopicCategoryResourceTest, self).setUp()
         all_public()
