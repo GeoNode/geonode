@@ -106,7 +106,7 @@ class CountJSONSerializer(Serializer):
 
                 if not isinstance(_type_filter, str):
                     _type_filter = _type_filter.__name__.lower()
-                resources = resources.filter(polymorphic_ctype__model=_type_filter).filter(metadata_only=False)
+                resources = resources.filter(polymorphic_ctype__model=_type_filter)
 
         counts = list()
         if subtypes:

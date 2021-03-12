@@ -539,6 +539,7 @@ class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, TestCase):
     def setUp(self):
         super(ThesaurusKeywordResourceTests, self).setUp()
         all_public()
+        self.user = get_user_model().objects.get(username="admin")
         self.list_url = reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "thesaurus/keywords"})
 
     def test_api_will_return_a_valid_json_response(self):
@@ -614,6 +615,7 @@ class LayerResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     def setUp(self):
         super(LayerResourceTests, self).setUp()
         all_public()
+        self.user = get_user_model().objects.get(username="admin")
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
@@ -637,6 +639,7 @@ class DocumentResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     def setUp(self):
         super(DocumentResourceTests, self).setUp()
         all_public()
+        self.user = get_user_model().objects.get(username="admin")
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
@@ -660,6 +663,7 @@ class MapResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     def setUp(self):
         super(MapResourceTests, self).setUp()
         all_public()
+        self.user = get_user_model().objects.get(username="admin")
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
@@ -683,6 +687,7 @@ class TopicCategoryResourceTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     def setUp(self):
         super(TopicCategoryResourceTest, self).setUp()
         all_public()
+        self.user = get_user_model().objects.get(username="admin")
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
