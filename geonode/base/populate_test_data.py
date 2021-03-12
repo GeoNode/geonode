@@ -82,7 +82,7 @@ def create_fixtures():
         ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10], elevation),
         ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10], elevation),
         ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation),
-        ('metadata true', 'metadata true', ('populartag',), [0, 22, 0, 22], farming),
+        ('map metadata true', 'map metadata true', ('populartag',), [0, 22, 0, 22], farming),
     ]
 
     user_data = [
@@ -131,7 +131,7 @@ def create_fixtures():
                       0, 10, 0, 10], next_date(), ('populartag',), biota),
                   ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [
                       0, 50, 0, 50], next_date(), ('populartag',), biota),
-                  ('metadata true', 'lorem ipsum', 'fleem', 'geonode:metadatatrue', [
+                  ('layer metadata true', 'lorem ipsum', 'fleem', 'geonode:metadatatrue', [
                       0, 22, 0, 22], next_date(), ('populartag',), farming)
                   ]
 
@@ -144,7 +144,7 @@ def create_fixtures():
                      ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10], elevation),
                      ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10], elevation),
                      ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation),
-                     ('metadata true', 'metadata true', ('populartag',), [0, 22, 0, 22], farming)]
+                     ('doc metadata true', 'doc metadata true', ('populartag',), [0, 22, 0, 22], farming)]
 
     return map_data, user_data, people_data, layer_data, document_data
 
@@ -205,8 +205,8 @@ def create_models(type=None, integration=False):
                     bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                     ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                     srid='EPSG:4326',
-                    category=category,                    
-                    metadata_only = title == 'metadata true'
+                    category=category,
+                    metadata_only=title == 'map metadata true'
                 )
                 m.save()
                 m.set_default_permissions()
@@ -228,7 +228,7 @@ def create_models(type=None, integration=False):
                     srid='EPSG:4326',
                     category=category,
                     doc_file=f,
-                    metadata_only = title == 'metadata true'
+                    metadata_only=title == 'doc metadata true'
                 )
                 m.save()
                 m.set_default_permissions()
@@ -257,7 +257,7 @@ def create_models(type=None, integration=False):
                     date=start,
                     storeType=storeType,
                     category=category,
-                    metadata_only = title == 'metadata true'
+                    metadata_only=title == 'layer metadata true'
                 )
                 layer.save()
                 layer.set_default_permissions()

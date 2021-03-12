@@ -17,6 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.maps.models import Map
+from geonode.documents.models import Document
 from unittest.case import TestCase
 from unittest.mock import patch
 from django.conf import settings
@@ -608,7 +610,7 @@ class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, TestCase):
 
 
 class LayerResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-    
+
     def setUp(self):
         super(LayerResourceTests, self).setUp()
         all_public()
@@ -629,8 +631,9 @@ class LayerResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertValidJSONResponse(resp)
         self.assertEqual(resp.json()["meta"]["total_count"], 1)
 
+
 class DocumentResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-    
+
     def setUp(self):
         super(DocumentResourceTests, self).setUp()
         all_public()
@@ -651,8 +654,9 @@ class DocumentResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertValidJSONResponse(resp)
         self.assertEqual(resp.json()["meta"]["total_count"], 1)
 
+
 class MapResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-    
+
     def setUp(self):
         super(MapResourceTests, self).setUp()
         all_public()
@@ -672,3 +676,69 @@ class MapResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         resp = self.api_client.get(url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(resp.json()["meta"]["total_count"], 1)
+
+
+class TopicCategoryResourceTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        super(TopicCategoryResourceTest, self).setUp()
+        all_public()
+        self.list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'categories'})
+
+    def test_the_api_should_return_all_layer_with_metadata_false(self):
+        url = f"{self.list_url}?type=layer"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        actual = sum([x['count'] for x in resp.json()['objects']])
+        self.assertEqual(8, actual)
+
+    def test_the_api_should_return_all_layer_with_metadata_updated(self):
+        x = Layer.objects.get(title='layer metadata true')
+        x.metadata_only = False
+        x.save()
+        url = f"{self.list_url}?type=layer"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        # by adding a new layer, the total should increase
+        actual = sum([x['count'] for x in resp.json()['objects']])
+        self.assertEqual(9, actual)
+
+    def test_the_api_should_return_all_maps_with_metadata_false(self):
+        url = f"{self.list_url}?type=map"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        actual = sum([x['count'] for x in resp.json()['objects']])
+        self.assertEqual(9, actual)
+
+    def test_the_api_should_return_all_maps_with_metadata_true(self):
+        x = Map.objects.get(title='map metadata true')
+        x.metadata_only = False
+        x.save()
+        url = f"{self.list_url}?type=map"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        # by adding a new layer, the total should increase
+        actual = sum([x['count'] for x in resp.json()['objects']])
+        self.assertEqual(10, actual)
+
+    def test_the_api_should_return_all_document_with_metadata_false(self):
+        url = f"{self.list_url}?type=document"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        actual = sum([x['count'] for x in resp.json()['objects']])
+        self.assertEqual(9, actual)
+
+    def test_the_api_should_return_all_document_with_metadata_true(self):
+        x = Document.objects.get(title='doc metadata true')
+        x.metadata_only = False
+        x.save()
+        url = f"{self.list_url}?type=document"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        # by adding a new layer, the total should increase
+        actual = sum([x['count'] for x in resp.json()['objects']])
+        self.assertEqual(10, actual)

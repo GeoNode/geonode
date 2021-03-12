@@ -723,7 +723,7 @@ class LayerResource(CommonModelApi):
             attribute='styles',
             null=True,
             use_in='detail')
-    
+
     def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
         _filters = filters.copy()
         metadata_only = _filters.pop('metadata_only', False)

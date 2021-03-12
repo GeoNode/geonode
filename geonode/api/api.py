@@ -106,7 +106,7 @@ class CountJSONSerializer(Serializer):
 
                 if not isinstance(_type_filter, str):
                     _type_filter = _type_filter.__name__.lower()
-                resources = resources.filter(polymorphic_ctype__model=_type_filter)
+                resources = resources.filter(polymorphic_ctype__model=_type_filter).filter(metadata_only=False)
 
         counts = list()
         if subtypes:
@@ -277,12 +277,6 @@ class RegionResource(TypeFilteredResource):
 class TopicCategoryResource(TypeFilteredResource):
     """Category api"""
     layers_count = fields.IntegerField(default=0)
-
-    def dehydrate(self, bundle):
-        rs_base = bundle.obj.resourcebase_set
-        if rs_base.exists():
-            bundle.data['count'] = rs_base.filter(metadata_only=False).count()
-        return bundle
 
     def dehydrate_layers_count(self, bundle):
         request = bundle.request
@@ -512,17 +506,20 @@ class ProfileResource(TypeFilteredResource):
     def dehydrate_layers_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
                                               'base.view_resourcebase').filter(polymorphic_ctype__model='layer')
-        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).filter(metadata_only=False).distinct().count()
+        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).filter(metadata_only=False)\
+            .distinct().count()
 
     def dehydrate_maps_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
                                               'base.view_resourcebase').filter(polymorphic_ctype__model='map')
-        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).filter(metadata_only=False).distinct().count()
+        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).filter(metadata_only=False)\
+            .distinct().count()
 
     def dehydrate_documents_count(self, bundle):
         obj_with_perms = get_objects_for_user(bundle.request.user,
                                               'base.view_resourcebase').filter(polymorphic_ctype__model='document')
-        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).filter(metadata_only=False).distinct().count()
+        return bundle.obj.resourcebase_set.filter(id__in=obj_with_perms.values('id')).filter(metadata_only=False)\
+            .distinct().count()
 
     def dehydrate_avatar_100(self, bundle):
         return avatar_url(bundle.obj, 240)
