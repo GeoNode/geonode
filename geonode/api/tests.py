@@ -622,24 +622,26 @@ class LayerResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(LayerResourceTests, self).setUp()
-        all_public()
         self.user = get_user_model().objects.get(username="admin")
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
                 'resource_name': 'layers'})
+        all_public()
+        self.token = get_or_create_token(self.user)
+        self.auth_header = 'Bearer {}'.format(self.token)
 
     def test_the_api_should_return_all_layers_with_metadata_false(self):
-        resp = self.api_client.get(self.list_url)
+        resp = self.api_client.get(self.list_url, authentication=self.auth_header)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(resp.json()["meta"]["total_count"], 8)
+        self.assertEqual(8, resp.json()["meta"]["total_count"])
 
     def test_the_api_should_return_all_layers_with_metadata_true(self):
         url = f"{self.list_url}?metadata_only=True"
-        resp = self.api_client.get(url)
+        resp = self.api_client.get(url, authentication=self.auth_header)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(resp.json()["meta"]["total_count"], 1)
+        self.assertEqual(1, resp.json()["meta"]["total_count"])
 
 
 class DocumentResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
@@ -709,31 +711,12 @@ class TopicCategoryResourceTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
     def setUp(self):
         super(TopicCategoryResourceTest, self).setUp()
-        all_public()
         self.user = get_user_model().objects.get(username="admin")
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
                 'api_name': 'api',
                 'resource_name': 'categories'})
-
-    def test_the_api_should_return_all_layer_with_metadata_false(self):
-        url = f"{self.list_url}?type=layer"
-        resp = self.api_client.get(url)
-        self.assertValidJSONResponse(resp)
-        actual = sum([x['count'] for x in resp.json()['objects']])
-        self.assertEqual(8, actual)
-
-    def test_the_api_should_return_all_layer_with_metadata_updated(self):
-        x = Layer.objects.get(title='layer metadata true')
-        x.metadata_only = False
-        x.save()
-        url = f"{self.list_url}?type=layer"
-        resp = self.api_client.get(url)
-        self.assertValidJSONResponse(resp)
-        # by adding a new layer, the total should increase
-        actual = sum([x['count'] for x in resp.json()['objects']])
-        self.assertEqual(9, actual)
 
     def test_the_api_should_return_all_maps_with_metadata_false(self):
         url = f"{self.list_url}?type=map"

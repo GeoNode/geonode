@@ -258,6 +258,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         self.fields['raw_constraints_other'] = serializers.CharField(read_only=True)
         self.fields['raw_supplemental_information'] = serializers.CharField(read_only=True)
         self.fields['raw_data_quality_statement'] = serializers.CharField(read_only=True)
+        self.fields['metadata_only'] = serializers.BooleanField()
 
         self.fields['embed_url'] = EmbedUrlField()
         self.fields['thumbnail_url'] = ThumbnailUrlField()
@@ -289,7 +290,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             'popular_count', 'share_count', 'rating', 'featured', 'is_published', 'is_approved',
             'detail_url', 'embed_url', 'created', 'last_updated',
             'raw_abstract', 'raw_purpose', 'raw_constraints_other',
-            'raw_supplemental_information', 'raw_data_quality_statement'
+            'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only'
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
