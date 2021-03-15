@@ -40,7 +40,7 @@ from geonode.layers.utils import file_upload
 from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map
 from geonode.utils import HttpClient, http_client, DisableDjangoSignals
-from geonode.tests.base import GeoNodeLiveTestSupport, GeoNodeBaseSimpleTestSupport
+from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeBaseSimpleTestSupport
 from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, create_thumbnail
 from geonode.thumbs.background import (
     OSMTileBackground,
@@ -254,7 +254,7 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
             self._fetch_and_compare_background(background, bbox, expected_image_path)
 
 
-class GeoNodeThumbnailWMSBackground(GeoNodeLiveTestSupport):
+class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
 
     layer_coast_line = None
 
@@ -364,7 +364,7 @@ class GeoNodeThumbnailWMSBackground(GeoNodeLiveTestSupport):
         )
 
 
-class GeoNodeThumbnailsIntegration(GeoNodeLiveTestSupport):
+class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
 
     layer_coast_line = None
     layer_highway = None
