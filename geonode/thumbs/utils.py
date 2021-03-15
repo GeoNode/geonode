@@ -243,10 +243,11 @@ def fetch_wms(url: str, max_retries: int = 3, retry_delay: int = 1):
             )
 
             # validate response
-            if resp.status_code < 200 or resp.status_code > 299 or "ServiceException" in str(image):
+            if not resp or resp.status_code < 200 or resp.status_code > 299 or "ServiceException" in str(image):
+                _status_code = resp.status_code if resp else 'Unknown'
                 logger.debug(
                     f"Fetching partial thumbnail from {url} failed with status code: "
-                    f"{resp.status_code} and response: {str(image)}"
+                    f"{_status_code} and response: {str(image)}"
                 )
                 image = None
                 time.sleep(retry_delay)

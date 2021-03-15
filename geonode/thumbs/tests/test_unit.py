@@ -196,7 +196,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         expected_bbox = [-18415954.05583559, 1414810.0631394347, -24064384.914356533, 16333507.057976719, "EPSG:3857"]
         expected_locations = [
             [
-                "http://geoserver:8080/geoserver/",
+                settings.GEOSERVER_LOCATION,
                 ["geonode:theaters_nyc", "geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1"],
             ],
             [

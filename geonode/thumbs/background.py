@@ -142,10 +142,14 @@ class GenericWMSBackground(BaseThumbBackground):
         img = utils.fetch_wms(background_url, self.max_retries, self.retry_delay)
         try:
             content = BytesIO(img)
-            Image.open(content).verify()  # verify that it is, in fact an image
-            image = Image.open(content)  # "re-open" the file (required after running verify method)
-            background.paste(image)
+            with Image.open(content) as image:
+                image.verify()  # verify that it is, in fact an image
+                image = Image.open(content)  # "re-open" the file (required after running verify method)
+                background.paste(image)
         except UnidentifiedImageError as e:
+            logger.error(f"Thumbnail generation. Error occurred while fetching background image: {e}")
+            raise e
+        except Exception as e:
             logger.error(f"Thumbnail generation. Error occurred while fetching background image: {e}")
             logger.exception(e)
         return background
@@ -341,7 +345,7 @@ class GenericXYZBackground(BaseThumbBackground):
                         logger.debug(f"Thumbnail background fetching from {imgurl} failed {retries} time(s) with: {e}")
                         if retries + 1 == self.max_retries:
                             logger.exception(e)
-                            raise
+                            raise e
                         time.sleep(self.retry_delay)
                         continue
                     else:
