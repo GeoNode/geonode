@@ -4,6 +4,9 @@ The other pages will use the implementation provided by the specific client (Map
  */
 window.getThumbnailOptions = function(){
     // (west, east, south, north, CRS)
+    if (typeof(olMap) == 'undefined') {
+        return null;
+    }
     var bbox = olMap.getExtent();
     var body = {
         srid: 'EPSG:3857',
@@ -13,12 +16,16 @@ window.getThumbnailOptions = function(){
 }
 
 var createMapThumbnail = function(obj_id) {
-    if (typeof(thumbnailUpdateUrl) == 'undefined' || typeof(olMap) == 'undefined') {
+    if (typeof(thumbnailUpdateUrl) == 'undefined') {
         console.error("Missing required variables");
         return true;
     }
 
     var body = getThumbnailOptions()
+    if (body == undefined) {
+        console.error("Thumbnail body undefined");
+        return false;
+    }
     $.ajax({
         type: "POST",
         url: thumbnailUpdateUrl,
