@@ -21,6 +21,7 @@
 import os
 import json
 import gisdata
+import logging
 import timeout_decorator
 
 from io import BytesIO
@@ -48,6 +49,8 @@ from geonode.thumbs.background import (
     GenericXYZBackground,
     GenericWMSBackground,
 )
+
+logger = logging.getLogger(__name__)
 
 LOCAL_TIMEOUT = 300
 EXPECTED_RESULTS_DIR = "geonode/thumbs/tests/expected_results/"
@@ -432,9 +435,9 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
     )
     def test_layer_default_thumb(self):
         expected_thumb = Image.open(EXPECTED_RESULTS_DIR + "thumbnails/default_layer_coast_line_thumb.png")
-
         create_gs_thumbnail_geonode(self.layer_coast_line, overwrite=True)
-
+        logger.error(f" --- expected_thumb: {expected_thumb}")
+        logger.error(f" --- thumbnail_url: {self.layer_coast_line.thumbnail_url}")
         self._fetch_thumb_and_compare(self.layer_coast_line.thumbnail_url, expected_thumb)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
