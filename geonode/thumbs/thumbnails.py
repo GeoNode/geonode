@@ -21,7 +21,7 @@
 import re
 import logging
 
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 from io import BytesIO
 from typing import List, Union, Optional, Tuple
 
@@ -151,8 +151,8 @@ def create_thumbnail(
                 height=height,
             )
 
+            logger.debug(f" -- fetching thumnail URL: {thumbnail_url}")
             partial_thumbs.append(utils.fetch_wms(thumbnail_url))
-
         except Exception as e:
             logger.error(f"Exception occurred while fetching partial thumbnail for {instance.name}.")
             logger.exception(e)
@@ -165,12 +165,16 @@ def create_thumbnail(
     merged_partial_thumbs = Image.new("RGBA", (width, height), (0, 0, 0))
 
     for image in partial_thumbs:
-        content = BytesIO(image)
-        img = Image.open(content)
-        img.verify()  # verify that it is, in fact an image
-
-        img = Image.open(BytesIO(image))  # "re-open" the file (required after running verify method)
-        merged_partial_thumbs.paste(img)
+        if image:
+            content = BytesIO(image)
+            try:
+                img = Image.open(content)
+                img.verify()  # verify that it is, in fact an image
+                img = Image.open(BytesIO(image))  # "re-open" the file (required after running verify method)
+                merged_partial_thumbs.paste(img)
+            except UnidentifiedImageError as e:
+                logger.error(f"Thumbnail generation. Error occurred while fetching layer image: {image}")
+                logger.exception(e)
 
     # --- fetch background image ---
     try:
@@ -178,6 +182,7 @@ def create_thumbnail(
         background = BackgroundGenerator(width, height).fetch(bbox, background_zoom)
     except Exception as e:
         logger.error(f"Thumbnail generation. Error occurred while fetching background image: {e}")
+        logger.exception(e)
         background = None
 
     # --- overlay image with background ---

@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from unittest.case import TestCase
 from unittest.mock import patch
 from django.conf import settings
 
@@ -530,9 +529,14 @@ class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertEqual(len(self.deserialize(resp)['objects']), 5)
 
 
-class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, TestCase):
+class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     #  loading test thesausurs
-    fixtures = ["test_thesaurus.json"]
+    fixtures = [
+        'initial_data.json',
+        "test_thesaurus.json",
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
 
     def setUp(self):
         super(ThesaurusKeywordResourceTests, self).setUp()

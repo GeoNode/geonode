@@ -121,6 +121,15 @@ def expand_bbox_to_ratio(
         "epsg:3857",
     ]
 
+    # make sure we do not fell into a 'zero-area' use case
+    TOLERANCE = 1.0e-7
+    if new_bbox[0] == new_bbox[1]:
+        new_bbox[0] -= TOLERANCE
+        new_bbox[1] += TOLERANCE
+    if new_bbox[2] == new_bbox[3]:
+        new_bbox[2] -= TOLERANCE
+        new_bbox[3] += TOLERANCE
+
     # convert bbox to target_crs
     return transform_bbox(new_bbox, target_crs=bbox[-1].lower())
 
