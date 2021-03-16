@@ -1253,18 +1253,14 @@ class SignalsTests(GeoNodeBaseTestSupport):
                 )
                 self.assertTrue(
                     _post_migrate_links_orig.count() > 0,
-                    "No 'original' links has been found for the layer '{}'".format(
-                        _lyr.alternate
-                    )
+                    f"No 'original' links has been found for the layer '{_lyr.alternate}'"
                 )
                 for _link_orig in _post_migrate_links_orig:
                     self.assertIn(
                         _link_orig.url,
                         _lyr.csw_anytext,
-                        "The link URL {0} is not present in the 'csw_anytext' attribute of the layer '{1}'".format(
-                            _link_orig.url,
-                            _lyr.alternate
-                        )
+                        f"The link URL {_link_orig.url} is not present in the 'csw_anytext' \
+attribute of the layer '{_lyr.alternate}'"
                     )
                 # Check catalogue
                 catalogue = get_catalogue()
@@ -1272,9 +1268,7 @@ class SignalsTests(GeoNodeBaseTestSupport):
                 self.assertIsNotNone(record)
                 self.assertTrue(
                     hasattr(record, 'links'),
-                    "No records have been found in the catalogue for the resource '{}'".format(
-                        _lyr.alternate
-                    )
+                    f"No records have been found in the catalogue for the resource '{_lyr.alternate}'"
                 )
                 # Check 'metadata' links for each record
                 for mime, name, metadata_url in record.links['metadata']:
@@ -1291,8 +1285,5 @@ class SignalsTests(GeoNodeBaseTestSupport):
                         _post_migrate_link_meta = None
                     self.assertIsNotNone(
                         _post_migrate_link_meta,
-                        "No '{}' links have been found in the catalogue for the resource '{}'".format(
-                            name,
-                            _lyr.alternate
-                        )
+                        f"No '{name}' links have been found in the catalogue for the resource '{_lyr.alternate}'"
                     )

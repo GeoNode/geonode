@@ -774,10 +774,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
     if not isinstance(data_dict['filtered_attributes'], str):
         filtered_attributes = [x for x in data_dict['filtered_attributes'] if '/load_layer_data' not in x]
     name = layername if ':' not in layername else layername.split(':')[1]
-    location = "{location}{service}".format(** {
-        'location': settings.OGC_SERVER['default']['LOCATION'],
-        'service': 'wms',
-    })
+    location = f"{(settings.OGC_SERVER['default']['LOCATION'])}wms"
     headers = {}
     if request and 'access_token' in request.session:
         access_token = request.session['access_token']
@@ -1400,16 +1397,14 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
         })
     if (request.method == 'POST'):
         try:
-            logger.debug('Deleting Layer {0}'.format(layer))
+            logger.debug(f'Deleting Layer {layer}')
             with transaction.atomic():
                 Layer.objects.filter(id=layer.id).delete()
         except IntegrityError:
             raise
         except Exception as e:
             traceback.print_exc()
-            message = '{0}: {1}.'.format(
-                _('Unable to delete layer'), layer.alternate)
-
+            message = f'{_("Unable to delete layer")}: {layer.alternate}.'
             if getattr(e, 'message', None) and 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _(
                     'This layer is a member of a layer group, you must remove the layer from the group '
@@ -1459,9 +1454,7 @@ def layer_granule_remove(
                 coverages['coverages']['coverage'][0]['name'], store, granule_id)
         except Exception as e:
             traceback.print_exc()
-            message = '{0}: {1}.'.format(
-                _('Unable to delete layer'), layer.alternate)
-
+            message = f'{_("Unable to delete layer")}: {layer.alternate}.'
             if 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _(
                     'This layer is a member of a layer group, you must remove the layer from the group '
@@ -1694,7 +1687,7 @@ def batch_permissions(request, model):
 
     if "cancel" in request.POST or not ids:
         return HttpResponseRedirect(
-            '/admin/{model}s/{model}/'.format(model=model.lower())
+            f'/admin/{model.lower()}s/{model.lower()}/'
         )
 
     if request.method == 'POST':
@@ -1729,7 +1722,7 @@ def batch_permissions(request, model):
                 except set_permissions.OperationalError as exc:
                     celery_logger.exception('Sending task raised: %r', exc)
             return HttpResponseRedirect(
-                '/admin/{model}s/{model}/'.format(model=model.lower())
+                f'/admin/{model.lower()}s/{model.lower()}/'
             )
         return render(
             request,

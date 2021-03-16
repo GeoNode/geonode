@@ -138,7 +138,7 @@ class Consumer(ConsumerMixin):
             _update_layer_data(body, self.last_message)
             self.last_message = json.loads(body)
         except Exception:
-            logger.debug("Could not encode message {!r}".format(body))
+            logger.debug(f"Could not encode message {body}")
         message.ack()
         logger.debug("on_geoserver_catalog: finished")
         self._check_message_limit()
@@ -149,7 +149,7 @@ class Consumer(ConsumerMixin):
             _update_layer_data(body, self.last_message)
             self.last_message = json.loads(body)
         except Exception:
-            logger.debug("Could not encode message {!r}".format(body))
+            logger.debug(f"Could not encode message {body}")
         message.ack()
         logger.debug("on_geoserver_data: finished")
         self._check_message_limit()
@@ -157,11 +157,11 @@ class Consumer(ConsumerMixin):
     def on_consume_ready(self, connection, channel, consumers, **kwargs):
         logger.debug(">>> Ready:")
         logger.debug(connection)
-        logger.debug("{} consumers:".format(len(consumers)))
+        logger.debug(f"{len(consumers)} consumers:")
         for i, consumer in enumerate(consumers, start=1):
-            logger.debug("{0} {1}".format(i, consumer))
-        super(Consumer, self).on_consume_ready(connection, channel, consumers,
-                                               **kwargs)
+            logger.debug(f"{i} {consumer}")
+        super(Consumer, self).on_consume_ready(
+            connection, channel, consumers, **kwargs)
 
     def on_layer_viewer(self, body, message):
         logger.debug("on_layer_viewer: RECEIVED MSG - body: %r" % (body,))
@@ -217,15 +217,18 @@ def _wait_for_layer(layer_id, num_attempts=5, wait_seconds=1):
     for current in range(1, num_attempts + 1):
         try:
             instance = Layer.objects.get(id=layer_id)
-            logger.debug("Attempt {}/{} - Found layer in the "
-                         "database".format(current, num_attempts))
+            logger.debug(
+                f"Attempt {current}/{num_attempts} - Found layer in the "
+                "database")
             break
         except Layer.DoesNotExist:
             time.sleep(wait_seconds)
-            logger.debug("Attempt {}/{} - Could not find layer "
-                         "instance".format(current, num_attempts))
+            logger.debug(
+                f"Attempt {current}/{num_attempts} - Could not find layer "
+                "instance")
     else:
-        logger.debug("Reached maximum attempts and layer {!r} is still not "
-                     "saved. Exiting...".format(layer_id))
+        logger.debug(
+            f"Reached maximum attempts and layer {layer_id} is still not "
+            "saved. Exiting...")
         raise Layer.DoesNotExist
     return instance

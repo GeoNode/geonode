@@ -678,7 +678,7 @@ def gs_slurp(
                     storeType=the_store.resource_type,
                     alternate="%s:%s" % (workspace.name, resource.name),
                     title=resource.title or 'No title provided',
-                    abstract=resource.abstract or "{}".format(_('No abstract provided')),
+                    abstract=resource.abstract or _('No abstract provided'),
                     owner=owner,
                     uuid=str(uuid.uuid4())
                 )
@@ -717,8 +717,7 @@ def gs_slurp(
                 if verbosity > 0:
                     msg = "Stopping process because --ignore-errors was not set and an error was found."
                     print(msg, file=sys.stderr)
-
-                raise Exception("Failed to process {}".format(resource.name)) from e
+                raise Exception(f"Failed to process {resource.name}") from e
 
         else:
             if created:
@@ -978,8 +977,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             # The code below will fail if http_client cannot be imported or WFS not supported
             req, body = http_client.get(dft_url, user=_user)
             doc = dlxml.fromstring(body.encode())
-            path = ".//{xsd}extension/{xsd}sequence/{xsd}element".format(
-                xsd="{http://www.w3.org/2001/XMLSchema}")
+            xsd = "{http://www.w3.org/2001/XMLSchema}"
+            path = f".//{xsd}extension/{xsd}sequence/{xsd}element"
             attribute_map = [[n.attrib["name"], n.attrib["type"]] for n in doc.findall(
                 path) if n.attrib.get("name") and n.attrib.get("type")]
         except Exception:
@@ -1026,8 +1025,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
         try:
             req, body = http_client.get(dc_url, user=_user)
             doc = dlxml.fromstring(body.encode())
-            path = ".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key".format(
-                wcs="{http://www.opengis.net/wcs/1.1.1}")
+            wcs = "{http://www.opengis.net/wcs/1.1.1}"
+            path = f".//{wcs}Axis/{wcs}AvailableKeys/{wcs}Key"
             attribute_map = [[n.text, "raster"] for n in doc.findall(path)]
         except Exception:
             tb = traceback.format_exc()
@@ -1573,7 +1572,7 @@ class OGC_Server(object):
         return urlsplit(self.LOCATION).netloc
 
     def __str__(self):
-        return "{0}".format(self.alias)
+        return str(self.alias)
 
 
 class OGC_Servers_Handler(object):
@@ -1757,10 +1756,9 @@ def _stylefilterparams_geowebcache_layer(layer_name):
         headers=headers,
         user=_user)
     if req.status_code != 200:
-        line = "Error {0} reading Style Filter Params GeoWebCache at {1}".format(
-            req.status_code, url
+        logger.error(
+            f"Error {req.status_code} reading Style Filter Params GeoWebCache at {url}"
         )
-        logger.error(line)
         return
 
     # check/write GWC filter parameters
@@ -1781,10 +1779,9 @@ def _stylefilterparams_geowebcache_layer(layer_name):
             headers=headers,
             user=_user)
         if req.status_code != 200:
-            line = "Error {0} writing Style Filter Params GeoWebCache at {1}".format(
-                req.status_code, url
+            logger.error(
+                f"Error {req.status_code} writing Style Filter Params GeoWebCache at {url}"
             )
-            logger.error(line)
 
 
 def _invalidate_geowebcache_layer(layer_name, url=None):
@@ -1792,9 +1789,9 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
     headers = {
         "Content-Type": "text/xml",
     }
-    body = """
-        <truncateLayer><layerName>{0}</layerName></truncateLayer>
-        """.strip().format(layer_name)
+    body = f"""
+        <truncateLayer><layerName>{layer_name}</layerName></truncateLayer>
+        """.strip()
     if not url:
         url = '%sgwc/rest/masstruncate' % ogc_server_settings.LOCATION
     req, content = http_client.post(
@@ -1804,10 +1801,9 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
         user=_user)
 
     if req.status_code != 200:
-        line = "Error {0} invalidating GeoWebCache at {1}".format(
-            req.status_code, url
+        logger.debug(
+            f"Error {req.status_code} invalidating GeoWebCache at {url}"
         )
-        logger.debug(line)
 
 
 def style_update(request, url):

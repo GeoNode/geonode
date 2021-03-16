@@ -87,7 +87,7 @@ class Style(models.Model, PermissionLevelMixin):
     workspace = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return "{0}".format(self.name)
+        return str(self.name)
 
     def absolute_url(self):
         if self.sld_url:
@@ -139,15 +139,15 @@ class UploadSession(models.Model):
         return self.processed and self.errors is None
 
     def __str__(self):
-        _s = "[Upload session-id: {}]".format(self.id)
+        _s = f"[Upload session-id: {self.id}]"
         try:
-            _s += " - {}".format(self.resource.title)
+            _s += f" - {self.resource.title}"
         except Exception:
             pass
-        return "{0}".format(_s)
+        return str(_s)
 
     def __unicode__(self):
-        return "{0}".format(self.__str__())
+        return str(self.__str__())
 
 
 class Layer(ResourceBase):
@@ -251,9 +251,7 @@ class Layer(ResourceBase):
         if self.remote_service is not None and self.remote_service.method == INDEXED:
             result = self.remote_service.service_url
         else:
-            result = "{base}ows".format(
-                base=settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
-            )
+            result = f"{(settings.OGC_SERVER['default']['PUBLIC_LOCATION'])}ows"
         return result
 
     @property
@@ -355,7 +353,7 @@ class Layer(ResourceBase):
         return cfg
 
     def __str__(self):
-        return "{0}".format(self.alternate)
+        return str(self.alternate)
 
     class Meta:
         # custom permissions,
@@ -577,7 +575,7 @@ class Attribute(models.Model):
     objects = AttributeManager()
 
     def __str__(self):
-        return "{0}".format(
+        return str(
             self.attribute_label if self.attribute_label else self.attribute)
 
     def unique_values_as_list(self):
@@ -588,15 +586,11 @@ def _get_alternate_name(instance):
     if instance.remote_service is not None and instance.remote_service.method == INDEXED:
         result = instance.name
     elif instance.remote_service is not None and instance.remote_service.method == CASCADED:
-        result = "{}:{}".format(
-            getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE),
-            instance.name
-        )
+        _ws = getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE)
+        result = f"{_ws}:{instance.name}"
     else:  # we are not dealing with a service-related instance
-        result = "{}:{}".format(
-            getattr(settings, "DEFAULT_WORKSPACE", _DEFAULT_WORKSPACE),
-            instance.name
-        )
+        _ws = getattr(settings, "DEFAULT_WORKSPACE", _DEFAULT_WORKSPACE)
+        result = f"{_ws}:{instance.name}"
     return result
 
 
@@ -632,7 +626,7 @@ def pre_save_layer(instance, sender, **kwargs):
     logger.debug("In pre_save_layer")
     if instance.alternate is None:
         instance.alternate = _get_alternate_name(instance)
-    logger.debug("instance.alternate is: {}".format(instance.alternate))
+    logger.debug(f"instance.alternate is: {instance.alternate}")
 
     base_file, info = instance.get_base_file()
 

@@ -99,40 +99,41 @@ class Command(BaseCommand):
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def list_labels(self, metric, resource=None):
         labels = self.collector.get_labels_for_metric(metric, resource=resource)
-        print('Labels for metric {}'.format(metric))
+        print(f'Labels for metric {metric}')
         for label in labels:
             print(' ', *label)
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def list_resources(self, metric):
         resources = self.collector.get_resources_for_metric(metric)
-        print('Resources for metric {}'.format(metric))
+        print(f'Resources for metric {metric}')
         for res in resources:
             print(' ', '='.join(res))
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def show_metrics(self, metric, since, until, interval, resource=None, label=None, service=None):
-        print('Monitoring Metric values for {}'.format(metric))
+        print(f'Monitoring Metric values for {metric}')
         if service:
-            print(' for service: {} '.format(service))
+            print(f' for service: {service} ')
         if resource:
-            print(' for resource: {}={} '.format(resource.type, resource.name))
+            print(f' for resource: {resource.type}={resource.name} ')
         if label:
-            print(' for label: {} label'.format(label.name))
+            print(f' for label: {label.name} label')
 
         utc = pytz.utc
         since = since.replace(tzinfo=utc) if since else None
         until = until.replace(tzinfo=utc) if until else None
 
-        data = self.collector.get_metrics_for(metric,
-                                              valid_from=since,
-                                              valid_to=until,
-                                              interval=interval,
-                                              resource=resource,
-                                              label=label,
-                                              service=service)
-        print(' since {} until {}\n'.format(data['input_valid_from'].strftime(TIMESTAMP_OUTPUT),
-                                          data['input_valid_to'].strftime(TIMESTAMP_OUTPUT)))
+        data = self.collector.get_metrics_for(
+            metric,
+            valid_from=since,
+            valid_to=until,
+            interval=interval,
+            resource=resource,
+            label=label,
+            service=service)
+        print(f" since {data['input_valid_from'].strftime(TIMESTAMP_OUTPUT)} "
+              f"until {data['input_valid_to'].strftime(TIMESTAMP_OUTPUT)}\n")
 
         for row in data['data']:
             val = None
@@ -147,4 +148,4 @@ class Command(BaseCommand):
         for stype, metrics in _metrics:
             print('service type', stype.name)
             for m in metrics:
-                print(' {}[{}]'.format(m.name, m.type))
+                print(f' {m.name}[{m.type}]')

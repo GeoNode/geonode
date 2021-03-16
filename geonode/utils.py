@@ -259,13 +259,14 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
     pragma = "no-cache"
     referer = request.META[
         "HTTP_REFERER"] if "HTTP_REFERER" in request.META else \
-        "{scheme}://{netloc}/".format(scheme=site_url.scheme,
-                                      netloc=site_url.netloc)
+        f"{site_url.scheme}://{site_url.netloc}/"
     encoding = request.META["HTTP_ACCEPT_ENCODING"] if "HTTP_ACCEPT_ENCODING" in request.META else "gzip"
-    headers.update({"Pragma": pragma,
-                    "Referer": referer,
-                    "Accept-encoding": encoding,
-    })
+    headers.update(
+        {
+            "Pragma": pragma,
+            "Referer": referer,
+            "Accept-encoding": encoding,
+        })
 
     return (headers, access_token)
 
@@ -391,9 +392,8 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             # Must be in the form : [x0, x1, y0, y1, EPSG:<target_srid>)
             return tuple([projected_bbox[0], projected_bbox[1], projected_bbox[2], projected_bbox[3]]) + \
                 ("EPSG:%s" % target_srid,)
-        except Exception:
-            tb = traceback.format_exc()
-            logger.error(tb)
+        except Exception as e:
+            logger.exception(e)
 
     return native_bbox
 
@@ -1070,8 +1070,7 @@ def format_urls(a, values):
 
 def build_abstract(resourcebase, url=None, includeURL=True):
     if resourcebase.abstract and url and includeURL:
-        return "{abstract} -- [{url}]({url})".format(
-            abstract=resourcebase.abstract, url=url)
+        return f"{resourcebase.abstract} -- [{url}]({url})"
     else:
         return resourcebase.abstract
 
@@ -1091,10 +1090,10 @@ def build_caveats(resourcebase):
 
 
 def build_social_links(request, resourcebase):
-    social_url = "{protocol}://{host}{path}".format(
-        protocol=("https" if request.is_secure() else "http"),
-        host=request.get_host(),
-        path=request.get_full_path())
+    netschema = ("https" if request.is_secure() else "http")
+    host = request.get_host()
+    path = request.get_full_path()
+    social_url = f"{netschema}://{host}{path}"
     # Don't use datetime strftime() because it requires year >= 1900
     # see
     # https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
@@ -1173,7 +1172,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
         inDataSource = None
 
     if inDataSource is None:
-        logger.debug("Could not open {}".format(inShapefile))
+        logger.debug(f"Could not open {inShapefile}")
         return False, None, None
     else:
         inLayer = inDataSource.GetLayer()
@@ -1233,7 +1232,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
         except Exception as e:
             logger.exception(e)
             raise GeoNodeException(
-                "Could not decode SHAPEFILE attributes by using the specified charset '{}'.".format(charset))
+                f"Could not decode SHAPEFILE attributes by using the specified charset '{charset}'.")
     return True, None, list_col
 
 
@@ -1332,10 +1331,9 @@ def parse_datetime(value):
             else:
                 return datetime.datetime.strptime(value, patt)
         except Exception:
-            # tb = traceback.format_exc()
-            # logger.error(tb)
-            pass
-    raise ValueError("Invalid datetime input: {}".format(value))
+            tb = traceback.format_exc()
+            logger.debug(tb)
+    raise ValueError(f"Invalid datetime input: {value}")
 
 
 def _convert_sql_params(cur, query):
@@ -1442,8 +1440,8 @@ class HttpClient(object):
                     logger.debug(tb)
             elif user == self.username:
                 valid_uname_pw = base64.b64encode(
-                    "{}:{}".format(self.username, self.password).encode()).decode()
-                headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
+                    f"{self.username}:{self.password}".encode()).decode()
+                headers['Authorization'] = f'Basic {valid_uname_pw}'
 
         response = None
         content = None
@@ -1460,7 +1458,8 @@ class HttpClient(object):
             pool_maxsize=self.pool_maxsize,
             pool_connections=self.pool_connections
         )
-        session.mount("{scheme}://".format(scheme=urlsplit(url).scheme), adapter)
+        scheme = urlsplit(url).scheme
+        session.mount(f"{scheme}://", adapter)
         session.verify = False
         action = getattr(session, method.lower(), None)
         if action:
@@ -1579,14 +1578,14 @@ def chmod_tree(dst, permissions=0o777):
             os.chmod(path, permissions)
             status = os.stat(path)
             if oct(status.st_mode & 0o777) != str(oct(permissions)):
-                raise Exception("Could not update permissions of {}".format(path))
+                raise Exception(f"Could not update permissions of {path}")
 
         for dirname in dirnames:
             path = os.path.join(dirpath, dirname)
             os.chmod(path, permissions)
             status = os.stat(path)
             if oct(status.st_mode & 0o777) != str(oct(permissions)):
-                raise Exception("Could not update permissions of {}".format(path))
+                raise Exception(f"Could not update permissions of {path}")
 
 
 def slugify_zh(text, separator='_'):

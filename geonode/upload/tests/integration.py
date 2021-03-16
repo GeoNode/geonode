@@ -73,13 +73,7 @@ DB_PORT = settings.DATABASES['default']['PORT']
 DB_NAME = settings.DATABASES['default']['NAME']
 DB_USER = settings.DATABASES['default']['USER']
 DB_PASSWORD = settings.DATABASES['default']['PASSWORD']
-DATASTORE_URL = 'postgis://{}:{}@{}:{}/{}'.format(
-    DB_USER,
-    DB_PASSWORD,
-    DB_HOST,
-    DB_PORT,
-    DB_NAME
-)
+DATASTORE_URL = f'postgis://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
 
 logging.getLogger('south').setLevel(logging.WARNING)
@@ -495,10 +489,8 @@ class TestUpload(UploaderBase):
                 # self.assertIn(
                 #     _link_orig.url,
                 #     test_layer.csw_anytext,
-                #     "The link URL {0} is not present in the 'csw_anytext' attribute of the layer '{1}'".format(
-                #         _link_orig.url,
-                #         test_layer.alternate
-                #     )
+                #     f"The link URL {_link_orig.url} is not present in the 'csw_anytext' \
+                # attribute of the layer '{test_layer.alternate}'"
                 # )
             # Check catalogue
             catalogue = get_catalogue()
@@ -506,9 +498,7 @@ class TestUpload(UploaderBase):
             self.assertIsNotNone(record)
             self.assertTrue(
                 hasattr(record, 'links'),
-                "No records have been found in the catalogue for the resource '{}'".format(
-                    test_layer.alternate
-                )
+                f"No records have been found in the catalogue for the resource '{test_layer.alternate}'"
             )
             # Check 'metadata' links for each record
             for mime, name, metadata_url in record.links['metadata']:
@@ -523,10 +513,7 @@ class TestUpload(UploaderBase):
                     )
                     self.assertIsNotNone(
                         _post_migrate_link_meta,
-                        "No '{}' links have been found in the catalogue for the resource '{}'".format(
-                            name,
-                            test_layer.alternate
-                        )
+                        f"No '{name}' links have been found in the catalogue for the resource '{test_layer.alternate}'"
                     )
                 except Link.DoesNotExist:
                     _post_migrate_link_meta = None

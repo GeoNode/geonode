@@ -99,13 +99,12 @@ HOSTNAME = _surl.hostname
 
 # add trailing slash to site url. geoserver url will be relative to this
 if not SITEURL.endswith('/'):
-    SITEURL = '{}/'.format(SITEURL)
+    SITEURL = f'{SITEURL}/'
 
+_DB_PATH = os.path.join(PROJECT_ROOT, 'development.db')
 DATABASE_URL = os.getenv(
     'DATABASE_URL',
-    'spatialite:///{path}'.format(
-        path=os.path.join(PROJECT_ROOT, 'development.db')
-    )
+    f'spatialite:///{_DB_PATH}'
 )
 
 if DATABASE_URL.startswith("spatialite"):
@@ -916,8 +915,8 @@ THEME_ACCOUNT_CONTACT_EMAIL = os.getenv(
 # per-deployment settings should go here
 
 # Login and logout urls override
-LOGIN_URL = os.getenv('LOGIN_URL', '{}account/login/'.format(SITEURL))
-LOGOUT_URL = os.getenv('LOGOUT_URL', '{}account/logout/'.format(SITEURL))
+LOGIN_URL = os.getenv('LOGIN_URL', f'{SITEURL}account/login/')
+LOGOUT_URL = os.getenv('LOGOUT_URL', f'{SITEURL}account/logout/')
 
 ACCOUNT_LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', SITEURL)
 ACCOUNT_LOGOUT_REDIRECT_URL = os.getenv('LOGOUT_REDIRECT_URL', SITEURL)
@@ -946,7 +945,7 @@ GEOSERVER_LOCATION = os.getenv(
 
 # add trailing slash to geoserver location url.
 if not GEOSERVER_LOCATION.endswith('/'):
-    GEOSERVER_LOCATION = '{}/'.format(GEOSERVER_LOCATION)
+    GEOSERVER_LOCATION = f'{GEOSERVER_LOCATION}/'
     
 GEOSERVER_PUBLIC_SCHEMA = os.getenv(
     'GEOSERVER_PUBLIC_SCHEMA', SITE_HOST_SCHEMA
@@ -960,10 +959,10 @@ GEOSERVER_PUBLIC_PORT = os.getenv(
     'GEOSERVER_PUBLIC_PORT', 8080
 )
 
-_default_public_location = '{}://{}:{}/geoserver/'.format(
-    GEOSERVER_PUBLIC_SCHEMA,
-    GEOSERVER_PUBLIC_HOST,
-    GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else '{}://{}/geoserver/'.format(GEOSERVER_PUBLIC_SCHEMA, GEOSERVER_PUBLIC_HOST)
+if GEOSERVER_PUBLIC_PORT:
+    _default_public_location = f'{GEOSERVER_PUBLIC_SCHEMA}://{GEOSERVER_PUBLIC_HOST}:{GEOSERVER_PUBLIC_PORT}/geoserver/'
+else:
+    _default_public_location = f'{GEOSERVER_PUBLIC_SCHEMA}://{GEOSERVER_PUBLIC_HOST}/geoserver/'
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
     'GEOSERVER_PUBLIC_LOCATION', _default_public_location

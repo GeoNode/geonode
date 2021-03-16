@@ -434,7 +434,7 @@ class OWSListView(View):
         headers, access_token = get_headers(request, _url, _raw_url)
         if access_token:
             _j = '&' if _url.query else '?'
-            _raw_url = _j.join([_raw_url, 'access_token={}'.format(access_token)])
+            _raw_url = _j.join([_raw_url, f'access_token={access_token}'])
         data.append({'url': _raw_url, 'type': 'OGC:WMS'})
 
         # WCS
@@ -443,7 +443,7 @@ class OWSListView(View):
         headers, access_token = get_headers(request, _url, _raw_url)
         if access_token:
             _j = '&' if _url.query else '?'
-            _raw_url = _j.join([_raw_url, 'access_token={}'.format(access_token)])
+            _raw_url = _j.join([_raw_url, f'access_token={access_token}'])
         data.append({'url': _raw_url, 'type': 'OGC:WCS'})
 
         # WFS
@@ -452,7 +452,7 @@ class OWSListView(View):
         headers, access_token = get_headers(request, _url, _raw_url)
         if access_token:
             _j = '&' if _url.query else '?'
-            _raw_url = _j.join([_raw_url, 'access_token={}'.format(access_token)])
+            _raw_url = _j.join([_raw_url, f'access_token={access_token}'])
         data.append({'url': _raw_url, 'type': 'OGC:WFS'})
 
         # catalogue from configuration
@@ -463,7 +463,7 @@ class OWSListView(View):
             headers, access_token = get_headers(request, _url, _raw_url)
             if access_token:
                 _j = '&' if _url.query else '?'
-                _raw_url = _j.join([_raw_url, 'access_token={}'.format(access_token)])
+                _raw_url = _j.join([_raw_url, f'access_token={access_token}'])
             data.append({'url': _raw_url, 'type': 'OGC:CSW'})
 
         # main site url

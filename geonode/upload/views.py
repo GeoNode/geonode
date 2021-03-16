@@ -165,24 +165,24 @@ def save_step_view(req, session):
     form = LayerUploadForm(req.POST, req.FILES)
     if form.is_valid():
         tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
-        logger.debug("valid_extensions: {}".format(form.cleaned_data["valid_extensions"]))
+        logger.debug(f"valid_extensions: {form.cleaned_data['valid_extensions']}")
         relevant_files = _select_relevant_files(
             form.cleaned_data["valid_extensions"],
             iter(req.FILES.values())
         )
-        logger.debug("relevant_files: {}".format(relevant_files))
+        logger.debug(f"relevant_files: {relevant_files}")
         _write_uploaded_files_to_disk(tempdir, relevant_files)
         base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
         name, ext = os.path.splitext(os.path.basename(base_file))
-        logger.debug('Name: {0}, ext: {1}'.format(name, ext))
-        logger.debug("base_file: {}".format(base_file))
+        logger.debug(f'Name: {name}, ext: {ext}')
+        logger.debug(f"base_file: {base_file}")
         scan_hint = get_scan_hint(form.cleaned_data["valid_extensions"])
         spatial_files = scan_file(
             base_file,
             scan_hint=scan_hint,
             charset=form.cleaned_data["charset"]
         )
-        logger.debug("spatial_files: {}".format(spatial_files))
+        logger.debug(f"spatial_files: {spatial_files}")
         import_session = save_step(
             req.user,
             name,

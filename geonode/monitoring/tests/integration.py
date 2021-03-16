@@ -78,13 +78,7 @@ DB_PORT = settings.DATABASES['default']['PORT']
 DB_NAME = settings.DATABASES['default']['NAME']
 DB_USER = settings.DATABASES['default']['USER']
 DB_PASSWORD = settings.DATABASES['default']['PASSWORD']
-DATASTORE_URL = 'postgis://{}:{}@{}:{}/{}'.format(
-    DB_USER,
-    DB_PASSWORD,
-    DB_HOST,
-    DB_PORT,
-    DB_NAME
-)
+DATASTORE_URL = f'postgis://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
 
 logging.getLogger('south').setLevel(logging.WARNING)

@@ -48,7 +48,7 @@ def delete_layer(self, layer_id):
     except Layer.DoesNotExist:
         logger.warning(f"Layers {layer_id} does not exist!")
         return
-    logger.debug('Deleting Layer {0}'.format(layer))
+    logger.debug(f'Deleting Layer {layer}')
     try:
         with transaction.atomic():
             layer.delete()

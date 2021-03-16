@@ -70,7 +70,7 @@ class Document(ResourceBase):
         verbose_name=_('URL'))
 
     def __str__(self):
-        return "{0}".format(self.title)
+        return str(self.title)
 
     def get_absolute_url(self):
         return reverse('document_detail', args=(self.id,))

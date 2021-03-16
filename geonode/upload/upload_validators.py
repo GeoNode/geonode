@@ -46,7 +46,7 @@ def _supported_type(ext, supported_types):
 
 
 def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types):
-    logger.debug("uploaded_files: {}".format(uploaded_files))
+    logger.debug(f"uploaded_files: {uploaded_files}")
     requires_datastore = () if ogc_server_settings.DATASTORE else (
         'csv',
         'kml')
@@ -152,11 +152,10 @@ def _validate_shapefile_components(possible_filenames):
         else:
             if additional_component.mandatory:
                 raise forms.ValidationError(
-                    "Could not find {!r} file, which is mandatory for "
-                    "shapefile uploads".format(
-                        additional_component.extension)
+                    f"Could not find {additional_component.extension} file, which is mandatory for "
+                    "shapefile uploads"
                 )
-    logger.debug("shapefile components: {}".format(components))
+    logger.debug(f"shapefile components: {components}")
     return components
 
 
@@ -174,8 +173,8 @@ def _validate_kml_bytes(kml_bytes, other_files):
                 "kml:Icon/kml:href/text()", namespaces=namespaces)[0].strip()
         except IndexError:
             image_path = ""
-        logger.debug("image_path: {}".format(image_path))
-        logger.debug("other_files: {}".format(other_files))
+        logger.debug(f"image_path: {image_path}")
+        logger.debug(f"other_files: {other_files}")
         if image_path not in other_files:
             raise forms.ValidationError(
                 _("Ground overlay image declared in kml file cannot be found"))

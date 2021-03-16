@@ -124,7 +124,7 @@ def decimal_encode(bbox):
         except Exception:
             o = None if 'EPSG' not in o else o
         if o and isinstance(o, float):
-            _bbox.append("{0:.15f}".format(round(o, 2)))
+            _bbox.append(f"{round(o, 2):.15f}")
         elif o and 'EPSG' in o:
             _srid = o
     _bbox = _bbox if not _srid else _bbox + [_srid]

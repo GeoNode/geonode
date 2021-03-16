@@ -136,12 +136,11 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
     if verb:
         try:
             activity.send(action.get('actor'),
-                          verb="{verb}".format(verb=verb),
+                          verb=str(verb),
                           action_object=action.get('action_object'),
                           target=action.get('target', None),
                           object_name=action.get('object_name'),
-                          raw_action=raw_action,
-                          )
+                          raw_action=raw_action)
         # except ModelNotActionable:
         except Exception:
             logger.warning('The activity received a non-actionable Model or None as the actor/action.')

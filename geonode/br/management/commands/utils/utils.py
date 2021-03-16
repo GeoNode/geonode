@@ -272,7 +272,7 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
             pg_tables = pg_all_tables
 
         for table in pg_tables:
-            logger.info("Dumping GeoServer Vectorial Data : {}:{}".format(db_name, table))
+            logger.info(f"Dumping GeoServer Vectorial Data : {db_name}:{table}")
             os.system('PGPASSWORD="' + db_passwd + '" ' + config.pg_dump_cmd + ' -h ' + db_host +
                       ' -p ' + str(db_port) + ' -U ' + db_user + ' -F c -b' +
                       ' -t \'"' + str(table) + '"\' -f ' +
@@ -301,7 +301,7 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
         file_names = [fn for fn in os.listdir(source_folder)
                       if any(fn.endswith(ext) for ext in included_extenstions)]
         for table in file_names:
-            logger.info("Restoring GeoServer Vectorial Data : {}:{} ".format(db_name, os.path.splitext(table)[0]))
+            logger.info(f"Restoring GeoServer Vectorial Data : {db_name}:{os.path.splitext(table)[0]} ")
             pg_rstcmd = 'PGPASSWORD="' + db_passwd + '" ' + config.pg_restore_cmd + ' -c -h ' + db_host + \
                         ' -p ' + str(db_port) + ' -U ' + db_user + ' --role=' + db_user + \
                         ' -F c -t "' + os.path.splitext(table)[0] + '" ' +\

@@ -139,7 +139,7 @@ class Profile(AbstractUser):
         return reverse('profile_detail', args=[self.username, ])
 
     def __str__(self):
-        return "{0}".format(self.username)
+        return str(self.username)
 
     @staticmethod
     def class_name(value):

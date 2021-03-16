@@ -40,7 +40,7 @@ HOSTNAME = _surl.hostname
 
 # add trailing slash to site url. geoserver url will be relative to this
 if not SITEURL.endswith('/'):
-    SITEURL = '{}/'.format(SITEURL)
+    SITEURL = f'{SITEURL}/'
 
 ALLOWED_HOSTS = ['localhost', 'geonode', 'django', 'geonode.example.com']
 
@@ -105,8 +105,10 @@ GEOSERVER_PUBLIC_PORT = os.getenv(
     'GEOSERVER_PUBLIC_PORT', 8080
 )
 
-_default_public_location = 'http://{}:{}/geoserver/'.format(
-    GEOSERVER_PUBLIC_HOST, GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else 'http://{}/geoserver/'.format(GEOSERVER_PUBLIC_HOST)
+if GEOSERVER_PUBLIC_PORT:
+    _default_public_location = f'{GEOSERVER_PUBLIC_SCHEMA}://{GEOSERVER_PUBLIC_HOST}:{GEOSERVER_PUBLIC_PORT}/geoserver/'
+else:
+    _default_public_location = f'{GEOSERVER_PUBLIC_SCHEMA}://{GEOSERVER_PUBLIC_HOST}/geoserver/'
 
 GEOSERVER_WEB_UI_LOCATION = os.getenv(
     'GEOSERVER_WEB_UI_LOCATION', GEOSERVER_LOCATION

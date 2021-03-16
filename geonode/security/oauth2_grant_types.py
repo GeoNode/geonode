@@ -520,7 +520,7 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
 
             if challenge_method not in self._code_challenge_methods:
                 raise errors.ServerError(
-                    description="code_challenge_method {} is not supported.".format(challenge_method),
+                    description=f"code_challenge_method {challenge_method} is not supported.",
                     request=request
                 )
 

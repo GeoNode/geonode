@@ -271,9 +271,9 @@ community."
         # check specific XPaths
         wmc = dlxml.fromstring(response.content)
 
-        namespace = '{http://www.opengis.net/context}'
-        title = '{ns}General/{ns}Title'.format(ns=namespace)
-        abstract = '{ns}General/{ns}Abstract'.format(ns=namespace)
+        ns = '{http://www.opengis.net/context}'
+        title = f'{ns}General/{ns}Title'
+        abstract = f'{ns}General/{ns}Abstract'
 
         self.assertIsNotNone(wmc.attrib.get('id'))
         self.assertEqual(wmc.find(title).text, 'GeoNode Default Map')

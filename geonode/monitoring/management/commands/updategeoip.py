@@ -41,7 +41,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('-f', '--file', dest='file', default=settings.GEOIP_PATH,
-                            help=_("Write result to file, default GEOIP_PATH: {}".format(settings.GEOIP_PATH)))
+                            help=_(f"Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"))
         parser.add_argument('-u', '--url', dest='url', default=URL,
                             help=_("Fetch database from specific url. If nothing provided, default {} will be used"))
         parser.add_argument('-o', '--overwrite', dest='overwrite', action='store_true', default=False,

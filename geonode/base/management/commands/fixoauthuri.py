@@ -62,7 +62,7 @@ class Command(BaseCommand):
             redirect_uris = '%s\n%s\n%s' % (
                 ogc_server_settings.LOCATION,
                 ogc_server_settings.public_url,
-                "{0}/geoserver/".format(target_address))
+                f"{target_address}/geoserver/")
             if Application.objects.filter(name='GeoServer').exists():
                 Application.objects.filter(name='GeoServer').update(redirect_uris=redirect_uris)
                 if force_exec:

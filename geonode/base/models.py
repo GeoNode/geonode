@@ -184,7 +184,7 @@ class SpatialRepresentationType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __str__(self):
-        return "{0}".format(self.gn_description)
+        return str(self.gn_description)
 
     class Meta:
         ordering = ("identifier",)
@@ -231,7 +231,7 @@ class Region(MPTTModel):
         default='EPSG:4326')
 
     def __str__(self):
-        return "{0}".format(self.name)
+        return str(self.name)
 
     @property
     def bbox(self):
@@ -280,7 +280,7 @@ class RestrictionCodeType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __str__(self):
-        return "{0}".format(self.gn_description)
+        return str(self.gn_description)
 
     class Meta:
         ordering = ("identifier",)
@@ -296,7 +296,7 @@ class License(models.Model):
     license_text = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return "{0}".format(self.name)
+        return str(self.name)
 
     @property
     def name_long(self):
@@ -485,7 +485,7 @@ class Thesaurus(models.Model):
     facet = models.BooleanField(default=True)
 
     def __str__(self):
-        return "{0}".format(self.identifier)
+        return str(self.identifier)
 
     class Meta:
         ordering = ("identifier",)
@@ -506,7 +506,7 @@ class ThesaurusKeywordLabel(models.Model):
     keyword = models.ForeignKey('ThesaurusKeyword', related_name='keyword', on_delete=models.CASCADE)
 
     def __str__(self):
-        return "{0}".format(self.label)
+        return str(self.label)
 
     class Meta:
         ordering = ("keyword", "lang")
@@ -530,7 +530,7 @@ class ThesaurusKeyword(models.Model):
     thesaurus = models.ForeignKey('Thesaurus', related_name='thesaurus', on_delete=models.CASCADE)
 
     def __str__(self):
-        return "{0}".format(self.alt_label)
+        return str(self.alt_label)
 
     @property
     def labels(self):
@@ -554,7 +554,7 @@ class ThesaurusLabel(models.Model):
     thesaurus = models.ForeignKey('Thesaurus', related_name='rel_thesaurus', on_delete=models.CASCADE)
 
     def __str__(self):
-        return "{0}".format(self.label)
+        return str(self.label)
 
     class Meta:
         ordering = ("lang",)
@@ -916,7 +916,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         super(ResourceBase, self).__init__(*args, **kwargs)
 
     def __str__(self):
-        return "{0}".format(self.title)
+        return str(self.title)
 
     def _remove_html_tags(self, attribute_str):
         _attribute_str = attribute_str
@@ -1062,7 +1062,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', self.srid)
             srid = int(match.group('srid')) if match else 4326
             bbox = BBOXHelper(self.bbox_polygon.extent)
-            return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:{}".format(srid)]
+            return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, f"EPSG:{srid}"]
         bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
@@ -1205,7 +1205,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     if not field.identifier:
                         continue
                 filled_fields.append(field)
-        return '{}%'.format(len(filled_fields) * 100 / len(required_fields))
+        return f'{len(filled_fields) * 100 / len(required_fields)}%'
 
     @property
     def instance_is_processed(self):
@@ -1734,7 +1734,7 @@ class Link(models.Model):
     objects = LinkManager()
 
     def __str__(self):
-        return "{0} link".format(self.link_type)
+        return f"{self.link_type} link"
 
 
 class MenuPlaceholder(models.Model):
@@ -1746,7 +1746,7 @@ class MenuPlaceholder(models.Model):
     )
 
     def __str__(self):
-        return "{0}".format(self.name)
+        return str(self.name)
 
 
 class Menu(models.Model):
@@ -1765,7 +1765,7 @@ class Menu(models.Model):
     )
 
     def __str__(self):
-        return "{0}".format(self.title)
+        return str(self.title)
 
     class Meta:
         unique_together = (
@@ -1818,7 +1818,7 @@ class MenuItem(models.Model):
         return hash(self.url)
 
     def __str__(self):
-        return "{0}".format(self.title)
+        return str(self.title)
 
     class Meta:
         unique_together = (

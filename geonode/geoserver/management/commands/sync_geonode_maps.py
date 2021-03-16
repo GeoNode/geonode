@@ -64,7 +64,7 @@ def sync_geonode_maps(ignore_errors,
                 traceback.print_exc()
                 print("Stopping process because --ignore-errors was not set and an error was found.")
                 return
-    print("There are {} maps which could not be updated because of errors".format(len(map_errors)))
+    print(f"There are {len(map_errors)} maps which could not be updated because of errors")
     for map_error in map_errors:
          print(map_error)
 

@@ -458,8 +458,7 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
         self.passwd = 'admin'
         create_models(type=b'document')
         create_models(type=b'map')
-        self.document_upload_url = "{}?no__redirect=true".format(
-            reverse('document_upload'))
+        self.document_upload_url = f"{(reverse('document_upload'))}?no__redirect=true"
         self.u = get_user_model().objects.get(username=self.user)
         self.u.email = 'test@email.com'
         self.u.is_active = True
@@ -473,7 +472,7 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
         with self.settings(ADMIN_MODERATE_UPLOADS=False):
             self.client.login(username=self.user, password=self.passwd)
             input_path = self._get_input_path()
-            document_upload_url = "{}".format(reverse('document_upload'))
+            document_upload_url = str(reverse('document_upload'))
             with open(input_path, 'rb') as f:
                 data = {'title': 'document title',
                         'doc_file': f,

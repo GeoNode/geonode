@@ -102,7 +102,7 @@ class Command(BaseCommand):
         date_issued = scheme.find('dcterms:issued', ns).text
         about = scheme.attrib.get(ABOUT_ATTRIB)
 
-        print('Thesaurus "{}" issued on {}'.format(thesaurus_title, date_issued))
+        print(f'Thesaurus "{thesaurus_title}" issued at {date_issued}')
 
         thesaurus = Thesaurus()
         thesaurus.identifier = name
@@ -133,7 +133,7 @@ class Command(BaseCommand):
                 available_lang = get_all_lang_available_with_title(concepts, LANG_ATTRIB)
                 alt_label = determinate_value(available_lang, default_lang)
 
-            print('Concept {} ({})'.format(alt_label, about))
+            print(f'Concept {alt_label} ({about})')
 
             tk = ThesaurusKeyword()
             tk.thesaurus = thesaurus
@@ -147,7 +147,7 @@ class Command(BaseCommand):
                 lang = pref_label.attrib.get(LANG_ATTRIB)
                 label = pref_label.text
 
-                print('    Label {}: {}'.format(lang, label))
+                print(f'    Label {lang}: {label}')
 
                 tkl = ThesaurusKeywordLabel()
                 tkl.keyword = tk

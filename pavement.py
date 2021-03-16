@@ -102,9 +102,9 @@ def grab(src, dest, name):
     logger.info(f" src, dest, name --> {src} {dest} {name}")
 
     if not os.path.exists(dest):
-        logger.info("Downloading {}".format(name))
+        logger.info(f"Downloading {name}")
     elif not zipfile.is_zipfile(dest):
-        logger.info("Downloading {} (corrupt file)".format(name))
+        logger.info(f"Downloading {name} (corrupt file)")
     elif not src.startswith("file://"):
         r = requests.head(src)
         file_time = datetime.datetime.fromtimestamp(os.path.getmtime(dest))
@@ -119,15 +119,15 @@ def grab(src, dest, name):
         if url_date < file_time :
             # Do not download if older than the local one
             return
-        logger.info("Downloading updated {}".format(name))
+        logger.info(f"Downloading updated {name}")
 
     # Local file does not exist or remote one is newer
     if src.startswith("file://"):
         src2 = src.replace("file://", '')
         if not os.path.exists(src2):
-            logger.info("Source location ({}) does not exist".format(src2))
+            logger.info(f"Source location ({src2}) does not exist")
         else:
-            logger.info("Copying local file from {}".format(src2))
+            logger.info(f"Copying local file from {src2}")
             shutil.copyfile(src2, dest)
     else:
         # urlretrieve(str(src), str(dest))
@@ -135,7 +135,7 @@ def grab(src, dest, name):
         r = requests.get(src, stream=True, timeout=10, verify=False)
         # Total size in bytes.
         total_size = int(r.headers.get('content-length', 0))
-        logger.info("Requesting {}".format(src))
+        logger.info(f"Requesting {src}")
         block_size = 1024
         wrote = 0
         with open("output.bin", 'wb') as f:
@@ -146,7 +146,7 @@ def grab(src, dest, name):
                     unit_scale=False):
                 wrote += len(data)
                 f.write(data)
-        logger.info(" total_size [{}] / wrote [{}] ".format(total_size, wrote))
+        logger.info(f" total_size [{total_size}] / wrote [{wrote}] ")
         if total_size != 0 and wrote != total_size:
             logger.error("ERROR, something went wrong. Data could not be written. Expected to write " + wrote +
                          " but wrote " + total_size + " instead")
@@ -374,7 +374,7 @@ def upgradedb(options):
     elif version is None:
         print("Please specify your GeoNode version")
     else:
-        print("Upgrades from version {} are not yet supported.".format(version))
+        print(f"Upgrades from version {version} are not yet supported."))
 
 
 @task
@@ -531,7 +531,7 @@ def stop_geoserver(options):
             shell=True,
             stdout=subprocess.PIPE)
         for pid in map(int, proc.stdout):
-            info('Stopping geoserver (process number {})'.format(pid))
+            info(f'Stopping geoserver (process number {pid})')
             os.kill(pid, signal.SIGKILL)
 
             # Check if the process that we killed is alive.
@@ -570,23 +570,17 @@ def start_django(options):
     bind = options.get('bind', '0.0.0.0:8000')
     port = bind.split(":")[1]
     foreground = '' if options.get('foreground', False) else '&'
-    sh('%s python -W ignore manage.py runserver %s %s' % (settings, bind, foreground))
+    sh(f'{settings} python -W ignore manage.py runserver {bind} {foreground}')
 
     if ASYNC_SIGNALS:
         if 'django_celery_beat' not in INSTALLED_APPS:
-            sh("{} celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E \
+            sh(f"{settings} celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E \
     --statedb=worker.state -s celerybeat-schedule --loglevel=DEBUG \
-    --concurrency=10 -n worker1@%h -f celery.log {}".format(  # noqa
-                settings,
-                foreground
-            ))
+    --concurrency=10 -n worker1@%h -f celery.log {foreground}")
         else:
-            sh("{} celery -A geonode.celery_app:app worker -l DEBUG {} {}".format(
-                settings,
-                "-s django_celery_beat.schedulers:DatabaseScheduler",
-                foreground
-            ))
-        sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
+            sh(f"{settings} celery -A geonode.celery_app:app worker -l DEBUG -s \
+                django_celery_beat.schedulers:DatabaseScheduler {foreground}")
+        sh(f'{settings} python -W ignore manage.py runmessaging {foreground}')
 
     # wait for Django to start
     started = waitfor("http://localhost:" + port)
@@ -830,25 +824,23 @@ def test_integration(options):
             if local:
                 sh("cp geonode/upload/tests/test_settings.py geonode/")
                 settings = 'geonode.test_settings'
-                sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
-                   "makemigrations --noinput".format(settings))
-                sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
-                   "migrate --noinput".format(settings))
-                sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
-                   "loaddata sample_admin.json".format(settings))
-                sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
-                   "loaddata geonode/base/fixtures/default_oauth_apps.json".format(settings))
-                sh("DJANGO_SETTINGS_MODULE={} python -W ignore manage.py "
-                   "loaddata geonode/base/fixtures/initial_data.json".format(settings))
+                sh(f"DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py "
+                   "makemigrations --noinput")
+                sh(f"DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py "
+                   "migrate --noinput")
+                sh(f"DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py "
+                   "loaddata sample_admin.json")
+                sh(f"DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py "
+                   "loaddata geonode/base/fixtures/default_oauth_apps.json")
+                sh(f"DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py "
+                   "loaddata geonode/base/fixtures/initial_data.json")
                 call_task('start_geoserver')
                 bind = options.get('bind', '0.0.0.0:8000')
                 foreground = '' if options.get('foreground', False) else '&'
-                sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runmessaging %s' %
-                (settings, foreground))
-                sh('DJANGO_SETTINGS_MODULE=%s python -W ignore manage.py runserver %s %s' %
-                (settings, bind, foreground))
+                sh(f'DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py runmessaging {foreground}')
+                sh(f'DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py runserver {bind} {foreground}')
                 sh('sleep 30')
-                settings = 'REUSE_DB=1 DJANGO_SETTINGS_MODULE=%s' % settings
+                settings = f'REUSE_DB=1 DJANGO_SETTINGS_MODULE={settings}'
             else:
                 call_task('sync', options={'settings': settings})
 
@@ -923,10 +915,8 @@ def reset(options):
 
 def _reset():
     from geonode import settings
-    sh("rm -rf {path}".format(
-        path=os.path.join(settings.PROJECT_ROOT, 'development.db')
-    )
-    )
+    path=os.path.join(settings.PROJECT_ROOT, 'development.db')
+    sh(f"rm -rf {path}")
     sh("rm -rf geonode/development.db")
     sh("rm -rf geonode/uploaded/*")
     _configure_data_dir()
@@ -1013,7 +1003,7 @@ def deb(options):
         deb_changelog = path('debian') / 'changelog'
         for idx, line in enumerate(fileinput.input([deb_changelog], inplace=True)):
             if idx == 0:
-                logger.info("geonode ({}) {}; urgency=high".format(simple_version, distribution), end='')
+                logger.info(f"geonode ({simple_version}) {distribution}; urgency=high", end='')
             else:
                 print(line.replace("urgency=medium", "urgency=high"), end='')
 

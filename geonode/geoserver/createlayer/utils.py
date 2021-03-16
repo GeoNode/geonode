@@ -187,36 +187,35 @@ def create_gs_layer(name, title, geometry_type, attributes=None):
     for spec in attributes:
         att_name, binding, opts = spec
         nillable = opts.get("nillable", False)
-        attributes_block += ("<attribute>"
-                             "<name>{name}</name>"
-                             "<binding>{binding}</binding>"
-                             "<nillable>{nillable}</nillable>"
-                             "</attribute>").format(name=att_name, binding=binding, nillable=nillable)
+        attributes_block += (
+            "<attribute>"
+            f"<name>{att_name}</name>"
+            f"<binding>{binding}</binding>"
+            f"<nillable>{nillable}</nillable>"
+            "</attribute>")
     attributes_block += "</attributes>"
 
     # TODO implement others srs and not only EPSG:4326
-    xml = ("<featureType>"
-           "<name>{name}</name>"
-           "<nativeName>{native_name}</nativeName>"
-           "<title>{title}</title>"
-           "<srs>EPSG:4326</srs>"
-           "<latLonBoundingBox><minx>{minx}</minx><maxx>{maxx}</maxx><miny>{miny}</miny><maxy>{maxy}</maxy>"
-           "<crs>EPSG:4326</crs></latLonBoundingBox>"
-           "{attributes}"
-           "</featureType>").format(
-        name=name, native_name=native_name,
-        title=title,
-        minx=BBOX[0], maxx=BBOX[1], miny=BBOX[2], maxy=BBOX[3],
-        attributes=attributes_block)
+    xml = (
+        "<featureType>"
+        f"<name>{name}</name>"
+        f"<nativeName>{native_name}</nativeName>"
+        f"<title>{title}</title>"
+        "<srs>EPSG:4326</srs>"
+        f"<latLonBoundingBox><minx>{BBOX[0]}</minx><maxx>{BBOX[1]}</maxx><miny>{BBOX[2]}</miny><maxy>{BBOX[3]}</maxy>"
+        f"<crs>EPSG:4326</crs></latLonBoundingBox>"
+        f"{attributes_block}"
+        "</featureType>")
 
-    url = ('%s/workspaces/%s/datastores/%s/featuretypes'
-           % (ogc_server_settings.rest, workspace.name, datastore.name))
+    url = (
+        f'{ogc_server_settings.rest}/workspaces/{workspace.name}/datastores/{datastore.name}/featuretypes'
+    )
     headers = {'Content-Type': 'application/xml'}
     _user, _password = ogc_server_settings.credentials
     req = requests.post(url, data=xml, headers=headers, auth=(_user, _password))
     if req.status_code != 201:
-        logger.error('Request status code was: %s' % req.status_code)
-        logger.error('Response was: %s' % req.text)
-        raise Exception("Layer could not be created in GeoServer {}".format(req.text))
+        logger.error(f'Request status code was: {req.status_code}')
+        logger.error(f'Response was: {req.text}')
+        raise Exception(f"Layer could not be created in GeoServer {req.text}")
 
     return workspace, datastore

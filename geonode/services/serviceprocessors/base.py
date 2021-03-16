@@ -89,7 +89,7 @@ def get_geoserver_cascading_workspace(create=True):
     name = getattr(settings, "CASCADE_WORKSPACE", "cascaded-services")
     workspace = catalog.get_workspace(name)
     if workspace is None and create:
-        uri = "http://www.geonode.org/{}".format(name)
+        uri = f"http://www.geonode.org/{name}"
         workspace = catalog.create_workspace(name, uri)
     return workspace
 
