@@ -289,7 +289,7 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
     conn.commit()
 
 
-def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_folder):
+def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_folder, preserve_tables):
     """Restore Full DB into target folder"""
     db_host = db_host if db_host is not None else 'localhost'
     db_port = db_port if db_port is not None else 5432
@@ -302,10 +302,11 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
                       if any(fn.endswith(ext) for ext in included_extenstions)]
         for table in file_names:
             logger.info("Restoring GeoServer Vectorial Data : {}:{} ".format(db_name, os.path.splitext(table)[0]))
-            pg_rstcmd = 'PGPASSWORD="' + db_passwd + '" ' + config.pg_restore_cmd + ' -c -h ' + db_host + \
+            pg_rstcmd = 'PGPASSWORD="' + db_passwd + '" ' + config.pg_restore_cmd + ' -h ' + db_host + \
                         ' -p ' + str(db_port) + ' -U ' + db_user + ' --role=' + db_user + \
                         ' -F c -t "' + os.path.splitext(table)[0] + '" ' +\
                         os.path.join(source_folder, table) + ' -d ' + db_name
+            pg_rstcmd += " -c" if preserve_tables else ""
             os.system(pg_rstcmd)
 
     except Exception:
@@ -317,6 +318,30 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
         traceback.print_exc()
 
     conn.commit()
+
+
+def remove_existing_tables(db_name, db_user, db_port, db_host, db_passwd):
+    conn = get_db_conn(db_name, db_user, db_port, db_host, db_passwd)
+    curs = conn.cursor()
+    table_list = """SELECT tablename from pg_tables where tableowner = '%s'""" % (db_user)
+
+    try:
+        curs.execute(table_list)
+        pg_all_tables = [table[0] for table in curs.fetchall()]
+        for pg_table in pg_all_tables:
+            logger.info("Dropping existing GeoServer Vectorial Data : {}:{} ".format(db_name, pg_table))
+            curs.execute(f"DROP TABLE {pg_table}")
+
+        conn.commit()
+    except Exception:
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+
+        traceback.print_exc()
+    curs.close()
+    conn.close()
 
 
 def confirm(prompt=None, resp=False):

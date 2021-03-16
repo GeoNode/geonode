@@ -152,6 +152,14 @@ class Command(BaseCommand):
             help='Skips activation of the Read Only mode in restore procedure execution.'
         )
 
+        parser.add_argument(
+            '--preserve-table',
+            action='store_true',
+            dest='preserve_tables',
+            default=False,
+            help='If True will preserve the existing tables without drop them'
+        )
+
     def handle(self, **options):
         skip_read_only = options.get('skip_read_only')
         config = Configuration.load()
@@ -184,6 +192,7 @@ class Command(BaseCommand):
         backup_files_dir = options.get('backup_files_dir')
         with_logs = options.get('with_logs')
         notify = options.get('notify')
+        preserve_tables = options.get('preserve_tables')
 
         # choose backup_file from backup_files_dir, if --backup-files-dir was provided
         if backup_files_dir:
@@ -291,7 +300,7 @@ class Command(BaseCommand):
                                                       skip_geoserver_info, skip_geoserver_security, ignore_errors)
                         self.prepare_geoserver_gwc_config(config, settings)
                         self.restore_geoserver_raster_data(config, settings, target_folder)
-                        self.restore_geoserver_vector_data(config, settings, target_folder)
+                        self.restore_geoserver_vector_data(config, settings, target_folder, preserve_tables)
                         print("Restoring geoserver external resources")
                         self.restore_geoserver_externals(config, settings, target_folder)
                     except Exception as exception:
@@ -628,6 +637,7 @@ class Command(BaseCommand):
 
         # Best Effort Restore: 'options': {'option': ['BK_BEST_EFFORT=true']}
         _options = [
+            'BK_PURGE_RESOURCES=true',
             'BK_CLEANUP_TEMP=true',
             'BK_SKIP_SETTINGS={}'.format('true' if skip_geoserver_info else 'false'),
             'BK_SKIP_SECURITY={}'.format('true' if skip_geoserver_security else 'false'),
@@ -759,7 +769,7 @@ class Command(BaseCommand):
                     print(('Skipping geoserver raster data restore: ' +
                            'directory "{}" not found.'.format(gs_data_folder)))
 
-    def restore_geoserver_vector_data(self, config, settings, target_folder):
+    def restore_geoserver_vector_data(self, config, settings, target_folder, preserve_tables):
         """Restore Vectorial Data from DB"""
         if (config.gs_dump_vector_data):
 
@@ -777,8 +787,11 @@ class Command(BaseCommand):
                 ogc_db_host = settings.DATABASES[datastore]['HOST']
                 ogc_db_port = settings.DATABASES[datastore]['PORT']
 
+                if not preserve_tables:
+                    utils.remove_existing_tables(ogc_db_name, ogc_db_user, ogc_db_port, ogc_db_host, ogc_db_passwd)
+
                 utils.restore_db(config, ogc_db_name, ogc_db_user, ogc_db_port,
-                                 ogc_db_host, ogc_db_passwd, gs_data_folder)
+                                 ogc_db_host, ogc_db_passwd, gs_data_folder, preserve_tables)
 
     def restore_geoserver_externals(self, config, settings, target_folder):
         """Restore external references from XML files"""
