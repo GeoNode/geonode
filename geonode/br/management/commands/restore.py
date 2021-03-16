@@ -160,6 +160,22 @@ class Command(BaseCommand):
             help='If True will preserve the existing tables without drop them'
         )
 
+        parser.add_argument(
+            '--preserve-geoserver-resources',
+            action='store_true',
+            dest='preserve_geoserver_resources',
+            default=False,
+            help='If True will preserve geoserver resources'
+        )
+
+        parser.add_argument(
+            '--soft-reset',
+            action='store_true',
+            dest='soft_reset',
+            default=False,
+            help='If True, preserve geoserver resources and tables'
+        )
+
     def handle(self, **options):
         skip_read_only = options.get('skip_read_only')
         config = Configuration.load()
@@ -193,6 +209,12 @@ class Command(BaseCommand):
         with_logs = options.get('with_logs')
         notify = options.get('notify')
         preserve_tables = options.get('preserve_tables')
+        preserve_geoserver_resources  = options.get('preserve_geoserver_resources')
+        soft_reset  = options.get('soft_reset')
+
+        if soft_reset:
+            preserve_tables = True
+            preserve_geoserver_resources  = True
 
         # choose backup_file from backup_files_dir, if --backup-files-dir was provided
         if backup_files_dir:
@@ -296,10 +318,10 @@ class Command(BaseCommand):
                     try:
                         print(("[Sanity Check] Full Write Access to '{}' ...".format(target_folder)))
                         chmod_tree(target_folder)
-                        self.restore_geoserver_backup(config, settings, target_folder,
-                                                      skip_geoserver_info, skip_geoserver_security, ignore_errors)
-                        self.prepare_geoserver_gwc_config(config, settings)
-                        self.restore_geoserver_raster_data(config, settings, target_folder)
+                        #self.restore_geoserver_backup(config, settings, target_folder,
+                        #                              skip_geoserver_info, skip_geoserver_security, ignore_errors, preserve_geoserver_resources)
+                        #self.prepare_geoserver_gwc_config(config, settings)
+                        #self.restore_geoserver_raster_data(config, settings, target_folder)
                         self.restore_geoserver_vector_data(config, settings, target_folder, preserve_tables)
                         print("Restoring geoserver external resources")
                         self.restore_geoserver_externals(config, settings, target_folder)
@@ -308,9 +330,9 @@ class Command(BaseCommand):
                             with tempfile.TemporaryDirectory(dir=temp_dir_path) as restore_folder:
                                 recovery_folder = extract_archive(recovery_file, restore_folder)
                                 self.restore_geoserver_backup(config, settings, recovery_folder,
-                                                              skip_geoserver_info, skip_geoserver_security, ignore_errors)
+                                                              skip_geoserver_info, skip_geoserver_security, ignore_errors, preserve_geoserver_resources)
                                 self.restore_geoserver_raster_data(config, settings, recovery_folder)
-                                self.restore_geoserver_vector_data(config, settings, recovery_folder)
+                                self.restore_geoserver_vector_data(config, settings, recovery_folder, preserve_tables)
                                 self.restore_geoserver_externals(config, settings, recovery_folder)
                         if notify:
                             restore_notification.apply_async(
@@ -622,7 +644,7 @@ class Command(BaseCommand):
 
         return None
 
-    def restore_geoserver_backup(self, config, settings, target_folder, skip_geoserver_info, skip_geoserver_security, ignore_errors):
+    def restore_geoserver_backup(self, config, settings, target_folder, skip_geoserver_info, skip_geoserver_security, ignore_errors, preserve_geoserver_resources):
         """Restore GeoServer Catalog"""
         url = settings.OGC_SERVER['default']['LOCATION']
         user = settings.OGC_SERVER['default']['USER']
@@ -637,7 +659,7 @@ class Command(BaseCommand):
 
         # Best Effort Restore: 'options': {'option': ['BK_BEST_EFFORT=true']}
         _options = [
-            'BK_PURGE_RESOURCES=true',
+            'BK_PURGE_RESOURCES={}'.format('true' if not preserve_geoserver_resources else 'false'),
             'BK_CLEANUP_TEMP=true',
             'BK_SKIP_SETTINGS={}'.format('true' if skip_geoserver_info else 'false'),
             'BK_SKIP_SECURITY={}'.format('true' if skip_geoserver_security else 'false'),
