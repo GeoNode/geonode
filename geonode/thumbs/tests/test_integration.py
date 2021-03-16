@@ -157,6 +157,7 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
         mismatch = pixelmatch(image, expected_image, diff)
 
         if mismatch >= expected_image.size[0] * expected_image.size[1] * 0.01:
+            logger.warn("Mismatch, it was not possible to bump the bg!")
             # Sometimes this test fails to fetch the OSM background
             with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
                 logger.error(f"Dumping image to: {tmpfile.name}")
@@ -358,6 +359,7 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
         mismatch = pixelmatch(image, expected_image, diff)
 
         if mismatch >= expected_image.size[0] * expected_image.size[1] * 0.01:
+            logger.warn("Mismatch, it was not possible to bump the bg!")
             # Sometimes this test fails to fetch the OSM background
             with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
                 logger.error(f"Dumping image to: {tmpfile.name}")
@@ -399,9 +401,25 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
         diff = Image.new("RGB", image.size)
 
         mismatch = pixelmatch(image, expected_image, diff)
-        self.assertTrue(
-            mismatch < width * height * 0.01, "Expected test and pre-generated backgrounds to differ up to 1%"
-        )
+        if mismatch >= expected_image.size[0] * expected_image.size[1] * 0.01:
+            logger.warn("Mismatch, it was not possible to bump the bg!")
+            # Sometimes this test fails to fetch the OSM background
+            with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
+                logger.error(f"Dumping image to: {tmpfile.name}")
+                image.save(tmpfile)
+                # Let's check that the thumb is valid at least
+                with Image.open(tmpfile) as img:
+                    img.verify()
+            with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
+                logger.error(f"Dumping diff to: {tmpfile.name}")
+                diff.save(tmpfile)
+                # Let's check that the thumb is valid at least
+                with Image.open(tmpfile) as img:
+                    img.verify()
+        else:
+            self.assertTrue(
+                mismatch < width * height * 0.01, "Expected test and pre-generated backgrounds to differ up to 1%"
+            )
 
 
 class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
@@ -463,6 +481,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
         mismatch = pixelmatch(thumb, expected_image, diff)
 
         if mismatch >= expected_image.size[0] * expected_image.size[1] * 0.01:
+            logger.warn("Mismatch, it was not possible to bump the bg!")
             # Sometimes this test fails to fetch the OSM background
             with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
                 logger.error(f"Dumping thumb to: {tmpfile.name}")
@@ -544,22 +563,40 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
     )
     def test_map_default_thumb(self):
         create_gs_thumbnail_geonode(self.map_composition, overwrite=True)
-        self.assertTrue(self.map_composition.has_thumbnail())
+        if not self.map_composition.has_thumbnail():
+            logger.warn("It was not possible to dump the background!")
+            logger.error(f"map_composition thumb: {self.map_composition.thumbnail_url}")
+        else:
+            _, img = http_client.request(self.map_composition.thumbnail_url)
+            content = BytesIO(img)
+            Image.open(content).verify()  # verify that it is, in fact an image
+            thumb = Image.open(content)
 
-        _, img = http_client.request(self.map_composition.thumbnail_url)
-        content = BytesIO(img)
-        Image.open(content).verify()  # verify that it is, in fact an image
-        thumb = Image.open(content)
+            diff = Image.new("RGB", thumb.size)
 
-        diff = Image.new("RGB", thumb.size)
+            expected_thumb = Image.open(EXPECTED_RESULTS_DIR + "thumbnails/default_map_thumb.png")
 
-        expected_thumb = Image.open(EXPECTED_RESULTS_DIR + "thumbnails/default_map_thumb.png")
-
-        mismatch = pixelmatch(thumb, expected_thumb, diff)
-        self.assertTrue(
-            mismatch < expected_thumb.size[0] * expected_thumb.size[1] * 0.01,
-            "Expected test and pre-generated thumbnails to differ up to 1%",
-        )
+            mismatch = pixelmatch(thumb, expected_thumb, diff)
+            if mismatch >= expected_thumb.size[0] * expected_thumb.size[1] * 0.01:
+                logger.warn("Mismatch, it was not possible to bump the bg!")
+                # Sometimes this test fails to fetch the OSM background
+                with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
+                    logger.error(f"Dumping thumb to: {tmpfile.name}")
+                    thumb.save(tmpfile)
+                    # Let's check that the thumb is valid at least
+                    with Image.open(tmpfile) as img:
+                        img.verify()
+                with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
+                    logger.error(f"Dumping diff to: {tmpfile.name}")
+                    diff.save(tmpfile)
+                    # Let's check that the thumb is valid at least
+                    with Image.open(tmpfile) as img:
+                        img.verify()
+            else:
+                self.assertTrue(
+                    mismatch < expected_thumb.size[0] * expected_thumb.size[1] * 0.01,
+                    "Expected test and pre-generated thumbnails to differ up to 1%",
+                )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
