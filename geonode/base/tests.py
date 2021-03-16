@@ -19,8 +19,10 @@
 #########################################################################
 
 import os
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 from urllib.parse import urlparse
+
+import requests
 
 from guardian.shortcuts import assign_perm, get_perms
 from imagekit.cachefiles.backends import Simple
@@ -50,7 +52,7 @@ from django.shortcuts import reverse
 
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.models import CuratedThumbnail
-from geonode.base.templatetags.base_tags import get_visibile_resources
+from geonode.base.templatetags.base_tags import get_visibile_resources, facets
 from geonode.base.templatetags.user_messages import show_notification
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
@@ -879,3 +881,52 @@ class TestHtmlTagRemoval(SimpleTestCase):
         r = ResourceBase()
         filtered_value = r._remove_html_tags(tagged_value)
         self.assertEqual(filtered_value, attribute_target_value)
+
+
+
+class TestFacets(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create(username='test', email='test@test.com')
+        Layer.objects.create(
+            owner=self.user, title='test_boxes', abstract='nothing', storeType='dataStore', is_approved=True
+        )
+        Layer.objects.create(
+            owner=self.user, title='test_1', abstract='contains boxes', storeType='dataStore', is_approved=True
+        )
+        Layer.objects.create(
+            owner=self.user, title='test_2', purpose='contains boxes', storeType='dataStore', is_approved=True
+        )
+        Layer.objects.create(
+            owner=self.user, title='test_3', storeType='dataStore', is_approved=True
+        )
+
+        Layer.objects.create(
+            owner=self.user, title='test_boxes', abstract='nothing', storeType='coverageStore', is_approved=True
+        )
+        Layer.objects.create(
+            owner=self.user, title='test_1', abstract='contains boxes', storeType='coverageStore', is_approved=True
+        )
+        Layer.objects.create(
+            owner=self.user, title='test_2', purpose='contains boxes', storeType='coverageStore', is_approved=True
+        )
+        Layer.objects.create(
+            owner=self.user, title='test_boxes', storeType='coverageStore', is_approved=True
+        )
+
+        self.request_mock = Mock(spec=requests.Request, GET=Mock())
+
+    def test_facets_filter_layers_returns_correctly(self):
+        self.request_mock.GET.get.side_effect = lambda key, self: {
+            'title__icontains': 'boxes',
+            'abstract__icontains': 'boxes',
+            'purpose__icontains': 'boxes',
+            'date__gte': None,
+            'date__range': None,
+            'date__lte': None,
+            'extent': None
+        }.get(key)
+        self.request_mock.GET.getlist.return_value = None
+        self.request_mock.user = self.user
+        results = facets({'request': self.request_mock})
+        self.assertEqual(results['vector'], 3)
+        self.assertEqual(results['raster'], 4)
