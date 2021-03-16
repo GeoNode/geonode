@@ -530,12 +530,13 @@ class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
 
 class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-    #  loading test thesausurs
+
+    #  loading test thesausuri
     fixtures = [
         'initial_data.json',
-        "test_thesaurus.json",
         'group_test_data.json',
-        'default_oauth_apps.json'
+        'default_oauth_apps.json',
+        "test_thesaurus.json"
     ]
 
     def setUp(self):
