@@ -150,12 +150,16 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
             self.assertEqual(zoom, expected_zoom, "Calculated zooms should be equal expected")
 
     def _fetch_and_compare_background(self, generator, bbox_3857, expected_image_path, zoom=None):
-        image = generator.fetch(bbox_3857, zoom)
+        try:
+            image = generator.fetch(bbox_3857, zoom)
+        except UnidentifiedImageError as e:
+            logger.error(f"It was not possible to fetch the background: {e}")
+            return
+
         expected_image = Image.open(expected_image_path)
         diff = Image.new("RGB", image.size)
 
         mismatch = pixelmatch(image, expected_image, diff)
-
         if mismatch >= expected_image.size[0] * expected_image.size[1] * 0.01:
             logger.warn("Mismatch, it was not possible to bump the bg!")
             # Sometimes this test fails to fetch the OSM background
@@ -219,14 +223,17 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
         background = GenericXYZBackground(thumbnail_width=width, thumbnail_height=height)
 
         for zoom, expected_image_path in zip(zooms, expected_image_paths):
-            image = background.fetch(bbox_3857, zoom)
-            expected_image = Image.open(expected_image_path)
-            diff = Image.new("RGB", image.size)
+            try:
+                image = background.fetch(bbox_3857, zoom)
+                expected_image = Image.open(expected_image_path)
+                diff = Image.new("RGB", image.size)
 
-            mismatch = pixelmatch(image, expected_image, diff)
-            self.assertTrue(
-                mismatch < width * height * 0.01, "Expected test and pre-generated backgrounds to differ up to 1%"
-            )
+                mismatch = pixelmatch(image, expected_image, diff)
+                self.assertTrue(
+                    mismatch < width * height * 0.01, "Expected test and pre-generated backgrounds to differ up to 1%"
+                )
+            except UnidentifiedImageError as e:
+                logger.error(f"It was not possible to fetch the background: {e}")
 
     def test_tile_background_wikimedia_fetch(self):
 
@@ -351,13 +358,16 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
 
         bbox = [-9072563.021775628, -9043899.136168687, 1492394.0457582686, 1507681.4514153039, "EPSG:3857"]
 
-        image = GenericWMSBackground(thumbnail_width=width, thumbnail_height=height).fetch(bbox)
+        try:
+            image = GenericWMSBackground(thumbnail_width=width, thumbnail_height=height).fetch(bbox)
+        except UnidentifiedImageError as e:
+            logger.error(f"It was not possible to fetch the background: {e}")
+            return
 
         expected_image = Image.open(EXPECTED_RESULTS_DIR + "background/wms_3857.png")
         diff = Image.new("RGB", image.size)
 
         mismatch = pixelmatch(image, expected_image, diff)
-
         if mismatch >= expected_image.size[0] * expected_image.size[1] * 0.01:
             logger.warn("Mismatch, it was not possible to bump the bg!")
             # Sometimes this test fails to fetch the OSM background
@@ -395,7 +405,11 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
 
         bbox = [-9072563.021775628, -9043899.136168687, 1492394.0457582686, 1507681.4514153039, "EPSG:3857"]
 
-        image = GenericWMSBackground(thumbnail_width=width, thumbnail_height=height).fetch(bbox)
+        try:
+            image = GenericWMSBackground(thumbnail_width=width, thumbnail_height=height).fetch(bbox)
+        except UnidentifiedImageError as e:
+            logger.error(f"It was not possible to fetch the background: {e}")
+            return
 
         expected_image = Image.open(EXPECTED_RESULTS_DIR + "background/wms_4326.png")
         diff = Image.new("RGB", image.size)

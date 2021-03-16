@@ -976,7 +976,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         self.assertIsNotNone(layer)
 
         # Reset GeoFence Rules
-        Layer.objects.all().delete()
         purge_geofence_all()
         geofence_rules_count = get_geofence_rules_count()
         self.assertTrue(geofence_rules_count == 0)
@@ -1119,7 +1118,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # self.assertEqual(_content_type, 'image/png')
 
         # Reset GeoFence Rules
-        Layer.objects.all().delete()
         purge_geofence_all()
         geofence_rules_count = get_geofence_rules_count()
         self.assertTrue(geofence_rules_count == 0)
