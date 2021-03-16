@@ -39,6 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseThumbBackground(ABC):
+
     def __init__(self, thumbnail_width: int, thumbnail_height: int, max_retries: int = 3, retry_delay: int = 1):
         """
         Base class for thumbnails background retrieval.
@@ -65,6 +66,7 @@ class BaseThumbBackground(ABC):
 
 
 class GenericWMSBackground(BaseThumbBackground):
+
     def __init__(
         self,
         thumbnail_width: int,
@@ -156,6 +158,7 @@ class GenericWMSBackground(BaseThumbBackground):
 
 
 class GenericXYZBackground(BaseThumbBackground):
+
     def __init__(
         self,
         thumbnail_width: int,
@@ -342,7 +345,7 @@ class GenericXYZBackground(BaseThumbBackground):
                         im = BytesIO(content)
                         Image.open(im).verify()  # verify that it is, in fact an image
                     except Exception as e:
-                        logger.debug(f"Thumbnail background fetching from {imgurl} failed {retries} time(s) with: {e}")
+                        logger.error(f"Thumbnail background fetching from {imgurl} failed {retries} time(s) with: {e}")
                         if retries + 1 == self.max_retries:
                             logger.exception(e)
                             raise e
@@ -350,7 +353,6 @@ class GenericXYZBackground(BaseThumbBackground):
                         continue
                     else:
                         break
-
                 image = Image.open(im)  # "re-open" the file (required after running verify method)
 
                 # add the fetched tile to the background image, placing it under proper coordinates
@@ -402,7 +404,6 @@ class GenericXYZBackground(BaseThumbBackground):
             # either all black or all white
             logger.error("Thumbnail background outside the allowed area.")
             raise ThumbnailError("Thumbnail background outside the allowed area.")
-
         return background
 
     def calculate_zoom(self):
@@ -418,11 +419,11 @@ class GenericXYZBackground(BaseThumbBackground):
                 break
             else:
                 zoom = max(zoom, z)
-
         return zoom
 
 
 class WikiMediaTileBackground(GenericXYZBackground):
+
     def __init__(
         self,
         thumbnail_width: int,
@@ -440,6 +441,7 @@ class WikiMediaTileBackground(GenericXYZBackground):
 
 
 class OSMTileBackground(GenericXYZBackground):
+
     def __init__(
         self,
         thumbnail_width: int,

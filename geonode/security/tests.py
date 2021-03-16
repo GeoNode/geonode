@@ -1004,7 +1004,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             permissions=permissions,
             execute_signals=True)
 
-        layer = Layer.objects.filter(title='san_andres_y_providencia_poi').first()
         check_layer(layer)
 
         geofence_rules_count = get_geofence_rules_count()

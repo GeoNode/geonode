@@ -82,7 +82,6 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
         start = datetime.now()
 
         with self.assertRaises(UnidentifiedImageError):
-
             GenericXYZBackground(
                 thumbnail_width=width, thumbnail_height=height, max_retries=max_retries, retry_delay=retry_delay
             ).fetch([623869.6556559108, 2458358.334500141, 4291621.974352865, 5270015.93640312, "EPSG:3857"])
@@ -329,7 +328,6 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
         start = datetime.now()
 
         with self.assertRaises(UnidentifiedImageError):
-
             GenericWMSBackground(
                 thumbnail_width=width, thumbnail_height=height, max_retries=max_retries, retry_delay=retry_delay
             ).fetch(bbox)
