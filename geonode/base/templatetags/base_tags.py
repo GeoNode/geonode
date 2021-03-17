@@ -71,6 +71,8 @@ def num_ratings(obj):
 def facets(context):
     request = context['request']
     title_filter = request.GET.get('title__icontains', '')
+    abstract_filter = request.GET.get('abstract__icontains', '')
+    purpose_filter = request.GET.get('purpose__icontains', '')
     extent_filter = request.GET.get('extent', None)
     keywords_filter = request.GET.getlist('keywords__slug__in', None)
     category_filter = request.GET.getlist('category__identifier__in', None)
@@ -181,7 +183,11 @@ def facets(context):
 
         return facets
     else:
-        layers = Layer.objects.filter(title__icontains=title_filter)
+        layers = Layer.objects.filter(
+            Q(title__icontains=title_filter) |
+            Q(abstract__icontains=abstract_filter) |
+            Q(purpose__icontains=purpose_filter)
+        )
         if category_filter:
             layers = layers.filter(category__identifier__in=category_filter)
         if regions_filter:

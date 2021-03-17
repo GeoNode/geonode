@@ -1,0 +1,64 @@
+[
+   {
+      "model":"maps.map",
+      "pk":1002,
+      "fields":{
+         "title_en":"theaters_nyc_map",
+         "abstract_en":"",
+         "purpose_en":null,
+         "constraints_other_en":null,
+         "supplemental_information_en":"No information provided",
+         "data_quality_statement_en":null,
+         "zoom":13,
+         "projection":"EPSG:3857",
+         "center_x":-73.87038966467539,
+         "center_y":40.75871740302572,
+         "last_modified":"2021-03-08T11:21:01.939Z",
+         "urlsuffix":"",
+         "featuredurl":"",
+         "tkeywords":[
+
+         ],
+         "regions":[
+
+         ],
+         "users_geolimits":[
+
+         ],
+         "groups_geolimits":[
+
+         ]
+      }
+   },
+   {
+      "model":"maps.map",
+      "pk":1009,
+      "fields":{
+         "title_en":"composition_map",
+         "abstract_en":"",
+         "purpose_en":null,
+         "constraints_other_en":null,
+         "supplemental_information_en":"No information provided",
+         "data_quality_statement_en":null,
+         "zoom":1,
+         "projection":"EPSG:3857",
+         "center_x":145.848125,
+         "center_y":-41.18394632635833,
+         "last_modified":"2021-03-08T12:24:40.621Z",
+         "urlsuffix":"",
+         "featuredurl":"",
+         "tkeywords":[
+
+         ],
+         "regions":[
+
+         ],
+         "users_geolimits":[
+
+         ],
+         "groups_geolimits":[
+
+         ]
+      }
+   }
+]

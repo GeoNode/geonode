@@ -73,6 +73,7 @@ from geonode.base.views import batch_modify
 from .tasks import delete_map
 from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
+from geonode.thumbs.thumbnails import create_thumbnail
 from deprecated import deprecated
 
 from dal import autocomplete
@@ -83,9 +84,6 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
     from geonode.geoserver.helpers import ogc_server_settings
-    from geonode.geoserver.helpers import (
-        _render_thumbnail,
-        _prepare_thumbnail_body_from_opts)
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -1340,29 +1338,18 @@ def map_thumbnail(request, mapid):
         raise Http404(_("Not found"))
 
     try:
-        image = None
-        try:
-            image = _prepare_thumbnail_body_from_opts(
-                request.body, request=request)
-        except Exception as e:
-            logger.debug(e)
-            try:
-                image = _render_thumbnail(request.body)
-            except Exception as e:
-                logger.debug(e)
-                image = None
 
-        if not image:
-            return HttpResponse(
-                content=_('couldn\'t generate thumbnail'),
-                status=500,
-                content_type='text/plain'
-            )
-        filename = "map-%s-thumb.png" % map_obj.uuid
-        map_obj.save_thumbnail(filename, image)
+        request_body = json.loads(request.body)
+        bbox = request_body['bbox'] + [request_body['srid']]
+        zoom = request_body.get('zoom', None)
 
-        return HttpResponse(_('Thumbnail saved'))
-    except Exception:
+        create_thumbnail(map_obj, bbox=bbox, background_zoom=zoom, overwrite=True)
+
+        return HttpResponse('Thumbnail saved')
+
+    except Exception as e:
+        logger.exception(e)
+
         return HttpResponse(
             content=_('error saving thumbnail'),
             status=500,
