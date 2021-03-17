@@ -49,7 +49,7 @@ def layer_create(request, template='createlayer/layer_create.html'):
                 layer.set_permissions(json.loads(permissions), created=True)
                 return redirect(layer)
             except Exception as e:
-                error = '%s (%s)' % (e, type(e))
+                error = f'{e} ({type(e)})'
     else:
         form = NewLayerForm()
 

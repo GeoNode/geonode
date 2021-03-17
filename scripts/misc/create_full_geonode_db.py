@@ -140,7 +140,7 @@ create_users(n_users)
 Document.objects.all().delete()
 for d in range(0, n_docs):
     t = Timer(partial(create_document, d))
-    print('Document %s generated in: %s' % (d, t.timeit(number=1)))
+    print(f'Document {d} generated in: {t.timeit(number=1)}')
 
 # 3. create layers
 # first we delete layers
@@ -149,4 +149,4 @@ for layer in Layer.objects.all():
 
 for l in range(0, n_layers):
     t = Timer(partial(create_layer, l))
-    print('Layer %s generated in: %s' % (l, t.timeit(number=1)))
+    print(f'Layer {l} generated in: {t.timeit(number=1)}')

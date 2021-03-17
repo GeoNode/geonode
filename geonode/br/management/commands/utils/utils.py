@@ -174,7 +174,7 @@ def get_db_conn(db_name, db_user, db_port, db_host, db_passwd):
     db_host = db_host if db_host is not None else 'localhost'
     db_port = db_port if db_port is not None else 5432
     conn = psycopg2.connect(
-        "dbname='%s' user='%s' port='%s' host='%s' password='%s'" % (db_name, db_user, db_port, db_host, db_passwd)
+        f"dbname='{db_name}' user='{db_user}' port='{db_port}' host='{db_host}' password='{db_passwd}'"
     )
     return conn
 
@@ -227,7 +227,7 @@ def flush_db(db_name, db_user, db_port, db_host, db_passwd):
     curs = conn.cursor()
 
     try:
-        sql_dump = """SELECT tablename from pg_tables where tableowner = '%s'""" % (db_user)
+        sql_dump = f"""SELECT tablename from pg_tables where tableowner = '{db_user}'"""
         curs.execute(sql_dump)
         pg_tables = curs.fetchall()
         for table in pg_tables:
@@ -255,7 +255,7 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
     curs = conn.cursor()
 
     try:
-        sql_dump = """SELECT tablename from pg_tables where tableowner = '%s'""" % (db_user)
+        sql_dump = f"""SELECT tablename from pg_tables where tableowner = '{db_user}'"""
         curs.execute(sql_dump)
         pg_all_tables = [table[0] for table in curs.fetchall()]
         pg_tables = []
@@ -341,9 +341,9 @@ def confirm(prompt=None, resp=False):
         prompt = 'Confirm'
 
     if resp:
-        prompt = '%s [%s]|%s: ' % (prompt, 'y', 'n')
+        prompt = f'{prompt} [y]|n: '
     else:
-        prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
+        prompt = f'{prompt} [n]|y: '
 
     while True:
         ans = input(prompt)
@@ -424,7 +424,7 @@ def glob2re(pat):
                     stuff = '^' + stuff[1:]
                 elif stuff[0] == '^':
                     stuff = '\\' + stuff
-                res = '%s[%s]' % (res, stuff)
+                res = f'{res}[{stuff}]'
         else:
             res = res + re.escape(c)
     return res + r'\Z(?ms)'

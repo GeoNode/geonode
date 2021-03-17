@@ -131,7 +131,7 @@ def geoserver_post_save_map(instance, sender, created, **kwargs):
     if not created:
         if not instance.thumbnail_url or \
         instance.thumbnail_url == staticfiles.static(settings.MISSING_THUMBNAIL):
-            logger.debug("... Creating Thumbnail for Map [%s]" % (instance.title))
+            logger.debug(f"... Creating Thumbnail for Map [{instance.title}]")
             # create_gs_thumbnail(instance, overwrite=False, check_bbox=True)
             geoserver_create_thumbnail.apply_async(((instance.id, False, True, )))
 

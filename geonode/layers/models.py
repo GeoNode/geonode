@@ -261,7 +261,7 @@ class Layer(ResourceBase):
     @property
     def service_typename(self):
         if self.remote_service is not None:
-            return "%s:%s" % (self.remote_service.name, self.alternate)
+            return f"{self.remote_service.name}:{self.alternate}"
         else:
             return self.alternate
 
@@ -329,7 +329,7 @@ class Layer(ResourceBase):
     def get_absolute_url(self):
         return reverse(
             'layer_detail',
-            args=("%s:%s" % (self.store, self.alternate),)
+            args=(f"{self.store}:{self.alternate}",)
         )
 
     @property

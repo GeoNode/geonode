@@ -523,8 +523,8 @@ def geoserver_post_save_layers(
                     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
                         gs_catalog.save(gs_resource)
                 except Exception as e:
-                    msg = ('Error while trying to save resource named %s in GeoServer, '
-                           'try to use: "%s"' % (gs_resource, str(e)))
+                    msg = (f'Error while trying to save resource named {gs_resource} in GeoServer, '
+                           f'try to use: "{e}"')
                     e.args = (msg,)
                     logger.exception(e)
 

@@ -74,8 +74,8 @@ class Command(BaseCommand):
         if not target_address or len(target_address) == 0:
             raise CommandError("Target Address '--target-address' is mandatory")
 
-        print("This will change all Maps, Layers, \
-Styles and Links Base URLs from [%s] to [%s]." % (source_address, target_address))
+        print(f"This will change all Maps, Layers, \
+Styles and Links Base URLs from [{source_address}] to [{target_address}].")
         print("The operation may take some time, depending on the amount of Layer on GeoNode.")
         message = 'You want to proceed?'
 

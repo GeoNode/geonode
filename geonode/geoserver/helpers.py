@@ -430,10 +430,8 @@ def cascading_delete(layer_name=None, catalog=None):
             resource = cat.get_resource(name=layer_name)
     except EnvironmentError as e:
         if e.errno == errno.ECONNREFUSED:
-            msg = ('Could not connect to geoserver at "%s"'
-                   'to save information for layer "%s"' % (
-                       ogc_server_settings.LOCATION, layer_name)
-                   )
+            msg = (f'Could not connect to geoserver at "{ogc_server_settings.LOCATION}"'
+                   f'to save information for layer "{layer_name}"')
             logger.error(msg)
             return None
         else:
@@ -637,7 +635,7 @@ def gs_slurp(
     if skip_geonode_registered:
         try:
             resources = [k for k in resources
-                         if not '%s:%s' % (k.workspace.name, k.name) in layer_names]
+                         if f'{k.workspace.name}:{k.name}' not in layer_names]
         except Exception:
             if ignore_errors:
                 pass
@@ -676,8 +674,8 @@ def gs_slurp(
                     workspace=workspace.name,
                     store=the_store.name,
                     storeType=the_store.resource_type,
-                    alternate="%s:%s" % (workspace.name, resource.name),
-                    title=resource.title or 'No title provided',
+                    alternate=f"{workspace.name}:{resource.name}",
+                    title=resource.title or _('No title provided'),
                     abstract=resource.abstract or _('No abstract provided'),
                     owner=owner,
                     uuid=str(uuid.uuid4())
@@ -732,7 +730,7 @@ def gs_slurp(
                 status = 'updated'
                 output['stats']['updated'] += 1
 
-        msg = "[%s] Layer %s (%d/%d)" % (status, name, i + 1, number)
+        msg = f"[{status}] Layer {name} ({(i + 1)}/{number})"
         info = {'name': name, 'status': status}
         if status == 'failed':
             output['stats']['failed'] += 1
@@ -824,10 +822,7 @@ def gs_slurp(
                 from .signals import geoserver_pre_delete
                 pre_delete.connect(geoserver_pre_delete, sender=Layer)
 
-            msg = "[%s] Layer %s (%d/%d)" % (status,
-                                             layer.name,
-                                             i + 1,
-                                             number_deleted)
+            msg = f"[{status}] Layer {layer.name} ({(i + 1)}/{number_deleted})"
             info = {'name': layer.name, 'status': status}
             if status == "delete_failed":
                 exception_type, error, traceback = sys.exc_info()
@@ -953,7 +948,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     attribute_map = []
     server_url = ogc_server_settings.LOCATION if layer.storeType != "remoteStore" else layer.remote_service.service_url
     if layer.storeType == "remoteStore" and layer.remote_service.ptype == "gxp_arcrestsource":
-        dft_url = server_url + ("%s?f=json" % (layer.alternate or layer.typename))
+        dft_url = f"{server_url}{(layer.alternate or layer.typename)}?f=json"
         try:
             # The code below will fail if http_client cannot be imported
             req, body = http_client.get(dft_url, user=_user)

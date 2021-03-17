@@ -469,9 +469,8 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     ]
 
     # Add required parameters for GXP lazy-loading
-    attribution = "%s %s" % (layer.owner.first_name,
-                             layer.owner.last_name) if layer.owner.first_name or layer.owner.last_name else str(
-        layer.owner)
+    attribution = f"{layer.owner.first_name} {layer.owner.last_name}" if layer.owner.first_name or \
+        layer.owner.last_name else str(layer.owner)
     srs = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
     srs_srid = int(srs.split(":")[1]) if srs != "EPSG:900913" else 3857
     config["attribution"] = "<span class='gx-attribution-title'>%s</span>" % attribution
@@ -561,7 +560,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
                     e = dlxml.fromstring(wms_capabilities)
                     for atype in e.findall(
-                            "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
+                            f"./[wms:Name='{layer.alternate}']/wms:Dimension[@name='time']", namespaces):
                         dim_name = atype.get('name')
                         if dim_name:
                             dim_name = str(dim_name).lower()

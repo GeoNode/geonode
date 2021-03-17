@@ -409,8 +409,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         # Verify it accepts an admin user
         adminuser = get_user_model().objects.get(is_superuser=True)
         valid_user = get_valid_user(adminuser)
-        msg = ('Passed in a valid admin user "%s" but got "%s" in return'
-               % (adminuser, valid_user))
+        msg = (f'Passed in a valid admin user "{adminuser}" but got "{valid_user}" in return')
         assert valid_user.id == adminuser.id, msg
 
         # Verify it returns a valid user after receiving None
@@ -420,13 +419,12 @@ class LayersTest(GeoNodeBaseTestSupport):
 
         newuser = get_user_model().objects.create(username='arieluser')
         valid_user = get_valid_user(newuser)
-        msg = ('Passed in a valid user "%s" but got "%s" in return'
-               % (newuser, valid_user))
+        msg = (f'Passed in a valid user "{newuser}" but got "{valid_user}" in return')
         assert valid_user.id == newuser.id, msg
 
         valid_user = get_valid_user('arieluser')
-        msg = ('Passed in a valid user by username "%s" but got'
-               ' "%s" in return' % ('arieluser', valid_user))
+        msg = ('Passed in a valid user by username "arieluser" but got'
+               f' "{valid_user}" in return')
         assert valid_user.username == 'arieluser', msg
 
         nn = get_anonymous_user()

@@ -374,7 +374,7 @@ def upgradedb(options):
     elif version is None:
         print("Please specify your GeoNode version")
     else:
-        print(f"Upgrades from version {version} are not yet supported."))
+        print(f"Upgrades from version {version} are not yet supported.")
 
 
 @task
@@ -598,7 +598,7 @@ def start_messaging(options):
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
     foreground = '' if options.get('foreground', False) else '&'
-    sh('%s python -W ignore manage.py runmessaging %s' % (settings, foreground))
+    sh(f'{settings} python -W ignore manage.py runmessaging {foreground}')
 
 
 @task
@@ -755,10 +755,7 @@ def test(options):
        'geonode.monitoring' in INSTALLED_APPS and \
        'geonode.monitoring' not in _apps_to_test:
         _apps_to_test.append('geonode.monitoring')
-    sh("%s manage.py test geonode.tests.smoke %s.tests --noinput %s %s" % (options.get('prefix'),
-                                                                           '.tests '.join(_apps_to_test),
-                                                                           _keepdb,
-                                                                           _parallel))
+    sh(f"{options.get('prefix')} manage.py test geonode.tests.smoke {('.tests '.join(_apps_to_test))}.tests --noinput {_keepdb} {_parallel}")
 
 
 @task
@@ -846,12 +843,7 @@ def test_integration(options):
 
         live_server_option = ''
         info("Running the tests now...")
-        sh(('%s %s manage.py test %s'
-            ' -v 3 %s --noinput %s' % (settings,
-                                       prefix,
-                                       name,
-                                       _keepdb,
-                                       live_server_option)))
+        sh(f'{settings} {prefix} manage.py test {name} -v 3 {_keepdb} --noinput {live_server_option}')
 
     except BuildFailure as e:
         info('Tests failed! %s' % str(e))
@@ -952,7 +944,7 @@ def setup_data(options):
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
 
-    sh("%s python -W ignore manage.py importlayers %s -v2" % (settings, data_dir))
+    sh(f"{settings} python -W ignore manage.py importlayers {data_dir} -v2")
 
 
 @needs(['package'])
@@ -982,8 +974,8 @@ def deb(options):
 
     # Workaround for git-dch bug
     # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=594580
-    sh('rm -rf %s/.git' % (os.path.realpath('package')))
-    sh('ln -s %s %s' % (os.path.realpath('.git'), os.path.realpath('package')))
+    sh(f"rm -rf {os.path.realpath('package')}/.git")
+    sh(f"ln -s {os.path.realpath('.git')} {os.path.realpath('package')}")
 
     with pushd('package'):
 
@@ -1024,7 +1016,7 @@ def deb(options):
             sh('debuild -k%s -S' % key)
 
     if ppa is not None:
-        sh('dput ppa:%s geonode_%s_source.changes' % (ppa, simple_version))
+        sh(f'dput ppa:{ppa} geonode_{simple_version}_source.changes')
 
 
 @task
@@ -1074,11 +1066,11 @@ def versions():
         stage = 'thefinal'
 
     if stage == 'unstable':
-        tail = '%s%s' % (branch, timestamp)
+        tail = f'{branch}{timestamp}'
     else:
-        tail = '%s%s' % (stage, edition)
+        tail = f'{stage}{edition}'
 
-    simple_version = '%s.%s.%s+%s' % (major, minor, revision, tail)
+    simple_version = f'{major}.{minor}.{revision}+{tail}'
     return version, simple_version
 
 
@@ -1112,7 +1104,7 @@ def kill(arg1, arg2):
                 # Get pid
                 fields = line.strip().split()
 
-                info('Stopping %s (process number %s)' % (arg1, int(fields[1])))
+                info(f'Stopping {arg1} (process number {int(fields[1])})')
                 if os.name == 'nt':
                     kill = 'taskkill /F /PID "%s"' % int(fields[1])
                 else:
@@ -1123,9 +1115,8 @@ def kill(arg1, arg2):
         time.sleep(1)
 
     if running:
-        raise Exception('Could not stop %s: '
-                        'Running processes are\n%s'
-                        % (arg1, '\n'.join([str(_l).strip() for _l in lines])))
+        raise Exception(f"Could not stop {arg1}: "
+                        f"Running processes are\n{('\n'.join([str(_l).strip() for _l in lines]))}")
 
 
 def waitfor(url, timeout=300):

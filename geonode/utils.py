@@ -211,7 +211,7 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
         value = request.COOKIES.get(name)
         if name == 'csrftoken':
             csrftoken = value
-        cook = "%s=%s" % (name, value)
+        cook = f"{name}={value}"
         cookies = cook if not cookies else (cookies + '; ' + cook)
 
     csrftoken = get_token(request) if not csrftoken else csrftoken
@@ -219,7 +219,7 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
     if csrftoken:
         headers['X-Requested-With'] = "XMLHttpRequest"
         headers['X-CSRFToken'] = csrftoken
-        cook = "%s=%s" % ('csrftoken', csrftoken)
+        cook = f"csrftoken={csrftoken}"
         cookies = cook if not cookies else (cookies + '; ' + cook)
 
     if cookies:
@@ -328,11 +328,11 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
             float(x1), float(y0),
             float(x0), float(y0))
         if include_srid:
-            wkt = 'SRID=%s;%s' % (srid, wkt)
+            wkt = f'SRID={srid};{wkt}'
     else:
         wkt = 'POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))'
         if include_srid:
-            wkt = 'SRID=4326;%s' % wkt
+            wkt = f'SRID=4326;{wkt}'
     return wkt
 
 
@@ -1777,8 +1777,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 )
 
         site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-        html_link_url = '%s%s' % (
-            site_url, instance.get_absolute_url())
+        html_link_url = f'{site_url}{instance.get_absolute_url()}'
 
         if (Link.objects.filter(resource=instance.resourcebase_ptr,
                                 url=html_link_url,

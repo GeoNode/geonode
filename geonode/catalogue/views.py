@@ -62,8 +62,8 @@ def csw_global_dispatch(request, layer_filter=None):
     if access_token and not access_token.is_expired():
         env.update({'access_token': access_token.token})
         if 'access_token' not in query_string:
-            absolute_uri = ('%s&access_token=%s' % (absolute_uri, access_token.token))
-            query_string = ('%s&access_token=%s' % (query_string, access_token.token))
+            absolute_uri = f'{absolute_uri}&access_token={access_token.token}'
+            query_string = f'{query_string}&access_token={access_token.token}'
 
     env.update({'local.app_root': os.path.dirname(__file__),
                 'REQUEST_URI': absolute_uri,
@@ -187,7 +187,7 @@ def csw_global_dispatch(request, layer_filter=None):
                                 url.text += "?"
                             else:
                                 url.text += "&"
-                            url.text += ("access_token=%s" % (access_token.token))
+                            url.text += f"access_token={access_token.token}"
                             url.set('updated', 'yes')
                 except Exception:
                     pass

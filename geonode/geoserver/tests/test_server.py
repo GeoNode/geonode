@@ -1085,9 +1085,9 @@ class UtilsTests(GeoNodeBaseTestSupport):
         wms_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wms')
         identifier = urlencode({'layers': instance.alternate})
         for _link in wms_links:
-            logger.debug('%s --> %s' % (wms_url, _link[3]))
+            logger.debug(f'{wms_url} --> {_link[3]}')
             self.assertTrue(wms_url in _link[3])
-            logger.debug('%s --> %s' % (identifier, _link[3]))
+            logger.debug(f'{identifier} --> {_link[3]}')
             self.assertTrue(identifier in _link[3])
 
         # WFS Links
@@ -1100,9 +1100,9 @@ class UtilsTests(GeoNodeBaseTestSupport):
         wfs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wfs')
         identifier = urlencode({'typename': instance.alternate})
         for _link in wfs_links:
-            logger.debug('%s --> %s' % (wfs_url, _link[3]))
+            logger.debug(f'{wfs_url} --> {_link[3]}')
             self.assertTrue(wfs_url in _link[3])
-            logger.debug('%s --> %s' % (identifier, _link[3]))
+            logger.debug(f'{identifier} --> {_link[3]}')
             self.assertTrue(identifier in _link[3])
 
         # WCS Links
@@ -1115,9 +1115,9 @@ class UtilsTests(GeoNodeBaseTestSupport):
         wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wcs')
         identifier = urlencode({'coverageid': instance.alternate.replace(':', '__', 1)})
         for _link in wcs_links:
-            logger.debug('%s --> %s' % (wcs_url, _link[3]))
+            logger.debug(f'{wcs_url} --> {_link[3]}')
             self.assertTrue(wcs_url in _link[3])
-            logger.debug('%s --> %s' % (identifier, _link[3]))
+            logger.debug(f'{identifier} --> {_link[3]}')
             self.assertTrue(identifier in _link[3])
 
         # Thumbnails Generation Default

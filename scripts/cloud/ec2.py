@@ -227,7 +227,7 @@ def launch():
     config.set('ec2', 'INSTANCE', instance_id)
     writeconfig(config)
 
-    print(("ssh -i %s ubuntu@%s" % (key_path, dns)))
+    print(f"ssh -i {key_path} ubuntu@{dns}")
     print("Terminate the instance via the web interface.")
 
     time.sleep(20)

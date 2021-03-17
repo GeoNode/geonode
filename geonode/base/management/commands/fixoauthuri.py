@@ -59,10 +59,7 @@ class Command(BaseCommand):
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import ogc_server_settings
-            redirect_uris = '%s\n%s\n%s' % (
-                ogc_server_settings.LOCATION,
-                ogc_server_settings.public_url,
-                f"{target_address}/geoserver/")
+            redirect_uris = f'{ogc_server_settings.LOCATION}\n{ogc_server_settings.public_url}\n{target_address}/geoserver/'
             if Application.objects.filter(name='GeoServer').exists():
                 Application.objects.filter(name='GeoServer').update(redirect_uris=redirect_uris)
                 if force_exec:
@@ -86,4 +83,4 @@ class Command(BaseCommand):
                     client_secret=client_secret,
                     user=get_user_model().objects.filter(is_superuser=True)[0]
                 )
-        return '%s,%s' % (client_id, client_secret)
+        return f'{client_id},{client_secret}'

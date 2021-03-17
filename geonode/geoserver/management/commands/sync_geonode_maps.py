@@ -45,7 +45,7 @@ def sync_geonode_maps(ignore_errors,
     for map in maps:
         try:
             count += 1
-            print("Syncing map %s/%s: %s" % (count, maps_count, map.title))
+            print(f"Syncing map {count}/{maps_count}: {map.title}")
             if updatethumbnails:
                 print("Regenerating thumbnails...")
                 create_gs_thumbnail(map, overwrite=True, check_bbox=False)

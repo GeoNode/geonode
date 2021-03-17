@@ -1388,7 +1388,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 _link_type = 'WWW:DOWNLOAD-1.0-http--download'
                 if self.storeType == 'remoteStore' and link.extension in ('html'):
                     _link_type = 'WWW:DOWNLOAD-%s' % self.remote_service.type
-                description = '%s (%s Format)' % (self.title, link.name)
+                description = f'{self.title} ({link.name} Format)'
                 links.append(
                     (self.title,
                      description,

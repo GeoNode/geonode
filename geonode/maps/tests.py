@@ -345,16 +345,16 @@ community."
 
     def test_new_map_with_layer(self):
         layer = Layer.objects.all().first()
-        self.client.get(reverse('new_map') + '?layer=' + layer.alternate)
+        self.client.get(f"{reverse('new_map')}?layer={layer.alternate}")
 
     def test_new_map_with_empty_bbox_layer(self):
         layer = Layer.objects.all().first()
-        self.client.get(reverse('new_map') + '?layer=' + layer.alternate)
+        self.client.get(f"{reverse('new_map')}?layer={layer.alternate}")
 
     def test_add_layer_to_existing_map(self):
         layer = Layer.objects.all().first()
         map_obj = Map.objects.all().first()
-        self.client.get(reverse('add_layer') + '?layer_name=%s&map_id=%s' % (layer.alternate, map_obj.id))
+        self.client.get(f"{reverse('add_layer')}?layer_name={layer.alternate}&map_id={map_obj.id}")
 
         map_obj = Map.objects.get(id=map_obj.id)
         for map_layer in map_obj.layers:

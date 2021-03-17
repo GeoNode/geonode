@@ -197,7 +197,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
             type_name=type_name, username=GEOSERVER_USER, password=GEOSERVER_PASSWD)
         ws, layer_name = type_name.split(':')
         self.assertTrue(layer_name in wms.contents,
-                        '%s is not in %s' % (layer_name, wms.contents))
+                        f'{layer_name} is not in {wms.contents}')
 
     def check_layer_geoserver_rest(self, layer_name):
         """ Check that a layer shows up in GeoServer rest api after
