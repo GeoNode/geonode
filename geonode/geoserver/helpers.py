@@ -39,7 +39,7 @@ from itertools import cycle
 from collections import namedtuple, defaultdict
 from os.path import basename, splitext, isfile
 from threading import local
-from urllib.parse import urlparse, urlencode, urlsplit, urljoin
+from urllib.parse import urlparse, urlencode, urlsplit, urljoin, unquote
 from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
 from dialogos.models import Comment
@@ -74,6 +74,7 @@ from geonode.security.views import _perms_info_json
 from geonode.security.utils import set_geowebcache_invalidate_cache
 import xml.etree.ElementTree as ET
 from django.utils.module_loading import import_string
+
 
 
 logger = logging.getLogger(__name__)
@@ -1205,7 +1206,9 @@ def save_style(gs_style, layer):
         style, created = Style.objects.get_or_create(name=style_name)
         if not style.workspace and gs_style.workspace:
             style.workspace = layer.workspace
-        style.sld_title = gs_style.sld_title or sld_name
+
+        title = gs_style.sld_title if gs_style.style_format != 'css' else sld_name
+        style.sld_title = title
         style.sld_body = gs_style.sld_body
         style.sld_url = gs_style.body_href
         style.save()
