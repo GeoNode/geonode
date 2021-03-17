@@ -39,7 +39,7 @@ from itertools import cycle
 from collections import namedtuple, defaultdict
 from os.path import basename, splitext, isfile
 from threading import local
-from urllib.parse import urlparse, urlencode, urlsplit, urljoin, unquote
+from urllib.parse import urlparse, urlencode, urlsplit, urljoin
 from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
 from dialogos.models import Comment
