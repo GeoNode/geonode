@@ -266,14 +266,15 @@ def get_sld_for(gs_catalog, layer):
     while not name and _tries < _max_retries:
         try:
             gs_layer = gs_catalog.get_layer(layer.name)
-            if gs_layer.default_style:
-                gs_style = gs_layer.default_style.sld_body
-                set_layer_style(layer,
-                                layer.alternate,
-                                gs_style)
-            name = gs_layer.default_style.name
-            if name:
-                break
+            if gs_layer:
+                if gs_layer.default_style:
+                    gs_style = gs_layer.default_style.sld_body
+                    set_layer_style(layer,
+                                    layer.alternate,
+                                    gs_style)
+                name = gs_layer.default_style.name
+                if name:
+                    break
         except Exception as e:
             logger.exception(e)
             name = None

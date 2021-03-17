@@ -1004,6 +1004,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             permissions=permissions,
             execute_signals=True)
 
+        layer = Layer.objects.get(name=layer[0])
+
         check_layer(layer)
 
         geofence_rules_count = get_geofence_rules_count()
