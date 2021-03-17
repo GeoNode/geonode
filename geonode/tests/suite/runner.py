@@ -166,7 +166,7 @@ class ParallelTestSuiteRunner(object):
             worker_count = worker_max
 
         worker_args = (tests_queue, results_queue, stop_event)
-        logger.debug("Number of workers %s " % worker_count)
+        logger.debug(f"Number of workers {worker_count} ")
         workers = self._create_worker_pool(pool_size=worker_count,
                                            target_func=self._run_tests_worker,
                                            worker_args=worker_args)

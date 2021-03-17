@@ -128,8 +128,7 @@ def layer_style(request, layername):
     old_default = layer.default_style
     if old_default.name == style_name:
         return HttpResponse(
-            "Default style for %s remains %s" %
-            (layer.name, style_name), status=200)
+            f"Default style for {layer.name} remains {style_name}", status=200)
 
     # This code assumes without checking
     # that the new default style name is included
@@ -151,8 +150,7 @@ def layer_style(request, layername):
         pass
 
     return HttpResponse(
-        "Default style for %s changed to %s" %
-        (layer.name, style_name), status=200)
+        f"Default style for {layer.name} changed to {style_name}", status=200)
 
 
 @login_required
@@ -433,7 +431,7 @@ def style_change_check(request, path):
                 except Exception:
                     authorized = (request.method == 'POST')  # The user is probably trying to create a new style
                     logger.warn(
-                        'There is not a style with such a name: %s.' % style_name)
+                        f'There is not a style with such a name: {style_name}.')
     return authorized
 
 
@@ -526,9 +524,9 @@ def geoserver_proxy(request,
     url = urlsplit(raw_url)
     affected_layers = None
 
-    if '%s/layers' % ws in path:
+    if f'{ws}/layers' in path:
         downstream_path = 'rest/layers'
-    elif '%s/styles' % ws in path:
+    elif f'{ws}/styles' in path:
         downstream_path = 'rest/styles'
 
     if request.method in ("POST", "PUT", "DELETE"):
@@ -542,8 +540,7 @@ def geoserver_proxy(request,
                     status=401)
             elif downstream_path == 'rest/styles':
                 logger.debug(
-                    "[geoserver_proxy] Updating Style ---> url %s" %
-                    url.geturl())
+                    f"[geoserver_proxy] Updating Style ---> url {url.geturl()}")
                 _style_name, _style_ext = os.path.splitext(os.path.basename(urlsplit(url.geturl()).path))
                 if _style_name == 'styles.json' and request.method == "PUT":
                     _parsed_get_args = dict(parse_qsl(urlsplit(url.geturl()).query))
@@ -556,14 +553,13 @@ def geoserver_proxy(request,
                     affected_layers = style_update(request, raw_url)
             elif downstream_path == 'rest/layers':
                 logger.debug(
-                    "[geoserver_proxy] Updating Layer ---> url %s" %
-                    url.geturl())
+                    f"[geoserver_proxy] Updating Layer ---> url {url.geturl()}")
                 try:
                     _layer_name = os.path.splitext(os.path.basename(request.path))[0]
                     _layer = Layer.objects.get(name__icontains=_layer_name)
                     affected_layers = [_layer]
                 except Exception:
-                    logger.warn("Could not find any Layer %s on DB" % os.path.basename(request.path))
+                    logger.warn(f"Could not find any Layer {os.path.basename(request.path)} on DB")
 
     kwargs = {'affected_layers': affected_layers}
     raw_url = unquote(raw_url)
@@ -734,7 +730,7 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
     if not layer.remote_service:
         wms_url = f'{ogc_server_settings.LOCATION}{workspace}/{layername}/wms?service=wms&version={version}&request=GetCapabilities'  # noqa
         if access_token:
-            wms_url += ('&access_token=%s' % access_token)
+            wms_url += f'&access_token={access_token}'
     else:
         wms_url = f'{layer.remote_service.service_url}?service=wms&version={version}&request=GetCapabilities'
 
@@ -747,7 +743,7 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
             # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
             wms_url = f'{ogc_server_settings.public_url}{workspace}/ows?service=wms&version={version}&request=GetCapabilities&layers={layer}'  # noqa
             if access_token:
-                wms_url += ('&access_token=%s' % access_token)
+                wms_url += f'&access_token={access_token}'
             req, content = http_client.get(wms_url, user=_user)
             getcap = ensure_string(content)
 

@@ -83,7 +83,7 @@ def check_geoserver_is_up():
     """Verifies all geoserver is running,
        this is needed to be able to upload.
     """
-    url = "%s" % ogc_server_settings.LOCATION
+    url = f"{ogc_server_settings.LOCATION}"
     req, content = http_client.get(url, user=_user)
     msg = ('Cannot connect to the GeoServer at %s\nPlease make sure you '
            'have started it.' % url)
@@ -459,7 +459,7 @@ def cascading_delete(layer_name=None, catalog=None):
         for s in styles:
             if s is not None and s.name not in _default_style_names:
                 try:
-                    logger.debug("Trying to delete Style [%s]" % s.name)
+                    logger.debug(f"Trying to delete Style [{s.name}]")
                     cat.delete(s, purge='true')
                 except Exception as e:
                     # Trying to delete a shared style will fail
@@ -517,7 +517,7 @@ def delete_from_postgis(layer_name, store):
     try:
         conn = psycopg2.connect(dbname=db_name, user=user, host=host, port=port, password=password)
         cur = conn.cursor()
-        cur.execute("SELECT DropGeometryTable ('%s')" % layer_name)
+        cur.execute(f"SELECT DropGeometryTable ('{layer_name}')")
         conn.commit()
     except Exception as e:
         logger.error(
@@ -1357,7 +1357,7 @@ def create_geoserver_db_featurestore(
         ds_exists = True
     except FailedRequestError:
         logger.debug(
-            'Creating target datastore %s' % dsname)
+            f'Creating target datastore {dsname}')
         ds = cat.create_datastore(dsname, workspace=workspace)
         db = ogc_server_settings.datastore_db
         db_engine = 'postgis' if \
@@ -1581,7 +1581,7 @@ class OGC_Servers_Handler(object):
         try:
             server = self.servers[alias]
         except KeyError:
-            raise ServerDoesNotExist("The server %s doesn't exist" % alias)
+            raise ServerDoesNotExist(f"The server {alias} doesn't exist")
 
         if 'PRINTNG_ENABLED' in server:
             raise ImproperlyConfigured("The PRINTNG_ENABLED setting has been removed, use 'PRINT_NG_ENABLED' instead.")
@@ -1593,7 +1593,7 @@ class OGC_Servers_Handler(object):
         try:
             server = self.servers[alias]
         except KeyError:
-            raise ServerDoesNotExist("The server %s doesn't exist" % alias)
+            raise ServerDoesNotExist(f"The server {alias} doesn't exist")
 
         server.setdefault('BACKEND', 'geonode.geoserver')
         server.setdefault('LOCATION', 'http://localhost:8080/geoserver/')
@@ -1661,7 +1661,7 @@ def fetch_gs_resource(instance, values, tries):
                            abstract=gs_resource.abstract or '',
                            owner=instance.owner))
     else:
-        msg = "There isn't a geoserver resource for this layer: %s" % instance.name
+        msg = f"There isn't a geoserver resource for this layer: {instance.name}"
         logger.exception(msg)
         if tries >= _max_tries:
             # raise GeoNodeException(msg)
@@ -1780,7 +1780,7 @@ def _invalidate_geowebcache_layer(layer_name, url=None):
         <truncateLayer><layerName>{layer_name}</layerName></truncateLayer>
         """.strip()
     if not url:
-        url = '%sgwc/rest/masstruncate' % ogc_server_settings.LOCATION
+        url = f'{ogc_server_settings.LOCATION}gwc/rest/masstruncate'
     req, content = http_client.post(
         url,
         data=body,
@@ -1835,7 +1835,7 @@ def style_update(request, url):
                     elm_user_style_title = elm_user_style_name.text
                 layer_name = elm_namedlayer_name.text
                 style_name = elm_user_style_name.text
-                sld_body = '<?xml version="1.0" encoding="UTF-8"?>%s' % request.body
+                sld_body = f'<?xml version="1.0" encoding="UTF-8"?>{request.body}'
             except Exception:
                 logger.warn("Could not recognize Style and Layer name from Request!")
         # add style in GN and associate it to layer
@@ -1901,7 +1901,7 @@ def set_time_info(layer, attribute, end_attribute, presentation,
     '''
     layer = gs_catalog.get_layer(layer.name)
     if layer is None:
-        raise ValueError('no such layer: %s' % layer.name)
+        raise ValueError(f'no such layer: {layer.name}')
     resource = layer.resource if layer else None
     if not resource:
         resources = gs_catalog.get_resources(stores=[layer.name])
@@ -1934,7 +1934,7 @@ def get_time_info(layer):
     '''
     layer = gs_catalog.get_layer(layer.name)
     if layer is None:
-        raise ValueError('no such layer: %s' % layer.name)
+        raise ValueError(f'no such layer: {layer.name}')
     resource = layer.resource if layer else None
     if not resource:
         resources = gs_catalog.get_resources(stores=[layer.name])
@@ -2076,8 +2076,8 @@ def set_time_dimension(cat, name, workspace, time_presentation, time_presentatio
             resource = resources[0]
 
     if not resource:
-        logger.exception("No resource could be found on GeoServer with name %s" % name)
-        raise Exception("No resource could be found on GeoServer with name %s" % name)
+        logger.exception(f"No resource could be found on GeoServer with name {name}")
+        raise Exception(f"No resource could be found on GeoServer with name {name}")
 
     resource.metadata = {'time': timeInfo}
     cat.save(resource)

@@ -141,7 +141,7 @@ _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
 def log_snippet(log_file):
     if not log_file or not os.path.isfile(log_file):
-        return "No log file at %s" % log_file
+        return f"No log file at {log_file}"
 
     with open(log_file, "r") as f:
         f.seek(0, 2)  # Seek @ EOF
@@ -472,7 +472,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         layer.owner.last_name else str(layer.owner)
     srs = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
     srs_srid = int(srs.split(":")[1]) if srs != "EPSG:900913" else 3857
-    config["attribution"] = "<span class='gx-attribution-title'>%s</span>" % attribution
+    config["attribution"] = f"<span class='gx-attribution-title'>{attribution}</span>"
     config["format"] = getattr(
         settings, 'DEFAULT_LAYER_FORMAT', 'image/png')
     config["title"] = layer.title
@@ -633,7 +633,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
                 "remote": True,
                 "url": service.service_url,
                 "name": service.name,
-                "title": "[R] %s" % service.title}
+                "title": f"[R] {service.title}"}
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
@@ -925,7 +925,7 @@ def layer_metadata(
                 "remote": True,
                 "url": service.service_url,
                 "name": service.name,
-                "title": "[R] %s" % service.title}
+                "title": f"[R] {service.title}"}
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,

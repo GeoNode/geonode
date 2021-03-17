@@ -119,7 +119,7 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
             GsLayer)
     except EnvironmentError as e:
         if e.errno == errno.ECONNREFUSED:
-            msg = 'Could not connect to catalog to verify if layer %s was local' % instance.name
+            msg = f'Could not connect to catalog to verify if layer {instance.name} was local'
             logger.warn(msg)
         else:
             raise e

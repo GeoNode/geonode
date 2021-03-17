@@ -38,12 +38,12 @@ class Partner(models.Model):
 
     @property
     def logo_class(self):
-        _logo_class = slugify("logo_%s" % self.name)
+        _logo_class = slugify(f"logo_{self.name}")
         return str(_logo_class)
 
     @property
     def partner_link(self):
-        _href = self.href if self.href.startswith('http') else 'http://%s' % self.href
+        _href = self.href if self.href.startswith('http') else f'http://{self.href}'
         return str(_href)
 
     def __str__(self):

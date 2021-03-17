@@ -48,7 +48,7 @@ def prefix_xsl_line(req, id):
             logger.debug(record.xml)
     except Exception:
         logger.debug(traceback.format_exc())
-        msg = 'Could not connect to catalogue to save information for layer "%s"' % str(resource)
+        msg = f'Could not connect to catalogue to save information for layer "{str(resource)}"'
         return HttpResponse(
             msg
         )

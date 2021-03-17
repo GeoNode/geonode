@@ -301,7 +301,7 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
         file_names = [fn for fn in os.listdir(source_folder)
                       if any(fn.endswith(ext) for ext in included_extenstions)]
         for table in file_names:
-            logger.info("Restoring GeoServer Vectorial Data : {}:{} ".format(db_name, os.path.splitext(table)[0]))
+            logger.info(f"Restoring GeoServer Vectorial Data : {db_name}:{os.path.splitext(table)[0]} ")
             pg_rstcmd = 'PGPASSWORD="' + db_passwd + '" ' + config.pg_restore_cmd + ' -h ' + db_host + \
                         ' -p ' + str(db_port) + ' -U ' + db_user + ' --role=' + db_user + \
                         ' -F c -t "' + os.path.splitext(table)[0] + '" ' +\
@@ -329,7 +329,7 @@ def remove_existing_tables(db_name, db_user, db_port, db_host, db_passwd):
         curs.execute(table_list)
         pg_all_tables = [table[0] for table in curs.fetchall()]
         for pg_table in pg_all_tables:
-            logger.info("Dropping existing GeoServer Vectorial Data : {}:{} ".format(db_name, pg_table))
+            logger.info(f"Dropping existing GeoServer Vectorial Data : {db_name}:{pg_table} ")
             curs.execute(f"DROP TABLE {pg_table} CASCADE")
 
         conn.commit()

@@ -94,7 +94,7 @@ def get_wms(version='1.1.1', type_name=None, username=None, password=None):
     # requests. Either we should roll our own or fix owslib
     if type_name:
         url = GEOSERVER_URL + \
-            '%swms?request=getcapabilities' % type_name.replace(':', '/')
+            f"{type_name.replace(':', '/')}wms?request=getcapabilities"
     else:
         url = GEOSERVER_URL + \
             'wms?request=getcapabilities'
@@ -217,7 +217,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(isinstance(data, dict))
         # make that the upload returns a success True key
-        self.assertTrue(data['success'], 'expected success but got %s' % data)
+        self.assertTrue(data['success'], f'expected success but got {data}')
         self.assertTrue('redirect_to' in data)
 
     def complete_upload(self, file_path, resp, data, is_raster=False):
@@ -256,8 +256,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
                 if data['success']:
                     self.assertTrue(
                         data['success'],
-                        'expected success but got %s' %
-                        data)
+                        f'expected success but got {data}')
                     self.assertTrue('redirect_to' in data)
                     current_step = data['redirect_to']
                     # self.wait_for_progress(data.get('progress'))
@@ -283,8 +282,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
             # @todo - make the check match completely (endswith at least)
             # currently working around potential 'orphaned' db tables
             self.assertTrue(
-                layer_name in url, 'expected %s in URL, got %s' %
-                (layer_name, url))
+                layer_name in url, f'expected {layer_name} in URL, got {url}')
             return url
         except Exception:
             return current_step
@@ -300,10 +298,9 @@ class UploaderBase(GeoNodeBaseTestSupport):
             # the import session is COMPLETE
             if upload and not upload.complete:
                 logger.warning(
-                    "Upload not complete for Layer %s" %
-                    original_name)
+                    f"Upload not complete for Layer {original_name}")
         except Upload.DoesNotExist:
-            self.fail('expected to find Upload object for %s' % original_name)
+            self.fail(f'expected to find Upload object for {original_name}')
 
     def check_layer_complete(self, layer_page, original_name):
         '''check everything to verify the layer is complete'''
@@ -329,8 +326,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
                 pass
         if not caps_found:
             logger.warning(
-                "Could not recognize Layer %s on GeoServer WMS Capa" %
-                original_name)
+                f"Could not recognize Layer {original_name} on GeoServer WMS Capa")
         self.check_upload_model(layer_name)
 
     def check_invalid_projection(self, layer_name, resp, data):
@@ -441,12 +437,12 @@ class TestUpload(UploaderBase):
         fname = os.path.join(
             GOOD_DATA,
             'vector',
-            '%s.shp' % layer_name)
+            f'{layer_name}.shp')
         self.upload_file(fname,
                          self.complete_upload,
-                         check_name='%s' % layer_name)
+                         check_name=f'{layer_name}')
 
-        test_layer = Layer.objects.filter(name__icontains='%s' % layer_name).last()
+        test_layer = Layer.objects.filter(name__icontains=f'{layer_name}').last()
         if test_layer:
             layer_attributes = test_layer.attributes
             self.assertIsNotNone(layer_attributes)
@@ -672,7 +668,7 @@ class TestUploadDBDataStore(UploaderBase):
 
         timedir = os.path.join(GOOD_DATA, 'time')
         layer_name = 'boxes_with_date'
-        shp = os.path.join(timedir, '%s.shp' % layer_name)
+        shp = os.path.join(timedir, f'{layer_name}.shp')
 
         # get to time step
         resp, data = self.client.upload_file(shp)
@@ -700,15 +696,13 @@ class TestUploadDBDataStore(UploaderBase):
 
                 self.assertTrue(
                     url.endswith(layer_name),
-                    'expected url to end with %s, but got %s' %
-                    (layer_name,
-                     url))
+                    f'expected url to end with {layer_name}, but got {url}')
                 self.assertEqual(resp.status_code, 200)
 
                 url = unquote(url)
                 self.check_layer_complete(url, layer_name)
                 wms = get_wms(
-                    type_name='geonode:%s' % layer_name, username=GEOSERVER_USER, password=GEOSERVER_PASSWD)
+                    type_name=f'geonode:{layer_name}', username=GEOSERVER_USER, password=GEOSERVER_PASSWD)
                 layer_info = list(wms.items())[0][1]
                 self.assertEqual(100, len(layer_info.timepositions))
             else:
@@ -720,7 +714,7 @@ class TestUploadDBDataStore(UploaderBase):
         cascading_delete(layer_name=layer_name, catalog=gs_catalog)
 
         def get_wms_timepositions():
-            alternate_name = 'geonode:%s' % layer_name
+            alternate_name = f'geonode:{layer_name}'
             if alternate_name in get_wms().contents:
                 metadata = get_wms().contents[alternate_name]
                 self.assertTrue(metadata is not None)
@@ -729,7 +723,7 @@ class TestUploadDBDataStore(UploaderBase):
                 return None
 
         thefile = os.path.join(
-            GOOD_DATA, 'time', '%s.shp' % layer_name
+            GOOD_DATA, 'time', f'{layer_name}.shp'
         )
         resp, data = self.client.upload_file(thefile)
 
@@ -762,15 +756,13 @@ class TestUploadDBDataStore(UploaderBase):
 
                 self.assertTrue(
                     url.endswith(layer_name),
-                    'expected url to end with %s, but got %s' %
-                    (layer_name,
-                     url))
+                    f'expected url to end with {layer_name}, but got {url}')
                 self.assertEqual(resp.status_code, 200)
 
                 url = unquote(url)
                 self.check_layer_complete(url, layer_name)
                 wms = get_wms(
-                    type_name='geonode:%s' % layer_name, username=GEOSERVER_USER, password=GEOSERVER_PASSWD)
+                    type_name=f'geonode:{layer_name}', username=GEOSERVER_USER, password=GEOSERVER_PASSWD)
                 layer_info = list(wms.items())[0][1]
                 self.assertEqual(100, len(layer_info.timepositions))
             else:

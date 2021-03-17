@@ -117,6 +117,6 @@ class Command(BaseCommand):
                         try:
                             os.remove(fname)
                         except OSError:
-                            logger.debug('Could not delete file %s' % fname)
+                            logger.debug(f'Could not delete file {fname}')
         except Exception as err:
             logger.error("Cannot process %s: %s", f, err, exc_info=err)

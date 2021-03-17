@@ -211,7 +211,7 @@ def save_step_view(req, session):
                                           form.cleaned_data["charset"],
                                           tempdir=tempdir)
 
-        _log('provided sld is %s' % sld)
+        _log(f'provided sld is {sld}')
         # upload_type = get_upload_type(base_file)
         upload_session = UploaderSession(
             tempdir=tempdir,
@@ -308,7 +308,7 @@ def srs_step_view(request, upload_session):
             {'status': 'error',
              'success': False,
              'id': upload_session.import_session.id,
-             'error_msg': "%s" % error,
+             'error_msg': f"{error}",
              }
         )
     else:
@@ -402,7 +402,7 @@ def csv_step_view(request, upload_session):
                 {'status': 'error',
                  'success': False,
                  'id': upload_session.import_session.id,
-                 'error_msg': "%s" % error,
+                 'error_msg': f"{error}",
                  }
             )
         else:

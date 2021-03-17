@@ -55,8 +55,8 @@ def csw_global_dispatch(request, layer_filter=None):
         if access_token and access_token.is_expired():
             access_token = None
 
-    absolute_uri = ('%s' % request.build_absolute_uri())
-    query_string = ('%s' % request.META['QUERY_STRING'])
+    absolute_uri = f'{request.build_absolute_uri()}'
+    query_string = f"{request.META['QUERY_STRING']}"
     env = request.META.copy()
 
     if access_token and not access_token.is_expired():

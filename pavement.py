@@ -81,7 +81,7 @@ from geonode.settings import (
 try:
     from geonode.settings import TEST_RUNNER_KEEPDB, TEST_RUNNER_PARALLEL
     _keepdb = '--keepdb' if TEST_RUNNER_KEEPDB else ''
-    _parallel = ('--parallel=%s' % TEST_RUNNER_PARALLEL) if TEST_RUNNER_PARALLEL else ''
+    _parallel = f'--parallel={TEST_RUNNER_PARALLEL}' if TEST_RUNNER_PARALLEL else ''
 except Exception:
     _keepdb = ''
     _parallel = ''
@@ -234,7 +234,7 @@ def _robust_rmtree(path, logger=None, max_retries=5):
             return
         except OSError:
             if logger:
-                info('Unable to remove path: %s' % path)
+                info(f'Unable to remove path: {path}')
                 info('Retrying after %d seconds' % i)
             time.sleep(i)
 
@@ -387,9 +387,9 @@ def updategeoip(options):
     """
     settings = options.get('settings', '')
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
-        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
+        settings = f'DJANGO_SETTINGS_MODULE={settings}'
 
-    sh("%s python -W ignore manage.py updategeoip -o" % settings)
+    sh(f"{settings} python -W ignore manage.py updategeoip -o")
 
 
 @task
@@ -402,17 +402,17 @@ def sync(options):
     """
     settings = options.get('settings', '')
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
-        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
+        settings = f'DJANGO_SETTINGS_MODULE={settings}'
 
-    sh("%s python -W ignore manage.py makemigrations --noinput" % settings)
-    sh("%s python -W ignore manage.py migrate --noinput" % settings)
-    sh("%s python -W ignore manage.py loaddata sample_admin.json" % settings)
-    sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/default_oauth_apps.json" % settings)
-    sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/initial_data.json" % settings)
+    sh(f"{settings} python -W ignore manage.py makemigrations --noinput")
+    sh(f"{settings} python -W ignore manage.py migrate --noinput")
+    sh(f"{settings} python -W ignore manage.py loaddata sample_admin.json")
+    sh(f"{settings} python -W ignore manage.py loaddata geonode/base/fixtures/default_oauth_apps.json")
+    sh(f"{settings} python -W ignore manage.py loaddata geonode/base/fixtures/initial_data.json")
     if 'django_celery_beat' in INSTALLED_APPS:
-        sh("%s python -W ignore manage.py loaddata geonode/base/fixtures/django_celery_beat.json" % settings)
-    sh("%s python -W ignore manage.py set_all_layers_alternate" % settings)
-    sh("%s python -W ignore manage.py collectstatic --noinput" % settings)
+        sh(f"{settings} python -W ignore manage.py loaddata geonode/base/fixtures/django_celery_beat.json")
+    sh(f"{settings} python -W ignore manage.py set_all_layers_alternate")
+    sh(f"{settings} python -W ignore manage.py collectstatic --noinput")
 
 
 @task
@@ -425,11 +425,11 @@ def package(options):
 
     version = geonode.get_version()
     # Use GeoNode's version for the package name.
-    pkgname = 'GeoNode-%s-all' % version
+    pkgname = f'GeoNode-{version}-all'
 
     # Create the output directory.
     out_pkg = path(pkgname)
-    out_pkg_tar = path("%s.tar.gz" % pkgname)
+    out_pkg_tar = path(f"{pkgname}.tar.gz")
 
     # Create a distribution in zip format for the geonode python package.
     dist_dir = path('dist')
@@ -445,7 +445,7 @@ def package(options):
                 old_package.remove()
 
         if out_pkg_tar.exists():
-            info('There is already a package for version %s' % version)
+            info(f'There is already a package for version {version}')
             return
 
         # Clean anything that is in the oupout package tree.
@@ -459,7 +459,7 @@ def package(options):
         justcopy(support_folder, out_pkg / 'support')
         justcopy(install_file, out_pkg)
 
-        geonode_dist = path('..') / 'dist' / 'GeoNode-%s.zip' % version
+        geonode_dist = path('..') / 'dist' / f'GeoNode-{version}.zip'
         justcopy(geonode_dist, out_pkg)
 
         # Create a tar file with all files in the output package folder.
@@ -468,14 +468,14 @@ def package(options):
             tar.add(file)
 
         # Add the README with the license and important links to documentation.
-        tar.add('README', arcname=('%s/README.rst' % out_pkg))
+        tar.add('README', arcname=f'{out_pkg}/README.rst')
         tar.close()
 
         # Remove all the files in the temporary output package directory.
         out_pkg.rmtree()
 
     # Report the info about the new package.
-    info("%s created" % out_pkg_tar.abspath())
+    info(f"{out_pkg_tar.abspath()} created")
 
 
 @task
@@ -566,7 +566,7 @@ def start_django(options):
     """
     settings = options.get('settings', '')
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
-        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
+        settings = f'DJANGO_SETTINGS_MODULE={settings}'
     bind = options.get('bind', '0.0.0.0:8000')
     port = bind.split(":")[1]
     foreground = '' if options.get('foreground', False) else '&'
@@ -596,7 +596,7 @@ def start_messaging(options):
     """
     settings = options.get('settings', '')
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
-        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
+        settings = f'DJANGO_SETTINGS_MODULE={settings}'
     foreground = '' if options.get('foreground', False) else '&'
     sh(f'{settings} python -W ignore manage.py runmessaging {foreground}')
 
@@ -646,7 +646,7 @@ def start_geoserver(options):
     except socket.error as e:
         socket_free = False
         if e.errno == 98:
-            info('Port %s is already in use' % jetty_port)
+            info(f'Port {jetty_port} is already in use')
         else:
             info(
                 'Something else raised the socket.error exception while checking port %s' %
@@ -720,11 +720,11 @@ def start_geoserver(options):
                 ' > %(loggernullpath)s &' % locals()
             ))
 
-        info('Starting GeoServer on %s' % url)
+        info(f'Starting GeoServer on {url}')
 
     # wait for GeoServer to start
     started = waitfor(url)
-    info('The logs are available at %s' % log_file)
+    info(f'The logs are available at {log_file}')
 
     if not started:
         # If applications did not start in time we will give the user a chance
@@ -847,7 +847,7 @@ def test_integration(options):
         sh(f'{settings} {prefix} manage.py test {name} -v 3 {_keepdb} --noinput {live_server_option}')
 
     except BuildFailure as e:
-        info('Tests failed! %s' % str(e))
+        info(f'Tests failed! {str(e)}')
     else:
         success = True
     finally:
@@ -975,7 +975,7 @@ def setup_data(options):
 
     settings = options.get('settings', '')
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
-        settings = 'DJANGO_SETTINGS_MODULE=%s' % settings
+        settings = f'DJANGO_SETTINGS_MODULE={settings}'
 
     sh(f"{settings} python -W ignore manage.py importlayers {data_dir} -v2")
 
@@ -999,7 +999,7 @@ def deb(options):
 
     version, simple_version = versions()
 
-    info('Creating package for GeoNode version %s' % version)
+    info(f'Creating package for GeoNode version {version}')
 
     # Get rid of any uncommitted changes to debian/changelog
     info('Getting rid of any uncommitted changes in debian/changelog')
@@ -1043,10 +1043,10 @@ def deb(options):
             sh('debuild -S')
         elif key is not None and ppa is None:
             print("A signed installable package")
-            sh('debuild -k%s -A' % key)
+            sh(f'debuild -k{key} -A')
         elif key is not None and ppa is not None:
             print("A signed, source package")
-            sh('debuild -k%s -S' % key)
+            sh(f'debuild -k{key} -S')
 
     if ppa is not None:
         sh(f'dput ppa:{ppa} geonode_{simple_version}_source.changes')
@@ -1075,11 +1075,11 @@ def publish(options):
     version, simple_version = versions()
     if ppa:
         sh('git add package/debian/changelog')
-        sh('git commit -m "Updated changelog for version %s"' % version)
-        sh('git tag -f %s' % version)
-        sh('git push origin %s' % version)
-        sh('git tag -f debian/%s' % simple_version)
-        sh('git push origin debian/%s' % simple_version)
+        sh(f'git commit -m "Updated changelog for version {version}"')
+        sh(f'git tag -f {version}')
+        sh(f'git push origin {version}')
+        sh(f'git tag -f debian/{simple_version}')
+        sh(f'git push origin debian/{simple_version}')
         # sh('git push origin master')
         sh('python setup.py sdist upload -r pypi')
 
@@ -1120,10 +1120,10 @@ def kill(arg1, arg2):
 
     while running and time.time() - t0 < time_out:
         if os.name == 'nt':
-            p = Popen('tasklist | find "%s"' % arg1, shell=True,
+            p = Popen(f'tasklist | find "{arg1}"', shell=True,
                       stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=False)
         else:
-            p = Popen('ps aux | grep %s' % arg1, shell=True,
+            p = Popen(f'ps aux | grep {arg1}', shell=True,
                       stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
 
         lines = p.stdout.readlines()
@@ -1131,7 +1131,7 @@ def kill(arg1, arg2):
         running = False
         for line in lines:
             # this kills all java.exe and python including self in windows
-            if ('%s' % arg2 in str(line)) or (os.name == 'nt' and '%s' % arg1 in str(line)):
+            if (f'{arg2}' in str(line)) or (os.name == 'nt' and f'{arg1}' in str(line)):
                 running = True
 
                 # Get pid
@@ -1139,9 +1139,9 @@ def kill(arg1, arg2):
 
                 info(f'Stopping {arg1} (process number {int(fields[1])})')
                 if os.name == 'nt':
-                    kill = 'taskkill /F /PID "%s"' % int(fields[1])
+                    kill = f'taskkill /F /PID "{int(fields[1])}"'
                 else:
-                    kill = 'kill -9 %s 2> /dev/null' % int(fields[1])
+                    kill = f'kill -9 {int(fields[1])} 2> /dev/null'
                 os.system(kill)
 
         # Give it a little more time

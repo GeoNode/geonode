@@ -329,7 +329,7 @@ AWS_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', '')
 AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', '')
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
-AWS_S3_BUCKET_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_BUCKET_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
 AWS_QUERYSTRING_AUTH = False
 if not DEBUG and S3_STATIC_ENABLED:
@@ -846,16 +846,16 @@ LOCKDOWN_GEONODE = ast.literal_eval(os.getenv('LOCKDOWN_GEONODE', 'False'))
 # - authorized exempt urls needed for oauth when GeoNode is set to lockdown
 AUTH_EXEMPT_URLS = (
     r'^%s/?$' % FORCE_SCRIPT_NAME,
-    '%s/o/*' % FORCE_SCRIPT_NAME,
-    '%s/gs/*' % FORCE_SCRIPT_NAME,
-    '%s/account/*' % FORCE_SCRIPT_NAME,
-    '%s/static/*' % FORCE_SCRIPT_NAME,
-    '%s/api/o/*' % FORCE_SCRIPT_NAME,
-    '%s/api/roles' % FORCE_SCRIPT_NAME,
-    '%s/api/adminRole' % FORCE_SCRIPT_NAME,
-    '%s/api/users' % FORCE_SCRIPT_NAME,
-    '%s/api/layers' % FORCE_SCRIPT_NAME,
-    '%s/monitoring' % FORCE_SCRIPT_NAME,
+    f'{FORCE_SCRIPT_NAME}/o/*',
+    f'{FORCE_SCRIPT_NAME}/gs/*',
+    f'{FORCE_SCRIPT_NAME}/account/*',
+    f'{FORCE_SCRIPT_NAME}/static/*',
+    f'{FORCE_SCRIPT_NAME}/api/o/*',
+    f'{FORCE_SCRIPT_NAME}/api/roles',
+    f'{FORCE_SCRIPT_NAME}/api/adminRole',
+    f'{FORCE_SCRIPT_NAME}/api/users',
+    f'{FORCE_SCRIPT_NAME}/api/layers',
+    f'{FORCE_SCRIPT_NAME}/monitoring',
     r'^/i18n/setlang/?$',
 )
 
@@ -1419,7 +1419,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             pycsw_config = PYCSW["CONFIGURATION"]
             if pycsw_config:
                 pycsw_catalogue = {
-                    ("%s" % pycsw_config['metadata:main']['identification_title']): {
+                    f"{pycsw_config['metadata:main']['identification_title']}": {
                         "url": CATALOGUE['default']['URL'],
                         "type": "csw",
                         "title": pycsw_config['metadata:main']['identification_title'],
@@ -1476,7 +1476,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "name": "s2cloudless:s2cloudless",
             "url": "https://maps.geo-solutions.it/geoserver/wms",
             "group": "background",
-            "thumbURL": "%sstatic/mapstorestyle/img/s2cloudless-s2cloudless.png" % SITEURL,
+            "thumbURL": f"{SITEURL}static/mapstorestyle/img/s2cloudless-s2cloudless.png",
             "visibility": False
        }, {
             "source": "ol",
@@ -1496,9 +1496,9 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "title": "MapBox streets-v11",
             "provider": "MapBoxStyle",
             "name": "MapBox streets-v11",
-            "accessToken": "%s" % MAPBOX_ACCESS_TOKEN,
+            "accessToken": f"{MAPBOX_ACCESS_TOKEN}",
             "source": "streets-v11",
-            "thumbURL": "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/6/33/23?access_token=%s" % MAPBOX_ACCESS_TOKEN,  # noqa
+            "thumbURL": f"https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/6/33/23?access_token={MAPBOX_ACCESS_TOKEN}",  # noqa
             "group": "background",
             "visibility": True
         }
@@ -1630,7 +1630,7 @@ else:
         'CELERY_RESULT_BACKEND_PATH', os.path.join(PROJECT_ROOT, '.celery_results'))
     if not os.path.exists(CELERY_RESULT_BACKEND_PATH):
         os.makedirs(CELERY_RESULT_BACKEND_PATH)
-    CELERY_RESULT_BACKEND = 'file:///%s' % CELERY_RESULT_BACKEND_PATH
+    CELERY_RESULT_BACKEND = f'file:///{CELERY_RESULT_BACKEND_PATH}'
 
 CELERY_BROKER_URL = os.environ.get('BROKER_URL', _BROKER_URL)
 CELERY_RESULT_PERSISTENT = ast.literal_eval(os.environ.get('CELERY_RESULT_PERSISTENT', 'False'))
@@ -1955,7 +1955,7 @@ if USE_GEOSERVER:
     PUBLIC_GEOSERVER = {
         "source": {
             "title": "GeoServer - Public Layers",
-            "attribution": "&copy; %s" % SITEURL,
+            "attribution": f"&copy; {SITEURL}",
             "ptype": LOCAL_GXP_PTYPE,
             "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "ows",
             "restUrl": "/gs/rest"
@@ -1964,7 +1964,7 @@ if USE_GEOSERVER:
     LOCAL_GEOSERVER = {
         "source": {
             "title": "GeoServer - Private Layers",
-            "attribution": "&copy; %s" % SITEURL,
+            "attribution": f"&copy; {SITEURL}",
             "ptype": LOCAL_GXP_PTYPE,
             "url": "/gs/ows",
             "restUrl": "/gs/rest"

@@ -154,8 +154,7 @@ def get_files(filename):
 
     # Make sure the file exists.
     if not os.path.exists(filename):
-        msg = ('Could not open %s. Make sure you are using a '
-               'valid file' % filename)
+        msg = f'Could not open {filename}. Make sure you are using a valid file'
         logger.debug(msg)
         raise GeoNodeException(msg)
 
@@ -252,7 +251,7 @@ def layer_type(filename):
     elif extension.lower() in cov_exts:
         return 'raster'
     else:
-        msg = ('Saving of extension [%s] is not implemented' % extension)
+        msg = f'Saving of extension [{extension}] is not implemented'
         raise GeoNodeException(msg)
 
 
@@ -402,7 +401,7 @@ def get_bbox(filename):
     except Exception:
         pass
 
-    return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, "EPSG:%s" % str(srid)]
+    return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, f"EPSG:{str(srid)}"]
 
 
 @transaction.atomic
@@ -505,7 +504,7 @@ def file_upload(filename,
                                 that is consistent with the file you are trying to replace."))
                 except Exception as e:
                     raise Exception(
-                        _("Some error occurred while trying to access the uploaded schema: %s" % str(e)))
+                        _(f"Some error occurred while trying to access the uploaded schema: {str(e)}"))
 
     # Set a default title that looks nice ...
     if title is None:
@@ -550,8 +549,7 @@ def file_upload(filename,
         with open(fn, 'rb') as f:
             upload_session.layerfile_set.create(
                 name=type_name, file=File(
-                    f, name='%s.%s' %
-                    (assigned_name or valid_name, type_name)))
+                    f, name=f'{assigned_name or valid_name}.{type_name}'))
             # save the system assigned name for the remaining files
             if not assigned_name:
                 the_file = upload_session.layerfile_set.all()[0].file.name

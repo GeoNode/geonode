@@ -126,8 +126,7 @@ class ContactRole(models.Model):
                 # only allow this if we are updating the same contact
                 if self.contact != contacts.get():
                     raise ValidationError(
-                        'There can be only one %s for a given resource' %
-                        self.role)
+                        f'There can be only one {self.role} for a given resource')
         if self.contact is None:
             # verify that any unbound contact is only associated to one
             # resource
@@ -419,10 +418,10 @@ class TaggedContentItem(ItemBase):
     def tags_for(cls, model, instance=None):
         if instance is not None:
             return cls.tag_model().objects.filter(**{
-                '%s__content_object' % cls.tag_relname(): instance
+                f'{cls.tag_relname()}__content_object': instance
             })
         return cls.tag_model().objects.filter(**{
-            '%s__content_object__isnull' % cls.tag_relname(): False
+            f'{cls.tag_relname()}__content_object__isnull': False
         }).distinct()
 
 
@@ -962,7 +961,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if self.pk is None and self.title:
                 # Resource Created
 
-                notice_type_label = '%s_created' % self.class_name.lower()
+                notice_type_label = f'{self.class_name.lower()}_created'
                 recipients = get_notification_recipients(notice_type_label, resource=self)
                 send_notification(recipients, notice_type_label, {'resource': self})
             elif self.pk:
@@ -976,7 +975,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     self.set_workflow_perms(approved=True)
 
                     # Send "approved" notification
-                    notice_type_label = '%s_approved' % self.class_name.lower()
+                    notice_type_label = f'{self.class_name.lower()}_approved'
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
                     _notification_sent = True
@@ -988,14 +987,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     self.set_workflow_perms(published=True)
 
                     # Send "published" notification
-                    notice_type_label = '%s_published' % self.class_name.lower()
+                    notice_type_label = f'{self.class_name.lower()}_published'
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
                     _notification_sent = True
 
                 # Updated Notifications Here
                 if not _notification_sent:
-                    notice_type_label = '%s_updated' % self.class_name.lower()
+                    notice_type_label = f'{self.class_name.lower()}_updated'
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
 
@@ -1008,7 +1007,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         Send a notification when a layer, map or document is deleted
         """
         if hasattr(self, 'class_name') and notify:
-            notice_type_label = '%s_deleted' % self.class_name.lower()
+            notice_type_label = f'{self.class_name.lower()}_deleted'
             recipients = get_notification_recipients(notice_type_label, resource=self)
             send_notification(recipients, notice_type_label, {'resource': self})
 
@@ -1082,11 +1081,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if self.bbox_polygon:
             bbox = BBOXHelper.from_xy(self.ll_bbox[:4])
 
-            return "{x0:.7f},{y0:.7f},{x1:.7f},{y1:.7f}".format(
-                x0=bbox.xmin,
-                y0=bbox.ymin,
-                x1=bbox.xmax,
-                y1=bbox.ymax)
+            return f"{bbox.xmin:.7f},{bbox.ymin:.7f},{bbox.xmax:.7f},{bbox.ymax:.7f}"
         bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
@@ -1097,11 +1092,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if self.bbox_polygon:
             bbox = BBOXHelper.from_xy(self.bbox[:4])
 
-            return "{x0:.7f},{y0:.7f},{x1:.7f},{y1:.7f}".format(
-                x0=bbox.xmin,
-                y0=bbox.ymin,
-                x1=bbox.xmax,
-                y1=bbox.ymax)
+            return f"{bbox.xmin:.7f},{bbox.ymin:.7f},{bbox.xmax:.7f},{bbox.ymax:.7f}"
         bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
@@ -1342,12 +1333,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         if not bbox or len(bbox) < 4:
             raise ValidationError(
-                'Bounding Box cannot be empty %s for a given resource' %
-                self.name)
+                f'Bounding Box cannot be empty {self.name} for a given resource')
         if not srid:
             raise ValidationError(
-                'Projection cannot be empty %s for a given resource' %
-                self.name)
+                f'Projection cannot be empty {self.name} for a given resource')
 
         self.srid = srid
         self.set_bbox_polygon(
@@ -1387,7 +1376,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             else:
                 _link_type = 'WWW:DOWNLOAD-1.0-http--download'
                 if self.storeType == 'remoteStore' and link.extension in ('html'):
-                    _link_type = 'WWW:DOWNLOAD-%s' % self.remote_service.type
+                    _link_type = f'WWW:DOWNLOAD-{self.remote_service.type}'
                 description = f'{self.title} ({link.name} Format)'
                 links.append(
                     (self.title,

@@ -127,7 +127,7 @@ class FilesTests(GeoNodeBaseTestSupport):
 
             basedir = os.path.dirname(spatial_file.base_file)
             for f in file_names:
-                path = os.path.join(basedir, '_%s' % f)
+                path = os.path.join(basedir, f'_{f}')
                 self.assertTrue(os.path.exists(path))
 
         # Test the scan_file function with a raster spatial file takes SLD also.

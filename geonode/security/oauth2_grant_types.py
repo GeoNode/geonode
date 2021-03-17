@@ -361,7 +361,7 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
                 duplicate_params = request.duplicate_params
                 if param in duplicate_params:
                     raise errors.InvalidRequestFatalError(
-                        description='Duplicate %s parameter.' % param,
+                        description=f'Duplicate {param} parameter.',
                         request=request)
             except ValueError:
                 log.exception(
@@ -470,7 +470,7 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
 
         for param in ('client_id', 'grant_type', 'redirect_uri'):
             if param in request.duplicate_params:
-                raise errors.InvalidRequestError(description='Duplicate %s parameter.' % param,
+                raise errors.InvalidRequestError(description=f'Duplicate {param} parameter.',
                                                  request=request)
 
         if self.request_validator.client_authentication_required(request):
@@ -565,7 +565,7 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
     def validate_code_challenge(self, challenge, challenge_method, verifier):
         if challenge_method in self._code_challenge_methods:
             return self._code_challenge_methods[challenge_method](verifier, challenge)
-        raise NotImplementedError('Unknown challenge_method %s' % challenge_method)
+        raise NotImplementedError(f'Unknown challenge_method {challenge_method}')
 
 
 class OpenIDAuthorizationCodeGrant(OpenIDGrantTypeBase):

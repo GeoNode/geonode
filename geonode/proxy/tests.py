@@ -43,7 +43,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import create_models
 
 TEST_DOMAIN = '.github.com'
-TEST_URL = 'https://help%s/' % TEST_DOMAIN
+TEST_URL = f'https://help{TEST_DOMAIN}/'
 
 
 class ProxyTest(GeoNodeBaseTestSupport):
@@ -59,8 +59,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
     @override_settings(DEBUG=True, PROXY_ALLOWED_HOSTS=())
     def test_validate_host_disabled_in_debug(self):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is True, all hosts pass the proxy."""
-        response = self.client.get('%s?url=%s' %
-                                   (self.proxy_url, self.url))
+        response = self.client.get(f'{self.proxy_url}?url={self.url}')
         # 404 - NOT FOUND
         if response.status_code != 404:
             self.assertTrue(response.status_code in (200, 301))
@@ -68,8 +67,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
     @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=())
     def test_validate_host_disabled_not_in_debug(self):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 403."""
-        response = self.client.get('%s?url=%s' %
-                                   (self.proxy_url, self.url))
+        response = self.client.get(f'{self.proxy_url}?url={self.url}')
         # 404 - NOT FOUND
         if response.status_code != 404:
             self.assertEqual(response.status_code, 403)
@@ -78,8 +76,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
     @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=(TEST_DOMAIN,))
     def test_proxy_allowed_host(self):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 403."""
-        response = self.client.get('%s?url=%s' %
-                                   (self.proxy_url, self.url))
+        response = self.client.get(f'{self.proxy_url}?url={self.url}')
         # 404 - NOT FOUND
         if response.status_code != 404:
             self.assertTrue(response.status_code in (200, 301))

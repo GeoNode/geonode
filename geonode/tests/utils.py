@@ -172,7 +172,7 @@ class Client(DjangoTestClient):
             message = ''
             if hasattr(ex, 'message'):
                 if debug:
-                    logger.error('error in request to %s' % path)
+                    logger.error(f'error in request to {path}')
                     logger.error(ex.message)
                 message = ex.message[ex.message.index(':')+2:]
             else:

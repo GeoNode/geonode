@@ -114,7 +114,7 @@ class FileType(object):
         return aux_files, slds, xmls
 
     def __repr__(self):
-        return "<FileType %s>" % self.code
+        return f"<FileType {self.code}>"
 
 
 TYPE_UNKNOWN = FileType("unknown", None, None)

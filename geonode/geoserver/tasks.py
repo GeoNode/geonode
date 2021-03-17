@@ -478,7 +478,7 @@ def geoserver_post_save_layers(
                 metadata_links.append((link.mime, link.name, link.url))
 
             if gs_resource:
-                logger.debug("Found geoserver resource for this layer: %s" % instance.name)
+                logger.debug(f"Found geoserver resource for this layer: {instance.name}")
                 gs_resource.metadata_links = metadata_links
                 instance.gs_resource = gs_resource
 

@@ -891,7 +891,7 @@ def add_layers_to_map_config(
         attribution = f"{layer.owner.first_name} {layer.owner.last_name}" if layer.owner.first_name or layer.owner.last_name else str(layer.owner)  # noqa
         srs = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
         srs_srid = int(srs.split(":")[1]) if srs != "EPSG:900913" else 3857
-        config["attribution"] = "<span class='gx-attribution-title'>%s</span>" % attribution
+        config["attribution"] = f"<span class='gx-attribution-title'>{attribution}</span>"
         config["format"] = getattr(
             settings, 'DEFAULT_LAYER_FORMAT', 'image/png')
         config["title"] = layer.title
@@ -1007,7 +1007,7 @@ def add_layers_to_map_config(
                     "remote": True,
                     "url": service.service_url,
                     "name": service.name,
-                    "title": "[R] %s" % service.title}
+                    "title": f"[R] {service.title}"}
             maplayer = MapLayer(map=map_obj,
                                 name=layer.alternate,
                                 ows_url=layer.ows_url,

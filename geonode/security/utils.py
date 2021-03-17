@@ -247,7 +247,7 @@ def purge_geofence_all():
                                                 headers=headers,
                                                 auth=HTTPBasicAuth(user, passwd))
                             if (r.status_code < 200 or r.status_code > 201):
-                                msg = "Could not DELETE GeoServer Rule id[%s]" % rule['id']
+                                msg = f"Could not DELETE GeoServer Rule id[{rule['id']}]"
                                 e = Exception(msg)
                                 logger.debug(f"Response [{r.status_code}] : {r.text}")
                                 raise e
@@ -461,14 +461,14 @@ def set_geowebcache_invalidate_cache(layer_alternate, cat=None):
                 http://localhost:8080/geoserver/gwc/rest/masstruncate
                 """
                 headers = {'Content-type': 'text/xml'}
-                payload = "<truncateLayer><layerName>%s</layerName></truncateLayer>" % layer_alternate
+                payload = f"<truncateLayer><layerName>{layer_alternate}</layerName></truncateLayer>"
                 r = requests.post(
                     url + 'gwc/rest/masstruncate',
                     headers=headers,
                     data=payload,
                     auth=HTTPBasicAuth(user, passwd))
                 if (r.status_code < 200 or r.status_code > 201):
-                    logger.debug("Could not Truncate GWC Cache for Layer '%s'." % layer_alternate)
+                    logger.debug(f"Could not Truncate GWC Cache for Layer '{layer_alternate}'.")
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)

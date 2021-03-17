@@ -177,7 +177,7 @@ def update(ctx):
 {siteurl} >> {override_fn}".format(**envs), pty=True)
     ctx.run("echo export LOGOUT_REDIRECT_URL=\
 {siteurl} >> {override_fn}".format(**envs), pty=True)
-    ctx.run("source %s" % override_env, pty=True)
+    ctx.run(f"source {override_env}", pty=True)
     print("****************************finalize env**********************************")
     ctx.run("env", pty=True)
 
@@ -417,11 +417,11 @@ def _geoserver_info_provision(url):
 </userPassword>"""
 
     response = cat.http_request(cat.service_url + '/security/self/password', method="PUT", data=data, headers=headers)
-    print("Response Code: %s" % response.status_code)
+    print(f"Response Code: {response.status_code}")
     if response.status_code == 200:
         print("GeoServer admin password updated SUCCESSFULLY!")
     else:
-        logger.warning("WARNING: GeoServer admin password *NOT* updated: code [%s]" % response.status_code)
+        logger.warning(f"WARNING: GeoServer admin password *NOT* updated: code [{response.status_code}]")
 
 
 def _prepare_oauth_fixture():

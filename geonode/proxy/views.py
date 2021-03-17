@@ -167,8 +167,7 @@ def proxy(request, url=None, response_callback=None,
 
     if request.method == "GET" and access_token and 'access_token' not in _url:
         query_separator = '&' if '?' in _url else '?'
-        _url = ('%s%saccess_token=%s' %
-                (_url, query_separator, access_token))
+        _url = f'{_url}{query_separator}access_token={access_token}'
 
     _data = request.body.decode('utf-8')
 
@@ -397,7 +396,7 @@ def download(request, resourceid, sender=Layer):
                 content=open(target_file, mode='rb'),
                 status=200,
                 content_type="application/zip")
-            response['Content-Disposition'] = 'attachment; filename="%s"' % target_file_name
+            response['Content-Disposition'] = f'attachment; filename="{target_file_name}"'
             return response
         except NotImplementedError:
             traceback.print_exc()

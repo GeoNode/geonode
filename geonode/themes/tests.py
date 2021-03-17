@@ -73,11 +73,11 @@ class ThemeLibraryTest(GeoNodeBaseTestSupport):
         response = self.client.get('/')
         self.assertNotContains(response, "welcome_2")
         self.assertContains(response, "welcome_3")
-        self.assertContains(response, "background: %s;" % theme_3.search_bg_color)
-        self.assertContains(response, "color: %s;" % theme_3.search_title_color)
-        self.assertContains(response, "color: %s;" % theme_3.search_link_color)
-        self.assertContains(response, "color: %s;" % theme_3.footer_text_color)
-        self.assertContains(response, "color: %s;" % theme_3.footer_href_color)
+        self.assertContains(response, f"background: {theme_3.search_bg_color};")
+        self.assertContains(response, f"color: {theme_3.search_title_color};")
+        self.assertContains(response, f"color: {theme_3.search_link_color};")
+        self.assertContains(response, f"color: {theme_3.footer_text_color};")
+        self.assertContains(response, f"color: {theme_3.footer_href_color};")
 
         # We should have only one active theme
         active_themes = GeoNodeThemeCustomization.objects.filter(is_enabled=True)

@@ -377,11 +377,11 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
-            _log("1. geofence_rules_count: %s " % geofence_rules_count)
+            _log(f"1. geofence_rules_count: {geofence_rules_count} ")
             self.assertEqual(geofence_rules_count, 14)
             set_geofence_all(test_perm_layer)
             geofence_rules_count = get_geofence_rules_count()
-            _log("2. geofence_rules_count: %s " % geofence_rules_count)
+            _log(f"2. geofence_rules_count: {geofence_rules_count} ")
             self.assertEqual(geofence_rules_count, 15)
 
         self.client.logout()
@@ -392,17 +392,17 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertEqual(len(self.deserialize(resp)['objects']), 7)
 
             perms = get_users_with_perms(test_perm_layer)
-            _log("3. perms: %s " % perms)
+            _log(f"3. perms: {perms} ")
             sync_geofence_with_guardian(test_perm_layer, perms, user='bobby')
 
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
-            _log("4. geofence_rules_count: %s " % geofence_rules_count)
+            _log(f"4. geofence_rules_count: {geofence_rules_count} ")
             self.assertEqual(geofence_rules_count, 15)
 
             # Validate maximum priority
             geofence_rules_highest_priority = get_highest_priority()
-            _log("5. geofence_rules_highest_priority: %s " % geofence_rules_highest_priority)
+            _log(f"5. geofence_rules_highest_priority: {geofence_rules_highest_priority} ")
             self.assertTrue(geofence_rules_highest_priority > 0)
 
             url = settings.OGC_SERVER['default']['LOCATION']
@@ -411,7 +411,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
             import requests
             from requests.auth import HTTPBasicAuth
-            r = requests.get(url + 'gwc/rest/seed/%s.json' % test_perm_layer.alternate,
+            r = requests.get(url + f'gwc/rest/seed/{test_perm_layer.alternate}.json',
                              auth=HTTPBasicAuth(user, passwd))
             self.assertEqual(r.status_code, 400)
 
@@ -501,20 +501,20 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         perm_spec = {'users': {'AnonymousUser': []}, 'groups': []}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        _log("1. geofence_rules_count: %s " % geofence_rules_count)
+        _log(f"1. geofence_rules_count: {geofence_rules_count} ")
         self.assertEqual(geofence_rules_count, 5)
 
         perm_spec = {
             "users": {"admin": ["view_resourcebase"]}, "groups": []}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        _log("2. geofence_rules_count: %s " % geofence_rules_count)
+        _log(f"2. geofence_rules_count: {geofence_rules_count} ")
         self.assertEqual(geofence_rules_count, 7)
 
         perm_spec = {'users': {"admin": ['change_layer_data']}, 'groups': []}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        _log("3. geofence_rules_count: %s " % geofence_rules_count)
+        _log(f"3. geofence_rules_count: {geofence_rules_count} ")
         self.assertEqual(geofence_rules_count, 7)
 
         # FULL WFS-T
@@ -600,13 +600,13 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         perm_spec = {'users': {}, 'groups': {'bar': ['view_resourcebase']}}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        _log("4. geofence_rules_count: %s " % geofence_rules_count)
+        _log(f"4. geofence_rules_count: {geofence_rules_count} ")
         self.assertEqual(geofence_rules_count, 7)
 
         perm_spec = {'users': {}, 'groups': {'bar': ['change_resourcebase']}}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        _log("5. geofence_rules_count: %s " % geofence_rules_count)
+        _log(f"5. geofence_rules_count: {geofence_rules_count} ")
         self.assertEqual(geofence_rules_count, 5)
 
         # Testing GeoLimits
@@ -1009,7 +1009,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         check_layer(layer)
 
         geofence_rules_count = get_geofence_rules_count()
-        _log("0. geofence_rules_count: %s " % geofence_rules_count)
+        _log(f"0. geofence_rules_count: {geofence_rules_count} ")
         self.assertTrue(geofence_rules_count >= 2)
 
         # Set the layer private for not authenticated users
@@ -1337,7 +1337,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
-            _log("1. geofence_rules_count: %s " % geofence_rules_count)
+            _log(f"1. geofence_rules_count: {geofence_rules_count} ")
             self.assertEqual(geofence_rules_count, 14)
 
         self.assertTrue(self.client.login(username='bobby', password='bob'))
@@ -1407,12 +1407,12 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             perms = get_users_with_perms(layer)
-            _log("2. perms: %s " % perms)
+            _log(f"2. perms: {perms} ")
             sync_geofence_with_guardian(layer, perms, user=bob, group=anonymous_group)
 
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
-            _log("3. geofence_rules_count: %s " % geofence_rules_count)
+            _log(f"3. geofence_rules_count: {geofence_rules_count} ")
             self.assertEqual(geofence_rules_count, 14)
 
         # 5. change_resourcebase_permissions
@@ -1582,7 +1582,7 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             if sld:
                 if isinstance(sld, bytes):
                     sld = sld.decode().strip('\n')
-                _log("sld. ------------ %s " % sld)
+                _log(f"sld. ------------ {sld} ")
                 set_layer_style(test_perm_layer, test_perm_layer.alternate, sld)
             create_gs_thumbnail(test_perm_layer, overwrite=True)
             self.assertIsNotNone(test_perm_layer.get_thumbnail_url())

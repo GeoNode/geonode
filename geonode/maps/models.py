@@ -135,12 +135,12 @@ class Map(ResourceBase, GXPMapBase):
             f"Abstract: {self.abstract}\n"
         )
         if self.license:
-            readme += "License: %s" % self.license
+            readme += f"License: {self.license}"
             if self.license.url:
-                readme += " (%s)" % self.license.url
+                readme += f" ({self.license.url})"
             readme += "\n"
         if self.constraints_other:
-            readme += "Additional constraints: %s\n" % self.constraints_other
+            readme += f"Additional constraints: {self.constraints_other}\n"
 
         def layer_json(lyr):
             return {
@@ -293,8 +293,7 @@ class Map(ResourceBase, GXPMapBase):
                     layer = Layer.objects.get(alternate=layer)
                 except ObjectDoesNotExist:
                     raise Exception(
-                        'Could not find layer with name %s' %
-                        layer)
+                        f'Could not find layer with name {layer}')
 
             if not user.has_perm(
                     'base.view_resourcebase',
@@ -576,7 +575,7 @@ class MapLayer(models.Model, GXPLayerBase):
         except Exception:
             link = None
         if link is None:
-            link = "<span>%s</span> " % self.name
+            link = f"<span>{self.name}</span> "
         return link
 
     class Meta:

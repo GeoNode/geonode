@@ -149,7 +149,7 @@ class UploaderSession(object):
             if hasattr(self, k):
                 setattr(self, k, v)
             else:
-                raise Exception('not handled : %s' % k)
+                raise Exception(f'not handled : {k}')
 
     def cleanup(self):
         """do what we should at the given state of the upload"""
@@ -507,7 +507,7 @@ def time_step(upload_session, time_attribute, time_transform_type,
         )
 
     if transforms:
-        logger.debug('Setting transforms %s' % transforms)
+        logger.debug(f'Setting transforms {transforms}')
         upload_session.import_session.tasks[0].add_transforms(transforms)
         try:
             upload_session.time_transforms = transforms
@@ -577,7 +577,7 @@ def final_step(upload_session, user, charset="UTF-8"):
 
     if import_session.state == 'INCOMPLETE':
         if task.state != 'ERROR':
-            raise Exception('unknown item state: %s' % task.state)
+            raise Exception(f'unknown item state: {task.state}')
     elif import_session.state == 'READY':
         import_session.commit()
     elif import_session.state == 'PENDING':
@@ -587,8 +587,7 @@ def final_step(upload_session, user, charset="UTF-8"):
 
     if not publishing:
         raise LayerNotReady(
-            "Expected to find layer named '%s' in geoserver" %
-            name)
+            f"Expected to find layer named '{name}' in geoserver")
 
     _log('Creating Django record for [%s]', name)
     target = task.target
@@ -748,8 +747,7 @@ def final_step(upload_session, user, charset="UTF-8"):
                 name=file_name,
                 base=base,
                 file=File(
-                    f, name='%s%s' %
-                    (assigned_name or saved_layer.name, type_name)))
+                    f, name=f'{assigned_name or saved_layer.name}{type_name}'))
             # save the system assigned name for the remaining files
             if not assigned_name:
                 the_file = geonode_upload_session.layerfile_set.all()[0].file.name

@@ -166,7 +166,7 @@ def geoserver_upload(
     assert gs_resource.name == name
 
     # Step 6. Make sure our data always has a valid projection
-    logger.debug('>>> Step 6. Making sure [%s] has a valid projection' % name)
+    logger.debug(f'>>> Step 6. Making sure [{name}] has a valid projection')
     _native_bbox = None
     try:
         _native_bbox = gs_resource.native_bbox
@@ -189,7 +189,7 @@ def geoserver_upload(
             logger.debug('BBOX coordinates forced to [-180, -90, 180, 90] for layer [%s].', name)
 
     # Step 7. Create the style and assign it to the created resource
-    logger.debug('>>> Step 7. Creating style for [%s]' % name)
+    logger.debug(f'>>> Step 7. Creating style for [{name}]')
     cat.save(gs_resource)
     publishing = cat.get_layer(name) or gs_resource
     sld = None

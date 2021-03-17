@@ -62,7 +62,7 @@ def assign_random_category(resource):
 def assign_keywords(resource):
     """ Assigns up to 5 keywords to resource """
     for i in range(0, randint(0, 5)):
-        resource.keywords.add('keyword_%s' % randint(0, n_keywords))
+        resource.keywords.add(f'keyword_{randint(0, n_keywords)}')
 
 
 def assign_regions(resource):
@@ -77,7 +77,7 @@ def create_users(n_users):
     """ Create n users in the database """
     for i in range(0, n_users):
         user = get_user_model()
-        user.username = 'user_%s' % i
+        user.username = f'user_{i}'
         user.save()
 
 
@@ -91,11 +91,11 @@ def set_resource(resource):
 
 def create_document(number):
     """ Creates a new document """
-    file_list = glob.glob('%s*.jpg' % doc_path)
+    file_list = glob.glob(f'{doc_path}*.jpg')
     random_index = randint(0, len(file_list) - 1)
     file_uri = file_list[random_index]
-    title = 'Document N. %s' % number
-    img_filename = '%s_img.jpg' % number
+    title = f'Document N. {number}'
+    img_filename = f'{number}_img.jpg'
     doc = Document(title=title, owner=get_random_user())
     doc.save()
     with open(file_uri, 'r') as f:
@@ -109,7 +109,7 @@ def create_document(number):
 
 def create_layer(number):
     """ Creates a new layer """
-    file_list = glob.glob('%s*.shp' % shp_path)
+    file_list = glob.glob(f'{shp_path}*.shp')
     random_index = randint(0, len(file_list) - 1)
     file_uri = file_list[random_index]
     layer = file_upload(file_uri)

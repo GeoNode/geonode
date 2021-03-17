@@ -153,7 +153,7 @@ class GeoServerMonitorClient(object):
 
         username = settings.OGC_SERVER['default']['USER']
         password = settings.OGC_SERVER['default']['PASSWORD']
-        log.debug(" href: %s " % href)
+        log.debug(f" href: {href} ")
         r = requests.get(
             href,
             auth=HTTPBasicAuth(username, password),

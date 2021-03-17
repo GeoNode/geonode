@@ -158,7 +158,7 @@ class NormalUserTest(GeoNodeLiveTestSupport):
 
             import requests
             from requests.auth import HTTPBasicAuth
-            r = requests.get(url + 'gwc/rest/seed/%s.json' % saved_layer.alternate,
+            r = requests.get(url + f'gwc/rest/seed/{saved_layer.alternate}.json',
                              auth=HTTPBasicAuth(user, passwd))
             self.assertEqual(r.status_code, 200)
             o = json.loads(r.text)
@@ -170,14 +170,14 @@ class NormalUserTest(GeoNodeLiveTestSupport):
                 set_styles,
                 create_gs_thumbnail)
 
-            _log("0. ------------ %s " % saved_layer)
+            _log(f"0. ------------ {saved_layer} ")
             self.assertIsNotNone(saved_layer)
             workspace, name = saved_layer.alternate.split(':')
             self.assertIsNotNone(workspace)
             self.assertIsNotNone(name)
             ws = gs_catalog.get_workspace(workspace)
             self.assertIsNotNone(ws)
-            _log("1. ------------ %s " % saved_layer.store)
+            _log(f"1. ------------ {saved_layer.store} ")
             self.assertIsNotNone(saved_layer.store)
 
             # Save layer attributes
@@ -189,7 +189,7 @@ class NormalUserTest(GeoNodeLiveTestSupport):
             # set SLD
             sld = saved_layer.default_style.sld_body if saved_layer.default_style else None
             self.assertIsNotNone(sld)
-            _log("2. ------------ %s " % sld)
+            _log(f"2. ------------ {sld} ")
             set_layer_style(saved_layer, saved_layer.alternate, sld)
 
             create_gs_thumbnail(saved_layer, overwrite=True)
@@ -339,7 +339,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     'rest/layers'),
                 username=gs_username,
                 password=gs_password)
-            if page.find('rest/layers/%s.html' % layer_name) > 0:
+            if page.find(f'rest/layers/{layer_name}.html') > 0:
                 found = True
             if not found:
                 msg = (
@@ -380,7 +380,7 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             gisdata.PROJECT_ROOT,
             'both/good/sangis.org/Airport/Air_Runways.shp')
 
-        self.assertTrue('%s.xml' % thelayer,
+        self.assertTrue(f'{thelayer}.xml',
                         'Expected layer XML metadata to exist')
         try:
             if os.path.exists(thelayer):
@@ -836,12 +836,12 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             overwrite=True)
         try:
             keywords = uploaded.keyword_list()
-            msg = 'No keywords found in layer %s' % uploaded.name
+            msg = f'No keywords found in layer {uploaded.name}'
             assert len(keywords) > 0, msg
             assert 'foo' in uploaded.keyword_list(
-            ), 'Could not find "foo" in %s' % keywords
+            ), f'Could not find "foo" in {keywords}'
             assert 'bar' in uploaded.keyword_list(
-            ), 'Could not find "bar" in %s' % keywords
+            ), f'Could not find "bar" in {keywords}'
         finally:
             # Clean up and completely delete the layers
             uploaded.delete()

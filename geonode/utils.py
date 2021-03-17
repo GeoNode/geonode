@@ -254,7 +254,7 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
                 access_token = get_or_create_token(request.user)
 
     if access_token:
-        headers['Authorization'] = 'Bearer %s' % access_token
+        headers['Authorization'] = f'Bearer {access_token}'
 
     pragma = "no-cache"
     referer = request.META[
@@ -391,7 +391,7 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             projected_bbox = [str(x) for x in g.GetEnvelope()]
             # Must be in the form : [x0, x1, y0, y1, EPSG:<target_srid>)
             return tuple([projected_bbox[0], projected_bbox[1], projected_bbox[2], projected_bbox[3]]) + \
-                ("EPSG:%s" % target_srid,)
+                (f"EPSG:{target_srid}",)
         except Exception as e:
             logger.exception(e)
 
@@ -652,7 +652,7 @@ class GXPMapBase(object):
                     'remote': True,
                     'ptype': service.ptype,
                     'name': service.name,
-                    'title': "[R] %s" % service.title
+                    'title': f"[R] {service.title}"
                 }
                 if remote_source['url'] not in source_urls:
                     index += 1
@@ -1012,7 +1012,7 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
         }
     elif exception:
         if body is None:
-            body = "Unexpected exception %s" % exception
+            body = f"Unexpected exception {exception}"
         else:
             body = body % exception
         body = {
@@ -1248,7 +1248,7 @@ def id_to_obj(id_):
 
 def printsignals():
     for signalname in signalnames:
-        logger.debug("SIGNALNAME: %s" % signalname)
+        logger.debug(f"SIGNALNAME: {signalname}")
         signaltype = getattr(models.signals, signalname)
         signals = signaltype.receivers[:]
         for signal in signals:
@@ -1434,7 +1434,7 @@ class HttpClient(object):
                     _u = user or get_user_model().objects.get(username=self.username)
                     access_token = get_or_create_token(_u)
                     if access_token and not access_token.is_expired():
-                        headers['Authorization'] = 'Bearer %s' % access_token.token
+                        headers['Authorization'] = f'Bearer {access_token.token}'
                 except Exception:
                     tb = traceback.format_exc()
                     logger.debug(tb)
@@ -1844,7 +1844,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # ogc_wms_path = '%s/ows' % instance.workspace
         ogc_wms_path = 'ows'
         ogc_wms_url = urljoin(ogc_server_settings.public_url, ogc_wms_path)
-        ogc_wms_name = 'OGC WMS: %s Service' % instance.workspace
+        ogc_wms_name = f'OGC WMS: {instance.workspace} Service'
         if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wms_name, url=ogc_wms_url).count() < 2:
             Link.objects.get_or_create(
                 resource=instance.resourcebase_ptr,
@@ -1862,7 +1862,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             # ogc_wfs_path = '%s/wfs' % instance.workspace
             ogc_wfs_path = 'ows'
             ogc_wfs_url = urljoin(ogc_server_settings.public_url, ogc_wfs_path)
-            ogc_wfs_name = 'OGC WFS: %s Service' % instance.workspace
+            ogc_wfs_name = f'OGC WFS: {instance.workspace} Service'
             if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wfs_name, url=ogc_wfs_url).count() < 2:
                 Link.objects.get_or_create(
                     resource=instance.resourcebase_ptr,
@@ -1880,7 +1880,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             # ogc_wcs_path = '%s/wcs' % instance.workspace
             ogc_wcs_path = 'ows'
             ogc_wcs_url = urljoin(ogc_server_settings.public_url, ogc_wcs_path)
-            ogc_wcs_name = 'OGC WCS: %s Service' % instance.workspace
+            ogc_wcs_name = f'OGC WCS: {instance.workspace} Service'
             if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wcs_name, url=ogc_wcs_url).count() < 2:
                 Link.objects.get_or_create(
                     resource=instance.resourcebase_ptr,

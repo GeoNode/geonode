@@ -336,7 +336,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 
     def _create_layer_service_link(self, geonode_layer):
         ogc_wms_url = geonode_layer.ows_url
-        ogc_wms_name = 'OGC WMS: %s Service' % geonode_layer.store
+        ogc_wms_name = f'OGC WMS: {geonode_layer.store} Service'
         ogc_wms_link_type = 'OGC:WMS'
         if Link.objects.filter(resource=geonode_layer.resourcebase_ptr,
                                name=ogc_wms_name,
@@ -609,14 +609,14 @@ class GeoNodeServiceHandler(WmsServiceHandler):
                                 thumbnail_remote_url)
                             if 'ServiceException' in str(image) or \
                                resp.status_code < 200 or resp.status_code > 299:
-                                msg = 'Unable to obtain thumbnail: %s' % image
+                                msg = f'Unable to obtain thumbnail: {image}'
                                 logger.debug(msg)
 
                                 # Replace error message with None.
                                 image = None
 
                             if image is not None:
-                                thumbnail_name = 'layer-%s-thumb.png' % geonode_layer.uuid
+                                thumbnail_name = f'layer-{geonode_layer.uuid}-thumb.png'
                                 geonode_layer.save_thumbnail(
                                     thumbnail_name, image=image)
                             else:

@@ -337,7 +337,7 @@ def attributes_sats_refresh(request):
                     json.dumps(
                         {
                             'success': 'false',
-                            'message': 'Error trying to fetch the resource "%s" from GeoServer!' % layer.store
+                            'message': f'Error trying to fetch the resource "{layer.store}" from GeoServer!'
                         }),
                     status=302,
                     content_type='text/plain')
@@ -355,7 +355,7 @@ def attributes_sats_refresh(request):
                 json.dumps(
                     {
                         'success': 'false',
-                        'message': 'Exception occurred: "%s"' % str(e)
+                        'message': f'Exception occurred: "{str(e)}"'
                     }),
                 status=302,
                 content_type='text/plain')

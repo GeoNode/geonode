@@ -648,7 +648,7 @@ class Command(BaseCommand):
 
         # Best Effort Restore: 'options': {'option': ['BK_BEST_EFFORT=true']}
         _options = [
-            'BK_PURGE_RESOURCES={}'.format('true' if not soft_reset else 'false'),
+            f"BK_PURGE_RESOURCES={'true' if not soft_reset else 'false'}",
             'BK_CLEANUP_TEMP=true',
             f'BK_SKIP_SETTINGS={("true" if skip_geoserver_info else "false")}',
             f'BK_SKIP_SECURITY={("true" if skip_geoserver_security else "false")}',

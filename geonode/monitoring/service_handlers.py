@@ -171,7 +171,7 @@ class GeoServerService(BaseServiceHandler):
 
     def setup(self):
         if not self.service.url:
-            raise ValueError("Monitoring is not configured to fetch from %s" % self.service.name)
+            raise ValueError(f"Monitoring is not configured to fetch from {self.service.name}")
         self.gs_monitor = GeoServerMonitorClient(self.service.url)
 
     def _collect(self, since, until, format=None, **kwargs):

@@ -155,7 +155,7 @@ class TestClient(DjangoTestClient):
         """
         if 'django.contrib.sessions' not in settings.INSTALLED_APPS:
             raise AssertionError("Unable to login without django.contrib.sessions in INSTALLED_APPS")
-        user.backend = "%s.%s" % ("django.contrib.auth.backends", "ModelBackend")
+        user.backend = f"{'django.contrib.auth.backends'}.{'ModelBackend'}"
 
         # Login
         self.force_login(user, backend=user.backend)
@@ -1917,10 +1917,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             {'name': 'OWS:ALL', 'type_label': 'Any OWS'}
         ]
         # url
-        url = "%s?%s" % (
-            reverse('monitoring:api_event_types'),
-            'ows_service=true'
-        )
+        url = f"{reverse('monitoring:api_event_types')}?{'ows_service=true'}"
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -1958,10 +1955,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             {'name': 'geoserver', 'type_label': 'Geoserver event'}
         ]
         # url
-        url = "%s?%s" % (
-            reverse('monitoring:api_event_types'),
-            'ows_service=false'
-        )
+        url = f"{reverse('monitoring:api_event_types')}?{'ows_service=false'}"
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))

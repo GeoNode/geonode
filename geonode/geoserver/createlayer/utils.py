@@ -116,7 +116,7 @@ def get_attributes(geometry_type, json_attrs=None):
     lattrs = []
     gattr = []
     gattr.append('the_geom')
-    gattr.append('com.vividsolutions.jts.geom.%s' % geometry_type)
+    gattr.append(f'com.vividsolutions.jts.geom.{geometry_type}')
     gattr.append({'nillable': False})
     lattrs.append(gattr)
     if json_attrs:

@@ -174,7 +174,7 @@ if activity:
 def rating_post_save(instance, sender, created, **kwargs):
     """ Send a notification when rating a layer, map or document
     """
-    notice_type_label = '%s_rated' % instance.content_object.class_name.lower()
+    notice_type_label = f'{instance.content_object.class_name.lower()}_rated'
     recipients = get_notification_recipients(notice_type_label,
                                              instance.user,
                                              resource=instance.content_object)
@@ -187,7 +187,7 @@ def comment_post_save(instance, sender, created, **kwargs):
     """ Send a notification when a comment to a layer, map or document has
     been submitted
     """
-    notice_type_label = '%s_comment' % instance.content_type.model.lower()
+    notice_type_label = f'{instance.content_type.model.lower()}_comment'
     recipients = get_comment_notification_recipients(notice_type_label,
                                                      instance.author,
                                                      resource=instance.content_object)
