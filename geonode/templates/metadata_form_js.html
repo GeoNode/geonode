@@ -80,6 +80,7 @@
             }
             mandatoryMissing = empty > 0;
           }
+        console.log(mandatoryMissing);
       var advancedMissing = $('#advanced').find('.input-empty').length > 0;
           if (advancedMissing) {
             var inputs = $('#advanced').find('.input-empty');
@@ -244,13 +245,18 @@
         {% block target %}
           if(target.id === 'category_form' ||
              target.id === 'id_resource-regions' ||
-             target.id === 'id_resource-group' || {{UI_REQUIRED_FIELDS}}.includes(target.id)
+             target.id === 'id_resource-group' || 
+             target.id === 'id_resource-date' ||
+             target.id === 'id_resource-links' ||
+             target.id === 'id_crop_file' || {{UI_REQUIRED_FIELDS}}.includes(target.id)
           ) {
               // group selector
               $(target).closest('#basicGroupInfo').toggleClass('has-error', empty);
 
               // category selector
               $(target).closest('#basicCategoryInfo').toggleClass('has-error', empty);
+              $(target).closest('#id_crop_entry').toggleClass('has-error', empty);
+              $(target).closest('#req_item').toggleClass('has-error', empty);
 
               // regions container
               $(target).closest('#regions_multiselect_container').toggleClass('has-error', empty);
@@ -328,9 +334,11 @@
                     if(isMandatoryField(this)) {
                         setInputEmpty(e.target, true);
                         var mandatoryWarning = "<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>{% trans "* Field declared Mandatory by the Metadata Schema" %}</strong></p>"
-                        if (!!$(this).closest('.check-select').length) {
+                        if (!!$(this).closest('.date').length) {
                             $(e.target).parent().parent().append(gettext(mandatoryWarning));
-                        } else if (!!$(this).closest('#mdinfo').length) {
+                        } else if (!!$(this).closest('.check-select').length) {
+                            $(e.target).parent().parent().append(gettext(mandatoryWarning));
+                        } else if (!!$(this).closest('#mdinfo').length || !!$(this).closest('#basicDescriptiveInfo').length) {
                             $(e.target).parent().append(gettext(mandatoryWarning));
                         }
                         empty++;
@@ -343,7 +351,12 @@
                         empty--;
                     }
                     setInputEmpty(e.target, false);
-                    $(e.target).parent().find(".mandatory-warning").remove();
+                    if (!!$(e.target).closest('.date').length) { 
+                        $(e.target).parent().parent().find(".mandatory-warning").remove();
+                    } else {
+                        $(e.target).parent().find(".mandatory-warning").remove();
+                    }
+                    
                 }
             }
 
@@ -363,6 +376,10 @@
         {{UI_REQUIRED_FIELDS}}.forEach(element => $('#' + element).change(onInputChange).change());
         $('#category_form').change(onInputChange).change();
         $('#id_resource-group').change(onInputChange).change();
+        $('#id_resource-group').change(onInputChange).change();
+        $('#id_crop_file').change(onInputChange).change();
+        $('#id_resource-date').change(onInputChange).change();
+        $('#id_resource-links').change(onInputChange).change();
 
         $( ':input[id*="id_tkeywords"][required]:visible').each( function () {
             $('#' + this.id).change(onInputChange).change();
@@ -371,8 +388,8 @@
         document.querySelector('select[name="resource-keywords"]').onchange=onInputChange
 
         $('#id_resource-regions').change(onInputChange).change();
-$('#id_resource-temporal_extent_end').on('blur', function() {$(this).change(onInputChange).change();})
-$('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(onInputChange).change();})
+        $('#id_resource-temporal_extent_end').on('blur', function() {$(this).change(onInputChange).change();})
+        $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(onInputChange).change();})
         $('#mandatory').find(":input:not(.value-select):not(.autocomplete)").each(function(){
             if(isMandatoryField(this)) {
                 prevNum++;
