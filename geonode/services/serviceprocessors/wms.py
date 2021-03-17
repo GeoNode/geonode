@@ -43,7 +43,8 @@ from django.utils.translation import ugettext as _
 
 from geonode.base.models import Link, TopicCategory
 from geonode.layers.models import Layer
-from geonode.layers.utils import create_thumbnail, resolve_regions
+from geonode.layers.utils import resolve_regions
+from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.geoserver.helpers import set_attributes_from_geoserver
 from geonode.utils import http_client
 from geonode.base.bbox_utils import BBOXHelper
@@ -289,30 +290,12 @@ class WmsServiceHandler(base.ServiceHandlerBase,
 
     def _create_layer_thumbnail(self, geonode_layer):
         """Create a thumbnail with a WMS request."""
-        _p_url = urlparse(self.url)
-        _q_separator = "&" if _p_url.query else "?"
-        params = {
-            "service": "WMS",
-            "version": self.parsed_service.version,
-            "request": "GetMap",
-            "layers": geonode_layer.alternate,
-            "bbox": geonode_layer.bbox_string,
-            "srs": geonode_layer.srid,
-            "crs": geonode_layer.srid,
-            "width": "200",
-            "height": "150",
-            "format": "image/png",
-            "styles": ""
-        }
-        kvp = "&".join("{}={}".format(*item) for item in params.items())
-        thumbnail_remote_url = f"{geonode_layer.remote_service.service_url}{_q_separator}{kvp}"
-        logger.debug(f"thumbnail_remote_url: {thumbnail_remote_url}")
         create_thumbnail(
             instance=geonode_layer,
-            thumbnail_remote_url=thumbnail_remote_url,
-            thumbnail_create_url=None,
-            check_bbox=False,
-            overwrite=True
+            wms_version=self.parsed_service.version,
+            bbox=geonode_layer.bbox,
+            forced_crs=geonode_layer.srid,
+            overwrite=True,
         )
 
     def _create_layer_legend_link(self, geonode_layer):

@@ -81,6 +81,9 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         super(ThumbnailTests, self).setUp()
         self.rb = ResourceBase.objects.create()
 
+    def tearDown(self):
+        super().tearDown()
+
     def test_initial_behavior(self):
         """
         Tests that an empty resource has a missing image as default thumbnail.
@@ -102,9 +105,15 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         """
         Tests that an monochromatic image does not change the current resource thumbnail.
         """
+        filename = 'test-thumb'
+
         current = self.rb.get_thumbnail_url()
-        self.rb.save_thumbnail('test-thumb', image)
+        self.rb.save_thumbnail(filename, image)
         self.assertEqual(current, urlparse(self.rb.get_thumbnail_url()).path)
+
+        # cleanup: remove saved thumbnail
+        thumb_utils.remove_thumbs(filename)
+        self.assertFalse(thumb_utils.thumb_exists(filename))
 
     @patch('PIL.Image.open', return_value=test_image)
     def test_thumb_utils_methods(self, image):
@@ -121,6 +130,10 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         storage.save(upload_path, File(f))
         self.assertTrue(thumb_utils.thumb_exists(filename))
         self.assertEqual(thumb_utils.thumb_size(upload_path), 10000)
+
+        # cleanup: remove saved thumbnail
+        thumb_utils.remove_thumbs(filename)
+        self.assertFalse(thumb_utils.thumb_exists(filename))
 
 
 class TestThumbnailUrl(GeoNodeBaseTestSupport):
@@ -870,6 +883,7 @@ class TestTagThesaurus(TestCase):
 
 @override_settings(THESAURUS_DEFAULT_LANG="en")
 class TestThesaurusAvailableForm(TestCase):
+    #  loading test thesausurs
     fixtures = [
         "test_thesaurus.json"
     ]

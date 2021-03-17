@@ -1927,15 +1927,26 @@ SOCIALACCOUNT_PROFILE_EXTRACTORS = {
 
 INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
 
+
 # Choose thumbnail generator -- this is the default generator
 THUMBNAIL_GENERATOR = os.environ.get(
-    'THUMBNAIL_GENERATOR', 'geonode.layers.utils.create_gs_thumbnail_geonode')
-THUMBNAIL_GENERATOR_DEFAULT_BG = os.environ.get(
-    'THUMBNAIL_GENERATOR_DEFAULT_BG',
-    'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png')
-THUMBNAIL_GENERATOR_DEFAULT_SIZE = {
+    'THUMBNAIL_GENERATOR', 'geonode.thumbs.thumbnails.create_gs_thumbnail_geonode')
+
+THUMBNAIL_SIZE = {
     'width': int(os.environ.get('THUMBNAIL_GENERATOR_DEFAULT_SIZE_WIDTH', 240)),
     'height': int(os.environ.get('THUMBNAIL_GENERATOR_DEFAULT_SIZE_HEIGHT', 200))
+}
+
+THUMBNAIL_BACKGROUND = {
+    # class generating thumbnail's background
+    'class': 'geonode.thumbs.background.WikiMediaTileBackground',
+    # 'class': 'geonode.thumbs.background.OSMTileBackground',
+    # 'class': 'geonode.thumbs.background.GenericXYZBackground',
+    # initialization parameters for generator instance, valid only for generic classes
+    'options': {
+        # 'url': URL for the generic xyz service
+        # 'tile_size': tile size for the generic xyz service, default is 256
+    },
 }
 
 # define the urls after the settings are overridden

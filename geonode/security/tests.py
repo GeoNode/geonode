@@ -976,7 +976,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         self.assertIsNotNone(layer)
 
         # Reset GeoFence Rules
-        Layer.objects.all().delete()
         purge_geofence_all()
         geofence_rules_count = get_geofence_rules_count()
         self.assertTrue(geofence_rules_count == 0)
@@ -1005,7 +1004,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             permissions=permissions,
             execute_signals=True)
 
-        layer = Layer.objects.filter(title='san_andres_y_providencia_poi').first()
+        layer = Layer.objects.get(name=layer[0])
+
         check_layer(layer)
 
         geofence_rules_count = get_geofence_rules_count()
@@ -1119,7 +1119,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # self.assertEqual(_content_type, 'image/png')
 
         # Reset GeoFence Rules
-        Layer.objects.all().delete()
         purge_geofence_all()
         geofence_rules_count = get_geofence_rules_count()
         self.assertTrue(geofence_rules_count == 0)
@@ -1585,7 +1584,6 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                     sld = sld.decode().strip('\n')
                 _log("sld. ------------ %s " % sld)
                 set_layer_style(test_perm_layer, test_perm_layer.alternate, sld)
-
             create_gs_thumbnail(test_perm_layer, overwrite=True)
             self.assertIsNotNone(test_perm_layer.get_thumbnail_url())
 

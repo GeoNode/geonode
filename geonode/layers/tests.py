@@ -29,6 +29,7 @@ import zipfile
 import tempfile
 import contextlib
 
+from mock import patch
 from pinax.ratings.models import OverallRating
 
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -383,27 +384,6 @@ class LayersTest(GeoNodeBaseTestSupport):
 
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
-
-    def test_layer_thumbnail_generation_managed_errors(self):
-        """
-        Test that 'layer_thumbnail' handles correctly thumbnail generation errors
-        """
-        layer = Layer.objects.all().first()
-        url = reverse('layer_thumbnail', args=(layer.alternate,))
-        # Now test with a valid user
-        self.client.login(username='admin', password='admin')
-
-        # test a method other than POST and GET
-        request_body = {'preview': '\
-"bbox":[1331513.3064995816,1333734.7576341194,5599619.355527631,5600574.818381195],\
-"srid":"EPSG:3857",\
-"center":{"x":11.971165359906351,"y":44.863749562810995,"crs":"EPSG:4326"},\
-"zoom":16,"width":930,"height":400,\
-"layers":"' + layer.alternate + '"}'}
-        response = self.client.post(url, data=request_body)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content.decode('utf-8'), 'Thumbnail saved')
-        self.assertNotEquals(layer.get_thumbnail_url(), settings.MISSING_THUMBNAIL)
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
@@ -1144,7 +1124,8 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
         return paths, suffixes,
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_moderated_upload(self):
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_moderated_upload(self, thumbnail_mock):
         """
         Test if moderation flag works
         """
@@ -1427,7 +1408,8 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @override_settings(UPLOADER=GEONODE_REST_UPLOADER)
-    def test_geonode_same_UUID_error(self):
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_geonode_same_UUID_error(self, thumbnail_mock):
         """
         Ensure a new layer with same UUID metadata cannot be uploaded
         """

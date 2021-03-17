@@ -20,6 +20,7 @@
 import json
 import logging
 
+from mock import patch
 from defusedxml import lxml as dlxml
 from django.test.utils import override_settings
 
@@ -142,7 +143,8 @@ community."
         "groups": {}}
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_map_json(self):
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_map_json(self, thumbnail_mock):
         map_obj = Map.objects.all().first()
         map_id = map_obj.id
         # Test that saving a map when not logged in gives 401
@@ -177,7 +179,8 @@ community."
                 map_layer.layer_title,
                 "base:nic_admin")
 
-    def test_map_save(self):
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_map_save(self, thumbnail_mock):
         """POST /maps/new/data -> Test saving a new map"""
 
         new_map = reverse("new_map_json")
@@ -298,28 +301,8 @@ community."
         response = self.client.get(reverse('map_detail', args=(map_obj.id,)))
         self.assertEqual(response.status_code, 200)
 
-    def test_map_thumbnail_generation_managed_errors(self):
-        """
-        Test that 'map_thumbnail' handles correctly thumbnail generation errors
-        """
-        map_obj = Map.objects.all().first()
-        url = reverse('map_thumbnail', args=(map_obj.id,))
-        # Now test with a valid user
-        self.client.login(username='admin', password='admin')
-
-        # test a method other than POST and GET
-        request_body = {'preview': '\
-"bbox":[1331513.3064995816,1333734.7576341194,5599619.355527631,5600574.818381195],\
-"srid":"EPSG:3857",\
-"center":{"x":11.971165359906351,"y":44.863749562810995,"crs":"EPSG:4326"},\
-"zoom":16,"width":930,"height":400,\
-"layers":"geonode:foo_bar"}'}
-        response = self.client.post(url, data=request_body)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content.decode('utf-8'), 'Thumbnail saved')
-        self.assertNotEquals(map_obj.get_thumbnail_url(), settings.MISSING_THUMBNAIL)
-
-    def test_describe_map(self):
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_describe_map(self, thumbnail_mock):
         map_obj = Map.objects.all().first()
         map_obj.set_default_permissions()
         response = self.client.get(reverse('map_metadata_detail', args=(map_obj.id,)))
@@ -513,7 +496,8 @@ community."
             self.assertFalse(self.not_admin.is_superuser)
             self.assertEqual(response.status_code, 200)
 
-    def test_map_metadata(self):
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_map_metadata(self, thumbnail_mock):
         """Test that map metadata can be properly rendered
         """
         # first create a map
@@ -557,7 +541,8 @@ community."
         # TODO: only invalid mapform is tested
 
     @override_settings(ASYNC_SIGNALS=False)
-    def test_map_remove(self):
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_map_remove(self, thumbnail_mock):
         """Test that map can be properly removed
         """
         # first create a map
@@ -614,7 +599,8 @@ community."
         self.assertEqual(response.status_code, 404)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_map_embed(self):
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_map_embed(self, thumbnail_mock):
         """Test that map can be properly embedded
         """
         # first create a map
@@ -685,7 +671,8 @@ community."
         self.assertEqual(map_obj.zoom, zoom)
         self.assertEqual(map_obj.projection, projection)
 
-    def test_map_view(self):
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_map_view(self, thumbnail_mock):
         """Test that map view can be properly rendered
         """
         # first create a map
@@ -754,7 +741,8 @@ community."
                 cfg = map_layer.layer_config()
                 self.assertIsNotNone(cfg["getFeatureInfo"])
 
-    def test_new_map_config(self):
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_new_map_config(self, thumbnail_mock):
         """Test that new map config can be properly assigned
         """
         self.client.login(username='admin', password='admin')
@@ -849,7 +837,8 @@ community."
         except Exception:
             pass
 
-    def test_rating_map_remove(self):
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_rating_map_remove(self, thumbnail_mock):
         """Test map rating is removed on map remove
         """
         if not on_travis:
