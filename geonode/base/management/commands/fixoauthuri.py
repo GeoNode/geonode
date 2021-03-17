@@ -53,13 +53,12 @@ class Command(BaseCommand):
         force_exec = options.get('force_exec')
         target_address = options.get('target_address')
 
-        from django.conf import settings
         client_id = None
         client_secret = None
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import ogc_server_settings
-            redirect_uris = f'{ogc_server_settings.LOCATION}\n{ogc_server_settings.public_url}\n{target_address}/geoserver/'
+            redirect_uris = f'{ogc_server_settings.LOCATION}\n{ogc_server_settings.public_url}\n{target_address}/geoserver/'  # noqa
             if Application.objects.filter(name='GeoServer').exists():
                 Application.objects.filter(name='GeoServer').update(redirect_uris=redirect_uris)
                 if force_exec:

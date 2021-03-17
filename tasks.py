@@ -221,10 +221,10 @@ def prepare(ctx):
         f'sed -i "s|<clientSecret>.*</clientSecret>|<clientSecret>{client_secret}</clientSecret>|g" {oauth_config}',
         pty=True)
     ctx.run(
-        f'sed -i "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>{new_ext_ip}o/authorize/</userAuthorizationUri>|g" {oauth_config}',
+        f'sed -i "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>{new_ext_ip}o/authorize/</userAuthorizationUri>|g" {oauth_config}',  # noqa
         pty=True)
     ctx.run(
-        f'sed -i "s|<redirectUri>.*</redirectUri>|<redirectUri>{new_ext_ip}geoserver/index.html</redirectUri>|g" {oauth_config}',
+        f'sed -i "s|<redirectUri>.*</redirectUri>|<redirectUri>{new_ext_ip}geoserver/index.html</redirectUri>|g" {oauth_config}',  # noqa
         pty=True)
     ctx.run(
         f'sed -i "s|<logoutUri>.*</logoutUri>|<logoutUri>{new_ext_ip}account/logout/</logoutUri>|g" {oauth_config}',
@@ -440,8 +440,8 @@ def _prepare_oauth_fixture():
                 "created": "2018-05-31T10:00:31.661Z",
                 "updated": "2018-05-31T11:30:31.245Z",
                 "algorithm": "RS256",
-                "redirect_uris": f"{net_scheme}://{pub_ip}:{pub_port}/geoserver/index.html" \
-                    if pub_port else f"{net_scheme}://{pub_ip}/geoserver/index.html",
+                "redirect_uris": f"{net_scheme}://{pub_ip}:{pub_port}/geoserver/index.html"
+                                 if pub_port else f"{net_scheme}://{pub_ip}/geoserver/index.html",
                 "name": "GeoServer",
                 "authorization_grant_type": "authorization-code",
                 "client_type": "confidential",
@@ -579,22 +579,22 @@ def _prepare_admin_fixture(admin_password, admin_email):
     mdext_date = d.isoformat()[:23] + "Z"
     default_fixture = [
         {
-        	"fields": {
-        		"date_joined": mdext_date,
-        		"email": admin_email,
-        		"first_name": "",
-        		"groups": [],
-        		"is_active": True,
-        		"is_staff": True,
-        		"is_superuser": True,
-        		"last_login": mdext_date,
-        		"last_name": "",
-        		"password": make_password(admin_password),
-        		"user_permissions": [],
-        		"username": "admin"
-        	},
-        	"model": "people.Profile",
-        	"pk": 1000
+            "fields": {
+                "date_joined": mdext_date,
+                "email": admin_email,
+                "first_name": "",
+                "groups": [],
+                "is_active": True,
+                "is_staff": True,
+                "is_superuser": True,
+                "last_login": mdext_date,
+                "last_name": "",
+                "password": make_password(admin_password),
+                "user_permissions": [],
+                "username": "admin"
+            },
+            "model": "people.Profile",
+            "pk": 1000
         }
     ]
     with open('/tmp/django_admin_docker.json', 'w') as fixturefile:

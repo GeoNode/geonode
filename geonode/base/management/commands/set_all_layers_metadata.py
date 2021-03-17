@@ -23,12 +23,7 @@ from django.core.management.base import BaseCommand
 from geonode.layers.models import Layer
 from geonode import geoserver  # noqa
 from geonode.catalogue.models import catalogue_post_save
-from geonode.geoserver.helpers import ogc_server_settings
 import logging
-
-
-logger = logging.getLogger(__name__)
-
 
 from geonode.utils import (
     check_ogc_backend,
@@ -41,6 +36,8 @@ from geonode.base.utils import (
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import set_attributes_from_geoserver as set_attributes
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):

@@ -47,15 +47,17 @@ class Command(BaseCommand):
         parser.add_argument('-m', '--list-metrics', dest='list_metrics', action='store_true', default=False,
                             help=_("Show list of metrics"))
         parser.add_argument('-l', '--list-labels', dest='list_labels', action='store_true', default=False,
-                    help=_("Show list of labels for metric"))
+                            help=_("Show list of labels for metric"))
 
         parser.add_argument('-r', '--list-resources', dest='list_resources', action='store_true', default=False,
-                    help=_("Show list of resources for metric"))
+                            help=_("Show list of resources for metric"))
 
         parser.add_argument('-s', '--since', dest='since', default=None, type=parse_datetime,
-                            help=_("Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not provided, last sync will be used."))
+                            help=_("Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). "
+                                   "If not provided, last sync will be used."))
         parser.add_argument('-u', '--until', dest='until', default=None, type=parse_datetime,
-                            help=_("Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not provided, now will be used."))
+                            help=_("Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). "
+                                   "If not provided, now will be used."))
 
         parser.add_argument('-i', '--interval', dest='interval', default=60, type=int,
                             help=_("Data aggregation interval in seconds (default: 60)"))
@@ -69,7 +71,6 @@ class Command(BaseCommand):
 
         parser.add_argument('-ll', '--label', dest='label', type=TypeChecks.label_type,
                             help=_("Show data for specific label"))
-
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def handle(self, *args, **options):
@@ -88,7 +89,6 @@ class Command(BaseCommand):
         if isinstance(metric_names, str):
             metric_names = [metric_names]
         for m in metric_names:
-            #def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None, label=None, resource=None):
             if options['list_labels']:
                 self.list_labels(m)
             elif options['list_resources']:
@@ -140,7 +140,6 @@ class Command(BaseCommand):
             if row['data']:
                 val = row['data'][0]['val']
             print(' ', row['valid_to'].strftime(TIMESTAMP_OUTPUT), '->', '' if not val else val)
-
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def list_metrics(self):

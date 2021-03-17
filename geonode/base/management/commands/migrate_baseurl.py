@@ -83,35 +83,35 @@ Styles and Links Base URLs from [{source_address}] to [{target_address}].")
             try:
                 _cnt = Map.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
-                        F('thumbnail_url'),Value(source_address),Value(target_address),function='replace'))
+                        F('thumbnail_url'), Value(source_address), Value(target_address), function='replace'))
                 logger.info("Updated %s Maps" % _cnt)
 
                 _cnt = MapLayer.objects.filter(ows_url__icontains=source_address).update(
                     ows_url=Func(
-                        F('ows_url'),Value(source_address),Value(target_address),function='replace'))
+                        F('ows_url'), Value(source_address), Value(target_address), function='replace'))
                 MapLayer.objects.filter(layer_params__icontains=source_address).update(
                     layer_params=Func(
-                        F('layer_params'),Value(source_address),Value(target_address),function='replace'))
+                        F('layer_params'), Value(source_address), Value(target_address), function='replace'))
                 logger.info("Updated %s MapLayers" % _cnt)
 
                 _cnt = Layer.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
-                        F('thumbnail_url'),Value(source_address),Value(target_address),function='replace'))
+                        F('thumbnail_url'), Value(source_address), Value(target_address), function='replace'))
                 logger.info("Updated %s Layers" % _cnt)
 
                 _cnt = Style.objects.filter(sld_url__icontains=source_address).update(
                     sld_url=Func(
-                        F('sld_url'),Value(source_address),Value(target_address),function='replace'))
+                        F('sld_url'), Value(source_address), Value(target_address), function='replace'))
                 logger.info("Updated %s Styles" % _cnt)
 
                 _cnt = Link.objects.filter(url__icontains=source_address).update(
                     url=Func(
-                        F('url'),Value(source_address),Value(target_address),function='replace'))
+                        F('url'), Value(source_address), Value(target_address), function='replace'))
                 logger.info("Updated %s Links" % _cnt)
 
                 _cnt = ResourceBase.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
-                        F('thumbnail_url'),Value(source_address),Value(target_address),function='replace'))
+                        F('thumbnail_url'), Value(source_address), Value(target_address), function='replace'))
                 _cnt += ResourceBase.objects.filter(csw_anytext__icontains=source_address).update(
                     csw_anytext=Func(
                         F('csw_anytext'), Value(source_address), Value(target_address), function='replace'))

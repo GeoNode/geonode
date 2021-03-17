@@ -141,7 +141,8 @@ class Command(BaseCommand):
 
         if verbosity > 0:
             print(
-                f"\n\nFinished processing {len(output['layers'])} layers in {output['stats']['duration_sec']:.2f} seconds.\n"
+                f"\n\nFinished processing {len(output['layers'])} "
+                f"layers in {output['stats']['duration_sec']:.2f} seconds.\n"
             )
             print(f"{output['stats']['created']} Created layers")
             print(f"{output['stats']['updated']} Updated layers")

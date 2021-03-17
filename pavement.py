@@ -116,7 +116,7 @@ def grab(src, dest, name):
         utc = pytz.utc
         url_date = url_date.replace(tzinfo=utc)
         file_time = file_time.replace(tzinfo=utc)
-        if url_date < file_time :
+        if url_date < file_time:
             # Do not download if older than the local one
             return
         logger.info(f"Downloading updated {name}")
@@ -183,7 +183,7 @@ def setup_geoserver(options):
         jetty_runner = download_dir / \
             os.path.basename(urlparse(dev_config['JETTY_RUNNER_URL']).path)
         geoserver_data = download_dir / \
-                       os.path.basename(urlparse(dev_config['DATA_DIR_URL']).path)
+            os.path.basename(urlparse(dev_config['DATA_DIR_URL']).path)
         grab(
             options.get(
                 'geoserver',
@@ -755,7 +755,8 @@ def test(options):
        'geonode.monitoring' in INSTALLED_APPS and \
        'geonode.monitoring' not in _apps_to_test:
         _apps_to_test.append('geonode.monitoring')
-    sh(f"{options.get('prefix')} manage.py test geonode.tests.smoke {('.tests '.join(_apps_to_test))}.tests --noinput {_keepdb} {_parallel}")
+    sh(f"{options.get('prefix')} manage.py test geonode.tests.smoke \
+{('.tests '.join(_apps_to_test))}.tests --noinput {_keepdb} {_parallel}")
 
 
 @task
@@ -882,17 +883,49 @@ def run_tests(options):
         call_task('test', options={'prefix': prefix})
     elif integration_tests:
         if integration_upload_tests:
-            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.upload.tests.integration', 'local': local})
+            call_task(
+                'test_integration',
+                options={
+                    'prefix': prefix,
+                    'name': 'geonode.upload.tests.integration',
+                    'local': local
+                })
         elif integration_monitoring_tests:
-            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.monitoring.tests.integration', 'local': local})
+            call_task(
+                'test_integration',
+                options={
+                    'prefix': prefix,
+                    'name': 'geonode.monitoring.tests.integration',
+                    'local': local
+                })
         elif integration_csw_tests:
-            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.csw', 'local': local})
+            call_task(
+                'test_integration',
+                options={
+                    'prefix': prefix,
+                    'name': 'geonode.tests.csw',
+                    'local': local
+                })
         elif integration_bdd_tests:
-            call_task('test_bdd', options={'local': local})
+            call_task(
+                'test_bdd',
+                options={'local': local})
         elif integration_server_tests:
-            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.geoserver.tests.integration', 'local': local})
+            call_task(
+                'test_integration',
+                options={
+                    'prefix': prefix,
+                    'name': 'geonode.geoserver.tests.integration',
+                    'local': local
+                })
         else:
-            call_task('test_integration', options={'prefix': prefix, 'name': 'geonode.tests.integration', 'local': local})
+            call_task(
+                'test_integration',
+                options={
+                    'prefix': prefix,
+                    'name': 'geonode.tests.integration',
+                    'local': local
+                })
     sh('flake8 geonode')
 
 
@@ -907,7 +940,7 @@ def reset(options):
 
 def _reset():
     from geonode import settings
-    path=os.path.join(settings.PROJECT_ROOT, 'development.db')
+    path = os.path.join(settings.PROJECT_ROOT, 'development.db')
     sh(f"rm -rf {path}")
     sh("rm -rf geonode/development.db")
     sh("rm -rf geonode/uploaded/*")
@@ -1115,8 +1148,9 @@ def kill(arg1, arg2):
         time.sleep(1)
 
     if running:
+        _procs = '\n'.join([str(_l).strip() for _l in lines])
         raise Exception(f"Could not stop {arg1}: "
-                        f"Running processes are\n{('\n'.join([str(_l).strip() for _l in lines]))}")
+                        f"Running processes are\n{_procs}")
 
 
 def waitfor(url, timeout=300):

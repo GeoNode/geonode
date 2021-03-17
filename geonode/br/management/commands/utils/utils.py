@@ -402,10 +402,10 @@ def glob2re(pat):
         c = pat[i]
         i = i+1
         if c == '*':
-            #res = res + '.*'
+            # res = res + '.*'
             res = res + '[^/]*'
         elif c == '?':
-            #res = res + '.'
+            # res = res + '.'
             res = res + '[^/]'
         elif c == '[':
             j = i

@@ -66,7 +66,7 @@ def sync_geonode_maps(ignore_errors,
                 return
     print(f"There are {len(map_errors)} maps which could not be updated because of errors")
     for map_error in map_errors:
-         print(map_error)
+        print(map_error)
 
 
 class Command(BaseCommand):

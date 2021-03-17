@@ -132,7 +132,7 @@ class Command(BaseCommand):
             action='store_true',
             dest='with_logs',
             default=False,
-            help="Compares the backup file with restoration logs, and applies it only, if it hasn't been already restored"
+            help="Compares the backup file with restoration logs, and applies it only, if it hasn't been already restored"  # noqa
         )
 
         parser.add_argument(
@@ -279,7 +279,7 @@ class Command(BaseCommand):
                         restore_notification.apply_async(
                             (admin_emails, backup_file, backup_md5, str(exception)))
 
-                    print("...Sanity Checks on Folder failed. Please make sure that the current user has full WRITE access to the above folders (and sub-folders or files).")
+                    print("...Sanity Checks on Folder failed. Please make sure that the current user has full WRITE access to the above folders (and sub-folders or files).")  # noqa
                     print("Reason:")
                     raise
 
@@ -299,7 +299,8 @@ class Command(BaseCommand):
                             with tempfile.TemporaryDirectory(dir=temp_dir_path) as restore_folder:
                                 recovery_folder = extract_archive(recovery_file, restore_folder)
                                 self.restore_geoserver_backup(config, settings, recovery_folder,
-                                                              skip_geoserver_info, skip_geoserver_security, ignore_errors)
+                                                              skip_geoserver_info, skip_geoserver_security,
+                                                              ignore_errors)
                                 self.restore_geoserver_raster_data(config, settings, recovery_folder)
                                 self.restore_geoserver_vector_data(config, settings, recovery_folder)
                                 self.restore_geoserver_externals(config, settings, recovery_folder)
@@ -345,27 +346,26 @@ class Command(BaseCommand):
                                 raise
 
                         # Restore Fixtures
+                        abortlater = False
                         for app_name, dump_name in zip(config.app_names, config.dump_names):
                             fixture_file = os.path.join(target_folder, dump_name+'.json')
 
                             print(f"Deserializing '{fixture_file}'")
                             try:
                                 call_command('loaddata', fixture_file, app_label=app_name)
-                            except IntegrityError as e:
+                            except IntegrityError:
                                 traceback.print_exc()
-                                logger.warning(f"WARNING: The fixture '{dump_name}' fails on integrity check and import is aborted after all fixtures have been checked.")
+                                logger.warning(f"WARNING: The fixture '{dump_name}' fails on integrity check and import is aborted after all fixtures have been checked.")  # noqa
                                 abortlater = True
-                            except Exception:
+                            except Exception as e:
                                 traceback.print_exc()
                                 logger.warning(f"WARNING: No valid fixture data found for '{dump_name}'.")
                                 # helpers.load_fixture(app_name, fixture_file)
-                                raise
-                        try: 
-                            if abortlater==True: 
                                 raise e
-                        except UnboundLocalError: 
-                            pass
-                        
+
+                        if abortlater:
+                            raise IntegrityError()
+
                         # Restore Media Root
                         if config.gs_data_dt_filter[0] is None:
                             shutil.rmtree(media_root, ignore_errors=True)
@@ -392,10 +392,13 @@ class Command(BaseCommand):
                         for static_files_folder in static_folders:
 
                             # skip restoration of static files of apps not located under LOCAL_ROOT path
-                            # (check to prevent overriding files from site-packages in project-template based GeoNode projects)
-                            if getattr(settings, 'LOCAL_ROOT', None) and not static_files_folder.startswith(settings.LOCAL_ROOT):
+                            # (check to prevent overriding files from site-packages
+                            #  in project-template based GeoNode projects)
+                            if getattr(settings, 'LOCAL_ROOT', None) and \
+                            not static_files_folder.startswith(settings.LOCAL_ROOT):
                                 print(
-                                    f"Skipping static directory: {static_files_folder}. It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
+                                    f"Skipping static directory: {static_files_folder}. "
+                                    f"It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
                                 continue
 
                             if config.gs_data_dt_filter[0] is None:
@@ -414,10 +417,13 @@ class Command(BaseCommand):
                         for template_files_folder in template_folders:
 
                             # skip restoration of template files of apps not located under LOCAL_ROOT path
-                            # (check to prevent overriding files from site-packages in project-template based GeoNode projects)
-                            if getattr(settings, 'LOCAL_ROOT', None) and not template_files_folder.startswith(settings.LOCAL_ROOT):
+                            # (check to prevent overriding files from site-packages
+                            #  in project-template based GeoNode projects)
+                            if getattr(settings, 'LOCAL_ROOT', None) and \
+                            not template_files_folder.startswith(settings.LOCAL_ROOT):
                                 print(
-                                    f"Skipping template directory: {template_files_folder}. It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
+                                    f"Skipping template directory: {template_files_folder}. "
+                                    f"It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
                                 continue
 
                             if config.gs_data_dt_filter[0] is None:
@@ -436,10 +442,13 @@ class Command(BaseCommand):
                         for locale_files_folder in locale_folders:
 
                             # skip restoration of locale files of apps not located under LOCAL_ROOT path
-                            # (check to prevent overriding files from site-packages in project-template based GeoNode projects)
-                            if getattr(settings, 'LOCAL_ROOT', None) and not locale_files_folder.startswith(settings.LOCAL_ROOT):
+                            # (check to prevent overriding files from site-packages
+                            #  in project-template based GeoNode projects)
+                            if getattr(settings, 'LOCAL_ROOT', None) and \
+                            not locale_files_folder.startswith(settings.LOCAL_ROOT):
                                 print(
-                                    f"Skipping locale directory: {locale_files_folder}. It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
+                                    f"Skipping locale directory: {locale_files_folder}. "
+                                    f"It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
                                 continue
 
                             if config.gs_data_dt_filter[0] is None:
@@ -490,7 +499,7 @@ class Command(BaseCommand):
                     restore_notification.apply_async(
                         (admin_emails, backup_file, backup_md5))
 
-                print("HINT: If you migrated from another site, do not forget to run the command 'migrate_baseurl' to fix Links")
+                print("HINT: If you migrated from another site, do not forget to run the command 'migrate_baseurl' to fix Links")  # noqa
                 print(
                     " e.g.:  DJANGO_SETTINGS_MODULE=my_geonode.settings python manage.py migrate_baseurl "
                     "--source-address=my-host-dev.geonode.org --target-address=my-host-prod.geonode.org"
@@ -538,7 +547,7 @@ class Command(BaseCommand):
         for file_name in os.listdir(backup_files_dir):
             file = os.path.join(backup_files_dir, file_name)
             if zipfile.is_zipfile(file):
-                backup_file = file if backup_file is None or os.path.getmtime(file) > os.path.getmtime(backup_file) else backup_file
+                backup_file = file if backup_file is None or os.path.getmtime(file) > os.path.getmtime(backup_file) else backup_file  # noqa
 
         if backup_file is None:
             warnings.warn(
@@ -613,7 +622,8 @@ class Command(BaseCommand):
 
         return None
 
-    def restore_geoserver_backup(self, config, settings, target_folder, skip_geoserver_info, skip_geoserver_security, ignore_errors):
+    def restore_geoserver_backup(self, config, settings, target_folder,
+                                 skip_geoserver_info, skip_geoserver_security, ignore_errors):
         """Restore GeoServer Catalog"""
         url = settings.OGC_SERVER['default']['LOCATION']
         user = settings.OGC_SERVER['default']['USER']

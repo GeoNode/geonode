@@ -36,6 +36,9 @@ from urllib.parse import urlparse, urljoin
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
 from geonode import get_version
 from kombu import Queue, Exchange
+from kombu.serialization import register
+
+from . import serializer
 
 SILENCED_SYSTEM_CHECKS = [
     '1_8.W001',
@@ -88,7 +91,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', _DEFAULT_SECRET_KEY)
 SITE_HOST_SCHEMA = os.getenv('SITE_HOST_SCHEMA', 'http')
 SITE_HOST_NAME = os.getenv('SITE_HOST_NAME', 'localhost')
 SITE_HOST_PORT = os.getenv('SITE_HOST_PORT', 8000)
-_default_siteurl = f"{SITE_HOST_SCHEMA}://{SITE_HOST_NAME}:{SITE_HOST_PORT}/" if SITE_HOST_PORT else f"{SITE_HOST_SCHEMA}://{SITE_HOST_NAME}/"
+_default_siteurl = f"{SITE_HOST_SCHEMA}://{SITE_HOST_NAME}:{SITE_HOST_PORT}/" \
+                   if SITE_HOST_PORT else f"{SITE_HOST_SCHEMA}://{SITE_HOST_NAME}/"
 SITEURL = os.getenv('SITEURL', _default_siteurl)
 
 # we need hostname for deployed
@@ -112,6 +116,7 @@ if DATABASE_URL.startswith("spatialite"):
         if spatialite_version < 5:
             # To workaround Shapely/Spatialite interaction bug for Spatialite < 5
             from shapely import speedups
+            speedups.enable()
     except FileNotFoundError as ex:
         print(ex)
 
@@ -558,7 +563,7 @@ DYNAMIC_REST = {
     # ENABLE_SERIALIZER_OPTIMIZATIONS: enable/disable representation speedups
     'ENABLE_SERIALIZER_OPTIMIZATIONS': True,
 
-    # DEFER_MANY_RELATIONS: automatically defer many-relations, unless 
+    # DEFER_MANY_RELATIONS: automatically defer many-relations, unless
     # `deferred=False` is explicitly set on the field.
     'DEFER_MANY_RELATIONS': False,
 
@@ -943,7 +948,7 @@ GEOSERVER_LOCATION = os.getenv(
 # add trailing slash to geoserver location url.
 if not GEOSERVER_LOCATION.endswith('/'):
     GEOSERVER_LOCATION = f'{GEOSERVER_LOCATION}/'
-    
+
 GEOSERVER_PUBLIC_SCHEMA = os.getenv(
     'GEOSERVER_PUBLIC_SCHEMA', SITE_HOST_SCHEMA
 )
@@ -977,7 +982,8 @@ OGC_SERVER_DEFAULT_PASSWORD = os.getenv(
     'GEOSERVER_ADMIN_PASSWORD', 'geoserver'
 )
 
-GEOFENCE_SECURITY_ENABLED = False if TEST and not INTEGRATION else ast.literal_eval(os.getenv('GEOFENCE_SECURITY_ENABLED', 'True'))
+GEOFENCE_SECURITY_ENABLED = False if TEST and not INTEGRATION \
+    else ast.literal_eval(os.getenv('GEOFENCE_SECURITY_ENABLED', 'True'))
 
 # OGC (WMS/WFS/WCS) Server Settings
 # OGC (WMS/WFS/WCS) Server Settings
@@ -1230,8 +1236,11 @@ try:
     PROXY_ALLOWED_HOSTS = ast.literal_eval(os.getenv('PROXY_ALLOWED_HOSTS'))
 except ValueError:
     # fallback to regular list of values separated with misc chars
-    PROXY_ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode', 'spatialreference.org', 'nominatim.openstreetmap.org', 'dev.openlayers.org'] if os.getenv('PROXY_ALLOWED_HOSTS') is None \
-        else re.split(r' *[,|:|;] *', os.getenv('PROXY_ALLOWED_HOSTS'))
+    PROXY_ALLOWED_HOSTS = [
+        HOSTNAME, 'localhost', 'django', 'geonode',
+        'spatialreference.org', 'nominatim.openstreetmap.org', 'dev.openlayers.org'] \
+            if os.getenv('PROXY_ALLOWED_HOSTS') is None \
+            else re.split(r' *[,|:|;] *', os.getenv('PROXY_ALLOWED_HOSTS'))
 
 # The proxy to use when making cross origin requests.
 PROXY_URL = os.environ.get('PROXY_URL', '/proxy/?url=')
@@ -1409,15 +1418,15 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
         if PYCSW:
             pycsw_config = PYCSW["CONFIGURATION"]
             if pycsw_config:
-                    pycsw_catalogue = {
-                        ("%s" % pycsw_config['metadata:main']['identification_title']): {
-                            "url": CATALOGUE['default']['URL'],
-                            "type": "csw",
-                            "title": pycsw_config['metadata:main']['identification_title'],
-                            "autoload": True
-                         }
-                    }
-                    return pycsw_catalogue
+                pycsw_catalogue = {
+                    ("%s" % pycsw_config['metadata:main']['identification_title']): {
+                        "url": CATALOGUE['default']['URL'],
+                        "type": "csw",
+                        "title": pycsw_config['metadata:main']['identification_title'],
+                        "autoload": True
+                        }
+                }
+                return pycsw_catalogue
         return None
 
     GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
@@ -1440,7 +1449,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     MAPSTORE_CATALOGUE_SELECTED_SERVICE = "Demo WMS Service"
 
     if GEONODE_CATALOGUE_SERVICE:
-        MAPSTORE_CATALOGUE_SERVICES[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]] = GEONODE_CATALOGUE_SERVICE[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]]
+        MAPSTORE_CATALOGUE_SERVICES[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]] = GEONODE_CATALOGUE_SERVICE[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]]  # noqa
         MAPSTORE_CATALOGUE_SELECTED_SERVICE = list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]
 
     DEFAULT_MS2_BACKGROUNDS = [
@@ -1479,19 +1488,6 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "visibility": False,
             "args": ["Empty Background", {"visibility": False}]
        }
-       # Custom XYZ Tile Provider
-        # {
-        #     "type": "tileprovider",
-        #     "title": "Title",
-        #     "provider": "custom", // or undefined
-        #     "name": "Name",
-        #     "group": "background",
-        #     "visibility": false,
-        #     "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        #     "options": {
-        #         "subdomains": [ "a", "b"]
-        #     }
-        # }
     ]
 
     if MAPBOX_ACCESS_TOKEN:
@@ -1502,11 +1498,11 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "name": "MapBox streets-v11",
             "accessToken": "%s" % MAPBOX_ACCESS_TOKEN,
             "source": "streets-v11",
-            "thumbURL": "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/6/33/23?access_token=%s" % MAPBOX_ACCESS_TOKEN,
+            "thumbURL": "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/6/33/23?access_token=%s" % MAPBOX_ACCESS_TOKEN,  # noqa
             "group": "background",
             "visibility": True
         }
-        DEFAULT_MS2_BACKGROUNDS = [BASEMAP,] + DEFAULT_MS2_BACKGROUNDS
+        DEFAULT_MS2_BACKGROUNDS = [BASEMAP, ] + DEFAULT_MS2_BACKGROUNDS
 
     if BING_API_KEY:
         BASEMAP = {
@@ -1518,7 +1514,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "apiKey": "{{apiKey}}",
             "visibility": False
         }
-        DEFAULT_MS2_BACKGROUNDS = [BASEMAP,] + DEFAULT_MS2_BACKGROUNDS
+        DEFAULT_MS2_BACKGROUNDS = [BASEMAP, ] + DEFAULT_MS2_BACKGROUNDS
 
     MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
 
@@ -1545,10 +1541,10 @@ SEARCH_FILTERS = {
 TINYMCE_DEFAULT_CONFIG = {
     "theme": "silver",
     "height": 500,
-    "plugins": 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
+    "plugins": 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',  # noqa
     "imagetools_cors_hosts": ['picsum.photos'],
     "menubar": 'file edit view insert format tools table help',
-    "toolbar": 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save | insertfile image media template link anchor codesample | ltr rtl',
+    "toolbar": 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save | insertfile image media template link anchor codesample | ltr rtl',  # noqa
     "toolbar_sticky": "true",
     "autosave_ask_before_unload": "true",
     "autosave_interval": "30s",
@@ -1567,7 +1563,7 @@ TINYMCE_DEFAULT_CONFIG = {
         {
             "title": 'New Table',
             "description": 'creates a new table',
-            "content": '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>'
+            "content": '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>'  # noqa
         },
         {
             "title": 'Starting my story',
@@ -1577,7 +1573,7 @@ TINYMCE_DEFAULT_CONFIG = {
         {
             "title": 'New list with dates',
             "description": 'New List with dates',
-            "content": '<div class="mceTmpl"><span class="cdate">cdate</span><br /><span class="mdate">mdate</span><h2>My List</h2><ul><li></li><li></li></ul></div>'
+            "content": '<div class="mceTmpl"><span class="cdate">cdate</span><br /><span class="mdate">mdate</span><h2>My List</h2><ul><li></li><li></li></ul></div>'  # noqa
         }
     ],
     "template_cdate_format": '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
@@ -1652,9 +1648,6 @@ CELERY_TASK_ALWAYS_EAGER = ast.literal_eval(os.environ.get('CELERY_TASK_ALWAYS_E
 CELERY_TASK_EAGER_PROPAGATES = ast.literal_eval(os.environ.get('CELERY_TASK_EAGER_PROPAGATES', 'True'))
 CELERY_TASK_IGNORE_RESULT = ast.literal_eval(os.environ.get('CELERY_TASK_IGNORE_RESULT', 'True'))
 
-
-from . import serializer
-from kombu.serialization import register
 register('geonode_json', serializer.dumps, serializer.loads, content_type='application/json', content_encoding='utf-8')
 
 # I use these to debug kombu crashes; we get a more informative message.
@@ -1753,7 +1746,7 @@ CELERY_SEND_TASK_ERROR_EMAILS = ast.literal_eval(os.environ.get('CELERY_SEND_TAS
 # NOTIFICATIONS SETTINGS
 # ########################################################################### #
 NOTIFICATION_ENABLED = ast.literal_eval(os.environ.get('NOTIFICATION_ENABLED', 'True')) or TEST
-#PINAX_NOTIFICATIONS_LANGUAGE_MODEL = "people.Profile"
+# PINAX_NOTIFICATIONS_LANGUAGE_MODEL = "people.Profile"
 
 # notifications backends
 NOTIFICATIONS_BACKEND = os.environ.get('NOTIFICATIONS_BACKEND', 'geonode.notifications_backend.EmailBackend')
@@ -1804,7 +1797,7 @@ if os.name == 'nt':
             GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
         else:
             # maybe it will be found regardless if not it will throw 500 error
-            from django.contrib.gis.geos import GEOSGeometry  # flake8: noqa
+            from django.contrib.gis.geos import GEOSGeometry  # noqa
 
 # Keywords thesauri
 # e.g. THESAURUS = {'name':'inspire_themes', 'required':True, 'filter':True}
@@ -1832,7 +1825,7 @@ if os.name == 'nt':
       3. Superusers can do enything.
 
     - if [ GROUP_PRIVATE_RESOURCES == True ]
-      The "unapproved" and "unpublished" Resources will be accessible **ONLY** by owners, superusers and member of 
+      The "unapproved" and "unpublished" Resources will be accessible **ONLY** by owners, superusers and member of
        the belonging groups.
 
     - if [ GROUP_MANDATORY_RESOURCES == True ]
@@ -1882,7 +1875,7 @@ ACCOUNT_MAX_EMAIL_ADDRESSES = int(os.getenv('ACCOUNT_MAX_EMAIL_ADDRESSES', '2'))
 
 SOCIALACCOUNT_ADAPTER = 'geonode.people.adapters.SocialAccountAdapter'
 SOCIALACCOUNT_AUTO_SIGNUP = ast.literal_eval(os.environ.get('SOCIALACCOUNT_AUTO_SIGNUP', 'True'))
-#This will hide or show local registration form in allauth view. True will show form
+# This will hide or show local registration form in allauth view. True will show form
 SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP = strtobool(os.environ.get('SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP', 'True'))
 
 # Uncomment this to enable Linkedin and Facebook login
@@ -2021,9 +2014,8 @@ USER_ANALYTICS_ENABLED = ast.literal_eval(os.getenv('USER_ANALYTICS_ENABLED', 'F
 USER_ANALYTICS_GZIP = ast.literal_eval(os.getenv('USER_ANALYTICS_GZIP', 'False'))
 
 GEOIP_PATH = os.getenv('GEOIP_PATH', os.path.join(PROJECT_ROOT, 'GeoIPCities.dat'))
-#This controls if tastypie search on resourches is performed only with titles
+# This controls if tastypie search on resourches is performed only with titles
 SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv('SEARCH_RESOURCES_EXTENDED', 'True'))
 # -- END Settings for MONITORING plugin
 
 CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
-

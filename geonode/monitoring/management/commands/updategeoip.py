@@ -67,8 +67,8 @@ class Command(BaseCommand):
         block_size = 1024
         wrote = 0
         with open('output.bin', 'wb') as f:
-            for data in tqdm(r.iter_content(block_size), total=math.ceil(total_size//block_size) , unit='KB', unit_scale=False):
-                wrote = wrote  + len(data)
+            for data in tqdm(r.iter_content(block_size), total=math.ceil(total_size//block_size), unit='KB', unit_scale=False):  # noqa
+                wrote = wrote + len(data)
                 f.write(data)
         logger.info(" total_size [%d] / wrote [%d] " % (total_size, wrote))
         if total_size != 0 and wrote != total_size:
@@ -83,7 +83,6 @@ class Command(BaseCommand):
             os.remove('output.bin')
         except OSError:
             pass
-
 
     def handle_new_format(self, f, fname):
         try:
@@ -105,7 +104,6 @@ class Command(BaseCommand):
                         return
         except Exception as err:
             logger.error("Cannot process %s: %s", f, err, exc_info=err)
-
 
     def handle_old_format(self, f, fname):
         try:
