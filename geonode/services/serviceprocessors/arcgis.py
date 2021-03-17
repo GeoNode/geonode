@@ -31,7 +31,8 @@ from django.utils.translation import ugettext as _
 
 from geonode.base.models import Link
 from geonode.layers.models import Layer
-from geonode.layers.utils import create_thumbnail
+from geonode.thumbs.thumbnails import create_thumbnail
+from geonode.base.bbox_utils import BBOXHelper
 
 from arcrest import MapService as ArcMapService, ImageService as ArcImageService
 
@@ -235,10 +236,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             "alternate": typename,
             "title": layer_meta.title,
             "abstract": layer_meta.abstract,
-            "bbox_x0": bbox[0],
-            "bbox_x1": bbox[2],
-            "bbox_y0": bbox[1],
-            "bbox_y1": bbox[3],
+            "bbox_polygon": BBOXHelper.from_xy([bbox[0], bbox[2], bbox[1], bbox[3]]).as_polygon(),
             "srid": srs,
             "keywords": ['ESRI', 'ArcGIS REST MapServer', layer_meta.title],
         }
@@ -264,29 +262,13 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
     def _create_layer_thumbnail(self, geonode_layer):
         """Create a thumbnail with a WMS request."""
-        params = {
-            "service": "WMS",
-            "version": self.parsed_service.version,
-            "request": "GetMap",
-            "layers": geonode_layer.alternate,
-            "bbox": geonode_layer.bbox_string,
-            "srs": geonode_layer.srid,
-            "crs": geonode_layer.srid,
-            "width": "200",
-            "height": "150",
-            "format": "image/png",
-            "styles": ""
-        }
-        kvp = "&".join("{}={}".format(*item) for item in params.items())
-        thumbnail_remote_url = "{}?{}".format(
-            geonode_layer.remote_service.service_url, kvp)
-        logger.debug("thumbnail_remote_url: {}".format(thumbnail_remote_url))
+
         create_thumbnail(
             instance=geonode_layer,
-            thumbnail_remote_url=thumbnail_remote_url,
-            thumbnail_create_url=None,
-            check_bbox=False,
-            overwrite=True
+            wms_version=self.parsed_service.version,
+            bbox=geonode_layer.bbox,
+            forced_crs=geonode_layer.srid,
+            overwrite=True,
         )
 
     def _create_layer_service_link(self, geonode_layer):

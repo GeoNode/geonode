@@ -1403,7 +1403,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                             storage.path(_upload_path)
                         )
                     except Exception as e:
-                        logger.debug(e)
+                        logger.exception(e)
 
                 try:
                     # Optimize the Thumbnail size and resolution
@@ -1414,9 +1414,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                         (_default_thumb_size['width'], _default_thumb_size['height']),
                         resample=Image.ANTIALIAS)
                     cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']))
-                    cover.save(storage.path(_upload_path), format='JPEG')
+                    cover.save(storage.path(_upload_path), format='PNG')
                 except Exception as e:
-                    logger.debug(e)
+                    logger.exception(e)
 
                 # check whether it is an URI or not
                 parsed = urlsplit(url)
@@ -1447,10 +1447,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     thumbnail_url=url
                 )
         except Exception as e:
-            logger.debug(
-                'Error when generating the thumbnail for resource %s. (%s)' %
-                (self.id, str(e)))
-            logger.warn('Check permissions for file %s.' % upload_path)
+            logger.error(
+                f'Error when generating the thumbnail for resource {self.id}. ({e})'
+            )
+            logger.error(f'Check permissions for file {upload_path}.')
             try:
                 Link.objects.filter(resource=self, name='Thumbnail').delete()
                 _thumbnail_url = staticfiles.static(settings.MISSING_THUMBNAIL)
@@ -1471,9 +1471,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     thumbnail_url=_thumbnail_url
                 )
             except Exception as e:
-                logger.debug(
-                    'Error when generating the thumbnail for resource %s. (%s)' %
-                    (self.id, str(e)))
+                logger.error(
+                    f'Error when generating the thumbnail for resource {self.id}. ({e})'
+                )
 
     def set_missing_info(self):
         """Set default permissions and point of contacts.

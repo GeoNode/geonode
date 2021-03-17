@@ -976,7 +976,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         self.assertIsNotNone(layer)
 
         # Reset GeoFence Rules
-        Layer.objects.all().delete()
         purge_geofence_all()
         geofence_rules_count = get_geofence_rules_count()
         self.assertTrue(geofence_rules_count == 0)
@@ -1005,7 +1004,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
             permissions=permissions,
             execute_signals=True)
 
-        layer = Layer.objects.filter(title='san_andres_y_providencia_poi').first()
+        layer = Layer.objects.get(name=layer[0])
+
         check_layer(layer)
 
         geofence_rules_count = get_geofence_rules_count()
@@ -1119,7 +1119,6 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # self.assertEqual(_content_type, 'image/png')
 
         # Reset GeoFence Rules
-        Layer.objects.all().delete()
         purge_geofence_all()
         geofence_rules_count = get_geofence_rules_count()
         self.assertTrue(geofence_rules_count == 0)
@@ -1544,14 +1543,13 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
             # Layer Manipulation
             from geonode.geoserver.signals import gs_catalog
-            from geonode.geoserver.helpers import (check_geoserver_is_up,
-                                                   get_sld_for,
-                                                   fixup_style,
-                                                   set_layer_style,
-                                                   set_attributes_from_geoserver,
-                                                   set_styles,
-                                                   create_gs_thumbnail,
-                                                   cleanup)
+            from geonode.geoserver.helpers import (
+                check_geoserver_is_up,
+                set_layer_style,
+                set_attributes_from_geoserver,
+                set_styles,
+                create_gs_thumbnail,
+                cleanup)
             check_geoserver_is_up()
 
             admin_user = get_user_model().objects.get(username="admin")
@@ -1586,11 +1584,6 @@ class GisBackendSignalsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                     sld = sld.decode().strip('\n')
                 _log("sld. ------------ %s " % sld)
                 set_layer_style(test_perm_layer, test_perm_layer.alternate, sld)
-
-                fixup_style(gs_catalog, test_perm_layer.alternate, None)
-                self.assertIsNotNone(get_sld_for(gs_catalog, test_perm_layer))
-                _log("fixup_sld. ------------ %s " % get_sld_for(gs_catalog, test_perm_layer))
-
             create_gs_thumbnail(test_perm_layer, overwrite=True)
             self.assertIsNotNone(test_perm_layer.get_thumbnail_url())
 

@@ -31,14 +31,12 @@ from geonode.tests.base import GeoNodeLiveTestSupport
 
 import os.path
 from django.conf import settings
-from django.db import connections, transaction
+from django.db import connections
 from django.contrib.auth import get_user_model
 
-from geonode.maps.models import Map
+from geonode.base.models import Link
 from geonode.layers.models import Layer
 from geonode.upload.models import Upload
-from geonode.documents.models import Document
-from geonode.base.models import Link
 from geonode.catalogue import get_catalogue
 from geonode.tests.utils import upload_step, Client
 from geonode.upload.utils import _ALLOW_TIME_STEP
@@ -177,15 +175,6 @@ class UploaderBase(GeoNodeLiveTestSupport):
             os.unlink(temp_file)
 
         # Cleanup
-        try:
-            with transaction.atomic():
-                Upload.objects.all().delete()
-                Layer.objects.all().delete()
-                Map.objects.all().delete()
-                Document.objects.all().delete()
-        except Exception as e:
-            logger.error(e)
-
         if settings.OGC_SERVER['default'].get(
                 "GEOFENCE_SECURITY_ENABLED", False):
             from geonode.security.utils import purge_geofence_all

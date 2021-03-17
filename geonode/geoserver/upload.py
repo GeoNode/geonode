@@ -199,12 +199,14 @@ def geoserver_upload(
     cat.save(gs_resource)
     publishing = cat.get_layer(name) or gs_resource
     sld = None
-    if 'sld' in files:
-        with open(files['sld'], 'rb') as f:
-            sld = f.read()
-
-    else:
-        sld = get_sld_for(cat, publishing)
+    try:
+        if 'sld' in files:
+            with open(files['sld'], 'rb') as f:
+                sld = f.read()
+        else:
+            sld = get_sld_for(cat, layer)
+    except Exception as e:
+        logger.exception(e)
 
     style = None
     if sld:
@@ -231,29 +233,12 @@ def geoserver_upload(
         if style is None:
             try:
                 style = cat.get_style(name, workspace=workspace) or cat.get_style(name)
-            except Exception:
-                try:
-                    style = cat.get_style(name + '_layer', workspace=workspace) or \
-                        cat.get_style(name + '_layer')
-                    overwrite = style or False
-                    cat.create_style(name + '_layer', sld, overwrite=overwrite, raw=True,
-                                     workspace=workspace)
-                    cat.reset()
-                    style = cat.get_style(name + '_layer', workspace=workspace) or \
-                        cat.get_style(name + '_layer')
-                except geoserver.catalog.ConflictingDataError as e:
-                    msg = ('There was already a style named %s in GeoServer, '
-                           'cannot overwrite: "%s"' % (name, str(e)))
-                    logger.warn(msg)
-                    e.args = (msg,)
-
-                style = cat.get_style(name + "_layer", workspace=workspace) or \
-                    cat.get_style(name + "_layer")
-                if style is None:
-                    style = cat.get_style('point')
-                    msg = ('Could not find any suitable style in GeoServer '
-                           'for Layer: "%s"' % (name))
-                    logger.error(msg)
+            except Exception as e:
+                style = cat.get_style('point')
+                msg = ('Could not find any suitable style in GeoServer '
+                       'for Layer: "%s"' % (name))
+                e.args = (msg,)
+                logger.exception(e)
 
         if style:
             publishing.default_style = style

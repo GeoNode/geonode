@@ -18,7 +18,7 @@
 #
 #########################################################################
 from geonode.tests.base import GeoNodeBaseTestSupport
-
+from django.test import TestCase
 import io
 import os
 import json
@@ -29,6 +29,7 @@ import zipfile
 import tempfile
 import contextlib
 
+from mock import patch
 from pinax.ratings.models import OverallRating
 
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -36,7 +37,7 @@ from django.forms import ValidationError
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.contrib.auth.models import Group
-
+from django.contrib.gis.geos import Polygon
 from django.db.models import Count
 from django.contrib.auth import get_user_model
 
@@ -383,27 +384,6 @@ class LayersTest(GeoNodeBaseTestSupport):
 
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
-
-    def test_layer_thumbnail_generation_managed_errors(self):
-        """
-        Test that 'layer_thumbnail' handles correctly thumbnail generation errors
-        """
-        layer = Layer.objects.all().first()
-        url = reverse('layer_thumbnail', args=(layer.alternate,))
-        # Now test with a valid user
-        self.client.login(username='admin', password='admin')
-
-        # test a method other than POST and GET
-        request_body = {'preview': '\
-"bbox":[1331513.3064995816,1333734.7576341194,5599619.355527631,5600574.818381195],\
-"srid":"EPSG:3857",\
-"center":{"x":11.971165359906351,"y":44.863749562810995,"crs":"EPSG:4326"},\
-"zoom":16,"width":930,"height":400,\
-"layers":"' + layer.alternate + '"}'}
-        response = self.client.post(url, data=request_body)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content.decode('utf-8'), 'Thumbnail saved')
-        self.assertNotEquals(layer.get_thumbnail_url(), settings.MISSING_THUMBNAIL)
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
@@ -1146,7 +1126,8 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
         return paths, suffixes,
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_moderated_upload(self):
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_moderated_upload(self, thumbnail_mock):
         """
         Test if moderation flag works
         """
@@ -1246,10 +1227,7 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             self.client.login(username=self.user, password=self.passwd)
             _l = Layer.objects.create(
                 name='test notifications',
-                bbox_x0=-180,
-                bbox_x1=180,
-                bbox_y0=-90,
-                bbox_y1=90,
+                bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
                 srid='EPSG:4326',
                 owner=self.norman)
             self.assertTrue(self.check_notification_out('layer_created', self.u))
@@ -1367,71 +1345,153 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @override_settings(UPLOADER=GEONODE_REST_UPLOADER)
     def test_geonode_rest_layer_uploader(self):
-        try:
-            PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-            layer_upload_url = reverse('layer_upload')
-            self.client.login(username=self.user, password=self.passwd)
-            # Check upload for each charset
-            thelayer_name = 'ming_female_1'
-            thelayer_path = os.path.join(
-                PROJECT_ROOT,
-                '../tests/data/%s' % thelayer_name)
-            files = dict(
-                base_file=SimpleUploadedFile(
-                    '%s.shp' % thelayer_name,
-                    open(os.path.join(thelayer_path,
-                         '%s.shp' % thelayer_name), mode='rb').read()),
-                shx_file=SimpleUploadedFile(
-                    '%s.shx' % thelayer_name,
-                    open(os.path.join(thelayer_path,
-                         '%s.shx' % thelayer_name), mode='rb').read()),
-                dbf_file=SimpleUploadedFile(
-                    '%s.dbf' % thelayer_name,
-                    open(os.path.join(thelayer_path,
-                         '%s.dbf' % thelayer_name), mode='rb').read()),
-                prj_file=SimpleUploadedFile(
-                    '%s.prj' % thelayer_name,
-                    open(os.path.join(thelayer_path,
-                         '%s.prj' % thelayer_name), mode='rb').read())
+        PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+        layer_upload_url = reverse('layer_upload')
+        self.client.login(username=self.user, password=self.passwd)
+        # Check upload for each charset
+        thelayer_name = 'ming_female_1'
+        thelayer_path = os.path.join(
+            PROJECT_ROOT,
+            '../tests/data/%s' % thelayer_name)
+        files = dict(
+            base_file=SimpleUploadedFile(
+                '%s.shp' % thelayer_name,
+                open(os.path.join(thelayer_path,
+                     '%s.shp' % thelayer_name), mode='rb').read()),
+            shx_file=SimpleUploadedFile(
+                '%s.shx' % thelayer_name,
+                open(os.path.join(thelayer_path,
+                     '%s.shx' % thelayer_name), mode='rb').read()),
+            dbf_file=SimpleUploadedFile(
+                '%s.dbf' % thelayer_name,
+                open(os.path.join(thelayer_path,
+                     '%s.dbf' % thelayer_name), mode='rb').read()),
+            prj_file=SimpleUploadedFile(
+                '%s.prj' % thelayer_name,
+                open(os.path.join(thelayer_path,
+                     '%s.prj' % thelayer_name), mode='rb').read())
+        )
+        files['permissions'] = '{}'
+        files['charset'] = 'windows-1258'
+        files['layer_title'] = 'test layer_{}'.format('windows-1258')
+        resp = self.client.post(layer_upload_url, data=files)
+        # Check response status code
+        if resp.status_code == 200:
+            # Retrieve the layer from DB
+            content = resp.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            data = json.loads(content)
+            # Check success
+            self.assertTrue(data['success'])
+            _lname = data['url'].split(':')[-1]
+            _l = Layer.objects.get(name=_lname)
+            # Check the layer has been published
+            self.assertTrue(_l.is_published)
+            # Check errors
+            self.assertNotIn('errors', data)
+            self.assertNotIn('errormsgs', data)
+            self.assertNotIn('traceback', data)
+            self.assertNotIn('context', data)
+            self.assertNotIn('upload_session', data)
+            self.assertEqual(data['bbox'], _l.bbox_string)
+            self.assertEqual(
+                data['crs'],
+                {
+                    'type': 'name',
+                    'properties': _l.srid
+                }
             )
-            files['permissions'] = '{}'
-            files['charset'] = 'windows-1258'
-            files['layer_title'] = 'test layer_{}'.format('windows-1258')
-            resp = self.client.post(layer_upload_url, data=files)
-            # Check response status code
-            if resp.status_code == 200:
-                # Retrieve the layer from DB
-                content = resp.content
-                if isinstance(content, bytes):
-                    content = content.decode('UTF-8')
-                data = json.loads(content)
-                # Check success
-                self.assertTrue(data['success'])
-                _lname = data['url'].split(':')[-1]
-                _l = Layer.objects.get(name=_lname)
-                # Check the layer has been published
-                self.assertTrue(_l.is_published)
-                # Check errors
-                self.assertNotIn('errors', data)
-                self.assertNotIn('errormsgs', data)
-                self.assertNotIn('traceback', data)
-                self.assertNotIn('context', data)
-                self.assertNotIn('upload_session', data)
-                self.assertEqual(data['bbox'], _l.bbox_string)
-                self.assertEqual(
-                    data['crs'],
-                    {
-                        'type': 'name',
-                        'properties': _l.srid
-                    }
-                )
-                self.assertEqual(
-                    data['ogc_backend'],
-                    settings.OGC_SERVER['default']['BACKEND']
-                )
-                _l.delete()
-        finally:
-            Layer.objects.all().delete()
+            self.assertEqual(
+                data['ogc_backend'],
+                settings.OGC_SERVER['default']['BACKEND']
+            )
+            _l.delete()
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @override_settings(UPLOADER=GEONODE_REST_UPLOADER)
+    @patch('geonode.thumbs.thumbnails.create_thumbnail')
+    def test_geonode_same_UUID_error(self, thumbnail_mock):
+        """
+        Ensure a new layer with same UUID metadata cannot be uploaded
+        """
+        PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+        layer_upload_url = reverse('layer_upload')
+        self.client.login(username=self.user, password=self.passwd)
+        # Check upload for each charset
+        thelayer_name = 'hydrodata'
+        thelayer_path = os.path.join(
+            PROJECT_ROOT,
+            '../tests/data/%s' % thelayer_name)
+        # Uploading the first one should be OK
+        same_uuid_root_file = 'same_uuid_a'
+        files = dict(
+            base_file=SimpleUploadedFile(
+                '%s.shp' % same_uuid_root_file,
+                open(os.path.join(thelayer_path,
+                     '%s.shp' % same_uuid_root_file), mode='rb').read()),
+            shx_file=SimpleUploadedFile(
+                '%s.shx' % same_uuid_root_file,
+                open(os.path.join(thelayer_path,
+                     '%s.shx' % same_uuid_root_file), mode='rb').read()),
+            dbf_file=SimpleUploadedFile(
+                '%s.dbf' % same_uuid_root_file,
+                open(os.path.join(thelayer_path,
+                     '%s.dbf' % same_uuid_root_file), mode='rb').read()),
+            prj_file=SimpleUploadedFile(
+                '%s.prj' % same_uuid_root_file,
+                open(os.path.join(thelayer_path,
+                     '%s.prj' % same_uuid_root_file), mode='rb').read()),
+            xml_file=SimpleUploadedFile(
+                '%s.xml' % same_uuid_root_file,
+                open(os.path.join(thelayer_path,
+                     '%s.xml' % same_uuid_root_file), mode='rb').read())
+        )
+        files['permissions'] = '{}'
+        files['charset'] = 'utf-8'
+        files['layer_title'] = 'test layer_{}'.format(same_uuid_root_file)
+        resp = self.client.post(layer_upload_url, data=files)
+        # Check response status code
+        self.assertEqual(resp.status_code, 200)
+
+        # Uploading the second one should give an ERROR
+        same_uuid_root_file = 'same_uuid_b'
+        files = dict(
+            base_file=SimpleUploadedFile(
+                '%s.shp' % same_uuid_root_file,
+                open(os.path.join(thelayer_path,
+                     '%s.shp' % same_uuid_root_file), mode='rb').read()),
+            shx_file=SimpleUploadedFile(
+                '%s.shx' % same_uuid_root_file,
+                open(os.path.join(thelayer_path,
+                     '%s.shx' % same_uuid_root_file), mode='rb').read()),
+            dbf_file=SimpleUploadedFile(
+                '%s.dbf' % same_uuid_root_file,
+                open(os.path.join(thelayer_path,
+                     '%s.dbf' % same_uuid_root_file), mode='rb').read()),
+            prj_file=SimpleUploadedFile(
+                '%s.prj' % same_uuid_root_file,
+                open(os.path.join(thelayer_path,
+                     '%s.prj' % same_uuid_root_file), mode='rb').read()),
+            xml_file=SimpleUploadedFile(
+                '%s.xml' % same_uuid_root_file,
+                open(os.path.join(thelayer_path,
+                     '%s.xml' % same_uuid_root_file), mode='rb').read())
+        )
+        files['permissions'] = '{}'
+        files['charset'] = 'utf-8'
+        files['layer_title'] = 'test layer_{}'.format(same_uuid_root_file)
+        resp = self.client.post(layer_upload_url, data=files)
+        # Check response status code
+        self.assertEqual(resp.status_code, 400)
+        content = resp.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        data = json.loads(content)
+        # Check errors
+        self.assertFalse(data['success'])
+        self.assertEqual(data['errormsgs'], 'Failed to upload the layer')
+        self.assertEqual(data['errors'], 'The UUID identifier from the XML Metadata is already in use in this system.')
 
 
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
@@ -1547,3 +1607,39 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
         self.assertEqual(response.context['map_layers'], [self.map_layer])
+
+
+'''
+Smoke test to explain how the uuidhandler will override the uuid for the layers
+Documentation of the handler is available here:
+https://github.com/GeoNode/documentation/blob/703cc6ba92b7b7a83637a874fb449420a9f8b78a/basic/settings/index.rst#uuid-handler
+'''
+
+
+class DummyUUIDHandler():
+    def __init__(self, instance):
+        self.instance = instance
+
+    def create_uuid(self):
+        return f'abc:{self.instance.uuid}'
+
+
+class TestCustomUUidHandler(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create(username='test', email='test@test.com')
+        self.sut = Layer.objects.create(
+            name="testLayer", owner=self.user, title='test', is_approved=True, uuid='abc-1234-abc'
+        )
+
+    def test_layer_will_maintain_his_uud_if_no_handler_is_definded(self):
+        expected = "abc-1234-abc"
+        self.assertEqual(expected, self.sut.uuid)
+
+    @override_settings(LAYER_UUID_HANDLER="geonode.layers.tests.DummyUUIDHandler")
+    def test_layer_will_override_the_uuid_if_handler_is_defined(self):
+        self.sut.keywords.add(*["updating", "values"])
+        self.sut.save()
+        expected = "abc:abc-1234-abc"
+        actual = Layer.objects.get(id=self.sut.id)
+        self.assertEqual(expected, actual.uuid)

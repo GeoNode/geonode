@@ -7,7 +7,6 @@ pip-log.txt
 MANIFEST
 dist
 .idea/
-.vscode/
 .pytest_cache/
 pip-wheel-metadata/
 # supporting stuff pulled in by paver script

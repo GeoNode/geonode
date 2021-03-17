@@ -24,7 +24,11 @@
   {% if OPENGRAPH_ENABLED %}
     {% include "base/_resourcebase_opengraph.html" %}
   {% endif %}
-
+  <script type="text/javascript">
+    // this is used by thumbnail.js to POST to the thumbnail update view
+    window.thumbnailUpdateUrl = '{% url 'layer_thumbnail' resource.alternate %}';
+  </script>
+  <script type="text/javascript" src="{% static "geonode/js/utils/thumbnail.js" %}"></script>
   {% get_layer_detail %}
 {{ block.super }}
 {% endblock %}

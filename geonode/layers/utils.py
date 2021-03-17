@@ -32,7 +32,6 @@ import logging
 import tarfile
 
 from datetime import datetime
-from urllib.parse import urlparse
 
 from osgeo import gdal, osr, ogr
 from zipfile import ZipFile, is_zipfile
@@ -51,24 +50,18 @@ from django.core.files.storage import default_storage as storage
 from django.utils.translation import ugettext as _
 
 # Geonode functionality
-from geonode.maps.models import Map
-from geonode.base.auth import get_or_create_token
-from geonode import GeoNodeException, geoserver, qgis_server
+from geonode.base.bbox_utils import BBOXHelper
+from geonode import GeoNodeException, geoserver
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import UploadSession, LayerFile
-from geonode.base.thumb_utils import thumb_exists
-from geonode.base.models import Link, SpatialRepresentationType,  \
+from geonode.base.models import SpatialRepresentationType,  \
     TopicCategory, Region, License, ResourceBase
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Layer
 from geonode.layers.metadata import set_metadata
 from geonode.upload.utils import _fixup_base_file
-from geonode.utils import (http_client,
-                           check_ogc_backend,
+from geonode.utils import (check_ogc_backend,
                            unzip_file,
-                           extract_tarfile,
-                           get_layer_name,
-                           get_layer_workspace,
-                           bbox_to_projection)
+                           extract_tarfile)
 
 READ_PERMISSIONS = [
     'view_resourcebase'
@@ -87,17 +80,6 @@ OWNER_PERMISSIONS = [
     'change_resourcebase_permissions',
     'publish_resourcebase'
 ]
-
-if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    # FIXME: The post service providing the map_status object
-    # should be moved to geonode.geoserver.
-    from geonode.geoserver.helpers import ogc_server_settings
-
-    # Use the http_client with one that knows the username
-    # and password for GeoServer's management user.
-    from geonode.geoserver.helpers import _prepare_thumbnail_body_from_opts
-elif check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-    from geonode.qgis_server.helpers import ogc_server_settings
 
 logger = logging.getLogger('geonode.layers.utils')
 
@@ -238,32 +220,6 @@ def get_files(filename):
                'distinct by spelling and not just case.') % filename
         raise GeoNodeException(msg)
 
-    # Only for QGIS Server
-    if check_ogc_backend(qgis_server.BACKEND_PACKAGE):
-        matches = glob.glob(glob_name + ".[qQ][mM][lL]")
-        logger.debug('Checking QML file')
-        logger.debug('Number of matches QML file : %s' % len(matches))
-        logger.debug('glob name: %s' % glob_name)
-        if len(matches) == 1:
-            files['qml'] = matches[0]
-        elif len(matches) > 1:
-            msg = ('Multiple style files (qml) for %s exist; they need to be '
-                   'distinct by spelling and not just case.') % filename
-            raise GeoNodeException(msg)
-
-        # Provides json files for additional extra data
-        matches = glob.glob(glob_name + ".[jJ][sS][oO][nN]")
-        logger.debug('Checking JSON File')
-        logger.debug(
-            'Number of matches JSON file : %s' % len(matches))
-        logger.debug('glob name: %s' % glob)
-
-        if len(matches) == 1:
-            files['json'] = matches[0]
-        elif len(matches) > 1:
-            msg = ('Multiple json files (json) for %s exist; they need to be '
-                   'distinct by spelling and not just case.') % filename
-            raise GeoNodeException(msg)
     return files
 
 
@@ -603,7 +559,12 @@ def file_upload(filename,
                 assigned_name = os.path.splitext(os.path.basename(the_file))[0]
 
     # Get a bounding box
-    bbox_x0, bbox_x1, bbox_y0, bbox_y1, srid = get_bbox(filename)
+    *bbox, srid = get_bbox(filename)
+    bbox_polygon = BBOXHelper.from_xy(bbox).as_polygon()
+
+    if srid:
+        srid_url = "http://www.spatialreference.org/ref/" + srid.replace(':', '/').lower() + "/"  # noqa
+        bbox_polygon.srid = int(srid.split(':')[1])
 
     # by default, if RESOURCE_PUBLISHING=True then layer.is_published
     # must be set to False
@@ -619,11 +580,8 @@ def file_upload(filename,
         'abstract': abstract,
         'owner': user,
         'charset': charset,
-        'bbox_x0': bbox_x0,
-        'bbox_x1': bbox_x1,
-        'bbox_y0': bbox_y0,
-        'bbox_y1': bbox_y1,
-        'srid': srid,
+        'bbox_polygon': bbox_polygon,
+        'srid': 'EPSG:4326',
         'is_approved': is_approved,
         'is_published': is_published,
         'license': license,
@@ -643,7 +601,14 @@ def file_upload(filename,
 
         if defaults['metadata_uploaded_preserve']:
             defaults['metadata_xml'] = xml_file
-            defaults['uuid'] = identifier
+
+        if identifier:
+            if ResourceBase.objects.filter(uuid=identifier).count():
+                logger.error("The UUID identifier from the XML Metadata is already in use in this system.")
+                raise GeoNodeException(
+                    _("The UUID identifier from the XML Metadata is already in use in this system."))
+            else:
+                defaults['uuid'] = identifier
 
         for key, value in vals.items():
             if key == 'spatial_representation_type':
@@ -701,10 +666,8 @@ def file_upload(filename,
         # update with new information
         defaults['title'] = defaults.get('title', None) or layer.title
         defaults['abstract'] = defaults.get('abstract', None) or layer.abstract
-        defaults['bbox_x0'] = defaults.get('bbox_x0', None) or layer.bbox_x0
-        defaults['bbox_x1'] = defaults.get('bbox_x1', None) or layer.bbox_x1
-        defaults['bbox_y0'] = defaults.get('bbox_y0', None) or layer.bbox_y0
-        defaults['bbox_y1'] = defaults.get('bbox_y1', None) or layer.bbox_y1
+        defaults['bbox_polygon'] = defaults.get('bbox_polygon', None) or layer.bbox_polygon
+        defaults['ll_bbox_polygon'] = defaults.get('ll_bbox_polygon', None) or layer.ll_bbox_polygon
         defaults['is_approved'] = defaults.get(
             'is_approved', is_approved) or layer.is_approved
         defaults['is_published'] = defaults.get(
@@ -945,276 +908,6 @@ def upload(incoming, user=None, overwrite=False,
     return output
 
 
-def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
-                     check_bbox=False, ogc_client=None, overwrite=False,
-                     width=240, height=200):
-    thumbnail_name = None
-    instance.refresh_from_db()
-    if isinstance(instance, Layer):
-        thumbnail_name = 'layer-%s-thumb.png' % instance.uuid
-    elif isinstance(instance, Map):
-        thumbnail_name = 'map-%s-thumb.png' % instance.uuid
-
-    _thumb_exists = thumb_exists(thumbnail_name)
-    if overwrite or not _thumb_exists:
-        BBOX_DIFFERENCE_THRESHOLD = 1e-5
-
-        is_remote = False
-        if not thumbnail_create_url:
-            thumbnail_create_url = thumbnail_remote_url
-            is_remote = True
-
-        if check_bbox:
-            # Check if the bbox is invalid
-            valid_x = (
-                float(
-                    instance.bbox_x0) -
-                float(
-                    instance.bbox_x1)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
-            valid_y = (
-                float(
-                    instance.bbox_y1) -
-                float(
-                    instance.bbox_y0)) ** 2 > BBOX_DIFFERENCE_THRESHOLD
-        else:
-            valid_x = True
-            valid_y = True
-
-        image = None
-
-        if valid_x and valid_y:
-            Link.objects.get_or_create(
-                resource=instance.get_self_resource(),
-                url=thumbnail_remote_url,
-                defaults=dict(
-                    extension='png',
-                    name="Remote Thumbnail",
-                    mime='image/png',
-                    link_type='image')
-            )
-            ResourceBase.objects.filter(id=instance.id) \
-                .update(thumbnail_url=thumbnail_remote_url)
-
-            # Download thumbnail and save it locally.
-            if not ogc_client:
-                ogc_client = http_client
-
-            if ogc_client:
-                headers = {}
-                if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                    if is_remote and thumbnail_remote_url:
-                        try:
-                            _ogc_server_settings = settings.OGC_SERVER['default']
-                            resp, image = ogc_client.request(
-                                thumbnail_remote_url,
-                                headers=headers,
-                                timeout=_ogc_server_settings.get('TIMEOUT', 60))
-                            if 'ServiceException' in image or \
-                                    resp.status_code < 200 or resp.status_code > 299:
-                                msg = 'Unable to obtain thumbnail: %s' % image
-                                logger.error(msg)
-                                # Replace error message with None.
-                                image = None
-                        except Exception:
-                            image = None
-                    if image is None:
-                        request_body = {
-                            'width': width,
-                            'height': height
-                        }
-                        if instance.bbox and \
-                        (not thumbnail_create_url or 'bbox' not in thumbnail_create_url):
-                            instance_bbox = instance.bbox[0:4]
-                            request_body['bbox'] = [str(coord) for coord in instance_bbox]
-                            request_body['srid'] = instance.srid
-
-                        if thumbnail_create_url:
-                            params = urlparse(thumbnail_create_url).query.split('&')
-                            request_body = {key: value for (key, value) in
-                                            [(lambda p: (p.split("=")[0], p.split("=")[1]))(p) for p in params]}
-                            if 'bbox' in request_body and isinstance(request_body['bbox'], str):
-                                request_body['bbox'] = [str(coord) for coord in request_body['bbox'].split(",")]
-                            if 'crs' in request_body and 'srid' not in request_body:
-                                request_body['srid'] = request_body['crs']
-                        elif instance.alternate:
-                            request_body['layers'] = instance.alternate
-
-                        if hasattr(instance, 'default_style'):
-                            if instance.default_style:
-                                request_body['styles'] = instance.default_style.name
-
-                        try:
-                            image = _prepare_thumbnail_body_from_opts(request_body)
-                        except Exception as e:
-                            logger.exception(e)
-                            image = None
-
-                if image is None:
-                    try:
-                        params = {
-                            'width': width,
-                            'height': height
-                        }
-                        # Add the bbox param only if the bbox is different to [None, None,
-                        # None, None]
-                        if None not in instance.bbox:
-                            params['bbox'] = instance.bbox_string
-                            params['crs'] = instance.srid
-
-                        if hasattr(instance, 'default_style'):
-                            if instance.default_style:
-                                params['styles'] = instance.default_style.name
-
-                        for _p in params.keys():
-                            if _p.lower() not in thumbnail_create_url.lower():
-                                thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (str(_p), str(params[_p]))
-                        _ogc_server_settings = settings.OGC_SERVER['default']
-                        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                            _user = _ogc_server_settings.get('USER', 'admin')
-                            _pwd = _ogc_server_settings.get('PASSWORD', 'geoserver')
-                            import base64
-                            valid_uname_pw = base64.b64encode(
-                                ("%s:%s" % (_user, _pwd)).encode("UTF-8")).decode("ascii")
-                            headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
-                        resp, image = ogc_client.request(
-                            thumbnail_create_url,
-                            headers=headers,
-                            timeout=_ogc_server_settings.get('TIMEOUT', 60))
-                        if 'ServiceException' in str(image) or \
-                        resp.status_code < 200 or resp.status_code > 299:
-                            msg = 'Unable to obtain thumbnail: %s' % image
-                            logger.debug(msg)
-
-                            # Replace error message with None.
-                            image = None
-                    except Exception as e:
-                        logger.exception(e)
-                        # Replace error message with None.
-                        image = None
-
-                if image is not None:
-                    instance.save_thumbnail(thumbnail_name, image=image)
-                else:
-                    msg = 'Unable to obtain thumbnail for: %s' % instance
-                    logger.debug(msg)
-                    instance.save_thumbnail(thumbnail_name, image=None)
-                    raise Exception(msg)
-
-
-# this is the original implementation of create_gs_thumbnail()
-def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
-    """
-    Create a thumbnail with a GeoServer request.
-    """
-    layers = None
-    bbox = None  # x0, x1, y0, y1
-    local_layers = []
-    local_bboxes = []
-    if isinstance(instance, Map):
-        # a map could be empty!
-        if not instance.layers:
-            return
-        for layer in instance.layers:
-            if layer.local:
-                # Compute Bounds
-                _layer_name = get_layer_name(layer)
-                _layer_store = layer.store
-                _layer_workspace = get_layer_workspace(layer)
-                _l = None
-                if _layer_store and \
-                Layer.objects.filter(store=_layer_store, workspace=_layer_workspace, name=_layer_name).count() > 0:
-                    _l = Layer.objects.filter(
-                        store=_layer_store,
-                        workspace=_layer_workspace,
-                        name=_layer_name).first()
-                elif _layer_workspace and \
-                Layer.objects.filter(workspace=_layer_workspace, name=_layer_name).count() > 0:
-                    _l = Layer.objects.filter(workspace=_layer_workspace, name=_layer_name).first()
-                elif Layer.objects.filter(alternate=layer.name).count() > 0:
-                    _l = Layer.objects.filter(alternate=layer.name).first()
-                if _l:
-                    wgs84_bbox = bbox_to_projection(_l.bbox)
-                    local_bboxes.append(wgs84_bbox)
-                    if _l.storeType != "remoteStore":
-                        local_layers.append(_l.alternate)
-        layers = ",".join(local_layers)
-    else:
-        # Compute Bounds
-        if instance.store:
-            _ll = Layer.objects.filter(
-                store=instance.store,
-                alternate=instance.alternate)
-        else:
-            _ll = Layer.objects.filter(
-                alternate=instance.alternate)
-        for _l in _ll:
-            if _l.name == instance.name:
-                wgs84_bbox = bbox_to_projection(_l.bbox)
-                local_bboxes.append(wgs84_bbox)
-                if _l.storeType != "remoteStore":
-                    local_layers.append(_l.alternate)
-        layers = ",".join(local_layers)
-
-    if local_bboxes:
-        for _bbox in local_bboxes:
-            if bbox is None:
-                bbox = list(_bbox)
-            else:
-                if float(bbox[0]) > float(_bbox[0]):
-                    bbox[0] = float(_bbox[0])
-                if float(bbox[1]) < float(_bbox[1]):
-                    bbox[1] = float(_bbox[1])
-                if float(bbox[2]) > float(_bbox[2]):
-                    bbox[2] = float(_bbox[2])
-                if float(bbox[3]) < float(_bbox[3]):
-                    bbox[3] = float(_bbox[3])
-
-    wms_endpoint = getattr(ogc_server_settings, 'WMS_ENDPOINT') or 'ows'
-    wms_version = getattr(ogc_server_settings, 'WMS_VERSION') or '1.1.0'
-    wms_format = getattr(ogc_server_settings, 'WMS_FORMAT') or 'image/png'
-
-    params = {
-        'service': 'WMS',
-        'version': wms_version,
-        'request': 'GetMap',
-        'layers': layers,
-        'format': wms_format,
-        # 'TIME': '-99999999999-01-01T00:00:00.0Z/99999999999-01-01T00:00:00.0Z'
-    }
-
-    if bbox:
-        _default_thumb_size = getattr(
-            settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
-        params['bbox'] = "%s,%s,%s,%s" % (bbox[0], bbox[2], bbox[1], bbox[3])
-        params['crs'] = 'EPSG:4326'
-        params['width'] = _default_thumb_size['width']
-        params['height'] = _default_thumb_size['height']
-
-    access_token = None
-    username = ogc_server_settings.credentials.username
-    user = get_user_model().objects.filter(username=username).first()
-    if user:
-        access_token = get_or_create_token(user)
-        if access_token and not access_token.is_expired():
-            params['access_token'] = access_token.token
-
-    # Avoid using urllib.urlencode here because it breaks the url.
-    # commas and slashes in values get encoded and then cause trouble
-    # with the WMS parser.
-    _p = "&".join("%s=%s" % item for item in params.items())
-
-    import posixpath
-    thumbnail_remote_url = posixpath.join(
-        ogc_server_settings.PUBLIC_LOCATION,
-        wms_endpoint) + "?" + _p
-    thumbnail_create_url = posixpath.join(
-        ogc_server_settings.LOCATION,
-        wms_endpoint) + "?" + _p
-
-    create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url,
-                     overwrite=overwrite, check_bbox=check_bbox)
-
-
 def delete_orphaned_layers():
     """Delete orphaned layer files."""
     deleted = []
@@ -1429,3 +1122,8 @@ def set_layers_permissions(permissions_name, resources_names=None,
                         if verbose:
                             logger.info("Permissions successfully updated!")
                             print("Permissions successfully updated!")
+
+
+def get_uuid_handler():
+    from django.utils.module_loading import import_string
+    return import_string(settings.LAYER_UUID_HANDLER)

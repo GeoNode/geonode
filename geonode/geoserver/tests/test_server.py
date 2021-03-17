@@ -21,7 +21,6 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
 import json
-import time
 import base64
 import shutil
 import tempfile
@@ -43,14 +42,11 @@ from geonode.decorators import on_ogc_backend
 
 from geonode.layers.models import Layer, Style
 from geonode.layers.populate_layers_data import create_layer_data
-from geonode.layers.utils import create_gs_thumbnail_geonode
 from geonode.geoserver.helpers import (
     gs_catalog,
     get_sld_for,
     OGC_Servers_Handler,
-    extract_name_from_sld,
-    create_gs_thumbnail,
-    _prepare_thumbnail_body_from_opts)
+    extract_name_from_sld)
 
 import logging
 
@@ -1119,38 +1115,6 @@ class UtilsTests(GeoNodeBaseTestSupport):
             self.assertTrue(wcs_url in _link[3])
             logger.debug('%s --> %s' % (identifier, _link[3]))
             self.assertTrue(identifier in _link[3])
-
-        # Thumbnails Generation Default
-        with self.assertRaises(Exception):
-            create_gs_thumbnail(instance, overwrite=True)
-        self.assertIsNotNone(instance.get_thumbnail_url())
-
-        # Thumbnails Generation Through "remote url"
-        with self.assertRaises(Exception):
-            create_gs_thumbnail_geonode(instance, overwrite=True, check_bbox=True)
-        self.assertIsNotNone(instance.get_thumbnail_url())
-
-        # Thumbnails Generation Through "image"
-        time.sleep(10)
-        instance.refresh_from_db()
-        request_body = {
-            'width': width,
-            'height': height,
-            'layers': instance.alternate
-        }
-        if hasattr(instance, 'default_style') and instance.default_style:
-            request_body['styles'] = instance.default_style.name
-            self.assertIsNotNone(request_body['styles'])
-
-        try:
-            image = _prepare_thumbnail_body_from_opts(request_body)
-            self.assertIsNotNone(image)
-        except Exception as e:
-            logger.exception(e)
-            image = None
-            # We are offline here, the layer does not exists in GeoServer
-            # - we expect the image is None
-            self.assertIsNone(image)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_importer_configuration(self):
