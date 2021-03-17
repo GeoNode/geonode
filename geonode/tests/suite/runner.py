@@ -136,7 +136,7 @@ class ParallelTestSuiteRunner(object):
             group_tests = tests[group]
             del tests[group]
 
-            logger.debug('Running tests in a main process: %s' % (group_tests))
+            logger.debug(f'Running tests in a main process: {group_tests}')
             pending_not_thread_safe_tests[group] = group_tests
             result = self._tests_func(tests=group_tests, worker_index=None)
             results_queue.put((group, result), block=False)
@@ -172,7 +172,7 @@ class ParallelTestSuiteRunner(object):
                                            worker_args=worker_args)
 
         for index, worker in enumerate(workers):
-            logger.debug('Staring worker %s' % (index))
+            logger.debug(f'Staring worker {index}')
             worker.start()
 
         if workers:
@@ -190,7 +190,7 @@ class ParallelTestSuiteRunner(object):
                         else:
                             pending_not_thread_safe_tests.pop(group)
                     except KeyError:
-                        logger.debug('Got a result for unknown group: %s' % (group))
+                        logger.debug(f'Got a result for unknown group: {group}')
                     else:
                         completed_tests[group] = result
                         self._print_result(result)
@@ -234,19 +234,13 @@ class ParallelTestSuiteRunner(object):
                     if stop_event.is_set():
                         # We should stop
                         break
-
                     try:
-                        result = None
                         logger.debug(
-                            'Worker %s is running tests %s' %
-                            (index, tests))
-                        result = self._tests_func(
-                            tests=tests, worker_index=index)
-
+                            f'Worker {index} is running tests {tests}')
+                        result = self._tests_func(tests=tests, worker_index=index)
                         results_queue.put((group, result))
                         logger.debug(
-                            'Worker %s has finished running tests %s' %
-                            (index, tests))
+                            f'Worker {index} has finished running tests {tests}')
                     except (KeyboardInterrupt, SystemExit):
                         if isinstance(self, TwistedParallelTestSuiteRunner):
                             # Twisted raises KeyboardInterrupt when the tests
@@ -255,21 +249,16 @@ class ParallelTestSuiteRunner(object):
                         else:
                             raise
                     except Exception as e:
-                        import traceback
-                        tb = traceback.format_exc()
-                        logger.error(tb)
-                        logger.debug('Running tests failed, reason: %s' % (str(e)))
-
+                        logger.debug(f'Running tests failed, reason: {e}')
                         result = TestResult().from_exception(e)
                         results_queue.put((group, result))
             except Empty:
                 logger.debug(
-                    'Worker %s timed out while waiting for tests to run' %
-                    (index))
+                    f'Worker {index} timed out while waiting for tests to run')
         finally:
             tests_queue.close()
             results_queue.close()
-        logger.debug('Worker %s is stopping' % (index))
+        logger.debug(f'Worker {index} is stopping')
 
     def _pre_tests_func(self):
         # This method gets called before _tests_func is called
@@ -430,8 +419,7 @@ class DjangoParallelTestSuiteRunner(ParallelTestSuiteRunner,
         worker_index = kwargs.get('worker_index', None)
         for alias in connections:
             connection = connections[alias]
-            database_name = 'test_%d_%s' % (
-                worker_index, connection.settings_dict['NAME'])
+            database_name = f"test_{worker_index}_{connection.settings_dict['NAME']}"
             connection.settings_dict['TEST_NAME'] = database_name
 
             item = test_databases.setdefault(

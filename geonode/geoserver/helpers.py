@@ -1449,12 +1449,12 @@ def _create_db_featurestore(name, data, overwrite=False, charset="UTF-8", worksp
         return ds, resource
     except Exception:
         msg = _("An exception occurred loading data to PostGIS")
-        msg += "- %s" % (sys.exc_info()[1])
+        msg += f"- {sys.exc_info()[1]}"
         try:
             delete_from_postgis(name, ds)
         except Exception:
             msg += _(" Additionally an error occured during database cleanup")
-            msg += "- %s" % (sys.exc_info()[1])
+            msg += f"- {sys.exc_info()[1]}"
         raise GeoNodeException(msg)
 
 
@@ -1469,15 +1469,15 @@ def get_store(cat, name, workspace=None):
 
     if workspace:
         try:
-            store = cat.get_xml('%s/%s.xml' % (workspace.datastore_url[:-4], name))
+            store = cat.get_xml(f'{workspace.datastore_url[:-4]}/{name}.xml')
         except FailedRequestError:
             try:
-                store = cat.get_xml('%s/%s.xml' % (workspace.coveragestore_url[:-4], name))
+                store = cat.get_xml(f'{workspace.coveragestore_url[:-4]}/{name}.xml')
             except FailedRequestError:
                 try:
-                    store = cat.get_xml('%s/%s.xml' % (workspace.wmsstore_url[:-4], name))
+                    store = cat.get_xml(f'{workspace.wmsstore_url[:-4]}/{name}.xml')
                 except FailedRequestError:
-                    raise FailedRequestError("No store found named: " + name)
+                    raise FailedRequestError(f"No store found named: {name}")
         if store:
             if store.tag == 'dataStore':
                 store = datastore_from_index(cat, workspace, store)
@@ -1487,9 +1487,9 @@ def get_store(cat, name, workspace=None):
                 store = wmsstore_from_index(cat, workspace, store)
             return store
         else:
-            raise FailedRequestError("No store found named: " + name)
+            raise FailedRequestError(f"No store found named: {name}")
     else:
-        raise FailedRequestError("No store found named: " + name)
+        raise FailedRequestError(f"No store found named: {name}")
 
 
 class ServerDoesNotExist(Exception):
@@ -1743,7 +1743,7 @@ def _stylefilterparams_geowebcache_layer(layer_name):
     headers = {
         "Content-Type": "text/xml"
     }
-    url = '%sgwc/rest/layers/%s.xml' % (ogc_server_settings.LOCATION, layer_name)
+    url = f'{ogc_server_settings.LOCATION}gwc/rest/layers/{layer_name}.xml'
 
     # read GWC configuration
     req, content = http_client.get(
@@ -1918,7 +1918,7 @@ def set_time_info(layer, attribute, end_attribute, presentation,
 
     resolution = None
     if precision_value and precision_step:
-        resolution = '%s %s' % (precision_value, precision_step)
+        resolution = f'{precision_value} {precision_step}'
     info = DimensionInfo("time", enabled, presentation, resolution, "ISO8601",
                          None, attribute=attribute, end_attribute=end_attribute)
     if resource and resource.metadata:

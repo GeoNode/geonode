@@ -323,7 +323,7 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
 def remove_existing_tables(db_name, db_user, db_port, db_host, db_passwd):
     conn = get_db_conn(db_name, db_user, db_port, db_host, db_passwd)
     curs = conn.cursor()
-    table_list = """SELECT tablename from pg_tables where tableowner = '%s'""" % (db_user)
+    table_list = f"""SELECT tablename from pg_tables where tableowner = '{db_user}'"""
 
     try:
         curs.execute(table_list)

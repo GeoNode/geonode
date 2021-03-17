@@ -305,9 +305,8 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                 if item['file'] in not_expected_layers:
                     continue
                 else:
-                    msg = ('Could not upload file "%s", '
-                           'and it is not in %s' % (
-                               item['file'], not_expected_layers))
+                    msg = (f"Could not upload file '{item['file']}', "
+                           f"and it is not in {not_expected_layers}")
                     assert errors, msg
             else:
                 msg = ('Upload should have returned either "name" or '
@@ -680,10 +679,10 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
         uploaded3 = file_upload(thefile, overwrite=False)
         check_layer(uploaded3)
         try:
-            msg = ('Expected %s but got %s' % (uploaded1.name, uploaded2.name))
+            msg = (f'Expected {uploaded1.name} but got {uploaded2.name}')
             assert uploaded1.name == uploaded2.name, msg
-            msg = ('Expected a different name when uploading %s using '
-                   'overwrite=False but got %s' % (thefile, uploaded3.name))
+            msg = (f'Expected a different name when uploading {thefile} using '
+                   f'overwrite=False but got {uploaded3.name}')
             assert uploaded1.name != uploaded3.name, msg
         finally:
             # Clean up and completely delete the layers

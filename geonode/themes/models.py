@@ -207,7 +207,7 @@ class GeoNodeThemeCustomization(models.Model):
 
     def file_link(self):
         if self.logo:
-            return "<a href='%s'>download</a>" % (self.logo.url,)
+            return f"<a href='{self.logo.url}'>download</a>"
         else:
             return "No attachment"
 
@@ -216,7 +216,7 @@ class GeoNodeThemeCustomization(models.Model):
     @property
     def theme_uuid(self):
         if not self.identifier:
-            self.identifier = slugify("theme id %s %s" % (self.id, self.date))
+            self.identifier = slugify(f"theme id {self.id} {self.date}")
         return str(self.identifier)
 
     def __str__(self):

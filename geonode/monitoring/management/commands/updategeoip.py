@@ -70,7 +70,7 @@ class Command(BaseCommand):
             for data in tqdm(r.iter_content(block_size), total=math.ceil(total_size//block_size), unit='KB', unit_scale=False):  # noqa
                 wrote = wrote + len(data)
                 f.write(data)
-        logger.info(" total_size [%d] / wrote [%d] " % (total_size, wrote))
+        logger.info(f" total_size [{total_size}] / wrote [{wrote}] ")
         if total_size != 0 and wrote != total_size:
             logger.info("ERROR, something went wrong")
         else:

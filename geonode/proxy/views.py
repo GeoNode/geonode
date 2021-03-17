@@ -176,10 +176,10 @@ def proxy(request, url=None, response_callback=None,
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         from geonode.geoserver.helpers import ogc_server_settings
         _url = _url.replace(
-            '%s%s' % (settings.SITEURL, 'geoserver'),
+            f'{settings.SITEURL}geoserver',
             ogc_server_settings.LOCATION.rstrip('/'))
         _data = _data.replace(
-            '%s%s' % (settings.SITEURL, 'geoserver'),
+            f'{settings.SITEURL}geoserver',
             ogc_server_settings.LOCATION.rstrip('/'))
 
     response, content = http_client.request(
@@ -236,8 +236,8 @@ def proxy(request, url=None, response_callback=None,
     else:
         # If we get a redirect, let's add a useful message.
         if status and status in (301, 302, 303, 307):
-            _response = HttpResponse(('This proxy does not support redirects. The server in "%s" '
-                                      'asked for a redirect to "%s"' % (url, response.getheader('Location'))),
+            _response = HttpResponse((f"This proxy does not support redirects. The server in '{url}' "
+                                      f"asked for a redirect to '{response.getheader('Location')}'"),
                                      status=status,
                                      content_type=content_type
                                      )

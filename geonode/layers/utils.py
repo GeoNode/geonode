@@ -186,10 +186,9 @@ def get_files(filename):
         for ext, pattern in required_extensions.items():
             matches = glob.glob(glob_name + pattern)
             if len(matches) == 0:
-                msg = ('Expected helper file %s does not exist; a Shapefile '
+                msg = (f'Expected helper file {base_name}.{ext} does not exist; a Shapefile '
                        'requires helper files with the following extensions: '
-                       '%s') % (base_name + "." + ext,
-                                list(required_extensions.keys()))
+                       f'{list(required_extensions.keys())}')
                 raise GeoNodeException(msg)
             elif len(matches) > 1:
                 msg = ('Multiple helper files for %s exist; they need to be '
@@ -283,9 +282,9 @@ def get_valid_name(layer_name):
     while Layer.objects.filter(name=proposed_name).exists():
         possible_chars = string.ascii_lowercase + string.digits
         suffix = "".join([choice(possible_chars) for i in range(4)])
-        proposed_name = '%s_%s' % (name, suffix)
+        proposed_name = f'{name}_{suffix}'
         logger.debug('Requested name already used; adjusting name '
-                     '[%s] => [%s]', layer_name, proposed_name)
+                     f'[{layer_name}] => [{proposed_name}]')
 
     return proposed_name
 
@@ -345,7 +344,7 @@ def get_resolution(filename):
         gtif = gdal.Open(filename)
         gt = gtif.GetGeoTransform()
         __, resx, __, __, __, resy = gt
-        resolution = '%s %s' % (resx, resy)
+        resolution = f'{resx} {resy}'
         return resolution
     except Exception:
         return None
@@ -814,7 +813,7 @@ def upload(incoming, user=None, overwrite=False,
 
     elif not os.path.isdir(incoming):
         msg = ('Please pass a filename or a directory name as the "incoming" '
-               'parameter, instead of %s: %s' % (incoming, type(incoming)))
+               f'parameter, instead of {incoming}: {type(incoming)}')
         logger.exception(msg)
         raise GeoNodeException(msg)
     else:
@@ -910,7 +909,7 @@ def upload(incoming, user=None, overwrite=False,
                         print(msg, file=sys.stderr)
                         raise Exception from e
 
-        msg = "[%s] Layer for '%s' (%d/%d)" % (status, filename, i + 1, number)
+        msg = f"[{status}] Layer for '{filename}' ({i + 1}/{number})"
         info = {'file': filename, 'status': status}
         if status == 'failed':
             info['traceback'] = traceback
@@ -1034,14 +1033,14 @@ def create_thumbnail(instance, thumbnail_remote_url, thumbnail_create_url=None,
 
                         for _p in params.keys():
                             if _p.lower() not in thumbnail_create_url.lower():
-                                thumbnail_create_url = thumbnail_create_url + '&%s=%s' % (str(_p), str(params[_p]))
+                                thumbnail_create_url = f"thumbnail_create_url&{_p}={params[_p]}"
                         _ogc_server_settings = settings.OGC_SERVER['default']
                         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                             _user = _ogc_server_settings.get('USER', 'admin')
                             _pwd = _ogc_server_settings.get('PASSWORD', 'geoserver')
                             import base64
                             valid_uname_pw = base64.b64encode(
-                                ("%s:%s" % (_user, _pwd)).encode("UTF-8")).decode("ascii")
+                                (f"{_user}:{_pwd}").encode("UTF-8")).decode("ascii")
                             headers['Authorization'] = f'Basic {valid_uname_pw}'
                         resp, image = ogc_client.request(
                             thumbnail_create_url,
@@ -1152,7 +1151,7 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     if bbox:
         _default_thumb_size = getattr(
             settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
-        params['bbox'] = "%s,%s,%s,%s" % (bbox[0], bbox[2], bbox[1], bbox[3])
+        params['bbox'] = f"{bbox[0]},{bbox[2]},{bbox[1]},{bbox[3]}"
         params['crs'] = 'EPSG:4326'
         params['width'] = _default_thumb_size['width']
         params['height'] = _default_thumb_size['height']
@@ -1221,9 +1220,7 @@ def set_layers_permissions(permissions_name, resources_names=None,
             resources = Layer.objects.filter(Q(title__in=resources_names) | Q(name__in=resources_names))
         except Layer.DoesNotExist:
             logger.warning(
-                'No resources have been found with these names: %s.' % (
-                    ", ".join(resources_names)
-                )
+                f'No resources have been found with these names: {", ".join(resources_names)}.'
             )
     if not resources:
         logger.warning("No resources have been found. No update operations have been executed.")
@@ -1340,15 +1337,16 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                             perm_spec["users"][_user] = list(u_perms_set)
                                         else:
                                             logger.warning(
-                                                "The user %s does not have "
-                                                "any permission on the layer %s. "
-                                                "It has been skipped." % (_user.username, resource.title)
+                                                f"The user {_user.username} does not have "
+                                                f"any permission on the layer {resource.title}. "
+                                                "It has been skipped."
                                             )
                                     else:
                                         logger.warning(
-                                            "Warning! - The user %s is the layer %s owner, "
+                                            f"Warning! - The user {_user.username} is the "
+                                            f"layer {resource.title} owner, "
                                             "so its permissions can't be changed. "
-                                            "It has been skipped." % (_user.username, resource.title)
+                                            "It has been skipped."
                                         )
                             for g in groups:
                                 _group = g
@@ -1381,8 +1379,9 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                         perm_spec["groups"][g] = list(g_perms_set)
                                     else:
                                         logger.warning(
-                                            "The group %s does not have any permission on the layer %s. "
-                                            "It has been skipped." % (g.name, resource.title)
+                                            f"The group {g.name} does not have any permission "
+                                            f"on the layer {resource.title}. "
+                                            "It has been skipped."
                                         )
                             # Set final permissions
                             resource.set_permissions(perm_spec)

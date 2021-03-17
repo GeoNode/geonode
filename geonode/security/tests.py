@@ -884,7 +884,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
                 e = dlxml.fromstring(wms_capabilities)
                 for atype in e.findall(
-                        "./[wms:Name='%s']/wms:Dimension[@name='time']" % (saved_layer.alternate), namespaces):
+                        f"./[wms:Name='{saved_layer.alternate}']/wms:Dimension[@name='time']", namespaces):
                     dim_name = atype.get('name')
                     if dim_name:
                         dim_name = str(dim_name).lower()

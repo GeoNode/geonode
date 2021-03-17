@@ -618,7 +618,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
     for service, allowed in gf_services.items():
         if layer and layer.name and allowed:
             if _user:
-                logger.debug("Adding 'user' to geofence the rule: %s %s %s" % (layer, service, _user))
+                logger.debug(f"Adding 'user' to geofence the rule: {layer} {service} {_user}")
                 _wkt = None
                 if users_geolimits and users_geolimits.count():
                     _wkt = users_geolimits.last().wkt
@@ -628,7 +628,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
                                               service, request=request, user=_user, allow=enabled)
                 _update_geofence_rule(layer, _layer_name, _layer_workspace, service, user=_user, geo_limit=_wkt)
             elif not _group:
-                logger.debug("Adding to geofence the rule: %s %s *" % (layer, service))
+                logger.debug(f"Adding to geofence the rule: {layer} {service} *")
                 _wkt = None
                 if anonymous_geolimits and anonymous_geolimits.count():
                     _wkt = anonymous_geolimits.last().wkt
@@ -642,7 +642,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
                         _update_geofence_rule(layer, _layer_name, _layer_workspace,
                                               service, request=request, user=_user, allow=enabled)
             if _group:
-                logger.debug("Adding 'group' to geofence the rule: %s %s %s" % (layer, service, _group))
+                logger.debug(f"Adding 'group' to geofence the rule: {layer} {service} {_group}")
                 _wkt = None
                 if groups_geolimits and groups_geolimits.count():
                     _wkt = groups_geolimits.last().wkt
@@ -817,7 +817,6 @@ def sync_resources_with_guardian(resource=None):
                     purge_geofence_layer_rules(r)
                     layer = Layer.objects.get(id=r.id)
                     perm_spec = layer.get_all_level_info()
-                    logger.debug(" %s --------------------------- %s " % (layer, perm_spec))
                     # All the other users
                     if 'users' in perm_spec:
                         for user, perms in perm_spec['users'].items():
@@ -836,7 +835,7 @@ def sync_resources_with_guardian(resource=None):
                     r.clear_dirty_state()
                 except Exception as e:
                     logger.exception(e)
-                    logger.warn("!WARNING! - Failure Synching-up Security Rules for Resource [%s]" % (r))
+                    logger.warn(f"!WARNING! - Failure Synching-up Security Rules for Resource [{r}]")
 
 
 def spec_perms_is_empty(perm_spec):

@@ -87,10 +87,9 @@ def geoserver_upload(
                     assert overwrite, msg
                     existing_type = resource.resource_type
                     if existing_type != the_layer_type:
-                        msg = ('Type of uploaded file %s (%s) '
+                        msg = (f'Type of uploaded file {name} ({the_layer_type}) '
                                'does not match type of existing '
-                               'resource type '
-                               '%s' % (name, the_layer_type, existing_type))
+                               f'resource type {existing_type}')
                         logger.debug(msg)
                         raise GeoNodeException(msg)
 
@@ -108,11 +107,8 @@ def geoserver_upload(
         logger.debug("Uploading raster layer: [%s]", base_file)
         create_store_and_resource = _create_coveragestore
     else:
-        msg = ('The layer type for name %s is %s. It should be '
-               '%s or %s,' % (name,
-                              the_layer_type,
-                              FeatureType.resource_type,
-                              Coverage.resource_type))
+        msg = (f'The layer type for name {name} is {the_layer_type}. It should be '
+               f'{FeatureType.resource_type} or {Coverage.resource_type},')
         logger.warn(msg)
         raise GeoNodeException(msg)
 
@@ -132,18 +128,17 @@ def geoserver_upload(
             overwrite=overwrite,
             workspace=workspace)
     except UploadError as e:
-        msg = ('Could not save the layer %s, there was an upload '
-               'error: %s' % (name, str(e)))
+        msg = (f'Could not save the layer {name}, there was an upload '
+               f'error: {e}')
         logger.warn(msg)
         e.args = (msg,)
         raise
     except ConflictingDataError as e:
         # A datastore of this name already exists
-        msg = ('GeoServer reported a conflict creating a store with name %s: '
-               '"%s". This should never happen because a brand new name '
+        msg = (f'GeoServer reported a conflict creating a store with name {name}: '
+               f'"{e}". This should never happen because a brand new name '
                'should have been generated. But since it happened, '
-               'try renaming the file or deleting the store in '
-               'GeoServer.' % (name, str(e)))
+               'try renaming the file or deleting the store in GeoServer.')
         logger.warn(msg)
         e.args = (msg,)
         raise
@@ -217,13 +212,13 @@ def geoserver_upload(
             cat.create_style(name, sld, overwrite=overwrite, raw=True, workspace=workspace)
             cat.reset()
         except geoserver.catalog.ConflictingDataError as e:
-            msg = ('There was already a style named %s in GeoServer, '
-                   'try to use: "%s"' % (name + "_layer", str(e)))
+            msg = (f'There was already a style named {name}_layer in GeoServer, '
+                   f'try to use: "{e}"')
             logger.warn(msg)
             e.args = (msg,)
         except geoserver.catalog.UploadError as e:
-            msg = ('Error while trying to upload style named %s in GeoServer, '
-                   'try to use: "%s"' % (name + "_layer", str(e)))
+            msg = (f'Error while trying to upload style named {name}_layer in GeoServer, '
+                   f'try to use: "{e}"')
             e.args = (msg,)
             logger.exception(e)
 
@@ -241,8 +236,8 @@ def geoserver_upload(
                     style = cat.get_style(name + '_layer', workspace=workspace) or \
                         cat.get_style(name + '_layer')
                 except geoserver.catalog.ConflictingDataError as e:
-                    msg = ('There was already a style named %s in GeoServer, '
-                           'cannot overwrite: "%s"' % (name, str(e)))
+                    msg = (f'There was already a style named {name} in GeoServer, '
+                           f'cannot overwrite: "{e}"')
                     logger.warn(msg)
                     e.args = (msg,)
 
@@ -251,7 +246,7 @@ def geoserver_upload(
                 if style is None:
                     style = cat.get_style('point')
                     msg = ('Could not find any suitable style in GeoServer '
-                           'for Layer: "%s"' % (name))
+                           f'for Layer: "{name}"')
                     logger.error(msg)
 
         if style:
@@ -260,8 +255,8 @@ def geoserver_upload(
             try:
                 cat.save(publishing)
             except geoserver.catalog.FailedRequestError as e:
-                msg = ('Error while trying to save resource named %s in GeoServer, '
-                       'try to use: "%s"' % (publishing, str(e)))
+                msg = (f'Error while trying to save resource named {publishing} in GeoServer, '
+                       f'try to use: "{e}"')
                 e.args = (msg,)
                 logger.exception(e)
 

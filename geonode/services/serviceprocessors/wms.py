@@ -555,9 +555,9 @@ class GeoNodeServiceHandler(WmsServiceHandler):
 
     def _probe_geonode_wms(self, raw_url):
         url = urlsplit(raw_url)
-        base_url = '%s://%s/' % (url.scheme, url.netloc)
+        base_url = f'{url.scheme}://{url.netloc}/'
         response = requests.get(
-            '%sapi/ows_endpoints/' % base_url, {},
+            f'{base_url}api/ows_endpoints/', {},
             timeout=30,
             verify=False)
         content = response.content
@@ -580,16 +580,16 @@ class GeoNodeServiceHandler(WmsServiceHandler):
                 logger.exception(e)
 
         # OLD-style not OWS Enabled GeoNode
-        _url = "%s://%s/geoserver/ows" % (url.scheme, url.netloc)
+        _url = f"{url.scheme}://{url.netloc}/geoserver/ows"
         return _url
 
     def _enrich_layer_metadata(self, geonode_layer):
         workspace, layername = geonode_layer.name.split(
             ":") if ":" in geonode_layer.name else (None, geonode_layer.name)
         url = urlsplit(self.url)
-        base_url = '%s://%s/' % (url.scheme, url.netloc)
+        base_url = f'{url.scheme}://{url.netloc}/'
         response = requests.get(
-            '%sapi/layers/?name=%s' % (base_url, layername), {},
+            f'{base_url}api/layers/?name={layername}', {},
             timeout=10,
             verify=False)
         content = response.content

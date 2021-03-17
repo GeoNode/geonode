@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 def flip_coordinates(c1, c2):
     if c1 > c2:
-        logger.debug('Flipping coordinates %s, %s' % (c1, c2))
+        logger.debug(f'Flipping coordinates {c1}, {c2}')
         temp = c1
         c1 = c2
         c2 = temp

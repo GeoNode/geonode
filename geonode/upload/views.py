@@ -596,7 +596,7 @@ def final_step_view(req, upload_session):
                         'status': 'pending',
                         'success': True,
                         'id': req.GET['id'],
-                        'redirect_to': '/upload/final' + "?id=%s%s" % (req.GET['id'], force_ajax)
+                        'redirect_to': f"/upload/final?id={req.GET['id']}{force_ajax}"
                     }
                 )
             except Exception as e:

@@ -267,10 +267,8 @@ def layer_style_manage(request, layername):
         except (FailedRequestError, EnvironmentError):
             tb = traceback.format_exc()
             logger.debug(tb)
-            msg = ('Could not connect to geoserver at "%s"'
-                   'to manage style information for layer "%s"' % (
-                       ogc_server_settings.LOCATION, layer.name)
-                   )
+            msg = (f'Could not connect to geoserver at "{ogc_server_settings.LOCATION}"'
+                   f'to manage style information for layer "{layer.name}"')
             logger.debug(msg)
             # If geoserver is not online, return an error
             return render(
@@ -335,8 +333,7 @@ def layer_style_manage(request, layername):
         except (FailedRequestError, EnvironmentError, MultiValueDictKeyError):
             tb = traceback.format_exc()
             logger.debug(tb)
-            msg = ('Error Saving Styles for Layer "%s"' % (layer.name)
-                   )
+            msg = (f'Error Saving Styles for Layer "{layer.name}"')
             logger.warn(msg)
             return render(
                 request,
@@ -485,8 +482,7 @@ def geoserver_proxy(request,
         assert _prefix in path
         prefix_idx = path.index(_prefix)
         _prefix = path[:prefix_idx] + _prefix
-        full_prefix = "%s/%s/%s" % (
-            _prefix, layername, downstream_path) if layername else _prefix
+        full_prefix = f"{_prefix}/{layername}/{downstream_path}" if layername else _prefix
         return path[len(full_prefix):]
 
     path = strip_prefix(request.get_full_path(), proxy_path)
@@ -499,11 +495,11 @@ def geoserver_proxy(request,
         if ws and ws in path:
             # Strip out WS from PATH
             try:
-                path = "/%s" % strip_prefix(path, "/%s:" % (ws))
+                path = f'/{strip_prefix(path, f"/{ws}:")}'
             except Exception:
                 pass
 
-        if proxy_path == '/gs/%s' % settings.DEFAULT_WORKSPACE and layername:
+        if proxy_path == f'/gs/{settings.DEFAULT_WORKSPACE}' and layername:
             import posixpath
             raw_url = urljoin(ogc_server_settings.LOCATION,
                               posixpath.join(workspace, layername, downstream_path, path))
@@ -736,13 +732,11 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
     """
     workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
     if not layer.remote_service:
-        wms_url = '%s%s/%s/wms?service=wms&version=%s&request=GetCapabilities'\
-            % (ogc_server_settings.LOCATION, workspace, layername, version)
+        wms_url = f'{ogc_server_settings.LOCATION}{workspace}/{layername}/wms?service=wms&version={version}&request=GetCapabilities'  # noqa
         if access_token:
             wms_url += ('&access_token=%s' % access_token)
     else:
-        wms_url = '%s?service=wms&version=%s&request=GetCapabilities'\
-            % (layer.remote_service.service_url, version)
+        wms_url = f'{layer.remote_service.service_url}?service=wms&version={version}&request=GetCapabilities'
 
     _user, _password = ogc_server_settings.credentials
     req, content = http_client.get(wms_url, user=_user)
@@ -751,8 +745,7 @@ def get_layer_capabilities(layer, version='1.3.0', access_token=None, tolerant=F
         if tolerant and ('ServiceException' in getcap or req.status_code == 404):
             # WARNING Please make sure to have enabled DJANGO CACHE as per
             # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-            wms_url = '%s%s/ows?service=wms&version=%s&request=GetCapabilities&layers=%s'\
-                % (ogc_server_settings.public_url, workspace, version, layer)
+            wms_url = f'{ogc_server_settings.public_url}{workspace}/ows?service=wms&version={version}&request=GetCapabilities&layers={layer}'  # noqa
             if access_token:
                 wms_url += ('&access_token=%s' % access_token)
             req, content = http_client.get(wms_url, user=_user)

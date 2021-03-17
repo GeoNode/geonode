@@ -321,7 +321,7 @@ def get_web_page(url, username=None, password=None, login_url=None):
         e.args = (msg,)
         raise
     except URLError as e:
-        msg = 'Could not open URL "%s": %s' % (url, e)
+        msg = f'Could not open URL "{url}": {e}'
         e.args = (msg,)
         raise
     else:
@@ -333,9 +333,9 @@ def get_web_page(url, username=None, password=None, login_url=None):
 def check_layer(uploaded):
     """Verify if an object is a valid Layer.
     """
-    msg = ('Was expecting layer object, got %s' % (type(uploaded)))
+    msg = (f'Was expecting layer object, got {type(uploaded)}')
     assert isinstance(uploaded, Layer), msg
-    msg = ('The layer does not have a valid name: %s' % uploaded.name)
+    msg = (f'The layer does not have a valid name: {uploaded.name}')
     assert len(uploaded.name) > 0, msg
 
 

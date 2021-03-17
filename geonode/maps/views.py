@@ -890,9 +890,7 @@ def add_layers_to_map_config(
                 'properties': layer.srid
             }
         # Add required parameters for GXP lazy-loading
-        attribution = "%s %s" % (layer.owner.first_name,
-                                 layer.owner.last_name) if layer.owner.first_name or layer.owner.last_name else str(
-            layer.owner)
+        attribution = f"{layer.owner.first_name} {layer.owner.last_name}" if layer.owner.first_name or layer.owner.last_name else str(layer.owner)  # noqa
         srs = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
         srs_srid = int(srs.split(":")[1]) if srs != "EPSG:900913" else 3857
         config["attribution"] = "<span class='gx-attribution-title'>%s</span>" % attribution
@@ -979,7 +977,7 @@ def add_layers_to_map_config(
                                       'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
                         e = dlxml.fromstring(wms_capabilities)
                         for atype in e.findall(
-                                "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
+                                f"./[wms:Name='{layer.alternate}']/wms:Dimension[@name='time']", namespaces):
                             dim_name = atype.get('name')
                             if dim_name:
                                 dim_name = str(dim_name).lower()
@@ -1026,7 +1024,7 @@ def add_layers_to_map_config(
 
             access_token = request.session['access_token'] if request and 'access_token' in request.session else None
             if access_token and ogc_server_url == layer_url and 'access_token' not in layer.ows_url:
-                url = '%s?access_token=%s' % (layer.ows_url, access_token)
+                url = f'{layer.ows_url}?access_token={access_token}'
             else:
                 url = layer.ows_url
             maplayer = MapLayer(

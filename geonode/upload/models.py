@@ -109,14 +109,13 @@ class Upload(models.Model):
         self.save()
 
     def get_resume_url(self):
-        return reverse('data_upload') + "?id=%s" % self.import_id
+        return f"{reverse('data_upload')}?id={self.import_id}"
 
     def get_delete_url(self):
         return reverse('data_upload_delete', args=[self.import_id])
 
     def get_import_url(self):
-        return "%srest/imports/%s" % (
-            ogc_server_settings.LOCATION, self.import_id)
+        return f"{ogc_server_settings.LOCATION}rest/imports/{self.import_id}"
 
     def delete(self, cascade=True):
         models.Model.delete(self)
@@ -134,10 +133,7 @@ class Upload(models.Model):
                 shutil.rmtree(self.upload_dir)
 
     def __str__(self):
-        return 'Upload [%s] gs%s - %s, %s' % (self.pk,
-                                              self.import_id,
-                                              self.name,
-                                              self.user)
+        return f'Upload [{self.pk}] gs{self.import_id} - {self.name}, {self.user}'
 
 
 class UploadFile(models.Model):

@@ -98,7 +98,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
             method=INDEXED,
             base_url='http://bogus.pocus.com/ows')
         response = self.client.get(
-            '%s?url=%s' % (self.proxy_url, 'http://bogus.pocus.com/ows/wms?request=GetCapabilities'))
+            f'{self.proxy_url}?url=http://bogus.pocus.com/ows/wms?request=GetCapabilities')
         # 200 - FOUND
         self.assertTrue(response.status_code in (200, 301))
 
@@ -119,7 +119,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
         geonode.proxy.views.http_client.request = request_mock
         url = "http://example.org/test/test/../../index.html"
 
-        self.client.get('%s?url=%s' % (self.proxy_url, url))
+        self.client.get(f'{self.proxy_url}?url={url}')
         assert request_mock.call_args[0][0] == 'http://example.org/index.html'
 
 
