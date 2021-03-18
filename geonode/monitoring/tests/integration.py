@@ -78,13 +78,7 @@ DB_PORT = settings.DATABASES['default']['PORT']
 DB_NAME = settings.DATABASES['default']['NAME']
 DB_USER = settings.DATABASES['default']['USER']
 DB_PASSWORD = settings.DATABASES['default']['PASSWORD']
-DATASTORE_URL = 'postgis://{}:{}@{}:{}/{}'.format(
-    DB_USER,
-    DB_PASSWORD,
-    DB_HOST,
-    DB_PORT,
-    DB_NAME
-)
+DATASTORE_URL = f'postgis://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
 
 logging.getLogger('south').setLevel(logging.WARNING)
@@ -161,7 +155,7 @@ class TestClient(DjangoTestClient):
         """
         if 'django.contrib.sessions' not in settings.INSTALLED_APPS:
             raise AssertionError("Unable to login without django.contrib.sessions in INSTALLED_APPS")
-        user.backend = "%s.%s" % ("django.contrib.auth.backends", "ModelBackend")
+        user.backend = f"{'django.contrib.auth.backends'}.{'ModelBackend'}"
 
         # Login
         self.force_login(user, backend=user.backend)
@@ -1923,10 +1917,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             {'name': 'OWS:ALL', 'type_label': 'Any OWS'}
         ]
         # url
-        url = "%s?%s" % (
-            reverse('monitoring:api_event_types'),
-            'ows_service=true'
-        )
+        url = f"{reverse('monitoring:api_event_types')}?{'ows_service=true'}"
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -1964,10 +1955,7 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             {'name': 'geoserver', 'type_label': 'Geoserver event'}
         ]
         # url
-        url = "%s?%s" % (
-            reverse('monitoring:api_event_types'),
-            'ows_service=false'
-        )
+        url = f"{reverse('monitoring:api_event_types')}?{'ows_service=false'}"
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))

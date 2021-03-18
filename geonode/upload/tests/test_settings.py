@@ -17,10 +17,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import os
-from urllib.parse import urlparse, urlunparse
-from geonode.settings import *
+import re
+import ast
+from datetime import timedelta
+from urllib.parse import urlparse
+from geonode import settings
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -40,7 +42,7 @@ HOSTNAME = _surl.hostname
 
 # add trailing slash to site url. geoserver url will be relative to this
 if not SITEURL.endswith('/'):
-    SITEURL = '{}/'.format(SITEURL)
+    SITEURL = f'{SITEURL}/'
 
 ALLOWED_HOSTS = ['localhost', 'geonode', 'django', 'geonode.example.com']
 
@@ -98,18 +100,20 @@ GEOSERVER_LOCATION = os.getenv(
 )
 
 GEOSERVER_PUBLIC_HOST = os.getenv(
-    'GEOSERVER_PUBLIC_HOST', SITE_HOST_NAME
+    'GEOSERVER_PUBLIC_HOST', settings.SITE_HOST_NAME
 )
 
 GEOSERVER_PUBLIC_PORT = os.getenv(
     'GEOSERVER_PUBLIC_PORT', 8080
 )
 
-_default_public_location = 'http://{}:{}/geoserver/'.format(
-    GEOSERVER_PUBLIC_HOST, GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else 'http://{}/geoserver/'.format(GEOSERVER_PUBLIC_HOST)
+if GEOSERVER_PUBLIC_PORT:
+    _default_public_location = f'{settings.GEOSERVER_PUBLIC_SCHEMA}://{settings.GEOSERVER_PUBLIC_HOST}:{settings.GEOSERVER_PUBLIC_PORT}/geoserver/'  # noqa
+else:
+    _default_public_location = f'{settings.GEOSERVER_PUBLIC_SCHEMA}://{settings.GEOSERVER_PUBLIC_HOST}/geoserver/'
 
 GEOSERVER_WEB_UI_LOCATION = os.getenv(
-    'GEOSERVER_WEB_UI_LOCATION', GEOSERVER_LOCATION
+    'GEOSERVER_WEB_UI_LOCATION', settings.GEOSERVER_LOCATION
 )
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv(
@@ -145,7 +149,7 @@ OGC_SERVER = {
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
         'WPS_ENABLED': False,
-        'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
+        'LOG_FILE': f'{os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir))}/geoserver/data/logs/geoserver.log',
         # Set to dictionary identifier of database containing spatial data in DATABASES dictionary to enable
         'DATASTORE': 'datastore',
         'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '60')),
@@ -190,8 +194,9 @@ UPLOADER = {
 MONITORING_ENABLED = ast.literal_eval(os.environ.get('MONITORING_ENABLED', 'False'))
 USER_ANALYTICS_ENABLED = ast.literal_eval(
     os.getenv('USER_ANALYTICS_ENABLED', os.environ.get('MONITORING_ENABLED', 'False')))
-USER_ANALYTICS_GZIP = ast.literal_eval(os.getenv('USER_ANALYTICS_GZIP',
-    os.environ.get('MONITORING_ENABLED', 'False')))
+USER_ANALYTICS_GZIP = ast.literal_eval(
+    os.getenv('USER_ANALYTICS_GZIP',
+              os.environ.get('MONITORING_ENABLED', 'False')))
 
 MONITORING_CONFIG = os.getenv("MONITORING_CONFIG", None)
 MONITORING_HOST_NAME = os.getenv("MONITORING_HOST_NAME", HOSTNAME)
@@ -205,10 +210,10 @@ MONITORING_DATA_TTL = timedelta(days=int(os.getenv("MONITORING_DATA_TTL", 7)))
 MONITORING_DISABLE_CSRF = ast.literal_eval(os.environ.get('MONITORING_DISABLE_CSRF', 'False'))
 
 if MONITORING_ENABLED:
-    if 'geonode.monitoring' not in INSTALLED_APPS:
-        INSTALLED_APPS += ('geonode.monitoring',)
-    if 'geonode.monitoring.middleware.MonitoringMiddleware' not in MIDDLEWARE:
-        MIDDLEWARE += \
+    if 'geonode.monitoring' not in settings.INSTALLED_APPS:
+        settings.INSTALLED_APPS += ('geonode.monitoring',)
+    if 'geonode.monitoring.middleware.MonitoringMiddleware' not in settings.MIDDLEWARE:
+        settings.MIDDLEWARE += \
             ('geonode.monitoring.middleware.MonitoringMiddleware',)
 
     # skip certain paths to not to mud stats too much
@@ -216,8 +221,8 @@ if MONITORING_ENABLED:
                              '/monitoring/',
                              '/admin',
                              '/jsi18n',
-                             STATIC_URL,
-                             MEDIA_URL,
+                             settings.STATIC_URL,
+                             settings.MEDIA_URL,
                              re.compile('^/[a-z]{2}/admin/'),
                              )
 
@@ -232,7 +237,7 @@ if MONITORING_ENABLED:
         (timedelta(days=14), timedelta(days=1),),
     )
 
-    CELERY_BEAT_SCHEDULE['collect_metrics'] = {
+    settings.CELERY_BEAT_SCHEDULE['collect_metrics'] = {
         'task': 'geonode.monitoring.tasks.collect_metrics',
         'schedule': 60.0,
     }

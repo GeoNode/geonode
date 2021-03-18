@@ -87,7 +87,7 @@ class Style(models.Model, PermissionLevelMixin):
     workspace = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return "{0}".format(self.name)
+        return str(self.name)
 
     def absolute_url(self):
         if self.sld_url:
@@ -102,8 +102,7 @@ class Style(models.Model, PermissionLevelMixin):
             return self.sld_url
         else:
             logger.error(
-                "SLD URL is empty for Style %s" %
-                self.name)
+                f"SLD URL is empty for Style {self.name}")
             return None
 
     def get_self_resource(self):
@@ -139,15 +138,15 @@ class UploadSession(models.Model):
         return self.processed and self.errors is None
 
     def __str__(self):
-        _s = "[Upload session-id: {}]".format(self.id)
+        _s = f"[Upload session-id: {self.id}]"
         try:
-            _s += " - {}".format(self.resource.title)
+            _s += f" - {self.resource.title}"
         except Exception:
             pass
-        return "{0}".format(_s)
+        return str(_s)
 
     def __unicode__(self):
-        return "{0}".format(self.__str__())
+        return str(self.__str__())
 
 
 class Layer(ResourceBase):
@@ -251,9 +250,7 @@ class Layer(ResourceBase):
         if self.remote_service is not None and self.remote_service.method == INDEXED:
             result = self.remote_service.service_url
         else:
-            result = "{base}ows".format(
-                base=settings.OGC_SERVER['default']['PUBLIC_LOCATION'],
-            )
+            result = f"{(settings.OGC_SERVER['default']['PUBLIC_LOCATION'])}ows"
         return result
 
     @property
@@ -263,7 +260,7 @@ class Layer(ResourceBase):
     @property
     def service_typename(self):
         if self.remote_service is not None:
-            return "%s:%s" % (self.remote_service.name, self.alternate)
+            return f"{self.remote_service.name}:{self.alternate}"
         else:
             return self.alternate
 
@@ -309,7 +306,7 @@ class Layer(ResourceBase):
         if base_files_count == 0:
             return None, None
 
-        msg = 'There should only be one main file (.shp or .geotiff or .asc), found %s' % base_files_count
+        msg = f'There should only be one main file (.shp or .geotiff or .asc), found {base_files_count}'
         assert base_files_count == 1, msg
 
         # we need to check, for shapefile, if column names are valid
@@ -318,7 +315,7 @@ class Layer(ResourceBase):
             valid_shp, wrong_column_name, list_col = check_shp_columnnames(
                 self)
             if wrong_column_name:
-                msg = 'Shapefile has an invalid column name: %s' % wrong_column_name
+                msg = f'Shapefile has an invalid column name: {wrong_column_name}'
             else:
                 msg = _('File cannot be opened, maybe check the encoding')
             # AF: Removing assertion since if the original file does not exists anymore
@@ -331,7 +328,7 @@ class Layer(ResourceBase):
     def get_absolute_url(self):
         return reverse(
             'layer_detail',
-            args=("%s:%s" % (self.store, self.alternate),)
+            args=(f"{self.store}:{self.alternate}",)
         )
 
     @property
@@ -355,7 +352,7 @@ class Layer(ResourceBase):
         return cfg
 
     def __str__(self):
-        return "{0}".format(self.alternate)
+        return str(self.alternate)
 
     class Meta:
         # custom permissions,
@@ -577,7 +574,7 @@ class Attribute(models.Model):
     objects = AttributeManager()
 
     def __str__(self):
-        return "{0}".format(
+        return str(
             self.attribute_label if self.attribute_label else self.attribute)
 
     def unique_values_as_list(self):
@@ -588,15 +585,11 @@ def _get_alternate_name(instance):
     if instance.remote_service is not None and instance.remote_service.method == INDEXED:
         result = instance.name
     elif instance.remote_service is not None and instance.remote_service.method == CASCADED:
-        result = "{}:{}".format(
-            getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE),
-            instance.name
-        )
+        _ws = getattr(settings, "CASCADE_WORKSPACE", _DEFAULT_CASCADE_WORKSPACE)
+        result = f"{_ws}:{instance.name}"
     else:  # we are not dealing with a service-related instance
-        result = "{}:{}".format(
-            getattr(settings, "DEFAULT_WORKSPACE", _DEFAULT_WORKSPACE),
-            instance.name
-        )
+        _ws = getattr(settings, "DEFAULT_WORKSPACE", _DEFAULT_WORKSPACE)
+        result = f"{_ws}:{instance.name}"
     return result
 
 
@@ -632,7 +625,7 @@ def pre_save_layer(instance, sender, **kwargs):
     logger.debug("In pre_save_layer")
     if instance.alternate is None:
         instance.alternate = _get_alternate_name(instance)
-    logger.debug("instance.alternate is: {}".format(instance.alternate))
+    logger.debug(f"instance.alternate is: {instance.alternate}")
 
     base_file, info = instance.get_base_file()
 
@@ -640,7 +633,7 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.info = info
 
     if base_file is not None:
-        extension = '.%s' % base_file.name
+        extension = f'.{base_file.name}'
         if extension in vec_exts:
             instance.storeType = 'dataStore'
         elif extension in cov_exts:
@@ -655,7 +648,7 @@ def pre_save_layer(instance, sender, **kwargs):
     # Send a notification when a layer is created
     if instance.pk is None and instance.title:
         # Resource Created
-        notice_type_label = '%s_created' % instance.class_name.lower()
+        notice_type_label = f'{instance.class_name.lower()}_created'
         recipients = get_notification_recipients(notice_type_label, resource=instance)
         send_notification(recipients, notice_type_label, {'resource': instance})
 

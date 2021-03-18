@@ -153,12 +153,10 @@ class LayerUploadForm(forms.Form):
                 "uploaded a %s file" % base_ext)
         elif cleaned["metadata_upload_form"] and base_ext.lower() not in (".xml"):
             raise forms.ValidationError(
-                "Only XML files are supported. You uploaded a %s file" %
-                base_ext)
+                f"Only XML files are supported. You uploaded a {base_ext} file")
         elif cleaned["style_upload_form"] and base_ext.lower() not in (".sld"):
             raise forms.ValidationError(
-                "Only SLD files are supported. You uploaded a %s file" %
-                base_ext)
+                f"Only SLD files are supported. You uploaded a {base_ext} file")
 
         if base_ext.lower() == ".shp":
             if dbf_file is None or shx_file is None:
@@ -183,14 +181,14 @@ class LayerUploadForm(forms.Form):
                         # force rename of file so that file.shp.xml doesn't
                         # overwrite as file.shp
                         if cleaned.get("xml_file"):
-                            cleaned["xml_file"].name = '%s.xml' % base_name
+                            cleaned["xml_file"].name = f'{base_name}.xml'
             if sld_file is not None:
                 if os.path.splitext(sld_file)[0] != base_name:
                     if sld_file.find('.shp') != -1:
                         # force rename of file so that file.shp.xml doesn't
                         # overwrite as file.shp
                         if cleaned.get("sld_file"):
-                            cleaned["sld_file"].name = '%s.sld' % base_name
+                            cleaned["sld_file"].name = f'{base_name}.sld'
         return cleaned
 
     def write_files(self):

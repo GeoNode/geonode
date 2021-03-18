@@ -47,9 +47,9 @@ def setup_test_db(worker_index, fixtures, fn, *args):
 
     old_name = settings.DATABASES['default']['NAME']
     if worker_index is not None:
-        test_database_name = 'test_%d_%s' % (worker_index, old_name)
+        test_database_name = f'test_{worker_index}_{old_name}'
     else:
-        test_database_name = 'test_%s' % (old_name)
+        test_database_name = f'test_{old_name}'
 
     create_test_db(test_database_name)
     if fixtures:

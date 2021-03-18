@@ -101,7 +101,7 @@ class LoginRequiredMiddleware(MiddlewareMixin):
 
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(
-                    "{login_path}?next={request_path}".format(login_path=self.redirect_to, request_path=request.path)
+                    f"{self.redirect_to}?next={request.path}"
                 )
 
 
@@ -143,6 +143,4 @@ class SessionControlMiddleware(MiddlewareMixin):
 
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(
-                    '{login_path}?next={request_path}'.format(
-                        login_path=self.redirect_to,
-                        request_path=request.path))
+                    f'{self.redirect_to}?next={request.path}')

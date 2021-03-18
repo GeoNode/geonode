@@ -97,7 +97,7 @@ def register_event(request, event_type, resource):
         resource_name = getattr(resource, 'alternate', None) or resource.title
         resource_id = resource.id
     else:
-        raise ValueError("Invalid resource: {}".format(resource))
+        raise ValueError(f"Invalid resource: {resource}")
     if request and hasattr(request, 'register_event'):
         request.register_event(event_type, resource_type, resource_name, resource_id)
 

@@ -102,7 +102,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
             if _u:
                 validated_data[_key] = _u
             else:
-                raise ValidationError("The specified '{}' does not exist!".format(_key))
+                raise ValidationError(f"The specified '{_key}' does not exist!")
 
     def extra_create_checks(self, validated_data):
         if 'name' not in validated_data or \

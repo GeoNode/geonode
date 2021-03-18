@@ -503,7 +503,7 @@ class ResourceBaseForm(TranslationModelForm):
                     _kk = _kk.replace('%u', r'\u').encode('unicode-escape').replace(
                         b'\\\\u',
                         b'\\u').decode('unicode-escape') if '%u' in _kk else _kk
-                    _hk = HierarchicalKeyword.objects.filter(name__iexact='%s' % _kk.strip())
+                    _hk = HierarchicalKeyword.objects.filter(name__iexact=f'{_kk.strip()}')
                     if _hk and len(_hk) > 0:
                         _unsescaped_kwds.append(str(_hk[0]))
                     else:
