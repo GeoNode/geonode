@@ -1369,10 +1369,10 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
         """
 
         filename_suffix_list = [
-        'structure',        # lower case default category
-        'planningCadastre', # mixed case default category
-        'NewCategory',      # new category; created during import
-        'NoCategory']       # no category (gmd:topicCategory gco:nilReason="missing"); maps to None
+            'structure',         # lower case default category
+            'planningCadastre',  # mixed case default category
+            'NewCategory',       # new category; created during import
+            'NoCategory']        # no category (gmd:topicCategory gco:nilReason="missing"); maps to None
 
         PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
         layer_upload_url = reverse('layer_upload')
@@ -1383,9 +1383,11 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
 
         for fnsuffix in filename_suffix_list:
             files = dict(
-                base_file=SimpleUploadedFile(thelayer_basename + '_' + fnsuffix + '.kml',
+                base_file=SimpleUploadedFile(
+                    thelayer_basename + '_' + fnsuffix + '.kml',
                     open(thelayer_path + thelayer_basename + '_' + fnsuffix + '.kml', mode='rb').read()),
-                xml_file=SimpleUploadedFile(thelayer_basename + '_' + fnsuffix + '.xml',
+                xml_file=SimpleUploadedFile(
+                    thelayer_basename + '_' + fnsuffix + '.xml',
                     open(thelayer_path + thelayer_basename + '_' + fnsuffix + '.xml', mode='rb').read())
             )
             files['permissions'] = '{}'
@@ -1418,7 +1420,6 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
                     category_object = TopicCategory.objects.get(identifier=fnsuffix)
 
                 self.assertEqual(_l.category, category_object)
-
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @override_settings(UPLOADER=GEONODE_REST_UPLOADER)
