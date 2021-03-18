@@ -21,7 +21,6 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
 import json
-import time
 import base64
 import shutil
 import tempfile
@@ -43,14 +42,11 @@ from geonode.decorators import on_ogc_backend
 
 from geonode.layers.models import Layer, Style
 from geonode.layers.populate_layers_data import create_layer_data
-from geonode.layers.utils import create_gs_thumbnail_geonode
 from geonode.geoserver.helpers import (
     gs_catalog,
     get_sld_for,
     OGC_Servers_Handler,
-    extract_name_from_sld,
-    create_gs_thumbnail,
-    _prepare_thumbnail_body_from_opts)
+    extract_name_from_sld)
 
 import logging
 
@@ -1085,9 +1081,9 @@ class UtilsTests(GeoNodeBaseTestSupport):
         wms_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wms')
         identifier = urlencode({'layers': instance.alternate})
         for _link in wms_links:
-            logger.debug('%s --> %s' % (wms_url, _link[3]))
+            logger.debug(f'{wms_url} --> {_link[3]}')
             self.assertTrue(wms_url in _link[3])
-            logger.debug('%s --> %s' % (identifier, _link[3]))
+            logger.debug(f'{identifier} --> {_link[3]}')
             self.assertTrue(identifier in _link[3])
 
         # WFS Links
@@ -1100,9 +1096,9 @@ class UtilsTests(GeoNodeBaseTestSupport):
         wfs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wfs')
         identifier = urlencode({'typename': instance.alternate})
         for _link in wfs_links:
-            logger.debug('%s --> %s' % (wfs_url, _link[3]))
+            logger.debug(f'{wfs_url} --> {_link[3]}')
             self.assertTrue(wfs_url in _link[3])
-            logger.debug('%s --> %s' % (identifier, _link[3]))
+            logger.debug(f'{identifier} --> {_link[3]}')
             self.assertTrue(identifier in _link[3])
 
         # WCS Links
@@ -1115,42 +1111,10 @@ class UtilsTests(GeoNodeBaseTestSupport):
         wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wcs')
         identifier = urlencode({'coverageid': instance.alternate.replace(':', '__', 1)})
         for _link in wcs_links:
-            logger.debug('%s --> %s' % (wcs_url, _link[3]))
+            logger.debug(f'{wcs_url} --> {_link[3]}')
             self.assertTrue(wcs_url in _link[3])
-            logger.debug('%s --> %s' % (identifier, _link[3]))
+            logger.debug(f'{identifier} --> {_link[3]}')
             self.assertTrue(identifier in _link[3])
-
-        # Thumbnails Generation Default
-        with self.assertRaises(Exception):
-            create_gs_thumbnail(instance, overwrite=True)
-        self.assertIsNotNone(instance.get_thumbnail_url())
-
-        # Thumbnails Generation Through "remote url"
-        with self.assertRaises(Exception):
-            create_gs_thumbnail_geonode(instance, overwrite=True, check_bbox=True)
-        self.assertIsNotNone(instance.get_thumbnail_url())
-
-        # Thumbnails Generation Through "image"
-        time.sleep(10)
-        instance.refresh_from_db()
-        request_body = {
-            'width': width,
-            'height': height,
-            'layers': instance.alternate
-        }
-        if hasattr(instance, 'default_style') and instance.default_style:
-            request_body['styles'] = instance.default_style.name
-            self.assertIsNotNone(request_body['styles'])
-
-        try:
-            image = _prepare_thumbnail_body_from_opts(request_body)
-            self.assertIsNotNone(image)
-        except Exception as e:
-            logger.exception(e)
-            image = None
-            # We are offline here, the layer does not exists in GeoServer
-            # - we expect the image is None
-            self.assertIsNone(image)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_importer_configuration(self):
@@ -1253,18 +1217,14 @@ class SignalsTests(GeoNodeBaseTestSupport):
                 )
                 self.assertTrue(
                     _post_migrate_links_orig.count() > 0,
-                    "No 'original' links has been found for the layer '{}'".format(
-                        _lyr.alternate
-                    )
+                    f"No 'original' links has been found for the layer '{_lyr.alternate}'"
                 )
                 for _link_orig in _post_migrate_links_orig:
                     self.assertIn(
                         _link_orig.url,
                         _lyr.csw_anytext,
-                        "The link URL {0} is not present in the 'csw_anytext' attribute of the layer '{1}'".format(
-                            _link_orig.url,
-                            _lyr.alternate
-                        )
+                        f"The link URL {_link_orig.url} is not present in the 'csw_anytext' \
+attribute of the layer '{_lyr.alternate}'"
                     )
                 # Check catalogue
                 catalogue = get_catalogue()
@@ -1272,9 +1232,7 @@ class SignalsTests(GeoNodeBaseTestSupport):
                 self.assertIsNotNone(record)
                 self.assertTrue(
                     hasattr(record, 'links'),
-                    "No records have been found in the catalogue for the resource '{}'".format(
-                        _lyr.alternate
-                    )
+                    f"No records have been found in the catalogue for the resource '{_lyr.alternate}'"
                 )
                 # Check 'metadata' links for each record
                 for mime, name, metadata_url in record.links['metadata']:
@@ -1291,8 +1249,5 @@ class SignalsTests(GeoNodeBaseTestSupport):
                         _post_migrate_link_meta = None
                     self.assertIsNotNone(
                         _post_migrate_link_meta,
-                        "No '{}' links have been found in the catalogue for the resource '{}'".format(
-                            name,
-                            _lyr.alternate
-                        )
+                        f"No '{name}' links have been found in the catalogue for the resource '{_lyr.alternate}'"
                     )

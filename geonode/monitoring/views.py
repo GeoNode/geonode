@@ -145,9 +145,9 @@ class CheckTypeForm(_ValidFromToLastForm):
         val = d[tname]
         if not val:
             return
-        tcheck = getattr(TypeChecks, '{}_type'.format(tname), None)
+        tcheck = getattr(TypeChecks, f'{tname}_type', None)
         if not tcheck:
-            raise forms.ValidationError("No type check for {}".format(tname))
+            raise forms.ValidationError(f"No type check for {tname}")
         try:
             return tcheck(val)
         except (Exception,) as err:
@@ -522,7 +522,7 @@ class BeaconView(View):
             ex = exposes[service]()
         except KeyError:
             return json_response(
-                errors={'exposed': 'No service for {}'.format(service)}, status=404)
+                errors={'exposed': f'No service for {service}'}, status=404)
         out = {'data': ex.expose(),
                'timestamp': datetime.utcnow().replace(tzinfo=pytz.utc)}
         return json_response(out)
@@ -565,7 +565,7 @@ class MetricNotificationCheckForm(forms.ModelForm):
         try:
             return cls.objects.get(name=val)
         except cls.DoesNotExist:
-            raise forms.ValidationError("Invalid {}: {}".format(name, val))
+            raise forms.ValidationError(f"Invalid {name}: {val}")
 
     def clean_metric(self):
         return self._get_clean_model(Metric, 'metric')
@@ -587,11 +587,11 @@ class MetricNotificationCheckForm(forms.ModelForm):
             vtype, vname = val.split('=')
         except IndexError:
             raise forms.ValidationError(
-                "Invalid resource name: {}".format(val))
+                f"Invalid resource name: {val}")
         try:
             return MonitoredResource.objects.get(name=vname, type=vtype)
         except MonitoredResource.DoesNotExist:
-            raise forms.ValidationError("Invalid resource: {}".format(val))
+            raise forms.ValidationError(f"Invalid resource: {val}")
 
 
 class UserNotificationConfigView(View):

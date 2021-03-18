@@ -45,7 +45,7 @@ def sync_geonode_maps(ignore_errors,
     for map in maps:
         try:
             count += 1
-            print("Syncing map %s/%s: %s" % (count, maps_count, map.title))
+            print(f"Syncing map {count}/{maps_count}: {map.title}")
             if updatethumbnails:
                 print("Regenerating thumbnails...")
                 create_gs_thumbnail(map, overwrite=True, check_bbox=False)
@@ -64,9 +64,9 @@ def sync_geonode_maps(ignore_errors,
                 traceback.print_exc()
                 print("Stopping process because --ignore-errors was not set and an error was found.")
                 return
-    print("There are {} maps which could not be updated because of errors".format(len(map_errors)))
+    print(f"There are {len(map_errors)} maps which could not be updated because of errors")
     for map_error in map_errors:
-         print(map_error)
+        print(map_error)
 
 
 class Command(BaseCommand):
