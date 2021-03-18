@@ -1342,6 +1342,66 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @override_settings(UPLOADER=GEONODE_REST_UPLOADER)
+    def test_geonode_upload_kml_and_import_isocategory(self):
+        """
+        Ensure a KML-File can be uploaded and the category is imported correctly from accompanying ISO-XML
+        """
+
+        filename_suffix_list = [
+            'structure',         # lower case default category
+            'planningCadastre',  # mixed case default category
+            'NewCategory',       # new category; created during import
+            'NoCategory']        # no category (gmd:topicCategory gco:nilReason="missing"); maps to None
+
+        PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+        layer_upload_url = reverse('layer_upload')
+        self.client.login(username=self.user, password=self.passwd)
+
+        thelayer_basename = 'Thuenen_BD_BT1'
+        thelayer_path = os.path.join(PROJECT_ROOT, '../tests/data/kml/')
+
+        for fnsuffix in filename_suffix_list:
+            files = dict(
+                base_file=SimpleUploadedFile(
+                    thelayer_basename + '_' + fnsuffix + '.kml',
+                    open(thelayer_path + thelayer_basename + '_' + fnsuffix + '.kml', mode='rb').read()),
+                xml_file=SimpleUploadedFile(
+                    thelayer_basename + '_' + fnsuffix + '.xml',
+                    open(thelayer_path + thelayer_basename + '_' + fnsuffix + '.xml', mode='rb').read())
+            )
+            files['permissions'] = '{}'
+            files['charset'] = 'utf-8'
+            files['layer_title'] = 'Thuenen_BD_BT1'
+            resp = self.client.post(layer_upload_url, data=files)
+            # Check response status code
+            self.assertEqual(resp.status_code, 200)
+
+            # Check response status code
+            if resp.status_code == 200:
+                content = resp.content
+                if isinstance(content, bytes):
+                    content = content.decode('UTF-8')
+                data = json.loads(content)
+
+                # Check success
+                self.assertTrue(data['success'])
+
+                # Retrieve the layer from DB
+                # the name may have changed (lowercase/suffix, ... e.g. 'url': '/layers/:geonode:thuenen_bd_bt1_dgyy')
+                _lname = data['url'].split(':')[-1]
+                _l = Layer.objects.get(name=_lname)
+
+                # except for NoCategory
+                # each layer must have a geonode category object with exactly same identifier
+                if fnsuffix == 'NoCategory':
+                    category_object = None
+                else:
+                    category_object = TopicCategory.objects.get(identifier=fnsuffix)
+
+                self.assertEqual(_l.category, category_object)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @override_settings(UPLOADER=GEONODE_REST_UPLOADER)
     def test_geonode_rest_layer_uploader(self):
         PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
         layer_upload_url = reverse('layer_upload')
