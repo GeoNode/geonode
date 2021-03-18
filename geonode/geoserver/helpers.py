@@ -76,7 +76,6 @@ import xml.etree.ElementTree as ET
 from django.utils.module_loading import import_string
 
 
-
 logger = logging.getLogger(__name__)
 
 temp_style_name_regex = r'[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}_ms_.*'
