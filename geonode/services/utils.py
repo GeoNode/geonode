@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 def flip_coordinates(c1, c2):
     if c1 > c2:
-        logger.debug('Flipping coordinates %s, %s' % (c1, c2))
+        logger.debug(f'Flipping coordinates {c1}, {c2}')
         temp = c1
         c1 = c2
         c2 = temp
@@ -124,7 +124,7 @@ def decimal_encode(bbox):
         except Exception:
             o = None if 'EPSG' not in o else o
         if o and isinstance(o, float):
-            _bbox.append("{0:.15f}".format(round(o, 2)))
+            _bbox.append(f"{round(o, 2):.15f}")
         elif o and 'EPSG' in o:
             _srid = o
     _bbox = _bbox if not _srid else _bbox + [_srid]

@@ -29,4 +29,3 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         sync_resources_with_guardian()
-

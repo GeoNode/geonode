@@ -50,7 +50,7 @@ if __name__ == '__main__':
     try:
         _, bucket_name, filepath = sys.argv
     except ValueError:
-        print(("Usage:\n    python %s bucket_name filepath" % sys.argv[0]))
+        print(f"Usage:\n    python {sys.argv[0]} bucket_name filepath")
 
     filename = os.path.basename(filepath)
     error = upload_file_s3(filepath, bucket_name)

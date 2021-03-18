@@ -307,9 +307,10 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
     def test_inbox_redirects_when_not_logged_in(self):
         target_url = reverse("messages_inbox")
         response = self.client.get(target_url)
+        account_login_url = reverse("account_login")
         self.assertRedirects(
             response,
-            "{}{}?next=http%3A//testserver{}".format(settings.SITEURL[:-1], reverse("account_login"), target_url)
+            f"{settings.SITEURL[:-1]}{account_login_url}?next=http%3A//testserver{target_url}"
         )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -328,9 +329,10 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
     def test_new_message_redirects_when_not_logged_in(self):
         target_url = reverse("message_create", args=(self.first_user.id,))
         response = self.client.get(target_url)
+        account_login_url = reverse("account_login")
         self.assertRedirects(
             response,
-            "{}{}?next=http%3A//testserver{}".format(settings.SITEURL[:-1], reverse("account_login"), target_url)
+            f"{settings.SITEURL[:-1]}{account_login_url}?next=http%3A//testserver{target_url}"
         )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -349,7 +351,8 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
     def test_thread_detail_redirects_when_not_logged_in(self):
         target_url = reverse("messages_thread_detail", args=(self.thread.id,))
         response = self.client.get(target_url)
+        account_login_url = reverse("account_login")
         self.assertRedirects(
             response,
-            "{}{}?next=http%3A//testserver{}".format(settings.SITEURL[:-1], reverse("account_login"), target_url)
+            f"{settings.SITEURL[:-1]}{account_login_url}?next=http%3A//testserver{target_url}"
         )

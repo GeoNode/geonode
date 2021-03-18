@@ -22,7 +22,6 @@ import os
 import json
 
 # import needed to resolve model filters:
-from django.db.models import Q
 from django.db import transaction, IntegrityError
 from django.core.management.base import BaseCommand, CommandError
 
@@ -76,10 +75,12 @@ class Command(BaseCommand):
 
         # check argument set
         if all(config is None for config in {layer_filters, map_filters, document_filters, config_path}):
-            raise CommandError("No configuration provided. Please specify any of the following arguments: '-l', '-m', '-d', '-c'.")
+            raise CommandError(
+                "No configuration provided. Please specify any of the following arguments: '-l', '-m', '-d', '-c'.")
 
         if any([layer_filters, map_filters, document_filters]) and config_path:
-            raise CommandError("Too many configuration options provided. Please use either '-c' or '-l', '-m', '-d' arguments.")
+            raise CommandError(
+                "Too many configuration options provided. Please use either '-c' or '-l', '-m', '-d' arguments.")
 
         # check config_file, if it exists
         if config_path:
@@ -102,7 +103,12 @@ class Command(BaseCommand):
                         # or 'filters' is not set in config OR it is not an JSON object
                         or not isinstance(config.get('filters'), dict)
                         # or all filters are empty
-                        or not any([config.get('filters').get('layer'), config.get('filters').get('map'), config.get('filters').get('document')])
+                        or not any(
+                            [
+                                config.get('filters').get('layer'),
+                                config.get('filters').get('map'),
+                                config.get('filters').get('document')
+                            ])
                 ):
                     print('Nothing to be done... exiting delete_resources command.')
                     return

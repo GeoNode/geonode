@@ -171,7 +171,7 @@ class GeoServerService(BaseServiceHandler):
 
     def setup(self):
         if not self.service.url:
-            raise ValueError("Monitoring is not configured to fetch from %s" % self.service.name)
+            raise ValueError(f"Monitoring is not configured to fetch from {self.service.name}")
         self.gs_monitor = GeoServerMonitorClient(self.service.url)
 
     def _collect(self, since, until, format=None, **kwargs):
@@ -197,11 +197,11 @@ class HostGeoServerService(BaseServiceHandler):
     def _collect(self, *args, **kwargs):
         base_url = self.service.url
         if not base_url:
-            raise ValueError("Service {} should have url provided".format(self.service.name))
-        url = '{}{}'.format(base_url.rstrip('/'), self.PATH)
+            raise ValueError(f"Service {self.service.name} should have url provided")
+        url = f"{base_url.rstrip('/')}{self.PATH}"
         rdata = requests.get(url, timeout=10, verify=False)
         if rdata.status_code != 200:
-            raise ValueError("Error response from api: ({}) {}".format(url, rdata))
+            raise ValueError(f"Error response from api: ({url}) {rdata}")
         data = rdata.json()['metrics']['metric']
         return data
 
@@ -217,11 +217,11 @@ class HostGeoNodeService(BaseServiceHandler):
     def _collect(self, since, until, *args, **kwargs):
         base_url = self.service.url
         if not base_url:
-            raise ValueError("Service {} should have url provided".format(self.service.name))
-        url = '{}/monitoring/api/beacon/{}/'.format(base_url.rstrip('/'), self.service.service_type.name)
+            raise ValueError(f"Service {self.service.name} should have url provided")
+        url = f"{base_url.rstrip('/')}/monitoring/api/beacon/{self.service.service_type.name}/"
         rdata = requests.get(url, timeout=10, verify=False)
         if rdata.status_code != 200:
-            raise ValueError("Error response from api: ({}) {}".format(url, rdata))
+            raise ValueError(f"Error response from api: ({url}) {rdata}")
         data = rdata.json()
         return data
 

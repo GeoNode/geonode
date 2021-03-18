@@ -70,7 +70,7 @@ class Document(ResourceBase):
         verbose_name=_('URL'))
 
     def __str__(self):
-        return "{0}".format(self.title)
+        return str(self.title)
 
     def get_absolute_url(self):
         return reverse('document_detail', args=(self.id,))
@@ -87,7 +87,7 @@ class Document(ResourceBase):
         if not self.title:
             return str(self.id)
         else:
-            return '%s (%s)' % (self.title, self.id)
+            return f'{self.title} ({self.id})'
 
     def find_placeholder(self):
         placeholder = 'documents/{0}-placeholder.png'
@@ -236,9 +236,7 @@ def post_save_document(instance, *args, **kwargs):
     if instance.id and instance.doc_file:
         name = "Hosted Document"
         site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-        url = '%s%s' % (
-            site_url,
-            reverse('document_download', args=(instance.id,)))
+        url = f"{site_url}{reverse('document_download', args=(instance.id,))}"
         create_document_thumbnail.apply_async((instance.id,))
     elif instance.doc_url:
         name = "External Document"

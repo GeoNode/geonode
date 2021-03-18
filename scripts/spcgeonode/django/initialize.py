@@ -109,14 +109,14 @@ _protocols = {
 }
 if _port not in _protocols:
     redirect_uris = [
-        'http://{}:{}/geoserver'.format(_host, _port),
-        'http://{}:{}/geoserver/index.html'.format(_host, _port),
+        f'http://{_host}:{_port}/geoserver',
+        f'http://{_host}:{_port}/geoserver/index.html'
     ]
 else:
     # Make sure protocol string match with GeoServer Redirect URL's protocol string
     redirect_uris = [
-        '{}{}/geoserver'.format(_protocols[_port], _host),
-        '{}{}/geoserver/index.html'.format(_protocols[_port], _host),
+        f'{_protocols[_port]}{_host}/geoserver',
+        f'{_protocols[_port]}{_host}/geoserver/index.html'
     ]
 
 app.redirect_uris = "\n".join(redirect_uris)
@@ -164,12 +164,12 @@ print("8. Waiting for GeoServer")
 _geoserver_host = os.getenv('GEOSERVER_LOCATION', 'http://geoserver:8080/geoserver')
 for _ in range(60*5):
     try:
-        requests.head("{}".format(_geoserver_host))
+        requests.head(str(_geoserver_host))
         break
     except ConnectionError:
         time.sleep(1)
 else:
-    requests.head("{}".format(_geoserver_host))
+    requests.head(str(_geoserver_host))
 
 #########################################################
 # 9. Securing GeoServer
@@ -184,7 +184,7 @@ geoserver_admin_password = os.getenv('GEOSERVER_ADMIN_PASSWORD', 'geoserver')
 
 # Getting the old password
 try:
-    r1 = requests.get('{}/rest/security/masterpw.json'.format(_geoserver_host),
+    r1 = requests.get(f'{_geoserver_host}/rest/security/masterpw.json',
                       auth=(geoserver_admin_username, geoserver_admin_password))
 except requests.exceptions.ConnectionError:
     print("Unable to connect to GeoServer. Make sure GeoServer is started and accessible.")
@@ -196,8 +196,9 @@ if old_password == 'M(cqp{V1':
     print("Randomizing master password")
     new_password = uuid.uuid4().hex
     data = json.dumps({"oldMasterPassword": old_password, "newMasterPassword": new_password})
-    r2 = requests.put('{}/rest/security/masterpw.json'.format(_geoserver_host), data=data,
-                      headers={'Content-Type': 'application/json'}, auth=(geoserver_admin_username, geoserver_admin_password))
+    r2 = requests.put(f'{_geoserver_host}/rest/security/masterpw.json', data=data,
+                      headers={'Content-Type': 'application/json'},
+                      auth=(geoserver_admin_username, geoserver_admin_password))
     r2.raise_for_status()
 else:
     print("Master password was already changed. No changes made.")

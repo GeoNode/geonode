@@ -31,5 +31,5 @@ class Command(BaseCommand):
         map_layers = MapLayer.objects.filter(local=True)
         for maplayer in map_layers:
             if not Layer.objects.filter(alternate=maplayer.name).exists():
-                print('Removing broken map layer {}'.format(maplayer.name))
+                print(f'Removing broken map layer {maplayer.name}')
                 maplayer.delete()

@@ -34,7 +34,7 @@ if not hasattr(settings, 'CATALOGUE'):
 
 # If settings.CATALOGUE is defined, we expect it to be properly named
 if DEFAULT_CATALOGUE_ALIAS not in settings.CATALOGUE:
-    raise ImproperlyConfigured("You must define a '%s' CATALOGUE" % DEFAULT_CATALOGUE_ALIAS)
+    raise ImproperlyConfigured(f"You must define a '{DEFAULT_CATALOGUE_ALIAS}' CATALOGUE")
 
 
 def load_backend(backend_name):
@@ -68,7 +68,7 @@ def load_backend(backend_name):
 def default_catalogue_backend():
     """Get the default backend
     """
-    msg = "There is no '%s' backend in CATALOGUE" % DEFAULT_CATALOGUE_ALIAS
+    msg = f"There is no '{DEFAULT_CATALOGUE_ALIAS}' backend in CATALOGUE"
     assert DEFAULT_CATALOGUE_ALIAS in settings.CATALOGUE, msg
     return settings.CATALOGUE[DEFAULT_CATALOGUE_ALIAS]
 
