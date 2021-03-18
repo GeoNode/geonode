@@ -43,7 +43,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.core.files.storage import default_storage as storage
-
+from django.utils.html import strip_tags
 from mptt.models import MPTTModel, TreeForeignKey
 
 from PIL import Image, ImageOps
@@ -931,23 +931,23 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def raw_abstract(self):
-        return self._remove_html_tags(self.abstract)
+        return strip_tags(self._remove_html_tags(self.abstract))
 
     @property
     def raw_purpose(self):
-        return self._remove_html_tags(self.purpose)
+        return strip_tags(self._remove_html_tags(self.purpose))
 
     @property
     def raw_constraints_other(self):
-        return self._remove_html_tags(self.constraints_other)
+        return strip_tags(self._remove_html_tags(self.constraints_other))
 
     @property
     def raw_supplemental_information(self):
-        return self._remove_html_tags(self.supplemental_information)
+        return strip_tags(self._remove_html_tags(self.supplemental_information))
 
     @property
     def raw_data_quality_statement(self):
-        return self._remove_html_tags(self.data_quality_statement)
+        return strip_tags(self._remove_html_tags(self.data_quality_statement))
 
     def save(self, notify=False, *args, **kwargs):
         """
