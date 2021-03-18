@@ -22,7 +22,6 @@ import logging
 import traceback
 from urllib.parse import quote, urlsplit, urljoin
 from itertools import chain
-import warnings
 
 from guardian.shortcuts import get_perms
 
@@ -60,7 +59,7 @@ from geonode.utils import (
     check_ogc_backend)
 from geonode.maps.forms import MapForm
 from geonode.security.views import _perms_info_json
-from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
+from geonode.base.forms import CategoryForm, TKeywordForm
 from geonode.base.models import (
     Thesaurus,
     TopicCategory)
@@ -232,7 +231,7 @@ def map_metadata(
     map_obj.add_missing_metadata_author_or_poc()
     current_keywords = [keyword.name for keyword in map_obj.keywords.all()]
     poc = map_obj.poc
-    topic_thesaurus = map_obj.tkeywords.all()
+
     metadata_author = map_obj.metadata_author
 
     topic_category = map_obj.category
@@ -242,11 +241,7 @@ def map_metadata(
         category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
             request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
             request.POST["category_choice_field"] else None)
-
-        if hasattr(settings, 'THESAURUS'):
-            tkeywords_form = TKeywordForm(request.POST)
-        else:
-            tkeywords_form = ThesaurusAvailableForm(request.POST, prefix='tkeywords')
+        tkeywords_form = TKeywordForm(request.POST)
     else:
         map_form = MapForm(instance=map_obj, prefix="resource")
         map_form.disable_keywords_widget_for_non_superuser(request.user)
@@ -257,43 +252,30 @@ def map_metadata(
         # Keywords from THESAURUS management
         map_tkeywords = map_obj.tkeywords.all()
         tkeywords_list = ''
-        # Create THESAURUS widgets
-        lang = 'en'
-        if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
-            warnings.warn('The settings for Thesaurus has been moved to Model, \
-            this feature will be removed in next releases', DeprecationWarning)
-            tkeywords_list = ''
-            if map_tkeywords and len(map_tkeywords) > 0:
-                tkeywords_ids = map_tkeywords.values_list('id', flat=True)
-                if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
-                    el = settings.THESAURUS
-                    thesaurus_name = el['name']
-                    try:
-                        t = Thesaurus.objects.get(identifier=thesaurus_name)
-                        for tk in t.thesaurus.filter(pk__in=tkeywords_ids):
-                            tkl = tk.keyword.filter(lang=lang)
-                            if len(tkl) > 0:
-                                tkl_ids = ",".join(
-                                    map(str, tkl.values_list('id', flat=True)))
-                                tkeywords_list += "," + \
-                                    tkl_ids if len(
-                                        tkeywords_list) > 0 else tkl_ids
-                    except Exception:
-                        tb = traceback.format_exc()
-                        logger.error(tb)
+        lang = 'en'  # TODO: use user's language
+        if map_tkeywords and len(map_tkeywords) > 0:
+            tkeywords_ids = map_tkeywords.values_list('id', flat=True)
+            if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
+                el = settings.THESAURUS
+                thesaurus_name = el['name']
+                try:
+                    t = Thesaurus.objects.get(identifier=thesaurus_name)
+                    for tk in t.thesaurus.filter(pk__in=tkeywords_ids):
+                        tkl = tk.keyword.filter(lang=lang)
+                        if len(tkl) > 0:
+                            tkl_ids = ",".join(
+                                map(str, tkl.values_list('id', flat=True)))
+                            tkeywords_list += "," + \
+                                tkl_ids if len(
+                                    tkeywords_list) > 0 else tkl_ids
+                except Exception:
+                    tb = traceback.format_exc()
+                    logger.error(tb)
 
-            tkeywords_form = TKeywordForm(instance=map_obj)
-        else:
-            tkeywords_form = ThesaurusAvailableForm(prefix='tkeywords')
-            #  set initial values for thesaurus form
-            for tid in tkeywords_form.fields:
-                values = []
-                values = [keyword.id for keyword in topic_thesaurus if int(tid) == keyword.thesaurus.id]
-                tkeywords_form.fields[tid].initial = values
+        tkeywords_form = TKeywordForm(instance=map_obj)
 
     if request.method == "POST" and map_form.is_valid(
-    ) and category_form.is_valid() and tkeywords_form.is_valid():
-
+    ) and category_form.is_valid():
         new_poc = map_form.cleaned_data['poc']
         new_author = map_form.cleaned_data['metadata_author']
         new_keywords = current_keywords if request.keyword_readonly else map_form.cleaned_data['keywords']
