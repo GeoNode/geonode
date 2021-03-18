@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from unittest.mock import patch
 from django.conf import settings
 
 from datetime import datetime, timedelta
@@ -208,7 +209,7 @@ class OAuthApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.passwd = 'admin'
         self._user = get_user_model().objects.get(username=self.user)
         self.token = get_or_create_token(self._user)
-        self.auth_header = 'Bearer {}'.format(self.token)
+        self.auth_header = f'Bearer {self.token}'
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
@@ -401,21 +402,21 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             return val.date().strftime(fstring)
 
         d1 = to_date(now - step)
-        filter_url = self.list_url + '?date__exact={}'.format(d1)
+        filter_url = self.list_url + f'?date__exact={d1}'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
         d3 = to_date(now - (3 * step))
-        filter_url = self.list_url + '?date__gte={}'.format(d3)
+        filter_url = self.list_url + f'?date__gte={d3}'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
         d4 = to_date(now - (4 * step))
-        filter_url = self.list_url + '?date__range={},{}'.format(d4, to_date(now))
+        filter_url = self.list_url + f'?date__range={d4},{to_date(now)}'
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
@@ -526,3 +527,86 @@ class LockdownApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 5)
+
+
+class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+
+    #  loading test thesausuri
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json',
+        "test_thesaurus.json"
+    ]
+
+    def setUp(self):
+        super(ThesaurusKeywordResourceTests, self).setUp()
+
+        self.list_url = reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "thesaurus/keywords"})
+
+    def test_api_will_return_a_valid_json_response(self):
+        resp = self.api_client.get(self.list_url)
+        self.assertValidJSONResponse(resp)
+
+    def test_will_return_empty_if_the_thesaurus_does_not_exists(self):
+        url = f"{self.list_url}?thesaurus=invalid-identifier"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 0)
+
+    def test_will_return_keywords_for_the_selected_thesaurus_if_exists(self):
+        url = f"{self.list_url}?thesaurus=inspire-theme"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 34)
+
+    def test_will_return_empty_if_the_alt_label_does_not_exists(self):
+        url = f"{self.list_url}?alt_label=invalid-alt_label"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 0)
+
+    def test_will_return_keywords_for_the_selected_alt_label_if_exists(self):
+        url = f"{self.list_url}?alt_label=ac"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 1)
+
+    def test_will_return_empty_if_the_kaywordId_does_not_exists(self):
+        url = f"{self.list_url}?id=12365478954862"
+        resp = self.api_client.get(url)
+        print(self.deserialize(resp))
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 0)
+
+    @patch("geonode.api.api.get_language")
+    def test_will_return_expected_keyword_label_for_existing_lang(self, lang):
+        lang.return_value = "de"
+        url = f"{self.list_url}?thesaurus=inspire-theme"
+        resp = self.api_client.get(url)
+        # the german translations exists, for the other labels, the alt_label will be used
+        expected_labels = [
+            "ac", "Adressen", "af", "am", "au", "br", "bu",
+            "cp", "ef", "el", "er", "ge", "gg", "gn", "hb", "hh",
+            "hy", "lc", "lu", "mf", "mr", "nz", "of", "oi", "pd",
+            "pf", "ps", "rs", "sd", "so", "sr", "su", "tn", "us"
+        ]
+        actual_labels = [x["alt_label"] for x in self.deserialize(resp)["objects"]]
+        self.assertValidJSONResponse(resp)
+        self.assertListEqual(expected_labels, actual_labels)
+
+    @patch("geonode.api.api.get_language")
+    def test_will_return_default_keyword_label_for_not_existing_lang(self, lang):
+        lang.return_value = "ke"
+        url = f"{self.list_url}?thesaurus=inspire-theme"
+        resp = self.api_client.get(url)
+        # no translations exists, the alt_label will be used for all keywords
+        expected_labels = [
+            "ac", "ad", "af", "am", "au", "br", "bu",
+            "cp", "ef", "el", "er", "ge", "gg", "gn", "hb", "hh",
+            "hy", "lc", "lu", "mf", "mr", "nz", "of", "oi", "pd",
+            "pf", "ps", "rs", "sd", "so", "sr", "su", "tn", "us"
+        ]
+        actual_labels = [x["alt_label"] for x in self.deserialize(resp)["objects"]]
+        self.assertValidJSONResponse(resp)
+        self.assertListEqual(expected_labels, actual_labels)

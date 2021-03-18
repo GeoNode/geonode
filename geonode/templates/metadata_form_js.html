@@ -93,8 +93,8 @@
           }
 
         {% if UI_REQUIRED_FIELDS %}
-         var advancedMissing = $('#ownership').find('.input-empty').length > 0;
-          if (advancedMissing) {
+         var metadataMissing = $('#ownership').find('.input-empty').length > 0;
+          if (metadataMissing) {
             var inputs = $('#ownership').find('.input-empty');
             var empty = inputs.length;
             for (var i=0; i<inputs.length; i++) {
@@ -102,12 +102,12 @@
                 empty--;
               }
             }
-            advancedMissing = empty > 0;
+            metadataMissing = empty > 0;
           }
           $('#completeness-hints .metadata-hint')
-            .toggleClass('progress-bar-danger', mandatoryMissing)
-            .toggleClass('progress-bar-success', !mandatoryMissing)
-            .attr('title', mandatoryMissing ? gettext("some schema mandatory fields are missing") : gettext("Metadata Schema mandatory fields completed") )
+            .toggleClass('progress-bar-danger', metadataMissing)
+            .toggleClass('progress-bar-success', !metadataMissing)
+            .attr('title', metadataMissing ? gettext("some schema mandatory fields are missing") : gettext("Metadata Schema mandatory fields completed") )
             .tooltip('fixTitle');
         {% endif %}
 
@@ -363,6 +363,7 @@
         {{UI_REQUIRED_FIELDS}}.forEach(element => $('#' + element).change(onInputChange).change());
         $('#category_form').change(onInputChange).change();
         $('#id_resource-group').change(onInputChange).change();
+
         document.querySelector('select[name="resource-keywords"]').onchange=onInputChange
 
         $( ':input[id*="id_tkeywords"][required]:visible').each( function () {
@@ -473,7 +474,7 @@ $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(on
               ) {
                 $('#group_mandatoryDialog').modal();
             } else {
-               validateRequiredInput()
+                validateRequiredInput()
             }
         });
 
@@ -498,11 +499,10 @@ $('#id_resource-temporal_extent_start').on('blur', function() {$(this).change(on
                 validateRequiredInput()
             }
         });
-
+        
         function validateRequiredInput() {
-            const required_inputs = $(':input[required]:visible')
             var errors = []
-            $( ':input[required]:visible').each( function () {
+            $( ':input[required]').each( function () {
                 if ( this.value.trim() == '' ) {
                     errors.push(this.id)
                 }

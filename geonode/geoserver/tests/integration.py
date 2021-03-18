@@ -82,8 +82,8 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
         try:
             # set attributes for resource
             for attribute in layer.attribute_set.all():
-                attribute.attribute_label = '%s_label' % attribute.attribute
-                attribute.description = '%s_description' % attribute.attribute
+                attribute.attribute_label = f'{attribute.attribute}_label'
+                attribute.description = f'{attribute.attribute}_description'
                 attribute.save()
 
             # sync the attributes with GeoServer
@@ -93,11 +93,11 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
             for attribute in layer.attribute_set.all():
                 self.assertEqual(
                     attribute.attribute_label,
-                    '%s_label' % attribute.attribute
+                    f'{attribute.attribute}_label'
                 )
                 self.assertEqual(
                     attribute.description,
-                    '%s_description' % attribute.attribute
+                    f'{attribute.attribute}_description'
                 )
 
             links = Link.objects.filter(resource=layer.resourcebase_ptr)

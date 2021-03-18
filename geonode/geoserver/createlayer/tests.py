@@ -122,7 +122,7 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
             self.assertEqual(resource.projection, layer.srid)
 
             # check if layer detail page is accessible with client
-            response = self.client.get(reverse('layer_detail', args=('geonode:%s' % layer_name,)))
+            response = self.client.get(reverse('layer_detail', args=(f'geonode:{layer_name}',)))
             self.assertEqual(response.status_code, 200)
 
     def test_layer_creation_with_wrong_geometry_type(self):

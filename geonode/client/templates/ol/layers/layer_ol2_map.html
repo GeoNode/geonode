@@ -61,8 +61,8 @@
                "https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]),
           	source
     	];
-
-    	var map = new OpenLayers.Map({
+        // olMap is used by thumbnail.js to POST to the thumbnail update view
+    	var map = window.olMap = new OpenLayers.Map({
             div: 'preview_map',
             projection: new OpenLayers.Projection('EPSG:900913'),
             layers: layers,

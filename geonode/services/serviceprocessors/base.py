@@ -41,7 +41,7 @@ else:
 logger = logging.getLogger(__name__)
 
 
-def get_proxified_ows_url(url, version=None, proxy_base=None):
+def get_proxified_ows_url(url, version='1.3.0', proxy_base=None):
     """
     clean an OWS URL of basic service elements
     source: https://stackoverflow.com/a/11640565
@@ -56,8 +56,6 @@ def get_proxified_ows_url(url, version=None, proxy_base=None):
     parsed = urlparse(url)
     qd = parse_qs(parsed.query, keep_blank_values=True)
     version = qd['version'][0] if 'version' in qd else version
-    if not version:
-        version = '1.1.1'
 
     for key, value in qd.items():
         if key.lower() not in basic_service_elements:
@@ -79,10 +77,8 @@ def get_proxified_ows_url(url, version=None, proxy_base=None):
         safe='') if qd else 'version%3D' + version + '%26request%3DGetCapabilities%26service%3Dwms'
     proxy_base = proxy_base if proxy_base else urljoin(
         settings.SITEURL, reverse('proxy'))
-    proxified_url = "{proxy_base}?url={ows_url}%3F{ows_request}".format(proxy_base=proxy_base,
-                                                                        ows_url=quote(
-                                                                            base_ows_url, safe=''),
-                                                                        ows_request=ows_request)
+    ows_url = quote(base_ows_url, safe='')
+    proxified_url = f"{proxy_base}?url={ows_url}%3F{ows_request}"
     return (version, proxified_url, base_ows_url)
 
 
@@ -93,7 +89,7 @@ def get_geoserver_cascading_workspace(create=True):
     name = getattr(settings, "CASCADE_WORKSPACE", "cascaded-services")
     workspace = catalog.get_workspace(name)
     if workspace is None and create:
-        uri = "http://www.geonode.org/{}".format(name)
+        uri = f"http://www.geonode.org/{name}"
         workspace = catalog.create_workspace(name, uri)
     return workspace
 

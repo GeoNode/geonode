@@ -17,7 +17,6 @@
 # along with this profgram. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 from django.test.testcases import SimpleTestCase, TestCase, LiveServerTestCase
 
 try:
@@ -35,8 +34,6 @@ except Exception:
             self.fget = method
             return self
 
-from geonode import geoserver  # noqa
-from geonode.utils import check_ogc_backend
 from geonode.base.populate_test_data import create_models, remove_models
 
 import faulthandler
@@ -55,17 +52,11 @@ class GeoNodeBaseTestSupport(TestCase):
     obj_ids = []
     integration = False
 
-    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        fixtures = [
-            'initial_data.json',
-            'group_test_data.json',
-            'default_oauth_apps.json'
-        ]
-    else:
-        fixtures = [
-            'initial_data.json',
-            'group_test_data.json'
-        ]
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
 
     @classproperty
     def get_type(cls):

@@ -64,7 +64,7 @@ def get_metric_names():
 def get_labels_for_metric(metric_name, resource=None):
     mt = ServiceTypeMetric.objects.filter(metric__name=metric_name)
     if not mt:
-        raise ValueError("No metric for {}".format(metric_name))
+        raise ValueError(f"No metric for {metric_name}")
 
     qparams = {'metric_values__service_metric__in': mt}
     if resource:
@@ -76,7 +76,7 @@ def get_labels_for_metric(metric_name, resource=None):
 def get_resources_for_metric(metric_name):
     mt = ServiceTypeMetric.objects.filter(metric__name=metric_name)
     if not mt:
-        raise ValueError("No metric for {}".format(metric_name))
+        raise ValueError(f"No metric for {metric_name}")
     return list(MonitoredResource.objects.filter(metric_values__service_metric__in=mt)
                                          .exclude(name='', type='')
                                          .distinct()

@@ -47,15 +47,17 @@ class Command(BaseCommand):
         parser.add_argument('-m', '--list-metrics', dest='list_metrics', action='store_true', default=False,
                             help=_("Show list of metrics"))
         parser.add_argument('-l', '--list-labels', dest='list_labels', action='store_true', default=False,
-                    help=_("Show list of labels for metric"))
+                            help=_("Show list of labels for metric"))
 
         parser.add_argument('-r', '--list-resources', dest='list_resources', action='store_true', default=False,
-                    help=_("Show list of resources for metric"))
+                            help=_("Show list of resources for metric"))
 
         parser.add_argument('-s', '--since', dest='since', default=None, type=parse_datetime,
-                            help=_("Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). If not provided, last sync will be used."))
+                            help=_("Process data since specific timestamp (YYYY-MM-DD HH:MM:SS format). "
+                                   "If not provided, last sync will be used."))
         parser.add_argument('-u', '--until', dest='until', default=None, type=parse_datetime,
-                            help=_("Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). If not provided, now will be used."))
+                            help=_("Process data until specific timestamp (YYYY-MM-DD HH:MM:SS format). "
+                                   "If not provided, now will be used."))
 
         parser.add_argument('-i', '--interval', dest='interval', default=60, type=int,
                             help=_("Data aggregation interval in seconds (default: 60)"))
@@ -69,7 +71,6 @@ class Command(BaseCommand):
 
         parser.add_argument('-ll', '--label', dest='label', type=TypeChecks.label_type,
                             help=_("Show data for specific label"))
-
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def handle(self, *args, **options):
@@ -88,7 +89,6 @@ class Command(BaseCommand):
         if isinstance(metric_names, str):
             metric_names = [metric_names]
         for m in metric_names:
-            #def get_metrics_for(self, metric_name, valid_from=None, valid_to=None, interval=None, service=None, label=None, resource=None):
             if options['list_labels']:
                 self.list_labels(m)
             elif options['list_resources']:
@@ -99,40 +99,41 @@ class Command(BaseCommand):
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def list_labels(self, metric, resource=None):
         labels = self.collector.get_labels_for_metric(metric, resource=resource)
-        print('Labels for metric {}'.format(metric))
+        print(f'Labels for metric {metric}')
         for label in labels:
             print(' ', *label)
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def list_resources(self, metric):
         resources = self.collector.get_resources_for_metric(metric)
-        print('Resources for metric {}'.format(metric))
+        print(f'Resources for metric {metric}')
         for res in resources:
             print(' ', '='.join(res))
 
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def show_metrics(self, metric, since, until, interval, resource=None, label=None, service=None):
-        print('Monitoring Metric values for {}'.format(metric))
+        print(f'Monitoring Metric values for {metric}')
         if service:
-            print(' for service: {} '.format(service))
+            print(f' for service: {service} ')
         if resource:
-            print(' for resource: {}={} '.format(resource.type, resource.name))
+            print(f' for resource: {resource.type}={resource.name} ')
         if label:
-            print(' for label: {} label'.format(label.name))
+            print(f' for label: {label.name} label')
 
         utc = pytz.utc
         since = since.replace(tzinfo=utc) if since else None
         until = until.replace(tzinfo=utc) if until else None
 
-        data = self.collector.get_metrics_for(metric,
-                                              valid_from=since,
-                                              valid_to=until,
-                                              interval=interval,
-                                              resource=resource,
-                                              label=label,
-                                              service=service)
-        print(' since {} until {}\n'.format(data['input_valid_from'].strftime(TIMESTAMP_OUTPUT),
-                                          data['input_valid_to'].strftime(TIMESTAMP_OUTPUT)))
+        data = self.collector.get_metrics_for(
+            metric,
+            valid_from=since,
+            valid_to=until,
+            interval=interval,
+            resource=resource,
+            label=label,
+            service=service)
+        print(f" since {data['input_valid_from'].strftime(TIMESTAMP_OUTPUT)} "
+              f"until {data['input_valid_to'].strftime(TIMESTAMP_OUTPUT)}\n")
 
         for row in data['data']:
             val = None
@@ -140,11 +141,10 @@ class Command(BaseCommand):
                 val = row['data'][0]['val']
             print(' ', row['valid_to'].strftime(TIMESTAMP_OUTPUT), '->', '' if not val else val)
 
-
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def list_metrics(self):
         _metrics = self.collector.get_metric_names()
         for stype, metrics in _metrics:
             print('service type', stype.name)
             for m in metrics:
-                print(' {}[{}]'.format(m.name, m.type))
+                print(f' {m.name}[{m.type}]')

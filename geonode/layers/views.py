@@ -22,7 +22,6 @@ import os
 import sys
 import logging
 import shutil
-import base64
 import traceback
 from types import TracebackType
 import warnings
@@ -32,7 +31,6 @@ from django.db.models import Q
 from urllib.parse import quote
 
 from django.http import Http404
-from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
 from django.template.response import TemplateResponse
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -50,6 +48,8 @@ from django.shortcuts import render
 from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_http_methods
+
+from geonode.thumbs.thumbnails import create_thumbnail
 
 from dal import autocomplete
 
@@ -114,10 +114,7 @@ from geonode.tasks.tasks import set_permissions
 from celery.utils.log import get_logger
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    from geonode.geoserver.helpers import (
-        _render_thumbnail,
-        _prepare_thumbnail_body_from_opts,
-        gs_catalog)
+    from geonode.geoserver.helpers import gs_catalog
 
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
@@ -144,7 +141,7 @@ _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
 def log_snippet(log_file):
     if not log_file or not os.path.isfile(log_file):
-        return "No log file at %s" % log_file
+        return f"No log file at {log_file}"
 
     with open(log_file, "r") as f:
         f.seek(0, 2)  # Seek @ EOF
@@ -471,12 +468,11 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     ]
 
     # Add required parameters for GXP lazy-loading
-    attribution = "%s %s" % (layer.owner.first_name,
-                             layer.owner.last_name) if layer.owner.first_name or layer.owner.last_name else str(
-        layer.owner)
+    attribution = f"{layer.owner.first_name} {layer.owner.last_name}" if layer.owner.first_name or \
+        layer.owner.last_name else str(layer.owner)
     srs = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
     srs_srid = int(srs.split(":")[1]) if srs != "EPSG:900913" else 3857
-    config["attribution"] = "<span class='gx-attribution-title'>%s</span>" % attribution
+    config["attribution"] = f"<span class='gx-attribution-title'>{attribution}</span>"
     config["format"] = getattr(
         settings, 'DEFAULT_LAYER_FORMAT', 'image/png')
     config["title"] = layer.title
@@ -563,7 +559,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
 
                     e = dlxml.fromstring(wms_capabilities)
                     for atype in e.findall(
-                            "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
+                            f"./[wms:Name='{layer.alternate}']/wms:Dimension[@name='time']", namespaces):
                         dim_name = atype.get('name')
                         if dim_name:
                             dim_name = str(dim_name).lower()
@@ -637,7 +633,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
                 "remote": True,
                 "url": service.service_url,
                 "name": service.name,
-                "title": "[R] %s" % service.title}
+                "title": f"[R] {service.title}"}
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
@@ -705,16 +701,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         'DEFAULT_MAP_CRS',
         'EPSG:3857')
 
-    # provide bbox in EPSG:4326 for leaflet
-    if context_dict["preview"] == 'leaflet':
-        try:
-            srid, wkt = layer.geographic_bounding_box.split(';')
-            srid = re.findall(r'\d+', srid)
-            geom = GEOSGeometry(wkt, srid=int(srid[0]))
-            geom.transform(4326)
-            context_dict["layer_bbox"] = ','.join([str(c) for c in geom.extent])
-        except Exception:
-            pass
     if layer.storeType == 'dataStore':
         links = layer.link_set.download().filter(
             Q(name__in=settings.DOWNLOAD_FORMATS_VECTOR) |
@@ -786,10 +772,7 @@ def load_layer_data(request, template='layers/layer_detail.html'):
     if not isinstance(data_dict['filtered_attributes'], str):
         filtered_attributes = [x for x in data_dict['filtered_attributes'] if '/load_layer_data' not in x]
     name = layername if ':' not in layername else layername.split(':')[1]
-    location = "{location}{service}".format(** {
-        'location': settings.OGC_SERVER['default']['LOCATION'],
-        'service': 'wms',
-    })
+    location = f"{(settings.OGC_SERVER['default']['LOCATION'])}wms"
     headers = {}
     if request and 'access_token' in request.session:
         access_token = request.session['access_token']
@@ -942,7 +925,7 @@ def layer_metadata(
                 "remote": True,
                 "url": service.service_url,
                 "name": service.name,
-                "title": "[R] %s" % service.title}
+                "title": f"[R] {service.title}"}
         maplayer = GXPLayer(
             name=layer.alternate,
             ows_url=layer.ows_url,
@@ -1412,16 +1395,14 @@ def layer_remove(request, layername, template='layers/layer_remove.html'):
         })
     if (request.method == 'POST'):
         try:
-            logger.debug('Deleting Layer {0}'.format(layer))
+            logger.debug(f'Deleting Layer {layer}')
             with transaction.atomic():
                 Layer.objects.filter(id=layer.id).delete()
         except IntegrityError:
             raise
         except Exception as e:
             traceback.print_exc()
-            message = '{0}: {1}.'.format(
-                _('Unable to delete layer'), layer.alternate)
-
+            message = f'{_("Unable to delete layer")}: {layer.alternate}.'
             if getattr(e, 'message', None) and 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _(
                     'This layer is a member of a layer group, you must remove the layer from the group '
@@ -1471,9 +1452,7 @@ def layer_granule_remove(
                 coverages['coverages']['coverage'][0]['name'], store, granule_id)
         except Exception as e:
             traceback.print_exc()
-            message = '{0}: {1}.'.format(
-                _('Unable to delete layer'), layer.alternate)
-
+            message = f'{_("Unable to delete layer")}: {layer.alternate}.'
             if 'referenced by layer group' in getattr(e, 'message', ''):
                 message = _(
                     'This layer is a member of a layer group, you must remove the layer from the group '
@@ -1502,50 +1481,23 @@ def layer_thumbnail(request, layername):
         raise Http404(_("Not found"))
 
     try:
-        try:
-            preview = json.loads(request.body).get('preview', None)
-        except Exception as e:
-            logger.debug(e)
-            preview = None
+        request_body = json.loads(request.body)
+        bbox = request_body['bbox'] + [request_body['srid']]
+        zoom = request_body.get('zoom', None)
 
-        if preview and preview == 'react':
-            format, image = json.loads(
-                request.body)['image'].split(';base64,')
-            image = base64.b64decode(image)
-        else:
-            image = None
-            try:
-                image = _prepare_thumbnail_body_from_opts(
-                    request.body, request=request)
-            except Exception as e:
-                logger.debug(e)
-                try:
-                    image = _render_thumbnail(request.body)
-                except Exception as e:
-                    logger.debug(e)
-                    image = None
-
-        is_image = False
-        if image:
-            import imghdr
-            for th in imghdr.tests:
-                is_image = th(image, None)
-                if is_image:
-                    break
-
-        if not is_image:
-            return HttpResponse(
-                content=_('couldn\'t generate thumbnail'),
-                status=500,
-                content_type='text/plain'
-            )
-        filename = "layer-%s-thumb.png" % layer_obj.uuid
-        layer_obj.save_thumbnail(filename, image)
+        create_thumbnail(
+            layer_obj,
+            bbox=bbox,
+            background_zoom=zoom,
+            overwrite=True
+        )
 
         return HttpResponse('Thumbnail saved')
+
     except Exception as e:
+        logger.exception(e)
         return HttpResponse(
-            content='error saving thumbnail: %s' % str(e),
+            content=_('couldn\'t generate thumbnail: %s' % str(e)),
             status=500,
             content_type='text/plain'
         )
@@ -1711,7 +1663,7 @@ def batch_permissions(request, model):
 
     if "cancel" in request.POST or not ids:
         return HttpResponseRedirect(
-            '/admin/{model}s/{model}/'.format(model=model.lower())
+            f'/admin/{model.lower()}s/{model.lower()}/'
         )
 
     if request.method == 'POST':
@@ -1746,7 +1698,7 @@ def batch_permissions(request, model):
                 except set_permissions.OperationalError as exc:
                     celery_logger.exception('Sending task raised: %r', exc)
             return HttpResponseRedirect(
-                '/admin/{model}s/{model}/'.format(model=model.lower())
+                f'/admin/{model.lower()}s/{model.lower()}/'
             )
         return render(
             request,

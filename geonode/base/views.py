@@ -72,7 +72,7 @@ def user_and_group_permission(request, model):
     ids = request.POST.get("ids")
     if "cancel" in request.POST or not ids:
         return HttpResponseRedirect(
-            '/admin/{}/{}/'.format(model_class._meta.app_label, model)
+            f'/admin/{model_class._meta.app_label}/{model}/'
         )
 
     if request.method == 'POST':
@@ -104,7 +104,7 @@ def user_and_group_permission(request, model):
                     (permissions_names, resources_names, users_usernames, groups_names, delete_flag))
 
         return HttpResponseRedirect(
-            '/admin/{}/{}/'.format(model_class._meta.app_label, model)
+            f'/admin/{model_class._meta.app_label}/{model}/'
         )
 
     form = UserAndGroupPermissionsForm({
@@ -135,7 +135,7 @@ def batch_modify(request, model):
 
     if "cancel" in request.POST or not ids:
         return HttpResponseRedirect(
-            '/admin/{model}s/{model}/'.format(model=model.lower())
+            f'/admin/{model.lower()}s/{model.lower()}/'
         )
 
     if request.method == 'POST':
@@ -177,7 +177,7 @@ def batch_modify(request, model):
                 keywords_through.objects.bulk_create(new_keywords, ignore_conflicts=True)
 
             return HttpResponseRedirect(
-                '/admin/{model}s/{model}/'.format(model=model.lower())
+                f'/admin/{model.lower()}s/{model.lower()}/'
             )
         return render(
             request,

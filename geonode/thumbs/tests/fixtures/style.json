@@ -1,0 +1,50 @@
+[
+   {
+      "model":"layers.style",
+      "pk":1,
+      "fields":{
+         "name":"geonode_theaters_nyc44",
+         "sld_title":"geonode_theaters_nyc44",
+         "sld_body":"b'<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\\n<StyledLayerDescriptor version=\"1.0.0\"\\n  xsi:schemaLocation=\"http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd\"\\n  xmlns=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\"\\n  xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\\n\\n  <NamedLayer>\\n    <Name>geonode_theaters_nyc44</Name>\\n    <UserStyle>\\n      <Title>yellow square point style</Title>\\n      <FeatureTypeStyle>\\n        <Rule>\\n          <Title>yellow point</Title>\\n          <PointSymbolizer>\\n            <Graphic>\\n              <Mark>\\n                <WellKnownName>square</WellKnownName>\\n                <Fill>\\n                  <CssParameter name=\"fill\">#ffff00</CssParameter>\\n                </Fill>\\n              </Mark>\\n              <Size>6</Size>\\n            </Graphic>\\n          </PointSymbolizer>\\n        </Rule>\\n\\n      </FeatureTypeStyle>\\n    </UserStyle>\\n  </NamedLayer>\\n</StyledLayerDescriptor>'",
+         "sld_version":null,
+         "sld_url":"http://geoserver:8080/geoserver/rest/workspaces/geonode/styles/geonode_theaters_nyc44.sld",
+         "workspace":"geonode"
+      }
+   },
+   {
+      "model":"layers.style",
+      "pk":2,
+      "fields":{
+         "name":"theaters_nyc",
+         "sld_title":"theaters_nyc",
+         "sld_body":"b'\\n<StyledLayerDescriptor version=\"1.0.0\" xmlns=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\"\\n  xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\\n  xsi:schemaLocation=\"http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd\">\\n  <NamedLayer>\\n    <Name>theaters_nyc</Name>\\n    <UserStyle>\\n    <Name>theaters_nyc</Name>\\n    <Title>theaters_nyc</Title>\\n      <FeatureTypeStyle>\\n        <Rule>\\n\\n<PointSymbolizer>\\n  <Graphic>\\n    <Mark>\\n      <WellKnownName>square</WellKnownName>\\n      <Fill>\\n        <CssParameter name=\"fill\">#880000</CssParameter>\\n      </Fill>\\n      <Stroke>\\n        <CssParameter name=\"stroke\">#ffbbbb</CssParameter>\\n      </Stroke>\\n    </Mark>\\n    <Size>10</Size>\\n  </Graphic>\\n</PointSymbolizer>\\n\\n        </Rule>\\n      </FeatureTypeStyle>\\n    </UserStyle>\\n  </NamedLayer>\\n</StyledLayerDescriptor>\\n'",
+         "sld_version":null,
+         "sld_url":"http://geoserver:8080/geoserver/rest/workspaces/geonode/styles/theaters_nyc.sld",
+         "workspace":"geonode"
+      }
+   },
+   {
+      "model":"layers.style",
+      "pk":3,
+      "fields":{
+         "name":"geonode_Meteorite_Landings_from_NASA_Open_Data_Portal7",
+         "sld_title":"geonode_Meteorite_Landings_from_NASA_Open_Data_Portal7",
+         "sld_body":"b'<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\\n<StyledLayerDescriptor version=\"1.0.0\"\\n  xsi:schemaLocation=\"http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd\"\\n  xmlns=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\"\\n  xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\\n\\n  <NamedLayer>\\n    <Name>geonode_Meteorite_Landings_from_NASA_Open_Data_Portal7</Name>\\n    <UserStyle>\\n      <Title>dark yellow square point style</Title>\\n      <FeatureTypeStyle>\\n        <Rule>\\n          <Title>dark yellow point</Title>\\n          <PointSymbolizer>\\n            <Graphic>\\n              <Mark>\\n                <WellKnownName>square</WellKnownName>\\n                <Fill>\\n                  <CssParameter name=\"fill\">#99cc00</CssParameter>\\n                </Fill>\\n              </Mark>\\n              <Size>6</Size>\\n            </Graphic>\\n          </PointSymbolizer>\\n        </Rule>\\n\\n      </FeatureTypeStyle>\\n    </UserStyle>\\n  </NamedLayer>\\n</StyledLayerDescriptor>'",
+         "sld_version":null,
+         "sld_url":"http://geoserver:8080/geoserver/rest/workspaces/geonode/styles/geonode_Meteorite_Landings_from_NASA_Open_Data_Portal7.sld",
+         "workspace":"geonode"
+      }
+   },
+   {
+      "model":"layers.style",
+      "pk":4,
+      "fields":{
+         "name":"Meteorite_Landings_from_NASA_Open_Data_Portal1",
+         "sld_title":"Meteorite_Landings_from_NASA_Open_Data_Portal1",
+         "sld_body":"b'\\n<StyledLayerDescriptor version=\"1.0.0\" xmlns=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\"\\n  xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\\n  xsi:schemaLocation=\"http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd\">\\n  <NamedLayer>\\n    <Name>Meteorite_Landings_from_NASA_Open_Data_Portal1</Name>\\n    <UserStyle>\\n    <Name>Meteorite_Landings_from_NASA_Open_Data_Portal1</Name>\\n    <Title>Meteorite_Landings_from_NASA_Open_Data_Portal1</Title>\\n      <FeatureTypeStyle>\\n        <Rule>\\n\\n<PointSymbolizer>\\n  <Graphic>\\n    <Mark>\\n      <WellKnownName>square</WellKnownName>\\n      <Fill>\\n        <CssParameter name=\"fill\">#880000</CssParameter>\\n      </Fill>\\n      <Stroke>\\n        <CssParameter name=\"stroke\">#ffbbbb</CssParameter>\\n      </Stroke>\\n    </Mark>\\n    <Size>10</Size>\\n  </Graphic>\\n</PointSymbolizer>\\n\\n        </Rule>\\n      </FeatureTypeStyle>\\n    </UserStyle>\\n  </NamedLayer>\\n</StyledLayerDescriptor>\\n'",
+         "sld_version":null,
+         "sld_url":"http://geoserver:8080/geoserver/rest/workspaces/geonode/styles/Meteorite_Landings_from_NASA_Open_Data_Portal1.sld",
+         "workspace":"geonode"
+      }
+   }
+]

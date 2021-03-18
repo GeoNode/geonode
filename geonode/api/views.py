@@ -141,7 +141,7 @@ def verify_token(request):
                 token_info,
                 content_type="application/json"
             )
-            response["Authorization"] = ("Bearer %s" % access_token)
+            response["Authorization"] = f"Bearer {access_token}"
             return response
         else:
             return HttpResponse(

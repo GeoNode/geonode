@@ -55,15 +55,15 @@ def csw_global_dispatch(request, layer_filter=None):
         if access_token and access_token.is_expired():
             access_token = None
 
-    absolute_uri = ('%s' % request.build_absolute_uri())
-    query_string = ('%s' % request.META['QUERY_STRING'])
+    absolute_uri = f'{request.build_absolute_uri()}'
+    query_string = f"{request.META['QUERY_STRING']}"
     env = request.META.copy()
 
     if access_token and not access_token.is_expired():
         env.update({'access_token': access_token.token})
         if 'access_token' not in query_string:
-            absolute_uri = ('%s&access_token=%s' % (absolute_uri, access_token.token))
-            query_string = ('%s&access_token=%s' % (query_string, access_token.token))
+            absolute_uri = f'{absolute_uri}&access_token={access_token.token}'
+            query_string = f'{query_string}&access_token={access_token.token}'
 
     env.update({'local.app_root': os.path.dirname(__file__),
                 'REQUEST_URI': absolute_uri,
@@ -100,8 +100,7 @@ def csw_global_dispatch(request, layer_filter=None):
             authorized_layers_filter = "id IN " + authorized_layers
             mdict['repository']['filter'] += " AND " + authorized_layers_filter
             if request.user and request.user.is_authenticated:
-                mdict['repository']['filter'] = "({}) OR ({})".format(mdict['repository']['filter'],
-                                                                      authorized_layers_filter)
+                mdict['repository']['filter'] = f"({mdict['repository']['filter']}) OR ({authorized_layers_filter})"
         else:
             authorized_layers_filter = "id = -9999"
             mdict['repository']['filter'] += " AND " + authorized_layers_filter
@@ -188,7 +187,7 @@ def csw_global_dispatch(request, layer_filter=None):
                                 url.text += "?"
                             else:
                                 url.text += "&"
-                            url.text += ("access_token=%s" % (access_token.token))
+                            url.text += f"access_token={access_token.token}"
                             url.set('updated', 'yes')
                 except Exception:
                     pass
@@ -233,7 +232,7 @@ def get_CSV_spec_char():
 # format value to unicode str without ';' char
 def fst(value):
     chrs = get_CSV_spec_char()
-    result = "{}".format(value)
+    result = str(value)
     result = result.replace(chrs["separator"], ',').replace('\\n', ' ').replace('\r\n', ' ')
     return result
 
@@ -364,9 +363,7 @@ def csw_render_extra_format_html(request, layeruuid, resname):
         layer = Layer.objects.get(resourcebase_ptr_id=resource.id)
         extra_res_md['atrributes'] = ''
         for attr in layer.attribute_set.all():
-            s = "<tr><td>{}</td><td>{}</td><td>{}</td></tr>".format(
-                attr.attribute, attr.attribute_label, attr.description
-            )
+            s = f"<tr><td>{attr.attribute}</td><td>{attr.attribute_label}</td><td>{attr.description}</td></tr>"
             extra_res_md['atrributes'] += s
 
     pocr = ContactRole.objects.get(
