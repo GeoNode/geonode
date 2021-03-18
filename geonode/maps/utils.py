@@ -86,7 +86,7 @@ def fix_baselayers(map_id):
         return
 
     if not Map.objects.filter(pk=id).exists():
-        logger.error('There is not a map with id %s' % id)
+        logger.error(f'There is not a map with id {id}')
         return
 
     map = Map.objects.get(pk=id)

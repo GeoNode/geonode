@@ -73,11 +73,11 @@ def sync_if_local_memory(func, *args, **kwargs):
                 worker.run(timeout=broker_socket_timeout)
             except Exception:
                 tb = traceback.format_exc()
-                msg = "Exception while publishing message: {}".format(tb)
+                msg = f"Exception while publishing message: {tb}"
                 logger.error(msg)
                 raise Exception(msg)
         elif not getattr(connection.connection, 'driver_name', None):
-            msg = "Exception while getting connection to {}".format(url)
+            msg = f"Exception while getting connection to {url}"
             logger.error(msg)
             raise Exception(msg)
 

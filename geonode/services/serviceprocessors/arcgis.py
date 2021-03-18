@@ -31,7 +31,7 @@ from django.utils.translation import ugettext as _
 
 from geonode.base.models import Link
 from geonode.layers.models import Layer
-from geonode.layers.utils import create_thumbnail
+from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.base.bbox_utils import BBOXHelper
 
 from arcrest import MapService as ArcMapService, ImageService as ArcImageService
@@ -188,7 +188,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             )
             if existance_test_qs.exists():
                 raise RuntimeError(
-                    "Resource {!r} has already been harvested".format(resource_id))
+                    f"Resource {resource_id} has already been harvested")
             resource_fields["keywords"] = keywords
             resource_fields["is_approved"] = True
             resource_fields["is_published"] = True
@@ -202,7 +202,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             # self._create_layer_legend_link(geonode_layer)
         else:
             raise RuntimeError(
-                "Resource {!r} cannot be harvested".format(resource_id))
+                f"Resource {resource_id} cannot be harvested")
 
     def has_resources(self):
         try:
@@ -213,20 +213,15 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
     def _offers_geonode_projection(self, srs):
         geonode_projection = getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857")
-        return geonode_projection in "EPSG:{}".format(srs)
+        return geonode_projection in f"EPSG:{srs}"
 
     def _get_indexed_layer_fields(self, layer_meta):
-        srs = "EPSG:%s" % layer_meta.extent.spatialReference.wkid
+        srs = f"EPSG:{layer_meta.extent.spatialReference.wkid}"
         bbox = utils.decimal_encode([layer_meta.extent.xmin,
                                      layer_meta.extent.ymin,
                                      layer_meta.extent.xmax,
                                      layer_meta.extent.ymax])
-
-        typename = slugify("{}-{}".format(
-            layer_meta.id,
-            ''.join(c for c in layer_meta.title if ord(c) < 128)
-        ))
-
+        typename = slugify(f"{layer_meta.id}-{''.join(c for c in layer_meta.title if ord(c) < 128)}")
         return {
             "name": layer_meta.title,
             "store": self.name,
@@ -262,48 +257,25 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
     def _create_layer_thumbnail(self, geonode_layer):
         """Create a thumbnail with a WMS request."""
-        params = {
-            "service": "WMS",
-            "version": self.parsed_service.version,
-            "request": "GetMap",
-            "layers": geonode_layer.alternate,
-            "bbox": geonode_layer.bbox_string,
-            "srs": geonode_layer.srid,
-            "crs": geonode_layer.srid,
-            "width": "200",
-            "height": "150",
-            "format": "image/png",
-            "styles": ""
-        }
-        kvp = "&".join("{}={}".format(*item) for item in params.items())
-        thumbnail_remote_url = "{}?{}".format(
-            geonode_layer.remote_service.service_url, kvp)
-        logger.debug("thumbnail_remote_url: {}".format(thumbnail_remote_url))
         create_thumbnail(
             instance=geonode_layer,
-            thumbnail_remote_url=thumbnail_remote_url,
-            thumbnail_create_url=None,
-            check_bbox=False,
-            overwrite=True
+            wms_version=self.parsed_service.version,
+            bbox=geonode_layer.bbox,
+            forced_crs=geonode_layer.srid,
+            overwrite=True,
         )
 
     def _create_layer_service_link(self, geonode_layer):
         Link.objects.get_or_create(
             resource=geonode_layer.resourcebase_ptr,
             url=geonode_layer.ows_url,
-            name="ESRI {}: {} Service".format(
-                geonode_layer.remote_service.type,
-                geonode_layer.store
-            ),
+            name=f"ESRI {geonode_layer.remote_service.type}: {geonode_layer.store} Service",
             defaults={
                 "extension": "html",
-                "name": "ESRI {}: {} Service".format(
-                    geonode_layer.remote_service.type,
-                    geonode_layer.store
-                ),
+                "name": f"ESRI {geonode_layer.remote_service.type}: {geonode_layer.store} Service",
                 "url": geonode_layer.ows_url,
                 "mime": "text/html",
-                "link_type": "ESRI:{}".format(geonode_layer.remote_service.type),
+                "link_type": f"ESRI:{geonode_layer.remote_service.type}",
             }
         )
 

@@ -93,7 +93,7 @@ class FilesTests(GeoNodeBaseTestSupport):
         """
         exts = ('.shp', '.shx', '.sld', '.xml', '.prj', '.dbf')
 
-        with create_files(['san_andres_y_providencia_location{0}'.format(s) for s in exts]) as tests:
+        with create_files([f'san_andres_y_providencia_location{s}' for s in exts]) as tests:
             shp = [s for s in tests if s.endswith('.shp')][0]
             spatial_files = scan_file(shp)
             self.assertTrue(isinstance(spatial_files, SpatialFiles))
@@ -127,7 +127,7 @@ class FilesTests(GeoNodeBaseTestSupport):
 
             basedir = os.path.dirname(spatial_file.base_file)
             for f in file_names:
-                path = os.path.join(basedir, '_%s' % f)
+                path = os.path.join(basedir, f'_{f}')
                 self.assertTrue(os.path.exists(path))
 
         # Test the scan_file function with a raster spatial file takes SLD also.

@@ -211,7 +211,7 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
         value = request.COOKIES.get(name)
         if name == 'csrftoken':
             csrftoken = value
-        cook = "%s=%s" % (name, value)
+        cook = f"{name}={value}"
         cookies = cook if not cookies else (cookies + '; ' + cook)
 
     csrftoken = get_token(request) if not csrftoken else csrftoken
@@ -219,7 +219,7 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
     if csrftoken:
         headers['X-Requested-With'] = "XMLHttpRequest"
         headers['X-CSRFToken'] = csrftoken
-        cook = "%s=%s" % ('csrftoken', csrftoken)
+        cook = f"csrftoken={csrftoken}"
         cookies = cook if not cookies else (cookies + '; ' + cook)
 
     if cookies:
@@ -254,18 +254,19 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
                 access_token = get_or_create_token(request.user)
 
     if access_token:
-        headers['Authorization'] = 'Bearer %s' % access_token
+        headers['Authorization'] = f'Bearer {access_token}'
 
     pragma = "no-cache"
     referer = request.META[
         "HTTP_REFERER"] if "HTTP_REFERER" in request.META else \
-        "{scheme}://{netloc}/".format(scheme=site_url.scheme,
-                                      netloc=site_url.netloc)
+        f"{site_url.scheme}://{site_url.netloc}/"
     encoding = request.META["HTTP_ACCEPT_ENCODING"] if "HTTP_ACCEPT_ENCODING" in request.META else "gzip"
-    headers.update({"Pragma": pragma,
-                    "Referer": referer,
-                    "Accept-encoding": encoding,
-    })
+    headers.update(
+        {
+            "Pragma": pragma,
+            "Referer": referer,
+            "Accept-encoding": encoding,
+        })
 
     return (headers, access_token)
 
@@ -327,11 +328,11 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
             float(x1), float(y0),
             float(x0), float(y0))
         if include_srid:
-            wkt = 'SRID=%s;%s' % (srid, wkt)
+            wkt = f'SRID={srid};{wkt}'
     else:
         wkt = 'POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))'
         if include_srid:
-            wkt = 'SRID=4326;%s' % wkt
+            wkt = f'SRID=4326;{wkt}'
     return wkt
 
 
@@ -390,10 +391,9 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             projected_bbox = [str(x) for x in g.GetEnvelope()]
             # Must be in the form : [x0, x1, y0, y1, EPSG:<target_srid>)
             return tuple([projected_bbox[0], projected_bbox[1], projected_bbox[2], projected_bbox[3]]) + \
-                ("EPSG:%s" % target_srid,)
-        except Exception:
-            tb = traceback.format_exc()
-            logger.error(tb)
+                (f"EPSG:{target_srid}",)
+        except Exception as e:
+            logger.exception(e)
 
     return native_bbox
 
@@ -652,7 +652,7 @@ class GXPMapBase(object):
                     'remote': True,
                     'ptype': service.ptype,
                     'name': service.name,
-                    'title': "[R] %s" % service.title
+                    'title': f"[R] {service.title}"
                 }
                 if remote_source['url'] not in source_urls:
                     index += 1
@@ -1012,7 +1012,7 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
         }
     elif exception:
         if body is None:
-            body = "Unexpected exception %s" % exception
+            body = f"Unexpected exception {exception}"
         else:
             body = body % exception
         body = {
@@ -1070,8 +1070,7 @@ def format_urls(a, values):
 
 def build_abstract(resourcebase, url=None, includeURL=True):
     if resourcebase.abstract and url and includeURL:
-        return "{abstract} -- [{url}]({url})".format(
-            abstract=resourcebase.abstract, url=url)
+        return f"{resourcebase.abstract} -- [{url}]({url})"
     else:
         return resourcebase.abstract
 
@@ -1091,10 +1090,10 @@ def build_caveats(resourcebase):
 
 
 def build_social_links(request, resourcebase):
-    social_url = "{protocol}://{host}{path}".format(
-        protocol=("https" if request.is_secure() else "http"),
-        host=request.get_host(),
-        path=request.get_full_path())
+    netschema = ("https" if request.is_secure() else "http")
+    host = request.get_host()
+    path = request.get_full_path()
+    social_url = f"{netschema}://{host}{path}"
     # Don't use datetime strftime() because it requires year >= 1900
     # see
     # https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
@@ -1173,7 +1172,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
         inDataSource = None
 
     if inDataSource is None:
-        logger.debug("Could not open {}".format(inShapefile))
+        logger.debug(f"Could not open {inShapefile}")
         return False, None, None
     else:
         inLayer = inDataSource.GetLayer()
@@ -1233,7 +1232,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
         except Exception as e:
             logger.exception(e)
             raise GeoNodeException(
-                "Could not decode SHAPEFILE attributes by using the specified charset '{}'.".format(charset))
+                f"Could not decode SHAPEFILE attributes by using the specified charset '{charset}'.")
     return True, None, list_col
 
 
@@ -1249,7 +1248,7 @@ def id_to_obj(id_):
 
 def printsignals():
     for signalname in signalnames:
-        logger.debug("SIGNALNAME: %s" % signalname)
+        logger.debug(f"SIGNALNAME: {signalname}")
         signaltype = getattr(models.signals, signalname)
         signals = signaltype.receivers[:]
         for signal in signals:
@@ -1332,10 +1331,9 @@ def parse_datetime(value):
             else:
                 return datetime.datetime.strptime(value, patt)
         except Exception:
-            # tb = traceback.format_exc()
-            # logger.error(tb)
-            pass
-    raise ValueError("Invalid datetime input: {}".format(value))
+            tb = traceback.format_exc()
+            logger.debug(tb)
+    raise ValueError(f"Invalid datetime input: {value}")
 
 
 def _convert_sql_params(cur, query):
@@ -1436,14 +1434,14 @@ class HttpClient(object):
                     _u = user or get_user_model().objects.get(username=self.username)
                     access_token = get_or_create_token(_u)
                     if access_token and not access_token.is_expired():
-                        headers['Authorization'] = 'Bearer %s' % access_token.token
+                        headers['Authorization'] = f'Bearer {access_token.token}'
                 except Exception:
                     tb = traceback.format_exc()
                     logger.debug(tb)
             elif user == self.username:
                 valid_uname_pw = base64.b64encode(
-                    "{}:{}".format(self.username, self.password).encode()).decode()
-                headers['Authorization'] = 'Basic {}'.format(valid_uname_pw)
+                    f"{self.username}:{self.password}".encode()).decode()
+                headers['Authorization'] = f'Basic {valid_uname_pw}'
 
         response = None
         content = None
@@ -1460,7 +1458,8 @@ class HttpClient(object):
             pool_maxsize=self.pool_maxsize,
             pool_connections=self.pool_connections
         )
-        session.mount("{scheme}://".format(scheme=urlsplit(url).scheme), adapter)
+        scheme = urlsplit(url).scheme
+        session.mount(f"{scheme}://", adapter)
         session.verify = False
         action = getattr(session, method.lower(), None)
         if action:
@@ -1579,14 +1578,14 @@ def chmod_tree(dst, permissions=0o777):
             os.chmod(path, permissions)
             status = os.stat(path)
             if oct(status.st_mode & 0o777) != str(oct(permissions)):
-                raise Exception("Could not update permissions of {}".format(path))
+                raise Exception(f"Could not update permissions of {path}")
 
         for dirname in dirnames:
             path = os.path.join(dirpath, dirname)
             os.chmod(path, permissions)
             status = os.stat(path)
             if oct(status.st_mode & 0o777) != str(oct(permissions)):
-                raise Exception("Could not update permissions of {}".format(path))
+                raise Exception(f"Could not update permissions of {path}")
 
 
 def slugify_zh(text, separator='_'):
@@ -1778,8 +1777,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 )
 
         site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-        html_link_url = '%s%s' % (
-            site_url, instance.get_absolute_url())
+        html_link_url = f'{site_url}{instance.get_absolute_url()}'
 
         if (Link.objects.filter(resource=instance.resourcebase_ptr,
                                 url=html_link_url,
@@ -1846,7 +1844,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # ogc_wms_path = '%s/ows' % instance.workspace
         ogc_wms_path = 'ows'
         ogc_wms_url = urljoin(ogc_server_settings.public_url, ogc_wms_path)
-        ogc_wms_name = 'OGC WMS: %s Service' % instance.workspace
+        ogc_wms_name = f'OGC WMS: {instance.workspace} Service'
         if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wms_name, url=ogc_wms_url).count() < 2:
             Link.objects.get_or_create(
                 resource=instance.resourcebase_ptr,
@@ -1864,7 +1862,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             # ogc_wfs_path = '%s/wfs' % instance.workspace
             ogc_wfs_path = 'ows'
             ogc_wfs_url = urljoin(ogc_server_settings.public_url, ogc_wfs_path)
-            ogc_wfs_name = 'OGC WFS: %s Service' % instance.workspace
+            ogc_wfs_name = f'OGC WFS: {instance.workspace} Service'
             if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wfs_name, url=ogc_wfs_url).count() < 2:
                 Link.objects.get_or_create(
                     resource=instance.resourcebase_ptr,
@@ -1882,7 +1880,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             # ogc_wcs_path = '%s/wcs' % instance.workspace
             ogc_wcs_path = 'ows'
             ogc_wcs_url = urljoin(ogc_server_settings.public_url, ogc_wcs_path)
-            ogc_wcs_name = 'OGC WCS: %s Service' % instance.workspace
+            ogc_wcs_name = f'OGC WCS: {instance.workspace} Service'
             if Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wcs_name, url=ogc_wcs_url).count() < 2:
                 Link.objects.get_or_create(
                     resource=instance.resourcebase_ptr,

@@ -23,7 +23,6 @@ import os
 import time
 import shutil
 import requests
-import traceback
 import re
 import logging
 
@@ -158,11 +157,10 @@ class Command(BaseCommand):
                     if app_name == 'br':
                         continue
 
-                    logger.info("Dumping '"+app_name+"' into '"+dump_name+".json'.")
+                    logger.info(f"Dumping '{app_name}' into '{dump_name}.json'.")
                     # Point stdout at a file for dumping data to.
-                    with open(os.path.join(target_folder, dump_name+'.json'), 'w') as output:
+                    with open(os.path.join(target_folder, f'{dump_name}.json'), 'w') as output:
                         call_command('dumpdata', app_name, format='json', indent=2, stdout=output)
-                    
 
                 # Store Media Root
                 media_root = settings.MEDIA_ROOT
@@ -172,7 +170,7 @@ class Command(BaseCommand):
 
                 copy_tree(media_root, media_folder,
                           ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
-                print("Saved Media Files from '"+media_root+"'.")
+                print(f"Saved Media Files from '{media_root}'.")
 
                 # Store Static Root
                 static_root = settings.STATIC_ROOT
@@ -182,7 +180,7 @@ class Command(BaseCommand):
 
                 copy_tree(static_root, static_folder,
                           ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
-                print("Saved Static Root from '"+static_root+"'.")
+                print(f"Saved Static Root from '{static_root}'.")
 
                 # Store Static Folders
                 static_folders = settings.STATICFILES_DIRS
@@ -194,8 +192,10 @@ class Command(BaseCommand):
 
                     # skip dumping of static files of apps not located under LOCAL_ROOT path
                     # (check to prevent saving files from site-packages in project-template based GeoNode projects)
-                    if getattr(settings, 'LOCAL_ROOT', None) and not static_files_folder.startswith(settings.LOCAL_ROOT):
-                        print(f"Skipping static directory: {static_files_folder}. It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
+                    if getattr(settings, 'LOCAL_ROOT', None) and \
+                    not static_files_folder.startswith(settings.LOCAL_ROOT):
+                        print(f"Skipping static directory: {static_files_folder}. "
+                              f"It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
                         continue
 
                     static_folder = os.path.join(static_files_folders,
@@ -205,7 +205,7 @@ class Command(BaseCommand):
 
                     copy_tree(static_files_folder, static_folder,
                               ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
-                    print("Saved Static Files from '"+static_files_folder+"'.")
+                    print(f"Saved Static Files from '{static_files_folder}'.")
 
                 # Store Template Folders
                 template_folders = []
@@ -224,8 +224,10 @@ class Command(BaseCommand):
 
                     # skip dumping of template files of apps not located under LOCAL_ROOT path
                     # (check to prevent saving files from site-packages in project-template based GeoNode projects)
-                    if getattr(settings, 'LOCAL_ROOT', None) and not template_files_folder.startswith(settings.LOCAL_ROOT):
-                        print(f"Skipping template directory: {template_files_folder}. It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
+                    if getattr(settings, 'LOCAL_ROOT', None) and \
+                    not template_files_folder.startswith(settings.LOCAL_ROOT):
+                        print(f"Skipping template directory: {template_files_folder}. "
+                              f"It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
                         continue
 
                     template_folder = os.path.join(template_files_folders,
@@ -235,7 +237,7 @@ class Command(BaseCommand):
 
                     copy_tree(template_files_folder, template_folder,
                               ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
-                    print("Saved Template Files from '"+template_files_folder+"'.")
+                    print(f"Saved Template Files from '{template_files_folder}'.")
 
                 # Store Locale Folders
                 locale_folders = settings.LOCALE_PATHS
@@ -247,8 +249,10 @@ class Command(BaseCommand):
 
                     # skip dumping of locale files of apps not located under LOCAL_ROOT path
                     # (check to prevent saving files from site-packages in project-template based GeoNode projects)
-                    if getattr(settings, 'LOCAL_ROOT', None) and not locale_files_folder.startswith(settings.LOCAL_ROOT):
-                        logger.info(f"Skipping locale directory: {locale_files_folder}. It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
+                    if getattr(settings, 'LOCAL_ROOT', None) and \
+                    not locale_files_folder.startswith(settings.LOCAL_ROOT):
+                        logger.info(f"Skipping locale directory: {locale_files_folder}. "
+                                    f"It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
                         continue
 
                     locale_folder = os.path.join(locale_files_folders,
@@ -258,20 +262,20 @@ class Command(BaseCommand):
 
                     copy_tree(locale_files_folder, locale_folder,
                               ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
-                    logger.info("Saved Locale Files from '"+locale_files_folder+"'.")
+                    logger.info(f"Saved Locale Files from '{locale_files_folder}'.")
 
                 # Create Final ZIP Archive
-                backup_archive = os.path.join(backup_dir, dir_time_suffix+'.zip')
+                backup_archive = os.path.join(backup_dir, f'{dir_time_suffix}.zip')
                 zip_dir(target_folder, backup_archive)
 
                 # Generate a md5 hash of a backup archive and save it
-                backup_md5_file = os.path.join(backup_dir, dir_time_suffix+'.md5')
+                backup_md5_file = os.path.join(backup_dir, f'{dir_time_suffix}.md5')
                 zip_archive_md5 = utils.md5_file_hash(backup_archive)
                 with open(backup_md5_file, 'w') as md5_file:
                     md5_file.write(zip_archive_md5)
 
                 # Generate the ini file with the current settings used by the backup command
-                backup_ini_file = os.path.join(backup_dir, dir_time_suffix + '.ini')
+                backup_ini_file = os.path.join(backup_dir, f'{dir_time_suffix}.ini')
                 with open(backup_ini_file, 'w') as configfile:
                     config.config_parser.write(configfile)
 
@@ -279,11 +283,11 @@ class Command(BaseCommand):
                 try:
                     shutil.rmtree(target_folder)
                 except Exception:
-                    logger.warning("WARNING: Could not be possible to delete the temp folder: '" + str(target_folder) + "'")
+                    logger.warning(f"WARNING: Could not be possible to delete the temp folder: '{target_folder}'")
 
                 print("Backup Finished. Archive generated.")
 
-                return str(os.path.join(backup_dir, dir_time_suffix+'.zip'))
+                return str(os.path.join(backup_dir, f'{dir_time_suffix}.zip'))
 
     def create_geoserver_backup(self, config, settings, target_folder, ignore_errors):
         # Create GeoServer Backup
@@ -292,12 +296,12 @@ class Command(BaseCommand):
         passwd = settings.OGC_SERVER['default']['PASSWORD']
         geoserver_bk_file = os.path.join(target_folder, 'geoserver_catalog.zip')
 
-        logger.info("Dumping 'GeoServer Catalog ["+url+"]' into '"+geoserver_bk_file+"'.")
-        r = requests.put(url + 'rest/reset/',
+        logger.info(f"Dumping 'GeoServer Catalog [{url}]' into '{geoserver_bk_file}'.")
+        r = requests.put(f'{url}rest/reset/',
                          auth=HTTPBasicAuth(user, passwd))
         if r.status_code != 200:
             raise ValueError('Could not reset GeoServer catalog!')
-        r = requests.put(url + 'rest/reload/',
+        r = requests.put(f'{url}rest/reload/',
                          auth=HTTPBasicAuth(user, passwd))
         if r.status_code != 200:
             raise ValueError('Could not reload GeoServer catalog!')
@@ -309,8 +313,8 @@ class Command(BaseCommand):
             'BK_CLEANUP_TEMP=true',
             'BK_SKIP_SETTINGS=false',
             'BK_SKIP_SECURITY=false',
-            'BK_BEST_EFFORT={}'.format('true' if ignore_errors else 'false'),
-            'exclude.file.path={}'.format(config.gs_exclude_file_path)
+            f'BK_BEST_EFFORT={("true" if ignore_errors else "false")}',
+            f'exclude.file.path={config.gs_exclude_file_path}'
         ]
         data = {'backup': {'archiveFile': geoserver_bk_file, 'overwrite': 'true',
                            'options': {'option': _options}}}
@@ -318,19 +322,19 @@ class Command(BaseCommand):
             'Accept': 'application/json',
             'Content-type': 'application/json'
         }
-        r = requests.post(url + 'rest/br/backup/', data=json.dumps(data),
+        r = requests.post(f'{url}rest/br/backup/', data=json.dumps(data),
                           headers=headers, auth=HTTPBasicAuth(user, passwd))
 
         if r.status_code in (200, 201, 406):
             try:
-                r = requests.get(url + 'rest/br/backup.json',
+                r = requests.get(f'{url}rest/br/backup.json',
                                  headers=headers,
                                  auth=HTTPBasicAuth(user, passwd),
                                  timeout=10)
                 if (r.status_code == 200):
                     gs_backup = r.json()
                     _url = urlparse(gs_backup['backups']['backup'][len(gs_backup['backups']['backup']) - 1]['href'])
-                    _url = '{}?{}'.format(urljoin(url, _url.path), _url.query)
+                    _url = f'{urljoin(url, _url.path)}?{_url.query}'
                     r = requests.get(_url,
                                      headers=headers,
                                      auth=HTTPBasicAuth(user, passwd),
@@ -344,7 +348,7 @@ class Command(BaseCommand):
                 raise ValueError(error_backup.format(url, r.status_code, r.text))
 
             gs_bk_exec_id = gs_backup['backup']['execution']['id']
-            r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
+            r = requests.get(f'{url}rest/br/backup/{gs_bk_exec_id}.json',
                              headers=headers,
                              auth=HTTPBasicAuth(user, passwd),
                              timeout=10)
@@ -355,7 +359,7 @@ class Command(BaseCommand):
                 while (gs_bk_exec_status != 'COMPLETED' and gs_bk_exec_status != 'FAILED'):
                     if (gs_bk_exec_progress != gs_bk_exec_progress_updated):
                         gs_bk_exec_progress_updated = gs_bk_exec_progress
-                    r = requests.get(url + 'rest/br/backup/' + str(gs_bk_exec_id) + '.json',
+                    r = requests.get(f'{url}rest/br/backup/{gs_bk_exec_id}.json',
                                      headers=headers,
                                      auth=HTTPBasicAuth(user, passwd),
                                      timeout=10)
@@ -368,7 +372,7 @@ class Command(BaseCommand):
 
                         gs_bk_exec_status = gs_backup['backup']['execution']['status']
                         gs_bk_exec_progress = gs_backup['backup']['execution']['progress']
-                        print(str(gs_bk_exec_status) + ' - ' + gs_bk_exec_progress)
+                        print(f'{gs_bk_exec_status} - {gs_bk_exec_progress}')
                         time.sleep(3)
                     else:
                         raise ValueError(error_backup.format(url, r.status_code, r.text))
@@ -379,7 +383,7 @@ class Command(BaseCommand):
                 os.chmod(geoserver_bk_file, _permissions)
                 status = os.stat(geoserver_bk_file)
                 if oct(status.st_mode & 0o777) != str(oct(_permissions)):
-                    raise Exception("Could not update permissions of {}".format(geoserver_bk_file))
+                    raise Exception(f"Could not update permissions of {geoserver_bk_file}")
             else:
                 raise ValueError(error_backup.format(url, r.status_code, r.text))
 
@@ -390,22 +394,22 @@ class Command(BaseCommand):
                 gs_data_root = os.path.join(config.gs_data_dir, 'geonode')
                 if not os.path.isabs(gs_data_root):
                     gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
-                logger.info("Dumping GeoServer Uploaded Data from '"+gs_data_root+"'.")
+                logger.info(f"Dumping GeoServer Uploaded Data from '{gs_data_root}'.")
                 if os.path.exists(gs_data_root):
                     gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'geonode')
                     if not os.path.exists(gs_data_folder):
                         os.makedirs(gs_data_folder)
                     copy_tree(gs_data_root, gs_data_folder,
                               ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
-                    logger.info("Dumped GeoServer Uploaded Data from '"+gs_data_root+"'.")
+                    logger.info(f"Dumped GeoServer Uploaded Data from '{gs_data_root}'.")
                 else:
-                    logger.info("Skipped GeoServer Uploaded Data '"+gs_data_root+"'.")
+                    logger.info(f"Skipped GeoServer Uploaded Data '{gs_data_root}'.")
 
                 # Dump '$config.gs_data_dir/data/geonode'
                 gs_data_root = os.path.join(config.gs_data_dir, 'data', 'geonode')
                 if not os.path.isabs(gs_data_root):
                     gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
-                logger.info("Dumping GeoServer Uploaded Data from '"+gs_data_root+"'.")
+                logger.info(f"Dumping GeoServer Uploaded Data from '{gs_data_root}'.")
                 if os.path.exists(gs_data_root):
                     gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
                     if not os.path.exists(gs_data_folder):
@@ -413,9 +417,9 @@ class Command(BaseCommand):
 
                     copy_tree(gs_data_root, gs_data_folder,
                               ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
-                    logger.info("Dumped GeoServer Uploaded Data from '" + gs_data_root + "'.")
+                    logger.info(f"Dumped GeoServer Uploaded Data from '{gs_data_root}'.")
                 else:
-                    logger.info("Skipped GeoServer Uploaded Data '"+gs_data_root+"'.")
+                    logger.info(f"Skipped GeoServer Uploaded Data '{gs_data_root}'.")
 
     def dump_geoserver_vector_data(self, config, settings, target_folder):
         if (config.gs_dump_vector_data):
@@ -455,7 +459,7 @@ class Command(BaseCommand):
                 if not os.path.isdir(external_path) and os.path.exists(external_path):
                     shutil.copy2(abspath, external_path)
             except shutil.SameFileError:
-                logger.warning("WARNING: {} and {} are the same file!".format(abspath, external_path))
+                logger.warning(f"WARNING: {abspath} and {external_path} are the same file!")
 
         def match_filename(key, text, regexp=re.compile("^(.+)$")):
             if key in ('filename', ):
@@ -469,7 +473,7 @@ class Command(BaseCommand):
                         if os.path.exists(abspath):
                             return abspath
                     except Exception:
-                        logger.warning("WARNING: Error while trying to dump {}".format(text))
+                        logger.warning(f"WARNING: Error while trying to dump {text}")
                         return
 
         def match_fileurl(key, text, regexp=re.compile("^file:(.+)$")):
@@ -484,7 +488,7 @@ class Command(BaseCommand):
                         if os.path.exists(abspath):
                             return abspath
                     except Exception:
-                        logger.warning("WARNING: Error while trying to dump {}".format(text))
+                        logger.warning(f"WARNING: Error while trying to dump {text}")
                         return
 
         def dump_external_resources_from_xml(path):

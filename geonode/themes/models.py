@@ -38,16 +38,16 @@ class Partner(models.Model):
 
     @property
     def logo_class(self):
-        _logo_class = slugify("logo_%s" % self.name)
-        return "{0}".format(_logo_class)
+        _logo_class = slugify(f"logo_{self.name}")
+        return str(_logo_class)
 
     @property
     def partner_link(self):
-        _href = self.href if self.href.startswith('http') else 'http://%s' % self.href
-        return "{0}".format(_href)
+        _href = self.href if self.href.startswith('http') else f'http://{self.href}'
+        return str(_href)
 
     def __str__(self):
-        return "{0}".format(self.title)
+        return str(self.title)
 
     class Meta:
         ordering = ("name", )
@@ -72,8 +72,9 @@ class JumbotronThemeSlide(models.Model):
 
     def __str__(self):
         get_icon = (lambda arg: '[✓]' if arg else '[✗]')
-        return '{} | <Enabled: {} -- Hide Text: {}>'.format(
-            self.slide_name, get_icon(self.is_enabled), get_icon(self.hide_jumbotron_slide_content))
+        _enabled_icon = get_icon(self.is_enabled)
+        _slide_content_icon = get_icon(self.hide_jumbotron_slide_content)
+        return f'{self.slide_name} | <Enabled: {_enabled_icon} -- Hide Text: {_slide_content_icon}>'
 
 
 class GeoNodeThemeCustomization(models.Model):
@@ -206,7 +207,7 @@ class GeoNodeThemeCustomization(models.Model):
 
     def file_link(self):
         if self.logo:
-            return "<a href='%s'>download</a>" % (self.logo.url,)
+            return f"<a href='{self.logo.url}'>download</a>"
         else:
             return "No attachment"
 
@@ -215,11 +216,11 @@ class GeoNodeThemeCustomization(models.Model):
     @property
     def theme_uuid(self):
         if not self.identifier:
-            self.identifier = slugify("theme id %s %s" % (self.id, self.date))
-        return "{0}".format(self.identifier)
+            self.identifier = slugify(f"theme id {self.id} {self.date}")
+        return str(self.identifier)
 
     def __str__(self):
-        return "{0}".format(self.name)
+        return str(self.name)
 
     class Meta:
         ordering = ("date", )

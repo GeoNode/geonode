@@ -88,7 +88,7 @@ def update_profile(sociallogin):
         for field in profile_fields:
             try:
                 extractor_method = getattr(
-                    extractor, "extract_{}".format(field))
+                    extractor, f"extract_{field}")
                 value = extractor_method(sociallogin.account.extra_data)
                 if not user_field(user, field):
                     user_field(user, field, value)

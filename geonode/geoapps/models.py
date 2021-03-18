@@ -81,8 +81,7 @@ class GeoApp(ResourceBase):
         on_delete=models.CASCADE)
 
     def __str__(self):
-        return '%s by %s' % (
-            self.title, (self.owner.username if self.owner else "<Anonymous>"))
+        return f'{self.title} by {(self.owner.username if self.owner else "<Anonymous>")}'
 
     @property
     def class_name(self):

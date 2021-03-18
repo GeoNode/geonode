@@ -341,12 +341,11 @@ class CommonModelApi(ModelResource):
 
             if len(subtypes) > 0:
                 types.append("layer")
-                sqs = SearchQuerySet().narrow("subtype:%s" %
-                                              ','.join(map(str, subtypes)))
+                sqs = SearchQuerySet().narrow(f"subtype:{','.join(map(str, subtypes))}")
 
             if len(types) > 0:
                 sqs = (SearchQuerySet() if sqs is None else sqs).narrow(
-                    "type:%s" % ','.join(map(str, types)))
+                    f"type:{','.join(map(str, types))}")
 
         # Filter by Query Params
         # haystack bug? if boosted fields aren't included in the
@@ -418,7 +417,7 @@ class CommonModelApi(ModelResource):
         if owner:
             sqs = (
                 SearchQuerySet() if sqs is None else sqs).narrow(
-                    "owner__username:%s" % ','.join(map(str, owner)))
+                    f"owner__username:{','.join(map(str, owner))}")
 
         # filter by date
         if date_start:
