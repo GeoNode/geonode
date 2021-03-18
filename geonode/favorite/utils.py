@@ -32,7 +32,7 @@ def get_favorite_info(user, content_object):
     result = {}
 
     url_content_type = type(content_object).__name__.lower()
-    result["add_url"] = reverse("add_favorite_{}".format(url_content_type), args=[content_object.pk])
+    result["add_url"] = reverse(f"add_favorite_{url_content_type}", args=[content_object.pk])
 
     existing_favorite = models.Favorite.objects.favorite_for_user_and_content_object(user, content_object)
 

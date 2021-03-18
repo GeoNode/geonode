@@ -154,8 +154,7 @@ def get_files(filename):
 
     # Make sure the file exists.
     if not os.path.exists(filename):
-        msg = ('Could not open %s. Make sure you are using a '
-               'valid file' % filename)
+        msg = f'Could not open {filename}. Make sure you are using a valid file'
         logger.debug(msg)
         raise GeoNodeException(msg)
 
@@ -169,10 +168,9 @@ def get_files(filename):
         for ext, pattern in required_extensions.items():
             matches = glob.glob(glob_name + pattern)
             if len(matches) == 0:
-                msg = ('Expected helper file %s does not exist; a Shapefile '
+                msg = (f'Expected helper file {base_name}.{ext} does not exist; a Shapefile '
                        'requires helper files with the following extensions: '
-                       '%s') % (base_name + "." + ext,
-                                list(required_extensions.keys()))
+                       f'{list(required_extensions.keys())}')
                 raise GeoNodeException(msg)
             elif len(matches) > 1:
                 msg = ('Multiple helper files for %s exist; they need to be '
@@ -253,7 +251,7 @@ def layer_type(filename):
     elif extension.lower() in cov_exts:
         return 'raster'
     else:
-        msg = ('Saving of extension [%s] is not implemented' % extension)
+        msg = f'Saving of extension [{extension}] is not implemented'
         raise GeoNodeException(msg)
 
 
@@ -266,9 +264,9 @@ def get_valid_name(layer_name):
     while Layer.objects.filter(name=proposed_name).exists():
         possible_chars = string.ascii_lowercase + string.digits
         suffix = "".join([choice(possible_chars) for i in range(4)])
-        proposed_name = '%s_%s' % (name, suffix)
+        proposed_name = f'{name}_{suffix}'
         logger.debug('Requested name already used; adjusting name '
-                     '[%s] => [%s]', layer_name, proposed_name)
+                     f'[{layer_name}] => [{proposed_name}]')
 
     return proposed_name
 
@@ -328,7 +326,7 @@ def get_resolution(filename):
         gtif = gdal.Open(filename)
         gt = gtif.GetGeoTransform()
         __, resx, __, __, __, resy = gt
-        resolution = '%s %s' % (resx, resy)
+        resolution = f'{resx} {resy}'
         return resolution
     except Exception:
         return None
@@ -403,7 +401,7 @@ def get_bbox(filename):
     except Exception:
         pass
 
-    return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, "EPSG:%s" % str(srid)]
+    return [bbox_x0, bbox_x1, bbox_y0, bbox_y1, f"EPSG:{str(srid)}"]
 
 
 @transaction.atomic
@@ -506,7 +504,7 @@ def file_upload(filename,
                                 that is consistent with the file you are trying to replace."))
                 except Exception as e:
                     raise Exception(
-                        _("Some error occurred while trying to access the uploaded schema: %s" % str(e)))
+                        _(f"Some error occurred while trying to access the uploaded schema: {str(e)}"))
 
     # Set a default title that looks nice ...
     if title is None:
@@ -551,8 +549,7 @@ def file_upload(filename,
         with open(fn, 'rb') as f:
             upload_session.layerfile_set.create(
                 name=type_name, file=File(
-                    f, name='%s.%s' %
-                    (assigned_name or valid_name, type_name)))
+                    f, name=f'{assigned_name or valid_name}.{type_name}'))
             # save the system assigned name for the remaining files
             if not assigned_name:
                 the_file = upload_session.layerfile_set.all()[0].file.name
@@ -797,7 +794,7 @@ def upload(incoming, user=None, overwrite=False,
 
     elif not os.path.isdir(incoming):
         msg = ('Please pass a filename or a directory name as the "incoming" '
-               'parameter, instead of %s: %s' % (incoming, type(incoming)))
+               f'parameter, instead of {incoming}: {type(incoming)}')
         logger.exception(msg)
         raise GeoNodeException(msg)
     else:
@@ -893,7 +890,7 @@ def upload(incoming, user=None, overwrite=False,
                         print(msg, file=sys.stderr)
                         raise Exception from e
 
-        msg = "[%s] Layer for '%s' (%d/%d)" % (status, filename, i + 1, number)
+        msg = f"[{status}] Layer for '{filename}' ({i + 1}/{number})"
         info = {'file': filename, 'status': status}
         if status == 'failed':
             info['traceback'] = traceback
@@ -921,7 +918,7 @@ def delete_orphaned_layers():
                 deleted.append(filename)
             except NotImplementedError as e:
                 logger.error(
-                    "Failed to delete orphaned layer file '{}': {}".format(filename, e))
+                    f"Failed to delete orphaned layer file '{filename}': {e}")
 
     return deleted
 
@@ -947,9 +944,7 @@ def set_layers_permissions(permissions_name, resources_names=None,
             resources = Layer.objects.filter(Q(title__in=resources_names) | Q(name__in=resources_names))
         except Layer.DoesNotExist:
             logger.warning(
-                'No resources have been found with these names: %s.' % (
-                    ", ".join(resources_names)
-                )
+                f'No resources have been found with these names: {", ".join(resources_names)}.'
             )
     if not resources:
         logger.warning("No resources have been found. No update operations have been executed.")
@@ -1001,8 +996,8 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                 users.append(user)
                             except User.DoesNotExist:
                                 logger.warning(
-                                    'The user {} does not exists. '
-                                    'It has been skipped.'.format(username)
+                                    f'The user {username} does not exists. '
+                                    'It has been skipped.'
                                 )
                     # GROUPS
                     groups = []
@@ -1013,8 +1008,8 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                 groups.append(group)
                             except Group.DoesNotExist:
                                 logger.warning(
-                                    'The group {} does not exists. '
-                                    'It has been skipped.'.format(group_name)
+                                    f'The group {group_name} does not exists. '
+                                    'It has been skipped.'
                                 )
                     if not users and not groups:
                         logger.error(
@@ -1066,15 +1061,16 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                             perm_spec["users"][_user] = list(u_perms_set)
                                         else:
                                             logger.warning(
-                                                "The user %s does not have "
-                                                "any permission on the layer %s. "
-                                                "It has been skipped." % (_user.username, resource.title)
+                                                f"The user {_user.username} does not have "
+                                                f"any permission on the layer {resource.title}. "
+                                                "It has been skipped."
                                             )
                                     else:
                                         logger.warning(
-                                            "Warning! - The user %s is the layer %s owner, "
+                                            f"Warning! - The user {_user.username} is the "
+                                            f"layer {resource.title} owner, "
                                             "so its permissions can't be changed. "
-                                            "It has been skipped." % (_user.username, resource.title)
+                                            "It has been skipped."
                                         )
                             for g in groups:
                                 _group = g
@@ -1107,8 +1103,9 @@ def set_layers_permissions(permissions_name, resources_names=None,
                                         perm_spec["groups"][g] = list(g_perms_set)
                                     else:
                                         logger.warning(
-                                            "The group %s does not have any permission on the layer %s. "
-                                            "It has been skipped." % (g.name, resource.title)
+                                            f"The group {g.name} does not have any permission "
+                                            f"on the layer {resource.title}. "
+                                            "It has been skipped."
                                         )
                             # Set final permissions
                             resource.set_permissions(perm_spec)

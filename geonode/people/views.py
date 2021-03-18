@@ -71,7 +71,7 @@ def profile_edit(request, username=None):
             form = ProfileForm(request.POST, request.FILES, instance=profile)
             if form.is_valid():
                 form.save()
-                messages.success(request, ("Profile %s updated." % username))
+                messages.success(request, (f"Profile {username} updated."))
                 return redirect(
                     reverse(
                         'profile_detail',

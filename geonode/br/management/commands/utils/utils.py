@@ -174,7 +174,7 @@ def get_db_conn(db_name, db_user, db_port, db_host, db_passwd):
     db_host = db_host if db_host is not None else 'localhost'
     db_port = db_port if db_port is not None else 5432
     conn = psycopg2.connect(
-        "dbname='%s' user='%s' port='%s' host='%s' password='%s'" % (db_name, db_user, db_port, db_host, db_passwd)
+        f"dbname='{db_name}' user='{db_user}' port='{db_port}' host='{db_host}' password='{db_passwd}'"
     )
     return conn
 
@@ -227,7 +227,7 @@ def flush_db(db_name, db_user, db_port, db_host, db_passwd):
     curs = conn.cursor()
 
     try:
-        sql_dump = """SELECT tablename from pg_tables where tableowner = '%s'""" % (db_user)
+        sql_dump = f"""SELECT tablename from pg_tables where tableowner = '{db_user}'"""
         curs.execute(sql_dump)
         pg_tables = curs.fetchall()
         for table in pg_tables:
@@ -255,7 +255,7 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
     curs = conn.cursor()
 
     try:
-        sql_dump = """SELECT tablename from pg_tables where tableowner = '%s'""" % (db_user)
+        sql_dump = f"""SELECT tablename from pg_tables where tableowner = '{db_user}'"""
         curs.execute(sql_dump)
         pg_all_tables = [table[0] for table in curs.fetchall()]
         pg_tables = []
@@ -272,7 +272,7 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
             pg_tables = pg_all_tables
 
         for table in pg_tables:
-            logger.info("Dumping GeoServer Vectorial Data : {}:{}".format(db_name, table))
+            logger.info(f"Dumping GeoServer Vectorial Data : {db_name}:{table}")
             os.system('PGPASSWORD="' + db_passwd + '" ' + config.pg_dump_cmd + ' -h ' + db_host +
                       ' -p ' + str(db_port) + ' -U ' + db_user + ' -F c -b' +
                       ' -t \'"' + str(table) + '"\' -f ' +
@@ -301,7 +301,7 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
         file_names = [fn for fn in os.listdir(source_folder)
                       if any(fn.endswith(ext) for ext in included_extenstions)]
         for table in file_names:
-            logger.info("Restoring GeoServer Vectorial Data : {}:{} ".format(db_name, os.path.splitext(table)[0]))
+            logger.info(f"Restoring GeoServer Vectorial Data : {db_name}:{os.path.splitext(table)[0]} ")
             pg_rstcmd = 'PGPASSWORD="' + db_passwd + '" ' + config.pg_restore_cmd + ' -h ' + db_host + \
                         ' -p ' + str(db_port) + ' -U ' + db_user + ' --role=' + db_user + \
                         ' -F c -t "' + os.path.splitext(table)[0] + '" ' +\
@@ -323,13 +323,13 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
 def remove_existing_tables(db_name, db_user, db_port, db_host, db_passwd):
     conn = get_db_conn(db_name, db_user, db_port, db_host, db_passwd)
     curs = conn.cursor()
-    table_list = """SELECT tablename from pg_tables where tableowner = '%s'""" % (db_user)
+    table_list = f"""SELECT tablename from pg_tables where tableowner = '{db_user}'"""
 
     try:
         curs.execute(table_list)
         pg_all_tables = [table[0] for table in curs.fetchall()]
         for pg_table in pg_all_tables:
-            logger.info("Dropping existing GeoServer Vectorial Data : {}:{} ".format(db_name, pg_table))
+            logger.info(f"Dropping existing GeoServer Vectorial Data : {db_name}:{pg_table} ")
             curs.execute(f"DROP TABLE {pg_table} CASCADE")
 
         conn.commit()
@@ -366,9 +366,9 @@ def confirm(prompt=None, resp=False):
         prompt = 'Confirm'
 
     if resp:
-        prompt = '%s [%s]|%s: ' % (prompt, 'y', 'n')
+        prompt = f'{prompt} [y]|n: '
     else:
-        prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
+        prompt = f'{prompt} [n]|y: '
 
     while True:
         ans = input(prompt)
@@ -427,10 +427,10 @@ def glob2re(pat):
         c = pat[i]
         i = i+1
         if c == '*':
-            #res = res + '.*'
+            # res = res + '.*'
             res = res + '[^/]*'
         elif c == '?':
-            #res = res + '.'
+            # res = res + '.'
             res = res + '[^/]'
         elif c == '[':
             j = i
@@ -449,7 +449,7 @@ def glob2re(pat):
                     stuff = '^' + stuff[1:]
                 elif stuff[0] == '^':
                     stuff = '\\' + stuff
-                res = '%s[%s]' % (res, stuff)
+                res = f'{res}[{stuff}]'
         else:
             res = res + re.escape(c)
     return res + r'\Z(?ms)'

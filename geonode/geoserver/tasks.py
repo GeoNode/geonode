@@ -365,7 +365,7 @@ def geoserver_finalize_upload(
             else:
                 geoserver_create_style(instance.id, instance.name, sld_file, tempdir)
 
-            logger.debug('Finalizing (permissions and notifications) Layer {0}'.format(instance))
+            logger.debug(f'Finalizing (permissions and notifications) Layer {instance}')
             instance.handle_moderated_uploads()
 
             if permissions is not None and not spec_perms_is_empty(permissions):
@@ -478,7 +478,7 @@ def geoserver_post_save_layers(
                 metadata_links.append((link.mime, link.name, link.url))
 
             if gs_resource:
-                logger.debug("Found geoserver resource for this layer: %s" % instance.name)
+                logger.debug(f"Found geoserver resource for this layer: {instance.name}")
                 gs_resource.metadata_links = metadata_links
                 instance.gs_resource = gs_resource
 
@@ -523,8 +523,8 @@ def geoserver_post_save_layers(
                     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
                         gs_catalog.save(gs_resource)
                 except Exception as e:
-                    msg = ('Error while trying to save resource named %s in GeoServer, '
-                           'try to use: "%s"' % (gs_resource, str(e)))
+                    msg = (f'Error while trying to save resource named {gs_resource} in GeoServer, '
+                           f'try to use: "{e}"')
                     e.args = (msg,)
                     logger.exception(e)
 
