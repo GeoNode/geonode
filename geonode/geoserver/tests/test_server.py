@@ -1081,9 +1081,9 @@ class UtilsTests(GeoNodeBaseTestSupport):
         wms_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wms')
         identifier = urlencode({'layers': instance.alternate})
         for _link in wms_links:
-            logger.debug('%s --> %s' % (wms_url, _link[3]))
+            logger.debug(f'{wms_url} --> {_link[3]}')
             self.assertTrue(wms_url in _link[3])
-            logger.debug('%s --> %s' % (identifier, _link[3]))
+            logger.debug(f'{identifier} --> {_link[3]}')
             self.assertTrue(identifier in _link[3])
 
         # WFS Links
@@ -1096,9 +1096,9 @@ class UtilsTests(GeoNodeBaseTestSupport):
         wfs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wfs')
         identifier = urlencode({'typename': instance.alternate})
         for _link in wfs_links:
-            logger.debug('%s --> %s' % (wfs_url, _link[3]))
+            logger.debug(f'{wfs_url} --> {_link[3]}')
             self.assertTrue(wfs_url in _link[3])
-            logger.debug('%s --> %s' % (identifier, _link[3]))
+            logger.debug(f'{identifier} --> {_link[3]}')
             self.assertTrue(identifier in _link[3])
 
         # WCS Links
@@ -1111,9 +1111,9 @@ class UtilsTests(GeoNodeBaseTestSupport):
         wcs_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'wcs')
         identifier = urlencode({'coverageid': instance.alternate.replace(':', '__', 1)})
         for _link in wcs_links:
-            logger.debug('%s --> %s' % (wcs_url, _link[3]))
+            logger.debug(f'{wcs_url} --> {_link[3]}')
             self.assertTrue(wcs_url in _link[3])
-            logger.debug('%s --> %s' % (identifier, _link[3]))
+            logger.debug(f'{identifier} --> {_link[3]}')
             self.assertTrue(identifier in _link[3])
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -1217,18 +1217,14 @@ class SignalsTests(GeoNodeBaseTestSupport):
                 )
                 self.assertTrue(
                     _post_migrate_links_orig.count() > 0,
-                    "No 'original' links has been found for the layer '{}'".format(
-                        _lyr.alternate
-                    )
+                    f"No 'original' links has been found for the layer '{_lyr.alternate}'"
                 )
                 for _link_orig in _post_migrate_links_orig:
                     self.assertIn(
                         _link_orig.url,
                         _lyr.csw_anytext,
-                        "The link URL {0} is not present in the 'csw_anytext' attribute of the layer '{1}'".format(
-                            _link_orig.url,
-                            _lyr.alternate
-                        )
+                        f"The link URL {_link_orig.url} is not present in the 'csw_anytext' \
+attribute of the layer '{_lyr.alternate}'"
                     )
                 # Check catalogue
                 catalogue = get_catalogue()
@@ -1236,9 +1232,7 @@ class SignalsTests(GeoNodeBaseTestSupport):
                 self.assertIsNotNone(record)
                 self.assertTrue(
                     hasattr(record, 'links'),
-                    "No records have been found in the catalogue for the resource '{}'".format(
-                        _lyr.alternate
-                    )
+                    f"No records have been found in the catalogue for the resource '{_lyr.alternate}'"
                 )
                 # Check 'metadata' links for each record
                 for mime, name, metadata_url in record.links['metadata']:
@@ -1255,8 +1249,5 @@ class SignalsTests(GeoNodeBaseTestSupport):
                         _post_migrate_link_meta = None
                     self.assertIsNotNone(
                         _post_migrate_link_meta,
-                        "No '{}' links have been found in the catalogue for the resource '{}'".format(
-                            name,
-                            _lyr.alternate
-                        )
+                        f"No '{name}' links have been found in the catalogue for the resource '{_lyr.alternate}'"
                     )

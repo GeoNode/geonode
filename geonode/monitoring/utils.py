@@ -110,7 +110,7 @@ class GeoServerMonitorClient(object):
             return href.geturl()
         if format in self.REPORT_FORMATS:
             href, ext = os.path.splitext(href.geturl())
-            return '{}.{}'.format(href, format)
+            return f'{href}.{format}'
         return format
 
     def get_requests(self, format=None, since=None, until=None):
@@ -119,7 +119,7 @@ class GeoServerMonitorClient(object):
         """
         from requests.auth import HTTPBasicAuth
 
-        rest_url = '{}rest/monitor/requests.html'.format(self.base_url)
+        rest_url = f'{self.base_url}rest/monitor/requests.html'
         qargs = {}
         if since:
             # since = since.astimezone(utc)
@@ -128,7 +128,7 @@ class GeoServerMonitorClient(object):
             # until = until.astimezone(utc)
             qargs['to'] = until.strftime(GS_FORMAT)
         if qargs:
-            rest_url = '{}?{}'.format(rest_url, urlencode(qargs))
+            rest_url = f'{rest_url}?{urlencode(qargs)}'
 
         log.debug('checking', rest_url)
         username = settings.OGC_SERVER['default']['USER']
@@ -146,14 +146,14 @@ class GeoServerMonitorClient(object):
             if data:
                 yield data
             else:
-                log.warning("Skipping payload for {}".format(href))
+                log.warning(f"Skipping payload for {href}")
 
     def get_request(self, href, format=format):
         from requests.auth import HTTPBasicAuth
 
         username = settings.OGC_SERVER['default']['USER']
         password = settings.OGC_SERVER['default']['PASSWORD']
-        log.debug(" href: %s " % href)
+        log.debug(f" href: {href} ")
         r = requests.get(
             href,
             auth=HTTPBasicAuth(username, password),
@@ -187,10 +187,10 @@ class GeoServerMonitorClient(object):
         raise ValueError("Cannot convert from html")
 
     def to_json(self, data, from_format):
-        h = getattr(self, '_from_{}'.format(from_format), None)
+        h = getattr(self, f'_from_{from_format}', None)
         if not h or not len(data):
             raise ValueError(
-                "Cannot convert from {} - no handler".format(from_format))
+                f"Cannot convert from {from_format} - no handler")
         return h(data)
 
 
@@ -259,7 +259,7 @@ class TypeChecks(object):
     @classmethod
     def audit_format(cls, val):
         if val not in cls.AUDIT_FORMATS:
-            raise ValueError("Invalid value for audit format: {}".format(val))
+            raise ValueError(f"Invalid value for audit format: {val}")
         return val
 
     @staticmethod
@@ -268,7 +268,7 @@ class TypeChecks(object):
         try:
             return Host.objects.get(name=val)
         except Host.DoesNotExist:
-            raise ValueError("Host {} does not exist".format(val))
+            raise ValueError(f"Host {val} does not exist")
 
     @staticmethod
     def resource_type(val):
@@ -281,7 +281,7 @@ class TypeChecks(object):
                 rtype, rname = val.split('=')
             except (ValueError, IndexError,):
                 raise ValueError(
-                    "{} is not valid resource description".format(val))
+                    f"{val} is not valid resource description")
         return MonitoredResource.objects.get(type=rtype, name=rname)
 
     @staticmethod
@@ -289,7 +289,7 @@ class TypeChecks(object):
         from geonode.monitoring.models import MonitoredResource
         if val in MonitoredResource._TYPES:
             return val
-        raise ValueError("Invalid monitored resource type: {}".format(val))
+        raise ValueError(f"Invalid monitored resource type: {val}")
 
     @staticmethod
     def metric_name_type(val):
@@ -297,7 +297,7 @@ class TypeChecks(object):
         try:
             return Metric.objects.get(name=val)
         except Metric.DoesNotExist:
-            raise ValueError("Metric {} doesn't exist".format(val))
+            raise ValueError(f"Metric {val} doesn't exist")
 
     @staticmethod
     def service_type(val):
@@ -305,7 +305,7 @@ class TypeChecks(object):
         try:
             return Service.objects.get(name=val)
         except Service.DoesNotExist:
-            raise ValueError("Service {} does not exist".format(val))
+            raise ValueError(f"Service {val} does not exist")
 
     @staticmethod
     def service_type_type(val):
@@ -313,7 +313,7 @@ class TypeChecks(object):
         try:
             return ServiceType.objects.get(name=val)
         except ServiceType.DoesNotExist:
-            raise ValueError("Service Type {} does not exist".format(val))
+            raise ValueError(f"Service Type {val} does not exist")
 
     @staticmethod
     def label_type(val):
@@ -325,7 +325,7 @@ class TypeChecks(object):
                 return MetricLabel.objects.get(name=val)
             except MetricLabel.DoesNotExist:
                 pass
-        raise ValueError("Invalid label value: {}".format(val))
+        raise ValueError(f"Invalid label value: {val}")
 
     @staticmethod
     def user_type(val):
@@ -334,7 +334,7 @@ class TypeChecks(object):
             if MetricLabel.objects.filter(user=val).count():
                 return val
         except MetricLabel.DoesNotExist:
-            raise ValueError("Invalid user value: {}".format(val))
+            raise ValueError(f"Invalid user value: {val}")
 
     @staticmethod
     def event_type_type(val):
@@ -342,7 +342,7 @@ class TypeChecks(object):
         try:
             return EventType.objects.get(name=val)
         except EventType.DoesNotExist:
-            raise ValueError("Event Type {} doesn't exist".format(val))
+            raise ValueError(f"Event Type {val} doesn't exist")
 
     @staticmethod
     def ows_service_type(val):
@@ -351,7 +351,7 @@ class TypeChecks(object):
         elif str(val).lower() in ("false", "0"):
             return False
         else:
-            raise ValueError("Invalid ows_service value {}".format(val))
+            raise ValueError(f"Invalid ows_service value {val}")
 
 
 def dump(obj, additional_fields=tuple()):
@@ -366,7 +366,7 @@ def dump(obj, additional_fields=tuple()):
         if isinstance(field, RelatedField):
             if val is not None:
                 v = val
-                val = {'class': '{}.{}'.format(val.__class__.__module__, val.__class__.__name__),
+                val = {'class': f'{val.__class__.__module__}.{val.__class__.__name__}',
                        'id': val.pk}
                 if hasattr(v, 'name'):
                     val['name'] = v.name
@@ -412,14 +412,10 @@ def collect_metric(**options):
     hexdigest = md5(name).hexdigest()
     lock_id = f'{name.decode()}-lock-{hexdigest}'
     _start_time = _end_time = datetime.utcnow().isoformat()
-    log.info('[{}] Collecting Metrics - started @ {}'.format(
-        lock_id,
-        _start_time))
+    log.info(f'[{lock_id}] Collecting Metrics - started @ {_start_time}')
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
-            log.info('[{}] Collecting Metrics - [...acquired lock] @ {}'.format(
-                lock_id,
-                _start_time))
+            log.info(f'[{lock_id}] Collecting Metrics - [...acquired lock] @ {_start_time}')
             try:
                 oservice = options['service']
                 if not oservice:
@@ -462,17 +458,11 @@ def collect_metric(**options):
                     # notifications_check = now - interval
                     c.emit_notifications()  # notifications_check))
                 _end_time = datetime.utcnow().isoformat()
-                log.info('[{}] Collecting Metrics - finished @ {}'.format(
-                    lock_id,
-                    _end_time))
+                log.info(f'[{lock_id}] Collecting Metrics - finished @ {_end_time}')
             except Exception as e:
-                log.info('[{}] Collecting Metrics - errored @ {}'.format(
-                    lock_id,
-                    _end_time))
+                log.info(f'[{lock_id}] Collecting Metrics - errored @ {_end_time}')
                 log.exception(e)
-    log.info('[{}] Collecting Metrics - exit @ {}'.format(
-        lock_id,
-        _end_time))
+    log.info(f'[{lock_id}] Collecting Metrics - exit @ {_end_time}')
     return (_start_time, _end_time)
 
 

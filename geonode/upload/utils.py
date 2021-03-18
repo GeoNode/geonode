@@ -135,7 +135,7 @@ def error_response(req, exception=None, errors=None, force_ajax=True):
     if exception:
         logger.exception('Unexpected error in upload step')
     else:
-        logger.error('upload error: %s', errors)
+        logger.error(f'upload error: {errors}')
     if req.is_ajax() or force_ajax:
         content_type = 'text/html' if not req.is_ajax() else None
         return json_response(exception=exception, errors=errors,
@@ -146,7 +146,7 @@ def error_response(req, exception=None, errors=None, force_ajax=True):
     return render(
         req,
         'upload/layer_upload_error.html',
-        context={'error_msg': 'Unexpected error : %s,' % exception})
+        context={'error_msg': f'Unexpected error : {exception}'})
 
 
 def json_load_byteified(file_handle):
@@ -257,7 +257,7 @@ def get_next_step(upload_session, offset=1):
     try:
         pages = _pages[upload_session.upload_type]
     except KeyError as e:
-        raise Exception(_('Unsupported file type: %s' % e.message))
+        raise Exception(_(f'Unsupported file type: {e.message}'))
     index = -1
     if upload_session.completed_step and upload_session.completed_step != 'save':
         index = pages.index(upload_session.completed_step)
@@ -299,7 +299,7 @@ def next_step_response(req, upload_session, force_ajax=True):
             {'status': 'error',
              'success': False,
              'id': import_session.id,
-             'error_msg': "%s" % upload_session.error_msg,
+             'error_msg': str(upload_session.error_msg),
              }
         )
 
@@ -310,13 +310,13 @@ def next_step_response(req, upload_session, force_ajax=True):
             upload_session.completed_step = 'check'
             return next_step_response(req, upload_session, force_ajax=True)
     if next == 'check' and force_ajax:
-        url = reverse('data_upload') + "?id=%s" % (import_session.id)
+        url = f"{reverse('data_upload')}?id={import_session.id}"
         return json_response(
             {'url': url,
              'status': 'incomplete',
              'success': True,
              'id': import_session.id,
-             'redirect_to': settings.SITEURL + 'upload/check' + "?id=%s%s" % (import_session.id, _force_ajax),
+             'redirect_to': f"{settings.SITEURL}upload/check?id={import_session.id}{_force_ajax}",
              }
         )
 
@@ -335,46 +335,46 @@ def next_step_response(req, upload_session, force_ajax=True):
         upload_session.completed_step = 'time'
         return next_step_response(req, upload_session, force_ajax)
     if next == 'time' and force_ajax:
-        url = reverse('data_upload') + "?id=%s" % (import_session.id)
+        url = f"{reverse('data_upload')}?id={import_session.id}"
         return json_response(
             {'url': url,
              'status': 'incomplete',
              'success': True,
              'id': import_session.id,
-             'redirect_to': settings.SITEURL + 'upload/time' + "?id=%s%s" % (import_session.id, _force_ajax),
+             'redirect_to': f"{settings.SITEURL}upload/time?id={import_session.id}{_force_ajax}",
              }
         )
 
     if next == 'mosaic' and force_ajax:
-        url = reverse('data_upload') + "?id=%s" % (import_session.id)
+        url = f"{reverse('data_upload')}?id={import_session.id}"
         return json_response(
             {'url': url,
              'status': 'incomplete',
              'success': True,
              'id': import_session.id,
-             'redirect_to': settings.SITEURL + 'upload/mosaic' + "?id=%s%s" % (import_session.id, _force_ajax),
+             'redirect_to': f"{settings.SITEURL}upload/mosaic?id={import_session.id}{_force_ajax}",
              }
         )
 
     if next == 'srs' and force_ajax:
-        url = reverse('data_upload') + "?id=%s" % (import_session.id)
+        url = f"{reverse('data_upload')}?id={import_session.id}"
         return json_response(
             {'url': url,
              'status': 'incomplete',
              'success': True,
              'id': import_session.id,
-             'redirect_to': settings.SITEURL + 'upload/srs' + "?id=%s%s" % (import_session.id, _force_ajax),
+             'redirect_to': f"{settings.SITEURL}upload/srs?id={import_session.id}{_force_ajax}",
              }
         )
 
     if next == 'csv' and force_ajax:
-        url = reverse('data_upload') + "?id=%s" % (import_session.id)
+        url = f"{reverse('data_upload')}?id={import_session.id}"
         return json_response(
             {'url': url,
              'status': 'incomplete',
              'success': True,
              'id': import_session.id,
-             'redirect_to': settings.SITEURL + 'upload/csv' + "?id=%s%s" % (import_session.id, _force_ajax),
+             'redirect_to': f"{settings.SITEURL}upload/csv?id={import_session.id}{_force_ajax}",
              }
         )
 
@@ -391,9 +391,9 @@ def next_step_response(req, upload_session, force_ajax=True):
                                       force_ajax=force_ajax)
     session_id = None
     if 'id' in req.GET:
-        session_id = "?id=%s" % (req.GET['id'])
+        session_id = f"?id={req.GET['id']}"
     elif import_session and import_session.id:
-        session_id = "?id=%s" % (import_session.id)
+        session_id = f"?id={import_session.id}"
 
     if req.is_ajax() or force_ajax:
         content_type = 'text/html' if not req.is_ajax() else None
@@ -444,9 +444,8 @@ def check_import_session_is_valid(request, upload_session, import_session):
             layer = import_session.tasks[0].layer
             invalid = [a for a in layer.attributes if str(a.name).find(' ') >= 0]
             if invalid:
-                att_list = "<pre>%s</pre>" % '. '.join(
-                    [a.name for a in invalid])
-                msg = "Attributes with spaces are not supported : %s" % att_list
+                att_list = f"<pre>{'. '.join([a.name for a in invalid])}</pre>"
+                msg = f"Attributes with spaces are not supported : {att_list}"
                 upload_session.completed_step = 'error'
                 upload_session.error_msg = msg
             return layer
@@ -522,7 +521,7 @@ def _fixup_base_file(absolute_base_file, tempdir=None):
     if os.path.exists(absolute_base_file):
         return absolute_base_file
     else:
-        raise Exception(_('File does not exist: %s' % absolute_base_file))
+        raise Exception(_(f'File does not exist: {absolute_base_file}'))
 
 
 def _get_layer_values(layer, upload_session, expand=0):
@@ -579,16 +578,14 @@ def run_import(upload_session, async_upload=_ASYNC_UPLOAD):
     import_execution_requested = False
     if import_session.state == 'INCOMPLETE':
         if task.state != 'ERROR':
-            raise Exception(_('unknown item state: %s' % task.state))
+            raise Exception(_(f'unknown item state: {task.state}'))
     elif import_session.state == 'PENDING' and task.target.store_type == 'coverageStore':
         if task.state == 'READY':
             import_session.commit(async_upload)
             import_execution_requested = True
         if task.state == 'ERROR':
             progress = task.get_progress()
-            raise Exception(_(
-                'error during import: %s' %
-                progress.get('message')))
+            raise Exception(_(f"error during import: {progress.get('message')}"))
 
     # if a target datastore is configured, ensure the datastore exists
     # in geoserver and set the uploader target appropriately
@@ -599,15 +596,13 @@ def run_import(upload_session, async_upload=_ASYNC_UPLOAD):
             workspace=settings.DEFAULT_WORKSPACE
         )
         _log(
-            'setting target datastore %s %s',
-            target.name,
-            target.workspace.name)
+            f'setting target datastore {target.name} {target.workspace.name}')
         task.set_target(target.name, target.workspace.name)
     else:
         target = task.target
 
     if upload_session.update_mode:
-        _log('setting updateMode to %s', upload_session.update_mode)
+        _log(f'setting updateMode to {upload_session.update_mode}')
         task.set_update_mode(upload_session.update_mode)
 
     _log('running import session')
@@ -624,8 +619,8 @@ def progress_redirect(step, upload_id):
     return json_response(dict(
         success=True,
         id=upload_id,
-        redirect_to=reverse('data_upload', args=[step]) + "?id=%s" % upload_id,
-        progress=reverse('data_upload_progress') + "?id=%s" % upload_id
+        redirect_to=f"{reverse('data_upload', args=[step])}?id={upload_id}",
+        progress=f"{reverse('data_upload_progress')}?id={upload_id}"
     ))
 
 

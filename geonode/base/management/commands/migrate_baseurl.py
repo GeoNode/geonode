@@ -74,8 +74,8 @@ class Command(BaseCommand):
         if not target_address or len(target_address) == 0:
             raise CommandError("Target Address '--target-address' is mandatory")
 
-        print("This will change all Maps, Layers, \
-Styles and Links Base URLs from [%s] to [%s]." % (source_address, target_address))
+        print(f"This will change all Maps, Layers, \
+Styles and Links Base URLs from [{source_address}] to [{target_address}].")
         print("The operation may take some time, depending on the amount of Layer on GeoNode.")
         message = 'You want to proceed?'
 
@@ -83,42 +83,42 @@ Styles and Links Base URLs from [%s] to [%s]." % (source_address, target_address
             try:
                 _cnt = Map.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
-                        F('thumbnail_url'),Value(source_address),Value(target_address),function='replace'))
-                logger.info("Updated %s Maps" % _cnt)
+                        F('thumbnail_url'), Value(source_address), Value(target_address), function='replace'))
+                logger.info(f"Updated {_cnt} Maps")
 
                 _cnt = MapLayer.objects.filter(ows_url__icontains=source_address).update(
                     ows_url=Func(
-                        F('ows_url'),Value(source_address),Value(target_address),function='replace'))
+                        F('ows_url'), Value(source_address), Value(target_address), function='replace'))
                 MapLayer.objects.filter(layer_params__icontains=source_address).update(
                     layer_params=Func(
-                        F('layer_params'),Value(source_address),Value(target_address),function='replace'))
-                logger.info("Updated %s MapLayers" % _cnt)
+                        F('layer_params'), Value(source_address), Value(target_address), function='replace'))
+                logger.info(f"Updated {_cnt} MapLayers")
 
                 _cnt = Layer.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
-                        F('thumbnail_url'),Value(source_address),Value(target_address),function='replace'))
-                logger.info("Updated %s Layers" % _cnt)
+                        F('thumbnail_url'), Value(source_address), Value(target_address), function='replace'))
+                logger.info(f"Updated {_cnt} Layers")
 
                 _cnt = Style.objects.filter(sld_url__icontains=source_address).update(
                     sld_url=Func(
-                        F('sld_url'),Value(source_address),Value(target_address),function='replace'))
-                logger.info("Updated %s Styles" % _cnt)
+                        F('sld_url'), Value(source_address), Value(target_address), function='replace'))
+                logger.info(f"Updated {_cnt} Styles")
 
                 _cnt = Link.objects.filter(url__icontains=source_address).update(
                     url=Func(
-                        F('url'),Value(source_address),Value(target_address),function='replace'))
-                logger.info("Updated %s Links" % _cnt)
+                        F('url'), Value(source_address), Value(target_address), function='replace'))
+                logger.info(f"Updated {_cnt} Links")
 
                 _cnt = ResourceBase.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
-                        F('thumbnail_url'),Value(source_address),Value(target_address),function='replace'))
+                        F('thumbnail_url'), Value(source_address), Value(target_address), function='replace'))
                 _cnt += ResourceBase.objects.filter(csw_anytext__icontains=source_address).update(
                     csw_anytext=Func(
                         F('csw_anytext'), Value(source_address), Value(target_address), function='replace'))
                 _cnt += ResourceBase.objects.filter(metadata_xml__icontains=source_address).update(
                     metadata_xml=Func(
                         F('metadata_xml'), Value(source_address), Value(target_address), function='replace'))
-                logger.info("Updated %s ResourceBases" % _cnt)
+                logger.info(f"Updated {_cnt} ResourceBases")
 
                 site = Site.objects.get_current()
                 if site:
@@ -132,7 +132,7 @@ Styles and Links Base URLs from [%s] to [%s]." % (source_address, target_address
                         _cnt = Application.objects.filter(name='GeoServer').update(
                             redirect_uris=Func(
                                 F('redirect_uris'), Value(source_address), Value(target_address), function='replace'))
-                        logger.info("Updated %s OAUth2 Redirect URIs" % _cnt)
+                        logger.info(f"Updated {_cnt} OAUth2 Redirect URIs")
 
             finally:
                 print("...done!")
