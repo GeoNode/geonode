@@ -325,7 +325,7 @@ def geoserver_finalize_upload(
                         value = SpatialRepresentationType(identifier=value)
                     elif key == 'topic_category':
                         value, created = TopicCategory.objects.get_or_create(
-                            identifier=value.lower(),
+                            identifier=value,
                             defaults={'description': '', 'gn_description': value})
                         key = 'category'
                         defaults[key] = value
