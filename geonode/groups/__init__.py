@@ -31,7 +31,7 @@ def init_registered_members_groupprofile():
 
     group_name = settings.REGISTERED_MEMBERS_GROUP_NAME
     group_title = settings.REGISTERED_MEMBERS_GROUP_TITLE
-    logger.debug("Creating %s default Group Profile" % group_name)
+    logger.debug(f"Creating {group_name} default Group Profile")
     groupprofile, created = GroupProfile.objects.get_or_create(
         slug=group_name)
     if created:

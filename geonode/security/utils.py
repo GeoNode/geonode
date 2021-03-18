@@ -172,7 +172,7 @@ def get_geofence_rules(page=0, entries=1, count=False):
             curl -X GET -u admin:geoserver \
                 http://<host>:<port>/geoserver/rest/geofence/rules.json?page={page}&entries={entries}
             """
-            _url = url + 'rest/geofence/rules.json?page={}&entries={}'.format(page, entries)
+            _url = f'{url}rest/geofence/rules.json?page={page}&entries={entries}'
         r = requests.get(_url,
                          headers=_headers,
                          auth=HTTPBasicAuth(user, passwd),
@@ -247,12 +247,12 @@ def purge_geofence_all():
                                                 headers=headers,
                                                 auth=HTTPBasicAuth(user, passwd))
                             if (r.status_code < 200 or r.status_code > 201):
-                                msg = "Could not DELETE GeoServer Rule id[%s]" % rule['id']
+                                msg = f"Could not DELETE GeoServer Rule id[{rule['id']}]"
                                 e = Exception(msg)
-                                logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                                logger.debug(f"Response [{r.status_code}] : {r.text}")
                                 raise e
                 except Exception:
-                    logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                    logger.debug(f"Response [{r.status_code}] : {r.text}")
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
@@ -273,8 +273,7 @@ def purge_geofence_layer_rules(resource):
     workspace = get_layer_workspace(resource.layer)
     try:
         r = requests.get(
-            "{}rest/geofence/rules.json?workspace={}&layer={}".format(
-                url, workspace, resource.layer.name),
+            f"{url}rest/geofence/rules.json?workspace={workspace}&layer={resource.layer.name}",
             headers=headers,
             auth=HTTPBasicAuth(user, passwd),
             timeout=10,
@@ -299,7 +298,7 @@ def purge_geofence_layer_rules(resource):
                     msg = "Could not DELETE GeoServer Rule for Layer "
                     msg = msg + str(resource.layer.name)
                     e = Exception(msg)
-                    logger.debug("Response [{}] : {}".format(r.status_code, r.text))
+                    logger.debug(f"Response [{r.status_code}] : {r.text}")
                     raise e
     except Exception as e:
         logger.exception(e)
@@ -342,11 +341,11 @@ def toggle_layer_cache(layer_name, enable=True, filters=None, formats=None):
             curl -v -u admin:geoserver -XGET \
                 "http://<host>:<port>/geoserver/gwc/rest/layers/geonode:tasmania_roads.xml"
             """
-            r = requests.get(url + 'gwc/rest/layers/{}.xml'.format(layer_name),
+            r = requests.get(f'{url}gwc/rest/layers/{layer_name}.xml',
                              auth=HTTPBasicAuth(user, passwd))
 
             if (r.status_code < 200 or r.status_code > 201):
-                logger.debug("Could not Retrieve {} Cache.".format(layer_name))
+                logger.debug(f"Could not Retrieve {layer_name} Cache.")
                 return False
             try:
                 xml_content = r.content
@@ -403,12 +402,12 @@ def toggle_layer_cache(layer_name, enable=True, filters=None, formats=None):
                 """
                 headers = {'Content-type': 'text/xml'}
                 payload = ET.tostring(tree)
-                r = requests.post(url + 'gwc/rest/layers/{}.xml'.format(layer_name),
+                r = requests.post(f'{url}gwc/rest/layers/{layer_name}.xml',
                                   headers=headers,
                                   data=payload,
                                   auth=HTTPBasicAuth(user, passwd))
                 if (r.status_code < 200 or r.status_code > 201):
-                    logger.debug("Could not Update {} Cache.".format(layer_name))
+                    logger.debug(f"Could not Update {layer_name} Cache.")
                     return False
             except Exception:
                 tb = traceback.format_exc()
@@ -433,11 +432,11 @@ def delete_layer_cache(layer_name):
             curl -v -u admin:geoserver -XDELETE \
                 "http://<host>:<port>/geoserver/gwc/rest/layers/geonode:tasmania_roads.xml"
             """
-            r = requests.delete(url + 'gwc/rest/layers/{}.xml'.format(layer_name),
+            r = requests.delete(f'{url}gwc/rest/layers/{layer_name}.xml',
                                 auth=HTTPBasicAuth(user, passwd))
 
             if (r.status_code < 200 or r.status_code > 201):
-                logger.debug("Could not Delete {} Cache.".format(layer_name))
+                logger.debug(f"Could not Delete {layer_name} Cache.")
                 return False
             return True
         except Exception:
@@ -462,14 +461,14 @@ def set_geowebcache_invalidate_cache(layer_alternate, cat=None):
                 http://localhost:8080/geoserver/gwc/rest/masstruncate
                 """
                 headers = {'Content-type': 'text/xml'}
-                payload = "<truncateLayer><layerName>%s</layerName></truncateLayer>" % layer_alternate
+                payload = f"<truncateLayer><layerName>{layer_alternate}</layerName></truncateLayer>"
                 r = requests.post(
                     url + 'gwc/rest/masstruncate',
                     headers=headers,
                     data=payload,
                     auth=HTTPBasicAuth(user, passwd))
                 if (r.status_code < 200 or r.status_code > 201):
-                    logger.debug("Could not Truncate GWC Cache for Layer '%s'." % layer_alternate)
+                    logger.debug(f"Could not Truncate GWC Cache for Layer '{layer_alternate}'.")
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
@@ -489,9 +488,9 @@ def set_geofence_all(instance):
     """
 
     resource = instance.get_self_resource()
-    logger.debug("Inside set_geofence_all for instance {}".format(instance))
+    logger.debug(f"Inside set_geofence_all for instance {instance}")
     workspace = get_layer_workspace(resource.layer)
-    logger.debug("going to work in workspace {!r}".format(workspace))
+    logger.debug(f"going to work in workspace {workspace}")
     try:
         url = settings.OGC_SERVER['default']['LOCATION']
         user = settings.OGC_SERVER['default']['USER']
@@ -518,9 +517,9 @@ def set_geofence_all(instance):
         )
         if response.status_code not in (200, 201):
             logger.debug(
-                "Response {!r} : {}".format(response.status_code, response.text))
+                f"Response {response.status_code} : {response.text}")
             raise RuntimeError("Could not ADD GeoServer ANONYMOUS Rule "
-                               "for Layer {}".format(resource.layer.name))
+                               f"for Layer {resource.layer.name}")
     except Exception:
         tb = traceback.format_exc()
         logger.debug(tb)
@@ -593,7 +592,6 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
         _disable_layer_cache = anonymous_geolimits.count() > 0
 
     if _disable_layer_cache:
-        # delete_layer_cache('{}:{}'.format(_layer_workspace, _layer_name))
         filters = None
         formats = None
         # Re-order dictionary
@@ -615,12 +613,12 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
             'image/gif',
             'image/png8'
         ]
-    toggle_layer_cache('{}:{}'.format(_layer_workspace, _layer_name), enable=True, filters=filters, formats=formats)
+    toggle_layer_cache(f'{_layer_workspace}:{_layer_name}', enable=True, filters=filters, formats=formats)
 
     for service, allowed in gf_services.items():
         if layer and layer.name and allowed:
             if _user:
-                logger.debug("Adding 'user' to geofence the rule: %s %s %s" % (layer, service, _user))
+                logger.debug(f"Adding 'user' to geofence the rule: {layer} {service} {_user}")
                 _wkt = None
                 if users_geolimits and users_geolimits.count():
                     _wkt = users_geolimits.last().wkt
@@ -630,7 +628,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
                                               service, request=request, user=_user, allow=enabled)
                 _update_geofence_rule(layer, _layer_name, _layer_workspace, service, user=_user, geo_limit=_wkt)
             elif not _group:
-                logger.debug("Adding to geofence the rule: %s %s *" % (layer, service))
+                logger.debug(f"Adding to geofence the rule: {layer} {service} *")
                 _wkt = None
                 if anonymous_geolimits and anonymous_geolimits.count():
                     _wkt = anonymous_geolimits.last().wkt
@@ -644,7 +642,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
                         _update_geofence_rule(layer, _layer_name, _layer_workspace,
                                               service, request=request, user=_user, allow=enabled)
             if _group:
-                logger.debug("Adding 'group' to geofence the rule: %s %s %s" % (layer, service, _group))
+                logger.debug(f"Adding 'group' to geofence the rule: {layer} {service} {_group}")
                 _wkt = None
                 if groups_geolimits and groups_geolimits.count():
                     _wkt = groups_geolimits.last().wkt
@@ -736,7 +734,7 @@ def _get_geofence_payload(layer, layer_name, workspace, access, user=None, group
     priority_el.text = str(highest_priority if highest_priority >= 0 else 0)
     if group is not None:
         role_el = etree.SubElement(root_el, "roleName")
-        role_el.text = "ROLE_{}".format(group.upper())
+        role_el.text = f"ROLE_{group.upper()}"
     workspace_el = etree.SubElement(root_el, "workspace")
     workspace_el.text = workspace
     layer_el = etree.SubElement(root_el, "layer")
@@ -776,10 +774,9 @@ def _update_geofence_rule(layer, layer_name, workspace,
         request=request,
         geo_limit=geo_limit
     )
-    logger.debug("request data: {}".format(payload))
+    logger.debug(f"request data: {payload}")
     response = requests.post(
-        "{base_url}rest/geofence/rules".format(
-            base_url=settings.OGC_SERVER['default']['LOCATION']),
+        f"{settings.OGC_SERVER['default']['LOCATION']}rest/geofence/rules",
         data=payload,
         headers={
             'Content-type': 'application/xml'
@@ -789,10 +786,10 @@ def _update_geofence_rule(layer, layer_name, workspace,
             password=settings.OGC_SERVER['default']['PASSWORD']
         )
     )
-    logger.debug("response status_code: {}".format(response.status_code))
+    logger.debug(f"response status_code: {response.status_code}")
     if response.status_code not in (200, 201):
-        msg = ("Could not ADD GeoServer User {!r} Rule for "
-               "Layer {!r}: '{!r}'".format(user, layer, response.text))
+        msg = (f"Could not ADD GeoServer User {user} Rule for "
+               f"Layer {layer}: '{response.text}'")
         if 'Duplicate Rule' in response.text:
             logger.debug(msg)
         else:
@@ -820,7 +817,6 @@ def sync_resources_with_guardian(resource=None):
                     purge_geofence_layer_rules(r)
                     layer = Layer.objects.get(id=r.id)
                     perm_spec = layer.get_all_level_info()
-                    logger.debug(" %s --------------------------- %s " % (layer, perm_spec))
                     # All the other users
                     if 'users' in perm_spec:
                         for user, perms in perm_spec['users'].items():
@@ -839,7 +835,7 @@ def sync_resources_with_guardian(resource=None):
                     r.clear_dirty_state()
                 except Exception as e:
                     logger.exception(e)
-                    logger.warn("!WARNING! - Failure Synching-up Security Rules for Resource [%s]" % (r))
+                    logger.warn(f"!WARNING! - Failure Synching-up Security Rules for Resource [{r}]")
 
 
 def spec_perms_is_empty(perm_spec):

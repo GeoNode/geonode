@@ -73,6 +73,7 @@ from geonode.base.views import batch_modify
 from .tasks import delete_map
 from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
+from geonode.thumbs.thumbnails import create_thumbnail
 from deprecated import deprecated
 
 from dal import autocomplete
@@ -83,9 +84,6 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
     from geonode.geoserver.helpers import ogc_server_settings
-    from geonode.geoserver.helpers import (
-        _render_thumbnail,
-        _prepare_thumbnail_body_from_opts)
 
 logger = logging.getLogger("geonode.maps.views")
 
@@ -890,12 +888,10 @@ def add_layers_to_map_config(
                 'properties': layer.srid
             }
         # Add required parameters for GXP lazy-loading
-        attribution = "%s %s" % (layer.owner.first_name,
-                                 layer.owner.last_name) if layer.owner.first_name or layer.owner.last_name else str(
-            layer.owner)
+        attribution = f"{layer.owner.first_name} {layer.owner.last_name}" if layer.owner.first_name or layer.owner.last_name else str(layer.owner)  # noqa
         srs = getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857')
         srs_srid = int(srs.split(":")[1]) if srs != "EPSG:900913" else 3857
-        config["attribution"] = "<span class='gx-attribution-title'>%s</span>" % attribution
+        config["attribution"] = f"<span class='gx-attribution-title'>{attribution}</span>"
         config["format"] = getattr(
             settings, 'DEFAULT_LAYER_FORMAT', 'image/png')
         config["title"] = layer.title
@@ -979,7 +975,7 @@ def add_layers_to_map_config(
                                       'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
                         e = dlxml.fromstring(wms_capabilities)
                         for atype in e.findall(
-                                "./[wms:Name='%s']/wms:Dimension[@name='time']" % (layer.alternate), namespaces):
+                                f"./[wms:Name='{layer.alternate}']/wms:Dimension[@name='time']", namespaces):
                             dim_name = atype.get('name')
                             if dim_name:
                                 dim_name = str(dim_name).lower()
@@ -1011,7 +1007,7 @@ def add_layers_to_map_config(
                     "remote": True,
                     "url": service.service_url,
                     "name": service.name,
-                    "title": "[R] %s" % service.title}
+                    "title": f"[R] {service.title}"}
             maplayer = MapLayer(map=map_obj,
                                 name=layer.alternate,
                                 ows_url=layer.ows_url,
@@ -1026,7 +1022,7 @@ def add_layers_to_map_config(
 
             access_token = request.session['access_token'] if request and 'access_token' in request.session else None
             if access_token and ogc_server_url == layer_url and 'access_token' not in layer.ows_url:
-                url = '%s?access_token=%s' % (layer.ows_url, access_token)
+                url = f'{layer.ows_url}?access_token={access_token}'
             else:
                 url = layer.ows_url
             maplayer = MapLayer(
@@ -1340,29 +1336,18 @@ def map_thumbnail(request, mapid):
         raise Http404(_("Not found"))
 
     try:
-        image = None
-        try:
-            image = _prepare_thumbnail_body_from_opts(
-                request.body, request=request)
-        except Exception as e:
-            logger.debug(e)
-            try:
-                image = _render_thumbnail(request.body)
-            except Exception as e:
-                logger.debug(e)
-                image = None
 
-        if not image:
-            return HttpResponse(
-                content=_('couldn\'t generate thumbnail'),
-                status=500,
-                content_type='text/plain'
-            )
-        filename = "map-%s-thumb.png" % map_obj.uuid
-        map_obj.save_thumbnail(filename, image)
+        request_body = json.loads(request.body)
+        bbox = request_body['bbox'] + [request_body['srid']]
+        zoom = request_body.get('zoom', None)
 
-        return HttpResponse(_('Thumbnail saved'))
-    except Exception:
+        create_thumbnail(map_obj, bbox=bbox, background_zoom=zoom, overwrite=True)
+
+        return HttpResponse('Thumbnail saved')
+
+    except Exception as e:
+        logger.exception(e)
+
         return HttpResponse(
             content=_('error saving thumbnail'),
             status=500,

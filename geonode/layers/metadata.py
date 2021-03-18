@@ -45,7 +45,7 @@ def set_metadata(xml):
         exml = dlxml.fromstring(xml.encode())
     except Exception as err:
         raise GeoNodeException(
-            'Uploaded XML document is not XML: %s' % str(err))
+            f'Uploaded XML document is not XML: {str(err)}')
 
     # check if document is an accepted XML metadata format
     tagname = get_tagname(exml)

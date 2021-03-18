@@ -94,7 +94,7 @@ def view_or_basicauth(view, request, test_func, realm="", *args, **kwargs):
     #
     response = HttpResponse()
     response.status_code = 401
-    response['WWW-Authenticate'] = 'Basic realm="%s"' % realm
+    response['WWW-Authenticate'] = f'Basic realm="{realm}"'
     return response
 
 
@@ -109,8 +109,7 @@ def view_decorator(fdec, subclass=False):
             raise TypeError(
                 "You should only decorate subclasses of View, not mixins.")
         if subclass:
-            cls = type("%sWithDecorator(%s)" %
-                       (cls.__name__, fdec.__name__), (cls,), {})
+            cls = type(f"{cls.__name__}WithDecorator({fdec.__name__})", (cls,), {})
         original = cls.as_view.__func__
 
         @wraps(original)
@@ -316,6 +315,6 @@ def superuser_or_apiauth():
 
 def dump_func_name(func):
     def echo_func(*func_args, **func_kwargs):
-        logger.debug('Start func: {}'.format(func.__name__))
+        logger.debug(f'Start func: {func.__name__}')
         return func(*func_args, **func_kwargs)
     return echo_func

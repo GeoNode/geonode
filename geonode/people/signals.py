@@ -108,7 +108,7 @@ def update_user_email_addresses(sender, **kwargs):
             EmailAddress.objects.add_email(
                 request=None, user=user, email=sociallogin_email, confirm=False)
         except IntegrityError:
-            logging.exception(msg="Could not add email address {} to user {}".format(sociallogin_email, user))
+            logging.exception(msg=f"Could not add email address {sociallogin_email} to user {user}")
 
 
 def notify_admins_new_signup(sender, **kwargs):

@@ -45,7 +45,7 @@ def remove_harvest_job(sender, **kwargs):
         resource_id = layer.alternate.split(":")[1] if re.match(f'^{workspace.name}:', resource_id) else layer.alternate
         if HarvestJob.objects.filter(resource_id=resource_id):
             for job in HarvestJob.objects.filter(resource_id=resource_id, service=layer.remote_service):
-                logger.debug("job: {}".format(job.id))
+                logger.debug(f"job: {job.id}")
                 job.delete()
     else:
         pass  # layer was not harvested from a service, we've nothing to do
