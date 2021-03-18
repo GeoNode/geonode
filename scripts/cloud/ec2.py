@@ -221,13 +221,13 @@ def launch():
     print("Firing up instance...")
     instance = wait_for_state(ec2, instance_id, 'running')
     dns = instance['PublicDnsName']
-    print(("Instance running at %s" % dns))
+    print(f"Instance running at {dns}")
 
     config.set('ec2', 'HOST', dns)
     config.set('ec2', 'INSTANCE', instance_id)
     writeconfig(config)
 
-    print(("ssh -i %s ubuntu@%s" % (key_path, dns)))
+    print(f"ssh -i {key_path} ubuntu@{dns}")
     print("Terminate the instance via the web interface.")
 
     time.sleep(20)
@@ -267,6 +267,6 @@ if __name__ == '__main__':
         print(config.get('ec2', 'KEY_PATH'))
     else:
         print("Usage:\n    " +
-              "python %s launch_base\n     " % sys.argv[0] +
-              "python %s launch_geonode\n    " % sys.argv[0] +
-              "python %s terminate" % sys.argv[0])
+              f"python {sys.argv[0]} launch_base\n     " +
+              f"python {sys.argv[0]} launch_geonode\n    " +
+              f"python {sys.argv[0]} terminate")

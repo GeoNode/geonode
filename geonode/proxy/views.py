@@ -167,8 +167,7 @@ def proxy(request, url=None, response_callback=None,
 
     if request.method == "GET" and access_token and 'access_token' not in _url:
         query_separator = '&' if '?' in _url else '?'
-        _url = ('%s%saccess_token=%s' %
-                (_url, query_separator, access_token))
+        _url = f'{_url}{query_separator}access_token={access_token}'
 
     _data = request.body.decode('utf-8')
 
@@ -176,10 +175,10 @@ def proxy(request, url=None, response_callback=None,
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         from geonode.geoserver.helpers import ogc_server_settings
         _url = _url.replace(
-            '%s%s' % (settings.SITEURL, 'geoserver'),
+            f'{settings.SITEURL}geoserver',
             ogc_server_settings.LOCATION.rstrip('/'))
         _data = _data.replace(
-            '%s%s' % (settings.SITEURL, 'geoserver'),
+            f'{settings.SITEURL}geoserver',
             ogc_server_settings.LOCATION.rstrip('/'))
 
     response, content = http_client.request(
@@ -236,8 +235,8 @@ def proxy(request, url=None, response_callback=None,
     else:
         # If we get a redirect, let's add a useful message.
         if status and status in (301, 302, 303, 307):
-            _response = HttpResponse(('This proxy does not support redirects. The server in "%s" '
-                                      'asked for a redirect to "%s"' % (url, response.getheader('Location'))),
+            _response = HttpResponse((f"This proxy does not support redirects. The server in '{url}' "
+                                      f"asked for a redirect to '{response.getheader('Location')}'"),
                                      status=status,
                                      content_type=content_type
                                      )
@@ -397,7 +396,7 @@ def download(request, resourceid, sender=Layer):
                 content=open(target_file, mode='rb'),
                 status=200,
                 content_type="application/zip")
-            response['Content-Disposition'] = 'attachment; filename="%s"' % target_file_name
+            response['Content-Disposition'] = f'attachment; filename="{target_file_name}"'
             return response
         except NotImplementedError:
             traceback.print_exc()
@@ -434,7 +433,7 @@ class OWSListView(View):
         headers, access_token = get_headers(request, _url, _raw_url)
         if access_token:
             _j = '&' if _url.query else '?'
-            _raw_url = _j.join([_raw_url, 'access_token={}'.format(access_token)])
+            _raw_url = _j.join([_raw_url, f'access_token={access_token}'])
         data.append({'url': _raw_url, 'type': 'OGC:WMS'})
 
         # WCS
@@ -443,7 +442,7 @@ class OWSListView(View):
         headers, access_token = get_headers(request, _url, _raw_url)
         if access_token:
             _j = '&' if _url.query else '?'
-            _raw_url = _j.join([_raw_url, 'access_token={}'.format(access_token)])
+            _raw_url = _j.join([_raw_url, f'access_token={access_token}'])
         data.append({'url': _raw_url, 'type': 'OGC:WCS'})
 
         # WFS
@@ -452,7 +451,7 @@ class OWSListView(View):
         headers, access_token = get_headers(request, _url, _raw_url)
         if access_token:
             _j = '&' if _url.query else '?'
-            _raw_url = _j.join([_raw_url, 'access_token={}'.format(access_token)])
+            _raw_url = _j.join([_raw_url, f'access_token={access_token}'])
         data.append({'url': _raw_url, 'type': 'OGC:WFS'})
 
         # catalogue from configuration
@@ -463,7 +462,7 @@ class OWSListView(View):
             headers, access_token = get_headers(request, _url, _raw_url)
             if access_token:
                 _j = '&' if _url.query else '?'
-                _raw_url = _j.join([_raw_url, 'access_token={}'.format(access_token)])
+                _raw_url = _j.join([_raw_url, f'access_token={access_token}'])
             data.append({'url': _raw_url, 'type': 'OGC:CSW'})
 
         # main site url

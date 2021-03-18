@@ -319,7 +319,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         response = self.client.get(reverse('layer_detail', args=(lyr.alternate,)))
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get(reverse('layer_detail', args=(":%s" % lyr.alternate,)))
+        response = self.client.get(reverse('layer_detail', args=(f":{lyr.alternate}",)))
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get(reverse('layer_metadata', args=(lyr.alternate,)))
@@ -389,24 +389,22 @@ class LayersTest(GeoNodeBaseTestSupport):
         # Verify it accepts an admin user
         adminuser = get_user_model().objects.get(is_superuser=True)
         valid_user = get_valid_user(adminuser)
-        msg = ('Passed in a valid admin user "%s" but got "%s" in return'
-               % (adminuser, valid_user))
+        msg = (f'Passed in a valid admin user "{adminuser}" but got "{valid_user}" in return')
         assert valid_user.id == adminuser.id, msg
 
         # Verify it returns a valid user after receiving None
         valid_user = get_valid_user(None)
-        msg = ('Expected valid user after passing None, got "%s"' % valid_user)
+        msg = f'Expected valid user after passing None, got "{valid_user}"'
         assert isinstance(valid_user, get_user_model()), msg
 
         newuser = get_user_model().objects.create(username='arieluser')
         valid_user = get_valid_user(newuser)
-        msg = ('Passed in a valid user "%s" but got "%s" in return'
-               % (newuser, valid_user))
+        msg = (f'Passed in a valid user "{newuser}" but got "{valid_user}" in return')
         assert valid_user.id == newuser.id, msg
 
         valid_user = get_valid_user('arieluser')
-        msg = ('Passed in a valid user by username "%s" but got'
-               ' "%s" in return' % ('arieluser', valid_user))
+        msg = ('Passed in a valid user by username "arieluser" but got'
+               f' "{valid_user}" in return')
         assert valid_user.username == 'arieluser', msg
 
         nn = get_anonymous_user()
@@ -1122,7 +1120,7 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
         base_name = 'single_point'
         suffixes = 'shp shx dbf prj'.split(' ')
         base_path = gisdata.GOOD_DATA
-        paths = [os.path.join(base_path, 'vector', '{}.{}'.format(base_name, suffix)) for suffix in suffixes]
+        paths = [os.path.join(base_path, 'vector', f'{base_name}.{suffix}') for suffix in suffixes]
         return paths, suffixes,
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -1144,7 +1142,7 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
             with contextlib.ExitStack() as stack:
                 input_files = [
                     stack.enter_context(_fp) for _fp in input_files]
-                files = dict(zip(['{}_file'.format(s) for s in suffixes], input_files))
+                files = dict(zip([f'{s}_file' for s in suffixes], input_files))
                 files['base_file'] = files.pop('shp_file')
                 files['permissions'] = '{}'
                 files['charset'] = 'utf-8'
@@ -1176,7 +1174,7 @@ class LayerModerationTestCase(GeoNodeBaseTestSupport):
             with contextlib.ExitStack() as stack:
                 input_files = [
                     stack.enter_context(_fp) for _fp in input_files]
-                files = dict(zip(['{}_file'.format(s) for s in suffixes], input_files))
+                files = dict(zip([f'{s}_file' for s in suffixes], input_files))
                 files['base_file'] = files.pop('shp_file')
                 files['permissions'] = '{}'
                 files['charset'] = 'utf-8'
@@ -1412,28 +1410,28 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
         thelayer_name = 'ming_female_1'
         thelayer_path = os.path.join(
             PROJECT_ROOT,
-            '../tests/data/%s' % thelayer_name)
+            f'../tests/data/{thelayer_name}')
         files = dict(
             base_file=SimpleUploadedFile(
-                '%s.shp' % thelayer_name,
+                f'{thelayer_name}.shp',
                 open(os.path.join(thelayer_path,
-                     '%s.shp' % thelayer_name), mode='rb').read()),
+                     f'{thelayer_name}.shp'), mode='rb').read()),
             shx_file=SimpleUploadedFile(
-                '%s.shx' % thelayer_name,
+                f'{thelayer_name}.shx',
                 open(os.path.join(thelayer_path,
-                     '%s.shx' % thelayer_name), mode='rb').read()),
+                     f'{thelayer_name}.shx'), mode='rb').read()),
             dbf_file=SimpleUploadedFile(
-                '%s.dbf' % thelayer_name,
+                f'{thelayer_name}.dbf',
                 open(os.path.join(thelayer_path,
-                     '%s.dbf' % thelayer_name), mode='rb').read()),
+                     f'{thelayer_name}.dbf'), mode='rb').read()),
             prj_file=SimpleUploadedFile(
-                '%s.prj' % thelayer_name,
+                f'{thelayer_name}.prj',
                 open(os.path.join(thelayer_path,
-                     '%s.prj' % thelayer_name), mode='rb').read())
+                     f'{thelayer_name}.prj'), mode='rb').read())
         )
         files['permissions'] = '{}'
         files['charset'] = 'windows-1258'
-        files['layer_title'] = 'test layer_{}'.format('windows-1258')
+        files['layer_title'] = 'test layer_windows-1258'
         resp = self.client.post(layer_upload_url, data=files)
         # Check response status code
         if resp.status_code == 200:
@@ -1482,34 +1480,34 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
         thelayer_name = 'hydrodata'
         thelayer_path = os.path.join(
             PROJECT_ROOT,
-            '../tests/data/%s' % thelayer_name)
+            f'../tests/data/{thelayer_name}')
         # Uploading the first one should be OK
         same_uuid_root_file = 'same_uuid_a'
         files = dict(
             base_file=SimpleUploadedFile(
-                '%s.shp' % same_uuid_root_file,
+                f'{same_uuid_root_file}.shp',
                 open(os.path.join(thelayer_path,
-                     '%s.shp' % same_uuid_root_file), mode='rb').read()),
+                     f'{same_uuid_root_file}.shp'), mode='rb').read()),
             shx_file=SimpleUploadedFile(
-                '%s.shx' % same_uuid_root_file,
+                f'{same_uuid_root_file}.shx',
                 open(os.path.join(thelayer_path,
-                     '%s.shx' % same_uuid_root_file), mode='rb').read()),
+                     f'{same_uuid_root_file}.shx'), mode='rb').read()),
             dbf_file=SimpleUploadedFile(
-                '%s.dbf' % same_uuid_root_file,
+                f'{same_uuid_root_file}.dbf',
                 open(os.path.join(thelayer_path,
-                     '%s.dbf' % same_uuid_root_file), mode='rb').read()),
+                     f'{same_uuid_root_file}.dbf'), mode='rb').read()),
             prj_file=SimpleUploadedFile(
-                '%s.prj' % same_uuid_root_file,
+                f'{same_uuid_root_file}.prj',
                 open(os.path.join(thelayer_path,
-                     '%s.prj' % same_uuid_root_file), mode='rb').read()),
+                     f'{same_uuid_root_file}.prj'), mode='rb').read()),
             xml_file=SimpleUploadedFile(
-                '%s.xml' % same_uuid_root_file,
+                f'{same_uuid_root_file}.xml',
                 open(os.path.join(thelayer_path,
-                     '%s.xml' % same_uuid_root_file), mode='rb').read())
+                     f'{same_uuid_root_file}.xml'), mode='rb').read())
         )
         files['permissions'] = '{}'
         files['charset'] = 'utf-8'
-        files['layer_title'] = 'test layer_{}'.format(same_uuid_root_file)
+        files['layer_title'] = f'test layer_{same_uuid_root_file}'
         resp = self.client.post(layer_upload_url, data=files)
         # Check response status code
         self.assertEqual(resp.status_code, 200)
@@ -1518,29 +1516,29 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
         same_uuid_root_file = 'same_uuid_b'
         files = dict(
             base_file=SimpleUploadedFile(
-                '%s.shp' % same_uuid_root_file,
+                f'{same_uuid_root_file}.shp',
                 open(os.path.join(thelayer_path,
-                     '%s.shp' % same_uuid_root_file), mode='rb').read()),
+                     f'{same_uuid_root_file}.shp'), mode='rb').read()),
             shx_file=SimpleUploadedFile(
-                '%s.shx' % same_uuid_root_file,
+                f'{same_uuid_root_file}.shx',
                 open(os.path.join(thelayer_path,
-                     '%s.shx' % same_uuid_root_file), mode='rb').read()),
+                     f'{same_uuid_root_file}.shx'), mode='rb').read()),
             dbf_file=SimpleUploadedFile(
-                '%s.dbf' % same_uuid_root_file,
+                f'{same_uuid_root_file}.dbf',
                 open(os.path.join(thelayer_path,
-                     '%s.dbf' % same_uuid_root_file), mode='rb').read()),
+                     f'{same_uuid_root_file}.dbf'), mode='rb').read()),
             prj_file=SimpleUploadedFile(
-                '%s.prj' % same_uuid_root_file,
+                f'{same_uuid_root_file}.prj',
                 open(os.path.join(thelayer_path,
-                     '%s.prj' % same_uuid_root_file), mode='rb').read()),
+                     f'{same_uuid_root_file}.prj'), mode='rb').read()),
             xml_file=SimpleUploadedFile(
-                '%s.xml' % same_uuid_root_file,
+                f'{same_uuid_root_file}.xml',
                 open(os.path.join(thelayer_path,
-                     '%s.xml' % same_uuid_root_file), mode='rb').read())
+                     f'{same_uuid_root_file}.xml'), mode='rb').read())
         )
         files['permissions'] = '{}'
         files['charset'] = 'utf-8'
-        files['layer_title'] = 'test layer_{}'.format(same_uuid_root_file)
+        files['layer_title'] = f'test layer_{same_uuid_root_file}'
         resp = self.client.post(layer_upload_url, data=files)
         # Check response status code
         self.assertEqual(resp.status_code, 400)
