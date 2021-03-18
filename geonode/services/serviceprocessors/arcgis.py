@@ -32,7 +32,6 @@ from django.utils.translation import ugettext as _
 from geonode.base.models import Link
 from geonode.layers.models import Layer
 from geonode.thumbs.thumbnails import create_thumbnail
-from geonode.base.bbox_utils import BBOXHelper
 
 from arcrest import MapService as ArcMapService, ImageService as ArcImageService
 
@@ -236,7 +235,10 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             "alternate": typename,
             "title": layer_meta.title,
             "abstract": layer_meta.abstract,
-            "bbox_polygon": BBOXHelper.from_xy([bbox[0], bbox[2], bbox[1], bbox[3]]).as_polygon(),
+            "bbox_x0": bbox[0],
+            "bbox_x1": bbox[2],
+            "bbox_y0": bbox[1],
+            "bbox_y1": bbox[3],
             "srid": srs,
             "keywords": ['ESRI', 'ArcGIS REST MapServer', layer_meta.title],
         }

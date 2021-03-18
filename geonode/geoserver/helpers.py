@@ -32,6 +32,7 @@ import traceback
 from shutil import copyfile
 
 from itertools import cycle
+from decimal import Decimal
 from collections import namedtuple, defaultdict
 from os.path import basename, splitext, isfile
 from threading import local
@@ -675,8 +676,11 @@ def gs_slurp(
                     uuid=str(uuid.uuid4())
                 )
                 created = True
-            bbox = resource.native_bbox
-            layer.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], resource.projection)
+            layer.bbox_x0 = Decimal(resource.native_bbox[0])
+            layer.bbox_x1 = Decimal(resource.native_bbox[1])
+            layer.bbox_y0 = Decimal(resource.native_bbox[2])
+            layer.bbox_y1 = Decimal(resource.native_bbox[3])
+            layer.srid = resource.projection
 
             # sync permissions in GeoFence
             perm_spec = json.loads(_perms_info_json(layer))

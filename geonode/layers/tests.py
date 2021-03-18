@@ -37,7 +37,6 @@ from django.forms import ValidationError
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.contrib.auth.models import Group
-from django.contrib.gis.geos import Polygon
 from django.db.models import Count
 from django.contrib.auth import get_user_model
 
@@ -1227,7 +1226,10 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             self.client.login(username=self.user, password=self.passwd)
             _l = Layer.objects.create(
                 name='test notifications',
-                bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
+                bbox_x0=-180,
+                bbox_x1=180,
+                bbox_y0=-90,
+                bbox_y1=90,
                 srid='EPSG:4326',
                 owner=self.norman)
             self.assertTrue(self.check_notification_out('layer_created', self.u))

@@ -50,7 +50,6 @@ from django.core.files.storage import default_storage as storage
 from django.utils.translation import ugettext as _
 
 # Geonode functionality
-from geonode.base.bbox_utils import BBOXHelper
 from geonode import GeoNodeException, geoserver
 from geonode.people.utils import get_valid_user
 from geonode.layers.models import UploadSession, LayerFile
@@ -559,12 +558,7 @@ def file_upload(filename,
                 assigned_name = os.path.splitext(os.path.basename(the_file))[0]
 
     # Get a bounding box
-    *bbox, srid = get_bbox(filename)
-    bbox_polygon = BBOXHelper.from_xy(bbox).as_polygon()
-
-    if srid:
-        srid_url = "http://www.spatialreference.org/ref/" + srid.replace(':', '/').lower() + "/"  # noqa
-        bbox_polygon.srid = int(srid.split(':')[1])
+    bbox_x0, bbox_x1, bbox_y0, bbox_y1, srid = get_bbox(filename)
 
     # by default, if RESOURCE_PUBLISHING=True then layer.is_published
     # must be set to False
@@ -580,8 +574,11 @@ def file_upload(filename,
         'abstract': abstract,
         'owner': user,
         'charset': charset,
-        'bbox_polygon': bbox_polygon,
-        'srid': 'EPSG:4326',
+        'bbox_x0': bbox_x0,
+        'bbox_x1': bbox_x1,
+        'bbox_y0': bbox_y0,
+        'bbox_y1': bbox_y1,
+        'srid': srid,
         'is_approved': is_approved,
         'is_published': is_published,
         'license': license,
@@ -666,8 +663,10 @@ def file_upload(filename,
         # update with new information
         defaults['title'] = defaults.get('title', None) or layer.title
         defaults['abstract'] = defaults.get('abstract', None) or layer.abstract
-        defaults['bbox_polygon'] = defaults.get('bbox_polygon', None) or layer.bbox_polygon
-        defaults['ll_bbox_polygon'] = defaults.get('ll_bbox_polygon', None) or layer.ll_bbox_polygon
+        defaults['bbox_x0'] = defaults.get('bbox_x0', None) or layer.bbox_x0
+        defaults['bbox_x1'] = defaults.get('bbox_x1', None) or layer.bbox_x1
+        defaults['bbox_y0'] = defaults.get('bbox_y0', None) or layer.bbox_y0
+        defaults['bbox_y1'] = defaults.get('bbox_y1', None) or layer.bbox_y1
         defaults['is_approved'] = defaults.get(
             'is_approved', is_approved) or layer.is_approved
         defaults['is_published'] = defaults.get(
