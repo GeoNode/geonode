@@ -49,6 +49,8 @@ from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_http_methods
 
+from geonode.thumbs.thumbnails import create_thumbnail
+
 from dal import autocomplete
 
 import json
@@ -112,10 +114,7 @@ from geonode.tasks.tasks import set_permissions
 from celery.utils.log import get_logger
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    from geonode.geoserver.helpers import (
-        _render_thumbnail,
-        _prepare_thumbnail_body_from_opts,
-        gs_catalog)
+    from geonode.geoserver.helpers import gs_catalog
 
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
@@ -1490,45 +1489,23 @@ def layer_thumbnail(request, layername):
         raise Http404(_("Not found"))
 
     try:
-        # try:
-        #     preview = json.loads(request.body).get('preview', None)
-        # except Exception as e:
-        #     logger.debug(e)
-        #     preview = None
+        request_body = json.loads(request.body)
+        bbox = request_body['bbox'] + [request_body['srid']]
+        zoom = request_body.get('zoom', None)
 
-        image = None
-        try:
-            image = _prepare_thumbnail_body_from_opts(
-                request.body, request=request)
-        except Exception as e:
-            logger.debug(e)
-            try:
-                image = _render_thumbnail(request.body)
-            except Exception as e:
-                logger.debug(e)
-                image = None
-
-        is_image = False
-        if image:
-            import imghdr
-            for th in imghdr.tests:
-                is_image = th(image, None)
-                if is_image:
-                    break
-
-        if not is_image:
-            return HttpResponse(
-                content=_('couldn\'t generate thumbnail'),
-                status=500,
-                content_type='text/plain'
-            )
-        filename = "layer-%s-thumb.png" % layer_obj.uuid
-        layer_obj.save_thumbnail(filename, image)
+        create_thumbnail(
+            layer_obj,
+            bbox=bbox,
+            background_zoom=zoom,
+            overwrite=True
+        )
 
         return HttpResponse('Thumbnail saved')
+
     except Exception as e:
+        logger.exception(e)
         return HttpResponse(
-            content='error saving thumbnail: %s' % str(e),
+            content=_('couldn\'t generate thumbnail: %s' % str(e)),
             status=500,
             content_type='text/plain'
         )

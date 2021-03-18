@@ -19,8 +19,10 @@
 #########################################################################
 
 import os
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 from urllib.parse import urlparse
+
+import requests
 from django.core.exceptions import ObjectDoesNotExist
 
 from guardian.shortcuts import assign_perm, get_perms
@@ -54,7 +56,7 @@ from django.shortcuts import reverse
 
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.models import CuratedThumbnail
-from geonode.base.templatetags.base_tags import get_visibile_resources
+from geonode.base.templatetags.base_tags import get_visibile_resources, facets
 from geonode.base.templatetags.thesaurus import (
     get_name_translation, get_unique_thesaurus_set,
     get_thesaurus_title,
@@ -79,6 +81,9 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         super(ThumbnailTests, self).setUp()
         self.rb = ResourceBase.objects.create()
 
+    def tearDown(self):
+        super().tearDown()
+
     def test_initial_behavior(self):
         """
         Tests that an empty resource has a missing image as default thumbnail.
@@ -100,9 +105,15 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         """
         Tests that an monochromatic image does not change the current resource thumbnail.
         """
+        filename = 'test-thumb'
+
         current = self.rb.get_thumbnail_url()
-        self.rb.save_thumbnail('test-thumb', image)
+        self.rb.save_thumbnail(filename, image)
         self.assertEqual(current, urlparse(self.rb.get_thumbnail_url()).path)
+
+        # cleanup: remove saved thumbnail
+        thumb_utils.remove_thumbs(filename)
+        self.assertFalse(thumb_utils.thumb_exists(filename))
 
     @patch('PIL.Image.open', return_value=test_image)
     def test_thumb_utils_methods(self, image):
@@ -119,6 +130,10 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         storage.save(upload_path, File(f))
         self.assertTrue(thumb_utils.thumb_exists(filename))
         self.assertEqual(thumb_utils.thumb_size(upload_path), 10000)
+
+        # cleanup: remove saved thumbnail
+        thumb_utils.remove_thumbs(filename)
+        self.assertFalse(thumb_utils.thumb_exists(filename))
 
 
 class TestThumbnailUrl(GeoNodeBaseTestSupport):
@@ -948,6 +963,7 @@ class TestTagThesaurus(TestCase):
 
 @override_settings(THESAURUS_DEFAULT_LANG="en")
 class TestThesaurusAvailableForm(TestCase):
+    #  loading test thesausurs
     fixtures = [
         "test_thesaurus.json"
     ]
@@ -966,3 +982,51 @@ class TestThesaurusAvailableForm(TestCase):
     def test_form_is_valid_if_fileds_send_expected_values(self):
         actual = self.sut(data={"1": 1})
         self.assertTrue(actual.is_valid())
+
+
+class TestFacets(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create(username='test', email='test@test.com')
+        Layer.objects.create(
+            owner=self.user, title='test_boxes', abstract='nothing', storeType='dataStore', is_approved=True
+        )
+        Layer.objects.create(
+            owner=self.user, title='test_1', abstract='contains boxes', storeType='dataStore', is_approved=True
+        )
+        Layer.objects.create(
+            owner=self.user, title='test_2', purpose='contains boxes', storeType='dataStore', is_approved=True
+        )
+        Layer.objects.create(
+            owner=self.user, title='test_3', storeType='dataStore', is_approved=True
+        )
+
+        Layer.objects.create(
+            owner=self.user, title='test_boxes', abstract='nothing', storeType='coverageStore', is_approved=True
+        )
+        Layer.objects.create(
+            owner=self.user, title='test_1', abstract='contains boxes', storeType='coverageStore', is_approved=True
+        )
+        Layer.objects.create(
+            owner=self.user, title='test_2', purpose='contains boxes', storeType='coverageStore', is_approved=True
+        )
+        Layer.objects.create(
+            owner=self.user, title='test_boxes', storeType='coverageStore', is_approved=True
+        )
+
+        self.request_mock = Mock(spec=requests.Request, GET=Mock())
+
+    def test_facets_filter_layers_returns_correctly(self):
+        self.request_mock.GET.get.side_effect = lambda key, self: {
+            'title__icontains': 'boxes',
+            'abstract__icontains': 'boxes',
+            'purpose__icontains': 'boxes',
+            'date__gte': None,
+            'date__range': None,
+            'date__lte': None,
+            'extent': None
+        }.get(key)
+        self.request_mock.GET.getlist.return_value = None
+        self.request_mock.user = self.user
+        results = facets({'request': self.request_mock})
+        self.assertEqual(results['vector'], 3)
+        self.assertEqual(results['raster'], 4)

@@ -1,0 +1,28 @@
+[
+   {
+      "model":"layers.uploadsession",
+      "pk":1,
+      "fields":{
+         "resource":1001,
+         "date":"2021-03-08T11:19:21.865Z",
+         "user":1,
+         "processed":true,
+         "error":null,
+         "traceback":null,
+         "context":null
+      }
+   },
+   {
+      "model":"layers.uploadsession",
+      "pk":2,
+      "fields":{
+         "resource":1005,
+         "date":"2021-03-08T12:15:41.440Z",
+         "user":1,
+         "processed":true,
+         "error":null,
+         "traceback":null,
+         "context":null
+      }
+   }
+]

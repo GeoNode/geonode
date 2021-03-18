@@ -1,0 +1,131 @@
+[
+   {
+      "model":"layers.layer",
+      "pk":1001,
+      "fields":{
+         "title_en":"theaters_nyc",
+         "abstract_en":"No abstract provided",
+         "purpose_en":null,
+         "constraints_other_en":null,
+         "supplemental_information_en":"No information provided",
+         "data_quality_statement_en":null,
+         "workspace":"geonode",
+         "store":"geonode_data",
+         "storeType":"dataStore",
+         "name":"theaters_nyc",
+         "typename":"geonode:theaters_nyc",
+         "is_mosaic":false,
+         "has_time":false,
+         "has_elevation":false,
+         "time_regex":null,
+         "elevation_regex":null,
+         "default_style":2,
+         "remote_service":null,
+         "charset":"UTF-8",
+         "upload_session":1,
+         "use_featureinfo_custom_template":false,
+         "featureinfo_custom_template":null,
+         "tkeywords":[
+
+         ],
+         "regions":[
+
+         ],
+         "users_geolimits":[
+
+         ],
+         "groups_geolimits":[
+
+         ],
+         "styles":[
+            2
+         ]
+      }
+   },
+   {
+      "model":"layers.layer",
+      "pk":1005,
+      "fields":{
+         "title_en":"Meteorite_Landings_from_NASA_Open_Data_Portal1",
+         "abstract_en":"No abstract provided",
+         "purpose_en":null,
+         "constraints_other_en":null,
+         "supplemental_information_en":"No information provided",
+         "data_quality_statement_en":null,
+         "workspace":"geonode",
+         "store":"geonode_data",
+         "storeType":"dataStore",
+         "name":"Meteorite_Landings_from_NASA_Open_Data_Portal1",
+         "typename":"geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1",
+         "is_mosaic":false,
+         "has_time":false,
+         "has_elevation":false,
+         "time_regex":null,
+         "elevation_regex":null,
+         "default_style":4,
+         "remote_service":null,
+         "charset":"UTF-8",
+         "upload_session":2,
+         "use_featureinfo_custom_template":false,
+         "featureinfo_custom_template":null,
+         "tkeywords":[
+
+         ],
+         "regions":[
+
+         ],
+         "users_geolimits":[
+
+         ],
+         "groups_geolimits":[
+
+         ],
+         "styles":[
+            4
+         ]
+      }
+   },
+   {
+      "model":"layers.layer",
+      "pk":1008,
+      "fields":{
+         "title_en":"DBG - Risorse minerarie",
+         "abstract_en":"Scala di visibilita 1:1 - 1:5.000.000. Dataset 'Banca dati geologica -Risorse minerarie'. Geometrie areali",
+         "purpose_en":null,
+         "constraints_other_en":null,
+         "supplemental_information_en":"No information provided",
+         "data_quality_statement_en":null,
+         "workspace":"remoteWorkspace",
+         "store":"httpwww502regionetoscanaitwmsrastercomrtwmsrtmapwmsmapwmsgeologiamap_resolution91",
+         "storeType":"remoteStore",
+         "name":"rt_geologia.dbg_risorse_minerarie",
+         "typename":"rt_geologia.dbg_risorse_minerarie",
+         "is_mosaic":false,
+         "has_time":false,
+         "has_elevation":false,
+         "time_regex":null,
+         "elevation_regex":null,
+         "default_style":null,
+         "remote_service":1003,
+         "charset":"UTF-8",
+         "upload_session":null,
+         "use_featureinfo_custom_template":false,
+         "featureinfo_custom_template":null,
+         "tkeywords":[
+
+         ],
+         "regions":[
+
+         ],
+         "users_geolimits":[
+
+         ],
+         "groups_geolimits":[
+
+         ],
+         "styles":[
+
+         ]
+      }
+   }
+]
