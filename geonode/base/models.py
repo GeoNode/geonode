@@ -24,7 +24,7 @@ import math
 import uuid
 import logging
 import traceback
-
+import html
 from django.db import models
 from django.conf import settings
 from django.core import serializers
@@ -40,7 +40,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.core.files.storage import default_storage as storage
-
+from django.utils.html import strip_tags
 from mptt.models import MPTTModel, TreeForeignKey
 
 from PIL import Image, ImageOps
@@ -896,31 +896,36 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return "{0}".format(self.title)
 
     def _remove_html_tags(self, attribute_str):
+        _attribute_str = attribute_str
         try:
             pattern = re.compile('<.*?>')
-            return re.sub(pattern, '', attribute_str)
+            _attribute_str = html.unescape(
+                re.sub(pattern, '', attribute_str).replace('\n', ' ').replace('\r', '').strip())
         except Exception:
-            return attribute_str
+            if attribute_str:
+                _attribute_str = html.unescape(
+                    attribute_str.replace('\n', ' ').replace('\r', '').strip())
+        return _attribute_str
 
     @property
     def raw_abstract(self):
-        return self._remove_html_tags(self.abstract)
+        return strip_tags(self._remove_html_tags(self.abstract))
 
     @property
     def raw_purpose(self):
-        return self._remove_html_tags(self.purpose)
+        return strip_tags(self._remove_html_tags(self.purpose))
 
     @property
     def raw_constraints_other(self):
-        return self._remove_html_tags(self.constraints_other)
+        return strip_tags(self._remove_html_tags(self.constraints_other))
 
     @property
     def raw_supplemental_information(self):
-        return self._remove_html_tags(self.supplemental_information)
+        return strip_tags(self._remove_html_tags(self.supplemental_information))
 
     @property
     def raw_data_quality_statement(self):
-        return self._remove_html_tags(self.data_quality_statement)
+        return strip_tags(self._remove_html_tags(self.data_quality_statement))
 
     def save(self, notify=False, *args, **kwargs):
         """
