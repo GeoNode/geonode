@@ -1442,12 +1442,10 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
             data = json.loads(content)
-            logger.info(data)
             # Check success
             self.assertTrue(data['success'])
             _lname = data['url'].split(':')[-1]
             _l = Layer.objects.get(name=_lname)
-            print(_l.name)
             # Check the layer has been published
             self.assertTrue(_l.is_published)
             # Check errors
