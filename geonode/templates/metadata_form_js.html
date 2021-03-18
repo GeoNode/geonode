@@ -69,6 +69,7 @@
       $('#profileCompleteness .progress-bar').html(parseFloat(((completeness)*100).toFixed(0)) + ' %').width(parseFloat(((completeness)*100).toFixed(2)) + '%');
       $('#profileCompleteness .completed').toggle(completeness === 1);
       $('#profileCompleteness .not-completed').toggle(completeness !== 1);
+      
       var mandatoryMissing = $('#mandatory').find('.input-empty:not([class^="select2"])').length > 0;
           if (mandatoryMissing) {
             var inputs = $('#mandatory').find('.input-empty:not([class^="select2"])');
@@ -80,7 +81,10 @@
             }
             mandatoryMissing = empty > 0;
           }
-        console.log(mandatoryMissing);
+        var imgMissing = $('img#image').attr('src');
+        if (imgMissing && imgMissing.includes('missing_thumb')) {
+            mandatoryMissing = true
+        }
       var advancedMissing = $('#advanced').find('.input-empty').length > 0;
           if (advancedMissing) {
             var inputs = $('#advanced').find('.input-empty');
@@ -237,6 +241,12 @@
             // display error status for token fields if not completed
             $(target).toggleClass("input-empty", empty);
           }
+          var imgMissing = $('img#image').attr('src');
+          console.log(target.id + ": " + imgMissing)
+          if (imgMissing && !imgMissing.includes('missing_thumb')) {
+              $('input#id_crop_file').removeClass("input-empty");
+              $('input#id_crop_file').parent().find(".mandatory-warning").remove();
+          }
 
           if(target.id === 'id_resource-keywords') {
             $(target).siblings('span').toggleClass('has-error', empty);
@@ -247,15 +257,13 @@
              target.id === 'id_resource-regions' ||
              target.id === 'id_resource-group' || 
              target.id === 'id_resource-date' ||
-             target.id === 'id_resource-links' ||
-             target.id === 'id_crop_file' || {{UI_REQUIRED_FIELDS}}.includes(target.id)
+             target.id === 'id_resource-links' || {{UI_REQUIRED_FIELDS}}.includes(target.id)
           ) {
               // group selector
               $(target).closest('#basicGroupInfo').toggleClass('has-error', empty);
 
               // category selector
               $(target).closest('#basicCategoryInfo').toggleClass('has-error', empty);
-              $(target).closest('#id_crop_entry').toggleClass('has-error', empty);
               $(target).closest('#req_item').toggleClass('has-error', empty);
 
               // regions container
@@ -338,7 +346,7 @@
                             $(e.target).parent().parent().append(gettext(mandatoryWarning));
                         } else if (!!$(this).closest('.check-select').length) {
                             $(e.target).parent().parent().append(gettext(mandatoryWarning));
-                        } else if (!!$(this).closest('#mdinfo').length || !!$(this).closest('#basicDescriptiveInfo').length) {
+                        } else if (!!$(this).closest('#mdinfo').length || !!$(this).closest('#basicDescriptiveInfo').length ) {
                             $(e.target).parent().append(gettext(mandatoryWarning));
                         }
                         empty++;
@@ -377,7 +385,7 @@
         $('#category_form').change(onInputChange).change();
         $('#id_resource-group').change(onInputChange).change();
         $('#id_resource-group').change(onInputChange).change();
-        $('#id_crop_file').change(onInputChange).change();
+
         $('#id_resource-date').change(onInputChange).change();
         $('#id_resource-links').change(onInputChange).change();
 
