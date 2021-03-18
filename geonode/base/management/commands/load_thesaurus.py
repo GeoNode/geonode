@@ -93,7 +93,7 @@ class Command(BaseCommand):
             raise CommandError("ConceptScheme not found in file")
 
         titles = scheme.findall('dc:title', ns)
-        
+
         default_lang = getattr(settings, 'THESAURUS_DEFAULT_LANG', None)
         available_lang = get_all_lang_available_with_title(titles, LANG_ATTRIB)
         thesaurus_title = determinate_value(available_lang, default_lang)
@@ -102,7 +102,7 @@ class Command(BaseCommand):
         date_issued = scheme.find('dcterms:issued', ns).text
         about = scheme.attrib.get(ABOUT_ATTRIB)
 
-        print('Thesaurus "{}" issued on {}'.format(thesaurus_title, date_issued))
+        print(f'Thesaurus "{thesaurus_title}" issued at {date_issued}')
 
         thesaurus = Thesaurus()
         thesaurus.identifier = name
@@ -133,7 +133,7 @@ class Command(BaseCommand):
                 available_lang = get_all_lang_available_with_title(concepts, LANG_ATTRIB)
                 alt_label = determinate_value(available_lang, default_lang)
 
-            print('Concept {} ({})'.format(alt_label, about))
+            print(f'Concept {alt_label} ({about})')
 
             tk = ThesaurusKeyword()
             tk.thesaurus = thesaurus
@@ -147,7 +147,7 @@ class Command(BaseCommand):
                 lang = pref_label.attrib.get(LANG_ATTRIB)
                 label = pref_label.text
 
-                print('    Label {}: {}'.format(lang, label))
+                print(f'    Label {lang}: {label}')
 
                 tkl = ThesaurusKeywordLabel()
                 tkl.keyword = tk
@@ -174,18 +174,20 @@ class Command(BaseCommand):
             tk.alt_label = keyword + '_alt'
             tk.save()
 
-            for l in ['it', 'en', 'es']:
+            for _l in ['it', 'en', 'es']:
                 tkl = ThesaurusKeywordLabel()
                 tkl.keyword = tk
-                tkl.lang = l
-                tkl.label = keyword + "_l_" + l + "_t_" + name
+                tkl.lang = _l
+                tkl.label = keyword + "_l_" + _l + "_t_" + name
                 tkl.save()
+
 
 def get_all_lang_available_with_title(items: List, LANG_ATTRIB: str):
     return [(item.attrib.get(LANG_ATTRIB), item.text) for item in items]
 
+
 def determinate_value(available_lang: List, default_lang: str):
-    sorted_lang = sorted(available_lang, key= lambda lang: '' if lang[0] is None else lang[0])
+    sorted_lang = sorted(available_lang, key=lambda lang: '' if lang[0] is None else lang[0])
     for item in sorted_lang:
         if item[0] is None:
             return item[1]

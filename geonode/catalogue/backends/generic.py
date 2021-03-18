@@ -68,7 +68,7 @@ class Catalogue(CatalogueServiceWeb):
 
         upurl = urlparse(self.url)
 
-        self.base = '%s://%s/' % (upurl.scheme, upurl.netloc)
+        self.base = f'{upurl.scheme}://{upurl.netloc}/'
 
         # User and Password are optional
         if 'USER' in kwargs:
@@ -112,14 +112,15 @@ class Catalogue(CatalogueServiceWeb):
             return None
 
     def url_for_uuid(self, uuid, outputschema):
-        return "%s?%s" % (self.url, urlencode({
+        _query_string = urlencode({
             "request": "GetRecordById",
             "service": "CSW",
             "version": "2.0.2",
             "id": uuid,
             "outputschema": outputschema,
             "elementsetname": "full"
-        }))
+        })
+        return f"{self.url}?{_query_string}"
 
     def urls_for_uuid(self, uuid):
         """returns list of valid GetRecordById URLs for a given record"""

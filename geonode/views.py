@@ -147,7 +147,7 @@ def ident_json(request):
     json_data['poc'] = {
         'name': settings.PYCSW['CONFIGURATION']['metadata:main']['contact_name'],
         'email': settings.PYCSW['CONFIGURATION']['metadata:main']['contact_email'],
-        'twitter': 'https://twitter.com/%s' % settings.TWITTER_SITE
+        'twitter': f'https://twitter.com/{settings.TWITTER_SITE}'
     }
 
     json_data['version'] = get_version()

@@ -75,8 +75,8 @@ class SpatialFile(object):
         return [self.base_file] + self.auxillary_files
 
     def __repr__(self):
-        return "<SpatialFile base_file=%s file_type=%s aux=%s sld=%s xml=%s>" % (
-            self.base_file, self.file_type, self.auxillary_files, self.sld_files, self.xml_files)
+        return f"<SpatialFile base_file={self.base_file} file_type={self.file_type} \
+aux={self.auxillary_files} sld={self.sld_files} xml={self.xml_files}>"
 
 
 class FileType(object):
@@ -114,7 +114,7 @@ class FileType(object):
         return aux_files, slds, xmls
 
     def __repr__(self):
-        return "<FileType %s>" % self.code
+        return f"<FileType {self.code}>"
 
 
 TYPE_UNKNOWN = FileType("unknown", None, None)

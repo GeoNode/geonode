@@ -17,7 +17,7 @@ class TaggitSelect2Custom(TaggitSelect2):
         try:
             value = super(TaggitSelect2Custom, self).value_from_datadict(data, files, name)
             if value and ',' not in value:
-                value = '%s,' % value
+                value = f'{value},'
             return value
         except TypeError:
             return ""

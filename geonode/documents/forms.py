@@ -55,8 +55,8 @@ class DocumentFormMixin(object):
         for obj in resources:
             type_id = ContentType.objects.get_for_model(obj.__class__).id
             choices.append([
-                "type:%s-id:%s" % (type_id, obj.id),
-                '%s (%s)' % (obj.title, obj.polymorphic_ctype.model)
+                f"type:{type_id}-id:{obj.id}",
+                f"{obj.title} ({obj.polymorphic_ctype.model})"
             ])
 
         return choices

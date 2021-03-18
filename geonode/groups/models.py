@@ -54,7 +54,7 @@ class GroupCategory(models.Model):
         verbose_name_plural = _('Group Categories')
 
     def __str__(self):
-        return "{0}".format(self.name)
+        return str(self.name)
 
     def get_absolute_url(self):
         return reverse('group_category_detail', args=(self.slug,))
@@ -130,7 +130,7 @@ class GroupProfile(models.Model):
         return []
 
     def __str__(self):
-        return "{0}".format(self.title)
+        return str(self.title)
 
     def keyword_list(self):
         """
@@ -203,7 +203,7 @@ class GroupProfile(models.Model):
         if not _members.count():
             GroupMember.objects.get_or_create(group=self, user=user, defaults=kwargs)
         else:
-            logger.warning("The invited user \"{0}\" is already a member".format(user.username))
+            logger.warning(f"The invited user \"{user.username}\" is already a member")
 
     def leave(self, user, **kwargs):
         if not user or user.is_anonymous or user == user.get_anonymous():
@@ -215,7 +215,7 @@ class GroupProfile(models.Model):
                 user.groups.remove(self.group)
                 member.delete()
         else:
-            logger.warning("The invited user \"{0}\" is not a member".format(user.username))
+            logger.warning(f"The invited user \"{user.username}\" is not a member")
 
     def get_absolute_url(self):
         return reverse('group_detail', args=[self.slug, ])
