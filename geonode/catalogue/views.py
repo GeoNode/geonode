@@ -39,7 +39,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 @csrf_exempt
-def csw_global_dispatch(request, layer_filter=None):
+def csw_global_dispatch(request, layer_filter=None, config_updater=None):
     """pycsw wrapper"""
 
     # this view should only operate if pycsw_local is the backend
@@ -48,6 +48,7 @@ def csw_global_dispatch(request, layer_filter=None):
         return HttpResponseRedirect(settings.CATALOGUE['default']['URL'])
 
     mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
+    mdict = config_updater(mdict) if config_updater else mdict
 
     access_token = None
     if request and request.user:
