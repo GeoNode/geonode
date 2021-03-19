@@ -197,6 +197,19 @@ def document_download(request, docid):
     return DownloadResponse(document.doc_file, basename=f"{filename}.{document.extension}")
 
 
+def document_link(request, docid):
+    document = get_object_or_404(Document, pk=docid)
+
+    if not request.user.has_perm(
+            'base.download_resourcebase',
+            obj=document.get_self_resource()):
+        return HttpResponse(
+            loader.render_to_string(
+                '401.html', context={
+                    'error_message': _("You are not allowed to view this document.")}, request=request), status=401)
+    return DownloadResponse(document.doc_file, attachment=False)
+
+
 class DocumentUploadView(CreateView):
     template_name = 'documents/document_upload.html'
     form_class = DocumentCreateForm
