@@ -360,7 +360,9 @@
         };
         {% endblock onInputChange %}
         {% block trigger_onInputChange %}
+
         {{UI_REQUIRED_FIELDS}}.forEach(element => $('#' + element).change(onInputChange).change());
+
         $('#category_form').change(onInputChange).change();
         $('#id_resource-group').change(onInputChange).change();
 

@@ -39,7 +39,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-02 14:49+0000\n"
-"PO-Revision-Date: 2021-01-21 22:30+0100\n"
+"PO-Revision-Date: 2021-03-10 12:08+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Italian (http://www.transifex.com/geonode/geonode/language/"
 "it/)\n"
@@ -6290,6 +6290,9 @@ msgstr ""
 
 msgid "Invalid permission level."
 msgstr "Livello di permessi non valido."
+
+msgid "If true, will be excluded from search"
+msgstr "Se Vero, l'elemento verrà escluso dalla ricerca"
 
 msgid "Permission Denied"
 msgstr "Permesso negato"
