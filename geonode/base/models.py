@@ -43,7 +43,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.core.files.storage import default_storage as storage
-
+from django.utils.html import strip_tags
 from mptt.models import MPTTModel, TreeForeignKey
 
 from PIL import Image, ImageOps
@@ -927,7 +927,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if attribute_str:
                 _attribute_str = html.unescape(
                     attribute_str.replace('\n', ' ').replace('\r', '').strip())
-        return _attribute_str
+        return strip_tags(_attribute_str)
 
     @property
     def raw_abstract(self):
