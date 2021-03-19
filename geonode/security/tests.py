@@ -59,7 +59,7 @@ from geonode.geoserver.upload import geoserver_upload
 from geonode.layers.populate_layers_data import create_layer_data
 
 from .utils import (
-    purge_geofence_all,
+    get_visible_resources, purge_geofence_all,
     get_users_with_perms,
     get_geofence_rules,
     get_geofence_rules_count,
@@ -1666,3 +1666,23 @@ class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             clean_layer = Layer.objects.get(pk=self._l.id)
             # Check dirty state
             self.assertFalse(clean_layer.dirty_state)
+
+
+class TestGetVisibleResources(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+    def setUp(self):
+        super(TestGetVisibleResources, self).setUp()
+        self.user = get_user_model().objects.get(username="admin")
+
+    def test_get_visible_resources_should_return_resource_with_metadata_only_false(self):
+        layers = Layer.objects.all()
+        actual = get_visible_resources(queryset=layers, user=self.user)
+        self.assertEqual(8, len(actual))
+
+    def test_get_visible_resources_should_return_updated_resource_with_metadata_only_false(self):
+        # Updating the layer with metadata only True to verify that the filter works
+        x = Layer.objects.get(title='layer metadata true')
+        x.metadata_only = False
+        x.save()
+        layers = Layer.objects.all()
+        actual = get_visible_resources(queryset=layers, user=self.user)
+        self.assertEqual(9, len(actual))

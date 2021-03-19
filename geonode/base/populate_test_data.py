@@ -69,6 +69,7 @@ def create_fixtures():
     biota = TopicCategory.objects.get(identifier='biota')
     location = TopicCategory.objects.get(identifier='location')
     elevation = TopicCategory.objects.get(identifier='elevation')
+    farming = TopicCategory.objects.get(identifier='farming')
     world_extent = [-180, 180, -90, 90]
 
     map_data = [
@@ -81,6 +82,7 @@ def create_fixtures():
         ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10], elevation),
         ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10], elevation),
         ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation),
+        ('map metadata true', 'map metadata true', ('populartag',), [0, 22, 0, 22], farming),
     ]
 
     user_data = [
@@ -129,6 +131,8 @@ def create_fixtures():
                       0, 10, 0, 10], next_date(), ('populartag',), biota),
                   ('common morx', 'lorem ipsum', 'fleem', 'geonode:fleem', [
                       0, 50, 0, 50], next_date(), ('populartag',), biota),
+                  ('layer metadata true', 'lorem ipsum', 'fleem', 'geonode:metadatatrue', [
+                      0, 22, 0, 22], next_date(), ('populartag',), farming)
                   ]
 
     document_data = [('lorem ipsum', 'common lorem ipsum', ('populartag',), world_extent, biota),
@@ -139,7 +143,8 @@ def create_fixtures():
                      ('quux', 'common double thing', ('populartag',), [0, 5, 0, 5], location),
                      ('morx', 'common thing double', ('populartag',), [0, 10, 0, 10], elevation),
                      ('titledupe something else ', 'whatever common', ('populartag',), [0, 10, 0, 10], elevation),
-                     ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation)]
+                     ('something titledupe else ', 'bar common', ('populartag',), [0, 50, 0, 50], elevation),
+                     ('doc metadata true', 'doc metadata true', ('populartag',), [0, 22, 0, 22], farming)]
 
     return map_data, user_data, people_data, layer_data, document_data
 
@@ -200,7 +205,8 @@ def create_models(type=None, integration=False):
                     bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                     ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                     srid='EPSG:4326',
-                    category=category
+                    category=category,
+                    metadata_only=title == 'map metadata true'
                 )
                 m.save()
                 m.set_default_permissions()
@@ -221,7 +227,8 @@ def create_models(type=None, integration=False):
                     ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                     srid='EPSG:4326',
                     category=category,
-                    doc_file=f
+                    doc_file=f,
+                    metadata_only=title == 'doc metadata true'
                 )
                 m.save()
                 m.set_default_permissions()
@@ -249,7 +256,8 @@ def create_models(type=None, integration=False):
                     temporal_extent_end=end,
                     date=start,
                     storeType=storeType,
-                    category=category
+                    category=category,
+                    metadata_only=title == 'layer metadata true'
                 )
                 layer.save()
                 layer.set_default_permissions()
