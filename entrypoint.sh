@@ -1,11 +1,25 @@
 #!/bin/bash
+
+# Exit script in case of error
 set -e
 
-/usr/local/bin/invoke update >> /usr/src/app/invoke.log
+# Start cron && memcached services
+service cron restart
+service memcached restart
+
+echo $"\n\n\n"
+echo "-----------------------------------------------------"
+echo "STARTING DJANGO ENTRYPOINT $(date)"
+echo "-----------------------------------------------------"
+
+/usr/local/bin/invoke update > /usr/src/geonode/invoke.log 2>&1
 
 source $HOME/.bashrc
 source $HOME/.override_env
 
+echo DOCKER_API_VERSION=$DOCKER_API_VERSION
+echo POSTGRES_USER=$POSTGRES_USER
+echo POSTGRES_PASSWORD=$POSTGRES_PASSWORD
 echo DATABASE_URL=$DATABASE_URL
 echo GEODATABASE_URL=$GEODATABASE_URL
 echo SITEURL=$SITEURL
@@ -40,7 +54,7 @@ else
         /usr/local/bin/invoke prepare >> /usr/src/app/invoke.log
         echo "prepare task done"
 
-        if [ ${IS_FIRST_START} = "true" ] || [ ${IS_FIRST_START} = "True" ] || [ ${FORCE_REINIT} = "true" ]  || [ ${FORCE_REINIT} = "True" ] || [ ! -e "/mnt/volumes/statics/geonode_init.lock" ]; then
+        if [ ${FORCE_REINIT} = "true" ]  || [ ${FORCE_REINIT} = "True" ] || [ ! -e "/mnt/volumes/statics/geonode_init.lock" ]; then
             /usr/local/bin/invoke updategeoip >> /usr/src/app/invoke.log
             echo "updategeoip task done"
             /usr/local/bin/invoke fixtures >> /usr/src/app/invoke.log
@@ -65,5 +79,11 @@ else
         echo "Executing UWSGI server $cmd for Production"
     fi
 fi
+
+echo "-----------------------------------------------------"
+echo "FINISHED DJANGO ENTRYPOINT --------------------------"
+echo "-----------------------------------------------------"
+
+# Run the CMD 
 echo "got command $cmd"
 exec $cmd
