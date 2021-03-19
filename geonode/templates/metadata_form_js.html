@@ -528,13 +528,13 @@
         });
         
         function validateRequiredInput() {
-            var errors = []
+            var errors = ['{% trans "Following items are required:" %}']
             $( ':input[required]').each( function () {
                 if ( this.value.trim() == '' ) {
                     errors.push(this.id)
                 }
             });
-            if (errors.length > 0) {
+            if (errors.length > 1) {
                 console.error("Following items are required: " + errors)
                 $(".general_errors").find("p").html(errors.join('<br>'));
                 $('#error_mandatoryDialog').modal();
@@ -567,8 +567,19 @@
             }
         });
 
-        $('#preview_tab').on('show.bs.tab', function(){
-            if
+        $('#preview_tab').on('show.bs.tab', function(e){
+            var errors = ['{% trans "Please, fill the following items before clicking on preview:" %}<br>']
+                $( ':input[required]').each( function () {
+                    if ( this.value.trim() == '' ) {
+                        errors.push(this.id)
+                    }
+                });
+            if (errors.length > 1) {
+	                e.preventDefault();
+                    console.error("Please, fill the following items before clicking on preview: " + errors)
+                    $(".general_errors").find("p").html(errors.join('<br>'));
+                    $('#error_mandatoryDialog').modal();
+                } else if
             ( is_category_mandatory &&
                 (
                     (!is_advanced && $('#category_form').hasClass("input-empty")) ||
