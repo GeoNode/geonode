@@ -59,7 +59,7 @@
 							<dd>{{resource.date}}, {% trans resource.date_type|title %} </dd>
 
 						<dt>{% trans "Abstract" %}</dt>
-							<dd>{{resource.abstract}}</dd>
+							<dd>{{resource.raw_abstract}}</dd>
 
 						<dt>{% trans "Edition" %}</dt>
 							{% if resource.edition %}
@@ -79,7 +79,7 @@
 
 						<dt>{% trans "Purpose" %}</dt>
 								{% if resource.purpose %}
-									<dd>{{resource.purpose}}</dd>
+									<dd>{{resource.raw_purpose}}</dd>
 								{% else %}
 									<dd> -- </dd>
 								{% endif %}
@@ -93,7 +93,7 @@
 
 						<dt>{% trans "Restrictions" %}</dt>
 							<dd>{{resource.restriction_code_type}}</dd>
-							<dd>{{resource.constraints_other}}</dd>
+							<dd>{{resource.raw_constraints_other}}</dd>
 
 						<dt>{% trans "License" %}</dt>
 							<dd>{{resource.license}}</dd>
@@ -117,11 +117,11 @@
 
 
 						<dt>{% trans "Supplemental Information" %}</dt>
-							<dd>{{resource.supplemental_information}}</dd>
+							<dd>{{resource.raw_supplemental_information}}</dd>
 
 						<dt>{% trans "Data Quality" %} </dt>
 							{% if resource.data_quality_statement %}
-							<dd>{{resource.data_quality_statement}}</dd>
+							<dd>{{resource.raw_data_quality_statement}}</dd>
 							{% else %}
 								<dd> -- </dd>
 							{% endif %}
