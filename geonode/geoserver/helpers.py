@@ -1201,7 +1201,9 @@ def save_style(gs_style, layer):
         style, created = Style.objects.get_or_create(name=style_name)
         if not style.workspace and gs_style.workspace:
             style.workspace = layer.workspace
-        style.sld_title = gs_style.sld_title or sld_name
+
+        title = gs_style.sld_title if gs_style.style_format != 'css' else sld_name
+        style.sld_title = title
         style.sld_body = gs_style.sld_body
         style.sld_url = gs_style.body_href
         style.save()
