@@ -22,6 +22,7 @@ import os
 import re
 import math
 import uuid
+import html
 import logging
 import traceback
 
@@ -40,7 +41,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.core.files.storage import default_storage as storage
-
+from django.utils.html import strip_tags
 from mptt.models import MPTTModel, TreeForeignKey
 
 from PIL import Image, ImageOps
@@ -896,11 +897,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return "{0}".format(self.title)
 
     def _remove_html_tags(self, attribute_str):
+        _attribute_str = attribute_str
         try:
             pattern = re.compile('<.*?>')
-            return re.sub(pattern, '', attribute_str)
+            _attribute_str = html.unescape(
+                re.sub(pattern, '', attribute_str).replace('\n', ' ').replace('\r', '').strip())
         except Exception:
-            return attribute_str
+            if attribute_str:
+                _attribute_str = html.unescape(
+                    attribute_str.replace('\n', ' ').replace('\r', '').strip())
+        return strip_tags(_attribute_str)
 
     @property
     def raw_abstract(self):
