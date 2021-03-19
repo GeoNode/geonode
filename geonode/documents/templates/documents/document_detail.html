@@ -35,7 +35,7 @@
       {% if resource.extension|lower in audiotypes and resource.doc_file %}
         {% get_mime_type mimetypemap resource.extension as mimetype %}
         <div id="embedded_map" width="500px">
-            <a style="text-decoration:none;" href="{% url "document_download" resource.id %}" target="_blank">
+            <a style="text-decoration:none;" href="{% url "document_link" resource.id %}" target="_blank">
                 <audio controls width="100%">
                     <source src="{% url "document_download" resource.id %}" type="{{ mimetype }}">
                     {% trans "Your browser does not support the audio element." %}
@@ -44,14 +44,14 @@
         </div>
       {% elif resource.extension|lower in imgtypes and resource.doc_file %}
         <div id="embedded_map" width="500px">
-            <a style="text-decoration:none;" href="{% url "document_download" resource.id %}" target="_blank">
+            <a style="text-decoration:none;" href="{% url "document_link" resource.id %}" target="_blank">
                 <img src="{% url "document_download" resource.id %}" width='100%' class="img-responsive" />
             </a>
         </div>
       {% elif resource.extension|lower in videotypes and resource.doc_file %}
         {% get_mime_type mimetypemap resource.extension as mimetype %}
         <div id="embedded_map" width="500px">
-            <a style="text-decoration:none;" href="{% url "document_download" resource.id %}" target="_blank">
+            <a style="text-decoration:none;" href="{% url "document_link" resource.id %}" target="_blank">
                 <video width="500" controls>
                     <source src="{% url "document_download" resource.id %}" type="{{ mimetype }}">
                     {% trans "Your browser does not support the video tag." %}
@@ -59,7 +59,7 @@
             </a>
         </div>
       {% elif resource.doc_file %}
-      <p><a href="{% url "document_download" resource.id %}" target="_blank">{% trans "Download the" %} {{ resource }} {% trans "document" %}</a></p>
+      <p><a href="{% url "document_link" resource.id %}" target="_blank">{% trans "Download the" %} {{ resource }} {% trans "document" %}</a></p>
       {% elif  resource.doc_url %}
       <p><a href="{{ resource.doc_url }}" target="_blank">{% trans "Download the" %} {{ resource }} {% trans "document" %}.</a> <small>({% trans 'External Resource' %})</small></p>
       {%  endif %}
