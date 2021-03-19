@@ -7530,9 +7530,17 @@ article.tab-pane {
   word-break: break-all;
   padding-left: 0px;
   padding-left: 12px;
+  display: flex;
+}
+.treeview .list-group-item .badge {
+  margin: auto;
+  margin-right: 0;
 }
 .treeview span.icon {
   margin-right: 5px;
+}
+.treeview span.node-icon {
+  padding-right: 17px;
 }
 span.icon.node-icon:before {
   font-family: FontAwesome;
@@ -7641,6 +7649,7 @@ nav.filter h4 {
 }
 nav.filter h4 a {
   color: white;
+  display: flex;
 }
 nav.filter h4 a.toggle {
   text-decoration: none;
