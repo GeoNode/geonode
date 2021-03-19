@@ -315,10 +315,12 @@ span.grippy::after {
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
-                                    <span><label for="{{ layer_form.title|id }}">{{ layer_form.title.label }}</label></span>
-                                    <!--<p class="xxs-font-size">(Name by which the cited resource is known)</p>-->
-                                    {{ layer_form.title }}
-                                    <div>
+                                    <div id="req_item">
+                                      <span><label for="{{ layer_form.title|id }}">{{ layer_form.title.label }}</label></span>
+                                      <!--<p class="xxs-font-size">(Name by which the cited resource is known)</p>-->
+                                      {{ layer_form.title }}
+                                    </div>
+                                    <div id="req_item">
                                         <span><label for="{{ layer_form.abstract|id }}">{{ layer_form.abstract.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
                                         {{ layer_form.abstract }}
@@ -330,7 +332,7 @@ span.grippy::after {
                                         <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
                                         {{ layer_form.date_type }}
                                     </div>
-                                    <div class="col-lg-6 col-xs-12">
+                                    <div class="col-lg-6 col-xs-12" id="req_item">
                                         <span><label for="{{ layer_form.date|id }}">{{ layer_form.date.label }}</label></span>
                                         <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
                                         {{ layer_form.date }}

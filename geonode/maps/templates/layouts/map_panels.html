@@ -291,10 +291,12 @@ span.grippy::after {
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
-                                    <span><label for="{{ map_form.title|id }}">{{ map_form.title.label }}</label></span>
-                                        <!--<p class="xxs-font-size">(Name by which the cited resource is known)</p>-->
-                                        {{ map_form.title }}
-                                    <div>
+                                    <div id="req_item">
+                                      <span><label for="{{ map_form.title|id }}">{{ map_form.title.label }}</label></span>
+                                          <!--<p class="xxs-font-size">(Name by which the cited resource is known)</p>-->
+                                          {{ map_form.title }}
+                                    </div>
+                                    <div id="req_item">
                                         <span><label for="{{ map_form.abstract|id }}">{{ map_form.abstract.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
                                         {{ map_form.abstract }}
@@ -306,7 +308,7 @@ span.grippy::after {
                                         <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
                                         {{ map_form.date_type }}
                                     </div>
-                                    <div class="col-lg-6 col-xs-12">
+                                    <div class="col-lg-6 col-xs-12" id="req_item">
                                         <span><label for="{{ map_form.date|id }}">{{ map_form.date.label }}</label></span>
                                         <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
                                         {{ map_form.date }}
