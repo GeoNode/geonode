@@ -736,7 +736,16 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         self.not_admin = get_user_model().objects.create(username='r-lukaku', is_active=True)
         self.not_admin.set_password('very-secret')
         self.not_admin.save()
-        self.test_doc = Document.objects.create(owner=self.not_admin, title='test', is_approved=True)
+        self.imgfile = io.BytesIO(
+            b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
+            b'\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
+        f = SimpleUploadedFile(
+            'test_img_file.gif',
+            self.imgfile.read(),
+            'image/gif')
+        self.test_doc = Document.objects.create(doc_file=f, owner=self.not_admin, title='test', is_approved=True)
+        self.perm_spec = {"users": {}, "groups": {}}
+        self.dock_link_url = reverse('document_link', args=(self.test_doc.pk,))
 
     def test_that_keyword_multiselect_is_disabled_for_non_admin_users(self):
         """
@@ -812,3 +821,17 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
             response = self.client.post(url, data={'resource-keywords': 'wonderful-keyword'})
             self.assertFalse(self.not_admin.is_superuser)
             self.assertEqual(response.status_code, 200)
+
+    def test_document_link_with_permissions(self):
+        self.test_doc.set_permissions(self.perm_spec)
+        # Get link as Anonymous user
+        response = self.client.get(self.dock_link_url)
+        self.assertEqual(response.status_code, 401)
+        # Access resource with user logged-in
+        self.client.login(username=self.not_admin.username, password='very-secret')
+        response = self.client.get(self.dock_link_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_document_link_with_no_permissions(self):
+        response = self.client.get(self.dock_link_url)
+        self.assertEqual(response.status_code, 200)
