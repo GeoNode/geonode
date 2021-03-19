@@ -825,6 +825,20 @@ class TestHtmlTagRemoval(SimpleTestCase):
         filtered_value = r._remove_html_tags(tagged_value)
         self.assertEqual(filtered_value, attribute_target_value)
 
+    def test_converted_html_in_tags_with_char_references(self):
+        tagged_value = """<p>&lt;p&gt;Abstract value &amp; some text&lt;/p&gt;</p>"""
+        attribute_target_value = """Abstract value & some text"""
+        r = ResourceBase()
+        filtered_value = r._remove_html_tags(tagged_value)
+        self.assertEqual(filtered_value, attribute_target_value)
+
+    def test_converted_html_in_tags_with_with_multiple_tags(self):
+        tagged_value = """<p><p><p><p>Abstract value &amp; some text</p></p></p></p>"""
+        attribute_target_value = """Abstract value & some text"""
+        r = ResourceBase()
+        filtered_value = r._remove_html_tags(tagged_value)
+        self.assertEqual(filtered_value, attribute_target_value)
+
 
 class TestTagThesaurus(TestCase):
     #  loading test thesausurs

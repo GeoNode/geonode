@@ -927,27 +927,27 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if attribute_str:
                 _attribute_str = html.unescape(
                     attribute_str.replace('\n', ' ').replace('\r', '').strip())
-        return _attribute_str
+        return strip_tags(_attribute_str)
 
     @property
     def raw_abstract(self):
-        return strip_tags(self._remove_html_tags(self.abstract))
+        return self._remove_html_tags(self.abstract)
 
     @property
     def raw_purpose(self):
-        return strip_tags(self._remove_html_tags(self.purpose))
+        return self._remove_html_tags(self.purpose)
 
     @property
     def raw_constraints_other(self):
-        return strip_tags(self._remove_html_tags(self.constraints_other))
+        return self._remove_html_tags(self.constraints_other)
 
     @property
     def raw_supplemental_information(self):
-        return strip_tags(self._remove_html_tags(self.supplemental_information))
+        return self._remove_html_tags(self.supplemental_information)
 
     @property
     def raw_data_quality_statement(self):
-        return strip_tags(self._remove_html_tags(self.data_quality_statement))
+        return self._remove_html_tags(self.data_quality_statement)
 
     def save(self, notify=False, *args, **kwargs):
         """
