@@ -17,7 +17,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import os
 import json
 import logging
 import traceback
@@ -26,22 +25,20 @@ import warnings
 
 from guardian.shortcuts import get_perms, get_objects_for_user
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.template import loader
 from django.utils.translation import ugettext as _
-from django.utils.text import slugify
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
-from django_downloadview.response import DownloadResponse
 from django.views.generic.edit import UpdateView, CreateView
 from django.db.models import F
 from django.forms.utils import ErrorList
 
 from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.decorators import check_keyword_write_perms
+from geonode.documents.utils import get_download_response
 from geonode.utils import resolve_object
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm
@@ -185,31 +182,13 @@ def document_detail(request, docid):
 
 
 def document_download(request, docid):
-    document = get_object_or_404(Document, pk=docid)
-
-    if not request.user.has_perm(
-            'base.download_resourcebase',
-            obj=document.get_self_resource()):
-        return HttpResponse(
-            loader.render_to_string(
-                '401.html', context={
-                    'error_message': _("You are not allowed to view this document.")}, request=request), status=401)
-    register_event(request, EventType.EVENT_DOWNLOAD, document)
-    filename = slugify(os.path.splitext(os.path.basename(document.title))[0])
-    return DownloadResponse(document.doc_file, basename=f"{filename}.{document.extension}")
+    response = get_download_response(request, docid, attachment=True)
+    return response
 
 
 def document_link(request, docid):
-    document = get_object_or_404(Document, pk=docid)
-
-    if not request.user.has_perm(
-            'base.download_resourcebase',
-            obj=document.get_self_resource()):
-        return HttpResponse(
-            loader.render_to_string(
-                '401.html', context={
-                    'error_message': _("You are not allowed to view this document.")}, request=request), status=401)
-    return DownloadResponse(document.doc_file, attachment=False)
+    response = get_download_response(request, docid)
+    return response
 
 
 class DocumentUploadView(CreateView):
