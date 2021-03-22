@@ -927,7 +927,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if attribute_str:
                 _attribute_str = html.unescape(
                     attribute_str.replace('\n', ' ').replace('\r', '').strip())
-        return _attribute_str
+        return strip_tags(_attribute_str)
 
     @property
     def raw_abstract(self):
