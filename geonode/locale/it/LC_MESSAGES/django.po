@@ -704,7 +704,7 @@ msgstr ""
 "Processi e fenomeni dell'atmosfera. Esempi: copertura nuvolosa, meteo, "
 "clima, condizioni atmosferiche, cambiamenti climatici, precipitazioni."
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr "Clima"
 
 msgid ""
@@ -765,7 +765,7 @@ msgstr ""
 "terremoti, attività vulcanica, frane, informazioni sulla gravità, suoli, "
 "permafrost, idrogeologia, erosione."
 
-msgid "Geoscience"
+msgid "Geoscientific Information"
 msgstr "Geoscience"
 
 msgid ""
@@ -812,8 +812,8 @@ msgstr ""
 "Basi militari, strutture, attività. Esempi: caserme, campi di addestramento, "
 "trasporto militare, raccolta di informazioni."
 
-msgid "Intelligence"
-msgstr "Intelligence"
+msgid "Intelligence Military"
+msgstr "Intelligence militare"
 
 msgid ""
 "Positional information and services. Examples: addresses, geodetic networks, "
@@ -841,7 +841,7 @@ msgstr ""
 "terreno. Esempi: mappe dell'uso del suolo, mappe di zonzing, indagini "
 "cadastrali, proprietà del terreno."
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr "Pianificazione"
 
 msgid ""
@@ -907,7 +907,7 @@ msgstr ""
 "delle acque reflue, distribuzione di elettricità e gas, comunicazione dei "
 "dati, telecomunicazioni, radio, reti di comunicazione."
 
-msgid "Utilities"
+msgid "Utilities Communication"
 msgstr "Servizi"
 
 msgid "Document Created"

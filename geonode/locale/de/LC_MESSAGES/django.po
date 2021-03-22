@@ -691,7 +691,7 @@ msgstr ""
 "Prozesse und Phänomene der Atmosphäre. Beispiele: Bewölkung, Wetter, Klima, "
 "atmosphärische Bedingungen, Klimawandel, Niederschlag."
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr "Atmosphäre"
 
 msgid ""
@@ -752,7 +752,7 @@ msgstr ""
 "Risiken von Erdbeben, vulkanische Aktivität, Erdrutsche, "
 "Gravitationsinformationen, Böden, Permafrost, Hydrogeologie, Erosion."
 
-msgid "Geoscience"
+msgid "Geoscientific Information"
 msgstr "Geowissenschaften"
 
 msgid ""
@@ -798,7 +798,7 @@ msgstr ""
 "Militärstützpunkte, Strukturen, Aktivitäten. Beispiele: Kasernen, "
 "Übungsgelände, Militärtransporte, Informationssammlung."
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr "Militär und Aufklärung"
 
 msgid ""
@@ -826,7 +826,7 @@ msgstr ""
 "Grundstücks verwendet werden. Beispiele: Landnutzungskarten, Zonenkarten, "
 "Katasterbefragungen, Grundbesitz."
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr "Planung"
 
 msgid ""
@@ -893,7 +893,7 @@ msgstr ""
 "Gasverteilung, Datenkommunikation, Telekommunikation, Radio, "
 "Kommunikationsnetze."
 
-msgid "Utilities"
+msgid "Utilities Communication"
 msgstr "Ver- und Entsorgung, Kommunikation "
 
 msgid "Document Created"
@@ -1555,7 +1555,7 @@ msgid "PNG"
 msgstr "PNG"
 
 msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
+msgstr "Projektion nicht valide. Ebene besitzt kein KBS!"
 
 msgid "You don't have permissions to change style for this layer"
 msgstr "Sie haben keine Berechtigung, den Stil der Ebene zu ändern"
@@ -6191,13 +6191,11 @@ msgstr ""
 "Es wurden eine oder mehrere SLD-Dateien bereitgestellt, für die jedoch keine "
 "passenden Dateien gefunden wurden."
 
-#, fuzzy
-#| msgid "Layer Created"
 msgid "Layer already exists"
-msgstr "Ebene erzeugt"
+msgstr "Ebene existiert bereits"
 
 msgid "Name already in use and overwrite is False"
-msgstr ""
+msgstr "Name in Verwendung und Überschreiben nicht gestattet"
 
 msgid "Invalid zip file detected"
 msgstr "Ungültige ZIP-Datei gefunden"
@@ -6271,7 +6269,7 @@ msgid "Unsupported DataBase for Mosaics!"
 msgstr "Nicht unterstützte Datenbank für Mosaiken!"
 
 msgid "Upload Session invalid or no more accessible!"
-msgstr ""
+msgstr "Sitzung abgelaufen, oder nicht mehr erreichbar"
 
 msgid "Invalid permission level."
 msgstr "Ungültige Berechtigungsstufe."

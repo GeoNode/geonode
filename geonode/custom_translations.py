@@ -31,7 +31,7 @@ texts = [
     _("Boundaries"),
     _("Processes and phenomena of the atmosphere. Examples: cloud cover, weather, climate, atmospheric conditions, "
       "climate change, precipitation."),
-    _("Climate"),
+    _("Climatology Meteorology Atmosphere"),
     _("Economic activities, conditions and employment. Examples: production, labour, revenue, commerce, industry, "
       "tourism and ecotourism, forestry, fisheries, commercial or subsistence hunting, exploration and exploitation "
       "of resources such as minerals, oil and gas."),
@@ -47,18 +47,18 @@ texts = [
     _("Information pertaining to earth sciences. Examples: geophysical features and processes, geology, minerals, "
       "sciences dealing with the composition, structure and origin of the earth s rocks, risks of earthquakes, "
       "volcanic activity, landslides, gravity information, soils, permafrost, hydrogeology, erosion."),
-    _("Geoscience"),
+    _("Geoscientific Information"),
     _("Health, health services, human ecology, and safety. Examples: disease and illness, factors affecting health, "
       "hygiene, substance abuse, mental and physical health, health services."),
     _("Health"),
     _("Base maps. Examples: land cover, topographic maps, imagery, unclassified images, annotations."),
-    _("Base Maps"
+    _("Imagery Base Maps Earth Cover"
       "Inland water features, drainage systems and their characteristics. Examples: rivers and glaciers, salt lakes, "
       "water utilization plans, dams, currents, floods, water quality, hydrographic charts."),
     _("Inland Waters"),
     _("Military bases, structures, activities. Examples: barracks, training grounds, military transportation, "
       "information collection."),
-    _("Intelligence"),
+    _("Intelligence Military"),
     _("Positional information and services. Examples: addresses, geodetic networks, control points, postal zones "
       "and services, place names."),
     _("Features and characteristics of salt water bodies (excluding inland waters). Examples: tides, tidal waves, "
@@ -66,7 +66,7 @@ texts = [
     _("Oceans"),
     _("Information used for appropriate actions for future use of the land. Examples: land use maps, zoning maps, "
       "cadastral surveys, land ownership."),
-    _("Planning"),
+    _("Planning Cadastre"),
     _("Settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic "
       "data, recreational areas and activities, social impact assessments, crime and justice, census information. "
       "Economic activities, conditions and employment."),
@@ -84,5 +84,5 @@ texts = [
       "geothermal, solar and nuclear sources of energy, water purification and distribution, sewage collection and "
       "disposal, electricity and gas distribution, data communication, telecommunication, radio, communication "
       "networks."),
-    _("Utilities")
+    _("Utilities Communication")
 ]
