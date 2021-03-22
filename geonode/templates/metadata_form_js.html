@@ -240,9 +240,11 @@
           } else if( !$(target).hasClass('autocomplete') ){
             // display error status for token fields if not completed
             $(target).toggleClass("input-empty", empty);
+            if (target.id.startsWith('id_tkeywords')) {
+                $("#" + target.id).closest("p").toggleClass("has-error", empty);   
+              }
           }
           var imgMissing = $('img#image').attr('src');
-          console.log(target.id + ": " + imgMissing)
           if (imgMissing && !imgMissing.includes('missing_thumb')) {
               $('input#id_crop_file').removeClass("input-empty");
               $('input#id_crop_file').parent().find(".mandatory-warning").remove();
@@ -326,6 +328,12 @@
             return false;
           }
 
+          if (el.id.startsWith('id_tkeywords') && $(el).hasClass('treq')) {
+              return true;
+          } else if (el.id.startsWith('id_tkeywords') && !$(el).hasClass('treq')) {
+              return false;
+          }
+
           var is_mandatory = (el.id.indexOf("autocomplete") < 0 &&
                         (typeof $(el).attr("class") !== 'undefined' && $(el).attr("class").indexOf("select2") < 0) &&
                         !$(el).hasClass('value-select') &&
@@ -386,14 +394,11 @@
 
         $('#category_form').change(onInputChange).change();
         $('#id_resource-group').change(onInputChange).change();
-        $('#id_resource-group').change(onInputChange).change();
 
         $('#id_resource-date').change(onInputChange).change();
         $('#id_resource-links').change(onInputChange).change();
 
-        $( ':input[id*="id_tkeywords"][required]:visible').each( function () {
-            $('#' + this.id).change(onInputChange).change();
-        });
+        {{REQ_THESAURI}}.forEach(element => document.querySelector('select[name="'+ element + '"]').onchange=onInputChange);
 
         document.querySelector('select[name="resource-keywords"]').onchange=onInputChange
 
