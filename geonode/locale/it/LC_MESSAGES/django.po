@@ -6293,3 +6293,6 @@ msgstr "Livello di permessi non valido."
 
 msgid "Permission Denied"
 msgstr "Permesso negato"
+
+msgid "Please, fill the following items before clicking on preview:"
+msgstr "Perfavore, completa i seguenti campi prima di andare su Anteprima:"

@@ -366,12 +366,6 @@ def csw_render_extra_format_html(request, layeruuid, resname):
             s = f"<tr><td>{attr.attribute}</td><td>{attr.attribute_label}</td><td>{attr.description}</td></tr>"
             extra_res_md['atrributes'] += s
 
-    resource.abstract = resource.raw_abstract
-    resource.supplemental_information = resource.raw_supplemental_information
-    resource.purpose = resource.raw_purpose
-    resource.constraints_other = resource.raw_constraints_other
-    resource.data_quality_statement = resource.raw_data_quality_statement
-
     pocr = ContactRole.objects.get(
         resource_id=resource.id, role='pointOfContact')
     pocp = get_user_model().objects.get(id=pocr.contact_id)
