@@ -731,6 +731,12 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
 
 class DocumentViewTestCase(GeoNodeBaseTestSupport):
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
     def setUp(self):
         self.not_admin = get_user_model().objects.create(username='r-lukaku', is_active=True)
         self.not_admin.set_password('very-secret')
@@ -743,7 +749,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
             self.imgfile.read(),
             'image/gif')
         self.test_doc = Document.objects.create(doc_file=f, owner=self.not_admin, title='test', is_approved=True)
-        self.perm_spec = {"users": {}, "groups": {}}
+        self.perm_spec = {"users": {"AnonymousUser": []}}
         self.dock_link_url = reverse('document_link', args=(self.test_doc.pk,))
 
     def test_that_keyword_multiselect_is_disabled_for_non_admin_users(self):
@@ -828,9 +834,5 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 401)
         # Access resource with user logged-in
         self.client.login(username=self.not_admin.username, password='very-secret')
-        response = self.client.get(self.dock_link_url)
-        self.assertEqual(response.status_code, 200)
-
-    def test_document_link_with_no_permissions(self):
         response = self.client.get(self.dock_link_url)
         self.assertEqual(response.status_code, 200)
