@@ -890,6 +890,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         null=True)
 
+    metadata_only = models.BooleanField(
+        _("Metadata"),
+        default=False,
+        help_text=_('If true, will be excluded from search'))
+
     __is_approved = False
     __is_published = False
 

@@ -6293,3 +6293,6 @@ msgstr "Livello di permessi non valido."
 
 msgid "Permission Denied"
 msgstr "Permesso negato"
+
+msgid "If true, will be excluded from search"
+msgstr "Se Vero, l'elemento verrà escluso dalla ricerca"

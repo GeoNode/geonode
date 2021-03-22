@@ -69,7 +69,7 @@ def get_visible_resources(queryset,
     except Exception:
         pass
 
-    filter_set = queryset
+    filter_set = queryset.filter(metadata_only=False)
 
     if not is_admin:
         if admin_approval_required:
