@@ -1,6 +1,6 @@
 # native dependencies
 Pillow==8.1.2
-lxml==4.6.2
+lxml==4.6.3
 defusedxml==0.7.1
 psycopg2==2.8.6
 Django==2.2.16
