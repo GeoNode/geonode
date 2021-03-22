@@ -6296,3 +6296,6 @@ msgstr "Se Vero, l'elemento verrà escluso dalla ricerca"
 
 msgid "Permission Denied"
 msgstr "Permesso negato"
+
+msgid "Please, fill the following items before clicking on preview:"
+msgstr "Perfavore, complete i segenti campi prima di andare su Anteprima:"
