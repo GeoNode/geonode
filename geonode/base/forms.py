@@ -355,7 +355,7 @@ class ThesaurusAvailableForm(forms.Form):
     def _define_choicefield(self, item, required, tname, lang):
         return models.ChoiceField(
             label=f"{tname}",
-            required=required,
+            required=False,
             widget=forms.Select(attrs={"class": "treq" if required else ""}),
             choices=self._get_thesauro_keyword_label(item, lang))
 
