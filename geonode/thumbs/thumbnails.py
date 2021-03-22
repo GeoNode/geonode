@@ -87,17 +87,22 @@ def create_thumbnail(
 
     instance.refresh_from_db()
 
-    thumbnail_name = _generate_thumbnail_name(instance)
+    default_thumbnail_name = _generate_thumbnail_name(instance)
     mime_type = "image/png"
     width = settings.THUMBNAIL_SIZE["width"]
     height = settings.THUMBNAIL_SIZE["height"]
 
-    if thumbnail_name is None:
+    if default_thumbnail_name is None:
         # instance is Map and has no layers defined
         utils.assign_missing_thumbnail(instance)
         return
 
-    if thumb_exists(thumbnail_name) and not overwrite:
+    # handle custom, uploaded thumbnails, which may have different extensions from the default thumbnail
+    thumbnail_exists = False
+    if instance.thumbnail_url and instance.thumbnail_url != settings.MISSING_THUMBNAIL:
+        thumbnail_exists = thumb_exists(instance.thumbnail_url.rsplit('/')[-1])
+
+    if (thumbnail_exists or thumb_exists(default_thumbnail_name)) and not overwrite:
         logger.debug(f"Thumbnail for {instance.name} already exists. Skipping thumbnail generation.")
         return
 
@@ -199,7 +204,7 @@ def create_thumbnail(
         content = output.getvalue()
 
     # save thumbnail
-    instance.save_thumbnail(thumbnail_name, image=content)
+    instance.save_thumbnail(default_thumbnail_name, image=content)
 
 
 def _generate_thumbnail_name(instance: Union[Layer, Map]) -> Optional[str]:
