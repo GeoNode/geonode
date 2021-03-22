@@ -32,7 +32,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-03-22 10:31+0000\n"
 "PO-Revision-Date: 2020-06-25 20:42+0200\n"
 "Last-Translator: Sylvain POULAIN <sylvain.poulain@giscan.com>\n"
 "Language-Team: French\n"
@@ -465,6 +465,12 @@ msgstr "Les règles de sécurité ne sont pas synchronisées avec GeoServer!"
 msgid "Resource Type"
 msgstr "Base de ressources"
 
+msgid "Metadata"
+msgstr "Metadonnées"
+
+msgid "If true, will be excluded from search"
+msgstr ""
+
 msgid "For example \"kml\""
 msgstr "Par exemple \"kml\""
 
@@ -690,30 +696,6 @@ msgstr "Description"
 msgid "GeoNode Client Library"
 msgstr "Bibliothèque client GeoNode"
 
-msgid "Explore Maps"
-msgstr "Explorer les cartes"
-
-msgid "Edit Map"
-msgstr "Modifier la Carte"
-
-msgid "Update"
-msgstr "Mise à jour"
-
-msgid "Create a New Map"
-msgstr "Créer une nouvelle carte"
-
-msgid "Available layers"
-msgstr "Couches disponibiles"
-
-msgid "Save"
-msgstr "Enregistrer"
-
-msgid "Save Map"
-msgstr "Enregistrer la Carte"
-
-msgid "Close"
-msgstr "Fermer"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -826,15 +808,18 @@ msgstr ""
 "Cartes de base. Exemples : couverture du sol, cartes topographiques, "
 "imagerie, images non classées, annotations."
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 #, fuzzy
 #| msgid ""
 #| "Inland water features, drainage systems and their characteristics. "
 #| "Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
 #| "currents, floods, water quality, hydrographic charts."
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 "Les caractéristiques des eaux intérieures, les systèmes de drainage et leurs "
 "caractéristiques. Exemples : rivières et glaciers, lacs salés, plans "
@@ -1090,9 +1075,6 @@ msgstr "Editer le document"
 msgid "Request change"
 msgstr "Demande de changement"
 
-msgid "Metadata"
-msgstr "Metadonnées"
-
 msgid "Wizard"
 msgstr "Procédure guidée"
 
@@ -1109,6 +1091,9 @@ msgstr "Remplacer"
 
 msgid "Remove"
 msgstr "Supprimer"
+
+msgid "Close"
+msgstr "Fermer"
 
 msgid "Download Metadata"
 msgstr "Téléchager les Metadonnées"
@@ -1180,6 +1165,9 @@ msgstr "Fournisseur de métadonnées"
 
 msgid "<< Back"
 msgstr "<< Retour"
+
+msgid "Update"
+msgstr "Mise à jour"
 
 msgid "Next >>"
 msgstr "Suivant >"
@@ -1637,6 +1625,11 @@ msgstr "Ajouter un attribut"
 msgid "Create"
 msgstr "Créer"
 
+#, fuzzy
+#| msgid "Not provided"
+msgid "No title provided"
+msgstr "Non fournit"
+
 msgid "No abstract provided"
 msgstr "Aucun résumé n'est fourni"
 
@@ -1928,6 +1921,9 @@ msgstr "Créer une catégorie de groupe"
 
 msgid "Edit Group Category"
 msgstr "Modifier une catégorie de groupe"
+
+msgid "Save"
+msgstr "Enregistrer"
 
 #, python-format
 msgid "The e-mail address '%(email)s' has already been invited."
@@ -2527,6 +2523,12 @@ msgstr "Ordre d'affichage"
 msgid "Visible"
 msgstr "Visibile"
 
+msgid "ERROR"
+msgstr "ERREUR"
+
+msgid "Following items are required:"
+msgstr ""
+
 msgid "Upload Layer Metadata"
 msgstr "Téléchargez la couche"
 
@@ -2626,6 +2628,11 @@ msgstr "Cela écrasera très probablement le style actuel par défaut !"
 
 msgid "Preview"
 msgstr "Prévisualiser"
+
+#, fuzzy
+#| msgid "Resource Metadata"
+msgid "Required Metadata"
+msgstr "Métadonnées de la ressource"
 
 msgid "Dataset Attributes"
 msgstr "Attributs d'ensemble de données"
@@ -3233,8 +3240,10 @@ msgstr ""
 "Veuillez vous assurer qu'il y a au moins un type de géométrie qui est "
 "cohérent avec le fichier que vous essayez de remplacer."
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+#, fuzzy
+#| msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid ""
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 "Une erreur s'est produite lors de la tentative d'accès au schéma téléchargé: "
 "%s"
@@ -3277,9 +3286,6 @@ msgstr "Vous n'êtes pas autorisé à voir cette couche"
 msgid "Failed to upload the layer"
 msgstr "Impossible de télécharger de la couche"
 
-msgid "Unable to delete layer"
-msgstr "Impossible de supprimer la couche"
-
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -3287,7 +3293,9 @@ msgstr ""
 "Cette couche fait partie d'un groupe de couches, vous devez retirer cette "
 "couche du groupe avant de la supprimer."
 
-msgid "couldn't generate thumbnail"
+#, fuzzy, python-format
+#| msgid "couldn't generate thumbnail"
+msgid "couldn't generate thumbnail: %s"
 msgstr "impossible de générer la miniature"
 
 msgid "Map Created"
@@ -3412,6 +3420,9 @@ msgstr "Copier cette carte"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Dupliquez cette carte et modifiez-la pour vos propres besoins"
 
+msgid "Create a New Map"
+msgstr "Créer une nouvelle carte"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3475,6 +3486,12 @@ msgstr "Téléchargement complet"
 msgid "Download Failed"
 msgstr "Téléchargement échoué"
 
+msgid "Edit Map"
+msgstr "Modifier la Carte"
+
+msgid "Explore Maps"
+msgstr "Explorer les cartes"
+
 msgid "maps explore"
 msgstr "Explorer les cartes"
 
@@ -3524,9 +3541,6 @@ msgstr "Vous n'êtes pas autorisé à modifier les métadonnées de cette carte.
 msgid "You are not allowed to view this map."
 msgstr "Vous n'êtes pas autorisé à visualiser cette carte."
 
-msgid "Thumbnail saved"
-msgstr "Miniature sauvgardée"
-
 msgid "error saving thumbnail"
 msgstr "erreur en sauvant la miniature"
 
@@ -3542,7 +3556,9 @@ msgstr "Alerte de surveillance"
 msgid "Alert situation reported by monitoring"
 msgstr "Situation d'alerte signalée par la surveillance"
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+#, fuzzy
+#| msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr "La surveillance du GeoNode sur {} signale des erreurs : {}"
 
 msgid "Enter valid email addresses."
@@ -3615,7 +3631,9 @@ msgstr "Afficher les données pour une ressource spécifique"
 msgid "Show data for specific label"
 msgstr "Afficher les données pour un label spécifique"
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, fuzzy, python-brace-format
+#| msgid "Write result to file, default GEOIP_PATH: {}"
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr "Ecrire le résultat dans le fichier, GEOIP_PATH par défaut: {}"
 
 msgid ""
@@ -3760,8 +3778,9 @@ msgstr "Quelle serait la gravité de l'erreur résultant de cette notification"
 msgid "Is it active"
 msgstr "Est-ce actif"
 
-msgid "{}: {}"
-msgstr "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
+msgstr ""
 
 msgid "Value must be above"
 msgstr "La valeur doit être supérieure à"
@@ -4332,7 +4351,9 @@ msgstr "Les ressources sélectionnées ont été importées"
 msgid "Resource is already being processed"
 msgstr "La ressource est déjà en cours de traitement"
 
-msgid "Resource {} is being processed"
+#, fuzzy, python-brace-format
+#| msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "La ressource {} est en cours de traitement"
 
 msgid "Service rescanned successfully"
@@ -4344,7 +4365,9 @@ msgstr "Vous n'êtes pas autorisé à modifier ce service."
 msgid "You are not permitted to remove this service."
 msgstr "Vous n'etes pas autorisé à supprimer ce service."
 
-msgid "Service {} has been deleted"
+#, fuzzy, python-brace-format
+#| msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "Le service {} a été supprimé"
 
 msgid "created"
@@ -5798,9 +5821,6 @@ msgstr "est membre des groupes suivants"
 msgid "Updating Metadata..."
 msgstr "Mise à jour des métadonnées ..."
 
-msgid "ERROR"
-msgstr "ERREUR"
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr "La Catégorie est obligatoire et ne peut pas être vide!"
 
@@ -6234,9 +6254,6 @@ msgstr "Z - A"
 msgid "Most popular"
 msgstr "Les plus populaires"
 
-msgid "Thesaurus"
-msgstr "Thésaurus"
-
 msgid "Text"
 msgstr "Texte"
 
@@ -6447,20 +6464,24 @@ msgstr ""
 "Pour prendre en charge le pas de temps, vous devez activer l'option "
 "OGC_SERVER DATASTORE"
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, fuzzy, python-brace-format
+#| msgid "Unsupported file type: %s"
+msgid "Unsupported file type: {e.message}"
 msgstr "Type de fichier non supporté:% s"
 
-#, python-format
-msgid "File does not exist: %s"
+#, fuzzy, python-brace-format
+#| msgid "File does not exist: %s"
+msgid "File does not exist: {absolute_base_file}"
 msgstr "Fichier manquant : %s"
 
-#, python-format
-msgid "unknown item state: %s"
+#, fuzzy, python-brace-format
+#| msgid "unknown item state: %s"
+msgid "unknown item state: {task.state}"
 msgstr "état inconnu:% s"
 
-#, python-format
-msgid "error during import: %s"
+#, fuzzy
+#| msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr "erreur import:% s"
 
 msgid "Could not find any valid Time Regex for the Mosaic files."
@@ -6478,3 +6499,21 @@ msgstr "Niveau d'autorisation non valide."
 
 msgid "Permission Denied"
 msgstr "Autorisation refusée"
+
+#~ msgid "Available layers"
+#~ msgstr "Couches disponibiles"
+
+#~ msgid "Save Map"
+#~ msgstr "Enregistrer la Carte"
+
+#~ msgid "Unable to delete layer"
+#~ msgstr "Impossible de supprimer la couche"
+
+#~ msgid "Thumbnail saved"
+#~ msgstr "Miniature sauvgardée"
+
+#~ msgid "{}: {}"
+#~ msgstr "{}: {}"
+
+#~ msgid "Thesaurus"
+#~ msgstr "Thésaurus"

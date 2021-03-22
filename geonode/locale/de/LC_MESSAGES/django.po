@@ -27,8 +27,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
-"PO-Revision-Date: 2021-02-24 09:35+0000\n"
+"POT-Creation-Date: 2021-03-22 10:31+0000\n"
+"PO-Revision-Date: 2021-03-22 10:42+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: German (http://www.transifex.com/geonode/geonode/language/"
 "de/)\n"
@@ -431,6 +431,12 @@ msgstr "Sicherheits-Regeln sind nicht mit GeoServer synchronisier!"
 msgid "Resource Type"
 msgstr "Ressourcentyp"
 
+msgid "Metadata"
+msgstr "Metadaten"
+
+msgid "If true, will be excluded from search"
+msgstr "Wenn wahr, dann von der Suche ausgeschlossen"
+
 msgid "For example \"kml\""
 msgstr "Zum Beispiel \"kml\""
 
@@ -640,30 +646,6 @@ msgstr "Beschreibung"
 msgid "GeoNode Client Library"
 msgstr "GeoNode Benutzer Bibliothek"
 
-msgid "Explore Maps"
-msgstr "Karten erkunden"
-
-msgid "Edit Map"
-msgstr "Karte bearbeiten"
-
-msgid "Update"
-msgstr "Aktualisieren"
-
-msgid "Create a New Map"
-msgstr "Neue Karte anlegen"
-
-msgid "Available layers"
-msgstr "Verfügbare Ebenen"
-
-msgid "Save"
-msgstr "Speichern"
-
-msgid "Save Map"
-msgstr "Karte speichern"
-
-msgid "Close"
-msgstr "Schließen"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -774,15 +756,13 @@ msgstr ""
 "Basiskarten. Beispiele: Grundstücksdecke, topografische Karten, Bilder, "
 "nicht klassifizierte Bilder, Anmerkungen."
 
-#, fuzzy
-#| msgid ""
-#| "Inland water features, drainage systems and their characteristics. "
-#| "Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-#| "currents, floods, water quality, hydrographic charts."
+msgid "Imagery Base Maps Earth Cover"
+msgstr "Basiskarten"
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 "Binnenwassermerkmale, Entwässerungssysteme und deren Eigenschaften. "
 "Beispiele: Flüsse und Gletscher, Salzseen, Wassernutzungspläne, Staudämme, "
@@ -1034,9 +1014,6 @@ msgstr "Dokument bearbeiten"
 msgid "Request change"
 msgstr "Veränderungs-Anfrage"
 
-msgid "Metadata"
-msgstr "Metadaten"
-
 msgid "Wizard"
 msgstr "Assistent"
 
@@ -1053,6 +1030,9 @@ msgstr "Ersetzen"
 
 msgid "Remove"
 msgstr "Entfernen"
+
+msgid "Close"
+msgstr "Schließen"
 
 msgid "Download Metadata"
 msgstr "Metadaten herunterladen"
@@ -1123,6 +1103,9 @@ msgstr "Metadaten-Quelle"
 
 msgid "<< Back"
 msgstr "<< Zurück"
+
+msgid "Update"
+msgstr "Aktualisieren"
 
 msgid "Next >>"
 msgstr "Nächste >>"
@@ -1512,6 +1495,9 @@ msgstr "Eigenschaft hinzufügen"
 msgid "Create"
 msgstr "Erzeugen"
 
+msgid "No title provided"
+msgstr "Kein Titel übergeben"
+
 msgid "No abstract provided"
 msgstr "Keine Zusammenfassung vorhanden"
 
@@ -1800,6 +1786,9 @@ msgstr "Eine Gruppen Kategorie erstellen"
 
 msgid "Edit Group Category"
 msgstr "Gruppenkategorie bearbeiten"
+
+msgid "Save"
+msgstr "Speichern"
 
 #, python-format
 msgid "The e-mail address '%(email)s' has already been invited."
@@ -2389,6 +2378,12 @@ msgstr "Anzeigetyp"
 msgid "Visible"
 msgstr "Sichtbar"
 
+msgid "ERROR"
+msgstr "FEHLER"
+
+msgid "Following items are required:"
+msgstr "Folgende Objekte sind benötigt:"
+
 msgid "Upload Layer Metadata"
 msgstr "Ebenen Metadata hochladen"
 
@@ -2488,6 +2483,9 @@ msgstr "Dies wird wahrscheinlich den Standarstil überschreiben!"
 
 msgid "Preview"
 msgstr "Voransicht"
+
+msgid "Required Metadata"
+msgstr "benötigte Metadaten"
 
 msgid "Dataset Attributes"
 msgstr "Datensatz Attribute"
@@ -3069,13 +3067,15 @@ msgstr ""
 "Bitte vergewissern Sie sich, dass mindestens ein Geometrietryp mit der Datei "
 "die ersetzt werden soll übereinstimmt."
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
-msgstr "Fehler beim Aufrufen des hochgeladenen Schemas: %s"
+msgid ""
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
+msgstr "Fehler beim Aufrufen des hochgeladenen Schemas: {str(e)}"
 
 msgid ""
 "The UUID identifier from the XML Metadata is already in use in this system."
-msgstr "Die in den XML Metadaten genannte UUID ist in diesem System bereits registriert."
+msgstr ""
+"Die in den XML Metadaten genannte UUID ist in diesem System bereits "
+"registriert."
 
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
@@ -3111,9 +3111,6 @@ msgstr "Sie sind nicht berechtigt, diese Ebene anzusehen"
 msgid "Failed to upload the layer"
 msgstr "Klicken Sie hier um eine Ebene hochzuladen"
 
-msgid "Unable to delete layer"
-msgstr "Ebene kann nicht gelöscht werden"
-
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -3121,8 +3118,9 @@ msgstr ""
 "Diese Ebene ist Mitglied einer Ebenengruppe. Sie müssen die Ebene vor dem "
 "Löschen aus der Gruppe entfernen."
 
-msgid "couldn't generate thumbnail"
-msgstr "Miniaturbild konnte nicht erstellt werden"
+#, python-format
+msgid "couldn't generate thumbnail: %s"
+msgstr "Miniaturbild %s konnte nicht erstellt werden"
 
 msgid "Map Created"
 msgstr "Karte erstellt"
@@ -3246,6 +3244,9 @@ msgstr "Karte kopieren"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "Dupliziere die Karte, um diese an Ihre Belange anzupassen"
 
+msgid "Create a New Map"
+msgstr "Neue Karte anlegen"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3302,6 +3303,12 @@ msgstr "Herunterladen abgeschlossen"
 msgid "Download Failed"
 msgstr "Herunterladen fehlgeschlagen"
 
+msgid "Edit Map"
+msgstr "Karte bearbeiten"
+
+msgid "Explore Maps"
+msgstr "Karten erkunden"
+
 msgid "maps explore"
 msgstr "Karten erkunden"
 
@@ -3351,9 +3358,6 @@ msgstr "Sie dürfen die Metadaten dieser Karte nicht ändern."
 msgid "You are not allowed to view this map."
 msgstr "Sie dürfen diese Karte nicht anschauen."
 
-msgid "Thumbnail saved"
-msgstr "Thumbnail"
-
 msgid "error saving thumbnail"
 msgstr "Fehler beim speichern des Thumbnails"
 
@@ -3369,8 +3373,8 @@ msgstr "Überwachungsalarm"
 msgid "Alert situation reported by monitoring"
 msgstr "Warnung durch Monitoring gemeldet"
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
-msgstr "GeoNode Monitoring auf {} meldet Fehler: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
+msgstr "GeoNode Monitoring auf {base_ctx['host']}"
 
 msgid "Enter valid email addresses."
 msgstr "Trage Sie eine valide E-Mail-Adresse ein."
@@ -3441,8 +3445,10 @@ msgstr "Zeige Daten für spezifische Ressource"
 msgid "Show data for specific label"
 msgstr "Zeige Daten für spezifische Beschriftung"
 
-msgid "Write result to file, default GEOIP_PATH: {}"
-msgstr "Ergebnisse in Datei schreiben. Standard GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
+msgstr ""
+"Ergebnisse in Datei schreiben. Standard GEOIP_PATH: {settings.GEOIP_PATH}"
 
 msgid ""
 "Fetch database from specific url. If nothing provided, default {} will be "
@@ -3586,8 +3592,9 @@ msgstr "Wie bedrohlich wäre ein Fehler dieser Benachrichtigung"
 msgid "Is it active"
 msgstr "Ist es aktiv"
 
-msgid "{}: {}"
-msgstr "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
+msgstr "{self.severity}: {self.name}"
 
 msgid "Value must be above"
 msgstr "Wert muss größer sein als"
@@ -4154,8 +4161,9 @@ msgstr "Die ausgewählten Ressourcen wurden importiert"
 msgid "Resource is already being processed"
 msgstr "Ressource wird bereits verarbeitet"
 
-msgid "Resource {} is being processed"
-msgstr "Ressource{} wird verarbeitet"
+#, python-brace-format
+msgid "Resource {resource_id} is being processed"
+msgstr "Ressource {resource_id} wird verarbeitet"
 
 msgid "Service rescanned successfully"
 msgstr "Der Service wurde erfolgreich erneut gescannt"
@@ -4166,8 +4174,9 @@ msgstr "Sie dürfen diesen Dienst nicht verändern."
 msgid "You are not permitted to remove this service."
 msgstr "Sie dürfen diesen Dienst nicht entfernen."
 
-msgid "Service {} has been deleted"
-msgstr "Dienst{} wurde gelöscht"
+#, python-brace-format
+msgid "Service {service.name} has been deleted"
+msgstr "Dienst {service.name}  wurde gelöscht"
 
 msgid "created"
 msgstr "erstellt"
@@ -5606,9 +5615,6 @@ msgstr "Die folgenden Gruppen:"
 msgid "Updating Metadata..."
 msgstr "Metadaten werden aktualisiert ..."
 
-msgid "ERROR"
-msgstr "FEHLER"
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr "Die Themenkategorie ist obligatorisch und darf nicht leer sein!"
 
@@ -6035,9 +6041,6 @@ msgstr "Z - A"
 msgid "Most popular"
 msgstr "Beliebteste"
 
-msgid "Thesaurus"
-msgstr "Thesaurus"
-
 msgid "Text"
 msgstr "Text"
 
@@ -6246,21 +6249,20 @@ msgstr ""
 "Um den Zeitschritt zu unterstützen, müssen Sie die Option OGC_SERVER "
 "DATASTORE aktivieren"
 
-#, python-format
-msgid "Unsupported file type: %s"
-msgstr "Nicht unterstützter Dateityp: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
+msgstr "Nicht unterstützter Dateityp: {e.message}"
 
-#, python-format
-msgid "File does not exist: %s"
-msgstr "Datei existiert nicht: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
+msgstr "Datei existiert nicht: {absolute_base_file}"
 
-#, python-format
-msgid "unknown item state: %s"
-msgstr "unbekannter Artikelstatus: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
+msgstr "unbekannter Artikelstatus: {task.state}"
 
-#, python-format
-msgid "error during import: %s"
-msgstr "Fehler beim Import: %s"
+msgid "error during import: {progress.get('message')}"
+msgstr "Fehler beim Import: {progress.get('message')}"
 
 msgid "Could not find any valid Time Regex for the Mosaic files."
 msgstr "Es wurde kein gültiger Time Regex für die Mosaic-Dateien gefunden."
@@ -6276,3 +6278,21 @@ msgstr "Ungültige Berechtigungsstufe."
 
 msgid "Permission Denied"
 msgstr "Zugriff verweigert"
+
+#~ msgid "Available layers"
+#~ msgstr "Verfügbare Ebenen"
+
+#~ msgid "Save Map"
+#~ msgstr "Karte speichern"
+
+#~ msgid "Unable to delete layer"
+#~ msgstr "Ebene kann nicht gelöscht werden"
+
+#~ msgid "Thumbnail saved"
+#~ msgstr "Thumbnail"
+
+#~ msgid "{}: {}"
+#~ msgstr "{}: {}"
+
+#~ msgid "Thesaurus"
+#~ msgstr "Thesaurus"

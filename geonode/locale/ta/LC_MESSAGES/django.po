@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-03-22 10:31+0000\n"
 "PO-Revision-Date: 2016-08-23 13:57+0000\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Tamil (http://www.transifex.com/geonode/geonode/language/"
@@ -467,6 +467,12 @@ msgstr ""
 msgid "Resource Type"
 msgstr "வளங்கள்"
 
+msgid "Metadata"
+msgstr "நுண்தரவு"
+
+msgid "If true, will be excluded from search"
+msgstr ""
+
 msgid "For example \"kml\""
 msgstr "உதாரணமாக \"kml\""
 
@@ -725,34 +731,6 @@ msgstr "விளக்கம்"
 msgid "GeoNode Client Library"
 msgstr "ஜியோநோட் உதவி "
 
-msgid "Explore Maps"
-msgstr "வரைபடங்களை உலாவருதல் "
-
-msgid "Edit Map"
-msgstr "திருத்தவும்"
-
-msgid "Update"
-msgstr "இயல்நிலைப்படுத்தல் "
-
-msgid "Create a New Map"
-msgstr " புதிய வரைபடத்தை உருவாக்குதல் "
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "காணப்படும் வடிவம்"
-
-msgid "Save"
-msgstr "சேமி"
-
-#, fuzzy
-#| msgid "Remove Map"
-msgid "Save Map"
-msgstr "வரைபடத்தை நீக்குக"
-
-msgid "Close"
-msgstr "மூடு"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -773,7 +751,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -819,8 +797,10 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
-msgstr ""
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "மேலதிக தகவல்கள்"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -836,10 +816,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -850,7 +833,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -871,7 +854,7 @@ msgid ""
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr ""
 
 msgid ""
@@ -923,10 +906,8 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-#, fuzzy
-#| msgid "User Activities"
-msgid "Utilities"
-msgstr "பயனர் நடவடிக்கைகள்"
+msgid "Utilities Communication"
+msgstr ""
 
 #, fuzzy
 #| msgid "Document Updated"
@@ -1084,9 +1065,6 @@ msgstr "திருத்த ஆவண"
 msgid "Request change"
 msgstr "தரவிறக்க வேண்டுதல்"
 
-msgid "Metadata"
-msgstr "நுண்தரவு"
-
 msgid "Wizard"
 msgstr ""
 
@@ -1105,6 +1083,9 @@ msgstr "பதிலீடு "
 
 msgid "Remove"
 msgstr "அகற்று"
+
+msgid "Close"
+msgstr "மூடு"
 
 msgid "Download Metadata"
 msgstr "நுண் தரவகளை பதிவிரக்கம் செய்க "
@@ -1182,6 +1163,9 @@ msgstr "நுண் தரவ வழங்கல் "
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "இயல்நிலைப்படுத்தல் "
 
 #, fuzzy
 #| msgid "Next"
@@ -1684,6 +1668,11 @@ msgstr " பண்பியல்பு "
 msgid "Create"
 msgstr "உருவாக்கவும்"
 
+#, fuzzy
+#| msgid "Not provided"
+msgid "No title provided"
+msgstr "வழங்கப்படவில்லை"
+
 msgid "No abstract provided"
 msgstr "சுருக்கம் வழங்கப்படவில்லை "
 
@@ -1996,6 +1985,9 @@ msgstr "ஒரு குழு உருவாக்க"
 #| msgid "Create Group"
 msgid "Edit Group Category"
 msgstr "குழு உருவாக்கவும்"
+
+msgid "Save"
+msgstr "சேமி"
 
 #, python-format
 msgid "The e-mail address '%(email)s' has already been invited."
@@ -2636,6 +2628,12 @@ msgstr "ஒழுங்கை வெளிப்படுத்தல் "
 msgid "Visible"
 msgstr "தென்படுகின்றதா?  "
 
+msgid "ERROR"
+msgstr ""
+
+msgid "Following items are required:"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
@@ -2741,6 +2739,11 @@ msgstr ""
 
 msgid "Preview"
 msgstr "முன்காட்சி  "
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "திருத்த சேவை மெட்டாடேட்டா"
 
 #, fuzzy
 #| msgid "Attributes"
@@ -3263,8 +3266,8 @@ msgid ""
 "are trying to replace."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid ""
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -3305,11 +3308,6 @@ msgstr "இந்த படுகையை பார்வையிட உங்
 msgid "Failed to upload the layer"
 msgstr "கோப்புகள் பதிவேற்றம் செய்வதற்கு"
 
-#, fuzzy
-#| msgid "Unable to delete layer"
-msgid "Unable to delete layer"
-msgstr "படுகையை நீக்க முடியாது"
-
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -3317,8 +3315,10 @@ msgstr ""
 "படுகை குழு ஒன்றின் அங்கத்துவமுடையதாக இப் படுகை காணப்படுகின்றது, இதனை நீக்குவதற்கு "
 "முன்னர் குழுவில் இருந்து படுகையை நீக்குதல் வேண்டும்"
 
-msgid "couldn't generate thumbnail"
-msgstr ""
+#, fuzzy, python-format
+#| msgid "Remote Thumbnail"
+msgid "couldn't generate thumbnail: %s"
+msgstr "Remote Thumbnail"
 
 msgid "Map Created"
 msgstr "வரைபடம் உருவாக்கப்பட்டுள்ளது  "
@@ -3458,6 +3458,9 @@ msgstr "இந்த வரைபடத்தை பிரதி செய்க
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "இந்த வரைபடத்தை பிரதிசெய்து உங்களின் சொந்த தேவைக்காக மாற்றம் செய்தல்"
 
+msgid "Create a New Map"
+msgstr " புதிய வரைபடத்தை உருவாக்குதல் "
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3514,6 +3517,12 @@ msgstr "முழுமையான பதிவிறக்க"
 msgid "Download Failed"
 msgstr "பதிவிறக்க முடியவில்லை"
 
+msgid "Edit Map"
+msgstr "திருத்தவும்"
+
+msgid "Explore Maps"
+msgstr "வரைபடங்களை உலாவருதல் "
+
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
@@ -3561,11 +3570,6 @@ msgstr "இந்த வரைபடத்தை பார்வையிடு�
 
 #, fuzzy
 #| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "Thumbnail"
-
-#, fuzzy
-#| msgid "Thumbnail"
 msgid "error saving thumbnail"
 msgstr "Thumbnail"
 
@@ -3583,7 +3587,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 #, fuzzy
@@ -3658,7 +3662,8 @@ msgstr "குறிப்பிடப்பட்டுள்ள மூலவ�
 msgid "Show data for specific label"
 msgstr "குறிப்பிடப்பட்டுள்ள மூலவளத்தின் தொடர்புத் திகதி "
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3827,7 +3832,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -4479,9 +4485,9 @@ msgstr "வள தரவிறக்கம் ஒன்று வேண்டப
 msgid "Resource is already being processed"
 msgstr "வள தரவிறக்கம் ஒன்று வேண்டப்பட்டுள்ளது"
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "A resource's download has been requested"
-msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "வள தரவிறக்கம் ஒன்று வேண்டப்பட்டுள்ளது"
 
 #, fuzzy
@@ -4497,9 +4503,9 @@ msgstr "இந்த சேவை நீக்க அனுமதி இல்�
 msgid "You are not permitted to remove this service."
 msgstr "இந்த சேவை நீக்க அனுமதி இல்லை."
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Service has been created:"
-msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "சேவை உருவாக்கப்பட்ட:"
 
 msgid "created"
@@ -5785,9 +5791,6 @@ msgstr "பின்வரும் குழுக்கள்:"
 msgid "Updating Metadata..."
 msgstr "நுண் தரவகளை பதிவிரக்கம் செய்க "
 
-msgid "ERROR"
-msgstr ""
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
@@ -6273,9 +6276,6 @@ msgstr "Z - ஒரு"
 msgid "Most popular"
 msgstr "மிக பிரபல்யமானது "
 
-msgid "Thesaurus"
-msgstr ""
-
 msgid "Text"
 msgstr "உரை"
 
@@ -6492,20 +6492,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 #, fuzzy
@@ -6524,3 +6523,28 @@ msgstr "பெறுமதியற்ற அனுமதி மட்டம்"
 
 msgid "Permission Denied"
 msgstr "அனுமதி மறுக்கப்பட்டுள்ளது "
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "காணப்படும் வடிவம்"
+
+#, fuzzy
+#~| msgid "Remove Map"
+#~ msgid "Save Map"
+#~ msgstr "வரைபடத்தை நீக்குக"
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "Utilities"
+#~ msgstr "பயனர் நடவடிக்கைகள்"
+
+#, fuzzy
+#~| msgid "Unable to delete layer"
+#~ msgid "Unable to delete layer"
+#~ msgstr "படுகையை நீக்க முடியாது"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "Thumbnail"

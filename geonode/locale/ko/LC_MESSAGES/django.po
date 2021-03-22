@@ -29,7 +29,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-02 14:49+0000\n"
+"POT-Creation-Date: 2021-03-22 10:31+0000\n"
 "PO-Revision-Date: 2016-08-24 07:02+0000\n"
 "Last-Translator: Minpa Lee <mapplus@gmail.com>\n"
 "Language-Team: Korean (http://www.transifex.com/geonode/geonode/language/"
@@ -466,6 +466,12 @@ msgstr ""
 msgid "Resource Type"
 msgstr "자원"
 
+msgid "Metadata"
+msgstr "메타데이터"
+
+msgid "If true, will be excluded from search"
+msgstr ""
+
 msgid "For example \"kml\""
 msgstr "예를 들어 \"kml\""
 
@@ -726,34 +732,6 @@ msgstr "설명"
 msgid "GeoNode Client Library"
 msgstr "GeoNode 도움말"
 
-msgid "Explore Maps"
-msgstr "지도 검색"
-
-msgid "Edit Map"
-msgstr "지도 편집"
-
-msgid "Update"
-msgstr "갱신"
-
-msgid "Create a New Map"
-msgstr "새로운 지도 생성"
-
-#, fuzzy
-#| msgid "Available styles"
-msgid "Available layers"
-msgstr "사용가능한 스타일"
-
-msgid "Save"
-msgstr "저장"
-
-#, fuzzy
-#| msgid "Remove Map"
-msgid "Save Map"
-msgstr "지도 제거"
-
-msgid "Close"
-msgstr "닫기"
-
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
 "biological sciences, ecology, wilderness, sealife, wetlands, habitat."
@@ -774,7 +752,7 @@ msgid ""
 "climate, atmospheric conditions, climate change, precipitation."
 msgstr ""
 
-msgid "Climate"
+msgid "Climatology Meteorology Atmosphere"
 msgstr ""
 
 msgid ""
@@ -820,8 +798,10 @@ msgid ""
 "erosion."
 msgstr ""
 
-msgid "Geoscience"
-msgstr ""
+#, fuzzy
+#| msgid "Supplemental Information"
+msgid "Geoscientific Information"
+msgstr "부가정보"
 
 msgid ""
 "Health, health services, human ecology, and safety. Examples: disease and "
@@ -837,10 +817,13 @@ msgid ""
 "images, annotations."
 msgstr ""
 
+msgid "Imagery Base Maps Earth Cover"
+msgstr ""
+
 msgid ""
-"Base MapsInland water features, drainage systems and their characteristics. "
-"Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-"currents, floods, water quality, hydrographic charts."
+"Inland water features, drainage systems and their characteristics. Examples: "
+"rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
+"floods, water quality, hydrographic charts."
 msgstr ""
 
 msgid "Inland Waters"
@@ -851,7 +834,7 @@ msgid ""
 "grounds, military transportation, information collection."
 msgstr ""
 
-msgid "Intelligence"
+msgid "Intelligence Military"
 msgstr ""
 
 msgid ""
@@ -872,7 +855,7 @@ msgid ""
 "Examples: land use maps, zoning maps, cadastral surveys, land ownership."
 msgstr ""
 
-msgid "Planning"
+msgid "Planning Cadastre"
 msgstr ""
 
 msgid ""
@@ -924,10 +907,8 @@ msgid ""
 "telecommunication, radio, communication networks."
 msgstr ""
 
-#, fuzzy
-#| msgid "User Activities"
-msgid "Utilities"
-msgstr "사용자 활동"
+msgid "Utilities Communication"
+msgstr ""
 
 #, fuzzy
 #| msgid "Document Updated"
@@ -1085,9 +1066,6 @@ msgstr "문서 편집"
 msgid "Request change"
 msgstr "다운로드 요청"
 
-msgid "Metadata"
-msgstr "메타데이터"
-
 msgid "Wizard"
 msgstr ""
 
@@ -1105,6 +1083,9 @@ msgstr "교체"
 
 msgid "Remove"
 msgstr "제거"
+
+msgid "Close"
+msgstr "닫기"
 
 msgid "Download Metadata"
 msgstr "메타데이터 다운로드"
@@ -1182,6 +1163,9 @@ msgstr "메타데이터 공급자"
 
 msgid "<< Back"
 msgstr ""
+
+msgid "Update"
+msgstr "갱신"
 
 #, fuzzy
 #| msgid "Next"
@@ -1682,6 +1666,11 @@ msgstr "속성"
 msgid "Create"
 msgstr "생성"
 
+#, fuzzy
+#| msgid "Not provided"
+msgid "No title provided"
+msgstr "제공되지 않음"
+
 msgid "No abstract provided"
 msgstr "개요가 제공되지 않습니다"
 
@@ -1993,6 +1982,9 @@ msgstr "그룹 생성"
 #| msgid "Create Group"
 msgid "Edit Group Category"
 msgstr "그룹 생성"
+
+msgid "Save"
+msgstr "저장"
 
 #, python-format
 msgid "The e-mail address '%(email)s' has already been invited."
@@ -2635,6 +2627,12 @@ msgstr "표시 순서"
 msgid "Visible"
 msgstr "보이기?"
 
+msgid "ERROR"
+msgstr ""
+
+msgid "Following items are required:"
+msgstr ""
+
 #, fuzzy
 #| msgid "Upload Layer"
 msgid "Upload Layer Metadata"
@@ -2740,6 +2738,11 @@ msgstr ""
 
 msgid "Preview"
 msgstr "미리보기"
+
+#, fuzzy
+#| msgid "Edit Service Metadata"
+msgid "Required Metadata"
+msgstr "서비스 메타데이터 편집"
 
 #, fuzzy
 #| msgid "Attributes"
@@ -3257,8 +3260,8 @@ msgid ""
 "are trying to replace."
 msgstr ""
 
-#, python-format
-msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid ""
+"Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
 
 msgid ""
@@ -3299,11 +3302,6 @@ msgstr "이 레이어를 볼 수 있는 권한이 없습니다."
 msgid "Failed to upload the layer"
 msgstr "업로드된 파일"
 
-#, fuzzy
-#| msgid "Unable to delete layer"
-msgid "Unable to delete layer"
-msgstr "레이어를 삭제할 수 없습니다"
-
 msgid ""
 "This layer is a member of a layer group, you must remove the layer from the "
 "group before deleting."
@@ -3311,8 +3309,10 @@ msgstr ""
 "이 레이어는 레이어 그룹에 포함되어 있습니다, 삭제하기 전 레이어 그룹에서 레이"
 "어를 제거해야 합니다."
 
-msgid "couldn't generate thumbnail"
-msgstr ""
+#, fuzzy, python-format
+#| msgid "Remote Thumbnail"
+msgid "couldn't generate thumbnail: %s"
+msgstr "Remote Thumbnail"
 
 msgid "Map Created"
 msgstr "생성된 지도"
@@ -3451,6 +3451,9 @@ msgstr "이 지도 복제"
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "이 지도를 복제하고 자신의 목적에 맞게 수정합니다"
 
+msgid "Create a New Map"
+msgstr "새로운 지도 생성"
+
 msgid ""
 "\n"
 "      Here you can download all the layers of this map that\n"
@@ -3507,6 +3510,12 @@ msgstr "다운로드 완료"
 msgid "Download Failed"
 msgstr "다운로드 실패"
 
+msgid "Edit Map"
+msgstr "지도 편집"
+
+msgid "Explore Maps"
+msgstr "지도 검색"
+
 #, fuzzy
 #| msgid "GeoExplorer"
 msgid "maps explore"
@@ -3557,11 +3566,6 @@ msgstr "이 지도를 볼 수 있는 권한이 없습니다."
 
 #, fuzzy
 #| msgid "Thumbnail"
-msgid "Thumbnail saved"
-msgstr "섬네일"
-
-#, fuzzy
-#| msgid "Thumbnail"
 msgid "error saving thumbnail"
 msgstr "섬네일"
 
@@ -3579,7 +3583,7 @@ msgstr ""
 msgid "Alert situation reported by monitoring"
 msgstr ""
 
-msgid "GeoNode Monitoring on {} reports errors: {}"
+msgid "GeoNode Monitoring on {base_ctx['host']} "
 msgstr ""
 
 #, fuzzy
@@ -3654,7 +3658,8 @@ msgstr "인용된 자원에 대한 참조 날짜"
 msgid "Show data for specific label"
 msgstr "인용된 자원에 대한 참조 날짜"
 
-msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
+msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
 msgstr ""
 
 msgid ""
@@ -3823,7 +3828,8 @@ msgstr ""
 msgid "Is it active"
 msgstr ""
 
-msgid "{}: {}"
+#, python-brace-format
+msgid "{self.severity}: {self.name}"
 msgstr ""
 
 msgid "Value must be above"
@@ -4472,9 +4478,9 @@ msgstr "리소스의 다운로드가 요청되었습니다"
 msgid "Resource is already being processed"
 msgstr "리소스의 다운로드가 요청되었습니다"
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "A resource's download has been requested"
-msgid "Resource {} is being processed"
+msgid "Resource {resource_id} is being processed"
 msgstr "리소스의 다운로드가 요청되었습니다"
 
 #, fuzzy
@@ -4490,9 +4496,9 @@ msgstr "이 서비스를 삭제할 권한이 없습니다."
 msgid "You are not permitted to remove this service."
 msgstr "이 서비스를 삭제할 권한이 없습니다."
 
-#, fuzzy
+#, fuzzy, python-brace-format
 #| msgid "Service has been created:"
-msgid "Service {} has been deleted"
+msgid "Service {service.name} has been deleted"
 msgstr "서비스가 생성되었습니다:"
 
 msgid "created"
@@ -6113,9 +6119,6 @@ msgstr "다음 그룹:"
 msgid "Updating Metadata..."
 msgstr "메타데이터 다운로드"
 
-msgid "ERROR"
-msgstr ""
-
 msgid "Topic Category is mandatory and cannot be empty!"
 msgstr ""
 
@@ -6596,9 +6599,6 @@ msgstr "Z - A"
 msgid "Most popular"
 msgstr "인기순"
 
-msgid "Thesaurus"
-msgstr ""
-
 msgid "Text"
 msgstr "텍스트"
 
@@ -6815,20 +6815,19 @@ msgid ""
 "To support the time step, you must enable the OGC_SERVER DATASTORE option"
 msgstr ""
 
-#, python-format
-msgid "Unsupported file type: %s"
+#, python-brace-format
+msgid "Unsupported file type: {e.message}"
 msgstr ""
 
-#, python-format
-msgid "File does not exist: %s"
+#, python-brace-format
+msgid "File does not exist: {absolute_base_file}"
 msgstr ""
 
-#, python-format
-msgid "unknown item state: %s"
+#, python-brace-format
+msgid "unknown item state: {task.state}"
 msgstr ""
 
-#, python-format
-msgid "error during import: %s"
+msgid "error during import: {progress.get('message')}"
 msgstr ""
 
 #, fuzzy
@@ -6847,3 +6846,28 @@ msgstr "유효하지 않은 권한 수준."
 
 msgid "Permission Denied"
 msgstr "사용 권한이 거부되었습니다"
+
+#, fuzzy
+#~| msgid "Available styles"
+#~ msgid "Available layers"
+#~ msgstr "사용가능한 스타일"
+
+#, fuzzy
+#~| msgid "Remove Map"
+#~ msgid "Save Map"
+#~ msgstr "지도 제거"
+
+#, fuzzy
+#~| msgid "User Activities"
+#~ msgid "Utilities"
+#~ msgstr "사용자 활동"
+
+#, fuzzy
+#~| msgid "Unable to delete layer"
+#~ msgid "Unable to delete layer"
+#~ msgstr "레이어를 삭제할 수 없습니다"
+
+#, fuzzy
+#~| msgid "Thumbnail"
+#~ msgid "Thumbnail saved"
+#~ msgstr "섬네일"
