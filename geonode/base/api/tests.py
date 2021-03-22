@@ -533,14 +533,17 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         for resource in resources:
             url = reverse('base-resources-detail', kwargs={'pk': resource.pk})
             response = self.client.get(url, format='json')
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(int(response.data['resource']['pk']), int(resource.pk))
-            embed_url = response.data['resource']['embed_url']
-            self.assertIsNotNone(embed_url)
+            if resource.title.endswith('metadata true'):
+                self.assertEqual(response.status_code, 404)
+            else:
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(int(response.data['resource']['pk']), int(resource.pk))
+                embed_url = response.data['resource']['embed_url']
+                self.assertIsNotNone(embed_url)
 
-            instance = resource.get_real_instance()
-            if hasattr(instance, 'embed_url'):
-                if instance.embed_url != NotImplemented:
-                    self.assertEqual(instance.embed_url, embed_url)
-                else:
-                    self.assertEqual("", embed_url)
+                instance = resource.get_real_instance()
+                if hasattr(instance, 'embed_url'):
+                    if instance.embed_url != NotImplemented:
+                        self.assertEqual(instance.embed_url, embed_url)
+                    else:
+                        self.assertEqual("", embed_url)

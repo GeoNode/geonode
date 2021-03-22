@@ -17,6 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.maps.models import Map
+from geonode.documents.models import Document
 from unittest.mock import patch
 from django.conf import settings
 
@@ -541,7 +543,7 @@ class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSuppor
 
     def setUp(self):
         super(ThesaurusKeywordResourceTests, self).setUp()
-
+        all_public()
         self.list_url = reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "thesaurus/keywords"})
 
     def test_api_will_return_a_valid_json_response(self):
@@ -610,3 +612,145 @@ class ThesaurusKeywordResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSuppor
         actual_labels = [x["alt_label"] for x in self.deserialize(resp)["objects"]]
         self.assertValidJSONResponse(resp)
         self.assertListEqual(expected_labels, actual_labels)
+
+
+class LayerResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    def setUp(self):
+        super(LayerResourceTests, self).setUp()
+        self.user = get_user_model().objects.get(username="admin")
+        self.list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'layers'})
+        all_public()
+        self.token = get_or_create_token(self.user)
+        self.auth_header = 'Bearer {}'.format(self.token)
+
+    def test_the_api_should_return_all_layers_with_metadata_false(self):
+        resp = self.api_client.get(self.list_url, authentication=self.auth_header)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(8, resp.json()["meta"]["total_count"])
+
+    def test_the_api_should_return_all_layers_with_metadata_true(self):
+        url = f"{self.list_url}?metadata_only=True"
+        resp = self.api_client.get(url, authentication=self.auth_header)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(1, resp.json()["meta"]["total_count"])
+
+
+class DocumentResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    def setUp(self):
+        super(DocumentResourceTests, self).setUp()
+        all_public()
+        self.user = get_user_model().objects.get(username="admin")
+        self.list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'documents'})
+
+    def test_the_api_should_return_all_documents_with_metadata_false(self):
+        resp = self.api_client.get(self.list_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 9)
+
+    def test_the_api_should_return_all_documents_with_metadata_true(self):
+        url = f"{self.list_url}?metadata_only=True"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 1)
+
+
+class MapResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    def setUp(self):
+        super(MapResourceTests, self).setUp()
+        all_public()
+        self.user = get_user_model().objects.get(username="admin")
+        self.list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'maps'})
+
+    def test_the_api_should_return_all_maps_with_metadata_false(self):
+        resp = self.api_client.get(self.list_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 9)
+
+    def test_the_api_should_return_all_maps_with_metadata_true(self):
+        url = f"{self.list_url}?metadata_only=True"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(resp.json()["meta"]["total_count"], 1)
+
+
+class TopicCategoryResourceTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
+    def setUp(self):
+        super(TopicCategoryResourceTest, self).setUp()
+        self.user = get_user_model().objects.get(username="admin")
+        self.list_url = reverse(
+            'api_dispatch_list',
+            kwargs={
+                'api_name': 'api',
+                'resource_name': 'categories'})
+
+    def test_the_api_should_return_all_maps_with_metadata_false(self):
+        url = f"{self.list_url}?type=map"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        actual = sum([x['count'] for x in resp.json()['objects']])
+        self.assertEqual(9, actual)
+
+    def test_the_api_should_return_all_maps_with_metadata_true(self):
+        x = Map.objects.get(title='map metadata true')
+        x.metadata_only = False
+        x.save()
+        url = f"{self.list_url}?type=map"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        # by adding a new layer, the total should increase
+        actual = sum([x['count'] for x in resp.json()['objects']])
+        self.assertEqual(10, actual)
+
+    def test_the_api_should_return_all_document_with_metadata_false(self):
+        url = f"{self.list_url}?type=document"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        actual = sum([x['count'] for x in resp.json()['objects']])
+        self.assertEqual(9, actual)
+
+    def test_the_api_should_return_all_document_with_metadata_true(self):
+        x = Document.objects.get(title='doc metadata true')
+        x.metadata_only = False
+        x.save()
+        url = f"{self.list_url}?type=document"
+        resp = self.api_client.get(url)
+        self.assertValidJSONResponse(resp)
+        # by adding a new layer, the total should increase
+        actual = sum([x['count'] for x in resp.json()['objects']])
+        self.assertEqual(10, actual)
