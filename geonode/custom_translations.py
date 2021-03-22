@@ -52,7 +52,7 @@ texts = [
       "hygiene, substance abuse, mental and physical health, health services."),
     _("Health"),
     _("Base maps. Examples: land cover, topographic maps, imagery, unclassified images, annotations."),
-    _("Imagery Base Maps Earth Cover"
+    _("Imagery Base Maps Earth Cover",
       "Inland water features, drainage systems and their characteristics. Examples: rivers and glaciers, salt lakes, "
       "water utilization plans, dams, currents, floods, water quality, hydrographic charts."),
     _("Inland Waters"),
