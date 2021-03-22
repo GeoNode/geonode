@@ -193,6 +193,11 @@ def resource_urls(request):
         GEONODE_APPS_NAME=getattr(settings, 'GEONODE_APPS_NAME', 'Apps'),
         GEONODE_APPS_NAV_MENU_ENABLE=getattr(settings, 'GEONODE_APPS_NAV_MENU_ENABLE', False),
         CATALOG_METADATA_TEMPLATE=getattr(settings, "CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml"),
-        UI_REQUIRED_FIELDS=getattr(settings, "UI_REQUIRED_FIELDS", [])
+        UI_REQUIRED_FIELDS=getattr(settings, "UI_REQUIRED_FIELDS", []),
+        REQ_THESAURI=[
+            f"tkeywords-{x.id}"
+            for x in Thesaurus.objects.all()
+            if (x.card_max == -1 and x.card_min == 1) or (x.card_max == 1 and x.card_min == 1)
+        ],
     )
     return defaults

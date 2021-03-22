@@ -344,21 +344,25 @@ class ThesaurusAvailableForm(forms.Form):
     def _define_multifield(self, item, required, tname, lang):
         return MultipleChoiceField(
             choices=self._get_thesauro_keyword_label(item, lang),
-            widget=autocomplete.Select2Multiple(url=f"/base/thesaurus_available/?sysid={item.id}&lang={lang}"),
+            widget=autocomplete.Select2Multiple(
+                url=f"/base/thesaurus_available/?sysid={item.id}&lang={lang}",
+                attrs={"class": "treq" if required else ""},
+            ),
             label=f"{tname}",
-            required=required,
+            required=False,
         )
 
     def _define_choicefield(self, item, required, tname, lang):
         return models.ChoiceField(
             label=f"{tname}",
             required=required,
+            widget=forms.Select(attrs={"class": "treq" if required else ""}),
             choices=self._get_thesauro_keyword_label(item, lang))
 
     @staticmethod
     def _get_thesauro_keyword_label(item, lang):
         qs_local = []
-        qs_non_local = []
+        qs_non_local = [("", "------")]
         for key in ThesaurusKeyword.objects.filter(thesaurus_id=item.id):
             label = ThesaurusKeywordLabel.objects.filter(keyword=key).filter(lang=lang)
             if label.exists():
