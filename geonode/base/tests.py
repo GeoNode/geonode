@@ -878,7 +878,7 @@ class TestTagThesaurus(TestCase):
 
     @staticmethod
     def __get_last_thesaurus():
-        return Thesaurus.objects.all().order_by("-id")[0]
+        return Thesaurus.objects.all().order_by("id")[0]
 
 
 @override_settings(THESAURUS_DEFAULT_LANG="en")
@@ -891,9 +891,11 @@ class TestThesaurusAvailableForm(TestCase):
     def setUp(self):
         self.sut = ThesaurusAvailableForm
 
-    def test_form_is_invalid_if_required_fields_are_missing(self):
+    def test_form_is_valid_if_all_fields_are_missing(self):
+        #  is now always true since the required is moved to the UI
+        #  (like the other fields)
         actual = self.sut(data={})
-        self.assertFalse(actual.is_valid())
+        self.assertTrue(actual.is_valid())
 
     def test_form_is_invalid_if_fileds_send_unexpected_values(self):
         actual = self.sut(data={"1": [1, 2]})
@@ -902,6 +904,18 @@ class TestThesaurusAvailableForm(TestCase):
     def test_form_is_valid_if_fileds_send_expected_values(self):
         actual = self.sut(data={"1": 1})
         self.assertTrue(actual.is_valid())
+
+    def test_field_class_treq_is_correctly_set_when_field_is_required(self):
+        actual = self.sut(data={"1": 1})
+        required = actual.fields.get('1')
+        obj_class = required.widget.attrs.get('class')
+        self.assertTrue(obj_class == 'treq')
+
+    def test_field_class_treq_is_not_set_when_field_is_optional(self):
+        actual = self.sut(data={"1": 1})
+        required = actual.fields.get('2')
+        obj_class = required.widget.attrs.get('class')
+        self.assertTrue(obj_class == '')
 
 
 class TestFacets(TestCase):
