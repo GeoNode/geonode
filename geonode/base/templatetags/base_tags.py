@@ -406,6 +406,21 @@ def display_edit_request_button(resource, user, perms):
         return _owner_set == set() or \
             _owner_set == set(['change_resourcebase_permissions', 'publish_resourcebase'])
 
-    if not _has_owner_his_permissions() and resource.owner.pk == user.pk:
+    if not _has_owner_his_permissions() and \
+    (user.is_superuser or resource.owner.pk == user.pk):
         return True
     return False
+
+
+@register.simple_tag
+def display_change_perms_button(resource, user, perms):
+    try:
+        from geonode.geoserver.helpers import ogc_server_settings
+    except Exception:
+        return False
+    if not getattr(ogc_server_settings, 'GEONODE_SECURITY_ENABLED', False):
+        return False
+    elif user.is_superuser or 'change_resourcebase_permissions' in set(perms):
+        return True
+    else:
+        return not getattr(settings, 'ADMIN_MODERATE_UPLOADS', False)
