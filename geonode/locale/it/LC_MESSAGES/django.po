@@ -39,7 +39,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-22 10:31+0000\n"
-"PO-Revision-Date: 2021-03-10 12:08+0100\n"
+"PO-Revision-Date: 2021-03-23 17:36+0100\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Italian (http://www.transifex.com/geonode/geonode/language/"
 "it/)\n"
@@ -770,13 +770,8 @@ msgstr ""
 "immagini non classificate, annotazioni."
 
 msgid "Imagery Base Maps Earth Cover"
-msgstr ""
+msgstr "Mappe Immagini di Base Copertina della Terra"
 
-#, fuzzy
-#| msgid ""
-#| "Inland water features, drainage systems and their characteristics. "
-#| "Examples: rivers and glaciers, salt lakes, water utilization plans, dams, "
-#| "currents, floods, water quality, hydrographic charts."
 msgid ""
 "Inland water features, drainage systems and their characteristics. Examples: "
 "rivers and glaciers, salt lakes, water utilization plans, dams, currents, "
@@ -1514,10 +1509,8 @@ msgstr "Aggiungere attributo"
 msgid "Create"
 msgstr "Creare"
 
-#, fuzzy
-#| msgid "Not provided"
 msgid "No title provided"
-msgstr "Non fornito"
+msgstr "Nessun titolo fornito"
 
 msgid "No abstract provided"
 msgstr "Nessun abstract inserito"
@@ -1562,7 +1555,7 @@ msgid "PNG"
 msgstr "PNG"
 
 msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
+msgstr "Proiezione non valida. Al livello manca il CRS!"
 
 msgid "You don't have permissions to change style for this layer"
 msgstr ""
@@ -2507,10 +2500,8 @@ msgstr ""
 msgid "Preview"
 msgstr "Anteprima"
 
-#, fuzzy
-#| msgid "Resource Metadata"
 msgid "Required Metadata"
-msgstr "Metadati delle risorse"
+msgstr "Metadati obbligatori"
 
 msgid "Dataset Attributes"
 msgstr "Attributi del dataset"
@@ -3099,17 +3090,15 @@ msgstr ""
 "Assicurarsi che sia presente almeno un tipo di geometria coerente con il "
 "file che si sta tentando di sostituire."
 
-#, fuzzy
-#| msgid "Some error occurred while trying to access the uploaded schema: %s"
 msgid ""
 "Some error occurred while trying to access the uploaded schema: {str(e)}"
 msgstr ""
-"Si è verificato un errore durante il tentativo di accedere allo schema "
-"caricato: %s"
+"Si è verificato un errore durante il tentativo di accesso allo schema "
+"caricato: {str(e)}"
 
 msgid ""
 "The UUID identifier from the XML Metadata is already in use in this system."
-msgstr ""
+msgstr "L'identificatore UUID dei metadati XML è già in uso in questo sistema."
 
 msgid ""
 "There was an error while attempting to upload your data. Please try again, "
@@ -3151,10 +3140,9 @@ msgstr ""
 "Questo livello è membro di un gruppo, devi rimuoverlo dal gruppo prima di "
 "eliminarlo."
 
-#, fuzzy, python-format
-#| msgid "couldn't generate thumbnail"
+#, python-format
 msgid "couldn't generate thumbnail: %s"
-msgstr "non è stato possibile generare la miniatura"
+msgstr "impossibile generare l'anteprima: %s"
 
 msgid "Map Created"
 msgstr "Mappa creata"
@@ -3412,10 +3400,8 @@ msgstr "Monitoring alert"
 msgid "Alert situation reported by monitoring"
 msgstr "Situazione di allarme segnalato dal monitoraggio"
 
-#, fuzzy
-#| msgid "GeoNode Monitoring on {} reports errors: {}"
 msgid "GeoNode Monitoring on {base_ctx['host']} "
-msgstr "GeoNode monitoraggio su {} segnala gli errori: {}"
+msgstr "Monitoraggio GeoNode su {base_ctx['host']} "
 
 msgid "Enter valid email addresses."
 msgstr "Immettere indirizzi di posta elettronica validi."
@@ -3484,10 +3470,9 @@ msgstr "Mostra dati per risorsa specifica"
 msgid "Show data for specific label"
 msgstr "Mostra dati per un'etichetta specifica"
 
-#, fuzzy, python-brace-format
-#| msgid "Write result to file, default GEOIP_PATH: {}"
+#, python-brace-format
 msgid "Write result to file, default GEOIP_PATH: {settings.GEOIP_PATH}"
-msgstr "Scrivi il risultato su file, default GEOIP_PATH: {}"
+msgstr "Scritto risultato su file, default  GEOIP_PATH: {settings.GEOIP_PATH}"
 
 msgid ""
 "Fetch database from specific url. If nothing provided, default {} will be "
@@ -3633,7 +3618,7 @@ msgstr "È attivo"
 
 #, python-brace-format
 msgid "{self.severity}: {self.name}"
-msgstr ""
+msgstr "{self.severity}: {self.name}"
 
 msgid "Value must be above"
 msgstr "Il valore deve essere superiore"
@@ -4200,10 +4185,9 @@ msgstr "Le risorse selezionate sono state importate"
 msgid "Resource is already being processed"
 msgstr "La risorsa è già stata processata"
 
-#, fuzzy, python-brace-format
-#| msgid "Resource {} is being processed"
+#, python-brace-format
 msgid "Resource {resource_id} is being processed"
-msgstr "{} Risorsa è in fase di elaborazione"
+msgstr "La Risorsa {resource_id} è in fase di elaborazione"
 
 msgid "Service rescanned successfully"
 msgstr "Il servizio è stato analizzato di nuovo correttamente"
@@ -4214,10 +4198,9 @@ msgstr "Non è consentito modificare questo servizio."
 msgid "You are not permitted to remove this service."
 msgstr "Non è consentito rimuovere questo servizio."
 
-#, fuzzy, python-brace-format
-#| msgid "Service {} has been deleted"
+#, python-brace-format
 msgid "Service {service.name} has been deleted"
-msgstr "Il servizio è stato eliminato"
+msgstr "Il servizio {service.name} è stato eliminato"
 
 msgid "created"
 msgstr "creato"
@@ -6221,13 +6204,11 @@ msgstr ""
 "È stato fornito uno o più file SLD, ma non sono stati trovati file "
 "corrispondenti."
 
-#, fuzzy
-#| msgid "Layer Created"
 msgid "Layer already exists"
-msgstr "Livello creato"
+msgstr "Il livello esiste già"
 
 msgid "Name already in use and overwrite is False"
-msgstr ""
+msgstr "Il nome è già in uso"
 
 msgid "Invalid zip file detected"
 msgstr "Rilevato file zip non valido"
@@ -6277,25 +6258,20 @@ msgstr ""
 "Per supportare il passaggio temporale, è necessario attivare l'opzione "
 "OGC_SERVER DATASTORE"
 
-#, fuzzy, python-brace-format
-#| msgid "Unsupported file type: %s"
+#, python-brace-format
 msgid "Unsupported file type: {e.message}"
-msgstr "Tipo di file non supportato: %s"
+msgstr "Tipo di file non supportato: {e.message}"
 
-#, fuzzy, python-brace-format
-#| msgid "File does not exist: %s"
+#, python-brace-format
 msgid "File does not exist: {absolute_base_file}"
-msgstr "File inesistente: %s"
+msgstr "Il file non esiste: {absolute_base_file}"
 
-#, fuzzy, python-brace-format
-#| msgid "unknown item state: %s"
+#, python-brace-format
 msgid "unknown item state: {task.state}"
-msgstr "stato dell'elemento sconosciuto: %s"
+msgstr "stato dell'elemento sconosciuto: {task.state}"
 
-#, fuzzy
-#| msgid "error during import: %s"
 msgid "error during import: {progress.get('message')}"
-msgstr "errore durante l'importazione: %s"
+msgstr "errore durante l'importazione: {progress.get('message')}"
 
 msgid "Could not find any valid Time Regex for the Mosaic files."
 msgstr "Impossibile trovare file kml all'interno del kmz caricato."
@@ -6304,7 +6280,7 @@ msgid "Unsupported DataBase for Mosaics!"
 msgstr "DataBase non supportato per mosaici!"
 
 msgid "Upload Session invalid or no more accessible!"
-msgstr ""
+msgstr "Sessione di upload non valida o inaccessibile!"
 
 msgid "Invalid permission level."
 msgstr "Livello di permessi non valido."
