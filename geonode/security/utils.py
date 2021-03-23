@@ -271,10 +271,11 @@ def purge_geofence_layer_rules(resource):
     passwd = settings.OGC_SERVER['default']['PASSWORD']
     headers = {'Content-type': 'application/json'}
     workspace = get_layer_workspace(resource.layer)
+    layer_name = resource.layer.name if resource.layer and hasattr(resource.layer, 'name') \
+        else resource.layer.alternate.split(":")[0]
     try:
         r = requests.get(
-            "{}rest/geofence/rules.json?workspace={}&layer={}".format(
-                url, workspace, resource.layer.name),
+            f"{url}rest/geofence/rules.json?workspace={workspace}&layer={layer_name}",
             headers=headers,
             auth=HTTPBasicAuth(user, passwd),
             timeout=10,
@@ -285,7 +286,7 @@ def purge_geofence_layer_rules(resource):
             r_ids = []
             if gs_rules and gs_rules['rules']:
                 for r in gs_rules['rules']:
-                    if r['layer'] and r['layer'] == resource.layer.name:
+                    if r['layer'] and r['layer'] == layer_name:
                         r_ids.append(r['id'])
 
             # Delete GeoFence Rules associated to the Layer
@@ -297,7 +298,7 @@ def purge_geofence_layer_rules(resource):
                     auth=HTTPBasicAuth(user, passwd))
                 if (r.status_code < 200 or r.status_code > 201):
                     msg = "Could not DELETE GeoServer Rule for Layer "
-                    msg = msg + str(resource.layer.name)
+                    msg = msg + str(layer_name)
                     e = Exception(msg)
                     logger.debug("Response [{}] : {}".format(r.status_code, r.text))
                     raise e
@@ -491,7 +492,9 @@ def set_geofence_all(instance):
     resource = instance.get_self_resource()
     logger.debug("Inside set_geofence_all for instance {}".format(instance))
     workspace = get_layer_workspace(resource.layer)
-    logger.debug("going to work in workspace {!r}".format(workspace))
+    layer_name = resource.layer.name if resource.layer and hasattr(resource.layer, 'name') \
+        else resource.layer.alternate.split(":")[0]
+    logger.debug(f"going to work in workspace {workspace}")
     try:
         url = settings.OGC_SERVER['default']['LOCATION']
         user = settings.OGC_SERVER['default']['USER']
@@ -506,7 +509,7 @@ def set_geofence_all(instance):
         headers = {'Content-type': 'application/xml'}
         payload = _get_geofence_payload(
             layer=resource.layer,
-            layer_name=resource.layer.name,
+            layer_name=layer_name,
             workspace=workspace,
             access="ALLOW"
         )
@@ -520,7 +523,7 @@ def set_geofence_all(instance):
             logger.debug(
                 "Response {!r} : {}".format(response.status_code, response.text))
             raise RuntimeError("Could not ADD GeoServer ANONYMOUS Rule "
-                               "for Layer {}".format(resource.layer.name))
+                               f"for Layer {layer_name}")
     except Exception:
         tb = traceback.format_exc()
         logger.debug(tb)
@@ -618,7 +621,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
     toggle_layer_cache('{}:{}'.format(_layer_workspace, _layer_name), enable=True, filters=filters, formats=formats)
 
     for service, allowed in gf_services.items():
-        if layer and layer.name and allowed:
+        if layer and _layer_name and allowed:
             if _user:
                 logger.debug("Adding 'user' to geofence the rule: %s %s %s" % (layer, service, _user))
                 _wkt = None

@@ -598,6 +598,7 @@ def final_step(upload_session, user, charset="UTF-8"):
 
     # Is it a regular file or an ImageMosaic?
     # if upload_session.mosaic_time_regex and upload_session.mosaic_time_value:
+    saved_layer = None
     if upload_session.mosaic:
         import pytz
         import datetime
@@ -616,34 +617,35 @@ def final_step(upload_session, user, charset="UTF-8"):
             has_time = False
 
         if not upload_session.append_to_mosaic_opts:
-            saved_layer, created = Layer.objects.get_or_create(
-                uuid=layer_uuid,
-                defaults=dict(
-                    store=target.name,
-                    storeType=target.store_type,
-                    alternate=alternate,
-                    workspace=target.workspace_name,
-                    title=title,
-                    name=task.layer.name,
-                    abstract=abstract or '',
-                    owner=user),
-                temporal_extent_start=start,
-                temporal_extent_end=end,
-                is_mosaic=True,
-                has_time=has_time,
-                has_elevation=False,
-                time_regex=upload_session.mosaic_time_regex
-            )
-
-            assert saved_layer is not None
+            try:
+                with transaction.atomic():
+                    saved_layer, created = Layer.objects.get_or_create(
+                        uuid=layer_uuid,
+                        defaults=dict(
+                            store=target.name,
+                            storeType=target.store_type,
+                            alternate=alternate,
+                            workspace=target.workspace_name,
+                            title=title,
+                            name=task.layer.name,
+                            abstract=abstract or '',
+                            owner=user,
+                            temporal_extent_start=start,
+                            temporal_extent_end=end,
+                            is_mosaic=True,
+                            has_time=has_time,
+                            has_elevation=False,
+                            time_regex=upload_session.mosaic_time_regex)
+                    )
+            except IntegrityError:
+                raise
+            assert saved_layer
         else:
             # saved_layer = Layer.objects.filter(name=upload_session.append_to_mosaic_name)
             # created = False
             saved_layer, created = Layer.objects.get_or_create(
                 name=upload_session.append_to_mosaic_name)
-
-            assert saved_layer is not None
-
+            assert saved_layer
             try:
                 if saved_layer.temporal_extent_start and end:
                     if pytz.utc.localize(
@@ -665,29 +667,24 @@ def final_step(upload_session, user, charset="UTF-8"):
     else:
         _has_time = (True if upload_session.time and upload_session.time_info and
                      upload_session.time_transforms else False)
-        saved_layer = None
         try:
             with transaction.atomic():
-                saved_layer = Layer.objects.create(uuid=layer_uuid, owner=user)
-                assert saved_layer is not None
-                created = Layer.objects.filter(id=saved_layer.id).exists()
-                if created:
-                    to_update = {
-                        "name": task.layer.name,
-                        "store": target.name,
-                        "storeType": target.store_type,
-                        "alternate": alternate,
-                        "workspace": target.workspace_name,
-                        "title": title,
-                        "abstract": abstract or '',
-                        "has_time": _has_time
-                    }
-                    Layer.objects.filter(id=saved_layer.id).update(**to_update)
-
-                    # Refresh from DB
-                    saved_layer.refresh_from_db()
+                saved_layer, created = Layer.objects.get_or_create(
+                    uuid=layer_uuid,
+                    defaults=dict(
+                        store=target.name,
+                        storeType=target.store_type,
+                        alternate=alternate,
+                        workspace=target.workspace_name,
+                        title=title,
+                        name=task.layer.name,
+                        abstract=abstract or '',
+                        owner=user,
+                        has_time=_has_time)
+                    )
         except IntegrityError:
             raise
+        assert saved_layer
 
     # Create a new upload session
     try:
