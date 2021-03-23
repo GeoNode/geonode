@@ -1968,10 +1968,10 @@ _csw = None
 _user, _password = ogc_server_settings.credentials
 
 url = ogc_server_settings.rest
-gs_catalog = Catalog(url, _user, _password,
+gs_catalog = Catalog(url, _user, _password, #1
                      retries=ogc_server_settings.MAX_RETRIES,
                      backoff_factor=ogc_server_settings.BACKOFF_FACTOR)
-gs_uploader = Client(url, _user, _password)
+gs_uploader = Client(url, _user, _password) #2
 
 _punc = re.compile(r"[\.:]")  # regex for punctuation that confuses restconfig
 _foregrounds = [

@@ -18,11 +18,13 @@
 #
 #########################################################################
 
+from geonode.base.views import upload_thesauro
 from django import forms
 from django.contrib import admin
 from django.conf import settings
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
-
+from django.urls import path
 from dal import autocomplete
 from taggit.forms import TagField
 
@@ -270,11 +272,34 @@ class ConfigurationAdmin(admin.ModelAdmin):
 
 
 class ThesaurusAdmin(admin.ModelAdmin):
+    change_list_template = "admin/thesauri/change_list.html"
+    change_form_template = 'admin/thesauri/change_form.html'
+
+    app_label = "base_thesaurus"
     model = Thesaurus
     list_display = ('id', 'identifier')
     list_display_links = ('id', 'identifier')
     ordering = ('identifier',)
 
+    def get_urls(self):
+        urls = super(ThesaurusAdmin, self).get_urls()
+        my_urls = [
+            path('upload/', upload_thesauro, name='base_thesaurus_upload'),
+        ]
+
+        # https://hakibenita.medium.com/how-to-add-custom-action-buttons-to-django-admin-8d266f5b0d41
+        # https://books.agiliq.com/projects/django-admin-cookbook/en/latest/action_buttons.html
+        # https://adriennedomingus.medium.com/adding-custom-views-or-templates-to-django-admin-740640cc6d42
+        # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#templates-which-may-be-overridden-per-app-or-model
+
+        return my_urls + urls
+
+    def set_identifier(self, request):
+        self.message_user(request, "All heroes are now immortal")
+        return HttpResponseRedirect("../")
+
+class NameForm(forms.Form):
+    your_name = forms.CharField(label='Your name', max_length=100)
 
 class ThesaurusLabelAdmin(admin.ModelAdmin):
     model = ThesaurusLabel

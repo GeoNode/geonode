@@ -1,0 +1,6 @@
+{% extends 'admin/change_list.html' %}
+{% block after_related_objects %}
+    {% if object_id %}
+        <a href="{% url 'custom_admin_site:preview' object_id %}" target="_blank">Preview </a>
+    {% endif %}
+{% endblock %}
