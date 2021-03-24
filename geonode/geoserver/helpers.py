@@ -374,19 +374,25 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
         except Exception as e:
             logger.exception(e)
 
-    if layer and style and \
-    style.name != layer.default_style.name and \
-    style.workspace != layer.default_style.workspace:
-        _default_style = gs_catalog.get_style(
+    if layer and style:
+        _old_styles = []
+        _old_styles.append(gs_catalog.get_style(
+            name=saved_layer.name))
+        _old_styles.append(gs_catalog.get_style(
+            name=f"{saved_layer.workspace}_{saved_layer.name}"))
+        _old_styles.append(gs_catalog.get_style(
+            name=layer.default_style.name))
+        _old_styles.append(gs_catalog.get_style(
             name=layer.default_style.name,
-            workspace=layer.default_style.workspace)
+            workspace=layer.default_style.workspace))
         layer.default_style = style
         gs_catalog.save(layer)
+        for _s in _old_styles:
+            try:
+                gs_catalog.delete(_s)
+            except Exception as e:
+                logger.debug(e)
         set_styles(saved_layer, gs_catalog)
-        try:
-            gs_catalog.delete(_default_style)
-        except Exception as e:
-            logger.debug(e)
 
 
 def cascading_delete(layer_name=None, catalog=None):
@@ -1059,45 +1065,14 @@ def set_styles(layer, gs_catalog):
             logger.exception("No GeoServer Layer found!")
 
     if gs_layer:
-        default_style = gs_layer.default_style
-        if not default_style:
-            try:
-                default_style = gs_catalog.get_style(layer.name, workspace=layer.workspace) \
-                    or gs_catalog.get_style(layer.name)
-                gs_layer.default_style = default_style
-                gs_catalog.save(gs_layer)
-            except Exception:
-                tb = traceback.format_exc()
-                logger.error(tb)
-                logger.exception("GeoServer Layer Default Style issues!")
-
+        default_style = gs_catalog.get_style(
+            name=gs_layer.default_style.name,
+            workspace=gs_layer.default_style.workspace)
         if default_style:
             # make sure we are not using a default SLD (which won't be editable)
-            style = None
-            if not default_style.workspace:
-                sld_name = default_style.sld_name
-                sld_body = default_style.sld_body
-                try:
-                    style = gs_catalog.get_style(sld_name, workspace=layer.workspace)
-                    if not style:
-                        style = gs_catalog.create_style(sld_name, sld_body, raw=True, workspace=layer.workspace)
-                except Exception:
-                    tb = traceback.format_exc()
-                    logger.error(tb)
-                    logger.exception("GeoServer Layer Default Style issues!")
-            else:
-                style = default_style
+            layer.default_style = save_style(default_style, layer)
+            style_set.append(layer.default_style)
 
-            if style and style != gs_layer.default_style:
-                _default_style = gs_layer.default_style
-                gs_layer.default_style = style
-                gs_catalog.save(gs_layer)
-                layer.default_style = save_style(style, layer)
-                style_set.append(layer.default_style)
-                try:
-                    gs_catalog.delete(_default_style)
-                except Exception as e:
-                    logger.debug(e)
         try:
             if gs_layer.styles:
                 alt_styles = gs_layer.styles
@@ -1106,10 +1081,8 @@ def set_styles(layer, gs_catalog):
                         _s = save_style(alt_style, layer)
                         if _s != layer.default_style:
                             style_set.append(_s)
-        except Exception:
-            tb = traceback.format_exc()
-            logger.error(tb)
-            logger.exception("GeoServer Layer Default Style issues!")
+        except Exception as e:
+            logger.exception(e)
 
     if style_set:
         # Remove duplicates
@@ -1165,35 +1138,19 @@ def set_styles(layer, gs_catalog):
 def save_style(gs_style, layer):
     style_name = os.path.basename(
         urlparse(gs_style.body_href).path).split('.')[0]
-    sld_name = gs_style.sld_name
+    sld_name = gs_style.name
     sld_body = gs_style.sld_body
     if not gs_style.workspace:
-        try:
-            gs_style = gs_catalog.get_style(style_name, workspace=layer.workspace)
-            if not gs_style:
-                gs_style = gs_catalog.create_style(style_name, sld_body, raw=True, workspace=layer.workspace)
-        except Exception as e:
-            tb = traceback.format_exc()
-            logger.debug(tb)
-            raise e
-
-    try:
-        _default_style = gs_catalog.get_style(style_name) or \
-            gs_catalog.get_style(f"{layer.workspace}_{style_name}")
-        if _default_style:
-            # Let's remove any '{saved_layer.workspace}_{saved_layer.name}' temp SLD around
-            gs_catalog.delete(_default_style)
-    except Exception as e:
-        logger.exception(e)
+        gs_style = gs_catalog.create_style(
+            style_name, sld_body,
+            raw=True, overwrite=True,
+            workspace=layer.workspace)
 
     style = None
     try:
         style, created = Style.objects.get_or_create(name=style_name)
-        if not style.workspace and gs_style.workspace:
-            style.workspace = layer.workspace
-
-        title = gs_style.sld_title if gs_style.style_format != 'css' else sld_name
-        style.sld_title = title
+        style.workspace = gs_style.workspace
+        style.sld_title = gs_style.sld_title if gs_style.style_format != 'css' else sld_name
         style.sld_body = gs_style.sld_body
         style.sld_url = gs_style.body_href
         style.save()
