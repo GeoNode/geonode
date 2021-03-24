@@ -283,7 +283,7 @@ class ThesaurusAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(ThesaurusAdmin, self).get_urls()
         my_urls = [
-            path('import-rdf/', self.import_rdf, name="admin")
+            path('importrdf/', self.import_rdf, name="base_thesaurus_importrdf")
         ]
         return my_urls + urls
 
