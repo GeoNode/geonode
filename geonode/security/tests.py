@@ -43,6 +43,7 @@ from guardian.shortcuts import (
 )
 from geonode import geoserver
 from geonode.base.models import (
+    Configuration,
     UserGeoLimit,
     GroupGeoLimit
 )
@@ -451,6 +452,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         self.passwd = 'admin'
         create_layer_data()
         self.anonymous_user = get_anonymous_user()
+        self.config = Configuration.load()
         self.list_url = reverse(
             'api_dispatch_list',
             kwargs={
@@ -480,6 +482,30 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
         self.assertTrue(layer2.title in json.loads(content)['not_changed'])
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_user_can(self):
+        bobby = get_user_model().objects.get(username='bobby')
+        perm_spec = {
+              'users': {
+                  'bobby': [
+                      'view_resourcebase',
+                      'download_resourcebase',
+                      'change_layer_style'
+                      ]
+              },
+              'groups': []
+          }
+        layer = Layer.objects.filter(storeType='dataStore').first()
+        layer.set_permissions(perm_spec)
+        # Test user has permission with read_only=False
+        self.assertTrue(layer.user_can(bobby, 'change_layer_style'))
+        # Test with edit permission and read_only=True
+        self.config.read_only = True
+        self.config.save()
+        self.assertFalse(layer.user_can(bobby, 'change_layer_style'))
+        # Test with view permission and read_only=True
+        self.assertTrue(layer.user_can(bobby, 'view_resourcebase'))
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @dump_func_name
