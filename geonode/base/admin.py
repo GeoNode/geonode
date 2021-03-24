@@ -18,15 +18,16 @@
 #
 #########################################################################
 
-from geonode.base.views import upload_thesauro
 from django import forms
 from django.contrib import admin
 from django.conf import settings
-from django.http.response import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import path
 from dal import autocomplete
 from taggit.forms import TagField
+from django.core.management import call_command
+from slugify import slugify
+from django.contrib import messages
 
 from treebeard.admin import TreeAdmin
 from treebeard.forms import movenodeform_factory
@@ -52,7 +53,7 @@ from geonode.base.models import (
 
 from geonode.base.forms import (
     BatchEditForm,
-    BatchPermissionsForm,
+    BatchPermissionsForm, ThesaurusImportForm,
     UserAndGroupPermissionsForm
 )
 from geonode.base.widgets import TaggitSelect2Custom
@@ -273,9 +274,7 @@ class ConfigurationAdmin(admin.ModelAdmin):
 
 class ThesaurusAdmin(admin.ModelAdmin):
     change_list_template = "admin/thesauri/change_list.html"
-    change_form_template = 'admin/thesauri/change_form.html'
 
-    app_label = "base_thesaurus"
     model = Thesaurus
     list_display = ('id', 'identifier')
     list_display_links = ('id', 'identifier')
@@ -284,22 +283,28 @@ class ThesaurusAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(ThesaurusAdmin, self).get_urls()
         my_urls = [
-            path('upload/', upload_thesauro, name='base_thesaurus_upload'),
+            path('import-rdf/', self.import_rdf, name="admin")
         ]
-
-        # https://hakibenita.medium.com/how-to-add-custom-action-buttons-to-django-admin-8d266f5b0d41
-        # https://books.agiliq.com/projects/django-admin-cookbook/en/latest/action_buttons.html
-        # https://adriennedomingus.medium.com/adding-custom-views-or-templates-to-django-admin-740640cc6d42
-        # https://docs.djangoproject.com/en/dev/ref/contrib/admin/#templates-which-may-be-overridden-per-app-or-model
-
         return my_urls + urls
 
-    def set_identifier(self, request):
-        self.message_user(request, "All heroes are now immortal")
-        return HttpResponseRedirect("../")
+    def import_rdf(self, request):
+        if request.method == "POST":
+            try:
+                rdf_file = request.FILES["rdf_file"]
+                name = slugify(rdf_file.name)
+                call_command('load_thesaurus', file=rdf_file, name=name)
+                self.message_user(request, "Your RDF file has been imported", messages.SUCCESS)
+                return redirect("..")
+            except Exception as e:
+                self.message_user(request, e.args[0], messages.ERROR)
+                return redirect("..")
 
-class NameForm(forms.Form):
-    your_name = forms.CharField(label='Your name', max_length=100)
+        form = ThesaurusImportForm()
+        payload = {"form": form}
+        return render(
+            request, "admin/thesauri/upload_form.html", payload
+        )
+
 
 class ThesaurusLabelAdmin(admin.ModelAdmin):
     model = ThesaurusLabel

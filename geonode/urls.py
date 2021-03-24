@@ -36,7 +36,7 @@ from . import version
 
 from geonode.api.urls import api, router
 from geonode.api.views import verify_token, user_info, roles, users, admin_role
-from geonode.base.views import thumbnail_upload, upload_thesauro
+from geonode.base.views import thumbnail_upload
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -182,7 +182,6 @@ urlpatterns += [
 
 urlpatterns += i18n_patterns(
     url(r'^grappelli/', include('grappelli.urls')),
-    url(r'^admin/base/thesaurus/upload', upload_thesauro, name="upload_thesauro"),
     url(r'^admin/', admin.site.urls, name="admin"),
 )
 

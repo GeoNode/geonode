@@ -20,7 +20,6 @@
 
 
 # Geonode functionality
-from django import forms
 from django.shortcuts import render
 from django.conf import settings
 from django.http import HttpResponse
@@ -32,7 +31,6 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from dal import views, autocomplete
-from django.views.generic.base import TemplateResponseMixin
 from user_messages.models import Message
 from guardian.shortcuts import get_objects_for_user
 
@@ -395,11 +393,3 @@ class OwnerRightsRequestView(LoginRequiredMixin, FormView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
-
-
-def upload_thesauro(request):
-    return render(request, 'admin/thesauri/change_form.html')
-
-
-class NameForm(forms.Form):
-    your_name = forms.CharField(label='Your name', max_length=100)
