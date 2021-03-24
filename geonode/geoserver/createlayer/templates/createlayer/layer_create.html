@@ -1,7 +1,8 @@
 {% extends "geonode_base.html" %}
 {% load i18n %}
-{% load bootstrap_tags %}
+{% load base_tags %}
 {% load staticfiles %}
+{% load bootstrap_tags %}
 
 {% block title %} {% trans "Create Layer"  %} - {{ block.super }}  {% endblock %}
 
@@ -45,7 +46,8 @@
 
   </div>
 
-  {% if GEONODE_SECURITY_ENABLED %}
+  {% display_change_perms_button resource request.user perms_list as display_perms_button %}
+  {% if display_perms_button %}
   <div class="col-md-4">
     <h3>{% trans "Permissions"  %}</h3>
     <form id="permission_form">
@@ -53,6 +55,7 @@
     </form>
   </div>
   {% endif %}
+
 </div>
 {% endblock %}
 

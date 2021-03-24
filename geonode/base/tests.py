@@ -31,6 +31,7 @@ from io import BytesIO
 from PIL import Image
 
 from geonode.base.utils import OwnerRightsRequestViewUtils, ManageResourceOwnerPermissions
+from geonode.base.templatetags.base_tags import display_change_perms_button
 from geonode.documents.models import Document
 from geonode.layers.models import Layer
 from geonode.maps.models import Map
@@ -769,6 +770,20 @@ class TestOwnerRightsRequestUtils(TestCase):
     def test_msg_recipients_workflow_off(self):
         users_count = 0
         self.assertEqual(users_count, OwnerRightsRequestViewUtils.get_message_recipients(self.user).count())
+
+    @override_settings(ADMIN_MODERATE_UPLOADS=True)
+    def test_display_change_perms_button_tag_moderated(self):
+        admin_perms = display_change_perms_button(self.la, self.admin, {})
+        user_perms = display_change_perms_button(self.la, self.user, {})
+        self.assertTrue(admin_perms)
+        self.assertFalse(user_perms)
+
+    @override_settings(ADMIN_MODERATE_UPLOADS=False)
+    def test_display_change_perms_button_tag_standard(self):
+        admin_perms = display_change_perms_button(self.la, self.admin, {})
+        user_perms = display_change_perms_button(self.la, self.user, {})
+        self.assertTrue(admin_perms)
+        self.assertTrue(user_perms)
 
 
 class TestGetVisibleResource(TestCase):
