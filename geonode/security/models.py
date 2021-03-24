@@ -388,3 +388,46 @@ class PermissionLevelMixin(object):
             if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                 if self.polymorphic_ctype.name == 'layer':
                     sync_geofence_with_guardian(self.layer, VIEW_PERMISSIONS)
+
+    def get_user_perms(self, user):
+        """
+        Returns a list of permissions a user has on a given resource
+        """
+        resource = self.get_self_resource()
+        user_resource_perms = get_users_with_perms(resource).get(user, [])
+        try:
+            if hasattr(self, "layer"):
+                user_resource_perms.extend(
+                    get_users_with_perms(self.layer).get(user, [])
+                    )
+        except Exception:
+            logger.debug(traceback.format_exc())
+
+        return user_resource_perms
+
+    def user_can(self, user, permission):
+        """
+        Checks if a has a given permission to the resource
+        """
+        # To avoid circular import
+        from geonode.base.models import Configuration
+
+        config = Configuration.load()
+        # Check read-only status if given permission is for edit, change or publish
+        perm_prefixes = ['change', 'delete', 'publish']
+        if any(prefix in permission for prefix in perm_prefixes):
+            if config.read_only:
+                return False
+        user_perms = self.get_user_perms(user)
+        is_admin = user.is_superuser
+        is_staff = user.is_staff
+        is_owner = user == self.owner
+        try:
+            is_manager = user.groupmember_set.all().filter(
+                role='manager').exists()
+        except Exception:
+            is_manager = False
+        has_access = is_admin or is_staff or is_owner or is_manager or user.has_perm(permission, obj=self)
+        if permission in user_perms or has_access:
+            return True
+        return False
