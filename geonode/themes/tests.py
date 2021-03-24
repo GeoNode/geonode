@@ -20,7 +20,7 @@
 import logging
 from deprecated import deprecated
 
-from geonode import get_version
+from geonode import __version__
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from .models import GeoNodeThemeCustomization
@@ -36,8 +36,7 @@ class ThemeLibraryTest(GeoNodeBaseTestSupport):
         response = self.client.get('/')
         logger.error("!! With the new geonode-mapstore-client landing page, this test must be changed.")
         logger.error("WARNING: different for 3.2.x and 3.1.x")
-        version = [int(_v) for _v in get_version()[:5].split(".")]
-        if version[0] == 3 and (version[1] == 1 or (version[1] == 2 and version[2] <= 2)):
+        if __version__[0] == 3 and (__version__[1] == 1 or (__version__[1] == 2 and __version__[3] != 'unstable')):
             self.assertContains(
                 response, "GeoNode is an open source platform for sharing geospatial data and maps.")
             # Creating a theme should change the welcome text
