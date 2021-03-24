@@ -1,6 +1,7 @@
 {% extends "documents/document_upload_base.html" %}
-{% load bootstrap_tags %}
 {% load i18n %}
+{% load base_tags %}
+{% load bootstrap_tags %}
 
 {% block title %} {% trans "Upload Document" %} - {{ block.super }} {% endblock %}
 
@@ -20,12 +21,15 @@
 
 {% block sidebar %}
 
-<div class="col-md-4">
-  <h3>{% trans "Permissions"  %}</h3>
-  <form id="permission_form">
-    {% include "_permissions.html" %}
-  </form>
-</div>
+  {% display_change_perms_button resource request.user perms_list as display_perms_button %}
+  {% if display_perms_button %}
+  <div class="col-md-4">
+    <h3>{% trans "Permissions"  %}</h3>
+    <form id="permission_form">
+      {% include "_permissions.html" %}
+    </form>
+  </div>
+  {% endif %}
 
 {% endblock %}
 
