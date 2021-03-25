@@ -20,18 +20,18 @@
 
 import os
 import re
-import six
 import sys
+import shutil
 import hashlib
 import psycopg2
 import traceback
 import dateutil.parser
+import logging
 
 from configparser import ConfigParser
 
 from django.core.management.base import CommandError
 
-import logging
 
 MEDIA_ROOT = 'uploaded'
 STATIC_ROOT = 'static_root'
@@ -39,8 +39,8 @@ STATICFILES_DIRS = 'static_dirs'
 TEMPLATE_DIRS = 'template_dirs'
 LOCALE_PATHS = 'locale_dirs'
 EXTERNAL_ROOT = 'external'
-
 logger = logging.getLogger(__name__)
+
 
 def option(parser):
 
@@ -175,7 +175,7 @@ def get_db_conn(db_name, db_user, db_port, db_host, db_passwd):
     db_host = db_host if db_host is not None else 'localhost'
     db_port = db_port if db_port is not None else 5432
     conn = psycopg2.connect(
-        "dbname='%s' user='%s' port='%s' host='%s' password='%s'" % (db_name, db_user, db_port, db_host, db_passwd)
+        f"dbname='{db_name}' user='{db_user}' port='{db_port}' host='{db_host}' password='{db_passwd}'"
     )
     return conn
 
@@ -190,6 +190,7 @@ def patch_db(db_name, db_user, db_port, db_host, db_passwd, truncate_monitoring=
         curs.execute("ALTER TABLE base_link ALTER COLUMN resource_id DROP NOT NULL;")
         if truncate_monitoring:
             curs.execute("TRUNCATE monitoring_notificationreceiver CASCADE;")
+        conn.commit()
     except Exception:
         try:
             conn.rollback()
@@ -197,8 +198,9 @@ def patch_db(db_name, db_user, db_port, db_host, db_passwd, truncate_monitoring=
             pass
 
         traceback.print_exc()
-
-    conn.commit()
+    finally:
+        curs.close()
+        conn.close()
 
 
 def cleanup_db(db_name, db_user, db_port, db_host, db_passwd):
@@ -209,6 +211,7 @@ def cleanup_db(db_name, db_user, db_port, db_host, db_passwd):
     try:
         curs.execute("DELETE FROM base_contactrole WHERE resource_id is NULL;")
         curs.execute("DELETE FROM base_link WHERE resource_id is NULL;")
+        conn.commit()
     except Exception:
         try:
             conn.rollback()
@@ -216,8 +219,9 @@ def cleanup_db(db_name, db_user, db_port, db_host, db_passwd):
             pass
 
         traceback.print_exc()
-
-    conn.commit()
+    finally:
+        curs.close()
+        conn.close()
 
 
 def flush_db(db_name, db_user, db_port, db_host, db_passwd):
@@ -228,7 +232,7 @@ def flush_db(db_name, db_user, db_port, db_host, db_passwd):
     curs = conn.cursor()
 
     try:
-        sql_dump = """SELECT tablename from pg_tables where tableowner = '%s'""" % (db_user)
+        sql_dump = f"""SELECT tablename from pg_tables where tableowner = '{db_user}'"""
         curs.execute(sql_dump)
         pg_tables = curs.fetchall()
         for table in pg_tables:
@@ -236,16 +240,16 @@ def flush_db(db_name, db_user, db_port, db_host, db_passwd):
                 continue
             print("Flushing Data : " + table[0])
             curs.execute("TRUNCATE " + table[0] + " CASCADE;")
-
+        conn.commit()
     except Exception:
         try:
             conn.rollback()
         except Exception:
             pass
-
         traceback.print_exc()
-
-    conn.commit()
+    finally:
+        curs.close()
+        conn.close()
 
 
 def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder):
@@ -256,7 +260,7 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
     curs = conn.cursor()
 
     try:
-        sql_dump = """SELECT tablename from pg_tables where tableowner = '%s'""" % (db_user)
+        sql_dump = f"""SELECT tablename from pg_tables where tableowner = '{db_user}'"""
         curs.execute(sql_dump)
         pg_all_tables = [table[0] for table in curs.fetchall()]
         pg_tables = []
@@ -272,22 +276,24 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
         else:
             pg_tables = pg_all_tables
 
+        print(f"Dumping existing GeoServer Vectorial Data: {pg_tables}")
+        empty_folder(target_folder)
         for table in pg_tables:
-            print("Dumping GeoServer Vectorial Data : {}:{}".format(db_name, table))
+            print(f"Dump Table: {db_name}:{table}")
             os.system('PGPASSWORD="' + db_passwd + '" ' + config.pg_dump_cmd + ' -h ' + db_host +
                       ' -p ' + str(db_port) + ' -U ' + db_user + ' -F c -b' +
                       ' -t \'"' + str(table) + '"\' -f ' +
                       os.path.join(target_folder, table + '.dump ' + db_name))
-
+        conn.commit()
     except Exception:
         try:
             conn.rollback()
         except Exception:
             pass
-
         traceback.print_exc()
-
-    conn.commit()
+    finally:
+        curs.close()
+        conn.close()
 
 
 def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_folder, preserve_tables):
@@ -302,47 +308,50 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
         file_names = [fn for fn in os.listdir(source_folder)
                       if any(fn.endswith(ext) for ext in included_extenstions)]
         for table in file_names:
-            print("Restoring GeoServer Vectorial Data : {}:{} ".format(db_name, os.path.splitext(table)[0]))
+            print(f"Restoring GeoServer Vectorial Data : {db_name}:{os.path.splitext(table)[0]} ")
             pg_rstcmd = 'PGPASSWORD="' + db_passwd + '" ' + config.pg_restore_cmd + ' -h ' + db_host + \
                         ' -p ' + str(db_port) + ' -U ' + db_user + ' --role=' + db_user + \
                         ' -F c -t "' + os.path.splitext(table)[0] + '" ' +\
                         os.path.join(source_folder, table) + ' -d ' + db_name
             pg_rstcmd += " -c" if preserve_tables else ""
             os.system(pg_rstcmd)
-
-    except Exception:
-        try:
-            conn.rollback()
-        except Exception:
-            pass
-
-        traceback.print_exc()
-
-    conn.commit()
-
-
-def remove_existing_tables(db_name, db_user, db_port, db_host, db_passwd):
-    conn = get_db_conn(db_name, db_user, db_port, db_host, db_passwd)
-    curs = conn.cursor()
-    table_list = """SELECT tablename from pg_tables where tableowner = '%s'""" % (db_user)
-
-    try:
-        curs.execute(table_list)
-        pg_all_tables = [table[0] for table in curs.fetchall()]
-        for pg_table in pg_all_tables:
-            logger.info("Dropping existing GeoServer Vectorial Data : {}:{} ".format(db_name, pg_table))
-            curs.execute(f"DROP TABLE \"{pg_table}\" CASCADE")
-
         conn.commit()
     except Exception:
         try:
             conn.rollback()
         except Exception:
             pass
-
         traceback.print_exc()
-    curs.close()
-    conn.close()
+    finally:
+        conn.close()
+
+
+def remove_existing_tables(db_name, db_user, db_port, db_host, db_passwd):
+    conn = get_db_conn(db_name, db_user, db_port, db_host, db_passwd)
+    curs = conn.cursor()
+    table_list = f"""SELECT tablename from pg_tables where tableowner = '{db_user}'"""
+
+    try:
+        curs.execute(table_list)
+        pg_all_tables = [table[0] for table in curs.fetchall()]
+        print(f"Dropping existing GeoServer Vectorial Data: {table_list}")
+        for pg_table in pg_all_tables:
+            print(f"Drop Table: {db_name}:{pg_table} ")
+            try:
+                curs.execute(f"DROP TABLE \"{pg_table}\" CASCADE")
+            except Exception as e:
+                print(f"Error Droping Table: {e}")
+        conn.commit()
+    except Exception as e:
+        print(f"Error Removing GeoServer Vectorial Data Tables: {e}")
+        try:
+            conn.rollback()
+        except Exception:
+            pass
+        traceback.print_exc()
+    finally:
+        curs.close()
+        conn.close()
 
 
 def confirm(prompt=None, resp=False):
@@ -367,15 +376,15 @@ def confirm(prompt=None, resp=False):
         prompt = 'Confirm'
 
     if resp:
-        prompt = '%s [%s]|%s: ' % (prompt, 'y', 'n')
+        prompt = f'{prompt} [y]|n: '
     else:
-        prompt = '%s [%s]|%s: ' % (prompt, 'n', 'y')
+        prompt = f'{prompt} [n]|y: '
 
     while True:
-        ans = six.moves.input(prompt)
+        ans = input(prompt)
         if not ans:
             return resp
-        if ans not in ['y', 'Y', 'n', 'N']:
+        if ans not in {'y', 'Y', 'n', 'N'}:
             print('please enter y or n.')
             continue
         if ans == 'y' or ans == 'Y':
@@ -428,10 +437,10 @@ def glob2re(pat):
         c = pat[i]
         i = i+1
         if c == '*':
-            #res = res + '.*'
+            # res = res + '.*'
             res = res + '[^/]*'
         elif c == '?':
-            #res = res + '.'
+            # res = res + '.'
             res = res + '[^/]'
         elif c == '[':
             j = i
@@ -450,7 +459,7 @@ def glob2re(pat):
                     stuff = '^' + stuff[1:]
                 elif stuff[0] == '^':
                     stuff = '\\' + stuff
-                res = '%s[%s]' % (res, stuff)
+                res = f'{res}[{stuff}]'
         else:
             res = res + re.escape(c)
     return res + r'\Z(?ms)'
@@ -458,3 +467,15 @@ def glob2re(pat):
 
 def glob_filter(names, pat):
     return (name for name in names if re.match(glob2re(pat), name))
+
+
+def empty_folder(folder):
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print('Failed to delete %s. Reason: %s' % (file_path, e))
