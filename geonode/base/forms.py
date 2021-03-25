@@ -683,3 +683,7 @@ class OwnerRightsRequestForm(forms.Form):
 
     class Meta:
         fields = ['reason', 'resource']
+
+
+class ThesaurusImportForm(forms.Form):
+    rdf_file = forms.FileField()
