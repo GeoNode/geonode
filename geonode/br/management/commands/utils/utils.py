@@ -330,7 +330,7 @@ def remove_existing_tables(db_name, db_user, db_port, db_host, db_passwd):
         pg_all_tables = [table[0] for table in curs.fetchall()]
         for pg_table in pg_all_tables:
             logger.info(f"Dropping existing GeoServer Vectorial Data : {db_name}:{pg_table} ")
-            curs.execute(f"DROP TABLE {pg_table} CASCADE")
+            curs.execute(f"DROP TABLE \"{pg_table}\" CASCADE")
 
         conn.commit()
     except Exception:
