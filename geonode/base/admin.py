@@ -21,10 +21,13 @@
 from django import forms
 from django.contrib import admin
 from django.conf import settings
-from django.shortcuts import render
-
+from django.shortcuts import redirect, render
+from django.urls import path
 from dal import autocomplete
 from taggit.forms import TagField
+from django.core.management import call_command
+from slugify import slugify
+from django.contrib import messages
 
 from treebeard.admin import TreeAdmin
 from treebeard.forms import movenodeform_factory
@@ -50,7 +53,7 @@ from geonode.base.models import (
 
 from geonode.base.forms import (
     BatchEditForm,
-    BatchPermissionsForm,
+    BatchPermissionsForm, ThesaurusImportForm,
     UserAndGroupPermissionsForm
 )
 from geonode.base.widgets import TaggitSelect2Custom
@@ -270,10 +273,37 @@ class ConfigurationAdmin(admin.ModelAdmin):
 
 
 class ThesaurusAdmin(admin.ModelAdmin):
+    change_list_template = "admin/thesauri/change_list.html"
+
     model = Thesaurus
     list_display = ('id', 'identifier')
     list_display_links = ('id', 'identifier')
     ordering = ('identifier',)
+
+    def get_urls(self):
+        urls = super(ThesaurusAdmin, self).get_urls()
+        my_urls = [
+            path('importrdf/', self.import_rdf, name="base_thesaurus_importrdf")
+        ]
+        return my_urls + urls
+
+    def import_rdf(self, request):
+        if request.method == "POST":
+            try:
+                rdf_file = request.FILES["rdf_file"]
+                name = slugify(rdf_file.name)
+                call_command('load_thesaurus', file=rdf_file, name=name)
+                self.message_user(request, "Your RDF file has been imported", messages.SUCCESS)
+                return redirect("..")
+            except Exception as e:
+                self.message_user(request, e.args[0], messages.ERROR)
+                return redirect("..")
+
+        form = ThesaurusImportForm()
+        payload = {"form": form}
+        return render(
+            request, "admin/thesauri/upload_form.html", payload
+        )
 
 
 class ThesaurusLabelAdmin(admin.ModelAdmin):
