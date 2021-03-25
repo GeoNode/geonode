@@ -919,6 +919,7 @@ class TestHtmlTagRemoval(SimpleTestCase):
         filtered_value = r._remove_html_tags(tagged_value)
         self.assertEqual(filtered_value, attribute_target_value)
 
+
 class TestTagThesaurus(TestCase):
     #  loading test thesausurs
     fixtures = [
