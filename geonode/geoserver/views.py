@@ -372,8 +372,7 @@ def feature_edit_check(request, layername, permission='change_layer_data'):
     if is_admin or is_staff or is_owner or is_manager or request.user.has_perm(
             permission,
             obj=layer) and \
-            ((permission == 'change_layer_data' and layer.storeType == 'dataStore' and feature_edit) or
-             True):
+            layer.storeType == 'dataStore' and feature_edit:
         return HttpResponse(
             json.dumps({'authorized': True}), content_type="application/json")
     else:
