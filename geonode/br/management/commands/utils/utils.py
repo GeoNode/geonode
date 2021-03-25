@@ -31,6 +31,7 @@ from configparser import ConfigParser
 
 from django.core.management.base import CommandError
 
+import logging
 
 MEDIA_ROOT = 'uploaded'
 STATIC_ROOT = 'static_root'
@@ -39,6 +40,7 @@ TEMPLATE_DIRS = 'template_dirs'
 LOCALE_PATHS = 'locale_dirs'
 EXTERNAL_ROOT = 'external'
 
+logger = logging.getLogger(__name__)
 
 def option(parser):
 
@@ -329,7 +331,7 @@ def remove_existing_tables(db_name, db_user, db_port, db_host, db_passwd):
         pg_all_tables = [table[0] for table in curs.fetchall()]
         for pg_table in pg_all_tables:
             logger.info("Dropping existing GeoServer Vectorial Data : {}:{} ".format(db_name, pg_table))
-            curs.execute(f"DROP TABLE {pg_table} CASCADE")
+            curs.execute(f"DROP TABLE \"{pg_table}\" CASCADE")
 
         conn.commit()
     except Exception:
