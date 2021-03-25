@@ -652,7 +652,7 @@ class Command(BaseCommand):
             'BK_CLEANUP_TEMP=true',
             f'BK_SKIP_SETTINGS={("true" if skip_geoserver_info else "false")}',
             f'BK_SKIP_SECURITY={("true" if skip_geoserver_security else "false")}',
-            f'BK_BEST_EFFORT={("true" if ignore_errors else "false")}',
+            'BK_BEST_EFFORT=true',
             f'exclude.file.path={config.gs_exclude_file_path}'
         ]
         data = {'restore': {'archiveFile': geoserver_bk_file,
