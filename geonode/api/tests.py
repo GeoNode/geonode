@@ -631,7 +631,7 @@ class LayerResourceTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'resource_name': 'layers'})
         all_public()
         self.token = get_or_create_token(self.user)
-        self.auth_header = 'Bearer {}'.format(self.token)
+        self.auth_header = f'Bearer {self.token}'
 
     def test_the_api_should_return_all_layers_with_metadata_false(self):
         resp = self.api_client.get(self.list_url, authentication=self.auth_header)

@@ -242,10 +242,9 @@
             $(target).toggleClass("input-empty", empty);
             if (target.id.startsWith('id_tkeywords')) {
                 $("#" + target.id).closest("p").toggleClass("has-error", empty);   
-            }
+              }
           }
           var imgMissing = $('img#image').attr('src');
-          console.log(target.id + ": " + imgMissing)
           if (imgMissing && !imgMissing.includes('missing_thumb')) {
               $('input#id_crop_file').removeClass("input-empty");
               $('input#id_crop_file').parent().find(".mandatory-warning").remove();
@@ -390,18 +389,18 @@
         };
         {% endblock onInputChange %}
         {% block trigger_onInputChange %}
+
         {{UI_REQUIRED_FIELDS}}.forEach(element => $('#' + element).change(onInputChange).change());
+
         $('#category_form').change(onInputChange).change();
         $('#id_resource-group').change(onInputChange).change();
 
         $('#id_resource-date').change(onInputChange).change();
         $('#id_resource-links').change(onInputChange).change();
 
-        document.querySelector('select[name="resource-keywords"]').onchange=onInputChange;
         {{REQ_THESAURI}}.forEach(element => document.querySelector('select[name="'+ element + '"]').onchange=onInputChange);
-        $( ':input[id*="id_tkeywords"][required]:visible').each( function () {
-            $('#' + this.id).change(onInputChange).change();
-        });
+
+        document.querySelector('select[name="resource-keywords"]').onchange=onInputChange
 
         $('#id_resource-regions').change(onInputChange).change();
         $('#id_resource-temporal_extent_end').on('blur', function() {$(this).change(onInputChange).change();})
@@ -581,11 +580,11 @@
                     }
                 });
             if (errors.length > 1) {
-                e.preventDefault();
-                console.error("Please, fill the following items before clicking on preview: " + errors)
-                $(".general_errors").find("p").html(errors.join('<br>'));
-                $('#error_mandatoryDialog').modal();
-            } else if
+	                e.preventDefault();
+                    console.error("Please, fill the following items before clicking on preview: " + errors)
+                    $(".general_errors").find("p").html(errors.join('<br>'));
+                    $('#error_mandatoryDialog').modal();
+                } else if
             ( is_category_mandatory &&
                 (
                     (!is_advanced && $('#category_form').hasClass("input-empty")) ||
