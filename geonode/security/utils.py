@@ -32,12 +32,14 @@ from requests.auth import HTTPBasicAuth
 from django.conf import settings
 from django.db.models import Q
 from django.contrib.auth import get_user_model
-from django.core.exceptions import PermissionDenied
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Group, Permission
 from django.core.exceptions import ObjectDoesNotExist
 from guardian.utils import get_user_obj_perms_model
-from guardian.shortcuts import assign_perm, get_anonymous_user
+from guardian.shortcuts import (
+    assign_perm,
+    get_anonymous_user,
+    get_objects_for_user)
 
 from geonode.utils import get_layer_workspace
 from geonode.groups.models import GroupProfile
@@ -106,16 +108,8 @@ def get_visible_resources(queryset,
             filter_set = filter_set.exclude(Q(dirty_state=True))
 
         if admin_approval_required or unpublished_not_visible or private_groups_not_visibile:
-            _allowed_resources = []
-            for _obj in filter_set.all():
-                try:
-                    resource = _obj.get_self_resource()
-                    if user.has_perm('base.view_resourcebase', resource) or \
-                    user.has_perm('view_resourcebase', resource):
-                        _allowed_resources.append(resource.id)
-                except (PermissionDenied, Exception) as e:
-                    logger.debug(e)
-            return filter_set.filter(id__in=_allowed_resources)
+            _allowed_resources = get_objects_for_user(user, 'base.view_resourcebase')
+            return filter_set.filter(id__in=_allowed_resources.values('id'))
 
     return filter_set
 
