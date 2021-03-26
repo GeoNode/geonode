@@ -19,8 +19,6 @@
 #########################################################################
 import os
 import logging
-import xml.etree.ElementTree as ET
-from defusedxml import lxml as dlxml
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -154,45 +152,13 @@ def csw_global_dispatch(request, layer_filter=None, config_updater=None):
         content = csw.dispatch_wsgi()
 
         # pycsw 2.0 has an API break:
-        # pycsw < 2.0: content = xml_response
-        # pycsw >= 2.0: content = [http_status_code, content]
+        # - pycsw < 2.0: content = xml_response
+        # - pycsw >= 2.0: content = [http_status_code, content]
         # deal with the API break
 
         if isinstance(content, list):  # pycsw 2.0+
             content = content[1]
 
-        spaces = {'csw': 'http://www.opengis.net/cat/csw/2.0.2',
-                  'dc': 'http://purl.org/dc/elements/1.1/',
-                  'dct': 'http://purl.org/dc/terms/',
-                  'gmd': 'http://www.isotc211.org/2005/gmd',
-                  'gml': 'http://www.opengis.net/gml',
-                  'ows': 'http://www.opengis.net/ows',
-                  'xs': 'http://www.w3.org/2001/XMLSchema',
-                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-                  'ogc': 'http://www.opengis.net/ogc',
-                  'gco': 'http://www.isotc211.org/2005/gco',
-                  'gmi': 'http://www.isotc211.org/2005/gmi'}
-
-        for prefix, uri in spaces.items():
-            ET.register_namespace(prefix, uri)
-
-        if access_token and not access_token.is_expired():
-            tree = dlxml.fromstring(content)
-            for online_resource in tree.findall(
-                    '*//gmd:CI_OnlineResource', spaces):
-                try:
-                    linkage = online_resource.find('gmd:linkage', spaces)
-                    for url in linkage.findall('gmd:URL', spaces):
-                        if url.text:
-                            if '?' not in url.text:
-                                url.text += "?"
-                            else:
-                                url.text += "&"
-                            url.text += f"access_token={access_token.token}"
-                            url.set('updated', 'yes')
-                except Exception:
-                    pass
-            content = ET.tostring(tree, encoding='utf8', method='xml')
     finally:
         # Restore original filter before doing anything
         mdict['repository']['filter'] = mdict_filter
