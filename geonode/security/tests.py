@@ -59,7 +59,8 @@ from geonode.geoserver.upload import geoserver_upload
 from geonode.layers.populate_layers_data import create_layer_data
 
 from .utils import (
-    get_visible_resources, purge_geofence_all,
+    get_visible_resources,
+    purge_geofence_all,
     get_users_with_perms,
     get_geofence_rules,
     get_geofence_rules_count,
