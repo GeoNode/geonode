@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import logging
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import Client
 from selenium import webdriver
@@ -33,10 +33,11 @@ except ImportError:
     import mock
 from owslib.map.wms111 import ContentMetadata
 
-from geonode.services.utils import test_resource_table_status
+from geonode.layers.models import Layer
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.services.utils import test_resource_table_status
 from . import enumerations, forms
-from .models import Service
+from .models import HarvestJob, Service
 from .serviceprocessors import (
     base,
     handler,
@@ -48,6 +49,8 @@ from .serviceprocessors.wms import WebMapService
 from arcrest import MapService as ArcMapService
 from owslib.wms import WebMapService as OwsWebMapService
 from collections import namedtuple
+
+logger = logging.getLogger(__name__)
 
 
 class ModuleFunctionsTestCase(StandardTestCase):
@@ -371,7 +374,139 @@ class ModuleFunctionsTestCase(StandardTestCase):
             maxScale=0
         )
         resource_fields = handler._get_indexed_layer_fields(layer_meta)
-        self.assertEqual(resource_fields['alternate'], '0-droits-ptroliers-et-gaziers-oil-and-gas-rights')
+        self.assertEqual(resource_fields['alternate'], f'{slugify(phony_url)}:{layer_meta.id}')
+
+    @mock.patch("arcrest.MapService",
+                autospec=True)
+    def test_get_arcgis_alternative_structure(self, mock_map_service):
+
+        LayerESRIExtent = namedtuple('LayerESRIExtent', 'spatialReference xmin ymin ymax xmax')
+        LayerESRIExtentSpatialReference = namedtuple('LayerESRIExtentSpatialReference', 'wkid latestWkid')
+
+        mock_arcgis_service_contents = {
+            'copyrightText': '',
+            'description': '',
+            'documentInfo': {
+                'Author': 'Administrator',
+                'Category': '',
+                'Comments': '',
+                'Keywords': '',
+                'Subject': '',
+                'Title': 'basemap_ortofoto_AGEA2011'
+            },
+            'fullExtent': {
+                'xmax': 579764.2319999984,
+                'xmin': 386130.6820000001,
+                'ymax': 4608909.064,
+                'ymin': 4418016.7140000025
+            },
+            'initialExtent': {
+                'xmax': 605420.5635976626,
+                'xmin': 349091.7176066373,
+                'ymax': 4608197.140968505,
+                'ymin': 4418728.637031497
+            },
+            'layers': [
+                {
+                    'copyrightText': '',
+                    'definitionExpression': '',
+                    'description': '',
+                    'displayField': '',
+                    'extent': LayerESRIExtent(
+                        LayerESRIExtentSpatialReference(None, None),
+                        570962.7069999985,
+                        4600232.139,
+                        394932.207,
+                        4426693.639000002),
+                    'fields': [],
+                    'geometryType': '',
+                    'id': 1,
+                    'maxScale': 0.0,
+                    'minScale': 0.0,
+                    'name': 'Regione_Campania.ecw',
+                    'title': 'Regione_Campania.ecw',
+                    'parentLayer': {
+                        'id': -1,
+                        'name': '-1'
+                    },
+                    'subLayers': [],
+                    'type': 'Raster Layer'
+                }
+            ],
+            'mapName': 'Layers',
+            'serviceDescription': '',
+            'singleFusedMapCache': True,
+            'spatialReference': None,
+            'tileInfo': {
+                'cols': 512,
+                'compressionQuality': 0,
+                'dpi': 96,
+                'format': 'PNG8',
+                'lods': [
+                    {'level': 0, 'resolution': 185.20870375074085, 'scale': 700000.0},
+                    {'level': 1, 'resolution': 66.1459656252646, 'scale': 250000.0},
+                    {'level': 2, 'resolution': 26.458386250105836, 'scale': 100000.0},
+                    {'level': 3, 'resolution': 19.843789687579378, 'scale': 75000.0},
+                    {'level': 4, 'resolution': 13.229193125052918, 'scale': 50000.0},
+                    {'level': 5, 'resolution': 6.614596562526459, 'scale': 25000.0},
+                    {'level': 6, 'resolution': 2.6458386250105836, 'scale': 10000.0},
+                    {'level': 7, 'resolution': 1.3229193125052918, 'scale': 5000.0},
+                    {'level': 8, 'resolution': 0.5291677250021167, 'scale': 2000.0}
+                ],
+                'origin': {
+                    'x': 289313.907000001,
+                    'y': 4704355.239
+                },
+                'rows': 512,
+                'spatialReference': None
+            },
+            'units': 'esriMeters'
+        }
+
+        phony_url = "http://sit.cittametropolitana.na.it/arcgis/rest/services/basemap_ortofoto_AGEA2011/MapServer"
+        mock_parsed_arcgis = mock.MagicMock(ArcMapService).return_value
+        (url, mock_parsed_arcgis) = mock.MagicMock(ArcMapService,
+                                                   return_value=(phony_url,
+                                                                 mock_parsed_arcgis)).return_value
+        mock_parsed_arcgis.url = phony_url
+        mock_parsed_arcgis.layers = mock_arcgis_service_contents['layers']
+        mock_parsed_arcgis._contents = mock_arcgis_service_contents
+        mock_parsed_arcgis._json_struct = mock_arcgis_service_contents
+
+        mock_map_service.return_value = (phony_url, mock_parsed_arcgis)
+
+        handler = arcgis.ArcImageServiceHandler(phony_url)
+        self.assertEqual(handler.url, phony_url)
+
+        layer_meta = handler._layer_meta(mock_parsed_arcgis.layers[0])
+        self.assertIsNotNone(layer_meta)
+        self.assertEqual(layer_meta.id, 1)
+        resource_fields = handler._get_indexed_layer_fields(layer_meta)
+        self.assertEqual(resource_fields['alternate'], f'{slugify(phony_url)}:{layer_meta.id}')
+
+        test_user, created = get_user_model().objects.get_or_create(username="serviceowner")
+        if created:
+            test_user.set_password("somepassword")
+            test_user.save()
+        result = handler.create_geonode_service(test_user)
+        try:
+            geonode_service, created = Service.objects.get_or_create(base_url=result.base_url)
+            Layer.objects.filter(remote_service=geonode_service).delete()
+            HarvestJob.objects.filter(service=geonode_service).delete()
+            handler._harvest_resource(layer_meta, geonode_service)
+            geonode_layer = Layer.objects.filter(remote_service=geonode_service).get()
+            self.assertIsNotNone(geonode_layer)
+            harvest_job, created = HarvestJob.objects.get_or_create(
+                service=geonode_service,
+                resource_id=geonode_layer.alternate
+            )
+            self.assertIsNotNone(harvest_job)
+            Layer.objects.filter(remote_service=geonode_service).delete()
+            self.assertEqual(HarvestJob.objects.filter(service=geonode_service,
+                                                       resource_id=geonode_layer.alternate).count(), 0)
+        except Service.DoesNotExist as e:
+            # In the case the Service URL becomes inaccessible for some reason
+            logger.error(e)
 
 
 class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
