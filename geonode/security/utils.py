@@ -75,7 +75,7 @@ def get_visible_resources(queryset,
 
     if not is_admin:
         if admin_approval_required:
-            if not user or user.is_anonymous:
+            if not user or not user.is_authenticated or user.is_anonymous:
                 filter_set = filter_set.filter(
                     Q(is_published=True) |
                     Q(group__in=public_groups) |
@@ -84,7 +84,7 @@ def get_visible_resources(queryset,
 
         # Hide Unpublished Resources to Anonymous Users
         if unpublished_not_visible:
-            if not user or user.is_anonymous:
+            if not user or not user.is_authenticated or user.is_anonymous:
                 filter_set = filter_set.exclude(Q(is_published=False))
 
         # Hide Resources Belonging to Private Groups
@@ -104,12 +104,13 @@ def get_visible_resources(queryset,
                 Q(dirty_state=True) & ~(
                     Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all))
             )
-        elif not user or user.is_anonymous:
+        else:
             filter_set = filter_set.exclude(Q(dirty_state=True))
 
         if admin_approval_required or unpublished_not_visible or private_groups_not_visibile:
-            _allowed_resources = get_objects_for_user(user, 'base.view_resourcebase')
-            return filter_set.filter(id__in=_allowed_resources.values('id'))
+            if user:
+                _allowed_resources = get_objects_for_user(user, 'base.view_resourcebase')
+                return filter_set.filter(id__in=_allowed_resources.values('id'))
 
     return filter_set
 
