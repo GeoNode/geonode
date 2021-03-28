@@ -694,6 +694,16 @@ def post_delete_layer(instance, sender, **kwargs):
     Remove the layer default style.
     """
     if instance.remote_service is not None and instance.remote_service.method == INDEXED:
+        try:
+            from geonode.services.models import HarvestJob
+            HarvestJob.objects.filter(
+                service=instance.remote_service, resource_id=instance.alternate).delete()
+            resource_id = instance.alternate.split(":")[-1] if len(instance.alternate.split(":")) else None
+            if resource_id:
+                HarvestJob.objects.filter(
+                    service=instance.remote_service, resource_id=resource_id).delete()
+        except Exception as e:
+            logger.exception(e)
         return
 
     from geonode.maps.models import MapLayer
