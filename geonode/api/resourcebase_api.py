@@ -228,6 +228,12 @@ class CommonModelApi(ModelResource):
         else:
             filtered = semi_filtered
 
+        if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
+            filtered = self.filter_published(filtered, request)
+
+        if settings.GROUP_PRIVATE_RESOURCES:
+            filtered = self.filter_group(filtered, request)
+
         if extent:
             filtered = self.filter_bbox(filtered, extent)
 
@@ -242,16 +248,26 @@ class CommonModelApi(ModelResource):
                     Q(owner__username__iexact=str(user))))
             else:
                 filtered = filtered.exclude(Q(dirty_state=True))
+        return filtered
 
-        filtered = get_visible_resources(
-            filtered,
+    def filter_published(self, queryset, request):
+        filter_set = get_visible_resources(
+            queryset,
             request.user if request else None,
             request=request,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING)
+
+        return filter_set
+
+    def filter_group(self, queryset, request):
+        filter_set = get_visible_resources(
+            queryset,
+            request.user if request else None,
+            request=request,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
-        return filtered
+        return filter_set
 
     def filter_h_keywords(self, queryset, keywords):
         filtered = queryset
