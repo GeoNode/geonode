@@ -109,24 +109,31 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             method=self.indexing_method,
             owner=owner,
             parent=parent,
-            version=self.parsed_service._json_struct["currentVersion"],
+            version=self.parsed_service._json_struct.get("currentVersion", 0.0),
             name=self.name,
             title=self.title,
-            abstract=self.parsed_service._json_struct["serviceDescription"] or _(
+            abstract=self.parsed_service._json_struct.get("serviceDescription") or _(
                 "Not provided"),
             online_resource=self.parsed_service.url,
         )
         return instance
 
     def get_keywords(self):
-        return self.parsed_service._json_struct["capabilities"].split(",")
+        return self.parsed_service._json_struct.get("capabilities", "").split(",")
 
     def get_resource(self, resource_id):
         ll = None
         try:
             ll = self.parsed_service.layers[int(resource_id)]
-        except Exception:
-            traceback.print_exc()
+        except Exception as e:
+            logger.exception(e)
+            for layer in self.parsed_service.layers:
+                try:
+                    if int(layer.id) == int(resource_id):
+                        ll = layer
+                        break
+                except Exception as e:
+                    logger.exception(e)
 
         return self._layer_meta(ll) if ll else None
 
@@ -151,18 +158,51 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         return map_layers
 
     def _layer_meta(self, layer):
+        _ll_keys = [
+            'id',
+            'title',
+            'abstract',
+            'type',
+            'geometryType',
+            'copyrightText',
+            'extent',
+            'fields',
+            'minScale',
+            'maxScale'
+        ]
         _ll = {}
-        _ll['id'] = layer.id
-        _ll['title'] = layer.name
-        _ll['abstract'] = layer.name
-        _ll['type'] = layer.type
-        _ll['geometryType'] = layer.geometryType
-        _ll['copyrightText'] = layer.copyrightText
-        _ll['extent'] = layer.extent
-        _ll['fields'] = layer.fields
-        _ll['minScale'] = layer.minScale
-        _ll['maxScale'] = layer.maxScale
+        if isinstance(layer, dict):
+            for _key in _ll_keys:
+                _ll[_key] = layer[_key] if _key in layer else None
+        else:
+            for _key in _ll_keys:
+                _ll[_key] = getattr(layer, _key, None)
+        if not _ll['title'] and getattr(layer, 'name'):
+            _ll['title'] = getattr(layer, 'name')
         return MapLayer(**_ll)
+
+    def _harvest_resource(self, layer_meta, geonode_service):
+        resource_fields = self._get_indexed_layer_fields(layer_meta)
+        keywords = resource_fields.pop("keywords")
+        existance_test_qs = Layer.objects.filter(
+            name=resource_fields["name"],
+            store=resource_fields["store"],
+            workspace=resource_fields["workspace"]
+        )
+        if existance_test_qs.exists():
+            raise RuntimeError(
+                f"Resource {resource_fields['name']} has already been harvested")
+        resource_fields["keywords"] = keywords
+        resource_fields["is_approved"] = True
+        resource_fields["is_published"] = True
+        if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
+            resource_fields["is_approved"] = False
+            resource_fields["is_published"] = False
+        geonode_layer = self._create_layer(
+            geonode_service, **resource_fields)
+        # self._enrich_layer_metadata(geonode_layer)
+        self._create_layer_service_link(geonode_layer)
+        # self._create_layer_legend_link(geonode_layer)
 
     def harvest_resource(self, resource_id, geonode_service):
         """Harvest a single resource from the service
@@ -178,27 +218,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         """
         layer_meta = self.get_resource(resource_id)
         if layer_meta:
-            resource_fields = self._get_indexed_layer_fields(layer_meta)
-            keywords = resource_fields.pop("keywords")
-            existance_test_qs = Layer.objects.filter(
-                name=resource_fields["name"],
-                store=resource_fields["store"],
-                workspace=resource_fields["workspace"]
-            )
-            if existance_test_qs.exists():
-                raise RuntimeError(
-                    "Resource {!r} has already been harvested".format(resource_id))
-            resource_fields["keywords"] = keywords
-            resource_fields["is_approved"] = True
-            resource_fields["is_published"] = True
-            if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
-                resource_fields["is_approved"] = False
-                resource_fields["is_published"] = False
-            geonode_layer = self._create_layer(
-                geonode_service, **resource_fields)
-            # self._enrich_layer_metadata(geonode_layer)
-            self._create_layer_service_link(geonode_layer)
-            # self._create_layer_legend_link(geonode_layer)
+            self._harvest_resource(layer_meta, geonode_service)
         else:
             raise RuntimeError(
                 "Resource {!r} cannot be harvested".format(resource_id))
@@ -232,7 +252,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             "storeType": "remoteStore",
             "workspace": "remoteWorkspace",
             "typename": typename,
-            "alternate": typename,
+            "alternate": f"{slugify(self.url)}:{layer_meta.id}",
             "title": layer_meta.title,
             "abstract": layer_meta.abstract,
             "bbox_x0": bbox[0],
