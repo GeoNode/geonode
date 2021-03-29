@@ -27,7 +27,6 @@ from django.conf import settings
 from pycsw.core.repository import Repository, query_spatial, get_geometry_area
 
 from geonode.base.models import ResourceBase
-from geonode.layers.models import Layer
 
 from pycsw.core import util
 
@@ -107,14 +106,10 @@ class GeoNodeRepository(Repository):
         Query by list of identifiers
         """
 
-        results = self._get_repo_filter(
-            Layer.objects).filter(
-            uuid__in=ids).all()
-
-        if len(results) == 0:  # try services
-            results = self._get_repo_filter(
-                ResourceBase.objects).filter(
-                uuid__in=ids).all()
+        results = self\
+            ._get_repo_filter(ResourceBase.objects)\
+            .filter(uuid__in=ids)\
+            .all()
 
         return results
 
@@ -124,7 +119,7 @@ class GeoNodeRepository(Repository):
         Query by property domain values
         """
 
-        objects = self._get_repo_filter(Layer.objects)
+        objects = self._get_repo_filter(ResourceBase.objects)
 
         if domainquerytype == 'range':
             return [tuple(objects.aggregate(
@@ -141,16 +136,16 @@ class GeoNodeRepository(Repository):
         Query to get latest (default) or earliest update to repository
         """
         if direction == 'min':
-            return Layer.objects.aggregate(
+            return ResourceBase.objects.aggregate(
                 Min('last_updated'))['last_updated__min'].strftime('%Y-%m-%dT%H:%M:%SZ')
-        return self._get_repo_filter(Layer.objects).aggregate(
+        return self._get_repo_filter(ResourceBase.objects).aggregate(
             Max('last_updated'))['last_updated__max'].strftime('%Y-%m-%dT%H:%M:%SZ')
 
     def query_source(self, source):
         """
         Query by source
         """
-        return self._get_repo_filter(Layer.objects).filter(url=source)
+        return self._get_repo_filter(ResourceBase.objects).filter(url=source)
 
     def query(self, constraint, sortby=None, typenames=None,
               maxrecords=10, startposition=0):
@@ -163,13 +158,13 @@ class GeoNodeRepository(Repository):
         # search engine
         if 'where' in constraint:  # GetRecords with constraint
             query = self._get_repo_filter(
-                Layer.objects).filter(alternate__isnull=False).extra(
+                ResourceBase.objects).filter(alternate__isnull=False).extra(
                 where=[
                     constraint['where']],
                 params=constraint['values'])
         else:  # GetRecords sans constraint
             query = self._get_repo_filter(
-                Layer.objects).filter(alternate__isnull=False)
+                ResourceBase.objects).filter(alternate__isnull=False)
 
         total = query.count()
 
