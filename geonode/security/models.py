@@ -21,8 +21,9 @@ import logging
 import traceback
 
 from django.conf import settings
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 
 from geonode.groups.conf import settings as groups_settings
@@ -40,7 +41,8 @@ from .utils import (
     set_owner_permissions,
     remove_object_permissions,
     purge_geofence_layer_rules,
-    sync_geofence_with_guardian
+    sync_geofence_with_guardian,
+    get_user_obj_perms_model
 )
 
 logger = logging.getLogger("geonode.security.models")
@@ -393,15 +395,21 @@ class PermissionLevelMixin(object):
         """
         Returns a list of permissions a user has on a given resource
         """
-        resource = self.get_self_resource()
-        user_resource_perms = get_users_with_perms(resource).get(user, [])
-        try:
-            if hasattr(self, "layer"):
-                user_resource_perms.extend(
-                    get_users_with_perms(self.layer).get(user, [])
-                    )
-        except Exception:
-            logger.debug(traceback.format_exc())
+        ctype = ContentType.objects.get_for_model(self)
+        PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
+
+        resource_perms = Permission.objects.filter(
+            codename__in=PERMISSIONS_TO_FETCH,
+            content_type_id=ctype.id
+            ).values('codename')
+
+        user_model = get_user_obj_perms_model(self)
+        user_resource_perms = user_model.objects.filter(
+            object_pk=self.pk,
+            content_type_id=ctype.id,
+            user_id=user.id,
+            permission__codename__in=resource_perms
+            ).values('permission__codename')
 
         return user_resource_perms
 
