@@ -490,7 +490,9 @@ class ModuleFunctionsTestCase(StandardTestCase):
             test_user.save()
         result = handler.create_geonode_service(test_user)
         try:
-            geonode_service, created = Service.objects.get_or_create(base_url=result.base_url)
+            geonode_service, created = Service.objects.get_or_create(
+                base_url=result.base_url,
+                owner=test_user)
             Layer.objects.filter(remote_service=geonode_service).delete()
             HarvestJob.objects.filter(service=geonode_service).delete()
             handler._harvest_resource(layer_meta, geonode_service)
