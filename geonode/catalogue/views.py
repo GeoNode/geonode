@@ -19,8 +19,6 @@
 #########################################################################
 import os
 import logging
-import xml.etree.ElementTree as ET
-from defusedxml import lxml as dlxml
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -39,7 +37,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 @csrf_exempt
-def csw_global_dispatch(request):
+def csw_global_dispatch(request, layer_filter=None, config_updater=None):
     """pycsw wrapper"""
 
     # this view should only operate if pycsw_local is the backend
@@ -48,6 +46,7 @@ def csw_global_dispatch(request):
         return HttpResponseRedirect(settings.CATALOGUE['default']['URL'])
 
     mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
+    mdict = config_updater(mdict) if config_updater else mdict
 
     access_token = None
     if request and request.user:
@@ -55,15 +54,15 @@ def csw_global_dispatch(request):
         if access_token and access_token.is_expired():
             access_token = None
 
-    absolute_uri = ('%s' % request.build_absolute_uri())
-    query_string = ('%s' % request.META['QUERY_STRING'])
+    absolute_uri = f'{request.build_absolute_uri()}'
+    query_string = f"{request.META['QUERY_STRING']}"
     env = request.META.copy()
 
     if access_token and not access_token.is_expired():
         env.update({'access_token': access_token.token})
         if 'access_token' not in query_string:
-            absolute_uri = ('%s&access_token=%s' % (absolute_uri, access_token.token))
-            query_string = ('%s&access_token=%s' % (query_string, access_token.token))
+            absolute_uri = f'{absolute_uri}&access_token={access_token.token}'
+            query_string = f'{query_string}&access_token={access_token.token}'
 
     env.update({'local.app_root': os.path.dirname(__file__),
                 'REQUEST_URI': absolute_uri,
@@ -84,10 +83,15 @@ def csw_global_dispatch(request):
                 get_objects_for_user(
                     profiles[0],
                     'base.view_resourcebase').values('id'))
+
             layers = ResourceBase.objects.filter(
                 id__in=[d['id'] for d in authorized])
+
+            if layer_filter and layers:
+                layers = layer_filter(layers)
+
             if layers:
-                authorized_ids = [d['id'] for d in authorized]
+                authorized_ids = [d.id for d in layers]
 
         if len(authorized_ids) > 0:
             authorized_layers = "(" + (", ".join(str(e)
@@ -95,8 +99,7 @@ def csw_global_dispatch(request):
             authorized_layers_filter = "id IN " + authorized_layers
             mdict['repository']['filter'] += " AND " + authorized_layers_filter
             if request.user and request.user.is_authenticated:
-                mdict['repository']['filter'] = "({}) OR ({})".format(mdict['repository']['filter'],
-                                                                      authorized_layers_filter)
+                mdict['repository']['filter'] = f"({mdict['repository']['filter']}) OR ({authorized_layers_filter})"
         else:
             authorized_layers_filter = "id = -9999"
             mdict['repository']['filter'] += " AND " + authorized_layers_filter
@@ -149,45 +152,13 @@ def csw_global_dispatch(request):
         content = csw.dispatch_wsgi()
 
         # pycsw 2.0 has an API break:
-        # pycsw < 2.0: content = xml_response
-        # pycsw >= 2.0: content = [http_status_code, content]
+        # - pycsw < 2.0: content = xml_response
+        # - pycsw >= 2.0: content = [http_status_code, content]
         # deal with the API break
 
         if isinstance(content, list):  # pycsw 2.0+
             content = content[1]
 
-        spaces = {'csw': 'http://www.opengis.net/cat/csw/2.0.2',
-                  'dc': 'http://purl.org/dc/elements/1.1/',
-                  'dct': 'http://purl.org/dc/terms/',
-                  'gmd': 'http://www.isotc211.org/2005/gmd',
-                  'gml': 'http://www.opengis.net/gml',
-                  'ows': 'http://www.opengis.net/ows',
-                  'xs': 'http://www.w3.org/2001/XMLSchema',
-                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-                  'ogc': 'http://www.opengis.net/ogc',
-                  'gco': 'http://www.isotc211.org/2005/gco',
-                  'gmi': 'http://www.isotc211.org/2005/gmi'}
-
-        for prefix, uri in spaces.items():
-            ET.register_namespace(prefix, uri)
-
-        if access_token and not access_token.is_expired():
-            tree = dlxml.fromstring(content)
-            for online_resource in tree.findall(
-                    '*//gmd:CI_OnlineResource', spaces):
-                try:
-                    linkage = online_resource.find('gmd:linkage', spaces)
-                    for url in linkage.findall('gmd:URL', spaces):
-                        if url.text:
-                            if '?' not in url.text:
-                                url.text += "?"
-                            else:
-                                url.text += "&"
-                            url.text += ("access_token=%s" % (access_token.token))
-                            url.set('updated', 'yes')
-                except Exception:
-                    pass
-            content = ET.tostring(tree, encoding='utf8', method='xml')
     finally:
         # Restore original filter before doing anything
         mdict['repository']['filter'] = mdict_filter
@@ -228,7 +199,7 @@ def get_CSV_spec_char():
 # format value to unicode str without ';' char
 def fst(value):
     chrs = get_CSV_spec_char()
-    result = "{}".format(value)
+    result = str(value)
     result = result.replace(chrs["separator"], ',').replace('\\n', ' ').replace('\r\n', ' ')
     return result
 
@@ -302,9 +273,10 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
                 resource.distribution_description) + sc"""
     content += 'data quality statement' + s + fst(
         resource.data_quality_statement) + sc
-    content += 'extent ' + s + fst(resource.bbox_x0) + ',' + fst(
-        resource.bbox_x1) + ',' + fst(
-        resource.bbox_y0) + ',' + fst(resource.bbox_y1) + sc
+
+    ext = resource.bbox_polygon.extent
+    content += 'extent ' + s + fst(ext[0]) + ',' + fst(ext[2]) + \
+        ',' + fst(ext[1]) + ',' + fst(ext[3]) + sc
     content += 'SRID  ' + s + fst(resource.srid) + sc
     content += 'Thumbnail url' + s + fst(resource.thumbnail_url) + sc
 
@@ -358,9 +330,7 @@ def csw_render_extra_format_html(request, layeruuid, resname):
         layer = Layer.objects.get(resourcebase_ptr_id=resource.id)
         extra_res_md['atrributes'] = ''
         for attr in layer.attribute_set.all():
-            s = "<tr><td>{}</td><td>{}</td><td>{}</td></tr>".format(
-                attr.attribute, attr.attribute_label, attr.description
-            )
+            s = f"<tr><td>{attr.attribute}</td><td>{attr.attribute_label}</td><td>{attr.description}</td></tr>"
             extra_res_md['atrributes'] += s
 
     pocr = ContactRole.objects.get(
