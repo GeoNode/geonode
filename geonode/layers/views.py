@@ -80,10 +80,10 @@ from geonode.layers.models import (
     Attribute,
     UploadSession)
 from geonode.layers.utils import (
-    file_upload,
+    file_upload, get_files, gs_append_data_to_layer,
     is_raster,
     is_vector,
-    surrogate_escape_string)
+    surrogate_escape_string, validate_input_source)
 
 from geonode.maps.models import Map
 from geonode.services.models import Service
@@ -94,7 +94,7 @@ from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm, PocForm
 from geonode.documents.models import get_related_documents
 from geonode import geoserver
-from geonode.security.utils import get_visible_resources
+from geonode.security.utils import get_visible_resources, set_geowebcache_invalidate_cache
 
 from geonode.utils import (
     resolve_object,
@@ -1368,6 +1368,86 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
             register_event(request, 'change', layer)
         else:
             status_code = 400
+        return HttpResponse(
+            json.dumps(out),
+            content_type='application/json',
+            status=status_code)
+
+
+@login_required
+def layer_append(request, layername, template='layers/layer_append.html'):
+    try:
+        layer = _resolve_layer(
+            request,
+            layername,
+            'base.change_resourcebase',
+            _PERMISSION_MSG_MODIFY)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
+
+    if request.method == 'GET':
+        ctx = {
+            'charsets': CHARSETS,
+            'resource': layer,
+            'is_featuretype': layer.is_vector(),
+            'is_layer': True,
+        }
+        return render(request, template, context=ctx)
+    elif request.method == 'POST':
+        form = LayerUploadForm(request.POST, request.FILES)
+        out = {}
+        if form.is_valid():
+            try:
+                tempdir, base_file = form.write_files()
+                files = get_files(base_file)
+                #  validate input source
+                resource_is_valid = validate_input_source(
+                    layer=layer, filename=base_file, files=files, action_type="append"
+                )
+                out = {}
+                if (
+                    os.getenv("DEFAULT_BACKEND_DATASTORE", None) == "datastore"
+                    and os.getenv("DEFAULT_BACKEND_UPLOADER", None) == "geonode.importer"
+                    and resource_is_valid
+                ):
+                    upload_session = gs_append_data_to_layer(layer, list(files.values()), request.user)
+                    upload_session.processed = True
+                    upload_session.save()
+                    out['success'] = True
+                    out['url'] = reverse(
+                        'layer_detail', args=[
+                            layer.service_typename])
+                    #  invalidating resource chache
+                    set_geowebcache_invalidate_cache(layer.typename)
+                    #  updating layer
+                    layer.save()
+                else:
+                    out['success'] = False
+                    out['errors'] = str("Please select a valid Geoserver backend")
+            except Exception as e:
+                logger.exception(e)
+                out['success'] = False
+                out['errors'] = str(e)
+            finally:
+                if tempdir is not None:
+                    shutil.rmtree(tempdir)
+        else:
+            errormsgs = []
+            for e in form.errors.values():
+                errormsgs.append([escape(v) for v in e])
+            out['errors'] = form.errors
+            out['errormsgs'] = errormsgs
+
+        if out['success']:
+            status_code = 200
+            register_event(request, 'change', layer)
+        else:
+            status_code = 400
+
         return HttpResponse(
             json.dumps(out),
             content_type='application/json',
