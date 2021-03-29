@@ -355,13 +355,14 @@ def feature_edit_check(request, layername, permission='change_layer_data'):
         return HttpResponse(
             json.dumps({'authorized': False}), content_type="application/json")
     datastore = ogc_server_settings.DATASTORE
-    feature_edit = datastore
-    if layer.user_can(request.user, permission) and layer.storeType == 'dataStore' and feature_edit:
-        return HttpResponse(
-            json.dumps({'authorized': True}), content_type="application/json")
-    else:
-        return HttpResponse(
-            json.dumps({'authorized': False}), content_type="application/json")
+    authorized = False
+    if layer.user_can(request.user, permission):
+        authorized = True
+        if permission == 'change_layer_data':
+            if not layer.storeType == 'dataStore' and datastore:
+                authorized = False
+    return HttpResponse(
+        json.dumps({'authorized': authorized}), content_type="application/json")
 
 
 def style_edit_check(request, layername):

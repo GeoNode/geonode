@@ -699,9 +699,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
         response_json = json.loads(content)
-        # TODO Needs discussion of it's validity
         # This will only be true for storeType dataStore
-        # self.assertEqual(response_json['authorized'], True)
         if layer.storeType == 'dataStore':
             self.assertEqual(response_json['authorized'], True)
         else:
@@ -739,13 +737,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
         response_json = json.loads(content)
-        # TODO Needs discussion of it's validity
-        # This will only be true for storeType dataStore
-        # self.assertEqual(response_json['authorized'], True)
-        if layer.storeType == 'dataStore':
-            self.assertEqual(response_json['authorized'], True)
-        else:
-            self.assertEqual(response_json['authorized'], False)
+        self.assertEqual(response_json['authorized'], True)
 
         # Login as a user with the proper permission and test the endpoint
         logged_in = self.client.login(username='admin', password='admin')
@@ -760,9 +752,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
         response_json = json.loads(content)
-        # TODO Needs discussion of it's validity
         # This will only be true for storeType dataStore
-        # self.assertEqual(response_json['authorized'], True)
         if layer.storeType == 'dataStore':
             self.assertEqual(response_json['authorized'], True)
         else:
@@ -793,6 +783,18 @@ class LayerTests(GeoNodeBaseTestSupport):
         response = self.client.post(
             reverse(
                 'feature_edit_check',
+                args=(
+                    valid_layer_typename,
+                )))
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        response_json = json.loads(content)
+        self.assertEqual(response_json['authorized'], False)
+
+        response = self.client.post(
+            reverse(
+                'style_edit_check',
                 args=(
                     valid_layer_typename,
                 )))
