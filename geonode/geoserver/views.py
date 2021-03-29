@@ -355,29 +355,14 @@ def feature_edit_check(request, layername, permission='change_layer_data'):
         return HttpResponse(
             json.dumps({'authorized': False}), content_type="application/json")
     datastore = ogc_server_settings.DATASTORE
-    feature_edit = datastore
-    is_admin = False
-    is_staff = False
-    is_owner = False
-    is_manager = False
-    if request.user:
-        is_admin = request.user.is_superuser if request.user else False
-        is_staff = request.user.is_staff if request.user else False
-        is_owner = (str(request.user) == str(layer.owner))
-        try:
-            is_manager = request.user.groupmember_set.all().filter(
-                role='manager').exists()
-        except Exception:
-            is_manager = False
-    if is_admin or is_staff or is_owner or is_manager or request.user.has_perm(
-            permission,
-            obj=layer) and \
-            layer.storeType == 'dataStore' and feature_edit:
-        return HttpResponse(
-            json.dumps({'authorized': True}), content_type="application/json")
-    else:
-        return HttpResponse(
-            json.dumps({'authorized': False}), content_type="application/json")
+    authorized = False
+    if layer.user_can(request.user, permission):
+        authorized = True
+        if permission == 'change_layer_data':
+            if not layer.storeType == 'dataStore' and datastore:
+                authorized = False
+    return HttpResponse(
+        json.dumps({'authorized': authorized}), content_type="application/json")
 
 
 def style_edit_check(request, layername):
