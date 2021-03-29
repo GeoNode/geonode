@@ -401,13 +401,13 @@ class LayerFile(models.Model):
     """Helper class to store original files.
     """
     upload_session = models.ForeignKey(UploadSession, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=4096)
     base = models.BooleanField(default=False)
     file = models.FileField(
         upload_to='layers/%Y/%m/%d',
         storage=FileSystemStorage(
             base_url=settings.LOCAL_MEDIA_URL),
-        max_length=255)
+        max_length=4096)
 
 
 class AttributeManager(models.Manager):

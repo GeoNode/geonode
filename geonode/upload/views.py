@@ -183,7 +183,7 @@ def save_step_view(req, session):
             charset=form.cleaned_data["charset"]
         )
         logger.debug(f"spatial_files: {spatial_files}")
-        import_session = save_step(
+        import_session, upload = save_step(
             req.user,
             name,
             spatial_files,
@@ -216,7 +216,7 @@ def save_step_view(req, session):
         upload_session = UploaderSession(
             tempdir=tempdir,
             base_file=spatial_files,
-            name=name,
+            name=upload.name,
             charset=form.cleaned_data["charset"],
             import_session=import_session,
             layer_abstract=form.cleaned_data["abstract"],
@@ -230,7 +230,7 @@ def save_step_view(req, session):
             append_to_mosaic_name=form.cleaned_data['append_to_mosaic_name'],
             mosaic_time_regex=form.cleaned_data['mosaic_time_regex'],
             mosaic_time_value=form.cleaned_data['mosaic_time_value'],
-            user=req.user
+            user=upload.user
         )
         Upload.objects.update_from_session(upload_session)
         return next_step_response(req, upload_session, force_ajax=True)

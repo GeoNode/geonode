@@ -59,11 +59,7 @@ from ..people.utils import get_default_user
 from ..layers.metadata import set_metadata
 from ..layers.utils import get_valid_layer_name
 from ..layers.models import Layer, UploadSession
-from ..geoserver.tasks import (
-    # geoserver_set_style,
-    # geoserver_create_style,
-    geoserver_finalize_upload
-)
+from ..geoserver.tasks import geoserver_finalize_upload
 from ..geoserver.helpers import (
     set_time_info,
     gs_catalog,
@@ -212,12 +208,13 @@ def upload(
         mosaic_time_regex=mosaic_time_regex,
         mosaic_time_value=mosaic_time_value
     )
-    time_step(upload_session,
-              time_attribute, time_transform_type,
-              presentation_strategy, precision_value, precision_step,
-              end_time_attribute=end_time_attribute,
-              end_time_transform_type=end_time_transform_type,
-              time_format=None)
+    time_step(
+        upload_session,
+        time_attribute, time_transform_type,
+        presentation_strategy, precision_value, precision_step,
+        end_time_attribute=end_time_attribute,
+        end_time_transform_type=end_time_transform_type,
+        time_format=None)
     utils.run_import(upload_session, async_upload=False)
     final_step(upload_session, user, charset=charset)
 
@@ -415,7 +412,7 @@ def save_step(user, layer, spatial_files, overwrite=True, mosaic=False,
     else:
         _log("Finished upload of [%s] to GeoServer without errors.", name)
 
-    return import_session
+    return import_session, upload
 
 
 def time_step(upload_session, time_attribute, time_transform_type,
@@ -727,6 +724,8 @@ def final_step(upload_session, user, charset="UTF-8"):
             )
             geonode_upload_session.processed = False
             geonode_upload_session.save()
+            Upload.objects.update_from_session(
+                upload_session, layer=saved_layer)
     except IntegrityError:
         raise
 
