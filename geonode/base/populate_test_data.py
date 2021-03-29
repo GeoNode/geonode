@@ -316,6 +316,35 @@ def dump_models(path=None):
     with open(path, 'w') as f:
         f.write(result)
 
+def create_single_layer(name):
+    get_user_model().objects.create(
+                    username='admin',
+                    is_superuser=True,
+                    first_name='admin')
+    test_datetime = datetime.strptime('2020-01-01', '%Y-%m-%d')
+    user = get_user_model().objects.get(username='AnonymousUser')
+    ll = (name, 'lorem ipsum', name, f'geonode:{name}', [
+                    0, 22, 0, 22], test_datetime, ('populartag',), "farming")
+    title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ll
+    layer = Layer(
+        title=title,
+        abstract=abstract,
+        name=name,
+        alternate=alternate,
+        bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+        ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+        srid='EPSG:4326',
+        uuid=str(uuid4()),
+        owner=user,
+        temporal_extent_start=test_datetime,
+        temporal_extent_end=test_datetime,
+        date=start,
+        storeType="dataStore",
+    )
+    layer.save()
+    layer.set_default_permissions()
+    return layer
+
 
 if __name__ == '__main__':
     create_models()
