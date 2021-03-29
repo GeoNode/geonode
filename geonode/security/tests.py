@@ -33,6 +33,7 @@ from tastypie.test import ResourceTestCaseMixin
 from django.conf import settings
 from django.http import HttpRequest
 from django.urls import reverse
+from django.db.models import Q
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
 
@@ -60,12 +61,13 @@ from geonode.geoserver.upload import geoserver_upload
 from geonode.layers.populate_layers_data import create_layer_data
 
 from .utils import (
-    get_visible_resources, purge_geofence_all,
+    get_visible_resources,
     get_users_with_perms,
     get_geofence_rules,
     get_geofence_rules_count,
     get_highest_priority,
     set_geofence_all,
+    purge_geofence_all,
     sync_geofence_with_guardian,
     sync_resources_with_guardian
 )
@@ -1695,6 +1697,7 @@ class SecurityRulesTest(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
 
 class TestGetVisibleResources(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
+
     def setUp(self):
         super(TestGetVisibleResources, self).setUp()
         self.user = get_user_model().objects.get(username="admin")
@@ -1712,3 +1715,96 @@ class TestGetVisibleResources(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layers = Layer.objects.all()
         actual = get_visible_resources(queryset=layers, user=self.user)
         self.assertEqual(9, len(actual))
+
+    @override_settings(
+        ADMIN_MODERATE_UPLOADS=True,
+        RESOURCE_PUBLISHING=True,
+        GROUP_PRIVATE_RESOURCES=True)
+    def test_get_visible_resources_advanced_workflow(self):
+        admin_user = get_user_model().objects.get(username="admin")
+        standard_user = get_user_model().objects.get(username="bobby")
+
+        self.assertIsNotNone(admin_user)
+        self.assertIsNotNone(standard_user)
+        admin_user.is_superuser = True
+        admin_user.save()
+        layers = Layer.objects.all()
+
+        actual = get_visible_resources(
+            queryset=Layer.objects.all(),
+            user=admin_user,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        # The method returns only 'metadata_only=False' resources
+        self.assertEqual(layers.count() - 1, actual.count())
+        actual = get_visible_resources(
+            queryset=Layer.objects.all(),
+            user=standard_user,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        # The method returns only 'metadata_only=False' resources
+        self.assertEqual(layers.count() - 1, actual.count())
+
+        # Test 'is_approved=False' 'is_published=False'
+        Layer.objects.filter(
+            ~Q(owner=standard_user)).update(
+                is_approved=False, is_published=False)
+
+        actual = get_visible_resources(
+            queryset=Layer.objects.all(),
+            user=admin_user,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        # The method returns only 'metadata_only=False' resources
+        self.assertEqual(layers.count() - 1, actual.count())
+        actual = get_visible_resources(
+            queryset=Layer.objects.all(),
+            user=standard_user,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        # The method returns only 'metadata_only=False' resources
+        self.assertEqual(layers.count() - 1, actual.count())
+        actual = get_visible_resources(
+            queryset=Layer.objects.all(),
+            user=None,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        # The method returns only 'metadata_only=False' resources
+        self.assertEqual(2, actual.count())
+
+        # Test private groups
+        private_groups = GroupProfile.objects.filter(
+            access="private")
+        private_groups.first().leave(standard_user)
+        Layer.objects.filter(
+            ~Q(owner=standard_user)).update(
+                group=private_groups.first().group)
+        actual = get_visible_resources(
+            queryset=Layer.objects.all(),
+            user=admin_user,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        # The method returns only 'metadata_only=False' resources
+        self.assertEqual(layers.count() - 1, actual.count())
+        actual = get_visible_resources(
+            queryset=Layer.objects.all(),
+            user=standard_user,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        # The method returns only 'metadata_only=False' resources
+        self.assertEqual(2, actual.count())
+        actual = get_visible_resources(
+            queryset=Layer.objects.all(),
+            user=None,
+            admin_approval_required=True,
+            unpublished_not_visible=True,
+            private_groups_not_visibile=True)
+        # The method returns only 'metadata_only=False' resources
+        self.assertEqual(2, actual.count())
