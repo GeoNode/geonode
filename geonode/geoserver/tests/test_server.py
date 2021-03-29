@@ -37,6 +37,7 @@ from django.test.utils import override_settings
 from guardian.shortcuts import assign_perm, remove_perm
 
 from geonode import geoserver
+from geonode.base.models import Configuration
 from geonode.decorators import on_ogc_backend
 
 from geonode.layers.models import Layer, Style
@@ -551,6 +552,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         self.user = 'admin'
         self.passwd = 'admin'
         create_layer_data()
+        self.config = Configuration.load()
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_style_manager(self):
@@ -697,7 +699,11 @@ class LayerTests(GeoNodeBaseTestSupport):
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
         response_json = json.loads(content)
-        self.assertEqual(response_json['authorized'], True)
+        # This will only be true for storeType dataStore
+        if layer.storeType == 'dataStore':
+            self.assertEqual(response_json['authorized'], True)
+        else:
+            self.assertEqual(response_json['authorized'], False)
 
         # Let's change layer permissions and try again with non-owner
         norman = get_user_model().objects.get(username='norman')
@@ -746,7 +752,11 @@ class LayerTests(GeoNodeBaseTestSupport):
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
         response_json = json.loads(content)
-        self.assertEqual(response_json['authorized'], True)
+        # This will only be true for storeType dataStore
+        if layer.storeType == 'dataStore':
+            self.assertEqual(response_json['authorized'], True)
+        else:
+            self.assertEqual(response_json['authorized'], False)
 
         layer = Layer.objects.all()[0]
         layer.storeType = "dataStore"
@@ -759,13 +769,40 @@ class LayerTests(GeoNodeBaseTestSupport):
                 reverse(
                     'feature_edit_check',
                     args=(
-                        valid_layer_typename,
+                        layer.alternate,
                     )))
             content = response.content
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
             response_json = json.loads(content)
             self.assertEqual(response_json['authorized'], True)
+
+        # Test when the system is in readonly mode
+        self.config.read_only = True
+        self.config.save()
+        response = self.client.post(
+            reverse(
+                'feature_edit_check',
+                args=(
+                    valid_layer_typename,
+                )))
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        response_json = json.loads(content)
+        self.assertEqual(response_json['authorized'], False)
+
+        response = self.client.post(
+            reverse(
+                'style_edit_check',
+                args=(
+                    valid_layer_typename,
+                )))
+        content = response.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
+        response_json = json.loads(content)
+        self.assertEqual(response_json['authorized'], False)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_acls(self):
