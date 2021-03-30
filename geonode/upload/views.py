@@ -101,7 +101,7 @@ def _get_upload_session(req):
         upload_id = str(req.GET['id'])
         upload_obj = get_object_or_404(
             Upload, import_id=upload_id, user=req.user)
-        upload_session = upload_obj.get_session()
+        upload_session = upload_obj.get_session
     return upload_session
 
 
@@ -652,7 +652,7 @@ def view(req, step):
                 Upload,
                 import_id=upload_id,
                 user=req.user)
-            session = upload_obj.get_session()
+            session = upload_obj.get_session
             if session:
                 return next_step_response(req, session)
         step = 'save'
@@ -670,7 +670,7 @@ def view(req, step):
 
         upload_obj = get_object_or_404(
             Upload, import_id=upload_id, user=req.user)
-        session = upload_obj.get_session()
+        session = upload_obj.get_session
         try:
             if session:
                 upload_session = session

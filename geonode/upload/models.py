@@ -98,6 +98,7 @@ class Upload(models.Model):
 
     STATE_INVALID = 'INVALID'
 
+    @property
     def get_session(self):
         if self.session:
             return pickle.loads(

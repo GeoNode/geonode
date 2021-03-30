@@ -146,13 +146,6 @@ workflows:
           requires:
             - geonode_test_suite_smoke
       - build:
-          name: geonode_test_integration_upload
-          load_docker_cache: true
-          save_docker_cache: false
-          test_suite: ./test_upload.sh
-          requires:
-            - geonode_test_suite_smoke
-      - build:
           name: geonode_test_integration_monitoring
           load_docker_cache: true
           save_docker_cache: false
@@ -161,6 +154,13 @@ workflows:
             - geonode_test_suite_smoke
 
       # TODO
+      # - build:
+      #     name: geonode_test_integration_upload
+      #     load_docker_cache: true
+      #     save_docker_cache: false
+      #     test_suite: ./test_upload.sh
+      #     requires:
+      #       - geonode_test_suite_smoke
       # - build:
       #     name: tests_integration
       #     load_docker_cache: true
@@ -173,13 +173,6 @@ workflows:
       #     load_docker_cache: true
       #     save_docker_cache: false
       #     test_suite: 'geonode.geoserver.tests.integration'
-      #     requires:
-      #       - geonode_test_suite_smoke
-      # - build:
-      #     name: tests_upload_integration
-      #     load_docker_cache: true
-      #     save_docker_cache: false
-      #     test_suite: 'geonode.upload.tests.integration'
       #     requires:
       #       - geonode_test_suite_smoke
 
