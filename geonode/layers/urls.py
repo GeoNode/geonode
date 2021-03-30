@@ -54,6 +54,8 @@ urlpatterns = [
         name="layer_granule_remove"),
     url(r'^(?P<layername>[^/]*)/replace$',
         views.layer_replace, name="layer_replace"),
+    url(r'^(?P<layername>[^/]*)/append$',
+        views.layer_append, name="layer_append"),
     url(r'^(?P<layername>[^/]*)/thumbnail$',
         views.layer_thumbnail, name='layer_thumbnail'),
     url(r'^(?P<layername>[^/]*)/get$', views.get_layer, name='get_layer'),
