@@ -359,7 +359,7 @@ def feature_edit_check(request, layername, permission='change_layer_data'):
     if layer.user_can(request.user, permission):
         authorized = True
         if permission == 'change_layer_data':
-            if not layer.storeType == 'dataStore' and datastore:
+            if not (layer.storeType == 'dataStore' and datastore):
                 authorized = False
     return HttpResponse(
         json.dumps({'authorized': authorized}), content_type="application/json")
