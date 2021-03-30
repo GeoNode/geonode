@@ -62,6 +62,7 @@ from geonode.upload.utils import _fixup_base_file
 from geonode.utils import (check_ogc_backend,
                            unzip_file,
                            extract_tarfile)
+from geonode.geoserver.helpers import gs_catalog, gs_uploader
 
 READ_PERMISSIONS = [
     'view_resourcebase'
@@ -459,52 +460,7 @@ def file_upload(filename,
 
     # We are going to replace an existing Layer...
     if layer and overwrite:
-        if layer.is_vector() and is_raster(filename):
-            raise Exception(_(
-                "You are attempting to replace a vector layer with a raster."))
-        elif (not layer.is_vector()) and is_vector(filename):
-            raise Exception(_(
-                "You are attempting to replace a raster layer with a vector."))
-
-        if layer.is_vector():
-            absolute_base_file = None
-            try:
-                if 'shp' in files and os.path.exists(files['shp']):
-                    absolute_base_file = _fixup_base_file(files['shp'])
-                elif 'zip' in files and os.path.exists(files['zip']):
-                    absolute_base_file = _fixup_base_file(files['zip'])
-            except Exception:
-                absolute_base_file = None
-
-            if not absolute_base_file or \
-            os.path.splitext(absolute_base_file)[1].lower() != '.shp':
-                raise Exception(
-                    _("You are attempting to replace a vector layer with an unknown format."))
-            else:
-                try:
-                    gtype = layer.gtype if not gtype else gtype
-                    inDataSource = ogr.Open(absolute_base_file)
-                    lyr = inDataSource.GetLayer(str(layer.name))
-                    if not lyr:
-                        raise Exception(
-                            _("Please ensure the name is consistent with the file you are trying to replace."))
-                    schema_is_compliant = False
-                    _ff = json.loads(lyr.GetFeature(0).ExportToJson())
-                    if gtype:
-                        logger.warning(
-                            _("Local GeoNode layer has no geometry type."))
-                        if _ff["geometry"]["type"] in gtype or gtype in _ff["geometry"]["type"]:
-                            schema_is_compliant = True
-                    elif "geometry" in _ff and _ff["geometry"]["type"]:
-                        schema_is_compliant = True
-
-                    if not schema_is_compliant:
-                        raise Exception(
-                            _("Please ensure there is at least one geometry type \
-                                that is consistent with the file you are trying to replace."))
-                except Exception as e:
-                    raise Exception(
-                        _(f"Some error occurred while trying to access the uploaded schema: {str(e)}"))
+        validate_input_source(layer, filename, files, gtype, action_type='replace')
 
     # Set a default title that looks nice ...
     if title is None:
@@ -1124,3 +1080,93 @@ def set_layers_permissions(permissions_name, resources_names=None,
 def get_uuid_handler():
     from django.utils.module_loading import import_string
     return import_string(settings.LAYER_UUID_HANDLER)
+
+
+def gs_append_data_to_layer(layer, base_files, user):
+    gs_layer = gs_catalog.get_layer(layer.name)
+    if gs_layer and gs_layer.type == 'VECTOR':
+        #  opening upload session for the selected layer
+        upload_session, created = UploadSession.objects.get_or_create(resource=layer, user=user)
+        upload_session.resource = layer
+        upload_session.processed = False
+        upload_session.save()
+
+        #  opening Import session for the selected layer
+        import_session = gs_uploader.start_import(
+            import_id=upload_session.id, name=layer.name, target_store=gs_layer.resource.store.name
+        )
+
+        import_session.upload_task(base_files)
+        task = import_session.tasks[0]
+        #  Changing layer name, mode and target
+        task.layer.set_target_layer_name(layer.name)
+        task.set_update_mode("APPEND")
+        task.set_target(store_name=gs_layer.resource.store.name, workspace=gs_layer.resource.workspace.name)
+        #  Starting import process
+        import_session.commit()
+        return upload_session
+
+
+def validate_input_source(layer, filename, files, gtype=None, action_type='replace'):
+    if layer.is_vector() and is_raster(filename):
+        raise Exception(_(
+            f"You are attempting to {action_type} a vector layer with a raster."))
+    elif (not layer.is_vector()) and is_vector(filename):
+        raise Exception(_(
+            f"You are attempting to {action_type} a raster layer with a vector."))
+
+    if layer.is_vector():
+        absolute_base_file = None
+        try:
+            if 'shp' in files and os.path.exists(files['shp']):
+                absolute_base_file = _fixup_base_file(files['shp'])
+            elif 'zip' in files and os.path.exists(files['zip']):
+                absolute_base_file = _fixup_base_file(files['zip'])
+        except Exception:
+            absolute_base_file = None
+
+        if not absolute_base_file or \
+        os.path.splitext(absolute_base_file)[1].lower() != '.shp':
+            raise Exception(
+                _(f"You are attempting to {action_type} a vector layer with an unknown format."))
+        else:
+            try:
+                gtype = layer.gtype if not gtype else gtype
+                inDataSource = ogr.Open(absolute_base_file)
+                lyr = inDataSource.GetLayer(str(layer.name))
+                if not lyr:
+                    raise Exception(
+                        _(f"Please ensure the name is consistent with the file you are trying to {action_type}."))
+                schema_is_compliant = False
+                _ff = json.loads(lyr.GetFeature(0).ExportToJson())
+                if gtype:
+                    logger.warning(
+                        _("Local GeoNode layer has no geometry type."))
+                    if _ff["geometry"]["type"] in gtype or gtype in _ff["geometry"]["type"]:
+                        schema_is_compliant = True
+                elif "geometry" in _ff and _ff["geometry"]["type"]:
+                    schema_is_compliant = True
+
+                if not schema_is_compliant:
+                    raise Exception(
+                        _(f"Please ensure there is at least one geometry type \
+                            that is consistent with the file you are trying to {action_type}."))
+
+                new_schema_fields = [field.name for field in lyr.schema]
+                gs_layer = gs_catalog.get_layer(layer.name)
+
+                if not gs_layer:
+                    raise Exception(
+                        _("The selected Layer does not exists in the catalog."))
+
+                gs_layer = gs_layer.resource.attributes
+                schema_is_compliant = all([x in gs_layer for x in new_schema_fields])
+
+                if not schema_is_compliant:
+                    raise Exception(
+                        _("Please ensure that the layer structure is consistent "
+                          f"with the file you are trying to {action_type}."))
+                return True
+            except Exception as e:
+                raise Exception(
+                    _(f"Some error occurred while trying to access the uploaded schema: {str(e)}"))
