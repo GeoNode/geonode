@@ -30,6 +30,13 @@ class HarvestJobAdminInline(admin.StackedInline):
     extra = 0
 
 
+class HarvestJobAdminForm(ResourceBaseAdminForm):
+
+    class Meta(ResourceBaseAdminForm.Meta):
+        model = models.HarvestJob
+        fields = '__all__'
+
+
 class ServiceAdminForm(ResourceBaseAdminForm):
 
     class Meta(ResourceBaseAdminForm.Meta):
@@ -37,10 +44,17 @@ class ServiceAdminForm(ResourceBaseAdminForm):
         fields = '__all__'
 
 
+class HarvestJobAdmin(admin.ModelAdmin):
+    list_display = ('id', 'service', 'resource_id', 'status', 'details')
+    list_display_links = ('id', 'service')
+    list_filter = ('id', 'service', 'status')
+    form = HarvestJobAdminForm
+
+
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'base_url', 'type', 'method')
-    list_display_links = ('id', 'name', )
-    list_filter = ('type', 'method')
+    list_display_links = ('id', 'name')
+    list_filter = ('id', 'name', 'type', 'method')
     form = ServiceAdminForm
     inlines = (
         HarvestJobAdminInline,
@@ -48,3 +62,4 @@ class ServiceAdmin(admin.ModelAdmin):
 
 
 admin.site.register(models.Service, ServiceAdmin)
+admin.site.register(models.HarvestJob, HarvestJobAdmin)
