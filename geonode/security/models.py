@@ -409,7 +409,7 @@ class PermissionLevelMixin(object):
             content_type_id=ctype.id,
             user_id=user.id,
             permission__codename__in=resource_perms
-            ).values('permission__codename')
+            ).values_list('permission__codename', flat=True)
 
         return user_resource_perms
 
@@ -426,7 +426,8 @@ class PermissionLevelMixin(object):
         if any(prefix in permission for prefix in perm_prefixes):
             if config.read_only:
                 return False
-        user_perms = self.get_user_perms(user)
+        resource = self.get_self_resource()
+        user_perms = self.get_user_perms(user).union(resource.get_user_perms(user))
         is_admin = user.is_superuser
         is_staff = user.is_staff
         is_owner = user == self.owner
