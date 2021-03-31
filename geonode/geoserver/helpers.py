@@ -371,6 +371,8 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
                     saved_layer.name, sld,
                     overwrite=True, raw=True,
                     workspace=saved_layer.workspace)
+            elif sld:
+                style.update_body(sld)
         except Exception as e:
             logger.exception(e)
 
