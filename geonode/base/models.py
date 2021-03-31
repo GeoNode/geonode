@@ -1292,9 +1292,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 links.append((self.title, link.name, link.link_type, link.url))
             else:
                 _link_type = 'WWW:DOWNLOAD-1.0-http--download'
-                if self.storeType == 'remoteStore' and link.extension in ('html'):
-                    _link_type = 'WWW:DOWNLOAD-%s' % self.remote_service.type
-                description = '%s (%s Format)' % (self.title, link.name)
+                try:
+                    _store_type = getattr(self.get_real_instance(), 'storeType', None)
+                    if _store_type and _store_type == 'remoteStore' and link.extension in ('html'):
+                        _remote_service = getattr(self.get_real_instance(), '_remote_service', None)
+                        if _remote_service:
+                            _link_type = f'WWW:DOWNLOAD-{_remote_service.type}'
+                except Exception as e:
+                    logger.exception(e)
+                description = f'{self.title} ({link.name} Format)'
                 links.append(
                     (self.title,
                      description,
