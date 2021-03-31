@@ -36,6 +36,7 @@
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
 
     <link rel="shortcut icon" href="{% static 'geonode/img/favicon.ico' %}" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link href="{% static "lib/css/ol.css" %}" rel="stylesheet" />
     <script src="{% static "lib/js/ol.js" %}"></script>
     <link rel="preload" as="style" href="{% static "geonode/css/font-awesome.min.css" %}" />
@@ -625,6 +626,7 @@
     {% endif %}
     <!-- End of Modal -->
 
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     {% if DEBUG_STATIC %}
     <script src="{% static "lib/js/jquery.js" %}"></script>
     <script src="{% static "lib/js/jquery.dataTables.js" %}"></script>
