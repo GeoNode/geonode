@@ -51,7 +51,7 @@ CONFIGURATION = {
     },
     'repository': {
         'source': 'geonode.catalogue.backends.pycsw_plugin.GeoNodeRepository',
-        'filter': f'dirty_state = {false_value}',
+        'filter': 'uuid IS NOT NULL',
         'mappings': os.path.join(os.path.dirname(__file__), 'pycsw_local_mappings.py')
     }
 }
