@@ -534,6 +534,7 @@ def csv_step(upload_session, lat_field, lng_field):
         raise UploadException.from_exc(
             _("The GeoServer Import Session is no more available"), e)
     upload_session.import_session = import_session
+    Upload.objects.update_from_session(upload_session)
 
 
 def srs_step(upload_session, source, target):
@@ -556,6 +557,7 @@ def srs_step(upload_session, source, target):
         raise UploadException.from_exc(
             _("The GeoServer Import Session is no more available"), e)
     upload_session.import_session = import_session
+    Upload.objects.update_from_session(upload_session)
 
 
 def final_step(upload_session, user, charset="UTF-8"):
@@ -567,6 +569,7 @@ def final_step(upload_session, user, charset="UTF-8"):
         raise UploadException.from_exc(
             _("The GeoServer Import Session is no more available"), e)
     upload_session.import_session = import_session
+    Upload.objects.update_from_session(upload_session)
 
     # the importer chooses an available featuretype name late in the game need
     # to verify the resource.name otherwise things will fail.  This happens
@@ -595,9 +598,17 @@ def final_step(upload_session, user, charset="UTF-8"):
             # if not task.data.format or task.data.format != 'Shapefile':
             import_session.commit()
 
+    try:
+        import_session = import_session.reload()
+    except gsimporter.api.NotFound as e:
+        raise UploadException.from_exc(
+            _("The GeoServer Import Session is no more available"), e)
+    upload_session.import_session = import_session
+    Upload.objects.update_from_session(upload_session)
+
     if not publishing:
         raise LayerNotReady(
-            f"Expected to find layer named '{name}' in geoserver")
+            _(f"Expected to find layer named '{name}' in geoserver"))
 
     _log('Creating Django record for [%s]', name)
     target = task.target
