@@ -52,7 +52,7 @@
         </thead>
         <tbody>
           {% for u in incomplete %}
-          <tr id="incomplete-{{ u.import_id }}" data-upload-id="{{ u.import_id }}">
+          <tr id="incomplete-{{ u.id }}" data-upload-id="{{ u.id }}">
             <th>{{ u.name }}</th>
             <td class="incomplete-date">{{ u.date }}</td>
             <td class="incomplete-progress text-center">
