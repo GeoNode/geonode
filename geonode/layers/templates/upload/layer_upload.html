@@ -36,26 +36,64 @@
 </div>
 <div class="row">
   <div class="col-md-8">
+
     {% if incomplete %}
     <section class="widget" id="incomplete-download-list">
       <h3>{% trans "Incomplete Uploads" %}</h3>
       <p>{% trans "You have the following incomplete uploads" %}:</p>
-      {% for u in incomplete %}
-      <div class="clearfix uip" id="incomplete-{{ u.import_id }}">
-        <div class="pull-left">{{ u.name }}, {% trans "last updated on" %} {{ u.date }}</div>
-        <div class="upload_actions pull-right">
-          <a class="btn btn-mini" href="#" id="resume-{{ u.import_id }}">{% trans "Resume" %}</a>
-          <a class="btn btn-mini" href="#" id="delete-{{ u.import_id }}"><i class="icon-trash"></i> {% trans "Delete" %}</a>
-        </div>
-      </div>
-      {% endfor %}
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th scope="row">{% trans "Name" %}</th>
+            <td>{% trans "Last update" %}</td>
+            <td>{% trans "Progress" %}</td>
+            <td></td>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in incomplete %}
+          <tr id="incomplete-{{ u.import_id }}" data-upload-id="{{ u.import_id }}">
+            <th>{{ u.name }}</th>
+            <td class="incomplete-date">{{ u.date }}</td>
+            <td class="incomplete-progress text-center">
+              <button
+                class="btn btn-default btn-sm btn-default"
+              >
+                <i class="fa fa-spinner fa-spin"></i>
+              </button>
+            </td>
+            <td class="incomplete-tools text-center">
+              <button
+                class="btn btn-default btn-sm incomplete-resume"
+                data-toggle="tooltip"
+                data-placement="top"
+                title="{% trans 'Resume' %}"
+                style="display:none"
+              >
+                <i class="fa fa-play"></i>
+              </button>
+              <button
+                class="btn btn-default btn-sm btn-danger incomplete-remove"
+                data-toggle="tooltip"
+                data-placement="top"
+                title="{% trans 'Delete' %}"
+                style="display:none"
+              >
+                <i class="fa fa-remove"></i>
+              </button>
+              <a
+                href="#"
+                class="btn btn-default btn-sm btn-default incomplete-link"
+                style="display:none"
+              >
+                <i class="fa fa-link"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </section>
-    <div id="confirm-delete" class="hidden alert alert-warning">
-      {% trans "Are you sure you want to delete this upload?" %}
-      <a href="#y" class="btn btn-danger">{% trans "Delete" %}</a>
-      <a href="#n" class="btn btn-default">{% trans "Cancel" %}</a>
-      <a href="#yy">{% trans "Delete, and don't ask me again." %}</a>
-    </div>
     {% endif %}
 
     {% block additional_info %}{% endblock %}
@@ -106,7 +144,7 @@
 
     <section>
       <a href="{% url "layer_upload" %}" id="clear-button" class="btn btn-default">{% trans "Clear" %}</a>
-      <a href="#" id="upload-button" class="btn btn-danger">{% trans "Upload files" %}</a>
+      <a href="#" id="upload-button" class="btn btn-primary">{% trans "Upload files" %}</a>
     </section>
   </div>
 

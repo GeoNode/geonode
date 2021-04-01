@@ -23,8 +23,7 @@ define(['underscore',
         doUpload,
         doUploads,
         doSrs,
-        doDelete,
-        doResume,
+        doUpdateIncompleteUploads,
         doSuccessfulUpload,
         attach_events,
         checkFiles,
@@ -189,59 +188,6 @@ define(['underscore',
         return matched;
     }
 
-    doDelete = function(event) {
-        var target = event.target || event.srcElement;
-        var id = target.id.split("-")[1];
-        var target = siteUrl + "upload/delete/" + id;
-        $.ajax({
-            url: target,
-            async: false,
-            mode: "queue",
-            contentType: false,
-        }).done(function (resp) {
-            var div = "#incomplete-" + id;
-            $(div).remove();
-
-            if ($('#incomplete-download-list > div[id^=incomplete]').length == 0){
-                $('#incomplete-download-list').hide();
-            }
-
-        }).fail(function (resp) {
-            //
-        });
-    };
-
-    doResume = function(event) {
-        var target = event.target || event.srcElement;
-        var id = target.id.split("-")[1];
-        var target = siteUrl + "upload/?id=" + id;
-        $.ajax({
-            url: target,
-            async: false,
-            mode: "queue",
-            contentType: false,
-        }).done(function (data) {
-          if('redirect_to' in data) {
-                common.make_request({
-                    url: data.redirect_to,
-                    async: false,
-                    failure: function (resp, status) {
-                        common.logError(resp, status);
-                    },
-                    success: function (resp, status) {
-                        window.location = resp.url;
-                    }
-                });
-            } else if ('url' in data) {
-                window.location = data.url;
-            } else {
-                common.logError("unexpected response");
-            }
-        }).fail(function (resp) {
-            common.logError(resp);
-        });
-    };
-
     doSrs = function (event) {
         var form = $("#srsForm")
         $.ajax({
@@ -308,6 +254,195 @@ define(['underscore',
         return false;
     };
 
+    doUpdateIncompleteUploads = function() {
+
+        const row = $( this ).get(0);
+        const intervalTime = 5000; // 5 seconds
+        const id = row.getAttribute('data-upload-id') || '';
+        const target = siteUrl + 'api/v2/uploads/' + id;
+        const progressNode = row.querySelector('.incomplete-progress');
+
+        var incompleteProgressInterval;
+        var resumeUrl = '';
+        var deleteUrl = '';
+
+        function handleDelete() {
+            $.ajax({
+                url: deleteUrl,
+                async: false,
+                mode: 'queue',
+                contentType: false,
+            })
+                .done(function () {
+                    // if the upload is successfully removed
+                    // - remove the node
+                    // - hide the incomplete download list if there are not child
+                    $('#incomplete-' + id).remove();
+                    if ($('#incomplete-download-list [data-upload-id]').length == 0){
+                        $('#incomplete-download-list').hide();
+                    }
+                    // if removed stop request on this node
+                    if (incompleteProgressInterval) {
+                        clearInterval(incompleteProgressInterval);
+                    }
+                })
+                .fail(function () {
+                    //
+                });
+        }
+
+        function handleResume() {
+            $.ajax({
+                url: resumeUrl,
+                async: false,
+                mode: "queue",
+                contentType: false,
+            })
+                .done(function (data) {
+                    if('redirect_to' in data) {
+                        common.make_request({
+                            url: data.redirect_to,
+                            async: false,
+                            failure: function (resp, status) {
+                                common.logError(resp, status);
+                            },
+                            success: function (resp, status) {
+                                window.location = resp.url;
+                            }
+                        });
+                    } else if ('url' in data) {
+                        window.location = data.url;
+                    } else {
+                        common.logError("unexpected response");
+                    }
+                })
+                .fail(function (resp) {
+                    common.logError(resp);
+                });
+        }
+
+        const resumeNode = row.querySelector('.incomplete-resume');
+        resumeNode.addEventListener('click', handleResume);
+        const removeNode = row.querySelector('.incomplete-remove');
+        removeNode.addEventListener('click', handleDelete);
+        const linkDetailNode = row.querySelector('.incomplete-link');
+
+        progressNode.style.position = 'relative';
+        progressNode.innerHTML = '';
+
+        // add a small progress bar in the progressNode
+        const progressBarBg = document.createElement('div');
+        progressBarBg.style.position = 'absolute';
+        progressBarBg.style.left = 0;
+        progressBarBg.style.bottom = 0;
+        progressBarBg.style.width = '100%';
+        progressBarBg.style.height = '4px';
+        progressNode.appendChild(progressBarBg);
+
+        const progressBar = document.createElement('div');
+        progressBar.style.position = 'absolute';
+        progressBar.style.left = 0;
+        progressBar.style.bottom = 0;
+        progressBar.style.width = 0;
+        progressBar.style.height = '4px';
+        progressBar.style.transition = '0.3s width';
+        progressNode.appendChild(progressBar);
+
+        // write the current progress percentage in the progressNode
+        const progressLabel = document.createElement('span');
+        progressNode.appendChild(progressLabel);
+
+        function requestStateProgress(resolve, reject) {
+            $.ajax({
+                url: target,
+                async: false,
+                mode: "queue",
+                contentType: false,
+            })
+                .done(function (response) {
+                    const uploadProperties = response && response.upload || {};
+                    resolve(uploadProperties);
+                })
+                .fail(function (error) { reject(error); });
+        }
+
+        // change style of rows in the incomplete upload list based on the state
+        function updateRowStructure(uploadProperties) {
+            progressBarBg.style.backgroundColor = '#f2f2f2';
+            progressBar.style.backgroundColor = '#27ca3b';
+            resumeNode.style.display = 'none';
+            removeNode.style.display = 'none';
+            linkDetailNode.style.display = 'none';
+            resumeUrl = uploadProperties.resume_url;
+            deleteUrl = uploadProperties.delete_url;
+            row.setAttribute('class', '');
+            switch(uploadProperties.state) {
+                case 'PENDING':
+                    resumeNode.style.display = 'inline-block';
+                    removeNode.style.display = 'inline-block';
+                    progressBarBg.style.backgroundColor = '#ccc';
+                    progressBar.style.backgroundColor = '#999';
+                    row.setAttribute('class', 'active');
+                    break;
+                case 'PROCESSED':
+                    linkDetailNode.style.display = 'inline-block';
+                    row.setAttribute('class', 'success');
+                    break;
+                case 'INVALID':
+                    removeNode.style.display = 'inline-block';
+                    row.setAttribute('class', 'danger');
+                    break;
+                default:
+                    removeNode.style.display = 'inline-block';
+                    break;
+            }
+        }
+
+        requestStateProgress(function(initialUploadProperties) {
+            // set initial value for the progress bar
+            const initialProgress = Math.round(initialUploadProperties.progress)  + '%';
+            progressLabel.innerHTML = initialProgress;
+            progressBar.style.width = initialProgress;
+
+            updateRowStructure(initialUploadProperties);
+
+            if (initialProgress !== '100%') {
+                incompleteProgressInterval = setInterval(function() {
+                    // check if the progressNode is still in the page
+                    // and stop the request for an update
+                    if (document.body.contains(progressNode)) {
+                        requestStateProgress(function(uploadProperties) {
+                            // set updated value for the progress bar
+                            updateRowStructure(uploadProperties);
+                            const progress = Math.round(uploadProperties.progress)  + '%';
+                            progressLabel.innerHTML = progress;
+                            progressBar.style.width = progress;
+
+                            // stop the requests once the progress is 100%
+                            if (progress === '100%') {
+                                // add visibility the link to detail if available
+                                const detailUrl = uploadProperties.layer && uploadProperties.layer.detail_url;
+                                if (detailUrl) {
+                                    linkDetailNode.style.display = 'inline-block';
+                                    resumeNode.style.display = 'none';
+                                    removeNode.style.display = 'none';
+                                    linkDetailNode.setAttribute('href', detailUrl);
+                                }
+                                clearInterval(incompleteProgressInterval);
+                            }
+                        }, function(error) {
+                            //
+                        });
+                    } else {
+                        clearInterval(incompleteProgressInterval);
+                    }
+                }, intervalTime);
+            }
+        }, function(error) {
+            //
+        });
+    }
+
     /** Initialization function. Called from main.js
      *
      *  @params
@@ -360,16 +495,14 @@ define(['underscore',
         });
         $(options.clear_button).on('click', doClearState);
         $(options.upload_button).on('click', doUploads);
-        $("[id^=delete]").on('click', doDelete);
-        $("[id^=resume]").on('click', doResume);
+        $('[data-upload-id]').each(doUpdateIncompleteUploads);
+        $('[data-toggle="tooltip"]').tooltip();
     };
 
     // public api
     return {
         initialize: initialize,
-        doSrs: doSrs,
-        doDelete: doDelete,
-        doResume: doResume
+        doSrs: doSrs
     };
 
 });
