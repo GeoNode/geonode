@@ -216,11 +216,33 @@
           <ul class="list-unstyled">
             {% for layer in resource.layer_set.all %}
             {% ifnotequal layer.group 'background' %}
+            <li>
+              <div class="map-layers">
+              <i class="fa fa-chevron-right"></i>
               {% if layer.local %}
-              <li><a href="{% url "layer_detail" layer.name %}">{% if layer.layer_title %}{{ layer.layer_title }}{% else %}{{ layer.name }}{% endif %}</a></li>
+                <a href="{% url "layer_detail" layer.name %}">
+                  {% if layer.layer_title %}
+                  {{ layer.layer_title }}
+                  {% else %}
+                  {{ layer.name }}
+                  {% endif %}
+                </a>
               {% else %}
-              <li>{{ layer.layer_title }}</li>
+                {{ layer.layer_title }}
               {% endif %}
+              </div>
+              <ul class="list-unstyled list-group">
+                <li class="map-legend list-group-item">
+                  <span>Legend</span>
+                  {% for legend in legends %}
+                  {% for key, value in legend.items %}
+                    <p>{{ key }}</p>
+                    <p><img id="legend_icon" src="{{ value }}"></p>
+                  {% endfor %}
+                  {% endfor %}
+                </li>
+              </ul>
+            </li>
             {% endifnotequal %}
             {% endfor %}
           </ul>

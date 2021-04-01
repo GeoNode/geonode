@@ -8422,3 +8422,15 @@ form-inline {
 .jumbotron .gn-container {
   margin-top: -2px;
 }
+
+.map-layers {
+  display: flex;
+  word-break: break-all;
+}
+.map-layers i {
+  padding: 7px 0px;
+  font-size: small;
+}
+.map-legend {
+  font-size: 10px;
+}
