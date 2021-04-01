@@ -20,7 +20,7 @@
 from rest_framework import serializers
 
 from dynamic_rest.serializers import DynamicModelSerializer
-from dynamic_rest.fields.fields import DynamicRelationField
+from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
 
 from geonode.upload.models import Upload, UploadFile
 from geonode.layers.api.serializers import LayerSerializer
@@ -166,6 +166,12 @@ class SessionSerializer(serializers.Field):
             return _s
 
 
+class ProgressField(DynamicComputedField):
+
+    def get_attribute(self, instance):
+        return instance.progress
+
+
 class UploadSerializer(DynamicModelSerializer):
 
     def __init__(self, *args, **kwargs):
@@ -184,9 +190,10 @@ class UploadSerializer(DynamicModelSerializer):
         fields = (
             'id', 'name', 'date', 'import_id',
             'state', 'complete', 'user', 'layer',
-            'upload_dir', 'uploadfile_set'
+            'upload_dir', 'uploadfile_set',
+            'progress'
         )
 
+    progress = ProgressField(read_only=True)
     layer = DynamicRelationField(LayerSerializer, embed=True, many=False, read_only=True)
-
     uploadfile_set = DynamicRelationField(UploadFileSerializer, embed=True, many=True, read_only=True)

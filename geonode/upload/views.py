@@ -38,11 +38,12 @@ import re
 import json
 import logging
 import zipfile
+import tempfile
 import traceback
 import gsimporter
-import tempfile
 
 from http.client import BadStatusLine
+
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
@@ -53,6 +54,8 @@ from django.utils.html import escape
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views.generic import CreateView, DeleteView
+
+from geonode.upload import UploadException
 from geonode.utils import fixup_shp_columnnames
 from geonode.base.enumerations import CHARSETS
 from geonode.monitoring import register_event
@@ -523,7 +526,11 @@ def time_step_view(request, upload_session):
                 )
                 upload_session.import_session.tasks[0].save_transforms()
 
-    upload_session.import_session = import_session.reload()
+    try:
+        upload_session.import_session = import_session.reload()
+    except gsimporter.api.NotFound as e:
+        raise UploadException.from_exc(
+            _("The GeoServer Import Session is no more available"), e)
 
     if start_attribute_and_type:
         def tx(type_name):

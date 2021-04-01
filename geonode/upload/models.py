@@ -24,7 +24,7 @@ import shutil
 import logging
 
 from slugify import slugify
-from gsimporter import NotFound
+from gsimporter.api import NotFound
 
 from django.db import models
 from django.urls import reverse
@@ -32,8 +32,10 @@ from django.conf import settings
 from django.core.files import File
 from django.utils.timezone import now
 from django.core.files.storage import FileSystemStorage
+from django.utils.translation import ugettext_lazy as _
 
 from geonode.layers.models import Layer
+from geonode.upload import UploadException
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 
 logger = logging.getLogger(__name__)
@@ -59,10 +61,8 @@ class UploadManager(models.Manager):
             state=import_session.state)
 
     def get_incomplete_uploads(self, user):
-        return self.filter(
-            user=user,
-            complete=False).exclude(
-            state=Upload.STATE_INVALID)
+        return self.filter(user=user).exclude(
+            state=Upload.STATE_PROCESSED)
 
 
 class Upload(models.Model):
@@ -97,6 +97,7 @@ class Upload(models.Model):
         ordering = ['-date']
 
     STATE_INVALID = 'INVALID'
+    STATE_PROCESSED = 'PROCESSED'
 
     @property
     def get_session(self):
@@ -152,8 +153,28 @@ class Upload(models.Model):
 
         self.save()
 
+    @property
+    def progress(self):
+        if self.state == Upload.STATE_INVALID:
+            return 0.0
+        elif self.state != 'COMPLETE' or not self.complete:
+            return 33.0
+        else:
+            if self.layer and self.layer.processed:
+                self.state = Upload.STATE_PROCESSED
+                Upload.objects.filter(id=self.id).update(state=Upload.STATE_PROCESSED)
+                return 100.0
+            else:
+                return 66.0
+
     def get_resume_url(self):
-        return f"{reverse('data_upload')}?id={self.import_id}"
+        try:
+            session = gs_uploader.get_session(self.import_id)
+        except NotFound as e:
+            session = None
+            raise UploadException.from_exc(
+                _("The GeoServer Import Session is no more available"), e)
+        return f"{reverse('data_upload')}?id={session.id}"
 
     def get_delete_url(self):
         return reverse('data_upload_delete', args=[self.import_id])
@@ -173,6 +194,11 @@ class Upload(models.Model):
                     session.delete()
                 except Exception:
                     logging.exception('error deleting upload session')
+            if self.layer:
+                try:
+                    self.layer.delete()
+                except Exception:
+                    logging.exception('error deleting upload layer')
             if self.upload_dir and os.path.exists(self.upload_dir):
                 shutil.rmtree(self.upload_dir)
 

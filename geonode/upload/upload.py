@@ -48,9 +48,10 @@ from django.db import IntegrityError, transaction
 from django.utils.translation import ugettext_lazy as _
 
 import geoserver
+import gsimporter
+
 from geoserver.resource import Coverage
 from geoserver.resource import FeatureType
-from gsimporter import BadRequest
 
 from geonode import GeoNodeException
 from geonode.upload import UploadException, LayerNotReady
@@ -509,8 +510,8 @@ def time_step(upload_session, time_attribute, time_transform_type,
         try:
             upload_session.time_transforms = transforms
             upload_session.time = True
-        except BadRequest as br:
-            raise UploadException.from_exc('Error configuring time:', br)
+        except gsimporter.BadRequest as br:
+            raise UploadException.from_exc(_('Error configuring time:'), br)
         upload_session.import_session.tasks[0].save_transforms()
     else:
         upload_session.time = False
@@ -527,7 +528,11 @@ def csv_step(upload_session, lat_field, lng_field):
     task.remove_transforms([transform], by_field='type', save=False)
     task.add_transforms([transform], save=False)
     task.save_transforms()
-    import_session = import_session.reload()
+    try:
+        import_session = import_session.reload()
+    except gsimporter.api.NotFound as e:
+        raise UploadException.from_exc(
+            _("The GeoServer Import Session is no more available"), e)
     upload_session.import_session = import_session
 
 
@@ -545,14 +550,22 @@ def srs_step(upload_session, source, target):
     task.remove_transforms([transform], by_field='type', save=False)
     task.add_transforms([transform], save=False)
     task.save_transforms()
-    import_session = import_session.reload()
+    try:
+        import_session = import_session.reload()
+    except gsimporter.api.NotFound as e:
+        raise UploadException.from_exc(
+            _("The GeoServer Import Session is no more available"), e)
     upload_session.import_session = import_session
 
 
 def final_step(upload_session, user, charset="UTF-8"):
     import_session = upload_session.import_session
     _log('Reloading session %s to check validity', import_session.id)
-    import_session = import_session.reload()
+    try:
+        import_session = import_session.reload()
+    except gsimporter.api.NotFound as e:
+        raise UploadException.from_exc(
+            _("The GeoServer Import Session is no more available"), e)
     upload_session.import_session = import_session
 
     # the importer chooses an available featuretype name late in the game need
