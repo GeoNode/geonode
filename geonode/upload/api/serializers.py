@@ -172,6 +172,21 @@ class ProgressField(DynamicComputedField):
         return instance.progress
 
 
+class ProgressUrlField(DynamicComputedField):
+
+    def __init__(self, type, **kwargs):
+        self.type = type
+        super(ProgressUrlField, self).__init__(**kwargs)
+
+    def get_attribute(self, instance):
+        try:
+            func = getattr(instance, f"get_{self.type}_url")
+            return func()
+        except AttributeError as e:
+            logger.exception(e)
+            return None
+
+
 class UploadSerializer(DynamicModelSerializer):
 
     def __init__(self, *args, **kwargs):
@@ -190,10 +205,13 @@ class UploadSerializer(DynamicModelSerializer):
         fields = (
             'id', 'name', 'date', 'import_id',
             'state', 'complete', 'user', 'layer',
-            'upload_dir', 'uploadfile_set',
-            'progress'
+            'upload_dir', 'uploadfile_set', 'progress',
+            'resume_url', 'delete_url', 'import_url'
         )
 
     progress = ProgressField(read_only=True)
+    resume_url = ProgressUrlField('resume', read_only=True)
+    delete_url = ProgressUrlField('delete', read_only=True)
+    import_url = ProgressUrlField('import', read_only=True)
     layer = DynamicRelationField(LayerSerializer, embed=True, many=False, read_only=True)
     uploadfile_set = DynamicRelationField(UploadFileSerializer, embed=True, many=True, read_only=True)
