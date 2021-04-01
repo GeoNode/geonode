@@ -46,6 +46,12 @@ class UploadManager(models.Manager):
     def __init__(self):
         models.Manager.__init__(self)
 
+    def invalidate_from_session(self, upload_session):
+        return self.filter(
+            user=upload_session.user,
+            import_id=upload_session.import_session.id
+        ).update(state=Upload.STATE_INVALID)
+
     def update_from_session(self, upload_session, layer=None):
         self.get(
             user=upload_session.user,
@@ -179,7 +185,8 @@ class Upload(models.Model):
         try:
             session = gs_uploader.get_session(self.import_id)
         except NotFound as e:
-            session = None
+            self.state = Upload.STATE_INVALID
+            Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
             raise UploadException.from_exc(
                 _("The GeoServer Import Session is no more available"), e)
         return f"{reverse('data_upload')}?id={session.id}"

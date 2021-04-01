@@ -529,6 +529,7 @@ def time_step_view(request, upload_session):
     try:
         upload_session.import_session = import_session.reload()
     except gsimporter.api.NotFound as e:
+        Upload.objects.invalidate_from_session(upload_session)
         raise UploadException.from_exc(
             _("The GeoServer Import Session is no more available"), e)
 
