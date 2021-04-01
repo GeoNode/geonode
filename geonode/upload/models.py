@@ -96,8 +96,13 @@ class Upload(models.Model):
     class Meta:
         ordering = ['-date']
 
-    STATE_INVALID = 'INVALID'
-    STATE_PROCESSED = 'PROCESSED'
+    STATE_READY = "READY"
+    STATE_RUNNING = "RUNNING"
+    STATE_PENDING = "PENDING"
+    STATE_INCOMPLETE = "INCOMPLETE"
+    STATE_COMPLETE = "COMPLETE"
+    STATE_INVALID = "INVALID"
+    STATE_PROCESSED = "PROCESSED"
 
     @property
     def get_session(self):
@@ -155,17 +160,20 @@ class Upload(models.Model):
 
     @property
     def progress(self):
-        if self.state == Upload.STATE_INVALID:
+        if self.state in \
+        (Upload.STATE_READY, Upload.STATE_INVALID, Upload.STATE_INCOMPLETE):
             return 0.0
-        elif self.state != 'COMPLETE' or not self.complete:
+        elif self.state == Upload.STATE_PENDING:
             return 33.0
-        else:
+        elif self.state == Upload.STATE_RUNNING:
+            return 66.0
+        elif self.complete:
             if self.layer and self.layer.processed:
                 self.state = Upload.STATE_PROCESSED
                 Upload.objects.filter(id=self.id).update(state=Upload.STATE_PROCESSED)
                 return 100.0
             else:
-                return 66.0
+                return 80.0
 
     def get_resume_url(self):
         try:
@@ -182,25 +190,44 @@ class Upload(models.Model):
     def get_import_url(self):
         return f"{ogc_server_settings.LOCATION}rest/imports/{self.import_id}"
 
-    def delete(self, cascade=True):
-        models.Model.delete(self)
-        if cascade:
+    def delete(self, *args, **kwargs):
+        importer_locations = []
+        upload_files = [_file.file for _file in UploadFile.objects.filter(upload=self)]
+        super(Upload, self).delete(*args, **kwargs)
+        try:
+            session = gs_uploader.get_session(self.import_id)
+        except NotFound:
+            session = None
+        if session:
+            for task in session.tasks:
+                if getattr(task, 'data'):
+                    importer_locations.append(
+                        getattr(task.data, 'location'))
             try:
-                session = gs_uploader.get_session(self.import_id)
-            except NotFound:
-                session = None
-            if session:
-                try:
-                    session.delete()
-                except Exception:
-                    logging.exception('error deleting upload session')
-            if self.layer:
-                try:
-                    self.layer.delete()
-                except Exception:
-                    logging.exception('error deleting upload layer')
-            if self.upload_dir and os.path.exists(self.upload_dir):
+                session.delete()
+            except Exception:
+                logging.exception('error deleting upload session')
+        if self.layer:
+            try:
+                self.layer.delete()
+            except Exception:
+                logging.exception('error deleting upload layer')
+        for _file in upload_files:
+            try:
+                if os.path.isfile(_file.path):
+                    os.remove(_file.path)
+            except Exception as e:
+                logger.exception(e)
+        for _location in importer_locations:
+            try:
+                shutil.rmtree(_location)
+            except Exception as e:
+                logger.exception(e)
+        if self.upload_dir and os.path.exists(self.upload_dir):
+            try:
                 shutil.rmtree(self.upload_dir)
+            except Exception as e:
+                logger.exception(e)
 
     def __str__(self):
         return f'Upload [{self.pk}] gs{self.import_id} - {self.name}, {self.user}'

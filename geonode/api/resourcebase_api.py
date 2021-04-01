@@ -238,10 +238,7 @@ class CommonModelApi(ModelResource):
             filtered = self.filter_h_keywords(filtered, keywords)
 
         # Hide Dirty State Resources
-        user = request.user if request else None
-        if not user or not user.is_authenticated or not user.is_superuser:
-            filtered = filtered.exclude(Q(dirty_state=True))
-        return filtered
+        return filtered.exclude(Q(dirty_state=True))
 
     def filter_published(self, queryset, request):
         filter_set = get_visible_resources(

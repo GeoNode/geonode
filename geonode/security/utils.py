@@ -73,6 +73,9 @@ def get_visible_resources(queryset,
 
     filter_set = queryset.filter(metadata_only=False)
 
+    # Hide Dirty State Resources
+    filter_set = filter_set.exclude(Q(dirty_state=True))
+
     if not is_admin:
         if admin_approval_required:
             if not user or not user.is_authenticated or user.is_anonymous:
@@ -97,10 +100,6 @@ def get_visible_resources(queryset,
                 )
             else:
                 filter_set = filter_set.exclude(group__in=private_groups)
-
-        # Hide Dirty State Resources
-        if not user or not user.is_authenticated or not user.is_superuser:
-            filter_set = filter_set.exclude(Q(dirty_state=True))
 
         if admin_approval_required or unpublished_not_visible or private_groups_not_visibile:
             if user:

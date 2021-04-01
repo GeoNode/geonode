@@ -688,6 +688,14 @@ def pre_delete_layer(instance, sender, **kwargs):
             if style != default_style:
                 style.delete()
 
+    if 'geonode.upload' in settings.INSTALLED_APPS and \
+    settings.UPLOADER['BACKEND'] == 'geonode.importer':
+        from geonode.upload.models import Upload
+        # Need to call delete one by one in ordee to invoke the
+        #  'delete' overridden method
+        for upload in Upload.objects.filter(layer_id=instance.id):
+            upload.delete()
+
     # Delete object permissions
     remove_object_permissions(instance)
 
