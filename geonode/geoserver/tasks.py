@@ -442,6 +442,7 @@ def geoserver_post_save_layers(
 
             geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
             geonode_upload_sessions.update(processed=False)
+            instance.set_dirty_state()
 
             gs_resource = None
             values = None
@@ -637,6 +638,7 @@ def geoserver_post_save_layers(
             try:
                 geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
                 geonode_upload_sessions.update(processed=True)
+                instance.clear_dirty_state()
             except Exception as e:
                 logger.exception(e)
 

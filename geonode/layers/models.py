@@ -216,9 +216,13 @@ class Layer(ResourceBase):
     def processed(self):
         self.upload_session = UploadSession.objects.filter(resource=self).first()
         if self.upload_session:
-            return self.upload_session.processed
+            if self.upload_session.processed:
+                self.clear_dirty_state()
+            else:
+                self.set_dirty_state()
         else:
-            return True
+            self.clear_dirty_state()
+        return not self.dirty_state
 
     @property
     def display_type(self):

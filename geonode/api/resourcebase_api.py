@@ -239,12 +239,8 @@ class CommonModelApi(ModelResource):
 
         # Hide Dirty State Resources
         user = request.user if request else None
-        if not user or not user.is_superuser:
-            if user:
-                filtered = filtered.exclude(Q(dirty_state=True) & ~(
-                    Q(owner__username__iexact=str(user))))
-            else:
-                filtered = filtered.exclude(Q(dirty_state=True))
+        if not user or not user.is_authenticated or not user.is_superuser:
+            filtered = filtered.exclude(Q(dirty_state=True))
         return filtered
 
     def filter_published(self, queryset, request):

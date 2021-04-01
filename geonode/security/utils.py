@@ -99,12 +99,7 @@ def get_visible_resources(queryset,
                 filter_set = filter_set.exclude(group__in=private_groups)
 
         # Hide Dirty State Resources
-        if user and user.is_authenticated:
-            filter_set = filter_set.exclude(
-                Q(dirty_state=True) & ~(
-                    Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all))
-            )
-        else:
+        if not user or not user.is_authenticated or not user.is_superuser:
             filter_set = filter_set.exclude(Q(dirty_state=True))
 
         if admin_approval_required or unpublished_not_visible or private_groups_not_visibile:

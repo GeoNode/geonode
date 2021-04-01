@@ -1235,12 +1235,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def set_dirty_state(self):
         if not self.dirty_state:
             self.dirty_state = True
-            self.save()
+            ResourceBase.objects.filter(id=self.id).update(dirty_state=True)
 
     def clear_dirty_state(self):
         if self.dirty_state:
             self.dirty_state = False
-            self.save()
+            ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
+
+    @property
+    def processed(self):
+        return not self.dirty_state
 
     @property
     def keyword_csv(self):
