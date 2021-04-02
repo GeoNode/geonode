@@ -186,13 +186,28 @@ class Upload(models.Model):
             if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
                 self.state = Upload.STATE_INVALID
                 Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
-        return f"{reverse('data_upload')}?id={self.import_id}"
+        if self.state == Upload.STATE_PENDING:
+            return f"{reverse('data_upload')}?id={self.import_id}"
+        else:
+            return None
 
     def get_delete_url(self):
-        return reverse('data_upload_delete', args=[self.import_id])
+        if self.state != Upload.STATE_PROCESSED:
+            return reverse('data_upload_delete', args=[self.import_id])
+        else:
+            return None
 
     def get_import_url(self):
-        return f"{ogc_server_settings.LOCATION}rest/imports/{self.import_id}"
+        try:
+            gs_uploader.get_session(self.import_id)
+        except NotFound:
+            if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
+                self.state = Upload.STATE_INVALID
+                Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
+        if self.state != Upload.STATE_INVALID:
+            return f"{ogc_server_settings.LOCATION}rest/imports/{self.import_id}"
+        else:
+            return None
 
     def delete(self, *args, **kwargs):
         importer_locations = []
