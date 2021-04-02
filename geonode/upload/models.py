@@ -226,11 +226,6 @@ class Upload(models.Model):
                 session.delete()
             except Exception:
                 logging.exception('error deleting upload session')
-        if self.layer:
-            try:
-                self.layer.delete()
-            except Exception:
-                logging.exception('error deleting upload layer')
         for _file in upload_files:
             try:
                 if os.path.isfile(_file.path):
