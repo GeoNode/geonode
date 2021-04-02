@@ -638,9 +638,10 @@ def geoserver_post_save_layers(
             try:
                 geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
                 geonode_upload_sessions.update(processed=True)
-                instance.clear_dirty_state()
             except Exception as e:
                 logger.exception(e)
+            finally:
+                instance.clear_dirty_state()
 
             # Updating HAYSTACK Indexes if needed
             if settings.HAYSTACK_SEARCH:

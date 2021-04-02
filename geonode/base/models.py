@@ -1233,14 +1233,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 return None
 
     def set_dirty_state(self):
-        if not self.dirty_state:
-            self.dirty_state = True
-            ResourceBase.objects.filter(id=self.id).update(dirty_state=True)
+        self.dirty_state = True
+        ResourceBase.objects.filter(id=self.id).update(dirty_state=True)
 
     def clear_dirty_state(self):
-        if self.dirty_state:
-            self.dirty_state = False
-            ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
+        self.dirty_state = False
+        ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
 
     @property
     def processed(self):

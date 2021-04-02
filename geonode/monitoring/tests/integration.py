@@ -53,6 +53,7 @@ from geonode.monitoring.models import do_autoconfigure
 from geonode.compat import ensure_string
 from geonode.monitoring.collector import CollectorAPI
 from geonode.monitoring.utils import generate_periods, align_period_start
+from geonode.base.models import ResourceBase
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.documents.models import Document
@@ -117,7 +118,7 @@ class TestClient(DjangoTestClient):
         # See https://www.python.org/dev/peps/pep-3333/#environ-variables
         environ = {
             'HTTP_COOKIE': '; '.join(sorted(
-                '%s=%s' % (morsel.key, morsel.coded_value)
+                f'{morsel.key}={morsel.coded_value}'
                 for morsel in self.cookies.values()
             )),
             'PATH_INFO': str('/'),
@@ -175,6 +176,7 @@ class MonitoringTestBase(GeoNodeLiveTestSupport):
             os.unlink('integration_settings.py')
 
     def setUp(self):
+        ResourceBase.objects.all().update(dirty_state=False)
         # await startup
         cl = Client(
             GEONODE_URL, GEONODE_USER, GEONODE_PASSWD

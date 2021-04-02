@@ -50,6 +50,7 @@ logger = logging.getLogger("geonode.security.utils")
 def get_visible_resources(queryset,
                           user,
                           request=None,
+                          metadata_only=False,
                           admin_approval_required=False,
                           unpublished_not_visible=False,
                           private_groups_not_visibile=False):
@@ -71,10 +72,9 @@ def get_visible_resources(queryset,
     except Exception:
         pass
 
-    filter_set = queryset.filter(metadata_only=False)
-
     # Hide Dirty State Resources
-    filter_set = filter_set.exclude(Q(dirty_state=True))
+    filter_set = queryset.filter(
+        Q(dirty_state=False) & Q(metadata_only=metadata_only))
 
     if not is_admin:
         if admin_approval_required:
@@ -83,12 +83,12 @@ def get_visible_resources(queryset,
                     Q(is_published=True) |
                     Q(group__in=public_groups) |
                     Q(group__in=groups)
-                ).exclude(Q(is_approved=False))
+                ).exclude(is_approved=False)
 
         # Hide Unpublished Resources to Anonymous Users
         if unpublished_not_visible:
             if not user or not user.is_authenticated or user.is_anonymous:
-                filter_set = filter_set.exclude(Q(is_published=False))
+                filter_set = filter_set.exclude(is_published=False)
 
         # Hide Resources Belonging to Private Groups
         if private_groups_not_visibile:

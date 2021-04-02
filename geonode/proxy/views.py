@@ -355,7 +355,7 @@ def download(request, resourceid, sender=Layer):
                 links = Link.objects.filter(resource=instance.resourcebase_ptr)
                 for link in links:
                     link_name = slugify(link.name)
-                    link_file = os.path.join(target_md_folder, "".join([link_name, ".%s" % link.extension]))
+                    link_file = os.path.join(target_md_folder, "".join([link_name, f".{link.extension}"]))
                     if link.link_type in ('data'):
                         # Skipping 'data' download links
                         continue
