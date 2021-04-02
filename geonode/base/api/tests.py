@@ -238,7 +238,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 20)
+        self.assertEqual(response.data['total'], 18)
         # Pagination
         self.assertEqual(len(response.data['resources']), 10)
         logger.debug(response.data)
@@ -248,7 +248,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 19)
+        self.assertEqual(response.data['total'], 17)
         # Pagination
         self.assertEqual(len(response.data['resources']), 10)
         logger.debug(response.data)

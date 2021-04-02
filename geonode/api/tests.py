@@ -89,7 +89,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         resp = self.api_client.get(self.list_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 8)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
     def test_layer_get_list_layer_private_to_one_user(self):
         """
@@ -99,32 +99,34 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
         layer = Layer.objects.all()[0]
         layer.set_permissions(perm_spec)
+        layer.clear_dirty_state()
         resp = self.api_client.get(self.list_url)
         self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
         self.api_client.client.login(username='bobby', password='bob')
         resp = self.api_client.get(self.list_url)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
         self.api_client.client.login(username=self.user, password=self.passwd)
         resp = self.api_client.get(self.list_url)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 8)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
         layer.is_published = False
         layer.save()
+        layer.clear_dirty_state()
 
         # with resource publishing
         with self.settings(RESOURCE_PUBLISHING=True):
             resp = self.api_client.get(self.list_url)
-            self.assertEqual(len(self.deserialize(resp)['objects']), 8)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
             self.api_client.client.login(username='bobby', password='bob')
             resp = self.api_client.get(self.list_url)
-            self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
             self.api_client.client.login(username=self.user, password=self.passwd)
             resp = self.api_client.get(self.list_url)
-            self.assertEqual(len(self.deserialize(resp)['objects']), 8)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
     def test_layer_get_detail_unauth_layer_not_public(self):
         """
@@ -132,7 +134,8 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
         layer = Layer.objects.all()[0]
         layer.set_permissions(self.perm_spec)
-        self.assertHttpNotFound(self.api_client.get(
+        layer.clear_dirty_state()
+        self.assertHttpUnauthorized(self.api_client.get(
             self.list_url + str(layer.id) + '/'))
 
         self.api_client.client.login(username=self.user, password=self.passwd)
@@ -148,7 +151,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
                 self.client.login(username=self.user, password=self.passwd)
                 resp = self.client.get(self.list_url)
-                self.assertEqual(len(self.deserialize(resp)['objects']), 8)
+                self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
                 self.client.logout()
                 resp = self.client.get(self.list_url)
@@ -190,7 +193,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
                     self.client.login(username=self.user, password=self.passwd)
                     resp = self.client.get(self.list_url)
-                    self.assertEqual(len(self.deserialize(resp)['objects']), 8)
+                    self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
                     self.client.logout()
                     resp = self.client.get(self.list_url)

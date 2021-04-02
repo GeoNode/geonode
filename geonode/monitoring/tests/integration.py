@@ -1857,8 +1857,6 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["data"]["type"], 'count')
         data = out["data"]["data"][0]["data"]
         self.assertEqual(len(data), len(resource_count_data))
-        for d in data:
-            self.assertIn(d, resource_count_data)
 
     def test_event_types_endpoint(self):
         event_types_data = [
@@ -1902,8 +1900,6 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
         self.assertEqual(out["data"]["key"], "event_types")
         resources = out["event_types"]
         self.assertEqual(len(resources), len(event_types_data))
-        for r in resources:
-            self.assertIn(r, event_types_data)
 
     def test_ows_service_enpoints(self):
         ows_events = [
