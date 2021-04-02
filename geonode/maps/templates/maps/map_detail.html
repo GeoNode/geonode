@@ -216,7 +216,7 @@
           <ul class="list-unstyled">
             {% for layer in resource.layer_set.all %}
             {% ifnotequal layer.group 'background' %}
-            <li>
+            <li class="chevron-caret" id="legend-{{layer.id}}">
               <div class="map-layers">
               <i class="fa fa-chevron-right"></i>
               {% if layer.local %}
@@ -231,15 +231,17 @@
                 {{ layer.layer_title }}
               {% endif %}
               </div>
-              <ul class="list-unstyled list-group">
-                <li class="map-legend list-group-item">
-                  <span>Legend</span>
-                  {% for legend in legends %}
-                  {% for key, value in legend.items %}
-                    <p>{{ key }}</p>
-                    <p><img id="legend_icon" src="{{ value }}"></p>
-                  {% endfor %}
-                  {% endfor %}
+              <ul class="list-unstyled">
+                <li class="map-legend">
+                  {% if layer.get_legend %}
+                    <span>Legend</span>
+                    {% for key, value in layer.get_legend.items %}
+                      <p>{{ key }}</p>
+                      <p class="legend-container" data-legend-src="{{ value }}"></p>
+                      {% endfor %}
+                    {% else %}
+                      <p>No legend</p>
+                    {% endif %}
                 </li>
               </ul>
             </li>
@@ -374,6 +376,34 @@
         });
         return false;
       });
+
+      $(document).ready(function() {
+        $('.map-legend').hide();
+        $('.chevron-caret').each(function() {
+          var icon = $(this).find('i');
+          var id = $(this).attr('id');
+          var mapLegend = $(this).find('.map-legend')
+
+          icon.bind('click', function() {
+            if ($(this).hasClass('fa-chevron-right')) {
+              $(this).addClass('fa-chevron-down').removeClass('fa-chevron-right');
+              mapLegend.show();
+              var legendContainer = $('#' + id + ' .legend-container');
+              var legendSrc = legendContainer.attr('data-legend-src');
+              var legendImage = legendContainer.find('img');
+              if (!legendImage.length) {
+                var img = new Image();
+                        img.setAttribute(id, 'legend_icon');
+                        img.src = legendSrc;
+                        legendContainer.append(img);
+              }
+            }else {
+              $(this).addClass('fa-chevron-right').removeClass('fa-chevron-down');
+              mapLegend.hide();
+            }
+      });
+    });
+  });
     </script>
 
     {% block thumbnail_script %}

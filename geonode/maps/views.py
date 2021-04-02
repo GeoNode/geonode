@@ -175,27 +175,10 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
         else:
             access_token = None
 
-    legends = []
-    for layer in layers:
-        layer_params = json.loads(layer.layer_params)
-        if 'style' in layer_params:
-            available_styles = layer_params.get('availableStyles')
-            for style in available_styles:
-                if style.get('name') == layer_params.get('style'):
-                    legends.append(
-                        {style.get('name'): style.get('legendURL')[0].get('onlineResource').get('href')})
-                elif layer_params.get('capabilty'):
-                    if layer_params.get('capabilty')['styles']:
-                        default_style = layer_params.get('capabilty')['styles'][0]
-                        legends.append(
-                                {default_style.get('title'): default_style.get('legend').get('href')})
-
-
     context_dict = {
         'access_token': access_token,
         'config': config,
         'resource': map_obj,
-        'legends': legends,
         'group': group,
         'layers': layers,
         'perms_list': perms_list,
@@ -923,6 +906,7 @@ def add_layers_to_map_config(
             "store": layer.store,
             "name": layer.alternate,
             "title": layer.title,
+            "style": layer.default_style.name if layer.default_style else '',
             "queryable": True,
             "storeType": layer.storeType,
             "bbox": {

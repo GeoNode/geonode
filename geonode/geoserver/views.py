@@ -540,7 +540,7 @@ def geoserver_proxy(request,
                     f"[geoserver_proxy] Updating Layer ---> url {url.geturl()}")
                 try:
                     _layer_name = os.path.splitext(os.path.basename(request.path))[0]
-                    _layer = Layer.objects.get(name__icontains=_layer_name)
+                    _layer = Layer.objects.get(name=_layer_name)
                     affected_layers = [_layer]
                 except Exception:
                     logger.warn(f"Could not find any Layer {os.path.basename(request.path)} on DB")
