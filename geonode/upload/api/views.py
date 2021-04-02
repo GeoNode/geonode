@@ -20,14 +20,24 @@
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
+from drf_spectacular.utils import extend_schema
+
+from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.exceptions import ParseError
+from rest_framework.parsers import FileUploadParser
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly, DjangoModelPermissionsOrAnonReadOnly  # noqa
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+
+from django.utils.translation import ugettext as _
 
 from geonode.base.api.filters import DynamicSearchFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.upload.models import Upload
+from geonode.layers.views import layer_upload_handle_post
 
 from .serializers import UploadSerializer
 from .permissions import UploadPermissionsFilter
@@ -41,6 +51,8 @@ class UploadViewSet(DynamicModelViewSet):
     """
     API endpoint that allows uploads to be viewed or edited.
     """
+    parser_class = [FileUploadParser, ]
+
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     filter_backends = [
@@ -50,3 +62,33 @@ class UploadViewSet(DynamicModelViewSet):
     queryset = Upload.objects.all()
     serializer_class = UploadSerializer
     pagination_class = GeoNodeApiPagination
+
+    @extend_schema(methods=['put'],
+                   responses={201: None},
+                   description="""
+        Starts an upload session based on the Layer Upload Form.
+
+        the form params look like:
+        ```
+            'csrfmiddlewaretoken': self.csrf_token,
+            'permissions': '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            'time': 'false',
+            'charset': 'UTF-8',
+            'base_file': base_file,
+            'dbf_file': dbf_file,
+            'shx_file': shx_file,
+            'prj_file': prj_file,
+            'tif_file': tif_file
+        ```
+        """)
+    @action(detail=False, methods=['put'])
+    def upload(self, request, format=None):
+        if not getattr(request, 'FILES', None):
+            raise ParseError(_("Empty content"))
+
+        user = request.user
+        if not user or not user.is_authenticated:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        layer_upload_handle_post(request, None)
+        return Response(status=status.HTTP_201_CREATED)
