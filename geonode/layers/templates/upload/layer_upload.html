@@ -36,12 +36,15 @@
 </div>
 <div class="row">
   <div class="col-md-8">
-
-    {% if incomplete %}
-    <section class="widget" id="incomplete-download-list">
+    <section class="widget" id="incomplete-download-list" style="display:none;">
       <h3>{% trans "Incomplete Uploads" %}</h3>
       <p>{% trans "You have the following incomplete uploads" %}:</p>
-      <table class="table table-bordered">
+      <table
+        id="upload-progress-table"
+        class="table table-bordered"
+        data-resume-tool-tooltip="{% trans 'Resume' %}"
+        data-remove-tool-tooltip="{% trans 'Delete' %}"
+      >
         <thead>
           <tr>
             <th scope="row">{% trans "Name" %}</th>
@@ -51,50 +54,55 @@
           </tr>
         </thead>
         <tbody>
-          {% for u in incomplete %}
-          <tr id="incomplete-{{ u.id }}" data-upload-id="{{ u.id }}">
-            <th>{{ u.name }}</th>
-            <td class="incomplete-date">{{ u.date }}</td>
-            <td class="incomplete-progress text-center">
-              <button
-                class="btn btn-default btn-sm btn-default"
-              >
-                <i class="fa fa-spinner fa-spin"></i>
-              </button>
-            </td>
-            <td class="incomplete-tools text-center">
-              <button
-                class="btn btn-default btn-sm incomplete-resume"
-                data-toggle="tooltip"
-                data-placement="top"
-                title="{% trans 'Resume' %}"
-                style="display:none"
-              >
-                <i class="fa fa-play"></i>
-              </button>
-              <button
-                class="btn btn-default btn-sm btn-danger incomplete-remove"
-                data-toggle="tooltip"
-                data-placement="top"
-                title="{% trans 'Delete' %}"
-                style="display:none"
-              >
-                <i class="fa fa-remove"></i>
-              </button>
-              <a
-                href="#"
-                class="btn btn-default btn-sm btn-default incomplete-link"
-                style="display:none"
-              >
-                <i class="fa fa-link"></i>
-              </a>
-            </td>
-          </tr>
-          {% endfor %}
         </tbody>
       </table>
+      <nav aria-label="Upload progress navigation" class="text-center">
+        <ul class="pagination pagination-sm"  style="margin-top:0;">
+          <li id="upload-progress-prev-page">
+            <a aria-label="Previous">
+              <span aria-hidden="true"><i class="fa fa-angle-left"></i></span>
+            </a>
+          </li>
+          <li id="upload-progress-page" style="display:none;">
+            <a>
+              {% trans "page" %}
+              <span class="upload-progress-page-count"></span>
+              {% trans "of" %}
+              <span class="upload-progress-page-total"></span>
+            </a>
+          </li>
+          <li id="upload-progress-next-page">
+            <a aria-label="Next">
+              <span aria-hidden="true"><i class="fa fa-angle-right"></i></span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div
+        class="modal fade"
+        id="remove-incomplete-upload-modal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="remove-incomplete-upload-modal-label">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="remove-incomplete-upload-modal-label">{% trans "Delete incomplete upload" %}</h4>
+            </div>
+            <div class="modal-body">
+              {% trans "Are you sure you want to remove this incomplete upload?" %}
+              <br/>
+              {% trans "Name" %}: <span class="remove-incomplete-upload-modal-name"></span>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "No, don't remove it" %}</button>
+              <button id="remove-incomplete-upload-modal-button" type="button" class="btn btn-danger">{% trans "Yes, I am sure" %}</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
-    {% endif %}
 
     {% block additional_info %}{% endblock %}
 

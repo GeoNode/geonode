@@ -23,7 +23,7 @@ define(['underscore',
         doUpload,
         doUploads,
         doSrs,
-        doUpdateIncompleteUploads,
+        initUploadProgressTable,
         doSuccessfulUpload,
         attach_events,
         checkFiles,
@@ -254,46 +254,66 @@ define(['underscore',
         return false;
     };
 
-    doUpdateIncompleteUploads = function() {
+    initUploadProgressTable = function() {
+        const section = document.querySelector('#incomplete-download-list');
+        const table = section.querySelector('#upload-progress-table');
+        const tbody = table.querySelector('tbody');
+        const prevPage = section.querySelector('#upload-progress-prev-page');
+        const nextPage = section.querySelector('#upload-progress-next-page');
+        const progressPage = section.querySelector('#upload-progress-page');
+        const currentPage = progressPage.querySelector('.upload-progress-page-count');
+        const totalPages = progressPage.querySelector('.upload-progress-page-total');
+        const resumeTooltip = table.getAttribute('data-resume-tool-tooltip');
+        const removeTooltip = table.getAttribute('data-remove-tool-tooltip');
+        const removeModal = section.querySelector('#remove-incomplete-upload-modal');
+        const removeModalButton = section.querySelector('#remove-incomplete-upload-modal-button');
+        const removeModalName = section.querySelector('.remove-incomplete-upload-modal-name');
 
-        const row = $( this ).get(0);
-        const intervalTime = 5000; // 5 seconds
-        const id = row.getAttribute('data-upload-id') || '';
-        const target = siteUrl + 'api/v2/uploads/' + id;
-        const progressNode = row.querySelector('.incomplete-progress');
+        const intervalTime = 5000;
 
-        var incompleteProgressInterval;
-        var resumeUrl = '';
-        var deleteUrl = '';
+        var page = 1;
+        var maxPage = 1;
+        var pageSize = 10;
+        var render;
+        var selected = null;
 
-        function handleDelete() {
+        function getUploadItems(options) {
             $.ajax({
-                url: deleteUrl,
+                url: siteUrl + 'api/v2/uploads?filter{-state}=PROCESSED&page=' + page + '&page_size=' + pageSize,
+                async: false,
+                mode: "queue",
+                contentType: false,
+            })
+                .done(function (response) {
+                    if (options.resolve) {
+                        options.resolve(response);
+                    }
+                })
+                .fail(function (error) {
+                    if (options.reject) {
+                        options.reject(error);
+                    }
+                });
+        }
+
+        function handleDelete(options) {
+            $.ajax({
+                url: options.url,
                 async: false,
                 mode: 'queue',
                 contentType: false,
             })
                 .done(function () {
-                    // if the upload is successfully removed
-                    // - remove the node
-                    // - hide the incomplete download list if there are not child
-                    $('#incomplete-' + id).remove();
-                    if ($('#incomplete-download-list [data-upload-id]').length == 0){
-                        $('#incomplete-download-list').hide();
-                    }
-                    // if removed stop request on this node
-                    if (incompleteProgressInterval) {
-                        clearInterval(incompleteProgressInterval);
+                    if (render) {
+                        render();
                     }
                 })
-                .fail(function () {
-                    //
-                });
+                .fail(function () {});
         }
 
-        function handleResume() {
+        function handleResume(options) {
             $.ajax({
-                url: resumeUrl,
+                url: options.url,
                 async: false,
                 mode: "queue",
                 contentType: false,
@@ -321,127 +341,168 @@ define(['underscore',
                 });
         }
 
-        const resumeNode = row.querySelector('.incomplete-resume');
-        resumeNode.addEventListener('click', handleResume);
-        const removeNode = row.querySelector('.incomplete-remove');
-        removeNode.addEventListener('click', handleDelete);
-        const linkDetailNode = row.querySelector('.incomplete-link');
+        function progressBar(properties) {
+            properties.parent.style.position = 'relative';
+            // add a small progress bar in the progressNode
+            const progressBarBg = document.createElement('div');
+            progressBarBg.style.position = 'absolute';
+            progressBarBg.style.left = 0;
+            progressBarBg.style.bottom = 0;
+            progressBarBg.style.width = '100%';
+            progressBarBg.style.height = '4px';
+            progressBarBg.style.backgroundColor = '#f2f2f2';
+            properties.parent.appendChild(progressBarBg);
 
-        progressNode.style.position = 'relative';
-        progressNode.innerHTML = '';
-
-        // add a small progress bar in the progressNode
-        const progressBarBg = document.createElement('div');
-        progressBarBg.style.position = 'absolute';
-        progressBarBg.style.left = 0;
-        progressBarBg.style.bottom = 0;
-        progressBarBg.style.width = '100%';
-        progressBarBg.style.height = '4px';
-        progressNode.appendChild(progressBarBg);
-
-        const progressBar = document.createElement('div');
-        progressBar.style.position = 'absolute';
-        progressBar.style.left = 0;
-        progressBar.style.bottom = 0;
-        progressBar.style.width = 0;
-        progressBar.style.height = '4px';
-        progressBar.style.transition = '0.3s width';
-        progressNode.appendChild(progressBar);
-
-        // write the current progress percentage in the progressNode
-        const progressLabel = document.createElement('span');
-        progressNode.appendChild(progressLabel);
-
-        function requestStateProgress(resolve, reject) {
-            $.ajax({
-                url: target,
-                async: false,
-                mode: "queue",
-                contentType: false,
-            })
-                .done(function (response) {
-                    const uploadProperties = response && response.upload || {};
-                    resolve(uploadProperties);
-                })
-                .fail(function (error) { reject(error); });
+            const progressBar = document.createElement('div');
+            progressBar.style.position = 'absolute';
+            progressBar.style.left = 0;
+            progressBar.style.bottom = 0;
+            progressBar.style.width = properties.width;
+            progressBar.style.height = '4px';
+            progressBar.style.transition = '0.3s width';
+            progressBar.style.backgroundColor = '#27ca3b';
+            properties.parent.appendChild(progressBar);
         }
 
-        // change style of rows in the incomplete upload list based on the state
-        function updateRowStructure(uploadProperties) {
-            progressBarBg.style.backgroundColor = '#f2f2f2';
-            progressBar.style.backgroundColor = '#27ca3b';
-            resumeNode.style.display = 'none';
-            removeNode.style.display = 'none';
-            linkDetailNode.style.display = 'none';
-            resumeUrl = uploadProperties.resume_url;
-            deleteUrl = uploadProperties.delete_url;
-            row.setAttribute('class', '');
-            switch(uploadProperties.state) {
+        function tableRow(properties) {
+            const row = document.createElement('tr');
+            row.setAttribute('data-upload-id', properties.id);
+            tbody.appendChild(row);
+
+            const name = document.createElement('th');
+            name.innerHTML = properties.name;
+            row.appendChild(name);
+
+            const date = document.createElement('td');
+            date.innerHTML = properties.date
+                ? new Date(properties.date).toLocaleString()
+                : 'none';
+            row.appendChild(date);
+
+            const progressPercentage = Math.round(properties.progress) + '%';
+            const progress = document.createElement('td');
+            progress.innerHTML = progressPercentage;
+            row.appendChild(progress);
+            progressBar({ parent: progress, width: progressPercentage });
+
+            const tools = document.createElement('td');
+            tools.setAttribute('class', 'text-center');
+            row.appendChild(tools);
+
+            switch(properties.state) {
                 case 'PENDING':
-                    resumeNode.style.display = 'inline-block';
-                    removeNode.style.display = 'inline-block';
-                    progressBarBg.style.backgroundColor = '#ccc';
-                    progressBar.style.backgroundColor = '#999';
                     row.setAttribute('class', 'active');
                     break;
                 case 'PROCESSED':
-                    linkDetailNode.style.display = 'inline-block';
                     row.setAttribute('class', 'success');
                     break;
                 case 'INVALID':
-                    removeNode.style.display = 'inline-block';
                     row.setAttribute('class', 'danger');
                     break;
                 default:
-                    removeNode.style.display = 'inline-block';
                     break;
+            }
+            if (properties.resume_url) {
+                const resumeTool = document.createElement('button');
+                resumeTool.setAttribute('class', 'btn btn-default btn-sm incomplete-resume');
+                resumeTool.setAttribute('title', resumeTooltip);
+                resumeTool.setAttribute('data-toggle', 'tooltip');
+                resumeTool.setAttribute('data-placement', 'top');
+                resumeTool.innerHTML = '<i class="fa fa-play"></i>';
+                resumeTool.onclick = function() { handleResume({ id: properties.id, url: properties.resume_url }); };
+                tools.appendChild(resumeTool);
+                $(resumeTool).tooltip();
+            }
+            if (properties.layer && properties.layer.detail_url) {
+                const linkTool = document.createElement('a');
+                linkTool.setAttribute('class', 'btn btn-default btn-sm incomplete-link');
+                linkTool.setAttribute('href', properties.layer.detail_url);
+                linkTool.innerHTML = '<i class="fa fa-link"></i>';
+                tools.appendChild(linkTool);
+            }
+            if (properties.delete_url) {
+                const removeTool = document.createElement('button');
+                removeTool.innerHTML = '<i class="fa fa-remove"></i>';
+                removeTool.setAttribute('class', 'btn btn-danger btn-sm incomplete-remove');
+                removeTool.setAttribute('title', removeTooltip);
+                removeTool.setAttribute('data-toggle', 'tooltip');
+                removeTool.setAttribute('data-placement', 'top');
+                removeTool.onclick = function() {
+                    removeModalName.innerHTML = properties.name;
+                    $(removeModal).modal();
+                    selected = { id: properties.id, url: properties.delete_url };
+                };
+                tools.appendChild(removeTool);
+                $(removeTool).tooltip();
             }
         }
 
-        requestStateProgress(function(initialUploadProperties) {
-            // set initial value for the progress bar
-            const initialProgress = Math.round(initialUploadProperties.progress)  + '%';
-            progressLabel.innerHTML = initialProgress;
-            progressBar.style.width = initialProgress;
-
-            updateRowStructure(initialUploadProperties);
-
-            if (initialProgress !== '100%') {
-                incompleteProgressInterval = setInterval(function() {
-                    // check if the progressNode is still in the page
-                    // and stop the request for an update
-                    if (document.body.contains(progressNode)) {
-                        requestStateProgress(function(uploadProperties) {
-                            // set updated value for the progress bar
-                            updateRowStructure(uploadProperties);
-                            const progress = Math.round(uploadProperties.progress)  + '%';
-                            progressLabel.innerHTML = progress;
-                            progressBar.style.width = progress;
-
-                            // stop the requests once the progress is 100%
-                            if (progress === '100%') {
-                                // add visibility the link to detail if available
-                                const detailUrl = uploadProperties.layer && uploadProperties.layer.detail_url;
-                                linkDetailNode.style.display = 'none';
-                                resumeNode.style.display = 'none';
-                                removeNode.style.display = 'none';
-                                if (detailUrl) {
-                                    linkDetailNode.style.display = 'inline-block';
-                                    linkDetailNode.setAttribute('href', detailUrl);
-                                }
-                                clearInterval(incompleteProgressInterval);
-                            }
-                        }, function(error) {
-                            //
-                        });
-                    } else {
-                        clearInterval(incompleteProgressInterval);
+        render = function() {
+            getUploadItems({
+                resolve: function(response) {
+                    tbody.innerHTML = '';
+                    maxPage = Math.ceil(response.total / response.page_size);
+                    const uploads = response.uploads || [];
+                    for (var i = 0; i < uploads.length; i++) {
+                        tableRow(uploads[i]);
                     }
-                }, intervalTime);
-            }
-        }, function(error) {
-            //
+                    const prevLink = response.links && response.links.previous;
+                    const nextLink = response.links && response.links.next;
+
+                    prevPage.setAttribute('class', !prevLink ? 'disabled' : '');
+                    nextPage.setAttribute('class', !nextLink ? 'disabled' : '');
+                    prevPage.style.cursor = !prevLink ? 'not-allowed' : 'pointer';
+                    nextPage.style.cursor = !nextLink ? 'not-allowed' : 'pointer';
+
+                    progressPage.style.display = 'inline';
+                    currentPage.innerHTML = page;
+                    totalPages.innerHTML = maxPage;
+
+                    section.style.display = uploads.length === 0 ? 'none' : 'block';
+                },
+                reject: function(error) {
+                    // if does not find the page
+                    // reset to page 1
+                    // this could happen while deleting the last item in a page
+                    if (error.status === 404) {
+                        page = 1;
+                        if (render) {
+                            render();
+                        }
+                    }
+                }
+            });
+        }
+
+        $(removeModal).on('hide.bs.modal', function (e) {
+            selected = null;
         });
+        removeModalButton.onclick = function () {
+            handleDelete(selected);
+            selected = null;
+            $(removeModal).modal('hide');
+        };
+        prevPage.addEventListener('click', function() {
+            const prev = page - 1;
+            if (prev >= 1) {
+                page = prev;
+                render();
+            }
+        });
+        nextPage.addEventListener('click', function() {
+            const next = page + 1;
+            if (next <= maxPage) {
+                page = next;
+                render();
+            }
+        });
+
+        render();
+        // continuously request update for the current page to the api
+        // and re-render the table
+        setInterval(function() {
+            render();
+        }, intervalTime);
     }
 
     /** Initialization function. Called from main.js
@@ -496,8 +557,8 @@ define(['underscore',
         });
         $(options.clear_button).on('click', doClearState);
         $(options.upload_button).on('click', doUploads);
-        $('[data-upload-id]').each(doUpdateIncompleteUploads);
-        $('[data-toggle="tooltip"]').tooltip();
+
+        initUploadProgressTable();
     };
 
     // public api
