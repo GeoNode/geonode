@@ -32,10 +32,8 @@ from django.conf import settings
 from django.core.files import File
 from django.utils.timezone import now
 from django.core.files.storage import FileSystemStorage
-from django.utils.translation import ugettext_lazy as _
 
 from geonode.layers.models import Layer
-from geonode.upload import UploadException
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 
 logger = logging.getLogger(__name__)
@@ -183,13 +181,12 @@ class Upload(models.Model):
 
     def get_resume_url(self):
         try:
-            session = gs_uploader.get_session(self.import_id)
-        except NotFound as e:
-            self.state = Upload.STATE_INVALID
-            Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
-            raise UploadException.from_exc(
-                _("The GeoServer Import Session is no more available"), e)
-        return f"{reverse('data_upload')}?id={session.id}"
+            gs_uploader.get_session(self.import_id)
+        except NotFound:
+            if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
+                self.state = Upload.STATE_INVALID
+                Upload.objects.filter(id=self.id).update(state=Upload.STATE_INVALID)
+        return f"{reverse('data_upload')}?id={self.import_id}"
 
     def get_delete_url(self):
         return reverse('data_upload_delete', args=[self.import_id])
