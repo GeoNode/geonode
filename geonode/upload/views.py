@@ -57,6 +57,7 @@ from django.views.generic import CreateView, DeleteView
 
 from geonode.upload import UploadException
 from geonode.utils import fixup_shp_columnnames
+from geonode.base.models import Configuration
 from geonode.base.enumerations import CHARSETS
 from geonode.monitoring import register_event
 from geonode.monitoring.models import EventType
@@ -650,6 +651,11 @@ def view(req, step):
     from django.contrib import auth
     if not auth.get_user(req).is_authenticated:
         return error_response(req, errors=["Not Authorized"])
+
+    config = Configuration.load()
+    if config.read_only or config.maintenance:
+        return error_response(req, errors=["Not Authorized"])
+
     upload_session = None
     upload_id = req.GET.get('id', None)
 

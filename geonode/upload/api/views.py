@@ -17,6 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
@@ -36,11 +37,12 @@ from django.utils.translation import ugettext as _
 from geonode.base.api.filters import DynamicSearchFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
-from geonode.upload.models import Upload
-from geonode.layers.views import layer_upload_handle_post
 
 from .serializers import UploadSerializer
 from .permissions import UploadPermissionsFilter
+
+from ..models import Upload
+from ..views import view as upload_view
 
 import logging
 
@@ -90,5 +92,11 @@ class UploadViewSet(DynamicModelViewSet):
         if not user or not user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        layer_upload_handle_post(request, None)
-        return Response(status=status.HTTP_201_CREATED)
+        response = upload_view(request, None)
+        if response.status_code == 200:
+            content = response.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            data = json.loads(content)
+            return Response(data=data, status=status.HTTP_201_CREATED)
+        return Response(status=response.status_code)

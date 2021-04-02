@@ -18,7 +18,6 @@
 #
 #########################################################################
 import os
-import django
 import logging
 
 from io import IOBase
@@ -28,12 +27,10 @@ from urllib.request import urljoin
 from django.conf import settings
 
 from django.urls import reverse
-from django.conf.urls import url, include
-from django.views.generic import TemplateView
-from django.views.i18n import JavaScriptCatalog
+from django.test.utils import override_settings
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
-from rest_framework.test import APITestCase, URLPatternsTestCase
+from rest_framework.test import APITestCase
 
 from seleniumrequests import Firefox
 # from selenium.common import exceptions
@@ -44,17 +41,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from webdriver_manager.firefox import GeckoDriverManager
 
-from geonode.api.urls import router
-from geonode.maps.views import map_embed
-from geonode.services.views import services
-from geonode.geoapps.views import geoapp_edit
-from geonode.layers.views import layer_upload, layer_embed, layer_detail
-
-from geonode import geoserver
-from geonode.utils import check_ogc_backend
 from geonode.base.populate_test_data import create_models
-
 from geonode.geoserver.helpers import ogc_server_settings
+
+from ..models import Upload
 
 GEONODE_USER = 'admin'
 GEONODE_PASSWD = 'admin'
@@ -64,7 +54,14 @@ GEOSERVER_USER, GEOSERVER_PASSWD = ogc_server_settings.credentials
 logger = logging.getLogger(__name__)
 
 
-class UploadApiTests(StaticLiveServerTestCase, APITestCase, URLPatternsTestCase):
+@override_settings(
+    ALLOWED_HOSTS=['*'],
+    CSRF_COOKIE_SECURE=False,
+    CSRF_COOKIE_HTTPONLY=False,
+    CORS_ORIGIN_ALLOW_ALL=True,
+    SESSION_COOKIE_SECURE=False
+)
+class UploadApiTests(StaticLiveServerTestCase, APITestCase):
 
     port = 8000
 
@@ -73,89 +70,6 @@ class UploadApiTests(StaticLiveServerTestCase, APITestCase, URLPatternsTestCase)
         'group_test_data.json',
         'default_oauth_apps.json'
     ]
-
-    urlpatterns = [
-        url(r'^$',
-            TemplateView.as_view(template_name='index.html'),
-            name='home'),
-        url(r'^help/$',
-            TemplateView.as_view(template_name='help.html'),
-            name='help'),
-        url(r'^developer/$',
-            TemplateView.as_view(
-                template_name='developer.html'),
-            name='developer'),
-        url(r'^about/$',
-            TemplateView.as_view(template_name='about.html'),
-            name='about'),
-        url(r'^privacy_cookies/$',
-            TemplateView.as_view(template_name='privacy-cookies.html'),
-            name='privacy-cookies'),
-        url(r'^/', include('geonode.proxy.urls')),
-        url(r"^account/", include("allauth.urls")),
-        url(r'^base/', include('geonode.base.urls')),
-        url(r'^people/', include('geonode.people.urls')),
-        url(r'^api/v2/', include(router.urls)),
-        url(r'^api/v2/', include('geonode.api.urls')),
-        url(r'^api/v2/api-auth/', include('rest_framework.urls', namespace='geonode_rest_framework')),
-        url(r'^upload$', layer_upload, name='layer_upload'),
-        url(r'^layers/$',
-            TemplateView.as_view(template_name='layers/layer_list.html'),
-            {'facet_type': 'layers', 'is_layer': True},
-            name='layer_browse'),
-        url(r'^maps/$',
-            TemplateView.as_view(template_name='maps/map_list.html'),
-            {'facet_type': 'maps', 'is_map': True},
-            name='maps_browse'),
-        url(r'^documents/$',
-            TemplateView.as_view(template_name='documents/document_list.html'),
-            {'facet_type': 'documents', 'is_document': True},
-            name='document_browse'),
-        url(r'^apps/$',
-            TemplateView.as_view(template_name='apps/app_list.html'),
-            {'facet_type': 'geoapps'},
-            name='apps_browse'),
-        url(r'^groups/$',
-            TemplateView.as_view(template_name='groups/group_list.html'),
-            name='group_list'),
-        url(r'^categories/$',
-            TemplateView.as_view(template_name="groups/category_list.html"),
-            name="group_category_list"),
-        url(r'^search/$',
-            TemplateView.as_view(template_name='search/search.html'),
-            name='search'),
-        url(r'^services/$', services, name='services'),
-        url(r'^invitations/', include(
-            'geonode.invitations.urls', namespace='geonode.invitations')),
-        url(r'^i18n/', include(django.conf.urls.i18n), name="i18n"),
-        url(r'^jsi18n/$', JavaScriptCatalog.as_view(), {}, name='javascript-catalog'),
-        url(r'^maps/(?P<mapid>[^/]+)/embed$', map_embed, name='map_embed'),
-        url(r'^layers/(?P<layername>[^/]+)/embed$', layer_embed, name='layer_embed'),
-        url(r'^layers/(?P<layername>[^/]*)$', layer_detail, name="layer_detail"),
-        url(r'^apps/(?P<geoappid>[^/]+)/embed$', geoapp_edit, {'template': 'apps/app_embed.html'}, name='geoapp_embed'),
-    ]
-
-    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        from geonode.geoserver.views import layer_acls, resolve_user
-        urlpatterns += [
-            url(r'^layers/acls/?$', layer_acls, name='layer_acls'),
-            url(r'^layers/acls_dep/?$', layer_acls, name='layer_acls_dep'),
-            url(r'^layers/resolve_user/?$', resolve_user, name='layer_resolve_user'),
-            url(r'^layers/resolve_user_dep/?$', resolve_user, name='layer_resolve_user_dep'),
-        ]
-        from geonode.upload import views as upload_views
-        urlpatterns += [  # 'geonode.upload.views',
-            url(r'^upload/new/$', upload_views.UploadFileCreateView.as_view(),
-                name='data_upload_new'),
-            url(r'^upload/progress$', upload_views.data_upload_progress,
-                name='data_upload_progress'),
-            url(r'^upload/(?P<step>\w+)?$', upload_views.view, name='data_upload'),
-            url(r'^upload/delete/(?P<id>\d+)?$',
-                upload_views.delete, name='data_upload_delete'),
-            url(r'^upload/remove/(?P<pk>\d+)$',
-                upload_views.UploadFileDeleteView.as_view(), name='data_upload_remove'),
-            url(r'^', include('geonode.upload.api.urls')),
-        ]
 
     @classmethod
     def setUpClass(cls):
@@ -183,17 +97,6 @@ class UploadApiTests(StaticLiveServerTestCase, APITestCase, URLPatternsTestCase)
 
     def setUp(self):
         super(UploadApiTests, self).setUp()
-
-        settings.SITEURL = f'{self.live_server_url}/'
-        settings.ACCOUNT_LOGIN_REDIRECT_URL = self.live_server_url
-        settings.ACCOUNT_LOGOUT_REDIRECT_URL = self.live_server_url
-
-        settings.ALLOWED_HOSTS = ['*'],
-        settings.CSRF_COOKIE_SECURE = False,
-        settings.CSRF_COOKIE_HTTPONLY = False,
-        settings.CORS_ORIGIN_ALLOW_ALL = True,
-        settings.SESSION_COOKIE_SECURE = False,
-        settings.OGC_REQUEST_TIMEOUT = 1
 
         self.session_id = None
         self.csrf_token = None
@@ -248,8 +151,7 @@ class UploadApiTests(StaticLiveServerTestCase, APITestCase, URLPatternsTestCase)
         # Wait until the response is received
         WebDriverWait(self.selenium, 10).until(
             # EC.url_changes(self.selenium.current_url)
-            # EC.title_contains("Explore Layers")
-            EC.title_contains(title)
+            EC.title_contains("Explore Layers")
             # lambda x: title in self.selenium.title
         )
 
@@ -327,8 +229,8 @@ class UploadApiTests(StaticLiveServerTestCase, APITestCase, URLPatternsTestCase)
             params['tif_file'].close()
 
         try:
-            logger.error(f" -- response: {response.status_code} / {response.json}")
-            return response, response.json
+            logger.error(f" -- response: {response.status_code} / {response.json()}")
+            return response, response.json()
         except ValueError:
             logger.exception(
                 ValueError(
@@ -344,6 +246,8 @@ class UploadApiTests(StaticLiveServerTestCase, APITestCase, URLPatternsTestCase)
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
         resp, data = self.upload_file(fname)
         self.assertEqual(resp.status_code, 201)
+        self.assertTrue(data['success'])
+        self.assertTrue('redirect_to' in data)
 
         url = reverse('uploads-list')
         # Anonymous
@@ -361,7 +265,37 @@ class UploadApiTests(StaticLiveServerTestCase, APITestCase, URLPatternsTestCase)
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 8)
+        self.assertEqual(response.data['total'], 1)
         # Pagination
-        self.assertEqual(len(response.data['uploads']), 8)
+        self.assertEqual(len(response.data['uploads']), 1)
         logger.debug(response.data)
+
+        url = f"{reverse('uploads-detail', kwargs={'pk': response.data['uploads'][0]['id']})}/"
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        upload_data = response.data['upload']
+        self.assertIsNotNone(upload_data)
+        self.assertEqual(upload_data['name'], 'relief_san_andres')
+        if upload_data['state'] != Upload.STATE_PROCESSED:
+            self.assertTrue(upload_data['progress'] < 100.0)
+            self.assertIsNone(upload_data['layer'])
+            self.assertIsNotNone(upload_data['resume_url'])
+            self.assertIsNotNone(upload_data['delete_url'])
+
+        upload_dir = upload_data['upload_dir']
+
+        self.assertTrue(os.path.exists(upload_dir) and os.path.isdir(upload_dir))
+        self.assertGreaterEqual(len(os.listdir(upload_dir)), 1)
+
+        response = self.client.get(upload_data['delete_url'], format='json')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('uploads-list'), format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.data['total'], 0)
+        # Pagination
+        self.assertEqual(len(response.data['uploads']), 0)
+        logger.debug(response.data)
+
+        self.assertFalse(os.path.exists(upload_dir))

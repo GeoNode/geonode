@@ -152,6 +152,13 @@ workflows:
           test_suite: ./test.sh geonode.tests.smoke geonode.monitoring.tests.integration
           requires:
             - geonode_test_suite_smoke
+      - build:
+          name: geonode_test_integration_upload
+          load_docker_cache: true
+          save_docker_cache: false
+          test_suite: ./test.sh geonode.upload.api.tests
+          requires:
+            - geonode_test_suite_smoke
 
       # TODO
       # - build:
