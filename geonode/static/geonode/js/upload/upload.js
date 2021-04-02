@@ -422,10 +422,11 @@ define(['underscore',
                             if (progress === '100%') {
                                 // add visibility the link to detail if available
                                 const detailUrl = uploadProperties.layer && uploadProperties.layer.detail_url;
+                                linkDetailNode.style.display = 'none';
+                                resumeNode.style.display = 'none';
+                                removeNode.style.display = 'none';
                                 if (detailUrl) {
                                     linkDetailNode.style.display = 'inline-block';
-                                    resumeNode.style.display = 'none';
-                                    removeNode.style.display = 'none';
                                     linkDetailNode.setAttribute('href', detailUrl);
                                 }
                                 clearInterval(incompleteProgressInterval);
