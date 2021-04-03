@@ -126,36 +126,40 @@ class Upload(models.Model):
 
         if layer and not self.layer:
             self.layer = layer
-            if upload_session.base_file:
-                uploaded_files = upload_session.base_file[0]
-                base_file = uploaded_files.base_file
-                aux_files = uploaded_files.auxillary_files
-                sld_files = uploaded_files.sld_files
-                xml_files = uploaded_files.xml_files
 
-                assigned_name = UploadFile.objects.create_from_upload(
+        if upload_session.base_file and self.layer and self.layer.name:
+            uploaded_files = upload_session.base_file[0]
+            base_file = uploaded_files.base_file
+            aux_files = uploaded_files.auxillary_files
+            sld_files = uploaded_files.sld_files
+            xml_files = uploaded_files.xml_files
+
+            if not UploadFile.objects.filter(upload=self, file=base_file).count():
+                uploaded_file = UploadFile.objects.create_from_upload(
                     self,
                     base_file,
                     None,
-                    base=True).name
+                    base=True)
 
-                for _f in aux_files:
-                    UploadFile.objects.create_from_upload(
-                        self,
-                        _f,
-                        assigned_name)
+                if uploaded_file and uploaded_file.name:
+                    assigned_name = uploaded_file.name
+                    for _f in aux_files:
+                        UploadFile.objects.create_from_upload(
+                            self,
+                            _f,
+                            assigned_name)
 
-                for _f in sld_files:
-                    UploadFile.objects.create_from_upload(
-                        self,
-                        _f,
-                        assigned_name)
+                    for _f in sld_files:
+                        UploadFile.objects.create_from_upload(
+                            self,
+                            _f,
+                            assigned_name)
 
-                for _f in xml_files:
-                    UploadFile.objects.create_from_upload(
-                        self,
-                        _f,
-                        assigned_name)
+                    for _f in xml_files:
+                        UploadFile.objects.create_from_upload(
+                            self,
+                            _f,
+                            assigned_name)
 
         if "COMPLETE" == self.state:
             self.complete = True
@@ -257,22 +261,26 @@ class UploadFileManager(models.Manager):
                            base_file,
                            assigned_name,
                            base=False):
-        with open(base_file, 'rb') as f:
-            file_name, type_name = os.path.splitext(os.path.basename(base_file))
-            file = File(
-                f, name=f'{assigned_name or upload.layer.name}{type_name}')
+        try:
+            if os.path.isfile(base_file) and os.path.exists(base_file):
+                with open(base_file, 'rb') as f:
+                    file_name, type_name = os.path.splitext(os.path.basename(base_file))
+                    file = File(
+                        f, name=f'{assigned_name or upload.layer.name}{type_name}')
 
-            # save the system assigned name for the remaining files
-            if not assigned_name:
-                the_file = file.name
-                assigned_name = os.path.splitext(os.path.basename(the_file))[0]
+                    # save the system assigned name for the remaining files
+                    if not assigned_name:
+                        the_file = file.name
+                        assigned_name = os.path.splitext(os.path.basename(the_file))[0]
 
-            return self.create(
-                upload=upload,
-                file=file,
-                name=assigned_name,
-                slug=slugify(file_name),
-                base=base)
+                    return self.create(
+                        upload=upload,
+                        file=file,
+                        name=assigned_name,
+                        slug=slugify(file_name),
+                        base=base)
+        except Exception as e:
+            logger.exception(e)
 
 
 class UploadFile(models.Model):

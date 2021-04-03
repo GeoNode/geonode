@@ -63,7 +63,7 @@ logger = logging.getLogger(__name__)
 )
 class UploadApiTests(StaticLiveServerTestCase, APITestCase):
 
-    port = 8000
+    # port = 8000
 
     fixtures = [
         'initial_data.json',
@@ -75,16 +75,19 @@ class UploadApiTests(StaticLiveServerTestCase, APITestCase):
     def setUpClass(cls):
         super().setUpClass()
 
-        """ Instantiate selenium driver instance """
-        binary = FirefoxBinary('/usr/bin/firefox')
-        opts = FirefoxOptions()
-        opts.add_argument("--headless")
-        executable_path = GeckoDriverManager().install()
-        cls.selenium = Firefox(
-            firefox_binary=binary,
-            firefox_options=opts,
-            executable_path=executable_path)
-        cls.selenium.implicitly_wait(10)
+        try:
+            """ Instantiate selenium driver instance """
+            binary = FirefoxBinary('/usr/bin/firefox')
+            opts = FirefoxOptions()
+            opts.add_argument("--headless")
+            executable_path = GeckoDriverManager().install()
+            cls.selenium = Firefox(
+                firefox_binary=binary,
+                firefox_options=opts,
+                executable_path=executable_path)
+            cls.selenium.implicitly_wait(10)
+        except Exception as e:
+            logger.error(e)
 
     @classmethod
     def tearDownClass(cls):
@@ -196,7 +199,7 @@ class UploadApiTests(StaticLiveServerTestCase, APITestCase):
         if ext.lower() == '.shp':
             for spatial_file in spatial_files:
                 ext, _ = spatial_file.split('_')
-                file_path = base + '.' + ext
+                file_path = f"{base}.{ext}"
                 # sometimes a shapefile is missing an extra file,
                 # allow for that
                 if os.path.exists(file_path):
@@ -247,7 +250,7 @@ class UploadApiTests(StaticLiveServerTestCase, APITestCase):
         resp, data = self.upload_file(fname)
         self.assertEqual(resp.status_code, 201)
         self.assertTrue(data['success'])
-        self.assertTrue('redirect_to' in data)
+        self.assertIn('redirect_to', data)
 
         url = reverse('uploads-list')
         # Anonymous
@@ -276,11 +279,32 @@ class UploadApiTests(StaticLiveServerTestCase, APITestCase):
         upload_data = response.data['upload']
         self.assertIsNotNone(upload_data)
         self.assertEqual(upload_data['name'], 'relief_san_andres')
+        logger.error(f" ---------- UPLOAD STATE: {upload_data['state']}")
         if upload_data['state'] != Upload.STATE_PROCESSED:
-            self.assertTrue(upload_data['progress'] < 100.0)
+            self.assertLess(upload_data['progress'], 100.0)
             self.assertIsNone(upload_data['layer'])
             self.assertIsNotNone(upload_data['resume_url'])
             self.assertIsNotNone(upload_data['delete_url'])
+            self.assertIn('uploadfile_set', upload_data)
+            self.assertEqual(len(upload_data['uploadfile_set']), 0)
+        else:
+            self.assertEqual(upload_data['progress'], 100.0)
+            self.assertIsNone(upload_data['resume_url'])
+            self.assertIsNone(upload_data['delete_url'])
+            self.assertIsNotNone(upload_data['layer'])
+            self.assertIsNotNone(upload_data['layer']['detail_url'])
+
+            self.assertNotIn('session', upload_data)
+            response = self.client.get(f'{url}?full=true', format='json')
+            self.assertEqual(response.status_code, 200)
+            upload_data = response.data['upload']
+            self.assertIsNotNone(upload_data)
+            self.assertIn('session', upload_data)
+            self.assertIn('uploadfile_set', upload_data)
+            self.assertEqual(len(upload_data['uploadfile_set']), 1)
+
+        self.assertIn('upload_dir', upload_data)
+        self.assertIsNotNone(upload_data['upload_dir'])
 
         upload_dir = upload_data['upload_dir']
 

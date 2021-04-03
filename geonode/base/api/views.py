@@ -27,7 +27,7 @@ from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly  # noqa
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
