@@ -30,5 +30,5 @@ class Command(BaseCommand):
         site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
         map_layers = MapLayer.objects.filter(local=True)
         for maplayer in map_layers:
-            maplayer.ows_url = site_url + "/geoserver/wms"
+            maplayer.ows_url = f"{site_url}/geoserver/wms"
             maplayer.save()

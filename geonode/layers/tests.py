@@ -567,7 +567,7 @@ class LayersTest(GeoNodeBaseTestSupport):
             expected_files = None
             try:
                 d = tempfile.mkdtemp()
-                fnames = ["foo." + ext for ext in extensions]
+                fnames = [f"foo.{ext}" for ext in extensions]
                 expected_files = {ext.lower(): fname for ext, fname in zip(extensions, fnames)}
                 for f in fnames:
                     path = os.path.join(d, f)
@@ -1365,11 +1365,11 @@ class LayersUploaderTests(GeoNodeBaseTestSupport):
         for fnsuffix in filename_suffix_list:
             files = dict(
                 base_file=SimpleUploadedFile(
-                    thelayer_basename + '_' + fnsuffix + '.kml',
-                    open(thelayer_path + thelayer_basename + '_' + fnsuffix + '.kml', mode='rb').read()),
+                    f"{thelayer_basename}_{fnsuffix}.kml",
+                    open(f"{thelayer_path + thelayer_basename}_{fnsuffix}.kml", mode='rb').read()),
                 xml_file=SimpleUploadedFile(
-                    thelayer_basename + '_' + fnsuffix + '.xml',
-                    open(thelayer_path + thelayer_basename + '_' + fnsuffix + '.xml', mode='rb').read())
+                    f"{thelayer_basename}_{fnsuffix}.xml",
+                    open(f"{thelayer_path + thelayer_basename}_{fnsuffix}.xml", mode='rb').read())
             )
             files['permissions'] = '{}'
             files['charset'] = 'utf-8'

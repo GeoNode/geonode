@@ -149,8 +149,7 @@ class LayerUploadForm(forms.Form):
         if not cleaned["metadata_upload_form"] and not cleaned["style_upload_form"] and base_ext.lower() not in (
                 ".shp", ".tif", ".tiff", ".geotif", ".geotiff", ".asc", ".sld", ".kml", ".kmz", ".csv"):
             raise forms.ValidationError(
-                "Only Shapefiles, GeoTiffs, and ASCIIs are supported. You "
-                "uploaded a %s file" % base_ext)
+                f"Only Shapefiles, GeoTiffs, and ASCIIs are supported. You uploaded a {base_ext} file")
         elif cleaned["metadata_upload_form"] and base_ext.lower() not in (".xml"):
             raise forms.ValidationError(
                 f"Only XML files are supported. You uploaded a {base_ext} file")

@@ -93,11 +93,9 @@ def get_wms(version='1.1.1', type_name=None, username=None, password=None):
     # right now owslib does not support auth for get caps
     # requests. Either we should roll our own or fix owslib
     if type_name:
-        url = GEOSERVER_URL + \
-            f"{type_name.replace(':', '/')}wms?request=getcapabilities"
+        url = f"{GEOSERVER_URL}{type_name.replace(':', '/')}wms?request=getcapabilities"
     else:
-        url = GEOSERVER_URL + \
-            'wms?request=getcapabilities'
+        url = f"{GEOSERVER_URL}wms?request=getcapabilities"
     ogc_server_settings = settings.OGC_SERVER['default']
     if username and password:
         return WebMapService(
@@ -140,7 +138,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
             GEONODE_URL, GEONODE_USER, GEONODE_PASSWD
         )
         self.catalog = Catalog(
-            GEOSERVER_URL + 'rest',
+            f"{GEOSERVER_URL}rest",
             GEOSERVER_USER,
             GEOSERVER_PASSWD,
             retries=ogc_server_settings.MAX_RETRIES,
@@ -409,7 +407,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
             if json_data and json_data.get('state', '') == 'COMPLETE':
                 return json_data
             elif json_data and json_data.get('state', '') == 'RUNNING' and \
-            wait_for_progress_cnt < 30:
+                    wait_for_progress_cnt < 30:
                 logger.error(f"[{wait_for_progress_cnt}] ... wait_for_progress @ {progress_url}")
                 json_data = self.wait_for_progress(progress_url, wait_for_progress_cnt=wait_for_progress_cnt + 1)
             return json_data

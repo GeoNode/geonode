@@ -50,12 +50,9 @@ class CleanEmailMixin(object):
             email = get_invitations_adapter().clean_email(em.strip())
 
             errors = {
-                "already_invited": _("The e-mail address '%(email)s' has already been"
-                                     " invited." % {"email": email}),
-                "already_accepted": _("The e-mail address '%(email)s' has already"
-                                      " accepted an invite." % {"email": email}),
-                "email_in_use": _("An active user is already using the"
-                                  " e-mail address '%(email)s'" % {"email": email}),
+                "already_invited": _(f"The e-mail address '{email}' has already been invited."),
+                "already_accepted": _(f"The e-mail address '{email}' has already accepted an invite."),
+                "email_in_use": _(f"An active user is already using the e-mail address '{email}'"),
             }
             try:
                 self.validate_invitation(email)

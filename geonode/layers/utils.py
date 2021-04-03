@@ -84,7 +84,7 @@ OWNER_PERMISSIONS = [
 
 logger = logging.getLogger('geonode.layers.utils')
 
-_separator = '\n' + ('-' * 100) + '\n'
+_separator = f"\n{'-' * 100}\n"
 
 
 def _clean_string(
@@ -128,8 +128,7 @@ def get_files(filename):
     try:
         filename.encode('ascii')
     except UnicodeEncodeError:
-        msg = "Please use only characters from the english alphabet for the filename. '%s' is not yet supported." \
-            % os.path.basename(filename).encode('UTF-8', 'strict')
+        msg = f"Please use only characters from the english alphabet for the filename. '{os.path.basename(filename).encode('UTF-8', 'strict')}' is not yet supported."
         raise GeoNodeException(msg)
 
     # Let's unzip the filname in case it is a ZIP file
@@ -180,7 +179,7 @@ def get_files(filename):
             else:
                 files[ext] = matches[0]
 
-        matches = glob.glob(glob_name + ".[pP][rR][jJ]")
+        matches = glob.glob(f"{glob_name}.[pP][rR][jJ]")
         if len(matches) == 1:
             files['prj'] = matches[0]
         elif len(matches) > 1:
@@ -193,11 +192,11 @@ def get_files(filename):
 
     # Only for GeoServer
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        matches = glob.glob(os.path.dirname(glob_name) + ".[sS][lL][dD]")
+        matches = glob.glob(f"{os.path.dirname(glob_name)}.[sS][lL][dD]")
         if len(matches) == 1:
             files['sld'] = matches[0]
         else:
-            matches = glob.glob(glob_name + ".[sS][lL][dD]")
+            matches = glob.glob(f"{glob_name}.[sS][lL][dD]")
             if len(matches) == 1:
                 files['sld'] = matches[0]
             elif len(matches) > 1:
@@ -205,12 +204,12 @@ def get_files(filename):
                        'distinct by spelling and not just case.') % filename
                 raise GeoNodeException(msg)
 
-    matches = glob.glob(glob_name + ".[xX][mM][lL]")
+    matches = glob.glob(f"{glob_name}.[xX][mM][lL]")
 
     # shapefile XML metadata is sometimes named base_name.shp.xml
     # try looking for filename.xml if base_name.xml does not exist
     if len(matches) == 0:
-        matches = glob.glob(filename + ".[xX][mM][lL]")
+        matches = glob.glob(f"{filename}.[xX][mM][lL]")
 
     if len(matches) == 1:
         files['xml'] = matches[0]
@@ -516,7 +515,7 @@ def file_upload(filename,
     bbox_polygon = BBOXHelper.from_xy(bbox).as_polygon()
 
     if srid:
-        srid_url = "http://www.spatialreference.org/ref/" + srid.replace(':', '/').lower() + "/"  # noqa
+        srid_url = f"http://www.spatialreference.org/ref/{srid.replace(':', '/').lower()}/"  # noqa
         bbox_polygon.srid = int(srid.split(':')[1])
 
     # by default, if RESOURCE_PUBLISHING=True then layer.is_published
@@ -868,7 +867,7 @@ def delete_orphaned_layers():
 
     for filename in files:
         if LayerFile.objects.filter(file__icontains=filename).count() == 0:
-            logger.debug("Deleting orphaned layer file " + filename)
+            logger.debug(f"Deleting orphaned layer file {filename}")
             try:
                 storage.delete(os.path.join("layers", filename))
                 deleted.append(filename)
@@ -915,7 +914,7 @@ def set_layers_permissions(permissions_name, resources_names=None,
                     permissions = READ_PERMISSIONS
                 else:
                     permissions = READ_PERMISSIONS + WRITE_PERMISSIONS \
-                                  + DOWNLOAD_PERMISSIONS + OWNER_PERMISSIONS
+                        + DOWNLOAD_PERMISSIONS + OWNER_PERMISSIONS
             elif permissions_name.lower() in ('write', 'w'):
                 if not delete_flag:
                     permissions = READ_PERMISSIONS + WRITE_PERMISSIONS
@@ -929,7 +928,7 @@ def set_layers_permissions(permissions_name, resources_names=None,
             elif permissions_name.lower() in ('owner', 'o'):
                 if not delete_flag:
                     permissions = READ_PERMISSIONS + WRITE_PERMISSIONS \
-                                  + DOWNLOAD_PERMISSIONS + OWNER_PERMISSIONS
+                        + DOWNLOAD_PERMISSIONS + OWNER_PERMISSIONS
                 else:
                     permissions = OWNER_PERMISSIONS
             if not permissions:
@@ -1126,7 +1125,7 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
             absolute_base_file = None
 
         if not absolute_base_file or \
-        os.path.splitext(absolute_base_file)[1].lower() != '.shp':
+                os.path.splitext(absolute_base_file)[1].lower() != '.shp':
             raise Exception(
                 _(f"You are attempting to {action_type} a vector layer with an unknown format."))
         else:

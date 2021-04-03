@@ -85,8 +85,8 @@ class OIDCValidator(OAuth2Validator):
         # http://openid.net/specs/openid-connect-core-1_0.html#ImplicitIDToken
         # if request.grant_type in 'authorization_code' and 'access_token' in token:
         if (request.grant_type == "authorization_code" and "access_token" in token) or \
-        request.response_type == "code id_token token" or \
-        (request.response_type == "id_token token" and "access_token" in token):
+                request.response_type == "code id_token token" or \
+                (request.response_type == "id_token token" and "access_token" in token):
             acess_token = token["access_token"]
             sha256 = hashlib.sha256(acess_token.encode("ascii"))
             bits128 = sha256.hexdigest()[:16]
