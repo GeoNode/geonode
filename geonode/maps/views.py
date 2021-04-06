@@ -472,21 +472,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
             "map": map_obj
         })
     elif request.method == 'POST':
-        if getattr(settings, 'SLACK_ENABLED', False):
-            slack_message = None
-            try:
-                from geonode.contrib.slack.utils import build_slack_message_map
-                slack_message = build_slack_message_map("map_delete", map_obj)
-            except Exception:
-                logger.error("Could not build slack message for delete map.")
-            delete_map.apply_async((map_obj.id, ))
-            try:
-                from geonode.contrib.slack.utils import send_slack_messages
-                send_slack_messages(slack_message)
-            except Exception:
-                logger.error("Could not send slack message for delete map.")
-        else:
-            delete_map.apply_async((map_obj.id, ))
+        delete_map.apply_async((map_obj.id, ))
 
         register_event(request, EventType.EVENT_REMOVE, map_obj)
 
