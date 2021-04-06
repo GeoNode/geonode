@@ -72,8 +72,8 @@
           {% for field in map_form %}
             {% if field.name != 'use_featureinfo_custom_template' and field.name != 'featureinfo_custom_template' %}
             <div class="form_item_spacing">
-              <span><label for="{{ field.id }}">{{ field.label }}</label></span>
               <div {% if field.name in UI_MANDATORY_FIELDS %} id='adv_req' {% else %}{% endif %} >
+              <span><label for="{{ field.id }}">{{ field.label }}</label></span>
               {{ field }}
               </div>
             </div>
