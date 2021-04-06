@@ -213,6 +213,12 @@ class Upload(models.Model):
         else:
             return None
 
+    def get_detail_url(self):
+        if self.layer:
+            return getattr(self.layer, 'detail_url', None)
+        else:
+            return None
+
     def delete(self, *args, **kwargs):
         importer_locations = []
         upload_files = [_file.file for _file in UploadFile.objects.filter(upload=self)]

@@ -195,6 +195,11 @@ class UploadSerializer(DynamicModelSerializer):
 
         if 'request' in self.context and \
         self.context['request'].query_params.get('full'):
+            self.fields['layer'] = DynamicRelationField(
+                LayerSerializer,
+                embed=True,
+                many=False,
+                read_only=True)
             self.fields['session'] = SessionSerializer(
                 source='get_session',
                 read_only=True)
@@ -203,15 +208,14 @@ class UploadSerializer(DynamicModelSerializer):
         model = Upload
         name = 'upload'
         fields = (
-            'id', 'name', 'date', 'import_id',
-            'state', 'complete', 'user', 'layer',
-            'upload_dir', 'uploadfile_set', 'progress',
-            'resume_url', 'delete_url', 'import_url'
+            'id', 'name', 'date', 'import_id', 'user',
+            'state', 'progress', 'complete', 'uploadfile_set',
+            'resume_url', 'delete_url', 'import_url', 'detail_url'
         )
 
     progress = ProgressField(read_only=True)
     resume_url = ProgressUrlField('resume', read_only=True)
     delete_url = ProgressUrlField('delete', read_only=True)
     import_url = ProgressUrlField('import', read_only=True)
-    layer = DynamicRelationField(LayerSerializer, embed=True, many=False, read_only=True)
+    detail_url = ProgressUrlField('detail', read_only=True)
     uploadfile_set = DynamicRelationField(UploadFileSerializer, embed=True, many=True, read_only=True)
