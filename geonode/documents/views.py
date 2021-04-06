@@ -268,6 +268,7 @@ class DocumentUploadView(CreateView):
             bbox = BBOXHelper.from_xy(bbox)
             self.object.bbox_polygon = bbox.as_polygon()
 
+        self.object.save(notify=True)
         register_event(self.request, EventType.EVENT_UPLOAD, self.object)
 
         if self.request.GET.get('no__redirect', False):
