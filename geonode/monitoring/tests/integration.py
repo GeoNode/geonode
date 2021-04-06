@@ -1187,7 +1187,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
              'val': '1.0000'}
         ]
         # layer/download
-        url = f"{reverse('monitoring:api_metric_data', args={'request.users'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'event_type=download'}&{'resource_type=layer'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'request.users'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'event_type=download'}&{'resource_type=layer'}")
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -1243,7 +1244,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
              'val': '1.0000'}
         ]
         # map/create
-        url = f"{reverse('monitoring:api_metric_data', args={'request.users'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'event_type=create'}&{'resource_type=map'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'request.users'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'event_type=create'}&{'resource_type=map'}")
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -1281,7 +1283,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
 
     def test_map_change_endpoints(self):
         # map/change
-        url = f"{reverse('monitoring:api_metric_data', args={'request.users'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'event_type=change'}&{'resource_type=map'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'request.users'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'event_type=change'}&{'resource_type=map'}")
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -1310,7 +1313,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
 
     def test_document_upload_endpoints(self):
         # document/upload
-        url = f"{reverse('monitoring:api_metric_data', args={'request.users'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'event_type=upload'}&{'resource_type=document'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'request.users'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'event_type=upload'}&{'resource_type=document'}")
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -1339,7 +1343,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
 
     def test_document_view_metadata_endpoints(self):
         # document/view_metadata
-        url = f"{reverse('monitoring:api_metric_data', args={'request.users'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'event_type=view_metadata'}&{'resource_type=document'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'request.users'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'event_type=view_metadata'}&{'resource_type=document'}")
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -1368,7 +1373,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
 
     def test_document_change_metadata_endpoints(self):
         # document/change_metadata
-        url = f"{reverse('monitoring:api_metric_data', args={'request.users'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'event_type=change_metadata'}&{'resource_type=document'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'request.users'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'event_type=change_metadata'}&{'resource_type=document'}")
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -1399,7 +1405,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
 
     def test_document_download_endpoints(self):
         # url
-        url = f"{reverse('monitoring:api_metric_data', args={'request.users'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'event_type=download'}&{'resource_type=document'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'request.users'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'event_type=download'}&{'resource_type=document'}")
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -1542,7 +1549,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
              'val': '1.0000'}
         ]
         # url
-        url = f"{reverse('monitoring:api_metric_data', args={'request.users'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'event_type=view'}&{'resource_type=url'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'request.users'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=2628000'}&{'event_type=view'}&{'resource_type=url'}")
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -1730,7 +1738,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             }
         ]
         # url
-        url = f"{reverse('monitoring:api_metric_data', args={'request.users'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'group_by=resource_on_user'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'request.users'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'group_by=resource_on_user'}")
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -1769,7 +1778,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             }
         ]
         # url
-        url = f"{reverse('monitoring:api_metric_data', args={'request.count'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'group_by=count_on_resource'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'request.count'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'group_by=count_on_resource'}")
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -1971,7 +1981,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
                                  'sum': '1.0000',
                                  'val': 1}]
         # url
-        url = f"{reverse('monitoring:api_metric_data', args={'request.users'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'group_by=event_type_on_label'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'request.users'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'group_by=event_type_on_label'}")
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -2058,7 +2069,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
              'val': 1}
         ]
         # url
-        url = f"{reverse('monitoring:api_metric_data', args={'request.users'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'group_by=event_type_on_user'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'request.users'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'group_by=event_type_on_user'}")
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -2154,7 +2166,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
             }
         ]
         # url
-        url = f"{reverse('monitoring:api_metric_data', args={'request.users'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&&interval=2628000'}&{'group_by=label&user=AnonymousUser'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'request.users'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&&interval=2628000'}&{'group_by=label&user=AnonymousUser'}")
         # Unauthorized
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
@@ -2298,7 +2311,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
                 'val': '26.5489000000000000'
             }
         ]
-        url = f"{reverse('monitoring:api_metric_data', args={'cpu.usage.percent'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'service=localhost-hostgeonode'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'cpu.usage.percent'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'service=localhost-hostgeonode'}")
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
         self.assertEqual(out["error"], "unauthorized_request")
@@ -2336,7 +2350,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
                 'val': '18.8349000000000000'
             }
         ]
-        url = f"{reverse('monitoring:api_metric_data', args={'cpu.usage.percent'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'service=localhost-hostgeoserver'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'cpu.usage.percent'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'service=localhost-hostgeoserver'}")
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
         self.assertEqual(out["error"], "unauthorized_request")
@@ -2374,7 +2389,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
                 'val': '83.3176000000000000'
             }
         ]
-        url = f"{reverse('monitoring:api_metric_data', args={'mem.usage.percent'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'service=localhost-hostgeonode'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'mem.usage.percent'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'service=localhost-hostgeonode'}")
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
         self.assertEqual(out["error"], "unauthorized_request")
@@ -2412,7 +2428,8 @@ class MonitoringAnalyticsTestCase(MonitoringTestBase):
                 'val': '89.8485666666666667'
             }
         ]
-        url = f"{reverse('monitoring:api_metric_data', args={'mem.usage.percent'})}?{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'service=localhost-hostgeoserver'}"
+        url = (f"{reverse('monitoring:api_metric_data', args={'mem.usage.percent'})}?"
+               f"{'valid_from=2018-09-11T20:00:00.000Z&valid_to=2019-09-11T20:00:00.000Z&interval=31536000'}&{'service=localhost-hostgeoserver'}")
         response = self.client.get(url)
         out = json.loads(ensure_string(response.content))
         self.assertEqual(out["error"], "unauthorized_request")
