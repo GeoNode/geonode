@@ -344,7 +344,6 @@
         
         {% block onInputChange %}
         var onInputChange = function(e){
-            console.log(e.target.id);
             toggleRestrictionsConstraints(e);
             if(e.target.value !== undefined && e.target.value.trim() === ''){
                 if(!$(e.target).hasClass("input-empty")){
@@ -406,6 +405,8 @@
         $('#id_resource-date').change(onInputChange).change();
         $('#id_resource-links').change(onInputChange).change();
 
+        document.querySelector('select[name="resource-keywords"]').onchange=onInputChange;
+
         {{REQ_THESAURI}}.forEach(element => document.querySelector('select[name="'+ element + '"]').onchange=onInputChange);
         
         // workaround to trigger the change in advanced metadata editing
@@ -413,7 +414,6 @@
         for (item in {{REQ_THESAURI}}) {
             $("#id_" + {{REQ_THESAURI}}[item]).trigger("change");
         }
-        document.querySelector('select[name="resource-keywords"]').onchange=onInputChange;
 
         $('#id_resource-regions').change(onInputChange).change();
         $('#id_resource-temporal_extent_end').on('blur', function() {$(this).change(onInputChange).change();})
