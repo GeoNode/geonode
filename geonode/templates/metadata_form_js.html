@@ -344,6 +344,7 @@
         
         {% block onInputChange %}
         var onInputChange = function(e){
+            console.log(e.target.id);
             toggleRestrictionsConstraints(e);
             if(e.target.value !== undefined && e.target.value.trim() === ''){
                 if(!$(e.target).hasClass("input-empty")){
@@ -352,7 +353,7 @@
                         var mandatoryWarning = "<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>{% trans "* Field declared Mandatory by the Metadata Schema" %}</strong></p>"
                         if (!!$(this).closest('.date').length) {
                             $(e.target).parent().parent().append(gettext(mandatoryWarning));
-                        } else if (!!$(this).closest('.check-select').length) {
+                        } else if (!!$(this).closest('.check-select').length || !!$(this).closest('#adv_req').length) {
                             $(e.target).parent().parent().append(gettext(mandatoryWarning));
                         } else if (!!$(this).closest('#mdinfo').length || !!$(this).closest('#basicDescriptiveInfo').length ) {
                             $(e.target).parent().append(gettext(mandatoryWarning));
@@ -395,12 +396,19 @@
         $('#category_form').change(onInputChange).change();
         $('#id_resource-group').change(onInputChange).change();
 
+        $('#id_resource-title').change(onInputChange).change();
+        $('#id_resource-abstract').change(onInputChange).change();
+        $('#id_resource-doi').change(onInputChange).change();
+        $('#id_resource-attribution').change(onInputChange).change();
+        $('#id_resource-data_quality_statement').change(onInputChange).change();
+        $('#id_resource-restriction_code_type').change(onInputChange).change();
+
         $('#id_resource-date').change(onInputChange).change();
         $('#id_resource-links').change(onInputChange).change();
 
         {{REQ_THESAURI}}.forEach(element => document.querySelector('select[name="'+ element + '"]').onchange=onInputChange);
 
-        document.querySelector('select[name="resource-keywords"]').onchange=onInputChange
+        document.querySelector('select[name="resource-keywords"]').onchange=onInputChange;
 
         $('#id_resource-regions').change(onInputChange).change();
         $('#id_resource-temporal_extent_end').on('blur', function() {$(this).change(onInputChange).change();})

@@ -93,13 +93,15 @@
         <!-- Added in the thesuarus field here since saving the form without it causes the thesuarus keywords to be removed. 
              Unfortunately this needs to appear at the bottom of the form since tkeywords_form is a complete other django form. 
              There might be a better way to solve this. -->
-        <div class="col-md-6 form-controls">
+        <div class="col-md-12 form-controls">
           {% block layer_fields %}
           {% for field in layer_form %}
             {% if field.name != 'use_featureinfo_custom_template' and field.name != 'featureinfo_custom_template' %}
-            <div style="margin-bottom: 25px">
-              <span><label for="{{ field.id }}">{{ field.label }}</label></span>
-              {{ field }}
+            <div class="form_item_spacing">
+              <div {% if field.name == 'title' %} id="req_item" {% else %}{% endif %}>
+                <span><label for="{{ field.id }}">{{ field.label }}</label></span>
+                {{ field }}
+                </div>
             </div>
             {% endif %}
           {% endfor %}
@@ -108,7 +110,12 @@
           {% block thesauri %}
           {# layer_form|as_bootstrap #}
           {% if THESAURI_FILTERS %}
-            {{ tkeywords_form }}
+            {% for field in tkeywords_form %}
+            <div class="form_item_spacing">
+              <span><label for="{{ field.id }}">{{ field.label }}</label></span>
+              {{ field }}
+            </div>
+            {% endfor %}
           {% endif %}
 
           {% endblock thesauri %}
@@ -125,7 +132,9 @@
                 <label class="fancy-checkbox">
                     <input type="radio" name="category_choice_field" value="{{ choice.0 }}"
                       {% ifequal category_form.initial choice.0 %} checked="checked" {% endifequal %} />
-                    {{ choice.1 }}
+                    <div class="form_item_spacing">
+                      {{ choice.1 }}
+                    </div>
                 </label>
               </div>
               <!-- div class="radio col-md-6">
