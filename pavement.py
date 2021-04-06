@@ -148,8 +148,7 @@ def grab(src, dest, name):
                 f.write(data)
         logger.info(f" total_size [{total_size}] / wrote [{wrote}] ")
         if total_size != 0 and wrote != total_size:
-            logger.error("ERROR, something went wrong. Data could not be written. Expected to write " + wrote +
-                         " but wrote " + total_size + " instead")
+            logger.error(f"ERROR, something went wrong. Data could not be written. Expected to write {wrote} but wrote {total_size} instead")
         else:
             shutil.move("output.bin", dest)
         try:
@@ -249,8 +248,7 @@ def _configure_data_dir():
         with open(config) as f:
             xml = f.read()
             m = re.search('proxyBaseUrl>([^<]+)', xml)
-            xml = xml[:m.start(1)] + \
-                "http://localhost:8080/geoserver" + xml[m.end(1):]
+            xml = f"{xml[:m.start(1)]}http://localhost:8080/geoserver{xml[m.end(1):]}"
             with open(config, 'w') as f:
                 f.write(xml)
     except Exception as e:
@@ -262,20 +260,15 @@ def _configure_data_dir():
         with open(config) as f:
             xml = f.read()
             m = re.search('accessTokenUri>([^<]+)', xml)
-            xml = xml[:m.start(1)] + \
-                "http://localhost:8000/o/token/" + xml[m.end(1):]
+            xml = f"{xml[:m.start(1)]}http://localhost:8000/o/token/{xml[m.end(1):]}"
             m = re.search('userAuthorizationUri>([^<]+)', xml)
-            xml = xml[:m.start(
-                1)] + "http://localhost:8000/o/authorize/" + xml[m.end(1):]
+            xml = f"{xml[:m.start(1)]}http://localhost:8000/o/authorize/{xml[m.end(1):]}"
             m = re.search('redirectUri>([^<]+)', xml)
-            xml = xml[:m.start(
-                1)] + "http://localhost:8080/geoserver/index.html" + xml[m.end(1):]
+            xml = f"{xml[:m.start(1)]}http://localhost:8080/geoserver/index.html{xml[m.end(1):]}"
             m = re.search('checkTokenEndpointUrl>([^<]+)', xml)
-            xml = xml[:m.start(
-                1)] + "http://localhost:8000/api/o/v4/tokeninfo/" + xml[m.end(1):]
+            xml = f"{xml[:m.start(1)]}http://localhost:8000/api/o/v4/tokeninfo/{xml[m.end(1):]}"
             m = re.search('logoutUri>([^<]+)', xml)
-            xml = xml[:m.start(
-                1)] + "http://localhost:8000/account/logout/" + xml[m.end(1):]
+            xml = f"{xml[:m.start(1)]}http://localhost:8000/account/logout/{xml[m.end(1):]}"
             with open(config, 'w') as f:
                 f.write(xml)
     except Exception as e:
@@ -287,7 +280,7 @@ def _configure_data_dir():
         with open(config) as f:
             xml = f.read()
             m = re.search('baseUrl>([^<]+)', xml)
-            xml = xml[:m.start(1)] + "http://localhost:8000" + xml[m.end(1):]
+            xml = f"{xml[:m.start(1)]}http://localhost:8000{xml[m.end(1):]}"
             with open(config, 'w') as f:
                 f.write(xml)
     except Exception as e:
@@ -342,7 +335,7 @@ def win_install_deps(options):
     failed = False
     for package, url in win_packages.items():
         tempfile = download_dir / os.path.basename(url)
-        logger.info("Installing file ... " + tempfile)
+        logger.info(f"Installing file ... {tempfile}")
         grab_winfiles(url, tempfile, package)
         try:
             easy_install.main([tempfile])
@@ -583,7 +576,7 @@ def start_django(options):
         sh(f'{settings} python -W ignore manage.py runmessaging {foreground}')
 
     # wait for Django to start
-    started = waitfor("http://localhost:" + port)
+    started = waitfor(f"http://localhost:{port}")
     if not started:
         info('Django never started properly or timed out.')
         sys.exit(1)
@@ -649,8 +642,7 @@ def start_geoserver(options):
             info(f'Port {jetty_port} is already in use')
         else:
             info(
-                'Something else raised the socket.error exception while checking port %s' %
-                jetty_port)
+                f'Something else raised the socket.error exception while checking port {jetty_port}')
             print(e)
     finally:
         s.close()
@@ -702,7 +694,7 @@ def start_geoserver(options):
                                     "java.exe e.g. --java_path=C:/path/to/java/bin/java.exe")
                     sys.exit(1)
                 # if there are spaces
-                javapath = 'START /B "" "' + javapath_opt + '"'
+                javapath = f"START /B \"\" \"{javapath_opt}\""
 
             sh((
                 '%(javapath)s -Xms512m -Xmx2048m -server -XX:+UseConcMarkSweepGC -XX:MaxPermSize=512m'

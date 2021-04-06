@@ -138,10 +138,10 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.set_permissions(self.perm_spec)
         layer.clear_dirty_state()
         self.assertHttpUnauthorized(self.api_client.get(
-            self.list_url + str(layer.id) + '/'))
+            f"{self.list_url + str(layer.id)}/"))
 
         self.api_client.client.login(username=self.user, password=self.passwd)
-        resp = self.api_client.get(self.list_url + str(layer.id) + '/')
+        resp = self.api_client.get(f"{self.list_url + str(layer.id)}/")
         self.assertValidJSONResponse(resp)
 
         # with delayed security
@@ -288,19 +288,19 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertValidJSONResponse(resp)
             self.assertEqual(len(self.deserialize(resp)['objects']), 9)
 
-            filter_url = self.profiles_list_url + '?name__icontains=norm'
+            filter_url = f"{self.profiles_list_url}?name__icontains=norm"
 
             resp = self.api_client.get(filter_url)
             self.assertValidJSONResponse(resp)
             self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
-            filter_url = self.profiles_list_url + '?name__icontains=NoRmAN'
+            filter_url = f"{self.profiles_list_url}?name__icontains=NoRmAN"
 
             resp = self.api_client.get(filter_url)
             self.assertValidJSONResponse(resp)
             self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
-            filter_url = self.profiles_list_url + '?name__icontains=bar'
+            filter_url = f"{self.profiles_list_url}?name__icontains=bar"
 
             resp = self.api_client.get(filter_url)
             self.assertValidJSONResponse(resp)
@@ -317,19 +317,19 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertValidJSONResponse(resp)
             self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
-            filter_url = self.groups_list_url + '?name__icontains=bar'
+            filter_url = f"{self.groups_list_url}?name__icontains=bar"
 
             resp = self.api_client.get(filter_url)
             self.assertValidJSONResponse(resp)
             self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
-            filter_url = self.groups_list_url + '?name__icontains=BaR'
+            filter_url = f"{self.groups_list_url}?name__icontains=BaR"
 
             resp = self.api_client.get(filter_url)
             self.assertValidJSONResponse(resp)
             self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
-            filter_url = self.groups_list_url + '?name__icontains=foo'
+            filter_url = f"{self.groups_list_url}?name__icontains=foo"
 
             resp = self.api_client.get(filter_url)
             self.assertValidJSONResponse(resp)
@@ -340,14 +340,13 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         # check we get the correct layers number returnered filtering on one
         # and then two different categories
-        filter_url = self.list_url + '?category__identifier=location'
+        filter_url = f"{self.list_url}?category__identifier=location"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 3)
 
-        filter_url = self.list_url + \
-            '?category__identifier__in=location&category__identifier__in=biota'
+        filter_url = f"{self.list_url}?category__identifier__in=location&category__identifier__in=biota"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
@@ -358,14 +357,13 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         # check we get the correct layers number returnered filtering on one
         # and then two different keywords
-        filter_url = self.list_url + '?keywords__slug=layertagunique'
+        filter_url = f"{self.list_url}?keywords__slug=layertagunique"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
-        filter_url = self.list_url + \
-            '?keywords__slug__in=layertagunique&keywords__slug__in=populartag'
+        filter_url = f"{self.list_url}?keywords__slug__in=layertagunique&keywords__slug__in=populartag"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
@@ -376,14 +374,13 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         # check we get the correct layers number returnered filtering on one
         # and then two different owners
-        filter_url = self.list_url + '?owner__username=user1'
+        filter_url = f"{self.list_url}?owner__username=user1"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 1)
 
-        filter_url = self.list_url + \
-            '?owner__username__in=user1&owner__username__in=foo'
+        filter_url = f"{self.list_url}?owner__username__in=user1&owner__username__in=foo"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
@@ -394,7 +391,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         # check we get the correct layers number returnered filtering on the
         # title
-        filter_url = self.list_url + '?title=layer2'
+        filter_url = f"{self.list_url}?title=layer2"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
@@ -413,21 +410,21 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             return val.date().strftime(fstring)
 
         d1 = to_date(now - step)
-        filter_url = self.list_url + f'?date__exact={d1}'
+        filter_url = f"{self.list_url}?date__exact={d1}"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
         d3 = to_date(now - (3 * step))
-        filter_url = self.list_url + f'?date__gte={d3}'
+        filter_url = f"{self.list_url}?date__gte={d3}"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 3)
 
         d4 = to_date(now - (4 * step))
-        filter_url = self.list_url + f'?date__range={d4},{to_date(now)}'
+        filter_url = f"{self.list_url}?date__range={d4},{to_date(now)}"
 
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)

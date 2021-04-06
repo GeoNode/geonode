@@ -37,7 +37,6 @@ log = logging.getLogger(__name__)
 
 
 def get_metric_names():
-
     """
     Returns list of tuples: (service type, list of metrics)
     """
@@ -104,8 +103,8 @@ def extract_event_type(requests):
 
 def extract_event_types(requests):
     event_types = requests.exclude(event_type__isnull=True)\
-                                   .distinct('event_type')\
-                                   .values_list('event_type', flat=True)
+        .distinct('event_type')\
+        .values_list('event_type', flat=True)
     return [EventType.objects.get(id=evt_id) for evt_id in event_types]
 
 
@@ -163,7 +162,7 @@ def calculate_rate(metric_name, metric_label,
 
 
 def calculate_percent(
-         metric_name, metric_label, current_value, valid_to):
+        metric_name, metric_label, current_value, valid_to):
     """
     Find previous network metric value and caclulate percent
     """
@@ -225,7 +224,7 @@ def aggregate_past_periods(metric_data_q=None, periods=None, cleanup=True, now=N
         # and extract service, resource, event type and label combinations
         # then, for each distinctive set, calculate per-metric aggregate values
         for period_start, period_end in periods:
-            log.debug('period %s - %s (%s s)', period_start, period_end, period_end-period_start)
+            log.debug('period %s - %s (%s s)', period_start, period_end, period_end - period_start)
             ret = aggregate_period(period_start, period_end, metric_data_q, cleanup)
             counter += ret
         previous_cutoff = until
@@ -237,9 +236,9 @@ def aggregate_period(period_start, period_end, metric_data_q, cleanup=True):
     to_remove_data = {'remove_at': period_start.strftime("%Y%m%d%H%M%S")}
     source_metric_data = metric_data_q.filter(valid_from__gte=period_start,
                                               valid_to__lte=period_end)\
-                                      .exclude(valid_from=period_start,
-                                               valid_to=period_end,
-                                               data={})
+        .exclude(valid_from=period_start,
+                 valid_to=period_end,
+                 data={})
     r = source_metric_data.values_list('service_id', 'service_metric_id', 'resource_id', 'event_type_id', 'label_id',)\
                           .distinct('service_id', 'service_metric_id', 'resource_id', 'event_type_id', 'label_id')
     source_metric_data.update(data=to_remove_data)
@@ -290,11 +289,11 @@ def aggregate_period(period_start, period_end, metric_data_q, cleanup=True):
                                  valid_from=period_start,
                                  valid_to=period_end,
                                  label_id=label_id)\
-                         .update(value=value,
-                                 value_num=value,
-                                 value_raw=value,
-                                 data=None,
-                                 samples_count=samples_count)
+                .update(value=value,
+                        value_num=value,
+                        value_raw=value,
+                        data=None,
+                        samples_count=samples_count)
         counter += 1
 
     if cleanup:

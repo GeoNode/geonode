@@ -205,7 +205,7 @@ def construct_wms_url(
         # add WMS endpoint to requests to Geoserver
         wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or "ows"
 
-    thumbnail_url = thumbnail_url + f"{wms_endpoint}?" + "&".join(f"{key}={val}" for key, val in params.items())
+    thumbnail_url = f"{thumbnail_url}{wms_endpoint}?{'&'.join(f'{key}={val}' for key, val in params.items())}"
 
     return thumbnail_url
 

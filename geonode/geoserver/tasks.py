@@ -291,7 +291,7 @@ def geoserver_finalize_upload(
                     owner=instance.owner,
                     store=gs_resource.store.name,
                     storeType=gs_resource.store.resource_type,
-                    alternate=gs_resource.store.workspace.name + ':' + gs_resource.name,
+                    alternate=f"{gs_resource.store.workspace.name}:{gs_resource.name}",
                     title=gs_resource.title or gs_resource.store.name,
                     abstract=gs_resource.abstract or ''))
 
@@ -550,8 +550,7 @@ def geoserver_post_save_layers(
                     bbox = instance.bbox
 
                 if instance.srid:
-                    instance.srid_url = "http://www.spatialreference.org/ref/" + \
-                        instance.srid.replace(':', '/').lower() + "/"
+                    instance.srid_url = f"http://www.spatialreference.org/ref/{instance.srid.replace(':', '/').lower()}/"
                 elif instance.bbox_polygon is not None:
                     # Guessing 'EPSG:4326' by default
                     instance.srid = 'EPSG:4326'

@@ -97,9 +97,9 @@ def proxy(request, url=None, response_callback=None,
     scheme = str(url.scheme)
     locator = str(url.path)
     if url.query != "":
-        locator += '?' + url.query
+        locator += f"?{url.query}"
     if url.fragment != "":
-        locator += '#' + url.fragment
+        locator += f"#{url.fragment}"
 
     # White-Black Listing Hosts
     site_url = urlsplit(settings.SITEURL)

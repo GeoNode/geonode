@@ -54,8 +54,7 @@ def bbox2wktpolygon(bbox):
     miny = float(bbox[1])
     maxx = float(bbox[2])
     maxy = float(bbox[3])
-    return 'POLYGON((%.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f))' \
-           % (minx, miny, minx, maxy, maxx, maxy, maxx, miny, minx, miny)
+    return f'POLYGON(({minx:.2f} {miny:.2f}, {minx:.2f} {maxy:.2f}, {maxx:.2f} {maxy:.2f}, {maxx:.2f} {miny:.2f}, {minx:.2f} {miny:.2f}))'
 
 
 def inverse_mercator(xy):

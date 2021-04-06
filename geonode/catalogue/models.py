@@ -57,8 +57,7 @@ def catalogue_post_save(instance, sender, **kwargs):
             raise err
 
     if not record:
-        msg = ('Metadata record for %s does not exist,'
-               ' check the catalogue signals.' % instance.title)
+        msg = f'Metadata record for {instance.title} does not exist, check the catalogue signals.'
         LOGGER.exception(msg)
         return
 

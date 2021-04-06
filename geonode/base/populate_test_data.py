@@ -326,13 +326,13 @@ def dump_models(path=None):
 
 def create_single_layer(name):
     get_user_model().objects.create(
-                    username='admin',
-                    is_superuser=True,
-                    first_name='admin')
+        username='admin',
+        is_superuser=True,
+        first_name='admin')
     test_datetime = datetime.strptime('2020-01-01', '%Y-%m-%d')
     user = get_user_model().objects.get(username='AnonymousUser')
     ll = (name, 'lorem ipsum', name, f'geonode:{name}', [
-                    0, 22, 0, 22], test_datetime, ('populartag',), "farming")
+        0, 22, 0, 22], test_datetime, ('populartag',), "farming")
     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ll
     layer = Layer(
         title=title,
