@@ -98,7 +98,7 @@
           {% for field in layer_form %}
             {% if field.name != 'use_featureinfo_custom_template' and field.name != 'featureinfo_custom_template' %}
             <div class="form_item_spacing">
-              <div {% if field.name == 'title' %} id="req_item" {% else %}{% endif %}>
+              <div {% if field.name in UI_MANDATORY_FIELDS %} id='adv_req' {% else %}{% endif %} >
                 <span><label for="{{ field.id }}">{{ field.label }}</label></span>
                 {{ field }}
                 </div>
@@ -107,17 +107,19 @@
           {% endfor %}
           {% endblock layer_fields %}
 
+
           {% block thesauri %}
           {# layer_form|as_bootstrap #}
           {% if THESAURI_FILTERS %}
             {% for field in tkeywords_form %}
-            <div class="form_item_spacing">
-              <span><label for="{{ field.id }}">{{ field.label }}</label></span>
+            <div class="form_item_spacing thesauri_keywords" id="tadv_req">
+              <p>
+              <label for="{{ field.thesaurus_id }}">{{ field.label }}</label>
               {{ field }}
+              </p>
             </div>
             {% endfor %}
           {% endif %}
-
           {% endblock thesauri %}
         </div>
 
@@ -129,12 +131,10 @@
               {% autoescape off %}
               {% for choice in category_form.category_choice_field.field.choices %}
               <div class="col-md-6">
-                <label class="fancy-checkbox">
+                <label class="fancy-checkbox form_item_spacing">
                     <input type="radio" name="category_choice_field" value="{{ choice.0 }}"
                       {% ifequal category_form.initial choice.0 %} checked="checked" {% endifequal %} />
-                    <div class="form_item_spacing">
                       {{ choice.1 }}
-                    </div>
                 </label>
               </div>
               <!-- div class="radio col-md-6">

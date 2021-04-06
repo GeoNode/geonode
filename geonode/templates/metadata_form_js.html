@@ -353,9 +353,9 @@
                         var mandatoryWarning = "<p class='xxs-font-size mandatory-warning'>&nbsp;&nbsp;&nbsp;<strong>{% trans "* Field declared Mandatory by the Metadata Schema" %}</strong></p>"
                         if (!!$(this).closest('.date').length) {
                             $(e.target).parent().parent().append(gettext(mandatoryWarning));
-                        } else if (!!$(this).closest('.check-select').length || !!$(this).closest('#adv_req').length) {
+                        } else if (!!$(this).closest('.check-select').length ) {
                             $(e.target).parent().parent().append(gettext(mandatoryWarning));
-                        } else if (!!$(this).closest('#mdinfo').length || !!$(this).closest('#basicDescriptiveInfo').length ) {
+                        } else if (!!$(this).closest('#mdinfo').length || !!$(this).closest('#basicDescriptiveInfo').length || !!$(this).closest('#tadv_req').length || !!$(this).closest('#adv_req').length ) {
                             $(e.target).parent().append(gettext(mandatoryWarning));
                         }
                         empty++;
@@ -407,7 +407,12 @@
         $('#id_resource-links').change(onInputChange).change();
 
         {{REQ_THESAURI}}.forEach(element => document.querySelector('select[name="'+ element + '"]').onchange=onInputChange);
-
+        
+        // workaround to trigger the change in advanced metadata editing
+        // otherwise will remain not-required untill a change on the item
+        for (item in {{REQ_THESAURI}}) {
+            $("#id_" + {{REQ_THESAURI}}[item]).trigger("change");
+        }
         document.querySelector('select[name="resource-keywords"]').onchange=onInputChange;
 
         $('#id_resource-regions').change(onInputChange).change();
