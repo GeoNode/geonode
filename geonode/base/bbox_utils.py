@@ -28,6 +28,7 @@ class BBOXHelper:
     A bounding box representation to avoid use of list indices when
     dealing with bounding boxes.
     """
+
     def __init__(self, minmaxform):
         self.xmin, self.ymin, self.xmax, self.ymax = minmaxform
 

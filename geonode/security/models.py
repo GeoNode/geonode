@@ -93,7 +93,7 @@ class PermissionLevelMixin(object):
                     if managers:
                         for manager in managers:
                             if manager not in users and not manager.is_superuser and \
-                            manager != resource.owner:
+                                    manager != resource.owner:
                                 for perm in ADMIN_PERMISSIONS + VIEW_PERMISSIONS:
                                     assign_perm(perm, manager, resource)
                                 users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS
@@ -107,7 +107,7 @@ class PermissionLevelMixin(object):
                 if managers:
                     for manager in managers:
                         if manager not in users and not manager.is_superuser and \
-                        manager != resource.owner:
+                                manager != resource.owner:
                             for perm in ADMIN_PERMISSIONS + VIEW_PERMISSIONS:
                                 assign_perm(perm, manager, resource)
                             users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS
@@ -161,7 +161,7 @@ class PermissionLevelMixin(object):
             if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
                 _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
                 if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and \
-                _members_group_name == user_group.name:
+                        _members_group_name == user_group.name:
                     return True
             return False
 
@@ -401,7 +401,7 @@ class PermissionLevelMixin(object):
         resource_perms = Permission.objects.filter(
             codename__in=PERMISSIONS_TO_FETCH,
             content_type_id=ctype.id
-            ).values('codename')
+        ).values('codename')
 
         user_model = get_user_obj_perms_model(self)
         user_resource_perms = user_model.objects.filter(
@@ -409,7 +409,7 @@ class PermissionLevelMixin(object):
             content_type_id=ctype.id,
             user_id=user.id,
             permission__codename__in=resource_perms
-            ).values_list('permission__codename', flat=True)
+        ).values_list('permission__codename', flat=True)
 
         return user_resource_perms
 

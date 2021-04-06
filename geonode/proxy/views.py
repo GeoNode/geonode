@@ -97,9 +97,9 @@ def proxy(request, url=None, response_callback=None,
     scheme = str(url.scheme)
     locator = str(url.path)
     if url.query != "":
-        locator += '?' + url.query
+        locator += f"?{url.query}"
     if url.fragment != "":
-        locator += '#' + url.fragment
+        locator += f"#{url.fragment}"
 
     # White-Black Listing Hosts
     site_url = urlsplit(settings.SITEURL)
@@ -355,7 +355,7 @@ def download(request, resourceid, sender=Layer):
                 links = Link.objects.filter(resource=instance.resourcebase_ptr)
                 for link in links:
                     link_name = slugify(link.name)
-                    link_file = os.path.join(target_md_folder, "".join([link_name, ".%s" % link.extension]))
+                    link_file = os.path.join(target_md_folder, "".join([link_name, f".{link.extension}"]))
                     if link.link_type in ('data'):
                         # Skipping 'data' download links
                         continue

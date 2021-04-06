@@ -180,17 +180,17 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         </Style>
       </Layer>"""
         kwargs = {
-          'content': content,
-          'status': 200,
-          'content_type': 'application/xml'
+            'content': content,
+            'status': 200,
+            'content_type': 'application/xml'
         }
         _content = _response_callback(**kwargs).content
         self.assertTrue(re.findall(f'{urljoin(settings.SITEURL, "/gs/")}ows', str(_content)))
 
         kwargs = {
-          'content': content,
-          'status': 200,
-          'content_type': 'text/xml; charset=UTF-8'
+            'content': content,
+            'status': 200,
+            'content_type': 'text/xml; charset=UTF-8'
         }
         _content = _response_callback(**kwargs).content
         self.assertTrue(re.findall(f'{urljoin(settings.SITEURL, "/gs/")}ows', str(_content)))

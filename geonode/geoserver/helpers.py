@@ -967,7 +967,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                                                            "version": "1.0.0",
                                                            "request": "DescribeFeatureType",
                                                            "typename": typename,
-                                                          })
+                                                           })
         try:
             # The code below will fail if http_client cannot be imported or WFS not supported
             req, body = http_client.get(dft_url, user=_user)

@@ -174,7 +174,7 @@ class Client(DjangoTestClient):
                 if debug:
                     logger.error(f'error in request to {path}')
                     logger.error(ex.message)
-                message = ex.message[ex.message.index(':')+2:]
+                message = ex.message[ex.message.index(':') + 2:]
             else:
                 message = str(ex)
             raise HTTPError(url, response.status_code, message, response.headers, None)
@@ -224,7 +224,7 @@ class Client(DjangoTestClient):
         if ext.lower() == '.shp':
             for spatial_file in spatial_files:
                 ext, _ = spatial_file.split('_')
-                file_path = base + '.' + ext
+                file_path = f"{base}.{ext}"
                 # sometimes a shapefile is missing an extra file,
                 # allow for that
                 if os.path.exists(file_path):

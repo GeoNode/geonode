@@ -298,8 +298,7 @@ def scan_file(file_name, scan_hint=None, charset=None):
         if len(found) == 1:
             found[0].xml_files = xml_files
         else:
-            raise Exception(_("One or more XML files was provided, but no " +
-                              "matching files were found for them."))
+            raise Exception(_("One or more XML files was provided, but no matching files were found for them."))
 
     # detect slds and assign if a single upload is found
     sld_files = _find_file_type(safe_paths, extension='.sld')
@@ -307,8 +306,7 @@ def scan_file(file_name, scan_hint=None, charset=None):
         if len(found) == 1:
             found[0].sld_files = sld_files
         else:
-            raise Exception(_("One or more SLD files was provided, but no " +
-                              "matching files were found for them."))
+            raise Exception(_("One or more SLD files was provided, but no matching files were found for them."))
     return SpatialFiles(dirname, found, archive=archive)
 
 

@@ -391,7 +391,7 @@ class CommonModelApi(ModelResource):
         # filter by category
         if category:
             sqs = (SearchQuerySet() if sqs is None else sqs).narrow(
-                'category:%s' % ','.join(map(str, category)))
+                f"category:{','.join(map(str, category))}")
 
         # filter by keyword: use filter_or with keywords_exact
         # not using exact leads to fuzzy matching and too many results

@@ -71,12 +71,12 @@ class Command(BaseCommand):
                 client_secret_arg = self._get_client_secret_arg(
                     provider_name).replace("-", "_")
                 client_id = (
-                        options.get(client_id_arg) or
-                        os.getenv(self._get_client_id_env(provider_name))
+                    options.get(client_id_arg) or
+                    os.getenv(self._get_client_id_env(provider_name))
                 )
                 client_secret = (
-                        options.get(client_secret_arg) or
-                        os.getenv(self._get_client_secret_env(provider_name))
+                    options.get(client_secret_arg) or
+                    os.getenv(self._get_client_secret_env(provider_name))
                 )
                 if all((client_id, client_secret)):
                     self.stdout.write(

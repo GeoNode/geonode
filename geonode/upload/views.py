@@ -750,16 +750,8 @@ class UploadFileCreateView(CreateView):
         data = [
             {
                 'name': f.name,
-                'url': settings.MEDIA_URL +
-                "uploads/" +
-                f.name.replace(
-                    " ",
-                    "_"),
-                'thumbnail_url': settings.MEDIA_URL +
-                "pictures/" +
-                f.name.replace(
-                    " ",
-                    "_"),
+                'url': f"{settings.MEDIA_URL}uploads/{f.name.replace(' ', '_')}",
+                'thumbnail_url': f"{settings.MEDIA_URL}pictures/{f.name.replace(' ', '_')}",
                 'delete_url': reverse(
                     'data_upload_remove',
                     args=[

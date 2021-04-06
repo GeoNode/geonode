@@ -766,7 +766,7 @@ if SESSION_EXPIRED_CONTROL_ENABLED:
     # This middleware checks for ACCESS_TOKEN validity and if expired forces
     # user logout
     MIDDLEWARE += \
-            ('geonode.security.middleware.SessionControlMiddleware',)
+        ('geonode.security.middleware.SessionControlMiddleware',)
 
 SESSION_COOKIE_SECURE = ast.literal_eval(os.environ.get('SESSION_COOKIE_SECURE', 'False'))
 CSRF_COOKIE_SECURE = ast.literal_eval(os.environ.get('CSRF_COOKIE_SECURE', 'False'))
@@ -1009,8 +1009,7 @@ OGC_SERVER = {
         'WMST_ENABLED': ast.literal_eval(os.getenv('WMST_ENABLED', 'False')),
         'BACKEND_WRITE_ENABLED': ast.literal_eval(os.getenv('BACKEND_WRITE_ENABLED', 'True')),
         'WPS_ENABLED': ast.literal_eval(os.getenv('WPS_ENABLED', 'False')),
-        'LOG_FILE': '%s/geoserver/data/logs/geoserver.log'
-        % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
+        'LOG_FILE': f'{os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir))}/geoserver/data/logs/geoserver.log',
         # Set to name of database in DATABASES dictionary to enable
         # 'datastore',
         'DATASTORE': os.getenv('DEFAULT_BACKEND_DATASTORE', ''),
@@ -1229,7 +1228,7 @@ except ValueError:
 #
 # AUTH_IP_WHITELIST = ['192.168.1.158', '192.168.1.159']
 AUTH_IP_WHITELIST = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('AUTH_IP_WHITELIST') is None \
-        else re.split(r' *[,|:|;] *', os.getenv('AUTH_IP_WHITELIST'))
+    else re.split(r' *[,|:|;] *', os.getenv('AUTH_IP_WHITELIST'))
 
 # A tuple of hosts the proxy can send requests to.
 try:
@@ -1240,8 +1239,8 @@ except ValueError:
     PROXY_ALLOWED_HOSTS = [
         HOSTNAME, 'localhost', 'django', 'geonode',
         'spatialreference.org', 'nominatim.openstreetmap.org', 'dev.openlayers.org'] \
-            if os.getenv('PROXY_ALLOWED_HOSTS') is None \
-            else re.split(r' *[,|:|;] *', os.getenv('PROXY_ALLOWED_HOSTS'))
+        if os.getenv('PROXY_ALLOWED_HOSTS') is None \
+        else re.split(r' *[,|:|;] *', os.getenv('PROXY_ALLOWED_HOSTS'))
 
 # The proxy to use when making cross origin requests.
 PROXY_URL = os.environ.get('PROXY_URL', '/proxy/?url=')
@@ -1317,10 +1316,10 @@ try:
 except ValueError:
     # fallback to regular list of values separated with misc chars
     AVATAR_PROVIDERS = (
-    'avatar.providers.PrimaryAvatarProvider',
-    'avatar.providers.GravatarAvatarProvider',
-    'avatar.providers.DefaultAvatarProvider'
-   ) if os.getenv('AVATAR_PROVIDERS') is None \
+        'avatar.providers.PrimaryAvatarProvider',
+        'avatar.providers.GravatarAvatarProvider',
+        'avatar.providers.DefaultAvatarProvider'
+    ) if os.getenv('AVATAR_PROVIDERS') is None \
         else re.split(r' *[,|:|;] *', os.getenv('AVATAR_PROVIDERS'))
 
 # Number of results per page listed in the GeoNode search pages
@@ -1508,7 +1507,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
                         "type": "csw",
                         "title": pycsw_config['metadata:main']['identification_title'],
                         "autoload": True
-                        }
+                    }
                 }
                 return pycsw_catalogue
         return None
@@ -1521,7 +1520,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "type": "wms",
             "title": "Demo WMS Service",
             "autoload": False
-         },
+        },
         "Demo WMTS Service": {
             "url": "https://demo.geo-solutions.it/geoserver/gwc/service/wmts",
             "type": "wmts",
@@ -1562,7 +1561,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "group": "background",
             "thumbURL": f"{SITEURL}static/mapstorestyle/img/s2cloudless-s2cloudless.png",
             "visibility": False
-       }, {
+        }, {
             "source": "ol",
             "group": "background",
             "id": "none",
@@ -1571,7 +1570,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "type": "empty",
             "visibility": False,
             "args": ["Empty Background", {"visibility": False}]
-       }
+        }
     ]
 
     if MAPBOX_ACCESS_TOKEN:
@@ -2041,7 +2040,7 @@ if USE_GEOSERVER:
             "title": "GeoServer - Public Layers",
             "attribution": f"&copy; {SITEURL}",
             "ptype": LOCAL_GXP_PTYPE,
-            "url": OGC_SERVER['default']['PUBLIC_LOCATION'] + "ows",
+            "url": f"{OGC_SERVER['default']['PUBLIC_LOCATION']}ows",
             "restUrl": "/gs/rest"
         }
     }

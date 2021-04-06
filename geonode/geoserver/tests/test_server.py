@@ -814,13 +814,11 @@ class LayerTests(GeoNodeBaseTestSupport):
         invalid_uname_pw = b"n0t:v@l1d"
 
         valid_auth_headers = {
-            'HTTP_AUTHORIZATION': 'basic ' +
-            base64.b64encode(valid_uname_pw).decode(),
+            'HTTP_AUTHORIZATION': f"basic {base64.b64encode(valid_uname_pw).decode()}",
         }
 
         invalid_auth_headers = {
-            'HTTP_AUTHORIZATION': 'basic ' +
-            base64.b64encode(invalid_uname_pw).decode(),
+            'HTTP_AUTHORIZATION': f"basic {base64.b64encode(invalid_uname_pw).decode()}",
         }
 
         bob = get_user_model().objects.get(username='bobby')
@@ -882,13 +880,11 @@ class LayerTests(GeoNodeBaseTestSupport):
         invalid_uname_pw = b"n0t:v@l1d"
 
         valid_auth_headers = {
-            'HTTP_AUTHORIZATION': 'basic ' +
-            base64.b64encode(valid_uname_pw).decode(),
+            'HTTP_AUTHORIZATION': f"basic {base64.b64encode(valid_uname_pw).decode()}",
         }
 
         invalid_auth_headers = {
-            'HTTP_AUTHORIZATION': 'basic ' +
-            base64.b64encode(invalid_uname_pw).decode(),
+            'HTTP_AUTHORIZATION': f"basic {base64.b64encode(invalid_uname_pw).decode()}",
         }
 
         response = self.client.get(
@@ -1004,8 +1000,8 @@ class UtilsTests(GeoNodeBaseTestSupport):
         defaults = self.OGC_DEFAULT_SETTINGS.get('default')
         ogc_settings = OGC_Servers_Handler(OGC_SERVER)['default']
         self.assertEqual(ogc_settings.server, defaults)
-        self.assertEqual(ogc_settings.rest, defaults['LOCATION'] + 'rest')
-        self.assertEqual(ogc_settings.ows, defaults['LOCATION'] + 'ows')
+        self.assertEqual(ogc_settings.rest, f"{defaults['LOCATION']}rest")
+        self.assertEqual(ogc_settings.ows, f"{defaults['LOCATION']}ows")
 
         # Make sure we get None vs a KeyError when the key does not exist
         self.assertIsNone(ogc_settings.SFDSDFDSF)
@@ -1105,7 +1101,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
         self.assertIsNotNone(instance.default_style.name)
 
         # WMS Links
-        wms_links = wms_links(ogc_settings.public_url + 'wms?',
+        wms_links = wms_links(f"{ogc_settings.public_url}wms?",
                               instance.alternate,
                               bbox,
                               srid,
@@ -1122,7 +1118,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
             self.assertTrue(identifier in _link[3])
 
         # WFS Links
-        wfs_links = wfs_links(ogc_settings.public_url + 'wfs?',
+        wfs_links = wfs_links(f"{ogc_settings.public_url}wfs?",
                               instance.alternate,
                               bbox,
                               srid)
@@ -1137,7 +1133,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
             self.assertTrue(identifier in _link[3])
 
         # WCS Links
-        wcs_links = wcs_links(ogc_settings.public_url + 'wcs?',
+        wcs_links = wcs_links(f"{ogc_settings.public_url}wcs?",
                               instance.alternate,
                               bbox,
                               srid)

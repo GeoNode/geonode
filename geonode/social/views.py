@@ -60,7 +60,7 @@ class RecentActivity(ListView):
                     resource = obj.get_self_resource()
                     user = request.user
                     if user.has_perm('base.view_resourcebase', resource) or \
-                    user.has_perm('view_resourcebase', resource):
+                            user.has_perm('view_resourcebase', resource):
                         _filtered_actions.append(_action.id)
                 except ResourceBase.DoesNotExist:
                     _filtered_actions.append(_action.id)

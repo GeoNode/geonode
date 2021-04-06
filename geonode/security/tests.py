@@ -216,7 +216,7 @@ class SecurityTest(GeoNodeBaseTestSupport):
         Tests the Geonode login required authentication middleware with Basic authenticated queries
         """
 
-        site_url_settings = [settings.SITEURL + "login/custom", "/login/custom", "login/custom"]
+        site_url_settings = [f"{settings.SITEURL}login/custom", "/login/custom", "login/custom"]
         black_listed_url = reverse("maps_browse")
 
         for setting in site_url_settings:
@@ -414,7 +414,7 @@ class BulkPermissionsTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
             import requests
             from requests.auth import HTTPBasicAuth
-            r = requests.get(url + f'gwc/rest/seed/{test_perm_layer.alternate}.json',
+            r = requests.get(f"{url}gwc/rest/seed/{test_perm_layer.alternate}.json",
                              auth=HTTPBasicAuth(user, passwd))
             self.assertEqual(r.status_code, 400)
 
@@ -489,15 +489,15 @@ class PermissionsTest(GeoNodeBaseTestSupport):
     def test_user_can(self):
         bobby = get_user_model().objects.get(username='bobby')
         perm_spec = {
-              'users': {
-                  'bobby': [
-                      'view_resourcebase',
-                      'download_resourcebase',
-                      'change_layer_style'
-                      ]
-              },
-              'groups': []
-          }
+            'users': {
+                'bobby': [
+                    'view_resourcebase',
+                    'download_resourcebase',
+                    'change_layer_style'
+                ]
+            },
+            'groups': []
+        }
         layer = Layer.objects.filter(storeType='dataStore').first()
         layer.set_permissions(perm_spec)
         # Test user has permission with read_only=False
@@ -564,8 +564,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         _deny_wfst_rule_exists = False
         for rule in rules_objs['rules']:
             if rule['service'] == "WFS" and \
-            rule['userName'] == 'bobby' and \
-            rule['request'] == "TRANSACTION":
+                    rule['userName'] == 'bobby' and \
+                    rule['request'] == "TRANSACTION":
                 _deny_wfst_rule_exists = rule['access'] == 'DENY'
                 break
         self.assertFalse(_deny_wfst_rule_exists)
@@ -591,13 +591,13 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         _allow_wfs_rule_position = -1
         for cnt, rule in enumerate(rules_objs['rules']):
             if rule['service'] == "WFS" and \
-            rule['userName'] == 'bobby' and \
-            rule['request'] == "TRANSACTION":
+                    rule['userName'] == 'bobby' and \
+                    rule['request'] == "TRANSACTION":
                 _deny_wfst_rule_exists = rule['access'] == 'DENY'
                 _deny_wfst_rule_position = cnt
             elif rule['service'] == "WFS" and \
-            rule['userName'] == 'bobby' and \
-            (rule['request'] is None or rule['request'] == '*'):
+                    rule['userName'] == 'bobby' and \
+                    (rule['request'] is None or rule['request'] == '*'):
                 _allow_wfs_rule_position = cnt
         self.assertTrue(_deny_wfst_rule_exists)
         self.assertTrue(_allow_wfs_rule_position > _deny_wfst_rule_position)
@@ -619,8 +619,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         _deny_wfst_rule_exists = False
         for rule in rules_objs['rules']:
             if rule['service'] == "WFS" and \
-            rule['userName'] == 'bobby' and \
-            rule['request'] == "TRANSACTION":
+                    rule['userName'] == 'bobby' and \
+                    rule['request'] == "TRANSACTION":
                 _deny_wfst_rule_exists = rule['access'] == 'DENY'
                 break
         self.assertFalse(_deny_wfst_rule_exists)
@@ -846,8 +846,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         user = settings.OGC_SERVER['default']['USER']
         passwd = settings.OGC_SERVER['default']['PASSWORD']
 
-        rest_path = 'rest/workspaces/geonode/datastores/{lyr_title}/featuretypes/{lyr_name}.xml'.\
-            format(lyr_title=saved_layer.store, lyr_name=name)
+        rest_path = f'rest/workspaces/geonode/datastores/{saved_layer.store}/featuretypes/{name}.xml'
         import requests
         from requests.auth import HTTPBasicAuth
         r = requests.get(url + rest_path,
@@ -881,7 +880,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         r = requests.put(url + rest_path,
                          data=payload,
                          headers={
-                            'Content-type': 'application/xml'
+                             'Content-type': 'application/xml'
                          },
                          auth=HTTPBasicAuth(user, passwd))
         self.assertEqual(r.status_code, 200)

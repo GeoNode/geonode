@@ -56,10 +56,9 @@ def _log(msg, *args):
     logger.debug(msg, *args)
 
 
-iso8601 = re.compile(r'^(?P<full>((?P<year>\d{4})([/-]?(?P<mon>(0[1-9])|(1[012]))' +
-                     r'([/-]?(?P<mday>(0[1-9])|([12]\d)|(3[01])))?)?(?:T(?P<hour>([01][0-9])' +
-                     r'|(?:2[0123]))(\:?(?P<min>[0-5][0-9])(\:?(?P<sec>[0-5][0-9]([\,\.]\d{1,10})?))?)' +
-                     r'?(?:Z|([\-+](?:([01][0-9])|(?:2[0123]))(\:?(?:[0-5][0-9]))?))?)?))$').match
+iso8601 = re.compile("^(?P<full>((?P<year>\\d{{4}})([/-]?(?P<mon>(0[1-9])|(1[012]))([/-]?(?P<mday>(0[1-9])|([12]\\d)|(3[01])))?)"
+                     "?(?:T(?P<hour>([01][0-9])|(?:2[0123]))(\\:?(?P<min>[0-5][0-9])(\\:?(?P<sec>[0-5][0-9]([\\,\\.]\\d{{1,10}})?"
+                     "))?)?(?:Z|([\\-+](?:([01][0-9])|(?:2[0123]))(\\:?(?:[0-5][0-9]))?))?)?))$").match
 
 _SUPPORTED_CRS = getattr(settings, 'UPLOADER', None)
 if _SUPPORTED_CRS:
@@ -787,8 +786,8 @@ SuggestedSPI=it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi"""
 
         timeregex_template = """regex=(?<=_)({mosaic_time_regex})"""
 
-        if not os.path.exists(dirname + '/timeregex.properties'):
-            with open(dirname + '/timeregex.properties', 'w') as timeregex_prop_file:
+        if not os.path.exists(f"{dirname}/timeregex.properties"):
+            with open(f"{dirname}/timeregex.properties", 'w') as timeregex_prop_file:
                 timeregex_prop_file.write(timeregex_template.format(**context))
 
     datastore_template = r"""SPI=org.geotools.data.postgis.PostgisNGDataStoreFactory
@@ -804,17 +803,17 @@ Connection\ timeout={db_conn_timeout}
 min\ connections={db_conn_min}
 max\ connections={db_conn_max}"""
 
-    if not os.path.exists(dirname + '/indexer.properties'):
-        with open(dirname + '/indexer.properties', 'w') as indexer_prop_file:
+    if not os.path.exists(f"{dirname}/indexer.properties"):
+        with open(f"{dirname}/indexer.properties", 'w') as indexer_prop_file:
             indexer_prop_file.write(indexer_template.format(**context))
 
-    if not os.path.exists(dirname + '/datastore.properties'):
-        with open(dirname + '/datastore.properties', 'w') as datastore_prop_file:
+    if not os.path.exists(f"{dirname}/datastore.properties"):
+        with open(f"{dirname}/datastore.properties", 'w') as datastore_prop_file:
             datastore_prop_file.write(datastore_template.format(**context))
 
     files_to_upload = []
     if not append_to_mosaic_opts and spatial_files:
-        z = zipfile.ZipFile(dirname + '/' + head + '.zip', "w", allowZip64=True)
+        z = zipfile.ZipFile(f"{dirname}/{head}.zip", "w", allowZip64=True)
         for spatial_file in spatial_files:
             f = spatial_file.base_file
             dst_basename = os.path.basename(f)
@@ -823,16 +822,15 @@ max\ connections={db_conn_max}"""
                 # Let's import only the first granule
                 z.write(spatial_file.base_file, arcname=dst_head + dst_tail)
             files_to_upload.append(spatial_file.base_file)
-        if os.path.exists(dirname + '/indexer.properties'):
-            z.write(dirname + '/indexer.properties', arcname='indexer.properties')
-        if os.path.exists(dirname + '/datastore.properties'):
+        if os.path.exists(f"{dirname}/indexer.properties"):
+            z.write(f"{dirname}/indexer.properties", arcname='indexer.properties')
+        if os.path.exists(f"{dirname}/datastore.properties"):
             z.write(
-                dirname +
-                '/datastore.properties',
+                f"{dirname}/datastore.properties",
                 arcname='datastore.properties')
         if mosaic_time_regex:
             z.write(
-                dirname + '/timeregex.properties',
+                f"{dirname}/timeregex.properties",
                 arcname='timeregex.properties')
         z.close()
 

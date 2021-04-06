@@ -158,7 +158,7 @@ class NormalUserTest(GeoNodeLiveTestSupport):
 
             import requests
             from requests.auth import HTTPBasicAuth
-            r = requests.get(url + f'gwc/rest/seed/{saved_layer.alternate}.json',
+            r = requests.get(f"{url}gwc/rest/seed/{saved_layer.alternate}.json",
                              auth=HTTPBasicAuth(user, passwd))
             self.assertEqual(r.status_code, 200)
             o = json.loads(r.text)
@@ -309,19 +309,15 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                            f"and it is not in {not_expected_layers}")
                     assert errors, msg
             else:
-                msg = ('Upload should have returned either "name" or '
-                       '"errors" for file %s.' % item['file'])
+                msg = f"Upload should have returned either \"name\" or \"errors\" for file {item['file']}."
                 assert 'name' in item, msg
                 layers[item['file']] = item['name']
 
-        msg = ('There were %s compatible layers in the directory,'
-               ' but only %s were sucessfully uploaded' %
-               (len(expected_layers), len(layers)))
+        msg = f'There were {len(expected_layers)} compatible layers in the directory, but only {len(layers)} were sucessfully uploaded'
         # assert len(layers) == len(expected_layers), msg
 
         for layer in expected_layers:
-            msg = ('The following file should have been uploaded'
-                   'but was not: %s. ' % layer)
+            msg = f'The following file should have been uploadedbut was not: {layer}. '
             assert layer in layers, msg
 
             layer_name = layers[layer]
@@ -921,9 +917,9 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
             layer_path, __ = os.path.splitext(new_vector_file)
 
             with open(f'{layer_path}.shp', 'rb') as layer_base, \
-                 open(f'{layer_path}.dbf', 'rb') as layer_dbf, \
-                 open(f'{layer_path}.shx', 'rb') as layer_shx, \
-                 open(f'{layer_path}.prj', 'rb') as layer_prj:
+                    open(f'{layer_path}.dbf', 'rb') as layer_dbf, \
+                    open(f'{layer_path}.shx', 'rb') as layer_shx, \
+                    open(f'{layer_path}.prj', 'rb') as layer_prj:
 
                 response = self.client.post(
                     vector_replace_url,
@@ -950,10 +946,10 @@ class GeoNodeMapTest(GeoNodeLiveTestSupport):
                     gisdata.VECTOR_DATA,
                     'san_andres_y_providencia_administrative.shp')
                 layer_path, __ = os.path.splitext(new_vector_file)
-                with open(layer_path + '.shp', 'rb') as layer_base, \
-                     open(layer_path + '.dbf', 'rb') as layer_dbf, \
-                     open(layer_path + '.shx', 'rb') as layer_shx, \
-                     open(layer_path + '.prj', 'rb') as layer_prj:
+                with open(f"{layer_path}.shp", 'rb') as layer_base, \
+                        open(f"{layer_path}.dbf", 'rb') as layer_dbf, \
+                        open(f"{layer_path}.shx", 'rb') as layer_shx, \
+                        open(f"{layer_path}.prj", 'rb') as layer_prj:
 
                     response = self.client.post(
                         vector_replace_url,
@@ -1154,7 +1150,7 @@ class LayersStylesApiInteractionTests(
         self.assertTrue('styles' in obj and obj['styles'])
 
         # Test filter layers by id
-        filter_url = self.layer_list_url + '?id=' + str(layer_id)
+        filter_url = f"{self.layer_list_url}?id={str(layer_id)}"
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         # This is a list url
@@ -1170,7 +1166,7 @@ class LayersStylesApiInteractionTests(
 
         prev_obj = obj
         # Test filter layers by name
-        filter_url = self.layer_list_url + '?name=' + self.layer.name
+        filter_url = f"{self.layer_list_url}?name={self.layer.name}"
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         # This is a list url
@@ -1184,7 +1180,7 @@ class LayersStylesApiInteractionTests(
     def test_style_interaction(self):
         """Style API interaction check."""
         # filter styles by layer id
-        filter_url = self.style_list_url + '?layer__id=' + str(self.layer.id)
+        filter_url = f"{self.style_list_url}?layer__id={str(self.layer.id)}"
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         # This is a list url
@@ -1192,7 +1188,7 @@ class LayersStylesApiInteractionTests(
         self.assertEqual(len(objects), 1)
 
         # filter styles by layer name
-        filter_url = self.style_list_url + '?layer__name=' + self.layer.name
+        filter_url = f"{self.style_list_url}?layer__name={self.layer.name}"
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         # This is a list url
@@ -1243,7 +1239,7 @@ class LayersStylesApiInteractionTests(
                 'resource_name': 'styles'
             }
         )
-        filter_url = style_list_url + '?layer__name=' + self.layer.name
+        filter_url = f"{style_list_url}?layer__name={self.layer.name}"
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         objects = self.deserialize(resp)['objects']
@@ -1275,7 +1271,7 @@ class LayersStylesApiInteractionTests(
         self.assertIsNotNone(style_body)
 
         # Check styles count
-        filter_url = style_list_url + '?layer__name=' + self.layer.name
+        filter_url = f"{style_list_url}?layer__name={self.layer.name}"
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
         objects = self.deserialize(resp)['objects']

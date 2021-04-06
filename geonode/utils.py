@@ -91,8 +91,7 @@ DEFAULT_ABSTRACT = ""
 
 INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
 
-ALPHABET = string.ascii_uppercase + string.ascii_lowercase + \
-    string.digits + '-_'
+ALPHABET = f"{string.ascii_uppercase + string.ascii_lowercase + string.digits}-_"
 ALPHABET_REVERSE = {c: i for (i, c) in enumerate(ALPHABET)}
 BASE = len(ALPHABET)
 SIGN_CHARACTER = '$'
@@ -212,7 +211,7 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
         if name == 'csrftoken':
             csrftoken = value
         cook = f"{name}={value}"
-        cookies = cook if not cookies else (cookies + '; ' + cook)
+        cookies = cook if not cookies else (f"{cookies}; {cook}")
 
     csrftoken = get_token(request) if not csrftoken else csrftoken
 
@@ -220,12 +219,11 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
         headers['X-Requested-With'] = "XMLHttpRequest"
         headers['X-CSRFToken'] = csrftoken
         cook = f"csrftoken={csrftoken}"
-        cookies = cook if not cookies else (cookies + '; ' + cook)
+        cookies = cook if not cookies else (f"{cookies}; {cook}")
 
     if cookies:
         if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
-            cookies = cookies + '; JSESSIONID=' + \
-                request.session['JSESSIONID']
+            cookies = f"{cookies}; JSESSIONID={request.session['JSESSIONID']}"
         headers['Cookie'] = cookies
 
     if request.method in ("POST", "PUT") and "CONTENT_TYPE" in request.META:
@@ -308,7 +306,7 @@ def _split_query(query):
             elif kw:
                 keywords.append(kw)
         else:
-            accum += ' ' + kw
+            accum += f" {kw}"
             if kw.endswith('"'):
                 keywords.append(accum[0:-1])
                 accum = None
@@ -384,7 +382,7 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             dest = SpatialReference()
             dest.ImportFromEPSG(target_srid)
             if int(_gdal_ver[0]) >= 3 and \
-            ((int(_gdal_ver[1]) == 0 and int(_gdal_ver[2]) >= 4) or int(_gdal_ver[1]) > 0):
+                    ((int(_gdal_ver[1]) == 0 and int(_gdal_ver[2]) >= 4) or int(_gdal_ver[1]) > 0):
                 source.SetAxisMappingStrategy(0)
                 dest.SetAxisMappingStrategy(0)
             g.Transform(CoordinateTransformation(source, dest))
@@ -562,10 +560,7 @@ class GXPMapBase(object):
             access_token = access_token.token
 
         if self.id and len(added_layers) == 0:
-            cfg = cache.get("viewer_json_" +
-                            str(self.id) +
-                            "_" +
-                            str(0 if user is None else user.id))
+            cfg = cache.get(f"viewer_json_{str(self.id)}_{str(0 if user is None else user.id)}")
             if cfg is not None:
                 return cfg
 
@@ -686,10 +681,7 @@ class GXPMapBase(object):
 
         # Create user-specific cache of maplayer config
         if self is not None:
-            cache.set("viewer_json_" +
-                      str(self.id) +
-                      "_" +
-                      str(0 if user is None else user.id), config)
+            cache.set(f"viewer_json_{str(self.id)}_{str(0 if user is None else user.id)}", config)
 
         # Client conversion if needed
         from geonode.client.hooks import hookset
@@ -1084,7 +1076,7 @@ def build_caveats(resourcebase):
     if resourcebase.data_quality_statement:
         caveats.append(resourcebase.data_quality_statement)
     if len(caveats) > 0:
-        return "- " + "%0A- ".join(caveats)
+        return f"- {'%0A- '.join(caveats)}"
     else:
         return ""
 
@@ -1208,14 +1200,14 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
                 else:
                     new_field_name = slugify(field_name)
                 if not b.match(new_field_name):
-                    new_field_name = '_' + new_field_name
+                    new_field_name = f"_{new_field_name}"
                 j = 0
                 while new_field_name in list_col_original or new_field_name in list_col.values():
                     if j == 0:
                         new_field_name += '_0'
-                    if new_field_name.endswith('_' + str(j)):
+                    if new_field_name.endswith(f"_{str(j)}"):
                         j += 1
-                        new_field_name = new_field_name[:-2] + '_' + str(j)
+                        new_field_name = f"{new_field_name[:-2]}_{str(j)}"
                 if field_name != new_field_name:
                     list_col[field_name] = new_field_name
         except Exception as e:
@@ -1263,6 +1255,7 @@ class DisableDjangoSignals:
     with DisableDjangoSignals():
         # do some fancy stuff here
     """
+
     def __init__(self, disabled_signals=None, skip=False):
         self.skip = skip
         self.stashed_signals = defaultdict(list)
@@ -1426,7 +1419,7 @@ class HttpClient(object):
     def request(self, url, method='GET', data=None, headers={}, stream=False,
                 timeout=None, retries=None, user=None, verify=False):
         if (user or self.username != 'admin') and \
-        check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
+                check_ogc_backend(geoserver.BACKEND_PACKAGE) and 'Authorization' not in headers:
             if connection.cursor().db.vendor not in ('sqlite', 'sqlite3', 'spatialite'):
                 try:
                     if user and isinstance(user, str):
@@ -1703,7 +1696,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
         # Set download links for WMS, WCS or WFS and KML
         logger.debug(" -- Resource Links[Set download links for WMS, WCS or WFS and KML]...")
-        links = wms_links(ogc_server_settings.public_url + 'ows?',
+        links = wms_links(f"{ogc_server_settings.public_url}ows?",
                           instance.alternate,
                           bbox,
                           srid,
@@ -1732,7 +1725,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                                     link_type='image').update(**_d)
 
         if instance.storeType == "dataStore":
-            links = wfs_links(ogc_server_settings.public_url + 'ows?',
+            links = wfs_links(f"{ogc_server_settings.public_url}ows?",
                               instance.alternate,
                               bbox=None,  # bbox filter should be set at runtime otherwise conflicting with CQL
                               srid=srid)
@@ -1755,7 +1748,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     )
 
         elif instance.storeType == 'coverageStore':
-            links = wcs_links(ogc_server_settings.public_url + 'wcs?',
+            links = wcs_links(f"{ogc_server_settings.public_url}wcs?",
                               instance.alternate,
                               bbox,
                               srid)
@@ -1802,10 +1795,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 if style:
                     style_name = os.path.basename(
                         urlparse(style.sld_url).path).split('.')[0]
-                    legend_url = ogc_server_settings.PUBLIC_LOCATION + \
-                        'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
-                        instance.alternate + '&STYLE=' + style_name + \
-                        '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
+                    legend_url = (f"{ogc_server_settings.PUBLIC_LOCATION}ows?service=WMS&request=GetLegendGraphic&format=image/png"
+                                  f"&WIDTH=20&HEIGHT=20&LAYER={instance.alternate}&STYLE={style_name}&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on")
 
                     if Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).count() < 2:
                         Link.objects.update_or_create(
@@ -2011,7 +2002,7 @@ def is_monochromatic_image(image_url, image_data=None):
 
     def is_local_static(url):
         if url.startswith(settings.STATIC_URL) or \
-        (url.startswith(settings.SITEURL) and settings.STATIC_URL in url):
+                (url.startswith(settings.SITEURL) and settings.STATIC_URL in url):
             return True
         return False
 
