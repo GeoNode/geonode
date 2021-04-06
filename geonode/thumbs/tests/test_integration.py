@@ -197,7 +197,7 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
         height = 200
 
         bbox_3857 = [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, "EPSG:3857"]
-        expected_image_path = EXPECTED_RESULTS_DIR + "background/wikimedia_outcome1.png"
+        expected_image_path = f"{EXPECTED_RESULTS_DIR}background/wikimedia_outcome1.png"
 
         background = GenericXYZBackground(thumbnail_width=width, thumbnail_height=height)
         self._fetch_and_compare_background(background, bbox_3857, expected_image_path)
@@ -219,7 +219,7 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
 
         zooms = range(6, 13)
         expected_image_paths = [
-            EXPECTED_RESULTS_DIR + f"background/wikimedia_zoom_{zoom}_outcome.png" for zoom in zooms
+            f"{EXPECTED_RESULTS_DIR}background/wikimedia_zoom_{zoom}_outcome.png" for zoom in zooms
         ]
 
         background = GenericXYZBackground(thumbnail_width=width, thumbnail_height=height)
@@ -249,12 +249,12 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
             [39681312.13711384, 43350289.494802296, 3596795.7455949546, 6654276.877002003, "EPSG:3857"],
         ]
 
-        expected_results_dir = EXPECTED_RESULTS_DIR + "background/"
+        expected_results_dir = f"{EXPECTED_RESULTS_DIR}background/"
         expected_images_paths = [
-            expected_results_dir + "wikimedia_outcome1.png",
-            expected_results_dir + "wikimedia_outcome2.png",
-            expected_results_dir + "wikimedia_outcome3.png",
-            expected_results_dir + "wikimedia_outcome4.png",
+            f"{expected_results_dir}wikimedia_outcome1.png",
+            f"{expected_results_dir}wikimedia_outcome2.png",
+            f"{expected_results_dir}wikimedia_outcome3.png",
+            f"{expected_results_dir}wikimedia_outcome4.png",
         ]
 
         background = WikiMediaTileBackground(thumbnail_width=width, thumbnail_height=height)
@@ -274,12 +274,12 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseSimpleTestSupport):
             [39681312.13711384, 43350289.494802296, 3596795.7455949546, 6654276.877002003, "EPSG:3857"],
         ]
 
-        expected_results_dir = EXPECTED_RESULTS_DIR + "background/"
+        expected_results_dir = f"{EXPECTED_RESULTS_DIR}background/"
         expected_images_paths = [
-            expected_results_dir + "osm_outcome1.png",
-            expected_results_dir + "osm_outcome2.png",
-            expected_results_dir + "osm_outcome3.png",
-            expected_results_dir + "osm_outcome4.png",
+            f"{expected_results_dir}osm_outcome1.png",
+            f"{expected_results_dir}osm_outcome2.png",
+            f"{expected_results_dir}osm_outcome3.png",
+            f"{expected_results_dir}osm_outcome4.png",
         ]
 
         background = OSMTileBackground(thumbnail_width=width, thumbnail_height=height)
@@ -349,10 +349,10 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
     @override_settings(
         THUMBNAIL_BACKGROUND={
             "options": {
-                "service_url": settings.OGC_SERVER["default"]["LOCATION"] + "ows/",
+                "service_url": f"{settings.OGC_SERVER['default']['LOCATION']}ows/",
                 "layer_name": "san_andres_y_providencia_coastline",
                 "srid": "EPSG:3857",
-                "version": "1.1.0",
+                "version": "1.1.0"
             }
         }
     )
@@ -368,7 +368,7 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
             logger.error(f"It was not possible to fetch the background: {e}")
             return
 
-        expected_image = Image.open(EXPECTED_RESULTS_DIR + "background/wms_3857.png")
+        expected_image = Image.open(f"{EXPECTED_RESULTS_DIR}background/wms_3857.png")
         diff = Image.new("RGB", image.size)
 
         mismatch = pixelmatch(image, expected_image, diff)
@@ -396,10 +396,10 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
     @override_settings(
         THUMBNAIL_BACKGROUND={
             "options": {
-                "service_url": settings.OGC_SERVER["default"]["LOCATION"] + "ows/",
+                "service_url": f"{settings.OGC_SERVER['default']['LOCATION']}ows/",
                 "layer_name": "san_andres_y_providencia_coastline",
                 "srid": "EPSG:4326",
-                "version": "1.1.0",
+                "version": "1.1.0"
             }
         }
     )
@@ -415,7 +415,7 @@ class GeoNodeThumbnailWMSBackground(GeoNodeBaseTestSupport):
             logger.error(f"It was not possible to fetch the background: {e}")
             return
 
-        expected_image = Image.open(EXPECTED_RESULTS_DIR + "background/wms_4326.png")
+        expected_image = Image.open(f"{EXPECTED_RESULTS_DIR}background/wms_4326.png")
         diff = Image.new("RGB", image.size)
 
         mismatch = pixelmatch(image, expected_image, diff)
@@ -527,7 +527,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
         }
     )
     def test_layer_default_thumb(self):
-        expected_thumb = Image.open(EXPECTED_RESULTS_DIR + "thumbnails/default_layer_coast_line_thumb.png")
+        expected_thumb = Image.open(f"{EXPECTED_RESULTS_DIR}thumbnails/default_layer_coast_line_thumb.png")
         create_gs_thumbnail_geonode(self.layer_coast_line, overwrite=True)
         self.layer_coast_line.refresh_from_db()
         self._fetch_thumb_and_compare(self.layer_coast_line.thumbnail_url, expected_thumb)
@@ -549,13 +549,13 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
             [-77007211.63038959, -18303573.90737422, 781254.9545387309, 32089861.740146928, "EPSG:3857"],
         ]
 
-        expected_results_dir = EXPECTED_RESULTS_DIR + "thumbnails/"
+        expected_results_dir = f"{EXPECTED_RESULTS_DIR}thumbnails/"
         expected_thumbs_paths = [
-            expected_results_dir + "layer_thumb1.png",
-            expected_results_dir + "layer_thumb2.png",
-            expected_results_dir + "layer_thumb3.png",
-            expected_results_dir + "layer_thumb4.png",
-            expected_results_dir + "layer_thumb5.png",
+            f"{expected_results_dir}layer_thumb1.png",
+            f"{expected_results_dir}layer_thumb2.png",
+            f"{expected_results_dir}layer_thumb3.png",
+            f"{expected_results_dir}layer_thumb4.png",
+            f"{expected_results_dir}layer_thumb5.png",
         ]
 
         self.client.login(username="norman", password="norman")
@@ -592,7 +592,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
 
             diff = Image.new("RGB", thumb.size)
 
-            expected_thumb = Image.open(EXPECTED_RESULTS_DIR + "thumbnails/default_map_thumb.png")
+            expected_thumb = Image.open(f"{EXPECTED_RESULTS_DIR}thumbnails/default_map_thumb.png")
 
             mismatch = pixelmatch(thumb, expected_thumb, diff)
             if mismatch >= expected_thumb.size[0] * expected_thumb.size[1] * 0.01:
@@ -632,13 +632,13 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
             [-77007211.63038959, -18303573.90737422, 781254.9545387309, 32089861.740146928, "EPSG:3857"],
         ]
 
-        expected_results_dir = EXPECTED_RESULTS_DIR + "thumbnails/"
+        expected_results_dir = f"{EXPECTED_RESULTS_DIR}thumbnails/"
         expected_thumbs_paths = [
-            expected_results_dir + "map_thumb1.png",
-            expected_results_dir + "map_thumb2.png",
-            expected_results_dir + "map_thumb3.png",
-            expected_results_dir + "map_thumb4.png",
-            expected_results_dir + "map_thumb5.png",
+            f"{expected_results_dir}map_thumb1.png",
+            f"{expected_results_dir}map_thumb2.png",
+            f"{expected_results_dir}map_thumb3.png",
+            f"{expected_results_dir}map_thumb4.png",
+            f"{expected_results_dir}map_thumb5.png",
         ]
 
         for bbox, expected_thumb_path in zip(bboxes, expected_thumbs_paths):

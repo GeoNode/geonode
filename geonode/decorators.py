@@ -204,7 +204,7 @@ def superuser_only(function):
 def check_keyword_write_perms(function):
     def _inner(request, *args, **kwargs):
         keyword_readonly = settings.FREETEXT_KEYWORDS_READONLY and request.method == "POST" \
-                           and not auth.get_user(request).is_superuser
+            and not auth.get_user(request).is_superuser
         request.keyword_readonly = keyword_readonly
         if keyword_readonly and 'resource-keywords' in request.POST:
             return HttpResponse(

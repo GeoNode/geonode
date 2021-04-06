@@ -91,7 +91,7 @@ class GenericWMSBackground(BaseThumbBackground):
 
         # WMS specific attributes (to be overwritten in specific background classes)
         service_url = options.get("service_url", None)
-        self.service_url = service_url + "/" if service_url and not service_url.endswith("/") else service_url
+        self.service_url = f"{service_url}/" if service_url and not service_url.endswith("/") else service_url
         self.layer_name = options.get("layer_name", None)
         self.format = options.get("format", "image/png")
         self.version = options.get("version", "1.3.0")

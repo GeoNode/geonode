@@ -266,7 +266,4 @@ if __name__ == '__main__':
         config = readconfig()
         print(config.get('ec2', 'KEY_PATH'))
     else:
-        print("Usage:\n    " +
-              f"python {sys.argv[0]} launch_base\n     " +
-              f"python {sys.argv[0]} launch_geonode\n    " +
-              f"python {sys.argv[0]} terminate")
+        print(f"Usage:\n    python {sys.argv[0]} launch_base\n     python {sys.argv[0]} launch_geonode\n    python {sys.argv[0]} terminate")

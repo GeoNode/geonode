@@ -74,7 +74,7 @@ def get_proxified_ows_url(url, version='1.3.0', proxy_base=None):
         urlencode(
             qd,
             doseq=True),
-        safe='') if qd else 'version%3D' + version + '%26request%3DGetCapabilities%26service%3Dwms'
+        safe='') if qd else f"version%3D{version}%26request%3DGetCapabilities%26service%3Dwms"
     proxy_base = proxy_base if proxy_base else urljoin(
         settings.SITEURL, reverse('proxy'))
     ows_url = quote(base_ows_url, safe='')

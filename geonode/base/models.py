@@ -302,7 +302,7 @@ class License(models.Model):
         if self.abbreviation is None or len(self.abbreviation) == 0:
             return self.name
         else:
-            return self.name + " (" + self.abbreviation + ")"
+            return f"{self.name} ({self.abbreviation})"
 
     @property
     def description_bullets(self):
@@ -312,7 +312,7 @@ class License(models.Model):
             bullets = []
             lines = self.description.split("\n")
             for line in lines:
-                bullets.append("+ " + line)
+                bullets.append(f"+ {line}")
             return bullets
 
     class Meta:
@@ -960,7 +960,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         Send a notification when a resource is created or updated
         """
         if not self.resource_type and self.polymorphic_ctype and \
-        self.polymorphic_ctype.model:
+                self.polymorphic_ctype.model:
             self.resource_type = self.polymorphic_ctype.model.lower()
 
         if hasattr(self, 'class_name') and (self.pk is None or notify):
@@ -1158,7 +1158,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if self.license.name is not None and (len(self.license.name) > 0):
             a.append(self.license.name)
         if self.license.url is not None and (len(self.license.url) > 0):
-            a.append("(" + self.license.url + ")")
+            a.append(f"({self.license.url})")
         return " ".join(a)
 
     @property
@@ -1166,12 +1166,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         a = []
         if self.license.name_long is not None and (
                 len(self.license.name_long) > 0):
-            a.append(self.license.name_long + ":")
+            a.append(f"{self.license.name_long}:")
         if self.license.description is not None and (
                 len(self.license.description) > 0):
             a.append(self.license.description)
         if self.license.url is not None and (len(self.license.url) > 0):
-            a.append("(" + self.license.url + ")")
+            a.append(f"({self.license.url})")
         return " ".join(a)
 
     @property

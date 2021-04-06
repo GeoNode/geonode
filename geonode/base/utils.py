@@ -98,11 +98,9 @@ def remove_duplicate_links(resource):
     if isinstance(resource, Layer):
         # fixup Legend links
         layer = resource
-        legend_url_template = \
-            ogc_server_settings.PUBLIC_LOCATION + \
-            'ows?service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&LAYER=' + \
-            '{alternate}&STYLE={style_name}' + \
-            '&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on'
+        legend_url_template = (f"{ogc_server_settings.PUBLIC_LOCATION}ows?"
+                               "service=WMS&request=GetLegendGraphic&format=image/png&WIDTH=20&HEIGHT=20&"
+                               f"LAYER={{alternate}}&STYLE={{style_name}}&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on")
         if layer.default_style and not layer.get_legend_url(style_name=layer.default_style.name):
             Link.objects.update_or_create(
                 resource=layer.resourcebase_ptr,

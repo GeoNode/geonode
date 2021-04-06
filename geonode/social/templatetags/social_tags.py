@@ -90,7 +90,7 @@ def activity_item(action, **kwargs):
         activity_class = 'delete'
 
     if raw_action == 'created' and \
-    object_type in ('layer', 'document'):
+            object_type in ('layer', 'document'):
         activity_class = 'upload'
 
     ctx = dict(

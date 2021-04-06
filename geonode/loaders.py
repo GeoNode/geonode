@@ -27,8 +27,8 @@ class GeoNodeCeleryTaksLoader(DjangoLoader):
         for conn in db.connections.all():
             try:
                 if not conn.in_atomic_block and \
-                (not conn.connection or
-                 (conn.connection.cursor() and not conn.is_usable())):
+                    (not conn.connection or
+                     (conn.connection.cursor() and not conn.is_usable())):
                     conn.close()
             except Exception:
                 pass

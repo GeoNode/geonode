@@ -116,8 +116,7 @@ def WebMapService(url,
             )
         )
     raise NotImplementedError(
-        'The WMS version (%s) you requested is not implemented. Please use 1.1.1 or 1.3.0.' %
-        version)
+        f'The WMS version ({version}) you requested is not implemented. Please use 1.1.1 or 1.3.0.')
 
 
 class WmsServiceHandler(base.ServiceHandlerBase,
@@ -358,7 +357,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         workspace = geoserver_resource.workspace.name if hasattr(geoserver_resource, 'workspace') else None
         store = geoserver_resource.store if hasattr(geoserver_resource, 'store') else None
         bbox = utils.decimal_encode(geoserver_resource.native_bbox) if hasattr(geoserver_resource, 'native_bbox') else \
-        utils.decimal_encode(geoserver_resource.boundingBox)
+            utils.decimal_encode(geoserver_resource.boundingBox)
         return {
             "name": name,
             "workspace": workspace or "remoteWorkspace",

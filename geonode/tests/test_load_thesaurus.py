@@ -87,7 +87,7 @@ class TestExtractLanguages(SimpleTestCase):
     def test_get_all_lang_available_should_return_all_the_lang_available_int_the_file(self):
         titles = self.__load_titles()
         XML_URI = "http://www.w3.org/XML/1998/namespace"
-        LANG_ATTRIB = "{" + XML_URI + "}lang"
+        LANG_ATTRIB = f"{{{XML_URI}}}lang"
         actual = get_all_lang_available_with_title(titles, LANG_ATTRIB)
         expected = [
             ("it", "Italian register of the reference data sets"),
