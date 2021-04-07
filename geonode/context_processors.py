@@ -181,7 +181,8 @@ def resource_urls(request):
         ),
         OGC_SERVER=getattr(settings, 'OGC_SERVER', None),
         DELAYED_SECURITY_SIGNALS=getattr(settings, 'DELAYED_SECURITY_SIGNALS', False),
-        READ_ONLY_MODE=getattr(Configuration.load(), 'read_only', False)
+        READ_ONLY_MODE=getattr(Configuration.load(), 'read_only', False),
+        ADVANCED_EDIT_EXCLUDE_FIELD=getattr(settings, "ADVANCED_EDIT_EXCLUDE_FIELD", []),
     )
 
     return defaults
