@@ -256,18 +256,18 @@ define(['underscore',
 
     initUploadProgressTable = function() {
         const section = document.querySelector('#incomplete-download-list');
-        const table = section.querySelector('#upload-progress-table');
+        const removeModal = section.querySelector('#remove-incomplete-upload-modal');
+        const table = section.querySelector('.upload-progress-table');
         const tbody = table.querySelector('tbody');
-        const prevPage = section.querySelector('#upload-progress-prev-page');
-        const nextPage = section.querySelector('#upload-progress-next-page');
-        const progressPage = section.querySelector('#upload-progress-page');
+        const prevPage = section.querySelector('.upload-progress-prev-page');
+        const nextPage = section.querySelector('.upload-progress-next-page');
+        const progressPage = section.querySelector('.upload-progress-page');
         const currentPage = progressPage.querySelector('.upload-progress-page-count');
         const totalPages = progressPage.querySelector('.upload-progress-page-total');
         const resumeTooltip = table.getAttribute('data-resume-tool-tooltip');
         const removeTooltip = table.getAttribute('data-remove-tool-tooltip');
-        const removeModal = section.querySelector('#remove-incomplete-upload-modal');
-        const removeModalButton = section.querySelector('#remove-incomplete-upload-modal-button');
-        const removeModalName = section.querySelector('.remove-incomplete-upload-modal-name');
+        const removeModalButton = removeModal && removeModal.querySelector('.remove-incomplete-upload-modal-button');
+        const removeModalName = removeModal && removeModal.querySelector('.remove-incomplete-upload-modal-name');
 
         const intervalTime = 5000;
 
@@ -276,12 +276,16 @@ define(['underscore',
         var pageSize = 10;
         var render;
         var selected = null;
+        var processed = [];
+        var lastUploadsIds = [];
+        var uploads = [];
+        var loading = false;
 
         function getUploadItems(options) {
             $.ajax({
-                url: siteUrl + 'api/v2/uploads?filter{-state}=PROCESSED&page=' + page + '&page_size=' + pageSize,
+                url: options.url || siteUrl + 'api/v2/uploads?filter{-state}=PROCESSED&page=1&page_size=99999',
                 async: false,
-                mode: "queue",
+                mode: 'queue',
                 contentType: false,
             })
                 .done(function (response) {
@@ -305,7 +309,7 @@ define(['underscore',
             })
                 .done(function () {
                     if (render) {
-                        render();
+                        render(true);
                     }
                 })
                 .fail(function () {});
@@ -413,14 +417,14 @@ define(['underscore',
                 tools.appendChild(resumeTool);
                 $(resumeTool).tooltip();
             }
-            if (properties.layer && properties.layer.detail_url) {
+            if (properties.state === 'PROCESSED' && properties.detail_url) {
                 const linkTool = document.createElement('a');
                 linkTool.setAttribute('class', 'btn btn-default btn-sm incomplete-link');
-                linkTool.setAttribute('href', properties.layer.detail_url);
+                linkTool.setAttribute('href', properties.detail_url);
                 linkTool.innerHTML = '<i class="fa fa-link"></i>';
                 tools.appendChild(linkTool);
             }
-            if (properties.delete_url) {
+            if (removeModal && properties.delete_url) {
                 const removeTool = document.createElement('button');
                 removeTool.innerHTML = '<i class="fa fa-remove"></i>';
                 removeTool.setAttribute('class', 'btn btn-danger btn-sm incomplete-remove');
@@ -437,51 +441,108 @@ define(['underscore',
             }
         }
 
-        render = function() {
-            getUploadItems({
-                resolve: function(response) {
-                    tbody.innerHTML = '';
-                    maxPage = Math.ceil(response.total / response.page_size);
-                    const uploads = response.uploads || [];
-                    for (var i = 0; i < uploads.length; i++) {
-                        tableRow(uploads[i]);
-                    }
-                    const prevLink = response.links && response.links.previous;
-                    const nextLink = response.links && response.links.next;
+        render = function(request) {
 
-                    prevPage.setAttribute('class', !prevLink ? 'disabled' : '');
-                    nextPage.setAttribute('class', !nextLink ? 'disabled' : '');
-                    prevPage.style.cursor = !prevLink ? 'not-allowed' : 'pointer';
-                    nextPage.style.cursor = !nextLink ? 'not-allowed' : 'pointer';
+            loading = true;
 
-                    progressPage.style.display = 'inline';
-                    currentPage.innerHTML = page;
-                    totalPages.innerHTML = maxPage;
+            function updateRenderedNodes() {
 
-                    section.style.display = uploads.length === 0 ? 'none' : 'block';
-                },
-                reject: function(error) {
-                    // if does not find the page
-                    // reset to page 1
-                    // this could happen while deleting the last item in a page
-                    if (error.status === 404) {
-                        page = 1;
-                        if (render) {
-                            render();
-                        }
+                tbody.innerHTML = '';
+                var start = (page - 1) * pageSize;
+                var end = start + pageSize;
+                var items = [].concat(uploads).concat(processed);
+
+                maxPage = Math.ceil(items.length / pageSize);
+
+                for (var i = start; i < end; i++) {
+                    if (items[i]) {
+                        tableRow(items[i]);
                     }
                 }
-            });
+                const prevLink = page > 1;
+                const nextLink = page < maxPage;
+
+                prevPage.setAttribute('class', !prevLink ? 'disabled' : '');
+                nextPage.setAttribute('class', !nextLink ? 'disabled' : '');
+                prevPage.style.cursor = !prevLink ? 'not-allowed' : 'pointer';
+                nextPage.style.cursor = !nextLink ? 'not-allowed' : 'pointer';
+
+                progressPage.style.display = 'inline';
+                currentPage.innerHTML = page;
+                totalPages.innerHTML = maxPage;
+
+                section.style.display = items.length === 0 ? 'none' : 'block';
+                loading = false;
+            }
+
+            if (request) {
+                getUploadItems({
+                    resolve: function(response) {
+
+                        uploads = response.uploads || [];
+
+                        var currentUploadIds = [];
+                        for (var i = 0; i < uploads.length; i++) {
+                            currentUploadIds.push(uploads[i].id);
+                        }
+    
+                        var diffUploadIds = [];
+                        for (var i = 0; i < lastUploadsIds.length; i++) {
+                            if (currentUploadIds.indexOf(lastUploadsIds[i]) === -1) {
+                                diffUploadIds.push(lastUploadsIds[i]);
+                            }
+                        }
+
+                        lastUploadsIds = currentUploadIds;
+
+                        if (diffUploadIds.length > 0) {
+                            getUploadItems({
+                                url: siteUrl + 'api/v2/uploads?filter{state}=PROCESSED&page=1&page_size=99999',
+                                resolve: function(res) {
+                                    const processedUploads = res.uploads || [];
+                                    for (var i = 0; i < processedUploads.length; i++) {
+                                        if (diffUploadIds.indexOf(processedUploads[i].id) !== -1) {
+                                            processed.push(processedUploads[i]);
+                                        }
+                                    } 
+                                    updateRenderedNodes();
+                                },
+                                reject: function() {
+                                    updateRenderedNodes();
+                                }
+                            });
+                        } else {
+                            updateRenderedNodes();
+                        }
+                    },
+                    reject: function(error) {
+                        // if does not find the page
+                        // reset to page 1
+                        // this could happen while deleting the last item in a page
+                        if (error.status === 404) {
+                            page = 1;
+                            if (render) {
+                                render(true);
+                            }
+                        }
+                        loading = false;
+                    }
+                });
+            } else {
+                updateRenderedNodes();
+            }
         }
 
-        $(removeModal).on('hide.bs.modal', function (e) {
-            selected = null;
-        });
-        removeModalButton.onclick = function () {
-            handleDelete(selected);
-            selected = null;
-            $(removeModal).modal('hide');
-        };
+        if (removeModal) {
+            $(removeModal).on('hide.bs.modal', function (e) {
+                selected = null;
+            });
+            removeModalButton.onclick = function () {
+                handleDelete(selected);
+                selected = null;
+                $(removeModal).modal('hide');
+            };
+        }
         prevPage.addEventListener('click', function() {
             const prev = page - 1;
             if (prev >= 1) {
@@ -497,11 +558,13 @@ define(['underscore',
             }
         });
 
-        render();
+        render(true);
         // continuously request update for the current page to the api
         // and re-render the table
         setInterval(function() {
-            render();
+            if (!loading) {
+                render(true);
+            }
         }, intervalTime);
     }
 

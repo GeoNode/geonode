@@ -40,8 +40,7 @@
       <h3>{% trans "Incomplete Uploads" %}</h3>
       <p>{% trans "You have the following incomplete uploads" %}:</p>
       <table
-        id="upload-progress-table"
-        class="table table-bordered"
+        class="table table-bordered upload-progress-table"
         data-resume-tool-tooltip="{% trans 'Resume' %}"
         data-remove-tool-tooltip="{% trans 'Delete' %}"
       >
@@ -58,12 +57,12 @@
       </table>
       <nav aria-label="Upload progress navigation" class="text-center">
         <ul class="pagination pagination-sm"  style="margin-top:0;">
-          <li id="upload-progress-prev-page">
+          <li class="upload-progress-prev-page">
             <a aria-label="Previous">
               <span aria-hidden="true"><i class="fa fa-angle-left"></i></span>
             </a>
           </li>
-          <li id="upload-progress-page" style="display:none;">
+          <li class="upload-progress-page" style="display:none;">
             <a>
               {% trans "page" %}
               <span class="upload-progress-page-count"></span>
@@ -71,7 +70,7 @@
               <span class="upload-progress-page-total"></span>
             </a>
           </li>
-          <li id="upload-progress-next-page">
+          <li class="upload-progress-next-page">
             <a aria-label="Next">
               <span aria-hidden="true"><i class="fa fa-angle-right"></i></span>
             </a>
@@ -97,7 +96,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "No, don't remove it" %}</button>
-              <button id="remove-incomplete-upload-modal-button" type="button" class="btn btn-danger">{% trans "Yes, I am sure" %}</button>
+              <button type="button" class="btn btn-danger remove-incomplete-upload-modal-button">{% trans "Yes, I am sure" %}</button>
             </div>
           </div>
         </div>
